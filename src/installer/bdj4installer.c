@@ -2246,6 +2246,7 @@ installerSetATI (installer_t *installer)
   if (installer->bdjoptloaded) {
     bdjoptSetStr (OPT_M_DIR_MUSIC, installer->musicdir);
     bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, installer->ati);
+    bdjoptSave ();
   }
   installer->instState = INST_VLC_CHECK;
 }
@@ -2740,7 +2741,6 @@ installerCleanup (installer_t *installer)
   const char  *targv [10];
 
   if (installer->bdjoptloaded) {
-    bdjoptSave ();
     bdjoptCleanup ();
   }
 

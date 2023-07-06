@@ -292,6 +292,8 @@ function checkInstallation {
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
       res=$(($res+1))
+
+      # check for bad version
       grep "^\.\.-1" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -ne 0 ]]; then
@@ -299,6 +301,7 @@ function checkInstallation {
       else
         echo "  incorrect version in ${hostname}/bdjconfig.txt"
       fi
+
       # check <hostname>/bdjconfig.txt for proper ati interface
       res=$(($res+1))
       grep "${ATI}" "${fn}" > /dev/null 2>&1
@@ -308,6 +311,26 @@ function checkInstallation {
       else
         tval=$(grep "${ATI}" "${fn}")
         echo "  incorrect ati interface $tval"
+      fi
+
+      # check for null volume
+      res=$(($res+1))
+      grep "libvolnull" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  null volume interface"
+      fi
+
+      # check for null pli
+      res=$(($res+1))
+      grep "libplinull" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  null player interface"
       fi
     else
       echo "  no ${fn}"
