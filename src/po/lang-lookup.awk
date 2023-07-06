@@ -4,17 +4,20 @@
 #
 
 function processitem() {
-# print "## -- p: line: " $0;
+  print "## -- p" state ": process " doprocess "/" inid "/" instr ": /" $0 "/" >> DBGFILE;
   if ($0 ~ /^$/) {
-# if (! start) { print "## -- p: start"; }
-# if (instr) { print "## -- p: msgstr: " tmstr; }
-    if (! start && doprint) {
-      print "";
+    if (state == 2 && instr) {
+      nmid = tmid;
+      nidline = tidline;
+      nstrline = tmstr;
+      dumpmsg();
     }
-    start = 1;
+    doprocess = 1;
+    inid = 0;
+    instr = 0;
     return;
   }
-  if (start == 1 && $0 ~ /^msgid/) {
+  if (doprocess == 1 && $0 ~ /^msgid/) {
     inid = 1;
     instr = 0;
     tidline = $0;
@@ -23,18 +26,19 @@ function processitem() {
     if (tmid == "\"\"") {
       tmid = "";
     }
+    print "## -- p" state ": msgid: " tmid >> DBGFILE;
     next;
   }
-  if (start == 1 && $0 ~ /^msgstr/) {
-# print "## -- p: msgid: " tmid;
+  if (doprocess == 1 && $0 ~ /^msgstr/) {
     inid = 0;
     instr = 1;
     tmp = $0;
     sub (/^msgstr */, "", tmp);
     tmstr = tmp;
+    print "## -- p" state ": msgstr: " tmstr >> DBGFILE;
     next;
   }
-  if (start == 1 && $0 ~ /^"/) {
+  if (doprocess == 1 && $0 ~ /^"/) {
     if (inid) {
       tidline = tidline ORS $0;
       if (tmid == "") {
@@ -42,58 +46,70 @@ function processitem() {
       } else {
         tmid = tmid ORS $0;
       }
+      print "## -- p" state ": msgid: cont: " tmid >> DBGFILE;
     }
     if (instr) {
       tmp = $0;
       tmstr = tmstr ORS tmp;
+      print "## -- p" state ": msgstr: cont: " tmstr >> DBGFILE;
     }
     next;
   }
+}
 
-  if (doprint) {
-# print "## -- print = " $0;
-    print $0;
-    instr = 0;
-    inid = 0;
-  }
+function printmsg() {
+  print nidline;
+  printf "msgstr ";
+  print pstrline;
+  print nidline >> DBGFILE;
+  printf "msgstr " >> DBGFILE;
+  print pstrline >> DBGFILE;
 }
 
 function dumpmsg() {
-# print "## -- nidline = " nidline;
-# print "## -- nmid = " nmid;
-# print "## -- msgstr = " nstrline;
-# print "## -- olddata = /" olddata [nmid] "/";
-  if (nstrline != "\"\"" && nmid !~ /helptext_/) {
-# print "## -- already present, not helptext"
-    print nidline;
-    printf "msgstr ";
-    print nstrline;
+  print "## -- nidline = " nidline >> DBGFILE;
+  print "## -- nmid = " nmid >> DBGFILE;
+  print "## -- msgstr = " nstrline >> DBGFILE;
+  if (nstrline != "\"\"") {
+    print "## -- already present" >> DBGFILE;
+    pstrline = nstrline;
+    printmsg();
   } else if (olddata [nmid] != "") {
-# print "## -- not empty";
-    print nidline;
-    printf "msgstr ";
-    print olddata [nmid];
+    print "## -- olddata not empty" >> DBGFILE;
+    print "## -- olddata = /" olddata [nmid] "/" >> DBGFILE;
+    pstrline = olddata [nmid];
+    printmsg();
   } else {
-    sub (/[:.]"$/, "\"", nmid);
-    if (nstrline == "\"\"" && olddata [nmid] != "") {
-# print "## -- not empty w/o period";
-      print nidline;
-      printf "msgstr ";
-      print olddata [nmid];
+    if (nmid ~ /"\n"/) {
+      tmid = nmid;
+      gsub (/"\n"/, "", tmid);
+      if (nstrline == "\"\"" && olddata [tmid] != "") {
+        print "## -- olddata not empty continuation" >> DBGFILE;
+        print "## -- olddata = /" olddata [tmid] "/" >> DBGFILE;
+        pstrline = olddata [tmid];
+        printmsg();
+      }
     } else {
-      nmid = gensub (/([Cc])olour/, "\\1olor", "g", nmid);
-      nmid = gensub (/([Oo])rganis/, "\\1rganiz", "g", nmid);
-      nmid = gensub (/([Cc])entimetre/, "\\1entimeter", "g", nmid);
+      sub (/[:.]"$/, "\"", nmid);
       if (nstrline == "\"\"" && olddata [nmid] != "") {
-# print "## -- not empty alt spelling";
-        print nidline;
-        printf "msgstr ";
-        print olddata [nmid];
+        print "## -- olddata not empty w/o period" >> DBGFILE;
+        print "## -- olddata = /" olddata [nmid] "/" >> DBGFILE;
+        pstrline = olddata [nmid];
+        printmsg();
       } else {
-# print "## -- is empty";
-        print nidline;
-        printf "msgstr ";
-        print nstrline;
+        nmid = gensub (/([Cc])olour/, "\\1olor", "g", nmid);
+        nmid = gensub (/([Oo])rganis/, "\\1rganiz", "g", nmid);
+        nmid = gensub (/([Cc])entimetre/, "\\1entimeter", "g", nmid);
+        if (nstrline == "\"\"" && olddata [nmid] != "") {
+          print "## -- olddata not empty alt spelling" >> DBGFILE;
+          print "## -- olddata = /" olddata [nmid] "/" >> DBGFILE;
+          pstrline = olddata [nmid];
+          printmsg();
+        } else {
+          print "## -- is empty" >> DBGFILE;
+          pstrline = nstrline;
+          printmsg();
+        }
       }
     }
   }
@@ -104,13 +120,30 @@ function dumpmsg() {
 }
 
 BEGIN {
+  # state 0 : not started
+  # state 1 : reading old data
+  # state 2 : reading current data
+  DBGFILE = "/dev/null";
+  # DBGFILE = "/dev/stderr";
   state = 0;
+  doprocess = 0;
+  inid = 0;
+  instr = 0;
+  doprint = 0;
 }
 
 {
   if (FNR == 1) {
     state++;
-    start = 0;
+    if (state == 1) {
+      print "## -- == reading old data " FILENAME >> DBGFILE;
+      doprint = 0;
+    }
+    if (state == 2) {
+      print "## -- == reading current data " FILENAME >> DBGFILE;
+      doprint = 1;
+    }
+    doprocess = 0;
     inid = 0;
     instr = 0;
   }
@@ -118,8 +151,24 @@ BEGIN {
     # skip debug comments
     next;
   }
+  if (doprint && $0 ~ /^#/) {
+    print $0;
+    print $0 >> DBGFILE;
+    instr = 0;
+    inid = 0;
+    next;
+  }
+  if (doprint && state == 2 && doprocess == 0) {
+    print $0;
+    print $0 >> DBGFILE;
+    if ($0 ~ /^$/) {
+      doprocess = 1;
+      print "## -- p" state ": start" >> DBGFILE;
+    }
+    next;
+  }
+  print "## -- p" state ": line: " $0 >> DBGFILE;
   if (state == 1) {
-    doprint = 0;
     processitem();
     omid = tmid;
     # always remove colons
@@ -137,19 +186,16 @@ BEGIN {
     }
   }
   if (state == 2) {
-    doprint = 1;
+    # the old data has been read in, process the existing po file.
     processitem();
-    if (start && instr) {
-      nmid = tmid;
-      nidline = tidline;
-      nstrline = tmstr;
-      dumpmsg();
-    }
   }
 }
 
 END {
-  if (doprint && start && instr) {
+  if (doprint && doprocess && instr) {
+    nmid = tmid;
+    nidline = tidline;
+    nstrline = tmstr;
     dumpmsg();
   }
 }

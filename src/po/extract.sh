@@ -27,6 +27,16 @@ function mkpo {
   dlang=$4
   elang=$5
 
+  if [[ $CHANGED == F ]]; then
+    hg diff ${out} > ${POTFILE}.t
+    if [[ ! -s ${POTFILE}.t ]]; then
+      echo "-- $(date +%T) no changes to $out"
+      rm -f ${POTFILE}.t
+      return
+    fi
+    rm -f ${POTFILE}.t
+  fi
+
   echo "-- $(date +%T) creating $out"
   if [[ -f ${out} && ${out} != en_GB.po ]]; then
     # re-use data from existing file
@@ -43,8 +53,11 @@ function mkpo {
       -e "s/: [0-9][0-9-]* [0-9][0-9:-]*/: ${dt}/" \
       ${out}
     sed -n '/^$/,$ p' bdj4.pot >> ${out}
+
+    echo "-- $(date +%T) updating translations from old .po files"
+    ./lang-lookup.sh ${out}
   else
-    # new file
+    # new en_GB file
     > ${out}
     echo "# == $dlang" >> ${out}
     echo "# -- $elang" >> ${out}
@@ -54,7 +67,7 @@ function mkpo {
         -e "s/PACKAGE/ballroomdj-4/" \
         -e "s/VERSION/${VERSION}/" \
         -e "s/FULL NAME.*ADDRESS./${xlator}/" \
-        -e "s/Bugs-To: /Bugs-To: brad.lanam.comp@gmail.com/" \
+        -e "s/Bugs-To: /Bugs-To: brad.lanam.di@gmail.com/" \
         -e "s/Language: /Language: ${lang}/" \
         -e "s,Language-Team:.*>,Language-Team: $elang," \
         -e "s/CHARSET/UTF-8/" \
@@ -62,6 +75,17 @@ function mkpo {
   fi
 }
 
+FORCE=F
+while test $# -gt 0; do
+  case $1 in
+    --force)
+      shift
+      FORCE=T
+      ;;
+  esac
+done
+
+echo "-- $(date +%T) extracting additional strings"
 TMP=potemplates.c
 > $TMP
 
@@ -126,6 +150,13 @@ grep -E '^Comment=' ../install/bdj4.desktop |
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMP > $TMP.n
 mv -f $TMP.n $TMP
 
+# preserve the original pot file w/o the creation date for later diff
+(
+  cd po
+  sed -e '/^"POT-Creation-Date:/ d' ${POTFILE} > ${POTFILE}.a
+  mv ${POTFILE} ${POTFILE}.k
+)
+
 echo "-- $(date +%T) extracting"
 xgettext -s -d bdj4 \
     --from-code=UTF-8 \
@@ -142,13 +173,33 @@ rm -f $TMP
 cd po
 
 awk -f extract-helptext.awk ${POTFILE} > ${POTFILE}.n
-mv -f ${POTFILE}.n ${POTFILE}
 
-fn=en_GB.po
-mkpo en ${fn} 'Automatically generated' 'English (GB)' english/gb
-rm -f ${fn}.old
-# The Queue_noun tag must be replaced with the correct noun.
-sed -i -e '/"Queue_noun"/ { n ; s,"","Queue", ; }' ${fn}
+CHANGED=F
+sed -e '/^"POT-Creation-Date:/ d' ${POTFILE}.n > ${POTFILE}.b
+diff ${POTFILE}.a ${POTFILE}.b > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  mv -f ${POTFILE}.n ${POTFILE}
+  CHANGED=T
+else
+  echo "   No changes to extracted text"
+  mv -f ${POTFILE}.k ${POTFILE}
+  rm -f ${POTFILE}.n
+fi
+rm -f ${POTFILE}.a ${POTFILE}.b ${POTFILE}.k
+if [[ $FORCE == T ]]; then
+  CHANGED=T
+fi
+
+if [[ $CHANGED == T ]]; then
+  fn=en_GB.po
+  mkpo en ${fn} 'Automatically generated' 'English (GB)' english/gb
+  # The Queue_noun tag must be replaced with the correct noun.
+  sed -i -e '/"Queue_noun"/ { n ; s,"","Queue", ; }' ${fn}
+
+  echo "-- $(date +%T) creating en_US.po"
+  awk -f mken_us.awk en_GB.po > en_US.po
+fi
 
 # If a translation is removed, remember to also remove
 # the locale/xx files and directories.
@@ -164,10 +215,6 @@ mkpo nl nl_BE.po 'marimo' Nederlands dutch
 #mkpo zh zh_TW.po 'unassigned' "繁體中文" "chinese (TW)"
 #mkpo zh zh_CN.po 'unassigned' "简体中文" "chinese (CN)"
 
-echo "-- $(date +%T) updating translations from old .po files"
-./lang-lookup.sh
-echo "-- $(date +%T) creating english/us .po files"
-awk -f mken_us.awk en_GB.po > en_US.po
 echo "-- $(date +%T) finished"
 
 exit 0

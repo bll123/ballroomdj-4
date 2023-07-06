@@ -41,7 +41,6 @@ cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == linux || $tag == macos ]]; then
   cp -pf packages/icu/share/icu/72.1/LICENSE ${licdir}/icu.LICENCE
 fi
-cp -pf packages/Bento*/Documents/LICENSE.txt ${licdir}/bento4.LICENSE
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 if [[ $platform == windows ]]; then
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE

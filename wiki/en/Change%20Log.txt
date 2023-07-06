@@ -9,9 +9,9 @@
 * Bug Fixes:
     * Apply Adjustments: Audio file tags are preserved.
     * Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
-    * Audio Tags: Recognize more MP4 extensions.
+    * Audio Tags: Recognize more MP4 audio file extensions.
     * Audio Tags: Fixed an intermittent issue using the mutagen interface.
-    * Windows: Fixed some database processing issues.
+    * Update Database: Fixed some database processing issues (windows).
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:
