@@ -1344,9 +1344,9 @@ tsProcessChkResponse (testsuite_t *testsuite, char *args)
 static int
 tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
 {
-  char    *tstr;
-  char    *p;
-  char    *d;
+  char    *tstr = NULL;
+  char    *p = NULL;
+  char    *d = NULL;
   char    *tokstr;
   int     route;
   int     msg;
@@ -1416,7 +1416,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   }
 
   connSendMessage (testsuite->conn, route, msg, d);
-  mdfree (d);
+  dataFree (d);
   mdfree (tstr);
   return TS_OK;
 }
