@@ -93,6 +93,8 @@ uicopytagsFree (uict_t *uict)
     uiEntryFree (uict->target);
     uiButtonFree (uict->sourcesel);
     uiButtonFree (uict->targetsel);
+    uiwcontFree (uict->ctDialog);
+    uiwcontFree (uict->statusMsg);
     for (int i = 0; i < UICT_CB_MAX; ++i) {
       callbackFree (uict->callbacks [i]);
     }
@@ -208,6 +210,11 @@ uicopytagsCreateDialog (uict_t *uict)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
+  /* CONTEXT: song editor: copy tags: source file */
+  uiwidgetp = uiCreateColonLabel (_("Source"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
   uiEntryCreate (uict->source);
   uiwidgetp = uiEntryGetWidgetContainer (uict->source);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -229,6 +236,11 @@ uicopytagsCreateDialog (uict_t *uict)
   /* target */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: song editor: copy tags: target file */
+  uiwidgetp = uiCreateColonLabel (_("Target"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (uict->target);
   uiwidgetp = uiEntryGetWidgetContainer (uict->target);

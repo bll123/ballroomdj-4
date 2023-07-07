@@ -3,9 +3,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3\n"
-"Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-07-05\n"
-"PO-Revision-Date: 2023-07-05\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-07-07\n"
+"PO-Revision-Date: 2023-07-07\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1762,6 +1762,10 @@ msgstr ""
 msgid "Sort by"
 msgstr ""
 
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr ""
+
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
 #. CONTEXT: playerui: the current speed for song playback
@@ -1856,6 +1860,10 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Tango"
+msgstr ""
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
 msgstr ""
 
 #. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.

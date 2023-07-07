@@ -50,7 +50,11 @@ dyInterfaceList (const char *pfx, const char *funcnm)
             slistSetStr (interfaces, desc, tmp);
           }
         }
+        /* using the address sanitizer comes up with spurious leaks */
+        /* if the dynamic library is closed */
+#if ! defined (BDJ4_USING_SANITIZER)
         dylibClose (dlHandle);
+#endif
       }
     }
   }

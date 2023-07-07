@@ -178,6 +178,12 @@ endif()
 if (BDJ4_BUILD STREQUAL "Memdebug-Sanitize")
   message ("Memdebug Sanitize Build")
   add_compile_options (-DBDJ4_MEM_DEBUG=1)
+  add_compile_options (-DBDJ4_USING_SANITIZER=1)
+endif()
+
+if (BDJ4_BUILD STREQUAL "SanitizeAddress")
+  message ("Sanitize Address Build")
+  add_compile_options (-DBDJ4_USING_SANITIZER=1)
 endif()
 
 if (BDJ4_BUILD STREQUAL "Debug")

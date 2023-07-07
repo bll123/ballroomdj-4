@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-05 12:36-0700\n"
+"POT-Creation-Date: 2023-07-07 15:23-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1766,6 +1766,10 @@ msgstr ""
 msgid "Sort by"
 msgstr ""
 
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr ""
+
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
 #. CONTEXT: playerui: the current speed for song playback
@@ -1860,6 +1864,10 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Tango"
+msgstr ""
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
 msgstr ""
 
 #. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.

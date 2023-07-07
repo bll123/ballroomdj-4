@@ -55,7 +55,11 @@ dylibClose (dlhandle_t *handle)
 {
 #if _lib_dlopen
   mdextfree (handle);
+#if ! defined (BDJ4_USING_SANITIZER)
+  /* using the address sanitizer comes up with spurious leaks if the dynamic */
+  /* library is closed */
   dlclose (handle);
+# endif
 #endif
 #if _lib_LoadLibrary
   HMODULE   whandle = handle;
