@@ -49,8 +49,8 @@ START_TEST(mdebug_valid_b)
   mdebugSetNoOutput ();
   data [0] = mdmalloc (10);
   data [1] = mdmalloc (10);
-  mdfree (data [0]);
   mdfree (data [1]);
+  mdfree (data [0]);
   ck_assert_int_eq (mdebugCount (), 0);
   ck_assert_int_eq (mdebugErrors (), 0);
 
@@ -93,6 +93,7 @@ START_TEST(mdebug_valid_ext_a)
   data = malloc (10);
   mdextalloc (data);
   mdextfree (data);
+  free (data);
   ck_assert_int_eq (mdebugCount (), 0);
   ck_assert_int_eq (mdebugErrors (), 0);
   mdebugCleanup ();
@@ -125,8 +126,8 @@ START_TEST(mdebug_no_free)
   mdebugInit ("chk-md-nf");
   mdebugSetNoOutput ();
   data = mdmalloc (10);
+  mdebugReport ();    // needed for no-free count
   ck_assert_int_eq (mdebugCount (), 1);
-  mdebugReport ();
   ck_assert_int_eq (mdebugErrors (), 1);
   mdfree (data);
   mdebugCleanup ();

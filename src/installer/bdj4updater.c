@@ -1049,9 +1049,10 @@ updaterCleanFiles (void)
 
     /* process what has been queued */
     updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
-    nlistFree (cleanlist);
-    cleanlist = NULL;
   }
+
+  nlistFree (cleanlist);
+  cleanlist = NULL;
 }
 
 static void

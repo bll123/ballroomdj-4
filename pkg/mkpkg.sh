@@ -166,6 +166,7 @@ cwd=$(pwd)
 
 . src/utils/pkgnm.sh
 
+clean=T
 preskip=F
 insttest=F
 while test $# -gt 0; do
@@ -175,6 +176,9 @@ while test $# -gt 0; do
       ;;
     --insttest)
       insttest=T
+      ;;
+    --noclean)
+      clean=F
       ;;
   esac
   shift
@@ -201,7 +205,9 @@ if [[ $preskip == F && $insttest == F ]]; then
   ./pkg/prepkg.sh
 fi
 
-(cd src; make tclean > /dev/null 2>&1)
+if [[ $clean == T ]]; then
+  (cd src; make tclean > /dev/null 2>&1)
+fi
 
 . ./VERSION.txt
 

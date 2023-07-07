@@ -681,7 +681,7 @@ function resetUnpack {
 }
 
 test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-./pkg/mkpkg.sh --preskip --insttest
+./pkg/mkpkg.sh --preskip --insttest --noclean
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
 mv -f "$UNPACKDIR" "$UNPACKDIRTMP"
 

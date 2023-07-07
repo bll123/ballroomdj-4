@@ -70,7 +70,6 @@ sequenceAlloc (const char *fname)
     lkey = conv.num;
     nlistSetStr (sequence->sequence, lkey, seqkey);
   }
-  datafileFree (sequence->df);
   nlistDumpInfo (sequence->sequence);
 
   return sequence;
@@ -88,6 +87,7 @@ sequenceCreate (const char *fname)
   sequence = mdmalloc (sizeof (sequence_t));
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
+  sequence->df = NULL;
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetVersion (sequence->sequence, SEQUENCE_VERSION);
@@ -102,6 +102,7 @@ sequenceFree (sequence_t *sequence)
     dataFree (sequence->path);
     dataFree (sequence->name);
     nlistFree (sequence->sequence);
+    datafileFree (sequence->df);
     mdfree (sequence);
   }
 }
