@@ -319,8 +319,7 @@ dbtagProcessing (void *udata)
           (double) (dbtag->iterations - dbtag->maxThreads));
       /* windows had some issues with the socket buffering, so wait a bit */
       /* before exiting. */
-      /* 4.3.3 bump this value up */
-      mstimeset (&dbtag->waitCheck, 4000);
+      mstimeset (&dbtag->waitCheck, 2000);
       dbtag->state = DBTAG_STATE_WAIT;
     }
   }

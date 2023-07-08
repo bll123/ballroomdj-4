@@ -166,6 +166,7 @@ danceselFree (dancesel_t *dancesel)
     nlistFree (dancesel->base);
     nlistFree (dancesel->adjustBase);
     nlistFree (dancesel->danceProbTable);
+    queueFree (dancesel->playedDances);
     /* windowed */
     nlistFree (dancesel->winsize);
     nlistFree (dancesel->wdecrement);
