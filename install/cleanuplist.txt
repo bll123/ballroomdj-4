@@ -94,17 +94,21 @@ install/patch-gtk3_Portfile_v0\.2\.diff$
 install/patch-meson_build\.diff$
 
 # 2023-5-5
-# windows: remove old stuff from distribution
+# windows: remove old libraries from distribution
 plocal/bin/libcares-5\.dll$
 plocal/bin/libcrypto-1_1-x86\.dll$
 plocal/bin/libssl-1_1-x86\.dll$
 plocal/bin/libunistring-2\.dll$
-# 2023-6 windows upgrade to ffmpeg-60
+# 2023-6 windows upgrade to ffmpeg-60, remove version 59
 plocal/bin/avcodec-59\.dll$
 plocal/bin/avdevice-59\.dll$
 plocal/bin/avfilter-8\.dll$
 plocal/bin/avformat-59\.dll$
 plocal/bin/avutil-57\.dll$
+
+# 2023-7 windows msys2 library updates
+plocal/bin/postproc-56\.dll$
+plocal/bin/swscale-6\.dll$
 
 # 2023-5-5
 # windows: remove libressl from distribution

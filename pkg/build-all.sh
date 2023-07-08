@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
+# 2023-5-5
+#   Could not get curl to link with libressl, so I just removed libressl.
+#   This means that the msys2 openssl libraries and dependencies get shipped.
+#   There may be some issue in the way libressl is being built.
+#
+
+# exported variables
+# clean   - T/F
+# conf    - T/F
+# pkgname - package name to build
+# INSTLOC - installation location
+# cwd     - current working dir (packages)
+
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cwd=$(pwd)
+
+INSTLOC=${cwd}/plocal
+test -d $INSTLOC || mkdir -p $INSTLOC
+export INSTLOC
+
+. ./pkg/build/build-setup.sh
+
+clean=T
+conf=T
+pkgname=""
+
+while test $# -gt 0;do
+  case $1 in
+    --noclean)
+      clean=F
+      ;;
+    --noconf)
+      conf=F
+      ;;
+    --pkg)
+      shift
+      pkgname=$1
+      ;;
+    *)
+      ;;
+  esac
+  shift
+done
+export clean conf pkgname
+
+# if an older compiler is needed...
+# if [ -d /winlibs/mingw${b}/bin ]; then
+#   PATH=/winlibs/mingw${b}/bin:$PATH
+# fi
+
+cd packages
+cwd=$(pwd)
+export cwd
+
+for bs in ../pkg/build/*-build.sh; do
+  ${bs}
+done
+
+echo "## finalize"
+find $INSTLOC -type f -print0 | xargs -0 chmod u+w
+exit 0

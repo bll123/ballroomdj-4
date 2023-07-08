@@ -142,6 +142,7 @@ function copyreleasefiles {
       ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/curl.exe \
       ${stage}/plocal/bin/libcheck-*.dll \
+      ${stage}/plocal/bin/libFLAC++-10.dll \
       ${stage}/plocal/bin/mp4*
   rm -rf \
       ${stage}/img/profile0[0-9] \
