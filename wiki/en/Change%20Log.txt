@@ -8,7 +8,6 @@
 
 * Bug Fixes:
     * Apply Adjustments: Audio file tags are preserved.
-    * Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
     * Audio Tags: Recognize more MP4 audio file extensions.
     * Audio Tags: Fixed an intermittent issue using the mutagen interface.
     * Update Database: Fixed some database processing issues (windows).
@@ -18,7 +17,7 @@
     * Audio Tags: Alternate processing method (MP3, Ogg, FLAC at this time).
     * Song Editor: Added 'Copy audio tags' dialog.
 * Internal:
-    * Code cleanup (datafile).
+    * Code cleanup.
 
 -->
 

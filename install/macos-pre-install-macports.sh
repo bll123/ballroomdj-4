@@ -189,6 +189,9 @@ sudo port -N install \
     flac \
     ffmpeg +nonfree -x11
 sudo -v
+sudo port -N remove \
+    taglib
+sudo -v
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 sudo port select --set pip pip${pyver}
