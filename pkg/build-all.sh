@@ -2,11 +2,6 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-# 2023-5-5
-#   Could not get curl to link with libressl, so I just removed libressl.
-#   This means that the msys2 openssl libraries and dependencies get shipped.
-#   There may be some issue in the way libressl is being built.
-#
 
 # exported variables
 # clean   - T/F
