@@ -13,6 +13,7 @@
     * Update Database: Fixed some database processing issues (windows).
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
+    * Configuration/Management: Change name of 'Easy Song List Editor' to 'Side-by-Side'.
 * New Features:
     * Audio Tags: Alternate processing method (MP3, Ogg, FLAC at this time).
     * Song Editor: Added 'Copy audio tags' dialog.

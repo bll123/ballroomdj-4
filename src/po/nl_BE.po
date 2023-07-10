@@ -636,18 +636,6 @@ msgstr "E-mailadres"
 msgid "Easy"
 msgstr "Gemakkelijk"
 
-#. CONTEXT: configuration: display settings for: easy song list
-msgid "Easy Song List"
-msgstr ""
-
-#. CONTEXT: managementui: menu checkbox: easy song list editor
-msgid "Easy Song List Editor"
-msgstr ""
-
-#. CONTEXT: configuration: display settings for: easy song selection
-msgid "Easy Song Selection"
-msgstr ""
-
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
 #. CONTEXT: managementui: menu selection: song list: edit menu
@@ -1721,6 +1709,18 @@ msgstr "Toon Song informatie"
 msgid "Shutdown Script"
 msgstr "Afsluitscript"
 
+#. CONTEXT: configuration: display settings for: side-by-side song list
+msgid "Side-by-Side Song List"
+msgstr ""
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection
+msgid "Side-by-Side Song Selection"
+msgstr ""
+
+#. CONTEXT: managementui: menu checkbox: side-by-side view
+msgid "Side-by-Side View"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Skipping conversion."
 msgstr "Conversie overslaan."
@@ -1742,7 +1742,7 @@ msgstr "Song Einde"
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
-#. CONTEXT: managementui: name of easy song list song selection tab
+#. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"

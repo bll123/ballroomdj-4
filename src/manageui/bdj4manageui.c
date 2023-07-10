@@ -998,10 +998,10 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_SONGLIST_NB]);
 
-  /* song list editor: easy song list tab */
+  /* song list editor: side-by-side view tab */
   mainhbox = uiCreateHorizBox ();
 
-  /* CONTEXT: managementui: name of easy song list song selection tab */
+  /* CONTEXT: managementui: name of side-by-side view tab */
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], mainhbox, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -2361,8 +2361,8 @@ manageSonglistMenu (manageui_t *manage)
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EZ_EDIT,
       manageToggleEasySonglist);
-  /* CONTEXT: managementui: menu checkbox: easy song list editor */
-  menuitem = uiMenuCreateCheckbox (menu, _("Easy Song List Editor"),
+  /* CONTEXT: managementui: menu checkbox: side-by-side view */
+  menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
       nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
       manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
   uiwcontFree (menuitem);
