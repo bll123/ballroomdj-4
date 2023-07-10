@@ -155,7 +155,7 @@ TLOC=${TMPDIR:-/var/tmp}
 TFN="$TLOC/bdj4-pre-inst.tmp"
 VARIANTSCONF=/opt/local/etc/macports/variants.conf
 
-grep -- "^-x11 +no_x11 +quartz" $VARIANTSCONF > /dev/null 2>&1
+grep -- "^.x11 .no_x11 .quartz" $VARIANTSCONF > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "-- Updating variants.conf"
@@ -189,7 +189,7 @@ sudo port -N install \
     flac \
     ffmpeg +nonfree -x11
 sudo -v
-sudo port -N remove \
+sudo port -N uninstall \
     taglib
 sudo -v
 sudo port select --set python python${pyver}

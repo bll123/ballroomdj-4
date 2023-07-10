@@ -6,7 +6,7 @@ version
 DEFAULTVOLUME
 ..30
 COMPLETEMSG
-..Thank You Dancers
+..Bedankt Dansers
 FADETYPE
 ..triangle
 MARQUEE_SHOW

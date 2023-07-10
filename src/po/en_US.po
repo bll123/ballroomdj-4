@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-07\n"
-"PO-Revision-Date: 2023-07-07\n"
+"POT-Creation-Date: 2023-07-10\n"
+"PO-Revision-Date: 2023-07-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -586,10 +586,6 @@ msgstr ""
 
 #. CONTEXT: label: disc number
 msgid "Disc"
-msgstr ""
-
-#. CONTEXT: label: disc count
-msgid "Disc Count"
 msgstr ""
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
@@ -1912,6 +1908,10 @@ msgstr ""
 msgid "Toggle Repeat"
 msgstr ""
 
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr ""
+
 #. CONTEXT: database update: status message: total number of files found
 msgid "Total Files"
 msgstr ""
@@ -1920,12 +1920,12 @@ msgstr ""
 msgid "Total Time"
 msgstr ""
 
-#. CONTEXT: label: track number
-msgid "Track"
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
 msgstr ""
 
-#. CONTEXT: label: track count
-msgid "Track Count"
+#. CONTEXT: label: track number
+msgid "Track"
 msgstr ""
 
 #. CONTEXT: apply adjustments: trim silence checkbox
