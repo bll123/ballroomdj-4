@@ -79,7 +79,7 @@ function copyreleasefiles {
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
-      dirlist+=" plocal/share/themes/macOS*"
+      dirlist+=" plocal/share/themes"
       ;;
     win32)
       echo "Platform not supported"
@@ -89,7 +89,7 @@ function copyreleasefiles {
       rm -rf plocal/lib/libicu*.so*
       cp -f packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
       filelist+=" plocal/bin/fpcalc.exe"
-      dirlist+=" plocal/bin plocal/share/themes/Wind*"
+      dirlist+=" plocal/bin plocal/share/themes"
       dirlist+=" plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
       dirlist+=" plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
       dirlist+=" plocal/lib/girepository-1.0 plocal/etc/fonts"
@@ -317,6 +317,12 @@ case $tag in
     rm -f ${tmpnm} ${tmpsep}
     ;;
   macos)
+    # make sure the themes are unpacked
+    if [[ ! -d plocal/share/themes/Mojave-dark-solid ||
+        ! -d plocal/share/themes/Mojave-light-solid ]]; then
+      ./pkg/build-all.sh --pkg themes
+    fi
+
     mkdir -p ${stagedir}${macosbase}
     mkdir -p ${stagedir}/Contents/Resources
     mkdir -p ${tmpmac}
@@ -332,7 +338,7 @@ case $tag in
 
     tfnl=$(find ${stagedir}${macosbase}/templates -name bdjconfig.txt.mp)
     for tfn in ${tfnl}*; do
-      sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ ; }' \
+      sed -e '/UI_THEME/ { n ; s/.*/..Mojave-dark-solid/ ; }' \
           -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
           -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
           ${tfn} > ${tfn}.n
@@ -360,6 +366,12 @@ case $tag in
     rm -f ${tmpnm} ${tmpsep}
     ;;
   win64)
+    # make sure the themes are unpacked
+    if [[ ! -d plocal/share/themes/Windows-10-Dark ||
+        ! -d plocal/share/themes/Windows-10-Acrylic ]]; then
+      ./pkg/build-all.sh --pkg themes
+    fi
+
     copyreleasefiles ${tag} ${stagedir}
 
     tfnl=$(find ${stagedir}/templates -name bdjconfig.txt.mp)

@@ -493,7 +493,7 @@ main (int argc, char * argv[])
   }
   if (! havetheme && isMacOS ()) {
 #if BDJ4_USE_GTK3
-    osSetEnv ("GTK_THEME", "macOS-Mojave-dark");
+    osSetEnv ("GTK_THEME", "Mojave-dark-solid");
 #endif
   }
 

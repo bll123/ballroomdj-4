@@ -33,7 +33,7 @@ while test $# -gt 0;do
     --noconf)
       conf=F
       ;;
-    --pkg)
+    --pkg|--pkgname)
       shift
       pkgname=$1
       ;;

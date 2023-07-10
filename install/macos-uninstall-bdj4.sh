@@ -55,10 +55,13 @@ if [[ $gr == Y ]]; then
   test -d "$dir" && rm -rf "$dir"
 
   # installed themes
-  fn="$HOME/.themes/macOS-Mojave-dark"
-  test -h "$fn" && rm -f "$fn"
-  fn="$HOME/.themes/macOS-Mojave-light"
-  test -h "$fn" && rm -f "$fn"
+  for fn in "$HOME/.themes/macOS-Mojave-dark" \
+      "$HOME/.themes/macOS-Mojave-light" \
+      "$HOME/.themes/Mojave-dark-solid" \
+      "$HOME/.themes/Mojave-light-solid" \
+      ; do
+    test -h "$fn" && rm -f "$fn"
+  done
   # It is possible the user has other GTK stuff installed and could
   # have other themes.  Try to remove the dir, but don't worry if it fails.
   dir="$HOME/.themes"

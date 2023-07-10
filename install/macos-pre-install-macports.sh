@@ -182,7 +182,7 @@ sudo port -N install \
     librsvg \
     glib2 +quartz \
     gtk3 +quartz \
-    adwaita-icon-theme \
+    adwaita-icon-theme
     libogg \
     libopus \
     opusfile \

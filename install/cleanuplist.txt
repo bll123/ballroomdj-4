@@ -4,6 +4,8 @@
 # Be sure to be very specific and use end of line markers if possible
 # All patterns are prefixed with the base directory.
 #
+# Starts with the base dir set to the top level dir (not data).
+#
 # ::datatopdir
 #   switch to data-top-dir as base (needed for macos)
 #   use for data/ tmp/ http/ img/profileNN/
@@ -132,6 +134,11 @@ bin/libatitaglib\.(so|dylib|dll)$
 # this should have been in the data/ directory (alpha 2022-12)
 # this can be removed later
 img/profile\d\d$
+
+# 2023-7-10
+# the themes have been renamed
+plocal/share/themes/macOS-Mojave-dark$
+plocal/share/themes/macOS-Mojave-light$
 
 ####
 # data-dir

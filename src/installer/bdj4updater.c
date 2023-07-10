@@ -372,8 +372,8 @@ main (int argc, char *argv [])
           ++haveitunes;
         }
       }
-    } // if itunes dir is not set
-  } // if not converted
+    } /* if itunes dir is not set */
+  } /* if not converted */
 
   /* a new installation, and the itunes folder and xml file */
   /* have been found. */
@@ -400,6 +400,27 @@ main (int argc, char *argv [])
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.1.0 : chg name of audiotag dylib");
       bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatimutagen");
       bdjoptchanged = true;
+    }
+  }
+
+  {
+    const char  *pfx = "macOS-";
+    size_t      len = strlen (pfx);
+    char        tbuff [MAXPATHLEN];
+
+    /* 4.3.3 change name of macos theme  */
+    tval = bdjoptGetStr (OPT_MP_UI_THEME);
+    if (tval != NULL && strncmp (tval, pfx, len) == 0) {
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.3 : chg name of ui theme");
+      snprintf (tbuff, sizeof (tbuff), "%s-solid", tval + len);
+      bdjoptSetStr (OPT_MP_UI_THEME, tbuff);
+      bdjoptchanged = true;
+      snprintf (tbuff, sizeof (tbuff), "%s/.themes/macOS-Mojave-dark",
+          sysvarsGetStr (SV_HOME));
+      fileopDelete (tbuff);
+      snprintf (tbuff, sizeof (tbuff), "%s/.themes/macOS-Mojave-light",
+          sysvarsGetStr (SV_HOME));
+      fileopDelete (tbuff);
     }
   }
 
@@ -945,6 +966,24 @@ updaterCleanFiles (void)
   if (fileopIsDirectory ("dev") ||
       fileopIsDirectory ("test-music-orig") ||
       fileopIsDirectory ("packages")) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "looks like the dev directory-a: skip");
+    return;
+  }
+
+  /* more checks for development directories */
+  snprintf (fname, sizeof (fname), "%s/dev", basedir);
+  if (fileopIsDirectory (fname)) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "looks like the dev directory-b: skip");
+    return;
+  }
+  snprintf (fname, sizeof (fname), "%s/test-music-orig", basedir);
+  if (fileopIsDirectory (fname)) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "looks like the dev directory-c: skip");
+    return;
+  }
+  snprintf (fname, sizeof (fname), "%s/packages", basedir);
+  if (fileopIsDirectory (fname)) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "looks like the dev directory-d: skip");
     return;
   }
 
@@ -952,104 +991,93 @@ updaterCleanFiles (void)
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   basedir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
 
-  /* more checks for development directories */
-  snprintf (fname, sizeof (fname), "%s/dev", basedir);
-  if (fileopIsDirectory (fname)) {
-    return;
-  }
-  snprintf (fname, sizeof (fname), "%s/test-music-orig", basedir);
-  if (fileopIsDirectory (fname)) {
-    return;
-  }
-  snprintf (fname, sizeof (fname), "%s/packages", basedir);
-  if (fileopIsDirectory (fname)) {
-    return;
-  }
-
   cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
 
   count = 0;
   fh = fileopOpen (fname, "r");
-  if (fh != NULL) {
-    while (fgets (pattern, sizeof (pattern), fh) != NULL) {
-      bdjregex_t  *rx;
-
-      if (*pattern == '#') {
-        continue;
-      }
-
-      stringTrim (pattern);
-      stringTrimChar (pattern, '/');
-
-      if (*pattern == '\0') {
-        continue;
-      }
-      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern);
-
-      /* on any change of directory or flag, process what has been queued */
-      if (strcmp (pattern, "::macosonly") == 0 ||
-          strcmp (pattern, "::linuxonly") == 0 ||
-          strcmp (pattern, "::windowsonly") == 0 ||
-          strcmp (pattern, "::allos") == 0 ||
-          strcmp (pattern, "::datatopdir") == 0) {
-        processflag = true;
-      }
-
-      if (processflag) {
-        updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
-        nlistFree (cleanlist);
-        cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
-        processflag = false;
-      }
-
-      if (strcmp (pattern, "::macosonly") == 0) {
-        macosonly = true;
-        linuxonly = false;
-        windowsonly = false;
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- macos only");
-      }
-      if (strcmp (pattern, "::linuxonly") == 0) {
-        macosonly = false;
-        linuxonly = true;
-        windowsonly = false;
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- linux only");
-      }
-      if (strcmp (pattern, "::windowsonly") == 0) {
-        macosonly = false;
-        linuxonly = false;
-        windowsonly = true;
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- windows only");
-      }
-      if (strcmp (pattern, "::allos") == 0) {
-        macosonly = false;
-        linuxonly = false;
-        windowsonly = false;
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- all os");
-      }
-      if (strcmp (pattern, "::datatopdir") == 0) {
-        basedir = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- data-top-dir");
-      }
-
-      if (strcmp (pattern, "::macosonly") == 0 ||
-          strcmp (pattern, "::linuxonly") == 0 ||
-          strcmp (pattern, "::windowsonly") == 0 ||
-          strcmp (pattern, "::allos") == 0 ||
-          strcmp (pattern, "::datatopdir") == 0) {
-        continue;
-      }
-
-      snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern);
-      rx = regexInit (fullpattern);
-      nlistSetData (cleanlist, count, rx);
-      ++count;
-    }
-    fclose (fh);
-
-    /* process what has been queued */
-    updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
+  if (fh == NULL) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "unable to open %s", fname);
+    return;
   }
+
+  while (fgets (pattern, sizeof (pattern), fh) != NULL) {
+    bdjregex_t  *rx;
+
+    if (*pattern == '#') {
+      continue;
+    }
+
+    stringTrim (pattern);
+    stringTrimChar (pattern, '/');
+
+    if (*pattern == '\0') {
+      continue;
+    }
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+
+    /* on any change of directory or flag, process what has been queued */
+    if (strcmp (pattern, "::macosonly") == 0 ||
+        strcmp (pattern, "::linuxonly") == 0 ||
+        strcmp (pattern, "::windowsonly") == 0 ||
+        strcmp (pattern, "::allos") == 0 ||
+        strcmp (pattern, "::datatopdir") == 0) {
+      processflag = true;
+    }
+
+    if (processflag) {
+      updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
+      nlistFree (cleanlist);
+      cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
+      processflag = false;
+    }
+
+    if (strcmp (pattern, "::macosonly") == 0) {
+      macosonly = true;
+      linuxonly = false;
+      windowsonly = false;
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- macos only");
+    }
+    if (strcmp (pattern, "::linuxonly") == 0) {
+      macosonly = false;
+      linuxonly = true;
+      windowsonly = false;
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- linux only");
+    }
+    if (strcmp (pattern, "::windowsonly") == 0) {
+      macosonly = false;
+      linuxonly = false;
+      windowsonly = true;
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- windows only");
+    }
+    if (strcmp (pattern, "::allos") == 0) {
+      macosonly = false;
+      linuxonly = false;
+      windowsonly = false;
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- all os");
+    }
+    if (strcmp (pattern, "::datatopdir") == 0) {
+      basedir = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- data-top-dir");
+    }
+
+    if (strcmp (pattern, "::macosonly") == 0 ||
+        strcmp (pattern, "::linuxonly") == 0 ||
+        strcmp (pattern, "::windowsonly") == 0 ||
+        strcmp (pattern, "::allos") == 0 ||
+        strcmp (pattern, "::datatopdir") == 0) {
+      continue;
+    }
+
+    snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    rx = regexInit (fullpattern);
+    nlistSetData (cleanlist, count, rx);
+    ++count;
+  }
+  fclose (fh);
+
+  /* process what has been queued */
+  updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
 
   nlistFree (cleanlist);
   cleanlist = NULL;
@@ -1099,8 +1127,9 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
     nlistStartIterator (cleanlist, &cliteridx);
     while ((key = nlistIterateKey (cleanlist, &cliteridx)) >= 0) {
       rx = nlistGetData (cleanlist, key);
+      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  check %s", fn); //
       if (regexMatch (rx, fn)) {
-        // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  match %s", fn);
+        // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  match %s", fn); //
         if (osIsLink (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete link %s", fn);
           fileopDelete (fn);

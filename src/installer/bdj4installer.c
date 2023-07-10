@@ -1938,12 +1938,12 @@ installerCopyTemplates (installer_t *installer)
     snprintf (to, sizeof (to), "%s/.themes", installer->home);
     diropMakeDir (to);
 
-    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-dark");
-    snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-dark", installer->home);
+    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-dark-solid");
+    snprintf (to, sizeof (to), "%s/.themes/Mojave-dark-solid", installer->home);
     filemanipLinkCopy (from, to);
 
-    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-light");
-    snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-light", installer->home);
+    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-light-solid");
+    snprintf (to, sizeof (to), "%s/.themes/Mojave-light-solid", installer->home);
     filemanipLinkCopy (from, to);
   }
 
