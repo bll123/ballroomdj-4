@@ -88,7 +88,6 @@ target_link_libraries (check_all PUBLIC
 target_compile_options (check_all PRIVATE -pthread)
 addIntlLibrary (check_all)
 addWinSockLibrary (check_all)
-updateRPath (check_all)
 
 add_executable (chkfileshared chkfileshared.c)
 target_link_libraries (chkfileshared PUBLIC
@@ -96,7 +95,6 @@ target_link_libraries (chkfileshared PUBLIC
   z
   m
 )
-updateRPath (chkfileshared)
 
 add_executable (chkprocess chkprocess.c)
 
@@ -104,3 +102,6 @@ install (TARGETS
   check_all chkfileshared chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+updateRPath (check_all)
+updateRPath (chkfileshared)

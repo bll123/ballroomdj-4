@@ -30,7 +30,6 @@ target_link_libraries (bdj4manageui PUBLIC
 )
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
-updateRPath (bdj4manageui)
 
 add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
@@ -49,7 +48,6 @@ target_link_libraries (bdj4bpmcounter PUBLIC
 )
 addIntlLibrary (bdj4bpmcounter)
 addWinSockLibrary (bdj4bpmcounter)
-updateRPath (bdj4bpmcounter)
 
 add_executable (bdj4dbupdate bdj4dbupdate.c)
 if (WIN32)
@@ -64,7 +62,6 @@ target_link_libraries (bdj4dbupdate PUBLIC
 )
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
-updateRPath (bdj4dbupdate)
 
 add_executable (bdj4dbtag bdj4dbtag.c)
 if (WIN32)
@@ -81,10 +78,13 @@ target_compile_options (bdj4dbtag PRIVATE -pthread)
 target_link_options (bdj4dbtag PUBLIC -pthread)
 addIntlLibrary (bdj4dbtag)
 addWinSockLibrary (bdj4dbtag)
-updateRPath (bdj4dbtag)
 
 install (TARGETS
   bdj4manageui bdj4bpmcounter bdj4dbupdate bdj4dbtag
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+updateRPath (bdj4manageui)
+updateRPath (bdj4bpmcounter)
+updateRPath (bdj4dbupdate)
+updateRPath (bdj4dbtag)

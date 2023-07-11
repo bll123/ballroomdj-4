@@ -18,7 +18,6 @@ target_link_libraries (bdj4info PUBLIC
   m
 )
 addIntlLibrary (bdj4info)
-updateRPath (bdj4info)
 
 add_executable (bdj4tags bdj4tags.c)
 if (WIN32)
@@ -31,7 +30,6 @@ target_link_libraries (bdj4tags PUBLIC
   m
 )
 addIntlLibrary (bdj4tags)
-updateRPath (bdj4tags)
 
 add_executable (tdbcompare tdbcompare.c)
 if (WIN32)
@@ -54,7 +52,6 @@ target_link_libraries (tdbsetval PUBLIC
   z
   m
 )
-updateRPath (tdbsetval)
 
 add_executable (testsuite
   testsuite.c
@@ -65,7 +62,6 @@ target_link_libraries (testsuite PUBLIC
   z
   m
 )
-updateRPath (testsuite)
 
 add_executable (tmusicsetup tmusicsetup.c)
 if (WIN32)
@@ -78,7 +74,6 @@ target_link_libraries (tmusicsetup PUBLIC
   m
 )
 addIntlLibrary (tmusicsetup)
-updateRPath (tmusicsetup)
 
 add_executable (ttagdbchk ttagdbchk.c)
 if (WIN32)
@@ -90,7 +85,6 @@ target_link_libraries (ttagdbchk PUBLIC
   z
   m
 )
-updateRPath (ttagdbchk)
 
 add_executable (vlcsinklist vlcsinklist.c)
 target_link_libraries (vlcsinklist PUBLIC
@@ -98,17 +92,25 @@ target_link_libraries (vlcsinklist PUBLIC
   ${ICU_LDFLAGS}
   m
 )
-updateRPath (vlcsinklist)
 
 add_executable (vsed vsed.c)
 target_link_libraries (vsed PUBLIC
   libbdj4common
   m
 )
-updateRPath (vsed)
 
 install (TARGETS
   bdj4info bdj4tags tdbcompare tdbsetval testsuite tmusicsetup ttagdbchk
   vlcsinklist vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+updateRPath (bdj4info)
+updateRPath (bdj4tags)
+updateRPath (tdbcompare)
+updateRPath (tdbsetval)
+updateRPath (testsuite)
+updateRPath (tmusicsetup)
+updateRPath (ttagdbchk)
+updateRPath (vlcsinklist)
+updateRPath (vsed)

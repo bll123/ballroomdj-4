@@ -52,10 +52,10 @@ target_link_libraries (libbdj4ui PUBLIC
 )
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
-updateRPath (libbdj4ui)
 
 install (TARGETS
   libbdj4ui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+updateRPath (libbdj4ui)

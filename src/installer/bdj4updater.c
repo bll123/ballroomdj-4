@@ -953,13 +953,15 @@ updaterCleanFiles (void)
   char    pattern [MAXPATHLEN];
   char    fullpattern [MAXPATHLEN];
   char    fname [MAXPATHLEN];
-  char    *basedir;
+  char    *basedir = NULL;
   int     count;
   nlist_t *cleanlist;
   bool    macosonly = false;
   bool    linuxonly = false;
   bool    windowsonly = false;
   bool    processflag = false;
+
+  basedir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
 
   /* look for development directories and do not run if any are found */
   /* this works for the relative case */
@@ -989,7 +991,6 @@ updaterCleanFiles (void)
 
   pathbldMakePath (fname, sizeof (fname),
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  basedir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
 
   cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
 

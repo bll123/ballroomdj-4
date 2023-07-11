@@ -14,14 +14,12 @@ target_link_libraries (libbdj4pli PUBLIC
   libbdj4basic libbdj4common
   m
 )
-updateRPath (libbdj4pli)
 
 add_library (libplinull SHARED plinull.c)
 target_link_libraries (libplinull PUBLIC
   libbdj4common
   m
 )
-updateRPath (libplinull)
 
 add_library (libplivlc SHARED plivlc.c vlci.c)
 target_include_directories (libplivlc
@@ -32,10 +30,12 @@ target_link_libraries (libplivlc PUBLIC
   ${LIBVLC_LIBRARY}
   m
 )
-updateRPath (libplivlc)
 
 install (TARGETS
   libbdj4pli libplinull libplivlc
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+updateRPath (libbdj4pli)
+updateRPath (libplinull)
+updateRPath (libplivlc)

@@ -14,7 +14,6 @@ target_link_libraries (libbdj4vol PUBLIC
   libbdj4basic libbdj4common
   m
 )
-updateRPath (libbdj4vol)
 
 add_library (libvolnull SHARED volnull.c)
 target_link_libraries (libvolnull PUBLIC
@@ -69,7 +68,6 @@ target_link_libraries (voltest PUBLIC
   ${ICU_LDFLAGS}
   m
 )
-updateRPath (voltest)
 
 install (TARGETS
   libbdj4vol libvolnull
@@ -99,3 +97,5 @@ if (WIN32)
   )
 endif()
 
+updateRPath (libbdj4vol)
+updateRPath (voltest)

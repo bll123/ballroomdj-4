@@ -29,9 +29,10 @@ target_link_libraries (libbdj4basic PUBLIC
   ${GLIB_LDFLAGS}
   m
 )
-updateRPath (libbdj4basic)
 
 install (TARGETS
   libbdj4basic
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+updateRPath (libbdj4basic)

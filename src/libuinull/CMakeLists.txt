@@ -45,10 +45,10 @@ target_link_libraries (libuinull PUBLIC
 )
 addIntlLibrary (libuinull)
 addWinSockLibrary (libuinull)
-updateRPath (libuinull)
 
 install (TARGETS
   libuinull
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+updateRPath (libuinull)
