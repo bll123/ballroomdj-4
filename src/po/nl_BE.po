@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-07\n"
-"PO-Revision-Date: 2023-07-10\n"
+"POT-Creation-Date: 2023-07-10\n"
+"PO-Revision-Date: 2023-07-11\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -227,7 +227,7 @@ msgstr "Voeg nieuwe toe"
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
-msgstr "Snelheid aanpassen, Nummer Begin en Nummer Einde"
+msgstr "Snelheid aanpassen, Song Begin en Song Einde"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
@@ -309,7 +309,7 @@ msgstr "Artiest"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
-msgstr "Databestanden toevoegen"
+msgstr "Databestanden koppelen"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send database
 msgid "Attach Database"
@@ -869,7 +869,7 @@ msgstr "Hoge %s"
 
 #. CONTEXT: playlist management: High Dance Level
 msgid "High Dance Level"
-msgstr ""
+msgstr "Hoog Dansniveau"
 
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playerui: name of the history tab : displayed played songs
@@ -1001,7 +1001,7 @@ msgstr "Lage %s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
-msgstr ""
+msgstr "Laag Dansniveau"
 
 #. CONTEXT: managementui: song list export: name of file save type
 #. CONTEXT: managementui: song list import: name of file type
@@ -1447,7 +1447,7 @@ msgstr "Wachtrij naam"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
-msgstr "Speellijst Toevoegen"
+msgstr "Speellijst In Wachtrij"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
@@ -1491,7 +1491,7 @@ msgstr "Database heropbouwen"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
-msgstr ""
+msgstr "Marquee Terughalen"
 
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
@@ -1691,7 +1691,7 @@ msgstr "Setup voltooid."
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
-msgstr ""
+msgstr "Toon Extra Wachtrijen"
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
@@ -1699,7 +1699,7 @@ msgstr "Toon Marquee"
 
 #. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
 msgid "Show Queue Dance Buttons"
-msgstr ""
+msgstr "Toon Wachtrij Dansknoppen"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
@@ -1711,15 +1711,15 @@ msgstr "Afsluitscript"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list
 msgid "Side-by-Side Song List"
-msgstr ""
+msgstr "Zij-aan-zij Songlijst"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection
 msgid "Side-by-Side Song Selection"
-msgstr ""
+msgstr "Zij-aan-zij Song Selectie"
 
 #. CONTEXT: managementui: menu checkbox: side-by-side view
 msgid "Side-by-Side View"
-msgstr ""
+msgstr "Zij-aan-zij Weergave"
 
 #. CONTEXT: installer: status message
 msgid "Skipping conversion."
@@ -1929,7 +1929,7 @@ msgstr "Totale tijd"
 
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
-msgstr "Aantal tracks"
+msgstr "Totaal aantal tracks"
 
 #. CONTEXT: label: track number
 msgid "Track"
@@ -2129,7 +2129,7 @@ msgstr "Hoe kan ik ondersteuning bekomen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "Om ondersteuning te krijgen, selecteer de knop 'Ondersteuning' of 'Support'. Er zijn linken naar de wiki, de forums en het ticketsysteem voor problemen. Of u kunt de knop 'Support bericht verzenden' gebruiken om een bericht te sturen."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2137,7 +2137,7 @@ msgstr "Controleer het Danstype voor Elk Nummer"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Selecteer 'Muziek Manager' aan de linkerkant van het 'BDJ4 beheer' venster.<br> Blader door de lijst met nummers en controleer of de dansstijl is ingesteld voor elk nummer.<br>Om de dansstijl in te stellen voor een song:=> Selecteer eerst het nummer.=> Selecteer het tabblad 'Song Editor' (onder de afspeelknoppen, naast het tabblad \"Muziek Manager\" en boven de lijst met nummers).=> Naast het veld met het label 'Dans' open je de keuzelijst dansstijlen en selecteer de dansstijl voor het nummer.=> Selecteer in de rechterbovenhoek van het tabblad 'Song Editor' de knop 'Bewaren' om de wijzigingen te bewaren.<br> U kan naar het tabblad 'Muziek Manager' teruggaan en zoeken naar andere nummers waarbij de dansstijl ook nog dient ingesteld te worden.=> Laat het venster 'BDJ4 beheer' open."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2145,7 +2145,7 @@ msgstr "Database voor de eerste keer opbouwen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "Om te kunnen functioneren, houdt BallroomDJ 4 een database bij van al je nummers. Deze database moet voor de eerste keer worden gebouwd.=> Selecteer de knop 'Beheren'.=> Selecteer in het venster 'BDJ4 beheer' het gedeelte 'Database bijwerken' aan de linkerkant van het venster.<br> De standaardselectie 'Controleren op nieuwe' wordt gebruikt wanneer u nummers toevoegt aan of verwijdert uit uw muziekcollectie.=> Wijzig de selectie in 'Database Heropbouwen'.=> Selecteer de knop 'Start'.=> Wacht tot het opnieuw opbouwen van de database is voltooid.=> Laat het venster 'BDJ4 beheer' open."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2153,7 +2153,7 @@ msgstr "Een Voorbeeldafspeellijst Aanmaken"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Selecteer 'Bewerk songlijsten' aan de linkerkant van het 'BDJ4 beheer' venster.<br> Aan de rechterkant van het onderste gedeelte van het venster staat een lijst met al je nummers.=> Selecteer een nummer door erop te klikken.=> Selecteer nu de linkerpijlknop in het midden van het onderste gedeelte.<br> Hiermee wordt het geselecteerde nummer toegevoegd aan de songlijst die wordt aangemaakt.=> Selecteer een paar nummers en voeg ze allemaal toe aan de songlijst.<br> Boven de lijst met nummers bevindt zich een invoervak met daarin de naam 'Nieuwe Songlijst'.=> Klik in het vak en wijzig de naam van de songlijst.=> Sluit het venster 'BDJ4 beheer'. De songlijst wordt automatisch opgeslagen."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2161,7 +2161,7 @@ msgstr "Stel de locatie van de Muziekmap in"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "De eerste stap is het configureren van de locatie van je muziekmap.=> Selecteer de knop 'Configureren'.<br> In het venster 'BDJ4 configuratie' wordt het eerste onderdeel 'Algemeen' weergegeven. Het eerste item in 'Algemeen' is de 'Muziekmap'.=> Wijzig de locatie van de 'Muziekmap' naar de actuele muziekmap die je wil gebruiken. (Dit kan door op het mapicoon te klikken achteraan het invoerveld van de maplocatie)=> Laat het venster 'BDJ4 configuratie' open."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2169,7 +2169,7 @@ msgstr "Controleer de Geconfigureerde Dansstijlen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "De namen van de dansstijlen moeten overeenkomen met wat je zelf gebruikt.=> Selecteer 'Bewerk Dansen' aan de linkerkant van het venster 'BDJ4 configuratie'.<br> Bekijk de lijst met dansstijlen. Als een dansstijl een andere naam heeft dan wat je gebruikt, selecteer dan de dansstijl en wijzig de naam. Als een dansstijl ontbreekt die je wel gebruikt, selecteer dan de knop 'Toevoegen' en voeg de dansstijl toe. Als er dansstijlen zijn die je nooit zult gebruiken, selecteer dan de dansstijl en selecteer vervolgens de knop 'Verwijderen'.=> Sluit het venster 'BDJ4 configuratie'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2177,7 +2177,7 @@ msgstr "Introductie / Aan de slag"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started.=> Select the 'Next' button to continue on to the next step."
+msgstr "Dit hulpprogramma zal je door een paar stappen leiden om je op weg te helpen.=> Selecteer de knop 'Volgende' om door te gaan naar de volgende stap"
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2185,7 +2185,7 @@ msgstr "Een Speellijst Afspelen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created.=> Select the 'Player' button.=> In the player window, select the 'Queue Playlist' drop-down.=> Select the name of the playlist that you entered previously."
+msgstr "Nu ga je de afspeellijst afspelen die zojuist is gemaakt.=> Selecteer de knop 'Speler'.=> Selecteer in het afspeelvenster de keuzelijst 'Speellijst in Wachtrij'.=> Selecteer de naam van de afspeellijst die je eerder hebt ingevoerd."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2193,5 +2193,5 @@ msgstr "Hoe is de Muziek Georganiseerd"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Het instellen van de organisatiemethode is belangrijk, zodat BallroomDJ 4 de informatie over uw muzieknummers kan bepalen wanneer de database wordt opgebouwd.=> Selecteer 'Organisatie' aan de linkerkant van het venster 'BDJ4 configuratie'.<br> Veel mensen hebben hun muziek georganiseerd door elke dansstijl in een aparte map te plaatsen.<br>De standaardorganisatie is 'Dansstijl/Titel'. Als je iTunes hebt geïnstalleerd, wordt het organisatiepad ingesteld op 'Albumartiest/Album/Schijf - Track0 Titel'.=> Selecteer de organisatiemethode die je gebruikt voor je nummers in de keuzelijst 'Organisatiepad'.<br> Als het organisatiepad dat je nodig hebt niet aanwezig is, selecteer de knop 'support' in het startvenster en stuur een supportbericht. Bijna elk organisatiepad kan worden geconfigureerd.<br> Als uw audiobestanden de dansstijl hebben opgeslagen in de genre-audiotag, schakelt u 'Database laadt dansstijl uit genre' in.=> Laat het venster 'BDJ4 configuratie' open."
 

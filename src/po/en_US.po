@@ -2251,6 +2251,7 @@ msgstr ""
 "=> Select the 'Player' button."
 "=> In the player window, select the 'Queue Playlist' drop-down."
 "=> Select the name of the playlist that you entered previously."
+"=> Select the 'Play/Pause' button to start playing the music."
 
 
 #. CONTEXT: title of a getting started help section
