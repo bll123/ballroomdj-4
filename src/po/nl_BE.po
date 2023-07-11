@@ -2185,7 +2185,7 @@ msgstr "Een Speellijst Afspelen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Nu ga je de afspeellijst afspelen die zojuist is gemaakt.=> Selecteer de knop 'Speler'.=> Selecteer in het afspeelvenster de keuzelijst 'Speellijst in Wachtrij'.=> Selecteer de naam van de afspeellijst die je eerder hebt ingevoerd."
+msgstr "Nu ga je de afspeellijst afspelen die zojuist is gemaakt.=> Selecteer de knop 'Speler'.=> Selecteer in het afspeelvenster de keuzelijst 'Speellijst in Wachtrij'.=> Selecteer de naam van de afspeellijst die je eerder hebt ingevoerd.=> Selecteer de 'Speel/Pauze' knop om de speellijst af te spelen."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
