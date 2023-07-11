@@ -29,14 +29,19 @@ dlhandle_t *
 dylibLoad (const char *path)
 {
   void      *handle = NULL;
+#if _lib_LoadLibrary
+  HMODULE   whandle;
+  char      npath [MAXPATHLEN];
+#endif
+
+  if (path == NULL || ! *path) {
+    return NULL;
+  }
 
 #if _lib_dlopen
   handle = dlopen (path, RTLD_LAZY);
 #endif
 #if _lib_LoadLibrary
-  HMODULE   whandle;
-  char      npath [MAXPATHLEN];
-
   strlcpy (npath, path, sizeof (npath));
   pathDisplayPath (npath, sizeof (npath));
   whandle = LoadLibrary (npath);
@@ -53,17 +58,23 @@ dylibLoad (const char *path)
 void
 dylibClose (dlhandle_t *handle)
 {
+#if _lib_LoadLibrary
+  HMODULE   whandle = handle;
+#endif
+
+  if (handle == NULL) {
+    return;
+  }
+
 #if _lib_dlopen
   mdextfree (handle);
-#if ! defined (BDJ4_USING_SANITIZER)
+# if ! defined (BDJ4_USING_SANITIZER)
   /* using the address sanitizer comes up with spurious leaks if the dynamic */
   /* library is closed */
   dlclose (handle);
 # endif
 #endif
 #if _lib_LoadLibrary
-  HMODULE   whandle = handle;
-
   mdextfree (handle);
   FreeLibrary (whandle);
 #endif
@@ -73,6 +84,10 @@ void *
 dylibLookup (dlhandle_t *handle, const char *funcname)
 {
   void      *addr = NULL;
+
+  if (handle == NULL || funcname == NULL || ! *funcname) {
+    return NULL;
+  }
 
 #if _lib_dlopen
   addr = dlsym (handle, funcname);

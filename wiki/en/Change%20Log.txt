@@ -4,23 +4,29 @@
 
 <!--
 
-**4.3.3 2023-7--**
+**4.3.3.1 2023-8--**
+
+-->
+
+**4.3.3 2023-7-11**
 
 * Bug Fixes:
     * Apply Adjustments: Audio file tags are preserved.
     * Audio Tags: Recognize more MP4 audio file extensions.
     * Audio Tags: Fixed an intermittent issue using the mutagen interface.
     * Update Database: Fixed some database processing issues (windows).
+    * Windows: Remove Adwaita-dark theme selection as it does not work.
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
-    * Configuration/Management: Change name of 'Easy Song List Editor' to 'Side-by-Side'.
+    * Configuration/Management: Change name of 'Easy Song List Editor' to 'Side-by-Side View'.
+    * Installer: The installer now asks for the music folder location (to determine audio tag processing method).
 * New Features:
     * Audio Tags: Alternate processing method (MP3, Ogg, FLAC at this time).
     * Song Editor: Added 'Copy audio tags' dialog.
+* Translations:
+    * Nederlands is now complete, not fully checked.
 * Internal:
-    * Code cleanup.
-
--->
+    * Code cleanup (datafile).
 
 **4.3.2.4 2023-5-29**
 

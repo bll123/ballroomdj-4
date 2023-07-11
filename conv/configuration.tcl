@@ -475,13 +475,13 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..${value}"
 
         puts $ofh UI_THEME
-        set value Adwaita-dark  ; # just something as a default
+        set value Adwaita  ; # just something as a default
         if { $::tcl_platform(os) eq "Linux" } {
-          # use the default
-          set value {}
+          # use the dark adwaita
+          set value Adwaita-dark
         }
         if { $::tcl_platform(platform) eq "windows" } { set value Windows-10-Dark }
-        if { $::tcl_platform(os) eq "Darwin" } { set value macOS-Mojave-dark }
+        if { $::tcl_platform(os) eq "Darwin" } { set value Mojave-dark-solid }
         puts $ofh "..${value}"
         set tfh [open [file join $datatopdir data theme.txt] w]
         puts $tfh "${value}"

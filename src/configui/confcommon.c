@@ -361,7 +361,8 @@ confuiGetThemeList (void)
   /* make sure the built-in themes are present */
   slistSetStr (sthemelist, "Adwaita", 0);
   /* adwaita-dark does not appear to work on macos w/macports */
-  if (! isMacOS()) {
+  /* 4.3.3 adwaita-dark does not appear to work on windos either */
+  if (isLinux ()) {
     slistSetStr (sthemelist, "Adwaita-dark", 0);
   }
   slistSetStr (sthemelist, "HighContrast", 0);

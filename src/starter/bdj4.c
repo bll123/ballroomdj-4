@@ -92,6 +92,7 @@ main (int argc, char * argv[])
     { "ati",            required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "locale",         required_argument,  NULL,   0 },
+    { "noclean",        no_argument,        NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },

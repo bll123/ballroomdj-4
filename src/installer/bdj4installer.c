@@ -212,6 +212,7 @@ typedef struct {
   bool            verbose : 1;
   bool            vlcinstalled : 1;
   bool            localespecified : 1;
+  bool            clean : 1;
 } installer_t;
 
 #define INST_HL_COLOR "#b16400"
@@ -309,6 +310,7 @@ main (int argc, char *argv[])
     { "bdj4installer",no_argument,      NULL,   0 },
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
+    { "noclean",    no_argument,        NULL,   'c' },
     { "nodatafiles", no_argument,       NULL,   'N' },
     { "nomutagen",  no_argument,        NULL,   'M' },
     { "reinstall",  no_argument,        NULL,   'r' },
@@ -373,6 +375,7 @@ main (int argc, char *argv[])
   installer.verbose = false;
   installer.vlcinstalled = false;
   installer.localespecified = false;
+  installer.clean = true;
   for (int i = 0; i < INST_CB_MAX; ++i) {
     installer.callbacks [i] = NULL;
   }
@@ -453,6 +456,10 @@ main (int argc, char *argv[])
       }
       case 'r': {
         installer.reinstall = true;
+        break;
+      }
+      case 'c': {
+        installer.clean = false;
         break;
       }
       case 'u': {
@@ -2188,8 +2195,6 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateShortcut (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
-
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "createshortcut");
     return;
@@ -2198,10 +2203,7 @@ installerCreateShortcut (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
 
-  /* pathbld_mp_dir_exec is used by instutilCreateShortcut() */
-  snprintf (tbuff, sizeof (tbuff), "%s/bin", installer->target);
-  sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
-  /* handles linux and windows */
+  /* handles linux and windows desktop shortcut */
   instutilCreateShortcut (BDJ4_NAME, installer->rundir, installer->rundir, 0);
 
   if (isMacOS ()) {
@@ -2770,15 +2772,19 @@ installerCleanup (installer_t *installer)
     return;
   }
 
-  if (isWindows ()) {
-    targv [0] = ".\\install\\install-rminstdir.bat";
-    snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
-    targv [1] = buff;
-    targv [2] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  if (installer->clean) {
+    if (isWindows ()) {
+      targv [0] = ".\\install\\install-rminstdir.bat";
+      snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
+      targv [1] = buff;
+      targv [2] = NULL;
+      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+    } else {
+      snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
+      (void) ! system (buff);
+    }
   } else {
-    snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
-    (void) ! system (buff);
+    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
   }
 }
 
@@ -3100,17 +3106,18 @@ installerGetExistingData (installer_t *installer)
   const char  *tmp = NULL;
   char        cwd [MAXPATHLEN];
 
-
   if (installer->bdjoptloaded) {
     bdjoptCleanup ();
     installer->bdjoptloaded = false;
   }
 
-  if (! installer->newinstall) {
-    (void) ! getcwd (cwd, sizeof (cwd));
-    if (chdir (installer->datatopdir)) {
-      return;
-    }
+  if (installer->newinstall) {
+    return;
+  }
+
+  (void) ! getcwd (cwd, sizeof (cwd));
+  if (chdir (installer->datatopdir)) {
+    return;
   }
 
   bdjoptInit ();
@@ -3128,10 +3135,8 @@ installerGetExistingData (installer_t *installer)
     installerSetATISelect (installer);
   }
 
-  if (! installer->newinstall) {
-    if (chdir (cwd)) {
-      installerFailWorkingDir (installer, installer->datatopdir, "get-old-b");
-    }
+  if (chdir (cwd)) {
+    installerFailWorkingDir (installer, installer->datatopdir, "get-old-b");
   }
 }
 
@@ -3165,8 +3170,13 @@ installerScanMusicDir (installer_t *installer)
   }
   slistFree (mlist);
 
+  /* recall that sysvars is not set up correctly */
+  /* pathbld_mp_dir_exec must be set properly */
+  /* the dynamically loaded libraries need this path */
   snprintf (tbuff, sizeof (tbuff), "%s/bin", installer->rundir);
   sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "dir-exec set to %s", tbuff);
+
   for (int i = 0; i < INST_ATI_MAX; ++i) {
     atiGetSupportedTypes (instati [i].name, supported [i]);
   }
