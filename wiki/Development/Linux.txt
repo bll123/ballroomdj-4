@@ -1,8 +1,20 @@
 [Wiki Home](Home)
 
-Arch based
+Red Hat based
+
 ~~~
-pacman -Syu
+dnf upgrade           # update everything
+dnf install name
+dnf upgrade name
+dnf remove name
+dnf search name
+dnf info name
+~~~
+
+Arch based
+
+~~~
+pacman -Syu       # update everything
 pacman -S name    # install a package
 pacman -Su name   # update a package
 pacman -Ss name   # search
@@ -10,6 +22,7 @@ pacman -Rcns name # remove and remove dependencies
 ~~~
 
 OpenSUSE
+
 ~~~
 zypper refresh
 zypper update
@@ -19,4 +32,4 @@ zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest
 ~~~
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-07-12 08:52:08; BDJ4 version 4.3.3)_

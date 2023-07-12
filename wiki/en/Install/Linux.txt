@@ -38,25 +38,26 @@ $HOME/BDJ4 folder
 
 ##### Install the Requisite Software
 
-If a pre-install script before version 6 was run, you must re-run
+If a pre-install script before version 7 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v6.sh script from sourceforge.
+Download the linux-pre-install-v7.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v6.sh
+bash linux-pre-install-v7.sh
 ~~~
 
 This script performs the following actions:
 
-* Installs the required software used by BallroomDJ 4 (vlc, ffmpeg, libcurl).
+* Installs the required software used by BallroomDJ 4.
+  (vlc, ffmpeg, libcurl, flac, libopusfile).
 * Adds the user to the 'audio' group.
 * Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
 
@@ -89,6 +90,10 @@ reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done. __(If you are updating an
 alpha installation, you must do a re-install.)__
 
+Choose the location of your music folder.  The installation process
+will scan your music folder to determine certain settings used in
+BDJ4.
+
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
 
@@ -96,8 +101,8 @@ After you have selected the installation folder, select the __Install__
 button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
+![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-B.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-07-11 22:49:13; BDJ4 version 4.3.3)_
+<br>_(Updated 2023-07-12 08:52:08; BDJ4 version 4.3.3)_

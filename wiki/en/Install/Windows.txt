@@ -76,6 +76,10 @@ reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done. __(If you are updating an
 alpha installation, you must do a re-install.)__
 
+Choose the location of your music folder.  The installation process
+will scan your music folder to determine certain settings used in
+BDJ4.
+
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
 
@@ -84,7 +88,7 @@ __Install__ button and wait for the __Installation Completed__
 message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png)
+![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-B.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 If the VLC application is not installed, the VLC installer will be
@@ -109,4 +113,4 @@ installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-07-12 08:52:08; BDJ4 version 4.3.3)_

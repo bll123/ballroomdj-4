@@ -71,6 +71,10 @@ reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done. __(If you are updating an
 alpha installation, you must do a re-install.)__
 
+Choose the location of your music folder.  The installation process
+will scan your music folder to determine certain settings used in
+BDJ4.
+
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder ($HOME/Library/Application Support/BallroomDJ) and
 select the __Convert BallroomDJ 3__ checkbox.
@@ -79,7 +83,7 @@ After you have selected the installation folder, select the __Install__
 button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png)
+![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-B.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Mac OS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
@@ -91,4 +95,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-07-11 22:49:13; BDJ4 version 4.3.3)_
+<br>_(Updated 2023-07-12 08:52:08; BDJ4 version 4.3.3)_
