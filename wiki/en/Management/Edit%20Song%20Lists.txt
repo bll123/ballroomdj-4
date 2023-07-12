@@ -9,14 +9,15 @@ songs selected and ordered by the DJ._</span>
 
 In all cases, the song list is automatically saved.
 
-##### Easy Song List Editor
+##### Side-by-Side View
 
 This is the default layout.  The left side of the window has the song
 list, and the right side has the song selection.  Due to the side by
 side layout, less information can be displayed about each song.  The
 columns displayed can be changed in
 [Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
-_Easy&nbsp;Song&nbsp;List_ and _Easy%20Song%20Selection_ selections.
+_Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List_ and
+_Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection_ selections.
 
 The left arrow button (![Left
 Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
@@ -25,20 +26,21 @@ song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-easy](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-easy-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists (Easy)**</span> </div>
+![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-A.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists (Side-by-Side View)**</span> </div>
 
 ##### Song List Editor
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-options-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-options-menu-B.png)
+![sl-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-options-menu-C.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Options Menu**</span> </div>
 
-An alternate layout is available by turning off the easy song list
-editor in the __Options__ menu.  The song list and the song selection
-are displayed in separate tabs.  This layout allows more information
-about each song to be displayed. The columns displayed can be changed
-in [Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
+An alternate layout is available by turning off the
+side&#8209;by&#8209;side view in the __Options__ menu.  The song list
+and the song selection are displayed in separate tabs.  This layout
+allows more information about each song to be displayed. The columns
+displayed can be changed in
+[Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
 _Song&nbsp;List_ and _Song%20Selection_ selections.
 
 In the song selection tab, select the songs to add to the song list.
@@ -215,4 +217,4 @@ playlist from iTunes.
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Import Menu**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-07-12 09:06:30; BDJ4 version 4.3.3)_
