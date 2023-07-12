@@ -50,8 +50,8 @@ selected songs, and not the entire listing.
 If the audio file has a MusicBrainz recording ID tag set, the
 MusicBrainz logo will be displayed.
 
-If the audio file has been modified from the original (via normalized
-audio, speed adjustments, song start/end adjustments or trimmed
+If the audio file has been modified from the original (via
+speed adjustments, song start/end adjustments or trimmed
 silence), a __*__ will be displayed.
 
 The filename is displayed.  The music folder set in
@@ -80,10 +80,13 @@ __Previous__ to switch to a different song, then switch back.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-A.png)
+![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-B.png)
 <br><span style="color:#4559bf;">**Manage / Song Editor / Actions Menu**</span> </div>
 
-__BPM__ starts the BPM Counter.
+__MPM__ starts the BPM/MPM Counter.
+
+__Actions&nbsp;/&nbsp;Copy&nbsp;Audio&nbsp;Tags__ starts a dialog to
+copy the audio tags from one audio file to another.
 
 __Actions&nbsp;/&nbsp;Edit&nbsp;All__ starts the batch edit
 process.  ___This function is not yet implemented___.
@@ -99,9 +102,8 @@ reverted. ___This function is not yet implemented___.
 
 __Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ starts a dialog to
 modify the audio file.  The audio file may have its silence trimmed,
-volume normalized or adjusted to apply the song start, song end and
-speed adjustments.  The original audio file is saved and can be
-restored.
+or adjusted to apply the song start, song end and speed adjustments.
+The original audio file is saved and can be restored.
 
 __Actions&nbsp;/&nbsp;Restore&nbsp;Original__ is only active if the
 audio file has been modified with the __Apply&nbsp;Adjustments__
@@ -115,11 +117,11 @@ song editor using
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
 After selecting the song to edit in the song editor, use the __Play__
-button to play the song.  Then select the _BPM_ menu selection in the
+button to play the song.  Then select the _MPM_ menu selection in the
 __Actions__ menu.  The BPM Counter will start.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-A.png)
+![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-B.png)
 <br><span style="color:#4559bf;">**Manage / Song Editor / BPM Counter**</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
@@ -129,11 +131,6 @@ the __Reset__ button.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
 <br><span style="color:#4559bf;">**Manage / Song Editor / BPM**</span> </div>
-
-If the BPM setting in
-[Configure&nbsp;/&nbsp;General](en-Configuration-General) is set to MPM
-(measures per minute), BDJ4 will select the MPM setting in the BPM
-Counter that matches the dance's time signature.
 
 ##### Song Editor Fields
 
@@ -170,4 +167,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-07-12 09:16:33; BDJ4 version 4.3.3)_

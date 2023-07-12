@@ -80,7 +80,6 @@
         * Adjust the song volume.
     * Apply adjustments
         * Trim Silence.
-        * Normalize Volume.
         * Adjust: apply speed, song start, song end to a song.
     * Batch Edit songs.
 * iTunes Support.
@@ -103,4 +102,4 @@
 * Automatic Organization.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-07-12 09:15:51; BDJ4 version 4.3.3)_
