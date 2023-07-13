@@ -86,9 +86,9 @@ START_TEST(mdebug_valid_ext_a)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-ext-a");
   mdebugCleanup ();
-  mdebugInit ("chk-md-v");
+  mdebugInit ("chk-md-ext-a");
   mdebugSetNoOutput ();
   data = malloc (10);
   mdextalloc (data);
@@ -104,13 +104,41 @@ START_TEST(mdebug_valid_ext_b)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-ext-b");
   mdebugCleanup ();
-  mdebugInit ("chk-md-v");
+  mdebugInit ("chk-md-ext-b");
   mdebugSetNoOutput ();
   data = malloc (10);
   mdextalloc (data);
   mdfree (data);
+  ck_assert_int_eq (mdebugCount (), 0);
+  ck_assert_int_eq (mdebugErrors (), 0);
+  mdebugCleanup ();
+}
+END_TEST
+
+START_TEST(mdebug_valid_open_close)
+{
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-open-close");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-o-c");
+  mdebugSetNoOutput ();
+  mdextopen (1);
+  mdextclose (1);
+  ck_assert_int_eq (mdebugCount (), 0);
+  ck_assert_int_eq (mdebugErrors (), 0);
+  mdebugCleanup ();
+}
+END_TEST
+
+START_TEST(mdebug_valid_fopen_fclose)
+{
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-fopen-fclose");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-o-c");
+  mdebugSetNoOutput ();
+  mdextfopen (stdin);
+  mdextfclose (stdin);
   ck_assert_int_eq (mdebugCount (), 0);
   ck_assert_int_eq (mdebugErrors (), 0);
   mdebugCleanup ();
@@ -182,6 +210,34 @@ START_TEST(mdebug_bad_realloc)
 }
 END_TEST
 
+START_TEST(mdebug_no_close)
+{
+  logMsg (LOG_DBG, LOG_IMPORTANT, "no-close");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-nc");
+  mdebugSetNoOutput ();
+  mdextopen (1);
+  ck_assert_int_eq (mdebugCount (), 1);
+  mdebugReport ();    // needed for no-free count
+  ck_assert_int_eq (mdebugErrors (), 1);
+  mdebugCleanup ();
+}
+END_TEST
+
+START_TEST(mdebug_no_fclose)
+{
+  logMsg (LOG_DBG, LOG_IMPORTANT, "no-fclose");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-nfc");
+  mdebugSetNoOutput ();
+  mdextfopen (stdin);
+  ck_assert_int_eq (mdebugCount (), 1);
+  mdebugReport ();    // needed for no-free count
+  ck_assert_int_eq (mdebugErrors (), 1);
+  mdebugCleanup ();
+}
+END_TEST
+
 Suite *
 mdebug_suite (void)
 {
@@ -195,10 +251,14 @@ mdebug_suite (void)
   tcase_add_test (tc, mdebug_valid_b);
   tcase_add_test (tc, mdebug_valid_ext_a);
   tcase_add_test (tc, mdebug_valid_ext_b);
+  tcase_add_test (tc, mdebug_valid_open_close);
+  tcase_add_test (tc, mdebug_valid_fopen_fclose);
   tcase_add_test (tc, mdebug_no_free);
   tcase_add_test (tc, mdebug_null_free);
   tcase_add_test (tc, mdebug_unknown_free);
   tcase_add_test (tc, mdebug_bad_realloc);
+  tcase_add_test (tc, mdebug_no_close);
+  tcase_add_test (tc, mdebug_no_fclose);
   suite_add_tcase (s, tc);
   return s;
 }

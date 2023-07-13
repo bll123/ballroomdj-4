@@ -545,13 +545,17 @@ bos_label:
     /* even though bdj4 doesn't support these */
     goto bos_label;
   } else {
+    mdextfclose (ifh);
     fclose (ifh);
     ifh = NULL;
   }
 
   state = VC_WRITE_FINISH;
-  if (ofh != stdout && fclose (ofh) != 0) {
-    goto cleanup_label;
+  if (ofh != stdout && ofh != NULL) {
+    mdextfclose (ofh);
+    if (fclose (ofh) != 0) {
+      goto cleanup_label;
+    }
   }
   ofh = NULL;
   state = VC_DONE_SUCCESS;
@@ -567,9 +571,11 @@ cleanup_label:
   }
   ogg_sync_clear (&oy_in);
   if (ofh != stdout && ofh != NULL) {
+    mdextfclose (ofh);
     fclose (ofh);
   }
   if (ifh != NULL) {
+    mdextfclose (ifh);
     fclose (ifh);
   }
   ogg_packet_clear (&my_vc_packet);

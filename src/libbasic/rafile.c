@@ -99,6 +99,7 @@ raClose (rafile_t *rafile)
 {
   logProcBegin (LOG_PROC, "raClose");
   if (rafile != NULL) {
+    mdextfclose (rafile->fh);
     fclose (rafile->fh);
     raUnlock (rafile);
     rafile->fh = NULL;

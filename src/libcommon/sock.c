@@ -85,6 +85,7 @@ sockServer (uint16_t listenPort, int *err)
   typ |= SOCK_CLOEXEC;
 #endif
   lsock = socket (AF_INET, typ, 0);
+  mdextsock (lsock);
   if (socketInvalid (lsock)) {
     *err = errno;
     logError ("socket:");
@@ -114,6 +115,7 @@ sockServer (uint16_t listenPort, int *err)
     logMsg (LOG_ERR, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
     logMsg (LOG_DBG, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
 #endif
+    mdextclose (lsock);
     close (lsock);
     return INVALID_SOCKET;
   }
@@ -125,6 +127,7 @@ sockServer (uint16_t listenPort, int *err)
     logMsg (LOG_ERR, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
     logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
 #endif
+    mdextclose (lsock);
     close (lsock);
     return INVALID_SOCKET;
   }
@@ -138,6 +141,7 @@ void
 sockClose (Sock_t sock)
 {
   if (! socketInvalid (sock) && sock > 2) {
+    mdextclose (sock);
     close (sock);
     --sockCount;
   }
@@ -271,6 +275,7 @@ sockAccept (Sock_t lsock, int *err)
   }
 
   if (sockSetNonblocking (nsock) < 0) {
+    mdextclose (nsock);
     close (nsock);
     return INVALID_SOCKET;
   }
@@ -300,6 +305,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     typ |= SOCK_CLOEXEC;
 #endif
     clsock = socket (AF_INET, typ, 0);
+    mdextsock (clsock);
 
     if (socketInvalid (clsock)) {
       *connerr = SOCK_CONN_FAIL;
@@ -312,6 +318,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 
     if (sockSetNonblocking (clsock) < 0) {
       *connerr = SOCK_CONN_FAIL;
+      mdextclose (clsock);
       close (clsock);
       return INVALID_SOCKET;
     }
@@ -319,6 +326,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     clsock = sockSetOptions (clsock, &err);
     if (err != 0) {
       *connerr = SOCK_CONN_FAIL;
+      mdextclose (clsock);
       close (clsock);
       return INVALID_SOCKET;
     }
@@ -385,6 +393,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
         logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
 #endif
       }
+      mdextclose (clsock);
       close (clsock);
       clsock = INVALID_SOCKET;
     }
@@ -801,6 +810,7 @@ sockSetOptions (Sock_t sock, int *err)
 #if _lib_WSAGetLastError
     logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
 #endif
+    mdextclose (sock);
     close (sock);
     return INVALID_SOCKET;
   }
@@ -809,6 +819,7 @@ sockSetOptions (Sock_t sock, int *err)
   if (rc != 0) {
     logError ("setsockopt-port:");
     *err = errno;
+    mdextclose (sock);
     close (sock);
     return INVALID_SOCKET;
   }

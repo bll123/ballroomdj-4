@@ -128,6 +128,7 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientDownloadCallback);
   curl_easy_perform (webclient->curl);
+  mdextfclose (fh);
   fclose (fh);
   webclient->dlFH = NULL;
   tm = mstimeend (&webclient->dlStart);
@@ -280,7 +281,9 @@ webclientCompressFile (const char *infn, const char *outfn)
   fwrite (data, strlen (data), 1, outfh);
   mdfree (data);    // allocated by glib
 
+  mdextfclose (infh);
   fclose (infh);
+  mdextfclose (outfh);
   fclose (outfh);
   mdfree (buff);
   mdfree (obuff);

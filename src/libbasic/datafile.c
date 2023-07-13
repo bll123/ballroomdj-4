@@ -831,6 +831,7 @@ datafileSaveKeyVal (datafile_t *df, const char *fn,
   datafileSaveKeyValBuffer (buff, sizeof (buff), df->tag,
       df->dfkeys, df->dfkeycount, list, offset);
   fprintf (fh, "%s", buff);
+  mdextfclose (fh);
   fclose (fh);
 }
 
@@ -894,6 +895,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
     }
   }
   fprintf (fh, "%s", buff);
+  mdextfclose (fh);
   fclose (fh);
 }
 
@@ -925,6 +927,7 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
     strlcat (buff, tbuff, sizeof (buff));
   }
   fprintf (fh, "%s", buff);
+  mdextfclose (fh);
   fclose (fh);
   logProcEnd (LOG_PROC, "datafileSaveList", "");
 }

@@ -453,6 +453,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   fh = fileopOpen (tbuff, "w");
   dlen = strlen (ndata);
   fwrite (ndata, dlen, 1, fh);
+  mdextfclose (fh);
   fclose (fh);
   /* windows requires an extra slash in front, and it doesn't hurt on linux */
   snprintf (qruri, MAXPATHLEN, "file:///%s/%s",

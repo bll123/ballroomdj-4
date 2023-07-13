@@ -1076,6 +1076,7 @@ updaterCleanFiles (void)
     nlistSetData (cleanlist, count, rx);
     ++count;
   }
+  mdextfclose (fh);
   fclose (fh);
 
   /* process what has been queued */
@@ -1213,6 +1214,7 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   *tmp = '\0';
   (void) ! fgets (tmp, sizeof (tmp), fh);
   (void) ! fgets (tmp, sizeof (tmp), fh);
+  mdextfclose (fh);
   fclose (fh);
   if (sscanf (tmp, "<!-- VERSION %d", &version) != 1) {
     version = 1;

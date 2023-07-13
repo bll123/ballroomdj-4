@@ -25,6 +25,11 @@ typedef enum {
   MDEBUG_TYPE_FREE = 'f',
   MDEBUG_TYPE_EXT_ALLOC = 'E',
   MDEBUG_TYPE_EXT_FREE = 'F',
+  MDEBUG_TYPE_EXT_OPEN = 'o',
+  MDEBUG_TYPE_EXT_SOCK = 'S',
+  MDEBUG_TYPE_EXT_CLOSE = 'c',
+  MDEBUG_TYPE_EXT_FOPEN = 'O',
+  MDEBUG_TYPE_EXT_FCLOSE = 'C',
 } mdebugtype_t;
 
 enum {
@@ -44,6 +49,11 @@ enum {
   MDEBUG_STRDUP,
   MDEBUG_FREE,
   MDEBUG_ERRORS,
+  MDEBUG_OPEN,
+  MDEBUG_SOCK,
+  MDEBUG_CLOSE,
+  MDEBUG_FOPEN,
+  MDEBUG_FCLOSE,
   MDEBUG_MAX,
 };
 
@@ -63,6 +73,8 @@ static bool     initialized = false;
 static bool     mdebugverbose = false;
 static bool     mdebugnooutput = false;
 
+static void * mdextalloc_a (void *data, const char *fn, int lineno, const char *tag, int type, int ctype);
+static void mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype);
 static void mdebugResize (void);
 static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno);
 static void mdebugDel (long idx);
@@ -76,25 +88,7 @@ static char *mdebugBacktrace (void);
 void
 mdfree_r (void *data, const char *fn, int lineno)
 {
-  long  loc;
-
-  if (initialized && data == NULL) {
-    mdebugLog ("%4s %p free-null %s %d\n", mdebugtag, data, fn, lineno);
-    mdebugcounts [MDEBUG_ERRORS] += 1;
-  }
-  if (initialized && data != NULL) {
-    loc = mdebugFind (data);
-    if (loc >= 0) {
-      if (mdebugverbose) {
-        mdebugLog ("%4s %p free-ok %s %d\n", mdebugtag, data, fn, lineno);
-      }
-      mdebugDel (loc);
-    } else {
-      mdebugLog ("%4s %p free-bad %s %d\n", mdebugtag, data, fn, lineno);
-      mdebugcounts [MDEBUG_ERRORS] += 1;
-    }
-    mdebugcounts [MDEBUG_FREE] += 1;
-  }
+  mdfree_a (data, fn, lineno, "free", MDEBUG_FREE);
   if (data != NULL) {
     free (data);
   }
@@ -103,25 +97,7 @@ mdfree_r (void *data, const char *fn, int lineno)
 void
 mdextfree_r (void *data, const char *fn, int lineno)
 {
-  long  loc;
-
-  if (initialized && data == NULL) {
-    mdebugLog ("%4s %p ext-free-null %s %d\n", mdebugtag, data, fn, lineno);
-    mdebugcounts [MDEBUG_ERRORS] += 1;
-  }
-  if (initialized && data != NULL) {
-    loc = mdebugFind (data);
-    if (loc >= 0) {
-      if (mdebugverbose) {
-        mdebugLog ("%4s %p ext-free-ok %s %d\n", mdebugtag, data, fn, lineno);
-      }
-      mdebugDel (loc);
-    } else {
-      mdebugLog ("%4s %p ext-free-dup %s %d\n", mdebugtag, data, fn, lineno);
-      mdebugcounts [MDEBUG_ERRORS] += 1;
-    }
-    mdebugcounts [MDEBUG_EXTFREE] += 1;
-  }
+  mdfree_a (data, fn, lineno, "ext-free", MDEBUG_EXTFREE);
 }
 
 void *
@@ -207,15 +183,50 @@ mdstrdup_r (const char *s, const char *fn, int lineno)
 void *
 mdextalloc_r (void *data, const char *fn, int lineno)
 {
-  if (initialized && data != NULL) {
-    mdebugResize ();
-    if (mdebugverbose) {
-      mdebugLog ("%4s %p ext-alloc %s %d\n", mdebugtag, data, fn, lineno);
-    }
-    mdebugAdd (data, MDEBUG_TYPE_EXT_ALLOC, fn, lineno);
-    mdebugcounts [MDEBUG_EXTALLOC] += 1;
-  }
-  return data;
+  return mdextalloc_a (data, fn, lineno, "ext-alloc",
+      MDEBUG_TYPE_EXT_ALLOC, MDEBUG_EXTALLOC);
+}
+
+void
+mdextopen_r (int fd, const char *fn, int lineno)
+{
+  void  *data = NULL;
+
+  data = (void *) (uintptr_t) fd;
+  mdextalloc_a (data, fn, lineno, "open",
+      MDEBUG_TYPE_EXT_OPEN, MDEBUG_OPEN);
+}
+
+void
+mdextsock_r (int fd, const char *fn, int lineno)
+{
+  void  *data = NULL;
+
+  data = (void *) (uintptr_t) fd;
+  mdextalloc_a (data, fn, lineno, "sock",
+      MDEBUG_TYPE_EXT_SOCK, MDEBUG_SOCK);
+}
+
+void
+mdextclose_r (int fd, const char *fn, int lineno)
+{
+  void  *data = NULL;
+
+  data = (void *) (uintptr_t) fd;
+  mdfree_a (data, fn, lineno, "close", MDEBUG_CLOSE);
+}
+
+void
+mdextfopen_r (void *data, const char *fn, int lineno)
+{
+  mdextalloc_a (data, fn, lineno, "fopen",
+      MDEBUG_TYPE_EXT_FOPEN, MDEBUG_FOPEN);
+}
+
+void
+mdextfclose_r (void *data, const char *fn, int lineno)
+{
+  mdfree_a (data, fn, lineno, "fclose", MDEBUG_FCLOSE);
 }
 
 void
@@ -290,6 +301,10 @@ mdebugReport (void)
     mdebugLog ("  Efree: %ld\n", mdebugcounts [MDEBUG_EXTFREE]);
     mdebugLog ("   free: %ld\n", mdebugcounts [MDEBUG_FREE]);
     mdebugLog ("    max: %ld\n", mdebugcounts [MDEBUG_COUNT_MAX]);
+    mdebugLog ("   open: %ld\n", mdebugcounts [MDEBUG_OPEN]);
+    mdebugLog ("  close: %ld\n", mdebugcounts [MDEBUG_CLOSE]);
+    mdebugLog ("  fopen: %ld\n", mdebugcounts [MDEBUG_FOPEN]);
+    mdebugLog (" fclose: %ld\n", mdebugcounts [MDEBUG_FCLOSE]);
   }
 }
 
@@ -330,12 +345,57 @@ mdebugErrors (void)
 }
 
 void
+mdebugSetVerbose (void)
+{
+  mdebugverbose = true;
+}
+
+void
 mdebugSetNoOutput (void)
 {
   mdebugnooutput = true;
 }
 
 /* internal routines */
+
+static void
+mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype)
+{
+  long  loc;
+
+  if (initialized && data == NULL) {
+    mdebugLog ("%4s %p %s-null %s %d\n", mdebugtag, data, tag, fn, lineno);
+    mdebugcounts [MDEBUG_ERRORS] += 1;
+  }
+  if (initialized && data != NULL) {
+    loc = mdebugFind (data);
+    if (loc >= 0) {
+      if (mdebugverbose) {
+        mdebugLog ("%4s %p %s-ok %s %d\n", mdebugtag, data, tag, fn, lineno);
+      }
+      mdebugDel (loc);
+    } else {
+      mdebugLog ("%4s %p %s-bad %s %d\n", mdebugtag, data, tag, fn, lineno);
+      mdebugcounts [MDEBUG_ERRORS] += 1;
+    }
+    mdebugcounts [ctype] += 1;
+  }
+}
+
+static void *
+mdextalloc_a (void *data, const char *fn, int lineno,
+    const char *tag, int type, int ctype)
+{
+  if (initialized && data != NULL) {
+    mdebugResize ();
+    if (mdebugverbose) {
+      mdebugLog ("%4s %p %s %s %d\n", mdebugtag, data, tag, fn, lineno);
+    }
+    mdebugAdd (data, type, fn, lineno);
+    mdebugcounts [ctype] += 1;
+  }
+  return data;
+}
 
 static void
 mdebugResize (void)

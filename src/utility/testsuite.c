@@ -554,6 +554,7 @@ tsClosingCallback (void *tts, programstate_t programState)
   testsuite_t *testsuite = tts;
 
   if (testsuite->fh != NULL) {
+    mdextfclose (testsuite->fh);
     fclose (testsuite->fh);
     testsuite->fh = NULL;
   }
@@ -1524,6 +1525,7 @@ tsNextFile (testsuite_t *testsuite)
   testsuite->lineno = 0;
 
   if (testsuite->fh != NULL) {
+    mdextfclose (testsuite->fh);
     fclose (testsuite->fh);
     testsuite->fh = NULL;
   }
@@ -1540,6 +1542,7 @@ tsNextFile (testsuite_t *testsuite)
     logMsg (LOG_DBG, LOG_BASIC, "-- file: %s", fn);
     snprintf (tbuff, sizeof (tbuff), "test-templates/tests/%s", fn);
     testsuite->fh = fopen (tbuff, "r");
+    mdextfopen (testsuite->fh);
   } else {
     rc = true;
   }

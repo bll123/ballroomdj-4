@@ -461,6 +461,7 @@ main (int argc, char * argv[])
     if (fileopFileExists (buff)) {
       fh = fileopOpen (buff, "r");
       (void) ! fgets (buff, sizeof (buff), fh);
+      mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
 #if BDJ4_USE_GTK3
@@ -478,6 +479,7 @@ main (int argc, char * argv[])
     if (fileopFileExists (buff)) {
       fh = fileopOpen (buff, "r");
       (void) ! fgets (buff, sizeof (buff), fh);
+      mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
 #if BDJ4_USE_GTK3

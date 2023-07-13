@@ -15,6 +15,7 @@
 #include "dirop.h"
 #include "fileop.h"
 #include "lock.h"
+#include "mdebug.h"
 #include "ilist.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -89,6 +90,7 @@ volregCreateBDJ4Flag (void)
       VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fh = fileopOpen (fn, "w");
   if (fh != NULL) {
+    mdextfclose (fh);
     fclose (fh);
   }
 }
@@ -267,6 +269,7 @@ volregGetFilename (char *tfn, size_t sz, char *fn)
 
     fh = fileopOpen (tbuff, "r");
     (void) ! fgets (tfn, sz, fh);
+    mdextfclose (fh);
     fclose (fh);
     stringTrim (tfn);
     fn = tfn;

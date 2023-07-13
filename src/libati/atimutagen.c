@@ -399,6 +399,7 @@ atiiSaveTags (atidata_t *atidata,
 
   fprintf (ofh, "%sprint (tags)\n", spacer);
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
+  mdextfclose (ofh);
   fclose (ofh);
 
   atisaved = mdmalloc (sizeof (atisaved_t));
@@ -479,6 +480,7 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   }
   fprintf (ofh, "%s  audio[k]=v\n", spacer);
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
+  mdextfclose (ofh);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn, NULL, 0);
@@ -515,6 +517,7 @@ atiiCleanTags (atidata_t *atidata,
   }
   fprintf (ofh, "%saudio.delete()\n", spacer);
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
+  mdextfclose (ofh);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn, NULL, 0);
@@ -625,6 +628,7 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   }
 
   atimutagenWritePythonTrailer (ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
+  mdextfclose (ofh);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn, NULL, 0);
@@ -723,6 +727,7 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   }
 
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
+  mdextfclose (ofh);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn, NULL, 0);

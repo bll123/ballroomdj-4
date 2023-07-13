@@ -825,6 +825,7 @@ starterMainLoop (void *tstarter)
         fprintf (fh, "E-Mail : %s\n", email);
         fprintf (fh, "Subject: %s\n", subj);
         fprintf (fh, "Message:\n\n%s\n", msg);
+        mdextfclose (fh);
         fclose (fh);
       }
       mdfree (msg);  // allocated by gtk

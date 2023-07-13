@@ -288,6 +288,7 @@ logBasic (const char *fmt, ...)
   fprintf (fh, "%s ", ttm);
   vfprintf (fh, fmt, args);
   va_end (args);
+  mdextfclose (fh);
   fclose (fh);
 }
 

@@ -67,6 +67,7 @@ fileSharedOpen (const char *fname, int truncflag)
     dataFree (fhandle);
     fhandle = NULL;
   }
+  mdextfopen (handle);
 #else
   flags = O_WRONLY | O_APPEND | O_CREAT;
 # if _define_O_CLOEXEC
@@ -76,6 +77,7 @@ fileSharedOpen (const char *fname, int truncflag)
     flags |= O_TRUNC;
   }
   fd = open (fname, flags, 0600);
+  mdextopen (fd);
   fhandle->fd = fd;
   if (fd < 0) {
     dataFree (fhandle);
@@ -113,8 +115,10 @@ fileSharedClose (fileshared_t *fhandle)
   }
 
 #if _lib_CloseHandle
+  mdextfclose (fhandle->handle);
   CloseHandle (fhandle->handle);
 #else
+  mdextclose (fhandle->fd);
   close (fhandle->fd);
 #endif
   dataFree (fhandle);

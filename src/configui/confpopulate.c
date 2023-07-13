@@ -17,6 +17,7 @@
 #include "configui.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -230,6 +231,7 @@ confuiPopulateOptions (confuigui_t *gui)
 
         fh = fileopOpen (tbuff, "w");
         fprintf (fh, "%s\n", sval);
+        mdextfclose (fh);
         fclose (fh);
       }
     }
@@ -243,6 +245,7 @@ confuiPopulateOptions (confuigui_t *gui)
 
       fh = fileopOpen (tbuff, "w");
       fprintf (fh, "%d\n", (int) nval);
+      mdextfclose (fh);
       fclose (fh);
     }
 
@@ -262,6 +265,7 @@ confuiPopulateOptions (confuigui_t *gui)
       if (sval != NULL) {
         fprintf (fh, "%s\n", sval);
       }
+      mdextfclose (fh);
       fclose (fh);
     }
 

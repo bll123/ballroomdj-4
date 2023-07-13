@@ -34,6 +34,7 @@ filedataReadAll (const char *fname, size_t *rlen)
     data = mdmalloc (len + 1);
     len = fread (data, 1, len, fh);
     data [len] = '\0';
+    mdextfclose (fh);
     fclose (fh);
     if (rlen != NULL) {
       *rlen = len;

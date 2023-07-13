@@ -51,10 +51,22 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   pid_t       tpid;
   int         rc;
 
+# if 0
+    {
+      int   k = 0;
+      fprintf (stderr, "== start: ");
+      while (targv [k] != NULL) {
+        fprintf (stderr, "%s ", targv [k]);
+        ++k;
+      }
+      fprintf (stderr, "\n");
+    }
+#endif
+
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
-    fprintf (stderr, "ERR: %d %s\n", errno, strerror (errno));
+    fprintf (stderr, "ERR: fork: %d %s\n", errno, strerror (errno));
     return tpid;
   }
 
@@ -66,18 +78,20 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 
     if (outfname != NULL) {
       int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU | S_IRWXG);
+      mdextopen (fd);
       if (fd < 0) {
         outfname = NULL;
       } else {
         dup2 (fd, STDOUT_FILENO);
         dup2 (fd, STDERR_FILENO);
+        mdextclose (fd);
         close (fd);
       }
     }
 
     rc = execv (targv [0], (char * const *) targv);
     if (rc < 0) {
-      fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
+      fprintf (stderr, "ERR: unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
       exit (1);
     }
 
@@ -127,7 +141,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     return -1;
   }
 
-#if 0
+# if 0
     {
       int   k = 0;
       fprintf (stderr, "== pipe: ");
@@ -151,6 +165,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     /* close the pipe read side */
     close (pipefd [0]);
 
+    /* send both stdout and stderr to the same fd */
     dup2 (pipefd [1], STDOUT_FILENO);
     dup2 (pipefd [1], STDERR_FILENO);
 

@@ -75,6 +75,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       dataFree (ffn);
     }
   }
+  mdextfclose (fh);
   fclose (fh);
 }
 
@@ -129,6 +130,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     }
   }
 
+  mdextfclose (fh);
   fclose (fh);
   return list;
 }

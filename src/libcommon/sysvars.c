@@ -454,6 +454,7 @@ sysvarsInit (const char *argv0)
     fh = fileopOpen (buff, "r");
     *tbuff = '\0';
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
+    mdextfclose (fh);
     fclose (fh);
     stringTrim (tbuff);
     if (*tbuff) {
@@ -590,6 +591,7 @@ sysvarsInit (const char *argv0)
     *tbuff = '\0';
     fh = fileopOpen (buff, "r");
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
+    mdextfclose (fh);
     fclose (fh);
     stringTrim (tbuff);
     if (*tbuff) {
@@ -724,6 +726,7 @@ sysvarsGetPythonVersion (void)
         fh = fileopOpen (tfn, "r");
         *buff = '\0';
         (void) ! fgets (buff, sizeof (buff), fh);
+        mdextfclose (fh);
         fclose (fh);
         stringTrim (buff);
         strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
@@ -734,6 +737,7 @@ sysvarsGetPythonVersion (void)
         fh = fileopOpen (tfn, "r");
         *buff = '\0';
         (void) ! fgets (buff, sizeof (buff), fh);
+        mdextfclose (fh);
         fclose (fh);
         stringTrim (buff);
         strlcpy (sysvars [SV_PYTHON_VERSION], buff, SV_MAX_SZ);
@@ -771,6 +775,7 @@ sysvarsGetPythonVersion (void)
       fh = fileopOpen (tfn, "w");
       if (fh != NULL) {
         fprintf (fh, "%s\n", sysvars [SV_PYTHON_DOT_VERSION]);
+        mdextfclose (fh);
         fclose (fh);
       }
     }
@@ -790,6 +795,7 @@ sysvarsGetPythonVersion (void)
       fh = fileopOpen (tfn, "w");
       if (fh != NULL) {
         fprintf (fh, "%s\n", sysvars [SV_PYTHON_VERSION]);
+        mdextfclose (fh);
         fclose (fh);
       }
     }
@@ -1024,6 +1030,7 @@ svGetLinuxOSInfo (char *fn)
         rc = true;
       }
     }
+    mdextfclose (fh);
     fclose (fh);
   }
 

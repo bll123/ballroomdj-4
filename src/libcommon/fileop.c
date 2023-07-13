@@ -277,12 +277,14 @@ fileopOpen (const char *fname, const char *mode)
     tfname = osToWideChar (fname);
     tmode = osToWideChar (mode);
     fh = _wfopen (tfname, tmode);
+    mdextfopen (fh);
     mdfree (tfname);
     mdfree (tmode);
   }
 #else
   {
     fh = fopen (fname, mode);
+    mdextfopen (fh);
   }
 #endif
   return fh;

@@ -735,6 +735,7 @@ altsetupSetup (altsetup_t *altsetup)
   if (fh != NULL) {
     (void) ! fgets (str, sizeof (str), fh);
     stringTrim (str);
+    mdextfclose (fh);
     fclose (fh);
     altcount = atoi (str);
     /* update alternate count */
@@ -746,6 +747,7 @@ altsetupSetup (altsetup_t *altsetup)
   if (fh != NULL) {
     snprintf (str, sizeof (str), "%d\n", altcount);
     fputs (str, fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -760,6 +762,7 @@ altsetupSetup (altsetup_t *altsetup)
   fh = fileopOpen (buff, "w");
   if (fh != NULL) {
     fputs (str, fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -787,6 +790,7 @@ altsetupSetup (altsetup_t *altsetup)
   if (fh != NULL) {
     fputs (tbuff, fh);
     fputs ("\n", fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -798,6 +802,7 @@ altsetupSetup (altsetup_t *altsetup)
   if (fh != NULL) {
     fputs (tbuff, fh);
     fputs ("\n", fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 

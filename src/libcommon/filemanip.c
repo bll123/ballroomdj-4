@@ -101,6 +101,7 @@ filemanipCopy (const char *fname, const char *nfn)
       fh = fileopOpen (nfn, "w");
       if (fh != NULL) {
         trc = fwrite (data, len, 1, fh);
+        mdextfclose (fh);
         fclose (fh);
       }
       mdfree (data);

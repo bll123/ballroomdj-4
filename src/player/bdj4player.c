@@ -1016,6 +1016,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   buff = mdmalloc (sz);
   fh = fileopOpen (npq->songfullpath, "rb");
   (void) ! fread (buff, sz, 1, fh);
+  mdextfclose (fh);
   fclose (fh);
   mdfree (buff);
 

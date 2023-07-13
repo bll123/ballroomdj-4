@@ -141,6 +141,7 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
         ndata = regexReplaceLiteral (data, "#ffa600", color);
         len = strlen (ndata);
         fwrite (ndata, len, 1, fh);
+        mdextfclose (fh);
         fclose (fh);
         dataFree (ndata);
       }
