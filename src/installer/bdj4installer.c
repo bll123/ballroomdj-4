@@ -419,6 +419,7 @@ main (int argc, char *argv[])
   if (fh != NULL) {
     (void) ! fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -577,6 +578,7 @@ main (int argc, char *argv[])
       (void) ! fgets (buff, sizeof (buff), fh);
       stringTrim (buff);
       installerSetBDJ3LocDir (&installer, buff);
+      mdextfclose (fh);
       fclose (fh);
     } else {
       char *fn;
@@ -1754,6 +1756,7 @@ installerSaveTargetDir (installer_t *installer)
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", installer->target);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -2048,6 +2051,7 @@ installerConvertStart (installer_t *installer)
     fh = fileopOpen (tbuff, "r");
     if (fh != NULL) {
       (void) ! fgets (tmp, sizeof (tmp), fh);
+      mdextfclose (fh);
       fclose (fh);
       sscanf (tmp, "#VERSION=%d", &ver);
       if (ver < 7) {
@@ -2580,6 +2584,7 @@ installerUpdateProcessInit (installer_t *installer)
     strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
     fh = fileopOpen (tbuff, "w");
     fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -2655,6 +2660,7 @@ installerFinalize (installer_t *installer)
       FILE  *fh;
 
       fh = fileopOpen (INST_NEW_FILE, "w");
+      mdextfclose (fh);
       fclose (fh);
     }
   }

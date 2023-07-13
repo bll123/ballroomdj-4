@@ -302,6 +302,7 @@ mdebugReport (void)
     mdebugLog ("   free: %ld\n", mdebugcounts [MDEBUG_FREE]);
     mdebugLog ("    max: %ld\n", mdebugcounts [MDEBUG_COUNT_MAX]);
     mdebugLog ("   open: %ld\n", mdebugcounts [MDEBUG_OPEN]);
+    mdebugLog ("   sock: %ld\n", mdebugcounts [MDEBUG_SOCK]);
     mdebugLog ("  close: %ld\n", mdebugcounts [MDEBUG_CLOSE]);
     mdebugLog ("  fopen: %ld\n", mdebugcounts [MDEBUG_FOPEN]);
     mdebugLog (" fclose: %ld\n", mdebugcounts [MDEBUG_FCLOSE]);

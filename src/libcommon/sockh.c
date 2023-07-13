@@ -18,6 +18,7 @@
 #include "sockh.h"
 #include "tmutil.h"
 
+static void  sockhCloseServer (sockserver_t *sockserver);
 static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
 
 void
@@ -70,17 +71,6 @@ sockhStartServer (uint16_t listenPort)
   return sockserver;
 }
 
-void
-sockhCloseServer (sockserver_t *sockserver)
-{
-  if (sockserver != NULL) {
-    sockhCloseClients (sockserver->si);
-    sockClose (sockserver->listenSock);
-    sockFreeCheck (sockserver->si);
-    mdfree (sockserver);
-  }
-}
-
 int
 sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args)
@@ -105,27 +95,17 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   return rc;
 }
 
-void
-sockhCloseClients (sockinfo_t *sockinfo)
-{
-  if (sockinfo == NULL) {
-    return;
-  }
-
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist[i];
-    if (socketInvalid (tsock)) {
-      continue;
-    }
-
-    sockRemoveCheck (sockinfo, tsock);
-    sockClose (tsock);
-  }
-
-  return;
-}
-
 /* internal routines */
+
+static void
+sockhCloseServer (sockserver_t *sockserver)
+{
+  if (sockserver != NULL) {
+    sockClose (sockserver->listenSock);
+    sockFreeCheck (sockserver->si);
+    mdfree (sockserver);
+  }
+}
 
 static int
 sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
