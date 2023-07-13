@@ -2275,7 +2275,6 @@ installerSaveLocale (installer_t *installer)
   }
 
   strlcpy (tbuff, "data/localeorig.txt", sizeof (tbuff));
-fprintf (stderr, "save-locale: %s\n", tbuff);
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));

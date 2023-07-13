@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-11\n"
+"PO-Revision-Date: 2023-07-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -826,7 +826,7 @@ msgstr "Lettertype"
 #. CONTEXT: playerui: menu selection: marquee: change the marquee font size
 #. CONTEXT: playerui: marquee font size dialog: the font size selector
 msgid "Font Size"
-msgstr "Tekengrootte"
+msgstr "Fontgrootte"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
@@ -1036,7 +1036,7 @@ msgstr "Marquee lettertype"
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr "Marquee lettergrootte"
+msgstr "Marquee Fontgrootte"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
@@ -1277,7 +1277,7 @@ msgstr "Wachtwoord"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Pause"
-msgstr "Pauseren"
+msgstr "Pauzeren"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
