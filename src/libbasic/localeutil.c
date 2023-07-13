@@ -43,14 +43,20 @@ localeInit (void)
   /* on windows, returns the locale set for the user, not what's set */
   /* in the environment. but GTK apparently picks up the environmental */
   /* setting and uses the appropriate locale */
-  sysvarsSetStr (SV_LOCALE_SYSTEM, osGetLocale (tbuff, sizeof (tbuff)));
-  snprintf (tbuff, sizeof (tbuff), "%-.5s", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  if (sysvarsGetNum (SVL_LOCALE_SYS_SET) == SYSVARS_LOCALE_NOT_SET) {
+    osGetLocale (lbuff, sizeof (lbuff));
+    sysvarsSetStr (SV_LOCALE_SYSTEM, lbuff);
+  } else {
+    strlcpy (lbuff, sysvarsGetStr (SV_LOCALE_SYSTEM), sizeof (lbuff));
+  }
+  snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
+  /* windows uses en-US rather than en_US */
+  tbuff [2] = '_';
+  sysvarsSetStr (SV_LOCALE_ORIG, tbuff);
 
   /* if sysvars has already read the locale.txt file, do not override */
   /* the locale setting */
-  if (sysvarsGetNum (SVL_LOCALE_SET) == 0) {
-    /* windows uses en-US rather than en_US */
-    tbuff [2] = '_';
+  if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     sysvarsSetStr (SV_LOCALE, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
     sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
@@ -124,8 +130,11 @@ localeDebug (void)
   osGetLocale (tbuff, sizeof (tbuff));
   fprintf (stderr, "  os-locale:%s\n", tbuff);
   fprintf (stderr, "  locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  fprintf (stderr, "  locale-orig:%s\n", sysvarsGetStr (SV_LOCALE_ORIG));
   fprintf (stderr, "  locale:%s\n", sysvarsGetStr (SV_LOCALE));
   fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
+  fprintf (stderr, "  locale-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SET));
+  fprintf (stderr, "  locale-sys-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SYS_SET));
   fprintf (stderr, "  env-all:%s\n", getenv ("LC_ALL"));
   fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));

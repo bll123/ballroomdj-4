@@ -214,8 +214,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
     } /* out type */
 
-    if (i == CONFUI_SPINBOX_LOCALE &&
-        localechanged) {
+    if (i == CONFUI_SPINBOX_LOCALE && localechanged) {
       sysvarsSetStr (SV_LOCALE, sval);
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
@@ -225,8 +224,7 @@ confuiPopulateOptions (confuigui_t *gui)
 
       /* if the set locale does not match the system or default locale */
       /* save it in the locale file */
-      if (strcmp (sval, sysvarsGetStr (SV_LOCALE_SYSTEM)) != 0 &&
-          strcmp (sval, "en_GB") != 0) {
+      if (strcmp (sval, sysvarsGetStr (SV_LOCALE_ORIG)) != 0) {
         FILE    *fh;
 
         fh = fileopOpen (tbuff, "w");

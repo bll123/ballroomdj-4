@@ -74,6 +74,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_HOST_WIKI] = { "HOST_WIKI" },
   [SV_LOCALE] = { "LOCALE" },
   [SV_LOCALE_ISO_639_2] = { "LOCALE_ISO_639_2" },
+  [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
@@ -442,13 +443,17 @@ sysvarsInit (const char *argv0)
   /* the locale is reset by localeinit */
   /* localeinit will also convert the windows names to something normal */
   strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
+  strlcpy (sysvars [SV_LOCALE_ORIG], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_ISO_639_2], "eng", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
 
-  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
-  lsysvars [SVL_LOCALE_SET] = 0;
+  lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;
+  lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_NOT_SET;
+
+  /* the installer creates this file to save the original system locale */
+  snprintf (buff, sizeof (buff), "%s/localeorig.txt", sysvars [SV_BDJ4_DREL_DATA]);
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
@@ -459,16 +464,37 @@ sysvarsInit (const char *argv0)
     fclose (fh);
     stringTrim (tbuff);
     if (*tbuff) {
-      strlcpy (sysvars [SV_LOCALE_ISO_639_2], "", SV_MAX_SZ);
-      strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
-      lsysvars [SVL_LOCALE_SET] = 1;
-      snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-      strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
-      /* not sure how to get the iso-639-2 locale */
-      if (strcmp (buff, "nl") == 0) {
-        strlcpy (sysvars [SV_LOCALE_ISO_639_2], "nld", SV_MAX_SZ);
+      /* save the system locale */
+      strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuff, SV_MAX_SZ);
+      /* do not mark locale-set, only locale-sys-set */
+      lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
+      /* localeInit() will set locale-orig and the other variables */
+    }
+  }
+
+  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    fh = fileopOpen (buff, "r");
+    *tbuff = '\0';
+    (void) ! fgets (tbuff, sizeof (tbuff), fh);
+    mdextfclose (fh);
+    fclose (fh);
+    stringTrim (tbuff);
+    if (*tbuff) {
+      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
+        strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
+        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
+        strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
+        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
       }
     }
+  }
+
+  /* not sure how to get the iso-639-2 locale */
+  if (strcmp (sysvarsGetStr (SV_LOCALE_SHORT), "nl") == 0) {
+    strlcpy (sysvars [SV_LOCALE_ISO_639_2], "nld", SV_MAX_SZ);
   }
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);

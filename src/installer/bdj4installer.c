@@ -76,6 +76,7 @@ typedef enum {
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
   INST_SET_ATI,
+  INST_SAVE_LOCALE,
   INST_VLC_CHECK,
   INST_VLC_DOWNLOAD,
   INST_VLC_INSTALL,
@@ -264,6 +265,7 @@ static void installerCreateShortcut (installer_t *installer);
 static void installerUpdateProcessInit (installer_t *installer);
 static void installerUpdateProcess (installer_t *installer);
 static void installerSetATI (installer_t *installer);
+static void installerSaveLocale (installer_t *installer);
 static void installerVLCCheck (installer_t *installer);
 static void installerVLCDownload (installer_t *installer);
 static void installerVLCInstall (installer_t *installer);
@@ -1087,6 +1089,10 @@ installerMainLoop (void *udata)
       installerSetATI (installer);
       break;
     }
+    case INST_SAVE_LOCALE: {
+      installerSaveLocale (installer);
+      break;
+    }
     case INST_VLC_CHECK: {
       installerVLCCheck (installer);
       break;
@@ -1876,7 +1882,7 @@ installerCopyFiles (installer_t *installer)
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
 
   if (installer->nodatafiles) {
-    installer->instState = INST_VLC_CHECK;
+    installer->instState = INST_SAVE_LOCALE;
   } else {
     installer->instState = INST_MAKE_DATA_TOP;
   }
@@ -2254,6 +2260,29 @@ installerSetATI (installer_t *installer)
     bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, installer->ati);
     bdjoptSave ();
   }
+  installer->instState = INST_SAVE_LOCALE;
+}
+
+static void
+installerSaveLocale (installer_t *installer)
+{
+  char        tbuff [MAXPATHLEN];
+  FILE        *fh;
+
+  if (chdir (installer->datatopdir)) {
+    installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
+    return;
+  }
+
+  strlcpy (tbuff, "data/localeorig.txt", sizeof (tbuff));
+fprintf (stderr, "save-locale: %s\n", tbuff);
+  fh = fileopOpen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
   installer->instState = INST_VLC_CHECK;
 }
 
