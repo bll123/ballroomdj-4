@@ -224,6 +224,7 @@ main (int argc, char * argv[])
       case 12: {
         prog = "bdj4installer";
         nodetach = true;
+        wait = true;
         isinstaller = true;
         ++validargs;
         break;
@@ -369,7 +370,6 @@ main (int argc, char * argv[])
     fprintf (stderr, "Invalid arguments\n");
     exit (1);
   }
-
 
   (void) ! getcwd (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));

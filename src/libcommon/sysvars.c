@@ -169,6 +169,7 @@ sysvarsInit (const char *argv0)
   SYSTEM_INFO winsysinfo;
 #endif
 
+  enable_core_dump ();
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
   pathNormalizePath (tcwd, SV_MAX_SZ);
@@ -613,8 +614,6 @@ sysvarsInit (const char *argv0)
   if (lsysvars [SVL_NUM_PROC] > 1) {
     lsysvars [SVL_NUM_PROC] -= 1;  // leave one process free
   }
-
-  enable_core_dump ();
 }
 
 void

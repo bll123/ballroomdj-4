@@ -140,6 +140,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   if (pipe (pipefd) < 0) {
     return -1;
   }
+  mdextopen (pipefd [0]);
+  mdextopen (pipefd [1]);
 
 # if 0
     {
@@ -163,11 +165,14 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   if (tpid == 0) {
     /* child */
     /* close the pipe read side */
+    mdextclose (pipefd [0]);
     close (pipefd [0]);
 
     /* send both stdout and stderr to the same fd */
     dup2 (pipefd [1], STDOUT_FILENO);
     dup2 (pipefd [1], STDERR_FILENO);
+    mdextclose (pipefd [1]);
+    close (pipefd [1]);
 
     rc = execv (targv [0], (char * const *) targv);
     if (rc < 0) {
@@ -179,6 +184,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   }
 
   /* write end of pipe is not needed by parent */
+  mdextclose (pipefd [1]);
   close (pipefd [1]);
 
   pid = tpid;
@@ -221,6 +227,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
         }
       }
     }
+    mdextclose (pipefd [0]);
     close (pipefd [0]);
   }
 
