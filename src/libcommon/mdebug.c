@@ -188,7 +188,7 @@ mdextalloc_r (void *data, const char *fn, int lineno)
 }
 
 void
-mdextopen_r (int fd, const char *fn, int lineno)
+mdextopen_r (long fd, const char *fn, int lineno)
 {
   void  *data = NULL;
 
@@ -198,7 +198,7 @@ mdextopen_r (int fd, const char *fn, int lineno)
 }
 
 void
-mdextsock_r (int fd, const char *fn, int lineno)
+mdextsock_r (long fd, const char *fn, int lineno)
 {
   void  *data = NULL;
 
@@ -208,7 +208,7 @@ mdextsock_r (int fd, const char *fn, int lineno)
 }
 
 void
-mdextclose_r (int fd, const char *fn, int lineno)
+mdextclose_r (long fd, const char *fn, int lineno)
 {
   void  *data = NULL;
 
