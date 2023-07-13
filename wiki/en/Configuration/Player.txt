@@ -12,7 +12,9 @@ _Integrated&nbsp;VLC_ is supported.
 
 __Audio__: Selects the audio interface.
 
-__Audio Tags__: Selects the audio tag interface.
+__Audio Tags__: Selects the audio tag interface. _Mutagen_ is currently
+the standard interface.  _BDJ4&nbsp;Internal_ is a newer interface and
+currently only supports MP3, Ogg and FLAC audio files.
 
 __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
@@ -30,4 +32,4 @@ is finished (no more songs left to play).
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-07-13 13:20:58; BDJ4 version 4.3.3)_

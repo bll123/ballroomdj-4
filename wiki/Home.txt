@@ -43,6 +43,7 @@
 
 [Getting Started with BDJ4](en-Install-Getting%20Started)
 
+[Installing BDJ4 in Other Locales](en-Install-Locales)
 
 [Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
@@ -118,4 +119,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-05-18 13:39:05; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-07-13 13:54:34; BDJ4 version 4.3.3)_
