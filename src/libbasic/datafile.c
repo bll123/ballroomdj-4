@@ -223,17 +223,17 @@ convMS (datafileconv_t *conv)
 /* datafile loading routines */
 
 datafile_t *
-datafileAlloc (const char *tag)
+datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount)
 {
   datafile_t      *df;
 
   logProcBegin (LOG_PROC, "datafileAlloc");
   df = mdmalloc (sizeof (datafile_t));
   df->tag = mdstrdup (tag);
-  df->fname = NULL;
-  df->dftype = DFTYPE_NONE;
-  df->dfkeys = NULL;
-  df->dfkeycount = 0;
+  df->fname = mdstrdup (fname);
+  df->dftype = dftype;
+  df->dfkeys = dfkeys;
+  df->dfkeycount = dfkeycount;
   df->distvers = 1;
   df->data = NULL;
   logProcEnd (LOG_PROC, "datafileAlloc", "");
@@ -249,14 +249,9 @@ datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname,
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
   logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
-  df = datafileAlloc (tag);
+  df = datafileAlloc (tag, dftype, fname, dfkeys, dfkeycount);
   if (df != NULL) {
     char *ddata;
-
-    df->dfkeys = dfkeys;
-    df->dfkeycount = dfkeycount;
-    df->dftype = dftype;
-    df->fname = mdstrdup (fname);
 
     ddata = datafileLoad (df, dftype, fname);
 

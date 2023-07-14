@@ -2031,12 +2031,12 @@ starterLoadOptions (startui_t *starter)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  starter->optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
+  starter->optiondf = datafileAllocParse ("ui-starter", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX, DF_NO_OFFSET, NULL);
   starter->options = datafileGetList (starter->optiondf);
   if (starter->options == NULL) {
     starter->optionsalloc = true;
-    starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, NULL);
+    starter->options = nlistAlloc ("ui-starter", LIST_ORDERED, NULL);
 
     nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_Y, -1);

@@ -20,14 +20,20 @@ songlistutilCreateFromList (musicdb_t *musicdb, const char *fname,
     nlist_t *dbidxlist)
 {
   songlist_t  *songlist;
-  songlist_t  *tsl;
   song_t      *song;
   nlistidx_t  iteridx;
   ilistidx_t  key;
   dbidx_t     dbidx;
-  int         distvers;
+  int         distvers = 1;
 
-  songlist = songlistAlloc (fname);
+  songlist = songlistLoad (fname);
+  if (songlist != NULL) {
+    distvers = songlistDistVersion (songlist);
+  } else {
+    songlist = songlistAlloc (fname);
+  }
+
+  songlistClear (songlist);
 
   nlistStartIterator (dbidxlist, &iteridx);
   key = 0;
@@ -40,9 +46,6 @@ songlistutilCreateFromList (musicdb_t *musicdb, const char *fname,
     ++key;
   }
 
-  tsl = songlistLoad (fname);
-  distvers = songlistDistVersion (tsl);
-  songlistFree (tsl);
   songlistSave (songlist, SONGLIST_UPDATE_TIMESTAMP, distvers);
   songlistFree (songlist);
 }

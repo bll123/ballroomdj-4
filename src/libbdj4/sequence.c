@@ -87,7 +87,8 @@ sequenceCreate (const char *fname)
   sequence = mdmalloc (sizeof (sequence_t));
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
-  sequence->df = NULL;
+  sequence->df = datafileAlloc ("sequence", DFTYPE_LIST,
+      sequence->path, NULL, 0);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetVersion (sequence->sequence, SEQUENCE_VERSION);
@@ -158,6 +159,12 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
 {
   if (slistGetCount (slist) <= 0) {
     return;
+  }
+
+  if (sequence->df == NULL) {
+    /* new sequence */
+    sequence->df = datafileAlloc ("sequence", DFTYPE_LIST,
+        sequence->path, NULL, 0);
   }
 
   slistSetVersion (slist, SEQUENCE_VERSION);

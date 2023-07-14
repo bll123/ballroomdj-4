@@ -179,13 +179,13 @@ main (int argc, char *argv[])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  bpmcounter.optiondf = datafileAllocParse ("bpmcounter-opt", DFTYPE_KEY_VAL, tbuff,
+  bpmcounter.optiondf = datafileAllocParse ("ui-bpmcounter", DFTYPE_KEY_VAL, tbuff,
       bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, DF_NO_OFFSET, NULL);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
   bpmcounter.optionsalloc = false;
   if (bpmcounter.options == NULL) {
     bpmcounter.optionsalloc = true;
-    bpmcounter.options = nlistAlloc ("bpmcounterui-opt", LIST_ORDERED, NULL);
+    bpmcounter.options = nlistAlloc ("ui-bpmcounter", LIST_ORDERED, NULL);
 
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_X, -1);
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_Y, -1);

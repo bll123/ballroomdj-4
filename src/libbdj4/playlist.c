@@ -248,6 +248,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl = playlistAlloc (musicdb);
+
   pl->name = mdstrdup (plname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
@@ -285,6 +286,15 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
     ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 0);
   }
 
+  pathbldMakePath (tbuff, sizeof (tbuff), pl->name,
+      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
+  pl->plinfodf = datafileAlloc ("playlist-pl", DFTYPE_KEY_VAL, tbuff,
+      playlistdfkeys, PLAYLIST_KEY_MAX);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), pl->name,
+      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
+  pl->pldancesdf = datafileAlloc ("playlist-dances", DFTYPE_INDIRECT, tbuff,
+      playlistdancedfkeys, pldancedfcount);
   return pl;
 }
 
@@ -614,11 +624,25 @@ playlistSave (playlist_t *pl, const char *name)
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
+
+  if (pl->plinfodf == NULL) {
+    /* new playlist */
+    pl->plinfodf = datafileAlloc ("playlist-pl", DFTYPE_KEY_VAL, tfn,
+        playlistdfkeys, PLAYLIST_KEY_MAX);
+  }
+
   datafileSave (pl->plinfodf, tfn, pl->plinfo, DF_NO_OFFSET,
       datafileDistVersion (pl->plinfodf));
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
+
+  if (pl->plinfodf == NULL) {
+    /* new playlist */
+    pl->pldancesdf = datafileAlloc ("playlist-dances", DFTYPE_INDIRECT, tfn,
+        playlistdancedfkeys, pldancedfcount);
+  }
+
   ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
   datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
       datafileDistVersion (pl->pldancesdf));

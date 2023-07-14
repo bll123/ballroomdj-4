@@ -273,13 +273,13 @@ main (int argc, char *argv[])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
+  plui.optiondf = datafileAllocParse ("ui-player", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   plui.options = datafileGetList (plui.optiondf);
   plui.optionsalloc = false;
   if (plui.options == NULL) {
     plui.optionsalloc = true;
-    plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, NULL);
+    plui.options = nlistAlloc ("ui-player", LIST_ORDERED, NULL);
 
     nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
     nlistSetNum (plui.options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, false);

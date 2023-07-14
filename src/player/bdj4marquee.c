@@ -208,13 +208,13 @@ main (int argc, char *argv[])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
+  marquee.optiondf = datafileAllocParse ("ui-marquee", DFTYPE_KEY_VAL, tbuff,
       mqdfkeys, MQ_KEY_MAX, DF_NO_OFFSET, NULL);
   marquee.options = datafileGetList (marquee.optiondf);
   marquee.optionsalloc = false;
   if (marquee.options == NULL) {
     marquee.optionsalloc = true;
-    marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, NULL);
+    marquee.options = nlistAlloc ("ui-marquee", LIST_ORDERED, NULL);
 
     nlistSetNum (marquee.options, MQ_WORKSPACE, -1);
     nlistSetNum (marquee.options, MQ_POSITION_X, -1);

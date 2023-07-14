@@ -77,7 +77,7 @@ void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);
 void          convMS (datafileconv_t *conv);
 
-datafile_t *  datafileAlloc (const char *tag);
+datafile_t *  datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount);
 datafile_t *  datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);

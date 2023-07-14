@@ -47,8 +47,8 @@ songlistAlloc (const char *fname)
   pathinfo_t    *pi;
 
   sl = mdmalloc (sizeof (songlist_t));
-  sl->df = NULL;
   sl->songlist = NULL;
+  sl->df = NULL;
   if (fileopIsAbsolutePath (fname)) {
     pi = pathInfo (fname);
     snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->blen, pi->basename);
@@ -74,7 +74,7 @@ songlistLoad (const char *fname)
   sl = songlistAlloc (fname);
 
   if (! fileopFileExists (sl->path)) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
+    // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
     songlistFree (sl);
     return NULL;
   }
@@ -188,6 +188,18 @@ songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sv
 }
 
 void
+songlistClear (songlist_t *sl)
+{
+  if (sl == NULL) {
+    return;
+  }
+
+  ilistFree (sl->songlist);
+  sl->songlist = ilistAlloc (sl->fname, LIST_ORDERED);
+  ilistSetVersion (sl->songlist, SONGLIST_VERSION);
+}
+
+void
 songlistSave (songlist_t *sl, int tmflag, int distvers)
 {
   time_t    origtm = 0;
@@ -196,12 +208,18 @@ songlistSave (songlist_t *sl, int tmflag, int distvers)
     return;
   }
 
+  if (sl->df == NULL) {
+    /* new songlist */
+    sl->df = datafileAlloc ("songlist", DFTYPE_INDIRECT, sl->path,
+        songlistdfkeys, SONGLIST_KEY_MAX);
+  }
+
   origtm = fileopModTime (sl->path);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   if (distvers == SONGLIST_USE_DIST_VERSION) {
     distvers = datafileDistVersion (sl->df);
   }
-  datafileSave (sl->df, NULL, sl->songlist, DF_NO_OFFSET, distvers);
+  datafileSave (sl->df, sl->path, sl->songlist, DF_NO_OFFSET, distvers);
   if (tmflag == SONGLIST_PRESERVE_TIMESTAMP) {
     fileopSetModTime (sl->path, origtm);
   }

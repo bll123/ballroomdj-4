@@ -515,13 +515,13 @@ main (int argc, char *argv[])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
+  manage.optiondf = datafileAllocParse ("ui-manage", DFTYPE_KEY_VAL, tbuff,
       manageuidfkeys, MANAGEUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   manage.options = datafileGetList (manage.optiondf);
   manage.optionsalloc = false;
   if (manage.options == NULL) {
     manage.optionsalloc = true;
-    manage.options = nlistAlloc ("manageui-opt", LIST_ORDERED, NULL);
+    manage.options = nlistAlloc ("ui-manage", LIST_ORDERED, NULL);
 
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_X, -1);
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_Y, -1);
