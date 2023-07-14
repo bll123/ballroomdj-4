@@ -150,6 +150,7 @@ START_TEST(songlist_save)
   ilistidx_t    iteridx;
   ilistidx_t    key;
   time_t        tma, tmb;
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save");
 
@@ -157,6 +158,8 @@ START_TEST(songlist_save)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
+  rc = songlistExists (SLFN);
+  ck_assert_int_ne (rc, 0);
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
   tma = fileopModTime (SLFFN);
@@ -169,9 +172,13 @@ START_TEST(songlist_save)
   mssleep (1000);
 
   songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
+  rc = songlistExists (SLFN);
+  ck_assert_int_ne (rc, 0);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_ne (tma, tmb);
 
+  /* re-load the saved songlist, as the key values may have changed */
+  sl = songlistLoad (SLFN);
   slb = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (slb);
   ck_assert_int_eq (songlistDistVersion (sl), songlistDistVersion (slb));
@@ -206,6 +213,7 @@ START_TEST(songlist_save_new)
   ilistidx_t    iteridx;
   ilistidx_t    iteridxb;
   ilistidx_t    key;
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save_new");
 
@@ -214,11 +222,17 @@ START_TEST(songlist_save_new)
   bdjvarsdfloadInit ();
 
   unlink (SLNEWFFN);
+  rc = songlistExists (SLNEWFN);
+  ck_assert_int_eq (rc, 0);
+
   sl = songlistLoad (SLNEWFN);
   ck_assert_ptr_null (sl);
 
   sl = songlistAlloc (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
+
+  rc = songlistExists (SLFN);
+  ck_assert_int_ne (rc, 0);
   slb = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (slb);
 
@@ -236,12 +250,13 @@ START_TEST(songlist_save_new)
   }
   ck_assert_ptr_nonnull (sl);
   songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
+  rc = songlistExists (SLNEWFN);
+  ck_assert_int_ne (rc, 0);
 
   sl = songlistLoad (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
 
   songlistStartIterator (sl, &iteridx);
-  songlistStartIterator (slb, &iteridxb);
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
     int   vala, valb;
     char  *stra, *strb;
