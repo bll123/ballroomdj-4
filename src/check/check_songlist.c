@@ -30,6 +30,8 @@
 
 #define SLFN "test-sl-a"
 #define SLFFN "data/test-sl-a.songlist"
+#define SLNEWFN "test-sl-new"
+#define SLNEWFFN "data/test-sl-new.songlist"
 
 static void
 setup (void)
@@ -146,7 +148,6 @@ START_TEST(songlist_save)
   songlist_t    *sl;
   songlist_t    *slb;
   ilistidx_t    iteridx;
-  ilistidx_t    iteridxb;
   ilistidx_t    key;
   time_t        tma, tmb;
 
@@ -159,11 +160,14 @@ START_TEST(songlist_save)
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
   tma = fileopModTime (SLFFN);
+
   songlistSave (sl, SONGLIST_PRESERVE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_eq (tma, tmb);
+
   /* the timestamp has a granularity of one second */
   mssleep (1000);
+
   songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_ne (tma, tmb);
@@ -173,19 +177,83 @@ START_TEST(songlist_save)
   ck_assert_int_eq (songlistDistVersion (sl), songlistDistVersion (slb));
 
   songlistStartIterator (sl, &iteridx);
+  while ((key = songlistIterate (sl, &iteridx)) >= 0) {
+    int   vala, valb;
+    char  *stra, *strb;
+
+    vala = songlistGetNum (sl, key, SONGLIST_DANCE);
+    valb = songlistGetNum (slb, key, SONGLIST_DANCE);
+    ck_assert_int_eq (vala, valb);
+    stra = songlistGetStr (sl, key, SONGLIST_FILE);
+    strb = songlistGetStr (slb, key, SONGLIST_FILE);
+    ck_assert_str_eq (stra, strb);
+    stra = songlistGetStr (sl, key, SONGLIST_TITLE);
+    strb = songlistGetStr (slb, key, SONGLIST_TITLE);
+    ck_assert_str_eq (stra, strb);
+  }
+  songlistFree (sl);
+  songlistFree (slb);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(songlist_save_new)
+{
+  songlist_t    *sl;
+  songlist_t    *slb;
+  ilistidx_t    iteridx;
+  ilistidx_t    iteridxb;
+  ilistidx_t    key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save_new");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjvarsdfloadInit ();
+
+  unlink (SLNEWFFN);
+  sl = songlistLoad (SLNEWFN);
+  ck_assert_ptr_null (sl);
+
+  sl = songlistAlloc (SLNEWFN);
+  ck_assert_ptr_nonnull (sl);
+  slb = songlistLoad (SLFN);
+  ck_assert_ptr_nonnull (slb);
+
+  songlistStartIterator (slb, &iteridxb);
+  while ((key = songlistIterate (slb, &iteridxb)) >= 0) {
+    int   vala;
+    char  *stra;
+
+    vala = songlistGetNum (slb, key, SONGLIST_DANCE);
+    songlistSetNum (sl, key, SONGLIST_DANCE, vala);
+    stra = songlistGetStr (slb, key, SONGLIST_FILE);
+    songlistSetStr (sl, key, SONGLIST_FILE, stra);
+    stra = songlistGetStr (slb, key, SONGLIST_TITLE);
+    songlistSetStr (sl, key, SONGLIST_TITLE, stra);
+  }
+  ck_assert_ptr_nonnull (sl);
+  songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
+
+  sl = songlistLoad (SLNEWFN);
+  ck_assert_ptr_nonnull (sl);
+
+  songlistStartIterator (sl, &iteridx);
   songlistStartIterator (slb, &iteridxb);
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
     int   vala, valb;
     char  *stra, *strb;
 
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
-    valb = songlistGetNum (sl, key, SONGLIST_DANCE);
+    valb = songlistGetNum (slb, key, SONGLIST_DANCE);
     ck_assert_int_eq (vala, valb);
     stra = songlistGetStr (sl, key, SONGLIST_FILE);
-    strb = songlistGetStr (sl, key, SONGLIST_FILE);
+    strb = songlistGetStr (slb, key, SONGLIST_FILE);
     ck_assert_str_eq (stra, strb);
     stra = songlistGetStr (sl, key, SONGLIST_TITLE);
-    strb = songlistGetStr (sl, key, SONGLIST_TITLE);
+    strb = songlistGetStr (slb, key, SONGLIST_TITLE);
     ck_assert_str_eq (stra, strb);
   }
   songlistFree (sl);
@@ -216,6 +284,7 @@ songlist_suite (void)
   tcase_set_tags (tc, "libbdj4 slow");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, songlist_save);
+  tcase_add_test (tc, songlist_save_new);
   suite_add_tcase (s, tc);
   return s;
 }
