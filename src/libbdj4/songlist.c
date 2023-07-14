@@ -84,7 +84,10 @@ songlistLoad (const char *fname)
     songlistFree (sl);
     return NULL;
   }
-  ilistFree (sl->songlist);
+  if (sl->songlist != datafileGetList (sl->df)) {
+    ilistFree (sl->songlist);
+    sl->songlist = NULL;
+  }
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
   return sl;
@@ -194,7 +197,11 @@ songlistClear (songlist_t *sl)
     return;
   }
 
-  ilistFree (sl->songlist);
+  if (sl->df == NULL ||
+        sl->songlist != datafileGetList (sl->df)) {
+    ilistFree (sl->songlist);
+    sl->songlist = NULL;
+  }
   sl->songlist = ilistAlloc (sl->fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
 }
