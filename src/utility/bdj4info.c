@@ -98,19 +98,23 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
 
-  fprintf (stdout, " i: bool   %ld\n", (long) sizeof (bool));
-  fprintf (stdout, " i: short  %ld\n", (long) sizeof (short));
-  fprintf (stdout, " i: int    %ld %ld\n", (long) sizeof (int), (long) INT_MAX);
-  fprintf (stdout, " i: long   %ld %ld\n", (long) sizeof (long), (long) LONG_MAX);
-  fprintf (stdout, " i: pid_t  %ld\n", (long) sizeof (pid_t));
-  fprintf (stdout, " i: size_t %ld\n", (long) sizeof (size_t));
-  fprintf (stdout, " i: time_t %ld\n", (long) sizeof (time_t));
-  fprintf (stdout, " i: uint32_t %ld %ld\n", (long) sizeof (uint32_t), (long) INT32_MAX);
-  fprintf (stdout, " i: uint64_t %ld\n", (long) sizeof (uint64_t));
+  fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
+  fprintf (stdout, " i: short  %d\n", (int) sizeof (short));
+  fprintf (stdout, " i: int    %d %ld\n", (int) sizeof (int), (long) INT_MAX);
+  fprintf (stdout, " i: long   %d %ld\n", (int) sizeof (long), (long) LONG_MAX);
+  fprintf (stdout, " i: pid_t  %d\n", (int) sizeof (pid_t));
+  fprintf (stdout, " i: size_t %d\n", (int) sizeof (size_t));
+  fprintf (stdout, " i: time_t %d\n", (int) sizeof (time_t));
+  fprintf (stdout, " i: uint32_t %d %ld\n", (int) sizeof (uint32_t), (long) INT32_MAX);
+  fprintf (stdout, " i: uint64_t %d\n", (int) sizeof (uint64_t));
 #if BDJ4_USE_GTK3
-  fprintf (stdout, " i: gboolean %ld\n", (long) sizeof (gboolean));
-  fprintf (stdout, " i: gint  %ld\n", (long) sizeof (gint));
-  fprintf (stdout, " i: glong %ld\n", (long) sizeof (glong));
+  fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
+  fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
+  fprintf (stdout, " i: glong %d\n", (int) sizeof (glong));
+  fprintf (stdout, "ui: GTK3\n");
+#endif
+#if BDJ4_USE_NULLUI
+  fprintf (stdout, "ui: null\n");
 #endif
 
   for (int i = 0; i < ENV_MAX; ++i) {

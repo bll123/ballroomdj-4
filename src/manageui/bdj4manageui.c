@@ -2889,6 +2889,7 @@ manageSetSonglistName (manageui_t *manage, const char *nm)
   dataFree (manage->sloldname);
   manage->sloldname = mdstrdup (nm);
   uimusicqSetSonglistName (manage->slmusicq, nm);
+  logMsg (LOG_DBG, LOG_INFO, "song list name set: %s\n", nm);
 }
 
 static void
