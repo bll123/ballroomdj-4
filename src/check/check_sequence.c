@@ -98,7 +98,7 @@ START_TEST(sequence_alloc)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-  seq = sequenceAlloc (SEQFN);
+  seq = sequenceLoad (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
   ck_assert_int_eq (slistGetCount (tlist), 4);
@@ -123,7 +123,7 @@ START_TEST(sequence_iterate)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-  seq = sequenceAlloc (SEQFN);
+  seq = sequenceLoad (SEQFN);
   ck_assert_ptr_nonnull (seq);
   sequenceStartIterator (seq, &iteridx);
   fkey = sequenceIterate (seq, &iteridx);
@@ -164,7 +164,7 @@ START_TEST(sequence_save)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-  seq = sequenceAlloc (SEQFN);
+  seq = sequenceLoad (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
   ck_assert_int_eq (slistGetCount (tlist), 4);
@@ -176,7 +176,7 @@ START_TEST(sequence_save)
   sequenceSave (seq, tslist);
   slistFree (tslist);
 
-  seqb = sequenceAlloc (SEQFN);
+  seqb = sequenceLoad (SEQFN);
 
   tlist = sequenceGetDanceList (seq);
   slistStartIterator (tlist, &siteridx);

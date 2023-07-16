@@ -340,7 +340,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
     manageSequenceSave (manageseq);
   }
 
-  seq = sequenceAlloc (fn);
+  seq = sequenceLoad (fn);
   if (seq == NULL) {
     logProcEnd (LOG_PROC, "manageSequenceLoadFile", "null");
     manageseq->inload = false;

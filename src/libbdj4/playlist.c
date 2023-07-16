@@ -209,7 +209,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
 
   if (type == PLTYPE_SEQUENCE) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
-    pl->sequence = sequenceAlloc (fname);
+    pl->sequence = sequenceLoad (fname);
     if (pl->sequence == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
@@ -268,7 +268,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
     pl->songlist = songlistLoad (plname);
   }
   if (type == PLTYPE_SEQUENCE) {
-    pl->sequence = sequenceAlloc (plname);
+    pl->sequence = sequenceLoad (plname);
   }
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plname);

@@ -33,7 +33,7 @@ typedef struct sequence {
 } sequence_t;
 
 sequence_t *
-sequenceAlloc (const char *fname)
+sequenceLoad (const char *fname)
 {
   sequence_t    *sequence;
   slist_t       *tlist;

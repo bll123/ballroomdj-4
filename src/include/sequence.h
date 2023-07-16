@@ -10,7 +10,7 @@
 
 typedef struct sequence sequence_t;
 
-sequence_t    *sequenceAlloc (const char *fname);
+sequence_t    *sequenceLoad (const char *fname);
 sequence_t    *sequenceCreate (const char *fname);
 void          sequenceFree (sequence_t *sequence);
 bool          sequenceExists (const char *name);
