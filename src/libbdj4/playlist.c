@@ -102,11 +102,10 @@ playlistFree (void *tpl)
   playlist_t    *pl = tpl;
 
   if (pl != NULL) {
-    if (pl->plinfodf != NULL) {
-      datafileFree (pl->plinfodf);
-    } else {
+    if (pl->plinfo != datafileGetList (pl->plinfodf)) {
       nlistFree (pl->plinfo);
     }
+    datafileFree (pl->plinfodf);
     datafileFree (pl->pldancesdf);
     ilistFree (pl->pldances);
     songlistFree (pl->songlist);

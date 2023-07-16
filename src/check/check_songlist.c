@@ -53,6 +53,7 @@ setup (void)
   filemanipCopy ("test-templates/test-songlist.songlist", "data/test-sl-a.songlist");
   filemanipCopy ("test-templates/test-songlist.pl", "data/test-sl-a.pl");
   filemanipCopy ("test-templates/test-songlist.pldances", "data/test-sl-a.pldances");
+  unlink (SLNEWFFN);
 }
 
 static void
@@ -61,6 +62,7 @@ teardown (void)
   filemanipCopy ("test-templates/test-songlist.songlist", "data/test-sl-a.songlist");
   filemanipCopy ("test-templates/test-songlist.pl", "data/test-sl-a.pl");
   filemanipCopy ("test-templates/test-songlist.pldances", "data/test-sl-a.pldances");
+  unlink (SLNEWFFN);
 }
 
 START_TEST(songlist_exists)
@@ -83,17 +85,17 @@ START_TEST(songlist_exists)
 }
 END_TEST
 
-START_TEST(songlist_alloc)
+START_TEST(songlist_create)
 {
   songlist_t    *sl;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_alloc");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_create");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-  sl = songlistAlloc (SLFN);
+  sl = songlistCreate (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
   songlistFree (sl);
 
@@ -216,6 +218,9 @@ START_TEST(songlist_save)
   /* the timestamp has a granularity of one second */
   mssleep (1000);
 
+  /* make a change to the first song list */
+  songlistSetStr (sl, 0, SONGLIST_TITLE, "test-save");
+
   songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
@@ -228,6 +233,9 @@ START_TEST(songlist_save)
   slb = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (slb);
   ck_assert_int_eq (songlistDistVersion (sl), songlistDistVersion (slb));
+
+  /* make the same change to the second song list */
+  songlistSetStr (slb, 0, SONGLIST_TITLE, "test-save");
 
   songlistStartIterator (sl, &iteridx);
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
@@ -267,14 +275,14 @@ START_TEST(songlist_save_new)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-  unlink (SLNEWFFN);
+  /* setup, teardown remove SLNEWFN */
   rc = songlistExists (SLNEWFN);
   ck_assert_int_eq (rc, 0);
 
   sl = songlistLoad (SLNEWFN);
   ck_assert_ptr_null (sl);
 
-  sl = songlistAlloc (SLNEWFN);
+  sl = songlistCreate (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
 
   rc = songlistExists (SLFN);
@@ -321,7 +329,7 @@ START_TEST(songlist_save_new)
   songlistFree (sl);
   songlistFree (slb);
 
-  unlink (SLNEWFFN);
+  /* setup, teardown remove SLNEWFN */
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
 }
@@ -338,7 +346,7 @@ songlist_suite (void)
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songlist_exists);
-  tcase_add_test (tc, songlist_alloc);
+  tcase_add_test (tc, songlist_create);
   tcase_add_test (tc, songlist_load);
   tcase_add_test (tc, songlist_iterate);
   tcase_add_test (tc, songlist_clear);

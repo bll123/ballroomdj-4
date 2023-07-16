@@ -237,7 +237,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     snprintf (tbuff, sizeof (tbuff), "%s/%s%s", eibdj4->datadir,
         eibdj4->plName, BDJ4_SONGLIST_EXT);
     songlistFree (eibdj4->sl);
-    eibdj4->sl = songlistAlloc (tbuff);
+    eibdj4->sl = songlistCreate (tbuff);
     eibdj4->slkey = 0;
 
     eibdj4->state = BDJ4_STATE_PROCESS;

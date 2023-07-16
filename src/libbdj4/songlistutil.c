@@ -26,14 +26,13 @@ songlistutilCreateFromList (musicdb_t *musicdb, const char *fname,
   dbidx_t     dbidx;
   int         distvers = 1;
 
-  songlist = songlistLoad (fname);
-  if (songlist != NULL) {
+  if (songlistExists (fname)) {
+    songlist = songlistLoad (fname);
     distvers = songlistDistVersion (songlist);
+    songlistClear (songlist);
   } else {
-    songlist = songlistAlloc (fname);
+    songlist = songlistCreate (fname);
   }
-
-  songlistClear (songlist);
 
   nlistStartIterator (dbidxlist, &iteridx);
   key = 0;

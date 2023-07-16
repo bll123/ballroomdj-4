@@ -39,30 +39,18 @@ static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, DF_NORM },
 };
 
-songlist_t *
-songlistAlloc (const char *fname)
-{
-  songlist_t    *sl;
-  char          tfn [MAXPATHLEN];
-  pathinfo_t    *pi;
+static songlist_t * songlistAlloc (const char *fname);
 
-  sl = mdmalloc (sizeof (songlist_t));
-  sl->songlist = NULL;
-  sl->df = NULL;
-  if (fileopIsAbsolutePath (fname)) {
-    pi = pathInfo (fname);
-    snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->blen, pi->basename);
-    sl->fname = mdstrdup (tfn);
-    pathInfoFree (pi);
-    strlcpy (tfn, fname, sizeof (tfn));
-  } else {
-    sl->fname = mdstrdup (fname);
-    pathbldMakePath (tfn, sizeof (tfn), fname,
-        BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-  }
-  sl->path = mdstrdup (tfn);
+songlist_t *
+songlistCreate (const char *fname)
+{
+  songlist_t  *sl;
+
+  sl = songlistAlloc (fname);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
+  sl->df = datafileAlloc ("songlist", DFTYPE_INDIRECT, sl->path,
+      songlistdfkeys, SONGLIST_KEY_MAX);
   return sl;
 }
 
@@ -83,10 +71,6 @@ songlistLoad (const char *fname)
   if (sl->df == NULL) {
     songlistFree (sl);
     return NULL;
-  }
-  if (sl->songlist != datafileGetList (sl->df)) {
-    ilistFree (sl->songlist);
-    sl->songlist = NULL;
   }
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
@@ -197,6 +181,10 @@ songlistClear (songlist_t *sl)
     return;
   }
 
+  if (ilistGetCount (sl->songlist) == 0) {
+    return;
+  }
+
   if (sl->df == NULL ||
         sl->songlist != datafileGetList (sl->df)) {
     ilistFree (sl->songlist);
@@ -215,10 +203,14 @@ songlistSave (songlist_t *sl, int tmflag, int distvers)
     return;
   }
 
+  if (sl->songlist == NULL) {
+    fprintf (stderr, "ERR: songlist: save: null songlist\n");
+    return;
+  }
+
   if (sl->df == NULL) {
-    /* new songlist */
-    sl->df = datafileAlloc ("songlist", DFTYPE_INDIRECT, sl->path,
-        songlistdfkeys, SONGLIST_KEY_MAX);
+    fprintf (stderr, "ERR: songlist: save: null df\n");
+    return;
   }
 
   origtm = fileopModTime (sl->path);
@@ -241,3 +233,31 @@ songlistDistVersion (songlist_t *sl)
 
   return datafileDistVersion (sl->df);
 }
+
+/* internal routines */
+
+static songlist_t *
+songlistAlloc (const char *fname)
+{
+  songlist_t    *sl;
+  char          tfn [MAXPATHLEN];
+  pathinfo_t    *pi;
+
+  sl = mdmalloc (sizeof (songlist_t));
+  sl->songlist = NULL;
+  sl->df = NULL;
+  if (fileopIsAbsolutePath (fname)) {
+    pi = pathInfo (fname);
+    snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->blen, pi->basename);
+    sl->fname = mdstrdup (tfn);
+    pathInfoFree (pi);
+    strlcpy (tfn, fname, sizeof (tfn));
+  } else {
+    sl->fname = mdstrdup (fname);
+    pathbldMakePath (tfn, sizeof (tfn), fname,
+        BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+  }
+  sl->path = mdstrdup (tfn);
+  return sl;
+}
+
