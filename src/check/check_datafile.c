@@ -156,6 +156,48 @@ START_TEST(parse_with_comments)
 }
 END_TEST
 
+START_TEST(datafile_alloc)
+{
+  datafile_t    *df;
+  const char    *fn;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_alloc");
+  fn = "tmp/dftestnone.txt";
+
+  df = datafileAlloc ("chk-df-a", DFTYPE_LIST, fn, NULL, 0);
+  ck_assert_int_eq (datafileDistVersion (df), 1);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (datafileGetType (df), DFTYPE_LIST);
+  ck_assert_str_eq (datafileGetFname (df), fn);
+  ck_assert_ptr_null (datafileGetData (df));
+
+  datafileFree (df);
+  unlink (fn);
+}
+END_TEST
+
+START_TEST(datafile_none)
+{
+  datafile_t    *df;
+  const char    *fn;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_none");
+  fn = "tmp/dftestnone.txt";
+
+  /* essentially the same as calling datafileAlloc() */
+  df = datafileAllocParse ("chk-df-a", DFTYPE_LIST, fn, NULL, 0,
+      DF_NO_OFFSET, NULL);
+  ck_assert_int_eq (datafileDistVersion (df), 1);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (datafileGetType (df), DFTYPE_LIST);
+  ck_assert_str_eq (datafileGetFname (df), fn);
+  ck_assert_ptr_null (datafileGetData (df));
+
+  datafileFree (df);
+  unlink (fn);
+}
+END_TEST
+
 START_TEST(datafile_simple)
 {
   datafile_t *    df;
@@ -835,7 +877,7 @@ START_TEST(datafile_keyval_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
-  fn = "tmp/dftestk.txt";
+  fn = "tmp/dftesti.txt";
   tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -850,9 +892,9 @@ START_TEST(datafile_keyval_save)
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 13);
 
-  fn = "tmp/dftestl.txt";
+  fn = "tmp/dftestj.txt";
   datafileSave (df, fn, list, DF_NO_OFFSET, datafileDistVersion (df));
-  tdf = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
+  tdf = datafileAllocParse ("chk-df-j", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
       DF_NO_OFFSET, NULL);
   ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
 
@@ -860,6 +902,96 @@ START_TEST(datafile_keyval_save)
   vers = -1;
   vers = nlistGetVersion (tlist);
   ck_assert_int_eq (vers, 13);
+
+  for (int i = 0; i < DFKEY_COUNT; ++i) {
+    if (dfkeyskl [i].valuetype == VALUE_STR) {
+      ck_assert_str_eq (nlistGetStr (list, dfkeyskl [i].itemkey),
+          nlistGetStr (tlist, dfkeyskl [i].itemkey));
+    }
+    if (dfkeyskl [i].valuetype == VALUE_DOUBLE) {
+      ck_assert_float_eq (nlistGetDouble (list, dfkeyskl [i].itemkey),
+          nlistGetDouble (tlist, dfkeyskl [i].itemkey));
+    }
+    if (dfkeyskl [i].valuetype == VALUE_NUM) {
+      ck_assert_int_eq (nlistGetNum (list, dfkeyskl [i].itemkey),
+          nlistGetNum (tlist, dfkeyskl [i].itemkey));
+    }
+    if (dfkeyskl [i].valuetype == VALUE_LIST) {
+      if (dfkeyskl [i].convFunc != NULL) {
+        datafileconv_t  conv;
+        datafileconv_t  tconv;
+
+        conv.allocated = false;
+        conv.valuetype = VALUE_LIST;
+        conv.list = nlistGetList (list, dfkeyskl [i].itemkey);
+        dfkeyskl [i].convFunc (&conv);
+
+        tconv.allocated = false;
+        tconv.valuetype = VALUE_LIST;
+        tconv.list = nlistGetList (list, dfkeyskl [i].itemkey);
+        dfkeyskl [i].convFunc (&tconv);
+        ck_assert_str_eq (conv.str, tconv.str);
+
+        if (conv.allocated) {
+          mdfree (conv.str);
+        }
+        if (tconv.allocated) {
+          mdfree (tconv.str);
+        }
+      }
+    }
+  }
+
+  datafileFree (df);
+  datafileFree (tdf);
+  unlink (fn);
+}
+END_TEST
+
+START_TEST(datafile_keyval_save_new)
+{
+  datafile_t      *df;
+  datafile_t      *tdf;
+  char            *fn = NULL;
+  nlist_t         *list;
+  nlist_t         *tlist;
+  int             vers;
+
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save_new");
+  fn = "tmp/dftestk.txt";
+
+  unlink (fn);
+  df = datafileAllocParse ("chk-df-k", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
+      DF_NO_OFFSET, NULL);
+
+  ck_assert_int_eq (datafileDistVersion (df), 1);
+  list = datafileGetList (df);
+  ck_assert_ptr_null (list);
+
+  list = nlistAlloc ("chk-df-k", LIST_ORDERED, NULL);
+  nlistSetStr (list, 14, "abc");
+  nlistSetNum (list, 15, 15);
+  nlistSetStr (list, 16, "def");
+  nlistSetNum (list, 17, 1);
+  nlistSetStr (list, 18, "ghi");
+  nlistSetStr (list, 19, "jkl");
+  nlistSetNum (list, 20, 2.0);
+  nlistSetNum (list, 22, 0);
+  nlistSetNum (list, 23, 0);
+  nlistSetNum (list, 24, 1);
+
+  datafileSave (df, fn, list, DF_NO_OFFSET, datafileDistVersion (df));
+
+  tdf = datafileAllocParse ("chk-df-kb", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
+      DF_NO_OFFSET, NULL);
+  ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
+
+  tlist = datafileGetList (tdf);
+  ck_assert_ptr_nonnull (tlist);
+  vers = -1;
+  vers = nlistGetVersion (tlist);
+  ck_assert_int_eq (vers, 1);
 
   for (int i = 0; i < DFKEY_COUNT; ++i) {
     if (dfkeyskl [i].valuetype == VALUE_STR) {
@@ -934,7 +1066,7 @@ START_TEST(datafile_indirect_save)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
+  df = datafileAllocParse ("chk-df-m", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
       DF_NO_OFFSET, NULL);
   ck_assert_int_eq (datafileDistVersion (df), 13);
   list = datafileGetList (df);
@@ -944,7 +1076,7 @@ START_TEST(datafile_indirect_save)
 
   fn = "tmp/dftestn.txt";
   datafileSave (df, fn, list, DF_NO_OFFSET, datafileDistVersion (df));
-  tdf = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
+  tdf = datafileAllocParse ("chk-df-n", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
       DF_NO_OFFSET, NULL);
   ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
 
@@ -992,7 +1124,7 @@ START_TEST(datafile_simple_save)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk-df-k", DFTYPE_LIST, fn, NULL, 0,
+  df = datafileAllocParse ("chk-df-o", DFTYPE_LIST, fn, NULL, 0,
       DF_NO_OFFSET, NULL);
   unlink (fn);
 
@@ -1003,7 +1135,7 @@ START_TEST(datafile_simple_save)
 
   fn = "tmp/dftestp.txt";
   datafileSave (df, fn, list, DF_NO_OFFSET, datafileDistVersion (df));
-  tdf = datafileAllocParse ("chk-df-k", DFTYPE_LIST, fn, NULL, 0,
+  tdf = datafileAllocParse ("chk-df-p", DFTYPE_LIST, fn, NULL, 0,
       DF_NO_OFFSET, NULL);
   tlist = datafileGetList (tdf);
   ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
@@ -1043,6 +1175,8 @@ datafile_suite (void)
 
   tc = tcase_create ("datafile");
   tcase_set_tags (tc, "libbasic");
+  tcase_add_test (tc, datafile_alloc);
+  tcase_add_test (tc, datafile_none);
   tcase_add_test (tc, datafile_simple);
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keyval_df_extra);
@@ -1051,6 +1185,7 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_keyval_savelist);
   tcase_add_test (tc, datafile_keyval_savebuffer);
   tcase_add_test (tc, datafile_keyval_save);
+  tcase_add_test (tc, datafile_keyval_save_new);
   tcase_add_test (tc, datafile_indirect_save);
   tcase_add_test (tc, datafile_simple_save);
   suite_add_tcase (s, tc);

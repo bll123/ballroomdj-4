@@ -225,14 +225,9 @@ START_TEST(sequence_save_new)
   sequence_t    *seqb;
   slist_t       *tlist;
   slist_t       *tlistb;
-  nlistidx_t    iteridx;
-  nlistidx_t    iteridxb;
-  nlistidx_t    siteridx;
-  nlistidx_t    siteridxb;
-  nlistidx_t    fkey;
-  nlistidx_t    key;
-  nlistidx_t    tkey;
   slist_t       *tslist;
+  slistidx_t    siteridx;
+  slistidx_t    siteridxb;
   char          *stra;
   char          *strb;
   int           rc;
