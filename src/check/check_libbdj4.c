@@ -45,13 +45,13 @@ check_libbdj4 (SRunner *sr)
    *  dancesel              complete
    *  sequence              complete
    *  songsel
-   *  audiotag
    *  playlist
+   *  audiotag
    *  sortopt               complete
    *  dispsel               complete
    *  orgutil               partial
-   *  webclient             complete 2022-12-27
    *  validate              complete
+   *  webclient             complete 2022-12-27
    *  songdb
    *  samesong              complete
    *  audioadjust
@@ -61,12 +61,14 @@ check_libbdj4 (SRunner *sr)
    *  orgopt                complete
    *  volreg                complete 2022-12-27 (missing lock tests)
    *  m3u
+   *  songlistutil
    *  itunes
    *  bdj4init
    *  instutil
    *  support
    *  mp3exp
    *  musicq
+   *  expimpbdj4
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
@@ -122,6 +124,12 @@ check_libbdj4 (SRunner *sr)
   s = sequence_suite();
   srunner_add_suite (sr, s);
 
+  /* songsel */
+
+  /* playlist */
+
+  /* audiotag */
+
   s = sortopt_suite();
   srunner_add_suite (sr, s);
 
@@ -131,14 +139,18 @@ check_libbdj4 (SRunner *sr)
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 
-  s = webclient_suite();
-  srunner_add_suite (sr, s);
-
   s = validate_suite();
   srunner_add_suite (sr, s);
 
+  s = webclient_suite();
+  srunner_add_suite (sr, s);
+
+  /* songdb */
+
   s = samesong_suite();
   srunner_add_suite (sr, s);
+
+  /* audioadjust */
 
   s = templateutil_suite();
   srunner_add_suite (sr, s);
@@ -154,6 +166,24 @@ check_libbdj4 (SRunner *sr)
 
   s = volreg_suite();
   srunner_add_suite (sr, s);
+
+  /* m3u */
+
+  /* songlistutil */
+
+  /* itunes */
+
+  /* bdj4init */
+
+  /* instutil */
+
+  /* support */
+
+  /* mp3exp */
+
+  /* musicq */
+
+  /* expimpbdj4 */
 }
 
 #pragma clang diagnostic pop
