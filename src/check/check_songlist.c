@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #pragma clang diagnostic push
 #pragma GCC diagnostic push
