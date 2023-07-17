@@ -69,6 +69,12 @@ slistSetSize (slist_t *list, listidx_t siz)
 }
 
 void
+slistTrackMaxWidths (slist_t *list)
+{
+  listTrackMaxWidths (LIST_KEY_STR, list);
+}
+
+void
 slistSetData (slist_t *list, const char *sidx, void *data)
 {
   listitem_t    item;
@@ -249,7 +255,7 @@ slistGetMaxKeyWidth (slist_t *list)
     return 0;
   }
 
-  return list->maxKeyWidth;
+  return listGetMaxKeyWidth (LIST_KEY_STR, list);
 }
 
 int
@@ -259,7 +265,7 @@ slistGetMaxDataWidth (slist_t *list)
     return 0;
   }
 
-  return list->maxDataWidth;
+  return listGetMaxDataWidth (LIST_KEY_STR, list);
 }
 
 slistidx_t

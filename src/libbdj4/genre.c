@@ -63,7 +63,7 @@ genreAlloc (void)
 
   dflist = datafileGetList (genre->df);
   genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
-  slistSetSize (genre->genreList, slistGetCount (genre->genre));
+  slistSetSize (genre->genreList, ilistGetCount (genre->genre));
 
   ilistStartIterator (dflist, &iteridx);
   while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {

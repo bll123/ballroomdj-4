@@ -60,7 +60,7 @@ ratingAlloc (void)
 
   rating->maxWidth = 0;
   rating->ratingList = slistAlloc ("rating-disp", LIST_UNORDERED, NULL);
-  slistSetSize (rating->ratingList, slistGetCount (rating->rating));
+  slistSetSize (rating->ratingList, ilistGetCount (rating->rating));
 
   ilistStartIterator (rating->rating, &iteridx);
   while ((key = ilistIterateKey (rating->rating, &iteridx)) >= 0) {

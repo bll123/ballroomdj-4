@@ -40,19 +40,25 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   /* always allocate the name so that dynamic names can be created */
   list->name = mdstrdup (name);
   list->data = NULL;
+  list->ordered = ordered;
+  list->keytype = keytype;
   list->version = 1;
+  list->valueFreeHook = valueFreeHook;
+  /* counts */
   list->count = 0;
   list->allocCount = 0;
   list->maxKeyWidth = 0;
   list->maxDataWidth = 0;
+  /* flags */
   list->replace = false;
-  list->keytype = keytype;
-  list->ordered = ordered;
+  list->setmaxkey = false;
+  list->setmaxdata = false;
+  /* cache */
   list->keyCache.strkey = NULL;
   list->locCache = LIST_LOC_INVALID;
   list->readCacheHits = 0;
   list->writeCacheHits = 0;
-  list->valueFreeHook = valueFreeHook;
+
   logMsg (LOG_DBG, LOG_LIST, "list alloc %s", name);
   return list;
 }
@@ -89,6 +95,97 @@ listFree (keytype_t keytype, void *tlist)
   mdfree (list);
 }
 
+/* list management */
+
+void
+listSetSize (keytype_t keytype, list_t *list, listidx_t siz)
+{
+  if (list == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  if (siz > list->allocCount) {
+    listidx_t   tsiz;
+
+    tsiz = list->allocCount;
+    list->allocCount = siz;
+    list->data = mdrealloc (list->data,
+        (size_t) list->allocCount * sizeof (listitem_t));
+    memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
+  }
+}
+
+void
+listSort (keytype_t keytype, list_t *list)
+{
+  mstime_t      tm;
+  time_t        elapsed;
+  long          swaps;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  mstimestart (&tm);
+  list->ordered = LIST_ORDERED;
+  swaps = mergeSort (list, 0, list->count - 1);
+  elapsed = mstimeend (&tm);
+  if (elapsed > 0) {
+    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %" PRId64 " ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
+  }
+}
+
+void
+listDumpInfo (keytype_t keytype, list_t *list)
+{
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
+      list->name, list->count, list->keytype, list->ordered);
+}
+
+/* used by the test suite */
+bool
+listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
+{
+  bool  rc;
+
+  if (list == NULL) {
+    return false;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return false;
+  }
+
+  rc = list->locCache != LIST_LOC_INVALID &&
+      list->keyCache.idx == key;
+  return rc;
+}
+
+void
+listTrackMaxWidths (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+  list->setmaxkey = true;
+  list->setmaxdata = true;
+}
+
+
+/* counts */
+
 listidx_t
 listGetCount (keytype_t keytype, list_t *list)
 {
@@ -114,6 +211,32 @@ listGetAllocCount (keytype_t keytype, list_t *list)
   return list->allocCount;
 }
 
+int
+listGetMaxKeyWidth (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->maxKeyWidth;
+}
+
+int
+listGetMaxDataWidth (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->maxDataWidth;
+}
+
+/* version */
+
 void
 listSetVersion (keytype_t keytype, list_t *list, int version)
 {
@@ -124,28 +247,6 @@ listSetVersion (keytype_t keytype, list_t *list, int version)
     return;
   }
   list->version = version;
-}
-
-void
-listSetSize (keytype_t keytype, list_t *list, listidx_t siz)
-{
-  if (list == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return;
-  }
-
-  if (siz > list->allocCount) {
-    listidx_t   tsiz;
-
-    tsiz = list->allocCount;
-    list->allocCount = siz;
-    list->data = mdrealloc (list->data,
-        (size_t) list->allocCount * sizeof (listitem_t));
-    memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
-  }
 }
 
 int
@@ -159,6 +260,139 @@ listGetVersion (keytype_t keytype, list_t *list)
   }
   return list->version;
 }
+
+/* iterators */
+
+void
+listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  *iteridx = LIST_END_LIST;
+}
+
+listidx_t
+listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  ++(*iteridx);
+
+  return listIterateKeyGetNum (list, iteridx);
+}
+
+listidx_t
+listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  --(*iteridx);
+  if (*iteridx < 0) {
+    /* do not decrement further! */
+    *iteridx = -1;
+  }
+
+  return listIterateKeyGetNum (list, iteridx);
+}
+
+char *
+listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  char    *value = NULL;
+
+  if (list == NULL) {
+    return NULL;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return NULL;
+  }
+
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    return NULL;
+  }
+
+  value = list->data [*iteridx].key.strkey;
+
+  listClearCache (list);
+
+  list->keyCache.strkey = mdstrdup (value);
+  list->locCache = *iteridx;
+
+  return value;
+}
+
+void *
+listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  void  *value = NULL;
+
+  if (list == NULL) {
+    return NULL;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return NULL;
+  }
+
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    return NULL;  /* indicate the end of the list */
+  }
+
+  value = list->data [*iteridx].value.data;
+  return value;
+}
+
+listnum_t
+listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  listnum_t   value = LIST_VALUE_INVALID;
+
+  if (list == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_VALUE_INVALID;
+  }
+
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    return LIST_VALUE_INVALID;  /* indicate the end of the list */
+  }
+
+  value = list->data [*iteridx].value.num;
+  return value;
+}
+
+listidx_t
+listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  return *iteridx;
+}
+
+
 
 void *
 listGetData (keytype_t keytype, list_t *list, const char *keydata)
@@ -281,168 +515,6 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%d", list->name, idx);
 }
 
-void
-listSort (keytype_t keytype, list_t *list)
-{
-  mstime_t      tm;
-  time_t        elapsed;
-  long          swaps;
-
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return;
-  }
-
-  mstimestart (&tm);
-  list->ordered = LIST_ORDERED;
-  swaps = mergeSort (list, 0, list->count - 1);
-  elapsed = mstimeend (&tm);
-  if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %" PRId64 " ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
-  }
-}
-
-void
-listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (! listCheckKeyType (list, keytype)) {
-    return;
-  }
-
-  *iteridx = LIST_END_LIST;
-}
-
-void
-listDumpInfo (keytype_t keytype, list_t *list)
-{
-  if (! listCheckKeyType (list, keytype)) {
-    return;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
-      list->name, list->count, list->keytype, list->ordered);
-}
-
-listidx_t
-listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return LIST_LOC_INVALID;
-  }
-
-  ++(*iteridx);
-
-  return listIterateKeyGetNum (list, iteridx);
-}
-
-listidx_t
-listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return LIST_LOC_INVALID;
-  }
-
-  --(*iteridx);
-  if (*iteridx < 0) {
-    /* do not decrement further! */
-    *iteridx = -1;
-  }
-
-  return listIterateKeyGetNum (list, iteridx);
-}
-
-char *
-listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  char    *value = NULL;
-
-  if (list == NULL) {
-    return NULL;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return NULL;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = LIST_END_LIST;
-    return NULL;
-  }
-
-  value = list->data [*iteridx].key.strkey;
-
-  listClearCache (list);
-
-  list->keyCache.strkey = mdstrdup (value);
-  list->locCache = *iteridx;
-
-  return value;
-}
-
-void *
-listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  void  *value = NULL;
-
-  if (list == NULL) {
-    return NULL;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return NULL;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = LIST_END_LIST;
-    return NULL;  /* indicate the end of the list */
-  }
-
-  value = list->data [*iteridx].value.data;
-  return value;
-}
-
-listnum_t
-listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  listnum_t   value = LIST_VALUE_INVALID;
-
-  if (list == NULL) {
-    return LIST_VALUE_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return LIST_VALUE_INVALID;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = LIST_END_LIST;
-    return LIST_VALUE_INVALID;  /* indicate the end of the list */
-  }
-
-  value = list->data [*iteridx].value.num;
-  return value;
-}
-
-listidx_t
-listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return LIST_LOC_INVALID;
-  }
-
-  return *iteridx;
-}
-
 listidx_t
 listGetIdx (keytype_t keytype, list_t *list, listkeylookup_t *key)
 {
@@ -498,24 +570,6 @@ listSet (keytype_t keytype, list_t *list, listitem_t *item)
     listInsert (list, loc, item);
   }
   return;
-}
-
-/* used by the test suite */
-bool
-listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
-{
-  bool  rc;
-
-  if (list == NULL) {
-    return false;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return false;
-  }
-
-  rc = list->locCache != LIST_LOC_INVALID &&
-      list->keyCache.idx == key;
-  return rc;
 }
 
 /* internal routines */

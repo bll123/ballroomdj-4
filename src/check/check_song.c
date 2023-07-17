@@ -105,8 +105,7 @@ static char *songparsedata [] = {
       "TRACKTOTAL\n..10\n"
       "VOLUMEADJUSTPERC\n..4400\n"
       "WORK_ID\n..\n"
-      "LASTUPDATED\n..1660237307\n"
-      "RRN\n..1\n",
+      "LASTUPDATED\n..1660237307\n",
     /* windows line endings */
     "FILE\r\n..waltz.mp3\r\n"
       "ADJUSTFLAGS\r\n..NT\r\n"
@@ -142,8 +141,7 @@ static char *songparsedata [] = {
       "TRACKTOTAL\r\n..10\r\n"
       "VOLUMEADJUSTPERC\r\n..-4400\r\n"
       "WORK_ID\r\n..\r\n"
-      "LASTUPDATED\r\n..1660237307\r\n"
-      "RRN\r\n..1\r\n",
+      "LASTUPDATED\r\n..1660237307\r\n",
     /* unix line endings, unicode filename */
     "FILE\n..IAmtheBest_내가제일잘나가.mp3\n"
       "ADJUSTFLAGS\n..\n"
@@ -180,7 +178,6 @@ static char *songparsedata [] = {
       "VOLUMEADJUSTPERC\n..4400\n"
       "WORK_ID\n..\n"
       "LASTUPDATED\n..1660237307\n"
-      "RRN\n..1\n"
 };
 enum {
   songparsedatasz = sizeof (songparsedata) / sizeof (char *),

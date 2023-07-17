@@ -61,7 +61,7 @@ statusAlloc (void)
 
   status->maxWidth = 0;
   status->statusList = slistAlloc ("status-disp", LIST_UNORDERED, NULL);
-  slistSetSize (status->statusList, slistGetCount (status->status));
+  slistSetSize (status->statusList, ilistGetCount (status->status));
 
   ilistStartIterator (status->status, &iteridx);
   while ((key = ilistIterateKey (status->status, &iteridx)) >= 0) {

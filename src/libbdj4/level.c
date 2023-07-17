@@ -63,7 +63,7 @@ levelAlloc ()
 
   level->maxWidth = 0;
   level->levelList = slistAlloc ("level-disp", LIST_UNORDERED, NULL);
-  slistSetSize (level->levelList, slistGetCount (level->level));
+  slistSetSize (level->levelList, ilistGetCount (level->level));
 
   ilistStartIterator (level->level, &iteridx);
   while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {

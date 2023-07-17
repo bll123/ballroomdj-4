@@ -51,7 +51,7 @@ static char *sorttypes [] = {
   "GENRE ALBUMARTIST TITLE",
   "GENRE ALBUM TRACKNUMBER",
   "TITLE",
-  "LASTUPDATE",
+  "LASTUPDATED",
 };
 enum {
   sorttypesz = sizeof (sorttypes) / sizeof (char *),
