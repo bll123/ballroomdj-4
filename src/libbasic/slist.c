@@ -12,7 +12,9 @@
 
 #include "bdjstring.h"
 #include "istring.h"
+#define BDJ4_LIST_MODULE 1
 #include "list.h"
+#undef BDJ4_LIST_MODULE
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -27,42 +29,45 @@ slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
 {
   slist_t    *list;
 
-  list = listAlloc (name, ordered, valueFreeHook);
-  list->keytype = LIST_KEY_STR;
+  list = listAlloc (name, LIST_KEY_STR, ordered, valueFreeHook);
   return list;
 }
 
 void
 slistFree (void *list)
 {
-  listFree (list);
+  listFree (LIST_KEY_STR, list);
 }
 
 void
 slistSetVersion (slist_t *list, int version)
 {
-  listSetVersion (list, version);
+  listSetVersion (LIST_KEY_STR, list, version);
 }
 
 int
 slistGetVersion (slist_t *list)
 {
-  return listGetVersion (list);
+  return listGetVersion (LIST_KEY_STR, list);
 }
 
 slistidx_t
 slistGetCount (slist_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  return list->count;
+  return listGetCount (LIST_KEY_STR, list);
+}
+
+/* for testing */
+slistidx_t
+slistGetAllocCount (slist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_STR, list);
 }
 
 void
 slistSetSize (slist_t *list, listidx_t siz)
 {
-  listSetSize (list, siz);
+  listSetSize (LIST_KEY_STR, list, siz);
 }
 
 void
@@ -76,7 +81,7 @@ slistSetData (slist_t *list, const char *sidx, void *data)
 
   slistUpdateMaxKeyWidth (list, sidx);
 
-  listSet (list, &item);
+  listSet (LIST_KEY_STR, list, &item);
 }
 
 void
@@ -93,7 +98,7 @@ slistSetStr (slist_t *list, const char *sidx, const char *data)
 
   slistUpdateMaxKeyWidth (list, sidx);
 
-  listSet (list, &item);
+  listSet (LIST_KEY_STR, list, &item);
 }
 
 void
@@ -107,7 +112,7 @@ slistSetNum (slist_t *list, const char *sidx, listnum_t data)
 
   slistUpdateMaxKeyWidth (list, sidx);
 
-  listSet (list, &item);
+  listSet (LIST_KEY_STR, list, &item);
 }
 
 void
@@ -121,7 +126,7 @@ slistSetDouble (slist_t *list, const char *sidx, double data)
 
   slistUpdateMaxKeyWidth (list, sidx);
 
-  listSet (list, &item);
+  listSet (LIST_KEY_STR, list, &item);
 }
 
 void
@@ -135,7 +140,7 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
 
   slistUpdateMaxKeyWidth (list, sidx);
 
-  listSet (list, &item);
+  listSet (LIST_KEY_STR, list, &item);
 }
 
 slistidx_t
@@ -148,31 +153,31 @@ slistGetIdx (slist_t *list, const char *sidx)
   }
 
   key.strkey = sidx;
-  return listGetIdx (list, &key);
+  return listGetIdx (LIST_KEY_STR, list, &key);
 }
 
 void *
 slistGetData (slist_t *list, const char *sidx)
 {
-  return listGetData (list, sidx);
+  return listGetData (LIST_KEY_STR, list, sidx);
 }
 
 char *
 slistGetStr (slist_t *list, const char *sidx)
 {
-  return listGetData (list, sidx);
+  return listGetData (LIST_KEY_STR, list, sidx);
 }
 
 void *
 slistGetDataByIdx (slist_t *list, slistidx_t idx)
 {
-  return listGetDataByIdx (list, idx);
+  return listGetDataByIdx (LIST_KEY_STR, list, idx);
 }
 
 listnum_t
 slistGetNumByIdx (slist_t *list, slistidx_t idx)
 {
-  return listGetNumByIdx (list, idx);
+  return listGetNumByIdx (LIST_KEY_STR, list, idx);
 }
 
 char *
@@ -196,7 +201,7 @@ slistGetNum (slist_t *list, const char *sidx)
   slistidx_t      idx;
 
   key.strkey = sidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_STR, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -212,7 +217,7 @@ slistGetDouble (slist_t *list, const char *sidx)
   slistidx_t      idx;
 
   key.strkey = sidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_STR, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.dval;
   }
@@ -232,7 +237,7 @@ slistGetList (slist_t *list, const char *sidx)
   }
 
   key.strkey = sidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_STR, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
@@ -262,13 +267,13 @@ slistGetMaxDataWidth (slist_t *list)
 slistidx_t
 slistIterateGetIdx (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateGetIdx (list, iteridx);
+  return listIterateGetIdx (LIST_KEY_STR, list, iteridx);
 }
 
 void
 slistSort (slist_t *list)
 {
-  listSort (list);
+  listSort (LIST_KEY_STR, list);
 }
 
 void
@@ -280,25 +285,26 @@ slistStartIterator (slist_t *list, slistidx_t *iteridx)
 char *
 slistIterateKey (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateKeyStr (list, iteridx);
+
+  return listIterateKeyStr (LIST_KEY_STR, list, iteridx);
 }
 
 void *
 slistIterateValueData (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateValue (list, iteridx);
+  return listIterateValue (LIST_KEY_STR, list, iteridx);
 }
 
 listnum_t
 slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateValueNum (list, iteridx);
+  return listIterateValueNum (LIST_KEY_STR, list, iteridx);
 }
 
 void
 slistDumpInfo (slist_t *list)
 {
-  listDumpInfo (list);
+  listDumpInfo (LIST_KEY_STR, list);
 }
 
 /* internal routines */

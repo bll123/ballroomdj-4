@@ -17,6 +17,7 @@ void        nlistFree (void * list);
 void        nlistSetVersion (nlist_t *list, int version);
 int         nlistGetVersion (nlist_t *list);
 nlistidx_t  nlistGetCount (nlist_t *list);
+nlistidx_t  nlistGetAllocCount (nlist_t *list);
 void        nlistSetSize (nlist_t *, nlistidx_t);
 void        nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);
 /* set routines */
@@ -47,5 +48,6 @@ listnum_t   nlistIterateValueNum (nlist_t *list, nlistidx_t *idx);
 void        nlistSort (nlist_t *);
 void        nlistDumpInfo (nlist_t *list);
 nlistidx_t  nlistSearchProbTable (nlist_t *probTable, double dval);
+bool        nlistDebugIsCached (list_t *list, listidx_t key);
 
 #endif /* INC_NLIST_H */

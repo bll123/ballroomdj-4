@@ -54,28 +54,38 @@ add_library (libbdj4string STATIC
   libcommon/mdebug.c
 )
 
-add_library (libbdj4tmutil STATIC
-  libcommon/tmutil.c
-)
-target_link_libraries (libbdj4tmutil PUBLIC
-  m
-)
-
 add_library (libbdj4osutils STATIC
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
-  libcommon/osprocess.c
   libcommon/osutils.c
-  libcommon/oswinprocess.c
   libcommon/oswinutils.c
 )
 target_link_libraries (libbdj4osutils PUBLIC
-  libbdj4tmutil
   libbdj4string
   m
 )
 addIOKitFramework (libbdj4osutils)
 addIntlLibrary (libbdj4osutils)
+
+add_library (libbdj4tmutil STATIC
+  libcommon/tmutil.c
+)
+target_link_libraries (libbdj4tmutil PUBLIC
+  libbdj4osutils
+  m
+)
+
+add_library (libbdj4osprocess STATIC
+  libcommon/osprocess.c
+  libcommon/oswinprocess.c
+)
+target_link_libraries (libbdj4osprocess PUBLIC
+  libbdj4tmutil
+  libbdj4osutils
+  libbdj4string
+  m
+)
+addIOKitFramework (libbdj4osprocess)
 
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
@@ -86,6 +96,7 @@ target_link_libraries (libbdj4fileop PUBLIC
   libbdj4string
   m
 )
+
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
   libcommon/osnetutils.c

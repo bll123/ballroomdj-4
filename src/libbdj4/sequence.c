@@ -46,7 +46,7 @@ sequenceLoad (const char *fname)
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fn)) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
+    // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return false;
   }
 
@@ -87,6 +87,7 @@ sequenceCreate (const char *fname)
   sequence = mdmalloc (sizeof (sequence_t));
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
+  sequence->distvers = 1;
   sequence->df = datafileAlloc ("sequence", DFTYPE_LIST,
       sequence->path, NULL, 0);
 
@@ -159,12 +160,6 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
 {
   if (slistGetCount (slist) <= 0) {
     return;
-  }
-
-  if (sequence->df == NULL) {
-    /* new sequence */
-    sequence->df = datafileAlloc ("sequence", DFTYPE_LIST,
-        sequence->path, NULL, 0);
   }
 
   slistSetVersion (slist, SEQUENCE_VERSION);

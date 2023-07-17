@@ -25,6 +25,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4se PUBLIC
   libbdj4fileop
+  libbdj4osprocess
   libbdj4osutils
   libbdj4string
   m

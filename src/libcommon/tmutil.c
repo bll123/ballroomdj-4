@@ -15,13 +15,18 @@
 #include <unistd.h>
 #include <locale.h>
 #include <math.h>
+#include <wchar.h>
 
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
 #if _hdr_windows
 # include <windows.h>
 #endif
 
 #include "bdjstring.h"
 #include "mdebug.h"
+#include "osutils.h"
 #include "tmutil.h"
 
 /* windows may not define these, notably timeradd() */
@@ -212,7 +217,7 @@ tmutilDstamp (char *buff, size_t max)
 }
 
 char *
-tmutilDisp (char *buff, size_t max, int type)
+tmutilDisp (char *buff, size_t sz, int type)
 {
   struct timeval    curr;
   struct tm         *tp;
@@ -232,7 +237,7 @@ tmutilDisp (char *buff, size_t max, int type)
   if (type == TM_CLOCK_ISO) {
     ssize_t    pos;
 
-    strftime (buff, max, "%A %Y-%m-%d %H:%M", tp);
+    strftime (buff, sz, "%A %Y-%m-%d %H:%M", tp);
     pos = strlen (buff);
     pos -= 5;
     if (pos > 0 && buff [pos] == '0') {
@@ -240,16 +245,39 @@ tmutilDisp (char *buff, size_t max, int type)
     }
   }
   if (type == TM_CLOCK_LOCAL) {
-    strftime (buff, max, "%c", tp);
+#if _lib_GetDateFormatEx
+    wchar_t     wtmp [200];
+    char        *tmp;
+
+    GetDateFormatEx (LOCALE_NAME_USER_DEFAULT, DATE_LONGDATE, NULL,
+        NULL, wtmp, 200, NULL);
+    tmp = osFromWideChar (wtmp);
+    if (tmp != NULL) {
+      strlcpy (buff, tmp, sz);
+      mdfree (tmp);
+    }
+# if _lib_GetDateFormatEx
+    GetTimeFormatEx (LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, NULL,
+        NULL, wtmp, 200);
+    tmp = osFromWideChar (wtmp);
+    if (tmp != NULL) {
+      strlcat (buff, " ", sz);
+      strlcat (buff, tmp, sz);
+      mdfree (tmp);
+    }
+# endif
+#else
+    strftime (buff, sz, "%c", tp);
+#endif
   }
   if (type == TM_CLOCK_TIME_12) {
-    strftime (buff, max, "%I:%M %p", tp);
+    strftime (buff, sz, "%I:%M %p", tp);
     if (*buff == '0') {
       *buff = ' ';
     }
   }
   if (type == TM_CLOCK_TIME_24) {
-    strftime (buff, max, "%H:%M", tp);
+    strftime (buff, sz, "%H:%M", tp);
     if (*buff == '0') {
       *buff = ' ';
     }
@@ -261,7 +289,7 @@ tmutilDisp (char *buff, size_t max, int type)
 }
 
 char *
-tmutilTstamp (char *buff, size_t max)
+tmutilTstamp (char *buff, size_t sz)
 {
   struct timeval    curr;
   struct tm         *tp;
@@ -282,14 +310,14 @@ tmutilTstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%H:%M:%S", tp);
+  strftime (buff, sz, "%H:%M:%S", tp);
   snprintf (tbuff, sizeof (tbuff), ".%03zd", m);
-  strlcat (buff, tbuff, max);
+  strlcat (buff, tbuff, sz);
   return buff;
 }
 
 char *
-tmutilShortTstamp (char *buff, size_t max)
+tmutilShortTstamp (char *buff, size_t sz)
 {
   struct timeval    curr;
   struct tm         *tp;
@@ -306,12 +334,12 @@ tmutilShortTstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%H%M%S", tp);
+  strftime (buff, sz, "%H%M%S", tp);
   return buff;
 }
 
 char *
-tmutilToMS (time_t ms, char *buff, size_t max)
+tmutilToMS (time_t ms, char *buff, size_t sz)
 {
   time_t     h, m, s;
 
@@ -319,15 +347,15 @@ tmutilToMS (time_t ms, char *buff, size_t max)
   m = ((ms / 1000) - (h * 60 * 60)) / 60;
   s = (ms / 1000) - (h * 60 * 60) - (m * 60);
   if (h > 0) {
-    snprintf (buff, max, "%2zd:%02zd:%02zd", h, m, s);
+    snprintf (buff, sz, "%2zd:%02zd:%02zd", h, m, s);
   } else {
-    snprintf (buff, max, "%2zd:%02zd", m, s);
+    snprintf (buff, sz, "%2zd:%02zd", m, s);
   }
   return buff;
 }
 
 char *
-tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
+tmutilToMSD (time_t ms, char *buff, size_t sz, int decimals)
 {
   time_t    m, s, d;
 
@@ -347,14 +375,14 @@ tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
   }
   /* reduce the number of digits for display */
   d = d / (int) pow (10, (3 - decimals));
-  snprintf (buff, max, "%"PRIu64":%02"PRIu64"%s%0*"PRIu64,
+  snprintf (buff, sz, "%"PRIu64":%02"PRIu64"%s%0*"PRIu64,
       (uint64_t) m, (uint64_t) s, radixchar, decimals, (uint64_t) d);
   return buff;
 }
 
 
 char *
-tmutilToDate (time_t ms, char *buff, size_t max)
+tmutilToDate (time_t ms, char *buff, size_t sz)
 {
   struct tm         *tp;
   time_t            s;
@@ -369,12 +397,12 @@ tmutilToDate (time_t ms, char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%Y-%m-%d", tp);
+  strftime (buff, sz, "%Y-%m-%d", tp);
   return buff;
 }
 
 char *
-tmutilToDateHM (time_t ms, char *buff, size_t max)
+tmutilToDateHM (time_t ms, char *buff, size_t sz)
 {
   struct tm         *tp;
   time_t            s;
@@ -389,7 +417,7 @@ tmutilToDateHM (time_t ms, char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%Y-%m-%d %H:%M", tp);
+  strftime (buff, sz, "%Y-%m-%d %H:%M", tp);
   return buff;
 }
 

@@ -546,7 +546,7 @@ datafileFreeData (datafile_t *df)
     if (df->data != NULL) {
       switch (df->dftype) {
         case DFTYPE_LIST: {
-          listFree (df->data);
+          slistFree (df->data);
           break;
         }
         case DFTYPE_INDIRECT: {
@@ -621,7 +621,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       }
       /* for simple datafiles, the distvers and the version are the same */
       if (distvers != NULL) {
-        listSetVersion (datalist, *distvers);
+        slistSetVersion (datalist, *distvers);
       }
       break;
     }
@@ -671,12 +671,16 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
     if (inc == 2 && strcmp (tkeystr, DF_VERSION_STR) == 0) {
       int version = atoi (tvalstr);
-      listSetVersion (datalist, version);
+      if (dftype == DFTYPE_INDIRECT) {
+        ilistSetVersion (datalist, version);
+      } else {
+        nlistSetVersion (datalist, version);
+      }
       continue;
     }
     if (strcmp (tkeystr, "count") == 0) {
       if (dftype == DFTYPE_INDIRECT) {
-        nlistSetSize (datalist, atol (tvalstr));
+        ilistSetSize (datalist, atol (tvalstr));
       }
       continue;
     }
@@ -822,7 +826,7 @@ datafileSaveKeyVal (datafile_t *df, const char *fn,
     return;
   }
 
-  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, listGetVersion (list));
+  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, nlistGetVersion (list));
   datafileSaveKeyValBuffer (buff, sizeof (buff), df->tag,
       df->dfkeys, df->dfkeycount, list, offset);
   fprintf (fh, "%s", buff);
@@ -851,7 +855,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   count = ilistGetCount (list);
   ilistStartIterator (list, &iteridx);
 
-  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, listGetVersion (list));
+  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, ilistGetVersion (list));
   fprintf (fh, "count\n..%d\n", count);
 
   count = 0;
@@ -911,7 +915,7 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
     return;
   }
 
-  fprintf (fh, DF_VERSION_FMT, listGetVersion (list));
+  fprintf (fh, DF_VERSION_FMT, slistGetVersion (list));
   fprintf (fh, "\n");
 
   slistStartIterator (list, &iteridx);

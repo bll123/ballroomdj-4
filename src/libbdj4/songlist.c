@@ -68,10 +68,6 @@ songlistLoad (const char *fname)
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, sl->path,
       songlistdfkeys, SONGLIST_KEY_MAX, DF_NO_OFFSET, NULL);
-  if (sl->df == NULL) {
-    songlistFree (sl);
-    return NULL;
-  }
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
   return sl;
@@ -81,8 +77,7 @@ void
 songlistFree (songlist_t *sl)
 {
   if (sl != NULL) {
-    if (sl->df == NULL ||
-        sl->songlist != datafileGetList (sl->df)) {
+    if (sl->songlist != datafileGetList (sl->df)) {
       ilistFree (sl->songlist);
     }
     datafileFree (sl->df);
@@ -185,8 +180,7 @@ songlistClear (songlist_t *sl)
     return;
   }
 
-  if (sl->df == NULL ||
-        sl->songlist != datafileGetList (sl->df)) {
+  if (sl->songlist != datafileGetList (sl->df)) {
     ilistFree (sl->songlist);
     sl->songlist = NULL;
   }

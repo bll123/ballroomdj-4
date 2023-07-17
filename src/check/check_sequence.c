@@ -43,7 +43,7 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
-  unlink (SEQNEWFFN);
+//  unlink (SEQNEWFFN);
 }
 
 static void
@@ -52,7 +52,7 @@ teardown (void)
   filemanipCopy ("test-templates/test-sequence.sequence", "data/test-seq-a.sequence");
   filemanipCopy ("test-templates/test-sequence.pl", "data/test-seq-a.pl");
   filemanipCopy ("test-templates/test-sequence.pldances", "data/test-seq-a.pldances");
-  unlink (SEQNEWFFN);
+//  unlink (SEQNEWFFN);
 }
 
 START_TEST(sequence_exists)
@@ -67,6 +67,7 @@ START_TEST(sequence_exists)
 
   rc = sequenceExists (SEQFN);
   ck_assert_int_ne (rc, 0);
+unlink (SEQNEWFFN);
   rc = sequenceExists (SEQNEWFN);
   ck_assert_int_eq (rc, 0);
 
@@ -100,7 +101,7 @@ END_TEST
 START_TEST(sequence_load)
 {
   sequence_t    *seq;
-  slist_t       *tlist;
+  nlist_t       *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_load");
 
@@ -111,7 +112,7 @@ START_TEST(sequence_load)
   seq = sequenceLoad (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
-  ck_assert_int_eq (slistGetCount (tlist), 4);
+  ck_assert_int_eq (nlistGetCount (tlist), 4);
   sequenceFree (seq);
 
   bdjvarsdfloadCleanup ();
@@ -179,10 +180,10 @@ START_TEST(sequence_save)
   tlist = sequenceGetDanceList (seq);
   ck_assert_int_eq (slistGetCount (tlist), 4);
   tslist = slistAlloc ("chk-seq-save", LIST_UNORDERED, NULL);
-  slistSetStr (tslist, "Waltz", 0);
-  slistSetStr (tslist, "Tango", 0);
-  slistSetStr (tslist, "Foxtrot", 0);
-  slistSetStr (tslist, "Quickstep", 0);
+  slistSetNum (tslist, "Waltz", 0);
+  slistSetNum (tslist, "Tango", 0);
+  slistSetNum (tslist, "Foxtrot", 0);
+  slistSetNum (tslist, "Quickstep", 0);
   sequenceSave (seq, tslist);
   slistFree (tslist);
 
@@ -223,13 +224,13 @@ START_TEST(sequence_save_new)
 {
   sequence_t    *seq;
   sequence_t    *seqb;
-  slist_t       *tlist;
-  slist_t       *tlistb;
-  slist_t       *tslist;
+  nlist_t       *tlist = NULL;
+  nlist_t       *tlistb = NULL;
+  slist_t       *tslist = NULL;
   slistidx_t    siteridx;
-  slistidx_t    siteridxb;
-  char          *stra;
-  char          *strb;
+  nlistidx_t    niteridxb;
+  char          *stra = NULL;
+  char          *strb = NULL;
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_save_new");
@@ -238,6 +239,9 @@ START_TEST(sequence_save_new)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
+unlink (SEQNEWFFN);
+  rc = sequenceExists (SEQNEWFN);
+  ck_assert_int_eq (rc, 0);
   seq = sequenceLoad (SEQNEWFN);
   ck_assert_ptr_null (seq);
   seq = sequenceCreate (SEQNEWFN);
@@ -245,28 +249,30 @@ START_TEST(sequence_save_new)
   tlist = sequenceGetDanceList (seq);
   ck_assert_int_eq (slistGetCount (tlist), 0);
   tslist = slistAlloc ("chk-seq-save-new", LIST_UNORDERED, NULL);
-  slistSetStr (tslist, "Waltz", 0);
-  slistSetStr (tslist, "Tango", 0);
-  slistSetStr (tslist, "Foxtrot", 0);
-  slistSetStr (tslist, "Quickstep", 0);
+  slistSetNum (tslist, "Waltz", 0);
+  slistSetNum (tslist, "Tango", 0);
+  slistSetNum (tslist, "Foxtrot", 0);
+  slistSetNum (tslist, "Quickstep", 0);
+  ck_assert_int_eq (slistGetCount (tslist), 4);
   sequenceSave (seq, tslist);
-  slistFree (tslist);
+  /* note that seq is not valid, sequence->sequence is still empty */
 
   rc = sequenceExists (SEQNEWFN);
   ck_assert_int_ne (rc, 0);
   seqb = sequenceLoad (SEQNEWFN);
   ck_assert_ptr_nonnull (seqb);
 
-  slistStartIterator (tslist, &siteridx);
   tlistb = sequenceGetDanceList (seqb);
-  slistStartIterator (tlistb, &siteridxb);
-  ck_assert_int_eq (slistGetCount (tlistb), 4);
+  ck_assert_int_eq (nlistGetCount (tlistb), 4);
 
+  slistStartIterator (tslist, &siteridx);
+  nlistStartIterator (tlistb, &niteridxb);
   while ((stra = slistIterateKey (tslist, &siteridx)) != NULL) {
-    strb = slistIterateKey (tlistb, &siteridxb);
+    strb = nlistIterateValueData (tlistb, &niteridxb);
     ck_assert_str_eq (stra, strb);
   }
 
+  slistFree (tslist);
   sequenceFree (seq);
   sequenceFree (seqb);
 

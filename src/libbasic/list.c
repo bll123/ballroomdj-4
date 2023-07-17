@@ -17,6 +17,8 @@
 #include "mdebug.h"
 #include "tmutil.h"
 
+static listidx_t listGetIdx_int (list_t *list, listkeylookup_t *key);
+static bool     listCheckKeyType (list_t *list, keytype_t keytype);
 static void     listFreeItem (list_t *, listidx_t);
 static listidx_t listIterateKeyGetNum (list_t *list, listidx_t *iteridx);
 static void     listInsert (list_t *, listidx_t loc, listitem_t *item);
@@ -30,7 +32,7 @@ static void     listClearCache (list_t *list);
 static listidx_t listCheckCache (list_t *list, listkeylookup_t *key);
 
 list_t *
-listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
+listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook)
 {
   list_t    *list;
 
@@ -44,7 +46,7 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
   list->maxKeyWidth = 0;
   list->maxDataWidth = 0;
   list->replace = false;
-  list->keytype = LIST_KEY_STR;
+  list->keytype = keytype;
   list->ordered = ordered;
   list->keyCache.strkey = NULL;
   list->locCache = LIST_LOC_INVALID;
@@ -56,48 +58,82 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
 }
 
 void
-listFree (void *tlist)
+listFree (keytype_t keytype, void *tlist)
 {
   list_t *list = (list_t *) tlist;
 
-  if (list != NULL) {
-    logMsg (LOG_DBG, LOG_LIST, "list free %s", list->name);
-    if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
-      logMsg (LOG_DBG, LOG_LIST,
-          "list %s: cache read:%ld write:%ld",
-          list->name, list->readCacheHits, list->writeCacheHits);
-    }
-    listClearCache (list);
-    if (list->data != NULL) {
-      for (listidx_t i = 0; i < list->count; ++i) {
-        listFreeItem (list, i);
-      }
-      mdfree (list->data);
-      list->data = NULL;
-    } /* data is not null */
-
-    list->count = 0;
-    list->allocCount = 0;
-    dataFree (list->name);
-    list->name = NULL;
-    mdfree (list);
+  if (list == NULL) {
+    return;
   }
+  listCheckKeyType (list, keytype);
+
+  logMsg (LOG_DBG, LOG_LIST, "list free %s", list->name);
+  if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
+    logMsg (LOG_DBG, LOG_LIST,
+        "list %s: cache read:%ld write:%ld",
+        list->name, list->readCacheHits, list->writeCacheHits);
+  }
+  listClearCache (list);
+  if (list->data != NULL) {
+    for (listidx_t i = 0; i < list->count; ++i) {
+      listFreeItem (list, i);
+    }
+    mdfree (list->data);
+    list->data = NULL;
+  } /* data is not null */
+
+  list->count = 0;
+  list->allocCount = 0;
+  dataFree (list->name);
+  list->name = NULL;
+  mdfree (list);
+}
+
+listidx_t
+listGetCount (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->count;
+}
+
+/* for testing */
+listidx_t
+listGetAllocCount (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->allocCount;
 }
 
 void
-listSetVersion (list_t *list, int version)
+listSetVersion (keytype_t keytype, list_t *list, int version)
 {
   if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return;
   }
   list->version = version;
 }
 
 void
-listSetSize (list_t *list, listidx_t siz)
+listSetSize (keytype_t keytype, list_t *list, listidx_t siz)
 {
   if (list == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return;
   }
 
@@ -113,16 +149,19 @@ listSetSize (list_t *list, listidx_t siz)
 }
 
 int
-listGetVersion (list_t *list)
+listGetVersion (keytype_t keytype, list_t *list)
 {
   if (list == NULL) {
+    return LIST_NO_VERSION;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return LIST_NO_VERSION;
   }
   return list->version;
 }
 
 void *
-listGetData (list_t *list, const char *keydata)
+listGetData (keytype_t keytype, list_t *list, const char *keydata)
 {
   void            *value = NULL;
   listkeylookup_t key;
@@ -131,12 +170,15 @@ listGetData (list_t *list, const char *keydata)
   if (list == NULL) {
     return value;
   }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
   if (keydata == NULL) {
     return value;
   }
 
   key.strkey = keydata;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx_int (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
@@ -145,12 +187,15 @@ listGetData (list_t *list, const char *keydata)
 }
 
 void *
-listGetDataByIdx (list_t *list, listidx_t idx)
+listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   void  *value = NULL;
 
 
   if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return value;
   }
   if (idx < 0 || idx >= list->count) {
@@ -162,11 +207,14 @@ listGetDataByIdx (list_t *list, listidx_t idx)
 }
 
 listnum_t
-listGetNumByIdx (list_t *list, listidx_t idx)
+listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listnum_t   value = LIST_VALUE_INVALID;
 
   if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return value;
   }
   if (idx < 0 || idx >= list->count) {
@@ -178,7 +226,7 @@ listGetNumByIdx (list_t *list, listidx_t idx)
 }
 
 listnum_t
-listGetNum (list_t *list, const char *keydata)
+listGetNum (keytype_t keytype, list_t *list, const char *keydata)
 {
   listnum_t       value = LIST_VALUE_INVALID;
   listkeylookup_t key;
@@ -187,12 +235,15 @@ listGetNum (list_t *list, const char *keydata)
   if (list == NULL) {
     return value;
   }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
   if (keydata == NULL) {
     return value;
   }
 
   key.strkey = keydata;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx_int (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -201,11 +252,14 @@ listGetNum (list_t *list, const char *keydata)
 }
 
 void
-listDeleteByIdx (list_t *list, listidx_t idx)
+listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listidx_t   copycount;
 
   if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return;
   }
   if (idx < 0 || idx >= list->count) {
@@ -228,13 +282,16 @@ listDeleteByIdx (list_t *list, listidx_t idx)
 }
 
 void
-listSort (list_t *list)
+listSort (keytype_t keytype, list_t *list)
 {
   mstime_t      tm;
   time_t        elapsed;
   long          swaps;
 
   if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return;
   }
 
@@ -248,22 +305,32 @@ listSort (list_t *list)
 }
 
 void
-listStartIterator (list_t *list, listidx_t *iteridx)
+listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
   *iteridx = LIST_END_LIST;
 }
 
 void
-listDumpInfo (list_t *list)
+listDumpInfo (keytype_t keytype, list_t *list)
 {
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
   logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 
 listidx_t
-listIterateKeyNum (list_t *list, listidx_t *iteridx)
+listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (list == NULL || list->keytype == LIST_KEY_STR) {
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -273,9 +340,12 @@ listIterateKeyNum (list_t *list, listidx_t *iteridx)
 }
 
 listidx_t
-listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx)
+listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (list == NULL || list->keytype == LIST_KEY_STR) {
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -289,11 +359,14 @@ listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx)
 }
 
 char *
-listIterateKeyStr (list_t *list, listidx_t *iteridx)
+listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   char    *value = NULL;
 
-  if (list == NULL || list->keytype == LIST_KEY_NUM) {
+  if (list == NULL) {
+    return NULL;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return NULL;
   }
 
@@ -314,11 +387,14 @@ listIterateKeyStr (list_t *list, listidx_t *iteridx)
 }
 
 void *
-listIterateValue (list_t *list, listidx_t *iteridx)
+listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   void  *value = NULL;
 
   if (list == NULL) {
+    return NULL;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return NULL;
   }
 
@@ -333,11 +409,14 @@ listIterateValue (list_t *list, listidx_t *iteridx)
 }
 
 listnum_t
-listIterateValueNum (list_t *list, listidx_t *iteridx)
+listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   listnum_t   value = LIST_VALUE_INVALID;
 
   if (list == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return LIST_VALUE_INVALID;
   }
 
@@ -352,9 +431,12 @@ listIterateValueNum (list_t *list, listidx_t *iteridx)
 }
 
 listidx_t
-listIterateGetIdx (list_t *list, listidx_t *iteridx)
+listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -362,7 +444,84 @@ listIterateGetIdx (list_t *list, listidx_t *iteridx)
 }
 
 listidx_t
-listGetIdx (list_t *list, listkeylookup_t *key)
+listGetIdx (keytype_t keytype, list_t *list, listkeylookup_t *key)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+  return listGetIdx_int (list, key);
+}
+
+void
+listSet (keytype_t keytype, list_t *list, listitem_t *item)
+{
+  listidx_t       loc = 0;
+  int             rc = -1;
+  int             found = 0;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  loc = listCheckCache (list, (listkeylookup_t *) &item->key);
+  if (loc != LIST_LOC_INVALID) {
+    ++list->writeCacheHits;
+    found = 1;
+    rc = 0;
+  }
+
+  if (! found) {
+    loc = 0;
+  }
+
+  if (! found && list->count > 0) {
+    if (list->ordered == LIST_ORDERED) {
+      rc = listBinarySearch (list, (listkeylookup_t *) &item->key, &loc);
+    } else {
+      loc = list->count;
+    }
+  }
+
+  if (list->ordered == LIST_ORDERED) {
+    if (rc < 0) {
+      listInsert (list, loc, item);
+    } else {
+      listReplace (list, loc, item);
+    }
+  } else {
+    listInsert (list, loc, item);
+  }
+  return;
+}
+
+/* used by the test suite */
+bool
+listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
+{
+  bool  rc;
+
+  if (list == NULL) {
+    return false;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return false;
+  }
+
+  rc = list->locCache != LIST_LOC_INVALID &&
+      list->keyCache.idx == key;
+  return rc;
+}
+
+/* internal routines */
+
+listidx_t
+listGetIdx_int (list_t *list, listkeylookup_t *key)
 {
   listidx_t   idx;
   listidx_t   ridx = LIST_LOC_INVALID;
@@ -415,64 +574,19 @@ listGetIdx (list_t *list, listkeylookup_t *key)
   return ridx;
 }
 
-void
-listSet (list_t *list, listitem_t *item)
+static bool
+listCheckKeyType (list_t *list, keytype_t keytype)
 {
-  listidx_t       loc = 0;
-  int             rc = -1;
-  int             found = 0;
+  bool    rc = true;
 
-  if (list == NULL) {
-    return;
+  if (list->keytype != keytype) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: mismatched key %s %d/%d", list->name, list->keytype, keytype);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: list: mismatched key %s %d/%d", list->name, list->keytype, keytype);
+    rc = false;
   }
 
-  loc = listCheckCache (list, (listkeylookup_t *) &item->key);
-  if (loc != LIST_LOC_INVALID) {
-    ++list->writeCacheHits;
-    found = 1;
-    rc = 0;
-  }
-
-  if (! found) {
-    loc = 0;
-  }
-
-  if (! found && list->count > 0) {
-    if (list->ordered == LIST_ORDERED) {
-      rc = listBinarySearch (list, (listkeylookup_t *) &item->key, &loc);
-    } else {
-      loc = list->count;
-    }
-  }
-
-  if (list->ordered == LIST_ORDERED) {
-    if (rc < 0) {
-      listInsert (list, loc, item);
-    } else {
-      listReplace (list, loc, item);
-    }
-  } else {
-    listInsert (list, loc, item);
-  }
-  return;
-}
-
-/* used by the test suite */
-bool
-listDebugIsCached (list_t *list, listidx_t key)
-{
-  bool  rc;
-
-  if (list == NULL) {
-    return false;
-  }
-
-  rc = list->locCache != LIST_LOC_INVALID &&
-      list->keyCache.idx == key;
   return rc;
 }
-
-/* internal routines */
 
 static void
 listFreeItem (list_t *list, listidx_t idx)
@@ -509,7 +623,7 @@ listFreeItem (list_t *list, listidx_t idx)
     }
     if (dp->valuetype == VALUE_LIST &&
         dp->value.data != NULL) {
-      listFree (dp->value.data);
+      listFree (((list_t *) dp->value.data)->keytype, dp->value.data);
     }
   } /* if the data pointer is not null */
 }

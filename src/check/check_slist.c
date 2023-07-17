@@ -27,8 +27,8 @@ START_TEST(simple_list_create_free)
 
   list = slistAlloc ("chk-a", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (slistGetCount (list), 0);
+  ck_assert_int_eq (slistGetAllocCount (list), 0);
   ck_assert_int_eq (list->ordered, LIST_UNORDERED);
   ck_assert_int_eq (list->keytype, LIST_KEY_STR);
   slistFree (list);
@@ -46,20 +46,20 @@ START_TEST(simple_list_add_unordered)
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->ordered, LIST_UNORDERED);
   slistSetStr (list, "ffff", NULL);
-  ck_assert_int_eq (list->count, 1);
+  ck_assert_int_eq (slistGetCount (list), 1);
   slistSetStr (list, "zzzz", NULL);
-  ck_assert_int_eq (list->count, 2);
+  ck_assert_int_eq (slistGetCount (list), 2);
   slistSetStr (list, "rrrr", NULL);
-  ck_assert_int_eq (list->count, 3);
+  ck_assert_int_eq (slistGetCount (list), 3);
   slistSetStr (list, "kkkk", NULL);
-  ck_assert_int_eq (list->count, 4);
+  ck_assert_int_eq (slistGetCount (list), 4);
   slistSetStr (list, "cccc", NULL);
-  ck_assert_int_eq (list->count, 5);
+  ck_assert_int_eq (slistGetCount (list), 5);
   slistSetStr (list, "aaaa", NULL);
-  ck_assert_int_eq (list->count, 6);
+  ck_assert_int_eq (slistGetCount (list), 6);
   slistSetStr (list, "bbbb", NULL);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (slistGetCount (list), 7);
+  ck_assert_int_eq (slistGetAllocCount (list), 10);
   slistFree (list);
 }
 END_TEST
@@ -155,12 +155,12 @@ START_TEST(simple_list_add_ordered_beg)
   list = slistAlloc ("chk-e", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "cccc", NULL);
-  ck_assert_int_eq (list->count, 1);
+  ck_assert_int_eq (slistGetCount (list), 1);
   slistSetStr (list, "bbbb", NULL);
-  ck_assert_int_eq (list->count, 2);
+  ck_assert_int_eq (slistGetCount (list), 2);
   slistSetStr (list, "aaaa", NULL);
-  ck_assert_int_eq (list->count, 3);
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (slistGetCount (list), 3);
+  ck_assert_int_eq (slistGetAllocCount (list), 5);
   slistStartIterator (list, &iteridx);
   value = (char *) slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
@@ -184,12 +184,12 @@ START_TEST(simple_list_add_ordered_end)
   list = slistAlloc ("chk-f", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "aaaa", NULL);
-  ck_assert_int_eq (list->count, 1);
+  ck_assert_int_eq (slistGetCount (list), 1);
   slistSetStr (list, "bbbb", NULL);
-  ck_assert_int_eq (list->count, 2);
+  ck_assert_int_eq (slistGetCount (list), 2);
   slistSetStr (list, "cccc", NULL);
-  ck_assert_int_eq (list->count, 3);
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (slistGetCount (list), 3);
+  ck_assert_int_eq (slistGetAllocCount (list), 5);
   slistStartIterator (list, &iteridx);
   value = (char *) slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
@@ -211,10 +211,10 @@ START_TEST(simple_list_add_ordered_prealloc)
 
 
   list = slistAlloc ("chk-g", LIST_ORDERED, NULL);
-  listSetSize (list, 7);
+  slistSetSize (list, 7);
   ck_assert_ptr_nonnull (list);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (slistGetCount (list), 0);
+  ck_assert_int_eq (slistGetAllocCount (list), 7);
   slistSetStr (list, "ffff", NULL);
   slistSetStr (list, "zzzz", NULL);
   slistSetStr (list, "rrrr", NULL);
@@ -222,8 +222,8 @@ START_TEST(simple_list_add_ordered_prealloc)
   slistSetStr (list, "cccc", NULL);
   slistSetStr (list, "aaaa", NULL);
   slistSetStr (list, "bbbb", NULL);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
+  ck_assert_int_eq (slistGetAllocCount (list), 7);
   slistStartIterator (list, &iteridx);
   value = (char *) slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
@@ -261,8 +261,8 @@ START_TEST(simple_list_add_sort)
   slistSetStr (list, "cccc", NULL);
   slistSetStr (list, "aaaa", NULL);
   slistSetStr (list, "bbbb", NULL);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (slistGetCount (list), 7);
+  ck_assert_int_eq (slistGetAllocCount (list), 10);
   slistStartIterator (list, &iteridx);
   value = (char *) slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
@@ -280,7 +280,7 @@ START_TEST(simple_list_add_sort)
   ck_assert_str_eq (value, "bbbb");
   slistSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   slistStartIterator (list, &iteridx);
   value = (char *) slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
@@ -309,9 +309,9 @@ START_TEST(slist_get_data_str)
 
 
   list = slistAlloc ("chk-i", LIST_UNORDERED, NULL);
-  listSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  slistSetSize (list, 7);
+  ck_assert_int_eq (slistGetCount (list), 0);
+  ck_assert_int_eq (slistGetAllocCount (list), 7);
   slistSetStr (list, "ffff", "0L");
   slistSetStr (list, "zzzz", "1L");
   slistSetStr (list, "rrrr", "2L");
@@ -319,9 +319,9 @@ START_TEST(slist_get_data_str)
   slistSetStr (list, "cccc", "4L");
   slistSetStr (list, "aaaa", "5L");
   slistSetStr (list, "bbbb", "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   slistSort (list);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   value = (char *) slistGetStr (list, "cccc");
   ck_assert_ptr_nonnull (value);
   ck_assert_str_eq (value, "4L");
@@ -338,9 +338,9 @@ START_TEST(slist_get_data_num)
 
 
   list = slistAlloc ("chk-i", LIST_UNORDERED, NULL);
-  listSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  slistSetSize (list, 7);
+  ck_assert_int_eq (slistGetCount (list), 0);
+  ck_assert_int_eq (slistGetAllocCount (list), 7);
   slistSetNum (list, "ffff", 10);
   slistSetNum (list, "zzzz", 11);
   slistSetNum (list, "rrrr", 12);
@@ -348,9 +348,9 @@ START_TEST(slist_get_data_num)
   slistSetNum (list, "cccc", 14);
   slistSetNum (list, "aaaa", 15);
   slistSetNum (list, "bbbb", 16);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   slistSort (list);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   val = slistGetNum (list, "cccc");
   ck_assert_int_eq (val, 14);
   val = slistGetNum (list, "aaaa");
@@ -445,8 +445,8 @@ START_TEST(slist_add_sort_str)
   slistSetNum (list, "cccc", 4L);
   slistSetNum (list, "aaaa", 5L);
   slistSetNum (list, "bbbb", 6L);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (slistGetCount (list), 7);
+  ck_assert_int_eq (slistGetAllocCount (list), 10);
 
   slistStartIterator (list, &iteridx);
   key = slistIterateKey (list, &iteridx);
@@ -460,7 +460,7 @@ START_TEST(slist_add_sort_str)
 
   slistSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   slistStartIterator (list, &iteridx);
   key = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
@@ -503,7 +503,7 @@ START_TEST(slist_replace_str)
   slistSetStr (list, "eeee", "444");
   slistSetStr (list, "ffff", "555");
 
-  ck_assert_int_eq (list->count, 6);
+  ck_assert_int_eq (slistGetCount (list), 6);
 
   slistStartIterator (list, &iteridx);
   key = slistIterateKey (list, &iteridx);
@@ -592,7 +592,7 @@ START_TEST(slist_free_str)
   slistSetStr (list, "cccc", "4L");
   slistSetStr (list, "aaaa", "5L");
   slistSetStr (list, "bbbb", "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (slistGetCount (list), 7);
   slistFree (list);
 }
 END_TEST

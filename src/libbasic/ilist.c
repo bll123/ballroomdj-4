@@ -11,16 +11,15 @@
 
 #include "bdjstring.h"
 #include "ilist.h"
+#define BDJ4_LIST_MODULE 1
 #include "list.h"
+#undef BDJ4_LIST_MODULE
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "slist.h"
 
-static void ilistSetDataValType (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
-    void *data, valuetype_t valueType);
-static void ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
-    listitem_t *item);
+static nlist_t  *ilistGetDatalist (ilist_t *list, ilistidx_t ikey);
 
 /* key/value list, keyed by a ilistidx_t */
 
@@ -29,102 +28,108 @@ ilistAlloc (const char *name, ilistorder_t ordered)
 {
   ilist_t    *list;
 
-  list = listAlloc (name, ordered, listFree);
-  list->keytype = LIST_KEY_NUM;
+  list = listAlloc (name, LIST_KEY_NUM, ordered, nlistFree);
   return list;
 }
 
 void
 ilistFree (void *list)
 {
-  listFree (list);
+  listFree (LIST_KEY_NUM, list);
 }
 
 void
 ilistSetVersion (ilist_t *list, int version)
 {
-  listSetVersion (list, version);
+  listSetVersion (LIST_KEY_NUM, list, version);
 }
 
 int
 ilistGetVersion (ilist_t *list)
 {
-  return listGetVersion (list);
+  return listGetVersion (LIST_KEY_NUM, list);
 }
 
 ilistidx_t
 ilistGetCount (ilist_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  return list->count;
+  return listGetCount (LIST_KEY_NUM, list);
+}
+
+/* for testing */
+ilistidx_t
+ilistGetAllocCount (ilist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_NUM, list);
 }
 
 void
 ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
-  listSetSize (list, siz);
+  listSetSize (LIST_KEY_NUM, list, siz);
 }
 
 void
 ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, const char *data)
 {
-  char *tdata = NULL;
+  char    *tdata = NULL;
+  nlist_t *datalist = NULL;
 
   if (data != NULL) {
     tdata = mdstrdup (data);
   }
-  ilistSetDataValType (list, ikey, lidx, tdata, VALUE_STR);
+  datalist = ilistGetDatalist (list, ikey);
+  nlistSetStr (datalist, lidx, data);
 }
 
 void
 ilistSetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
-  ilistSetDataValType (list, ikey, lidx, data, VALUE_LIST);
+  nlist_t *datalist = NULL;
+
+  datalist = ilistGetDatalist (list, ikey);
+  nlistSetList (datalist, lidx, data);
 }
 
 void
 ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
-  ilistSetDataValType (list, ikey, lidx, data, VALUE_DATA);
+  nlist_t *datalist = NULL;
+
+  datalist = ilistGetDatalist (list, ikey);
+  nlistSetData (datalist, lidx, data);
 }
 
 void
 ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
 {
-  listitem_t    item;
+  nlist_t *datalist = NULL;
 
   if (list == NULL) {
     return;
   }
 
-  item.key.idx = lidx;
-  item.valuetype = VALUE_NUM;
-  item.value.num = data;
-  ilistSetDataItem (list, ikey, lidx, &item);
+  datalist = ilistGetDatalist (list, ikey);
+  nlistSetNum (datalist, lidx, data);
 }
 
 void
 ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
 {
-  listitem_t    item;
+  nlist_t     *datalist = NULL;
 
   if (list == NULL) {
     return;
   }
 
-  item.key.idx = lidx;
-  item.valuetype = VALUE_DOUBLE;
-  item.value.dval = data;
-
-  ilistSetDataItem (list, ikey, lidx, &item);
+  datalist = ilistGetDatalist (list, ikey);
+  nlistSetDouble (datalist, lidx, data);
 }
 
 bool
 ilistExists (list_t *list, ilistidx_t ikey)
 {
-  ilist_t   *datalist = NULL;
+  nlist_t   *datalist;
 
   if (list == NULL) {
     return false;
@@ -142,22 +147,15 @@ void *
 ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   void            *value = NULL;
-  listkeylookup_t  key;
-  ilistidx_t       idx = 0;
   ilist_t          *datalist = NULL;
 
   if (list == NULL) {
     return NULL;
   }
 
-  datalist = nlistGetList (list, ikey);
+  datalist = ilistGetDatalist (list, ikey);
   if (datalist != NULL) {
-    key.idx = lidx;
-    idx = listGetIdx (datalist, &key);
-    if (idx >= 0) {
-      value = datalist->data [idx].value.data;
-    }
-    logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%d idx:%d", datalist->name, lidx, idx);
+    value = nlistGetData (datalist, lidx);
   }
   return value;
 }
@@ -165,29 +163,27 @@ ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 char *
 ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
-  return ilistGetData (list, ikey, lidx);
+  char  *value;
+
+  value = ilistGetData (list, ikey, lidx);
+  logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%d value %s", list->name, lidx, value);
+  return value;
 }
 
 ilistidx_t
 ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   ilistidx_t      value = LIST_VALUE_INVALID;
-  listkeylookup_t key;
-  ilistidx_t      idx;
   nlist_t         *datalist;
 
   if (list == NULL) {
     return LIST_VALUE_INVALID;
   }
 
-  datalist = nlistGetList (list, ikey);
+  datalist = ilistGetDatalist (list, ikey);
   if (datalist != NULL) {
-    key.idx = lidx;
-    idx = listGetIdx (datalist, &key);
-    if (idx >= 0) {
-      value = datalist->data [idx].value.num;
-    }
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%d", list->name, lidx, idx, value);
+    value = nlistGetNum (datalist, lidx);
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d value:%d", list->name, lidx, value);
   }
   return value;
 }
@@ -196,22 +192,16 @@ double
 ilistGetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   double          value = LIST_DOUBLE_INVALID;
-  listkeylookup_t key;
-  ilistidx_t      idx;
-  nlist_t         *datalist;
+  nlist_t         *datalist = NULL;
 
   if (list == NULL) {
     return LIST_DOUBLE_INVALID;
   }
 
-  datalist = nlistGetList (list, ikey);
+  datalist = ilistGetDatalist (list, ikey);
   if (datalist != NULL) {
-    key.idx = lidx;
-    idx = listGetIdx (datalist, &key);
-    if (idx >= 0) {
-      value = datalist->data [idx].value.dval;
-    }
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%8.2g", list->name, lidx, idx, value);
+    value = nlistGetDouble (datalist, lidx);
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d value:%8.2g", list->name, lidx, value);
   }
   return value;
 }
@@ -233,16 +223,16 @@ ilistDelete (list_t *list, ilistidx_t ikey)
   }
 
   key.idx = ikey;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
-    listDeleteByIdx (list, idx);
+    listDeleteByIdx (LIST_KEY_NUM, list, idx);
   }
 }
 
 void
 ilistSort (ilist_t *list)
 {
-  listSort (list);
+  listSort (LIST_KEY_NUM, list);
 }
 
 void
@@ -254,42 +244,25 @@ ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
-  return listIterateKeyNum (list, iteridx);
+  return listIterateKeyNum (LIST_KEY_NUM, list, iteridx);
 }
 
 void
 ilistDumpInfo (ilist_t *list)
 {
-  listDumpInfo (list);
+  listDumpInfo (LIST_KEY_NUM, list);
 }
 
 /* internal routines */
 
-static void
-ilistSetDataValType (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
-    void *data, valuetype_t valueType)
+static nlist_t *
+ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
 {
-  listitem_t    item;
+  nlist_t         *datalist = NULL;
+  char            tbuff [40];
 
   if (list == NULL) {
-    return;
-  }
-
-  item.key.idx = lidx;
-  item.valuetype = valueType;
-  item.value.data = data;
-  ilistSetDataItem (list, ikey, lidx, &item);
-}
-
-static void
-ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
-    listitem_t *item)
-{
-  nlist_t       *datalist = NULL;
-  char          tbuff [40];
-
-  if (list == NULL) {
-    return;
+    return NULL;
   }
 
   datalist = nlistGetList (list, ikey);
@@ -298,10 +271,7 @@ ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
     nlistSetList (list, ikey, datalist);
   }
-  if (datalist != NULL) {
-    listSet (datalist, item);
-  }
-  return;
+  return datalist;
 }
 
 

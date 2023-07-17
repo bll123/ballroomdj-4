@@ -51,8 +51,10 @@
 #cmakedefine01 _lib_CreateProcess
 #cmakedefine01 _lib_FlushFileBuffers
 #cmakedefine01 _lib_FindFirstFileW
+#cmakedefine01 _lib_GetDateFormatEx
 #cmakedefine01 _lib_GetFullPathName
 #cmakedefine01 _lib_GetNativeSystemInfo
+#cmakedefine01 _lib_GetTimeFormatEx
 #cmakedefine01 _lib_GetUserDefaultUILanguage
 #cmakedefine01 _lib_RegOpenKeyEx
 #cmakedefine01 _lib_RemoveDirectoryW

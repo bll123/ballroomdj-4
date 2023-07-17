@@ -36,8 +36,9 @@ target_include_directories (libbdj4common
 )
 target_link_libraries (libbdj4common PUBLIC
   libbdj4fileop     # fileop.c
-  libbdj4osutils    # osutils.c, osprocess.c
+  libbdj4osprocess  # osprocess.c
   libbdj4tmutil     # tmutil.c
+  libbdj4osutils    # osutils.c
   libbdj4string     # bdjstring, strlcat, strlcpy, mdebug
   ${GLIB_LDFLAGS}
   m

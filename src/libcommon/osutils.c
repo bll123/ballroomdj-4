@@ -26,7 +26,6 @@
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osutils.h"
-#include "tmutil.h"
 
 void
 osGetEnv (const char *name, char *buff, size_t sz)

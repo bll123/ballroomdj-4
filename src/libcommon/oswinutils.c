@@ -22,7 +22,6 @@
 #include "bdj4.h"
 #include "mdebug.h"
 #include "osutils.h"
-#include "tmutil.h"
 
 char *
 osRegistryGet (char *key, char *name)

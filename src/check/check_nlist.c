@@ -70,8 +70,8 @@ START_TEST(nlist_create_free)
 
   list = nlistAlloc ("chk-a", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 0);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
   ck_assert_int_eq (list->keytype, LIST_KEY_NUM);
   nlistFree (list);
@@ -107,8 +107,8 @@ START_TEST(nlist_set_size)
 
   list = nlistAlloc ("chk-c", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -121,9 +121,8 @@ START_TEST(nlist_get_count)
 
   list = nlistAlloc ("chk-d", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (nlistGetCount (list), 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -137,8 +136,8 @@ START_TEST(nlist_u_set_num)
 
   list = nlistAlloc ("chk-e", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetNum (list, 6, 0);
   nlistSetNum (list, 26, 1);
   nlistSetNum (list, 18, 2);
@@ -147,9 +146,8 @@ START_TEST(nlist_u_set_num)
   nlistSetNum (list, 3, 4);
   nlistSetNum (list, 1, 5);
   nlistSetNum (list, 2, 6);
-  ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (nlistGetCount (list), 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -163,8 +161,8 @@ START_TEST(nlist_u_set_double)
 
   list = nlistAlloc ("chk-f", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetDouble (list, 6, 0.0);
   nlistSetDouble (list, 26, 1.0);
   nlistSetDouble (list, 18, 2.0);
@@ -173,9 +171,8 @@ START_TEST(nlist_u_set_double)
   nlistSetDouble (list, 3, 4.0);
   nlistSetDouble (list, 1, 5.0);
   nlistSetDouble (list, 2, 6.0);
-  ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (nlistGetCount (list), 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -190,8 +187,8 @@ START_TEST(nlist_u_set_data_static)
 
   list = nlistAlloc ("chk-g", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetData (list, 6, "0L");
   nlistSetData (list, 26, "1L");
   nlistSetData (list, 18, "2L");
@@ -200,9 +197,8 @@ START_TEST(nlist_u_set_data_static)
   nlistSetData (list, 3, "4L");
   nlistSetData (list, 1, "5L");
   nlistSetData (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (nlistGetCount (list), 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -217,8 +213,8 @@ START_TEST(nlist_u_set_str)
 
   list = nlistAlloc ("chk-h", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -227,9 +223,8 @@ START_TEST(nlist_u_set_str)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (nlistGetCount (list), 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -244,8 +239,8 @@ START_TEST(nlist_u_set_list)
 
   list = nlistAlloc ("chk-i", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   tlist = nlistAlloc ("chk-i1", LIST_UNORDERED, NULL);
   nlistSetNum (tlist, 1, 7);
   nlistSetList (list, 6, tlist);
@@ -265,9 +260,8 @@ START_TEST(nlist_u_set_list)
   tlist = nlistAlloc ("chk-i6", LIST_UNORDERED, NULL);
   nlistSetNum (tlist, 1, 7);
   nlistSetList (list, 2, tlist);
-  ck_assert_int_eq (list->count, 6);
   ck_assert_int_eq (nlistGetCount (list), 6);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -279,23 +273,23 @@ START_TEST(nlist_u_set_str_no_size)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_set_str_no_size");
 
   list = nlistAlloc ("chk-aa", LIST_UNORDERED, NULL);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 0);
   nlistSetStr (list, 6, "0L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 26, "1L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 18, "2L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 11, "3L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 3, "4L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 1, "5L");
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->allocCount, 10);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -311,8 +305,8 @@ START_TEST(nlist_u_getbyidx)
 
   list = nlistAlloc ("chk-bb", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -323,7 +317,7 @@ START_TEST(nlist_u_getbyidx)
   nlistSetNum (list, 14, 7);
   nlistSetNum (list, 8, 8);
   nlistSetNum (list, 9, 9);
-  ck_assert_int_eq (list->count, 10);
+  ck_assert_int_eq (nlistGetCount (list), 10);
 
   /* unordered */
   key = nlistGetKeyByIdx (list, 0);
@@ -356,8 +350,8 @@ START_TEST(nlist_u_iterate)
 
   list = nlistAlloc ("chk-cc", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -365,7 +359,7 @@ START_TEST(nlist_u_iterate)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
 
   nlistStartIterator (list, &iteridx);
   key = nlistIterateKey (list, &iteridx);
@@ -405,8 +399,8 @@ START_TEST(nlist_s_set_size_sort)
 
   list = nlistAlloc ("chk-dd", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -414,11 +408,11 @@ START_TEST(nlist_s_set_size_sort)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistSort (list);
 
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -430,21 +424,21 @@ START_TEST(nlist_s_no_size_sort)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_no_size_sort");
 
   list = nlistAlloc ("chk-dd-bb", LIST_UNORDERED, NULL);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 0);
   nlistSetStr (list, 6, "0L");
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
   nlistSetStr (list, 11, "3L");
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->allocCount, 10);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistSort (list);
 
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -456,7 +450,7 @@ START_TEST(nlist_s_ordered)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_ordered");
 
   list = nlistAlloc ("chk-dd-cc", LIST_ORDERED, NULL);
-  ck_assert_int_eq (list->count, 0);
+  ck_assert_int_eq (nlistGetCount (list), 0);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -465,7 +459,7 @@ START_TEST(nlist_s_ordered)
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
 
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -479,8 +473,8 @@ START_TEST(nlist_s_get_str)
 
   list = nlistAlloc ("chk-dd-dd", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 7);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -488,10 +482,10 @@ START_TEST(nlist_s_get_str)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistSort (list);
 
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   value = nlistGetStr (list, 3);
   ck_assert_ptr_nonnull (value);
   ck_assert_str_eq (value, "4L");
@@ -511,8 +505,8 @@ START_TEST(nlist_s_cache_bug_20221013)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_cache_bug_20221013");
 
   list = nlistAlloc ("chk-ee", LIST_ORDERED, NULL);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (nlistGetCount (list), 0);
+  ck_assert_int_eq (nlistGetAllocCount (list), 0);
   nlistSetStr (list, 6, "0L");
   nlistSetStr (list, 26, "1L");
   nlistSetStr (list, 18, "2L");
@@ -520,18 +514,18 @@ START_TEST(nlist_s_cache_bug_20221013)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (nlistGetCount (list), 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
 
   value = nlistGetStr (list, 3);
   ck_assert_ptr_nonnull (value);
   ck_assert_str_eq (value, "4L");
   /* should be in cache */
-  ck_assert_int_eq (listDebugIsCached (list, 3), 1);
+  ck_assert_int_eq (nlistDebugIsCached (list, 3), 1);
 
   nlistSetStr (list, 14, "7L");
   /* should not be in cache after an insert */
-  ck_assert_int_eq (listDebugIsCached (list, 3), 0);
+  ck_assert_int_eq (nlistDebugIsCached (list, 3), 0);
 
   nlistFree (list);
 }
@@ -627,8 +621,8 @@ START_TEST(nlist_set_get_num)
   nlistSetNum (list, 3, 4);
   nlistSetNum (list, 1, 5);
   nlistSetNum (list, 2, 6);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (nlistGetCount (list), 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
 
   /* unordered */
   nlistStartIterator (list, &iteridx);
@@ -643,7 +637,7 @@ START_TEST(nlist_set_get_num)
 
   nlistSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
 
   /* ordered */
   nlistStartIterator (list, &iteridx);
@@ -831,7 +825,7 @@ START_TEST(nlist_s_replace_str)
   nlistSetStr (list, 5, "444");
   nlistSetStr (list, 6, "555");
 
-  ck_assert_int_eq (list->count, 6);
+  ck_assert_int_eq (nlistGetCount (list), 6);
 
   nlistStartIterator (list, &iteridx);
   key = nlistIterateKey (list, &iteridx);
@@ -921,7 +915,7 @@ START_TEST(nlist_free_str)
   nlistSetStr (list, 3, "4L");
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
   nlistFree (list);
 }
 END_TEST
@@ -968,7 +962,7 @@ START_TEST(nlist_free_item)
   nlistSetData (list, 2, item [itemc]);
   ++itemc;
 
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
 
   for (int i = 0; i < itemc; ++i) {
     ck_assert_int_eq (item [i]->alloc, 1);
@@ -1037,7 +1031,7 @@ START_TEST(nlist_free_list)
   nlistSetList (list, 2, item [itemc]);
   ++itemc;
 
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (nlistGetCount (list), 7);
 
   for (int i = 0; i < itemc; ++i) {
     ck_assert_int_eq (nlistGetNum (item [i], i + 1), i);
@@ -1061,8 +1055,8 @@ START_TEST(nlist_set_get_mixed)
   nlistSetNum (list, 6, 0);
   nlistSetDouble (list, 26, 1.0);
   nlistSetStr (list, 18, "2");
-  ck_assert_int_eq (list->count, 3);
-  ck_assert_int_eq (list->allocCount, 5);
+  ck_assert_int_eq (nlistGetCount (list), 3);
+  ck_assert_int_eq (nlistGetAllocCount (list), 5);
 
   nval = nlistGetNum (list, 6);
   ck_assert_int_eq (nval, 0);
@@ -1109,7 +1103,7 @@ START_TEST(nlist_inc_dec)
   nlistDecrement (list, 7);
   nval = nlistGetNum (list, 7);
   ck_assert_int_eq (nval, 1);
-  ck_assert_int_eq (list->count, 2);
+  ck_assert_int_eq (nlistGetCount (list), 2);
 
   nlistFree (list);
 }
@@ -1189,11 +1183,11 @@ START_TEST(nlist_byidx_bug_20220815)
   key = nlistGetIdx (list, 3);
   ck_assert_int_eq (key, 2);
   /* should be in cache */
-  ck_assert_int_eq (listDebugIsCached (list, 3), 1);
+  ck_assert_int_eq (nlistDebugIsCached (list, 3), 1);
   /* not found, returns -1 */
   key = nlistGetIdx (list, 99);
   ck_assert_int_lt (key, 0);
-  ck_assert_int_eq (listDebugIsCached (list, 3), 0);
+  ck_assert_int_eq (nlistDebugIsCached (list, 3), 0);
 
   nlistFree (list);
 }

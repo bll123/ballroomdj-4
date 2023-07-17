@@ -17,6 +17,7 @@ void      ilistFree (void * list);
 void      ilistSetVersion (ilist_t *list, int version);
 int       ilistGetVersion (ilist_t *list);
 ilistidx_t   ilistGetCount (ilist_t *list);
+ilistidx_t   ilistGetAllocCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ilistidx_t);
   /* set routines */
 void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, const char *value);

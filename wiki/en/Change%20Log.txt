@@ -6,6 +6,9 @@
 
 **4.3.3.2 2023-8**
 
+* Bug Fixes:
+    * Player: Windows: Fix clock display to use the configured version.
+
 -->
 
 **4.3.3.1 2023-7-14**

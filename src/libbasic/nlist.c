@@ -10,7 +10,9 @@
 #include <string.h>
 #include <inttypes.h>
 
+#define BDJ4_LIST_MODULE 1
 #include "list.h"
+#undef BDJ4_LIST_MODULE
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -23,42 +25,45 @@ nlistAlloc (const char *name, nlistorder_t ordered, nlistFree_t valueFreeHook)
 {
   nlist_t    *list;
 
-  list = listAlloc (name, ordered, valueFreeHook);
-  list->keytype = LIST_KEY_NUM;
+  list = listAlloc (name, LIST_KEY_NUM, ordered, valueFreeHook);
   return list;
 }
 
 void
 nlistFree (void *list)
 {
-  listFree (list);
+  listFree (LIST_KEY_NUM, list);
 }
 
 void
 nlistSetVersion (nlist_t *list, int version)
 {
-  listSetVersion (list, version);
+  listSetVersion (LIST_KEY_NUM, list, version);
 }
 
 int
 nlistGetVersion (nlist_t *list)
 {
-  return listGetVersion (list);
+  return listGetVersion (LIST_KEY_NUM, list);
 }
 
 nlistidx_t
 nlistGetCount (nlist_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  return list->count;
+  return listGetCount (LIST_KEY_NUM, list);
+}
+
+/* for testing */
+nlistidx_t
+nlistGetAllocCount (nlist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_NUM, list);
 }
 
 void
 nlistSetSize (nlist_t *list, nlistidx_t siz)
 {
-  listSetSize (list, siz);
+  listSetSize (LIST_KEY_NUM, list, siz);
 }
 
 void
@@ -79,7 +84,7 @@ nlistSetData (nlist_t *list, nlistidx_t lkey, void *data)
   item.key.idx = lkey;
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -93,7 +98,7 @@ nlistSetStr (nlist_t *list, nlistidx_t lkey, const char *data)
   if (data != NULL) {
     item.value.data = mdstrdup (data);
   }
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -104,7 +109,7 @@ nlistSetNum (nlist_t *list, nlistidx_t lkey, listnum_t data)
   item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = data;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -115,7 +120,7 @@ nlistSetDouble (nlist_t *list, nlistidx_t lkey, double data)
   item.key.idx = lkey;
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -126,7 +131,7 @@ nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data)
   item.key.idx = lkey;
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -138,7 +143,7 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
   listnum_t       value = 0;
 
   key.idx = lkey;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -146,7 +151,7 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
   item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void
@@ -158,7 +163,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
   listnum_t       value = 0;
 
   key.idx = lkey;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -166,7 +171,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
   item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
-  listSet (list, &item);
+  listSet (LIST_KEY_NUM, list, &item);
 }
 
 void *
@@ -181,7 +186,7 @@ nlistGetData (nlist_t *list, nlistidx_t lkey)
   }
 
   key.idx = lkey;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
@@ -206,20 +211,20 @@ nlistGetIdx (nlist_t *list, nlistidx_t lkey)
   }
 
   key.idx = lkey;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   return idx;
 }
 
 void *
 nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
 {
-  return listGetDataByIdx (list, idx);
+  return listGetDataByIdx (LIST_KEY_NUM, list, idx);
 }
 
 listnum_t
 nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
-  return listGetNumByIdx (list, idx);
+  return listGetNumByIdx (LIST_KEY_NUM, list, idx);
 }
 
 nlistidx_t
@@ -247,7 +252,7 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
   }
 
   key.idx = lidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -267,7 +272,7 @@ nlistGetDouble (nlist_t *list, nlistidx_t lidx)
   }
 
   key.idx = lidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.dval;
   }
@@ -287,7 +292,7 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
   }
 
   key.idx = lidx;
-  idx = listGetIdx (list, &key);
+  idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
@@ -298,7 +303,7 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
 void
 nlistSort (nlist_t *list)
 {
-  listSort (list);
+  listSort (LIST_KEY_NUM, list);
 }
 
 void
@@ -310,31 +315,31 @@ nlistStartIterator (nlist_t *list, nlistidx_t *iteridx)
 nlistidx_t
 nlistIterateKey (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateKeyNum (list, iteridx);
+  return listIterateKeyNum (LIST_KEY_NUM, list, iteridx);
 }
 
 nlistidx_t
 nlistIterateKeyPrevious (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateKeyPreviousNum (list, iteridx);
+  return listIterateKeyPreviousNum (LIST_KEY_NUM, list, iteridx);
 }
 
 void *
 nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateValue (list, iteridx);
+  return listIterateValue (LIST_KEY_NUM, list, iteridx);
 }
 
 listnum_t
 nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateValueNum (list, iteridx);
+  return listIterateValueNum (LIST_KEY_NUM, list, iteridx);
 }
 
 void
 nlistDumpInfo (nlist_t *list)
 {
-  listDumpInfo (list);
+  listDumpInfo (LIST_KEY_NUM, list);
 }
 
 /* returns the key value, not the table index */
@@ -374,3 +379,8 @@ nlistSearchProbTable (nlist_t *probTable, double dval)
   return -1;
 }
 
+bool
+nlistDebugIsCached (list_t *list, listidx_t key)
+{
+  return listDebugIsCached (LIST_KEY_NUM, list, key);
+}

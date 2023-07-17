@@ -41,8 +41,8 @@ dnctypesAlloc (void)
   dnctypes->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
       NULL, 0, DF_NO_OFFSET, NULL);
   dnctypes->dnctypes = datafileGetList (dnctypes->df);
-  listSort (dnctypes->dnctypes);
-  listDumpInfo (dnctypes->dnctypes);
+  slistSort (dnctypes->dnctypes);
+  slistDumpInfo (dnctypes->dnctypes);
   return dnctypes;
 }
 

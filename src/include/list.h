@@ -8,23 +8,11 @@
 #include <stdbool.h>
 
 typedef int32_t listidx_t;
-typedef int64_t listnum_t;
-
-typedef enum {
-  LIST_KEY_STR,
-  LIST_KEY_NUM,
-} keytype_t;
 
 typedef enum {
   LIST_UNORDERED,
   LIST_ORDERED,
 } listorder_t;
-
-typedef enum {
-  LIST_TYPE_UNKNOWN,
-  LIST_BASIC,
-  LIST_NAMEVALUE,
-} listtype_t;
 
 typedef enum {
   VALUE_NONE,
@@ -35,6 +23,27 @@ typedef enum {
   VALUE_LIST,
   VALUE_ALIAS,
 } valuetype_t;
+
+enum {
+  LIST_LOC_INVALID    = -1,
+  LIST_VALUE_INVALID  = -65534,
+  LIST_END_LIST       = -1,
+  LIST_NO_VERSION     = -1,
+};
+#define LIST_DOUBLE_INVALID -665534.0
+
+typedef int64_t listnum_t;
+
+typedef enum {
+  LIST_KEY_STR,
+  LIST_KEY_NUM,
+} keytype_t;
+
+typedef enum {
+  LIST_TYPE_UNKNOWN,
+  LIST_BASIC,
+  LIST_NAMEVALUE,
+} listtype_t;
 
 typedef void (*listFree_t)(void *);
 
@@ -78,40 +87,33 @@ typedef struct {
   bool            replace : 1;
 } list_t;
 
-enum {
-  LIST_LOC_INVALID    = -1,
-  LIST_VALUE_INVALID  = -65534,
-  LIST_END_LIST       = -1,
-  LIST_NO_VERSION     = -1,
-};
-#define LIST_DOUBLE_INVALID -665534.0
-
   /*
    * simple lists only store a list of data.
    */
-list_t      *listAlloc (const char *name, listorder_t ordered,
-                listFree_t valueFreeHook);
-void        listFree (void *list);
-void        listSetVersion (list_t *list, int version);
-int         listGetVersion (list_t *list);
-listidx_t   listGetIdx (list_t *list, listkeylookup_t *key);
-void        listSetSize (list_t *list, listidx_t size);
-void        listSetVersion (list_t *list, listidx_t version);
-void        listSet (list_t *list, listitem_t *item);
-void        *listGetData (list_t *list, const char *keystr);
-void        *listGetDataByIdx (list_t *list, listidx_t idx);
-listnum_t   listGetNumByIdx (list_t *list, listidx_t idx);
-listnum_t   listGetNum (list_t *list, const char *keystr);
-void        listDeleteByIdx (list_t *, listidx_t idx);
-void        listSort (list_t *list);
-void        listStartIterator (list_t *list, listidx_t *iteridx);
-listidx_t   listIterateKeyNum (list_t *list, listidx_t *iteridx);
-listidx_t   listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx);
-char        *listIterateKeyStr (list_t *list, listidx_t *iteridx);
-void        *listIterateValue (list_t *list, listidx_t *iteridx);
-listnum_t   listIterateValueNum (list_t *list, listidx_t *iteridx);
-listidx_t   listIterateGetIdx (list_t *list, listidx_t *iteridx);
-void        listDumpInfo (list_t *list);
-bool        listDebugIsCached (list_t *list, listidx_t key);
+list_t      *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
+void        listFree (keytype_t keytype, void *list);
+listidx_t   listGetCount (keytype_t keytype, list_t *list);
+listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
+void        listSetVersion (keytype_t keytype, list_t *list, int version);
+int         listGetVersion (keytype_t keytype, list_t *list);
+listidx_t   listGetIdx (keytype_t keytype, list_t *list, listkeylookup_t *key);
+void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);
+void        listSetVersion (keytype_t keytype, list_t *list, listidx_t version);
+void        listSet (keytype_t keytype, list_t *list, listitem_t *item);
+void        *listGetData (keytype_t keytype, list_t *list, const char *keystr);
+void        *listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx);
+listnum_t   listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx);
+listnum_t   listGetNum (keytype_t keytype, list_t *list, const char *keystr);
+void        listDeleteByIdx (keytype_t keytype, list_t *, listidx_t idx);
+void        listSort (keytype_t keytype, list_t *list);
+void        listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx);
+listidx_t   listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
+listidx_t   listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
+char        *listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx);
+void        *listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx);
+listnum_t   listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
+listidx_t   listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx);
+void        listDumpInfo (keytype_t keytype, list_t *list);
+bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 
 #endif /* INC_LIST_H */

@@ -30,6 +30,7 @@ endif()
 target_link_libraries (bdj4 PUBLIC
   libbdj4launcher
   libbdj4fileop
+  libbdj4osprocess
   libbdj4osutils
   libbdj4tmutil
   libbdj4string
@@ -53,6 +54,7 @@ target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g PUBLIC
   libbdj4launcher
   libbdj4fileop
+  libbdj4osprocess
   libbdj4osutils
   libbdj4string
   ${GTK_LDFLAGS}

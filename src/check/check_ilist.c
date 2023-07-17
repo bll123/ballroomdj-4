@@ -27,8 +27,8 @@ START_TEST(ilist_create_free)
 
   list = ilistAlloc ("chk-a", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 0);
+  ck_assert_int_eq (ilistGetCount (list), 0);
+  ck_assert_int_eq (ilistGetAllocCount (list), 0);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
   ck_assert_int_eq (list->keytype, LIST_KEY_NUM);
   ilistFree (list);
@@ -44,8 +44,8 @@ START_TEST(ilist_get_data_str)
 
   list = ilistAlloc ("chk-b", LIST_ORDERED);
   ilistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (ilistGetCount (list), 0);
+  ck_assert_int_eq (ilistGetAllocCount (list), 7);
   ilistSetStr (list, 6, 0, "0L");
   ilistSetStr (list, 26, 0, "1L");
   ilistSetStr (list, 18, 0, "2L");
@@ -53,7 +53,7 @@ START_TEST(ilist_get_data_str)
   ilistSetStr (list, 3, 0, "4L");
   ilistSetStr (list, 1, 0, "5L");
   ilistSetStr (list, 2, 0, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
   value = ilistGetStr (list, 3, 0);
   ck_assert_ptr_nonnull (value);
   ck_assert_str_eq (value, "4L");
@@ -70,12 +70,10 @@ START_TEST(ilist_get_data_str_sub)
 
   list = ilistAlloc ("chk-c", LIST_ORDERED);
   ilistSetSize (list, 7);
-  ck_assert_int_eq (list->count, 0);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (ilistGetCount (list), 0);
+  ck_assert_int_eq (ilistGetAllocCount (list), 7);
   ilistSetStr (list, 6, 0, "0L");
   ilistSetStr (list, 6, 1, "8L");
-  ck_assert_int_eq (list->count, 1);
-  ck_assert_int_eq (list->count, ilistGetCount (list));
   ck_assert_int_eq (ilistGetCount (list), 1);
   ilistSetStr (list, 26, 0, "1L");
   ilistSetStr (list, 26, 1, "9L");
@@ -83,8 +81,6 @@ START_TEST(ilist_get_data_str_sub)
   ilistSetStr (list, 18, 1, "10L");
   ilistSetStr (list, 11, 0, "3L");
   ilistSetStr (list, 11, 1, "11L");
-  ck_assert_int_eq (list->count, 4);
-  ck_assert_int_eq (list->count, ilistGetCount (list));
   ck_assert_int_eq (ilistGetCount (list), 4);
   ilistSetStr (list, 3, 0, "4L");
   ilistSetStr (list, 3, 1, "12L");
@@ -92,7 +88,7 @@ START_TEST(ilist_get_data_str_sub)
   ilistSetStr (list, 1, 1, "13L");
   ilistSetStr (list, 2, 0, "6L");
   ilistSetStr (list, 2, 1, "14L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
   value = ilistGetStr (list, 3, 0);
   ck_assert_ptr_nonnull (value);
   ck_assert_str_eq (value, "4L");
@@ -175,8 +171,8 @@ START_TEST(ilist_u_sort)
   ilistSetNum (list, 3, 1, 4);
   ilistSetNum (list, 1, 1, 5);
   ilistSetNum (list, 2, 1, 6);
-  ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (ilistGetCount (list), 7);
+  ck_assert_int_eq (ilistGetAllocCount (list), 10);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -190,7 +186,7 @@ START_TEST(ilist_u_sort)
 
   ilistSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
@@ -232,7 +228,7 @@ START_TEST(ilist_replace_str)
   ilistSetStr (list, 5, 0, "444");
   ilistSetStr (list, 6, 0, "555");
 
-  ck_assert_int_eq (list->count, 6);
+  ck_assert_int_eq (ilistGetCount (list), 6);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -322,7 +318,7 @@ START_TEST(ilist_free_str)
   ilistSetStr (list, 3, 2, "4L");
   ilistSetStr (list, 1, 2, "5L");
   ilistSetStr (list, 2, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
 
   ilistFree (list);
 }
@@ -345,7 +341,7 @@ START_TEST(ilist_exists)
   ilistSetStr (list, 3, 2, "4L");
   ilistSetStr (list, 1, 2, "5L");
   ilistSetStr (list, 2, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
 
   val = ilistExists (list, 6);
   ck_assert_int_eq (val, 1);
@@ -373,7 +369,7 @@ START_TEST(ilist_delete)
   ilistSetStr (list, 3, 2, "4L");
   ilistSetStr (list, 1, 2, "5L");
   ilistSetStr (list, 2, 2, "6L");
-  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (ilistGetCount (list), 7);
 
   val = ilistExists (list, 6);
   ck_assert_int_eq (val, 1);

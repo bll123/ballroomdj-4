@@ -234,7 +234,7 @@ main (int argc, char *argv [])
     updlist = nlistAlloc ("updater-updlist", LIST_ORDERED, NULL);
     updlistallocated = true;
   }
-  listSetVersion (updlist, 3);
+  nlistSetVersion (updlist, 3);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted: %d", converted);
 

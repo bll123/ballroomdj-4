@@ -624,23 +624,11 @@ playlistSave (playlist_t *pl, const char *name)
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
 
-  if (pl->plinfodf == NULL) {
-    /* new playlist */
-    pl->plinfodf = datafileAlloc ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-        playlistdfkeys, PLAYLIST_KEY_MAX);
-  }
-
   datafileSave (pl->plinfodf, tfn, pl->plinfo, DF_NO_OFFSET,
       datafileDistVersion (pl->plinfodf));
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
-
-  if (pl->plinfodf == NULL) {
-    /* new playlist */
-    pl->pldancesdf = datafileAlloc ("playlist-dances", DFTYPE_INDIRECT, tfn,
-        playlistdancedfkeys, pldancedfcount);
-  }
 
   ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
   datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
