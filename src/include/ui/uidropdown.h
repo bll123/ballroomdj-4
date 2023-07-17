@@ -17,6 +17,7 @@ uiwcont_t *uiDropDownCreate (uidropdown_t *dropdown,
     uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
 uiwcont_t *uiComboboxCreate (uidropdown_t *dropdown,
     uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
+/* be sure to call slistCalcMaxWidth() on the lists passed to these routines */
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
