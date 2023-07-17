@@ -79,7 +79,7 @@ END_TEST
 START_TEST(sequence_create)
 {
   sequence_t    *seq;
-  slist_t       *tlist;
+  nlist_t       *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_create");
 
@@ -90,7 +90,7 @@ START_TEST(sequence_create)
   seq = sequenceCreate (SEQNEWFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
-  ck_assert_int_eq (slistGetCount (tlist), 0);
+  ck_assert_int_eq (nlistGetCount (tlist), 0);
   sequenceFree (seq);
 
   bdjvarsdfloadCleanup ();
@@ -156,12 +156,10 @@ START_TEST(sequence_save)
 {
   sequence_t    *seq;
   sequence_t    *seqb;
-  slist_t       *tlist;
-  slist_t       *tlistb;
+  nlist_t       *tlist;
+  nlist_t       *tlistb;
   nlistidx_t    iteridx;
   nlistidx_t    iteridxb;
-  nlistidx_t    siteridx;
-  nlistidx_t    siteridxb;
   nlistidx_t    fkey;
   nlistidx_t    key;
   nlistidx_t    tkey;
@@ -178,7 +176,7 @@ START_TEST(sequence_save)
   seq = sequenceLoad (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
-  ck_assert_int_eq (slistGetCount (tlist), 4);
+  ck_assert_int_eq (nlistGetCount (tlist), 4);
   tslist = slistAlloc ("chk-seq-save", LIST_UNORDERED, NULL);
   slistSetNum (tslist, "Waltz", 0);
   slistSetNum (tslist, "Tango", 0);
@@ -190,25 +188,26 @@ START_TEST(sequence_save)
   seqb = sequenceLoad (SEQFN);
 
   tlist = sequenceGetDanceList (seq);
-  slistStartIterator (tlist, &siteridx);
-  ck_assert_int_eq (slistGetCount (tlist), 4);
+  ck_assert_int_eq (nlistGetCount (tlist), 4);
   tlistb = sequenceGetDanceList (seqb);
-  slistStartIterator (tlistb, &siteridxb);
-  ck_assert_int_eq (slistGetCount (tlistb), 4);
+  ck_assert_int_eq (nlistGetCount (tlistb), 4);
 
   sequenceStartIterator (seq, &iteridx);
   sequenceStartIterator (seqb, &iteridxb);
-  fkey = sequenceIterate (seq, &iteridx);
+  key = sequenceIterate (seq, &iteridx);
+  fkey = key;
   tkey = sequenceIterate (seqb, &iteridxb);
-  ck_assert_int_eq (fkey, tkey);
+  ck_assert_int_eq (key, tkey);
 
   while ((key = sequenceIterate (seq, &iteridx)) != fkey) {
     tkey = sequenceIterate (seqb, &iteridxb);
     ck_assert_int_eq (key, tkey);
   }
 
-  while ((stra = slistIterateKey (tlist, &siteridx)) != NULL) {
-    strb = slistIterateKey (tlistb, &siteridxb);
+  nlistStartIterator (tlist, &iteridx);
+  nlistStartIterator (tlistb, &iteridxb);
+  while ((stra = slistIterateKey (tlist, &iteridx)) != NULL) {
+    strb = slistIterateKey (tlistb, &iteridxb);
     ck_assert_str_eq (stra, strb);
   }
 
@@ -227,7 +226,7 @@ START_TEST(sequence_save_new)
   nlist_t       *tlist = NULL;
   nlist_t       *tlistb = NULL;
   slist_t       *tslist = NULL;
-  slistidx_t    siteridx;
+  slistidx_t    iteridx;
   nlistidx_t    niteridxb;
   char          *stra = NULL;
   char          *strb = NULL;
@@ -265,9 +264,9 @@ unlink (SEQNEWFFN);
   tlistb = sequenceGetDanceList (seqb);
   ck_assert_int_eq (nlistGetCount (tlistb), 4);
 
-  slistStartIterator (tslist, &siteridx);
+  slistStartIterator (tslist, &iteridx);
   nlistStartIterator (tlistb, &niteridxb);
-  while ((stra = slistIterateKey (tslist, &siteridx)) != NULL) {
+  while ((stra = slistIterateKey (tslist, &iteridx)) != NULL) {
     strb = nlistIterateValueData (tlistb, &niteridxb);
     ck_assert_str_eq (stra, strb);
   }

@@ -10,9 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define BDJ4_LIST_MODULE 1
-#include "list.h"
-#undef BDJ4_LIST_MODULE
+#include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -145,7 +143,7 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
   key.idx = lkey;
   idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.num;
+    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
   }
   ++value;
   item.key.idx = lkey;
@@ -165,7 +163,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
   key.idx = lkey;
   idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.num;
+    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
   }
   --value;
   item.key.idx = lkey;
@@ -188,7 +186,7 @@ nlistGetData (nlist_t *list, nlistidx_t lkey)
   key.idx = lkey;
   idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.data;
+    value = listGetDataByIdx (LIST_KEY_NUM, list, idx);
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d", list->name, lkey, idx);
   return value;
@@ -254,7 +252,7 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
   key.idx = lidx;
   idx = listGetIdx (LIST_KEY_NUM, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.num;
+    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%" PRId64, list->name, lidx, idx, value);
   return value;

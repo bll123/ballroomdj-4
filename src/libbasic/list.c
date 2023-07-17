@@ -12,7 +12,7 @@
 
 #include "bdjstring.h"
 #include "istring.h"
-#include "list.h"
+#include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
 #include "tmutil.h"

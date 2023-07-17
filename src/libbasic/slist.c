@@ -12,9 +12,7 @@
 
 #include "bdjstring.h"
 #include "istring.h"
-#define BDJ4_LIST_MODULE 1
-#include "list.h"
-#undef BDJ4_LIST_MODULE
+#include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -203,7 +201,7 @@ slistGetNum (slist_t *list, const char *sidx)
   key.strkey = sidx;
   idx = listGetIdx (LIST_KEY_STR, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.num;
+    value = listGetNumByIdx (LIST_KEY_STR, list, idx);
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%" PRId64, list->name, sidx, idx, value);
   return value;
@@ -239,7 +237,7 @@ slistGetList (slist_t *list, const char *sidx)
   key.strkey = sidx;
   idx = listGetIdx (LIST_KEY_STR, list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.data;
+    value = listGetDataByIdx (LIST_KEY_STR, list, idx);
   }
   return value;
 }

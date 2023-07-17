@@ -11,9 +11,7 @@
 
 #include "bdjstring.h"
 #include "ilist.h"
-#define BDJ4_LIST_MODULE 1
-#include "list.h"
-#undef BDJ4_LIST_MODULE
+#include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
