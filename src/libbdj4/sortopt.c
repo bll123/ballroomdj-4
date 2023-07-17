@@ -79,6 +79,7 @@ sortoptAlloc (void)
     mdfree (tvalue);
   }
   slistSort (list);
+  slistCalcMaxWidth (list);
   sortopt->sortoptList = list;
 
   return sortopt;

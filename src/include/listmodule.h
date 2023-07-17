@@ -45,7 +45,6 @@ typedef struct list {
   listidx_t       count;
   listidx_t       allocCount;
   int             maxKeyWidth;
-  int             maxDataWidth;
   keytype_t       keytype;
   listorder_t     ordered;
   listitem_t      *data;        /* array */
@@ -56,7 +55,6 @@ typedef struct list {
   listFree_t      valueFreeHook;
   bool            replace : 1;
   bool            setmaxkey : 1;
-  bool            setmaxdata : 1;
 } list_t;
 
   /*
@@ -69,12 +67,11 @@ void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);
 void        listSort (keytype_t keytype, list_t *list);
 void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
-void        listTrackMaxWidths (keytype_t keytype, list_t *list);
+void        listCalcMaxWidth (keytype_t keytype, list_t *list);
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
 listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
 int         listGetMaxKeyWidth (keytype_t keytype, list_t *list);
-int         listGetMaxDataWidth (keytype_t keytype, list_t *list);
 /* version */
 void        listSetVersion (keytype_t keytype, list_t *list, int version);
 int         listGetVersion (keytype_t keytype, list_t *list);

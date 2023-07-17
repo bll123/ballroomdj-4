@@ -18,7 +18,6 @@
 #include "slist.h"
 
 static void   slistSetKey (list_t *list, listkey_t *key, const char *keydata);
-static void   slistUpdateMaxKeyWidth (list_t *list, const char *keydata);
 
 /* key/value list, keyed by a listidx_t */
 
@@ -69,9 +68,9 @@ slistSetSize (slist_t *list, listidx_t siz)
 }
 
 void
-slistTrackMaxWidths (slist_t *list)
+slistCalcMaxWidth (slist_t *list)
 {
-  listTrackMaxWidths (LIST_KEY_STR, list);
+  listCalcMaxWidth (LIST_KEY_STR, list);
 }
 
 void
@@ -82,8 +81,6 @@ slistSetData (slist_t *list, const char *sidx, void *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-
-  slistUpdateMaxKeyWidth (list, sidx);
 
   listSet (LIST_KEY_STR, list, &item);
 }
@@ -100,8 +97,6 @@ slistSetStr (slist_t *list, const char *sidx, const char *data)
     item.value.data = mdstrdup (data);
   }
 
-  slistUpdateMaxKeyWidth (list, sidx);
-
   listSet (LIST_KEY_STR, list, &item);
 }
 
@@ -113,8 +108,6 @@ slistSetNum (slist_t *list, const char *sidx, listnum_t data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_NUM;
   item.value.num = data;
-
-  slistUpdateMaxKeyWidth (list, sidx);
 
   listSet (LIST_KEY_STR, list, &item);
 }
@@ -128,8 +121,6 @@ slistSetDouble (slist_t *list, const char *sidx, double data)
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
 
-  slistUpdateMaxKeyWidth (list, sidx);
-
   listSet (LIST_KEY_STR, list, &item);
 }
 
@@ -141,8 +132,6 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-
-  slistUpdateMaxKeyWidth (list, sidx);
 
   listSet (LIST_KEY_STR, list, &item);
 }
@@ -258,16 +247,6 @@ slistGetMaxKeyWidth (slist_t *list)
   return listGetMaxKeyWidth (LIST_KEY_STR, list);
 }
 
-int
-slistGetMaxDataWidth (slist_t *list)
-{
-  if (list == NULL) {
-    return 0;
-  }
-
-  return listGetMaxDataWidth (LIST_KEY_STR, list);
-}
-
 slistidx_t
 slistIterateGetIdx (slist_t *list, slistidx_t *iteridx)
 {
@@ -319,19 +298,3 @@ slistSetKey (list_t *list, listkey_t *key, const char *keydata)
   key->strkey = mdstrdup (keydata);
 }
 
-static void
-slistUpdateMaxKeyWidth (list_t *list, const char *keydata)
-{
-  if (list == NULL) {
-    return;
-  }
-
-  if (keydata != NULL) {
-    ssize_t       len;
-
-    len = istrlen (keydata);
-    if (len > list->maxKeyWidth) {
-      list->maxKeyWidth = len;
-    }
-  }
-}

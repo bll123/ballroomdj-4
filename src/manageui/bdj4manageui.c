@@ -2049,6 +2049,7 @@ manageiTunesDialogCreateList (manageui_t *manage)
   while ((skey = itunesIteratePlaylists (manage->itunes)) != NULL) {
     slistSetStr (pllist, skey, skey);
   }
+  slistCalcMaxWidth (pllist);
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (manage->itunessel, pllist, "");
   slistFree (pllist);

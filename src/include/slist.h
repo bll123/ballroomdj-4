@@ -20,7 +20,7 @@ int       slistGetVersion (slist_t *list);
 slistidx_t slistGetCount (slist_t *list);
 slistidx_t slistGetAllocCount (slist_t *list);
 void      slistSetSize (slist_t *, slistidx_t);
-void      slistTrackMaxWidths (slist_t *list);
+void      slistCalcMaxWidth (slist_t *list);
   /* set routines */
 void      slistSetData (slist_t *, const char *sidx, void *data);
 void      slistSetStr (slist_t *, const char *sidx, const char *data);
@@ -37,7 +37,6 @@ char *    slistGetKeyByIdx (slist_t *list, slistidx_t lidx);
 listnum_t slistGetNum (slist_t *, const char *sidx);
 double    slistGetDouble (slist_t *, const char *sidx);
 int       slistGetMaxKeyWidth (slist_t *);
-int       slistGetMaxDataWidth (slist_t *);
 slist_t   *slistGetList (slist_t *, const char *sidx);
   /* iterators */
 void      slistStartIterator (slist_t *list, slistidx_t *idx);

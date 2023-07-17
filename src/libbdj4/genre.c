@@ -71,6 +71,7 @@ genreAlloc (void)
         ilistGetStr (dflist, gkey, GENRE_GENRE), gkey);
   }
   slistSort (genre->genreList);
+  slistCalcMaxWidth (genre->genreList);
 
   return genre;
 }

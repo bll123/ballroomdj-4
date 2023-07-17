@@ -109,6 +109,7 @@ danceAlloc (const char *altfname)
     slistSetNum (dance->danceList, val, key);
   }
   slistSort (dance->danceList);
+  slistCalcMaxWidth (dance->danceList);
 
   return dance;
 }

@@ -48,11 +48,9 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   list->count = 0;
   list->allocCount = 0;
   list->maxKeyWidth = 0;
-  list->maxDataWidth = 0;
   /* flags */
   list->replace = false;
   list->setmaxkey = false;
-  list->setmaxdata = false;
   /* cache */
   list->keyCache.strkey = NULL;
   list->locCache = LIST_LOC_INVALID;
@@ -171,16 +169,28 @@ listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
 }
 
 void
-listTrackMaxWidths (keytype_t keytype, list_t *list)
+listCalcMaxWidth (keytype_t keytype, list_t *list)
 {
+  int     maxlen = 10;
+
   if (list == NULL) {
     return;
   }
   if (! listCheckKeyType (list, keytype)) {
     return;
   }
-  list->setmaxkey = true;
-  list->setmaxdata = true;
+
+  for (listidx_t i = 0; i < list->count; ++i) {
+    if (list->data [i].key.strkey != NULL) {
+      size_t    len;
+
+      len = istrlen (list->data [i].key.strkey);
+      if (len > maxlen) {
+        maxlen = len;
+      }
+    }
+  }
+  list->maxKeyWidth = maxlen;
 }
 
 
@@ -221,18 +231,6 @@ listGetMaxKeyWidth (keytype_t keytype, list_t *list)
     return 0;
   }
   return list->maxKeyWidth;
-}
-
-int
-listGetMaxDataWidth (keytype_t keytype, list_t *list)
-{
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return 0;
-  }
-  return list->maxDataWidth;
 }
 
 /* version */
