@@ -25,9 +25,6 @@
 #include "tmutil.h"
 
 static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
-static void bdjoptConvFadeType (datafileconv_t *conv);
-static void bdjoptConvWriteTags (datafileconv_t *conv);
-static void bdjoptConvMarqueeShow (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptConvDanceselMethod (datafileconv_t *conv);
 
@@ -553,32 +550,9 @@ bdjoptGetProfileName (void)
   return pname;
 }
 
-/* internal routines */
+/* the conversion routines are public so that the check suite can test them */
 
-static int
-bdjoptQueueIndex (nlistidx_t idx, int musicq)
-{
-  nlistidx_t    nidx;
-
-  if (musicq >= BDJ4_QUEUE_MAX) {
-    musicq = 0;
-  }
-  nidx = OPT_Q_ACTIVE + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
-  /* if the queue is not active, use the values from queue 0 */
-  /* excepting the queue name, active flag and display flag */
-  /* note that special playback queues such as the manageui playback queue */
-  /* will get their settings from the main music queue */
-  if (idx != OPT_Q_QUEUE_NAME &&
-      idx != OPT_Q_ACTIVE &&
-      idx != OPT_Q_DISPLAY &&
-      ! nlistGetNum (bdjopt->bdjoptList, nidx)) {
-    musicq = 0;
-  }
-  nidx = idx + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
-  return nidx;
-}
-
-static void
+void
 bdjoptConvFadeType (datafileconv_t *conv)
 {
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
@@ -619,7 +593,7 @@ bdjoptConvFadeType (datafileconv_t *conv)
   }
 }
 
-static void
+void
 bdjoptConvWriteTags (datafileconv_t *conv)
 {
   bdjwritetags_t  wtag = WRITE_TAGS_NONE;
@@ -651,7 +625,7 @@ bdjoptConvWriteTags (datafileconv_t *conv)
   }
 }
 
-static void
+void
 bdjoptConvMarqueeShow (datafileconv_t *conv)
 {
   bdjmarqueeshow_t  mqshow = MARQUEE_SHOW_VISIBLE;
@@ -681,6 +655,31 @@ bdjoptConvMarqueeShow (datafileconv_t *conv)
     }
     conv->str = sval;
   }
+}
+
+/* internal routines */
+
+static int
+bdjoptQueueIndex (nlistidx_t idx, int musicq)
+{
+  nlistidx_t    nidx;
+
+  if (musicq >= BDJ4_QUEUE_MAX) {
+    musicq = 0;
+  }
+  nidx = OPT_Q_ACTIVE + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
+  /* if the queue is not active, use the values from queue 0 */
+  /* excepting the queue name, active flag and display flag */
+  /* note that special playback queues such as the manageui playback queue */
+  /* will get their settings from the main music queue */
+  if (idx != OPT_Q_QUEUE_NAME &&
+      idx != OPT_Q_ACTIVE &&
+      idx != OPT_Q_DISPLAY &&
+      ! nlistGetNum (bdjopt->bdjoptList, nidx)) {
+    musicq = 0;
+  }
+  nidx = idx + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
+  return nidx;
 }
 
 static void

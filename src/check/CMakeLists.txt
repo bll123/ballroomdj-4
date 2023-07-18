@@ -38,6 +38,7 @@ add_executable (check_all
   check_vsencdec.c
   # libbasic
   check_libbasic.c
+  check_bdjopt.c
   check_datafile.c
   check_dirlist.c
   check_ilist.c

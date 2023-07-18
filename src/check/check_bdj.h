@@ -47,6 +47,7 @@ Suite *     tmutil_suite (void);
 Suite *     vsencdec_suite (void);
 
 /* libbasic */
+Suite *     bdjopt_suite (void);
 Suite *     datafile_suite (void);
 Suite *     dirlist_suite (void);
 Suite *     ilist_suite (void);

@@ -34,7 +34,7 @@ check_libbasic (SRunner *sr)
    *  ilist       partial
    *  slist       partial
    *  datafile    partial
-   *  bdjopt
+   *  bdjopt      complete 2023-7-18
    *  procutil    partial
    *  lock        complete
    *  localeutil
@@ -48,6 +48,8 @@ check_libbasic (SRunner *sr)
   s = istring_suite();
   srunner_add_suite (sr, s);
 
+  /* list */
+
   s = nlist_suite();
   srunner_add_suite (sr, s);
 
@@ -60,11 +62,16 @@ check_libbasic (SRunner *sr)
   s = datafile_suite();
   srunner_add_suite (sr, s);
 
+  s = bdjopt_suite();
+  srunner_add_suite (sr, s);
+
   s = procutil_suite();
   srunner_add_suite (sr, s);
 
   s = lock_suite();
   srunner_add_suite (sr, s);
+
+  /* localeutil */
 
   s = rafile_suite();
   srunner_add_suite (sr, s);
