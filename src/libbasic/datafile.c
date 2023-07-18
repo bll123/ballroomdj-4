@@ -162,7 +162,7 @@ convTextList (datafileconv_t *conv)
   } else if (conv->invt == VALUE_LIST) {
     slist_t     *list;
     slistidx_t  iteridx;
-    char        tbuff [200];
+    char        tbuff [300];
     const char  *key;
 
     conv->outvt = VALUE_STRVAL;
@@ -184,32 +184,19 @@ convTextList (datafileconv_t *conv)
 void
 convMS (datafileconv_t *conv)
 {
-  ssize_t   num;
+  time_t    num;
   char      tbuff [40];
 
   if (conv->invt == VALUE_STR) {
-    char      *p;
-    char      *tstr = NULL;
-    char      *tokstr;
-
     conv->outvt = VALUE_NUM;
     num = 0;
     if (conv->str != NULL) {
-      tstr = mdstrdup (conv->str);
-      p = strtok_r (tstr, ":", &tokstr);
-      if (p != NULL) {
-        num += atoi (p) * 60;
-        p = strtok_r (NULL, ":", &tokstr);
-        if (p != NULL) {
-          num += atoi (p);
-        }
-      }
-      mdfree (tstr);
+      num = tmutilStrToMS (conv->str);
     }
     conv->num = num;
   } else if (conv->invt == VALUE_NUM) {
     conv->outvt = VALUE_STRVAL;
-    tmutilToMS (conv->num, tbuff, sizeof (tbuff));
+    tmutilToMSD (conv->num, tbuff, sizeof (tbuff), 1);
     conv->strval = mdstrdup (tbuff);
   }
 }

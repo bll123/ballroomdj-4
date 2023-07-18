@@ -30,6 +30,7 @@
 #include "songutil.h"
 #include "status.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 #include "orgutil.h"
 
@@ -406,16 +407,10 @@ songDisplayString (song_t *song, int tagidx)
       changed = true;
     }
     if (changed) {
-      conv.num = dur;
-      conv.invt = VALUE_NUM;
-      convMS (&conv);
-      if (conv.outvt == VALUE_STR) {
-        snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.strval);
-      }
-      if (conv.outvt == VALUE_STRVAL) {
-        snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.strval);
-        dataFree (conv.strval);
-      }
+      char  tmp [40];
+
+      tmutilToMSD (dur, tmp, sizeof (tmp), 1);
+      snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, tmp);
       str = mdstrdup (tbuff);
     }
   }

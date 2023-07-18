@@ -156,6 +156,117 @@ START_TEST(parse_with_comments)
 }
 END_TEST
 
+START_TEST(datafile_conv_boolean)
+{
+  datafileconv_t conv;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_boolean");
+
+  for (int i = 0; i <= 1; ++i) {
+    conv.invt = VALUE_NUM;
+    conv.num = i;
+    convBoolean (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_STR);
+    ck_assert_ptr_nonnull (conv.str);
+    conv.invt = VALUE_STR;
+    convBoolean (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_NUM);
+    ck_assert_int_eq (conv.num, i);
+  }
+
+  conv.invt = VALUE_STR;
+  conv.str = "on";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 1);
+
+  conv.invt = VALUE_STR;
+  conv.str = "true";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 1);
+
+  conv.invt = VALUE_STR;
+  conv.str = "1";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 1);
+}
+END_TEST
+
+typedef struct {
+  const char  *in;
+  const char  *out;
+} ctxtlist_tc_t;
+
+ctxtlist_tc_t txtlist_tc [] = {
+  { "a, b, c, d", "a b c d" },
+  { "a;b;c",      "a b c" },
+  { "a,b",        "a b" },
+  { "d e f",      "d e f" },
+};
+enum {
+  txtlist_tc_count = sizeof (txtlist_tc) / sizeof (ctxtlist_tc_t),
+};
+
+START_TEST(datafile_conv_textlist)
+{
+  datafileconv_t  conv;
+  slist_t         *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_textlist");
+
+  for (int i = 0; i < txtlist_tc_count; ++i) {
+    conv.invt = VALUE_STR;
+    conv.str = txtlist_tc [i].in;
+    convTextList (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_LIST);
+    tlist = conv.list;
+    conv.invt = VALUE_LIST;
+    convTextList (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_STRVAL);
+    ck_assert_str_eq (conv.strval, txtlist_tc [i].out);
+    slistFree (tlist);
+    mdfree (conv.strval);
+  }
+}
+END_TEST
+
+typedef struct {
+  const char  *in;
+  time_t      val;
+} cms_tc_t;
+
+cms_tc_t ms_tc [] = {
+  { "1:59.0", 119000 },
+  { "1:01.0", 61000 },
+  { "1:01.9", 61900 },
+};
+enum {
+  ms_tc_count = sizeof (ms_tc) / sizeof (cms_tc_t),
+};
+
+START_TEST(datafile_conv_ms)
+{
+  datafileconv_t  conv;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_ms");
+
+  for (int i = 0; i < ms_tc_count; ++i) {
+    conv.invt = VALUE_STR;
+    conv.str = ms_tc [i].in;
+    convMS (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_NUM);
+    ck_assert_int_eq (conv.num, ms_tc [i].val);
+    conv.invt = VALUE_NUM;
+    convMS (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_STRVAL);
+    ck_assert_str_eq (conv.strval, ms_tc [i].in);
+    mdfree (conv.strval);
+  }
+}
+END_TEST
+
 START_TEST(datafile_alloc)
 {
   datafile_t    *df;
@@ -1147,6 +1258,9 @@ datafile_suite (void)
 
   tc = tcase_create ("datafile");
   tcase_set_tags (tc, "libbasic");
+  tcase_add_test (tc, datafile_conv_boolean);
+  tcase_add_test (tc, datafile_conv_textlist);
+  tcase_add_test (tc, datafile_conv_ms);
   tcase_add_test (tc, datafile_alloc);
   tcase_add_test (tc, datafile_none);
   tcase_add_test (tc, datafile_simple);

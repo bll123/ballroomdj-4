@@ -345,20 +345,15 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   if (uieibdj4->currtype == UIEIBDJ4_EXPORT) {
     odir = nlistGetStr (uieibdj4->options, MANAGE_EXP_BDJ4_DIR);
-fprintf (stderr, "a: odir: %s %d\n", odir, odir == NULL);
   }
   if (uieibdj4->currtype == UIEIBDJ4_IMPORT) {
     odir = nlistGetStr (uieibdj4->options, MANAGE_IMP_BDJ4_DIR);
-fprintf (stderr, "b: odir: %s %d\n", odir, odir == NULL);
   }
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
-fprintf (stderr, "c: odir: %s\n", odir);
   }
   strlcpy (tbuff, odir, sizeof (tbuff));
-fprintf (stderr, "tbuff-a: %s\n", tbuff);
   pathDisplayPath (tbuff, sizeof (tbuff));
-fprintf (stderr, "tbuff-b: %s\n", tbuff);
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, tbuff);
 
   uibutton = uiCreateButton (
@@ -441,7 +436,6 @@ uieibdj4TargetDialog (void *udata)
   dir = uiSelectDirDialog (selectdata);
   if (dir != NULL) {
     /* the validation process will be called */
-fprintf (stderr, "tdialog-b: %s\n", dir);
     uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, dir);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
     mdfree (dir);   // allocated by gtk

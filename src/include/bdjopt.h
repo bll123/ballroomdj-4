@@ -145,6 +145,7 @@ void    bdjoptConvClock (datafileconv_t *conv);
 void    bdjoptConvFadeType (datafileconv_t *conv);
 void    bdjoptConvWriteTags (datafileconv_t *conv);
 void    bdjoptConvMarqueeShow (datafileconv_t *conv);
+void    bdjoptConvDanceselMethod (datafileconv_t *conv);
 void    bdjoptDump (void);
 bool    bdjoptProfileExists (void);
 char    * bdjoptGetProfileName (void);

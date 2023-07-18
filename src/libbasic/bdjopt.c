@@ -26,7 +26,6 @@
 
 static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
 static void bdjoptCreateNewConfigs (void);
-static void bdjoptConvDanceselMethod (datafileconv_t *conv);
 
 typedef struct {
   int           currprofile;
@@ -657,6 +656,28 @@ bdjoptConvMarqueeShow (datafileconv_t *conv)
   }
 }
 
+void
+bdjoptConvDanceselMethod (datafileconv_t *conv)
+{
+  int   method = DANCESEL_METHOD_WINDOWED;
+  char  *sval = NULL;
+
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
+
+    if (strcmp (conv->str, "windowed") == 0) {
+      method = DANCESEL_METHOD_WINDOWED;
+    }
+    conv->num = method;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
+    switch (conv->num) {
+      case DANCESEL_METHOD_WINDOWED: { sval = "windowed"; break; }
+    }
+    conv->str = sval;
+  }
+}
+
 /* internal routines */
 
 static int
@@ -746,27 +767,6 @@ bdjoptCreateNewConfigs (void)
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }
 
-static void
-bdjoptConvDanceselMethod (datafileconv_t *conv)
-{
-  int   method = DANCESEL_METHOD_WINDOWED;
-  char  *sval = NULL;
-
-  if (conv->invt == VALUE_STR) {
-    conv->outvt = VALUE_NUM;
-
-    if (strcmp (conv->str, "windowed") == 0) {
-      method = DANCESEL_METHOD_WINDOWED;
-    }
-    conv->num = method;
-  } else if (conv->invt == VALUE_NUM) {
-    conv->outvt = VALUE_STR;
-    switch (conv->num) {
-      case DANCESEL_METHOD_WINDOWED: { sval = "windowed"; break; }
-    }
-    conv->str = sval;
-  }
-}
 
 
 
