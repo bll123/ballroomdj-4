@@ -2034,7 +2034,7 @@ starterLoadOptions (startui_t *starter)
   starter->optiondf = datafileAllocParse ("ui-starter", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX, DF_NO_OFFSET, NULL);
   starter->options = datafileGetList (starter->optiondf);
-  if (starter->options == NULL) {
+  if (starter->options == NULL || nlistGetCount (starter->options) == 0) {
     starter->optionsalloc = true;
     starter->options = nlistAlloc ("ui-starter", LIST_ORDERED, NULL);
 

@@ -237,7 +237,7 @@ main (int argc, char *argv[])
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX, DF_NO_OFFSET, NULL);
   confui.options = datafileGetList (confui.optiondf);
-  if (confui.options == NULL) {
+  if (confui.options == NULL || nlistGetCount (confui.options) == 0) {
     confui.optionsalloc = true;
     confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, NULL);
 

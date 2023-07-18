@@ -38,7 +38,6 @@ genre_t *
 genreAlloc (void)
 {
   genre_t       *genre = NULL;
-  slist_t       *dflist = NULL;
   ilistidx_t    gkey;
   ilistidx_t    iteridx;
   char          fname [MAXPATHLEN];
@@ -61,17 +60,18 @@ genreAlloc (void)
   genre->genre = datafileGetList (genre->df);
   ilistDumpInfo (genre->genre);
 
-  dflist = datafileGetList (genre->df);
   genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
   slistSetSize (genre->genreList, ilistGetCount (genre->genre));
 
-  ilistStartIterator (dflist, &iteridx);
-  while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {
+  ilistStartIterator (genre->genre, &iteridx);
+  while ((gkey = ilistIterateKey (genre->genre, &iteridx)) >= 0) {
     slistSetNum (genre->genreList,
-        ilistGetStr (dflist, gkey, GENRE_GENRE), gkey);
+        ilistGetStr (genre->genre, gkey, GENRE_GENRE), gkey);
   }
   slistSort (genre->genreList);
   slistCalcMaxWidth (genre->genreList);
+
+  ilistStartIterator (genre->genre, &iteridx);
 
   return genre;
 }

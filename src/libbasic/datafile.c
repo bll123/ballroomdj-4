@@ -549,7 +549,12 @@ datafileFreeData (datafile_t *df)
         }
         case DFTYPE_KEY_VAL:
         {
-          nlistFree (df->data);
+          if (df->dfkeys == NULL) {
+            /* simple list */
+            slistFree (df->data);
+          } else {
+            nlistFree (df->data);
+          }
           break;
         }
         default: {

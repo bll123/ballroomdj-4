@@ -4,10 +4,12 @@
 
 <!--
 
-**4.3.3.2 2023-8**
+**4.3.3.2 2023-8---**
 
 * Bug Fixes:
-    * Player: Windows: Fix clock display to use the configured version.
+    * Player: Windows: Fix clock display to use the windows configuration.
+* Internal:
+    * Code cleanup (list, data conversion).
 
 -->
 

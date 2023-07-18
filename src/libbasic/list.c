@@ -907,6 +907,7 @@ listCheckKeyType (list_t *list, keytype_t keytype)
   bool    rc = true;
 
   if (list->keytype != keytype) {
+fprintf (stderr, "ERR: list: mismatched key %s have:%d got:%d\n", list->name, list->keytype, keytype);
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
     rc = false;

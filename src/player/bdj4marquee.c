@@ -212,7 +212,7 @@ main (int argc, char *argv[])
       mqdfkeys, MQ_KEY_MAX, DF_NO_OFFSET, NULL);
   marquee.options = datafileGetList (marquee.optiondf);
   marquee.optionsalloc = false;
-  if (marquee.options == NULL) {
+  if (marquee.options == NULL || nlistGetCount (marquee.options) == 0) {
     marquee.optionsalloc = true;
     marquee.options = nlistAlloc ("ui-marquee", LIST_ORDERED, NULL);
 

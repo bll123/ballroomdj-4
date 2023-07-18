@@ -181,11 +181,17 @@ slistGetList (slist_t *list, const char *sidx)
 int
 slistGetMaxKeyWidth (slist_t *list)
 {
+  int     value;
+
   if (list == NULL) {
     return 0;
   }
 
-  return listGetMaxKeyWidth (LIST_KEY_STR, list);
+  value = listGetMaxKeyWidth (LIST_KEY_STR, list);
+if (value <= 0) {
+fprintf (stderr, "maxwidth not set %s\n", listGetName (LIST_KEY_STR, list));
+}
+  return value;
 }
 
 slistidx_t

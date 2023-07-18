@@ -277,7 +277,7 @@ main (int argc, char *argv[])
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   plui.options = datafileGetList (plui.optiondf);
   plui.optionsalloc = false;
-  if (plui.options == NULL) {
+  if (plui.options == NULL || nlistGetCount (plui.options) == 0) {
     plui.optionsalloc = true;
     plui.options = nlistAlloc ("ui-player", LIST_ORDERED, NULL);
 

@@ -230,7 +230,7 @@ main (int argc, char *argv [])
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
       upddfkeys, UPD_DF_COUNT, DF_NO_OFFSET, NULL);
   updlist = datafileGetList (df);
-  if (updlist == NULL) {
+  if (updlist == NULL || nlistGetCount (updlist) == 0) {
     updlist = nlistAlloc ("updater-updlist", LIST_ORDERED, NULL);
     updlistallocated = true;
   }

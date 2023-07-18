@@ -183,7 +183,7 @@ main (int argc, char *argv[])
       bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, DF_NO_OFFSET, NULL);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
   bpmcounter.optionsalloc = false;
-  if (bpmcounter.options == NULL) {
+  if (bpmcounter.options == NULL || nlistGetCount (bpmcounter.options) == 0) {
     bpmcounter.optionsalloc = true;
     bpmcounter.options = nlistAlloc ("ui-bpmcounter", LIST_ORDERED, NULL);
 

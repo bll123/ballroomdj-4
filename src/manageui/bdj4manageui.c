@@ -519,7 +519,7 @@ main (int argc, char *argv[])
       manageuidfkeys, MANAGEUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   manage.options = datafileGetList (manage.optiondf);
   manage.optionsalloc = false;
-  if (manage.options == NULL) {
+  if (manage.options == NULL || nlistGetCount (manage.options) == 0) {
     manage.optionsalloc = true;
     manage.options = nlistAlloc ("ui-manage", LIST_ORDERED, NULL);
 

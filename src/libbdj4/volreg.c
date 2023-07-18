@@ -177,7 +177,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   vlist = datafileGetList (df);
 
   vkey = -1;
-  if (vlist != NULL) {
+  if (vlist != NULL && ilistGetCount (vlist) > 0) {
     ilistStartIterator (vlist, &viteridx);
     while ((key = ilistIterateKey (vlist, &viteridx)) >= 0) {
       dsink = ilistGetStr (vlist, key, VOLREG_SINK);
