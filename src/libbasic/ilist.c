@@ -225,9 +225,7 @@ ilistDelete (list_t *list, ilistidx_t ikey)
   }
 
   idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
-  if (idx >= 0) {
-    listDeleteByIdx (LIST_KEY_IND, list, idx);
-  }
+  listDeleteByIdx (LIST_KEY_IND, list, idx);
 }
 
 void
@@ -262,9 +260,7 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
   }
 
   idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
-  if (idx >= 0) {
-    datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
-  }
+  datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
 
   if (datalist == NULL) {
     snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
