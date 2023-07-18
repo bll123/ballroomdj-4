@@ -22,6 +22,23 @@ typedef union {
   listidx_t   idx;
 } listkeylookup_t;
 
+typedef union {
+  char        *strkey;
+  listidx_t   idx;
+} listkey_t;
+
+typedef union {
+  void        *data;
+  listnum_t   num;
+  double      dval;
+} listvalue_t;
+
+typedef struct {
+  listkey_t     key;
+  valuetype_t   valuetype;
+  listvalue_t   value;
+} listitem_t;
+
 typedef struct list {
   char            *name;
   int             version;
@@ -40,6 +57,7 @@ typedef struct list {
   bool            setmaxkey : 1;
 } list_t;
 
+static void     listSet (list_t *list, listitem_t *item);
 static listidx_t listGetIdx_int (list_t *list, listkeylookup_t *key);
 static bool     listCheckKeyType (list_t *list, keytype_t keytype);
 static void     listFreeItem (list_t *, listidx_t);
@@ -598,16 +616,202 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 }
 
 void
-listSet (keytype_t keytype, list_t *list, listitem_t *item)
+listSetStrData (keytype_t keytype, list_t *list, const char *key, void *data)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.strkey = mdstrdup (key);
+  item.valuetype = VALUE_DATA;
+  item.value.data = data;
+  listSet (list, &item);
+}
+
+void
+listSetStrList (keytype_t keytype, list_t *list, const char *key, void *data)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.strkey = mdstrdup (key);
+  item.valuetype = VALUE_LIST;
+  item.value.data = data;
+  listSet (list, &item);
+}
+
+void
+listSetStrStr (keytype_t keytype, list_t *list, const char *key, const char *str)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.strkey = mdstrdup (key);
+  item.valuetype = VALUE_STR;
+  item.value.data = NULL;
+  if (str != NULL) {
+    item.value.data = mdstrdup (str);
+  }
+  listSet (list, &item);
+}
+
+void
+listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.strkey = mdstrdup (key);
+  item.valuetype = VALUE_NUM;
+  item.value.num = val;
+  listSet (list, &item);
+}
+
+void
+listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.strkey = mdstrdup (key);
+  item.valuetype = VALUE_DOUBLE;
+  item.value.dval = dval;
+  listSet (list, &item);
+}
+
+void
+listSetNumData (keytype_t keytype, list_t *list, listidx_t key, void *data)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.idx = key;
+  item.valuetype = VALUE_DATA;
+  item.value.data = data;
+  listSet (list, &item);
+}
+
+void
+listSetNumList (keytype_t keytype, list_t *list, listidx_t key, void *data)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.idx = key;
+  item.valuetype = VALUE_LIST;
+  item.value.data = data;
+  listSet (list, &item);
+}
+
+void
+listSetNumStr (keytype_t keytype, list_t *list, listidx_t key, const char *str)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.idx = key;
+  item.valuetype = VALUE_STR;
+  item.value.data = NULL;
+  if (str != NULL) {
+    item.value.data = mdstrdup (str);
+  }
+  listSet (list, &item);
+}
+
+void
+listSetNumNum (keytype_t keytype, list_t *list, listidx_t key, listnum_t val)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.idx = key;
+  item.valuetype = VALUE_NUM;
+  item.value.num = val;
+  listSet (list, &item);
+}
+
+void
+listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+
+  item.key.idx = key;
+  item.valuetype = VALUE_DOUBLE;
+  item.value.dval = dval;
+  listSet (list, &item);
+}
+
+
+/* internal routines */
+
+static void
+listSet (list_t *list, listitem_t *item)
 {
   listidx_t       loc = 0;
   int             rc = -1;
   int             found = 0;
 
   if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
     return;
   }
 
@@ -641,8 +845,6 @@ listSet (keytype_t keytype, list_t *list, listitem_t *item)
   }
   return;
 }
-
-/* internal routines */
 
 listidx_t
 listGetIdx_int (list_t *list, listkeylookup_t *key)

@@ -76,12 +76,7 @@ ilistSort (ilist_t *list)
 void
 ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist)
 {
-  listitem_t    item;
-
-  item.key.idx = ikey;
-  item.valuetype = VALUE_LIST;
-  item.value.data = datalist;
-  listSet (LIST_KEY_IND, list, &item);
+  listSetNumList (LIST_KEY_IND, list, ikey, datalist);
 }
 
 void
@@ -272,16 +267,11 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
   }
 
   if (datalist == NULL) {
-    listitem_t    item;
-
     snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
         listGetName (LIST_KEY_IND, list), ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
 
-    item.key.idx = ikey;
-    item.valuetype = VALUE_LIST;
-    item.value.data = datalist;
-    listSet (LIST_KEY_IND, list, &item);
+    listSetNumList (LIST_KEY_IND, list, ikey, datalist);
   }
   return datalist;
 }

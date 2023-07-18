@@ -12,37 +12,6 @@ typedef enum {
   LIST_KEY_IND,
 } keytype_t;
 
-typedef enum {
-  LIST_TYPE_UNKNOWN,
-  LIST_BASIC,
-  LIST_NAMEVALUE,
-} listtype_t;
-
-typedef union listkey listkey_t;
-
-typedef union listkey {
-  char        *strkey;
-  listidx_t   idx;
-} listkey_t;
-
-typedef union listvalue listvalue_t;
-
-typedef union listvalue {
-  void        *data;
-  listnum_t   num;
-  double      dval;
-} listvalue_t;
-
-typedef struct listitem listitem_t;
-
-typedef struct listitem {
-  listkey_t     key;
-  valuetype_t   valuetype;
-  listvalue_t   value;
-} listitem_t;
-
-typedef struct list list_t;
-
 list_t      *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
 void        listFree (keytype_t keytype, void *list);
 /* list management */
@@ -53,13 +22,16 @@ bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 void        listCalcMaxWidth (keytype_t keytype, list_t *list);
 const char  *listGetName (keytype_t keytype, list_t *list);
 void        listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook);
+
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
 listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
 int         listGetMaxKeyWidth (keytype_t keytype, list_t *list);
+
 /* version */
 void        listSetVersion (keytype_t keytype, list_t *list, int version);
 int         listGetVersion (keytype_t keytype, list_t *list);
+
 /* iterators */
 void        listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
@@ -69,6 +41,7 @@ void        *listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteri
 listnum_t   listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx);
 
+/* get */
 listidx_t   listGetIdxNumKey (keytype_t keytype, list_t *list, listidx_t key);
 listidx_t   listGetIdxStrKey (keytype_t keytype, list_t *list, const char *strkey);
 listidx_t   listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx);
@@ -78,7 +51,18 @@ const char  *listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx);
 listnum_t   listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx);
 double      listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx);
 
-void        listSet (keytype_t keytype, list_t *list, listitem_t *item);
+/* set */
+void        listSetStrData (keytype_t keytype, list_t *list, const char *key, void *data);
+void        listSetStrList (keytype_t keytype, list_t *list, const char *key, void *data);
+void        listSetStrStr (keytype_t keytype, list_t *list, const char *key, const char *str);
+void        listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val);
+void        listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval);
+void        listSetNumData (keytype_t keytype, list_t *list, listidx_t key, void *data);
+void        listSetNumList (keytype_t keytype, list_t *list, listidx_t key, void *data);
+void        listSetNumStr (keytype_t keytype, list_t *list, listidx_t key, const char *str);
+void        listSetNumNum (keytype_t keytype, list_t *list, listidx_t key, listnum_t val);
+void        listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval);
+
 void        listDeleteByIdx (keytype_t keytype, list_t *, listidx_t idx);
 
 #endif /* LIST_MODULE_H */

@@ -17,9 +17,7 @@
 #include "mdebug.h"
 #include "slist.h"
 
-static void   slistSetKey (list_t *list, listkey_t *key, const char *keydata);
-
-/* key/value list, keyed by a listidx_t */
+/* keyed by a string */
 
 slist_t *
 slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
@@ -76,64 +74,31 @@ slistCalcMaxWidth (slist_t *list)
 void
 slistSetData (slist_t *list, const char *sidx, void *data)
 {
-  listitem_t    item;
-
-  slistSetKey (list, &item.key, sidx);
-  item.valuetype = VALUE_DATA;
-  item.value.data = data;
-
-  listSet (LIST_KEY_STR, list, &item);
+  listSetStrData (LIST_KEY_STR, list, sidx, data);
 }
 
 void
 slistSetStr (slist_t *list, const char *sidx, const char *data)
 {
-  listitem_t    item;
-
-  slistSetKey (list, &item.key, sidx);
-  item.valuetype = VALUE_STR;
-  item.value.data = NULL;
-  if (data != NULL) {
-    item.value.data = mdstrdup (data);
-  }
-
-  listSet (LIST_KEY_STR, list, &item);
+  listSetStrStr (LIST_KEY_STR, list, sidx, data);
 }
 
 void
 slistSetNum (slist_t *list, const char *sidx, listnum_t data)
 {
-  listitem_t    item;
-
-  slistSetKey (list, &item.key, sidx);
-  item.valuetype = VALUE_NUM;
-  item.value.num = data;
-
-  listSet (LIST_KEY_STR, list, &item);
+  listSetStrNum (LIST_KEY_STR, list, sidx, data);
 }
 
 void
 slistSetDouble (slist_t *list, const char *sidx, double data)
 {
-  listitem_t    item;
-
-  slistSetKey (list, &item.key, sidx);
-  item.valuetype = VALUE_DOUBLE;
-  item.value.dval = data;
-
-  listSet (LIST_KEY_STR, list, &item);
+  listSetStrDouble (LIST_KEY_STR, list, sidx, data);
 }
 
 void
 slistSetList (slist_t *list, const char *sidx, slist_t *data)
 {
-  listitem_t    item;
-
-  slistSetKey (list, &item.key, sidx);
-  item.valuetype = VALUE_LIST;
-  item.value.data = data;
-
-  listSet (LIST_KEY_STR, list, &item);
+  listSetStrList (LIST_KEY_STR, list, sidx, data);
 }
 
 slistidx_t
@@ -263,13 +228,5 @@ void
 slistDumpInfo (slist_t *list)
 {
   listDumpInfo (LIST_KEY_STR, list);
-}
-
-/* internal routines */
-
-static void
-slistSetKey (list_t *list, listkey_t *key, const char *keydata)
-{
-  key->strkey = mdstrdup (keydata);
 }
 

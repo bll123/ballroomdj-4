@@ -85,65 +85,36 @@ nlistSort (nlist_t *list)
 void
 nlistSetData (nlist_t *list, nlistidx_t lkey, void *data)
 {
-  listitem_t    item;
-
-  item.key.idx = lkey;
-  item.valuetype = VALUE_DATA;
-  item.value.data = data;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumData (LIST_KEY_NUM, list, lkey, data);
 }
 
 void
 nlistSetStr (nlist_t *list, nlistidx_t lkey, const char *data)
 {
-  listitem_t    item;
-
-  item.key.idx = lkey;
-  item.valuetype = VALUE_STR;
-  item.value.data = NULL;
-  if (data != NULL) {
-    item.value.data = mdstrdup (data);
-  }
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumStr (LIST_KEY_NUM, list, lkey, data);
 }
 
 void
 nlistSetNum (nlist_t *list, nlistidx_t lkey, listnum_t data)
 {
-  listitem_t    item;
-
-  item.key.idx = lkey;
-  item.valuetype = VALUE_NUM;
-  item.value.num = data;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumNum (LIST_KEY_NUM, list, lkey, data);
 }
 
 void
 nlistSetDouble (nlist_t *list, nlistidx_t lkey, double data)
 {
-  listitem_t    item;
-
-  item.key.idx = lkey;
-  item.valuetype = VALUE_DOUBLE;
-  item.value.dval = data;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumDouble (LIST_KEY_NUM, list, lkey, data);
 }
 
 void
 nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data)
 {
-  listitem_t    item;
-
-  item.key.idx = lkey;
-  item.valuetype = VALUE_LIST;
-  item.value.data = data;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumList (LIST_KEY_NUM, list, lkey, data);
 }
 
 void
 nlistIncrement (nlist_t *list, nlistidx_t lkey)
 {
-  listitem_t      item;
   nlistidx_t      idx;
   listnum_t       value = 0;
 
@@ -153,16 +124,12 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
     value = 0;
   }
   ++value;
-  item.key.idx = lkey;
-  item.valuetype = VALUE_NUM;
-  item.value.num = value;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumNum (LIST_KEY_NUM, list, lkey, value);
 }
 
 void
 nlistDecrement (nlist_t *list, nlistidx_t lkey)
 {
-  listitem_t      item;
   nlistidx_t      idx;
   listnum_t       value = 0;
 
@@ -172,10 +139,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
     value = 0;
   }
   --value;
-  item.key.idx = lkey;
-  item.valuetype = VALUE_NUM;
-  item.value.num = value;
-  listSet (LIST_KEY_NUM, list, &item);
+  listSetNumNum (LIST_KEY_NUM, list, lkey, value);
 }
 
 /* get routines */
