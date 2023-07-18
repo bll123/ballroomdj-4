@@ -92,8 +92,8 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   editable = false;
   while ((key = statusIterate (status, &iteridx)) >= 0) {
-    char    *statusdisp;
-    long playflag;
+    const char  *statusdisp;
+    long        playflag;
 
     statusdisp = statusGetStatus (status, key);
     playflag = statusGetPlayFlag (status, key);

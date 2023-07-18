@@ -30,8 +30,8 @@ main (int argc, char *argv [])
   void        *data = NULL;
   slist_t     *wlist = NULL;
   slistidx_t  iteridx;
-  char        *key = NULL;
-  char        *val = NULL;
+  const char  *key = NULL;
+  const char  *val = NULL;
 //  bool        rawdata = false;
   bool        isbdj4 = false;
   int         c = 0;
@@ -196,14 +196,15 @@ main (int argc, char *argv [])
     for (int i = fidx + 1; i < argc; ++i) {
       char    *p;
       char    *tokstr;
+      char    *tval;
 
-      val = mdstrdup (argv [i]);
-      p = strtok_r (val, "=", &tokstr);
+      tval = mdstrdup (argv [i]);
+      p = strtok_r (tval, "=", &tokstr);
       if (p != NULL) {
         p = strtok_r (NULL, "=", &tokstr);
-        tagkey = tagdefLookup (val);
+        tagkey = tagdefLookup (tval);
         if (tagkey >= 0) {
-          slistSetStr (wlist, val, p);
+          slistSetStr (wlist, tval, p);
           writetags = true;
         }
       }

@@ -414,7 +414,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
-  char        *str;
+  const char  *str;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         x, y;

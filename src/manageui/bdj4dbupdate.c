@@ -117,9 +117,9 @@ typedef struct {
   int               state;
   musicdb_t         *musicdb;
   musicdb_t         *newmusicdb;
-  char              *musicdir;
+  const char        *musicdir;
   size_t            musicdirlen;
-  char              *dbtopdir;
+  const char        *dbtopdir;
   int               prefixlen;
   size_t            dbtopdirlen;
   mstime_t          outputTimer;
@@ -131,7 +131,7 @@ typedef struct {
   size_t            maxWriteLen;
   mstime_t          starttm;
   int               stopwaitcount;
-  char              *olddirlist;
+  const char        *olddirlist;
   itunes_t          *itunes;
   queue_t           *tagdataq;
   int               waitcount;
@@ -170,7 +170,7 @@ static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
-static void     dbupdateQueueTagData (dbupdate_t *dbupdate, char *args);
+static void     dbupdateQueueTagData (dbupdate_t *dbupdate, const char *args);
 static void     dbupdateTagDataFree (void *data);
 static void     dbupdateProcessTagDataQueue (dbupdate_t *dbupdate);
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data);
@@ -470,7 +470,7 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_SEND &&
       queueGetCount (dbupdate->tagdataq) <= QUEUE_PROCESS_LIMIT) {
     int         count = 0;
-    char        *fn;
+    const char  *fn;
     pathinfo_t  *pi;
 
     while ((fn =
@@ -892,15 +892,17 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 }
 
 static void
-dbupdateQueueTagData (dbupdate_t *dbupdate, char *args)
+dbupdateQueueTagData (dbupdate_t *dbupdate, const char *args)
 {
   char          *ffn;
   char          *data;
   tagdataitem_t *tdi;
   char          *tokstr;
   dbidx_t       count;
+  char          *targs;
 
-  ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  targs = mdstrdup (args);
+  ffn = strtok_r (targs, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
 
   if (dbupdate->usereader && data == NULL) {
@@ -908,6 +910,7 @@ dbupdateQueueTagData (dbupdate_t *dbupdate, char *args)
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
     dbupdateIncCount (dbupdate, C_NULL_DATA);
     dbupdateIncCount (dbupdate, C_FILE_PROC);
+    mdfree (targs);
     return;
   }
 
@@ -936,6 +939,7 @@ dbupdateQueueTagData (dbupdate_t *dbupdate, char *args)
     connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_PAUSE, NULL);
     dbupdate->state = DB_UPD_PAUSE_PROCESS;
   }
+  mdfree (targs);
 }
 
 static void
@@ -977,7 +981,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
   song_t      *song = NULL;
   size_t      len;
   const char  *relfname;
-  char        *val;
+  const char  *val;
   int         rewrite;
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", ffn);
@@ -1030,7 +1034,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
 
   if (logCheck (LOG_DBG, LOG_DBUPDATE)) {
     slistidx_t  iteridx;
-    char        *tag, *data;
+    const char  *tag, *data;
 
     slistStartIterator (tagdata, &iteridx);
     while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
@@ -1075,7 +1079,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
   if (! dbupdate->rebuild && ! dbupdate->compact) {
     song = dbGetByName (dbupdate->musicdb, songfname);
     if (song != NULL) {
-      char      *tmp;
+      const char  *tmp;
 
       rrn = songGetNum (song, TAG_RRN);
       tmp = songGetStr (song, TAG_DBADDDATE);

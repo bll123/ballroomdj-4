@@ -147,14 +147,14 @@ void
 uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel)
 {
-  char              *strval;
-  char              *dispval;
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
-  ilistidx_t        iteridx;
-  nlistidx_t        internalidx;
-  uiwcont_t        *uitreewidgetp;
-  char              tbuff [200];
+  const char    *strval;
+  const char    *dispval;
+  GtkTreeIter   iter;
+  GtkListStore  *store = NULL;
+  ilistidx_t    iteridx;
+  nlistidx_t    internalidx;
+  uiwcont_t     *uitreewidgetp;
+  char          tbuff [200];
 
   if (dropdown == NULL || list == NULL) {
     return;
@@ -212,7 +212,7 @@ void
 uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel)
 {
-  char              *dispval;
+  const char        *dispval;
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
   char              tbuff [200];

@@ -375,9 +375,9 @@ END_TEST
 
 START_TEST(slist_add_str_iterate)
 {
-  slist_t *      list;
-  char *        value;
-  char *        key;
+  slist_t *     list;
+  const char *  value;
+  const char *  key;
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_str_iterate");
@@ -429,8 +429,8 @@ END_TEST
 START_TEST(slist_add_sort_str)
 {
   slist_t *      list;
+  const char *  key;
   ssize_t          value;
-  char          *key;
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_sort_str");
@@ -478,8 +478,8 @@ END_TEST
 START_TEST(slist_replace_str)
 {
   slist_t        *list;
-  char          *key;
-  char          *value;
+  const char *  key;
+  const char *  value;
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_replace_str");

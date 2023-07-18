@@ -212,7 +212,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   dancelist = danceGetDanceList (dances);
   slistStartIterator (dancelist, &iteridx);
   while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    char        *dancedisp;
+    const char  *dancedisp;
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
@@ -304,9 +304,8 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   if (widx == CONFUI_ENTRY_DANCE_TAGS) {
     slist_t *slist;
 
-    conv.allocated = true;
-    conv.str = mdstrdup (str);
-    conv.valuetype = VALUE_STR;
+    conv.str = str;
+    conv.invt = VALUE_STR;
     convTextList (&conv);
     slist = conv.list;
     danceSetList (dances, key, didx, slist);
@@ -403,12 +402,12 @@ confuiDanceSpinboxChg (void *udata, int widx)
 static int
 confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
 {
-  int               rc;
-  const char        *fn;
-  char              tbuff [MAXPATHLEN];
-  char              nfn [MAXPATHLEN];
-  char              *musicdir;
-  size_t            mlen;
+  int         rc;
+  const char  *fn;
+  char        tbuff [MAXPATHLEN];
+  char        nfn [MAXPATHLEN];
+  const char  *musicdir;
+  size_t      mlen;
 
   logProcBegin (LOG_PROC, "confuiDanceValidateAnnouncement");
 
@@ -479,7 +478,7 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   nlist_t       *llist = NULL;
   dnctype_t     *dnctypes;
   slistidx_t    iteridx;
-  char          *key;
+  const char    *key;
   int           count;
 
   logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");

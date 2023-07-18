@@ -30,7 +30,7 @@ typedef enum {
 
 typedef struct org org_t;
 
-org_t   * orgAlloc (char *orgpath);
+org_t   * orgAlloc (const char *orgpath);
 void    orgFree (org_t *org);
 slist_t *orgGetList (org_t *org);
 char    * orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey);
@@ -40,6 +40,6 @@ void    orgStartIterator (org_t *org, slistidx_t *iteridx);
 int     orgIterateTagKey (org_t *org, slistidx_t *iteridx);
 int     orgIterateOrgKey (org_t *org, slistidx_t *iteridx);
 int     orgGetTagKey (int orgkey);
-char *  orgGetText (org_t *org, slistidx_t idx);
+const char *orgGetText (org_t *org, slistidx_t idx);
 
 #endif /* INC_ORGUTIL_H */

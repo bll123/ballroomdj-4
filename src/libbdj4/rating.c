@@ -64,8 +64,8 @@ ratingAlloc (void)
 
   ilistStartIterator (rating->rating, &iteridx);
   while ((key = ilistIterateKey (rating->rating, &iteridx)) >= 0) {
-    char    *val;
-    int     len;
+    const char  *val;
+    int         len;
 
     val = ilistGetStr (rating->rating, key, RATING_RATING);
     slistSetNum (rating->ratingList, val, key);
@@ -102,7 +102,7 @@ ratingGetMaxWidth (rating_t *rating)
   return rating->maxWidth;
 }
 
-char *
+const char *
 ratingGetRating (rating_t *rating, ilistidx_t ikey)
 {
   return ilistGetStr (rating->rating, ikey, RATING_RATING);
@@ -134,18 +134,17 @@ ratingConv (datafileconv_t *conv)
 
   rating = bdjvarsdfGet (BDJVDF_RATINGS);
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
     num = slistGetNum (rating->ratingList, conv->str);
     if (num == LIST_VALUE_INVALID) {
       /* unknown ratings are dumped into the unrated bucket */
       num = RATING_UNRATED_IDX;
     }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
     num = conv->num;
+    conv->outvt = VALUE_STR;
     conv->str = ilistGetStr (rating->rating, num, RATING_RATING);
   }
 }

@@ -89,7 +89,7 @@ static void   orgutilInfoFree (void *data);
 static void   orgutilClean (char *target, const char *from, size_t sz);
 
 org_t *
-orgAlloc (char *orgpath)
+orgAlloc (const char *orgpath)
 {
   org_t         *org;
   char          *tvalue;
@@ -325,8 +325,9 @@ char *
 orgMakeSongPath (org_t *org, song_t *song)
 {
   slistidx_t      iteridx;
-  char            *p;
-  char            *tp;
+  const char      *p;
+  const char      *tp;
+  char            *rp;
   char            tbuff [MAXPATHLEN];
   char            gbuff [MAXPATHLEN];
   char            tmp [40];
@@ -374,8 +375,7 @@ orgMakeSongPath (org_t *org, song_t *song)
           p = tmp;
         }
         if (orginfo->convFunc != NULL) {
-          conv.allocated = false;
-          conv.valuetype = VALUE_NUM;
+          conv.invt = VALUE_NUM;
           conv.num = val;
           orginfo->convFunc (&conv);
           p = conv.str;
@@ -458,8 +458,8 @@ orgMakeSongPath (org_t *org, song_t *song)
     strlcat (tbuff, gbuff, sizeof (tbuff));
   }
 
-  p = mdstrdup (tbuff);
-  return p;
+  rp = mdstrdup (tbuff);
+  return rp;
 }
 
 bool
@@ -512,7 +512,7 @@ orgGetTagKey (int orgkey)
   return orglookup [orgkey].tagkey;
 }
 
-char *
+const char *
 orgGetText (org_t *org, slistidx_t idx)
 {
   orginfo_t *orginfo;

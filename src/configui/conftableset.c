@@ -21,7 +21,7 @@
 #include "ui.h"
 
 void
-confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key)
+confuiDanceSet (uitree_t *uitree, const char *dancedisp, ilistidx_t key)
 {
   logProcBegin (LOG_PROC, "confuiDanceSet");
   uiTreeViewSetValues (uitree,
@@ -34,7 +34,7 @@ confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key)
 
 void
 confuiGenreSet (uitree_t *uitree,
-    int editable, char *genredisp, int clflag)
+    int editable, const char *genredisp, int clflag)
 {
   logProcBegin (LOG_PROC, "confuiGenreSet");
   uiTreeViewSetValues (uitree,
@@ -47,7 +47,7 @@ confuiGenreSet (uitree_t *uitree,
 
 void
 confuiLevelSet (uitree_t *uitree,
-    int editable, char *leveldisp, long weight, int def)
+    int editable, const char *leveldisp, long weight, int def)
 {
   uiwcont_t      *adjustment;
 
@@ -67,7 +67,7 @@ confuiLevelSet (uitree_t *uitree,
 
 void
 confuiRatingSet (uitree_t *uitree,
-    int editable, char *ratingdisp, long weight)
+    int editable, const char *ratingdisp, long weight)
 {
   uiwcont_t   *adjustment;
 
@@ -87,7 +87,7 @@ confuiRatingSet (uitree_t *uitree,
 
 void
 confuiStatusSet (uitree_t *uitree,
-    int editable, char *statusdisp, int playflag)
+    int editable, const char *statusdisp, int playflag)
 {
   logProcBegin (LOG_PROC, "confuiStatusSet");
   uiTreeViewSetValues (uitree,

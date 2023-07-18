@@ -36,7 +36,7 @@ samesongAlloc (musicdb_t *musicdb)
   dbidx_t     dbidx;
   song_t      *song;
   ssize_t     ssidx;
-  char        *sscolor;
+  const char  *sscolor;
   char        tbuff [80];
   int         val;
 

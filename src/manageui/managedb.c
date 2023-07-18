@@ -326,7 +326,7 @@ manageDbChg (void *udata)
   managedb_t      *managedb = udata;
   double          value;
   int             nval;
-  char            *sval;
+  const char      *sval;
 
   nval = MANAGE_DB_CHECK_NEW;
 
@@ -426,7 +426,7 @@ manageDbStart (void *udata)
 {
   managedb_t  *managedb = udata;
   int         nval;
-  char        *sval = NULL;
+  const char  *sval = NULL;
   const char  *targv [10];
   int         targc = 0;
   char        tbuff [MAXPATHLEN];

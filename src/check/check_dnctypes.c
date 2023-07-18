@@ -46,8 +46,8 @@ END_TEST
 START_TEST(dnctypes_iterate)
 {
   dnctype_t   *dt = NULL;
-  char        *val = NULL;
-  char        *prior = NULL;
+  const char  *val = NULL;
+  const char  *prior = NULL;
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dnctypes_iterate");
@@ -67,7 +67,7 @@ END_TEST
 START_TEST(dnctypes_conv)
 {
   dnctype_t   *dt = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   datafileconv_t conv;
   int         count;
@@ -80,20 +80,15 @@ START_TEST(dnctypes_conv)
   dnctypesStartIterator (dt, &iteridx);
   count = 0;
   while ((val = dnctypesIterate (dt, &iteridx)) != NULL) {
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = val;
     dnctypesConv (&conv);
     ck_assert_int_eq (conv.num, count);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_NUM;
+    conv.invt = VALUE_NUM;
     conv.num = count;
     dnctypesConv (&conv);
-    ck_assert_str_eq (conv.str, val);
-    if (conv.allocated) {
-      mdfree (conv.str);
-    }
+    ck_assert_str_eq (conv.numstr, val);
 
     ++count;
   }

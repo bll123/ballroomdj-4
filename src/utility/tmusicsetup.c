@@ -310,9 +310,8 @@ updateData (ilist_t *tmlist, ilistidx_t key)
   datafileconv_t  conv;
   ilistidx_t    danceIdx = LIST_VALUE_INVALID;
 
-  conv.allocated = false;
   conv.str = ilistGetStr (tmlist, key, TAG_DANCE);
-  conv.valuetype = VALUE_STR;
+  conv.invt = VALUE_STR;
   danceConvDance (&conv);
   danceIdx = conv.num;
 

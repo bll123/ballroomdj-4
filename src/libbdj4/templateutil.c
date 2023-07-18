@@ -37,7 +37,7 @@ templateImageCopy (const char *color)
   char        to [MAXPATHLEN];
   slist_t     *dirlist;
   slistidx_t  iteridx;
-  char        *fname;
+  const char  *fname;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "img", "", PATHBLD_MP_DIR_TEMPLATE);
 
@@ -82,7 +82,7 @@ templateDisplaySettingsCopy (void)
   char        to [MAXPATHLEN];
   slist_t     *dirlist;
   slistidx_t  iteridx;
-  char        *fname;
+  const char  *fname;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 

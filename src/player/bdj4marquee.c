@@ -947,10 +947,10 @@ marqueeSetTimer (marquee_t *marquee, char *args)
 static void
 marqueeSetFont (marquee_t *marquee, int sz)
 {
-  char    *f;
-  char    fontname [200];
-  char    tbuff [200];
-  int     i;
+  const char  *f;
+  char        fontname [200];
+  char        tbuff [200];
+  int         i;
 
   logProcBegin (LOG_PROC, "marqueeSetFont");
 
@@ -1026,7 +1026,7 @@ marqueeRecover (marquee_t *marquee)
 static void
 marqueeDisplayCompletion (marquee_t *marquee)
 {
-  char  *disp;
+  const char  *disp;
 
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DANCE], "");
   uiLabelSetText (marquee->wcont [MQ_W_INFO_ARTIST], "");

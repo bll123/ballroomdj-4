@@ -76,7 +76,7 @@ danceAlloc (const char *altfname)
 {
   dance_t     *dance;
   char        fname [MAXPATHLEN];
-  char        *val;
+  const char  *val;
   int         key;
   ilistidx_t  iteridx;
 
@@ -157,7 +157,7 @@ danceGetCount (dance_t *dances)
   return ilistGetCount (dances->dances);
 }
 
-char *
+const char *
 danceGetStr (dance_t *dances, ilistidx_t dkey, ilistidx_t idx)
 {
   if (dances == NULL || dances->dances == NULL) {
@@ -232,13 +232,12 @@ danceConvDance (datafileconv_t *conv)
 
   dance = bdjvarsdfGet (BDJVDF_DANCES);
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
     num = slistGetNum (dance->danceList, conv->str);
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     num = conv->num;
     conv->str = ilistGetStr (dance->dances, num, DANCE_DANCE);
   }
@@ -342,19 +341,18 @@ static void
 danceConvSpeed (datafileconv_t *conv)
 {
   nlistidx_t  idx;
-  char        *sval;
+  const char  *sval;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
     sval = conv->str;
     idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, sval);
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
       conv->num = dancespeeddfkeys [idx].itemkey;
     }
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     if (conv->num < 0 || conv->num >= DANCE_SPEED_MAX) {
       sval = dancespeeddfkeys [DANCE_SPEED_NORMAL].name;  // unknown -> normal
     } else {
@@ -369,9 +367,8 @@ danceConvTimeSig (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
     idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->str);
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
@@ -380,8 +377,8 @@ danceConvTimeSig (datafileconv_t *conv)
       /* in case there are any leftover 4/8 settings */
       conv->num = DANCE_TIMESIG_44;
     }
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     if (conv->num < 0 || conv->num >= DANCE_TIMESIG_MAX) {
       conv->str = NULL;
     } else {

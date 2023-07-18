@@ -19,7 +19,7 @@ status_t    * statusAlloc (void);
 void        statusFree (status_t *);
 ssize_t     statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);
-char        * statusGetStatus (status_t *, ilistidx_t ikey);
+const char  * statusGetStatus (status_t *, ilistidx_t ikey);
 ssize_t     statusGetPlayFlag (status_t *status, ilistidx_t ikey);
 void        statusStartIterator (status_t *status, ilistidx_t *iteridx);
 ilistidx_t  statusIterate (status_t *status, ilistidx_t *iteridx);

@@ -461,7 +461,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
 
   slistStartIterator (dancelist, &iteridx);
   while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    char        *dancedisp;
+    const char  *dancedisp;
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 

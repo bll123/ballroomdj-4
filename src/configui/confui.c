@@ -26,7 +26,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
-  char          *tstr;
+  const char    *tstr;
 
   logProcBegin (LOG_PROC, "confuiBuildUIUserInterface");
   vbox = uiCreateVertBox ();

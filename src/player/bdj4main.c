@@ -130,7 +130,7 @@ static bool mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool mainClosingCallback (void *tmaindata, programstate_t programState);
 static void mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void mainSendMarqueeData (maindata_t *mainData);
-static char * mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx);
+static const char * mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx);
 static void mainQueueClear (maindata_t *mainData, char *args);
 static void mainQueueDance (maindata_t *mainData, char *args, int count);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
@@ -139,7 +139,7 @@ static void mainMusicQueueFill (maindata_t *mainData);
 static void mainMusicQueuePrep (maindata_t *mainData, int mqidx);
 static void mainMusicqClearPreppedSongs (maindata_t *mainData, int mqidx, int idx);
 static void mainMusicqClearPrep (maindata_t *mainData, int mqidx, int idx);
-static char *mainPrepSong (maindata_t *maindata, int flag, int mqidx, song_t *song, char *sfname, int playlistIdx, long uniqueidx);
+static const char *mainPrepSong (maindata_t *maindata, int flag, int mqidx, song_t *song, const char *sfname, int playlistIdx, long uniqueidx);
 static void mainPlaylistClearQueue (maindata_t *mainData, char *args);
 static void mainTogglePause (maindata_t *mainData, char *args);
 static void mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction);
@@ -976,7 +976,7 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
 static void
 mainStartMarquee (maindata_t *mainData)
 {
-  char        *theme;
+  const char  *theme;
   const char  *targv [2];
   int         idx = 0;
   int         flags = 0;
@@ -1074,21 +1074,21 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 static void
 mainSendMarqueeData (maindata_t *mainData)
 {
-  char    tbuff [200];
-  char    *sbuff = NULL;
-  char    *dstr = NULL;
-  char    *tstr = NULL;
-  int     mqLen;
-  int     mqidx;
-  int     musicqLen;
-  time_t  currTime;
-  time_t  qdur = 0;
-  int     lastmqidx;
-  int     marqueeidx;
-  int     qoffset;
-  char    *jbuff = NULL;
-  bool    marqueeactive = false;
-  bool    mobmarqueeactive = false;
+  char        tbuff [200];
+  char        *sbuff = NULL;
+  const char  *dstr = NULL;
+  const char  *tstr = NULL;
+  int         mqLen;
+  int         mqidx;
+  int         musicqLen;
+  time_t      currTime;
+  time_t      qdur = 0;
+  int         lastmqidx;
+  int         marqueeidx;
+  int         qoffset;
+  char        *jbuff = NULL;
+  bool        marqueeactive = false;
+  bool        mobmarqueeactive = false;
 
   logProcBegin (LOG_PROC, "mainSendMarqueeData");
 
@@ -1244,13 +1244,13 @@ mainSendMarqueeData (maindata_t *mainData)
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
 
-static char *
+static const char *
 mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx)
 {
-  char      *tstr;
-  char      *dstr;
-  dbidx_t   dbidx;
-  song_t    *song;
+  const char  *tstr;
+  const char  *dstr;
+  dbidx_t     dbidx;
+  song_t      *song;
 
   logProcBegin (LOG_PROC, "mainSongGetDanceDisplay");
 
@@ -1531,11 +1531,11 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
 
   /* 5 is the number of songs to prep ahead of time */
   for (int i = 0; i < MAIN_PREP_SIZE; ++i) {
-    char          *sfname = NULL;
+    const char    *sfname = NULL;
     dbidx_t       dbidx;
     song_t        *song = NULL;
     musicqflag_t  flags;
-    char          *annfname = NULL;
+    const char    *annfname = NULL;
     int           playlistIdx;
 
     dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, i);
@@ -1620,9 +1620,9 @@ mainMusicqClearPrep (maindata_t *mainData, int mqidx, int idx)
   }
 }
 
-static char *
+static const char *
 mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
-    song_t *song, char *sfname, int playlistIdx, long uniqueidx)
+    song_t *song, const char *sfname, int playlistIdx, long uniqueidx)
 {
   char          tbuff [1024];
   playlist_t    *playlist = NULL;
@@ -1632,11 +1632,10 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
   double        voladjperc = 0;
   int           announceflag = false;
   ilistidx_t    danceidx;
-  char          *annfname = NULL;
+  const char    *annfname = NULL;
 
   logProcBegin (LOG_PROC, "mainPrepSong");
 
-  sfname = songGetStr (song, TAG_FILE);
   voladjperc = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
   if (isnan (voladjperc)) { voladjperc = 0.0; }
   if (voladjperc == LIST_DOUBLE_INVALID) {
@@ -2125,13 +2124,13 @@ mainPlaybackBegin (maindata_t *mainData)
 static void
 mainMusicQueuePlay (maindata_t *mainData)
 {
-  musicqflag_t      flags;
-  char              *sfname;
-  dbidx_t           dbidx;
-  long              uniqueidx;
-  song_t            *song;
-  int               currlen;
-  time_t            currTime;
+  musicqflag_t  flags;
+  const char    *sfname;
+  dbidx_t       dbidx;
+  long          uniqueidx;
+  song_t        *song;
+  int           currlen;
+  time_t        currTime;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
 
@@ -2348,7 +2347,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   dance_t       *dances;
   slist_t       *danceList;
   slistidx_t    idx;
-  char          *dancenm;
+  const char    *dancenm;
   char          tbuff [200];
   char          *rbuff = NULL;
   slistidx_t    iteridx;
@@ -2377,8 +2376,8 @@ static void
 mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 {
   slist_t       *plList = NULL;
-  char          *plfnm = NULL;
-  char          *plnm = NULL;
+  const char    *plfnm = NULL;
+  const char    *plnm = NULL;
   char          tbuff [200];
   char          *rbuff = NULL;
   slistidx_t    iteridx;
@@ -2407,17 +2406,17 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 static void
 mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 {
-  char    tbuff [200];
-  char    tbuff2 [40];
-  char    *jsbuff = NULL;
-  char    *timerbuff = NULL;
-  char    *tokstr = NULL;
-  char    *p;
-  int     jsonflag;
-  int     musicqLen;
-  char    *data;
-  dbidx_t dbidx;
-  song_t  *song;
+  char        tbuff [200];
+  char        tbuff2 [40];
+  char        *jsbuff = NULL;
+  char        *timerbuff = NULL;
+  char        *tokstr = NULL;
+  char        *p;
+  int         jsonflag;
+  int         musicqLen;
+  const char  *data;
+  dbidx_t     dbidx;
+  song_t      *song;
 
   logProcBegin (LOG_PROC, "mainSendPlayerStatus");
 
@@ -3220,15 +3219,15 @@ mainNextPlaylist (maindata_t *mainData)
 static void
 mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
 {
-  char    tmp [2000];
-  dbidx_t dbidx;
-  dbidx_t qdbidx;
-  dbidx_t mqdbidx [MUSICQ_PB_MAX][MAIN_TS_DEBUG_MAX];
-  char    *title;
-  char    *dance;
-  song_t  *song;
-  char    *songfn;
-  int     bpm;
+  char        tmp [2000];
+  dbidx_t     dbidx;
+  dbidx_t     qdbidx;
+  dbidx_t     mqdbidx [MUSICQ_PB_MAX][MAIN_TS_DEBUG_MAX];
+  const char  *title;
+  const char  *dance;
+  song_t      *song;
+  const char  *songfn;
+  int         bpm;
 
   dbidx = -1;
   qdbidx = -1;

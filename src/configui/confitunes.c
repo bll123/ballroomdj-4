@@ -123,7 +123,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 {
   char          tmp [200];
   char          tbuff [MAXPATHLEN];
-  char          *tdata;
+  const char    *tdata;
   uiwcont_t     *mvbox;
   uiwcont_t     *vbox;
   uiwcont_t     *vboxb;

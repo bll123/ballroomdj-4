@@ -317,7 +317,7 @@ void
 manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
 {
   sequence_t  *seq = NULL;
-  char        *dstr = NULL;
+  const char  *dstr = NULL;
   nlist_t     *dancelist = NULL;
   slist_t     *tlist = NULL;
   nlistidx_t  iteridx;

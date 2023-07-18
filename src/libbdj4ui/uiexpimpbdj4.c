@@ -22,6 +22,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "sysvars.h"

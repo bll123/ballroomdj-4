@@ -266,7 +266,7 @@ uiduallistFree (uiduallist_t *duallist)
 void
 uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
-  char          *keystr;
+  const char    *keystr;
   slistidx_t    siteridx;
   uitree_t      *uitree = NULL;
   uitree_t      *uistree = NULL;

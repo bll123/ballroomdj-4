@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
@@ -65,8 +66,8 @@ statusAlloc (void)
 
   ilistStartIterator (status->status, &iteridx);
   while ((key = ilistIterateKey (status->status, &iteridx)) >= 0) {
-    char    *val;
-    int     len;
+    const char  *val;
+    int         len;
 
     val = ilistGetStr (status->status, key, STATUS_STATUS);
     slistSetNum (status->statusList, val, key);
@@ -103,7 +104,7 @@ statusGetMaxWidth (status_t *status)
   return status->maxWidth;
 }
 
-char *
+const char *
 statusGetStatus (status_t *status, ilistidx_t idx)
 {
   return ilistGetStr (status->status, idx, STATUS_STATUS);
@@ -135,32 +136,23 @@ statusConv (datafileconv_t *conv)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
-
+  if (conv->invt == VALUE_STR) {
     if (status == NULL) {
       conv->num = 0;
-      if (conv->allocated) {
-        mdfree (conv->str);
-      }
       return;
     }
 
     num = slistGetNum (status->statusList, conv->str);
-    if (conv->allocated) {
-      mdfree (conv->str);
-    }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
-    conv->allocated = false;
-
+  } else if (conv->invt == VALUE_NUM) {
     if (status == NULL || conv->num == LIST_VALUE_INVALID) {
-      conv->str = "New";
+      conv->str = _("New");
       return;
     }
 
     num = conv->num;
+    conv->outvt = VALUE_STR;
     conv->str = ilistGetStr (status->status, num, STATUS_STATUS);
   }
 }

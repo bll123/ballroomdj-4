@@ -20,7 +20,7 @@ level_t     *levelAlloc (void);
 void        levelFree (level_t *);
 ssize_t     levelGetCount (level_t *level);
 int         levelGetMaxWidth (level_t *level);
-char        * levelGetLevel (level_t *level, ilistidx_t idx);
+const char  * levelGetLevel (level_t *level, ilistidx_t idx);
 ssize_t     levelGetWeight (level_t *level, ilistidx_t idx);
 ssize_t     levelGetDefault (level_t *level, ilistidx_t idx);
 char        * levelGetDefaultName (level_t *level);

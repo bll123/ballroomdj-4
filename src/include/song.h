@@ -14,7 +14,7 @@ typedef struct song song_t;
 song_t *  songAlloc (void);
 void      songFree (void *);
 void      songParse (song_t *song, char *data, ilistidx_t didx);
-char *    songGetStr (song_t *, nlistidx_t);
+const char *songGetStr (song_t *, nlistidx_t);
 listnum_t songGetNum (song_t *, nlistidx_t);
 double    songGetDouble (song_t *, nlistidx_t);
 slist_t * songGetList (song_t *song, nlistidx_t idx);

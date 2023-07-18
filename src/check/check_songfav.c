@@ -114,21 +114,16 @@ START_TEST(songfav_conv)
 
   songfav = songFavoriteAlloc ();
 
-  conv.allocated = false;
-  conv.valuetype = VALUE_STR;
+  conv.invt = VALUE_STR;
   conv.str = "bluestar";
   songFavoriteConv (&conv);
   ck_assert_int_ge (conv.num, 0);
 
   songFavoriteConv (&conv);
   ck_assert_str_eq (conv.str, "bluestar");
-  if (conv.allocated) {
-    mdfree (conv.str);
-  }
 
   count = songFavoriteGetCount (songfav);
-  conv.allocated = false;
-  conv.valuetype = VALUE_STR;
+  conv.invt = VALUE_STR;
   conv.str = "imported";
   songFavoriteConv (&conv);
   ck_assert_int_ge (conv.num, count);

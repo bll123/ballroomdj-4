@@ -23,7 +23,7 @@
 #include "orgopt.h"
 #include "orgutil.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "song.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -36,8 +36,7 @@ orgoptAlloc (void)
   slist_t       *dflist;
   slistidx_t    dfiteridx;
   slist_t       *list;
-  char          *value;
-  char          *p;
+  const char    *value;
   char          dispstr [MAXPATHLEN];
   char          path [MAXPATHLEN];
 
@@ -71,9 +70,10 @@ orgoptAlloc (void)
     orgStartIterator (org, &piteridx);
     while ((orgkey = orgIterateOrgKey (org, &piteridx)) >= 0) {
       if (orgkey == ORG_TEXT) {
+        const char  *tmp;
         /* leading or trailing characters */
-        p = orgGetText (org, piteridx);
-        strlcat (dispstr, p, sizeof (dispstr));
+        tmp = orgGetText (org, piteridx);
+        strlcat (dispstr, tmp, sizeof (dispstr));
       } else {
         tagkey = orgGetTagKey (orgkey);
         strlcat (dispstr, tagdefs [tagkey].displayname, sizeof (dispstr));

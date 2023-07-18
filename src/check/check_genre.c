@@ -51,7 +51,7 @@ START_TEST(genre_iterate)
 {
   genre_t     *genre = NULL;
   slist_t     *gl = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   int         count;
   int         key;
@@ -82,7 +82,7 @@ END_TEST
 START_TEST(genre_conv)
 {
   genre_t     *genre = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   datafileconv_t conv;
   int         count;
@@ -99,20 +99,15 @@ START_TEST(genre_conv)
   while ((key = genreIterate (genre, &iteridx)) >= 0) {
     val = genreGetGenre (genre, key);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = val;
     genreConv (&conv);
     ck_assert_int_eq (conv.num, count);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_NUM;
+    conv.invt = VALUE_NUM;
     conv.num = count;
     genreConv (&conv);
-    ck_assert_str_eq (conv.str, val);
-    if (conv.allocated) {
-      mdfree (conv.str);
-    }
+    ck_assert_str_eq (conv.numstr, val);
 
     ++count;
   }
@@ -125,14 +120,14 @@ START_TEST(genre_save)
 {
   genre_t     *genre = NULL;
   slist_t     *gl = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   ilistidx_t  giteridx;
   ilistidx_t  iiteridx;
   int         key;
   int         cf;
   ilist_t     *tlist;
   int         tkey;
-  char        *tval;
+  const char  *tval;
   int         tcf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_save");

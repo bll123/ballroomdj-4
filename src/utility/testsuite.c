@@ -297,7 +297,7 @@ main (int argc, char *argv [])
       testsuite.gresults.testcount, testsuite.gresults.testfail);
   if (testsuite.gresults.testfail > 0) {
     slistidx_t  iteridx;
-    char        *key;
+    const char  *key;
 
     fprintf (stdout, "Failed: ");
     slistStartIterator (testsuite.failedlist, &iteridx);
@@ -986,8 +986,8 @@ tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
   char        *tstr;
   char        *p;
   char        *tokstr;
-  char        *key;
-  char        *valchk;
+  const char  *key;
+  const char  *valchk;
   slistidx_t  iteridx;
 
   tstr = mdstrdup (tcmd);

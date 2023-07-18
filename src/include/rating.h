@@ -23,7 +23,7 @@ rating_t    *ratingAlloc (void);
 void        ratingFree (rating_t *rating);
 ssize_t     ratingGetCount (rating_t *rating);
 int         ratingGetMaxWidth (rating_t *rating);
-char        * ratingGetRating (rating_t *rating, ilistidx_t idx);
+const char  * ratingGetRating (rating_t *rating, ilistidx_t idx);
 ssize_t     ratingGetWeight (rating_t *rating, ilistidx_t idx);
 void        ratingStartIterator (rating_t *rating, ilistidx_t *iteridx);
 ilistidx_t  ratingIterate (rating_t *rating, ilistidx_t *iteridx);

@@ -67,9 +67,9 @@ levelAlloc ()
 
   ilistStartIterator (level->level, &iteridx);
   while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
-    char    *val;
-    ssize_t nval;
-    int     len;
+    const char  *val;
+    ssize_t     nval;
+    int         len;
 
     val = ilistGetStr (level->level, key, LEVEL_LEVEL);
     slistSetNum (level->levelList, val, key);
@@ -113,7 +113,7 @@ levelGetMaxWidth (level_t *level)
   return level->maxWidth;
 }
 
-char *
+const char *
 levelGetLevel (level_t *level, ilistidx_t ikey)
 {
   return ilistGetStr (level->level, ikey, LEVEL_LEVEL);
@@ -175,19 +175,17 @@ levelConv (datafileconv_t *conv)
 
   level = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
-
+  if (conv->invt == VALUE_STR) {
     num = slistGetNum (level->levelList, conv->str);
+    conv->outvt = VALUE_NUM;
     conv->num = num;
     if (conv->num == LIST_VALUE_INVALID) {
       /* unknown levels are dumped into bucket 1 */
       conv->num = 1;
     }
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
     num = conv->num;
+    conv->outvt = VALUE_STR;
     conv->str = ilistGetStr (level->level, num, LEVEL_LEVEL);
   }
 }

@@ -215,7 +215,7 @@ manageStatsDisplayStats (managestats_t *managestats)
   char        tbuff [60];
   int         count;
   slist_t     *danceList;
-  char        *dancedisp;
+  const char  *dancedisp;
   dance_t     *dances;
   slistidx_t  diteridx;
   ilistidx_t  didx;

@@ -849,7 +849,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   char          *tokstr;
   dbidx_t       dbidx = -1;
   song_t        *song = NULL;
-  char          *data = NULL;
+  const char    *data = NULL;
   ilistidx_t    danceIdx;
   dance_t       *dances;
 

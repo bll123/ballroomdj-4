@@ -140,7 +140,7 @@ main (int argc, char *argv [])
   char        *musicdir = NULL;
   char        homemusicdir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  char        *tval = NULL;
+  const char  *tval = NULL;
   bool        isbdj4 = false;
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
@@ -1122,7 +1122,7 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
   slistidx_t  fiteridx;
   nlistidx_t  cliteridx;
   nlistidx_t  key;
-  char        *fn;
+  const char  *fn;
   bdjregex_t  *rx;
 
   slistStartIterator (filelist, &fiteridx);

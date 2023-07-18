@@ -37,7 +37,7 @@ sequenceLoad (const char *fname)
 {
   sequence_t    *sequence;
   slist_t       *tlist;
-  char          *seqkey;
+  const char    *seqkey;
   slistidx_t    lkey;
   char          fn [MAXPATHLEN];
   nlistidx_t    iteridx;
@@ -63,8 +63,7 @@ sequenceLoad (const char *fname)
 
   slistStartIterator (tlist, &iteridx);
   while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = seqkey;
     danceConvDance (&conv);
     lkey = conv.num;

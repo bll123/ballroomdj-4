@@ -23,6 +23,7 @@ typedef enum {
   VALUE_NUM,
   VALUE_LIST,
   VALUE_ALIAS,
+  VALUE_STRVAL,     // only used by the conversion functions (out valuetype)
 } valuetype_t;
 
 enum {

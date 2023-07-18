@@ -104,7 +104,7 @@ dbCount (musicdb_t *musicdb)
 int
 dbLoad (musicdb_t *musicdb)
 {
-  char        *fstr = NULL;
+  const char  *fstr = NULL;
   song_t      *song;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
@@ -163,7 +163,7 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
   rafileidx_t rrn;
-  char        *fstr;
+  const char  *fstr;
 
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
@@ -300,8 +300,8 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
 {
   size_t        tblen = 0;
   slistidx_t    iteridx;
-  char          *tag;
-  char          *data;
+  const char    *tag;
+  const char    *data;
   bool          havestatus = false;
   char          tmp [100];
 

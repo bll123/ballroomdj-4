@@ -67,11 +67,11 @@ songFavoriteAlloc (void)
 
   ilistStartIterator (songfav->songfavList, &iteridx);
   while ((key = ilistIterateKey (songfav->songfavList, &iteridx)) >= 0) {
-    char    *name;
-    char    *disp;
-    char    *color;
-    int     usersel;
-    char    tbuff [100];
+    const char  *name;
+    const char  *disp;
+    const char  *color;
+    int         usersel;
+    char        tbuff [100];
 
     name = ilistGetStr (songfav->songfavList, key, SONGFAV_NAME);
     disp = ilistGetStr (songfav->songfavList, key, SONGFAV_DISPLAY);
@@ -172,17 +172,16 @@ songFavoriteConv (datafileconv_t *conv)
     return;
   }
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
     num = slistGetNum (songfav->songfavLookup, conv->str);
     if (num == LIST_VALUE_INVALID) {
       num = 0;
     }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
     num = conv->num;
+    conv->outvt = VALUE_STR;
     conv->str = ilistGetStr (songfav->songfavList, num, SONGFAV_NAME);
   }
 }

@@ -446,7 +446,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   int             row;
   song_t          * song;
   dbidx_t         dbidx;
-  char            * listingFont;
+  const char      * listingFont;
   slist_t         * sellist;
   const char      * sscolor = ""; // "#000000";
 

@@ -18,7 +18,6 @@ typedef struct {
 pathinfo_t *  pathInfo (const char *path);
 void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
-void          pathDisplayPath (char *buff, size_t len);
 void          pathStripPath (char *buff, size_t len);
 void          pathNormalizePath (char *buff, size_t len);
 void          pathRealPath (char *to, const char *from, size_t sz);

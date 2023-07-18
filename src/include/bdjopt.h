@@ -130,11 +130,11 @@ enum {
 
 void    bdjoptInit (void);
 void    bdjoptCleanup (void);
-char    *bdjoptGetStr (nlistidx_t idx);
+const char *bdjoptGetStr (nlistidx_t idx);
 int64_t bdjoptGetNum (nlistidx_t idx);
 void    bdjoptSetStr (nlistidx_t idx, const char *value);
 void    bdjoptSetNum (nlistidx_t idx, int64_t value);
-char    *bdjoptGetStrPerQueue (nlistidx_t idx, int musicq);
+const char *bdjoptGetStrPerQueue (nlistidx_t idx, int musicq);
 int64_t bdjoptGetNumPerQueue (nlistidx_t idx, int musicq);
 void    bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq);
 void    bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq);

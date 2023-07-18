@@ -406,7 +406,7 @@ void confuiSetStatusMsg (confuigui_t *gui, const char *msg);
 void confuiSelectFileDialog (confuigui_t *gui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
-void confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath);
+void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
 char *confuiGetLocalIP (confuigui_t *gui);
 void confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled);
@@ -437,7 +437,7 @@ void confuiCreateGenreTable (confuigui_t *gui);
 void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, char *value);
+void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, const char *value);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
@@ -513,11 +513,11 @@ bool confuiDanceSelect (void *udata, long col);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */
-void confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key);
-void confuiGenreSet (uitree_t *uitree, int editable, char *genredisp, int clflag);
-void confuiLevelSet (uitree_t *uitree, int editable, char *leveldisp, long weight, int def);
-void confuiRatingSet (uitree_t *uitree, int editable, char *ratingdisp, long weight);
-void confuiStatusSet (uitree_t *uitree, int editable, char *statusdisp, int playflag);
+void confuiDanceSet (uitree_t *uitree, const char *dancedisp, ilistidx_t key);
+void confuiGenreSet (uitree_t *uitree, int editable, const char *genredisp, int clflag);
+void confuiLevelSet (uitree_t *uitree, int editable, const char *leveldisp, long weight, int def);
+void confuiRatingSet (uitree_t *uitree, int editable, const char *ratingdisp, long weight);
+void confuiStatusSet (uitree_t *uitree, int editable, const char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);

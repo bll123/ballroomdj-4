@@ -143,7 +143,7 @@ START_TEST(songlist_iterate)
   count = 0;
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
     ilistidx_t    vala;
-    char          *stra;
+    const char    *stra;
 
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     ck_assert_int_ge (vala, 0);
@@ -240,8 +240,8 @@ START_TEST(songlist_save)
 
   songlistStartIterator (sl, &iteridx);
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
-    int   vala, valb;
-    char  *stra, *strb;
+    int         vala, valb;
+    const char  *stra, *strb;
 
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     valb = songlistGetNum (slb, key, SONGLIST_DANCE);
@@ -293,8 +293,8 @@ START_TEST(songlist_save_new)
 
   songlistStartIterator (slb, &iteridxb);
   while ((key = songlistIterate (slb, &iteridxb)) >= 0) {
-    int   vala;
-    char  *stra;
+    int         vala;
+    const char  *stra;
 
     vala = songlistGetNum (slb, key, SONGLIST_DANCE);
     songlistSetNum (sl, key, SONGLIST_DANCE, vala);
@@ -314,8 +314,8 @@ START_TEST(songlist_save_new)
 
   songlistStartIterator (sl, &iteridx);
   while ((key = songlistIterate (sl, &iteridx)) >= 0) {
-    int   vala, valb;
-    char  *stra, *strb;
+    int         vala, valb;
+    const char  *stra, *strb;
 
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     valb = songlistGetNum (slb, key, SONGLIST_DANCE);

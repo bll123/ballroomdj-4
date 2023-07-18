@@ -47,6 +47,7 @@
 #include "ossignal.h"
 #include "osutils.h"
 #include "osuiutils.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -2163,10 +2164,10 @@ installerConvertStart (installer_t *installer)
 static void
 installerConvert (installer_t *installer)
 {
-  char      *fn;
-  char      buffa [MAXPATHLEN];
-  char      buffb [MAXPATHLEN];
-  const char *targv [15];
+  const char  *fn;
+  char        buffa [MAXPATHLEN];
+  char        buffb [MAXPATHLEN];
+  const char  *targv [15];
 
   fn = slistIterateKey (installer->convlist, &installer->convidx);
   if (fn == NULL) {

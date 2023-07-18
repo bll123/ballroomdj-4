@@ -228,8 +228,8 @@ START_TEST(sequence_save_new)
   slist_t       *tslist = NULL;
   slistidx_t    iteridx;
   nlistidx_t    niteridxb;
-  char          *stra = NULL;
-  char          *strb = NULL;
+  const char    *stra = NULL;
+  const char    *strb = NULL;
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_save_new");

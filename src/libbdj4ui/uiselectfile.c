@@ -149,7 +149,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiwcont_t     *scwindow;
   char          tbuff [200];
   slistidx_t    fliteridx;
-  char          *disp;
+  const char    *disp;
 
 
   selectfile->selfilecb = cb;

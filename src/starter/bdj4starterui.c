@@ -1900,7 +1900,7 @@ starterSendFilesInit (startui_t *starter, char *dir, int sendType)
 static void
 starterSendFiles (startui_t *starter)
 {
-  char        *fn;
+  const char  *fn;
   const char  *origfn;
   char        ifn [MAXPATHLEN];
   char        tbuff [100];

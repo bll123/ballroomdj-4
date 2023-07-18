@@ -47,7 +47,7 @@ END_TEST
 START_TEST(status_iterate)
 {
   status_t     *status = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   int         count;
   int         key;
@@ -84,7 +84,7 @@ END_TEST
 START_TEST(status_conv)
 {
   status_t     *status = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   datafileconv_t conv;
   int         count;
@@ -100,20 +100,15 @@ START_TEST(status_conv)
   while ((key = statusIterate (status, &iteridx)) >= 0) {
     val = statusGetStatus (status, key);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = val;
     statusConv (&conv);
     ck_assert_int_eq (conv.num, count);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_NUM;
+    conv.invt = VALUE_NUM;
     conv.num = count;
     statusConv (&conv);
-    ck_assert_str_eq (conv.str, val);
-    if (conv.allocated) {
-      mdfree (conv.str);
-    }
+    ck_assert_str_eq (conv.numstr, val);
 
     ++count;
   }
@@ -125,14 +120,14 @@ END_TEST
 START_TEST(status_save)
 {
   status_t     *status = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   ilistidx_t  giteridx;
   ilistidx_t  iiteridx;
   int         key;
   int         pf;
   ilist_t     *tlist;
   int         tkey;
-  char        *tval;
+  const char  *tval;
   int         tpf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_save");

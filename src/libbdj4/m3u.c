@@ -18,6 +18,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "song.h"
 #include "songutil.h"
@@ -33,7 +34,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   dbidx_t     dbidx;
   song_t      *song;
   char        tbuff [MAXPATHLEN];
-  char        *str;
+  const char  *str;
   char        *ffn;
   bool        ffnallocated = false;
 
@@ -62,7 +63,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     if (str != NULL && *str) {
       fprintf (fh, "#EXTART:%s\n", str);
     }
-    ffn = nlistGetStr (list, dbidx);
+    ffn = (char *) nlistGetStr (list, dbidx);
     ffnallocated = false;
     if (ffn == NULL) {
       str = songGetStr (song, TAG_FILE);

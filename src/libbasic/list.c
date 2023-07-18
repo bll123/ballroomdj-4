@@ -17,6 +17,11 @@
 #include "mdebug.h"
 #include "tmutil.h"
 
+typedef union {
+  const char  *strkey;
+  listidx_t   idx;
+} listkeylookup_t;
+
 static listidx_t listGetIdx_int (list_t *list, listkeylookup_t *key);
 static bool     listCheckKeyType (list_t *list, keytype_t keytype);
 static void     listFreeItem (list_t *, listidx_t);
@@ -185,7 +190,7 @@ listCalcMaxWidth (keytype_t keytype, list_t *list)
       size_t    len;
 
       len = istrlen (list->data [i].key.strkey);
-      if (len > maxlen) {
+      if ((int) len > maxlen) {
         maxlen = len;
       }
     }
@@ -193,6 +198,17 @@ listCalcMaxWidth (keytype_t keytype, list_t *list)
   list->maxKeyWidth = maxlen;
 }
 
+const char *
+listGetName (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->name;
+}
 
 /* counts */
 
@@ -305,7 +321,7 @@ listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
   return listIterateKeyGetNum (list, iteridx);
 }
 
-char *
+const char *
 listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   char    *value = NULL;
@@ -390,6 +406,136 @@ listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
   return *iteridx;
 }
 
+listidx_t
+listGetIdxNumKey (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  listkeylookup_t key;
+
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  key.idx = idx;
+  return listGetIdx_int (list, &key);
+}
+
+listidx_t
+listGetIdxStrKey (keytype_t keytype, list_t *list, const char *str)
+{
+  listkeylookup_t key;
+
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  key.strkey = str;
+  return listGetIdx_int (list, &key);
+}
+
+listidx_t
+listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_LOC_INVALID;
+  }
+
+  if (idx >= 0 && idx < list->count) {
+    return list->data [idx].key.idx;
+  }
+  return LIST_LOC_INVALID;
+}
+
+const char *
+listGetKeyStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  if (list == NULL) {
+    return NULL;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return NULL;
+  }
+
+  if (idx >= 0 && idx < list->count) {
+    return list->data [idx].key.strkey;
+  }
+  return NULL;
+}
+
+void *
+listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  void    *value = NULL;
+
+  if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
+  if (idx >= 0 && idx < list->count) {
+    value = list->data [idx].value.data;
+  }
+
+  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%d", list->name, idx);
+  return value;
+}
+
+const char *
+listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  const char  *value;
+
+  value = listGetDataByIdx (keytype, list, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%d %s", list->name, idx, value);
+  return value;
+}
+
+listnum_t
+listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  listnum_t   value = LIST_VALUE_INVALID;
+
+  if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
+  if (idx >= 0 && idx < list->count) {
+    value = list->data [idx].value.num;
+  }
+
+  logMsg (LOG_DBG, LOG_LIST, "list:gnbi:%s idx:%d %" PRId64, list->name, idx, value);
+  return value;
+}
+
+double
+listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx)
+{
+  double    value = LIST_DOUBLE_INVALID;
+
+  if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
+  if (idx >= 0 && idx < list->count) {
+    value = list->data [idx].value.dval;
+  }
+
+  logMsg (LOG_DBG, LOG_LIST, "list:gdbi:%s idx:%d %.2f", list->name, idx, value);
+  return value;
+}
 
 
 void *
@@ -415,45 +561,6 @@ listGetData (keytype_t keytype, list_t *list, const char *keydata)
     value = list->data [idx].value.data;
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d", list->name, keydata, idx);
-  return value;
-}
-
-void *
-listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
-{
-  void  *value = NULL;
-
-
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return value;
-  }
-  if (idx < 0 || idx >= list->count) {
-    return value;
-  }
-  value = list->data [idx].value.data;
-  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%d", list->name, idx);
-  return value;
-}
-
-listnum_t
-listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
-{
-  listnum_t   value = LIST_VALUE_INVALID;
-
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return value;
-  }
-  if (idx < 0 || idx >= list->count) {
-    return value;
-  }
-  value = list->data [idx].value.num;
-  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%d", list->name, idx);
   return value;
 }
 
@@ -511,18 +618,6 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     }
   }
   logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%d", list->name, idx);
-}
-
-listidx_t
-listGetIdx (keytype_t keytype, list_t *list, listkeylookup_t *key)
-{
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return LIST_LOC_INVALID;
-  }
-  return listGetIdx_int (list, key);
 }
 
 void
@@ -618,7 +713,8 @@ listGetIdx_int (list_t *list, listkeylookup_t *key)
     if (list->keytype == LIST_KEY_STR && key->strkey != NULL) {
       list->keyCache.strkey = mdstrdup (key->strkey);
     }
-    if (list->keytype == LIST_KEY_NUM) {
+    if (list->keytype == LIST_KEY_NUM ||
+        list->keytype == LIST_KEY_IND) {
       list->keyCache.idx = key->idx;
     }
     list->locCache = ridx;
@@ -759,7 +855,8 @@ listCompare (const list_t *list, const listkey_t *a, const listkey_t *b)
     if (list->keytype == LIST_KEY_STR) {
       rc = istringCompare (a->strkey, b->strkey);
     }
-    if (list->keytype == LIST_KEY_NUM) {
+    if (list->keytype == LIST_KEY_NUM ||
+        list->keytype == LIST_KEY_IND) {
       rc = idxCompare (a->idx, b->idx);
     }
   }
@@ -878,7 +975,8 @@ listCheckCache (list_t *list, listkeylookup_t *key)
          key->strkey != NULL &&
          list->keyCache.strkey != NULL &&
          strcmp (key->strkey, list->keyCache.strkey) == 0) ||
-        (list->keytype == LIST_KEY_NUM &&
+        ((list->keytype == LIST_KEY_NUM ||
+          list->keytype == LIST_KEY_IND) &&
          key->idx == list->keyCache.idx)) {
       ridx = list->locCache;
     }

@@ -22,13 +22,15 @@ typedef struct parseinfo parseinfo_t;
 typedef struct datafile datafile_t;
 
 typedef struct {
-  valuetype_t   valuetype;
-  bool          allocated;
+  valuetype_t   invt;
+  valuetype_t   outvt;
   union {
     listnum_t   num;
     list_t      *list;
-    char        *str;
+    const char  *str;
     double      dval;
+    char        numstr [40];
+    char        *strval;
   };
 } datafileconv_t;
 

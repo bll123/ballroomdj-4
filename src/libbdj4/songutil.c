@@ -70,9 +70,9 @@ songutilHasOriginal (const char *sfname)
 void
 songutilConvAdjustFlags (datafileconv_t *conv)
 {
-  if (conv->valuetype == VALUE_STR) {
-    int   num;
-    char  *str;
+  if (conv->invt == VALUE_STR) {
+    int         num;
+    const char  *str;
 
     str = conv->str;
 
@@ -93,18 +93,13 @@ songutilConvAdjustFlags (datafileconv_t *conv)
       ++str;
     }
 
-    conv->valuetype = VALUE_NUM;
-    if (conv->allocated) {
-      mdfree (conv->str);
-    }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-    conv->allocated = false;
-  } else if (conv->valuetype == VALUE_NUM) {
-    int   num;
-    char  tbuff [40];
-    char  *str;
+  } else if (conv->invt == VALUE_NUM) {
+    int     num;
+    char    tbuff [40];
+    char    *str;
 
-    conv->valuetype = VALUE_STR;
     num = conv->num;
 
     *tbuff = '\0';
@@ -125,8 +120,8 @@ songutilConvAdjustFlags (datafileconv_t *conv)
     }
     *str = '\0';
 
-    conv->str = mdstrdup (tbuff);
-    conv->allocated = true;
+    conv->outvt = VALUE_STRVAL;
+    conv->strval = mdstrdup (tbuff);
   }
 }
 

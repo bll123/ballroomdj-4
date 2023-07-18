@@ -19,6 +19,7 @@
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
@@ -192,7 +193,7 @@ instutilCopyTemplates (void)
 
       strlcpy (tbuff, fname, sizeof (tbuff));
       if (renamelist != NULL) {
-        char    *tval;
+        const char  *tval;
 
         tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
         if (tval != NULL) {

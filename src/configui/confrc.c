@@ -150,9 +150,9 @@ confuiLoadHTMLList (confuigui_t *gui)
   datafile_t    *df = NULL;
   slist_t       *list = NULL;
   slistidx_t    iteridx;
-  char          *key;
-  char          *data;
-  char          *tstr;
+  const char    *key;
+  const char    *data;
+  const char    *tstr;
   nlist_t       *llist;
   int           count;
 

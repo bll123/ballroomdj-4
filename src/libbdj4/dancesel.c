@@ -605,8 +605,8 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
 static bool
 danceselMatchTag (slist_t *tags, slist_t *otags)
 {
-  char        *ttag;
-  char        *otag;
+  const char  *ttag;
+  const char  *otag;
   slistidx_t  titeridx;
   slistidx_t  oiteridx;
 

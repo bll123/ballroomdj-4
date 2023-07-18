@@ -55,7 +55,7 @@ void
 confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
 {
   dance_t         *dances;
-  char            *sval;
+  const char      *sval;
   slist_t         *slist;
   datafileconv_t  conv;
   int             widx;
@@ -69,17 +69,13 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
 
   slist = danceGetList (dances, danceIdx, DANCE_TAGS);
-  conv.allocated = false;
   conv.list = slist;
-  conv.valuetype = VALUE_LIST;
+  conv.invt = VALUE_LIST;
   convTextList (&conv);
-  sval = conv.str;
+  sval = conv.strval;
   widx = CONFUI_ENTRY_DANCE_TAGS;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
-  if (conv.allocated) {
-    mdfree (conv.str);
-    sval = NULL;
-  }
+  dataFree (conv.strval);
 
   timesig = danceGetTimeSignature (danceIdx);
 

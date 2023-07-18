@@ -97,8 +97,8 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   editable = false;
   while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
-    char    *ratingdisp;
-    long weight;
+    const char  *ratingdisp;
+    long        weight;
 
     ratingdisp = ratingGetRating (ratings, key);
     weight = ratingGetWeight (ratings, key);

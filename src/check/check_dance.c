@@ -100,14 +100,15 @@ START_TEST(dance_set)
 {
   dance_t     *dance = NULL;
   char        *val = NULL;
+  const char  *cval = NULL;
   slistidx_t  iteridx;
   int         count;
   int         key;
   char        *ann;
   int         hbpm;
   int         lbpm;
-  char        *tval;
-  char        *tann;
+  const char  *tval;
+  const char  *tann;
   int         thbpm;
   int         tlbpm;
   int         tspd;
@@ -165,8 +166,8 @@ START_TEST(dance_set)
     ttags = danceGetList (dance, key, DANCE_TAGS);
     ck_assert_int_eq (slistGetCount (ttags), 1);
     slistStartIterator (ttags, &ttiteridx);
-    val = slistIterateKey (ttags, &ttiteridx);
-    ck_assert_str_eq (val, "tag");
+    cval = slistIterateKey (ttags, &ttiteridx);
+    ck_assert_str_eq (cval, "tag");
 
     danceGetNum (dance, key, DANCE_TIMESIG);
     danceSetNum (dance, key, DANCE_TIMESIG, DANCE_TIMESIG_24);
@@ -190,7 +191,7 @@ END_TEST
 START_TEST(dance_conv)
 {
   dance_t     *dance = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   slistidx_t  iteridx;
   datafileconv_t conv;
   int         count;
@@ -207,24 +208,18 @@ START_TEST(dance_conv)
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
     val = danceGetStr (dance, key, DANCE_DANCE);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = val;
     danceConvDance (&conv);
     ck_assert_int_eq (conv.num, count);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_NUM;
+    conv.invt = VALUE_NUM;
     conv.num = count;
     danceConvDance (&conv);
     ck_assert_str_eq (conv.str, val);
-    if (conv.allocated) {
-      mdfree (conv.str);
-    }
 
     type = danceGetNum (dance, key, DANCE_TYPE);
-    conv.allocated = false;
-    conv.valuetype = VALUE_NUM;
+    conv.invt = VALUE_NUM;
     conv.num = type;
     dnctypesConv (&conv);
     dnctypesConv (&conv);
@@ -240,21 +235,21 @@ END_TEST
 START_TEST(dance_save)
 {
   dance_t     *dance = NULL;
-  char        *val = NULL;
+  const char  *val = NULL;
   ilistidx_t  diteridx;
   ilistidx_t  iiteridx;
   int         key;
   ilist_t     *tlist;
   int         tkey;
-  char        *ann;
+  const char  *ann;
   int         hbpm;
   int         lbpm;
   int         spd;
   slist_t     *tags;
   int         ts;
   int         type;
-  char        *tval;
-  char        *tann;
+  const char  *tval;
+  const char  *tann;
   int         thbpm;
   int         tlbpm;
   int         tspd;
@@ -362,7 +357,7 @@ START_TEST(dance_delete)
   ilistidx_t  dkey;
   ilistidx_t  diteridx;
   int         count;
-  char        *val;
+  const char  *val;
   char        *dval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_delete");
@@ -402,7 +397,7 @@ START_TEST(dance_add)
   ilistidx_t  key;
   ilistidx_t  diteridx;
   int         rc;
-  char        *val;
+  const char  *val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_add");
 

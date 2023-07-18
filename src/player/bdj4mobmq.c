@@ -75,7 +75,7 @@ main (int argc, char *argv[])
 {
   mobmqdata_t     mobmqData;
   uint16_t        listenPort;
-  char            *tval;
+  const char      *tval;
   long            flags;
 
 #if BDJ4_MEM_DEBUG

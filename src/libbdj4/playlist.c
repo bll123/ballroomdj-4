@@ -355,9 +355,8 @@ playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *value)
     return;
   }
 
-  conv.str = mdstrdup (value);
-  conv.allocated = true;
-  conv.valuetype = VALUE_STR;
+  conv.str = value;
+  conv.invt = VALUE_STR;
   convTextList (&conv);
 
   nlistSetList (pl->plinfo, key, conv.list);
@@ -411,7 +410,7 @@ playlistGetNextSong (playlist_t *pl,
   pltype_t    type;
   song_t      *song = NULL;
   int         count;
-  char        *sfname;
+  const char  *sfname;
   int         stopAfter;
 
 
@@ -506,7 +505,7 @@ playlistGetNextSong (playlist_t *pl,
 slist_t *
 playlistGetPlaylistList (int flag, const char *dir)
 {
-  char        *tplfnm;
+  const char  *tplfnm;
   char        tfn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   slist_t     *filelist;
@@ -890,11 +889,9 @@ playlistAlloc (musicdb_t *musicdb)
 static void
 plConvType (datafileconv_t *conv)
 {
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
+  if (conv->invt == VALUE_STR) {
     ssize_t   num;
 
-    conv->valuetype = VALUE_NUM;
     num = PLTYPE_SONGLIST;
     if (strcmp (conv->str, "automatic") == 0) {
       num = PLTYPE_AUTO;
@@ -902,17 +899,18 @@ plConvType (datafileconv_t *conv)
     if (strcmp (conv->str, "sequence") == 0) {
       num = PLTYPE_SEQUENCE;
     }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
+  } else if (conv->invt == VALUE_NUM) {
     char    *sval;
 
-    conv->valuetype = VALUE_STR;
     sval = "songlist";
     switch (conv->num) {
       case PLTYPE_SONGLIST: { sval = "songlist"; break; }
       case PLTYPE_AUTO: { sval = "automatic"; break; }
       case PLTYPE_SEQUENCE: { sval = "sequence"; break; }
     }
+    conv->outvt = VALUE_STR;
     conv->str = sval;
   }
 }

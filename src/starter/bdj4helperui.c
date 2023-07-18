@@ -379,10 +379,10 @@ helperNextCallback (void *udata)
 static void
 helpDisplay (helperui_t *helper)
 {
-  char    *title;
-  char    *text;
-  char    *ttext;
-  char    *ntext;
+  const char  *title;
+  const char  *text;
+  char        *ttext;
+  char        *ntext;
 
   if (helper->helpkey >= 0) {
     title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);

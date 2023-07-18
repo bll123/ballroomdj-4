@@ -30,7 +30,7 @@ void        nlistIncrement (nlist_t *, nlistidx_t lkey);
 void        nlistDecrement (nlist_t *, nlistidx_t lkey);
 /* get routines */
 void        *nlistGetData (nlist_t *, nlistidx_t lkey);
-char        *nlistGetStr (nlist_t *, nlistidx_t lkey);
+const char  *nlistGetStr (nlist_t *, nlistidx_t lkey);
 nlistidx_t  nlistGetIdx (nlist_t *list, nlistidx_t idx);
 void        *nlistGetDataByIdx (nlist_t *, nlistidx_t idx);
 listnum_t   nlistGetNumByIdx (nlist_t *list, nlistidx_t idx);

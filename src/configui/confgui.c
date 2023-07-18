@@ -99,7 +99,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 void
 confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
-    char *value)
+    const char *value)
 {
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
@@ -229,7 +229,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   if (list != NULL) {
     nlistidx_t    iteridx;
     nlistidx_t    key;
-    char          *val;
+    const char    *val;
 
     nlistStartIterator (list, &iteridx);
     while ((key = nlistIterateKey (list, &iteridx)) >= 0) {

@@ -21,8 +21,8 @@
 #include "nlist.h"
 
 typedef struct {
-  int     alloc;
-  char    *value;
+  int   alloc;
+  char  *value;
 } chk_item_t;
 
 static chk_item_t *allocItem (const char *str);
@@ -343,7 +343,7 @@ START_TEST(nlist_u_iterate)
 {
   nlist_t       *list;
   nlistidx_t    iteridx;
-  char          *value;
+  const char    *value;
   ssize_t       key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_iterate");
@@ -534,7 +534,7 @@ END_TEST
 START_TEST(nlist_s_iterate_str)
 {
   nlist_t *      list;
-  char *        value;
+  const char    *value;
   nlistidx_t          key;
   nlistidx_t    iteridx;
 
@@ -1045,7 +1045,7 @@ START_TEST(nlist_set_get_mixed)
 {
   nlist_t *       list;
   ssize_t         nval;
-  char            *sval;
+  const char      *sval;
   double          dval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_set_get_mixed");

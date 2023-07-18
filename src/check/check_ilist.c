@@ -38,7 +38,7 @@ END_TEST
 START_TEST(ilist_get_data_str)
 {
   ilist_t        *list;
-  char          *value;
+  const char     *value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_get_data_str");
 
@@ -64,7 +64,7 @@ END_TEST
 START_TEST(ilist_get_data_str_sub)
 {
   ilist_t        *list;
-  char          *value;
+  const char     *value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_get_data_str_sub");
 
@@ -102,7 +102,7 @@ END_TEST
 START_TEST(ilist_iterate)
 {
   ilist_t *      list;
-  char *        value;
+  const char     *value;
   ilistidx_t          key;
   ilistidx_t    iteridx;
 
@@ -205,7 +205,7 @@ START_TEST(ilist_replace_str)
 {
   ilist_t       *list;
   ilistidx_t    key;
-  char          *value;
+  const char     *value;
   ilistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_replace_str");

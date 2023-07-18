@@ -69,7 +69,7 @@ START_TEST(dispsel_save)
   slist_t     *tlistb;
   slistidx_t  iteridx;
   slistidx_t  iteridxb;
-  char        *vala, *valb;
+  const char  *vala, *valb;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_save");
 

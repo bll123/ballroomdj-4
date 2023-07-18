@@ -377,7 +377,7 @@ musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 
 void
 musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
-    qidx_t qkey, char *annfname)
+    qidx_t qkey, const char *annfname)
 {
   musicqitem_t      *musicqitem;
 
@@ -547,12 +547,12 @@ musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx)
 }
 
 
-char *
+const char *
 musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx, tagdefkey_t tagidx)
 {
   musicqitem_t  *musicqitem;
   song_t        *song;
-  char          *data = NULL;
+  const char    *data = NULL;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return NULL;
@@ -570,13 +570,13 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx, tagdefkey_t 
   return data;
 }
 
-char *
+const char *
 musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
 {
   musicqitem_t  *musicqitem = NULL;
   song_t        *song = NULL;
   listidx_t     danceIdx;
-  char          *danceStr = NULL;
+  const char    *danceStr = NULL;
   dance_t       *dances = NULL;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {

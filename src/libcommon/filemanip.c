@@ -24,7 +24,7 @@
 #include "fileop.h"
 #include "mdebug.h"
 #include "osutils.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "sysvars.h"
 
 #if _hdr_windows

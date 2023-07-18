@@ -90,7 +90,7 @@ static int valueTypeLookup [SONG_FILTER_MAX] = {
 #define SONG_FILTER_SORT_DEFAULT "TITLE"
 
 static void songfilterFreeData (songfilter_t *sf, int i);
-static bool songfilterCheckStr (char *str, char *searchstr);
+static bool songfilterCheckStr (const char *str, char *searchstr);
 static void songfilterMakeSortKey (songfilter_t *sf,
     song_t *song, char *sortkey, ssize_t sz);
 static nlist_t *songfilterParseSortKey (songfilter_t *sf);
@@ -143,7 +143,7 @@ songfilterFree (songfilter_t *sf)
 }
 
 void
-songfilterSetSort (songfilter_t *sf, char *sortselection)
+songfilterSetSort (songfilter_t *sf, const char *sortselection)
 {
   logProcBegin (LOG_PROC, "songfilterSetSort");
 
@@ -383,7 +383,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     sl = songlistLoad (sf->datafilter [SONG_FILTER_PLAYLIST]);
     songlistStartIterator (sl, &sliter);
     while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
-      char  *sfname;
+      const char  *sfname;
 
       sfname = songlistGetStr (sl, slkey, SONGLIST_FILE);
       song = dbGetByName (musicdb, sfname);
@@ -616,7 +616,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   /* song selection display on the other hand, should show everything */
   /* unless it is in playlist mode. */
   if (sf->inuse [SONG_FILTER_KEYWORD]) {
-    char    *keyword;
+    const char  *keyword;
 
     keyword = songGetStr (song, TAG_KEYWORD);
 
@@ -666,7 +666,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     if (! found) {
       slist_t     *tagList;
       slistidx_t  iteridx;
-      char        *tag;
+      const char  *tag;
 
       tagList = (slist_t *) songGetList (song, TAG_TAGS);
       slistStartIterator (tagList, &iteridx);
@@ -776,7 +776,7 @@ songfilterFreeData (songfilter_t *sf, int i)
 }
 
 static bool
-songfilterCheckStr (char *str, char *searchstr)
+songfilterCheckStr (const char *str, char *searchstr)
 {
   bool  found = false;
   char  tbuff [MAXPATHLEN];
@@ -827,7 +827,7 @@ songfilterMakeSortKey (songfilter_t *sf,
   while ((tagkey = nlistIterateKey (sf->parsed, &iteridx)) >= 0) {
     if (tagkey == TAG_DANCE) {
       ilistidx_t  danceIdx;
-      char        *danceStr = NULL;
+      const char  *danceStr = NULL;
 
       danceIdx = songGetNum (song, tagkey);
       if (danceIdx >= 0) {

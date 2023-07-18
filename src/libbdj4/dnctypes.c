@@ -64,7 +64,7 @@ dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx)
   slistStartIterator (dnctypes->dnctypes, iteridx);
 }
 
-char *
+const char *
 dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx)
 {
   if (dnctypes == NULL) {
@@ -78,29 +78,28 @@ dnctypesConv (datafileconv_t *conv)
 {
   dnctype_t       *dnctypes = NULL;
   ssize_t         num;
-  char            *sval = NULL;
+  const char      *sval = NULL;
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
   if (dnctypes == NULL) {
     return;
   }
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
     if (conv->str == NULL) {
       num = LIST_VALUE_INVALID;
     } else {
       num = slistGetIdx (dnctypes->dnctypes, conv->str);
     }
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
     if (conv->num == LIST_VALUE_INVALID) {
       sval = NULL;
     } else {
       sval = slistGetKeyByIdx (dnctypes->dnctypes, conv->num);
     }
+    conv->outvt = VALUE_STR;
     conv->str = sval;
   }
 }

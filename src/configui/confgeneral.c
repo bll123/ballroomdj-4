@@ -22,7 +22,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "sysvars.h"
 #include "ui.h"
 
@@ -194,8 +194,8 @@ confuiLoadLocaleList (confuigui_t *gui)
   datafile_t    *df = NULL;
   slist_t       *list = NULL;
   slistidx_t    iteridx;
-  char          *key;
-  char          *data;
+  const char    *key;
+  const char    *data;
   nlist_t       *llist;
   int           count;
   bool          found;

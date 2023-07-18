@@ -96,10 +96,10 @@ confuiCreateLevelTable (confuigui_t *gui)
   levelStartIterator (levels, &iteridx);
 
   while ((key = levelIterate (levels, &iteridx)) >= 0) {
-    char  *leveldisp;
-    long  weight;
-    long  def;
-    bool  deffound = false;
+    const char  *leveldisp;
+    long        weight;
+    long        def;
+    bool        deffound = false;
 
     leveldisp = levelGetLevel (levels, key);
     weight = levelGetWeight (levels, key);

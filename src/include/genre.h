@@ -19,7 +19,7 @@ typedef struct genre genre_t;
 genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);
 int       genreGetCount (genre_t *genre);
-char      *genreGetGenre (genre_t *genre, ilistidx_t ikey);
+const char *genreGetGenre (genre_t *genre, ilistidx_t ikey);
 ssize_t   genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey);
 void      genreStartIterator (genre_t *genre, ilistidx_t *iteridx);
 ilistidx_t genreIterate (genre_t *genre, ilistidx_t *iteridx);

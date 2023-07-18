@@ -88,8 +88,8 @@ confuiCreateGenreTable (confuigui_t *gui)
   genreStartIterator (genres, &iteridx);
 
   while ((key = genreIterate (genres, &iteridx)) >= 0) {
-    char    *genredisp;
-    long    clflag;
+    const char  *genredisp;
+    long        clflag;
 
     genredisp = genreGetGenre (genres, key);
     clflag = genreGetClassicalFlag (genres, key);

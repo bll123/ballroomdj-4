@@ -32,7 +32,7 @@ sortoptAlloc (void)
   slist_t       *dflist;
   slistidx_t    dfiteridx;
   slist_t       *list;
-  char          *value;
+  const char    *value;
   char          *tvalue;
   char          *p;
   char          *tokstr;

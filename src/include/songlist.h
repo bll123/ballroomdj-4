@@ -33,7 +33,7 @@ int  songlistGetCount (songlist_t *);
 void songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx);
 ilistidx_t songlistIterate (songlist_t *sl, ilistidx_t *iteridx);
 ilistidx_t songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);
-char * songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);
+const char * songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);
 void songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val);
 void songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval);
 void songlistClear (songlist_t *sl);

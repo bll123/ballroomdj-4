@@ -75,6 +75,14 @@ nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
 }
 
 void
+nlistSort (nlist_t *list)
+{
+  listSort (LIST_KEY_NUM, list);
+}
+
+/* set routines */
+
+void
 nlistSetData (nlist_t *list, nlistidx_t lkey, void *data)
 {
   listitem_t    item;
@@ -135,15 +143,14 @@ nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data)
 void
 nlistIncrement (nlist_t *list, nlistidx_t lkey)
 {
-  listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
   listnum_t       value = 0;
 
-  key.idx = lkey;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
+  if (value == LIST_VALUE_INVALID) {
+    value = 0;
   }
   ++value;
   item.key.idx = lkey;
@@ -155,15 +162,14 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
 void
 nlistDecrement (nlist_t *list, nlistidx_t lkey)
 {
-  listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
   listnum_t       value = 0;
 
-  key.idx = lkey;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
+  if (value == LIST_VALUE_INVALID) {
+    value = 0;
   }
   --value;
   item.key.idx = lkey;
@@ -172,44 +178,18 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
   listSet (LIST_KEY_NUM, list, &item);
 }
 
-void *
-nlistGetData (nlist_t *list, nlistidx_t lkey)
-{
-  void            *value = NULL;
-  listkeylookup_t key;
-  nlistidx_t      idx;
-
-  if (list == NULL) {
-    return NULL;
-  }
-
-  key.idx = lkey;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = listGetDataByIdx (LIST_KEY_NUM, list, idx);
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d", list->name, lkey, idx);
-  return value;
-}
-
-char *
-nlistGetStr (nlist_t *list, nlistidx_t lkey)
-{
-  return nlistGetData (list, lkey);
-}
+/* get routines */
 
 nlistidx_t
 nlistGetIdx (nlist_t *list, nlistidx_t lkey)
 {
-  listkeylookup_t key;
   nlistidx_t      idx;
 
   if (list == NULL) {
     return LIST_LOC_INVALID;
   }
 
-  key.idx = lkey;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
   return idx;
 }
 
@@ -235,74 +215,52 @@ nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
     return LIST_LOC_INVALID;
   }
 
-  return list->data [idx].key.idx;
+  return listGetKeyNumByIdx (LIST_KEY_NUM, list, idx);
+}
+
+void *
+nlistGetData (nlist_t *list, nlistidx_t lkey)
+{
+  nlistidx_t      idx;
+
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  return listGetDataByIdx (LIST_KEY_NUM, list, idx);
+}
+
+const char *
+nlistGetStr (nlist_t *list, nlistidx_t lkey)
+{
+  nlistidx_t      idx;
+
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  return listGetStrByIdx (LIST_KEY_NUM, list, idx);
 }
 
 listnum_t
-nlistGetNum (nlist_t *list, nlistidx_t lidx)
+nlistGetNum (nlist_t *list, nlistidx_t lkey)
 {
-  listnum_t       value = LIST_VALUE_INVALID;
-  listkeylookup_t key;
   nlistidx_t      idx;
 
-  if (list == NULL) {
-    return LIST_VALUE_INVALID;
-  }
-
-  key.idx = lidx;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = listGetNumByIdx (LIST_KEY_NUM, list, idx);
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%" PRId64, list->name, lidx, idx, value);
-  return value;
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  return listGetNumByIdx (LIST_KEY_NUM, list, idx);
 }
 
 double
-nlistGetDouble (nlist_t *list, nlistidx_t lidx)
+nlistGetDouble (nlist_t *list, nlistidx_t lkey)
 {
-  double          value = LIST_DOUBLE_INVALID;
-  listkeylookup_t key;
   nlistidx_t      idx;
 
-  if (list == NULL) {
-    return LIST_DOUBLE_INVALID;
-  }
-
-  key.idx = lidx;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.dval;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%.6f", list->name, lidx, idx, value);
-  return value;
+  idx = listGetIdxNumKey (LIST_KEY_NUM, list, lkey);
+  return listGetDoubleByIdx (LIST_KEY_NUM, list, idx);
 }
 
 nlist_t *
-nlistGetList (nlist_t *list, nlistidx_t lidx)
+nlistGetList (nlist_t *list, nlistidx_t lkey)
 {
-  void            *value = NULL;
-  listkeylookup_t key;
-  nlistidx_t      idx;
-
-  if (list == NULL) {
-    return NULL;
-  }
-
-  key.idx = lidx;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.data;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d", list->name, lidx, idx);
-  return value;
+  return nlistGetData (list, lkey);
 }
 
-void
-nlistSort (nlist_t *list)
-{
-  listSort (LIST_KEY_NUM, list);
-}
+/* iterators */
 
 void
 nlistStartIterator (nlist_t *list, nlistidx_t *iteridx)

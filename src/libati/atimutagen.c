@@ -539,8 +539,8 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   char                fn [MAXPATHLEN];
   int                 tagkey;
   slistidx_t          iteridx;
-  char                *tag;
-  char                *value;
+  const char          *tag;
+  const char          *value;
   FILE                *ofh;
   int                 rc;
   int                 writetags;
@@ -648,8 +648,8 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   char                fn [MAXPATHLEN];
   int                 tagkey;
   slistidx_t          iteridx;
-  char                *tag;
-  char                *value;
+  const char          *tag;
+  const char          *value;
   FILE                *ofh;
   int                 rc;
   int                 writetags;

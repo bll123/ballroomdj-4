@@ -26,45 +26,62 @@ ilistAlloc (const char *name, ilistorder_t ordered)
 {
   ilist_t    *list;
 
-  list = listAlloc (name, LIST_KEY_NUM, ordered, nlistFree);
+  list = listAlloc (name, LIST_KEY_IND, ordered, ilistFree);
   return list;
 }
 
 void
 ilistFree (void *list)
 {
-  listFree (LIST_KEY_NUM, list);
+  listFree (LIST_KEY_IND, list);
 }
 
 void
 ilistSetVersion (ilist_t *list, int version)
 {
-  listSetVersion (LIST_KEY_NUM, list, version);
+  listSetVersion (LIST_KEY_IND, list, version);
 }
 
 int
 ilistGetVersion (ilist_t *list)
 {
-  return listGetVersion (LIST_KEY_NUM, list);
+  return listGetVersion (LIST_KEY_IND, list);
 }
 
 ilistidx_t
 ilistGetCount (ilist_t *list)
 {
-  return listGetCount (LIST_KEY_NUM, list);
+  return listGetCount (LIST_KEY_IND, list);
 }
 
 /* for testing */
 ilistidx_t
 ilistGetAllocCount (ilist_t *list)
 {
-  return listGetAllocCount (LIST_KEY_NUM, list);
+  return listGetAllocCount (LIST_KEY_IND, list);
 }
 
 void
 ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
-  listSetSize (LIST_KEY_NUM, list, siz);
+  listSetSize (LIST_KEY_IND, list, siz);
+}
+
+void
+ilistSort (ilist_t *list)
+{
+  listSort (LIST_KEY_IND, list);
+}
+
+void
+ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist)
+{
+  listitem_t    item;
+
+  item.key.idx = ikey;
+  item.valuetype = VALUE_LIST;
+  item.value.data = datalist;
+  listSet (LIST_KEY_IND, list, &item);
 }
 
 void
@@ -127,14 +144,14 @@ ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
 bool
 ilistExists (list_t *list, ilistidx_t ikey)
 {
-  nlist_t   *datalist;
+  nlistidx_t      idx;
 
   if (list == NULL) {
     return false;
   }
 
-  datalist = nlistGetList (list, ikey);
-  if (datalist == NULL) {
+  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
+  if (idx < 0) {
     return false;
   }
 
@@ -158,10 +175,10 @@ ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return value;
 }
 
-char *
+const char *
 ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
-  char  *value;
+  const char  *value;
 
   value = ilistGetData (list, ikey, lidx);
   logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%d value %s", list->name, lidx, value);
@@ -214,23 +231,15 @@ void
 ilistDelete (list_t *list, ilistidx_t ikey)
 {
   ilistidx_t      idx;
-  listkeylookup_t key;
 
   if (list == NULL) {
     return;
   }
 
-  key.idx = ikey;
-  idx = listGetIdx (LIST_KEY_NUM, list, &key);
+  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
   if (idx >= 0) {
-    listDeleteByIdx (LIST_KEY_NUM, list, idx);
+    listDeleteByIdx (LIST_KEY_IND, list, idx);
   }
-}
-
-void
-ilistSort (ilist_t *list)
-{
-  listSort (LIST_KEY_NUM, list);
 }
 
 void
@@ -242,13 +251,13 @@ ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
-  return listIterateKeyNum (LIST_KEY_NUM, list, iteridx);
+  return listIterateKeyNum (LIST_KEY_IND, list, iteridx);
 }
 
 void
 ilistDumpInfo (ilist_t *list)
 {
-  listDumpInfo (LIST_KEY_NUM, list);
+  listDumpInfo (LIST_KEY_IND, list);
 }
 
 /* internal routines */
@@ -258,16 +267,27 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
 {
   nlist_t         *datalist = NULL;
   char            tbuff [40];
+  nlistidx_t      idx;
 
   if (list == NULL) {
     return NULL;
   }
 
-  datalist = nlistGetList (list, ikey);
+  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
+  if (idx >= 0) {
+    datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
+  }
+
   if (datalist == NULL) {
+    listitem_t    item;
+
     snprintf (tbuff, sizeof (tbuff), "%s-item-%d", list->name, ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
-    nlistSetList (list, ikey, datalist);
+
+    item.key.idx = ikey;
+    item.valuetype = VALUE_LIST;
+    item.value.data = datalist;
+    listSet (LIST_KEY_IND, list, &item);
   }
   return datalist;
 }

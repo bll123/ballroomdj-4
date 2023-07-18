@@ -176,10 +176,10 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
   song->songlistchange = false;
 }
 
-char *
+const char *
 songGetStr (song_t *song, nlistidx_t idx)
 {
-  char    *value;
+  const char  *value;
 
   if (song == NULL || song->songInfo == NULL) {
     return NULL;
@@ -278,14 +278,13 @@ songSetList (song_t *song, nlistidx_t tagidx, const char *str)
     return;
   }
 
-  conv.allocated = false;
-  conv.str = (char *) str;
-  conv.valuetype = VALUE_STR;
+  conv.str = str;
+  conv.invt = VALUE_STR;
   convfunc = tagdefs [tagidx].convfunc;
   if (convfunc != NULL) {
     convfunc (&conv);
   }
-  if (conv.valuetype != VALUE_LIST) {
+  if (conv.outvt != VALUE_LIST) {
     return;
   }
 
@@ -315,9 +314,9 @@ songChangeFavorite (song_t *song)
 bool
 songAudioFileExists (song_t *song)
 {
-  char      *sfname;
-  char      *ffn;
-  bool      exists = false;
+  const char  *sfname;
+  char        *ffn;
+  bool        exists = false;
 
   sfname = songGetStr (song, TAG_FILE);
   ffn = songutilFullFileName (sfname);
@@ -340,6 +339,7 @@ songDisplayString (song_t *song, int tagidx)
   dfConvFunc_t    convfunc;
   datafileconv_t  conv;
   char            *str = NULL;
+  const char      *tstr = NULL;
 
   if (song == NULL) {
     return NULL;
@@ -360,23 +360,25 @@ songDisplayString (song_t *song, int tagidx)
   convfunc = tagdefs [tagidx].convfunc;
 
   if (convfunc != NULL) {
-    conv.allocated = false;
     if (vt == VALUE_NUM) {
       conv.num = songGetNum (song, tagidx);
     } else if (vt == VALUE_LIST) {
       conv.list = songGetList (song, tagidx);
     }
-    conv.valuetype = vt;
+    conv.invt = vt;
     convfunc (&conv);
-    if (conv.str == NULL) { conv.str = ""; }
-    str = mdstrdup (conv.str);
-    if (conv.allocated) {
-      mdfree (conv.str);
+    if (conv.outvt == VALUE_STR) {
+      if (conv.str == NULL) { conv.str = ""; }
+      str = mdstrdup (conv.str);
+    }
+    if (conv.outvt == VALUE_STRVAL) {
+      str = mdstrdup (conv.strval);
+      dataFree (conv.strval);
     }
   } else {
-    str = songGetStr (song, tagidx);
-    if (str == NULL) { str = ""; }
-    str = mdstrdup (str);
+    tstr = songGetStr (song, tagidx);
+    if (tstr == NULL) { tstr = ""; }
+    str = mdstrdup (tstr);
   }
 
   /* uses the display string from the conversion */
@@ -404,16 +406,16 @@ songDisplayString (song_t *song, int tagidx)
       changed = true;
     }
     if (changed) {
-      conv.allocated = false;
       conv.num = dur;
-      conv.valuetype = VALUE_NUM;
+      conv.invt = VALUE_NUM;
       convMS (&conv);
-      if (conv.str == NULL) { conv.str = ""; }
-      snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.str);
-      if (conv.allocated) {
-        mdfree (conv.str);
+      if (conv.outvt == VALUE_STR) {
+        snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.strval);
       }
-      mdfree (str);
+      if (conv.outvt == VALUE_STRVAL) {
+        snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.strval);
+        dataFree (conv.strval);
+      }
       str = mdstrdup (tbuff);
     }
   }

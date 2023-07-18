@@ -211,6 +211,7 @@ START_TEST(song_parse_get)
 {
   song_t      *song = NULL;
   char        *data;
+  const char  *cdata;
   slist_t     *tlist;
   slistidx_t  iteridx;
 
@@ -223,7 +224,6 @@ START_TEST(song_parse_get)
     double          dval;
     int             rc;
     datafileconv_t  conv;
-
 
     song = songAlloc ();
     data = mdstrdup (songparsedata [i]);
@@ -250,10 +250,10 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (rc, 1);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag1");
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag2");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag1");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag2");
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
@@ -261,8 +261,7 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = "bluestar";
     songFavoriteConv (&conv);
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
@@ -277,6 +276,7 @@ START_TEST(song_parse_set)
 {
   song_t      *song = NULL;
   char        *data;
+  const char  *cdata;
   slist_t     *tlist;
   slistidx_t  iteridx;
   datafileconv_t conv;
@@ -327,13 +327,12 @@ START_TEST(song_parse_set)
     ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), -5.5);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag5");
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag4");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag5");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag4");
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = "purplestar";
     songFavoriteConv (&conv);
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
@@ -446,10 +445,11 @@ START_TEST(song_tag_list)
 {
   song_t      *song = NULL;
   char        *data;
+  const char  *cdata;
   slist_t     *tlist;
   slistidx_t  iteridx;
   char        tbuff [3096];
-  char        *tag;
+  const char  *tag;
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
@@ -473,7 +473,6 @@ START_TEST(song_tag_list)
         slistGetStr (tlist, tagdefs [TAG_FILE].tag));
     slistStartIterator (tlist, &iteridx);
     while ((tag = slistIterateKey (tlist, &iteridx)) != NULL) {
-
       if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
         continue;
       }
@@ -484,8 +483,8 @@ START_TEST(song_tag_list)
       strlcat (tbuff, tag, sizeof (tbuff));
       strlcat (tbuff, "\n", sizeof (tbuff));
       strlcat (tbuff, "..", sizeof (tbuff));
-      data = slistGetStr (tlist, tag);
-      strlcat (tbuff, data, sizeof (tbuff));
+      cdata = slistGetStr (tlist, tag);
+      strlcat (tbuff, cdata, sizeof (tbuff));
       strlcat (tbuff, "\n", sizeof (tbuff));
     }
     slistFree (tlist);
@@ -517,10 +516,10 @@ START_TEST(song_tag_list)
 
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag1");
-    data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag2");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag1");
+    cdata = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (cdata, "tag2");
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
@@ -528,8 +527,7 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
 
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
+    conv.invt = VALUE_STR;
     conv.str = "bluestar";
     songFavoriteConv (&conv);
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);

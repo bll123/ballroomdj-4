@@ -110,7 +110,7 @@ itunesAlloc (void)
   char        tbuff [MAXPATHLEN];
   slist_t     *tlist;
   slistidx_t  iteridx;
-  char        *key;
+  const char  *key;
 
   itunes = mdmalloc (sizeof (itunes_t));
 
@@ -449,7 +449,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 {
   slist_t     *rawdata;
   slistidx_t  iteridx;
-  char        *key;
+  const char  *key;
   const char  *val;
   long        lastval = -1;
   nlist_t     *entry = NULL;
@@ -479,7 +479,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         nlistFree (entry);
       }
       if (! skip && lastval >= 0) {
-        char    *tval;
+        const char  *tval;
 
         tval = nlistGetStr (entry, TAG_FILE);
         if (tval != NULL) {
@@ -518,8 +518,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       if (atoi (val) == 1) {
         datafileconv_t  conv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_STR;
+        conv.invt = VALUE_STR;
         if (strcmp (key, "Loved") == 0) {
           conv.str = "pinkheart";
         }
@@ -593,9 +592,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       } else if (tagidx == TAG_GENRE) {
         datafileconv_t  conv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_STR;
-        conv.str = (char *) val;
+        conv.invt = VALUE_STR;
+        conv.str = val;
         genreConv (&conv);
         nlistSetNum (entry, tagidx, conv.num);
         logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) conv.num);
@@ -615,7 +613,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     nlistFree (entry);
   }
   if (! skip) {
-    char  *tval;
+    const char  *tval;
 
     tval = nlistGetStr (entry, TAG_FILE);
     if (tval != NULL) {
@@ -636,8 +634,8 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 {
   slist_t     *rawdata = NULL;
   slistidx_t  iteridx;
-  char        *key;
-  char        *val;
+  const char  *key;
+  const char  *val;
   char        keepname [1000];
   nlist_t     *ids = NULL;
   bool        skip = false;

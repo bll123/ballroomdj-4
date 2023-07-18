@@ -139,10 +139,10 @@ songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
   return val;
 }
 
-char *
+const char *
 songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
-  char    *val = NULL;
+  const char  *val = NULL;
 
   if (sl == NULL || sl->songlist == NULL) {
     return NULL;

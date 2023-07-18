@@ -51,7 +51,7 @@ songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 bool          songfilterCheckSelection (songfilter_t *sf, int type);
-void          songfilterSetSort (songfilter_t *sf, char *sortselection);
+void          songfilterSetSort (songfilter_t *sf, const char *sortselection);
 void          songfilterClear (songfilter_t *sf, int filterType);
 bool          songfilterInUse (songfilter_t *sf, int filterType);
 void          songfilterOff (songfilter_t *sf, int filterType);

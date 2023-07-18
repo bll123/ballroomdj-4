@@ -265,10 +265,10 @@ bdjoptCleanup (void)
   bdjopt = NULL;
 }
 
-char *
+const char *
 bdjoptGetStr (nlistidx_t idx)
 {
-  void      *value = NULL;
+  const char  *value = NULL;
 
   if (bdjopt == NULL) {
     return NULL;
@@ -316,11 +316,11 @@ bdjoptSetNum (nlistidx_t idx, int64_t value)
   nlistSetNum (bdjopt->bdjoptList, idx, value);
 }
 
-char *
+const char *
 bdjoptGetStrPerQueue (nlistidx_t idx, int musicq)
 {
   nlistidx_t  nidx;
-  void        *value = NULL;
+  const char  *value = NULL;
 
   if (bdjopt == NULL) {
     return NULL;
@@ -445,9 +445,8 @@ bdjoptConvBPM (datafileconv_t *conv)
   bdjbpm_t   nbpm = BPM_BPM;
   char       *sval = NULL;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     if (strcmp (conv->str, "BPM") == 0) {
       nbpm = BPM_BPM;
@@ -456,8 +455,8 @@ bdjoptConvBPM (datafileconv_t *conv)
       nbpm = BPM_MPM;
     }
     conv->num = nbpm;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     switch (conv->num) {
       case BPM_BPM: { sval = "BPM"; break; }
       case BPM_MPM: { sval = "MPM"; break; }
@@ -472,9 +471,8 @@ bdjoptConvClock (datafileconv_t *conv)
   int   nclock = TM_CLOCK_LOCAL;
   char  *sval = NULL;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     if (strcmp (conv->str, "iso") == 0) {
       nclock = TM_CLOCK_ISO;
@@ -492,8 +490,8 @@ bdjoptConvClock (datafileconv_t *conv)
       nclock = TM_CLOCK_OFF;
     }
     conv->num = nclock;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     switch (conv->num) {
       case TM_CLOCK_ISO: { sval = "iso"; break; }
       case TM_CLOCK_LOCAL: { sval = "local"; break; }
@@ -586,9 +584,8 @@ bdjoptConvFadeType (datafileconv_t *conv)
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
   char            *sval;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     fadetype = FADETYPE_TRIANGLE;
     if (strcmp (conv->str, "exponentialsine") == 0) {
@@ -607,8 +604,8 @@ bdjoptConvFadeType (datafileconv_t *conv)
       fadetype = FADETYPE_INVERTED_PARABOLA;
     }
     conv->num = fadetype;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     sval = "triangle";
     switch (conv->num) {
       case FADETYPE_EXPONENTIAL_SINE: { sval = "exponentialsine"; break; }
@@ -628,9 +625,8 @@ bdjoptConvWriteTags (datafileconv_t *conv)
   bdjwritetags_t  wtag = WRITE_TAGS_NONE;
   char            *sval;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     wtag = WRITE_TAGS_NONE;
     if (strcmp (conv->str, "NONE") == 0) {
@@ -643,8 +639,8 @@ bdjoptConvWriteTags (datafileconv_t *conv)
       wtag = WRITE_TAGS_BDJ_ONLY;
     }
     conv->num = wtag;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     sval = "NONE";
     switch (conv->num) {
       case WRITE_TAGS_ALL: { sval = "ALL"; break; }
@@ -661,9 +657,8 @@ bdjoptConvMarqueeShow (datafileconv_t *conv)
   bdjmarqueeshow_t  mqshow = MARQUEE_SHOW_VISIBLE;
   char              *sval;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     mqshow = MARQUEE_SHOW_VISIBLE;
     if (strcmp (conv->str, "off") == 0) {
@@ -676,8 +671,8 @@ bdjoptConvMarqueeShow (datafileconv_t *conv)
       mqshow = MARQUEE_SHOW_VISIBLE;
     }
     conv->num = mqshow;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     sval = "visible";
     switch (conv->num) {
       case MARQUEE_SHOW_OFF: { sval = "off"; break; }
@@ -758,16 +753,15 @@ bdjoptConvDanceselMethod (datafileconv_t *conv)
   int   method = DANCESEL_METHOD_WINDOWED;
   char  *sval = NULL;
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
 
     if (strcmp (conv->str, "windowed") == 0) {
       method = DANCESEL_METHOD_WINDOWED;
     }
     conv->num = method;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
     switch (conv->num) {
       case DANCESEL_METHOD_WINDOWED: { sval = "windowed"; break; }
     }

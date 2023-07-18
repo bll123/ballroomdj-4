@@ -139,26 +139,14 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
 slistidx_t
 slistGetIdx (slist_t *list, const char *sidx)
 {
-  listkeylookup_t   key;
-
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
   if (sidx == NULL) {
     return LIST_LOC_INVALID;
   }
 
-  key.strkey = sidx;
-  return listGetIdx (LIST_KEY_STR, list, &key);
-}
-
-void *
-slistGetData (slist_t *list, const char *sidx)
-{
-  return listGetData (LIST_KEY_STR, list, sidx);
-}
-
-char *
-slistGetStr (slist_t *list, const char *sidx)
-{
-  return listGetData (LIST_KEY_STR, list, sidx);
+  return listGetIdxStrKey (LIST_KEY_STR, list, sidx);
 }
 
 void *
@@ -173,32 +161,38 @@ slistGetNumByIdx (slist_t *list, slistidx_t idx)
   return listGetNumByIdx (LIST_KEY_STR, list, idx);
 }
 
-char *
+const char *
 slistGetKeyByIdx (slist_t *list, slistidx_t idx)
 {
-  if (list == NULL) {
-    return NULL;
-  }
-  if (idx < 0 || idx >= list->count) {
-    return NULL;
-  }
+  return listGetKeyStrByIdx (LIST_KEY_STR, list, idx);
+}
 
-  return list->data [idx].key.strkey;
+void *
+slistGetData (slist_t *list, const char *sidx)
+{
+  slistidx_t      idx;
+
+  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
+  return listGetDataByIdx (LIST_KEY_STR, list, idx);
+}
+
+const char *
+slistGetStr (slist_t *list, const char *sidx)
+{
+  slistidx_t      idx;
+
+  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
+  return listGetStrByIdx (LIST_KEY_STR, list, idx);
 }
 
 listnum_t
 slistGetNum (slist_t *list, const char *sidx)
 {
   listnum_t       value = LIST_VALUE_INVALID;
-  listkeylookup_t key;
   slistidx_t      idx;
 
-  key.strkey = sidx;
-  idx = listGetIdx (LIST_KEY_STR, list, &key);
-  if (idx >= 0) {
-    value = listGetNumByIdx (LIST_KEY_STR, list, idx);
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%" PRId64, list->name, sidx, idx, value);
+  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
+  value = listGetNumByIdx (LIST_KEY_STR, list, idx);
   return value;
 }
 
@@ -206,35 +200,17 @@ double
 slistGetDouble (slist_t *list, const char *sidx)
 {
   double          value = LIST_DOUBLE_INVALID;
-  listkeylookup_t key;
   slistidx_t      idx;
 
-  key.strkey = sidx;
-  idx = listGetIdx (LIST_KEY_STR, list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.dval;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%8.2g", list->name, sidx, idx, value);
+  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
+  value = listGetDoubleByIdx (LIST_KEY_STR, list, idx);
   return value;
 }
 
 slist_t *
 slistGetList (slist_t *list, const char *sidx)
 {
-  void            *value = NULL;
-  listkeylookup_t key;
-  slistidx_t      idx;
-
-  if (list == NULL) {
-    return NULL;
-  }
-
-  key.strkey = sidx;
-  idx = listGetIdx (LIST_KEY_STR, list, &key);
-  if (idx >= 0) {
-    value = listGetDataByIdx (LIST_KEY_STR, list, idx);
-  }
-  return value;
+  return slistGetData (list, sidx);
 }
 
 int
@@ -265,10 +241,9 @@ slistStartIterator (slist_t *list, slistidx_t *iteridx)
   *iteridx = -1;
 }
 
-char *
+const char *
 slistIterateKey (slist_t *list, slistidx_t *iteridx)
 {
-
   return listIterateKeyStr (LIST_KEY_STR, list, iteridx);
 }
 

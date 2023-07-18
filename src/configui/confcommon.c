@@ -30,6 +30,7 @@
 #include "nlist.h"
 #include "orgutil.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -50,7 +51,7 @@ confuiLoadThemeList (confuigui_t *gui)
   nlistidx_t  iteridx;
   int         count;
   bool        usesys = false;
-  char        *p;
+  const char  *p;
 
   p = bdjoptGetStr (OPT_MP_UI_THEME);
   /* use the system default if the ui theme is empty */
@@ -100,7 +101,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    char  *ip;
+    const char  *ip;
 
     ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
     if (ip == NULL) {
@@ -144,7 +145,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    char  *ip;
+    const char  *ip;
 
     ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
     if (ip == NULL) {
@@ -170,7 +171,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 }
 
 void
-confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
+confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
 {
   char      *data;
   org_t     *org;
@@ -329,7 +330,7 @@ confuiGetThemeList (void)
   char        tbuff [MAXPATHLEN];
   slist_t     *sthemelist = NULL;
   slistidx_t  iteridx;
-  char        *nm;
+  const char  *nm;
   int         count;
 
 
@@ -385,7 +386,7 @@ static slist_t *
 confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
-  char          *fn;
+  const char    *fn;
   pathinfo_t    *pi;
   static char   *srchdir = "gtk-3.0";
   char          tbuff [MAXPATHLEN];

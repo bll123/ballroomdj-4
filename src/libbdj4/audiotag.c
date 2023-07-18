@@ -134,9 +134,9 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   int         filetype;
   int         writetags;
   slistidx_t  iteridx;
-  char        *tag;
-  char        *newvalue;
-  char        *value;
+  const char  *tag;
+  const char  *newvalue;
+  const char  *value;
   slist_t     *updatelist;
   slist_t     *dellist;
   nlist_t     *datalist;
@@ -554,8 +554,8 @@ audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey)
 {
   const char  *tag;
-  char        *newvalue;
-  char        *value;
+  const char  *newvalue;
+  const char  *value;
 
 
   tag = tagdefs [totkey].tag;

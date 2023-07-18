@@ -165,7 +165,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   char        fn [MAXPATHLEN];
   ilistidx_t  key;
   ilistidx_t  vkey;
-  char        *dsink;
+  const char  *dsink;
   int         rval;
   bool        newvlist = false;
 

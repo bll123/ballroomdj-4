@@ -24,7 +24,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "slist.h"
 #include "song.h"
 #include "songutil.h"
@@ -511,7 +511,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     dbidx_t dbidx, int editallflag)
 {
   se_internal_t   *seint;
-  char            *data;
+  char            *tval;
+  const char      *data;
   long            val;
   double          dval;
   int             bpmdispidx = UISE_NOT_DISPLAYED;
@@ -522,10 +523,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   seint->dbidx = dbidx;
   seint->changed = 0;
 
-  data = uisongGetDisplay (song, TAG_FILE, &val, &dval);
-  uiLabelSetText (seint->wcont [UISE_W_FILE_DISP], data);
-  dataFree (data);
-  data = NULL;
+  tval = uisongGetDisplay (song, TAG_FILE, &val, &dval);
+  uiLabelSetText (seint->wcont [UISE_W_FILE_DISP], tval);
+  dataFree (tval);
+  tval = NULL;
 
   uiImageClear (seint->wcont [UISE_W_AUDIOID_IMG]);
   data = songGetStr (song, TAG_RECORDING_ID);
@@ -555,7 +556,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       continue;
     }
 
-    data = uisongGetDisplay (song, tagkey, &val, &dval);
+    tval = uisongGetDisplay (song, tagkey, &val, &dval);
     if (! seint->ineditallapply) {
       seint->items [count].changed = false;
       seint->items [count].lastchanged = false;
@@ -564,8 +565,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
         uiEntrySetValue (seint->items [count].entry, "");
-        if (data != NULL) {
-          uiEntrySetValue (seint->items [count].entry, data);
+        if (tval != NULL) {
+          uiEntrySetValue (seint->items [count].entry, tval);
         }
         break;
       }
@@ -601,7 +602,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         break;
       }
       case ET_SPINBOX: {
-        if (data != NULL) {
+        if (tval != NULL) {
           fprintf (stderr, "et_spinbox: mismatch type\n");
         }
         if (val < 0) { val = 0; }
@@ -623,7 +624,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
           if (dval <= 0.0) { dval = 100.0; }
           seint->lastspeed = val;
         }
-        if (data != NULL) {
+        if (tval != NULL) {
           fprintf (stderr, "et_scale: mismatch type\n");
         }
         uiScaleSetValue (seint->items [count].uiwidgetp, dval);
@@ -631,8 +632,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         break;
       }
       case ET_LABEL: {
-        if (data != NULL) {
-          uiLabelSetText (seint->items [count].uiwidgetp, data);
+        if (tval != NULL) {
+          uiLabelSetText (seint->items [count].uiwidgetp, tval);
         }
         break;
       }
@@ -641,8 +642,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       }
     }
 
-    dataFree (data);
-    data = NULL;
+    dataFree (tval);
+    tval = NULL;
   }
 
   if (seint->bpmidx != UISE_NOT_DISPLAYED) {
@@ -1065,7 +1066,7 @@ static void
 uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, int dispsel)
 {
   slist_t         *sellist;
-  char            *keystr;
+  const char      *keystr;
   slistidx_t      dsiteridx;
   se_internal_t   *seint;
 

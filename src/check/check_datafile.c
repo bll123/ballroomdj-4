@@ -200,8 +200,8 @@ END_TEST
 
 START_TEST(datafile_simple)
 {
-  datafile_t *    df;
-  char *          value;
+  datafile_t      *df;
+  const char      *value;
   char            *tstr = NULL;
   char            *fn;
   FILE            *fh;
@@ -288,7 +288,7 @@ START_TEST(datafile_keyval_dfkey)
   listidx_t         key;
   ssize_t           lval;
   double            dval;
-  char *            value;
+  const char      *value;
   char            *tstr = NULL;
   char            *fn = NULL;
   FILE            *fh;
@@ -401,7 +401,7 @@ START_TEST(datafile_keyval_df_extra)
   listidx_t         key;
   ssize_t           lval;
   double            dval;
-  char *            value;
+  const char      *value;
   char            *tstr = NULL;
   char            *fn = NULL;
   FILE            *fh;
@@ -513,7 +513,7 @@ START_TEST(datafile_indirect)
 {
   datafile_t      *df;
   listidx_t       key;
-  char *          value;
+  const char      *value;
   ssize_t         lval;
   char            *tstr = NULL;
   char            *fn = NULL;
@@ -603,7 +603,7 @@ START_TEST(datafile_indirect_missing)
 {
   datafile_t      *df;
   listidx_t       key;
-  char *          value;
+  const char      *value;
   ssize_t         lval;
   char            *tstr = NULL;
   char            *fn = NULL;
@@ -701,9 +701,9 @@ END_TEST
 START_TEST(datafile_keyval_savelist)
 {
   datafile_t      *df;
-  char *          value;
-  char            *tstr = NULL;
-  char            *fn = NULL;
+  const char      *value;
+  const char      *tstr = NULL;
+  const char      *fn = NULL;
   FILE            *fh;
   nlist_t         *list;
   slist_t         *slist;
@@ -743,15 +743,11 @@ START_TEST(datafile_keyval_savelist)
       if (dfkeyskl [i].convFunc != NULL) {
         datafileconv_t  conv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_NUM;
+        conv.invt = VALUE_NUM;
         conv.num = nlistGetNum (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&conv);
         value = conv.str;
         ck_assert_str_eq (value, tstr);
-        if (conv.allocated) {
-          mdfree (conv.str);
-        }
       } else {
         snprintf (tmp, sizeof (tmp), "%" PRId64,
             nlistGetNum (list, dfkeyskl [i].itemkey));
@@ -762,15 +758,12 @@ START_TEST(datafile_keyval_savelist)
       if (dfkeyskl [i].convFunc != NULL) {
         datafileconv_t  conv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_LIST;
+        conv.invt = VALUE_LIST;
         conv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&conv);
-        value = conv.str;
+        value = conv.strval;
         ck_assert_str_eq (value, tstr);
-        if (conv.allocated) {
-          mdfree (conv.str);
-        }
+        dataFree (conv.strval);
       }
     }
   }
@@ -837,23 +830,16 @@ START_TEST(datafile_keyval_savebuffer)
         datafileconv_t  conv;
         datafileconv_t  tconv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_LIST;
+        conv.invt = VALUE_LIST;
         conv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&conv);
 
-        tconv.allocated = false;
-        tconv.valuetype = VALUE_LIST;
+        tconv.invt = VALUE_LIST;
         tconv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&tconv);
-        ck_assert_str_eq (conv.str, tconv.str);
-
-        if (conv.allocated) {
-          mdfree (conv.str);
-        }
-        if (tconv.allocated) {
-          mdfree (tconv.str);
-        }
+        ck_assert_str_eq (conv.strval, tconv.strval);
+        dataFree (conv.strval);
+        dataFree (tconv.strval);
       }
     }
   }
@@ -921,23 +907,16 @@ START_TEST(datafile_keyval_save)
         datafileconv_t  conv;
         datafileconv_t  tconv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_LIST;
+        conv.invt = VALUE_LIST;
         conv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&conv);
 
-        tconv.allocated = false;
-        tconv.valuetype = VALUE_LIST;
+        tconv.invt = VALUE_LIST;
         tconv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&tconv);
-        ck_assert_str_eq (conv.str, tconv.str);
-
-        if (conv.allocated) {
-          mdfree (conv.str);
-        }
-        if (tconv.allocated) {
-          mdfree (tconv.str);
-        }
+        ck_assert_str_eq (conv.strval, tconv.strval);
+        dataFree (conv.strval);
+        dataFree (tconv.strval);
       }
     }
   }
@@ -1011,23 +990,16 @@ START_TEST(datafile_keyval_save_new)
         datafileconv_t  conv;
         datafileconv_t  tconv;
 
-        conv.allocated = false;
-        conv.valuetype = VALUE_LIST;
+        conv.invt = VALUE_LIST;
         conv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&conv);
 
-        tconv.allocated = false;
-        tconv.valuetype = VALUE_LIST;
+        tconv.invt = VALUE_LIST;
         tconv.list = nlistGetList (list, dfkeyskl [i].itemkey);
         dfkeyskl [i].convFunc (&tconv);
-        ck_assert_str_eq (conv.str, tconv.str);
-
-        if (conv.allocated) {
-          mdfree (conv.str);
-        }
-        if (tconv.allocated) {
-          mdfree (tconv.str);
-        }
+        ck_assert_str_eq (conv.strval, tconv.strval);
+        dataFree (conv.strval);
+        dataFree (tconv.strval);
       }
     }
   }
@@ -1052,8 +1024,8 @@ START_TEST(datafile_indirect_save)
   ilistidx_t      iteridx;
   int             nval;
   int             tnval;
-  char            *sval;
-  char            *tsval;
+  const char      *sval;
+  const char      *tsval;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_save");
@@ -1105,10 +1077,10 @@ START_TEST(datafile_simple_save)
 {
   datafile_t *    df;
   datafile_t *    tdf;
-  char            *val;
-  char            *tval;
+  const char      *val;
+  const char      *tval;
   char            *tstr = NULL;
-  char            *fn;
+  const char      *fn;
   FILE            *fh;
   slist_t         *list;
   slist_t         *tlist;

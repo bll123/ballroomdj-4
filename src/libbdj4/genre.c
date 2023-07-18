@@ -93,7 +93,7 @@ genreGetCount (genre_t *genre)
   return ilistGetCount (genre->genre);
 }
 
-char *
+const char *
 genreGetGenre (genre_t *genre, ilistidx_t ikey)
 {
   return ilistGetStr (genre->genre, ikey, GENRE_GENRE);
@@ -125,17 +125,16 @@ genreConv (datafileconv_t *conv)
 
   genre = bdjvarsdfGet (BDJVDF_GENRES);
 
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
+  if (conv->invt == VALUE_STR) {
     num = slistGetNum (genre->genreList, conv->str);
+    conv->outvt = VALUE_NUM;
     conv->num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
+  } else if (conv->invt == VALUE_NUM) {
     if (conv->num == LIST_VALUE_INVALID) {
       conv->str = "";
     } else {
       num = conv->num;
+      conv->outvt = VALUE_STR;
       conv->str = ilistGetStr (genre->genre, num, GENRE_GENRE);
     }
   }

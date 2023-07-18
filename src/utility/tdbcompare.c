@@ -148,7 +148,7 @@ main (int argc, char *argv [])
   while ((song [DB_A] = dbIterate (db [DB_A], &dbidx [DB_A], &dbiteridx [DB_A])) != NULL) {
     slist_t     *taglist [DB_MAX];
     slistidx_t  tagiteridx [DB_MAX];
-    char        *tag [DB_MAX];
+    const char  *tag [DB_MAX];
     const char  *fn;
 
 
@@ -182,7 +182,7 @@ main (int argc, char *argv [])
 
     /* it's ok for dbadddate to be mismatched, but it must exist in both */
     for (int i = 0; i < DB_MAX; ++i) {
-      char    *val;
+      const char  *val;
 
       val = songGetStr (song [i], TAG_DBADDDATE);
       if (val == NULL) {
@@ -193,7 +193,7 @@ main (int argc, char *argv [])
 
     /* it's ok for lastupdated to be mismatched, but it must exist in both */
     for (int i = 0; i < DB_MAX; ++i) {
-      char    *val;
+      const char  *val;
 
       val = songGetStr (song [i], TAG_LAST_UPDATED);
       if (val == NULL) {
@@ -204,7 +204,7 @@ main (int argc, char *argv [])
 
     slistStartIterator (taglist [DB_A], &tagiteridx [DB_A]);
     while ((tag [DB_A] = slistIterateKey (taglist [DB_A], &tagiteridx [DB_A])) != NULL) {
-      char  *val [DB_MAX];
+      const char  *val [DB_MAX];
 
       if (strcmp (tag [DB_A], tagdefs [TAG_DBADDDATE].tag) == 0) {
         continue;

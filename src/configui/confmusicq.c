@@ -321,7 +321,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
   int         widx;
   nlistidx_t  iteridx;
   nlistidx_t  key;
-  char        *val;
+  const char  *val;
   size_t      maxWidth = 10;
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
