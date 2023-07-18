@@ -71,7 +71,7 @@ nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
     return;
   }
 
-  list->valueFreeHook = valueFreeHook;
+  listSetFreeHook (LIST_KEY_NUM, list, valueFreeHook);
 }
 
 void
@@ -208,13 +208,6 @@ nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 nlistidx_t
 nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
 {
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (idx < 0 || idx >= list->count) {
-    return LIST_LOC_INVALID;
-  }
-
   return listGetKeyNumByIdx (LIST_KEY_NUM, list, idx);
 }
 
@@ -310,19 +303,19 @@ nlistSearchProbTable (nlist_t *probTable, double dval)
   double            d;
 
 
-  r = probTable->count - 1;
+  r = listGetCount (LIST_KEY_NUM, probTable) - 1;
 
   while (l <= r) {
     m = l + (r - l) / 2;
 
     if (m != 0) {
-      d = probTable->data [m-1].value.dval;
+      d = listGetDoubleByIdx (LIST_KEY_NUM, probTable, m - 1);
       rca = dval > d;
     }
-    d = probTable->data [m].value.dval;
+    d = listGetDoubleByIdx (LIST_KEY_NUM, probTable, m);
     rcb = dval <= d;
     if ((m == 0 || rca) && rcb) {
-      return probTable->data [m].key.idx;
+      return listGetKeyNumByIdx (LIST_KEY_NUM, probTable, m);
     }
 
     if (! rcb) {

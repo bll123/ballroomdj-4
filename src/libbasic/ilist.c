@@ -87,12 +87,8 @@ ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist)
 void
 ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, const char *data)
 {
-  char    *tdata = NULL;
   nlist_t *datalist = NULL;
 
-  if (data != NULL) {
-    tdata = mdstrdup (data);
-  }
   datalist = ilistGetDatalist (list, ikey);
   nlistSetStr (datalist, lidx, data);
 }
@@ -181,7 +177,6 @@ ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   const char  *value;
 
   value = ilistGetData (list, ikey, lidx);
-  logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%d value %s", list->name, lidx, value);
   return value;
 }
 
@@ -198,7 +193,6 @@ ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   datalist = ilistGetDatalist (list, ikey);
   if (datalist != NULL) {
     value = nlistGetNum (datalist, lidx);
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d value:%d", list->name, lidx, value);
   }
   return value;
 }
@@ -216,7 +210,6 @@ ilistGetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   datalist = ilistGetDatalist (list, ikey);
   if (datalist != NULL) {
     value = nlistGetDouble (datalist, lidx);
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d value:%8.2g", list->name, lidx, value);
   }
   return value;
 }
@@ -281,7 +274,8 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
   if (datalist == NULL) {
     listitem_t    item;
 
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%d", list->name, ikey);
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
+        listGetName (LIST_KEY_IND, list), ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
 
     item.key.idx = ikey;

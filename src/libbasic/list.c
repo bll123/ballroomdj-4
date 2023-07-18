@@ -22,6 +22,24 @@ typedef union {
   listidx_t   idx;
 } listkeylookup_t;
 
+typedef struct list {
+  char            *name;
+  int             version;
+  listidx_t       count;
+  listidx_t       allocCount;
+  int             maxKeyWidth;
+  keytype_t       keytype;
+  listorder_t     ordered;
+  listitem_t      *data;        /* array */
+  listkey_t       keyCache;
+  listidx_t       locCache;
+  long            readCacheHits;
+  long            writeCacheHits;
+  listFree_t      valueFreeHook;
+  bool            replace : 1;
+  bool            setmaxkey : 1;
+} list_t;
+
 static listidx_t listGetIdx_int (list_t *list, listkeylookup_t *key);
 static bool     listCheckKeyType (list_t *list, keytype_t keytype);
 static void     listFreeItem (list_t *, listidx_t);
@@ -208,6 +226,18 @@ listGetName (keytype_t keytype, list_t *list)
     return 0;
   }
   return list->name;
+}
+
+void
+listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook)
+{
+  if (list == NULL) {
+    return;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+  list->valueFreeHook = valueFreeHook;
 }
 
 /* counts */
@@ -534,59 +564,6 @@ listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   }
 
   logMsg (LOG_DBG, LOG_LIST, "list:gdbi:%s idx:%d %.2f", list->name, idx, value);
-  return value;
-}
-
-
-void *
-listGetData (keytype_t keytype, list_t *list, const char *keydata)
-{
-  void            *value = NULL;
-  listkeylookup_t key;
-  listidx_t       idx;
-
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return value;
-  }
-  if (keydata == NULL) {
-    return value;
-  }
-
-  key.strkey = keydata;
-  idx = listGetIdx_int (list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.data;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d", list->name, keydata, idx);
-  return value;
-}
-
-listnum_t
-listGetNum (keytype_t keytype, list_t *list, const char *keydata)
-{
-  listnum_t       value = LIST_VALUE_INVALID;
-  listkeylookup_t key;
-  listidx_t       idx;
-
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return value;
-  }
-  if (keydata == NULL) {
-    return value;
-  }
-
-  key.strkey = keydata;
-  idx = listGetIdx_int (list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.num;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%" PRId64, list->name, keydata, idx, value);
   return value;
 }
 

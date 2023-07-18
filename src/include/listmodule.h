@@ -43,24 +43,6 @@ typedef struct listitem {
 
 typedef struct list list_t;
 
-typedef struct list {
-  char            *name;
-  int             version;
-  listidx_t       count;
-  listidx_t       allocCount;
-  int             maxKeyWidth;
-  keytype_t       keytype;
-  listorder_t     ordered;
-  listitem_t      *data;        /* array */
-  listkey_t       keyCache;
-  listidx_t       locCache;
-  long            readCacheHits;
-  long            writeCacheHits;
-  listFree_t      valueFreeHook;
-  bool            replace : 1;
-  bool            setmaxkey : 1;
-} list_t;
-
 list_t      *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
 void        listFree (keytype_t keytype, void *list);
 /* list management */
@@ -70,6 +52,7 @@ void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 void        listCalcMaxWidth (keytype_t keytype, list_t *list);
 const char  *listGetName (keytype_t keytype, list_t *list);
+void        listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook);
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
 listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
@@ -96,10 +79,6 @@ listnum_t   listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx);
 double      listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx);
 
 void        listSet (keytype_t keytype, list_t *list, listitem_t *item);
-void        *listGetData (keytype_t keytype, list_t *list, const char *keystr);
-//void        *listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx);
-//listnum_t   listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx);
-listnum_t   listGetNum (keytype_t keytype, list_t *list, const char *keystr);
 void        listDeleteByIdx (keytype_t keytype, list_t *, listidx_t idx);
 
 #endif /* LIST_MODULE_H */
