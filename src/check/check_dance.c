@@ -222,6 +222,7 @@ START_TEST(dance_conv)
     conv.invt = VALUE_NUM;
     conv.num = type;
     dnctypesConv (&conv);
+    conv.invt = VALUE_STR;
     dnctypesConv (&conv);
     ck_assert_int_eq (conv.num, type);
 

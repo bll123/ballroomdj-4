@@ -88,7 +88,7 @@ START_TEST(dnctypes_conv)
     conv.invt = VALUE_NUM;
     conv.num = count;
     dnctypesConv (&conv);
-    ck_assert_str_eq (conv.numstr, val);
+    ck_assert_str_eq (conv.str, val);
 
     ++count;
   }

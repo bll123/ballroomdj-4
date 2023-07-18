@@ -119,6 +119,7 @@ START_TEST(songfav_conv)
   songFavoriteConv (&conv);
   ck_assert_int_ge (conv.num, 0);
 
+  conv.invt = VALUE_NUM;
   songFavoriteConv (&conv);
   ck_assert_str_eq (conv.str, "bluestar");
 

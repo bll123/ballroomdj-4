@@ -29,7 +29,6 @@ typedef struct {
     list_t      *list;
     const char  *str;
     double      dval;
-    char        numstr [40];
     char        *strval;
   };
 } datafileconv_t;

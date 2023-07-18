@@ -111,7 +111,7 @@ START_TEST(level_conv)
     conv.invt = VALUE_NUM;
     conv.num = count;
     levelConv (&conv);
-    ck_assert_str_eq (conv.numstr, val);
+    ck_assert_str_eq (conv.str, val);
 
     ++count;
   }

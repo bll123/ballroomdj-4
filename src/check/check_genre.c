@@ -107,7 +107,7 @@ START_TEST(genre_conv)
     conv.invt = VALUE_NUM;
     conv.num = count;
     genreConv (&conv);
-    ck_assert_str_eq (conv.numstr, val);
+    ck_assert_str_eq (conv.str, val);
 
     ++count;
   }

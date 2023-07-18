@@ -96,7 +96,7 @@ START_TEST(rating_conv)
     conv.invt = VALUE_NUM;
     conv.num = count;
     ratingConv (&conv);
-    ck_assert_str_eq (conv.numstr, val);
+    ck_assert_str_eq (conv.str, val);
 
     ++count;
   }
