@@ -492,17 +492,17 @@ listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     value = list->data [idx].value.data;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%d", list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%d ?/%d", list->name, idx, value == NULL);
   return value;
 }
 
 const char *
 listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
-  const char  *value;
+  const char  *value = NULL;
 
   value = listGetDataByIdx (keytype, list, idx);
-  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%d %s", list->name, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%d %s/%d", list->name, idx, value, value == NULL);
   return value;
 }
 
@@ -520,7 +520,6 @@ listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   if (idx >= 0 && idx < list->count) {
     value = list->data [idx].value.num;
   }
-
   logMsg (LOG_DBG, LOG_LIST, "list:gnbi:%s idx:%d %" PRId64, list->name, idx, value);
   return value;
 }

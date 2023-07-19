@@ -137,7 +137,7 @@ slistGetData (slist_t *list, const char *sidx)
 const char *
 slistGetStr (slist_t *list, const char *sidx)
 {
-  slistidx_t      idx;
+  slistidx_t  idx;
 
   idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
   return listGetStrByIdx (LIST_KEY_STR, list, idx);
@@ -181,8 +181,8 @@ slistGetMaxKeyWidth (slist_t *list)
   }
 
   value = listGetMaxKeyWidth (LIST_KEY_STR, list);
-if (value <= 0) {
-fprintf (stderr, "maxwidth not set %s\n", listGetName (LIST_KEY_STR, list));
+if (value == 0) {
+fprintf (stderr, "slist: %s max-width 0\n", listGetName (LIST_KEY_STR, list));
 }
   return value;
 }

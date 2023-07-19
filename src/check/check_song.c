@@ -177,7 +177,16 @@ static char *songparsedata [] = {
       "TRACKTOTAL\n..10\n"
       "VOLUMEADJUSTPERC\n..4400\n"
       "WORK_ID\n..\n"
-      "LASTUPDATED\n..1660237307\n"
+      "LASTUPDATED\n..1660237307\n",
+    /* unix line endings, not all data*/
+    "FILE\n..chacha.mp3\n"
+      "ALBUM\n..album\n"
+      "ALBUMARTIST\n..albumartist\n"
+      "ARTIST\n..artist\n"
+      "DANCE\n..Cha Cha\n"
+      "DANCELEVEL\n..Normal\n"
+      "DANCERATING\n..Good\n"
+      "DURATION\n..304540\n",
 };
 enum {
   songparsedatasz = sizeof (songparsedata) / sizeof (char *),
@@ -191,7 +200,6 @@ START_TEST(song_parse)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse");
 
   bdjvarsdfloadInit ();
-
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
@@ -219,7 +227,6 @@ START_TEST(song_parse_get)
 
   bdjvarsdfloadInit ();
 
-
   for (int i = 0; i < songparsedatasz; ++i) {
     double          dval;
     int             rc;
@@ -232,39 +239,46 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songIsChanged (song), 0);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
+    ck_assert_str_eq (songGetStr (song, TAG_ALBUMARTIST), "albumartist");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
-    if (i == 0) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
-    }
-    if (i == 1) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
-    }
-    if (i == 2) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
-    }
-    ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
-    ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
-    ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
-    dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
-    rc = dval == 4.4 || dval == -4.4;
-    ck_assert_int_eq (rc, 1);
-    tlist = songGetList (song, TAG_TAGS);
-    slistStartIterator (tlist, &iteridx);
-    cdata = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (cdata, "tag1");
-    cdata = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (cdata, "tag2");
-    /* converted - these assume the standard data files */
-    ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
-    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
-    ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
+    if (i < 3) {
+      if (i == 0) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+      }
+      if (i == 1) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+      }
+      if (i == 2) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+      }
+      ck_assert_str_eq (songGetStr (song, TAG_COMPOSER), "composer");
+      ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
+      ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
+      ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
+      dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+      rc = dval == 4.4 || dval == -4.4;
+      ck_assert_int_eq (rc, 1);
+      tlist = songGetList (song, TAG_TAGS);
+      slistStartIterator (tlist, &iteridx);
+      cdata = slistIterateKey (tlist, &iteridx);
+      ck_assert_str_eq (cdata, "tag1");
+      cdata = slistIterateKey (tlist, &iteridx);
+      ck_assert_str_eq (cdata, "tag2");
+      /* converted - these assume the standard data files */
+      ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
+      ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
+      ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
 
-    conv.invt = VALUE_STR;
-    conv.str = "bluestar";
-    songFavoriteConv (&conv);
-    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
+      conv.invt = VALUE_STR;
+      conv.str = "bluestar";
+      songFavoriteConv (&conv);
+      ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
+    }
+    if (i == 3) {
+      ck_assert_ptr_null (songGetStr (song, TAG_COMPOSER));
+    }
     songFree (song);
   }
 
@@ -295,6 +309,7 @@ START_TEST(song_parse_set)
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     songSetStr (song, TAG_ARTIST, "artistb");
     songSetStr (song, TAG_ALBUM, "albumb");
+
     songSetNum (song, TAG_DISCNUMBER, 2);
     songSetNum (song, TAG_TRACKNUMBER, 6);
     songSetNum (song, TAG_TRACKTOTAL, 11);
@@ -303,6 +318,9 @@ START_TEST(song_parse_set)
     songSetList (song, TAG_TAGS, data);
     mdfree (data);
     songChangeFavorite (song);
+
+    ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artistb");
+    ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "albumb");
     ck_assert_int_eq (songIsChanged (song), 1);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     songSetStr (song, TAG_TITLE, "title");
@@ -310,19 +328,20 @@ START_TEST(song_parse_set)
     songClearChanged (song);
     ck_assert_int_eq (songIsChanged (song), 0);
 
-    ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artistb");
-    ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "albumb");
     ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 2);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 6);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 11);
-    if (i == 0) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
-    }
-    if (i == 1) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
-    }
-    if (i == 2) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+
+    if (i < 3) {
+      if (i == 0) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+      }
+      if (i == 1) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+      }
+      if (i == 2) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+      }
     }
     ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), -5.5);
     tlist = songGetList (song, TAG_TAGS);
@@ -333,7 +352,11 @@ START_TEST(song_parse_set)
     ck_assert_str_eq (cdata, "tag4");
 
     conv.invt = VALUE_STR;
-    conv.str = "purplestar";
+    if (i < 3) {
+      conv.str = "purplestar";
+    } else {
+      conv.str = "redstar";
+    }
     songFavoriteConv (&conv);
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
     songFree (song);
@@ -406,12 +429,19 @@ START_TEST(song_display)
     mdfree (data);
 
     /* converted - these assume the standard data files */
-    data = songDisplayString (song, TAG_GENRE);
-    ck_assert_str_eq (data, "Classical");
-    mdfree (data);
+
+    if (i < 3) {
+      data = songDisplayString (song, TAG_GENRE);
+      ck_assert_str_eq (data, "Classical");
+      mdfree (data);
+    }
 
     data = songDisplayString (song, TAG_DANCE);
-    ck_assert_str_eq (data, "Waltz");
+    if (i < 3) {
+      ck_assert_str_eq (data, "Waltz");
+    } else {
+      ck_assert_str_eq (data, "Cha Cha");
+    }
     mdfree (data);
 
     data = songDisplayString (song, TAG_DANCERATING);
@@ -422,18 +452,28 @@ START_TEST(song_display)
     ck_assert_str_eq (data, "Normal");
     mdfree (data);
 
-    data = songDisplayString (song, TAG_STATUS);
-    ck_assert_str_eq (data, "New");
+    data = songDisplayString (song, TAG_COMPOSER);
+    if (i < 3) {
+      ck_assert_str_eq (data, "composer");
+    } else {
+      ck_assert_str_eq (data, "");
+    }
     mdfree (data);
 
-    data = songDisplayString (song, TAG_FAVORITE);
-    rc = strncmp (data, "<span", 5);
-    ck_assert_int_eq (rc, 0);
-    mdfree (data);
+    if (i < 3) {
+      data = songDisplayString (song, TAG_STATUS);
+      ck_assert_str_eq (data, "New");
+      mdfree (data);
 
-    data = songDisplayString (song, TAG_TAGS);
-    ck_assert_str_eq (data, "tag1 tag2");
-    mdfree (data);
+      data = songDisplayString (song, TAG_FAVORITE);
+      rc = strncmp (data, "<span", 5);
+      ck_assert_int_eq (rc, 0);
+      mdfree (data);
+
+      data = songDisplayString (song, TAG_TAGS);
+      ck_assert_str_eq (data, "tag1 tag2");
+      mdfree (data);
+    }
     songFree (song);
   }
 
@@ -484,6 +524,9 @@ START_TEST(song_tag_list)
       strlcat (tbuff, "\n", sizeof (tbuff));
       strlcat (tbuff, "..", sizeof (tbuff));
       cdata = slistGetStr (tlist, tag);
+if (strcmp (tag, "COMPOSER") == 0) {
+fprintf (stderr, "tlist: composer: %s/%d\n", cdata, cdata == NULL);
+}
       strlcat (tbuff, cdata, sizeof (tbuff));
       strlcat (tbuff, "\n", sizeof (tbuff));
     }
@@ -498,39 +541,46 @@ START_TEST(song_tag_list)
 
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
-    ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
-    ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
-    ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
-    if (i == 0) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
-    }
-    if (i == 1) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
-    }
-    if (i == 2) {
-      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
-    }
-    dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
-    rc = dval == 4.4 || dval == -4.4;
-    ck_assert_int_eq (rc, 1);
-
-    tlist = songGetList (song, TAG_TAGS);
-    slistStartIterator (tlist, &iteridx);
-    cdata = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (cdata, "tag1");
-    cdata = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (cdata, "tag2");
-    /* converted - these assume the standard data files */
-    ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
-    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
-    ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
+    if (i < 3) {
+      ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
+      ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
+      ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
+      if (i == 0) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+      }
+      if (i == 1) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+      }
+      if (i == 2) {
+        ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+      }
+      dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+      rc = dval == 4.4 || dval == -4.4;
+      ck_assert_int_eq (rc, 1);
 
-    conv.invt = VALUE_STR;
-    conv.str = "bluestar";
-    songFavoriteConv (&conv);
-    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
+      tlist = songGetList (song, TAG_TAGS);
+      slistStartIterator (tlist, &iteridx);
+      cdata = slistIterateKey (tlist, &iteridx);
+      ck_assert_str_eq (cdata, "tag1");
+      cdata = slistIterateKey (tlist, &iteridx);
+      ck_assert_str_eq (cdata, "tag2");
+      /* converted - these assume the standard data files */
+      ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
+      ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
+      ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
+
+      conv.invt = VALUE_STR;
+      conv.str = "bluestar";
+      songFavoriteConv (&conv);
+      ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
+
+      ck_assert_str_eq (songGetStr (song, TAG_COMPOSER), "composer");
+    }
+    if (i == 3) {
+      ck_assert_str_eq (songGetStr (song, TAG_COMPOSER), "");
+    }
 
     songFree (song);
   }

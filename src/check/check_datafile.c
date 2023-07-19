@@ -232,20 +232,6 @@ START_TEST(datafile_conv_textlist)
 }
 END_TEST
 
-typedef struct {
-  const char  *in;
-  time_t      val;
-} cms_tc_t;
-
-cms_tc_t ms_tc [] = {
-  { "1:59.0", 119000 },
-  { "1:01.0", 61000 },
-  { "1:01.9", 61900 },
-};
-enum {
-  ms_tc_count = sizeof (ms_tc) / sizeof (cms_tc_t),
-};
-
 START_TEST(datafile_alloc)
 {
   datafile_t    *df;
@@ -270,11 +256,13 @@ START_TEST(datafile_none)
 {
   datafile_t    *df;
   const char    *fn;
+  slist_t       *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_none");
   fn = "tmp/dftestnone.txt";
 
   /* essentially the same as calling datafileAlloc() */
+  /* 2023-7-19 this no longer returns null if the datafile does not exist */
   df = datafileAllocParse ("chk-df-a", DFTYPE_LIST, fn, NULL, 0,
       DF_NO_OFFSET, NULL);
   ck_assert_int_eq (datafileDistVersion (df), 1);
@@ -282,6 +270,8 @@ START_TEST(datafile_none)
   ck_assert_int_eq (datafileGetType (df), DFTYPE_LIST);
   ck_assert_str_eq (datafileGetFname (df), fn);
   ck_assert_ptr_null (datafileGetData (df));
+  list = datafileGetList (df);
+  ck_assert_int_eq (slistGetCount (list), 0);
 
   datafileFree (df);
   unlink (fn);
@@ -389,14 +379,16 @@ START_TEST(datafile_keyval_dfkey)
   int             vers = -1;
 
 
+fprintf (stderr, "--chk-- datafile_keyval_dfkey\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey");
-  fn = "tmp/dftestb.txt";
-  tstr = "# test 6\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  fn = "tmp/dftestb1.txt";
+  /* F is removed */
+  tstr = "# test 6a\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk-df-b", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
+  df = datafileAllocParse ("chk-df-b1", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
       DF_NO_OFFSET, NULL);
   ck_assert_int_eq (datafileDistVersion (df), 6);
   ck_assert_ptr_nonnull (df);
@@ -434,11 +426,6 @@ START_TEST(datafile_keyval_dfkey)
   ck_assert_int_eq (key, 18);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "e");
-
-  key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, 19);
-  value = nlistGetData (list, key);
-  ck_assert_str_eq (value, "f");
 
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 20);
@@ -480,6 +467,115 @@ START_TEST(datafile_keyval_dfkey)
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "a");
 
+  key = 19;
+  value = nlistGetStr (list, key);
+  ck_assert_ptr_null (value);
+
+  datafileFree (df);
+  unlink (fn);
+}
+END_TEST
+
+START_TEST(datafile_keyval_dfkey_missing)
+{
+  datafile_t        *df;
+  listidx_t         key;
+  ssize_t           lval;
+  double            dval;
+  const char      *value;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  slist_t         *list;
+  slist_t         *slist;
+  nlistidx_t      iteridx;
+  slistidx_t      siteridx;
+
+
+fprintf (stderr, "--chk-- datafile_keyval_dfkey_missing\n");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey_missing");
+  fn = "tmp/dftestb2.txt";
+  /* F is removed */
+  tstr = "# test 6b\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  fh = fopen (fn, "w");
+  fprintf (fh, "%s", tstr);
+  fclose (fh);
+
+  df = datafileAllocParse ("chk-df-b2", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
+      DF_NO_OFFSET, NULL);
+
+  list = datafileGetList (df);
+  nlistStartIterator (list, &iteridx);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 14);
+  value = nlistGetStr (list, key);
+  ck_assert_str_eq (value, "a");
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 15);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 5);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 16);
+  value = nlistGetStr (list, key);
+  ck_assert_str_eq (value, "c");
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 17);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 1);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 18);
+  value = nlistGetStr (list, key);
+  ck_assert_str_eq (value, "e");
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 20);
+  dval = nlistGetDouble (list, key);
+  ck_assert_float_eq (dval, 1.2);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 21);
+  slist = nlistGetList (list, key);
+
+  slistStartIterator (slist, &siteridx);
+  value = slistIterateKey (slist, &siteridx);
+  ck_assert_str_eq (value, "aaa");
+  value = slistIterateKey (slist, &siteridx);
+  ck_assert_str_eq (value, "bbb");
+  value = slistIterateKey (slist, &siteridx);
+  ck_assert_str_eq (value, "ccc");
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 22);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 0);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 23);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 1);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 24);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 0);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 14);
+  value = nlistGetStr (list, key);
+  ck_assert_str_eq (value, "a");
+
+  key = 19;
+  value = nlistGetStr (list, key);
+  ck_assert_ptr_null (value);
+
   datafileFree (df);
   unlink (fn);
 }
@@ -502,6 +598,7 @@ START_TEST(datafile_keyval_df_extra)
   int             vers;
 
 
+fprintf (stderr, "--chk-- datafile_keyval_df_extra\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
   fn = "tmp/dftestc.txt";
   tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -551,7 +648,7 @@ START_TEST(datafile_keyval_df_extra)
 
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 19);
-  value = nlistGetData (list, key);
+  value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "f");
 
   key = nlistIterateKey (list, &iteridx);
@@ -801,9 +898,11 @@ START_TEST(datafile_keyval_savelist)
   char            tmp [40];
 
 
+fprintf (stderr, "--chk-- datafile_keyval_savelist\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savelist");
   fn = "tmp/dftestf.txt";
-  tstr = "# version 10\nversion\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  /* F is removed */
+  tstr = "# version 10\nversion\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -822,7 +921,14 @@ START_TEST(datafile_keyval_savelist)
     tstr = slistGetStr (slist, dfkeyskl [i].name);
     if (dfkeyskl [i].valuetype == VALUE_STR) {
       value = nlistGetStr (list, dfkeyskl [i].itemkey);
-      ck_assert_str_eq (value, tstr);
+fprintf (stderr, "  %d chk: %s/%d\n", dfkeyskl [i].itemkey, tstr, tstr == NULL);
+fprintf (stderr, "  %d value: %s/%d\n", dfkeyskl [i].itemkey, value, value == NULL);
+      /* special case for F */
+      if (dfkeyskl [i].itemkey == 19) {
+        ck_assert_ptr_null (value);
+      } else {
+        ck_assert_str_eq (value, tstr);
+      }
     }
     if (dfkeyskl [i].valuetype == VALUE_DOUBLE) {
       snprintf (tmp, sizeof (tmp), "%.0f",
@@ -877,9 +983,11 @@ START_TEST(datafile_keyval_savebuffer)
   char            tbuff [4096];
 
 
+fprintf (stderr, "--chk-- datafile_keyval_savebuffer\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savebuffer");
   fn = "tmp/dftestg.txt";
-  tstr = "# version 11\nversion\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  /* F is removed */
+  tstr = "# version 11\nversion\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -904,8 +1012,12 @@ START_TEST(datafile_keyval_savebuffer)
 
   for (int i = 0; i < DFKEY_COUNT; ++i) {
     if (dfkeyskl [i].valuetype == VALUE_STR) {
-      ck_assert_str_eq (nlistGetStr (list, dfkeyskl [i].itemkey),
-          nlistGetStr (tlist, dfkeyskl [i].itemkey));
+      if (dfkeyskl [i].itemkey == 19) {
+        ck_assert_ptr_null (nlistGetStr (list, dfkeyskl [i].itemkey));
+      } else {
+        ck_assert_str_eq (nlistGetStr (list, dfkeyskl [i].itemkey),
+            nlistGetStr (tlist, dfkeyskl [i].itemkey));
+      }
     }
     if (dfkeyskl [i].valuetype == VALUE_DOUBLE) {
       ck_assert_float_eq (nlistGetDouble (list, dfkeyskl [i].itemkey),
@@ -952,9 +1064,11 @@ START_TEST(datafile_keyval_save)
   int             vers;
 
 
+fprintf (stderr, "--chk-- datafile_keyval_save\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
   fn = "tmp/dftesti.txt";
-  tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  /* F is removed */
+  tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -981,8 +1095,12 @@ START_TEST(datafile_keyval_save)
 
   for (int i = 0; i < DFKEY_COUNT; ++i) {
     if (dfkeyskl [i].valuetype == VALUE_STR) {
-      ck_assert_str_eq (nlistGetStr (list, dfkeyskl [i].itemkey),
-          nlistGetStr (tlist, dfkeyskl [i].itemkey));
+      if (dfkeyskl [i].itemkey == 19) {
+        ck_assert_ptr_null (nlistGetStr (list, dfkeyskl [i].itemkey));
+      } else {
+        ck_assert_str_eq (nlistGetStr (list, dfkeyskl [i].itemkey),
+            nlistGetStr (tlist, dfkeyskl [i].itemkey));
+      }
     }
     if (dfkeyskl [i].valuetype == VALUE_DOUBLE) {
       ck_assert_float_eq (nlistGetDouble (list, dfkeyskl [i].itemkey),
@@ -1243,6 +1361,7 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_none);
   tcase_add_test (tc, datafile_simple);
   tcase_add_test (tc, datafile_keyval_dfkey);
+  tcase_add_test (tc, datafile_keyval_dfkey_missing);
   tcase_add_test (tc, datafile_keyval_df_extra);
   tcase_add_test (tc, datafile_indirect);
   tcase_add_test (tc, datafile_indirect_missing);

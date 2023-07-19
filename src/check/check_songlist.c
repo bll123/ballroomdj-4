@@ -208,6 +208,8 @@ START_TEST(songlist_save)
 
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (SLFFN);
+  ck_assert_int_ne (rc, 0);
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
   tma = fileopModTime (SLFFN);

@@ -60,6 +60,24 @@ START_TEST(ilist_get_data_str)
 }
 END_TEST
 
+START_TEST(ilist_get_data_str_null)
+{
+  ilist_t        *list;
+  const char     *value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_get_data_str_null");
+
+  list = ilistAlloc ("chk-c", LIST_ORDERED);
+  ilistSetStr (list, 6, 0, "0L");
+  ilistSetStr (list, 26, 0, NULL);
+  value = ilistGetStr (list, 6, 0);
+  ck_assert_str_eq (value, "0L");
+  value = ilistGetStr (list, 26, 0);
+  ck_assert_ptr_null (value);
+  ilistFree (list);
+}
+END_TEST
+
 START_TEST(ilist_get_data_str_sub)
 {
   ilist_t        *list;
@@ -407,6 +425,7 @@ ilist_suite (void)
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, ilist_create_free);
   tcase_add_test (tc, ilist_get_data_str);
+  tcase_add_test (tc, ilist_get_data_str_null);
   tcase_add_test (tc, ilist_get_data_str_sub);
   tcase_add_test (tc, ilist_iterate);
   tcase_add_test (tc, ilist_u_sort);

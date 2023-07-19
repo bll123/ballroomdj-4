@@ -496,6 +496,40 @@ START_TEST(nlist_s_get_str)
 }
 END_TEST
 
+START_TEST(nlist_s_get_str_null)
+{
+  nlist_t        *list;
+  const char     *value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_get_str_null");
+
+  list = nlistAlloc ("chk-dd-ee", LIST_ORDERED, NULL);
+  nlistSetStr (list, 5, "0L");
+  nlistSetStr (list, 6, NULL);
+  value = nlistGetStr (list, 5);
+  ck_assert_str_eq (value, "0L");
+  value = nlistGetStr (list, 6);
+  ck_assert_ptr_null (value);
+  nlistFree (list);
+}
+END_TEST
+
+START_TEST(nlist_s_get_str_not_exist)
+{
+  nlist_t        *list;
+  const char     *value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_get_str_not_exist");
+
+  list = nlistAlloc ("chk-dd-ee", LIST_ORDERED, NULL);
+  nlistSetStr (list, 5, "0L");
+  nlistSetStr (list, 6, NULL);
+  value = nlistGetStr (list, 17);
+  ck_assert_ptr_null (value);
+  nlistFree (list);
+}
+END_TEST
+
 START_TEST(nlist_s_cache_bug_20221013)
 {
   nlist_t        *list;
@@ -1276,6 +1310,8 @@ nlist_suite (void)
   tcase_add_test (tc, nlist_s_no_size_sort);
   tcase_add_test (tc, nlist_s_ordered);
   tcase_add_test (tc, nlist_s_get_str);
+  tcase_add_test (tc, nlist_s_get_str_null);
+  tcase_add_test (tc, nlist_s_get_str_not_exist);
   tcase_add_test (tc, nlist_s_cache_bug_20221013);
   tcase_add_test (tc, nlist_s_iterate_str);
   tcase_add_test (tc, nlist_set_get_num);

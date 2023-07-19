@@ -1013,11 +1013,15 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
     }
   }
   if (vt == VALUE_STR) {
-    snprintf (buff, sz, "%s", conv->str);
+    if (conv->str != NULL) {
+      snprintf (buff, sz, "%s", conv->str);
+    }
   }
   if (vt == VALUE_STRVAL) {
-    snprintf (buff, sz, "%s", conv->strval);
-    dataFree (conv->strval);
+    if (conv->strval != NULL) {
+      snprintf (buff, sz, "%s", conv->strval);
+      mdfree (conv->strval);
+    }
   }
 }
 

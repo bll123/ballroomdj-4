@@ -231,6 +231,14 @@ main (int argc, char *argv [])
         fprintf (stderr, "    null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
+      if (val [DB_A] != NULL && strcmp (val [DB_A], "(null)") == 0) {
+        fprintf (stderr, "    tag %s has '(null)' string (db-a) %s\n", tag [DB_A], fn);
+        grc = 1;
+      }
+      if (val [DB_B] != NULL && strcmp (val [DB_B], "(null)") == 0) {
+        fprintf (stderr, "    tag %s has '(null)' string (db-b) %s\n", tag [DB_A], fn);
+        grc = 1;
+      }
 
       if (strcmp (tag [DB_A], tagdefs [TAG_DURATION].tag) == 0) {
         if (val [DB_A] != NULL && val [DB_B] != NULL) {

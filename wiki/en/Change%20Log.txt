@@ -10,6 +10,7 @@
     * Player: Windows: Fix clock display to use the windows configuration.
 * Internal:
     * Code cleanup (list, data conversion).
+    * New tests.
 
 -->
 
