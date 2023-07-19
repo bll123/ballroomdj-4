@@ -54,13 +54,6 @@ ilistGetCount (ilist_t *list)
   return listGetCount (LIST_KEY_IND, list);
 }
 
-/* for testing */
-ilistidx_t
-ilistGetAllocCount (ilist_t *list)
-{
-  return listGetAllocCount (LIST_KEY_IND, list);
-}
-
 void
 ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
@@ -240,10 +233,26 @@ ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
   return listIterateKeyNum (LIST_KEY_IND, list, iteridx);
 }
 
+/* debug / informational */
+
 void
 ilistDumpInfo (ilist_t *list)
 {
   listDumpInfo (LIST_KEY_IND, list);
+}
+
+/* for testing */
+ilistidx_t
+ilistGetAllocCount (ilist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_IND, list);
+}
+
+/* for testing */
+int
+ilistGetOrdering (ilist_t *list)
+{
+  return listGetOrdering (LIST_KEY_IND, list);
 }
 
 /* internal routines */

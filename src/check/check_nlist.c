@@ -72,8 +72,7 @@ START_TEST(nlist_create_free)
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (nlistGetCount (list), 0);
   ck_assert_int_eq (nlistGetAllocCount (list), 0);
-//  ck_assert_int_eq (list->ordered, LIST_ORDERED);
-//  ck_assert_int_eq (list->keytype, LIST_KEY_NUM);
+  ck_assert_int_eq (nlistGetOrdering (list), LIST_ORDERED);
   nlistFree (list);
 }
 END_TEST
@@ -636,7 +635,7 @@ START_TEST(nlist_set_get_num)
   ck_assert_int_eq (value, 1);
 
   nlistSort (list);
-//  ck_assert_int_eq (list->ordered, LIST_ORDERED);
+  ck_assert_int_eq (nlistGetOrdering (list), LIST_ORDERED);
   ck_assert_int_eq (nlistGetCount (list), 7);
 
   /* ordered */

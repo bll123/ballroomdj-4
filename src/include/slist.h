@@ -19,7 +19,6 @@ void      slistFree (void * list);
 void      slistSetVersion (slist_t *list, int version);
 int       slistGetVersion (slist_t *list);
 slistidx_t slistGetCount (slist_t *list);
-slistidx_t slistGetAllocCount (slist_t *list);
 void      slistSetSize (slist_t *, slistidx_t);
 void      slistCalcMaxWidth (slist_t *list);
 int       slistGetMaxKeyWidth (slist_t *);
@@ -46,7 +45,9 @@ const char *slistIterateKey (slist_t *list, slistidx_t *idx);
 void      *slistIterateValueData (slist_t *list, slistidx_t *idx);
 listnum_t slistIterateValueNum (slist_t *list, slistidx_t *idx);
 listidx_t slistIterateGetIdx (list_t *list, slistidx_t *idx);
-  /* aux routines */
+/* debug / information routines */
+slistidx_t slistGetAllocCount (slist_t *list);
 void      slistDumpInfo (slist_t *list);
+int       slistGetOrdering (slist_t *list);
 
 #endif /* INC_SLIST_H */

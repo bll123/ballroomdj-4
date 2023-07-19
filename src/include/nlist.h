@@ -14,12 +14,13 @@ typedef listFree_t  nlistFree_t;
 /* keyed by a nlistidx_t */
 nlist_t     *nlistAlloc (const char *name, nlistorder_t, nlistFree_t valueFreeHook);
 void        nlistFree (void * list);
-void        nlistSetVersion (nlist_t *list, int version);
-int         nlistGetVersion (nlist_t *list);
 nlistidx_t  nlistGetCount (nlist_t *list);
-nlistidx_t  nlistGetAllocCount (nlist_t *list);
 void        nlistSetSize (nlist_t *, nlistidx_t);
 void        nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);
+void        nlistSort (nlist_t *);
+/* version */
+void        nlistSetVersion (nlist_t *list, int version);
+int         nlistGetVersion (nlist_t *list);
 /* set routines */
 void        nlistSetData (nlist_t *, nlistidx_t lkey, void *data);
 void        nlistSetStr (nlist_t *, nlistidx_t lkey, const char *data);
@@ -44,10 +45,12 @@ nlistidx_t  nlistIterateKey (nlist_t *list, nlistidx_t *idx);
 nlistidx_t  nlistIterateKeyPrevious (nlist_t *list, nlistidx_t *idx);
 void        *nlistIterateValueData (nlist_t *list, nlistidx_t *idx);
 listnum_t   nlistIterateValueNum (nlist_t *list, nlistidx_t *idx);
-/* aux routines */
-void        nlistSort (nlist_t *);
-void        nlistDumpInfo (nlist_t *list);
+/* search */
 nlistidx_t  nlistSearchProbTable (nlist_t *probTable, double dval);
+/* debug / information routines */
+void        nlistDumpInfo (nlist_t *list);
 bool        nlistDebugIsCached (list_t *list, listidx_t key);
+nlistidx_t  nlistGetAllocCount (nlist_t *list);
+int         nlistGetOrdering (nlist_t *list);
 
 #endif /* INC_NLIST_H */

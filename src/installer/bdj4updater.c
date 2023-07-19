@@ -497,9 +497,9 @@ main (int argc, char *argv [])
     /*             display the queuedance playlist properly. */
     /* 2023-5-23 : 4.3.2.4 */
     /*             Updated internal key names */
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 4);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 3);
-    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 2);
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 4);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 3);
+    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 2);
   }
 
   {
@@ -933,7 +933,7 @@ main (int argc, char *argv [])
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
   if (updlistallocated) {
-    slistFree (updlist);
+    nlistFree (updlist);
   }
 
   bdj4shutdown (ROUTE_NONE, NULL);

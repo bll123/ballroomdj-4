@@ -52,13 +52,6 @@ slistGetCount (slist_t *list)
   return listGetCount (LIST_KEY_STR, list);
 }
 
-/* for testing */
-slistidx_t
-slistGetAllocCount (slist_t *list)
-{
-  return listGetAllocCount (LIST_KEY_STR, list);
-}
-
 void
 slistSetSize (slist_t *list, listidx_t siz)
 {
@@ -230,9 +223,24 @@ slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
   return listIterateValueNum (LIST_KEY_STR, list, iteridx);
 }
 
+/* debug / informational */
+
 void
 slistDumpInfo (slist_t *list)
 {
   listDumpInfo (LIST_KEY_STR, list);
 }
 
+/* for testing */
+slistidx_t
+slistGetAllocCount (slist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_STR, list);
+}
+
+/* for testing */
+int
+slistGetOrdering (slist_t *list)
+{
+  return listGetOrdering (LIST_KEY_STR, list);
+}

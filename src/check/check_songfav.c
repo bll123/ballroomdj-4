@@ -32,6 +32,38 @@ setup (void)
   templateFileCopy ("favorites.txt", "favorites.txt");
 }
 
+START_TEST(songfav_conv)
+{
+  songfav_t     *songfav = NULL;
+  datafileconv_t conv;
+  int           count;
+
+  bdjvarsdfloadInit ();
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_conv");
+
+  songfav = songFavoriteAlloc ();
+
+  conv.invt = VALUE_STR;
+  conv.str = "bluestar";
+  songFavoriteConv (&conv);
+  ck_assert_int_ge (conv.num, 0);
+
+  conv.invt = VALUE_NUM;
+  songFavoriteConv (&conv);
+  ck_assert_str_eq (conv.str, "bluestar");
+
+  count = songFavoriteGetCount (songfav);
+  conv.invt = VALUE_STR;
+  conv.str = "imported";
+  songFavoriteConv (&conv);
+  ck_assert_int_ge (conv.num, count);
+
+  songFavoriteFree (songfav);
+  bdjvarsdfloadCleanup ();
+}
+END_TEST
+
 START_TEST(songfav_alloc)
 {
   songfav_t   *songfav = NULL;
@@ -102,38 +134,6 @@ START_TEST(songfav_get_str)
 }
 END_TEST
 
-START_TEST(songfav_conv)
-{
-  songfav_t     *songfav = NULL;
-  datafileconv_t conv;
-  int           count;
-
-  bdjvarsdfloadInit ();
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_conv");
-
-  songfav = songFavoriteAlloc ();
-
-  conv.invt = VALUE_STR;
-  conv.str = "bluestar";
-  songFavoriteConv (&conv);
-  ck_assert_int_ge (conv.num, 0);
-
-  conv.invt = VALUE_NUM;
-  songFavoriteConv (&conv);
-  ck_assert_str_eq (conv.str, "bluestar");
-
-  count = songFavoriteGetCount (songfav);
-  conv.invt = VALUE_STR;
-  conv.str = "imported";
-  songFavoriteConv (&conv);
-  ck_assert_int_ge (conv.num, count);
-
-  songFavoriteFree (songfav);
-  bdjvarsdfloadCleanup ();
-}
-END_TEST
-
 Suite *
 songfav_suite (void)
 {
@@ -144,11 +144,11 @@ songfav_suite (void)
   tc = tcase_create ("songfav");
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_test (tc, songfav_conv);
   tcase_add_test (tc, songfav_alloc);
   tcase_add_test (tc, songfav_count);
   tcase_add_test (tc, songfav_next_value);
   tcase_add_test (tc, songfav_get_str);
-  tcase_add_test (tc, songfav_conv);
   suite_add_tcase (s, tc);
   return s;
 }

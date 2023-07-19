@@ -18,7 +18,6 @@ void      ilistFree (void * list);
 void      ilistSetVersion (ilist_t *list, int version);
 int       ilistGetVersion (ilist_t *list);
 ilistidx_t   ilistGetCount (ilist_t *list);
-ilistidx_t   ilistGetAllocCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ilistidx_t);
 void      ilistSort (ilist_t *);
 void      ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist);
@@ -36,11 +35,13 @@ ilistidx_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 double    ilistGetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 slist_t   *ilistGetList (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 void      ilistDelete (list_t *, ilistidx_t ikey);
-  /* iterators */
+/* iterators */
 void      ilistStartIterator (ilist_t *list, ilistidx_t *idx);
 ilistidx_t ilistIterateKey (ilist_t *list, ilistidx_t *idx);
-  /* aux routines */
+/* debug / information routines */
 void      ilistDumpInfo (ilist_t *list);
+ilistidx_t   ilistGetAllocCount (ilist_t *list);
+int       ilistGetOrdering (ilist_t *list);
 
 #endif /* INC_ILIST_H */
 

@@ -29,8 +29,7 @@ START_TEST(ilist_create_free)
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (ilistGetCount (list), 0);
   ck_assert_int_eq (ilistGetAllocCount (list), 0);
-//  ck_assert_int_eq (list->ordered, LIST_ORDERED);
-//  ck_assert_int_eq (list->keytype, LIST_KEY_NUM);
+  ck_assert_int_eq (ilistGetOrdering (list), LIST_ORDERED);
   ilistFree (list);
 }
 END_TEST
@@ -185,7 +184,7 @@ START_TEST(ilist_u_sort)
   ck_assert_int_eq (value, 1);
 
   ilistSort (list);
-//  ck_assert_int_eq (list->ordered, LIST_ORDERED);
+  ck_assert_int_eq (ilistGetOrdering (list), LIST_ORDERED);
   ck_assert_int_eq (ilistGetCount (list), 7);
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);

@@ -182,34 +182,6 @@ listSort (keytype_t keytype, list_t *list)
 }
 
 void
-listDumpInfo (keytype_t keytype, list_t *list)
-{
-  if (! listCheckKeyType (list, keytype)) {
-    return;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
-      list->name, list->count, list->keytype, list->ordered);
-}
-
-/* used by the test suite */
-bool
-listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
-{
-  bool  rc;
-
-  if (list == NULL) {
-    return false;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return false;
-  }
-
-  rc = list->locCache != LIST_LOC_INVALID &&
-      list->keyCache.idx == key;
-  return rc;
-}
-
-void
 listCalcMaxWidth (keytype_t keytype, list_t *list)
 {
   int     maxlen = 10;
@@ -270,19 +242,6 @@ listGetCount (keytype_t keytype, list_t *list)
     return 0;
   }
   return list->count;
-}
-
-/* for testing */
-listidx_t
-listGetAllocCount (keytype_t keytype, list_t *list)
-{
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
-    return 0;
-  }
-  return list->allocCount;
 }
 
 int
@@ -801,6 +760,62 @@ listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval)
   listSet (list, &item);
 }
 
+/* debug / informational */
+
+void
+listDumpInfo (keytype_t keytype, list_t *list)
+{
+  if (! listCheckKeyType (list, keytype)) {
+    return;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
+      list->name, list->count, list->keytype, list->ordered);
+}
+
+/* used by the test suite */
+bool
+listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
+{
+  bool  rc;
+
+  if (list == NULL) {
+    return false;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return false;
+  }
+
+  rc = list->locCache != LIST_LOC_INVALID &&
+      list->keyCache.idx == key;
+  return rc;
+}
+
+/* for testing */
+listidx_t
+listGetAllocCount (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return 0;
+  }
+  return list->allocCount;
+}
+
+/* for testing */
+int
+listGetOrdering (keytype_t keytype, list_t *list)
+{
+  if (list == NULL) {
+    return LIST_UNORDERED;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return LIST_UNORDERED;
+  }
+
+  return list->ordered;
+}
 
 /* internal routines */
 

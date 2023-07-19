@@ -33,29 +33,10 @@ nlistFree (void *list)
   listFree (LIST_KEY_NUM, list);
 }
 
-void
-nlistSetVersion (nlist_t *list, int version)
-{
-  listSetVersion (LIST_KEY_NUM, list, version);
-}
-
-int
-nlistGetVersion (nlist_t *list)
-{
-  return listGetVersion (LIST_KEY_NUM, list);
-}
-
 nlistidx_t
 nlistGetCount (nlist_t *list)
 {
   return listGetCount (LIST_KEY_NUM, list);
-}
-
-/* for testing */
-nlistidx_t
-nlistGetAllocCount (nlist_t *list)
-{
-  return listGetAllocCount (LIST_KEY_NUM, list);
 }
 
 void
@@ -78,6 +59,20 @@ void
 nlistSort (nlist_t *list)
 {
   listSort (LIST_KEY_NUM, list);
+}
+
+/* version */
+
+void
+nlistSetVersion (nlist_t *list, int version)
+{
+  listSetVersion (LIST_KEY_NUM, list, version);
+}
+
+int
+nlistGetVersion (nlist_t *list)
+{
+  return listGetVersion (LIST_KEY_NUM, list);
 }
 
 /* set routines */
@@ -249,11 +244,7 @@ nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
   return listIterateValueNum (LIST_KEY_NUM, list, iteridx);
 }
 
-void
-nlistDumpInfo (nlist_t *list)
-{
-  listDumpInfo (LIST_KEY_NUM, list);
-}
+/* search */
 
 /* returns the key value, not the table index */
 nlistidx_t
@@ -292,8 +283,30 @@ nlistSearchProbTable (nlist_t *probTable, double dval)
   return -1;
 }
 
+/* debug / informational */
+
 bool
 nlistDebugIsCached (list_t *list, listidx_t key)
 {
   return listDebugIsCached (LIST_KEY_NUM, list, key);
+}
+
+/* for testing */
+nlistidx_t
+nlistGetAllocCount (nlist_t *list)
+{
+  return listGetAllocCount (LIST_KEY_NUM, list);
+}
+
+void
+nlistDumpInfo (nlist_t *list)
+{
+  listDumpInfo (LIST_KEY_NUM, list);
+}
+
+/* for testing */
+int
+nlistGetOrdering (nlist_t *list)
+{
+  return listGetOrdering (LIST_KEY_NUM, list);
 }

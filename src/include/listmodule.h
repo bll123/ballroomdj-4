@@ -17,15 +17,12 @@ void        listFree (keytype_t keytype, void *list);
 /* list management */
 void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);
 void        listSort (keytype_t keytype, list_t *list);
-void        listDumpInfo (keytype_t keytype, list_t *list);
-bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 void        listCalcMaxWidth (keytype_t keytype, list_t *list);
 const char  *listGetName (keytype_t keytype, list_t *list);
 void        listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook);
 
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
-listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
 int         listGetMaxKeyWidth (keytype_t keytype, list_t *list);
 
 /* version */
@@ -64,5 +61,12 @@ void        listSetNumNum (keytype_t keytype, list_t *list, listidx_t key, listn
 void        listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval);
 
 void        listDeleteByIdx (keytype_t keytype, list_t *, listidx_t idx);
+
+/* debug / information */
+
+listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
+void        listDumpInfo (keytype_t keytype, list_t *list);
+bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
+int         listGetOrdering (keytype_t keytype, list_t *list);
 
 #endif /* LIST_MODULE_H */
