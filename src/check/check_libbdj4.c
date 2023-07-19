@@ -46,11 +46,11 @@ check_libbdj4 (SRunner *sr)
    *  sequence              complete
    *  songsel
    *  playlist
+   *  validate              complete
    *  audiotag
    *  sortopt               complete
    *  dispsel               complete
    *  orgutil               partial
-   *  validate              complete
    *  webclient             complete 2022-12-27
    *  songdb
    *  samesong              complete
@@ -128,6 +128,9 @@ check_libbdj4 (SRunner *sr)
 
   /* playlist */
 
+  s = validate_suite();
+  srunner_add_suite (sr, s);
+
   /* audiotag */
 
   s = sortopt_suite();
@@ -137,9 +140,6 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = validate_suite();
   srunner_add_suite (sr, s);
 
   s = webclient_suite();

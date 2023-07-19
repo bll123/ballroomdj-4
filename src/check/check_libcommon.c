@@ -30,22 +30,22 @@ check_libcommon (SRunner *sr)
   /* libcommon:
    *  strlcat     --
    *  strlcpy     --
+   *  tmutil      complete
    *  fileop      complete
    *  osutils     complete 2022-12-27
    *  bdjstring   complete
-   *  tmutil      complete
    *  osprocess   complete                // uses procutil, pathbld, ossignal
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
    *  mdebug      complete
    *  sysvars
-   *  osdir       complete 2022-12-27     // uses dirop
+   *  osdir       complete 2022-12-27     // test uses dirop
    *  pathdisp    complete
+   *  pathbld     complete
    *  dirop       complete
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
-   *  pathbld     complete
    *  log
    *  bdjmsg      complete
    *  sock        partial
@@ -64,6 +64,9 @@ check_libcommon (SRunner *sr)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
 
+  s = tmutil_suite();
+  srunner_add_suite (sr, s);
+
   s = fileop_suite();
   srunner_add_suite (sr, s);
 
@@ -71,9 +74,6 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = bdjstring_suite();
-  srunner_add_suite (sr, s);
-
-  s = tmutil_suite();
   srunner_add_suite (sr, s);
 
   s = osprocess_suite();

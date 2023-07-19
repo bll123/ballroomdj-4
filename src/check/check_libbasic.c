@@ -53,10 +53,10 @@ check_libbasic (SRunner *sr)
   s = nlist_suite();
   srunner_add_suite (sr, s);
 
-  s = slist_suite();
+  s = ilist_suite();
   srunner_add_suite (sr, s);
 
-  s = ilist_suite();
+  s = slist_suite();
   srunner_add_suite (sr, s);
 
   s = datafile_suite();
