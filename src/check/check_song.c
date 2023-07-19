@@ -524,9 +524,6 @@ START_TEST(song_tag_list)
       strlcat (tbuff, "\n", sizeof (tbuff));
       strlcat (tbuff, "..", sizeof (tbuff));
       cdata = slistGetStr (tlist, tag);
-if (strcmp (tag, "COMPOSER") == 0) {
-fprintf (stderr, "tlist: composer: %s/%d\n", cdata, cdata == NULL);
-}
       strlcat (tbuff, cdata, sizeof (tbuff));
       strlcat (tbuff, "\n", sizeof (tbuff));
     }

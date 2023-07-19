@@ -51,18 +51,18 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
-  filemanipCopy ("test-templates/test-songlist.songlist", "data/test-sl-a.songlist");
-  filemanipCopy ("test-templates/test-songlist.pl", "data/test-sl-a.pl");
-  filemanipCopy ("test-templates/test-songlist.pldances", "data/test-sl-a.pldances");
+  filemanipCopy ("test-templates/test-sl-a.songlist", "data/test-sl-a.songlist");
+  filemanipCopy ("test-templates/test-sl-a.pl", "data/test-sl-a.pl");
+  filemanipCopy ("test-templates/test-sl-a.pldances", "data/test-sl-a.pldances");
   unlink (SLNEWFFN);
 }
 
 static void
 teardown (void)
 {
-  filemanipCopy ("test-templates/test-songlist.songlist", "data/test-sl-a.songlist");
-  filemanipCopy ("test-templates/test-songlist.pl", "data/test-sl-a.pl");
-  filemanipCopy ("test-templates/test-songlist.pldances", "data/test-sl-a.pldances");
+  filemanipCopy ("test-templates/test-sl-a.songlist", "data/test-sl-a.songlist");
+  filemanipCopy ("test-templates/test-sl-a.pl", "data/test-sl-a.pl");
+  filemanipCopy ("test-templates/test-sl-a.pldances", "data/test-sl-a.pldances");
   unlink (SLNEWFFN);
 }
 

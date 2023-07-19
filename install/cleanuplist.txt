@@ -141,6 +141,22 @@ plocal/share/themes/macOS-Mojave-dark$
 plocal/share/themes/macOS-Mojave-light$
 
 ####
+# linux
+
+::linuxonly
+
+# 2023-7-19 : never used on linux
+bin/bdj4g
+
+####
+# windows
+
+::windowsonly
+
+# 2023-7-19 : never used on windows
+bin/bdj4g.exe
+
+####
 # data-dir
 
 ::datatopdir

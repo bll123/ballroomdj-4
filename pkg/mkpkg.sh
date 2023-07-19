@@ -147,6 +147,18 @@ function copyreleasefiles {
   rm -rf \
       ${stage}/img/profile0[0-9] \
       ${stage}/plocal/lib/pkgconfig
+
+  # the graphics-linked launcher is not used on linux or windows
+  case ${tag} in
+    linux)
+      rm -f ${stage}/bin/bdj4g
+      ;;
+    macos)
+      ;;
+    win64)
+      rm -f ${stage}/bin/bdj4g
+      ;;
+  esac
 }
 
 function setLibVol {

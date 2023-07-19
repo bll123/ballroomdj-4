@@ -352,7 +352,6 @@ START_TEST(slist_get_data_str_not_exist)
   slist_t        *list;
   const char     *value;
 
-fprintf (stderr, "--chk-- slist_get_data_str_not_exist\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_str_not_exist");
 
   list = slistAlloc ("chk-k", LIST_ORDERED, NULL);
@@ -361,7 +360,6 @@ fprintf (stderr, "--chk-- slist_get_data_str_not_exist\n");
   value = slistGetStr (list, "QQQQ");
   ck_assert_ptr_null (value);
   slistFree (list);
-fprintf (stderr, "FIN slist_get_data_str_not_exist\n");
 }
 END_TEST
 

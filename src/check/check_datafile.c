@@ -379,7 +379,6 @@ START_TEST(datafile_keyval_dfkey)
   int             vers = -1;
 
 
-fprintf (stderr, "--chk-- datafile_keyval_dfkey\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey");
   fn = "tmp/dftestb1.txt";
   /* F is removed */
@@ -492,7 +491,6 @@ START_TEST(datafile_keyval_dfkey_missing)
   slistidx_t      siteridx;
 
 
-fprintf (stderr, "--chk-- datafile_keyval_dfkey_missing\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey_missing");
   fn = "tmp/dftestb2.txt";
   /* F is removed */
@@ -598,7 +596,6 @@ START_TEST(datafile_keyval_df_extra)
   int             vers;
 
 
-fprintf (stderr, "--chk-- datafile_keyval_df_extra\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
   fn = "tmp/dftestc.txt";
   tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -898,7 +895,6 @@ START_TEST(datafile_keyval_savelist)
   char            tmp [40];
 
 
-fprintf (stderr, "--chk-- datafile_keyval_savelist\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savelist");
   fn = "tmp/dftestf.txt";
   /* F is removed */
@@ -921,8 +917,6 @@ fprintf (stderr, "--chk-- datafile_keyval_savelist\n");
     tstr = slistGetStr (slist, dfkeyskl [i].name);
     if (dfkeyskl [i].valuetype == VALUE_STR) {
       value = nlistGetStr (list, dfkeyskl [i].itemkey);
-fprintf (stderr, "  %d chk: %s/%d\n", dfkeyskl [i].itemkey, tstr, tstr == NULL);
-fprintf (stderr, "  %d value: %s/%d\n", dfkeyskl [i].itemkey, value, value == NULL);
       /* special case for F */
       if (dfkeyskl [i].itemkey == 19) {
         ck_assert_ptr_null (value);
@@ -983,7 +977,6 @@ START_TEST(datafile_keyval_savebuffer)
   char            tbuff [4096];
 
 
-fprintf (stderr, "--chk-- datafile_keyval_savebuffer\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savebuffer");
   fn = "tmp/dftestg.txt";
   /* F is removed */
@@ -1064,7 +1057,6 @@ START_TEST(datafile_keyval_save)
   int             vers;
 
 
-fprintf (stderr, "--chk-- datafile_keyval_save\n");
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
   fn = "tmp/dftesti.txt";
   /* F is removed */

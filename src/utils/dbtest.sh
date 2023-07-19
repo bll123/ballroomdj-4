@@ -211,8 +211,6 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-TESTON=F # debug
-
 if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes
   tname=checknew-basic
@@ -270,8 +268,6 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-TESTON=T # debug
-
 # restore the main test database, needed for write tags check
 # only the main db has songs with song-start/song-end/vol-adjust-perc
 cp -f $TMAINDB $DATADB
@@ -319,8 +315,6 @@ if [[ $TESTON == T ]]; then
   esac
   dispres $tname $rc $crc
 fi
-
-exit 1
 
 # create test db w/different song-end
 # the problem here is that with bdj3 compatibility off, there is no
