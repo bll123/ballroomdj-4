@@ -181,26 +181,6 @@ convTextList (datafileconv_t *conv)
   logProcEnd (LOG_PROC, "convTextList", "");
 }
 
-void
-convMS (datafileconv_t *conv)
-{
-  time_t    num;
-  char      tbuff [40];
-
-  if (conv->invt == VALUE_STR) {
-    conv->outvt = VALUE_NUM;
-    num = 0;
-    if (conv->str != NULL) {
-      num = tmutilStrToMS (conv->str);
-    }
-    conv->num = num;
-  } else if (conv->invt == VALUE_NUM) {
-    conv->outvt = VALUE_STRVAL;
-    tmutilToMSD (conv->num, tbuff, sizeof (tbuff), 1);
-    conv->strval = mdstrdup (tbuff);
-  }
-}
-
 /* datafile loading routines */
 
 datafile_t *
@@ -438,8 +418,38 @@ datafileDistVersion (datafile_t *df)
   return df->distvers;
 }
 
+int
+datafileReadDistVersion (const char *fname)
+{
+  FILE    *fh;
+  char    line [MAXPATHLEN];
+  int     distvers = 1;
+  bool    done;
 
-/* for debugging only */
+  fh = fileopOpen (fname, "r");
+  if (fh == NULL) {
+    return distvers;
+  }
+
+  done = false;
+  while (! done) {
+    (void) ! fgets (line, sizeof (line), fh);
+    if (strncmp (line, DF_VERSION_DIST_STR, strlen (DF_VERSION_DIST_STR)) == 0) {
+      sscanf (line, DF_VERSION_FMT, &distvers);
+      done = true;
+    }
+    if (*line != '#') {
+      /* assume, that after then first block of comments, that the */
+      /* dist version does not exist */
+      done = true;
+    }
+  }
+
+  fclose (fh);
+  return distvers;
+}
+
+/* debug / informational */
 
 datafiletype_t
 datafileGetType (datafile_t *df)

@@ -59,6 +59,8 @@ static datafilekey_t songdfkeys [] = {
   { "DBADDDATE",            TAG_DBADDDATE,            VALUE_STR, NULL, DF_NORM },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_NUM, NULL, DF_NORM },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, DF_NORM },
+  /* no conversion is defined for duration. it is handled as */
+  /* a special case in uisong.c */
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, DF_NORM },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, DF_NORM },
   { "FILE",                 TAG_FILE,                 VALUE_STR, NULL, DF_NORM },
@@ -356,6 +358,45 @@ songDisplayString (song_t *song, int tagidx)
     return str;
   }
 
+  if (tagidx == TAG_DURATION) {
+    long    dur;
+    long    val;
+    int     speed;
+    char    durstr [50];
+    char    tbuff [50];
+    bool    changed = false;
+
+    dur = songGetNum (song, TAG_DURATION);
+    tmutilToMSD (dur, durstr, sizeof (durstr), 1);
+
+    val = songGetNum (song, TAG_SONGEND);
+    if (val > 0 && val < dur) {
+      dur = val;
+      changed = true;
+    }
+    val = songGetNum (song, TAG_SONGSTART);
+    if (val > 0) {
+      dur -= val;
+      changed = true;
+    }
+    speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+    if (speed > 0 && speed != 100) {
+      dur = songutilAdjustPosReal (dur, speed);
+      changed = true;
+    }
+    if (changed) {
+      char  tmp [40];
+
+      tmutilToMSD (dur, tmp, sizeof (tmp), 1);
+      snprintf (tbuff, sizeof (tbuff), "%s (%s)", durstr, tmp);
+      str = mdstrdup (tbuff);
+    } else {
+      str = mdstrdup (durstr);
+    }
+
+    return str;
+  }
+
   vt = tagdefs [tagidx].valueType;
 
   convfunc = tagdefs [tagidx].convfunc;
@@ -380,39 +421,6 @@ songDisplayString (song_t *song, int tagidx)
     tstr = songGetStr (song, tagidx);
     if (tstr == NULL) { tstr = ""; }
     str = mdstrdup (tstr);
-  }
-
-  /* uses the display string from the conversion */
-  if (tagidx == TAG_DURATION) {
-    long    dur;
-    long    val;
-    int     speed;
-    char    tbuff [100];
-    bool    changed = false;
-
-    dur = songGetNum (song, TAG_DURATION);
-    val = songGetNum (song, TAG_SONGEND);
-    if (val > 0 && val < dur) {
-      dur = val;
-      changed = true;
-    }
-    val = songGetNum (song, TAG_SONGSTART);
-    if (val > 0) {
-      dur -= val;
-      changed = true;
-    }
-    speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
-    if (speed > 0 && speed != 100) {
-      dur = songutilAdjustPosReal (dur, speed);
-      changed = true;
-    }
-    if (changed) {
-      char  tmp [40];
-
-      tmutilToMSD (dur, tmp, sizeof (tmp), 1);
-      snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, tmp);
-      str = mdstrdup (tbuff);
-    }
   }
 
   return str;

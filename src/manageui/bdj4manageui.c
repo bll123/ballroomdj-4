@@ -541,8 +541,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, COPY_TAGS_POSITION_Y, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_X, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_Y, -1);
-    nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, NULL);
-    nlistSetStr (manage.options, MANAGE_IMP_BDJ4_DIR, NULL);
+    nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, "");
+    nlistSetStr (manage.options, MANAGE_IMP_BDJ4_DIR, "");
   }
 
   uiUIInitialize ();

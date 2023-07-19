@@ -51,7 +51,10 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
   *dval = 0.0;
   /* get the numeric values also in addition to the display string */
   str = uisongGetValue (song, tagidx, num, dval);
-  if (tagdefs [tagidx].convfunc != NULL) {
+  /* duration is a special case. it needs to be converted to a string. */
+  /* but no conversion is defined, as it is never converted from a string. */
+  if (tagdefs [tagidx].convfunc != NULL ||
+      tagidx == TAG_DURATION) {
     dataFree (str);
     str = songDisplayString (song, tagidx);
   }

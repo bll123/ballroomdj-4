@@ -112,6 +112,7 @@ void logStart (const char *processnm, const char *processtag, loglevel_t level);
 void logStartAppend (const char *processnm, const char *processtag, loglevel_t level);
 void logEnd (void);
 void logBacktraceHandler (int sig);
+void logBacktrace (void);
 char * plstateDebugText (playerstate_t plstate);
 void logBasic (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));

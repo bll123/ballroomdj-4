@@ -126,7 +126,7 @@ static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
-static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
+static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static int  updaterGetMPMValue (song_t *song);
 
@@ -460,7 +460,7 @@ main (int argc, char *argv [])
     /*   'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
-    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, DFTYPE_LIST, 2);
+    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 2);
   }
 
   {
@@ -468,14 +468,14 @@ main (int argc, char *argv [])
     /* updated values (version 3) */
     /* 4.3.2.4 2023-5-26 */
     /* added windowed values (version 4) */
-    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 4);
+    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 4);
   }
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
     /* 4.3.0.4 2023-4-4 (version number bump) audioadjust.txt */
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 4);
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 4);
   }
 
   {
@@ -497,9 +497,9 @@ main (int argc, char *argv [])
     /*             display the queuedance playlist properly. */
     /* 2023-5-23 : 4.3.2.4 */
     /*             Updated internal key names */
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 4);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 3);
-    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, DFTYPE_INDIRECT, 2);
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 4);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 3);
+    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, 2);
   }
 
   {
@@ -1176,16 +1176,13 @@ updaterCopyIfNotPresent (const char *fn, const char *ext)
 }
 
 static void
-updaterCopyVersionCheck (const char *fn, const char *ext,
-    int dftype, int currvers)
+updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
 {
-  datafile_t  *tmpdf;
   int         version;
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
-  tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
-  version = datafileDistVersion (tmpdf);
+  version = datafileReadDistVersion (tbuff);
   logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
   if (version < currvers) {
     char  tmp [MAXPATHLEN];
@@ -1194,7 +1191,6 @@ updaterCopyVersionCheck (const char *fn, const char *ext,
     templateFileCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
-  datafileFree (tmpdf);
 }
 
 static void

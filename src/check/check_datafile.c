@@ -246,27 +246,6 @@ enum {
   ms_tc_count = sizeof (ms_tc) / sizeof (cms_tc_t),
 };
 
-START_TEST(datafile_conv_ms)
-{
-  datafileconv_t  conv;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_ms");
-
-  for (int i = 0; i < ms_tc_count; ++i) {
-    conv.invt = VALUE_STR;
-    conv.str = ms_tc [i].in;
-    convMS (&conv);
-    ck_assert_int_eq (conv.outvt, VALUE_NUM);
-    ck_assert_int_eq (conv.num, ms_tc [i].val);
-    conv.invt = VALUE_NUM;
-    convMS (&conv);
-    ck_assert_int_eq (conv.outvt, VALUE_STRVAL);
-    ck_assert_str_eq (conv.strval, ms_tc [i].in);
-    mdfree (conv.strval);
-  }
-}
-END_TEST
-
 START_TEST(datafile_alloc)
 {
   datafile_t    *df;
@@ -1260,7 +1239,6 @@ datafile_suite (void)
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, datafile_conv_boolean);
   tcase_add_test (tc, datafile_conv_textlist);
-  tcase_add_test (tc, datafile_conv_ms);
   tcase_add_test (tc, datafile_alloc);
   tcase_add_test (tc, datafile_none);
   tcase_add_test (tc, datafile_simple);

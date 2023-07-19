@@ -76,7 +76,6 @@ ssize_t       parseSimple (parseinfo_t *, char *, int *distvers);
 ssize_t       parseKeyValue (parseinfo_t *, char *, int *distvers);
 void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);
-void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount);
 datafile_t *  datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf);
@@ -91,6 +90,7 @@ void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, 
 void          datafileSave (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
 int           datafileDistVersion (datafile_t *df);
+int           datafileReadDistVersion (const char *fname);
 
 /* for debugging only */
 datafiletype_t datafileGetType (datafile_t *df);

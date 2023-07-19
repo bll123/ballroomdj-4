@@ -255,6 +255,13 @@ enum {
 void
 logBacktraceHandler (int sig)
 {
+  logBacktrace ();
+  exit (1);
+}
+
+void
+logBacktrace (void)
+{
 #if _lib_backtrace
   void    *array [LOG_BACKTRACE_SIZE];
   char    **out;
@@ -271,7 +278,6 @@ logBacktraceHandler (int sig)
     }
   }
   mdfree (out);
-  exit (1);
 #endif
 }
 

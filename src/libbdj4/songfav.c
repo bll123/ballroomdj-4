@@ -77,6 +77,8 @@ songFavoriteAlloc (void)
     disp = ilistGetStr (songfav->songfavList, key, SONGFAV_DISPLAY);
     color = ilistGetStr (songfav->songfavList, key, SONGFAV_COLOR);
     usersel = ilistGetNum (songfav->songfavList, key, SONGFAV_USERSEL);
+    /* this is gtk specific stuff; it may need to be re-coded */
+    /* if another gui toolkit is implemented */
     if (color == NULL || *color == '\0') {
       /* for key 0, simply use the display string by itself. */
       /* it will inherit the standard text color. */
