@@ -845,6 +845,96 @@ START_TEST(playlist_get_next_sl)
 }
 END_TEST
 
+START_TEST(playlist_get_next_sl_stop_after)
+{
+  playlist_t  *pl;
+  int         count;
+  int         idxt;
+  song_t      *song;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_sl_stop_after");
+
+  cleanup ();
+
+  idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, db);
+  ck_assert_ptr_nonnull (pl);
+
+  playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 10);
+
+  count = 0;
+  while ((song = playlistGetNextSong (pl, 0, NULL, NULL)) != NULL) {
+    ++count;
+  }
+  ck_assert_int_eq (count, 10);
+
+  playlistFree (pl);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(playlist_get_next_seq)
+{
+  playlist_t  *pl;
+  int         count;
+  int         idxt;
+  song_t      *song;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_seq");
+
+  cleanup ();
+
+  idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, db);
+  ck_assert_ptr_nonnull (pl);
+
+  playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 7);
+
+  count = 0;
+  while ((song = playlistGetNextSong (pl, 0, NULL, NULL)) != NULL) {
+    ++count;
+  }
+  ck_assert_int_eq (count, 7);
+
+  playlistFree (pl);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(playlist_get_next_auto)
+{
+  playlist_t  *pl;
+  int         count;
+  int         idxt;
+  song_t      *song;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_seq");
+
+  cleanup ();
+
+  idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, db);
+  ck_assert_ptr_nonnull (pl);
+
+  playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 8);
+
+  count = 0;
+  while ((song = playlistGetNextSong (pl, 0, NULL, NULL)) != NULL) {
+    ++count;
+  }
+  ck_assert_int_eq (count, 8);
+
+  playlistFree (pl);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
 Suite *
 playlist_suite (void)
 {
@@ -870,6 +960,8 @@ playlist_suite (void)
   tcase_add_test (tc, playlist_chk_and_create);
   tcase_add_test (tc, playlist_get_pl_list);
   tcase_add_test (tc, playlist_get_next_sl);
+  tcase_add_test (tc, playlist_get_next_sl_stop_after);
+  tcase_add_test (tc, playlist_get_next_seq);
   suite_add_tcase (s, tc);
   return s;
 }
