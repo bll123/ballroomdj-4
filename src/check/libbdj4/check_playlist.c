@@ -912,7 +912,7 @@ START_TEST(playlist_get_next_auto)
   int         idxt;
   song_t      *song;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_seq");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_auto");
 
   cleanup ();
 
@@ -962,6 +962,7 @@ playlist_suite (void)
   tcase_add_test (tc, playlist_get_next_sl);
   tcase_add_test (tc, playlist_get_next_sl_stop_after);
   tcase_add_test (tc, playlist_get_next_seq);
+  tcase_add_test (tc, playlist_get_next_auto);
   suite_add_tcase (s, tc);
   return s;
 }
