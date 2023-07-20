@@ -54,6 +54,11 @@ setup (void)
   filemanipCopy ("test-templates/test-sl-a.songlist", "data/test-sl-a.songlist");
   filemanipCopy ("test-templates/test-sl-a.pl", "data/test-sl-a.pl");
   filemanipCopy ("test-templates/test-sl-a.pldances", "data/test-sl-a.pldances");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjvarsdfloadInit ();
+
   unlink (SLNEWFFN);
 }
 
@@ -63,6 +68,10 @@ teardown (void)
   filemanipCopy ("test-templates/test-sl-a.songlist", "data/test-sl-a.songlist");
   filemanipCopy ("test-templates/test-sl-a.pl", "data/test-sl-a.pl");
   filemanipCopy ("test-templates/test-sl-a.pldances", "data/test-sl-a.pldances");
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+
   unlink (SLNEWFFN);
 }
 
@@ -72,17 +81,10 @@ START_TEST(songlist_exists)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_exists");
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
   rc = songlistExists (SLFN "xyzzy");
   ck_assert_int_eq (rc, 0);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -92,16 +94,9 @@ START_TEST(songlist_create)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_create");
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-
   sl = songlistCreate (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
   songlistFree (sl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -111,16 +106,9 @@ START_TEST(songlist_load)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_load");
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
   songlistFree (sl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -132,10 +120,6 @@ START_TEST(songlist_iterate)
   ilistidx_t    key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_iterate");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
@@ -155,13 +139,10 @@ START_TEST(songlist_iterate)
   }
   ck_assert_int_eq (count, 72);
   songlistFree (sl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
-/* double-free bug 2023-7-14 */
+/* also double-free bug 2023-7-14 */
 START_TEST(songlist_clear)
 {
   songlist_t    *sl = NULL;
@@ -170,10 +151,6 @@ START_TEST(songlist_clear)
 
   mdebugInit ("chk-sl-bug");
   mdebugSetNoOutput ();
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
@@ -185,8 +162,6 @@ START_TEST(songlist_clear)
   songlistFree (sl);
   ck_assert_int_eq (mdebugErrors (), 0);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
   mdebugCleanup ();
 }
 END_TEST
@@ -201,10 +176,6 @@ START_TEST(songlist_save)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
@@ -257,9 +228,6 @@ START_TEST(songlist_save)
   }
   songlistFree (sl);
   songlistFree (slb);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -274,11 +242,8 @@ START_TEST(songlist_save_new)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save_new");
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
+  unlink (SLNEWFFN);
 
-  /* setup, teardown remove SLNEWFN */
   rc = songlistExists (SLNEWFN);
   ck_assert_int_eq (rc, 0);
 
@@ -331,10 +296,6 @@ START_TEST(songlist_save_new)
   }
   songlistFree (sl);
   songlistFree (slb);
-
-  /* setup, teardown remove SLNEWFN */
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 

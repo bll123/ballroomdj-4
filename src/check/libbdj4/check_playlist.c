@@ -17,6 +17,7 @@
 
 #include <check.h>
 
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdfload.h"
@@ -25,10 +26,11 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "log.h"
-#include "nlist.h"
+#include "musicdb.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "slist.h"
+#include "song.h"
 #include "templateutil.h"
 
 #define SEQFN "test-seq-a"
@@ -37,6 +39,10 @@
 #define SEQNEWFN "test-seq-new"
 #define SLNEWFN "test-sl-new"
 #define AUTONEWFN "test-auto-new"
+#define SEQRENFN "test-seq-ren"
+
+static char *dbfn = "data/musicdb.dat";
+static musicdb_t *db = NULL;
 
 typedef struct {
   bool        new;
@@ -62,6 +68,9 @@ static test_fn_t test_data [] = {
   { true, SLNEWFN, "", "" },
   { true, AUTONEWFN, "", "" },
   { true, AUTONEWFN, "", "" },
+  { true, SEQRENFN, "", "" },
+  { true, SEQRENFN, "", "" },
+  { true, SEQRENFN, "", "" },
 };
 enum {
   CPL_TEST_MAX = sizeof (test_data) / sizeof (test_fn_t),
@@ -75,13 +84,14 @@ enum {
   CPL_PL_OFFSET = 0,
   CPL_PLD_OFFSET = 1,
   CPL_ADDTL_OFFSET = 2,
-  /* how many of each type */
+  /* how many entries for each type */
   CPL_SEQ_COUNT = 3,
   CPL_SL_COUNT = 3,
   CPL_AUTO_COUNT = 2,
   /* test types */
   CPL_EXIST_OFFSET = 0,
   CPL_NEW_OFFSET = CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT,
+  CPL_REN_OFFSET = 2 * (CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT),
 };
 static bool initialized = false;
 
@@ -127,6 +137,18 @@ init (void)
 }
 
 static void
+cleanup (void)
+{
+  for (int i = 0; i < CPL_TEST_MAX; ++i) {
+    if (test_data [i].new) {
+      unlink (test_data [i].ffn);
+    } else {
+      filemanipCopy (test_data [i].testfn, test_data [i].ffn);
+    }
+  }
+}
+
+static void
 setup (void)
 {
   init ();
@@ -139,25 +161,23 @@ setup (void)
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
 
-  for (int i = 0; i < CPL_TEST_MAX; ++i) {
-    if (test_data [i].new) {
-      unlink (test_data [i].ffn);
-    } else {
-      filemanipCopy (test_data [i].testfn, test_data [i].ffn);
-    }
-  }
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
+  bdjvarsdfloadInit ();
+  db = dbOpen (dbfn);
+
+  cleanup ();
 }
 
 static void
 teardown (void)
 {
-  for (int i = 0; i < CPL_TEST_MAX; ++i) {
-    if (test_data [i].new) {
-      unlink (test_data [i].ffn);
-    } else {
-      filemanipCopy (test_data [i].testfn, test_data [i].ffn);
-    }
-  }
+  cleanup ();
+
+  dbClose (db);
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
 }
 
 /* playlistExists() checks for the existence of the .pl file */
@@ -166,10 +186,6 @@ START_TEST(playlist_exists)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_exists");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -188,9 +204,6 @@ START_TEST(playlist_exists)
   ck_assert_int_ne (playlistExists (test_data [idxt].basefn), 0);
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   ck_assert_int_eq (playlistExists (test_data [idxt].basefn), 0);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -199,10 +212,6 @@ START_TEST(playlist_get_type)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_type");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -215,9 +224,6 @@ START_TEST(playlist_get_type)
   /* auto */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   ck_assert_int_eq (playlistGetType (test_data [idxt].basefn), PLTYPE_AUTO);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -227,10 +233,6 @@ START_TEST(playlist_create_basic)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_create_basic");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
@@ -253,48 +255,45 @@ START_TEST(playlist_create_basic)
   pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
 START_TEST(playlist_load_basic)
 {
   playlist_t    *pl;
+  const char    *nm;
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_load_basic");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
   pl = playlistLoad (test_data [idxt].basefn, NULL);
   ck_assert_ptr_nonnull (pl);
+  nm = playlistGetName (pl);
+  ck_assert_str_eq (nm, test_data [idxt].basefn);
   playlistFree (pl);
 
   /* song list */
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
   pl = playlistLoad (test_data [idxt].basefn, NULL);
   ck_assert_ptr_nonnull (pl);
+  nm = playlistGetName (pl);
+  ck_assert_str_eq (nm, test_data [idxt].basefn);
   playlistFree (pl);
 
   /* auto */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   pl = playlistLoad (test_data [idxt].basefn, NULL);
   ck_assert_ptr_nonnull (pl);
+  nm = playlistGetName (pl);
+  ck_assert_str_eq (nm, test_data [idxt].basefn);
   playlistFree (pl);
 
   /* doesn't exist */
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   pl = playlistLoad (test_data [idxt].basefn, NULL);
   ck_assert_ptr_null (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -304,10 +303,6 @@ START_TEST(playlist_get)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -338,9 +333,6 @@ START_TEST(playlist_get)
   ck_assert_int_eq (playlistGetDanceNum (pl, 0, PLDANCE_DANCE), 0);
   ck_assert_int_eq (playlistGetDanceNum (pl, 3, PLDANCE_DANCE), 3);
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -351,10 +343,6 @@ START_TEST(playlist_set)
   int           val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_set");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -434,6 +422,34 @@ START_TEST(playlist_set)
   val = playlistGetConfigNum (pl, PLAYLIST_TYPE);
   ck_assert_int_eq (val, PLTYPE_SEQUENCE);
 
+  playlistSetDanceNum (pl, 3, PLDANCE_MPM_HIGH, 220);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MPM_HIGH);
+  ck_assert_int_eq (val, 220);
+  playlistSetDanceNum (pl, 3, PLDANCE_MPM_HIGH, 200);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MPM_HIGH);
+  ck_assert_int_eq (val, 200);
+
+  playlistSetDanceNum (pl, 3, PLDANCE_MPM_LOW, 120);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MPM_LOW);
+  ck_assert_int_eq (val, 120);
+  playlistSetDanceNum (pl, 3, PLDANCE_MPM_LOW, 100);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MPM_LOW);
+  ck_assert_int_eq (val, 100);
+
+  playlistSetDanceNum (pl, 3, PLDANCE_COUNT, 5);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 5);
+  playlistSetDanceNum (pl, 3, PLDANCE_COUNT, 10);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 10);
+
+  playlistSetDanceNum (pl, 3, PLDANCE_MAXPLAYTIME, 0);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MAXPLAYTIME);
+  ck_assert_int_eq (val, 0);
+  playlistSetDanceNum (pl, 3, PLDANCE_MAXPLAYTIME, 10000);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_MAXPLAYTIME);
+  ck_assert_int_eq (val, 10000);
+
   /* pldance_dance may not be changed */
   val = playlistGetDanceNum (pl, 3, PLDANCE_DANCE);
   ck_assert_int_eq (val, 3);
@@ -448,19 +464,116 @@ START_TEST(playlist_set)
   val = playlistGetDanceNum (pl, 3, PLDANCE_SELECTED);
   ck_assert_int_eq (val, false);
 
+  /* using the set-dance-count changes selected also */
+  playlistSetDanceNum (pl, 5, PLDANCE_SELECTED, true);
+  playlistSetDanceNum (pl, 6, PLDANCE_SELECTED, false);
+  playlistSetDanceCount (pl, 5, 0);
+  playlistSetDanceCount (pl, 6, 7);
+  val = playlistGetDanceNum (pl, 5, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, false);
+  val = playlistGetDanceNum (pl, 5, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 6, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, true);
+  val = playlistGetDanceNum (pl, 6, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 7);
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
-#if 0
+START_TEST(playlist_reset)
+{
+  playlist_t    *pl;
+  int           idxt;
+  int           val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_reset");
+
+  /* sequence */
+  idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  ck_assert_ptr_nonnull (pl);
+
+  playlistSetDanceNum (pl, 0, PLDANCE_SELECTED, true);
+  playlistSetDanceNum (pl, 1, PLDANCE_SELECTED, true);
+  playlistSetDanceNum (pl, 2, PLDANCE_SELECTED, true);
+  playlistSetDanceNum (pl, 3, PLDANCE_SELECTED, true);
+
+  /* using the set-dance-count changes selected also */
+  playlistSetDanceNum (pl, 5, PLDANCE_SELECTED, true);
+  playlistSetDanceCount (pl, 6, 7);
+
+  playlistResetAll (pl);
+  val = playlistGetDanceNum (pl, 0, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 1, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 2, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 4, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 5, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 6, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, 0);
+
+  val = playlistGetDanceNum (pl, 0, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 1, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 2, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 4, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 5, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+  val = playlistGetDanceNum (pl, 6, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 0);
+
+  playlistFree (pl);
+}
+END_TEST
+
 START_TEST(playlist_save)
 {
+  playlist_t    *pl;
+  int           idxt;
+  int           val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_save");
+
+  /* use an auto playlist here */
+  /* sequences and song lists have their select flags and */
+  /* counts modified on load */
+  idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSetDanceNum (pl, 3, PLDANCE_SELECTED, true);
+  playlistSetDanceNum (pl, 3, PLDANCE_COUNT, 5);
+  playlistSetDanceNum (pl, 4, PLDANCE_SELECTED, false);
+  playlistSetDanceNum (pl, 4, PLDANCE_COUNT, 6);
+  playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 3);
+  playlistSave (pl, test_data [idxt].basefn);
+  playlistFree (pl);
+  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  ck_assert_ptr_nonnull (pl);
+  val = playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER);
+  ck_assert_int_eq (val, 3);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, true);
+  val = playlistGetDanceNum (pl, 3, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 5);
+  val = playlistGetDanceNum (pl, 4, PLDANCE_SELECTED);
+  ck_assert_int_eq (val, false);
+  val = playlistGetDanceNum (pl, 4, PLDANCE_COUNT);
+  ck_assert_int_eq (val, 6);
+  playlistFree (pl);
 }
 END_TEST
-#endif
 
 START_TEST(playlist_save_new)
 {
@@ -469,9 +582,7 @@ START_TEST(playlist_save_new)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_save_new");
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
+  cleanup ();
 
   /* sequence */
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
@@ -508,6 +619,226 @@ START_TEST(playlist_save_new)
     ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
   }
   playlistFree (pl);
+}
+END_TEST
+
+START_TEST(playlist_rename)
+{
+  playlist_t    *pl;
+  int           idx, idxt;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_rename");
+
+  cleanup ();
+
+  /* sequence */
+  idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSave (pl, test_data [idxt].basefn);
+  /* saved file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  playlistFree (pl);
+
+  idx = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  idxt = CPL_REN_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  playlistRename (test_data [idx].basefn, test_data [idxt].basefn);
+  /* new file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  /* old file names should not exist */
+  for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
+  }
+}
+END_TEST
+
+START_TEST(playlist_copy)
+{
+  playlist_t    *pl;
+  int           idx, idxt;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_copy");
+
+  /* sequence */
+  idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSave (pl, test_data [idxt].basefn);
+  /* saved file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  playlistFree (pl);
+
+  idx = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  idxt = CPL_REN_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  playlistCopy (test_data [idx].basefn, test_data [idxt].basefn);
+  /* new file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  /* old file names should exist */
+  for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+}
+END_TEST
+
+START_TEST(playlist_delete)
+{
+  playlist_t    *pl;
+  int           idx, idxt;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_delete");
+
+  cleanup ();
+
+  /* sequence */
+  idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSave (pl, test_data [idxt].basefn);
+  /* saved file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  playlistFree (pl);
+
+  idx = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  idxt = CPL_REN_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  playlistCopy (test_data [idx].basefn, test_data [idxt].basefn);
+  playlistDelete (test_data [idx].basefn);
+  /* new file names should exist */
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  /* old file names should not exist due to delete */
+  for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
+  }
+}
+END_TEST
+
+START_TEST(playlist_chk_and_create)
+{
+  int           idx, idxt;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_chk_and_create");
+
+  cleanup ();
+
+  /* sequence */
+  idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
+  playlistCheckAndCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE);
+  for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+}
+END_TEST
+
+START_TEST(playlist_get_pl_list)
+{
+  slist_t     *pllist;
+  int         val;
+  const char  *sval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_pl_list");
+
+  cleanup ();
+
+  /* includes the special queuedance playlist */
+  pllist = playlistGetPlaylistList (PL_LIST_ALL, NULL);
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 17);
+  sval = slistGetStr (pllist, _("QueueDance"));
+  ck_assert_str_eq (sval, _("QueueDance"));
+  slistFree (pllist);
+
+  /* does not include the special queuedance playlist */
+  pllist = playlistGetPlaylistList (PL_LIST_AUTO_SEQ, NULL);
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 9);
+  sval = slistGetStr (pllist, _("QueueDance"));
+  ck_assert_ptr_null (sval);
+  slistFree (pllist);
+
+  /* does not include the special queuedance playlist */
+  pllist = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 16);
+  sval = slistGetStr (pllist, _("QueueDance"));
+  ck_assert_ptr_null (sval);
+  slistFree (pllist);
+
+  pllist = playlistGetPlaylistList (PL_LIST_SEQUENCE, NULL);
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 5);
+  sval = slistGetStr (pllist, _("QueueDance"));
+  ck_assert_ptr_null (sval);
+  slistFree (pllist);
+
+  pllist = playlistGetPlaylistList (PL_LIST_SONGLIST, NULL);
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 7);
+  slistFree (pllist);
+
+  pllist = playlistGetPlaylistList (PL_LIST_DIR, "data");
+  val = slistGetCount (pllist);
+  ck_assert_int_eq (val, 17);
+  sval = slistGetStr (pllist, _("QueueDance"));
+  ck_assert_ptr_nonnull (sval);
+  slistFree (pllist);
+}
+END_TEST
+
+START_TEST(playlist_get_next_sl)
+{
+  playlist_t  *pl;
+  int         count;
+  int         idxt;
+  song_t      *song;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_sl");
+
+  cleanup ();
+
+  idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  ck_assert_ptr_nonnull (pl);
+
+  /* get-next-song should fail nicely when no database has been set */
+  song = playlistGetNextSong (pl, 0, NULL, NULL);
+  ck_assert_ptr_null (song);
+  playlistFree (pl);
+
+  /* song list */
+  idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
+  pl = playlistLoad (test_data [idxt].basefn, db);
+  ck_assert_ptr_nonnull (pl);
+
+  count = 0;
+  while ((song = playlistGetNextSong (pl, 0, NULL, NULL)) != NULL) {
+    ++count;
+  }
+  ck_assert_int_eq (count, 72);
+
+  playlistFree (pl);
 
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
@@ -530,8 +861,15 @@ playlist_suite (void)
   tcase_add_test (tc, playlist_load_basic);
   tcase_add_test (tc, playlist_get);
   tcase_add_test (tc, playlist_set);
-//  tcase_add_test (tc, playlist_save);
+  tcase_add_test (tc, playlist_reset);
+  tcase_add_test (tc, playlist_save);
   tcase_add_test (tc, playlist_save_new);
+  tcase_add_test (tc, playlist_rename);
+  tcase_add_test (tc, playlist_copy);
+  tcase_add_test (tc, playlist_delete);
+  tcase_add_test (tc, playlist_chk_and_create);
+  tcase_add_test (tc, playlist_get_pl_list);
+  tcase_add_test (tc, playlist_get_next_sl);
   suite_add_tcase (s, tc);
   return s;
 }

@@ -428,6 +428,11 @@ playlistGetNextSong (playlist_t *pl,
     return NULL;
   }
 
+  if (pl->musicdb == NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "get-next-song: %s: null db", pl->name);
+    return NULL;
+  }
+
   logProcBegin (LOG_PROC, "playlistGetNextSong");
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
   stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
