@@ -44,6 +44,10 @@ pathbldMakePath (char *buff, size_t buffsz,
     /* relative */
     dirprefix = sysvarsGetStr (SV_BDJ4_DREL_IMG);
   }
+  if ((flags & PATHBLD_MP_DREL_TEST_TMPL) == PATHBLD_MP_DREL_TEST_TMPL) {
+    /* relative */
+    dirprefix = "test-templates";
+  }
   if ((flags & PATHBLD_MP_DIR_DATATOP) == PATHBLD_MP_DIR_DATATOP) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
   }

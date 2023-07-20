@@ -3109,6 +3109,8 @@ mainGetGap (maindata_t *mainData, int mqidx, int index)
     gap = 0;
   }
   plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
+  /* if the playlist-gap is configured to the default, */
+  /* it is a negative number */
   if (plgap >= 0) {
     gap = plgap;
   }

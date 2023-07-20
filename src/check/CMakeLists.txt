@@ -61,6 +61,7 @@ add_executable (check_all
   libbdj4/check_musicdb.c
   libbdj4/check_orgopt.c
   libbdj4/check_orgutil.c
+  libbdj4/check_playlist.c
   libbdj4/check_rating.c
   libbdj4/check_samesong.c
   libbdj4/check_sequence.c

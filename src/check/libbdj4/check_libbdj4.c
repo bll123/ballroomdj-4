@@ -39,11 +39,11 @@ check_libbdj4 (SRunner *sr)
    *  tagdef                complete
    *  song                  complete
    *  musicdb               complete
-   *  songlist              complete
+   *  songlist              complete 2023-7-18
    *  autosel               complete
    *  songfilter            complete
    *  dancesel              complete
-   *  sequence              complete
+   *  sequence              complete 2023-7-18
    *  songsel
    *  playlist
    *  validate              complete
@@ -126,7 +126,8 @@ check_libbdj4 (SRunner *sr)
 
   /* songsel */
 
-  /* playlist */
+  s = playlist_suite();
+  srunner_add_suite (sr, s);
 
   s = validate_suite();
   srunner_add_suite (sr, s);

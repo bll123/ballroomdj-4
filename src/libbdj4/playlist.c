@@ -254,7 +254,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
   nlistSetStr (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_ANNOUNCE, 0);
-  nlistSetNum (pl->plinfo, PLAYLIST_GAP, -100);
+  nlistSetNum (pl->plinfo, PLAYLIST_GAP, PL_GAP_DEFAULT);
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetMax (levels));
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
@@ -342,6 +342,11 @@ playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
     return;
   }
 
+  /* type is used internally, may not be changed */
+  if (key == PLAYLIST_TYPE) {
+    return;
+  }
+
   nlistSetNum (pl->plinfo, key, value);
   return;
 }
@@ -396,6 +401,11 @@ void
 playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value)
 {
   if (pl == NULL || pl->plinfo == NULL) {
+    return;
+  }
+
+  /* dance may not be changed */
+  if (key == PLDANCE_DANCE) {
     return;
   }
 

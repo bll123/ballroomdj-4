@@ -43,16 +43,16 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
-//  unlink (SEQNEWFFN);
+  unlink (SEQNEWFFN);
 }
 
 static void
 teardown (void)
 {
-  filemanipCopy ("test-templates/test-sequence.sequence", "data/test-seq-a.sequence");
-  filemanipCopy ("test-templates/test-sequence.pl", "data/test-seq-a.pl");
-  filemanipCopy ("test-templates/test-sequence.pldances", "data/test-seq-a.pldances");
-//  unlink (SEQNEWFFN);
+  filemanipCopy ("test-templates/test-seq-a.sequence", "data/test-seq-a.sequence");
+  filemanipCopy ("test-templates/test-seq-a.pl", "data/test-seq-a.pl");
+  filemanipCopy ("test-templates/test-seq-a.pldances", "data/test-seq-a.pldances");
+  unlink (SEQNEWFFN);
 }
 
 START_TEST(sequence_exists)
@@ -67,7 +67,6 @@ START_TEST(sequence_exists)
 
   rc = sequenceExists (SEQFN);
   ck_assert_int_ne (rc, 0);
-unlink (SEQNEWFFN);
   rc = sequenceExists (SEQNEWFN);
   ck_assert_int_eq (rc, 0);
 
@@ -238,7 +237,6 @@ START_TEST(sequence_save_new)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
 
-unlink (SEQNEWFFN);
   rc = sequenceExists (SEQNEWFN);
   ck_assert_int_eq (rc, 0);
   seq = sequenceLoad (SEQNEWFN);

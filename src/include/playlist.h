@@ -62,6 +62,8 @@ enum {
 
 enum {
   PL_VALID_SONG_ATTEMPTS = 40,
+  /* negative one-tenth of a second for the spinbox */
+  PL_GAP_DEFAULT = -100,
 };
 
 typedef struct playlist playlist_t;
