@@ -26,6 +26,7 @@
 #include "pathdisp.h"
 #include "sysvars.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 
 START_TEST(path_disppath)
 {
@@ -33,6 +34,7 @@ START_TEST(path_disppath)
   int     owin;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_disppath");
+  mdebugSubTag ("path_disppath");
 
   owin = sysvarsGetNum (SVL_IS_WINDOWS);
   sysvarsSetNum (SVL_IS_WINDOWS, 1);

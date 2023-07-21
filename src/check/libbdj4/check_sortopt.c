@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "slist.h"
 #include "sortopt.h"
@@ -35,6 +36,7 @@ START_TEST(sortopt_alloc)
   sortopt_t   *so;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sortopt_alloc");
+  mdebugSubTag ("sortopt_alloc");
 
   so = sortoptAlloc ();
   sortoptFree (so);
@@ -47,6 +49,7 @@ START_TEST(sortopt_chk)
   slist_t     *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sortopt_chk");
+  mdebugSubTag ("sortopt_chk");
 
 
   so = sortoptAlloc ();

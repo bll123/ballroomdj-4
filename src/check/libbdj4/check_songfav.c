@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
@@ -41,6 +42,7 @@ START_TEST(songfav_conv)
   bdjvarsdfloadInit ();
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_conv");
+  mdebugSubTag ("songfav_conv");
 
   songfav = songFavoriteAlloc ();
 
@@ -69,6 +71,7 @@ START_TEST(songfav_alloc)
   songfav_t   *songfav = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_alloc");
+  mdebugSubTag ("songfav_alloc");
 
   songfav = songFavoriteAlloc ();
   ck_assert_ptr_nonnull (songfav);
@@ -82,6 +85,7 @@ START_TEST(songfav_count)
   int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_count");
+  mdebugSubTag ("songfav_count");
   songfav = songFavoriteAlloc ();
   count = songFavoriteGetCount (songfav);
   ck_assert_int_ge (count, 1);
@@ -97,6 +101,7 @@ START_TEST(songfav_next_value)
   int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_next_value");
+  mdebugSubTag ("songfav_next_value");
   songfav = songFavoriteAlloc ();
   count = songFavoriteGetCount (songfav);
   value = songFavoriteGetNextValue (songfav, value);
@@ -117,7 +122,8 @@ START_TEST(songfav_get_str)
   songfav_t     *songfav = NULL;
   const char    *str;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_get-str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_get_str");
+  mdebugSubTag ("songfav_get_str");
   songfav = songFavoriteAlloc ();
 
   str = songFavoriteGetStr (songfav, 1, SONGFAV_COLOR);

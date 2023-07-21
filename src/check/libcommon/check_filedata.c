@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "filedata.h"
 #include "log.h"
 #include "mdebug.h"
@@ -32,6 +33,7 @@ START_TEST(filedata_readall)
   char *fn = "tmp/abc.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_readall");
+  mdebugSubTag ("filedata_readall");
 
   fh = fopen (fn, "w");
   fclose (fh);

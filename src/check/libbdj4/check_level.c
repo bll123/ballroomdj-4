@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "level.h"
@@ -37,6 +38,7 @@ START_TEST(level_alloc)
   level_t   *level = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_alloc");
+  mdebugSubTag ("level_alloc");
 
   level = levelAlloc ();
   ck_assert_ptr_nonnull (level);
@@ -56,6 +58,7 @@ START_TEST(level_iterate)
   int         dcount;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_iterate");
+  mdebugSubTag ("level_iterate");
 
   level = levelAlloc ();
   levelStartIterator (level, &iteridx);
@@ -94,6 +97,7 @@ START_TEST(level_conv)
   int         key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_conv");
+  mdebugSubTag ("level_conv");
 
   bdjvarsdfloadInit ();
 
@@ -136,6 +140,7 @@ START_TEST(level_save)
   int         tdf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_save");
+  mdebugSubTag ("level_save");
 
   /* required for the level conversion function */
   bdjvarsdfloadInit ();

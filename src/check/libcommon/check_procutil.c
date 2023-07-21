@@ -20,6 +20,7 @@
 
 #include "bdj4.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -34,6 +35,7 @@ START_TEST(procutil_exists)
   procutil_t process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_exists");
+  mdebugSubTag ("procutil_exists");
 
   pid = getpid ();
   process.pid = pid;
@@ -56,6 +58,7 @@ START_TEST(procutil_start)
   procutil_t *process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_start");
+  mdebugSubTag ("procutil_start");
 
   ppid = getpid ();
 
@@ -92,6 +95,7 @@ START_TEST(procutil_kill)
   procutil_t *process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_kill");
+  mdebugSubTag ("procutil_kill");
 
   ppid = getpid ();
 

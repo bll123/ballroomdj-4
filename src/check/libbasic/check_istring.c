@@ -21,6 +21,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "istring.h"
 #include "log.h"
 #include "osutils.h"
@@ -35,6 +36,7 @@ START_TEST(istring_istrlen)
   istringInit ("de_DE");
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istrlen");
+  mdebugSubTag ("istring_istrlen");
 
   strcpy (buff, "\xc2\xbf");
   ck_assert_int_eq (strlen (buff), 2);
@@ -66,6 +68,7 @@ START_TEST(istring_comp)
   int     rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_comp");
+  mdebugSubTag ("istring_comp");
 
   istringCleanup ();
   istringInit ("de_DE");
@@ -129,6 +132,7 @@ START_TEST(istring_tolower)
   char    tbuff [200];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_tolower");
+  mdebugSubTag ("istring_tolower");
 
   istringCleanup ();
   istringInit ("de_DE");
@@ -151,6 +155,7 @@ START_TEST(istring_toupper)
   char    tbuff [200];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_toupper");
+  mdebugSubTag ("istring_toupper");
 
   istringCleanup ();
   istringInit ("de_DE");

@@ -39,6 +39,7 @@ main (int argc, char *argv [])
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("chk");
+  // mdebugSetVerbose ();
 #endif
   sRandom ();
   sysvarsInit (argv [0]);

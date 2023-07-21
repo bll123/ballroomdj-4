@@ -20,6 +20,7 @@
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -60,6 +61,7 @@ START_TEST(sequence_exists)
   int     rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_exists");
+  mdebugSubTag ("sequence_exists");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -81,6 +83,7 @@ START_TEST(sequence_create)
   nlist_t       *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_create");
+  mdebugSubTag ("sequence_create");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -103,6 +106,7 @@ START_TEST(sequence_load)
   nlist_t       *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_load");
+  mdebugSubTag ("sequence_load");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -128,6 +132,7 @@ START_TEST(sequence_iterate)
   int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_iterate");
+  mdebugSubTag ("sequence_iterate");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -167,6 +172,7 @@ START_TEST(sequence_save)
   char          *strb;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_save");
+  mdebugSubTag ("sequence_save");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -232,6 +238,7 @@ START_TEST(sequence_save_new)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_save_new");
+  mdebugSubTag ("sequence_save_new");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");

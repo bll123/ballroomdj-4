@@ -20,6 +20,7 @@
 #endif
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "callback.h"
 
@@ -111,7 +112,8 @@ START_TEST(callback_alloc)
 {
   callback_t    *cb;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_alloc");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_alloc");
+  mdebugSubTag ("callback_alloc");
   cb = callbackInit (NULL, NULL, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
@@ -148,7 +150,8 @@ START_TEST(callback_norm)
   int           a = -1;
   bool          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_norm");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_norm");
+  mdebugSubTag ("callback_norm");
 
   cb = callbackInit (cbn, NULL, NULL);
   rc = callbackHandler (cb);
@@ -169,7 +172,8 @@ START_TEST(callback_double)
   double        a = -1.0;
   bool          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_double");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_double");
+  mdebugSubTag ("callback_double");
 
   cb = callbackInitDouble (cbd, NULL);
   rc = callbackHandlerDouble (cb, 4.0);
@@ -190,7 +194,8 @@ START_TEST(callback_intint)
   ii_t          a;
   bool          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_intint");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_intint");
+  mdebugSubTag ("callback_intint");
 
   a.a = -1;
   a.b = -2;
@@ -216,7 +221,8 @@ START_TEST(callback_long)
   long          a = -1;
   bool          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_long");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_long");
+  mdebugSubTag ("callback_long");
 
   cb = callbackInitLong (cbl, NULL);
   rc = callbackHandlerLong (cb, 4);
@@ -237,7 +243,8 @@ START_TEST(callback_longint)
   li_t          a;
   bool          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_longint");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_longint");
+  mdebugSubTag ("callback_longint");
 
   a.a = -1;
   a.b = -2;
@@ -263,7 +270,8 @@ START_TEST(callback_string)
   const char    *a;
   long          rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "callback_long");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_long");
+  mdebugSubTag ("callback_long");
   a = "1234";
 
   cb = callbackInitStr (cbs, NULL);

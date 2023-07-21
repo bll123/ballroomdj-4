@@ -20,6 +20,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
@@ -52,6 +53,7 @@ START_TEST(volreg_save)
   bool        exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_save");
+  mdebugSubTag ("volreg_save");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -78,6 +80,7 @@ START_TEST(volreg_clear)
   int     val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_clear");
+  mdebugSubTag ("volreg_clear");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -99,6 +102,7 @@ START_TEST(volreg_bdj3flag)
   FILE    *fh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_bdj3flag");
+  mdebugSubTag ("volreg_bdj3flag");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
@@ -122,6 +126,7 @@ START_TEST(volreg_bdj4flag)
   bool    exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_bdj4flag");
+  mdebugSubTag ("volreg_bdj4flag");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);

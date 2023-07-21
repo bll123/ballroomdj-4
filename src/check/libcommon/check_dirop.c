@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "dirlist.h"
 #include "dirop.h"
 #include "filemanip.h"
@@ -33,6 +34,7 @@ START_TEST(dirop_mkdir_isdir_a)
   char *fn = "tmp/def";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mkdir_isdir_a");
+  mdebugSubTag ("dirop_mkdir_isdir_a");
 
   unlink (fn);
   rmdir (fn);
@@ -79,6 +81,7 @@ START_TEST(dirop_del_dir_a)
   char *nfn = "tmp/abc/def/xyz.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del_dir_a");
+  mdebugSubTag ("dirop_del_dir_a");
 
   /* note that this fails on windows running under msys2 */
   rc = diropMakeDir (dfn);
@@ -123,6 +126,7 @@ START_TEST(dirop_mk_is_del_u)
   int     rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mk_is_del_u");
+  mdebugSubTag ("dirop_mk_is_del_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];

@@ -19,6 +19,7 @@
 #include "log.h"
 #include "tmutil.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "sysvars.h"
 
 START_TEST(mstime_chk)
@@ -27,6 +28,7 @@ START_TEST(mstime_chk)
   time_t      tm_chk;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_chk");
+  mdebugSubTag ("mstime_chk");
 
   tm_s = time (NULL);
   tm_s *= 1000;
@@ -46,6 +48,7 @@ START_TEST(mssleep_sec)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_sec");
+  mdebugSubTag ("mssleep_sec");
 
   tm_s = mstime ();
   mssleep (2000);
@@ -67,6 +70,7 @@ START_TEST(mssleep_ms)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_ms");
+  mdebugSubTag ("mssleep_ms");
 
   tm_s = mstime ();
   mssleep (200);
@@ -87,6 +91,7 @@ START_TEST(mssleep_ms_b)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_ms");
+  mdebugSubTag ("mssleep_ms");
 
   tm_s = mstime ();
   for (int i = 0; i < 40; ++i) {
@@ -113,6 +118,7 @@ START_TEST(mstimestartofday_chk)
   time_t    tm_chk;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstimestartofday_chk");
+  mdebugSubTag ("mstimestartofday_chk");
 
   tm_s = mstime ();
   tm_chk = mstimestartofday ();
@@ -129,6 +135,7 @@ START_TEST(mstime_start_end)
   time_t      m, d;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_start_end");
+  mdebugSubTag ("mstime_start_end");
 
   tm_s = mstime ();
   mstimestart (&mi);
@@ -152,6 +159,7 @@ START_TEST(mstime_set)
   time_t      m, d;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_set");
+  mdebugSubTag ("mstime_set");
 
   tm_s = mstime ();
   mstimeset (&tmset, 2000);
@@ -174,6 +182,7 @@ START_TEST(mstime_set_tm)
   time_t      m, s, d;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_set_tm");
+  mdebugSubTag ("mstime_set_tm");
 
   s = mstime ();
   /* sets tmset to the value supplied */
@@ -193,6 +202,7 @@ START_TEST(mstime_check)
   bool        rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_check");
+  mdebugSubTag ("mstime_check");
 
   mstimeset (&tmset, 2000);
   rc = mstimeCheck (&tmset);
@@ -211,6 +221,7 @@ START_TEST(tmutildstamp_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutildstamp_chk");
+  mdebugSubTag ("tmutildstamp_chk");
 
   tmutilDstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 10);
@@ -222,6 +233,7 @@ START_TEST(tmutildisp_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutildisp_chk");
+  mdebugSubTag ("tmutildisp_chk");
 
   tmutilDisp (buff, sizeof (buff), TM_CLOCK_ISO);
   ck_assert_int_ge (strlen (buff), 16);
@@ -241,6 +253,7 @@ START_TEST(tmutiltstamp_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltstamp_chk");
+  mdebugSubTag ("tmutiltstamp_chk");
 
   tmutilTstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 12);
@@ -252,6 +265,7 @@ START_TEST(tmutilshorttstamp_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutilshorttstamp_chk");
+  mdebugSubTag ("tmutilshorttstamp_chk");
 
   tmutilShortTstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 6);
@@ -263,6 +277,7 @@ START_TEST(tmutiltoms_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltoms_chk");
+  mdebugSubTag ("tmutiltoms_chk");
 
   tmutilToMS (0, buff, sizeof (buff));
   ck_assert_str_eq (buff, " 0:00");
@@ -281,6 +296,7 @@ START_TEST(tmutiltomsd_chk)
   char        tmp [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltomsd_chk");
+  mdebugSubTag ("tmutiltomsd_chk");
 
   tmutilToMSD (0, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "0:00%s000", sysvarsGetStr (SV_LOCALE_RADIX));
@@ -315,6 +331,7 @@ START_TEST(tmutiltodatehm_chk)
   char        buff [80];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltodatehm_chk");
+  mdebugSubTag ("tmutiltodatehm_chk");
 
   tmutilToDateHM (mstime(), buff, sizeof (buff));
   ck_assert_int_ge (strlen (buff), 14);
@@ -326,6 +343,7 @@ START_TEST(tmutil_strtoms)
   long  value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutil_strtoms");
+  mdebugSubTag ("tmutil_strtoms");
 
   value = tmutilStrToMS ("0:00");
   ck_assert_int_eq (value, 0);
@@ -352,6 +370,7 @@ START_TEST(tmutil_strtohm)
   long  value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutil_strtohm");
+  mdebugSubTag ("tmutil_strtohm");
 
   value = tmutilStrToHM ("0:00");
   ck_assert_int_eq (value, 0);

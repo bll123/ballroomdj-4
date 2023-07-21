@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "dance.h"
 #include "dnctypes.h"
@@ -39,6 +40,7 @@ START_TEST(dance_alloc)
   dance_t   *dance = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_alloc");
+  mdebugSubTag ("dance_alloc");
 
   bdjvarsdfloadInit ();
   dance = danceAlloc (NULL);
@@ -60,6 +62,7 @@ START_TEST(dance_iterate)
   int         type;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_iterate");
+  mdebugSubTag ("dance_iterate");
 
   bdjvarsdfloadInit ();
 
@@ -118,6 +121,7 @@ START_TEST(dance_set)
   int         ttype;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_iterate");
+  mdebugSubTag ("dance_iterate");
 
   bdjvarsdfloadInit ();
 
@@ -199,6 +203,7 @@ START_TEST(dance_conv)
   int         type;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_conv");
+  mdebugSubTag ("dance_conv");
 
   bdjvarsdfloadInit ();
 
@@ -261,6 +266,7 @@ START_TEST(dance_save)
   slistidx_t  ttiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_save");
+  mdebugSubTag ("dance_save");
 
   /* required for the dance conversion function */
   bdjvarsdfloadInit ();
@@ -362,6 +368,7 @@ START_TEST(dance_delete)
   char        *dval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_delete");
+  mdebugSubTag ("dance_delete");
 
   bdjvarsdfloadInit ();
   dance = danceAlloc (NULL);
@@ -401,6 +408,7 @@ START_TEST(dance_add)
   const char  *val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_add");
+  mdebugSubTag ("dance_add");
 
   bdjvarsdfloadInit ();
   dance = danceAlloc (NULL);

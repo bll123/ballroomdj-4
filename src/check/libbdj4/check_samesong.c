@@ -21,6 +21,7 @@
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "filemanip.h"
 #include "log.h"
 #include "musicdb.h"
@@ -68,6 +69,7 @@ START_TEST(samesong_alloc)
   samesong_t    *ss;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_alloc");
+  mdebugSubTag ("samesong_alloc");
 
   ss = samesongAlloc (db);
   samesongFree (ss);
@@ -88,6 +90,7 @@ START_TEST(samesong_basic)
   int           val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_basic");
+  mdebugSubTag ("samesong_basic");
 
   ss = samesongAlloc (db);
 
@@ -132,6 +135,7 @@ START_TEST(samesong_get_by_ssidx)
   slist_t       *clist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_get_by_ssidx");
+  mdebugSubTag ("samesong_get_by_ssidx");
 
   ss = samesongAlloc (db);
 
@@ -185,6 +189,7 @@ START_TEST(samesong_get_by_dbidx)
   slist_t       *clist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_get_by_dbidx");
+  mdebugSubTag ("samesong_get_by_dbidx");
 
   ss = samesongAlloc (db);
 
@@ -255,6 +260,7 @@ START_TEST(samesong_set)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_set");
+  mdebugSubTag ("samesong_set");
 
   ss = samesongAlloc (db);
 
@@ -628,6 +634,7 @@ START_TEST(samesong_singleton)
   nlistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_singleton");
+  mdebugSubTag ("samesong_singleton");
 
   ss = samesongAlloc (db);
 
@@ -725,6 +732,7 @@ START_TEST(samesong_clear)
   nlistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_clear");
+  mdebugSubTag ("samesong_clear");
 
   ss = samesongAlloc (db);
 

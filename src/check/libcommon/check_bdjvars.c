@@ -20,12 +20,14 @@
 
 #include "bdjvars.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "sysvars.h"
 
 START_TEST(bdjvars_init)
 {
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvars_init");
+  mdebugSubTag ("bdjvars_init");
 
   ck_assert_int_eq (bdjvarsIsInitialized (), 0);
   bdjvarsInit ();
@@ -42,6 +44,7 @@ START_TEST(bdjvars_init_idx)
 {
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvars_init_idx");
+  mdebugSubTag ("bdjvars_init_idx");
 
   sysvarsSetNum (SVL_BDJIDX, 2);
   bdjvarsInit ();
@@ -57,6 +60,7 @@ START_TEST(bdjvars_adjust)
 {
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvars_adjust");
+  mdebugSubTag ("bdjvars_adjust");
 
   bdjvarsInit ();
   sysvarsSetNum (SVL_BDJIDX, 3);
@@ -73,6 +77,7 @@ START_TEST(bdjvars_set)
 {
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvars_set");
+  mdebugSubTag ("bdjvars_set");
 
   bdjvarsInit ();
   bdjvarsSetNum (BDJVL_BPM_COUNTER_PORT, 12);

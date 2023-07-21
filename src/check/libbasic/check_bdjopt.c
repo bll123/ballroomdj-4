@@ -18,6 +18,7 @@
 
 #include "bdjopt.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "musicq.h"
 #include "tmutil.h"
@@ -27,6 +28,7 @@ START_TEST(bdjopt_conv_bpm)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_bpm");
+  mdebugSubTag ("bdjopt_conv_bpm");
 
   for (int i = BPM_BPM; i <= BPM_MPM; ++i) {
     conv.invt = VALUE_NUM;
@@ -47,6 +49,7 @@ START_TEST(bdjopt_conv_clock)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_bpm");
+  mdebugSubTag ("bdjopt_conv_bpm");
 
   for (int i = TM_CLOCK_ISO; i <= TM_CLOCK_OFF; ++i) {
     conv.invt = VALUE_NUM;
@@ -67,6 +70,7 @@ START_TEST(bdjopt_conv_fadetype)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_fadetype");
+  mdebugSubTag ("bdjopt_conv_fadetype");
 
   for (int i = FADETYPE_EXPONENTIAL_SINE; i <= FADETYPE_TRIANGLE; ++i) {
     conv.invt = VALUE_NUM;
@@ -87,6 +91,7 @@ START_TEST(bdjopt_conv_writetags)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_writetags");
+  mdebugSubTag ("bdjopt_conv_writetags");
 
   for (int i = WRITE_TAGS_NONE; i <= WRITE_TAGS_ALL; ++i) {
     conv.invt = VALUE_NUM;
@@ -107,6 +112,7 @@ START_TEST(bdjopt_conv_mqshow)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_mqshow");
+  mdebugSubTag ("bdjopt_conv_mqshow");
 
   for (int i = MARQUEE_SHOW_OFF; i <= MARQUEE_SHOW_VISIBLE; ++i) {
     conv.invt = VALUE_NUM;
@@ -127,6 +133,7 @@ START_TEST(bdjopt_conv_dancesel_method)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_dancesel_method");
+  mdebugSubTag ("bdjopt_conv_dancesel_method");
 
   for (int i = DANCESEL_METHOD_WINDOWED; i <= DANCESEL_METHOD_WINDOWED; ++i) {
     conv.invt = VALUE_NUM;
@@ -148,6 +155,7 @@ START_TEST(bdjopt_get)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_get");
+  mdebugSubTag ("bdjopt_get");
 
   bdjoptInit ();
   tstr = bdjoptGetStr (OPT_G_ACOUSTID_KEY);
@@ -176,6 +184,7 @@ START_TEST(bdjopt_set)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_set");
+  mdebugSubTag ("bdjopt_set");
 
   bdjoptInit ();
 
@@ -250,6 +259,7 @@ START_TEST(bdjopt_save)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_save");
+  mdebugSubTag ("bdjopt_save");
 
   bdjoptInit ();
 

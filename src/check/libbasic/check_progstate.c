@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "progstate.h"
 
@@ -35,6 +36,7 @@ START_TEST(progstate_chk)
   int             mcount;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- progstate_chk");
+  mdebugSubTag ("progstate_chk");
 
   for (int i = 0; i < STATE_MAX; ++i) {
     statetab [i] = 0;
@@ -137,6 +139,7 @@ START_TEST(progstate_multi_skip)
   int             userdata = 1;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- progstate_multi_skip");
+  mdebugSubTag ("progstate_multi_skip");
 
   for (int i = 0; i < STATE_MAX; ++i) {
     statetab [i] = 0;

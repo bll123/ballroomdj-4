@@ -20,6 +20,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "istring.h"
 #include "log.h"
 #include "sysvars.h"
@@ -30,6 +31,7 @@ START_TEST(bdjstring_string_to_lower)
   char  buff [20];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_to_lower");
+  mdebugSubTag ("bdjstring_string_to_lower");
 
   strcpy (buff, "ABCD");
   stringAsciiToLower (buff);
@@ -43,6 +45,7 @@ START_TEST(bdjstring_string_to_upper)
   char  buff [20];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_to_upper");
+  mdebugSubTag ("bdjstring_string_to_upper");
 
   strcpy (buff, "abcd");
   stringAsciiToUpper (buff);
@@ -55,6 +58,7 @@ START_TEST(bdjstring_string_trim)
   char  buff [20];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_trim");
+  mdebugSubTag ("bdjstring_string_trim");
 
   strcpy (buff, "abcd\n");
   stringTrim (buff);
@@ -87,6 +91,7 @@ START_TEST(bdjstring_string_trim_char)
   char  buff [20];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_trim_char");
+  mdebugSubTag ("bdjstring_string_trim_char");
 
   strcpy (buff, "abcdz");
   stringTrimChar (buff, 'z');
@@ -103,6 +108,7 @@ START_TEST(bdjstring_version_compare)
   int   rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_version_compare");
+  mdebugSubTag ("bdjstring_version_compare");
 
   rc = versionCompare ("1", "1");
   ck_assert_int_eq (rc, 0);
@@ -144,6 +150,7 @@ START_TEST(bdjstring_append)
   size_t  blen = 0;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_append");
+  mdebugSubTag ("bdjstring_append");
 
   blen = stringAppend (buff, sizeof (buff), blen, "abcde");
   ck_assert_int_eq (blen, 5);

@@ -25,6 +25,7 @@
 #include "mdebug.h"
 #include "osprocess.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 /* procutil hasn't had its tests run, but need the procutilExists routine */
 #include "procutil.h"
 #include "sysvars.h"
@@ -69,6 +70,7 @@ START_TEST(osprocess_start)
   int   exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start");
+  mdebugSubTag ("osprocess_start");
 
   runchk (0, &pid, &exists, 0);
   ck_assert_int_gt (pid, 0);
@@ -82,6 +84,7 @@ START_TEST(osprocess_start_detach)
   int   exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_detach");
+  mdebugSubTag ("osprocess_start_detach");
 
   runchk (OS_PROC_DETACH, &pid, &exists, 0);
   ck_assert_int_gt (pid, 0);
@@ -95,6 +98,7 @@ START_TEST(osprocess_start_wait)
   int   exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_wait");
+  mdebugSubTag ("osprocess_start_wait");
 
   /* in this case, the pid is the return code from the program */
 
@@ -121,6 +125,7 @@ START_TEST(osprocess_start_handle)
   int         flags = 0;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_handle");
+  mdebugSubTag ("osprocess_start_handle");
 
   extension = "";
   if (isWindows ()) {
@@ -165,6 +170,7 @@ START_TEST(osprocess_start_redirect)
   FILE        *fh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_redirect");
+  mdebugSubTag ("osprocess_start_redirect");
 
   extension = "";
   if (isWindows ()) {
@@ -209,6 +215,7 @@ START_TEST(osprocess_pipe)
   size_t      retsz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe");
+  mdebugSubTag ("osprocess_pipe");
 
   extension = "";
   if (isWindows ()) {
@@ -249,6 +256,7 @@ START_TEST(osprocess_pipe_wait)
   size_t      retsz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe_wait");
+  mdebugSubTag ("osprocess_pipe_wait");
 
   extension = "";
   if (isWindows ()) {
@@ -294,6 +302,7 @@ START_TEST(osprocess_pipe_rc)
   int         rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe_rc");
+  mdebugSubTag ("osprocess_pipe_rc");
 
   extension = "";
   if (isWindows ()) {
@@ -343,6 +352,7 @@ START_TEST(osprocess_run)
   char        *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_run");
+  mdebugSubTag ("osprocess_run");
 
   extension = "";
   if (isWindows ()) {

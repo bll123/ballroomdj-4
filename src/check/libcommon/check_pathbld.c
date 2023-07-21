@@ -21,6 +21,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -67,6 +68,7 @@ START_TEST(pathbld_chk)
   char    cwd [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathbld_chk");
+  mdebugSubTag ("pathbld_chk");
 
   (void) ! getcwd (cwd, sizeof (cwd));
   pathNormalizePath (cwd, sizeof (cwd));

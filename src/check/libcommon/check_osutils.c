@@ -20,6 +20,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
@@ -35,6 +36,7 @@ START_TEST(osutils_setenv)
   char  *str = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_chk");
+  mdebugSubTag ("osutils_chk");
 
   str = getenv (ENAME);
   ck_assert_ptr_null (str);
@@ -64,6 +66,8 @@ START_TEST(osutils_link)
   bool        exists;
   bool        expect;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_link");
+  mdebugSubTag ("osutils_link");
   fileopDelete (fnad);
   fileopDelete (fnb);
 
@@ -92,6 +96,8 @@ START_TEST(osutils_getsysfont)
 {
   char  *tptr = NULL;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getsysfont");
+  mdebugSubTag ("osutils_getsysfont");
   tptr = osGetSystemFont (sysvarsGetStr (SV_PATH_GSETTINGS));
   if (isLinux ()) {
     ck_assert_ptr_nonnull (tptr);
@@ -107,6 +113,8 @@ START_TEST(osutils_getregistry)
 {
   char  *tptr = NULL;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getregistry");
+  mdebugSubTag ("osutils_getregistry");
   tptr = osRegistryGet (
       "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
       "My Music");
@@ -126,6 +134,8 @@ START_TEST(osutils_widechar)
     wchar_t *wcs;
     char    *nstr;
 
+    logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_widechar");
+    mdebugSubTag ("osutils_widechar");
     wcs = osToWideChar (WTEST);
     ck_assert_ptr_nonnull (wcs);
     nstr = osFromWideChar (wcs);

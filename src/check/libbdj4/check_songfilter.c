@@ -22,6 +22,7 @@
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "dance.h"
 #include "filemanip.h"
 #include "genre.h"
@@ -92,6 +93,7 @@ START_TEST(songfilter_alloc)
   songfilter_t  *sf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_alloc");
+  mdebugSubTag ("songfilter_alloc");
 
   sf = songfilterAlloc ();
   songfilterFree (sf);
@@ -104,6 +106,7 @@ START_TEST(songfilter_set_sort)
   const char    *p;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_set_sort");
+  mdebugSubTag ("songfilter_set_sort");
 
   sf = songfilterAlloc ();
   for (int i = 0; i < sorttypesz; ++i) {
@@ -121,6 +124,7 @@ START_TEST(songfilter_process)
   dbidx_t       rv, tv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_process");
+  mdebugSubTag ("songfilter_process");
 
   sf = songfilterAlloc ();
   rv = songfilterProcess (sf, db);
@@ -138,6 +142,7 @@ START_TEST(songfilter_rating)
   rating_t      *ratings;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_rating");
+  mdebugSubTag ("songfilter_rating");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -173,6 +178,7 @@ START_TEST(songfilter_off_on)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_off_on");
+  mdebugSubTag ("songfilter_off_on");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -211,6 +217,7 @@ START_TEST(songfilter_clear)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_clear");
+  mdebugSubTag ("songfilter_clear");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -237,6 +244,7 @@ START_TEST(songfilter_reset)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_reset");
+  mdebugSubTag ("songfilter_reset");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -264,6 +272,7 @@ START_TEST(songfilter_get_byidx)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_get_byidx");
+  mdebugSubTag ("songfilter_get_byidx");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -294,6 +303,7 @@ START_TEST(songfilter_genre)
   genre_t       *genres;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_genre");
+  mdebugSubTag ("songfilter_genre");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -326,6 +336,7 @@ START_TEST(songfilter_level)
   level_t       *levels;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_level");
+  mdebugSubTag ("songfilter_level");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -378,6 +389,7 @@ START_TEST(songfilter_status)
   status_t      *status;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_status");
+  mdebugSubTag ("songfilter_status");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -408,6 +420,7 @@ START_TEST(songfilter_playable)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_playable");
+  mdebugSubTag ("songfilter_playable");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -436,6 +449,7 @@ START_TEST(songfilter_keyword)
   slist_t       *listall;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_keyword");
+  mdebugSubTag ("songfilter_keyword");
 
   sf = songfilterAlloc ();
 
@@ -502,6 +516,7 @@ START_TEST(songfilter_dance_idx)
   ilistidx_t    wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_dance_idx");
+  mdebugSubTag ("songfilter_dance_idx");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -532,6 +547,7 @@ START_TEST(songfilter_dance_list)
   ilistidx_t    wkey, tkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_dance_list");
+  mdebugSubTag ("songfilter_dance_list");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -577,6 +593,7 @@ START_TEST(songfilter_favorite)
   dbidx_t       arv, rv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_favorite");
+  mdebugSubTag ("songfilter_favorite");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -599,6 +616,7 @@ START_TEST(songfilter_search)
   dbidx_t       arv, rv, temprv [8];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_search");
+  mdebugSubTag ("songfilter_search");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -690,6 +708,7 @@ START_TEST(songfilter_multi)
   ilistidx_t    wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_dance_idx");
+  mdebugSubTag ("songfilter_dance_idx");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -739,6 +758,7 @@ START_TEST(songfilter_bpm)
   ilistidx_t    wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_bpm");
+  mdebugSubTag ("songfilter_bpm");
 
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
@@ -796,6 +816,7 @@ START_TEST(songfilter_sort)
   dbidx_t       dbidx, ldbidx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_sort");
+  mdebugSubTag ("songfilter_sort");
 
   for (int i = 0; i < sorttypesz; ++i) {
     sf [i] = songfilterAlloc ();

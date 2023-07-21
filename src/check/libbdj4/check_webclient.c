@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "fileop.h"
 #include "mdebug.h"
 #include "webclient.h"
@@ -41,6 +42,7 @@ START_TEST(webclient_alloc)
   webclient_t    *wc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_alloc");
+  mdebugSubTag ("webclient_alloc");
 
   wc = webclientAlloc (NULL, NULL);
   webclientClose (wc);
@@ -54,6 +56,7 @@ START_TEST(webclient_get)
   checkwc_t     r = { NULL, 0 };
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_get");
+  mdebugSubTag ("webclient_get");
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
@@ -75,6 +78,7 @@ START_TEST(webclient_dl)
   size_t        sz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_dl");
+  mdebugSubTag ("webclient_dl");
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
@@ -105,6 +109,7 @@ START_TEST(webclient_post)
   checkwc_t     r = { NULL, 0 };
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_post");
+  mdebugSubTag ("webclient_post");
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
@@ -123,6 +128,7 @@ START_TEST(webclient_localip)
   char          *ip = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_localip");
+  mdebugSubTag ("webclient_localip");
 
   ip = webclientGetLocalIP ();
   ck_assert_ptr_nonnull (ip);
@@ -144,6 +150,7 @@ START_TEST(webclient_upload_plain)
   const char    *tdata = "def456";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_plain");
+  mdebugSubTag ("webclient_upload_plain");
 
   fh = fopen (UPFILE, "w");
   if (fh != NULL) {
@@ -195,6 +202,7 @@ START_TEST(webclient_upload_gzip)
   const char    *tdata = "ghi789";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_gzip");
+  mdebugSubTag ("webclient_upload_gzip");
 
   fh = fopen (UPFILE, "w");
   if (fh != NULL) {

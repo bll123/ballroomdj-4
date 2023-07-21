@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "dirlist.h"
 #include "dirop.h"
 #include "filemanip.h"
@@ -103,6 +104,7 @@ setup (void)
     }
     if (tvalues [i].type == CHK_FILE) {
       fh = fileopOpen (tvalues [i].name, "w");
+      mdextfclose (fh);
       fclose (fh);
     }
     if (tvalues [i].type == CHK_DIR) {
@@ -123,6 +125,7 @@ START_TEST(dirlist_basic)
   slist_t   *slist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirlist_basic");
+  mdebugSubTag ("dirlist_basic");
 
   slist = NULL;
   for (int i = 0; i < tvaluesz; ++i) {
@@ -159,6 +162,7 @@ START_TEST(dirlist_recursive)
   slist_t   *slist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirlist_recursive");
+  mdebugSubTag ("dirlist_recursive");
 
   slist = dirlistRecursiveDirList ("tmp/abc", DIRLIST_DIRS);
   slistSort (slist);  // for testing

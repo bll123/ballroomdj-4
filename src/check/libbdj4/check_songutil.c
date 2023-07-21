@@ -18,6 +18,7 @@
 
 #include "bdjopt.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "mdebug.h"
 #include "songutil.h"
@@ -42,6 +43,7 @@ START_TEST(songutil_chk)
   char  *val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songutil_chk");
+  mdebugSubTag ("songutil_chk");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
@@ -63,6 +65,7 @@ START_TEST(songutil_pos)
   int       speed;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songutil_pos");
+  mdebugSubTag ("songutil_pos");
 
   pos = 40000;
   speed = 100;

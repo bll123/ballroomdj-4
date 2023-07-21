@@ -25,6 +25,7 @@
 #include "log.h"
 #include "pathutil.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 
 typedef struct {
   char    *path;
@@ -64,6 +65,7 @@ START_TEST(pathinfo_chk)
   pathinfo_t    *pi;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
+  mdebugSubTag ("pathinfo_chk");
 
   for (int64_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
@@ -117,6 +119,7 @@ START_TEST(path_normpath)
   char    to [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
+  mdebugSubTag ("path_normpath");
 
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
   pathNormalizePath (to, sizeof (to));
@@ -141,6 +144,7 @@ START_TEST(path_strippath)
   char    to [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
+  mdebugSubTag ("path_normpath");
 
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
   pathStripPath (to, sizeof (to));
@@ -177,6 +181,7 @@ START_TEST(path_realpath)
   char    actual [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
+  mdebugSubTag ("path_realpath");
 
   (void) ! getcwd (cwd, sizeof (cwd));
   pathNormalizePath (cwd, sizeof (cwd));

@@ -20,6 +20,7 @@
 
 #include "queue.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 
 START_TEST(queue_alloc_free)
@@ -28,6 +29,7 @@ START_TEST(queue_alloc_free)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_alloc_free");
+  mdebugSubTag ("queue_alloc_free");
   q = queueAlloc ("alloc-free", NULL);
   ck_assert_ptr_nonnull (q);
   count = queueGetCount (q);
@@ -42,6 +44,7 @@ START_TEST(queue_push_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_one");
+  mdebugSubTag ("queue_push_one");
   q = queueAlloc ("push-one", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -56,6 +59,7 @@ START_TEST(queue_push_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_two");
+  mdebugSubTag ("queue_push_two");
   q = queueAlloc ("push-two", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -73,6 +77,7 @@ START_TEST(queue_push_many)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_many");
+  mdebugSubTag ("queue_push_many");
   q = queueAlloc ("push-many", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -100,6 +105,7 @@ START_TEST(queue_push_pop_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_pop_one");
+  mdebugSubTag ("queue_push_pop_one");
   q = queueAlloc ("push-pop-1", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -123,6 +129,7 @@ START_TEST(queue_push_pop_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_pop_two");
+  mdebugSubTag ("queue_push_pop_two");
   q = queueAlloc ("push-pop-2", NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -152,6 +159,7 @@ START_TEST(queue_push_head)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_head");
+  mdebugSubTag ("queue_push_head");
   q = queueAlloc ("push-head", NULL);
   queuePush (q, "aaaa");
   queuePushHead (q, "bbbb");
@@ -180,6 +188,7 @@ START_TEST(queue_get_first)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_get_first");
+  mdebugSubTag ("queue_get_first");
   q = queueAlloc ("get-first", NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -226,6 +235,7 @@ START_TEST(queue_multi_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_one");
+  mdebugSubTag ("queue_multi_one");
   q = queueAlloc ("multi-1", NULL);
 
   queuePush (q, "aaaa");
@@ -265,6 +275,7 @@ START_TEST(queue_multi_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_two");
+  mdebugSubTag ("queue_multi_two");
   q = queueAlloc ("multi-2", NULL);
 
   queuePush (q, "aaaa");
@@ -342,6 +353,7 @@ START_TEST(queue_multi_many)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_many");
+  mdebugSubTag ("queue_multi_many");
   q = queueAlloc ("multi-many", NULL);
 
   queuePush (q, "aaaa");
@@ -431,6 +443,7 @@ START_TEST(queue_getbyidx)
   qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_getbyidx");
+  mdebugSubTag ("queue_getbyidx");
   q = queueAlloc ("get-by-idx", NULL);
 
   queuePush (q, "aaaa");
@@ -528,6 +541,7 @@ START_TEST(queue_iterate)
   qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_iterate");
+  mdebugSubTag ("queue_iterate");
   q = queueAlloc ("iterate", NULL);
 
   queuePush (q, "aaaa");
@@ -596,6 +610,7 @@ START_TEST(queue_move)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_move");
+  mdebugSubTag ("queue_move");
   q = queueAlloc ("move", NULL);
 
   queuePush (q, "aaaa");
@@ -688,6 +703,7 @@ START_TEST(queue_insert_node)
   qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_insert_node");
+  mdebugSubTag ("queue_insert_node");
   q = queueAlloc ("insert", NULL);
 
   queuePush (q, "aaaa");
@@ -810,6 +826,7 @@ START_TEST(queue_remove_by_idx)
   qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_by_idx");
+  mdebugSubTag ("queue_remove_by_idx");
   q = queueAlloc ("remove-by-idx", NULL);
 
   queuePush (q, "aaaa");
@@ -944,6 +961,7 @@ START_TEST(queue_cache)
   qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_cache");
+  mdebugSubTag ("queue_cache");
   q = queueAlloc ("get-by-idx", NULL);
 
   queuePush (q, "aaaa");
@@ -1287,6 +1305,7 @@ START_TEST(queue_remove_iter_node)
   qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_iter_node");
+  mdebugSubTag ("queue_remove_iter_node");
   q = queueAlloc ("remove-node", NULL);
 
   queuePush (q, "aaaa");
@@ -1437,6 +1456,7 @@ START_TEST(queue_clear)
   qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_clear");
+  mdebugSubTag ("queue_clear");
   q = queueAlloc ("clear", NULL);
 
   queuePush (q, "aaaa");

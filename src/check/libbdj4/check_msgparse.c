@@ -21,6 +21,7 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "msgparse.h"
 #include "nlist.h"
@@ -57,6 +58,7 @@ START_TEST(msgparse_mq_data)
   mp_musicqupditem_t  *mpmqitem = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- msgparse_mq_data");
+  mdebugSubTag ("msgparse_mq_data");
 
   snprintf (tbuff, sizeof (tbuff), "6%c2761800%c77%c",
       MSG_ARGS_RS, MSG_ARGS_RS, MSG_ARGS_RS);
@@ -90,6 +92,7 @@ START_TEST(msgparse_songsel_data)
   mp_songselect_t *mpss = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- msgparse_songsel_data");
+  mdebugSubTag ("msgparse_songsel_data");
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%d",
       2, MSG_ARGS_RS, 12);

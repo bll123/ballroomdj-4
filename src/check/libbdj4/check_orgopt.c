@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "orgopt.h"
 #include "slist.h"
@@ -35,6 +36,7 @@ START_TEST(orgopt_alloc)
   orgopt_t   *oopt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgopt_alloc");
+  mdebugSubTag ("orgopt_alloc");
 
   oopt = orgoptAlloc ();
   orgoptFree (oopt);
@@ -47,6 +49,7 @@ START_TEST(orgopt_chk)
   slist_t     *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgopt_chk");
+  mdebugSubTag ("orgopt_chk");
 
 
   oopt = orgoptAlloc ();

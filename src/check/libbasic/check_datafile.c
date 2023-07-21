@@ -25,12 +25,14 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 
 START_TEST(parse_init_free)
 {
   parseinfo_t     *pi;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_init_free");
+  mdebugSubTag ("parse_init_free");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   ck_assert_int_eq (parseGetAllocCount (pi), 0);
@@ -49,6 +51,7 @@ START_TEST(parse_simple)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_simple");
+  mdebugSubTag ("parse_simple");
   tstr = mdstrdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -87,6 +90,7 @@ START_TEST(parse_keyvalue)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_keyvalue");
+  mdebugSubTag ("parse_keyvalue");
   tstr = mdstrdup ("# version 3\nversion\n..4\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -126,6 +130,7 @@ START_TEST(parse_with_comments)
   int             distvers = 1;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
+  mdebugSubTag ("parse_with_comments");
   tstr = mdstrdup ("# comment\n# version 4\nversion\n..5\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -161,6 +166,7 @@ START_TEST(datafile_conv_boolean)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_boolean");
+  mdebugSubTag ("datafile_conv_boolean");
 
   for (int i = 0; i <= 1; ++i) {
     conv.invt = VALUE_NUM;
@@ -215,6 +221,7 @@ START_TEST(datafile_conv_textlist)
   slist_t         *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_conv_textlist");
+  mdebugSubTag ("datafile_conv_textlist");
 
   for (int i = 0; i < txtlist_tc_count; ++i) {
     conv.invt = VALUE_STR;
@@ -238,6 +245,7 @@ START_TEST(datafile_alloc)
   const char    *fn;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_alloc");
+  mdebugSubTag ("datafile_alloc");
   fn = "tmp/dftestnone.txt";
 
   df = datafileAlloc ("chk-df-a", DFTYPE_LIST, fn, NULL, 0);
@@ -259,6 +267,7 @@ START_TEST(datafile_none)
   slist_t       *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_none");
+  mdebugSubTag ("datafile_none");
   fn = "tmp/dftestnone.txt";
 
   /* essentially the same as calling datafileAlloc() */
@@ -291,6 +300,7 @@ START_TEST(datafile_simple)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_simple");
+  mdebugSubTag ("datafile_simple");
   fn = "tmp/dftesta.txt";
   tstr = "# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
@@ -380,6 +390,7 @@ START_TEST(datafile_keyval_dfkey)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey");
+  mdebugSubTag ("datafile_keyval_dfkey");
   fn = "tmp/dftestb1.txt";
   /* F is removed */
   tstr = "# test 6a\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -492,6 +503,7 @@ START_TEST(datafile_keyval_dfkey_missing)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey_missing");
+  mdebugSubTag ("datafile_keyval_dfkey_missing");
   fn = "tmp/dftestb2.txt";
   /* F is removed */
   tstr = "# test 6b\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -597,6 +609,7 @@ START_TEST(datafile_keyval_df_extra)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
+  mdebugSubTag ("datafile_keyval_df_extra");
   fn = "tmp/dftestc.txt";
   tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -707,6 +720,7 @@ START_TEST(datafile_indirect)
   int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
+  mdebugSubTag ("datafile_indirect");
   fn = "tmp/dftestd.txt";
   tstr = "# version 8\nversion\n..9\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
@@ -797,6 +811,7 @@ START_TEST(datafile_indirect_missing)
   int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_missing");
+  mdebugSubTag ("datafile_indirect_missing");
   fn = "tmp/dfteste.txt";
   tstr = "# version 9\nversion\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
@@ -896,6 +911,7 @@ START_TEST(datafile_keyval_savelist)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savelist");
+  mdebugSubTag ("datafile_keyval_savelist");
   fn = "tmp/dftestf.txt";
   /* F is removed */
   tstr = "# version 10\nversion\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -978,6 +994,7 @@ START_TEST(datafile_keyval_savebuffer)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savebuffer");
+  mdebugSubTag ("datafile_keyval_savebuffer");
   fn = "tmp/dftestg.txt";
   /* F is removed */
   tstr = "# version 11\nversion\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -1058,6 +1075,7 @@ START_TEST(datafile_keyval_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
+  mdebugSubTag ("datafile_keyval_save");
   fn = "tmp/dftesti.txt";
   /* F is removed */
   tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
@@ -1138,6 +1156,7 @@ START_TEST(datafile_keyval_save_new)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save_new");
+  mdebugSubTag ("datafile_keyval_save_new");
   fn = "tmp/dftestk.txt";
 
   unlink (fn);
@@ -1229,6 +1248,7 @@ START_TEST(datafile_indirect_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_save");
+  mdebugSubTag ("datafile_indirect_save");
   fn = "tmp/dftestm.txt";
   tstr = "# version 13\nversion\n..14\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..b\nB\n..2\n"
@@ -1290,6 +1310,7 @@ START_TEST(datafile_simple_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_simple_save");
+  mdebugSubTag ("datafile_simple_save");
   fn = "tmp/dftesto.txt";
   tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");

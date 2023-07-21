@@ -20,6 +20,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "dirop.h"
 #include "fileop.h"
 #include "log.h"
@@ -52,6 +53,7 @@ START_TEST(osdir_chk)
   char        *fn;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osdir_chk");
+  mdebugSubTag ("osdir_chk");
 
   diropMakeDir (OSDIRTESTDIR);
 

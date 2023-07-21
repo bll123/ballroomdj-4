@@ -23,6 +23,7 @@
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "dance.h"
 #include "dancesel.h"
 #include "filemanip.h"
@@ -82,6 +83,7 @@ START_TEST(dancesel_alloc)
   ilistidx_t  wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_alloc");
+  mdebugSubTag ("dancesel_alloc");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "--chk-- dancesel_alloc\n");
   }
@@ -108,6 +110,7 @@ START_TEST(dancesel_choose_single_no_hist)
   ilistidx_t  wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_single_no_hist");
+  mdebugSubTag ("dancesel_choose_single_no_hist");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_single_no_hist\n");
   }
@@ -142,6 +145,7 @@ START_TEST(dancesel_choose_three_no_hist)
   ilistidx_t  wkey, tkey, fkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_three_no_hist");
+  mdebugSubTag ("dancesel_choose_three_no_hist");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_three_no_hist\n");
   }
@@ -189,6 +193,7 @@ START_TEST(dancesel_choose_two_hist_s)
   int         count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_s");
+  mdebugSubTag ("dancesel_choose_two_hist_s");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_two_hist_s\n");
   }
@@ -243,6 +248,7 @@ START_TEST(dancesel_choose_two_hist_a)
   int         val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_a");
+  mdebugSubTag ("dancesel_choose_two_hist_a");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_two_hist_a\n");
   }
@@ -299,6 +305,7 @@ START_TEST(dancesel_choose_multi_count)
   int         counts [TM_MAX_DANCE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_count");
+  mdebugSubTag ("dancesel_choose_multi_count");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_multi_count\n");
   }
@@ -361,6 +368,7 @@ START_TEST(dancesel_choose_multi_tag)
 
   /* it is difficult to ascertain whether the tag match count is low enough */
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_tag");
+  mdebugSubTag ("dancesel_choose_multi_tag");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_multi_tag\n");
   }
@@ -430,6 +438,7 @@ START_TEST(dancesel_choose_fast)
   int         fastmatch;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
+  mdebugSubTag ("dancesel_choose_fast");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_fast\n");
   }
@@ -508,6 +517,7 @@ START_TEST(dancesel_mix)
   int         i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
+  mdebugSubTag ("dancesel_choose_fast");
   if (DANCESEL_DEBUG) {
     fprintf (stderr, "-- dancesel_choose_fast\n");
   }

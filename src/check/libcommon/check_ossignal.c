@@ -20,6 +20,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "ossignal.h"
 
@@ -33,6 +34,7 @@ START_TEST(ossignal_chk)
   int   count = 0;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ossignal_chk");
+  mdebugSubTag ("ossignal_chk");
 
   osSetStandardSignals (sigh);
 

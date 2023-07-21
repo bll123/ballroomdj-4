@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "colorutils.h"
 #include "log.h"
 
@@ -28,6 +29,7 @@ START_TEST(colorutils_chk)
   char    cb [200];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- colorutils_chk");
+  mdebugSubTag ("colorutils_chk");
 
   createRandomColor (c, sizeof (c));
   ck_assert_int_eq (strlen (c), 7);

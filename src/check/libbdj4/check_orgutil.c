@@ -17,6 +17,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "orgutil.h"
 
@@ -73,6 +74,7 @@ START_TEST(orgutil_parse)
   org_t     *org;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_parse");
+  mdebugSubTag ("orgutil_parse");
 
   while (orgpaths [i] != NULL) {
     org = orgAlloc (orgpaths[i]);
@@ -91,6 +93,7 @@ START_TEST(orgutil_regex)
   char      *val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_regex");
+  mdebugSubTag ("orgutil_regex");
 
   path = "{%DANCE%/}{%TITLE%}";
 

@@ -22,6 +22,7 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -34,6 +35,7 @@ START_TEST(lock_name)
 {
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_name");
+  mdebugSubTag ("lock_name");
 
   ck_assert_str_eq (lockName (ROUTE_PLAYERUI), "playerui");
 }
@@ -49,6 +51,7 @@ START_TEST(lock_acquire_release)
   int64_t       temp;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_acquire_release");
+  mdebugSubTag ("lock_acquire_release");
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
@@ -76,6 +79,7 @@ START_TEST(lock_already)
   struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_already");
+  mdebugSubTag ("lock_already");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
@@ -98,6 +102,7 @@ START_TEST(lock_other_dead)
   struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_other_dead");
+  mdebugSubTag ("lock_other_dead");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_OTHER_PID);
@@ -122,6 +127,7 @@ START_TEST(lock_unlock_fail)
   struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_unlock_fail");
+  mdebugSubTag ("lock_unlock_fail");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
@@ -148,6 +154,7 @@ START_TEST(lock_exists)
   FILE          *fh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_exists");
+  mdebugSubTag ("lock_exists");
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);

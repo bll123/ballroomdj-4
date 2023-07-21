@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "osnetutils.h"
 
@@ -27,6 +28,7 @@ START_TEST(osnetutils_chk)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osnetutils_chk");
+  mdebugSubTag ("osnetutils_chk");
 
   *tbuff = '\0';
   getHostname (tbuff, sizeof (tbuff));

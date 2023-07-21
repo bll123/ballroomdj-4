@@ -22,6 +22,7 @@
 #include "pathbld.h"
 #include "rafile.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 
 #define RAFN "tmp/test_rafile.dat"
 
@@ -32,6 +33,7 @@ START_TEST(rafile_create_new)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_create_new");
+  mdebugSubTag ("rafile_create_new");
 
   unlink (RAFN);
   rafile = raOpen (RAFN, 10);
@@ -52,6 +54,7 @@ START_TEST(rafile_reopen)
   rafile_t      *rafile;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reopen");
+  mdebugSubTag ("rafile_reopen");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -70,6 +73,7 @@ START_TEST(rafile_write)
   off_t         lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write");
+  mdebugSubTag ("rafile_write");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -121,6 +125,7 @@ START_TEST(rafile_write_batch)
   off_t         lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write_batch");
+  mdebugSubTag ("rafile_write_batch");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -178,6 +183,7 @@ START_TEST(rafile_read)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_read");
+  mdebugSubTag ("rafile_read");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -204,6 +210,7 @@ START_TEST(rafile_rewrite)
   off_t         lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
+  mdebugSubTag ("rafile_rewrite");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -242,6 +249,7 @@ START_TEST(rafile_reread)
   ssize_t       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reread");
+  mdebugSubTag ("rafile_reread");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -269,6 +277,7 @@ START_TEST(rafile_write_read)
   char          data [RAFILE_REC_SIZE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
+  mdebugSubTag ("rafile_rewrite");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -334,6 +343,7 @@ START_TEST(rafile_bad_write_len)
   char          data [2 * RAFILE_REC_SIZE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_write_len");
+  mdebugSubTag ("rafile_bad_write_len");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -353,6 +363,7 @@ START_TEST(rafile_clear)
   char          data [2 * RAFILE_REC_SIZE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_clear");
+  mdebugSubTag ("rafile_clear");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -381,6 +392,7 @@ START_TEST(rafile_bad_read)
   char          data [RAFILE_REC_SIZE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_read");
+  mdebugSubTag ("rafile_bad_read");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -400,6 +412,7 @@ START_TEST(rafile_bad_clear)
   ssize_t       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_clear");
+  mdebugSubTag ("rafile_bad_clear");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -416,6 +429,7 @@ END_TEST
 START_TEST(rafile_cleanup)
 {
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_cleanup");
+  mdebugSubTag ("rafile_cleanup");
 
   unlink (RAFN);
 }

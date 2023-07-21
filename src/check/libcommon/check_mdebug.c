@@ -15,6 +15,9 @@
 
 #include <check.h>
 
+#if defined (BDJ4_MEM_DEBUG)
+# define BDJ4_MEM_DEBUG_ALREADY
+#endif
 #if ! defined (BDJ4_MEM_DEBUG)
 # define BDJ4_MEM_DEBUG
 #endif
@@ -27,9 +30,14 @@ START_TEST(mdebug_valid)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-v");
+  mdebugSubTag ("mdebug_valid");
   mdebugSetNoOutput ();
   data = mdmalloc (10);
   mdfree (data);
@@ -43,9 +51,14 @@ START_TEST(mdebug_valid_b)
 {
   void  *data [10];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-b");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid_b");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-vb");
+  mdebugSubTag ("mdebug_valid_b");
   mdebugSetNoOutput ();
   data [0] = mdmalloc (10);
   data [1] = mdmalloc (10);
@@ -86,9 +99,14 @@ START_TEST(mdebug_valid_ext_a)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-ext-a");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid_ext_a");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-ext-a");
+  mdebugSubTag ("mdebug_valid_ext_a");
   mdebugSetNoOutput ();
   data = malloc (10);
   mdextalloc (data);
@@ -104,9 +122,14 @@ START_TEST(mdebug_valid_ext_b)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-ext-b");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid_ext_b");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-ext-b");
+  mdebugSubTag ("mdebug_valid_ext_b");
   mdebugSetNoOutput ();
   data = malloc (10);
   mdextalloc (data);
@@ -119,9 +142,14 @@ END_TEST
 
 START_TEST(mdebug_valid_open_close)
 {
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-open-close");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid_open_close");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-o-c");
+  mdebugSubTag ("mdebug_valid_open_close");
   mdebugSetNoOutput ();
   mdextopen (1);
   mdextclose (1);
@@ -133,9 +161,14 @@ END_TEST
 
 START_TEST(mdebug_valid_fopen_fclose)
 {
-  logMsg (LOG_DBG, LOG_IMPORTANT, "valid-fopen-fclose");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_valid_fopen_fclose");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-o-c");
+  mdebugSubTag ("mdebug_valid_fopen_fclose");
   mdebugSetNoOutput ();
   mdextfopen (stdin);
   mdextfclose (stdin);
@@ -149,9 +182,14 @@ START_TEST(mdebug_no_free)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "no-free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_no_free");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-nf");
+  mdebugSubTag ("mdebug_no_free");
   mdebugSetNoOutput ();
   data = mdmalloc (10);
   mdebugReport ();    // needed for no-free count
@@ -166,9 +204,14 @@ START_TEST(mdebug_null_free)
 {
   void  *data = NULL;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "null-free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_null_free");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-nullf");
+  mdebugSubTag ("mdebug_null_free");
   mdebugSetNoOutput ();
   mdfree (data);
   ck_assert_int_eq (mdebugCount (), 0);
@@ -181,9 +224,14 @@ START_TEST(mdebug_unknown_free)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "unknown-free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_unknown_free");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-uf");
+  mdebugSubTag ("mdebug_unknown_free");
   mdebugSetNoOutput ();
   data = malloc (10);
   mdfree (data);
@@ -197,9 +245,14 @@ START_TEST(mdebug_bad_realloc)
 {
   void  *data;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "bad-realloc");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_bad_realloc");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-br");
+  mdebugSubTag ("mdebug_bad_realloc");
   mdebugSetNoOutput ();
   data = malloc (55);
   data = mdrealloc (data, 95);
@@ -212,9 +265,14 @@ END_TEST
 
 START_TEST(mdebug_no_close)
 {
-  logMsg (LOG_DBG, LOG_IMPORTANT, "no-close");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_no_close");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-nc");
+  mdebugSubTag ("mdebug_no_close");
   mdebugSetNoOutput ();
   mdextopen (1);
   ck_assert_int_eq (mdebugCount (), 1);
@@ -226,9 +284,14 @@ END_TEST
 
 START_TEST(mdebug_no_fclose)
 {
-  logMsg (LOG_DBG, LOG_IMPORTANT, "no-fclose");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mdebug_no_fclose");
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugCleanup ();
   mdebugInit ("chk-md-nfc");
+  mdebugSubTag ("mdebug_no_fclose");
   mdebugSetNoOutput ();
   mdextfopen (stdin);
   ck_assert_int_eq (mdebugCount (), 1);

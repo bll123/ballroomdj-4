@@ -17,6 +17,9 @@
 
 #include <check.h>
 
+#if defined (BDJ4_MEM_DEBUG)
+# define BDJ4_MEM_DEBUG_ALREADY
+#endif
 #if ! defined (BDJ4_MEM_DEBUG)
 # define BDJ4_MEM_DEBUG
 #endif
@@ -80,6 +83,7 @@ START_TEST(songlist_exists)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_exists");
+  mdebugSubTag ("songlist_exists");
 
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
@@ -93,6 +97,7 @@ START_TEST(songlist_create)
   songlist_t    *sl;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_create");
+  mdebugSubTag ("songlist_create");
 
   sl = songlistCreate (SLNEWFN);
   ck_assert_ptr_nonnull (sl);
@@ -105,6 +110,7 @@ START_TEST(songlist_load)
   songlist_t    *sl;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_load");
+  mdebugSubTag ("songlist_load");
 
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
@@ -120,6 +126,7 @@ START_TEST(songlist_iterate)
   ilistidx_t    key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_iterate");
+  mdebugSubTag ("songlist_iterate");
 
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
@@ -148,8 +155,12 @@ START_TEST(songlist_clear)
   songlist_t    *sl = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_clear");
-
+#ifdef BDJ4_MEM_DEBUG_ALREADY
+  logMsg (LOG_DBG, LOG_IMPORTANT, "  not run");
+  return;
+#endif
   mdebugInit ("chk-sl-bug");
+  mdebugSubTag ("songlist_clear");
   mdebugSetNoOutput ();
 
   sl = songlistLoad (SLFN);
@@ -176,6 +187,7 @@ START_TEST(songlist_save)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save");
+  mdebugSubTag ("songlist_clear");
 
   rc = songlistExists (SLFN);
   ck_assert_int_ne (rc, 0);
@@ -241,6 +253,7 @@ START_TEST(songlist_save_new)
   int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save_new");
+  mdebugSubTag ("songlist_save_new");
 
   unlink (SLNEWFFN);
 

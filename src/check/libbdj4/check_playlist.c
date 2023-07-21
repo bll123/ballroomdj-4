@@ -22,6 +22,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -186,6 +187,7 @@ START_TEST(playlist_exists)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_exists");
+  mdebugSubTag ("playlist_exists");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -212,6 +214,7 @@ START_TEST(playlist_get_type)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_type");
+  mdebugSubTag ("playlist_get_type");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -233,6 +236,7 @@ START_TEST(playlist_create_basic)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_create_basic");
+  mdebugSubTag ("playlist_create_basic");
 
   /* sequence */
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
@@ -265,6 +269,7 @@ START_TEST(playlist_load_basic)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_load_basic");
+  mdebugSubTag ("playlist_load_basic");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -303,6 +308,7 @@ START_TEST(playlist_get)
   int           idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get");
+  mdebugSubTag ("playlist_get");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -343,6 +349,7 @@ START_TEST(playlist_set)
   int           val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_set");
+  mdebugSubTag ("playlist_set");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -488,6 +495,7 @@ START_TEST(playlist_reset)
   int           val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_reset");
+  mdebugSubTag ("playlist_reset");
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
@@ -545,6 +553,7 @@ START_TEST(playlist_save)
   int           val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_save");
+  mdebugSubTag ("playlist_save");
 
   /* use an auto playlist here */
   /* sequences and song lists have their select flags and */
@@ -581,6 +590,7 @@ START_TEST(playlist_save_new)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_save_new");
+  mdebugSubTag ("playlist_save_new");
 
   cleanup ();
 
@@ -628,6 +638,7 @@ START_TEST(playlist_rename)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_rename");
+  mdebugSubTag ("playlist_rename");
 
   cleanup ();
 
@@ -665,6 +676,7 @@ START_TEST(playlist_copy)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_copy");
+  mdebugSubTag ("playlist_copy");
 
   /* sequence */
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
@@ -700,6 +712,7 @@ START_TEST(playlist_delete)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_delete");
+  mdebugSubTag ("playlist_delete");
 
   cleanup ();
 
@@ -737,6 +750,7 @@ START_TEST(playlist_chk_and_create)
   int           idx, idxt;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_chk_and_create");
+  mdebugSubTag ("playlist_chk_and_create");
 
   cleanup ();
 
@@ -759,6 +773,7 @@ START_TEST(playlist_get_pl_list)
   const char  *sval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_pl_list");
+  mdebugSubTag ("playlist_get_pl_list");
 
   cleanup ();
 
@@ -815,6 +830,7 @@ START_TEST(playlist_get_next_sl)
   song_t      *song;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_sl");
+  mdebugSubTag ("playlist_get_next_sl");
 
   cleanup ();
 
@@ -853,6 +869,7 @@ START_TEST(playlist_get_next_sl_stop_after)
   song_t      *song;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_sl_stop_after");
+  mdebugSubTag ("playlist_get_next_sl_stop_after");
 
   cleanup ();
 
@@ -883,6 +900,7 @@ START_TEST(playlist_get_next_seq)
   song_t      *song;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_seq");
+  mdebugSubTag ("playlist_get_next_seq");
 
   cleanup ();
 
@@ -913,6 +931,7 @@ START_TEST(playlist_get_next_auto)
   song_t      *song;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_next_auto");
+  mdebugSubTag ("playlist_get_next_auto");
 
   cleanup ();
 

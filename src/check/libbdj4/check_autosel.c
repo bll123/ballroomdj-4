@@ -19,6 +19,7 @@
 #include "autosel.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "templateutil.h"
 
@@ -40,6 +41,7 @@ START_TEST(autosel_alloc)
   autosel_t     *autosel;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- autosel_alloc");
+  mdebugSubTag ("autosel_alloc");
 
   autosel = autoselAlloc ();
   ck_assert_ptr_nonnull (autosel);
@@ -54,6 +56,7 @@ START_TEST(autosel_get)
   double        dval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- autosel_get");
+  mdebugSubTag ("autosel_get");
 
   /* check for the default values from the template */
   autosel = autoselAlloc ();

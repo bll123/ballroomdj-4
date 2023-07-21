@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "genre.h"
 #include "ilist.h"
@@ -38,6 +39,7 @@ START_TEST(genre_alloc)
   slist_t   *gl = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_alloc");
+  mdebugSubTag ("genre_alloc");
 
   genre = genreAlloc ();
   ck_assert_ptr_nonnull (genre);
@@ -59,6 +61,7 @@ START_TEST(genre_iterate)
   int         cf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_iterate");
+  mdebugSubTag ("genre_iterate");
 
   genre = genreAlloc ();
   gl = genreGetList (genre);
@@ -89,6 +92,7 @@ START_TEST(genre_conv)
   int         key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_conv");
+  mdebugSubTag ("genre_conv");
 
   /* required for the genre conversion function */
   bdjvarsdfloadInit ();
@@ -131,6 +135,7 @@ START_TEST(genre_save)
   int         tcf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_save");
+  mdebugSubTag ("genre_save");
 
   /* required for the genre conversion function */
   bdjvarsdfloadInit ();

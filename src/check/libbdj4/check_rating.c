@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
@@ -37,6 +38,7 @@ START_TEST(rating_alloc)
   rating_t   *rating = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_alloc");
+  mdebugSubTag ("rating_alloc");
 
   rating = ratingAlloc ();
   ck_assert_ptr_nonnull (rating);
@@ -53,6 +55,7 @@ START_TEST(rating_iterate)
   int         w;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_iterate");
+  mdebugSubTag ("rating_iterate");
 
   rating = ratingAlloc ();
   ratingStartIterator (rating, &iteridx);
@@ -79,6 +82,7 @@ START_TEST(rating_conv)
   int         key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_conv");
+  mdebugSubTag ("rating_conv");
 
   bdjvarsdfloadInit ();
 
@@ -119,6 +123,7 @@ START_TEST(rating_save)
   int         tw;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_save");
+  mdebugSubTag ("rating_save");
 
   /* required for the rating conversion function */
   bdjvarsdfloadInit ();

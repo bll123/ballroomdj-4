@@ -20,6 +20,7 @@
 
 #include "bdjvarsdf.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 
 START_TEST(bdjvarsdf_set_get)
@@ -27,6 +28,7 @@ START_TEST(bdjvarsdf_set_get)
   char    *data = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvarsdf_set_get");
+  mdebugSubTag ("bdjvarsdf_set_get");
 
   bdjvarsdfSet (BDJVDF_DANCES, "test");
   data = bdjvarsdfGet (BDJVDF_DANCES);

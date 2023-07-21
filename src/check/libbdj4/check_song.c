@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "dirop.h"
 #include "filemanip.h"
@@ -51,6 +52,7 @@ START_TEST(song_alloc)
   song_t   *songb = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_alloc");
+  mdebugSubTag ("song_alloc");
 
   bdjvarsdfloadInit ();
 
@@ -198,6 +200,7 @@ START_TEST(song_parse)
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse");
+  mdebugSubTag ("song_parse");
 
   bdjvarsdfloadInit ();
 
@@ -224,6 +227,7 @@ START_TEST(song_parse_get)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_get");
+  mdebugSubTag ("song_parse_get");
 
   bdjvarsdfloadInit ();
 
@@ -296,6 +300,7 @@ START_TEST(song_parse_set)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_set");
+  mdebugSubTag ("song_parse_set");
 
   bdjvarsdfloadInit ();
 
@@ -375,6 +380,7 @@ START_TEST(song_audio_file)
   bool        rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_audio_file");
+  mdebugSubTag ("song_audio_file");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
@@ -414,6 +420,7 @@ START_TEST(song_display)
   int         rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_display");
+  mdebugSubTag ("song_display");
 
   bdjvarsdfloadInit ();
 
@@ -493,6 +500,7 @@ START_TEST(song_tag_list)
   datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
+  mdebugSubTag ("song_tag_list");
 
   bdjvarsdfloadInit ();
 

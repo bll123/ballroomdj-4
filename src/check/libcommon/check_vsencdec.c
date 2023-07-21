@@ -19,6 +19,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "vsencdec.h"
 
@@ -42,6 +43,7 @@ START_TEST(vsencdec_encdec)
   char  ebuff [50];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- vsencdec_encdec");
+  mdebugSubTag ("vsencdec_encdec");
 
   for (int i = 0; i < TEST_SZ; ++i) {
     vsencdec (tests [i].d, ebuff, sizeof (ebuff));

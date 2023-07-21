@@ -18,6 +18,7 @@
 
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "datafile.h"
 #include "dnctypes.h"
 #include "log.h"
@@ -36,6 +37,7 @@ START_TEST(dnctypes_alloc)
   dnctype_t *dt = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dnctypes_alloc");
+  mdebugSubTag ("dnctypes_alloc");
 
   dt = dnctypesAlloc ();
   ck_assert_ptr_nonnull (dt);
@@ -51,6 +53,7 @@ START_TEST(dnctypes_iterate)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dnctypes_iterate");
+  mdebugSubTag ("dnctypes_iterate");
 
   dt = dnctypesAlloc ();
   dnctypesStartIterator (dt, &iteridx);
@@ -73,6 +76,7 @@ START_TEST(dnctypes_conv)
   int         count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dnctypes_conv");
+  mdebugSubTag ("dnctypes_conv");
 
   bdjvarsdfloadInit ();
 

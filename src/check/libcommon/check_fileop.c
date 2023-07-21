@@ -20,6 +20,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "fileop.h"
 #include "log.h"
 #include "osutils.h"
@@ -32,6 +33,7 @@ START_TEST(fileop_exists_a)
   char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_a");
+  mdebugSubTag ("fileop_exists_a");
 
   unlink (fn);
   fn = "tmp/abc.txt";
@@ -54,6 +56,7 @@ START_TEST(fileop_exists_symlink)
   char  *fnb = "tmp/sldef.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_symlink");
+  mdebugSubTag ("fileop_exists_symlink");
 
   unlink (fn);
   unlink (fnb);
@@ -96,6 +99,7 @@ START_TEST(fileop_size_a)
   char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_a");
+  mdebugSubTag ("fileop_size_a");
 
   unlink (fn);
   fn = "tmp/abc.txt";
@@ -119,6 +123,7 @@ START_TEST(fileop_modtime_a)
   char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_a");
+  mdebugSubTag ("fileop_modtime_a");
 
   ctm = time (NULL);
   unlink (fn);
@@ -141,6 +146,7 @@ START_TEST(fileop_setmodtime_a)
   char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_a");
+  mdebugSubTag ("fileop_setmodtime_a");
 
   ctm = time (NULL);
   unlink (fn);
@@ -166,6 +172,7 @@ START_TEST(fileop_delete_a)
   char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_delete_a");
+  mdebugSubTag ("fileop_delete_a");
 
   unlink (fn);
   fn = "tmp/abc.txt";
@@ -192,6 +199,7 @@ START_TEST(fileop_delete_symlink)
   char  *fnb = "tmp/sljkl.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_delete_symlink");
+  mdebugSubTag ("fileop_delete_symlink");
 
   unlink (fn);
   fh = fopen (fn, "w");
@@ -263,6 +271,7 @@ START_TEST(fileop_open_u)
   FILE    *fh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_open_u");
+  mdebugSubTag ("fileop_open_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -279,6 +288,7 @@ START_TEST(fileop_exists_u)
   int     rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_u");
+  mdebugSubTag ("fileop_exists_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -297,6 +307,7 @@ START_TEST(fileop_del_u)
   int     rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_del_u");
+  mdebugSubTag ("fileop_del_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -319,6 +330,7 @@ START_TEST(fileop_size_u)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_u");
+  mdebugSubTag ("fileop_size_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -343,6 +355,7 @@ START_TEST(fileop_modtime_u)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_u");
+  mdebugSubTag ("fileop_modtime_u");
 
   ctm = time (NULL);
   for (int i = 0; i < fnlistsz; ++i) {
@@ -368,6 +381,7 @@ START_TEST(fileop_setmodtime_u)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_u");
+  mdebugSubTag ("fileop_setmodtime_u");
 
   ctm = time (NULL);
   for (int i = 0; i < fnlistsz; ++i) {

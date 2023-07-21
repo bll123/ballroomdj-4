@@ -20,6 +20,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "fileop.h"
 #include "fileshared.h"
 #include "log.h"
@@ -37,6 +38,7 @@ START_TEST(fileshared_open_trunc)
   fileshared_t  *sfh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_trunc");
+  mdebugSubTag ("fileshared_open_trunc");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
   ck_assert_ptr_nonnull (sfh);
@@ -50,6 +52,7 @@ START_TEST(fileshared_open_append)
   fileshared_t  *sfh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_append");
+  mdebugSubTag ("fileshared_open_append");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_APPEND);
   ck_assert_ptr_nonnull (sfh);
@@ -67,6 +70,7 @@ START_TEST(fileshared_write)
   size_t        sz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write");
+  mdebugSubTag ("fileshared_write");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
@@ -84,6 +88,7 @@ START_TEST(fileshared_write_append)
   size_t        sz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_append");
+  mdebugSubTag ("fileshared_write_append");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
@@ -107,6 +112,7 @@ START_TEST(fileshared_write_multiple)
   size_t        sz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_multiple");
+  mdebugSubTag ("fileshared_write_multiple");
 
   sfha = fileSharedOpen (FN, FILE_OPEN_APPEND);
   fileSharedWrite (sfha, DATAA, strlen (DATAA));
@@ -135,6 +141,7 @@ START_TEST(fileshared_write_shared)
   char          tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_shared");
+  mdebugSubTag ("fileshared_write_shared");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_APPEND);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));

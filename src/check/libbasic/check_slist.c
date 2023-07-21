@@ -16,6 +16,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "slist.h"
 
@@ -24,6 +25,7 @@ START_TEST(simple_list_create_free)
   slist_t    *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_create_free");
+  mdebugSubTag ("simple_list_create_free");
 
   list = slistAlloc ("chk-a", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -39,6 +41,7 @@ START_TEST(simple_list_add_unordered)
   slist_t    *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_unordered");
+  mdebugSubTag ("simple_list_add_unordered");
 
 
   list = slistAlloc ("chk-b", LIST_UNORDERED, NULL);
@@ -70,6 +73,7 @@ START_TEST(simple_list_add_unordered_iterate)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_unordered_iterate");
+  mdebugSubTag ("simple_list_add_unordered_iterate");
 
 
   list = slistAlloc ("chk-c", LIST_UNORDERED, NULL);
@@ -111,6 +115,7 @@ START_TEST(simple_list_add_ordered_iterate)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_iterate");
+  mdebugSubTag ("simple_list_add_ordered_iterate");
 
 
   list = slistAlloc ("chk-d", LIST_ORDERED, NULL);
@@ -149,6 +154,7 @@ START_TEST(simple_list_add_ordered_beg)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_beg");
+  mdebugSubTag ("simple_list_add_ordered_beg");
 
 
   list = slistAlloc ("chk-e", LIST_ORDERED, NULL);
@@ -178,6 +184,7 @@ START_TEST(simple_list_add_ordered_end)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_end");
+  mdebugSubTag ("simple_list_add_ordered_end");
 
 
   list = slistAlloc ("chk-f", LIST_ORDERED, NULL);
@@ -207,6 +214,7 @@ START_TEST(simple_list_add_ordered_prealloc)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_prealloc");
+  mdebugSubTag ("simple_list_add_ordered_prealloc");
 
 
   list = slistAlloc ("chk-g", LIST_ORDERED, NULL);
@@ -249,6 +257,7 @@ START_TEST(simple_list_add_sort)
   slistidx_t  iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_sort");
+  mdebugSubTag ("simple_list_add_sort");
 
 
   list = slistAlloc ("chk-h", LIST_UNORDERED, NULL);
@@ -305,6 +314,7 @@ START_TEST(slist_get_data_str)
   char          *value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_str");
+  mdebugSubTag ("slist_get_data_str");
 
 
   list = slistAlloc ("chk-i", LIST_UNORDERED, NULL);
@@ -334,6 +344,7 @@ START_TEST(slist_get_data_str_null)
   const char     *value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_str_null");
+  mdebugSubTag ("slist_get_data_str_null");
 
   list = slistAlloc ("chk-j", LIST_ORDERED, NULL);
   slistSetStr (list, "ffff", "0L");
@@ -353,6 +364,7 @@ START_TEST(slist_get_data_str_not_exist)
   const char     *value;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_str_not_exist");
+  mdebugSubTag ("slist_get_data_str_not_exist");
 
   list = slistAlloc ("chk-k", LIST_ORDERED, NULL);
   slistSetStr (list, "ffff", "0L");
@@ -369,6 +381,7 @@ START_TEST(slist_get_data_num)
   int     val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_num");
+  mdebugSubTag ("slist_get_data_num");
 
 
   list = slistAlloc ("chk-l", LIST_UNORDERED, NULL);
@@ -415,6 +428,7 @@ START_TEST(slist_add_str_iterate)
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_str_iterate");
+  mdebugSubTag ("slist_add_str_iterate");
 
 
   list = slistAlloc ("chk-m", LIST_ORDERED, NULL);
@@ -468,6 +482,7 @@ START_TEST(slist_add_sort_str)
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_sort_str");
+  mdebugSubTag ("slist_add_sort_str");
 
 
   list = slistAlloc ("chk-n", LIST_UNORDERED, NULL);
@@ -517,6 +532,7 @@ START_TEST(slist_replace_str)
   slistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_replace_str");
+  mdebugSubTag ("slist_replace_str");
 
 
   list = slistAlloc ("chk-o", LIST_ORDERED, NULL);
@@ -616,6 +632,7 @@ START_TEST(slist_free_str)
   slist_t        *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_free_str");
+  mdebugSubTag ("slist_free_str");
 
   list = slistAlloc ("chk-p", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);

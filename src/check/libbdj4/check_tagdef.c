@@ -17,12 +17,14 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "log.h"
 #include "tagdef.h"
 
 START_TEST(tagdef_init)
 {
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tagdef_init");
+  mdebugSubTag ("tagdef_init");
 
   ck_assert_ptr_null (tagdefs [TAG_ALBUM].displayname);
   tagdefInit ();
@@ -39,6 +41,7 @@ START_TEST(tagdef_lookup)
   tagdefkey_t   val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tagdef_lookup");
+  mdebugSubTag ("tagdef_lookup");
 
   tagdefInit ();
   val = tagdefLookup ("ALBUM");

@@ -20,6 +20,7 @@
 
 #include "bdj4.h"
 #include "check_bdj.h"
+#include "mdebug.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "log.h"
@@ -56,6 +57,7 @@ START_TEST(filemanip_move)
   ssize_t   nsz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move");
+  mdebugSubTag ("filemanip_move");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -97,6 +99,7 @@ START_TEST(filemanip_copy)
   char      *nullfn = "tmp/not-exist.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy");
+  mdebugSubTag ("filemanip_copy");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -143,6 +146,7 @@ START_TEST(filemanip_backup)
   char      buff [10];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup");
+  mdebugSubTag ("filemanip_backup");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  ofn0a [MAXPATHLEN];
@@ -301,6 +305,7 @@ START_TEST(filemanip_renameall)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_renameall");
+  mdebugSubTag ("filemanip_renameall");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  ofn0 [MAXPATHLEN];
@@ -401,6 +406,7 @@ START_TEST(filemanip_deleteall)
   int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_deleteall");
+  mdebugSubTag ("filemanip_deleteall");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  ofn0 [MAXPATHLEN];
