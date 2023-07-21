@@ -572,6 +572,7 @@ playlistGetPlaylistList (int flag, const char *dir)
         continue;
       }
     }
+    /* the data duplicates the key for use in uidropdrown */
     slistSetStr (pnlist, tfn, tfn);
   }
 

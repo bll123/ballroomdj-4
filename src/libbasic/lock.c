@@ -118,7 +118,6 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   }
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
-  mdextopen (fd);
   count = 0;
   while (fd < 0 && count < 30) {
     /* check for detached lock file */
@@ -142,10 +141,10 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
     mssleep (20);
     ++count;
     fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
-    mdextopen (fd);
   }
 
   if (fd >= 0) {
+    mdextopen (fd);
     snprintf (pidstr, sizeof (pidstr), "%" PRId64, (int64_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
     (void) ! write (fd, pidstr, len);

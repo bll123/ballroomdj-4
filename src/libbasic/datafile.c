@@ -445,6 +445,7 @@ datafileReadDistVersion (const char *fname)
     }
   }
 
+  mdextfclose (fh);
   fclose (fh);
   return distvers;
 }

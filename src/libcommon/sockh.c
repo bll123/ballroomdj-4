@@ -101,6 +101,7 @@ static void
 sockhCloseServer (sockserver_t *sockserver)
 {
   if (sockserver != NULL) {
+    logMsg (LOG_DBG, LOG_SOCKET, "close listen sock %" PRId64, (int64_t) sockserver->listenSock);
     sockClose (sockserver->listenSock);
     sockFreeCheck (sockserver->si);
     mdfree (sockserver);
@@ -135,7 +136,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
       if (! socketInvalid (clsock)) {
         logMsg (LOG_DBG, LOG_SOCKET, "connected");
         sockserver->si = sockAddCheck (sockserver->si, clsock);
-        logMsg (LOG_DBG, LOG_SOCKET, "add client sock %" PRId64, (int64_t) clsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "add accept sock %" PRId64, (int64_t) clsock);
       }
     } else {
       char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
@@ -147,6 +148,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
          */
         logMsg (LOG_DBG, LOG_SOCKET, "remove sock %" PRId64, (int64_t) msgsock);
         sockRemoveCheck (sockserver->si, msgsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
         sockClose (msgsock);
         return done;
       }
@@ -166,6 +168,8 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
           sockRemoveCheck (sockserver->si, msgsock);
           /* the caller will close the socket */
           done = msgFunc (routefrom, route, msg, args, userData);
+          logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
+          sockClose (msgsock);
           break;
         }
         default: {

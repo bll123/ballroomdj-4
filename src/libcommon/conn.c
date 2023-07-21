@@ -5,8 +5,10 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -129,6 +131,7 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
     logMsg (LOG_DBG, LOG_SOCKET, "connect %d/%s to:%d/%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
         route, msgRouteDebugText (route));
+    logMsg (LOG_DBG, LOG_SOCKET, "conn sock %" PRId64, (int64_t) conn [route].sock);
     if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL) < 0) {
       logMsg (LOG_DBG, LOG_SOCKET, "connect-send-handshake-fail %d/%s to:%d/%s",
@@ -166,6 +169,7 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
         route, msgRouteDebugText (route));
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
+    logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) conn [route].sock);
     sockClose (conn [route].sock);
   }
 
@@ -248,6 +252,7 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
       route, msg, args);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "lost connection to %d", route);
+    logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) conn [route].sock);
     sockClose (conn [route].sock);
     conn [route].sock = INVALID_SOCKET;
     conn [route].connected = false;

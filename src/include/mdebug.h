@@ -51,6 +51,7 @@ void dataFree_r (void *data);
 void mddataFree_r (void *data, const char *fn, int lineno);
 void mdebugReport (void);
 void mdebugInit (const char *tag);
+void mdebugSubTag (const char *tag);
 void mdebugCleanup (void);
 long mdebugCount (void);
 long mdebugErrors (void);

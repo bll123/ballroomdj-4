@@ -434,6 +434,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
 
+  if (starter->started [ROUTE_PLAYERUI]) {
+    starterPlayerShutdown ();
+  }
+
   for (int route = 0; route < ROUTE_MAX; ++route) {
     if (starter->started [route] > 0) {
       procutilStopProcess (starter->processes [route],
@@ -484,10 +488,6 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   procutilStopAllProcess (starter->processes, starter->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (starter->processes);
-
-  if (starter->started [ROUTE_PLAYERUI]) {
-    starterPlayerShutdown ();
-  }
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 

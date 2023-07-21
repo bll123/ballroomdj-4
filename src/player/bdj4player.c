@@ -116,6 +116,7 @@ typedef struct {
   time_t          fadeTimeStart;
   mstime_t        fadeTimeNext;
   int             stopNextsongFlag;
+  int             stopwaitcount;
   bool            inFade : 1;
   bool            inFadeIn : 1;
   bool            inFadeOut : 1;
@@ -138,6 +139,7 @@ static int      playerProcessing (void *udata);
 static bool     playerConnectingCallback (void *tpdata, programstate_t programState);
 static bool     playerHandshakeCallback (void *tpdata, programstate_t programState);
 static bool     playerStoppingCallback (void *tpdata, programstate_t programState);
+static bool     playerStopWaitCallback (void *udata, programstate_t programState);
 static bool     playerClosingCallback (void *tpdata, programstate_t programState);
 static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
@@ -214,6 +216,7 @@ main (int argc, char *argv[])
   playerData.pauseAtEnd = false;
   playerData.repeat = false;
   playerData.stopNextsongFlag = STOP_NORMAL;
+  playerData.stopwaitcount = 0;
   playerData.stopPlaying = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
@@ -222,6 +225,8 @@ main (int argc, char *argv[])
       playerHandshakeCallback, &playerData);
   progstateSetCallback (playerData.progstate, STATE_STOPPING,
       playerStoppingCallback, &playerData);
+  progstateSetCallback (playerData.progstate, STATE_STOP_WAIT,
+      playerStopWaitCallback, &playerData);
   progstateSetCallback (playerData.progstate, STATE_CLOSING,
       playerClosingCallback, &playerData);
 
@@ -314,6 +319,16 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
   connDisconnectAll (playerData->conn);
   logProcEnd (LOG_PROC, "playerStoppingCallback", "");
   return STATE_FINISHED;
+}
+
+static bool
+playerStopWaitCallback (void *udata, programstate_t programState)
+{
+  playerdata_t  *playerData = udata;
+  bool          rc;
+
+  rc = connWaitClosed (playerData->conn, &playerData->stopwaitcount);
+  return rc;
 }
 
 static bool

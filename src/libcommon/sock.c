@@ -85,7 +85,6 @@ sockServer (uint16_t listenPort, int *err)
   typ |= SOCK_CLOEXEC;
 #endif
   lsock = socket (AF_INET, typ, 0);
-  mdextsock (lsock);
   if (socketInvalid (lsock)) {
     *err = errno;
     logError ("socket:");
@@ -95,6 +94,7 @@ sockServer (uint16_t listenPort, int *err)
     return INVALID_SOCKET;
   }
 
+  mdextsock (lsock);
   lsock = sockSetOptions (lsock, err);
   memset (&saddr, 0, sizeof (struct sockaddr_in));
   saddr.sin_family = AF_INET;
@@ -274,6 +274,7 @@ sockAccept (Sock_t lsock, int *err)
     return INVALID_SOCKET;
   }
 
+  mdextsock (nsock);
   if (sockSetNonblocking (nsock) < 0) {
     mdextclose (nsock);
     close (nsock);
@@ -305,7 +306,6 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     typ |= SOCK_CLOEXEC;
 #endif
     clsock = socket (AF_INET, typ, 0);
-    mdextsock (clsock);
 
     if (socketInvalid (clsock)) {
       *connerr = SOCK_CONN_FAIL;
@@ -316,6 +316,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       return INVALID_SOCKET;
     }
 
+    mdextsock (clsock);
     if (sockSetNonblocking (clsock) < 0) {
       *connerr = SOCK_CONN_FAIL;
       mdextclose (clsock);
