@@ -148,6 +148,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].outtype = CONFUI_OUT_NONE;
     confui.gui.uiitem [i].bdjoptIdx = -1;
     confui.gui.uiitem [i].listidx = 0;
+    confui.gui.uiitem [i].debuglvl = 0;
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;

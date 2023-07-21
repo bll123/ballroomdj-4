@@ -203,12 +203,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_OUT_DEBUG: {
         if (nval) {
-          long  idx;
-          long  bitval;
-
-          idx = i - CONFUI_WIDGET_DEBUG_1;
-          bitval = 1 << idx;
-          debug |= bitval;
+          debug |= gui->uiitem [i].debuglvl;
         }
         break;
       }

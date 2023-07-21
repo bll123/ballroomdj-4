@@ -143,7 +143,8 @@ enum {
   CONFUI_WIDGET_DEBUG_1048576,
   CONFUI_WIDGET_DEBUG_2097152,
   CONFUI_WIDGET_DEBUG_4194304,
-  CONFUI_WIDGET_DEBUG_8388608,
+  CONFUI_WIDGET_DEBUG_MAX,
+  CONFUI_WIDGET_DEBUG_LABEL,
   CONFUI_WIDGET_DEFAULT_VOL,
   CONFUI_WIDGET_FILTER_DANCELEVEL,
   CONFUI_WIDGET_FILTER_FAVORITE,
@@ -196,6 +197,7 @@ enum {
 typedef struct {
   confuibasetype_t  basetype;
   confuiouttype_t   outtype;
+  long              debuglvl;
   int               bdjoptIdx;
   union {
     uidropdown_t  *dropdown;
