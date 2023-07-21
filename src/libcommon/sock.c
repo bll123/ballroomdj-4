@@ -52,6 +52,20 @@
 #include "sock.h"
 #include "tmutil.h"
 
+typedef struct {
+  Sock_t          sock;
+  bool            havedata;
+} socklist_t;
+
+typedef struct sockinfo {
+  int             count;
+  int             active;
+  Sock_t          max;
+  fd_set          readfdsbase;
+  fd_set          readfds;
+  socklist_t      *socklist;
+} sockinfo_t;
+
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
@@ -159,6 +173,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   if (sockinfo == NULL) {
     sockinfo = mdmalloc (sizeof (sockinfo_t));
     sockinfo->count = 0;
+    sockinfo->active = 0;
     sockinfo->max = 0;
     sockinfo->socklist = NULL;
   }
@@ -171,11 +186,10 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   idx = sockinfo->count;
   ++sockinfo->count;
   sockinfo->socklist = mdrealloc (sockinfo->socklist,
-      (size_t) sockinfo->count * sizeof (Sock_t));
-  sockinfo->socklist[idx] = sock;
-  if (sock > sockinfo->max) {
-    sockinfo->max = sock;
-  }
+      (size_t) sockinfo->count * sizeof (socklist_t));
+  sockinfo->socklist [idx].sock = sock;
+  sockinfo->socklist [idx].havedata = false;
+  ++sockinfo->active;
 
   sockUpdateReadCheck (sockinfo);
 
@@ -194,9 +208,11 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     return;
   }
 
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    if (sockinfo->socklist [i] == sock) {
-      sockinfo->socklist [i] = INVALID_SOCKET;
+  for (int i = 0; i < sockinfo->count; ++i) {
+    if (sockinfo->socklist [i].sock == sock) {
+      --sockinfo->active;
+      sockinfo->socklist [i].sock = INVALID_SOCKET;
+      sockinfo->socklist [i].havedata = false;
       break;
     }
   }
@@ -219,9 +235,17 @@ sockCheck (sockinfo_t *sockinfo)
 {
   int               rc;
   struct timeval    tv;
+  int               ridx = -1;
 
   if (sockinfo == NULL) {
     return INVALID_SOCKET;
+  }
+
+  for (int i = 0; i < sockinfo->count; ++i) {
+    if (sockinfo->socklist [i].havedata) {
+      sockinfo->socklist [i].havedata = false;
+      return sockinfo->socklist [i].sock;
+    }
   }
 
   memcpy (&(sockinfo->readfds), &sockinfo->readfdsbase, sizeof (fd_set));
@@ -242,16 +266,26 @@ sockCheck (sockinfo_t *sockinfo)
     return INVALID_SOCKET;
   }
   if (rc > 0) {
-    for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-      Sock_t tsock = sockinfo->socklist [i];
+    for (int i = 0; i < sockinfo->count; ++i) {
+      Sock_t  tsock;
+
+      sockinfo->socklist [i].havedata = false;
+      tsock = sockinfo->socklist [i].sock;
       if (socketInvalid (tsock)) {
         continue;
       }
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
-        return tsock;
+        sockinfo->socklist [i].havedata = true;
+        ridx = i;
       }
     }
   }
+
+  if (ridx >= 0) {
+    sockinfo->socklist [ridx].havedata = false;
+    return sockinfo->socklist [ridx].sock;
+  }
+
   return 0;
 }
 
@@ -261,7 +295,6 @@ sockAccept (Sock_t lsock, int *err)
   struct sockaddr_in  saddr;
   Socklen_t           alen;
   Sock_t              nsock;
-
 
   alen = sizeof (struct sockaddr_in);
   nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
@@ -511,6 +544,19 @@ sockWritable (Sock_t sock)
     return false;
   }
   return true;
+}
+
+bool
+sockWaitClosed (sockinfo_t *sockinfo)
+{
+  bool    rc;
+
+  rc = false;
+  /* do not count the listener socket as open */
+  if (sockinfo == NULL || sockinfo->active <= 1) {
+    rc = true;
+  }
+  return rc;
 }
 
 /* internal routines */
@@ -799,15 +845,29 @@ sockSetOptions (Sock_t sock, int *err)
 {
   int                 opt = 1;
   int                 rc;
+  struct linger       l;
 
   if (socketInvalid (sock)) {
     return INVALID_SOCKET;
   }
 
-  rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
+  rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError ("setsockopt-addr:");
+#if _lib_WSAGetLastError
+    logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
+#endif
+    mdextclose (sock);
+    close (sock);
+    return INVALID_SOCKET;
+  }
+  l.l_onoff = true;
+  l.l_linger = 1;
+  rc = setsockopt (sock, SOL_SOCKET, SO_LINGER, &l, sizeof (l));
+  if (rc != 0) {
+    *err = errno;
+    logError ("setsockopt-linger:");
 #if _lib_WSAGetLastError
     logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
 #endif
@@ -832,12 +892,16 @@ static void
 sockUpdateReadCheck (sockinfo_t *sockinfo)
 {
   FD_ZERO (&(sockinfo->readfdsbase));
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist [i];
+  sockinfo->max = 0;
+  for (int i = 0; i < sockinfo->count; ++i) {
+    Sock_t tsock = sockinfo->socklist [i].sock;
     if (socketInvalid (tsock)) {
       continue;
     }
     FD_SET (tsock, &(sockinfo->readfdsbase));
+    if (tsock > sockinfo->max) {
+      sockinfo->max = tsock;
+    }
   }
 }
 

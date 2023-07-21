@@ -48,13 +48,7 @@
  #define BDJ_TYPEDEF_USECONDS 1
 #endif
 
-typedef struct {
-  int             count;
-  Sock_t          max;
-  fd_set          readfdsbase;
-  fd_set          readfds;
-  Sock_t          *socklist;
-} sockinfo_t;
+typedef struct sockinfo sockinfo_t;
 
 enum {
   SOCK_CONN_OK,
@@ -84,5 +78,6 @@ int           sockWriteStr (Sock_t, char *s, size_t slen);
 int           sockWriteBinary (Sock_t, char *data, size_t dlen);
 bool          socketInvalid (Sock_t sock);
 bool          sockWritable (Sock_t sock);
+bool          sockWaitClosed (sockinfo_t *sockinfo);
 
 #endif /* INC_SOCK_H */

@@ -18,6 +18,12 @@
 #include "sockh.h"
 #include "tmutil.h"
 
+enum {
+  MAIN_NO_DATA,
+  MAIN_HAD_DATA,
+  MAIN_FINISH,
+};
+
 static void  sockhCloseServer (sockserver_t *sockserver);
 static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
 
@@ -26,25 +32,31 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
     sockhProcessFunc_t processFunc, void *userData)
 {
   int           done = 0;
-  int           tdone = 0;
   sockserver_t  *sockserver;
-  Sock_t        msgsock = INVALID_SOCKET;
 
   sockserver = sockhStartServer (listenPort);
 
-  while (! done) {
+  while (done != MAIN_FINISH) {
+    int     rc;
+    int     tdone = 0;
+
     tdone = sockhProcessMain (sockserver, msgFunc, userData);
-    if (tdone) {
-      ++done;
+    if (tdone == MAIN_FINISH) {
+      rc = sockWaitClosed (sockserver->si);
+      if (rc) {
+        done = MAIN_FINISH;
+      }
     }
     tdone = processFunc (userData);
     if (tdone) {
-      ++done;
+      rc = sockWaitClosed (sockserver->si);
+      if (rc) {
+        done = MAIN_FINISH;
+      }
     }
 
-    msgsock = sockCheck (sockserver->si);
-    /* if there is more data, don't sleep */
-    if (msgsock == 0 || socketInvalid (msgsock)) {
+    /* if there was data, don't sleep */
+    if (done == MAIN_NO_DATA) {
       mssleep (SOCKH_MAINLOOP_TIMEOUT);
     }
   } /* wait for a message */
@@ -120,65 +132,71 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
   bdjmsgmsg_t msg = MSG_NULL;
   char        args [BDJMSG_MAX];
   Sock_t      clsock;
-  int         done = 0;
+  int         rc = MAIN_NO_DATA;
+  int         trc;
   int         err = 0;
 
 
   msgsock = sockCheck (sockserver->si);
-  if (socketInvalid (msgsock)) {
-    return done;
+  if (socketInvalid (msgsock) || msgsock == 0) {
+    return rc;
   }
+  rc = MAIN_HAD_DATA;
 
-  if (msgsock != 0) {
-    if (msgsock == sockserver->listenSock) {
-      logMsg (LOG_DBG, LOG_SOCKET, "got connection request");
-      clsock = sockAccept (sockserver->listenSock, &err);
-      if (! socketInvalid (clsock)) {
-        logMsg (LOG_DBG, LOG_SOCKET, "connected");
-        sockserver->si = sockAddCheck (sockserver->si, clsock);
-        logMsg (LOG_DBG, LOG_SOCKET, "add accept sock %" PRId64, (int64_t) clsock);
+  if (msgsock == sockserver->listenSock) {
+    logMsg (LOG_DBG, LOG_SOCKET, "got connection request");
+    clsock = sockAccept (sockserver->listenSock, &err);
+    if (! socketInvalid (clsock)) {
+      logMsg (LOG_DBG, LOG_SOCKET, "connected");
+      sockserver->si = sockAddCheck (sockserver->si, clsock);
+      logMsg (LOG_DBG, LOG_SOCKET, "add accept sock %" PRId64, (int64_t) clsock);
+    }
+  } else {
+    char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
+
+    if (rval == NULL) {
+      /* either an indicator that the code is mucked up,
+       * the message buffer is too short,
+       * or that the socket has been closed.
+       */
+      logMsg (LOG_DBG, LOG_SOCKET, "remove sock %" PRId64, (int64_t) msgsock);
+      sockRemoveCheck (sockserver->si, msgsock);
+      logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
+      sockClose (msgsock);
+      return rc;
+    }
+    logMsg (LOG_DBG, LOG_SOCKET, "rcvd message: %s", rval);
+
+    msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
+    logMsg (LOG_DBG, LOG_SOCKET,
+        "sockh: from: %d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+    switch (msg) {
+      case MSG_NULL: {
+        break;
       }
-    } else {
-      char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
-
-      if (rval == NULL) {
-        /* either an indicator that the code is mucked up,
-         * the message buffer is too short,
-         * or that the socket has been closed.
-         */
-        logMsg (LOG_DBG, LOG_SOCKET, "remove sock %" PRId64, (int64_t) msgsock);
+      case MSG_SOCKET_CLOSE: {
+        logMsg (LOG_DBG, LOG_SOCKET, "rcvd close socket");
         sockRemoveCheck (sockserver->si, msgsock);
+        /* the caller will close the socket */
+        trc = msgFunc (routefrom, route, msg, args, userData);
+        if (trc) {
+          rc = MAIN_FINISH;
+        }
         logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
         sockClose (msgsock);
-        return done;
+        break;
       }
-      logMsg (LOG_DBG, LOG_SOCKET, "rcvd message: %s", rval);
+      default: {
+        trc = msgFunc (routefrom, route, msg, args, userData);
+        if (trc) {
+          rc = MAIN_FINISH;
+        }
+      }
+    } /* switch */
+  } /* msg from client */
 
-      msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
-      logMsg (LOG_DBG, LOG_SOCKET,
-          "sockh: from: %d/%s route:%d/%s msg:%d/%s args:%s",
-          routefrom, msgRouteDebugText (routefrom),
-          route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-      switch (msg) {
-        case MSG_NULL: {
-          break;
-        }
-        case MSG_SOCKET_CLOSE: {
-          logMsg (LOG_DBG, LOG_SOCKET, "rcvd close socket");
-          sockRemoveCheck (sockserver->si, msgsock);
-          /* the caller will close the socket */
-          done = msgFunc (routefrom, route, msg, args, userData);
-          logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
-          sockClose (msgsock);
-          break;
-        }
-        default: {
-          done = msgFunc (routefrom, route, msg, args, userData);
-        }
-      } /* switch */
-    } /* msg from client */
-  } /* have message */
-
-  return done;
+  return rc;
 }
 

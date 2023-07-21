@@ -84,13 +84,13 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_4096, -1, (val & 4096));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
       CONFUI_WIDGET_DEBUG_32768, -1, (val & 32768));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
-      CONFUI_WIDGET_DEBUG_524288, -1, (val & 524288));
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
+      CONFUI_WIDGET_DEBUG_524288, -1, (val & 524288));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Random Access File",
       CONFUI_WIDGET_DEBUG_2048, -1, (val & 2048));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Socket",

@@ -94,8 +94,6 @@ START_TEST(sock_server_create_check)
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
-  ck_assert_int_eq (si->count, 1);
-  ck_assert_int_eq (si->socklist[0], s);
   sockRemoveCheck (si, s);    /* closes the socket */
   sockFreeCheck (si);
   sockClose (s);
@@ -581,6 +579,7 @@ START_TEST(sock_write_check_read)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 0);
 
   rc = sockCheck (si);
   count = 0;
@@ -618,8 +617,9 @@ START_TEST(sock_write_check_read)
   }
   mssleep (200);
   sockClose (r);
-  sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 1);
+  sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
   ck_assert_int_eq (gthreadrc, 0);
@@ -667,6 +667,7 @@ START_TEST(sock_close)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 0);
 
   mssleep (20); /* a delay to allow client to close */
 
@@ -687,8 +688,9 @@ START_TEST(sock_close)
   }
   mssleep (200);
   sockClose (r);
-  sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 1);
+  sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
   ck_assert_int_eq (gthreadrc, 0);
@@ -738,6 +740,7 @@ START_TEST(sock_write_close)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 0);
 
   mssleep (20); /* a delay to allow client to close */
 
@@ -772,8 +775,9 @@ START_TEST(sock_write_close)
   }
   mssleep (200);
   sockClose (r);
-  sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
+  ck_assert_int_eq (sockWaitClosed (si), 1);
+  sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
   ck_assert_int_eq (gthreadrc, 0);
