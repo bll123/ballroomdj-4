@@ -60,6 +60,7 @@ typedef struct {
 typedef struct sockinfo {
   int             count;
   int             active;
+  int             havecount;
   Sock_t          max;
   fd_set          readfdsbase;
   fd_set          readfds;
@@ -174,6 +175,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo = mdmalloc (sizeof (sockinfo_t));
     sockinfo->count = 0;
     sockinfo->active = 0;
+    sockinfo->havecount = 0;
     sockinfo->max = 0;
     sockinfo->socklist = NULL;
   }
@@ -241,7 +243,10 @@ sockCheck (sockinfo_t *sockinfo)
     return INVALID_SOCKET;
   }
 
-  for (int i = 0; i < sockinfo->count; ++i) {
+  /* this was just to prevent any particular socket from being starved */
+  /* from being processed */
+  /* bdj4 is not high volume, this is not really needed */
+  for (int i = 0; sockinfo->havecount && i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i].havedata) {
       sockinfo->socklist [i].havedata = false;
       return sockinfo->socklist [i].sock;
@@ -266,6 +271,7 @@ sockCheck (sockinfo_t *sockinfo)
     return INVALID_SOCKET;
   }
   if (rc > 0) {
+    sockinfo->havecount = 0;
     for (int i = 0; i < sockinfo->count; ++i) {
       Sock_t  tsock;
 
@@ -276,7 +282,9 @@ sockCheck (sockinfo_t *sockinfo)
       }
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
         sockinfo->socklist [i].havedata = true;
-        ridx = i;
+        ++sockinfo->havecount;
+        /* want to process any listener socket items first */
+        if (ridx == -1) { ridx = i; }
       }
     }
   }
