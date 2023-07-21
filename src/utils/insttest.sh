@@ -757,9 +757,7 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-# leave this off for now.
-# will need to revisit the alternate directory installation later
-if [[ T == F ]]; then
+if [[ T == T ]]; then
   # install w/o data files
   cleanInstTest
   resetUnpack

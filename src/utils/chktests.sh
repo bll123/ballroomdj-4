@@ -9,7 +9,7 @@ done
 cwd=$(pwd)
 
 cd check
-for f in *.c; do
+for f in *.c */*.c; do
   ca=$(egrep START_TEST $f| wc -l)
   cb=$(egrep END_TEST $f | wc -l)
   if [[ $ca -ne $cb ]]; then

@@ -46,7 +46,8 @@ check_libbdj4 (SRunner *sr)
    *  dancesel              complete
    *  sequence              complete 2023-7-18
    *  songsel
-   *  playlist
+   *  playlist              complete 2023-7-21
+   *      add-count, add-played, set-filter are not tested at this time.
    *  validate              complete
    *  audiotag
    *  sortopt               complete
@@ -183,7 +184,8 @@ check_libbdj4 (SRunner *sr)
 
   /* mp3exp */
 
-  /* musicq */
+  s = musicq_suite();
+  srunner_add_suite (sr, s);
 
   /* expimpbdj4 */
 }

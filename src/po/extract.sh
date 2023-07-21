@@ -158,6 +158,7 @@ mv -f $TMP.n $TMP
 )
 
 echo "-- $(date +%T) extracting"
+# */*/*.c is not needed, as those are the check modules.
 xgettext -s -d bdj4 \
     --from-code=UTF-8 \
     --language=C \

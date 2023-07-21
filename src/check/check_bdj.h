@@ -68,6 +68,7 @@ Suite *     genre_suite (void);
 Suite *     level_suite (void);
 Suite *     msgparse_suite (void);
 Suite *     musicdb_suite (void);
+Suite *     musicq_suite (void);
 Suite *     orgopt_suite (void);
 Suite *     orgutil_suite (void);
 Suite *     rating_suite (void);
