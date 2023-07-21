@@ -196,18 +196,56 @@ START_TEST(musicq_move)
   musicq_t  *musicq;
   int       mqidx = MUSICQ_PB_A;
   dbidx_t   dbidx;
-  dbidx_t   tdbidx [] = { 2, 1, 0, 3, 6, 5, 4, };
+  dbidx_t   tdbidx [] = { 1, 0, 2, 3, 6, 5, 4, };
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_move");
   musicq = musicqAlloc (db);
   for (int i = 0; i < 7; ++i) {
     musicqPush (musicq, mqidx, i, 6, 10000);
   }
-  musicqMove (musicq, mqidx, 0, 2);
+  /* move is usually used for next/previous */
+  musicqMove (musicq, mqidx, 0, 1);
   musicqMove (musicq, mqidx, 4, 5);
   musicqMove (musicq, mqidx, 5, 6);
   musicqMove (musicq, mqidx, 5, 4);
   ck_assert_int_eq (musicqGetLen (musicq, mqidx), 7);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    dbidx = musicqGetByIdx (musicq, mqidx, i);
+    ck_assert_int_eq (dbidx, tdbidx [i]);
+  }
+  /* bad index */
+  musicqMove (musicq, mqidx, 5, 8);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    dbidx = musicqGetByIdx (musicq, mqidx, i);
+    ck_assert_int_eq (dbidx, tdbidx [i]);
+  }
+  musicqFree (musicq);
+}
+END_TEST
+
+START_TEST(musicq_swap)
+{
+  musicq_t  *musicq;
+  int       mqidx = MUSICQ_PB_A;
+  dbidx_t   dbidx;
+  dbidx_t   tdbidx [] = { 0, 6, 2, 1, 5, 3, 4, };
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_swap");
+  musicq = musicqAlloc (db);
+  for (int i = 0; i < 7; ++i) {
+    musicqPush (musicq, mqidx, i, 6, 10000);
+  }
+  musicqSwap (musicq, mqidx, 1, 3);
+  musicqSwap (musicq, mqidx, 4, 6);
+  musicqSwap (musicq, mqidx, 1, 4);
+  musicqSwap (musicq, mqidx, 5, 4);
+  ck_assert_int_eq (musicqGetLen (musicq, mqidx), 7);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    dbidx = musicqGetByIdx (musicq, mqidx, i);
+    ck_assert_int_eq (dbidx, tdbidx [i]);
+  }
+  /* bad index */
+  musicqSwap (musicq, mqidx, 5, 12);
   for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
     dbidx = musicqGetByIdx (musicq, mqidx, i);
     ck_assert_int_eq (dbidx, tdbidx [i]);
@@ -237,6 +275,25 @@ START_TEST(musicq_remove)
     dbidx = musicqGetByIdx (musicq, mqidx, i);
     ck_assert_int_eq (dbidx, tdbidx [i]);
   }
+  musicqFree (musicq);
+}
+END_TEST
+
+START_TEST(musicq_clear)
+{
+  musicq_t  *musicq;
+  int       mqidx = MUSICQ_PB_A;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_clear");
+  musicq = musicqAlloc (db);
+  for (int i = 0; i < 7; ++i) {
+    musicqPush (musicq, mqidx, i, 6, 10000);
+  }
+  ck_assert_int_eq (musicqGetLen (musicq, mqidx), 7);
+  musicqClear (musicq, mqidx, 4);
+  ck_assert_int_eq (musicqGetLen (musicq, mqidx), 4);
+  musicqClear (musicq, mqidx, 1);
+  ck_assert_int_eq (musicqGetLen (musicq, mqidx), 1);
   musicqFree (musicq);
 }
 END_TEST
@@ -312,6 +369,24 @@ START_TEST(musicq_get_disp_idx)
   for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
     ck_assert_int_eq (musicqGetDispIdx (musicq, mqidx, i), i + 2);
   }
+  musicqMove (musicq, mqidx, 0, 1);
+  musicqMove (musicq, mqidx, 4, 5);
+  musicqMove (musicq, mqidx, 6, 7);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    ck_assert_int_eq (musicqGetDispIdx (musicq, mqidx, i), i + 2);
+  }
+  musicqSwap (musicq, mqidx, 1, 3);
+  musicqSwap (musicq, mqidx, 4, 6);
+  musicqSwap (musicq, mqidx, 1, 4);
+  musicqSwap (musicq, mqidx, 5, 4);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    ck_assert_int_eq (musicqGetDispIdx (musicq, mqidx, i), i + 2);
+  }
+  musicqRemove (musicq, mqidx, 8);
+  musicqRemove (musicq, mqidx, 7);
+  for (int i = 0; i < musicqGetLen (musicq, mqidx); ++i) {
+    ck_assert_int_eq (musicqGetDispIdx (musicq, mqidx, i), i + 2);
+  }
   musicqFree (musicq);
 }
 END_TEST
@@ -356,6 +431,102 @@ START_TEST(musicq_get_unique_idx)
 }
 END_TEST
 
+START_TEST(musicq_flags)
+{
+  musicq_t  *musicq;
+  int       mqidx = MUSICQ_PB_A;
+  int       val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_flags");
+  musicq = musicqAlloc (db);
+  for (int i = 0; i < 10; ++i) {
+    musicqPush (musicq, mqidx, i, i, 10000);
+  }
+  musicqSetFlag (musicq, mqidx, 1, MUSICQ_FLAG_PAUSE);
+  musicqSetFlag (musicq, mqidx, 2, MUSICQ_FLAG_REQUEST);
+
+  val = musicqGetFlags (musicq, mqidx, 2);
+  ck_assert_int_eq (val, MUSICQ_FLAG_REQUEST);
+
+  val = musicqGetFlags (musicq, mqidx, 1);
+  ck_assert_int_eq (val, MUSICQ_FLAG_PAUSE);
+
+  musicqSetFlag (musicq, mqidx, 1, MUSICQ_FLAG_REQUEST);
+  val = musicqGetFlags (musicq, mqidx, 1);
+  ck_assert_int_eq (val, MUSICQ_FLAG_PAUSE | MUSICQ_FLAG_REQUEST);
+
+  musicqClearFlag (musicq, mqidx, 1, MUSICQ_FLAG_PAUSE);
+  val = musicqGetFlags (musicq, mqidx, 1);
+  ck_assert_int_eq (val, MUSICQ_FLAG_REQUEST);
+
+  musicqFree (musicq);
+}
+END_TEST
+
+START_TEST(musicq_announce)
+{
+  musicq_t  *musicq;
+  int       mqidx = MUSICQ_PB_A;
+  const char  *sval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_announce");
+  musicq = musicqAlloc (db);
+  for (int i = 0; i < 10; ++i) {
+    musicqPush (musicq, mqidx, i, i, 10000);
+  }
+
+  musicqSetAnnounce (musicq, mqidx, 1, "abc123");
+  musicqSetAnnounce (musicq, mqidx, 2, "def123");
+  sval = musicqGetAnnounce (musicq, mqidx, 2);
+  ck_assert_str_eq (sval, "def123");
+  sval = musicqGetAnnounce (musicq, mqidx, 1);
+  ck_assert_str_eq (sval, "abc123");
+
+  musicqFree (musicq);
+}
+END_TEST
+
+
+START_TEST(musicq_duration)
+{
+  musicq_t  *musicq;
+  int       mqidx = MUSICQ_PB_A;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicq_duration");
+  musicq = musicqAlloc (db);
+  for (int i = 0; i < 5; ++i) {
+    musicqPush (musicq, mqidx, i, 5, 10000);
+  }
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      musicqGetLen (musicq, mqidx) * 10000);
+  musicqPushHeadEmpty (musicq, mqidx);
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      (musicqGetLen (musicq, mqidx) - 1) * 10000);
+  musicqPop (musicq, mqidx);
+  musicqPop (musicq, mqidx);
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      musicqGetLen (musicq, mqidx) * 10000);
+  for (int i = 0; i < 5; ++i) {
+    musicqPush (musicq, mqidx, i, 5, 10000);
+  }
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      musicqGetLen (musicq, mqidx) * 10000);
+  musicqInsert (musicq, mqidx, 2, 6, 10000);
+  musicqInsert (musicq, mqidx, 1, 7, 10000);
+  musicqInsert (musicq, mqidx, 7, 8, 10000);
+  musicqInsert (musicq, mqidx, 5, 9, 10000);
+  musicqInsert (musicq, mqidx, 2, 10, 10000);
+  musicqInsert (musicq, mqidx, 999, 11, 10000);
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      musicqGetLen (musicq, mqidx) * 10000);
+  musicqRemove (musicq, mqidx, 8);
+  musicqRemove (musicq, mqidx, 7);
+  ck_assert_int_eq (musicqGetDuration (musicq, mqidx),
+      musicqGetLen (musicq, mqidx) * 10000);
+  musicqFree (musicq);
+}
+END_TEST
+
 Suite *
 musicq_suite (void)
 {
@@ -374,10 +545,18 @@ musicq_suite (void)
   tcase_add_test (tc, musicq_get_by_idx);
   tcase_add_test (tc, musicq_insert);
   tcase_add_test (tc, musicq_move);
+  tcase_add_test (tc, musicq_swap);
   tcase_add_test (tc, musicq_remove);
+  tcase_add_test (tc, musicq_clear);
   tcase_add_test (tc, musicq_get_pl_idx);
   tcase_add_test (tc, musicq_get_disp_idx);
   tcase_add_test (tc, musicq_get_unique_idx);
+  tcase_add_test (tc, musicq_flags);
+  tcase_add_test (tc, musicq_announce);
+  tcase_add_test (tc, musicq_duration);
+/* get dance */
+/* get data */
+/* next queue */
   suite_add_tcase (s, tc);
   return s;
 }
