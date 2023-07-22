@@ -853,7 +853,7 @@ sock_suite (void)
   tcase_add_test (tc, sock_server_check);
   suite_add_tcase (s, tc);
   tc = tcase_create ("sock-conn");
-  tcase_set_tags (tc, "libcommon slow");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, sock_connect_accept);
   tcase_add_test (tc, sock_check_connect_accept);
   suite_add_tcase (s, tc);

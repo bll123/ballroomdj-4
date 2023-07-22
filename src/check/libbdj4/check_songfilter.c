@@ -891,7 +891,7 @@ songfilter_suite (void)
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("songfilter-search");
-  tcase_set_tags (tc, "libbdj4 slow");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songfilter_search);
   /* for some reason the mac is really slow */

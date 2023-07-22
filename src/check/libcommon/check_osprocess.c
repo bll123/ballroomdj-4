@@ -377,7 +377,7 @@ osprocess_suite (void)
   s = suite_create ("osprocess");
   tc = tcase_create ("osprocess");
   tcase_set_timeout (tc, 8.0);
-  tcase_set_tags (tc, "libcommon slow");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, osprocess_start);
   tcase_add_test (tc, osprocess_start_detach);
   tcase_add_test (tc, osprocess_start_wait);

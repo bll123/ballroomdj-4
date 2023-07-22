@@ -144,10 +144,6 @@ check:
 	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --check_all)
 
-.PHONY: checkfast
-checkfast:
-	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all)
-
 .PHONY: checktag
 checktag:
 	(cd ..;CK_INCLUDE_TAGS=$(tag) ./bin/bdj4 --check_all)

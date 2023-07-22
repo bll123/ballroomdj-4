@@ -405,7 +405,7 @@ tmutil_suite (void)
   tcase_add_test (tc, mstime_chk);
   suite_add_tcase (s, tc);
   tc = tcase_create ("tmutil-timers");
-  tcase_set_tags (tc, "libcommon slow");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, mssleep_sec);
   tcase_add_test (tc, mssleep_ms);
   tcase_add_test (tc, mssleep_ms_b);

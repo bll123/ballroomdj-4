@@ -205,7 +205,7 @@ lock_suite (void)
   tcase_add_test (tc, lock_acquire_release);
   suite_add_tcase (s, tc);
   tc = tcase_create ("lock-already");
-  tcase_set_tags (tc, "libbasic slow");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, lock_already);
   suite_add_tcase (s, tc);
   tc = tcase_create ("lock-more");
