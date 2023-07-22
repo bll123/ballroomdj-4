@@ -413,7 +413,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
     const char  *targv [5];
     int         targc = 0;

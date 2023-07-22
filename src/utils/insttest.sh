@@ -16,6 +16,7 @@ fail=0
 grc=0
 verbose=F
 keep=F
+keepfirst=F
 
 while test $# -gt 0; do
   case $1 in
@@ -24,6 +25,9 @@ while test $# -gt 0; do
       ;;
     --keep)
       keep=T
+      ;;
+    --keepfirst)
+      keepfirst=T
       ;;
   esac
   shift
@@ -706,6 +710,10 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
 rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
+
+if [[ $keepfirst == T ]]; then
+  exit 1
+fi
 
 if [[ $crc -eq 0 ]]; then
   # standard re-install

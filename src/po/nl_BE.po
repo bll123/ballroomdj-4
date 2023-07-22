@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-13\n"
+"PO-Revision-Date: 2023-07-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -685,10 +685,7 @@ msgstr "Mobiele Marquee inschakelen"
 msgid "Enable Remote Control"
 msgstr "Afstandsbediening inschakelen"
 
-#. CONTEXT: set up alternate: ask for alternate folder
-msgid "Enter the alternate folder."
-msgstr "Voer plaatsvervangende map in."
-
+#. CONTEXT: set up alternate: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
@@ -917,6 +914,7 @@ msgstr "Importeren van %s"
 msgid "Initial Setup."
 msgstr "Oorspronkelijke instelling."
 
+#. CONTEXT: set up alternate: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr "Installeren"
@@ -1123,6 +1121,7 @@ msgstr "Naam"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
+#. CONTEXT: status: default status (new) when status is not set
 msgid "New"
 msgstr "Nieuw"
 
@@ -1224,11 +1223,6 @@ msgstr "Speelt Niet"
 #, c-format
 msgid "Not a valid %s folder."
 msgstr "Geen geldige %s map."
-
-#. CONTEXT: installer: the location entered is not a valid music folder.
-#, c-format
-msgid "Not a valid music folder."
-msgstr "Is geen geldige muziekmap."
 
 #. CONTEXT: installer: display of package status
 #, c-format
@@ -1579,6 +1573,7 @@ msgstr "Installatielocatie opslaan."
 msgid "Scale"
 msgstr "Schaal"
 
+#. CONTEXT: altsetup: status message
 #. CONTEXT: installer: status message
 msgid "Scanning music folder."
 msgstr "Scannen van de muziekmap."
@@ -1638,6 +1633,7 @@ msgid "Select Folder"
 msgstr "Selecteer map"
 
 #. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: altsetup: music folder selection dialog: window title
 #. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
@@ -1779,7 +1775,6 @@ msgstr "Tempo"
 msgid "Speed Adjustment"
 msgstr "Tempo aanpassing"
 
-#. CONTEXT: set up alternate: start the set-up process
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
 msgstr "Start"

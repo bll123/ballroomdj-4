@@ -7,6 +7,7 @@
 **4.3.3.2 2023-8---**
 
 * Bug Fixes:
+    * Installer: Fix a spurious status message.
     * Internal: Make sure message processing is finalized on exit.
     * Music Queue: Fix music queue display counter.
     * Player: Windows: Fix clock display to use the windows configuration.

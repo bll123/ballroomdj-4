@@ -9,6 +9,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ati.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "datafile.h"
@@ -23,6 +25,11 @@
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
+
+instati_t instati [INST_ATI_MAX] = {
+  [INST_ATI_BDJ4] = { "libatibdj4", false },
+  [INST_ATI_MUTAGEN] = { "libatimutagen", true },
+};
 
 static void instutilCopyHttpSVGFile (const char *fn);
 
@@ -328,6 +335,80 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   }
 
   pathNormalizePath (homemusicdir, sz);
+}
+
+/* scan the music directory and determine which */
+/* ati interface has the best support */
+/* prefer bdj4 internal ati where possible */
+void
+instutilScanMusicDir (const char *musicdir, const char *rundir,
+    char *ati, size_t atisz)
+{
+  slist_t     *mlist;
+  slistidx_t  iteridx;
+  const char  *fn;
+  char        tbuff [MAXPATHLEN];
+  int         tagtype;
+  int         filetype;
+  int         flags [AFILE_TYPE_MAX];
+  int         supported [INST_ATI_MAX][AFILE_TYPE_MAX];
+  int         suppval [INST_ATI_MAX];
+  int         max;
+  int         idx;
+
+  for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
+    flags [j] = 0;
+  }
+
+  mlist = dirlistRecursiveDirList (musicdir, DIRLIST_FILES);
+  slistStartIterator (mlist, &iteridx);
+  while ((fn = slistIterateKey (mlist, &iteridx)) != NULL) {
+    audiotagDetermineTagType (fn, &tagtype, &filetype);
+    flags [filetype] = 1;
+  }
+  slistFree (mlist);
+
+  /* recall that sysvars is not set up correctly */
+  /* pathbld_mp_dir_exec must be set properly */
+  /* the dynamically loaded libraries need this path */
+  snprintf (tbuff, sizeof (tbuff), "%s/bin", rundir);
+  sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "dir-exec set to %s", tbuff);
+
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    atiGetSupportedTypes (instati [i].name, supported [i]);
+  }
+
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    suppval [i] = 0;
+
+    for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
+      /* don't worry about unknown types */
+      if (j == AFILE_TYPE_UNKNOWN) {
+        continue;
+      }
+      if (flags [j] > 0) {
+        if (supported [i][j] == ATI_READ_WRITE) {
+          suppval [i] += 2;
+        }
+        if (supported [i][j] == ATI_READ) {
+          suppval [i] += 1;
+        }
+      }
+    }
+  }
+
+  /* want bdj4 internal ati if possible */
+  idx = INST_ATI_BDJ4;
+  max = suppval [idx];
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    if (suppval [i] > max) {
+      max = suppval [i];
+      idx = i;
+    }
+  }
+
+  strlcpy (ati, instati [idx].name, atisz);
 }
 
 /* internal routines */

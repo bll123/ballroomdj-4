@@ -63,6 +63,7 @@ enum {
 #define DANCE_FN            "dances"
 #define ITUNES_FIELDS_FN    "itunes-fields"
 #define ITUNES_STARS_FN     "itunes-stars"
+#define NEWINSTALL_FN       "newinstall"
 /* option data files */
 #define CONFIGUI_OPT_FN     "ui-config"
 #define MANAGEUI_OPT_FN     "ui-manage"
@@ -75,6 +76,7 @@ enum {
 #define VOLREG_BDJ4_EXT_FN  "volbdj4"
 #define VOLREG_BDJ3_EXT_FN  "volbdj3"
 /* alternates/base port */
+#define READONLY_FN         "readonly"
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
 /* cache files */

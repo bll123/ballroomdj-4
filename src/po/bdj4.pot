@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-10 05:06-0700\n"
+"POT-Creation-Date: 2023-07-22 10:30-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -683,10 +683,7 @@ msgstr ""
 msgid "Enable Remote Control"
 msgstr ""
 
-#. CONTEXT: set up alternate: ask for alternate folder
-msgid "Enter the alternate folder."
-msgstr ""
-
+#. CONTEXT: set up alternate: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
@@ -915,6 +912,7 @@ msgstr ""
 msgid "Initial Setup."
 msgstr ""
 
+#. CONTEXT: set up alternate: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr ""
@@ -1120,6 +1118,7 @@ msgstr ""
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
+#. CONTEXT: status: default status (new) when status is not set
 msgid "New"
 msgstr ""
 
@@ -1220,11 +1219,6 @@ msgstr ""
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
-msgstr ""
-
-#. CONTEXT: installer: the location entered is not a valid music folder.
-#, c-format
-msgid "Not a valid music folder."
 msgstr ""
 
 #. CONTEXT: installer: display of package status
@@ -1576,6 +1570,7 @@ msgstr ""
 msgid "Scale"
 msgstr ""
 
+#. CONTEXT: altsetup: status message
 #. CONTEXT: installer: status message
 msgid "Scanning music folder."
 msgstr ""
@@ -1635,6 +1630,7 @@ msgid "Select Folder"
 msgstr ""
 
 #. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: altsetup: music folder selection dialog: window title
 #. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
@@ -1776,7 +1772,6 @@ msgstr ""
 msgid "Speed Adjustment"
 msgstr ""
 
-#. CONTEXT: set up alternate: start the set-up process
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
 msgstr ""

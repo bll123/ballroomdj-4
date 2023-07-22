@@ -178,8 +178,8 @@ END_TEST
 
 START_TEST(bdjopt_set)
 {
-  const char  *ostr;
-  const char  *oqn;
+  char        *ostr;
+  char        *oqn;
   const char  *tstr;
   int         oval, ovalb, oact;
   int         val;
@@ -255,8 +255,8 @@ END_TEST
 
 START_TEST(bdjopt_save)
 {
-  const char  *ostr;
-  const char  *oqn;
+  char        *ostr;
+  char        *oqn;
   const char  *tstr;
   int         oval, ogap, oact;
   int         val;

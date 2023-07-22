@@ -95,6 +95,7 @@ main (int argc, char * argv[])
     { "noclean",        no_argument,        NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
+    { "readonly",       no_argument,        NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },
@@ -272,6 +273,9 @@ main (int argc, char * argv[])
       }
       case 20: {
         prog = "bdj4altsetup";
+        nodetach = true;
+        wait = true;
+        isinstaller = true;
         ++validargs;
         break;
       }
@@ -373,6 +377,17 @@ main (int argc, char * argv[])
 
   (void) ! getcwd (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));
+
+  if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
+    prog = "bdj4altsetup";
+    nodetach = true;
+    wait = true;
+    isinstaller = true;
+    if (chdir (sysvarsGetStr (SV_BDJ4_DIR_MAIN)) < 0) {
+      fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_MAIN));
+      exit (1);
+    }
+  }
 
   if (isinstaller == false) {
     if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {

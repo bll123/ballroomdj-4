@@ -111,13 +111,14 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
-  [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
-  [SVL_IS_MACOS] = { "IS_MACOS" },
+  [SVL_BDJIDX] = { "BDJIDX" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
+  [SVL_IS_MACOS] = { "IS_MACOS" },
+  [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
   [SVL_LOCALE_SET] = { "LOCALE_SET" },
+  [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
   [SVL_NUM_PROC] = { "NUM_PROC" },
   [SVL_OSBITS] = { "OSBITS" },
-  [SVL_BDJIDX] = { "BDJIDX" },
 };
 
 enum {
@@ -155,6 +156,7 @@ sysvarsInit (const char *argv0)
   char          tbuff [SV_MAX_SZ+1];
   char          altpath [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
+  char          rochkbuff [MAXPATHLEN];
   char          *tptr;
   char          *p;
   size_t        dlen;
@@ -314,14 +316,17 @@ sysvarsInit (const char *argv0)
   strlcpy (altpath, tbuff, sizeof (altpath));
   pathStripPath (altpath, sizeof (altpath));
   pathNormalizePath (altpath, sizeof (altpath));
+fprintf (stderr, "altpath: %s\n", altpath);
 
   /* this gives us the real path to the executable */
   pathRealPath (buff, tbuff, sizeof (buff));
   pathNormalizePath (buff, sizeof (buff));
+fprintf (stderr, "path-to-exec: %s\n", buff);
 
   if (strcmp (altpath, buff) != 0) {
     alternatepath = true;
   }
+fprintf (stderr, "alternatepath: %d\n", alternatepath);
 
   /* strip off the filename */
   p = strrchr (buff, '/');
@@ -339,10 +344,14 @@ sysvarsInit (const char *argv0)
     strlcpy (sysvars [SV_BDJ4_DIR_MAIN], buff, SV_MAX_SZ);
   }
 
-  if (fileopIsDirectory ("data")) {
-    /* if there is a data directory in the current working directory  */
-    /* a change of directories is contra-indicated.                   */
+  snprintf (rochkbuff, sizeof (rochkbuff), "data/%s%s",
+     READONLY_FN, BDJ4_CONFIG_EXT);
+  if (fileopIsDirectory ("data") && ! fileopFileExists (rochkbuff)) {
+    /* if there is a data directory in the current working directory */
+    /* and there is no 'readonly.txt' file */
+    /* a change of directories is contra-indicated. */
 
+fprintf (stderr, "found local data\n");
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
@@ -363,7 +372,10 @@ sysvarsInit (const char *argv0)
       }
 
       strlcat (altpath, "/data", sizeof (altpath));
-      if (fileopIsDirectory (altpath)) {
+fprintf (stderr, "chk altpath: %s\n", altpath);
+      snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
+          altpath, READONLY_FN, BDJ4_CONFIG_EXT);
+      if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
         strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
         found = true;
         lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
@@ -373,12 +385,22 @@ sysvarsInit (const char *argv0)
     if (! found) {
       lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_NORM;
 
-      if (isMacOS ()) {
-        strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
-        strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
-        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+      snprintf (rochkbuff, sizeof (rochkbuff), "%s/data/%s%s",
+         sysvars [SV_BDJ4_DIR_MAIN], READONLY_FN, BDJ4_CONFIG_EXT);
+
+      if (fileopFileExists (rochkbuff)) {
+fprintf (stderr, "found readonly.txt\n");
+        lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_UNKNOWN;
+        *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
-        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+        if (isMacOS ()) {
+          strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
+          strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
+          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+        } else {
+          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+        }
+fprintf (stderr, "not found, use: %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
       }
     }
   }

@@ -25,8 +25,6 @@
 # include <windows.h>
 #endif
 
-#include "ati.h"
-#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -136,26 +134,6 @@ enum {
   INST_MUSICDIR,
 };
 
-enum {
-  INST_ATI_BDJ4,
-  INST_ATI_MUTAGEN,
-  INST_ATI_MAX,
-};
-
-typedef struct {
-  const char  *name;
-  bool        needmutagen;
-} instati_t;
-
-static instati_t instati [INST_ATI_MAX] = {
-  [INST_ATI_BDJ4] = { "libatibdj4", false },
-  [INST_ATI_MUTAGEN] = { "libatimutagen", true },
-};
-
-#define INST_DISP_ACTION "-- "
-#define INST_DISP_STATUS "   "
-#define INST_DISP_ERROR "** "
-
 #define BDJ4_MACOS_DIR    "BDJ4.app"
 #define MACOS_PREFIX      "/Contents/MacOS"
 
@@ -166,7 +144,6 @@ typedef struct {
   char            *home;
   char            *target;
   char            *hostname;
-  char            ati [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
@@ -193,18 +170,22 @@ typedef struct {
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* ati */
+  char            ati [40];
   char            *musicdir;
   int             atiselect;
   /* flags */
   bool            bdjoptloaded : 1;
+  bool            clean : 1;
   bool            convprocess : 1;
   bool            guienabled : 1;
   bool            inSetConvert : 1;
+  bool            localespecified : 1;
   bool            newinstall : 1;
-  bool            nomutagen : 1;
   bool            nodatafiles : 1;
+  bool            nomutagen : 1;
   bool            pythoninstalled : 1;
   bool            quiet : 1;
+  bool            readonly : 1;
   bool            reinstall : 1;
   bool            scrolltoend : 1;
   bool            testregistration : 1;
@@ -213,16 +194,10 @@ typedef struct {
   bool            updatepython : 1;
   bool            verbose : 1;
   bool            vlcinstalled : 1;
-  bool            localespecified : 1;
-  bool            clean : 1;
 } installer_t;
 
-#define INST_HL_COLOR "#b16400"
-#define INST_HL_CLASS "insthl"
-#define INST_SEP_COLOR "#733000"
-#define INST_SEP_CLASS "instsep"
-
 #define INST_NEW_FILE "data/newinstall.txt"
+#define INST_READONLY_FILE "data/readonly.txt"
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define INST_SAVE_FNAME "installdir.txt"
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
@@ -316,6 +291,7 @@ main (int argc, char *argv[])
     { "noclean",    no_argument,        NULL,   'c' },
     { "nodatafiles", no_argument,       NULL,   'N' },
     { "nomutagen",  no_argument,        NULL,   'M' },
+    { "readonly",   no_argument,        NULL,   'R' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
     { "testregistration", no_argument,  NULL,   'T' },
@@ -361,14 +337,17 @@ main (int argc, char *argv[])
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
   installer.bdjoptloaded = false;
+  installer.clean = true;
   installer.convprocess = false;
   installer.guienabled = true;
   installer.inSetConvert = false;
+  installer.localespecified = false;
   installer.newinstall = true;
-  installer.nomutagen = false;
   installer.nodatafiles = false;
+  installer.nomutagen = false;
   installer.pythoninstalled = false;
   installer.quiet = false;
+  installer.readonly = false;
   installer.reinstall = false;
   installer.scrolltoend = false;
   installer.testregistration = false;
@@ -377,8 +356,7 @@ main (int argc, char *argv[])
   installer.updatepython = false;
   installer.verbose = false;
   installer.vlcinstalled = false;
-  installer.localespecified = false;
-  installer.clean = true;
+
   for (int i = 0; i < INST_CB_MAX; ++i) {
     installer.callbacks [i] = NULL;
   }
@@ -460,6 +438,10 @@ main (int argc, char *argv[])
       }
       case 'r': {
         installer.reinstall = true;
+        break;
+      }
+      case 'R': {
+        installer.readonly = true;
         break;
       }
       case 'c': {
@@ -789,7 +771,7 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
@@ -873,7 +855,7 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
@@ -1148,7 +1130,7 @@ installerMainLoop (void *udata)
     }
     case INST_FINISH: {
       /* CONTEXT: installer: status message */
-      installerDisplayText (installer, "## ",  _("Installation complete."), true);
+      installerDisplayText (installer, INST_DISP_FIN, _("Installation complete."), true);
       if (installer->guienabled) {
         installer->instState = INST_PREPARE;
       } else {
@@ -1214,11 +1196,14 @@ installerValidateTarget (uientry_t *entry, void *udata)
     installer->reinstall = false;
   }
 
+#if 0
   if (strcmp (dir, installer->target) == 0) {
     /* no change */
     /* prevent the convprocess flag from bouncing between different states */
+fprintf (stderr, "dir/tgt: %s %s\n", dir, installer->target);
     return UIENTRY_OK;
   }
+#endif
 
   return installerValidateProcessTarget (installer, dir);
 }
@@ -1228,14 +1213,14 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 {
   bool          exists = false;
   char          tbuff [MAXPATHLEN];
-  int           rc = UIENTRY_OK;
+  int           rc = UIENTRY_ERROR;
   bool          found = false;
 
   /* base possibilities: */
   /*  a) exists, has a bdj4 installation (r/u) */
   /*  b) exists, no bdj4, append bdj4-name, has bdj4 installation (r/u) */
   /*  c) exists, no bdj4, append bdj4-name, no bdj4 (f) */
-  /*  d) does not exist, append bdj4-name (n) */
+  /*  d) does not exist, do not append bdj4-name (n) */
   /* r/u = re-install/update */
   /* f = fail */
   /* n = new */
@@ -1267,6 +1252,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
   if (exists) {
     if (found) {
+      rc = UIENTRY_OK;
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
@@ -1286,6 +1272,21 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     }
   }
   if (! exists) {
+    pathinfo_t  *pi;
+
+    rc = UIENTRY_OK;
+    pi = pathInfo (dir);
+fprintf (stderr, "dir: %s\n", dir);
+    if (pi->dlen > 0) {
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+fprintf (stderr, "chk: %s\n", tbuff);
+      if (! fileopIsDirectory (tbuff)) {
+fprintf (stderr, "  not-dir\n");
+        rc = UIENTRY_ERROR;
+      }
+    }
+    pathInfoFree (pi);
+
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
@@ -1304,7 +1305,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   installer_t   *installer = udata;
   bool          locok = false;
   char          tbuff [200];
-  int           rc = UIENTRY_OK;
+  int           rc = UIENTRY_ERROR;
 
   if (! installer->guienabled) {
     return UIENTRY_ERROR;
@@ -1320,10 +1321,12 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   pathNormalizePath (tbuff, strlen (tbuff));
   if (*tbuff == '\0' || strcmp (tbuff, "-") == 0) {
     locok = true;
+    rc = UIENTRY_OK;
   } else {
     if (! isMacOS ()) {
       if (locationcheck (tbuff)) {
         locok = true;
+        rc = UIENTRY_OK;
       }
     } else {
       char  *fn;
@@ -1331,21 +1334,23 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
       fn = locatebdj3 ();
       if (fn != NULL) {
         locok = true;
+        rc = UIENTRY_OK;
         mdfree (fn);
       }
     }
   }
 
   if (! locok) {
-    rc = UIENTRY_ERROR;
     /* CONTEXT: installer: the location entered is not a valid BDJ3 location. */
     snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
     uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
     installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
   }
 
-  /* will call display-convert */
-  installerSetPaths (installer);
+  if (rc == UIENTRY_OK) {
+    /* will call display-convert */
+    installerSetPaths (installer);
+  }
   return rc;
 }
 
@@ -1353,9 +1358,8 @@ static int
 installerValidateMusicDir (uientry_t *entry, void *udata)
 {
   installer_t   *installer = udata;
-  bool          locok = false;
   char          tbuff [200];
-  int           rc = UIENTRY_OK;
+  int           rc = UIENTRY_ERROR;
 
   if (! installer->guienabled) {
     return UIENTRY_ERROR;
@@ -1369,21 +1373,14 @@ installerValidateMusicDir (uientry_t *entry, void *udata)
 
   strlcpy (tbuff, uiEntryGetValue (installer->musicdirEntry), sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
-  if (*tbuff &&
-      fileopIsDirectory (tbuff)) {
-    locok = true;
+  if (*tbuff && fileopIsDirectory (tbuff)) {
+    rc = UIENTRY_OK;
   }
 
-  if (! locok) {
-    rc = UIENTRY_ERROR;
-    /* CONTEXT: installer: the location entered is not a valid music folder. */
-    snprintf (tbuff, sizeof (tbuff), _("Not a valid music folder."));
-    uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
-    installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
+  if (rc == UIENTRY_OK) {
+    /* will call display-convert */
+    installerSetPaths (installer);
   }
-
-  /* will call display-convert */
-  installerSetPaths (installer);
   return rc;
 }
 
@@ -2692,6 +2689,16 @@ installerFinalize (installer_t *installer)
       mdextfclose (fh);
       fclose (fh);
     }
+
+    /* readonly flag */
+    if (installer->readonly) {
+      FILE  *fh;
+
+      fh = fileopOpen (INST_READONLY_FILE, "w");
+      mdextfclose (fh);
+      fclose (fh);
+    }
+
   }
 
   if (installer->nodatafiles) {
@@ -3175,76 +3182,10 @@ installerGetExistingData (installer_t *installer)
   }
 }
 
-/* scan the music directory and determine which */
-/* ati interface has the best support */
-/* prefer bdj4 internal ati where possible */
 static void
 installerScanMusicDir (installer_t *installer)
 {
-  slist_t     *mlist;
-  slistidx_t  iteridx;
-  const char  *fn;
-  char        tbuff [MAXPATHLEN];
-  int         tagtype;
-  int         filetype;
-  int         flags [AFILE_TYPE_MAX];
-  int         supported [INST_ATI_MAX][AFILE_TYPE_MAX];
-  int         suppval [INST_ATI_MAX];
-  int         max;
-  int         idx;
-
-  for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
-    flags [j] = 0;
-  }
-
-  mlist = dirlistRecursiveDirList (installer->musicdir, DIRLIST_FILES);
-  slistStartIterator (mlist, &iteridx);
-  while ((fn = slistIterateKey (mlist, &iteridx)) != NULL) {
-    audiotagDetermineTagType (fn, &tagtype, &filetype);
-    flags [filetype] = 1;
-  }
-  slistFree (mlist);
-
-  /* recall that sysvars is not set up correctly */
-  /* pathbld_mp_dir_exec must be set properly */
-  /* the dynamically loaded libraries need this path */
-  snprintf (tbuff, sizeof (tbuff), "%s/bin", installer->rundir);
-  sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "dir-exec set to %s", tbuff);
-
-  for (int i = 0; i < INST_ATI_MAX; ++i) {
-    atiGetSupportedTypes (instati [i].name, supported [i]);
-  }
-
-  for (int i = 0; i < INST_ATI_MAX; ++i) {
-    suppval [i] = 0;
-
-    for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
-      /* don't worry about unknown types */
-      if (j == AFILE_TYPE_UNKNOWN) {
-        continue;
-      }
-      if (flags [j] > 0) {
-        if (supported [i][j] == ATI_READ_WRITE) {
-          suppval [i] += 2;
-        }
-        if (supported [i][j] == ATI_READ) {
-          suppval [i] += 1;
-        }
-      }
-    }
-  }
-
-  /* want bdj4 internal ati if possible */
-  idx = INST_ATI_BDJ4;
-  max = suppval [idx];
-  for (int i = 0; i < INST_ATI_MAX; ++i) {
-    if (suppval [i] > max) {
-      max = suppval [i];
-      idx = i;
-    }
-  }
-
-  strlcpy (installer->ati, instati [idx].name, sizeof (installer->ati));
+  instutilScanMusicDir (installer->musicdir, installer->rundir,
+      installer->ati, sizeof (installer->ati));
   installerSetATISelect (installer);
 }
