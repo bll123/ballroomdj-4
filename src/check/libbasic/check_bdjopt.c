@@ -179,6 +179,7 @@ END_TEST
 START_TEST(bdjopt_set)
 {
   const char  *ostr;
+  const char  *oqn;
   const char  *tstr;
   int         oval, ovalb, oact;
   int         val;
@@ -197,8 +198,7 @@ START_TEST(bdjopt_set)
   val = bdjoptGetNum (OPT_P_FADETYPE);
   ck_assert_int_eq (val, oval);
 
-  ostr = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  ck_assert_ptr_nonnull (ostr);
+  ostr = mdstrdup (bdjoptGetStr (OPT_P_COMPLETE_MSG));
   bdjoptSetStr (OPT_P_COMPLETE_MSG, "hello");
   tstr = bdjoptGetStr (OPT_P_COMPLETE_MSG);
   ck_assert_str_eq (tstr, "hello");
@@ -212,7 +212,7 @@ START_TEST(bdjopt_set)
   ck_assert_int_ge (ovalb, 0);
   oact = bdjoptGetNumPerQueue (OPT_Q_ACTIVE, MUSICQ_PB_B);
   ck_assert_int_ge (ovalb, 0);
-  ostr = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B);
+  oqn = mdstrdup (bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B));
   ck_assert_ptr_nonnull (ostr);
   bdjoptSetNumPerQueue (OPT_Q_GAP, 2000, MUSICQ_PB_A);
   bdjoptSetNumPerQueue (OPT_Q_GAP, 3000, MUSICQ_PB_B);
@@ -236,7 +236,7 @@ START_TEST(bdjopt_set)
   bdjoptSetNumPerQueue (OPT_Q_GAP, oval, MUSICQ_PB_A);
   bdjoptSetNumPerQueue (OPT_Q_GAP, ovalb, MUSICQ_PB_B);
   bdjoptSetNumPerQueue (OPT_Q_ACTIVE, oact, MUSICQ_PB_B);
-  bdjoptSetStrPerQueue (OPT_Q_QUEUE_NAME, ostr, MUSICQ_PB_B);
+  bdjoptSetStrPerQueue (OPT_Q_QUEUE_NAME, oqn, MUSICQ_PB_B);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_A);
   ck_assert_int_eq (val, oval);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
@@ -244,9 +244,12 @@ START_TEST(bdjopt_set)
   val = bdjoptGetNumPerQueue (OPT_Q_ACTIVE, MUSICQ_PB_B);
   ck_assert_int_eq (val, oact);
   tstr = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B);
-  ck_assert_str_eq (tstr, ostr);
+  ck_assert_str_eq (tstr, oqn);
 
   bdjoptCleanup ();
+
+  mdfree (ostr);
+  mdfree (oqn);
 }
 END_TEST
 
@@ -269,8 +272,7 @@ START_TEST(bdjopt_save)
   val = bdjoptGetNum (OPT_P_FADETYPE);
   ck_assert_int_eq (val, 1);
 
-  ostr = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  ck_assert_ptr_nonnull (ostr);
+  ostr = mdstrdup (bdjoptGetStr (OPT_P_COMPLETE_MSG));
   bdjoptSetStr (OPT_P_COMPLETE_MSG, "hello");
   tstr = bdjoptGetStr (OPT_P_COMPLETE_MSG);
   ck_assert_str_eq (tstr, "hello");
@@ -281,8 +283,7 @@ START_TEST(bdjopt_save)
   ogap = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
   ck_assert_int_ge (ogap, 0);
   bdjoptSetNumPerQueue (OPT_Q_GAP, 3000, MUSICQ_PB_B);
-  oqn = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B);
-  ck_assert_ptr_nonnull (oqn);
+  oqn = mdstrdup (bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B));
   bdjoptSetStrPerQueue (OPT_Q_QUEUE_NAME, "testc", MUSICQ_PB_B);
 
   val = bdjoptGetNumPerQueue (OPT_Q_ACTIVE, MUSICQ_PB_B);
@@ -311,6 +312,9 @@ START_TEST(bdjopt_save)
   bdjoptSetNumPerQueue (OPT_Q_GAP, ogap, MUSICQ_PB_B);
   bdjoptSetNumPerQueue (OPT_Q_ACTIVE, oact, MUSICQ_PB_B);
   bdjoptSetStrPerQueue (OPT_Q_QUEUE_NAME, oqn, MUSICQ_PB_B);
+
+  mdfree (ostr);
+  mdfree (oqn);
 
   bdjoptSave ();
   bdjoptCleanup ();
