@@ -409,8 +409,9 @@ main (int argc, char *argv[])
   installerSetTargetDir (&installer, buff);
 
   instutilGetMusicDir (buff, sizeof (buff));
-  dataFree (installer.musicdir);
-  installer.musicdir = mdstrdup (buff);
+  installerSetMusicDir (&installer, buff);
+//  dataFree (installer.musicdir);
+//  installer.musicdir = mdstrdup (buff);
 
   while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -482,8 +483,9 @@ main (int argc, char *argv[])
         break;
       }
       case 'm': {
-        dataFree (installer.musicdir);
-        installer.musicdir = mdstrdup (optarg);
+        installerSetMusicDir (&installer, optarg);
+//        dataFree (installer.musicdir);
+//        installer.musicdir = mdstrdup (optarg);
         break;
       }
       case 'M': {
@@ -1196,15 +1198,18 @@ installerValidateTarget (uientry_t *entry, void *udata)
     installer->reinstall = false;
   }
 
+// ### fix
+// when exactly should the conversion be checked while the user is
+// typing in data
+// perhaps another timer to check the conversion process?
 #if 0
   if (strcmp (dir, installer->target) == 0) {
     /* no change */
     /* prevent the convprocess flag from bouncing between different states */
 fprintf (stderr, "dir/tgt: %s %s\n", dir, installer->target);
-    return UIENTRY_OK;
+    return
   }
 #endif
-
   return installerValidateProcessTarget (installer, dir);
 }
 
@@ -1276,12 +1281,9 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
     rc = UIENTRY_OK;
     pi = pathInfo (dir);
-fprintf (stderr, "dir: %s\n", dir);
     if (pi->dlen > 0) {
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
-fprintf (stderr, "chk: %s\n", tbuff);
       if (! fileopIsDirectory (tbuff)) {
-fprintf (stderr, "  not-dir\n");
         rc = UIENTRY_ERROR;
       }
     }
@@ -1401,6 +1403,10 @@ installerTargetDirDialog (void *udata)
     char        tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, fn, sizeof (tbuff));
+    /* after the user selected a folder via a button, */
+    /* want the /BDJ4 appended */
+    installerCheckAndFixTarget (tbuff, sizeof (tbuff));
+    /* the validation routine gets called upon set */
     uiEntrySetValue (installer->targetEntry, tbuff);
     mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
@@ -1696,8 +1702,7 @@ installerInstInit (installer_t *installer)
       (void) ! fgets (tbuff, sizeof (tbuff), stdin);
       stringTrim (tbuff);
       if (*tbuff != '\0') {
-        dataFree (installer->musicdir);
-        installer->musicdir = mdstrdup (tbuff);
+        installerSetMusicDir (installer, tbuff);
       }
 
       /* CONTEXT: installer: command line interface: prompt to continue */
@@ -3166,13 +3171,12 @@ installerGetExistingData (installer_t *installer)
   installer->bdjoptloaded = true;
 
   tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  if (tmp != NULL) {
-    dataFree (installer->musicdir);
-    installer->musicdir = mdstrdup (tmp);
+  if (tmp != NULL && *tmp) {
+    installerSetMusicDir (installer, tmp);
     installerSetMusicDirEntry (installer, installer->musicdir);
   }
   tmp = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
-  if (tmp != NULL) {
+  if (tmp != NULL && *tmp) {
     strlcpy (installer->ati, tmp, sizeof (installer->ati));
     installerSetATISelect (installer);
   }

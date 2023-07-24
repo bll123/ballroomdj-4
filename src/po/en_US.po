@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-22\n"
-"PO-Revision-Date: 2023-07-22\n"
+"POT-Creation-Date: 2023-07-23\n"
+"PO-Revision-Date: 2023-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -53,6 +53,7 @@ msgstr ""
 msgid "%s Helper"
 msgstr ""
 
+#. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
@@ -86,11 +87,6 @@ msgstr ""
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr ""
-
-#. CONTEXT: set up alternate: window title
-#, c-format
-msgid "%s Set Up Alternate"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
@@ -264,10 +260,6 @@ msgstr ""
 
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 msgid "Already Exists"
-msgstr ""
-
-#. CONTEXT: set up alternate: dialog title for selecting location
-msgid "Alternate Location"
 msgstr ""
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
@@ -493,7 +485,7 @@ msgstr ""
 msgid "Copying files."
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Copying template files."
 msgstr ""
@@ -525,12 +517,12 @@ msgstr ""
 msgid "Create from Playlist"
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating folder structure."
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr ""
@@ -679,7 +671,7 @@ msgstr ""
 msgid "Enable Remote Control"
 msgstr ""
 
-#. CONTEXT: set up alternate: ask for installation folder
+#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
@@ -709,7 +701,7 @@ msgstr ""
 msgid "Error: Folder already exists."
 msgstr ""
 
-#. CONTEXT: set up alternate: failure message
+#. CONTEXT: alternate installation: failure message
 #. CONTEXT: installer: failure message
 msgid "Error: Unable to set working folder."
 msgstr ""
@@ -718,7 +710,7 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#. CONTEXT: set up alternate: exits the altsetup
+#. CONTEXT: alternate installation: exits the altsetup
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
@@ -904,15 +896,16 @@ msgstr ""
 msgid "Import from %s"
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
 msgstr ""
 
-#. CONTEXT: set up alternate: install BDJ4 in the alternate location
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr ""
 
+#. CONTEXT: alternate installation: dialog title for selecting location
 #. CONTEXT: installer: dialog title for selecting install location
 msgid "Install Location"
 msgstr ""
@@ -1108,7 +1101,7 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#. CONTEXT: set up alternate: name (for shortcut)
+#. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
 msgstr ""
 
@@ -1118,6 +1111,7 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
@@ -1173,11 +1167,6 @@ msgstr ""
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
-msgstr ""
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "New alternate folder."
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
@@ -1366,7 +1355,7 @@ msgstr ""
 msgid "Proceed with installation?"
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Process aborted."
 msgstr ""
 
@@ -1456,20 +1445,16 @@ msgstr ""
 msgid "Rating"
 msgstr ""
 
-#. CONTEXT: set up alternate: checkbox: re-install alternate
+#. CONTEXT: alternate installation: checkbox: re-install
 #. CONTEXT: installer: checkbox: re-install BDJ4
 msgid "Re-Install"
 msgstr ""
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Re-install %s."
-msgstr ""
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "Re-install existing alternate."
 msgstr ""
 
 #. CONTEXT: database update: rebuilds the database
@@ -1674,7 +1659,7 @@ msgstr ""
 msgid "Set Up Alternate Folder"
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Setup complete."
 msgstr ""
 
@@ -1982,21 +1967,17 @@ msgid ""
 "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr ""
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
 msgstr ""
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
-msgstr ""
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "Updating existing alternate."
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control

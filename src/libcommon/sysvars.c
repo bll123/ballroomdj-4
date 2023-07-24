@@ -62,7 +62,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
-  [SV_DIR_CONFIG] = { "CONFIG_DIR" },
+  [SV_DIR_CONFIG] = { "DIR_CONFIG" },
+  [SV_DIR_CONFIG_HOME] = { "DIR_CONFIG_HOME" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
   [SV_HOST_DOWNLOAD] = { "HOST_DOWNLOAD" },
@@ -295,10 +296,16 @@ sysvarsInit (const char *argv0)
   }
 
   if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/%s", sysvars [SV_HOME], BDJ4_NAME);
+    snprintf (sysvars [SV_DIR_CONFIG_HOME], SV_MAX_SZ,
+        "%s/AppData/Roaming", sysvars [SV_HOME]);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/.config/%s", sysvars [SV_HOME], BDJ4_NAME);
+    osGetEnv ("XDG_CONFIG_HOME", sysvars [SV_DIR_CONFIG_HOME], SV_MAX_SZ);
+    if (! *sysvars [SV_DIR_CONFIG_HOME]) {
+      snprintf (sysvars [SV_DIR_CONFIG_HOME], SV_MAX_SZ, "%s/.config",
+          sysvars [SV_HOME]);
+    }
   }
+  snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CONFIG_HOME], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
@@ -316,17 +323,14 @@ sysvarsInit (const char *argv0)
   strlcpy (altpath, tbuff, sizeof (altpath));
   pathStripPath (altpath, sizeof (altpath));
   pathNormalizePath (altpath, sizeof (altpath));
-fprintf (stderr, "altpath: %s\n", altpath);
 
   /* this gives us the real path to the executable */
   pathRealPath (buff, tbuff, sizeof (buff));
   pathNormalizePath (buff, sizeof (buff));
-fprintf (stderr, "path-to-exec: %s\n", buff);
 
   if (strcmp (altpath, buff) != 0) {
     alternatepath = true;
   }
-fprintf (stderr, "alternatepath: %d\n", alternatepath);
 
   /* strip off the filename */
   p = strrchr (buff, '/');
@@ -351,7 +355,6 @@ fprintf (stderr, "alternatepath: %d\n", alternatepath);
     /* and there is no 'readonly.txt' file */
     /* a change of directories is contra-indicated. */
 
-fprintf (stderr, "found local data\n");
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
@@ -372,7 +375,6 @@ fprintf (stderr, "found local data\n");
       }
 
       strlcat (altpath, "/data", sizeof (altpath));
-fprintf (stderr, "chk altpath: %s\n", altpath);
       snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
           altpath, READONLY_FN, BDJ4_CONFIG_EXT);
       if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
@@ -389,7 +391,6 @@ fprintf (stderr, "chk altpath: %s\n", altpath);
          sysvars [SV_BDJ4_DIR_MAIN], READONLY_FN, BDJ4_CONFIG_EXT);
 
       if (fileopFileExists (rochkbuff)) {
-fprintf (stderr, "found readonly.txt\n");
         lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_UNKNOWN;
         *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
@@ -400,7 +401,6 @@ fprintf (stderr, "found readonly.txt\n");
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
         }
-fprintf (stderr, "not found, use: %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
       }
     }
   }
@@ -650,8 +650,10 @@ fprintf (stderr, "not found, use: %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
 
   lsysvars [SVL_NUM_PROC] = 2;
   if (isWindows ()) {
-    tptr = getenv ("NUMBER_OF_PROCESSORS");
-    if (tptr != NULL) {
+    char    tmp [80];
+
+    osGetEnv ("NUMBER_OF_PROCESSORS", tmp, sizeof (tmp));
+    if (*tmp) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else {

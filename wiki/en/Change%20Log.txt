@@ -7,10 +7,14 @@
 **4.3.3.2 2023-8---**
 
 * Bug Fixes:
+    * Alternate Installer: Clean up validation of folder entry.
+    * Installer: Clean up validation of folder entry.
     * Installer: Fix a spurious status message.
     * Internal: Make sure message processing is finalized on exit.
     * Music Queue: Fix music queue display counter.
     * Player: Windows: Fix clock display to use the windows configuration.
+* Changes:
+    * Alternate Installer: Add music folder to dialog.
 * Internal:
     * Code cleanup (list, data conversion).
     * More automated tests.

@@ -229,8 +229,9 @@ main (int argc, char *argv[])
   altsetup.nameEntry = NULL;
 
   instutilGetMusicDir (buff, sizeof (buff));
-  dataFree (altsetup.musicdir);
-  altsetup.musicdir = mdstrdup (buff);
+  altsetupSetMusicDir (&altsetup, buff);
+//  dataFree (altsetup.musicdir);
+//  altsetup.musicdir = mdstrdup (buff);
 
   while ((c = getopt_long_only (argc, argv, "CUrVQt:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -252,8 +253,9 @@ main (int argc, char *argv[])
         break;
       }
       case 'm': {
-        dataFree (altsetup.musicdir);
-        altsetup.musicdir = mdstrdup (optarg);
+        altsetupSetMusicDir (&altsetup, optarg);
+//        dataFree (altsetup.musicdir);
+//        altsetup.musicdir = mdstrdup (optarg);
         break;
       }
       case 'V': {
@@ -281,7 +283,7 @@ main (int argc, char *argv[])
 
   if (altsetup.guienabled) {
     altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
-    altsetup.musicdirEntry = uiEntryInit (80, MAXPATHLEN);
+    altsetup.musicdirEntry = uiEntryInit (60, MAXPATHLEN);
     altsetup.nameEntry = uiEntryInit (30, 30);
   }
 
@@ -356,8 +358,8 @@ altsetupBuildUI (altsetup_t *altsetup)
   osuiSetIcon (imgbuff);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
-  /* CONTEXT: set up alternate: window title */
-  snprintf (tbuff, sizeof (tbuff), _("%s Set Up Alternate"), BDJ4_NAME);
+  /* CONTEXT: alternate installation: window title */
+  snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   altsetup->callbacks [ALT_CB_EXIT] = callbackInit (
       altsetupExitCallback, altsetup, NULL);
   altsetup->wcont [ALT_W_WINDOW] = uiCreateMainWindow (
@@ -371,7 +373,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackInWindow (altsetup->wcont [ALT_W_WINDOW], vbox);
 
   uiwidgetp = uiCreateLabel (
-      /* CONTEXT: set up alternate: ask for installation folder */
+      /* CONTEXT: alternate installation: ask for installation folder */
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -408,7 +410,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: set up alternate: checkbox: re-install alternate */
+  /* CONTEXT: alternate installation: checkbox: re-install */
   altsetup->wcont [ALT_W_REINST] = uiCreateCheckButton (_("Re-Install"),
       altsetup->reinstall);
   uiBoxPackStart (hbox, altsetup->wcont [ALT_W_REINST]);
@@ -460,7 +462,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: set up alternate: name (for shortcut) */
+      /* CONTEXT: alternate installation: name (for shortcut) */
       _("Name"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -480,7 +482,7 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uibutton = uiCreateButton (
       altsetup->callbacks [ALT_CB_EXIT],
-      /* CONTEXT: set up alternate: exits the altsetup */
+      /* CONTEXT: alternate installation: exits the altsetup */
       _("Exit"), NULL);
   altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
@@ -490,7 +492,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetupSetupCallback, altsetup, NULL);
   uibutton = uiCreateButton (
       altsetup->callbacks [ALT_CB_START],
-      /* CONTEXT: set up alternate: install BDJ4 in the alternate location */
+      /* CONTEXT: alternate installation: install BDJ4 in the alternate location */
       _("Install"), NULL);
   altsetup->buttons [ALT_BUTTON_START] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
@@ -518,6 +520,7 @@ altsetupMainLoop (void *udata)
     uiUIProcessEvents ();
 
     uiEntryValidate (altsetup->targetEntry, false);
+    uiEntryValidate (altsetup->musicdirEntry, false);
 
     if (altsetup->scrolltoend) {
       uiTextBoxScrollToEnd (altsetup->disptb);
@@ -536,6 +539,7 @@ altsetupMainLoop (void *udata)
     case ALT_PREPARE: {
       if (altsetup->guienabled) {
         uiEntryValidate (altsetup->targetEntry, true);
+        uiEntryValidate (altsetup->musicdirEntry, true);
       }
       altsetup->instState = ALT_WAIT_USER;
       break;
@@ -591,7 +595,7 @@ altsetupMainLoop (void *udata)
       break;
     }
     case ALT_FINISH: {
-      /* CONTEXT: set up alternate: status message */
+      /* CONTEXT: alternate installation: status message */
       altsetupDisplayText (altsetup, INST_DISP_FIN, _("Setup complete."), true);
       altsetup->instState = ALT_PREPARE;
       break;
@@ -651,12 +655,12 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
 
   if (exists) {
     if (tbool) {
-      /* CONTEXT: set up alternate: message indicating the action that will be taken */
-      snprintf (tbuff, sizeof (tbuff), _("Re-install existing alternate."));
+      /* CONTEXT: alternate installation: message indicating the action that will be taken */
+      snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
       uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
     } else {
-      /* CONTEXT: set up alternate: message indicating the action that will be taken */
-      snprintf (tbuff, sizeof (tbuff), _("Updating existing alternate."));
+      /* CONTEXT: alternate installation: message indicating the action that will be taken */
+      snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
       uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
     }
   } else {
@@ -673,8 +677,8 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
     pathInfoFree (pi);
 
     altsetup->newinstall = true;
-    /* CONTEXT: set up alternate: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("New alternate folder."));
+    /* CONTEXT: alternate installation: message indicating the action that will be taken */
+    snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
   }
 
@@ -711,12 +715,10 @@ altsetupValidateMusicDir (uientry_t *entry, void *udata)
 
   strlcpy (tbuff, uiEntryGetValue (altsetup->musicdirEntry), sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
-fprintf (stderr, "tbuff: /%s/\n", tbuff);
   if (*tbuff && fileopIsDirectory (tbuff)) {
     rc = UIENTRY_OK;
   }
 
-fprintf (stderr, "rc: %d err:%d ok:%d \n", rc, UIENTRY_ERROR, UIENTRY_OK);
   if (rc == UIENTRY_OK) {
     altsetupSetPaths (altsetup);
   }
@@ -731,8 +733,8 @@ altsetupTargetDirDialog (void *udata)
   uiselect_t  *selectdata;
 
   selectdata = uiDialogCreateSelect (altsetup->wcont [ALT_W_WINDOW],
-      /* CONTEXT: set up alternate: dialog title for selecting location */
-      _("Alternate Location"),
+      /* CONTEXT: alternate installation: dialog title for selecting location */
+      _("Install Location"),
       uiEntryGetValue (altsetup->targetEntry), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -755,7 +757,9 @@ altsetupSetMusicDirEntry (altsetup_t *altsetup, const char *musicdir)
 
   strlcpy (tbuff, musicdir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (altsetup->musicdirEntry, tbuff);
+  if (altsetup->guienabled) {
+    uiEntrySetValue (altsetup->musicdirEntry, tbuff);
+  }
 }
 
 static bool
@@ -841,7 +845,7 @@ altsetupChangeDir (altsetup_t *altsetup)
 static void
 altsetupCreateDirs (altsetup_t *altsetup)
 {
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* create the directories that are not included in the distribution */
@@ -859,7 +863,7 @@ altsetupCreateDirs (altsetup_t *altsetup)
 static void
 altsetupCopyTemplates (altsetup_t *altsetup)
 {
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Copying template files."), false);
 
   if (chdir (altsetup->target)) {
@@ -884,13 +888,15 @@ altsetupSetup (altsetup_t *altsetup)
   int     altcount;
   int     baseport;
 
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Initial Setup."), false);
 
   /* the altcount.txt file should only exist for the initial installation */
   pathbldMakePath (buff, sizeof (buff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+fprintf (stderr, "altcount-a: %s\n", buff);
   if (fileopFileExists (buff)) {
+fprintf (stderr, "  del %s\n", buff);
     fileopDelete (buff);
   }
 
@@ -899,6 +905,7 @@ altsetupSetup (altsetup_t *altsetup)
 // ### used.
   pathbldMakePath (buff, sizeof (buff),
       "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
+fprintf (stderr, "altcount-b: %s\n", buff);
 
   /* read the current altcount */
   altcount = 0;
@@ -990,7 +997,7 @@ altsetupCreateShortcut (altsetup_t *altsetup)
     return;
   }
 
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Creating shortcut."), false);
   name = uiEntryGetValue (altsetup->nameEntry);
   if (name == NULL || ! *name) {
@@ -1026,6 +1033,7 @@ altsetupSetATI (altsetup_t *altsetup)
   if (altsetup->bdjoptloaded) {
     bdjoptSetStr (OPT_M_DIR_MUSIC, altsetup->musicdir);
     bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, altsetup->ati);
+    bdjoptSetStr (OPT_P_PROFILENAME, uiEntryGetValue (altsetup->nameEntry));
     bdjoptSave ();
   }
   altsetup->instState = ALT_UPDATE_PROCESS_INIT;
@@ -1041,7 +1049,7 @@ altsetupUpdateProcessInit (altsetup_t *altsetup)
     return;
   }
 
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
   altsetupDisplayText (altsetup, INST_DISP_ACTION, buff, false);
   altsetup->instState = ALT_UPDATE_PROCESS;
@@ -1119,9 +1127,9 @@ static void
 altsetupFailWorkingDir (altsetup_t *altsetup, const char *dir)
 {
   fprintf (stderr, "Unable to set working dir: %s\n", dir);
-  /* CONTEXT: set up alternate: failure message */
+  /* CONTEXT: alternate installation: failure message */
   altsetupDisplayText (altsetup, "", _("Error: Unable to set working folder."), false);
-  /* CONTEXT: set up alternate: status message */
+  /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ERROR, _("Process aborted."), false);
   altsetup->instState = ALT_WAIT_USER;
 }
@@ -1166,13 +1174,12 @@ altsetupGetExistingData (altsetup_t *altsetup)
   altsetup->bdjoptloaded = true;
 
   tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  if (tmp != NULL) {
-    dataFree (altsetup->musicdir);
-    altsetup->musicdir = mdstrdup (tmp);
+  if (tmp != NULL && *tmp) {
+    altsetupSetMusicDir (altsetup, tmp);
     altsetupSetMusicDirEntry (altsetup, altsetup->musicdir);
   }
   tmp = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
-  if (tmp != NULL) {
+  if (tmp != NULL && *tmp) {
     strlcpy (altsetup->ati, tmp, sizeof (altsetup->ati));
     altsetupSetATISelect (altsetup);
   }

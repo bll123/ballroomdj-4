@@ -191,12 +191,10 @@ uiEntryValidate (uientry_t *uientry, bool forceflag)
     mstimeset (&uientry->validateTimer, 500);
   }
   if (rc == UIENTRY_ERROR) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
-        GTK_ENTRY_ICON_SECONDARY, "dialog-error");
+    uiEntrySetIcon (uientry, "dialog-error");
   }
   if (rc == UIENTRY_OK) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
-        GTK_ENTRY_ICON_SECONDARY, NULL);
+    uiEntryClearIcon (uientry);
   }
   mstimeset (&uientry->validateTimer, 3600000);
   return rc;

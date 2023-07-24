@@ -25,6 +25,7 @@ typedef enum {
   SV_BDJ4_RELEASELEVEL,
   SV_BDJ4_VERSION,
   SV_CA_FILE,
+  SV_DIR_CONFIG_HOME,   // from XDG_CONFIG_HOME or $HOME/.config
   SV_DIR_CONFIG,        // .config/BDJ4 or AppData/Roaming/BDJ4
   SV_FONT_DEFAULT,
   SV_HOME,

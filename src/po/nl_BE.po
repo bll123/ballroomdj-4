@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-22\n"
+"PO-Revision-Date: 2023-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -59,6 +59,7 @@ msgstr "%s Forums"
 msgid "%s Helper"
 msgstr "%s Hulp"
 
+#. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
@@ -93,11 +94,6 @@ msgstr "%s Speler is Actief"
 #, c-format
 msgid "%s Playlist"
 msgstr "%s Speellijst"
-
-#. CONTEXT: set up alternate: window title
-#, c-format
-msgid "%s Set Up Alternate"
-msgstr "%s Alternatief instellen"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
@@ -271,10 +267,6 @@ msgstr "Toegestane zoekwoorden"
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 msgid "Already Exists"
 msgstr "Bestaat al"
-
-#. CONTEXT: set up alternate: dialog title for selecting location
-msgid "Alternate Location"
-msgstr "Alternatieve Locatie"
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
@@ -499,7 +491,7 @@ msgstr "Kopij van %s"
 msgid "Copying files."
 msgstr "Bestanden kopiëren."
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Copying template files."
 msgstr "Kopiëren van sjabloonbestanden."
@@ -531,12 +523,12 @@ msgstr "Snelkoppeling voor Profiel aanmaken"
 msgid "Create from Playlist"
 msgstr "Aanmaken vanaf Speellijst"
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating folder structure."
 msgstr "Mapstructuur maken."
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Snelkoppeling maken."
@@ -685,7 +677,7 @@ msgstr "Mobiele Marquee inschakelen"
 msgid "Enable Remote Control"
 msgstr "Afstandsbediening inschakelen"
 
-#. CONTEXT: set up alternate: ask for installation folder
+#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
@@ -715,7 +707,7 @@ msgstr "Fout: Map %s bestaat al."
 msgid "Error: Folder already exists."
 msgstr "Fout: Map bestaat al."
 
-#. CONTEXT: set up alternate: failure message
+#. CONTEXT: alternate installation: failure message
 #. CONTEXT: installer: failure message
 msgid "Error: Unable to set working folder."
 msgstr "Fout: Kan werkmap niet instellen."
@@ -724,7 +716,7 @@ msgstr "Fout: Kan werkmap niet instellen."
 msgid "Examples"
 msgstr "Voorbeelden"
 
-#. CONTEXT: set up alternate: exits the altsetup
+#. CONTEXT: alternate installation: exits the altsetup
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
@@ -910,15 +902,16 @@ msgstr "Importeren uit"
 msgid "Import from %s"
 msgstr "Importeren van %s"
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
 msgstr "Oorspronkelijke instelling."
 
-#. CONTEXT: set up alternate: install BDJ4 in the alternate location
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr "Installeren"
 
+#. CONTEXT: alternate installation: dialog title for selecting location
 #. CONTEXT: installer: dialog title for selecting install location
 msgid "Install Location"
 msgstr "Installatie Locatie"
@@ -1115,7 +1108,7 @@ msgstr "Muziek Wachtrijen"
 msgid "Mute"
 msgstr "Dempen"
 
-#. CONTEXT: set up alternate: name (for shortcut)
+#. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
 msgstr "Naam"
 
@@ -1125,6 +1118,7 @@ msgstr "Naam"
 msgid "New"
 msgstr "Nieuw"
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
@@ -1181,11 +1175,6 @@ msgstr "Nieuwe naam songlijst"
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
 msgstr "Nieuwe Status"
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "New alternate folder."
-msgstr "Nieuwe Alternatieve map."
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: song editor : next song
@@ -1373,7 +1362,7 @@ msgstr "Vorige"
 msgid "Proceed with installation?"
 msgstr "Doorgaan met installeren?"
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Process aborted."
 msgstr "Proces is afgebroken."
 
@@ -1463,21 +1452,17 @@ msgstr "Quickstep"
 msgid "Rating"
 msgstr "Beoordeling"
 
-#. CONTEXT: set up alternate: checkbox: re-install alternate
+#. CONTEXT: alternate installation: checkbox: re-install
 #. CONTEXT: installer: checkbox: re-install BDJ4
 msgid "Re-Install"
 msgstr "Herinstalleren"
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Re-install %s."
 msgstr "%s opnieuw installeren."
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "Re-install existing alternate."
-msgstr "Herinstalleer bestaande alternatieven."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1681,7 +1666,7 @@ msgstr "Wachtrij instellen voor afspelen"
 msgid "Set Up Alternate Folder"
 msgstr "Alternatieve Map Instellen"
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 msgid "Setup complete."
 msgstr "Setup voltooid."
 
@@ -1989,22 +1974,18 @@ msgid ""
 "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Werkt de informatie in de BallroomDJ-database bij via de tags van de audiobestanden."
 
-#. CONTEXT: set up alternate: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
 msgstr "Updaten van %s."
 
+#. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
 msgstr "Bestaande %s installatie bijwerken."
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "Updating existing alternate."
-msgstr "Bestaande alternatieven updaten."
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
