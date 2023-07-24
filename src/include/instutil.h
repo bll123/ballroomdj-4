@@ -10,6 +10,9 @@ enum {
   INST_ATI_MAX,
 };
 
+#define BDJ4_MACOS_DIR    "BDJ4.app"
+#define MACOS_PREFIX      "/Contents/MacOS"
+
 #define INST_HL_COLOR "#b16400"
 #define INST_HL_CLASS "insthl"
 #define INST_SEP_COLOR "#733000"
@@ -33,5 +36,7 @@ void  instutilCopyTemplates (void);
 void  instutilCopyHttpFiles (void);
 void  instutilGetMusicDir (char *homemusicdir, size_t sz);
 void  instutilScanMusicDir (const char *musicdir, const char *rundir, char *ati, size_t atisz);
+void  instutilAppendNameToTarget (char *buff, size_t sz, int macosonly);
+bool  instutilCheckForExistingInstall (const char *rundir, const char *dir);
 
 #endif /* INC_INSTUTIL_H */

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-23\n"
-"PO-Revision-Date: 2023-07-23\n"
+"POT-Creation-Date: 2023-07-24\n"
+"PO-Revision-Date: 2023-07-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -798,10 +798,6 @@ msgstr ""
 msgid "Folder"
 msgstr ""
 
-#. CONTEXT: installer: command line interface: status message
-msgid "Folder already exists."
-msgstr ""
-
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
 msgstr ""
@@ -924,6 +920,7 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
 msgstr ""

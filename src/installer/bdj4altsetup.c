@@ -741,6 +741,7 @@ altsetupTargetDirDialog (void *udata)
     char        tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, fn, sizeof (tbuff));
+    instutilAppendNameToTarget (tbuff, sizeof (tbuff), false);
     /* validation gets called again upon set */
     uiEntrySetValue (altsetup->targetEntry, tbuff);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altsetup->target);

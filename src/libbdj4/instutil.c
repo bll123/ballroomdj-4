@@ -15,6 +15,7 @@
 #include "bdjstring.h"
 #include "datafile.h"
 #include "dirlist.h"
+#include "fileop.h"
 #include "filemanip.h"
 #include "instutil.h"
 #include "log.h"
@@ -409,6 +410,48 @@ instutilScanMusicDir (const char *musicdir, const char *rundir,
   }
 
   strlcpy (ati, instati [idx].name, atisz);
+}
+
+void
+instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
+{
+  pathinfo_t  *pi;
+  const char  *nm;
+  int         rc;
+
+  if (macosonly && ! isMacOS ()) {
+    return;
+  }
+
+  pi = pathInfo (buff);
+  nm = BDJ4_NAME;
+  if (isMacOS ()) {
+    nm = BDJ4_MACOS_DIR;
+  }
+
+  rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
+      pi->flen == strlen (nm);
+  if (! rc) {
+    stringTrimChar (buff, '/');
+    strlcat (buff, "/", sz);
+    strlcat (buff, nm, sz);
+  }
+  pathInfoFree (pi);
+}
+
+/* checks for an existing BDJ4 run-time installation */
+/* note that the data/ dir may be elsewhere */
+bool
+instutilCheckForExistingInstall (const char *rundir, const char *dir)
+{
+  char        tbuff [MAXPATHLEN];
+  bool        exists;
+
+  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
+      rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+  exists = fileopFileExists (tbuff);
+
+  return exists;
 }
 
 /* internal routines */

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 20:37-0700\n"
+"POT-Creation-Date: 2023-07-24 15:41-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -802,10 +802,6 @@ msgstr ""
 msgid "Folder"
 msgstr ""
 
-#. CONTEXT: installer: command line interface: status message
-msgid "Folder already exists."
-msgstr ""
-
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
 msgstr ""
@@ -928,6 +924,7 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
 msgstr ""

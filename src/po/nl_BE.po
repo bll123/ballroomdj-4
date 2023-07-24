@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-23\n"
+"PO-Revision-Date: 2023-07-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -804,10 +804,6 @@ msgstr "Eerste"
 msgid "Folder"
 msgstr "Map"
 
-#. CONTEXT: installer: command line interface: status message
-msgid "Folder already exists."
-msgstr "Map bestaat al."
-
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
 msgstr "Lettertype"
@@ -930,6 +926,7 @@ msgstr "Installatie voltooid."
 msgid "Installing %s."
 msgstr "%s Installeren."
 
+#. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
 msgstr "Ongeldige Map"
