@@ -1160,7 +1160,7 @@ installerReinstallCBHandler (void *udata)
     return UICB_STOP;
   }
 
-  nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
+  nval = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
   installer->reinstall = nval;
   installerTargetFeedbackMsg (installer);
   return UICB_CONT;
@@ -1303,12 +1303,12 @@ installerTargetFeedbackMsg (installer_t *installer)
   /* if targetexists is true, and updateinstall is false, the target */
   /* folder is an existing folder, but not a bdj4 installation */
 
-  if (installer->reinstall && installer->updateinstall) {
+  if (installer->updateinstall && installer->reinstall) {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
   }
-  if (! installer->reinstall && installer->updateinstall) {
+  if (installer->updateinstall && ! installer->reinstall) {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
