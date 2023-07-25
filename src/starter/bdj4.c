@@ -381,6 +381,8 @@ main (int argc, char * argv[])
   (void) ! getcwd (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));
 
+fprintf (stderr, "sv: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
+fprintf (stderr, "sv: %d\n", (int) sysvarsGetNum (SVL_DATAPATH));
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
     prog = "bdj4altinst";
     nodetach = true;

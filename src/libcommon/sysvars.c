@@ -337,8 +337,8 @@ sysvarsInit (const char *argv0)
     strlcpy (sysvars [SV_BDJ4_DIR_MAIN], buff, SV_MAX_SZ);
   }
 
-  snprintf (rochkbuff, sizeof (rochkbuff), "data/%s%s",
-     READONLY_FN, BDJ4_CONFIG_EXT);
+  snprintf (rochkbuff, sizeof (rochkbuff), "%s%s",
+       READONLY_FN, BDJ4_CONFIG_EXT);
   if (fileopIsDirectory ("data") && ! fileopFileExists (rochkbuff)) {
     /* if there is a data directory in the current working directory */
     /* and there is no 'readonly.txt' file */
@@ -363,9 +363,9 @@ sysvarsInit (const char *argv0)
         *p = '\0';
       }
 
-      strlcat (altpath, "/data", sizeof (altpath));
       snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
           altpath, READONLY_FN, BDJ4_CONFIG_EXT);
+      strlcat (altpath, "/data", sizeof (altpath));
       if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
         strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
         found = true;
@@ -376,7 +376,7 @@ sysvarsInit (const char *argv0)
     if (! found) {
       lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_NORM;
 
-      snprintf (rochkbuff, sizeof (rochkbuff), "%s/data/%s%s",
+      snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
          sysvars [SV_BDJ4_DIR_MAIN], READONLY_FN, BDJ4_CONFIG_EXT);
 
       if (fileopFileExists (rochkbuff)) {
