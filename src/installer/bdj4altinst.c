@@ -1177,6 +1177,30 @@ altinstUpdateProcess (altinst_t *altinst)
 static void
 altinstFinalize (altinst_t *altinst)
 {
+  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
+    FILE    *fh;
+
+    diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+    fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+    if (fh != NULL) {
+      fputs ("0\n", fh);
+      fclose (fh);
+    }
+
+    /* create the new install flag file on a new install */
+    if (altinst->newinstall) {
+      FILE  *fh;
+      char  tbuff [MAXPATHLEN];
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          NEWINST_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      fh = fileopOpen (tbuff, "w");
+      mdextfclose (fh);
+      fclose (fh);
+    }
+  }
+
+
   if (altinst->verbose) {
     fprintf (stdout, "finish OK\n");
     fprintf (stdout, "bdj3-version x\n");

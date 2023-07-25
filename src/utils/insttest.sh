@@ -17,6 +17,7 @@ grc=0
 dump=F
 keep=F
 keepfirst=F
+readonly=F
 quiet=--quiet
 
 while test $# -gt 0; do
@@ -29,6 +30,9 @@ while test $# -gt 0; do
       ;;
     --keepfirst)
       keepfirst=T
+      ;;
+    --readonly)
+      readonly=T
       ;;
     --noquiet)
       quiet=""
@@ -729,26 +733,28 @@ echo "-- $(date +%T) creating test music"
 cleanInstTest
 resetUnpack
 
-# main test db : rebuild of standard test database
-tname=new-install-no-bdj3
-echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended ${quiet} \
-    --nomutagen \
-    --ati ${ATI} \
-    --targetdir "$TARGETTOPDIR" \
-    --unpackdir "$UNPACKDIR" \
-    --musicdir "$MUSICDIR" \
-    )
-rc=$?
-checkInstallation $section $tname "$out" $rc n y
-crc=$?
+if [[ $readonly == F ]]; then
+  # main test db : rebuild of standard test database
+  tname=new-install-no-bdj3
+  echo "== $section $tname"
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
+      --verbose --unattended ${quiet} \
+      --nomutagen \
+      --ati ${ATI} \
+      --targetdir "$TARGETTOPDIR" \
+      --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc n y
+  crc=$?
 
-if [[ $keepfirst == T ]]; then
-  exit 1
+  if [[ $keepfirst == T ]]; then
+    exit 1
+  fi
 fi
 
-if [[ $crc -eq 0 ]]; then
+if [[ $readonly == F && $crc -eq 0 ]]; then
   # standard re-install
   resetUnpack
   tname=re-install-no-bdj3
@@ -798,8 +804,8 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-if [[ T == T ]]; then
-  if [[ $tag == linux || $tag == windows ]]; then
+if [[ $readonly == F ]]; then
+  if [[ $tag == linux || $platform == windows ]]; then
     # alternate installation (linux, windows)
     tname=alt-install
     echo "== $section $tname"
@@ -827,10 +833,14 @@ if [[ T == T ]]; then
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --musicdir "$MUSICDIR" \
-      --nodatafiles \
+      --readonly \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc n n
+fi
+
+if [[ $readonly == T ]]; then
+  exit 1
 fi
 
 section=nl
@@ -875,7 +885,7 @@ if [[ $crc -eq 0 ]]; then
 fi
 
 if [[ T == T ]]; then
-  if [[ $tag == linux || $tag == windows ]]; then
+  if [[ $tag == linux || $platform == windows ]]; then
     # alternate installation (linux, windows)
     tname=alt-install
     echo "== $section $tname"

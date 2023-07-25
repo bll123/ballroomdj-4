@@ -561,10 +561,10 @@ sysvarsInit (const char *argv0)
   }
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CONFIG_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG_BASE],
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       ALT_COUNT_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_ALTCOUNT], tbuff, SV_MAX_SZ);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG_BASE],
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_INST_PATH], tbuff, SV_MAX_SZ);
 

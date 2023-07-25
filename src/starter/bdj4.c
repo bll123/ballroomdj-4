@@ -88,7 +88,6 @@ main (int argc, char * argv[])
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
-    { "nodatafiles",    no_argument,        NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
     { "readonly",       no_argument,        NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },

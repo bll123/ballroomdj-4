@@ -80,6 +80,8 @@ enum {
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
 #define INST_PATH_FN        "installdir"
+#define READONLY_FN         "readonly"
+#define NEWINST_FN          "newinstall"
 /* cache files */
 #define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
 #define SYSVARS_PY_VERS_FN      "pyvers"

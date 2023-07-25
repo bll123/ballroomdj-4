@@ -182,7 +182,6 @@ typedef struct {
   bool            localespecified : 1;
   bool            musicdirok : 1;
   bool            newinstall : 1;
-  bool            nodatafiles : 1;
   bool            nomutagen : 1;
   bool            pythoninstalled : 1;
   bool            quiet : 1;
@@ -199,8 +198,6 @@ typedef struct {
   bool            vlcinstalled : 1;
 } installer_t;
 
-#define INST_NEW_FILE "data/newinstall.txt"
-#define INST_READONLY_FILE "data/readonly.txt"
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
@@ -262,7 +259,6 @@ static void installerRegister (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, const char *pfx, const char *txt, bool bold);
-static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerSetRundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
@@ -295,7 +291,6 @@ main (int argc, char *argv[])
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
     { "noclean",    no_argument,        NULL,   'c' },
-    { "nodatafiles", no_argument,       NULL,   'N' },
     { "nomutagen",  no_argument,        NULL,   'M' },
     { "readonly",   no_argument,        NULL,   'R' },
     { "reinstall",  no_argument,        NULL,   'r' },
@@ -352,7 +347,6 @@ main (int argc, char *argv[])
   installer.localespecified = false;
   installer.musicdirok = false;
   installer.newinstall = true;
-  installer.nodatafiles = false;
   installer.nomutagen = false;
   installer.pythoninstalled = false;
   installer.quiet = false;
@@ -405,8 +399,7 @@ main (int argc, char *argv[])
   }
   instutilAppendNameToTarget (buff, sizeof (buff), false);
 
-  installerGetTargetSaveFname (&installer, tbuff, sizeof (tbuff));
-  fh = fileopOpen (tbuff, "r");
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "r");
   if (fh != NULL) {
     (void) ! fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
@@ -497,10 +490,6 @@ main (int argc, char *argv[])
       }
       case 'M': {
         installer.nomutagen = true;
-        break;
-      }
-      case 'N': {
-        installer.nodatafiles = true;
         break;
       }
       default: {
@@ -1732,16 +1721,15 @@ installerInstInit (installer_t *installer)
 static void
 installerSaveTargetDir (installer_t *installer)
 {
-  char        tbuff [MAXPATHLEN];
   FILE        *fh;
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
-  installerGetTargetSaveFname (installer, tbuff, sizeof (tbuff));
   uiEntrySetValue (installer->targetEntry, installer->target);
 
-  fh = fileopOpen (tbuff, "w");
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", installer->target);
     mdextfclose (fh);
@@ -1863,7 +1851,7 @@ installerCopyFiles (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
 
-  if (installer->nodatafiles) {
+  if (installer->readonly) {
     installer->instState = INST_SAVE_LOCALE;
   } else {
     installer->instState = INST_MAKE_DATA_TOP;
@@ -2526,12 +2514,12 @@ installerMutagenCheck (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
 
-  if (installer->nodatafiles) {
+  if (installer->readonly) {
     installer->instState = INST_FINALIZE;
     return;
   }
 
-  /* must appear after the nodatafiles check */
+  /* must appear after the readonly check */
   if (installer->nomutagen) {
     installer->instState = INST_UPDATE_PROCESS_INIT;
     return;
@@ -2645,15 +2633,39 @@ installerFinalize (installer_t *installer)
       SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
   fileopDelete (tbuff);
 
-  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
-    FILE    *fh;
+  if (! installer->readonly) {
+    if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
+      FILE    *fh;
 
-    diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-    fh = fopen (sysvarsGetStr (SV_DIR_CONFIG), "w");
-    if (fh != NULL) {
-      fputs ("0\n", fh);
+      diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+      fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+      if (fh != NULL) {
+        fputs ("0\n", fh);
+        fclose (fh);
+      }
+    }
+
+    /* create the new install flag file on a new install */
+    if (installer->newinstall) {
+      FILE  *fh;
+
+      snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
+          NEWINST_FN, BDJ4_CONFIG_EXT);
+      fh = fileopOpen (tbuff, "w");
+      mdextfclose (fh);
       fclose (fh);
     }
+  }
+
+  /* readonly flag */
+  if (installer->readonly) {
+    FILE  *fh;
+
+    snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
+        installer->target, READONLY_FN, BDJ4_CONFIG_EXT);
+    fh = fileopOpen (tbuff, "w");
+    mdextfclose (fh);
+    fclose (fh);
   }
 
   if (installer->verbose) {
@@ -2674,28 +2686,7 @@ installerFinalize (installer_t *installer)
     fprintf (stdout, "converted %d\n", installer->convprocess);
   }
 
-  if (! installer->nodatafiles) {
-    /* create the new install flag file on a new install */
-    if (installer->newinstall) {
-      FILE  *fh;
-
-      fh = fileopOpen (INST_NEW_FILE, "w");
-      mdextfclose (fh);
-      fclose (fh);
-    }
-
-    /* readonly flag */
-    if (installer->readonly) {
-      FILE  *fh;
-
-      fh = fileopOpen (INST_READONLY_FILE, "w");
-      mdextfclose (fh);
-      fclose (fh);
-    }
-
-  }
-
-  if (installer->nodatafiles) {
+  if (installer->readonly) {
     installer->instState = INST_FINISH;
   } else {
     installer->instState = INST_REGISTER_INIT;
@@ -2845,13 +2836,6 @@ installerDisplayText (installer_t *installer, const char *pfx,
       fflush (stdout);
     }
   }
-}
-
-static void
-installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
-{
-  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-  snprintf (buff, sz, "%s", sysvarsGetStr (SV_FILE_INST_PATH));
 }
 
 static void
