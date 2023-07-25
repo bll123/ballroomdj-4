@@ -688,6 +688,7 @@ msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
 msgid "Enter the folder where %s is installed."
 msgstr "Geef de map op waar %s is geïnstalleerd."
 
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: status message
 msgid "Error: Folder already exists."
@@ -902,7 +903,6 @@ msgstr "Installatie Locatie"
 msgid "Installation aborted."
 msgstr "Installatie afgebroken."
 
-#. CONTEXT: installer: status message
 msgid "Installation complete."
 msgstr "Installatie voltooid."
 
@@ -911,6 +911,7 @@ msgstr "Installatie voltooid."
 msgid "Installing %s."
 msgstr "%s Installeren."
 
+#. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
@@ -1532,7 +1533,7 @@ msgstr "Installatielocatie opslaan."
 msgid "Scale"
 msgstr "Schaal"
 
-#. CONTEXT: altsetup: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Scanning music folder."
 msgstr "Scannen van de muziekmap."
@@ -1592,7 +1593,7 @@ msgid "Select Folder"
 msgstr "Selecteer map"
 
 #. CONTEXT: configuration: folder selection dialog: window title
-#. CONTEXT: altsetup: music folder selection dialog: window title
+#. CONTEXT: alternate installation: music folder selection dialog: window title
 #. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format

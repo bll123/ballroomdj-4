@@ -119,23 +119,28 @@ typedef struct {
   bool            bdjoptloaded : 1;
   bool            guienabled : 1;
   bool            localespecified : 1;
+  bool            musicdirok : 1;
   bool            newinstall : 1;
   bool            quiet : 1;
   bool            reinstall : 1;
   bool            scrolltoend : 1;
+  bool            targetexists : 1;
   bool            uiBuilt : 1;
   bool            unattended : 1;
+  bool            updateinstall : 1;
   bool            verbose : 1;
 } altsetup_t;
 
 static void altsetupBuildUI (altsetup_t *altsetup);
 static int  altsetupMainLoop (void *udata);
 static bool altsetupExitCallback (void *udata);
-static bool altsetupCheckDirTarget (void *udata);
+static bool altsetupReinstallCBHandler (void *udata);
 static bool altsetupTargetDirDialog (void *udata);
 static void altsetupSetMusicDirEntry (altsetup_t *altsetup, const char *musicdir);
 static bool altsetupMusicDirDialog (void *udata);
 static int  altsetupValidateTarget (uientry_t *entry, void *udata);
+static int  altsetupValidateProcessTarget (altsetup_t *altsetup, const char *dir);
+static void altsetupTargetFeedbackMsg (altsetup_t *altsetup);
 static int  altsetupValidateMusicDir (uientry_t *entry, void *udata);
 static bool altsetupSetupCallback (void *udata);
 static void altsetupSetPaths (altsetup_t *altsetup);
@@ -178,7 +183,6 @@ main (int argc, char *argv[])
     { "targetdir",  required_argument,  NULL,   't' },
     { "unattended", no_argument,        NULL,   'U' },
     /* generic args */
-    { "cli",        no_argument,        NULL,   'C' },
     { "quiet"  ,    no_argument,        NULL,   'Q' },
     { "verbose",    no_argument,        NULL,   'V' },
     /* bdj4 launcher args */
@@ -208,12 +212,15 @@ main (int argc, char *argv[])
   altsetup.bdjoptloaded = false;
   altsetup.guienabled = true;
   altsetup.localespecified = false;
+  altsetup.musicdirok = false;
   altsetup.newinstall = false;
   altsetup.quiet = false;
   altsetup.reinstall = false;
   altsetup.scrolltoend = false;
+  altsetup.targetexists = false;
   altsetup.uiBuilt = false;
   altsetup.unattended = false;
+  altsetup.updateinstall = false;
   altsetup.verbose = false;
   for (int i = 0; i < ALT_W_MAX; ++i) {
     altsetup.wcont [i] = NULL;
@@ -230,8 +237,6 @@ main (int argc, char *argv[])
 
   instutilGetMusicDir (buff, sizeof (buff));
   altsetupSetMusicDir (&altsetup, buff);
-//  dataFree (altsetup.musicdir);
-//  altsetup.musicdir = mdstrdup (buff);
 
   while ((c = getopt_long_only (argc, argv, "CUrVQt:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -254,8 +259,6 @@ main (int argc, char *argv[])
       }
       case 'm': {
         altsetupSetMusicDir (&altsetup, optarg);
-//        dataFree (altsetup.musicdir);
-//        altsetup.musicdir = mdstrdup (optarg);
         break;
       }
       case 'V': {
@@ -415,7 +418,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetup->reinstall);
   uiBoxPackStart (hbox, altsetup->wcont [ALT_W_REINST]);
   altsetup->callbacks [ALT_CB_REINST] = callbackInit (
-      altsetupCheckDirTarget, altsetup, NULL);
+      altsetupReinstallCBHandler, altsetup, NULL);
   uiToggleButtonSetCallback (altsetup->wcont [ALT_W_REINST], altsetup->callbacks [ALT_CB_REINST]);
 
   altsetup->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
@@ -609,11 +612,14 @@ altsetupMainLoop (void *udata)
 }
 
 static bool
-altsetupCheckDirTarget (void *udata)
+altsetupReinstallCBHandler (void *udata)
 {
-  altsetup_t   *altsetup = udata;
+  altsetup_t    *altsetup = udata;
+  int           nval;
 
-  uiEntryValidate (altsetup->targetEntry, true);
+  nval = uiToggleButtonIsActive (altsetup->wcont [ALT_W_REINST]);
+  altsetup->reinstall = nval;
+  altsetupTargetFeedbackMsg (altsetup);
   return UICB_CONT;
 }
 
@@ -622,8 +628,6 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
 {
   altsetup_t   *altsetup = udata;
   const char    *dir;
-  bool          exists = false;
-  bool          tbool;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
 
@@ -636,64 +640,120 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (altsetup->targetEntry);
-  tbool = uiToggleButtonIsActive (altsetup->wcont [ALT_W_REINST]);
-  altsetup->newinstall = false;
-  altsetup->reinstall = tbool;
-
-  exists = fileopIsDirectory (dir);
-
   strlcpy (tbuff, dir, sizeof (tbuff));
-  if (fileopIsDirectory (tbuff)) {
-    rc = UIENTRY_OK;
-    strlcat (tbuff, "/data", sizeof (tbuff));
-    if (! fileopIsDirectory (tbuff)) {
-      exists = false;
-      /* if there is an existing directory, the data/ sub-dir must exist */
-      rc = UIENTRY_ERROR;
-    }
+  pathNormalizePath (tbuff, sizeof (tbuff));
+  if (strcmp (tbuff, altsetup->target) != 0) {
+    rc = altsetupValidateProcessTarget (altsetup, altsetup->target);
   }
 
-  if (exists) {
-    if (tbool) {
-      /* CONTEXT: alternate installation: message indicating the action that will be taken */
-      snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
-      uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
-    } else {
-      /* CONTEXT: alternate installation: message indicating the action that will be taken */
-      snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-      uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
+  return rc;
+}
+
+static int
+altsetupValidateProcessTarget (altsetup_t *altsetup, const char *dir)
+{
+  int     rc = UIENTRY_ERROR;
+  bool    exists = false;
+  bool    found = false;
+  char    tbuff [MAXPATHLEN];
+
+  if (fileopIsDirectory (dir)) {
+    exists = true;
+    found = instutilCheckForExistingInstall (altsetup->maindir, dir);
+    if (! found) {
+      strlcpy (tbuff, dir, sizeof (tbuff));
+      instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
+      exists = fileopIsDirectory (tbuff);
+      if (exists) {
+        found = instutilCheckForExistingInstall (altsetup->maindir, tbuff);
+        if (found) {
+          dir = tbuff;
+        }
+      }
+    }
+
+    if (exists && found) {
+      /* this will be a re-install or an update */
+      rc = UIENTRY_OK;
     }
   } else {
     pathinfo_t    *pi;
+    char          tmp [MAXPATHLEN];
 
+    exists = false;
+    found = false;
     rc = UIENTRY_OK;
+
+    /* the path doesn't exist, which is ok for a new installation */
+    /* check the path up to that point and make sure it is valid */
     pi = pathInfo (dir);
     if (pi->dlen > 0) {
-      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
-      if (! fileopIsDirectory (tbuff)) {
+      snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->dlen, pi->dirname);
+      if (! fileopIsDirectory (tmp)) {
         rc = UIENTRY_ERROR;
       }
     }
     pathInfoFree (pi);
+  }
 
-    altsetup->newinstall = true;
+  if (rc == UIENTRY_OK) {
+    /* set the target directory information */
+    altsetupSetTargetDir (altsetup, dir);
+    altsetup->newinstall = false;
+    altsetup->updateinstall = false;
+    altsetup->targetexists = false;
+    if (exists) {
+      altsetup->targetexists = true;
+      if (found) {
+        altsetup->newinstall = false;
+        altsetup->updateinstall = true;
+      }
+    }
+    if (! exists) {
+      altsetup->newinstall = true;
+    }
+  }
+
+  altsetupTargetFeedbackMsg (altsetup);
+
+  return rc;
+}
+
+static void
+altsetupTargetFeedbackMsg (altsetup_t *altsetup)
+{
+  char          tbuff [MAXPATHLEN];
+
+  /* one of newinstall or updateinstall must be set */
+  /* reinstall matches the re-install checkbox */
+  /* if targetexists is true, and updateinstall is false, the target */
+  /* folder is an existing folder, but not a bdj4 installation */
+
+  if (altsetup->updateinstall && altsetup->reinstall) {
+    /* CONTEXT: alternate installation: message indicating the action that will be taken */
+    snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
+    uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
+  }
+  if (altsetup->updateinstall && ! altsetup->reinstall) {
+    /* CONTEXT: alternate installation: message indicating the action that will be taken */
+    snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
+    uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
+  }
+  if (altsetup->newinstall) {
     /* CONTEXT: alternate installation: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
   }
-
-  if (! *dir) {
-    rc = UIENTRY_ERROR;
+  if (altsetup->targetexists && ! altsetup->updateinstall) {
+    /* CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation */
+    uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], _("Error: Folder already exists."));
+  }
+  if (! altsetup->targetexists && ! altsetup->newinstall && ! altsetup->updateinstall) {
+    /* CONTEXT: alternate installation: the selected folder is not valid */
+    uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], _("Invalid Folder"));
   }
 
-  if (exists) {
-    altsetupGetExistingData (altsetup);
-  }
-
-  if (rc == UIENTRY_OK) {
-    altsetupSetPaths (altsetup);
-  }
-  return rc;
+  return;
 }
 
 static int
@@ -719,8 +779,10 @@ altsetupValidateMusicDir (uientry_t *entry, void *udata)
     rc = UIENTRY_OK;
   }
 
+  altsetup->musicdirok = false;
   if (rc == UIENTRY_OK) {
-    altsetupSetPaths (altsetup);
+    altsetupSetMusicDir (altsetup, tbuff);
+    altsetup->musicdirok = true;
   }
   return rc;
 }
@@ -771,7 +833,7 @@ altsetupMusicDirDialog (void *udata)
   uiselect_t  *selectdata;
   char        tbuff [100];
 
-  /* CONTEXT: altsetup: music folder selection dialog: window title */
+  /* CONTEXT: alternate installation: music folder selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
   selectdata = uiDialogCreateSelect (altsetup->wcont [ALT_W_WINDOW],
       tbuff, uiEntryGetValue (altsetup->musicdirEntry), NULL, NULL, NULL);
@@ -808,15 +870,15 @@ altsetupSetupCallback (void *udata)
 static void
 altsetupSetPaths (altsetup_t *altsetup)
 {
-  altsetupSetTargetDir (altsetup, uiEntryGetValue (altsetup->targetEntry));
-  altsetupSetMusicDir (altsetup, uiEntryGetValue (altsetup->musicdirEntry));
+  if (altsetup->targetexists) {
+    altsetupGetExistingData (altsetup);
+  }
 }
 
 static void
 altsetupInit (altsetup_t *altsetup)
 {
   altsetupSetPaths (altsetup);
-  altsetup->reinstall = uiToggleButtonIsActive (altsetup->wcont [ALT_W_REINST]);
   altsetup->instState = ALT_MAKE_TARGET;
 }
 
@@ -824,7 +886,6 @@ static void
 altsetupMakeTarget (altsetup_t *altsetup)
 {
   diropMakeDir (altsetup->target);
-
   altsetup->instState = ALT_CHDIR;
 }
 
@@ -1024,7 +1085,7 @@ altsetupSetATI (altsetup_t *altsetup)
   }
 
   if (altsetup->newinstall || altsetup->reinstall) {
-    /* CONTEXT: altsetup: status message */
+    /* CONTEXT: alternate installation: status message */
     altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Scanning music folder."), false);
 
     /* this will scan the music dir and set the audio tag interface */
@@ -1138,16 +1199,22 @@ altsetupFailWorkingDir (altsetup_t *altsetup, const char *dir)
 static void
 altsetupSetTargetDir (altsetup_t *altsetup, const char *fn)
 {
+  char      *tmp;
+
+  tmp = mdstrdup (fn);
   dataFree (altsetup->target);
-  altsetup->target = mdstrdup (fn);
+  altsetup->target = tmp;
   pathNormalizePath (altsetup->target, strlen (altsetup->target));
 }
 
 static void
 altsetupSetMusicDir (altsetup_t *altsetup, const char *fn)
 {
+  char      *tmp;
+
+  tmp = mdstrdup (fn);
   dataFree (altsetup->musicdir);
-  altsetup->musicdir = mdstrdup (fn);
+  altsetup->musicdir = tmp;
   pathNormalizePath (altsetup->musicdir, strlen (altsetup->musicdir));
 }
 

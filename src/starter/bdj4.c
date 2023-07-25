@@ -86,7 +86,6 @@ main (int argc, char * argv[])
     { "ttagdbchk",      no_argument,        NULL,   27 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
     /* bdj4updater */
-    { "converted",      no_argument,        NULL,   0 },
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
     { "ati",            required_argument,  NULL,   0 },
@@ -102,6 +101,7 @@ main (int argc, char * argv[])
     { "unattended",     no_argument,        NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
     /* updater, installer */
+    { "convert",        no_argument,        NULL,   0 },
     { "musicdir",       required_argument,  NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },

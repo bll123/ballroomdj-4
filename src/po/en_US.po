@@ -682,6 +682,7 @@ msgstr ""
 msgid "Enter the folder where %s is installed."
 msgstr ""
 
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: status message
 msgid "Error: Folder already exists."
@@ -896,7 +897,6 @@ msgstr ""
 msgid "Installation aborted."
 msgstr ""
 
-#. CONTEXT: installer: status message
 msgid "Installation complete."
 msgstr ""
 
@@ -905,6 +905,7 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
@@ -1525,7 +1526,7 @@ msgstr ""
 msgid "Scale"
 msgstr ""
 
-#. CONTEXT: altsetup: status message
+#. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Scanning music folder."
 msgstr ""
@@ -1585,7 +1586,7 @@ msgid "Select Folder"
 msgstr ""
 
 #. CONTEXT: configuration: folder selection dialog: window title
-#. CONTEXT: altsetup: music folder selection dialog: window title
+#. CONTEXT: alternate installation: music folder selection dialog: window title
 #. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format

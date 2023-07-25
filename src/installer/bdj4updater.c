@@ -159,7 +159,7 @@ main (int argc, char *argv [])
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
-    { "converted",  no_argument,        NULL,   'c' },
+    { "convert",    no_argument,        NULL,   'c' },
     { "musicdir",   required_argument,  NULL,   'm' },
     { "writetags",  no_argument,        NULL,   'W' },
     { "bdj4updater",no_argument,        NULL,   0 },

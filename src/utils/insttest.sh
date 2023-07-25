@@ -14,20 +14,24 @@ tcount=0
 pass=0
 fail=0
 grc=0
-verbose=F
+dump=F
 keep=F
 keepfirst=F
+quiet=--quiet
 
 while test $# -gt 0; do
   case $1 in
-    --verbose)
-      verbose=T
+    --dump)
+      dump=T
       ;;
     --keep)
       keep=T
       ;;
     --keepfirst)
       keepfirst=T
+      ;;
+    --noquiet)
+      quiet=""
       ;;
   esac
   shift
@@ -215,6 +219,14 @@ function checkInstallation {
         ;;
       converted)
         shift
+        if [[ $fin == T ]]; then
+          res=$(($res+1))  # converted
+          if [[ $1 == "0" ]]; then
+            chk=$(($chk+1))
+          else
+            echo "  should not convert"
+          fi
+        fi
         ;;
       bdj3-version)
         shift
@@ -663,7 +675,7 @@ function checkInstallation {
     grc=1
     fail=$(($fail+1))
     echo "   $section $tname FAIL"
-    if [[ $verbose == T ]]; then
+    if [[ $dump == T ]]; then
       echo "  rc: $trc"
       echo "  out:"
       echo $tout | sed 's/^/  /'
@@ -700,7 +712,7 @@ resetUnpack
 tname=new-install-no-bdj3
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended --quiet \
+    --verbose --unattended ${quiet} \
     --nomutagen \
     --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
@@ -721,7 +733,7 @@ if [[ $crc -eq 0 ]]; then
   tname=re-install-no-bdj3
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended --quiet \
+      --verbose --unattended ${quiet} \
       --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
@@ -737,7 +749,7 @@ if [[ $crc -eq 0 ]]; then
   tname=update-no-bdj3
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended --quiet \
+      --verbose --unattended ${quiet} \
       --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
@@ -754,7 +766,7 @@ if [[ $crc -eq 0 ]]; then
   echo "== $section $tname"
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended --quiet \
+      --verbose --unattended ${quiet} \
       --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
@@ -772,7 +784,7 @@ if [[ T == T ]]; then
   tname=install-no-data
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended --quiet \
+      --verbose --unattended ${quiet} \
       --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
@@ -794,7 +806,7 @@ resetUnpack
 tname=new-install-no-bdj3
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended --quiet \
+    --verbose --unattended ${quiet} \
     --nomutagen \
     --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
@@ -813,7 +825,7 @@ if [[ $crc -eq 0 ]]; then
 
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended --quiet \
+      --verbose --unattended ${quiet} \
       --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \

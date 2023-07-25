@@ -171,10 +171,12 @@ typedef struct {
   char            *musicdir;
   int             atiselect;
   /* flags */
+  bool            aborted : 1;
   bool            bdjoptloaded : 1;
   bool            clean : 1;
   bool            convdirok : 1;
   bool            convprocess : 1;
+  bool            convspecified : 1;
   bool            guienabled : 1;
   bool            insetconvert : 1;
   bool            localespecified : 1;
@@ -221,6 +223,7 @@ static void installerSetConversionFlags (installer_t *installer);
 static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
 static int  installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir);
 static int  installerValidateMusicDir (uientry_t *entry, void *udata);
+static int  installerValidateProcessMusicDir (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 static void installerSetConvertStatus (installer_t *installer, int val);
 static void installerConversionFeedbackMsg (installer_t *installer);
@@ -289,6 +292,7 @@ main (int argc, char *argv[])
     { "ati",        required_argument,  NULL,   'A' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
     { "bdj4installer",no_argument,      NULL,   0 },
+    { "convert",    no_argument,        NULL,   'C' },
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
     { "noclean",    no_argument,        NULL,   'c' },
@@ -338,10 +342,12 @@ main (int argc, char *argv[])
   /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
+  installer.aborted = false;
   installer.bdjoptloaded = false;
   installer.clean = true;
   installer.convdirok = false;
   installer.convprocess = false;
+  installer.convspecified = false;
   installer.guienabled = true;
   installer.insetconvert = false;
   installer.localespecified = false;
@@ -445,6 +451,10 @@ main (int argc, char *argv[])
         installer.readonly = true;
         break;
       }
+      case 'C': {
+        installer.convspecified = true;
+        break;
+      }
       case 'c': {
         installer.clean = false;
         break;
@@ -507,7 +517,9 @@ main (int argc, char *argv[])
   }
 
   if (*installer.unpackdir == '\0') {
-    fprintf (stderr, "Error: unpackdir argument is required\n");
+    if (! installer.quiet) {
+      fprintf (stdout, "Error: unpackdir argument is required\n");
+    }
     if (installer.verbose) {
       fprintf (stdout, "finish NG\n");
     }
@@ -521,23 +533,28 @@ main (int argc, char *argv[])
     exit (1);
   }
 
-  /* this only works if the installer.target is pointing at an existing */
-  /* install of BDJ4 */
-  installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
-  if (*tbuff) {
-    fh = fileopOpen (tbuff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (buff, sizeof (buff), fh);
-      stringTrim (buff);
-      installerSetBDJ3LocDir (&installer, buff);
-      mdextfclose (fh);
-      fclose (fh);
-    } else {
-      char *fn;
+  /* only try to fetch the bdj3loc if the installer is not running */
+  /* as unattended.  unattended installations will specify the bdj3loc */
+  /* on the command line */
+  if (! installer.unattended) {
+    /* this only works if the installer.target is pointing at an existing */
+    /* install of BDJ4 */
+    installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
+    if (*tbuff) {
+      fh = fileopOpen (tbuff, "r");
+      if (fh != NULL) {
+        (void) ! fgets (buff, sizeof (buff), fh);
+        stringTrim (buff);
+        installerSetBDJ3LocDir (&installer, buff);
+        mdextfclose (fh);
+        fclose (fh);
+      } else {
+        char *fn;
 
-      fn = locatebdj3 ();
-      installerSetBDJ3LocDir (&installer, fn);
-      mdfree (fn);
+        fn = locatebdj3 ();
+        installerSetBDJ3LocDir (&installer, fn);
+        mdfree (fn);
+      }
     }
   }
 
@@ -567,13 +584,10 @@ main (int argc, char *argv[])
 
   while (installer.instState != INST_EXIT) {
     if (installer.instState != installer.lastInstState) {
-      if (installer.nodatafiles) {
-        if (installer.verbose && ! installer.quiet) {
-          fprintf (stderr, "state: %d\n", installer.instState);
-        }
-      } else {
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "state: %d", installer.instState);
+      if (installer.verbose && ! installer.quiet) {
+        fprintf (stderr, "state: %d\n", installer.instState);
       }
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "state: %d", installer.instState);
       installer.lastInstState = installer.instState;
     }
     installerMainLoop (&installer);
@@ -1091,7 +1105,10 @@ installerMainLoop (void *udata)
     }
     case INST_FINISH: {
       /* CONTEXT: installer: status message */
-      installerDisplayText (installer, INST_DISP_FIN, _("Installation complete."), true);
+      if (! installer->aborted) {
+        installerDisplayText (installer, INST_DISP_FIN, _("Installation complete."), true);
+      }
+      installer->aborted = false;
 
       if (installer->guienabled) {
         installer->instState = INST_PREPARE;
@@ -1142,7 +1159,7 @@ installerConversionCBHandler (void *udata)
 
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
   installer->convprocess = false;
-  if (nval) {
+  if (nval && *installer->bdj3loc) {
     installer->convprocess = true;
   }
 
@@ -1294,9 +1311,15 @@ installerSetConversionFlags (installer_t *installer)
 {
   /* set the conversion flags */
   if (installer->convdirok) {
-    if (installer->newinstall) {
-      installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_ON);
-      installer->convprocess = true;
+    if (installer->newinstall && *installer->bdj3loc) {
+      if (installer->unattended) {
+        if (installer->convspecified) {
+          installer->convprocess = true;
+        }
+      } else {
+        installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_ON);
+        installer->convprocess = true;
+      }
     }
     if (installer->updateinstall) {
       /* do not automatically convert on a re-install */
@@ -1348,7 +1371,7 @@ installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir)
 {
   int       rc = UIENTRY_OK;
 
-  if (*dir == '\0' || strcmp (dir, "-") == 0) {
+  if (*dir == '\0') {
     rc = UIENTRY_OK;
   } else {
     if (! isMacOS ()) {
@@ -1406,18 +1429,29 @@ installerValidateMusicDir (uientry_t *entry, void *udata)
 
   strlcpy (tbuff, uiEntryGetValue (installer->musicdirEntry), sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
-  if (*tbuff && fileopIsDirectory (tbuff)) {
+  rc = installerValidateProcessMusicDir (installer, tbuff);
+
+  return rc;
+}
+
+static int
+installerValidateProcessMusicDir (installer_t *installer, const char *dir)
+{
+  int   rc = UIENTRY_ERROR;
+
+  if (*dir && fileopIsDirectory (dir)) {
     rc = UIENTRY_OK;
   }
 
   installer->musicdirok = false;
   if (rc == UIENTRY_OK) {
-    installerSetMusicDir (installer, tbuff);
+    installerSetMusicDir (installer, dir);
     installer->musicdirok = true;
   }
 
   return rc;
 }
+
 
 static void
 installerSetPaths (installer_t *installer)
@@ -1649,6 +1683,7 @@ installerPrepare (installer_t *installer)
   /* to get initial feedback messages displayed and to set variables */
   installerValidateProcessTarget (installer, installer->target);
   installerValidateProcessBDJ3Loc (installer, installer->bdj3loc);
+  installerValidateProcessMusicDir (installer, installer->musicdir);
 
   if (! installer->guienabled && ! installer->unattended) {
     fprintf (stderr, "Error: no installation specified\n");
@@ -1675,6 +1710,7 @@ installerInstInit (installer_t *installer)
     installerDisplayText (installer, INST_DISP_ERROR, _("Error: Folder already exists."), false);
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
+    installer->aborted = true;
     installer->instState = INST_WAIT_USER;
     return;
   }
@@ -1683,6 +1719,7 @@ installerInstInit (installer_t *installer)
   if (! installer->musicdirok) {
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
+    installer->aborted = true;
     installer->instState = INST_WAIT_USER;
     return;
   }
@@ -1935,8 +1972,7 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  if (strcmp (installer->bdj3loc, "-") == 0 ||
-     *installer->bdj3loc == '\0') {
+  if (*installer->bdj3loc == '\0') {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1966,8 +2002,7 @@ installerConvertStart (installer_t *installer)
     }
   }
 
-  if (strcmp (installer->bdj3loc, "-") == 0 ||
-     *installer->bdj3loc == '\0') {
+  if (*installer->bdj3loc == '\0') {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -2198,7 +2233,7 @@ installerSetATI (installer_t *installer)
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_ACTION, _("Scanning music folder."), false);
 
-    /* this will scan the music dir and set the audio tag interface */
+    /* scan the music dir and set the audio tag interface */
     installerScanMusicDir (installer);
   }
 
@@ -2589,7 +2624,7 @@ installerUpdateProcess (installer_t *installer)
     targv [targc++] = "--newinstall";
   }
   if (installer->convprocess) {
-    targv [targc++] = "--converted";
+    targv [targc++] = "--convert";
   }
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
@@ -3024,6 +3059,7 @@ installerFailWorkingDir (installer_t *installer, const char *dir, const char *ms
   installerDisplayText (installer, INST_DISP_ERROR, _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
+  installer->aborted = true;
   installer->instState = INST_WAIT_USER;
 }
 
@@ -3033,7 +3069,6 @@ installerSetTargetDir (installer_t *installer, const char *fn)
   char  *tmp;
 
   /* fn may be pointing to an allocated value, which is installer->target */
-  /* bad code */
   tmp = mdstrdup (fn);
   dataFree (installer->target);
   installer->target = tmp;
@@ -3043,16 +3078,22 @@ installerSetTargetDir (installer_t *installer, const char *fn)
 static void
 installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 {
+  char    *tmp;
+
+  tmp = mdstrdup (fn);
   dataFree (installer->bdj3loc);
-  installer->bdj3loc = mdstrdup (fn);
+  installer->bdj3loc = tmp;
   pathNormalizePath (installer->bdj3loc, strlen (installer->bdj3loc));
 }
 
 static void
 installerSetMusicDir (installer_t *installer, const char *fn)
 {
+  char    *tmp;
+
+  tmp = mdstrdup (fn);
   dataFree (installer->musicdir);
-  installer->musicdir = mdstrdup (fn);
+  installer->musicdir = tmp;
   pathNormalizePath (installer->musicdir, strlen (installer->musicdir));
 }
 
