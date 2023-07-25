@@ -160,7 +160,10 @@ function checkInstallation {
   tout=$(echo $3 | sed "s/\r//g")       # for windows
   trc=$4
   type=$5
+  # datafiles may be 'y', 'n' or 'o' (only).
   datafiles=$6
+  # target is an optional parameter, defaults to TARGETDIR
+  target=${7:-${TARGETDIR}}
 
   chk=0
   res=0
@@ -257,7 +260,7 @@ function checkInstallation {
     echo "  installer: bad return code"
   fi
 
-  if [[ $datafiles == y ]]; then
+  if [[ $datafiles == y || $datafiles == o ]]; then
     res=$(($res+1))  # data dir
     if [[ $fin == T && -d "${DATADIR}" ]]; then
       chk=$(($chk+1))
@@ -367,14 +370,6 @@ function checkInstallation {
       fi
     else
       echo "  no ${fn}"
-    fi
-
-    # main image files
-    res=$(($res+1))
-    if [[ $fin == T && -f "${TARGETDIR}/img/led_on.svg" ]]; then
-      chk=$(($chk+1))
-    else
-      echo "  no img/led_on.svg file"
     fi
 
     res=$(($res+1))  # tmp dir
@@ -623,35 +618,45 @@ function checkInstallation {
     fi
   fi
 
-  res=$(($res+1))  # bin dir
-  if [[ $fin == T && -d "${TARGETDIR}/bin" ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  no bin directory"
-  fi
-
-  res=$(($res+1))  # bdj4 exec
-  if [[ $fin == T && -f "${TARGETDIR}/bin/bdj4${sfx}" ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  no bdj4 executable"
-  fi
-
-  if [[ $datafiles == y ]]; then
-    lvol=$(sed -n -e '/^VOLUME/ { n; s/^\.\.//; p ; }' $mconf)
-    lpli=$(sed -n -e '/^PLAYER/ { n; s/^\.\.//; p ; }' $mconf)
-
-    res=$(($res+1))  # volume lib
-    if [[ $fin == T && $libvol == $lvol ]]; then
+  if [[ $datafiles != o ]]; then
+    # main image files
+    res=$(($res+1))
+    if [[ $fin == T && -f "${target}/img/led_on.svg" ]]; then
       chk=$(($chk+1))
     else
-      echo "  volume library not set correctly"
+      echo "  no img/led_on.svg file"
     fi
-    res=$(($res+1))  # pli lib
-    if [[ $fin == T && $libpli == $lpli ]]; then
+
+    res=$(($res+1))  # bin dir
+    if [[ $fin == T && -d "${target}/bin" ]]; then
       chk=$(($chk+1))
     else
-      echo "  pli library not set correctly"
+      echo "  no bin directory"
+    fi
+
+    res=$(($res+1))  # bdj4 exec
+    if [[ $fin == T && -f "${target}/bin/bdj4${sfx}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no bdj4 executable"
+    fi
+
+    if [[ $datafiles == y ]]; then
+      lvol=$(sed -n -e '/^VOLUME/ { n; s/^\.\.//; p ; }' $mconf)
+      lpli=$(sed -n -e '/^PLAYER/ { n; s/^\.\.//; p ; }' $mconf)
+
+      res=$(($res+1))  # volume lib
+      if [[ $fin == T && $libvol == $lvol ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  volume library not set correctly"
+      fi
+      res=$(($res+1))  # pli lib
+      if [[ $fin == T && $libpli == $lpli ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  pli library not set correctly"
+      fi
     fi
   fi
 
@@ -661,10 +666,24 @@ function checkInstallation {
       echo "ASAN files found"
       exit 1
     fi
-    c=$(ls -1 "${TARGETDIR}/core" 2>/dev/null | wc -l)
+    c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "core file found"
       exit 1
+    fi
+    if [[ $TARGETALTDIR != $target ]]; then
+      c=$(ls -1 "${TARGETALTDIR}/core" 2>/dev/null | wc -l)
+      if [[ $c -ne 0 ]]; then
+        echo "core file found (b)"
+        exit 1
+      fi
+    fi
+    if [[ $TARGETTOPDIR != $target ]]; then
+      c=$(ls -1 "${TARGETTOPDIR}/core" 2>/dev/null | wc -l)
+      if [[ $c -ne 0 ]]; then
+        echo "core file found (c)"
+        exit 1
+      fi
     fi
   fi
 
@@ -746,20 +765,6 @@ if [[ $crc -eq 0 ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc r y
 
-  if [[ $tag == linux || $tag == windows ]]; then
-    # alternate installation (linux, windows)
-    tname=alt-install
-    echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altsetup \
-        --verbose --unattended ${quiet} \
-        --ati ${ATI} \
-        --targetdir "$TARGETALTDIR" \
-        --musicdir "$MUSICDIR" \
-        )
-    rc=$?
-    checkInstallation $section $tname "$out" $rc u y
-  fi
-
   # standard update
   resetUnpack
   tname=update-no-bdj3
@@ -794,6 +799,22 @@ if [[ $crc -eq 0 ]]; then
 fi
 
 if [[ T == T ]]; then
+  if [[ $tag == linux || $tag == windows ]]; then
+    # alternate installation (linux, windows)
+    tname=alt-install
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+  fi
+fi
+
+if [[ T == T ]]; then
   # install w/o data files
   cleanInstTest
   resetUnpack
@@ -811,9 +832,6 @@ if [[ T == T ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc n n
 fi
-
-
-
 
 section=nl
 locale=nl_BE
@@ -854,6 +872,23 @@ if [[ $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
+fi
+
+if [[ T == T ]]; then
+  if [[ $tag == linux || $tag == windows ]]; then
+    # alternate installation (linux, windows)
+    tname=alt-install
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        --locale ${locale} \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+  fi
 fi
 
 if [[ $keep == F ]]; then

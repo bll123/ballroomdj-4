@@ -61,7 +61,7 @@ main (int argc, char * argv[])
   int       rc;
 
   static struct option bdj_options [] = {
-    { "bdj4altsetup",   no_argument,        NULL,   20 },
+    { "bdj4altinst",    no_argument,        NULL,   20 },
     { "bdj4bpmcounter", no_argument,        NULL,   19 },
     { "bdj4configui",   no_argument,        NULL,   3 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
@@ -93,17 +93,17 @@ main (int argc, char * argv[])
     { "readonly",       no_argument,        NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
-    /* used by installer, altsetup */
+    /* used by installer, altinst */
     { "ati",            required_argument,  NULL,   0 },
     { "locale",         required_argument,  NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
-    /* altsetup */
+    /* altinst */
     { "name",           required_argument,  NULL,   0 },
     /* updater, installer */
     { "convert",        no_argument,        NULL,   0 },
-    /* updater, installer, altsetup */
+    /* updater, installer, altinst */
     { "musicdir",       required_argument,  NULL,   0 },
     /* updater */
     { "newinstall",     no_argument,        NULL,   0 },
@@ -276,7 +276,7 @@ main (int argc, char * argv[])
         break;
       }
       case 20: {
-        prog = "bdj4altsetup";
+        prog = "bdj4altinst";
         nodetach = true;
         wait = true;
         isinstaller = true;
@@ -383,7 +383,7 @@ main (int argc, char * argv[])
   pathNormalizePath (origcwd, sizeof (origcwd));
 
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
-    prog = "bdj4altsetup";
+    prog = "bdj4altinst";
     nodetach = true;
     wait = true;
     isinstaller = true;

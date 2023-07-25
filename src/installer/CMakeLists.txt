@@ -49,11 +49,11 @@ target_link_libraries (bdj4installer PUBLIC
 )
 addIntlLibrary (bdj4installer)
 
-add_executable (bdj4altsetup bdj4altsetup.c)
+add_executable (bdj4altinst bdj4altinst.c)
 if (WIN32)
-  target_compile_options (bdj4altsetup PRIVATE -municode)
+  target_compile_options (bdj4altinst PRIVATE -municode)
 endif()
-target_link_libraries (bdj4altsetup PUBLIC
+target_link_libraries (bdj4altinst PUBLIC
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
@@ -62,7 +62,7 @@ target_link_libraries (bdj4altsetup PUBLIC
   z
   m
 )
-addIntlLibrary (bdj4altsetup)
+addIntlLibrary (bdj4altinst)
 
 add_executable (bdj4updater bdj4updater.c)
 if (WIN32)
@@ -78,10 +78,10 @@ target_link_libraries (bdj4updater PUBLIC
 addIntlLibrary (bdj4updater)
 
 install (TARGETS
-  bdj4se bdj4installer bdj4altsetup bdj4updater
+  bdj4se bdj4installer bdj4altinst bdj4updater
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (bdj4installer)
-updateRPath (bdj4altsetup)
+updateRPath (bdj4altinst)
 updateRPath (bdj4updater)

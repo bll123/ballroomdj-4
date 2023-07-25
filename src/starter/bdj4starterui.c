@@ -2056,7 +2056,7 @@ starterSetUpAlternate (void *udata)
   pathbldMakePath (prog, sizeof (prog),
       "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
   targv [targc++] = prog;
-  targv [targc++] = "--bdj4altsetup";
+  targv [targc++] = "--bdj4altinst";
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
 

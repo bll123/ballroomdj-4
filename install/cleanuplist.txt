@@ -128,7 +128,10 @@ bin/libatitaglib\.(so|dylib|dll)$
 
 # 2023-7-25
 # altcount.txt now lives in the .config dir
+# altsetup renamed to altinst
 templates/altcount\.txt$
+bin/bdj4altsetup$
+bin/bdj4altsetup\.exe$
 
 ####
 # mac-os
