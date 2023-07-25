@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-24\n"
+"PO-Revision-Date: 2023-07-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -682,28 +682,14 @@ msgstr "Afstandsbediening inschakelen"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
 
-#. CONTEXT: installer: command line interface: asking for the BDJ4 destination
-#, c-format
-msgid "Enter the destination folder."
-msgstr "Voer de doelmap in."
-
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Geef de map op waar %s is geïnstalleerd."
 
-#. CONTEXT: installer: command line interface: asking for the user's music folder
-#, c-format
-msgid "Enter the music folder."
-msgstr "Geef de muziekmap op."
-
-#. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
-#, c-format
-msgid "Error: Folder %s already exists."
-msgstr "Fout: Map %s bestaat al."
-
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
 msgid "Error: Folder already exists."
 msgstr "Fout: Map bestaat al."
 
@@ -912,7 +898,6 @@ msgstr "Installeren"
 msgid "Install Location"
 msgstr "Installatie Locatie"
 
-#. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
 msgstr "Installatie afgebroken."
@@ -1117,7 +1102,6 @@ msgstr "Nieuw"
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "New %s installation."
 msgstr "Nieuwe %s installatie."
@@ -1344,7 +1328,6 @@ msgstr "Poort"
 msgid "Position"
 msgstr "Positie"
 
-#. CONTEXT: installer: command line interface: instructions
 #. CONTEXT: installer: command line interface: accept BDJ3 location default
 #, c-format
 msgid "Press 'Enter' to select the default."
@@ -1353,11 +1336,6 @@ msgstr "Druk op 'Enter' om de standaardwaarde te selecteren."
 #. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr "Vorige"
-
-#. CONTEXT: installer: command line interface: prompt to continue
-#, c-format
-msgid "Proceed with installation?"
-msgstr "Doorgaan met installeren?"
 
 #. CONTEXT: alternate installation: status message
 msgid "Process aborted."
@@ -1456,7 +1434,6 @@ msgstr "Herinstalleren"
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Re-install %s."
 msgstr "%s opnieuw installeren."
@@ -1979,7 +1956,6 @@ msgstr "Updaten van %s."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
 msgstr "Bestaande %s installatie bijwerken."

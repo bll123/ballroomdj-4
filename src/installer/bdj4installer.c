@@ -61,7 +61,6 @@ typedef enum {
   INST_VERIFY_INSTALL,
   INST_PREPARE,
   INST_WAIT_USER,
-  INST_GET_INFO_FROM_USER,
   INST_INIT,
   INST_SAVE_TARGET,
   INST_MAKE_TARGET,
@@ -179,6 +178,7 @@ typedef struct {
   bool            guienabled : 1;
   bool            insetconvert : 1;
   bool            localespecified : 1;
+  bool            musicdirok : 1;
   bool            newinstall : 1;
   bool            nodatafiles : 1;
   bool            nomutagen : 1;
@@ -229,7 +229,6 @@ static bool installerInstallCallback (void *udata);
 static void installerVerifyInstInit (installer_t *installer);
 static void installerVerifyInstall (installer_t *installer);
 static void installerPrepare (installer_t *installer);
-static void installerGetInfoFromUser (installer_t *installer);
 static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
@@ -302,7 +301,6 @@ main (int argc, char *argv[])
     { "unattended", no_argument,        NULL,   'U' },
     { "unpackdir",  required_argument,  NULL,   'u' },
     /* generic args */
-    { "cli",        no_argument,        NULL,   'C' },
     { "quiet"  ,    no_argument,        NULL,   'Q' },
     { "verbose",    no_argument,        NULL,   'V' },
     /* bdj4 launcher args */
@@ -347,6 +345,7 @@ main (int argc, char *argv[])
   installer.guienabled = true;
   installer.insetconvert = false;
   installer.localespecified = false;
+  installer.musicdirok = false;
   installer.newinstall = true;
   installer.nodatafiles = false;
   installer.nomutagen = false;
@@ -426,19 +425,16 @@ main (int argc, char *argv[])
         }
         break;
       }
-      case 'C': {
-        installer.guienabled = false;
-#if _define_SIGCHLD
-        osDefaultSignal (SIGCHLD);
-#endif
-        break;
-      }
       case 'T': {
         installer.testregistration = true;
         break;
       }
       case 'U': {
         installer.unattended = true;
+        installer.guienabled = false;
+#if _define_SIGCHLD
+        osDefaultSignal (SIGCHLD);
+#endif
         break;
       }
       case 'r': {
@@ -510,46 +506,11 @@ main (int argc, char *argv[])
     installer.musicdirEntry = uiEntryInit (60, MAXPATHLEN);
   }
 
-  if (installer.unattended) {
-    bool    ok = true;
-    bool    exists;
-
-    exists = false;
-// ### FIX
-//    exists = installerCheckTarget (&installer, installer.target);
-    if (fileopIsDirectory (installer.target)) {
-      if (! exists) {
-        fprintf (stderr, "target directory is invalid: exists but not bdj4\n");
-        ok = false;
-      }
-      if (exists && installer.newinstall && installer.reinstall) {
-        fprintf (stderr, "target directory is invalid: new & reinstall\n");
-        ok = false;
-      }
-    }
-    if (*installer.bdj3loc) {
-      if (! fileopIsDirectory (installer.bdj3loc)) {
-        fprintf (stderr, "invalid bdj3 loc\n");
-        ok = false;
-      }
-    }
-
-    if (! ok) {
-      fprintf (stdout, "finish NG\n");
-      dataFree (installer.target);
-      dataFree (installer.bdj3loc);
-      dataFree (installer.musicdir);
-#if BDJ4_MEM_DEBUG
-      mdebugReport ();
-      mdebugCleanup ();
-#endif
-      exit (1);
-    }
-  }
-
   if (*installer.unpackdir == '\0') {
     fprintf (stderr, "Error: unpackdir argument is required\n");
-    fprintf (stdout, "finish NG\n");
+    if (installer.verbose) {
+      fprintf (stdout, "finish NG\n");
+    }
     dataFree (installer.target);
     dataFree (installer.bdj3loc);
     dataFree (installer.musicdir);
@@ -602,8 +563,6 @@ main (int argc, char *argv[])
   if (installer.guienabled) {
     installerBuildUI (&installer);
     osuiFinalize ();
-  } else {
-    installer.instState = INST_INIT;
   }
 
   while (installer.instState != INST_EXIT) {
@@ -1001,10 +960,9 @@ installerMainLoop (void *udata)
     }
     case INST_WAIT_USER: {
       /* do nothing */
-      break;
-    }
-    case INST_GET_INFO_FROM_USER: {
-      installerGetInfoFromUser (installer);
+      if (installer->unattended) {
+        installer->instState = INST_FINISH;
+      }
       break;
     }
     case INST_INIT: {
@@ -1163,6 +1121,7 @@ installerReinstallCBHandler (void *udata)
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
   installer->reinstall = nval;
   installerTargetFeedbackMsg (installer);
+  installerConversionFeedbackMsg (installer);
   return UICB_CONT;
 }
 
@@ -1327,8 +1286,6 @@ installerTargetFeedbackMsg (installer_t *installer)
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], _("Invalid Folder"));
   }
 
-  installerConversionFeedbackMsg (installer);
-
   return;
 }
 
@@ -1453,8 +1410,10 @@ installerValidateMusicDir (uientry_t *entry, void *udata)
     rc = UIENTRY_OK;
   }
 
+  installer->musicdirok = false;
   if (rc == UIENTRY_OK) {
     installerSetMusicDir (installer, tbuff);
+    installer->musicdirok = true;
   }
 
   return rc;
@@ -1585,12 +1544,14 @@ installerSetConvertStatus (installer_t *installer, int state)
 static void
 installerConversionFeedbackMsg (installer_t *installer)
 {
-  int           nval;
+  int           nval = false;
   char          *tptr;
   char          tbuff [200];
   bool          nodir = false;
 
-  nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
+  if (installer->guienabled) {
+    nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
+  }
 
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
@@ -1690,120 +1651,43 @@ installerPrepare (installer_t *installer)
   installerValidateProcessBDJ3Loc (installer, installer->bdj3loc);
 
   if (! installer->guienabled && ! installer->unattended) {
-    installer->instState = INST_GET_INFO_FROM_USER;
+    fprintf (stderr, "Error: no installation specified\n");
+    if (installer->verbose) {
+      fprintf (stdout, "finish NG\n");
+    }
+    installer->instState = INST_FINISH;
+  } else if (installer->unattended) {
+    installer->instState = INST_INIT;
   } else {
+    /* gui is enabled, wait for install button */
     installer->instState = INST_WAIT_USER;
   }
-}
-
-/* if the installer is being run from the command line, get the data */
-/* from the user */
-static void
-installerGetInfoFromUser (installer_t *installer)
-{
-  char        tbuff [MAXPATHLEN];
-
-  /* target directory */
-
-  tbuff [0] = '\0';
-  /* CONTEXT: installer: command line interface: asking for the BDJ4 destination */
-  printf (_("Enter the destination folder."));
-  printf ("\n");
-  /* CONTEXT: installer: command line interface: instructions */
-  printf (_("Press 'Enter' to select the default."));
-  printf ("\n");
-  printf ("[%s] : ", installer->target);
-  fflush (stdout);
-  (void) ! fgets (tbuff, sizeof (tbuff), stdin);
-  stringTrim (tbuff);
-  if (*tbuff != '\0') {
-    dataFree (installer->target);
-    installer->target = mdstrdup (tbuff);
-  }
-  installerValidateProcessTarget (installer, installer->target);
-
-  if (installer->targetexists && installer->updateinstall) {
-// ### FIX
-// need to ask whether to re-install
-    printf ("\n");
-    if (installer->reinstall) {
-      /* CONTEXT: installer: command line interface: indicating action */
-      printf (_("Re-install %s."), BDJ4_NAME);
-    } else {
-      /* CONTEXT: installer: command line interface: indicating action */
-      printf (_("Updating existing %s installation."), BDJ4_NAME);
-    }
-    printf ("\n");
-    fflush (stdout);
-  }
-
-  if (! installer->targetexists && installer->newinstall) {
-    /* CONTEXT: installer: command line interface: indicating action */
-    printf (_("New %s installation."), BDJ4_NAME);
-  }
-
-  /* music directory */
-
-  tbuff [0] = '\0';
-  /* CONTEXT: installer: command line interface: asking for the user's music folder */
-  printf (_("Enter the music folder."));
-  printf ("\n");
-  /* CONTEXT: installer: command line interface: instructions */
-  printf (_("Press 'Enter' to select the default."));
-  printf ("\n");
-  printf ("[%s] : ", installer->musicdir);
-  fflush (stdout);
-  (void) ! fgets (tbuff, sizeof (tbuff), stdin);
-  stringTrim (tbuff);
-  if (*tbuff != '\0') {
-    installerSetMusicDir (installer, tbuff);
-  }
-
-  if (installer->targetexists && ! installer->updateinstall) {
-    /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
-    snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
-        installer->target);
-    installerDisplayText (installer, INST_DISP_ERROR, tbuff, false);
-    /* CONTEXT: installer: command line interface: status message */
-    installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
-    installer->instState = INST_WAIT_USER;
-    return;
-  }
-
-// ### FIX
-// need to ask for bdj3 location
-
-  /* CONTEXT: installer: command line interface: prompt to continue */
-  printf (_("Proceed with installation?"));
-  printf ("\n");
-  printf ("[Y] : ");
-  fflush (stdout);
-  (void) ! fgets (tbuff, sizeof (tbuff), stdin);
-  stringTrim (tbuff);
-  if (*tbuff != '\0') {
-    if (strncmp (tbuff, "Y", 1) != 0 &&
-        strncmp (tbuff, "y", 1) != 0) {
-      /* CONTEXT: installer: command line interface: status message */
-      printf (" * %s", _("Installation aborted."));
-      printf ("\n");
-      fflush (stdout);
-      installer->instState = INST_WAIT_USER;
-      return;
-    }
-  }
-
-  installer->instState = INST_INIT;
 }
 
 static void
 installerInstInit (installer_t *installer)
 {
+  /* no possible installation could be made */
+  /* this is generally an attempt to install to a folder that exists */
+  /* but no bdj4 installation was found */
   if (! installer->newinstall && ! installer->updateinstall) {
+    /* CONTEXT: installer: status message */
+    installerDisplayText (installer, INST_DISP_ERROR, _("Error: Folder already exists."), false);
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
     installer->instState = INST_WAIT_USER;
     return;
   }
+
+  /* bad music dir specified */
+  if (! installer->musicdirok) {
+    /* CONTEXT: installer: status message */
+    installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
+    installer->instState = INST_WAIT_USER;
+    return;
+  }
+
+  /* a bad conversion dir will turn off the convprocess flag */
 
   installerSetPaths (installer);
   installer->instState = INST_SAVE_TARGET;

@@ -182,7 +182,7 @@ function checkInstallation {
         ;;
       update)
         shift
-        if [[ $fin == T && $type == "u" ]]; then
+        if [[ $fin == T && ( $type == "u" || $type == "r" ) ]]; then
           res=$(($res+1))  # update
           if [[ $1 == "1" ]]; then
             chk=$(($chk+1))
@@ -699,7 +699,7 @@ resetUnpack
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
 echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
     --verbose --unattended --quiet \
     --nomutagen \
     --ati ${ATI} \
@@ -720,7 +720,7 @@ if [[ $crc -eq 0 ]]; then
   resetUnpack
   tname=re-install-no-bdj3
   echo "== $section $tname"
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended --quiet \
       --nomutagen \
       --ati ${ATI} \
@@ -736,7 +736,7 @@ if [[ $crc -eq 0 ]]; then
   resetUnpack
   tname=update-no-bdj3
   echo "== $section $tname"
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended --quiet \
       --nomutagen \
       --ati ${ATI} \
@@ -753,7 +753,7 @@ if [[ $crc -eq 0 ]]; then
   tname=update-chk-updater
   echo "== $section $tname"
   checkUpdaterClean $section
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended --quiet \
       --nomutagen \
       --ati ${ATI} \
@@ -771,7 +771,7 @@ if [[ T == T ]]; then
   resetUnpack
   tname=install-no-data
   echo "== $section $tname"
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended --quiet \
       --nomutagen \
       --ati ${ATI} \
@@ -793,7 +793,7 @@ resetUnpack
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
 echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
     --verbose --unattended --quiet \
     --nomutagen \
     --ati ${ATI} \
@@ -812,7 +812,7 @@ if [[ $crc -eq 0 ]]; then
   echo "== $section $tname"
 
   checkUpdaterClean $section
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended --quiet \
       --nomutagen \
       --ati ${ATI} \

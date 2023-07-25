@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-24\n"
-"PO-Revision-Date: 2023-07-24\n"
+"POT-Creation-Date: 2023-07-25\n"
+"PO-Revision-Date: 2023-07-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -676,28 +676,14 @@ msgstr ""
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
 
-#. CONTEXT: installer: command line interface: asking for the BDJ4 destination
-#, c-format
-msgid "Enter the destination folder."
-msgstr ""
-
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr ""
 
-#. CONTEXT: installer: command line interface: asking for the user's music folder
-#, c-format
-msgid "Enter the music folder."
-msgstr ""
-
-#. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
-#, c-format
-msgid "Error: Folder %s already exists."
-msgstr ""
-
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
 msgid "Error: Folder already exists."
 msgstr ""
 
@@ -906,7 +892,6 @@ msgstr ""
 msgid "Install Location"
 msgstr ""
 
-#. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
 msgstr ""
@@ -1110,7 +1095,6 @@ msgstr ""
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "New %s installation."
 msgstr ""
@@ -1337,7 +1321,6 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#. CONTEXT: installer: command line interface: instructions
 #. CONTEXT: installer: command line interface: accept BDJ3 location default
 #, c-format
 msgid "Press 'Enter' to select the default."
@@ -1345,11 +1328,6 @@ msgstr ""
 
 #. CONTEXT: song editor : previous song
 msgid "Previous"
-msgstr ""
-
-#. CONTEXT: installer: command line interface: prompt to continue
-#, c-format
-msgid "Proceed with installation?"
 msgstr ""
 
 #. CONTEXT: alternate installation: status message
@@ -1449,7 +1427,6 @@ msgstr ""
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Re-install %s."
 msgstr ""
@@ -1972,7 +1949,6 @@ msgstr ""
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
 msgstr ""
