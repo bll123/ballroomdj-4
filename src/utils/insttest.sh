@@ -824,7 +824,7 @@ if [[ T == T ]]; then
   # install w/o data files
   cleanInstTest
   resetUnpack
-  tname=install-no-data
+  tname=install-readonly
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \

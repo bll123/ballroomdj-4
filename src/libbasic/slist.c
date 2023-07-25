@@ -181,9 +181,6 @@ slistGetMaxKeyWidth (slist_t *list)
   }
 
   value = listGetMaxKeyWidth (LIST_KEY_STR, list);
-if (value == 0) {
-fprintf (stderr, "slist: %s max-width 0\n", listGetName (LIST_KEY_STR, list));
-}
   return value;
 }
 

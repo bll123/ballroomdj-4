@@ -121,6 +121,7 @@ typedef struct {
   int             atiselect;
   /* flags */
   bool            bdjoptloaded : 1;
+  bool            firstinstall : 1;
   bool            guienabled : 1;
   bool            localespecified : 1;
   bool            musicdirok : 1;
@@ -220,6 +221,7 @@ main (int argc, char *argv[])
   altinst.name = mdstrdup ("BDJ4 B");
   altinst.hostname = NULL;
   altinst.bdjoptloaded = false;
+  altinst.firstinstall = false;
   altinst.guienabled = true;
   altinst.localespecified = false;
   altinst.musicdirok = false;
@@ -310,6 +312,16 @@ main (int argc, char *argv[])
   sysvarsInit (argv[0]);
   bdjvarsInit ();
   localeInit ();
+
+  /* the altcount.txt lives in the configuration dir */
+  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
+    altinst.firstinstall = true;
+  }
+
+  if (altinst.firstinstall) {
+    dataFree (altinst.name);
+    altinst.name = mdstrdup (BDJ4_NAME);
+  }
 
   strlcpy (altinst.ati, instati [INST_ATI_BDJ4].name, sizeof (altinst.ati));
   altinstSetATISelect (&altinst);
@@ -673,7 +685,9 @@ altinstValidateTarget (uientry_t *entry, void *udata)
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));
   if (strcmp (tbuff, altinst->target) != 0) {
-    rc = altinstValidateProcessTarget (altinst, altinst->target);
+    rc = altinstValidateProcessTarget (altinst, tbuff);
+  } else {
+    rc = UIENTRY_OK;
   }
 
   return rc;
@@ -692,7 +706,9 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     found = instutilCheckForExistingInstall (altinst->maindir, dir);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
-      instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
+      if (altinst->firstinstall) {
+        instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
+      }
       exists = fileopIsDirectory (tbuff);
       if (exists) {
         found = instutilCheckForExistingInstall (altinst->maindir, tbuff);
@@ -995,34 +1011,58 @@ altinstSetup (altinst_t *altinst)
   char    tbuff [MAXPATHLEN];
   FILE    *fh;
   char    str [40];
-  int     altcount;
+  int     altcount = 0;
   int     baseport;
 
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Initial Setup."), false);
 
   /* the altcount.txt lives in the configuration dir */
+  if (altinst->firstinstall) {
+    FILE    *fh;
 
-  /* read the current altcount */
-  altcount = 0;
-  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "r");
-  if (fh != NULL) {
-    (void) ! fgets (str, sizeof (str), fh);
-    stringTrim (str);
-    mdextfclose (fh);
-    fclose (fh);
-    altcount = atoi (str);
-    /* update alternate count */
-    ++altcount;
+    diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+    fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+    if (fh != NULL) {
+      fputs ("0\n", fh);
+      fclose (fh);
+    }
+
+    /* create the new install flag file when the first installation */
+    if (altinst->newinstall) {
+      FILE  *fh;
+      char  tbuff [MAXPATHLEN];
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          NEWINST_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      fh = fileopOpen (tbuff, "w");
+      mdextfclose (fh);
+      fclose (fh);
+    }
   }
 
-  /* write the new altcount */
-  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
-  if (fh != NULL) {
-    snprintf (str, sizeof (str), "%d\n", altcount);
-    fputs (str, fh);
-    mdextfclose (fh);
-    fclose (fh);
+  if (! altinst->firstinstall) {
+    /* read the current altcount */
+    altcount = 0;
+    fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "r");
+    if (fh != NULL) {
+      (void) ! fgets (str, sizeof (str), fh);
+      stringTrim (str);
+      mdextfclose (fh);
+      fclose (fh);
+      altcount = atoi (str);
+      /* update alternate count */
+      ++altcount;
+    }
+
+    /* write the new altcount */
+    fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+    if (fh != NULL) {
+      snprintf (str, sizeof (str), "%d\n", altcount);
+      fputs (str, fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
   }
 
   /* calculate the new base port */
@@ -1177,30 +1217,6 @@ altinstUpdateProcess (altinst_t *altinst)
 static void
 altinstFinalize (altinst_t *altinst)
 {
-  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
-    FILE    *fh;
-
-    diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-    fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
-    if (fh != NULL) {
-      fputs ("0\n", fh);
-      fclose (fh);
-    }
-
-    /* create the new install flag file on a new install */
-    if (altinst->newinstall) {
-      FILE  *fh;
-      char  tbuff [MAXPATHLEN];
-
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          NEWINST_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-      fh = fileopOpen (tbuff, "w");
-      mdextfclose (fh);
-      fclose (fh);
-    }
-  }
-
-
   if (altinst->verbose) {
     fprintf (stdout, "finish OK\n");
     fprintf (stdout, "bdj3-version x\n");
