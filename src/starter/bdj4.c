@@ -85,24 +85,28 @@ main (int argc, char * argv[])
     { "tmusicsetup",    no_argument,        NULL,   21 },
     { "ttagdbchk",      no_argument,        NULL,   27 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
-    /* bdj4updater */
-    { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
-    { "ati",            required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },
-    { "locale",         required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
     { "readonly",       no_argument,        NULL,   0 },
+    { "testregistration", no_argument,      NULL,   0 },
+    { "unpackdir",      required_argument,  NULL,   0 },
+    /* used by installer, altsetup */
+    { "ati",            required_argument,  NULL,   0 },
+    { "locale",         required_argument,  NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },
-    { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
-    { "unpackdir",      required_argument,  NULL,   0 },
+    /* altsetup */
+    { "name",           required_argument,  NULL,   0 },
     /* updater, installer */
     { "convert",        no_argument,        NULL,   0 },
+    /* updater, installer, altsetup */
     { "musicdir",       required_argument,  NULL,   0 },
+    /* updater */
+    { "newinstall",     no_argument,        NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },
     { "profile",        required_argument,  NULL,   'p' },

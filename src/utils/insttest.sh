@@ -68,6 +68,7 @@ case $systype in
 esac
 
 TARGETTOPDIR=${cwd}/tmp/BDJ4
+TARGETALTDIR=${cwd}/tmp/BDJ4-alt
 TARGETDIR=${TARGETTOPDIR}${macdir}
 DATATOPDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
@@ -688,6 +689,7 @@ function checkInstallation {
 function cleanInstTest {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
   test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
+  test -d "$TARGETALTDIR" && rm -rf "$TARGETALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
 }
 
@@ -744,6 +746,20 @@ if [[ $crc -eq 0 ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc r y
 
+  if [[ $tag == linux || $tag == windows ]]; then
+    # alternate installation (linux, windows)
+    tname=alt-install
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altsetup \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc u y
+  fi
+
   # standard update
   resetUnpack
   tname=update-no-bdj3
@@ -795,6 +811,9 @@ if [[ T == T ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc n n
 fi
+
+
+
 
 section=nl
 locale=nl_BE

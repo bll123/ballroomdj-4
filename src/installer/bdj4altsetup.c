@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <getopt.h>
+#include <signal.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -105,6 +106,7 @@ typedef struct {
   char            *maindir;
   char            *hostname;
   char            *home;
+  char            *name;
   /* conversion */
   uiwcont_t       *wcont [ALT_W_MAX];
   uientry_t       *targetEntry;
@@ -142,9 +144,11 @@ static int  altsetupValidateTarget (uientry_t *entry, void *udata);
 static int  altsetupValidateProcessTarget (altsetup_t *altsetup, const char *dir);
 static void altsetupTargetFeedbackMsg (altsetup_t *altsetup);
 static int  altsetupValidateMusicDir (uientry_t *entry, void *udata);
+static int  altsetupValidateProcessMusicDir (altsetup_t *altsetup, const char *dir);
 static bool altsetupSetupCallback (void *udata);
 static void altsetupSetPaths (altsetup_t *altsetup);
 
+static void altsetupPrepare (altsetup_t *altsetup);
 static void altsetupInit (altsetup_t *altsetup);
 static void altsetupMakeTarget (altsetup_t *altsetup);
 static void altsetupChangeDir (altsetup_t *altsetup);
@@ -179,6 +183,7 @@ main (int argc, char *argv[])
     { "bdj4altsetup",no_argument,       NULL,   0 },
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
+    { "name",       required_argument,  NULL,   'n' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
     { "unattended", no_argument,        NULL,   'U' },
@@ -208,6 +213,7 @@ main (int argc, char *argv[])
   altsetup.musicdir = mdstrdup ("");
   altsetup.maindir = NULL;
   altsetup.home = NULL;
+  altsetup.name = mdstrdup ("BDJ4 B");
   altsetup.hostname = NULL;
   altsetup.bdjoptloaded = false;
   altsetup.guienabled = true;
@@ -243,6 +249,9 @@ main (int argc, char *argv[])
       case 'U': {
         altsetup.unattended = true;
         altsetup.guienabled = false;
+#if _define_SIGCHLD
+        osDefaultSignal (SIGCHLD);
+#endif
         break;
       }
       case 'r': {
@@ -258,6 +267,10 @@ main (int argc, char *argv[])
         break;
       }
       case 'm': {
+        altsetupSetMusicDir (&altsetup, optarg);
+        break;
+      }
+      case 'n': {
         altsetupSetMusicDir (&altsetup, optarg);
         break;
       }
@@ -471,7 +484,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (altsetup->nameEntry);
-  uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
+  uiEntrySetValue (altsetup->nameEntry, altsetup->name);
   uiwidgetp = uiEntryGetWidgetContainer (altsetup->nameEntry);
   uiBoxPackStart (hbox, uiwidgetp);
 
@@ -540,15 +553,14 @@ altsetupMainLoop (void *udata)
       break;
     }
     case ALT_PREPARE: {
-      if (altsetup->guienabled) {
-        uiEntryValidate (altsetup->targetEntry, true);
-        uiEntryValidate (altsetup->musicdirEntry, true);
-      }
-      altsetup->instState = ALT_WAIT_USER;
+      altsetupPrepare (altsetup);
       break;
     }
     case ALT_WAIT_USER: {
       /* do nothing */
+      if (! altsetup->guienabled) {
+        altsetup->instState = ALT_INIT;
+      }
       break;
     }
     case ALT_INIT: {
@@ -775,15 +787,25 @@ altsetupValidateMusicDir (uientry_t *entry, void *udata)
 
   strlcpy (tbuff, uiEntryGetValue (altsetup->musicdirEntry), sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
-  if (*tbuff && fileopIsDirectory (tbuff)) {
+  rc = altsetupValidateProcessMusicDir (altsetup, tbuff);
+  return rc;
+}
+
+static int
+altsetupValidateProcessMusicDir (altsetup_t *altsetup, const char *dir)
+{
+  int   rc = UIENTRY_ERROR;
+
+  if (*dir && fileopIsDirectory (dir)) {
     rc = UIENTRY_OK;
   }
 
   altsetup->musicdirok = false;
   if (rc == UIENTRY_OK) {
-    altsetupSetMusicDir (altsetup, tbuff);
+    altsetupSetMusicDir (altsetup, dir);
     altsetup->musicdirok = true;
   }
+
   return rc;
 }
 
@@ -876,6 +898,14 @@ altsetupSetPaths (altsetup_t *altsetup)
 }
 
 static void
+altsetupPrepare (altsetup_t *altsetup)
+{
+  altsetupValidateProcessTarget (altsetup, altsetup->target);
+  altsetupValidateProcessMusicDir (altsetup, altsetup->musicdir);
+  altsetup->instState = ALT_WAIT_USER;
+}
+
+static void
 altsetupInit (altsetup_t *altsetup)
 {
   altsetupSetPaths (altsetup);
@@ -953,25 +983,11 @@ altsetupSetup (altsetup_t *altsetup)
   /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Initial Setup."), false);
 
-  /* the altcount.txt file should only exist for the initial installation */
-  pathbldMakePath (buff, sizeof (buff),
-      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-fprintf (stderr, "altcount-a: %s\n", buff);
-  if (fileopFileExists (buff)) {
-fprintf (stderr, "  del %s\n", buff);
-    fileopDelete (buff);
-  }
-
-// ### FIX
-// ### if the source dir is read-only, the home datatopdir should be
-// ### used.
-  pathbldMakePath (buff, sizeof (buff),
-      "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
-fprintf (stderr, "altcount-b: %s\n", buff);
+  /* the altcount.txt lives in the configuration dir */
 
   /* read the current altcount */
   altcount = 0;
-  fh = fileopOpen (buff, "r");
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "r");
   if (fh != NULL) {
     (void) ! fgets (str, sizeof (str), fh);
     stringTrim (str);
@@ -983,7 +999,7 @@ fprintf (stderr, "altcount-b: %s\n", buff);
   }
 
   /* write the new altcount */
-  fh = fileopOpen (buff, "w");
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
   if (fh != NULL) {
     snprintf (str, sizeof (str), "%d\n", altcount);
     fputs (str, fh);
@@ -1061,9 +1077,9 @@ altsetupCreateShortcut (altsetup_t *altsetup)
 
   /* CONTEXT: alternate installation: status message */
   altsetupDisplayText (altsetup, INST_DISP_ACTION, _("Creating shortcut."), false);
-  name = uiEntryGetValue (altsetup->nameEntry);
-  if (name == NULL || ! *name) {
-    name = "BDJ4-alt";
+  name = altsetup->name;
+  if (altsetup->guienabled) {
+    name = uiEntryGetValue (altsetup->nameEntry);
   }
   instutilCreateShortcut (name, altsetup->maindir, altsetup->target, 0);
 

@@ -25,8 +25,11 @@ typedef enum {
   SV_BDJ4_RELEASELEVEL,
   SV_BDJ4_VERSION,
   SV_CA_FILE,
-  SV_DIR_CONFIG_HOME,   // from XDG_CONFIG_HOME or $HOME/.config
-  SV_DIR_CONFIG,        // .config/BDJ4 or AppData/Roaming/BDJ4
+  SV_DIR_CONFIG_BASE,   // from XDG_CONFIG_HOME or $HOME/.config
+                        // windows: %USERPROFILE%/AppData/Roaming
+  SV_DIR_CONFIG,        // {DIR_CONFIG_BASE}/BDJ4
+  SV_FILE_ALTCOUNT,
+  SV_FILE_INST_PATH,
   SV_FONT_DEFAULT,
   SV_HOME,
   SV_HOST_DOWNLOAD,

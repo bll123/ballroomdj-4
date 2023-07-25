@@ -28,8 +28,9 @@ if [[ $(uname -s) != Linux ]]; then
   exit 1
 fi
 
-confdir=$HOME/.config/BDJ4
-instdir=$HOME/.config/BDJ4/installdir.txt
+chome=${XDG_CONFIG_HOME:-$HOME/.config}
+confdir="${chome}/BDJ4"
+instdir="${chome}/BDJ4/installdir.txt"
 appdir=$HOME/.local/share/applications
 desktop=$(xdg-user-dir DESKTOP)
 

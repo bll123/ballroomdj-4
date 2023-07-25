@@ -75,10 +75,11 @@ enum {
 #define VOLREG_LOCK         "volreglock"
 #define VOLREG_BDJ4_EXT_FN  "volbdj4"
 #define VOLREG_BDJ3_EXT_FN  "volbdj3"
-/* alternates/base port */
+/* installation/base port */
 #define READONLY_FN         "readonly"
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
+#define INST_PATH_FN        "installdir"
 /* cache files */
 #define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
 #define SYSVARS_PY_VERS_FN      "pyvers"

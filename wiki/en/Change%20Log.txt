@@ -11,12 +11,13 @@
     * Installer: Clean up validation of folder entry.
     * Installer: Fix a spurious status message.
     * Internal: Make sure message processing is finalized on exit.
+    * Linux: Properly support XDG_CONFIG_HOME.
     * Music Queue: Fix music queue display counter.
     * Player: Windows: Fix clock display to use the windows configuration.
 * Changes:
     * Alternate Installer: Add music folder to dialog.
 * Internal:
-    * Code cleanup (list, data conversion).
+    * Code cleanup (list, data conversion, installer, alternate installer).
     * More automated tests.
 
 -->

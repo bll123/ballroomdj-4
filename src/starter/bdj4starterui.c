@@ -589,9 +589,7 @@ starterBuildUI (startui_t  *starter)
     uiwcontFree (menuitem);
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  if (fileopFileExists (tbuff)) {
+  if (! isMacOS ()) {
     /* CONTEXT: starterui: menu item: install in alternate folder */
     snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
     starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (

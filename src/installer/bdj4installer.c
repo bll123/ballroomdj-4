@@ -202,7 +202,6 @@ typedef struct {
 #define INST_NEW_FILE "data/newinstall.txt"
 #define INST_READONLY_FILE "data/readonly.txt"
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
-#define INST_SAVE_FNAME "installdir.txt"
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
@@ -2646,6 +2645,17 @@ installerFinalize (installer_t *installer)
       SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
   fileopDelete (tbuff);
 
+  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
+    FILE    *fh;
+
+    diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+    fh = fopen (sysvarsGetStr (SV_DIR_CONFIG), "w");
+    if (fh != NULL) {
+      fputs ("0\n", fh);
+      fclose (fh);
+    }
+  }
+
   if (installer->verbose) {
     fprintf (stdout, "finish OK\n");
     if (*installer->bdj3version) {
@@ -2841,7 +2851,7 @@ static void
 installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-  snprintf (buff, sz, "%s/%s", sysvarsGetStr (SV_DIR_CONFIG), INST_SAVE_FNAME);
+  snprintf (buff, sz, "%s", sysvarsGetStr (SV_FILE_INST_PATH));
 }
 
 static void

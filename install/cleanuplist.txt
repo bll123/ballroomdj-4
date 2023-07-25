@@ -126,6 +126,10 @@ plocal/bin/libtls-26\.dll$
 plocal/bin/libtag\.dll$
 bin/libatitaglib\.(so|dylib|dll)$
 
+# 2023-7-25
+# altcount.txt now lives in the .config dir
+templates/altcount\.txt$
+
 ####
 # mac-os
 
@@ -201,3 +205,8 @@ data/audiotagintfc\.txt$
 
 # removed 2023-4-22, not needed in data dir (4.3.2)
 data/helpdata\.txt$
+
+# 2023-7-25
+# altcount.txt now lives in the .config dir
+data/altcount\.txt$
+

@@ -51,7 +51,8 @@ if [[ $gr == Y ]]; then
   # application
   dir="$HOME/Applications/BDJ4.app"
   test -d "$dir" && rm -rf "$dir"
-  dir="$HOME/.config/BDJ4"
+  chome=${XDG_CONFIG_HOME:-$HOME/.config}
+  dir="${chome}/BDJ4"
   test -d "$dir" && rm -rf "$dir"
 
   # installed themes

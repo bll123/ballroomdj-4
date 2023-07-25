@@ -27,6 +27,7 @@
 #include "sysvars.h"
 
 const char *envitems [] = {
+  "DESKTOP_SESSION",
   "GDK_SCALE",
   "GTK_CSD",
   "GTK_THEME",
@@ -42,6 +43,9 @@ const char *envitems [] = {
   "USER",
   "USERNAME",
   "USERPROFILE",
+  "XDG_CONFIG_HOME",
+  "XDG_CURRENT_DESKTOP",
+  "XDG_SESSION_DESKTOP",
 };
 enum {
   ENV_MAX = sizeof (envitems) / sizeof (const char *),
@@ -122,7 +126,7 @@ main (int argc, char *argv [])
 
     osGetEnv (envitems [i], tmp, sizeof (tmp));
     if (*tmp) {
-      fprintf (stdout, "e: %-20s %s\n", envitems [i], tmp);
+      fprintf (stdout, " e: %-20s %s\n", envitems [i], tmp);
     }
   }
 
