@@ -1188,10 +1188,10 @@ installerValidateTarget (uientry_t *entry, void *udata)
 static int
 installerValidateProcessTarget (installer_t *installer, const char *dir)
 {
-  int     rc = UIENTRY_ERROR;
-  bool    exists = false;
-  bool    found = false;
-  char    tbuff [MAXPATHLEN];
+  int         rc = UIENTRY_ERROR;
+  bool        exists = false;
+  bool        found = false;
+  char        tbuff [MAXPATHLEN];
 
   if (fileopIsDirectory (dir)) {
     exists = true;
@@ -1745,71 +1745,17 @@ installerSaveTargetDir (installer_t *installer)
 static void
 installerMakeTarget (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
-  char    *data;
-  char    *p;
-  char    *tp;
-  char    *tokptr;
-  char    *tokptrb;
+  char            tbuff [MAXPATHLEN];
+  sysversinfo_t   *versinfo;
 
   diropMakeDir (installer->target);
   diropMakeDir (installer->rundir);
 
   *installer->oldversion = '\0';
-  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
-      installer->target);
-  if (fileopFileExists (tbuff)) {
-    char *nm, *ver, *build, *bdate, *rlvl, *rdev;
-
-    nm = "";
-    ver = "";
-    build = "";
-    bdate = "";
-    rlvl = "";
-    rdev = "";
-    data = filedataReadAll (tbuff, NULL);
-    tp = strtok_r (data, "\r\n", &tokptr);
-    while (tp != NULL) {
-      nm = strtok_r (tp, "=", &tokptrb);
-      p = strtok_r (NULL, "=", &tokptrb);
-      if (nm != NULL && p != NULL && strcmp (nm, "VERSION") == 0) {
-        ver = p;
-      }
-      if (nm != NULL && p != NULL && strcmp (nm, "BUILD") == 0) {
-        build = p;
-      }
-      if (nm != NULL && p != NULL && strcmp (nm, "BUILDDATE") == 0) {
-        bdate = p;
-      }
-      if (nm != NULL && p != NULL && strcmp (nm, "RELEASELEVEL") == 0) {
-        rlvl = p;
-      }
-      if (nm != NULL && p != NULL && strcmp (nm, "DEVELOPMENT") == 0) {
-        rdev = p;
-      }
-      if (p != NULL) {
-        stringTrim (p);
-      }
-      tp = strtok_r (NULL, "\r\n", &tokptr);
-    }
-    strlcat (installer->oldversion, ver, sizeof (installer->oldversion));
-    if (strcmp (rlvl, "production") == 0) {
-      rlvl = "";
-    }
-    if (*rlvl) {
-      strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
-      strlcat (installer->oldversion, rlvl, sizeof (installer->oldversion));
-    }
-    if (*rdev) {
-      strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
-      strlcat (installer->oldversion, rdev, sizeof (installer->oldversion));
-    }
-    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
-    strlcat (installer->oldversion, bdate, sizeof (installer->oldversion));
-    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
-    strlcat (installer->oldversion, build, sizeof (installer->oldversion));
-    mdfree (data);
-  }
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", installer->target);
+  versinfo = sysvarsParseVersionFile (tbuff);
+  instutilOldVersionString (versinfo, installer->oldversion, sizeof (installer->oldversion));
+  sysvarsParseVersionFileFree (versinfo);
 
   installer->instState = INST_COPY_START;
 }
@@ -2626,7 +2572,7 @@ installerUpdateProcess (installer_t *installer)
 static void
 installerFinalize (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
 
   /* clear the python version cache files */
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
@@ -2718,40 +2664,11 @@ installerRegisterInit (installer_t *installer)
 static void
 installerRegister (installer_t *installer)
 {
-  char          uri [200];
-  char          tbuff [2048];
-
-  installer->webresponse = NULL;
-  installer->webresplen = 0;
-  if (installer->webclient == NULL) {
-    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
-  }
-  snprintf (uri, sizeof (uri), "%s/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_REGISTER));
+  char          tbuff [500];
 
   snprintf (tbuff, sizeof (tbuff),
-      "key=%s"
-      "&version=%s&build=%s&builddate=%s&releaselevel=%s"
-      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
-      "&pythonvers=%s"
-      "&user=%s&host=%s"
-      "&systemlocale=%s&locale=%s"
       "&bdj3version=%s&oldversion=%s"
       "&new=%d&reinstall=%d&update=%d&convert=%d",
-      "9873453",  // key
-      sysvarsGetStr (SV_BDJ4_VERSION),
-      sysvarsGetStr (SV_BDJ4_BUILD),
-      sysvarsGetStr (SV_BDJ4_BUILDDATE),
-      sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
-      sysvarsGetStr (SV_OSNAME),
-      sysvarsGetStr (SV_OSDISP),
-      sysvarsGetStr (SV_OSVERS),
-      sysvarsGetStr (SV_OSBUILD),
-      sysvarsGetStr (SV_PYTHON_DOT_VERSION),
-      sysvarsGetStr (SV_USER),
-      sysvarsGetStr (SV_HOSTNAME),
-      sysvarsGetStr (SV_LOCALE_SYSTEM),
-      sysvarsGetStr (SV_LOCALE),
       installer->bdj3version,
       installer->oldversion,
       installer->newinstall,
@@ -2759,8 +2676,7 @@ installerRegister (installer_t *installer)
       installer->updateinstall,
       installer->convprocess
       );
-  webclientPost (installer->webclient, uri, tbuff);
-
+  instutilRegister (tbuff);
   installer->instState = INST_FINISH;
 }
 

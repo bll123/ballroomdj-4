@@ -4,6 +4,8 @@
 #ifndef INC_INSTUTIL_H
 #define INC_INSTUTIL_H
 
+#include "sysvars.h"
+
 enum {
   INST_ATI_BDJ4,
   INST_ATI_MUTAGEN,
@@ -28,6 +30,16 @@ typedef struct {
   bool        needmutagen;
 } instati_t;
 
+enum {
+  INST_TYPE_STD,
+  INST_TYPE_ALT,
+  INST_TYPE_UNKNOWN,
+};
+
+typedef struct {
+  int     insttype;
+} instinfo_t;
+
 extern instati_t instati [INST_ATI_MAX];
 
 void  instutilCreateShortcut (const char *name, const char *maindir,
@@ -39,5 +51,7 @@ void  instutilScanMusicDir (const char *musicdir, const char *rundir, char *ati,
 void  instutilAppendNameToTarget (char *buff, size_t sz, int macosonly);
 bool  instutilCheckForExistingInstall (const char *dir);
 bool  instutilIsStandardInstall (const char *dir);
+void  instutilRegister (const char *data);
+void  instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz);
 
 #endif /* INC_INSTUTIL_H */

@@ -165,6 +165,7 @@ sysvarsInit (const char *argv0)
   char          *p;
   size_t        dlen;
   bool          alternatepath = false;
+  sysversinfo_t *versinfo;
 #if _lib_uname
   struct utsname  ubuf;
 #endif
@@ -345,7 +346,6 @@ sysvarsInit (const char *argv0)
     /* and there is no 'readonly.txt' file */
     /* a change of directories is contra-indicated. */
 
-fprintf (stderr, "sysvars: datatop (local): %s\n", tcwd);
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
@@ -375,7 +375,6 @@ fprintf (stderr, "sysvars: datatop (local): %s\n", tcwd);
         altpath [tlen] = '\0';
         strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
         found = true;
-fprintf (stderr, "sysvars: datatop (alt): %s\n", altpath);
         lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
       }
     }
@@ -397,7 +396,6 @@ fprintf (stderr, "sysvars: datatop (alt): %s\n", altpath);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
         }
-fprintf (stderr, "sysvars: datatop (norm): %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
       }
     }
   }
@@ -518,41 +516,13 @@ fprintf (stderr, "sysvars: datatop (norm): %s\n", sysvars [SV_BDJ4_DIR_DATATOP])
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);
-  if (fileopFileExists (buff)) {
-    char    *data;
-    char    *tokptr;
-    char    *tokptrb;
-    char    *tp;
-    char    *vnm;
-    char    *p;
-
-    strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], "", SV_MAX_SZ);
-    strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], "", SV_MAX_SZ);
-
-    data = filedataReadAll (buff, NULL);
-    tp = strtok_r (data, "\r\n", &tokptr);
-    while (tp != NULL) {
-      vnm = strtok_r (tp, "=", &tokptrb);
-      p = strtok_r (NULL, "=", &tokptrb);
-      if (vnm != NULL && p != NULL && strcmp (vnm, "VERSION") == 0) {
-        strlcpy (sysvars [SV_BDJ4_VERSION], p, SV_MAX_SZ);
-      }
-      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILD") == 0) {
-        strlcpy (sysvars [SV_BDJ4_BUILD], p, SV_MAX_SZ);
-      }
-      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILDDATE") == 0) {
-        strlcpy (sysvars [SV_BDJ4_BUILDDATE], p, SV_MAX_SZ);
-      }
-      if (vnm != NULL && p != NULL && strcmp (vnm, "RELEASELEVEL") == 0) {
-        strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], p, SV_MAX_SZ);
-      }
-      if (vnm != NULL && p != NULL && strcmp (vnm, "DEVELOPMENT") == 0) {
-        strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], p, SV_MAX_SZ);
-      }
-      tp = strtok_r (NULL, "\r\n", &tokptr);
-    }
-    mdfree (data);
-  }
+  versinfo = sysvarsParseVersionFile (buff);
+  strlcpy (sysvars [SV_BDJ4_VERSION], versinfo->version, SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_BUILD], versinfo->build, SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_BUILDDATE], versinfo->builddate, SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], versinfo->releaselevel, SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], versinfo->dev, SV_MAX_SZ);
+  sysvarsParseVersionFileFree (versinfo);
 
   /* do this after the VERSION.txt file has been read */
   /* so that an alternative filename can be set up for development */
@@ -1011,6 +981,62 @@ sysvarslDesc (sysvarlkey_t idx)
     return "";
   }
   return sysvarsldesc [idx].desc;
+}
+
+sysversinfo_t *
+sysvarsParseVersionFile (const char *path)
+{
+  sysversinfo_t *versinfo;
+
+  versinfo = mdmalloc (sizeof (sysversinfo_t));
+  versinfo->data = NULL;
+  versinfo->version = "";
+  versinfo->build = "";
+  versinfo->builddate = "";
+  versinfo->releaselevel = "";
+  versinfo->dev = "";
+
+  if (fileopFileExists (path)) {
+    char    *tokptr;
+    char    *tokptrb;
+    char    *tp;
+    char    *vnm;
+    char    *p;
+
+    versinfo->data = filedataReadAll (path, NULL);
+    tp = strtok_r (versinfo->data, "\r\n", &tokptr);
+    while (tp != NULL) {
+      vnm = strtok_r (tp, "=", &tokptrb);
+      p = strtok_r (NULL, "=", &tokptrb);
+      if (vnm != NULL && p != NULL && strcmp (vnm, "VERSION") == 0) {
+        versinfo->version = p;
+      }
+      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILD") == 0) {
+        versinfo->build = p;
+      }
+      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILDDATE") == 0) {
+        versinfo->builddate = p;
+      }
+      if (vnm != NULL && p != NULL && strcmp (vnm, "RELEASELEVEL") == 0) {
+        versinfo->releaselevel = p;
+      }
+      if (vnm != NULL && p != NULL && strcmp (vnm, "DEVELOPMENT") == 0) {
+        versinfo->dev = p;
+      }
+      tp = strtok_r (NULL, "\r\n", &tokptr);
+    }
+  }
+
+  return versinfo;
+}
+
+void
+sysvarsParseVersionFileFree (sysversinfo_t *versinfo)
+{
+  if (versinfo != NULL) {
+    dataFree (versinfo->data);
+    mdfree (versinfo);
+  }
 }
 
 /* internal routines */

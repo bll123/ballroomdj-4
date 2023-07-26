@@ -67,6 +67,8 @@ typedef enum {
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
   ALT_FINALIZE,
+  ALT_REGISTER_INIT,
+  ALT_REGISTER,
   ALT_FINISH,
   ALT_EXIT,
 } altinststate_t;
@@ -131,6 +133,7 @@ typedef struct {
   bool            reinstall : 1;
   bool            scrolltoend : 1;
   bool            targetexists : 1;
+  bool            testregistration : 1;
   bool            uiBuilt : 1;
   bool            unattended : 1;
   bool            updateinstall : 1;
@@ -165,6 +168,8 @@ static void altinstSetATI (altinst_t *altinst);
 static void altinstUpdateProcessInit (altinst_t *altinst);
 static void altinstUpdateProcess (altinst_t *altinst);
 static void altinstFinalize (altinst_t *altinst);
+static void altinstRegisterInit (altinst_t *altinst);
+static void altinstRegister (altinst_t *altinst);
 
 static void altinstCleanup (altinst_t *altinst);
 static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold);
@@ -194,6 +199,7 @@ main (int argc, char *argv[])
     { "name",       required_argument,  NULL,   'n' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
+    { "testregistration", no_argument,  NULL,   'T' },
     { "unattended", no_argument,        NULL,   'U' },
     /* generic args */
     { "quiet"  ,    no_argument,        NULL,   'Q' },
@@ -234,6 +240,7 @@ main (int argc, char *argv[])
   altinst.reinstall = false;
   altinst.scrolltoend = false;
   altinst.targetexists = false;
+  altinst.testregistration = false;
   altinst.uiBuilt = false;
   altinst.unattended = false;
   altinst.updateinstall = false;
@@ -335,7 +342,10 @@ main (int argc, char *argv[])
         break;
       }
       case 'D': {
-fprintf (stderr, "data-top-dir: %s\n", optarg);
+        break;
+      }
+      case 'T': {
+        altinst.testregistration = true;
         break;
       }
       default: {
@@ -664,6 +674,14 @@ altinstMainLoop (void *udata)
       altinstFinalize (altinst);
       break;
     }
+    case ALT_REGISTER_INIT: {
+      altinstRegisterInit (altinst);
+      break;
+    }
+    case ALT_REGISTER: {
+      altinstRegister (altinst);
+      break;
+    }
     case ALT_FINISH: {
       /* CONTEXT: alternate installation: status message */
       altinstDisplayText (altinst, INST_DISP_FIN, _("Setup complete."), true);
@@ -724,10 +742,10 @@ altinstValidateTarget (uientry_t *entry, void *udata)
 static int
 altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 {
-  int     rc = UIENTRY_ERROR;
-  bool    exists = false;
-  bool    found = false;
-  char    tbuff [MAXPATHLEN];
+  int         rc = UIENTRY_ERROR;
+  bool        exists = false;
+  bool        found = false;
+  char        tbuff [MAXPATHLEN];
 
   if (fileopIsDirectory (dir)) {
     exists = true;
@@ -959,9 +977,7 @@ altinstSetupCallback (void *udata)
 static void
 altinstSetPaths (altinst_t *altinst)
 {
-fprintf (stderr, "alt-set-paths\n");
   if (altinst->targetexists) {
-fprintf (stderr, "  have target\n");
     altinstGetExistingData (altinst);
   }
 }
@@ -1007,6 +1023,7 @@ static void
 altinstMakeTarget (altinst_t *altinst)
 {
   diropMakeDir (altinst->target);
+
   altinst->instState = ALT_CHDIR;
 }
 
@@ -1029,7 +1046,6 @@ static void
 altinstCreateDirs (altinst_t *altinst)
 {
   if (altinst->updateinstall) {
-fprintf (stderr, "create-dirs: upd-install\n");
     altinstGetExistingData (altinst);
   }
 
@@ -1284,12 +1300,55 @@ altinstFinalize (altinst_t *altinst)
     fprintf (stdout, "finish OK\n");
     fprintf (stdout, "bdj3-version x\n");
     fprintf (stdout, "old-version x\n");
+    fprintf (stdout, "first-install %d\n", altinst->firstinstall);
     fprintf (stdout, "new-install %d\n", altinst->newinstall);
     fprintf (stdout, "re-install %d\n", altinst->reinstall);
     fprintf (stdout, "update %d\n", altinst->updateinstall);
     fprintf (stdout, "converted 0\n");
   }
 
+  if (altinst->firstinstall) {
+    altinst->instState = ALT_REGISTER_INIT;
+  } else {
+    altinst->instState = ALT_FINISH;
+  }
+}
+
+static void
+altinstRegisterInit (altinst_t *altinst)
+{
+  char    tbuff [200];
+
+  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+      ! altinst->testregistration) {
+    /* no need to register */
+    snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
+    altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
+    altinst->instState = ALT_FINISH;
+  } else {
+    /* CONTEXT: altinst: status message */
+    snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
+    altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
+    altinst->instState = ALT_REGISTER;
+  }
+}
+
+static void
+altinstRegister (altinst_t *altinst)
+{
+  char          tbuff [500];
+
+  snprintf (tbuff, sizeof (tbuff),
+      "&bdj3version=%s&oldversion=%s"
+      "&new=%d&reinstall=%d&update=%d&convert=%d",
+      "",
+      "",
+      altinst->newinstall,
+      altinst->reinstall,
+      altinst->updateinstall,
+      false
+      );
+  instutilRegister (tbuff);
   altinst->instState = ALT_FINISH;
 }
 
@@ -1390,14 +1449,11 @@ altinstGetExistingData (altinst_t *altinst)
   }
 
   if (altinst->newinstall) {
-fprintf (stderr, "ged: new-install\n");
     return;
   }
 
   (void) ! getcwd (cwd, sizeof (cwd));
-fprintf (stderr, "ged: target: %s\n", altinst->target);
   if (chdir (altinst->target)) {
-fprintf (stderr, "  chdir failed\n");
     return;
   }
 

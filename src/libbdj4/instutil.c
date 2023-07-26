@@ -15,10 +15,12 @@
 #include "bdjstring.h"
 #include "datafile.h"
 #include "dirlist.h"
+#include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "instutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -26,13 +28,20 @@
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
+#include "webclient.h"
 
 instati_t instati [INST_ATI_MAX] = {
   [INST_ATI_BDJ4] = { "libatibdj4", false },
   [INST_ATI_MUTAGEN] = { "libatimutagen", true },
 };
 
+typedef struct {
+  char            *webresponse;
+  size_t          webresplen;
+} instweb_t;
+
 static void instutilCopyHttpSVGFile (const char *fn);
+static void instutilWebResponseCallback (void *userdata, char *resp, size_t len);
 
 void
 instutilCreateShortcut (const char *name, const char *maindir,
@@ -470,6 +479,76 @@ instutilIsStandardInstall (const char *dir)
   return exists;
 }
 
+void
+instutilRegister (const char *data)
+{
+  instweb_t     instweb;
+  webclient_t   *webclient;
+  char          uri [200];
+  char          tbuff [4096];
+
+  instweb.webresponse = NULL;
+  instweb.webresplen = 0;
+  webclient = webclientAlloc (&instweb, instutilWebResponseCallback);
+  snprintf (uri, sizeof (uri), "%s/%s",
+      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_REGISTER));
+
+  snprintf (tbuff, sizeof (tbuff),
+      "key=%s"
+      "&version=%s&build=%s&builddate=%s&releaselevel=%s"
+      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
+      "&pythonvers=%s"
+      "&user=%s&host=%s"
+      "&systemlocale=%s&locale=%s"
+      "%s",
+      "9873453",  // key
+      sysvarsGetStr (SV_BDJ4_VERSION),
+      sysvarsGetStr (SV_BDJ4_BUILD),
+      sysvarsGetStr (SV_BDJ4_BUILDDATE),
+      sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
+      sysvarsGetStr (SV_OSNAME),
+      sysvarsGetStr (SV_OSDISP),
+      sysvarsGetStr (SV_OSVERS),
+      sysvarsGetStr (SV_OSBUILD),
+      sysvarsGetStr (SV_PYTHON_DOT_VERSION),
+      sysvarsGetStr (SV_USER),
+      sysvarsGetStr (SV_HOSTNAME),
+      sysvarsGetStr (SV_LOCALE_SYSTEM),
+      sysvarsGetStr (SV_LOCALE),
+      data
+      );
+  webclientPost (webclient, uri, tbuff);
+  webclientClose (webclient);
+}
+
+void
+instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz)
+{
+  char    *rlvl;
+
+  strlcat (buff, versinfo->version, sz);
+  rlvl = versinfo->releaselevel;
+  if (strcmp (versinfo->releaselevel, "production") == 0) {
+    rlvl = "";
+  }
+  if (*rlvl) {
+    strlcat (buff, "-", sz);
+    strlcat (buff, rlvl, sz);
+  }
+  if (*versinfo->dev) {
+    strlcat (buff, "-", sz);
+    strlcat (buff, versinfo->dev, sz);
+  }
+  if (*versinfo->builddate) {
+    strlcat (buff, "-", sz);
+    strlcat (buff, versinfo->builddate, sz);
+  }
+  if (*versinfo->build) {
+    strlcat (buff, "-", sz);
+    strlcat (buff, versinfo->build, sz);
+  }
+}
+
 /* internal routines */
 
 static void
@@ -483,5 +562,15 @@ instutilCopyHttpSVGFile (const char *fn)
   pathbldMakePath (to, sizeof (to),
       fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   filemanipCopy (from, to);
+}
+
+static void
+instutilWebResponseCallback (void *userdata, char *resp, size_t len)
+{
+  instweb_t *instweb = userdata;
+
+  instweb->webresponse = resp;
+  instweb->webresplen = len;
+  return;
 }
 

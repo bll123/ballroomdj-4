@@ -699,11 +699,12 @@ function checkInstallation {
     grc=1
     fail=$(($fail+1))
     echo "   $section $tname FAIL"
-    if [[ $dump == T ]]; then
-      echo "  rc: $trc"
-      echo "  out:"
-      echo $tout | sed 's/^/  /'
-    fi
+  fi
+
+  if [[ $dump == T ]]; then
+    echo "  rc: $trc"
+    echo "  out:"
+    echo $tout | sed 's/^/  /'
   fi
 
   return $tcrc

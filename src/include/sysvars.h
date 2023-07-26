@@ -102,6 +102,15 @@ enum {
   SYSVARS_LOCALE_SET,
 };
 
+typedef struct {
+  char    *data;
+  char    *version;
+  char    *build;
+  char    *builddate;
+  char    *releaselevel;
+  char    *dev;
+} sysversinfo_t;
+
 void    sysvarsInit (const char *argv0);
 void    sysvarsCheckPaths (const char *otherpaths);
 void    sysvarsGetPythonVersion (void);
@@ -115,5 +124,7 @@ const char * sysvarslDesc (sysvarlkey_t idx);
 bool    isMacOS (void);
 bool    isWindows (void);
 bool    isLinux (void);
+sysversinfo_t *sysvarsParseVersionFile (const char *path);
+void    sysvarsParseVersionFileFree (sysversinfo_t *versinfo);
 
 #endif /* INC_SYSVARS_H */
