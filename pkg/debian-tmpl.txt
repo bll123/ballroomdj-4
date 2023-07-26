@@ -1,0 +1,8 @@
+Package: #DEBNAME#
+Version: #VERSION#
+Section: multimedia
+Priority: optional
+Architecture: arm64
+Maintainer: Brad Lanam <brad.lanam.comp@gmail.com>
+Description: BallroomDJ 4 is a player designed for
+ the requirements of playing ballroom music.

@@ -44,8 +44,11 @@ Add user to _developer group:
 
 scutil --set HostName bll-mac.ballroomdj.org
 
+# to reset the keychain password
+<br>security set-keychain-password
+
 # run this first to get all the bdj4 requirements installed
-$HOME/bdj4/install/macos-pre-install-macports.sh
+<br>$HOME/bdj4/install/macos-pre-install-macports.sh
 
 sudo port install autossh di rlwrap                   # for bll
 <br>sudo port install check cmake pkgconfig sshpass   # for bdj4.
