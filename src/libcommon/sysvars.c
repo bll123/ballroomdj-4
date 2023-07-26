@@ -65,6 +65,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_DIR_CONFIG] = { "DIR_CONFIG" },
   [SV_DIR_CONFIG_BASE] = { "DIR_CONFIG_BASE" },
   [SV_FILE_ALTCOUNT] = { "FILE_ALTCOUNT" },
+  [SV_FILE_ALT_INST_PATH] = { "FILE_ALT_INST_PATH" },
   [SV_FILE_INST_PATH] = { "FILE_INST_PATH" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
@@ -344,13 +345,15 @@ sysvarsInit (const char *argv0)
     /* and there is no 'readonly.txt' file */
     /* a change of directories is contra-indicated. */
 
+fprintf (stderr, "sysvars: datatop (local): %s\n", tcwd);
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
     bool found = false;
 
+    /* check for a data directory in the original run-path */
     if (alternatepath) {
-      /* check for a data directory in the original run-path */
+      size_t    tlen;
 
       /* strip filename */
       p = strrchr (altpath, '/');
@@ -365,10 +368,14 @@ sysvarsInit (const char *argv0)
 
       snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
           altpath, READONLY_FN, BDJ4_CONFIG_EXT);
+      tlen = strlen (altpath);
       strlcat (altpath, "/data", sizeof (altpath));
       if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
+        /* remove the /data suffix */
+        altpath [tlen] = '\0';
         strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
         found = true;
+fprintf (stderr, "sysvars: datatop (alt): %s\n", altpath);
         lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
       }
     }
@@ -390,6 +397,7 @@ sysvarsInit (const char *argv0)
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
         }
+fprintf (stderr, "sysvars: datatop (norm): %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
       }
     }
   }
@@ -567,6 +575,9 @@ sysvarsInit (const char *argv0)
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_INST_PATH], tbuff, SV_MAX_SZ);
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
+      ALT_INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
+  strlcpy (sysvars [SV_FILE_ALT_INST_PATH], tbuff, SV_MAX_SZ);
 
   snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ,
       "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,

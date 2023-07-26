@@ -56,6 +56,7 @@ typedef enum {
   ALT_PREPARE,
   ALT_WAIT_USER,
   ALT_INIT,
+  ALT_SAVE_TARGET,
   ALT_MAKE_TARGET,
   ALT_CHDIR,
   ALT_CREATE_DIRS,
@@ -153,6 +154,7 @@ static void altinstSetPaths (altinst_t *altinst);
 
 static void altinstPrepare (altinst_t *altinst);
 static void altinstInit (altinst_t *altinst);
+static void altinstSaveTargetDir (altinst_t *altinst);
 static void altinstMakeTarget (altinst_t *altinst);
 static void altinstChangeDir (altinst_t *altinst);
 static void altinstCreateDirs (altinst_t *altinst);
@@ -176,15 +178,17 @@ static void altinstScanMusicDir (altinst_t *altinst);
 int
 main (int argc, char *argv[])
 {
-  altinst_t    altinst;
+  altinst_t     altinst;
   char          buff [MAXPATHLEN];
   char          *uifont;
   int           c = 0;
   int           option_index = 0;
+  FILE          *fh;
 
   static struct option bdj_options [] = {
     { "ati",        required_argument,  NULL,   'A' },
     { "bdj4altinst",no_argument,       NULL,   0 },
+    { "datatopdir", required_argument,  NULL,   'D' },
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
     { "name",       required_argument,  NULL,   'n' },
@@ -247,8 +251,41 @@ main (int argc, char *argv[])
   altinst.musicdirEntry = NULL;
   altinst.nameEntry = NULL;
 
+  sysvarsInit (argv[0]);
+  bdjvarsInit ();
+  localeInit ();
+
+  strlcpy (buff, sysvarsGetStr (SV_HOME), sizeof (buff));
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff), "%s/Applications", sysvarsGetStr (SV_HOME));
+  }
+  instutilAppendNameToTarget (buff, sizeof (buff), false);
+
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
+  if (fh != NULL) {
+    (void) ! fgets (buff, sizeof (buff), fh);
+    stringTrim (buff);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  altinstSetTargetDir (&altinst, buff);
+
   instutilGetMusicDir (buff, sizeof (buff));
   altinstSetMusicDir (&altinst, buff);
+
+  /* the altcount.txt lives in the configuration dir */
+  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
+    altinst.firstinstall = true;
+  }
+
+  if (altinst.firstinstall) {
+    dataFree (altinst.name);
+    altinst.name = mdstrdup (BDJ4_NAME);
+  }
+
+  strlcpy (altinst.ati, instati [INST_ATI_BDJ4].name, sizeof (altinst.ati));
+  altinstSetATISelect (&altinst);
 
   while ((c = getopt_long_only (argc, argv, "CUrVQt:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -297,6 +334,10 @@ main (int argc, char *argv[])
         altinstSetATISelect (&altinst);
         break;
       }
+      case 'D': {
+fprintf (stderr, "data-top-dir: %s\n", optarg);
+        break;
+      }
       default: {
         break;
       }
@@ -308,23 +349,6 @@ main (int argc, char *argv[])
     altinst.musicdirEntry = uiEntryInit (60, MAXPATHLEN);
     altinst.nameEntry = uiEntryInit (30, 30);
   }
-
-  sysvarsInit (argv[0]);
-  bdjvarsInit ();
-  localeInit ();
-
-  /* the altcount.txt lives in the configuration dir */
-  if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
-    altinst.firstinstall = true;
-  }
-
-  if (altinst.firstinstall) {
-    dataFree (altinst.name);
-    altinst.name = mdstrdup (BDJ4_NAME);
-  }
-
-  strlcpy (altinst.ati, instati [INST_ATI_BDJ4].name, sizeof (altinst.ati));
-  altinstSetATISelect (&altinst);
 
   altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   altinst.home = sysvarsGetStr (SV_HOME);
@@ -590,6 +614,10 @@ altinstMainLoop (void *udata)
       altinstInit (altinst);
       break;
     }
+    case ALT_SAVE_TARGET: {
+      altinstSaveTargetDir (altinst);
+      break;
+    }
     case ALT_MAKE_TARGET: {
       altinstMakeTarget (altinst);
       break;
@@ -703,7 +731,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 
   if (fileopIsDirectory (dir)) {
     exists = true;
-    found = instutilCheckForExistingInstall (altinst->maindir, dir);
+    found = instutilCheckForExistingInstall (dir);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       if (altinst->firstinstall) {
@@ -711,14 +739,16 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
       }
       exists = fileopIsDirectory (tbuff);
       if (exists) {
-        found = instutilCheckForExistingInstall (altinst->maindir, tbuff);
+        found = instutilCheckForExistingInstall (tbuff);
         if (found) {
           dir = tbuff;
         }
       }
     }
 
-    if (exists && found) {
+    /* do not try to overwrite an existing standard installation */
+    if (exists && found &&
+        ! instutilIsStandardInstall (dir)) {
       /* this will be a re-install or an update */
       rc = UIENTRY_OK;
     }
@@ -742,14 +772,17 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     pathInfoFree (pi);
   }
 
+  altinst->newinstall = false;
+  altinst->updateinstall = false;
+  altinst->targetexists = false;
+  if (exists) {
+    altinst->targetexists = true;
+  }
+
   if (rc == UIENTRY_OK) {
     /* set the target directory information */
     altinstSetTargetDir (altinst, dir);
-    altinst->newinstall = false;
-    altinst->updateinstall = false;
-    altinst->targetexists = false;
     if (exists) {
-      altinst->targetexists = true;
       if (found) {
         altinst->newinstall = false;
         altinst->updateinstall = true;
@@ -926,7 +959,9 @@ altinstSetupCallback (void *udata)
 static void
 altinstSetPaths (altinst_t *altinst)
 {
+fprintf (stderr, "alt-set-paths\n");
   if (altinst->targetexists) {
+fprintf (stderr, "  have target\n");
     altinstGetExistingData (altinst);
   }
 }
@@ -935,6 +970,7 @@ static void
 altinstPrepare (altinst_t *altinst)
 {
   altinstValidateProcessTarget (altinst, altinst->target);
+  altinstSetPaths (altinst);
   altinstValidateProcessMusicDir (altinst, altinst->musicdir);
   altinst->instState = ALT_WAIT_USER;
 }
@@ -943,6 +979,27 @@ static void
 altinstInit (altinst_t *altinst)
 {
   altinstSetPaths (altinst);
+  altinst->instState = ALT_SAVE_TARGET;
+}
+
+static void
+altinstSaveTargetDir (altinst_t *altinst)
+{
+  FILE        *fh;
+
+  /* CONTEXT: alternate altinst: status message */
+  altinstDisplayText (altinst, INST_DISP_ACTION, _("Saving install location."), false);
+
+  uiEntrySetValue (altinst->targetEntry, altinst->target);
+
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", altinst->target);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
   altinst->instState = ALT_MAKE_TARGET;
 }
 
@@ -971,6 +1028,11 @@ altinstChangeDir (altinst_t *altinst)
 static void
 altinstCreateDirs (altinst_t *altinst)
 {
+  if (altinst->updateinstall) {
+fprintf (stderr, "create-dirs: upd-install\n");
+    altinstGetExistingData (altinst);
+  }
+
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Creating folder structure."), false);
 
@@ -1022,9 +1084,10 @@ altinstSetup (altinst_t *altinst)
     FILE    *fh;
 
     diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-    fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+    fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
     if (fh != NULL) {
       fputs ("0\n", fh);
+      mdextfclose (fh);
       fclose (fh);
     }
 
@@ -1327,11 +1390,14 @@ altinstGetExistingData (altinst_t *altinst)
   }
 
   if (altinst->newinstall) {
+fprintf (stderr, "ged: new-install\n");
     return;
   }
 
   (void) ! getcwd (cwd, sizeof (cwd));
+fprintf (stderr, "ged: target: %s\n", altinst->target);
   if (chdir (altinst->target)) {
+fprintf (stderr, "  chdir failed\n");
     return;
   }
 

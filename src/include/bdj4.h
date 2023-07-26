@@ -65,23 +65,23 @@ enum {
 #define ITUNES_STARS_FN     "itunes-stars"
 #define NEWINSTALL_FN       "newinstall"
 /* option data files */
+#define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"
 #define MANAGEUI_OPT_FN     "ui-manage"
 #define PLAYERUI_OPT_FN     "ui-player"
 #define STARTERUI_OPT_FN    "ui-starter"
-#define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 /* volume registration */
 #define VOLREG_FN           "volreg"
 #define VOLREG_LOCK         "volreglock"
 #define VOLREG_BDJ4_EXT_FN  "volbdj4"
 #define VOLREG_BDJ3_EXT_FN  "volbdj3"
 /* installation/base port */
-#define READONLY_FN         "readonly"
 #define ALT_COUNT_FN        "altcount"
+#define ALT_INST_PATH_FN    "altinstdir"
 #define BASE_PORT_FN        "baseport"
 #define INST_PATH_FN        "installdir"
-#define READONLY_FN         "readonly"
 #define NEWINST_FN          "newinstall"
+#define READONLY_FN         "readonly"
 /* cache files */
 #define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
 #define SYSVARS_PY_VERS_FN      "pyvers"

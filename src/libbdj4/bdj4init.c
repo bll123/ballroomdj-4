@@ -118,6 +118,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     switch (c) {
       case 't': {
         if (fileopIsDirectory (optarg)) {
+fprintf (stderr, "bdj4init: datatopdir: %s\n", optarg);
           sysvarsSetStr (SV_BDJ4_DIR_DATATOP, optarg);
           sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
         }

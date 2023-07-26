@@ -1195,20 +1195,22 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
   if (fileopIsDirectory (dir)) {
     exists = true;
-    found = instutilCheckForExistingInstall (installer->rundir, dir);
+    found = instutilCheckForExistingInstall (dir);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
-        found = instutilCheckForExistingInstall (installer->rundir, tbuff);
+        found = instutilCheckForExistingInstall (tbuff);
         if (found) {
           dir = tbuff;
         }
       }
     }
 
-    if (exists && found) {
+    /* do not try to overwrite an existing alternate installation */
+    if (exists && found &&
+        instutilIsStandardInstall (dir)) {
       /* this will be a re-install or an update */
       rc = UIENTRY_OK;
     }
@@ -1232,14 +1234,17 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     pathInfoFree (pi);
   }
 
+  installer->newinstall = false;
+  installer->updateinstall = false;
+  installer->targetexists = false;
+  if (exists) {
+    installer->targetexists = true;
+  }
+
   if (rc == UIENTRY_OK) {
     /* set the target directory information */
     installerSetTargetDir (installer, dir);
-    installer->newinstall = false;
-    installer->updateinstall = false;
-    installer->targetexists = false;
     if (exists) {
-      installer->targetexists = true;
       if (found) {
         installer->newinstall = false;
         installer->updateinstall = true;
@@ -1439,7 +1444,6 @@ installerValidateProcessMusicDir (installer_t *installer, const char *dir)
 
   return rc;
 }
-
 
 static void
 installerSetPaths (installer_t *installer)
@@ -1666,11 +1670,10 @@ installerVerifyInstall (installer_t *installer)
 static void
 installerPrepare (installer_t *installer)
 {
-  installerSetPaths (installer);
-
   /* to get initial feedback messages displayed and to set variables */
   installerValidateProcessTarget (installer, installer->target);
   installerValidateProcessBDJ3Loc (installer, installer->bdj3loc);
+  installerSetPaths (installer);
   installerValidateProcessMusicDir (installer, installer->musicdir);
 
   if (! installer->guienabled && ! installer->unattended) {

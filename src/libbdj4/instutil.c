@@ -439,17 +439,33 @@ instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
   pathInfoFree (pi);
 }
 
-/* checks for an existing BDJ4 run-time installation */
+/* checks for an existing BDJ4 installation */
 /* note that the data/ dir may be elsewhere */
+/* note that this will be true for either a standard install or */
+/* an alternate installation. */
 bool
-instutilCheckForExistingInstall (const char *rundir, const char *dir)
+instutilCheckForExistingInstall (const char *dir)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
 
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
-      rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+      dir, sysvarsGetStr (SV_OS_EXEC_EXT));
   exists = fileopFileExists (tbuff);
+
+  return exists;
+}
+
+/* checks for a standard installation */
+/* alternate installations do not have a locale/ dir, check for that */
+bool
+instutilIsStandardInstall (const char *dir)
+{
+  char        tbuff [MAXPATHLEN];
+  bool        exists;
+
+  snprintf (tbuff, sizeof (tbuff), "%s/locale", dir);
+  exists = fileopIsDirectory (tbuff);
 
   return exists;
 }

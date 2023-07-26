@@ -37,6 +37,7 @@ void  instutilCopyHttpFiles (void);
 void  instutilGetMusicDir (char *homemusicdir, size_t sz);
 void  instutilScanMusicDir (const char *musicdir, const char *rundir, char *ati, size_t atisz);
 void  instutilAppendNameToTarget (char *buff, size_t sz, int macosonly);
-bool  instutilCheckForExistingInstall (const char *rundir, const char *dir);
+bool  instutilCheckForExistingInstall (const char *dir);
+bool  instutilIsStandardInstall (const char *dir);
 
 #endif /* INC_INSTUTIL_H */

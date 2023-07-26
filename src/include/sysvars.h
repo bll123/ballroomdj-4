@@ -29,6 +29,7 @@ typedef enum {
                         // windows: %USERPROFILE%/AppData/Roaming
   SV_DIR_CONFIG,        // {DIR_CONFIG_BASE}/BDJ4
   SV_FILE_ALTCOUNT,
+  SV_FILE_ALT_INST_PATH,
   SV_FILE_INST_PATH,
   SV_FONT_DEFAULT,
   SV_HOME,

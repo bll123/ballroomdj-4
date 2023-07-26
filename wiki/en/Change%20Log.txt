@@ -7,9 +7,8 @@
 **4.3.3.2 2023-8---**
 
 * Bug Fixes:
-    * Alternate Installer: Clean up validation of folder entry.
-    * Installer: Clean up validation of folder entry.
-    * Installer: Fix a spurious status message.
+    * Alternate Installer: Many fixes and updates.
+    * Installer: Various fixes and updates.
     * Internal: Make sure message processing is finalized on exit.
     * Linux: Properly support XDG_CONFIG_HOME.
     * Music Queue: Fix music queue display counter.
