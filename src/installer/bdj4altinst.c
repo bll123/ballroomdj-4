@@ -1305,6 +1305,7 @@ altinstFinalize (altinst_t *altinst)
     fprintf (stdout, "re-install %d\n", altinst->reinstall);
     fprintf (stdout, "update %d\n", altinst->updateinstall);
     fprintf (stdout, "converted 0\n");
+    fprintf (stdout, "readonly 0\n");
   }
 
   if (altinst->firstinstall) {
@@ -1340,12 +1341,13 @@ altinstRegister (altinst_t *altinst)
 
   snprintf (tbuff, sizeof (tbuff),
       "&bdj3version=%s&oldversion=%s"
-      "&new=%d&reinstall=%d&update=%d&convert=%d",
+      "&new=%d&reinstall=%d&update=%d&convert=%d&readonly=%d",
       "",
       "",
       altinst->newinstall,
       altinst->reinstall,
       altinst->updateinstall,
+      false,
       false
       );
   instutilRegister (tbuff);

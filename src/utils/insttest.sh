@@ -830,10 +830,8 @@ if [[ T == T ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
       --nomutagen \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       --readonly \
       )
   rc=$?

@@ -147,10 +147,11 @@ main (int argc, char *argv [])
   int         statusflags [UPD_MAX];
   int         counters [UPD_MAX];
   bool        processflags [UPD_MAX];
-  bool        processaf = false;
+  bool        processaf= false;
   bool        processdb = false;
   bool        forcewritetags = false;
   bool        updlistallocated = false;
+  bool        readonly = false;
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
@@ -224,6 +225,15 @@ main (int argc, char *argv [])
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_INFO, "updt");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST, "updt");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      READONLY_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
+  if (fileopFileExists (tbuff)) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "readonly install");
+    readonly = true;
+    updaterCleanFiles ();
+    goto finish;
+  }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -936,6 +946,7 @@ main (int argc, char *argv [])
     nlistFree (updlist);
   }
 
+finish:
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
   dataFree (musicdir);

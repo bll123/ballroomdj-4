@@ -84,9 +84,9 @@ typedef enum {
   INST_PYTHON_INSTALL,
   INST_MUTAGEN_CHECK,
   INST_MUTAGEN_INSTALL,
+  INST_FINALIZE,
   INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
-  INST_FINALIZE,
   INST_REGISTER_INIT,
   INST_REGISTER,
   INST_FINISH,
@@ -441,6 +441,8 @@ main (int argc, char *argv[])
       }
       case 'R': {
         installer.readonly = true;
+        installerSetMusicDir (&installer, "");
+        installer.musicdirok = true;
         break;
       }
       case 'C': {
@@ -926,9 +928,11 @@ installerMainLoop (void *udata)
     uiUIProcessEvents ();
   }
 
-  uiEntryValidate (installer->targetEntry, false);
-  uiEntryValidate (installer->bdj3locEntry, false);
-  uiEntryValidate (installer->musicdirEntry, false);
+  if (installer->guienabled) {
+    uiEntryValidate (installer->targetEntry, false);
+    uiEntryValidate (installer->bdj3locEntry, false);
+    uiEntryValidate (installer->musicdirEntry, false);
+  }
 
   if (installer->guienabled && installer->scrolltoend) {
     uiTextBoxScrollToEnd (installer->disptb);
@@ -1071,16 +1075,16 @@ installerMainLoop (void *udata)
       installerMutagenInstall (installer);
       break;
     }
+    case INST_FINALIZE: {
+      installerFinalize (installer);
+      break;
+    }
     case INST_UPDATE_PROCESS_INIT: {
       installerUpdateProcessInit (installer);
       break;
     }
     case INST_UPDATE_PROCESS: {
       installerUpdateProcess (installer);
-      break;
-    }
-    case INST_FINALIZE: {
-      installerFinalize (installer);
       break;
     }
     case INST_REGISTER_INIT: {
@@ -1433,6 +1437,9 @@ installerValidateProcessMusicDir (installer_t *installer, const char *dir)
   int   rc = UIENTRY_ERROR;
 
   if (*dir && fileopIsDirectory (dir)) {
+    rc = UIENTRY_OK;
+  }
+  if (installer->readonly && ! *dir) {
     rc = UIENTRY_OK;
   }
 
@@ -1801,7 +1808,7 @@ installerCopyFiles (installer_t *installer)
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
 
   if (installer->readonly) {
-    installer->instState = INST_SAVE_LOCALE;
+    installer->instState = INST_VLC_CHECK;
   } else {
     installer->instState = INST_MAKE_DATA_TOP;
   }
@@ -2155,7 +2162,7 @@ static void
 installerSetATI (installer_t *installer)
 {
   if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->rundir, "createshortcut");
+    installerFailWorkingDir (installer, installer->rundir, "setati");
     return;
   }
 
@@ -2188,7 +2195,7 @@ installerSaveLocale (installer_t *installer)
   FILE        *fh;
 
   if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
+    installerFailWorkingDir (installer, installer->datatopdir, "savelocale");
     return;
   }
 
@@ -2213,7 +2220,7 @@ installerVLCCheck (installer_t *installer)
     if (instati [installer->atiselect].needmutagen) {
       installer->instState = INST_PYTHON_CHECK;
     } else {
-      installer->instState = INST_UPDATE_PROCESS_INIT;
+      installer->instState = INST_FINALIZE;
     }
     return;
   }
@@ -2233,7 +2240,7 @@ installerVLCCheck (installer_t *installer)
     if (instati [installer->atiselect].needmutagen) {
       installer->instState = INST_PYTHON_CHECK;
     } else {
-      installer->instState = INST_UPDATE_PROCESS_INIT;
+      installer->instState = INST_FINALIZE;
     }
   }
 }
@@ -2292,7 +2299,7 @@ installerVLCDownload (installer_t *installer)
     if (instati [installer->atiselect].needmutagen) {
       installer->instState = INST_PYTHON_CHECK;
     } else {
-      installer->instState = INST_UPDATE_PROCESS_INIT;
+      installer->instState = INST_FINALIZE;
     }
   }
 }
@@ -2324,7 +2331,7 @@ installerVLCInstall (installer_t *installer)
   if (instati [installer->atiselect].needmutagen) {
     installer->instState = INST_PYTHON_CHECK;
   } else {
-    installer->instState = INST_UPDATE_PROCESS_INIT;
+    installer->instState = INST_FINALIZE;
   }
 }
 
@@ -2470,12 +2477,12 @@ installerMutagenCheck (installer_t *installer)
 
   /* must appear after the readonly check */
   if (installer->nomutagen) {
-    installer->instState = INST_UPDATE_PROCESS_INIT;
+    installer->instState = INST_FINALIZE;
     return;
   }
 
   if (! installer->pythoninstalled) {
-    installer->instState = INST_UPDATE_PROCESS_INIT;
+    installer->instState = INST_FINALIZE;
     return;
   }
 
@@ -2509,63 +2516,6 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   installerCheckPackages (installer);
-  installer->instState = INST_UPDATE_PROCESS_INIT;
-}
-
-static void
-installerUpdateProcessInit (installer_t *installer)
-{
-  char  buff [MAXPATHLEN];
-
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
-    return;
-  }
-
-  /* the updater must be run in the same locale as the installer */
-  if (installer->localespecified) {
-    FILE    *fh;
-    char    tbuff [512];
-
-    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
-    fh = fileopOpen (tbuff, "w");
-    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
-    mdextfclose (fh);
-    fclose (fh);
-  }
-
-  /* CONTEXT: installer: status message */
-  snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
-  installerDisplayText (installer, INST_DISP_ACTION, buff, false);
-  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
-  installer->instState = INST_UPDATE_PROCESS;
-}
-
-static void
-installerUpdateProcess (installer_t *installer)
-{
-  char  tbuff [MAXPATHLEN];
-  int   targc = 0;
-  const char  *targv [10];
-
-  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
-      installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
-  targv [targc++] = tbuff;
-  targv [targc++] = "--wait";
-  targv [targc++] = "--bdj4updater";
-  /* only need to run the 'newinstall' update process when the template */
-  /* files have been copied */
-  if (installer->newinstall || installer->reinstall) {
-    targv [targc++] = "--newinstall";
-  }
-  if (installer->convprocess) {
-    targv [targc++] = "--convert";
-  }
-  targv [targc++] = NULL;
-  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
-
   installer->instState = INST_FINALIZE;
 }
 
@@ -2633,13 +2583,71 @@ installerFinalize (installer_t *installer)
     fprintf (stdout, "re-install %d\n", installer->reinstall);
     fprintf (stdout, "update %d\n", installer->updateinstall);
     fprintf (stdout, "converted %d\n", installer->convprocess);
+    fprintf (stdout, "readonly %d\n", installer->readonly);
   }
 
   if (installer->readonly) {
     installer->instState = INST_FINISH;
   } else {
-    installer->instState = INST_REGISTER_INIT;
+    installer->instState = INST_UPDATE_PROCESS_INIT;
   }
+}
+
+static void
+installerUpdateProcessInit (installer_t *installer)
+{
+  char  buff [MAXPATHLEN];
+
+  if (chdir (installer->datatopdir)) {
+    installerFailWorkingDir (installer, installer->datatopdir, "updprocessinit");
+    return;
+  }
+
+  /* the updater must be run in the same locale as the installer */
+  if (installer->localespecified) {
+    FILE    *fh;
+    char    tbuff [512];
+
+    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
+    fh = fileopOpen (tbuff, "w");
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  /* CONTEXT: installer: status message */
+  snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
+  installerDisplayText (installer, INST_DISP_ACTION, buff, false);
+  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
+  installer->instState = INST_UPDATE_PROCESS;
+}
+
+static void
+installerUpdateProcess (installer_t *installer)
+{
+  char  tbuff [MAXPATHLEN];
+  int   targc = 0;
+  const char  *targv [10];
+
+  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
+      installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+  targv [targc++] = tbuff;
+  targv [targc++] = "--wait";
+  targv [targc++] = "--bdj4updater";
+  /* only need to run the 'newinstall' update process when the template */
+  /* files have been copied */
+  if (installer->newinstall || installer->reinstall) {
+    targv [targc++] = "--newinstall";
+  }
+  if (installer->convprocess) {
+    targv [targc++] = "--convert";
+  }
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
+
+  installer->instState = INST_REGISTER_INIT;
 }
 
 static void
@@ -2668,13 +2676,14 @@ installerRegister (installer_t *installer)
 
   snprintf (tbuff, sizeof (tbuff),
       "&bdj3version=%s&oldversion=%s"
-      "&new=%d&reinstall=%d&update=%d&convert=%d",
+      "&new=%d&reinstall=%d&update=%d&convert=%d&readonly=%d",
       installer->bdj3version,
       installer->oldversion,
       installer->newinstall,
       installer->reinstall,
       installer->updateinstall,
-      installer->convprocess
+      installer->convprocess,
+      installer->readonly
       );
   instutilRegister (tbuff);
   installer->instState = INST_FINISH;
@@ -3057,7 +3066,7 @@ installerGetExistingData (installer_t *installer)
   }
 
   if (chdir (cwd)) {
-    installerFailWorkingDir (installer, installer->datatopdir, "get-old-b");
+    installerFailWorkingDir (installer, installer->datatopdir, "getexistdata");
   }
 }
 
