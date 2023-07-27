@@ -818,6 +818,31 @@ if [[ $readonly == F ]]; then
         )
     rc=$?
     checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+
+    # alternate installation (linux, windows)
+    tname=alt-install-reinstall
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        --reinstall \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc r o "${TARGETALTDIR}"
+
+    # alternate installation (linux, windows)
+    tname=alt-install-update
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc u o "${TARGETALTDIR}"
   fi
 fi
 

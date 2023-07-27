@@ -107,6 +107,7 @@ typedef struct {
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
   uibutton_t      *buttons [ALT_BUTTON_MAX];
+  char            oldversion [MAXPATHLEN];
   char            *target;
   char            *maindir;
   char            *hostname;
@@ -226,6 +227,7 @@ main (int argc, char *argv[])
   altinst.lastInstState = ALT_PRE_INIT;
   altinst.target = mdstrdup ("");
   altinst.musicdir = mdstrdup ("");
+  strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
   altinst.home = NULL;
   altinst.name = mdstrdup ("BDJ4 B");
@@ -1022,7 +1024,18 @@ altinstSaveTargetDir (altinst_t *altinst)
 static void
 altinstMakeTarget (altinst_t *altinst)
 {
+  char            tbuff [MAXPATHLEN];
+  sysversinfo_t   *versinfo;
+
   diropMakeDir (altinst->target);
+
+  *altinst->oldversion = '\0';
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->target);
+  if (fileopFileExists (tbuff)) {
+    versinfo = sysvarsParseVersionFile (tbuff);
+    instutilOldVersionString (versinfo, altinst->oldversion, sizeof (altinst->oldversion));
+    sysvarsParseVersionFileFree (versinfo);
+  }
 
   altinst->instState = ALT_CHDIR;
 }
@@ -1246,7 +1259,11 @@ altinstFinalize (altinst_t *altinst)
   if (altinst->verbose) {
     fprintf (stdout, "finish OK\n");
     fprintf (stdout, "bdj3-version x\n");
-    fprintf (stdout, "old-version x\n");
+    if (*altinst->oldversion) {
+      fprintf (stdout, "old-version %s\n", altinst->oldversion);
+    } else {
+      fprintf (stdout, "old-version x\n");
+    }
     fprintf (stdout, "first-install %d\n", altinst->firstinstall);
     fprintf (stdout, "new-install %d\n", altinst->newinstall);
     fprintf (stdout, "re-install %d\n", altinst->reinstall);
@@ -1329,7 +1346,7 @@ altinstRegister (altinst_t *altinst)
       "&bdj3version=%s&oldversion=%s"
       "&new=%d&reinstall=%d&update=%d&convert=%d&readonly=%d",
       "",
-      "",
+      altinst->oldversion,
       altinst->newinstall,
       altinst->reinstall,
       altinst->updateinstall,

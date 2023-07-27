@@ -164,7 +164,6 @@ sysvarsInit (const char *argv0)
   char          altpath [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
   char          rochkbuff [MAXPATHLEN];
-  char          *tptr;
   char          *p;
   size_t        dlen;
   bool          alternatepath = false;
@@ -537,6 +536,7 @@ sysvarsInit (const char *argv0)
           sysvars [SV_HOME]);
     }
   }
+  pathNormalizePath (sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ);
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CONFIG_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
@@ -564,6 +564,7 @@ sysvarsInit (const char *argv0)
           sysvars [SV_HOME]);
     }
   }
+  pathNormalizePath (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CACHE], tbuff, SV_MAX_SZ);
@@ -666,7 +667,7 @@ sysvarsInit (const char *argv0)
 
     osGetEnv ("NUMBER_OF_PROCESSORS", tmp, sizeof (tmp));
     if (*tmp) {
-      lsysvars [SVL_NUM_PROC] = atoi (tptr);
+      lsysvars [SVL_NUM_PROC] = atoi (tmp);
     }
   } else {
 #if _lib_sysconf

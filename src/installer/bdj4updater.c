@@ -151,7 +151,6 @@ main (int argc, char *argv [])
   bool        processdb = false;
   bool        forcewritetags = false;
   bool        updlistallocated = false;
-  bool        readonly = false;
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
@@ -230,7 +229,6 @@ main (int argc, char *argv [])
       READONLY_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
   if (fileopFileExists (tbuff)) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "readonly install");
-    readonly = true;
     updaterCleanFiles ();
     goto finish;
   }

@@ -84,6 +84,9 @@ void *
 dylibLookup (dlhandle_t *handle, const char *funcname)
 {
   void      *addr = NULL;
+#if _lib_LoadLibrary
+  HMODULE   whandle = handle;
+#endif
 
   if (handle == NULL || funcname == NULL || ! *funcname) {
     return NULL;
@@ -93,9 +96,10 @@ dylibLookup (dlhandle_t *handle, const char *funcname)
   addr = dlsym (handle, funcname);
 #endif
 #if _lib_LoadLibrary
-  HMODULE   whandle = handle;
   addr = GetProcAddress (whandle, funcname);
 #endif
+
+/* debugging */
 #if 0
   if (addr == NULL) {
     fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
@@ -105,6 +109,7 @@ dylibLookup (dlhandle_t *handle, const char *funcname)
   } else {
     fprintf (stderr, "sym lookup %s OK\n", funcname);
   }
-#endif
+#endif /* debug */
+
   return addr;
 }
