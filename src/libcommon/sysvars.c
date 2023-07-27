@@ -62,6 +62,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
+  [SV_DIR_CACHE] = { "DIR_CACHE" },
+  [SV_DIR_CACHE_BASE] = { "DIR_CACHE_BASE" },
   [SV_DIR_CONFIG] = { "DIR_CONFIG" },
   [SV_DIR_CONFIG_BASE] = { "DIR_CONFIG_BASE" },
   [SV_FILE_ALTCOUNT] = { "FILE_ALTCOUNT" },
@@ -525,9 +527,6 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], versinfo->dev, SV_MAX_SZ);
   sysvarsParseVersionFileFree (versinfo);
 
-  /* do this after the VERSION.txt file has been read */
-  /* so that an alternative filename can be set up for development */
-  /* for the altcount.txt file */
   if (isWindows ()) {
     snprintf (sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ,
         "%s/AppData/Roaming", sysvars [SV_HOME]);
@@ -538,8 +537,10 @@ sysvarsInit (const char *argv0)
           sysvars [SV_HOME]);
     }
   }
+
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CONFIG_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
+
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       ALT_COUNT_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_ALTCOUNT], tbuff, SV_MAX_SZ);
@@ -549,6 +550,23 @@ sysvarsInit (const char *argv0)
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       ALT_INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_ALT_INST_PATH], tbuff, SV_MAX_SZ);
+
+  if (isWindows ()) {
+    osGetEnv ("TEMP", sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
+    if (! *sysvars [SV_DIR_CACHE_BASE]) {
+      snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
+          "%s/AppData/Local/Temp", sysvars [SV_HOME]);
+    }
+  } else {
+    osGetEnv ("XDG_CACHE_HOME", sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
+    if (! *sysvars [SV_DIR_CACHE_BASE]) {
+      snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ, "%s/.cache",
+          sysvars [SV_HOME]);
+    }
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
+  strlcpy (sysvars [SV_DIR_CACHE], tbuff, SV_MAX_SZ);
 
   snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ,
       "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,

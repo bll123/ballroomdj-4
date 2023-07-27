@@ -45,6 +45,7 @@
 #include "ossignal.h"
 #include "osutils.h"
 #include "osuiutils.h"
+#include "pathbld.h"
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "slist.h"
@@ -2591,6 +2592,13 @@ installerFinalize (installer_t *installer)
   } else {
     installer->instState = INST_UPDATE_PROCESS_INIT;
   }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
 }
 
 static void

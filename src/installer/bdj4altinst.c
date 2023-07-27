@@ -1178,33 +1178,12 @@ altinstSetup (altinst_t *altinst)
 #endif
   }
 
-// ### FIX these paths may not be valid in sysvars
-  /* create the link files that point to the volreg.txt and lock file */
-// ### FIX these need to be in a known location if the main installation
-// ### is read-only.
   pathbldMakePath (buff, sizeof (buff),
-      VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
-  fh = fileopOpen (buff, "w");
-  if (fh != NULL) {
-    fputs (tbuff, fh);
-    fputs ("\n", fh);
-    mdextfclose (fh);
-    fclose (fh);
-  }
-
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (buff);
   pathbldMakePath (buff, sizeof (buff),
-      "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_DIR_MAIN);
-  fh = fileopOpen (buff, "w");
-  if (fh != NULL) {
-    fputs (tbuff, fh);
-    fputs ("\n", fh);
-    mdextfclose (fh);
-    fclose (fh);
-  }
+      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (buff);
 
   altinst->instState = ALT_CREATE_SHORTCUT;
 }

@@ -40,7 +40,6 @@ enum {
 #define BDJ4_DB_EXT       ".dat"
 #define BDJ4_HTML_EXT     ".html"
 #define BDJ4_LOCK_EXT     ".lck"
-#define BDJ4_LINK_EXT     ".link"
 #define BDJ4_PLAYLIST_EXT ".pl"
 #define BDJ4_PL_DANCE_EXT ".pldances"
 #define BDJ4_SEQUENCE_EXT ".sequence"
@@ -72,7 +71,6 @@ enum {
 #define STARTERUI_OPT_FN    "ui-starter"
 /* volume registration */
 #define VOLREG_FN           "volreg"
-#define VOLREG_LOCK         "volreglock"
 #define VOLREG_BDJ4_EXT_FN  "volbdj4"
 #define VOLREG_BDJ3_EXT_FN  "volbdj3"
 /* installation/base port */

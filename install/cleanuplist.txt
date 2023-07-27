@@ -211,5 +211,11 @@ data/helpdata\.txt$
 
 # 2023-7-25
 # altcount.txt now lives in the .config dir
+# volreg has been moved to the .cache dir
 data/altcount\.txt$
+data/volreg\.txt$
+data/volreg\.txt\.bak\.1$
+tmp/volreglock\.lck$
+data/volreg\.link$
+data/volreglock\.link$
 

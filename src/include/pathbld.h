@@ -25,6 +25,7 @@ typedef enum {
   PATHBLD_MP_DIR_DATATOP  = 0x20000200,
   /* other paths */
   PATHBLD_IS_OTHER        = 0x40000000,
+  PATHBLD_MP_DIR_CACHE    = 0x40000002,
   PATHBLD_MP_DIR_CONFIG   = 0x40000001,
   /* flags */
   PATHBLD_MP_DSTAMP       = 0x00010000,

@@ -43,6 +43,7 @@ const char *envitems [] = {
   "USER",
   "USERNAME",
   "USERPROFILE",
+  "XDG_CACHE_HOME",
   "XDG_CONFIG_HOME",
   "XDG_CURRENT_DESKTOP",
   "XDG_SESSION_DESKTOP",

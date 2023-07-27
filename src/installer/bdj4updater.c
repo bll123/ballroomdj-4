@@ -261,7 +261,10 @@ main (int argc, char *argv [])
   /* Always remove the volreg.txt and flag files on an update.  */
   /* This helps prevents any issues with the volume. */
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (tbuff);
   volregClearBDJ4Flag ();
   pathbldMakePath (tbuff, sizeof (tbuff),

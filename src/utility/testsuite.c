@@ -182,7 +182,10 @@ main (int argc, char *argv [])
       LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (tbuff);
 
   procutilInitProcesses (testsuite.processes);
