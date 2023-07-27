@@ -34,7 +34,6 @@ echo "-- $(date +%T) creating install package"
 echo "-- $(date +%T) installing"
 (
   cd "$UNPACKDIR"
-set -x
   ./bin/bdj4 --bdj4installer \
       --unattended \
       --nomutagen \
@@ -43,7 +42,6 @@ set -x
       --unpackdir "$UNPACKDIR" \
       --musicdir "/home/bll/Music" \
       --readonly
-set +x
 )
 
 echo "-- $(date +%T) finalizing"
