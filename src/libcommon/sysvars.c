@@ -116,6 +116,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
   [SVL_BDJIDX] = { "BDJIDX" },
+  [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
   [SVL_IS_MACOS] = { "IS_MACOS" },
   [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
@@ -624,6 +625,7 @@ sysvarsInit (const char *argv0)
   sysvarsCheckMutagen ();
 
   lsysvars [SVL_BDJIDX] = 0;
+  lsysvars [SVL_INITIAL_PORT] = 32548;
   lsysvars [SVL_BASEPORT] = 32548;
   strlcpy (buff, "data/baseport.txt", sizeof (buff));
   if (fileopFileExists (buff)) {

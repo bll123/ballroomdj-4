@@ -64,9 +64,9 @@ typedef enum {
   ALT_SETUP,
   ALT_CREATE_SHORTCUT,
   ALT_SET_ATI,
+  ALT_FINALIZE,
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
-  ALT_FINALIZE,
   ALT_REGISTER_INIT,
   ALT_REGISTER,
   ALT_FINISH,
@@ -662,16 +662,16 @@ altinstMainLoop (void *udata)
       altinstSetATI (altinst);
       break;
     }
+    case ALT_FINALIZE: {
+      altinstFinalize (altinst);
+      break;
+    }
     case ALT_UPDATE_PROCESS_INIT: {
       altinstUpdateProcessInit (altinst);
       break;
     }
     case ALT_UPDATE_PROCESS: {
       altinstUpdateProcess (altinst);
-      break;
-    }
-    case ALT_FINALIZE: {
-      altinstFinalize (altinst);
       break;
     }
     case ALT_REGISTER_INIT: {
@@ -1038,7 +1038,7 @@ altinstChangeDir (altinst_t *altinst)
   if (altinst->newinstall || altinst->reinstall) {
     altinst->instState = ALT_CREATE_DIRS;
   } else {
-    altinst->instState = ALT_UPDATE_PROCESS_INIT;
+    altinst->instState = ALT_FINALIZE;
   }
 }
 
@@ -1145,7 +1145,7 @@ altinstSetup (altinst_t *altinst)
   }
 
   /* calculate the new base port */
-  baseport = sysvarsGetNum (SVL_BASEPORT);
+  baseport = sysvarsGetNum (SVL_INITIAL_PORT);
   baseport += altcount * BDJOPT_MAX_PROFILES * (int) bdjvarsGetNum (BDJVL_NUM_PORTS);
   snprintf (str, sizeof (str), "%d\n", baseport);
 
@@ -1159,6 +1159,12 @@ altinstSetup (altinst_t *altinst)
     fclose (fh);
   }
 
+  /* copy the VERSION.txt file so that the old version can be tracked */
+  snprintf (buff, sizeof (buff), "%s/VERSION.txt", altinst->maindir);
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->target);
+  filemanipCopy (buff, tbuff);
+
+// ### FIX : check is dir-exec even set?
   /* create the symlink for the bdj4 executable */
   if (isWindows ()) {
     /* handled by the desktop shortcut */
@@ -1172,6 +1178,7 @@ altinstSetup (altinst_t *altinst)
 #endif
   }
 
+// ### FIX these paths may not be valid in sysvars
   /* create the link files that point to the volreg.txt and lock file */
 // ### FIX these need to be in a known location if the main installation
 // ### is read-only.
@@ -1251,7 +1258,29 @@ altinstSetATI (altinst_t *altinst)
     bdjoptSetStr (OPT_P_PROFILENAME, uiEntryGetValue (altinst->nameEntry));
     bdjoptSave ();
   }
-  altinst->instState = ALT_UPDATE_PROCESS_INIT;
+  altinst->instState = ALT_FINALIZE;
+}
+
+static void
+altinstFinalize (altinst_t *altinst)
+{
+  if (altinst->verbose) {
+    fprintf (stdout, "finish OK\n");
+    fprintf (stdout, "bdj3-version x\n");
+    fprintf (stdout, "old-version x\n");
+    fprintf (stdout, "first-install %d\n", altinst->firstinstall);
+    fprintf (stdout, "new-install %d\n", altinst->newinstall);
+    fprintf (stdout, "re-install %d\n", altinst->reinstall);
+    fprintf (stdout, "update %d\n", altinst->updateinstall);
+    fprintf (stdout, "converted 0\n");
+    fprintf (stdout, "readonly 0\n");
+  }
+
+  if (altinst->firstinstall) {
+    altinst->instState = ALT_UPDATE_PROCESS_INIT;
+  } else {
+    altinst->instState = ALT_FINISH;
+  }
 }
 
 static void
@@ -1290,29 +1319,7 @@ altinstUpdateProcess (altinst_t *altinst)
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
 
-  altinst->instState = ALT_FINALIZE;
-}
-
-static void
-altinstFinalize (altinst_t *altinst)
-{
-  if (altinst->verbose) {
-    fprintf (stdout, "finish OK\n");
-    fprintf (stdout, "bdj3-version x\n");
-    fprintf (stdout, "old-version x\n");
-    fprintf (stdout, "first-install %d\n", altinst->firstinstall);
-    fprintf (stdout, "new-install %d\n", altinst->newinstall);
-    fprintf (stdout, "re-install %d\n", altinst->reinstall);
-    fprintf (stdout, "update %d\n", altinst->updateinstall);
-    fprintf (stdout, "converted 0\n");
-    fprintf (stdout, "readonly 0\n");
-  }
-
-  if (altinst->firstinstall) {
-    altinst->instState = ALT_REGISTER_INIT;
-  } else {
-    altinst->instState = ALT_FINISH;
-  }
+  altinst->instState = ALT_REGISTER_INIT;
 }
 
 static void
