@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -28,9 +28,14 @@ if [[ $(uname -s) != Linux ]]; then
   exit 1
 fi
 
-chome=${XDG_CONFIG_HOME:-$HOME/.config}
-confdir="${chome}/BDJ4"
-instdir="${chome}/BDJ4/installdir.txt"
+cdir=${XDG_CACHE_HOME:-$HOME/.cache}
+cachedir="${cdir}/BDJ4"
+
+cdir=${XDG_CONFIG_HOME:-$HOME/.config}
+confdira="${HOME}/.config/BDJ4"
+confdirb="${cdir}/BDJ4"
+instdir="${cdir}/BDJ4/installdir.txt"
+altinstdir="${cdir}/BDJ4/altinstdir.txt"
 appdir=$HOME/.local/share/applications
 desktop=$(xdg-user-dir DESKTOP)
 
@@ -38,13 +43,17 @@ echo "Uninstall the BallroomDJ 4 Application? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
   dir="$HOME/BDJ4"
-  if [[ -f $instdir ]]; then
-    dir=$(cat $instdir)
-  fi
-  if [[ $dir != "" ]]; then
-    test -d ${dir} && rm -rf ${dir}
+  for fn in $instdir $altinstdir; do
+    dir=""
+    if [[ -f $instdir ]]; then
+      dir=$(cat $instdir)
+    fi
+    if [[ $dir != "" ]]; then
+      test -d ${dir} && rm -rf ${dir}
+    fi
   fi
   test -d ${confdir} && rm -rf ${confdir}
+  test -d ${cachedir} && rm -rf ${cachedir}
   test -f ${desktop}/BDJ4.desktop && rm -f ${desktop}/BDJ4.desktop
   test -f ${desktop}/bdj4.desktop && rm -f ${desktop}/bdj4.desktop
   test -f ${appdir}/BDJ4.desktop && rm -f ${appdir}/BDJ4.desktop

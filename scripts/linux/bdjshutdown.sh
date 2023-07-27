@@ -1,6 +1,7 @@
 #!/bin/bash
 
-spath=$HOME/.config/BDJ4
+cdir="${XDG_CACHE_DIR:-$HOME/.cache}"
+spath="${cdir}/BDJ4"
 test -d "$spath" || mkdir -p "$spath"
 RESTFILE="$spath/bdj4-ss-restore"
 

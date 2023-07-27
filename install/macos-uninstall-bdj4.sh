@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -51,9 +51,14 @@ if [[ $gr == Y ]]; then
   # application
   dir="$HOME/Applications/BDJ4.app"
   test -d "$dir" && rm -rf "$dir"
-  chome=${XDG_CONFIG_HOME:-$HOME/.config}
-  dir="${chome}/BDJ4"
-  test -d "$dir" && rm -rf "$dir"
+  # cache dir
+  cdir=${XDG_CACHE_HOME:-$HOME/.cache}
+  cachedir="${cdir}/BDJ4"
+  test -d "$cachedir" && rm -rf "$cachedir"
+  # config dir
+  cdir=${XDG_CONFIG_HOME:-$HOME/.config}
+  confdir="${cdir}/BDJ4"
+  test -d "$confdir" && rm -rf "$confdir"
 
   # installed themes
   for fn in "$HOME/.themes/macOS-Mojave-dark" \

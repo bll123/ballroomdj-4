@@ -1,6 +1,12 @@
 #!/bin/bash
 
-spath=$HOME/.config/BDJ4
+# old path / cleanup
+cdir="$HOME/.config"
+rm -f "${cdir}/BDJ4/bdj4-ss-restore"
+rm -f "${cdir}/BDJ4/bdj4-ss-restore.orig"
+
+cdir="${XDG_CACHE_DIR:-$HOME/.cache}"
+spath="${cdir}/BDJ4"
 test -d "$spath" || mkdir -p "$spath"
 RESTFILE="$spath/bdj4-ss-restore"
 
@@ -115,6 +121,7 @@ if [ $rc -eq 0 ]; then
       /do-not-disturb
 fi
 
-if [[ -f $RESTFILE && ! -f $RESTFILE.orig ]]; then
-  cp -f $RESTFILE $RESTFILE.orig
+# create a backup; this is mostly useful for development purposes
+if [[ ! -f $RESTFILE.orig ]]; then
+  cp -pf $RESTFILE $RESTFILE.orig
 fi
