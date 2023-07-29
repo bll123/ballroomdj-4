@@ -476,10 +476,11 @@ main (int argc, char *argv [])
 
   {
     /* 4.2.0 2023-3-5 autoselection.txt */
-    /* updated values (version 3) */
     /* 4.3.2.4 2023-5-26 */
+    /* 4.3.3.2 2023-7-29 */
     /* added windowed values (version 4) */
-    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 4);
+    /* added fastprior (version 5) */
+    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   {

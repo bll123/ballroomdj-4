@@ -61,8 +61,10 @@ START_TEST(autosel_get)
   /* check for the default values from the template */
   autosel = autoselAlloc ();
 
-  dval = autoselGetDouble (autosel, AUTOSEL_BOTHFAST);
+  dval = autoselGetDouble (autosel, AUTOSEL_FAST_BOTH);
   ck_assert_float_eq (dval, 1000.0);
+  dval = autoselGetDouble (autosel, AUTOSEL_FAST_PRIOR);
+  ck_assert_float_eq (dval, 150.0);
   val = autoselGetNum (autosel, AUTOSEL_HIST_DISTANCE);
   ck_assert_int_eq (val, 5);
 

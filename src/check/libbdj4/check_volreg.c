@@ -56,7 +56,7 @@ START_TEST(volreg_save)
   mdebugSubTag ("volreg_save");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
   unlink (tbuff);
 
   volregSave (TESTSINK, 76);
@@ -83,7 +83,7 @@ START_TEST(volreg_clear)
   mdebugSubTag ("volreg_clear");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
 
   checkSink (tbuff, TESTSINK, 76, 2);
   val = volregClear (TESTSINK);

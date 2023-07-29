@@ -48,7 +48,7 @@ typedef struct dancesel {
   /* windowed probability tables */
   nlist_t       *winsize;
   nlist_t       *wdecrement;
-  nlist_t       *wearlysel;
+  nlist_t       *winEarlySel;
   /* played */
   queue_t       *playedDances;
   /* autosel variables that will be used */
@@ -107,7 +107,7 @@ danceselAlloc (nlist_t *countList,
   /* windowed */
   dancesel->winsize = nlistAlloc ("dancesel-winsize", LIST_ORDERED, NULL);
   dancesel->wdecrement = nlistAlloc ("dancesel-w-decrement", LIST_ORDERED, NULL);
-  dancesel->wearlysel = nlistAlloc ("dancesel-w-early-sel", LIST_ORDERED, NULL);
+  dancesel->winEarlySel = nlistAlloc ("dancesel-w-early-sel", LIST_ORDERED, NULL);
 
   /* selected */
   dancesel->selCount = 0;
@@ -170,7 +170,7 @@ danceselFree (dancesel_t *dancesel)
     /* windowed */
     nlistFree (dancesel->winsize);
     nlistFree (dancesel->wdecrement);
-    nlistFree (dancesel->wearlysel);
+    nlistFree (dancesel->winEarlySel);
     mdfree (dancesel);
   }
   logProcEnd (LOG_PROC, "danceselFree", "");
@@ -328,36 +328,42 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
         dec = nlistGetDouble (dancesel->wdecrement, didx);
         diff = twinsz - dec;
 
-        nlistSetNum (dancesel->wearlysel, didx, false);
+        nlistSetNum (dancesel->winEarlySel, didx, false);
+
+        /* base value for the dance */
+        /* determine which dances are allowed to be selected */
+        /* always 1.0 unless the dance is outside the window */
+        /* if outside the window, use the diff* values to give */
+        /* the dance a small chance of being selected */
 
         /* wsz   dec   diff   tbase */
         /* 3.4 - 0.0 :  3.4 : 1.0 */
         /* 3.4 - 1.0 :  2.4 : 0.1 */
-        /* 3.4 - 2.0 :  1.4 : 0.35 */
+        /* 3.4 - 2.0 :  1.4 : 0.25 */
         /* 3.4 - 3.0 :  0.4 : 0.5 */
         /* 3.4 - 4.0 : -0.4 : 1.0, reset decrement */
         if (diff <= 0.0) {
           tbase = 1.0;
           nlistSetDouble (dancesel->wdecrement, didx, 0.0);
-          nlistSetNum (dancesel->wearlysel, didx, false);
+          nlistSetNum (dancesel->winEarlySel, didx, false);
         } else if (diff >= twinsz) {
           /* decrement is zero */
           tbase = 1.0;
         } else {
           if (diff > 0.0) {
             tbase = countTries * 0.1;
-            if (! nlistGetNum (dancesel->wearlysel, didx)) {
+            if (! nlistGetNum (dancesel->winEarlySel, didx)) {
               /* these allow the dance to be selected a bit early in the window */
               /* this helps prevent situations where no dance can be selected */
               /* in these cases, if the dance is selected, make sure the dance */
               /* is not re-selected until the decrement is reset */
               if (diff <= 3.0) {
                 tbase = dancesel->windowedDiffC;
-                nlistSetNum (dancesel->wearlysel, didx, true);
+                nlistSetNum (dancesel->winEarlySel, didx, true);
               }
               if (diff <= 2.0) {
                 tbase = dancesel->windowedDiffB;
-                nlistSetNum (dancesel->wearlysel, didx, true);
+                nlistSetNum (dancesel->winEarlySel, didx, true);
               }
             }
             /* on the edge between windows, 50% chance */
@@ -398,6 +404,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       nlistSetDouble (dancesel->adjustBase, didx, abase);
 
       /* if this selection is at the beginning of the playlist */
+
       if (dancesel->selCount < autoselGetNum (dancesel->autosel, AUTOSEL_BEG_COUNT)) {
         /* if this dance is a fast dance ( / 1000) */
         if (speed == DANCE_SPEED_FAST) {
@@ -411,27 +418,18 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       }
 
       /* if this dance and the previous dance were both fast ( / 1000) */
-      if (pddanceIdx >= 0 &&
-          pdspeed == speed && speed == DANCE_SPEED_FAST) {
-        abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_BOTHFAST);
+
+      if (speed == DANCE_SPEED_FAST &&
+          pddanceIdx >= 0 && pdspeed == speed) {
+        abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_FAST_BOTH);
         logMsg (LOG_DBG, LOG_DANCESEL, "   speed is fast and same as previous: abase: %.6f", abase);
         if (DANCESEL_DEBUG) {
           fprintf (stderr, "   speed is fast and same as previous: abase: %.6f\n", abase);
         }
       }
 
-      /* if there is a tag match between the previous dance and this one */
-      /* ( / 600 ) */
-      tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
-      if (pddanceIdx >= 0 && danceselMatchTag (tags, pdtags)) {
-        abase = abase / dancesel->prevTagMatch;
-        logMsg (LOG_DBG, LOG_DANCESEL, "   matched tags with previous: abase: %.6f", abase);
-        if (DANCESEL_DEBUG) {
-          fprintf (stderr, "   matched tags with previous: abase: %.6f\n", abase);
-        }
-      }
-
       /* if this dance and the previous dance have matching types ( / 600 ) */
+
       type = danceGetNum (dancesel->dances, didx, DANCE_TYPE);
       if (pddanceIdx >= 0 && pdtype == type) {
         abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_TYPE_MATCH);
@@ -441,12 +439,26 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
         }
       }
 
+      /* if there is a tag match between the previous dance and this one */
+      /* ( / 600 ) */
+
+      tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
+      if (pddanceIdx >= 0 && danceselMatchTag (tags, pdtags)) {
+        abase = abase / dancesel->prevTagMatch;
+        logMsg (LOG_DBG, LOG_DANCESEL, "   matched tags with previous: abase: %.6f", abase);
+        if (DANCESEL_DEBUG) {
+          fprintf (stderr, "   matched tags with previous: abase: %.6f\n", abase);
+        }
+      }
+
       /* process prior checks, save abase */
+
       nlistSetDouble (dancesel->adjustBase, didx, abase);
 
-      queueIdx = queueCount - 1;
+      /* the previous dance (dist == 1) has already been checked */
+      queueDist = 2;
+      queueIdx = queueCount - queueDist;
       priorLookupDone = false;
-      queueDist = 0;
       priordidx = -1;
       chkdist = dancesel->histDistance;
 
@@ -454,6 +466,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
         bool  match = false;
 
         priorLookupDone = danceselGetPriorInfo (dancesel, queueCount, queueIdx, &priordidx);
+        /* priordidx will be -1 if there is no prior dance*/
         if (! priorLookupDone && priordidx != -1) {
           logMsg (LOG_DBG, LOG_DANCESEL, "   prior dist:%d", queueDist);
           if (DANCESEL_DEBUG) {
@@ -480,7 +493,8 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     }
   } /* outside loop to make sure something is available to be selected */
 
-  /* get the totals for the adjusted base values */
+  /* get the total for the adjusted base values */
+
   adjTotal = 0.0;
   nlistStartIterator (dancesel->adjustBase, &iteridx);
   while ((didx = nlistIterateKey (dancesel->adjustBase, &iteridx)) >= 0) {
@@ -497,6 +511,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   }
 
   /* create a probability table of running totals */
+
   tprob = 0.0;
   nlistStartIterator (dancesel->adjustBase, &iteridx);
   while ((didx = nlistIterateKey (dancesel->adjustBase, &iteridx)) >= 0) {
@@ -515,6 +530,8 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     nlistSetDouble (dancesel->danceProbTable, didx, tprob);
   }
 
+  /* and pick a dance */
+
   tval = dRandom ();
   didx = nlistSearchProbTable (dancesel->danceProbTable, tval);
   logMsg (LOG_DBG, LOG_BASIC, "== select %.6f %d/%s",
@@ -525,9 +542,9 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   }
   if (dancesel->method == DANCESEL_METHOD_WINDOWED) {
     /* if the dance was an early selection, reset the decrement */
-    if (nlistGetNum (dancesel->wearlysel, didx)) {
+    if (nlistGetNum (dancesel->winEarlySel, didx)) {
       nlistSetDouble (dancesel->wdecrement, didx, 0.0);
-      nlistSetNum (dancesel->wearlysel, didx, false);
+      nlistSetNum (dancesel->winEarlySel, didx, false);
     }
   } /* method = windowed */
 
@@ -554,8 +571,10 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
   int           matchrc = false;
 
   logProcBegin (LOG_PROC, "danceselProcessPrior");
+
   /* only the first hist-distance songs are checked */
-  if (priordist >= dancesel->histDistance) {
+
+  if (priordist > dancesel->histDistance) {
     logProcEnd (LOG_PROC, "danceselProcessPrior", "past-distance");
     return false;
   }
@@ -567,15 +586,38 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
   }
 
   /* the previous dance's tags have already been adjusted */
+
   if (priordist > 0) {
     logMsg (LOG_DBG, LOG_DANCESEL, "     process prior didx:%d/%s prior:%d/%s",
         didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
         priordidx, danceGetStr (dancesel->dances, priordidx, DANCE_DANCE));
   }
 
-  /* the tags of the first few dances in the history are checked */
+  /* check the speed of the previous dance if the priordist == 2 */
 
+  if (! match && priordist == 2) {
+    int     pspeed;
+    int     speed;
+
+    pspeed = danceGetNum (dancesel->dances, priordidx, DANCE_SPEED);
+    speed = danceGetNum (dancesel->dances, didx, DANCE_SPEED);
+    if (speed == DANCE_SPEED_FAST && pspeed == speed) {
+      double  tmp;
+
+      tmp = autoselGetDouble (dancesel->autosel, AUTOSEL_FAST_PRIOR);
+      logMsg (LOG_DBG, LOG_DANCESEL, "     fastmatch adj: %.6f old-abase: %.6f", tmp, abase);
+      abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_FAST_PRIOR);
+      logMsg (LOG_DBG, LOG_DANCESEL, "     fastmatch abase: %.6f", abase);
+      if (DANCESEL_DEBUG) {
+        fprintf (stderr, "     fastmatch abase: %.6f", abase);
+      }
+      matchrc = true;
+    }
+  }
+
+  /* the tags of the first few dances in the history are checked */
   /* when matching, don't process another match if one has already been found */
+
   if (! match && priordist > 0 && priordist < dancesel->histDistance) {
     double    tmp;
 
@@ -584,12 +626,12 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
     if (danceselMatchTag (tags, priortags)) {
       /* further distance, smaller value, minimum no change */
       tmp = fmax (1.0, (dancesel->tagMatch / pow (priordist, dancesel->priorExp)));
-      logMsg (LOG_DBG, LOG_DANCESEL, "     tagmatch adj: %.6f abase: %.6f", tmp, abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "     tagmatch adj: %.6f old-abase: %.6f", tmp, abase);
       abase = abase / tmp;
       nlistSetDouble (dancesel->adjustBase, didx, abase);
-      logMsg (LOG_DBG, LOG_DANCESEL, "     matched prior tags: abase: %.6f", abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "     tagmatch tags: abase: %.6f", abase);
       if (DANCESEL_DEBUG) {
-        fprintf (stderr, "      matched prior tags abase: %.6f\n", abase);
+        fprintf (stderr, "      tagmatch adj: %.6f abase: %.6f\n", tmp, abase);
       }
       matchrc = true;
     }
@@ -708,6 +750,6 @@ danceselInitDecrement (dancesel_t *dancesel)
   nlistStartIterator (dancesel->base, &iteridx);
   while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
     nlistSetDouble (dancesel->wdecrement, didx, 0.0);
-    nlistSetNum (dancesel->wearlysel, didx, false);
+    nlistSetNum (dancesel->winEarlySel, didx, false);
   }
 }

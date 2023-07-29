@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Alternate Installer: Many fixes and updates.
+    * Automatic Dance Selection: Fix some bugs processing prior selections.
     * Installer: Various fixes and updates.
     * Internal: Make sure message processing is finalized on exit.
     * Linux: Properly support XDG_CONFIG_HOME.
@@ -15,6 +16,7 @@
     * Player: Windows: Fix clock display to use the windows configuration.
 * Changes:
     * Alternate Installer: Add music folder to dialog.
+    * Automatic Dance Selection: Added another variable to spread out fast dances better.
 * Internal:
     * Code cleanup (list, data conversion, installer, alternate installer).
     * More automated tests.

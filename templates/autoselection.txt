@@ -1,10 +1,11 @@
 # autoselection
-# 2023-5-29
-# version 4
+# 2023-7-29
+# version 5
+#    v5 2023-7-29 rename bothfast to fastboth, added fastprior
 #    v4 2023-5-25 added windowed method settings
 #    v3 2023-3-5 updated tagmatch, typematch values
 version
-..4
+..5
 #
 # dance selection
 #
@@ -32,8 +33,11 @@ BEGINFAST
 ..30000000
 #
 # if the previous dance and the dance are both fast (1000.0)
-BOTHFAST
+FASTBOTH
 ..1000000
+# if the prior dance (before previous) and the dance are both fast (100.0)
+FASTPRIOR
+..100000
 #
 # if the dance has a tag that matches the previous dance (80.0)
 PREVTAGMATCH
