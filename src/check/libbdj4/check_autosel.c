@@ -64,7 +64,7 @@ START_TEST(autosel_get)
   dval = autoselGetDouble (autosel, AUTOSEL_FAST_BOTH);
   ck_assert_float_eq (dval, 1000.0);
   dval = autoselGetDouble (autosel, AUTOSEL_FAST_PRIOR);
-  ck_assert_float_eq (dval, 150.0);
+  ck_assert_float_eq (dval, 100.0);
   val = autoselGetNum (autosel, AUTOSEL_HIST_DISTANCE);
   ck_assert_int_eq (val, 5);
 

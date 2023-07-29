@@ -313,7 +313,15 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   while (countAvailable == 0) {
     nlistStartIterator (dancesel->base, &iteridx);
     while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
+
+      /* if re-trying, give all dances a small chance, and */
+      /* raise the chance as the number of tries goes up. */
+      /* the prevents starvation when the possibilities become low */
       tbase = countTries * 0.1;
+
+      /* at this time, only the 'windowed' method is implemented. */
+      /* there was a (more complicated) 'expected-count' method, */
+      /* but it has been removed. */
 
       if (dancesel->method == DANCESEL_METHOD_WINDOWED) {
         double    twinsz;
