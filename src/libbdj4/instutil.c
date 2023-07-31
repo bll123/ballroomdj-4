@@ -277,7 +277,7 @@ instutilCopyHttpFiles (void)
     snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
+    snprintf (tbuff, sizeof (tbuff), "rsync -aS '%s' '%s'", from, "http");
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   (void) ! system (tbuff);
@@ -453,13 +453,13 @@ instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
 /* note that this will be true for either a standard install or */
 /* an alternate installation. */
 bool
-instutilCheckForExistingInstall (const char *dir)
+instutilCheckForExistingInstall (const char *dir, const char *macospfx)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
 
-  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
-      dir, sysvarsGetStr (SV_OS_EXEC_EXT));
+  snprintf (tbuff, sizeof (tbuff), "%s%s/bin/bdj4%s",
+      dir, macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
   exists = fileopFileExists (tbuff);
 
   return exists;
@@ -468,12 +468,12 @@ instutilCheckForExistingInstall (const char *dir)
 /* checks for a standard installation */
 /* alternate installations do not have a locale/ dir, check for that */
 bool
-instutilIsStandardInstall (const char *dir)
+instutilIsStandardInstall (const char *dir, const char *macospfx)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
 
-  snprintf (tbuff, sizeof (tbuff), "%s/locale", dir);
+  snprintf (tbuff, sizeof (tbuff), "%s%s/locale", dir, macospfx);
   exists = fileopIsDirectory (tbuff);
 
   return exists;

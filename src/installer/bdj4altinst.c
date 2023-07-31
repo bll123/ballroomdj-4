@@ -109,6 +109,7 @@ typedef struct {
   uibutton_t      *buttons [ALT_BUTTON_MAX];
   char            oldversion [MAXPATHLEN];
   char            *target;
+  char            *macospfx;
   char            *maindir;
   char            *hostname;
   char            *home;
@@ -226,6 +227,7 @@ main (int argc, char *argv[])
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
   altinst.target = mdstrdup ("");
+  altinst.macospfx = "";
   altinst.musicdir = mdstrdup ("");
   strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
@@ -266,6 +268,7 @@ main (int argc, char *argv[])
 
   strlcpy (buff, sysvarsGetStr (SV_HOME), sizeof (buff));
   if (isMacOS ()) {
+    altinst.macospfx = MACOS_PREFIX;
     snprintf (buff, sizeof (buff), "%s/Applications", sysvarsGetStr (SV_HOME));
   }
   instutilAppendNameToTarget (buff, sizeof (buff), false);
@@ -557,7 +560,7 @@ altinstBuildUI (altinst_t *altinst)
 
   uibutton = uiCreateButton (
       altinst->callbacks [ALT_CB_EXIT],
-      /* CONTEXT: alternate installation: exits the altinst */
+      /* CONTEXT: alternate installation: exits the alternate installer */
       _("Exit"), NULL);
   altinst->buttons [ALT_BUTTON_EXIT] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
@@ -751,7 +754,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 
   if (fileopIsDirectory (dir)) {
     exists = true;
-    found = instutilCheckForExistingInstall (dir);
+    found = instutilCheckForExistingInstall (dir, altinst->macospfx);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       if (altinst->firstinstall) {
@@ -759,7 +762,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
       }
       exists = fileopIsDirectory (tbuff);
       if (exists) {
-        found = instutilCheckForExistingInstall (tbuff);
+        found = instutilCheckForExistingInstall (tbuff, altinst->macospfx);
         if (found) {
           dir = tbuff;
         }
@@ -768,7 +771,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 
     /* do not try to overwrite an existing standard installation */
     if (exists && found &&
-        ! instutilIsStandardInstall (dir)) {
+        ! instutilIsStandardInstall (dir, altinst->macospfx)) {
       /* this will be a re-install or an update */
       rc = UIENTRY_OK;
     }
@@ -1005,7 +1008,7 @@ altinstSaveTargetDir (altinst_t *altinst)
 {
   FILE        *fh;
 
-  /* CONTEXT: alternate altinst: status message */
+  /* CONTEXT: alternate installer: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Saving install location."), false);
 
   uiEntrySetValue (altinst->targetEntry, altinst->target);
@@ -1330,7 +1333,7 @@ altinstRegisterInit (altinst_t *altinst)
     altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
     altinst->instState = ALT_FINISH;
   } else {
-    /* CONTEXT: altinst: status message */
+    /* CONTEXT: alternate installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
     altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
     altinst->instState = ALT_REGISTER;

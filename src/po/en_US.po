@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-07-25\n"
-"PO-Revision-Date: 2023-07-25\n"
+"POT-Creation-Date: 2023-07-31\n"
+"PO-Revision-Date: 2023-07-31\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -697,7 +697,7 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#. CONTEXT: alternate installation: exits the altsetup
+#. CONTEXT: alternate installation: exits the alternate installer
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
@@ -1444,6 +1444,7 @@ msgstr ""
 msgid "Recovered from crash."
 msgstr ""
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
@@ -1518,6 +1519,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""

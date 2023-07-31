@@ -49,8 +49,8 @@ void  instutilCopyHttpFiles (void);
 void  instutilGetMusicDir (char *homemusicdir, size_t sz);
 void  instutilScanMusicDir (const char *musicdir, const char *rundir, char *ati, size_t atisz);
 void  instutilAppendNameToTarget (char *buff, size_t sz, int macosonly);
-bool  instutilCheckForExistingInstall (const char *dir);
-bool  instutilIsStandardInstall (const char *dir);
+bool  instutilCheckForExistingInstall (const char *dir, const char *macospfx);
+bool  instutilIsStandardInstall (const char *dir, const char *macospfx);
 void  instutilRegister (const char *data);
 void  instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz);
 

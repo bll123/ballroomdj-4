@@ -67,27 +67,26 @@ START_TEST(fileop_exists_symlink)
   rc = osCreateLink ("slabc.txt", fnb);
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 1);
-#if _lib_symlink
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 1);
-  /* for the time being, check this here */
-  rc = osIsLink (fnb);
-  ck_assert_int_eq (rc, 1);
-#endif
+  if (! isWindows ()) {
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 1);
+    rc = osIsLink (fnb);
+    ck_assert_int_eq (rc, 1);
+  }
   rc = fileopFileExists ("tmp/slghi.txt");
   ck_assert_int_eq (rc, 0);
 
   unlink (fn);
 
-#if _lib_symlink
-  /* the symlink exists though the file does not */
-  /* fileopFileExists will return false, as it uses stat() */
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 0);
-  /* for the time being, check this here */
-  rc = osIsLink (fnb);
-  ck_assert_int_eq (rc, 1);
-#endif
+  if (! isWindows ()) {
+    /* the symlink exists though the file does not */
+    /* fileopFileExists will return false, as it uses stat() */
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 0);
+    /* for the time being, check this here */
+    rc = osIsLink (fnb);
+    ck_assert_int_eq (rc, 1);
+  }
   unlink (fnb);
 }
 END_TEST
@@ -209,42 +208,42 @@ START_TEST(fileop_delete_symlink)
 
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 1);
-#if _lib_symlink
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopDelete (fnb);
-  ck_assert_int_eq (rc, 0);
-#endif
+  if (! isWindows ()) {
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 1);
+    rc = fileopDelete (fnb);
+    ck_assert_int_eq (rc, 0);
+  }
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 1);
-#if _lib_symlink
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 0);
-#endif
+  if (! isWindows ()) {
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 0);
+  }
 
   rc = osCreateLink ("slghi.txt", fnb);
-#if _lib_symlink
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 1);
-#endif
+  if (! isWindows ()) {
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 1);
+  }
 
   rc = fileopDelete (fn);
   ck_assert_int_eq (rc, 0);
 
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 0);
-#if _lib_symlink
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 0);
-  rc = osIsLink (fnb);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopDelete (fnb);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (fnb);
-  ck_assert_int_eq (rc, 0);
-  rc = osIsLink (fnb);
-  ck_assert_int_eq (rc, 0);
-#endif
+  if (! isWindows ()) {
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 0);
+    rc = osIsLink (fnb);
+    ck_assert_int_eq (rc, 1);
+    rc = fileopDelete (fnb);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (fnb);
+    ck_assert_int_eq (rc, 0);
+    rc = osIsLink (fnb);
+    ck_assert_int_eq (rc, 0);
+  }
 
   rc = fileopDelete ("tmp/slmno.txt");
   ck_assert_int_lt (rc, 0);

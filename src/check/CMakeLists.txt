@@ -19,6 +19,7 @@ add_executable (check_all
   libcommon/check_filemanip.c
   libcommon/check_fileshared.c
   libcommon/check_fileop.c
+  libcommon/check_fileop_dir.c
   libcommon/check_lock.c
   libcommon/check_mdebug.c
   libcommon/check_osdir.c

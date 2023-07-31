@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-25 06:04-0700\n"
+"POT-Creation-Date: 2023-07-31 10:36-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -701,7 +701,7 @@ msgstr ""
 msgid "Examples"
 msgstr ""
 
-#. CONTEXT: alternate installation: exits the altsetup
+#. CONTEXT: alternate installation: exits the alternate installer
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
@@ -1448,6 +1448,7 @@ msgstr ""
 msgid "Recovered from crash."
 msgstr ""
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
@@ -1522,6 +1523,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""

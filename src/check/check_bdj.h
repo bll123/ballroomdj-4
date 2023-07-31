@@ -27,6 +27,7 @@ Suite *     dirop_suite (void);
 Suite *     filedata_suite (void);
 Suite *     filemanip_suite (void);
 Suite *     fileop_suite (void);
+Suite *     fileop_dir_suite (void);
 Suite *     fileshared_suite (void);
 Suite *     lock_suite (void);
 Suite *     mdebug_suite (void);

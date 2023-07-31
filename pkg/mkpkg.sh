@@ -35,12 +35,12 @@ function copysrcfiles {
   for f in $filelist; do
     dir=$(dirname ${f})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-    cp -pf ${f} ${stage}/${dir}
+    rsync -aS ${f} ${stage}/${dir}
   done
   for d in $dirlist; do
     dir=$(dirname ${d})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-    cp -pr ${d} ${stage}/${dir}
+    rsync -aS ${d} ${stage}/${dir}
   done
 
   updatereadme ${stage}
@@ -71,12 +71,12 @@ function copyreleasefiles {
   fi
   case ${tag} in
     linux)
-      cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
+      cp -pf packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
       ;;
     macos)
-      cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
+      cp -pf packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes"
@@ -87,7 +87,7 @@ function copyreleasefiles {
       ;;
     win64)
       rm -rf plocal/lib/libicu*.so*
-      cp -f packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
+      cp -pf packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
       filelist+=" plocal/bin/fpcalc.exe"
       dirlist+=" plocal/bin plocal/share/themes"
       dirlist+=" plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
@@ -100,12 +100,12 @@ function copyreleasefiles {
   for f in $filelist; do
     dir=$(dirname ${f})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-    cp -pf ${f} ${stage}/${dir}
+    rsync -aS ${f} ${stage}/${dir}
   done
   for d in $dirlist; do
     dir=$(dirname ${d})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-    cp -pr ${d} ${stage}/${dir}
+    rsync -aS ${d} ${stage}/${dir}
   done
 
   updatereadme ${stage}

@@ -42,6 +42,7 @@ check_libcommon (SRunner *sr)
    *  mdebug      complete
    *  sysvars
    *  osdir       complete 2022-12-27     // test uses dirop
+   *  fileop_dir  complete 2023-7-31
    *  pathdisp    complete
    *  pathbld     complete
    *  dirop       complete
@@ -95,6 +96,9 @@ check_libcommon (SRunner *sr)
   /* sysvars */
 
   s = osdir_suite();
+  srunner_add_suite (sr, s);
+
+  s = fileop_dir_suite();
   srunner_add_suite (sr, s);
 
   s = pathdisp_suite();

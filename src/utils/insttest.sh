@@ -133,7 +133,7 @@ function checkUpdaterClean {
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
-  if [[ $section == nl ]]; then
+  if [[ $section == nl_BE || $section == nl_NL ]]; then
     fn="$DATADIR/Standaardrondes.pldances"
   fi
   if [[ -f ${fn} ]]; then
@@ -141,7 +141,7 @@ function checkUpdaterClean {
   fi
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
-  if [[ $section == nl ]]; then
+  if [[ $section == nl_BE || $section == nl_NL ]]; then
     fn="$DATADIR/DansToevoegen.pl"
     # nl was renamed after the bad data situation
     rm -f "${fn}"
@@ -497,7 +497,7 @@ function checkInstallation {
     # automatic.pl file
     fna="${DATADIR}/automatic.pl"
     fnb="${DATADIR}/Automatisch.pl"
-    if [[ $section == nl ]]; then
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
       fnb="$temp"
@@ -530,7 +530,7 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
     fnb="${DATADIR}/DansToevoegen.pldances"
-    if [[ $section == nl ]]; then
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
       fnb="$temp"
@@ -553,7 +553,7 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb="${DATADIR}/DansToevoegen.pl"
-    if [[ $section == nl ]]; then
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
       fnb="$temp"
@@ -570,7 +570,7 @@ function checkInstallation {
 
     res=$(($res+1))  # standardround.pldances file
     fn="${DATADIR}/standardrounds.pldances"
-    if [[ $section == nl ]]; then
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"
     fi
     if [[ $fin == T && -f ${fn} ]]; then
@@ -719,7 +719,7 @@ function cleanInstTest {
 
 function resetUnpack {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-  cp -fpr "$UNPACKDIRTMP" "$UNPACKDIR"
+  rsync -aS "$UNPACKDIRTMP/" "$UNPACKDIR"
 }
 
 test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
@@ -867,13 +867,13 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-section=nl
+section=nl_BE
 locale=nl_BE
 
 cleanInstTest
 resetUnpack
 
-# main test db : rebuild of standard test database
+# main test db : rebuild of standard test database, nl_BE
 tname=new-install-no-bdj3
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
@@ -924,6 +924,28 @@ if [[ T == T ]]; then
     checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
   fi
 fi
+
+section=nl_NL
+locale=nl_NL
+
+cleanInstTest
+resetUnpack
+
+# main test db : rebuild of standard test database, nl_NL
+tname=new-install-no-bdj3
+echo "== $section $tname"
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
+    --verbose --unattended ${quiet} \
+    --nomutagen \
+    --ati ${ATI} \
+    --targetdir "$TARGETTOPDIR" \
+    --unpackdir "$UNPACKDIR" \
+    --musicdir "$MUSICDIR" \
+    --locale ${locale} \
+    )
+rc=$?
+checkInstallation $section $tname "$out" $rc n y
+crc=$?
 
 if [[ $keep == F ]]; then
   cleanInstTest

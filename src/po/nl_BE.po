@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-25\n"
+"PO-Revision-Date: 2023-07-31\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -703,7 +703,7 @@ msgstr "Fout: Kan werkmap niet instellen."
 msgid "Examples"
 msgstr "Voorbeelden"
 
-#. CONTEXT: alternate installation: exits the altsetup
+#. CONTEXT: alternate installation: exits the alternate installer
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
@@ -1451,6 +1451,7 @@ msgstr "Marquee Terughalen"
 msgid "Recovered from crash."
 msgstr "Hersteld van crash."
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
@@ -1525,6 +1526,7 @@ msgstr "Samba"
 msgid "Save"
 msgstr "Bewaren"
 
+#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr "Installatielocatie opslaan."

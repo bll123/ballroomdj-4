@@ -142,6 +142,7 @@ typedef struct {
   char            *home;
   char            *target;
   char            *hostname;
+  char            *macospfx;
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
@@ -326,6 +327,7 @@ main (int argc, char *argv[])
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
   installer.target = mdstrdup ("");
+  installer.macospfx = "";
   installer.rundir [0] = '\0';
   installer.bdj3loc = mdstrdup ("");
   installer.musicdir = mdstrdup ("");
@@ -390,6 +392,10 @@ main (int argc, char *argv[])
 
   strlcpy (installer.ati, instati [INST_ATI_BDJ4].name, sizeof (installer.ati));
   installerSetATISelect (&installer);
+
+  if (isMacOS ()) {
+    installer.macospfx = MACOS_PREFIX;
+  }
 
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
@@ -1200,13 +1206,13 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
   if (fileopIsDirectory (dir)) {
     exists = true;
-    found = instutilCheckForExistingInstall (dir);
+    found = instutilCheckForExistingInstall (dir, installer->macospfx);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
-        found = instutilCheckForExistingInstall (tbuff);
+        found = instutilCheckForExistingInstall (tbuff, installer->macospfx);
         if (found) {
           dir = tbuff;
         }
@@ -1215,7 +1221,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
     /* do not try to overwrite an existing alternate installation */
     if (exists && found &&
-        instutilIsStandardInstall (dir)) {
+        instutilIsStandardInstall (dir, installer->macospfx)) {
       /* this will be a re-install or an update */
       rc = UIENTRY_OK;
     }
@@ -1649,16 +1655,16 @@ static void
 installerVerifyInstall (installer_t *installer)
 {
   char        tmp [40];
+  char        tbuff [MAXPATHLEN];
   const char  *targv [2];
 
   if (isWindows ()) {
     /* verification on windows is too slow */
     strlcpy (tmp, "OK", sizeof (tmp));
   } else {
-    targv [0] = "./install/verifychksum.sh";
-    if (isMacOS ()) {
-      targv [0] = "./Contents/MacOS/install/verifychksum.sh";
-    }
+    snprintf (tbuff, sizeof (tbuff), ".%s/install/verifychksum.sh",
+        installer->macospfx);
+    targv [0] = tbuff;
     targv [1] = NULL;
     osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
   }
@@ -1792,6 +1798,23 @@ installerCopyFiles (installer_t *installer)
   char      tbuff [MAXPATHLEN];
   char      tmp [MAXPATHLEN];
 
+  /* due to various reasons, symlinks were not being preserved on macos */
+  /* during the installation process. */
+  /* in order to properly install the locale/en and locale/nl symlinks, */
+  /* these two directories must be removed first */
+  if (isMacOS ()) {
+    snprintf (tbuff, sizeof (tbuff), "%s%s/locale/en",
+        installer->target, installer->macospfx);
+    if (! osIsLink (tbuff) && fileopIsDirectory (tbuff)) {
+      diropDeleteDir (tbuff);
+    }
+    snprintf (tbuff, sizeof (tbuff), "%s%s/locale/nl",
+        installer->target, installer->macospfx);
+    if (! osIsLink (tbuff) && fileopIsDirectory (tbuff)) {
+      diropDeleteDir (tbuff);
+    }
+  }
+
   if (isWindows ()) {
     strlcpy (tmp, installer->rundir, sizeof (tmp));
     pathDisplayPath (tmp, sizeof (tmp));
@@ -1799,8 +1822,7 @@ installerCopyFiles (installer_t *installer)
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         tmp);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "tar -c -f - . | (cd '%s'; tar -x -f -)",
-        installer->target);
+    snprintf (tbuff, sizeof (tbuff), "rsync -aS . '%s'", installer->target);
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   (void) ! system (tbuff);
@@ -2779,13 +2801,8 @@ installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
 {
   *buff = '\0';
   if (*installer->target) {
-    if (isMacOS ()) {
-      snprintf (buff, sz, "%s/Contents/MacOS/install/%s",
-          installer->target, BDJ3_LOC_FILE);
-    } else {
-      snprintf (buff, sz, "%s/install/%s",
-          installer->target, BDJ3_LOC_FILE);
-    }
+    snprintf (buff, sz, "%s%s/install/%s",
+        installer->target, installer->macospfx, BDJ3_LOC_FILE);
   }
 }
 
@@ -2794,10 +2811,8 @@ installerSetRundir (installer_t *installer, const char *dir)
 {
   installer->rundir [0] = '\0';
   if (*dir) {
-    strlcpy (installer->rundir, dir, sizeof (installer->rundir));
-    if (isMacOS ()) {
-      strlcat (installer->rundir, MACOS_PREFIX, sizeof (installer->rundir));
-    }
+    snprintf (installer->rundir, sizeof (installer->rundir),
+        "%s%s", dir, installer->macospfx);
     pathNormalizePath (installer->rundir, sizeof (installer->rundir));
   }
 }
