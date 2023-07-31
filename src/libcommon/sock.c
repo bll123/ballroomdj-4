@@ -859,7 +859,7 @@ sockSetOptions (Sock_t sock, int *err)
     return INVALID_SOCKET;
   }
 
-  rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+  rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, (const void *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError ("setsockopt-addr:");
@@ -872,7 +872,7 @@ sockSetOptions (Sock_t sock, int *err)
   }
   l.l_onoff = true;
   l.l_linger = 1;
-  rc = setsockopt (sock, SOL_SOCKET, SO_LINGER, &l, sizeof (l));
+  rc = setsockopt (sock, SOL_SOCKET, SO_LINGER, (const void *) &l, sizeof (l));
   if (rc != 0) {
     *err = errno;
     logError ("setsockopt-linger:");

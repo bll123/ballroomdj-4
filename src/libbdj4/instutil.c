@@ -449,17 +449,18 @@ instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
 }
 
 /* checks for an existing BDJ4 installation */
-/* note that the data/ dir may be elsewhere */
-/* note that this will be true for either a standard install or */
-/* an alternate installation. */
+/* on windows, the alternate installation does not have a bin/ directory */
+/* check for the VERSION.txt file */
+/* the VERSION.txt exists for both an alternate installation and for */
+/* a standard installation */
 bool
 instutilCheckForExistingInstall (const char *dir, const char *macospfx)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
 
-  snprintf (tbuff, sizeof (tbuff), "%s%s/bin/bdj4%s",
-      dir, macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
+  snprintf (tbuff, sizeof (tbuff), "%s%s/VERSION.txt",
+      dir, macospfx);
   exists = fileopFileExists (tbuff);
 
   return exists;

@@ -664,30 +664,36 @@ function checkInstallation {
     fi
   fi
 
-  if [[ -d "${DATADIR}" ]]; then
-    c=$(ls -1 "${DATADIR}/asan*" 2>/dev/null | wc -l)
+  if [[ -d "${DATATOPDIR}" ]]; then
+    c=$(ls -1 "${DATATOPDIR}/asan*" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "ASAN files found"
       exit 1
     fi
-    c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
+    c=$(ls -1 "${DATATOPDIR}/tmp/atimutagen*" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
-      echo "core file found"
+      echo "atimutagen files found"
       exit 1
     fi
-    if [[ $TARGETALTDIR != $target ]]; then
-      c=$(ls -1 "${TARGETALTDIR}/core" 2>/dev/null | wc -l)
-      if [[ $c -ne 0 ]]; then
-        echo "core file found (b)"
-        exit 1
-      fi
+  fi
+
+  c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "core file found"
+    exit 1
+  fi
+  if [[ $TARGETALTDIR != $target ]]; then
+    c=$(ls -1 "${TARGETALTDIR}/core" 2>/dev/null | wc -l)
+    if [[ $c -ne 0 ]]; then
+      echo "core file found (b)"
+      exit 1
     fi
-    if [[ $TARGETTOPDIR != $target ]]; then
-      c=$(ls -1 "${TARGETTOPDIR}/core" 2>/dev/null | wc -l)
-      if [[ $c -ne 0 ]]; then
-        echo "core file found (c)"
-        exit 1
-      fi
+  fi
+  if [[ $TARGETTOPDIR != $target ]]; then
+    c=$(ls -1 "${TARGETTOPDIR}/core" 2>/dev/null | wc -l)
+    if [[ $c -ne 0 ]]; then
+      echo "core file found (c)"
+      exit 1
     fi
   fi
 
@@ -731,6 +737,13 @@ section=basic
 
 echo "-- $(date +%T) creating test music"
 ./src/utils/mktestsetup.sh --force
+
+c=$(ls -1 "${DATATOPDIR}/tmp/atimutagen*" 2>/dev/null | wc -l)
+if [[ $c -ne 0 ]]; then
+  echo "atimutagen files found after mktestsetup.sh"
+  exit 1
+fi
+
 cleanInstTest
 resetUnpack
 

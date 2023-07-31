@@ -9,18 +9,20 @@
 
 #include "config.h"
 
-#if _hdr_endpointvolume
+#if __WINNT__
 
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
 
+/* initguid.h is needed for the link to PKEY_Device_FriendlyName to work */
+/* had to move it to the beginning of the include list 2023-7-31 */
+#include <initguid.h>
 #include <winsock2.h>
 #include <windows.h>
 #include <commctrl.h>
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
-#include <initguid.h>  // needed to link correctly
 #include <Functiondiscoverykeys_devpkey.h>
 
 #include "mdebug.h"
@@ -204,5 +206,4 @@ Exit:
 
 } /* extern C */
 
-
-#endif
+#endif  /* is windows */
