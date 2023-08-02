@@ -2,10 +2,8 @@
 
 case ${systype} in
   Linux)
-    exit 0
     ;;
   Darwin)
-    exit 0
     ;;
   MINGW64*)
     ;;
@@ -33,7 +31,7 @@ if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
     make -j $procs LIBS="-static-libgcc -static-libstdc++"
     make install
     # don't need the c++ version
-    rm -f "$INSTLOC/bin/libFLAC++*" "$INSTLOC/lib/libFLAC++*" "$INSTLOC/lib/pkgconfig/flac++.pc"
+    rm -f $INSTLOC/bin/libFLAC++* $INSTLOC/lib/libFLAC++* $INSTLOC/lib/pkgconfig/flac++.pc
     if [[ $platform != windows && $clean == T ]]; then
       make distclean
     fi

@@ -69,6 +69,13 @@ static int  audiotagCompareExt (const void *ta, const void *tb);
 void
 audiotagInit (void)
 {
+  /* this is only an issue on linux when running an older install */
+  /* on a newer system */
+  if (! atiCheck (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC))) {
+    /* for now, just hard-code a fallback to libatimutagen */
+    bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatimutagen");
+  }
+
   at = mdmalloc (sizeof (audiotag_t));
   at->ati = atiInit (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC),
       bdjoptGetNum (OPT_G_WRITETAGS),

@@ -36,6 +36,24 @@ typedef struct ati {
   atidata_t         *atidata;
 } ati_t;
 
+bool
+atiCheck (const char *atipkg)
+{
+  bool        rc = false;
+  dlhandle_t  *dlHandle = NULL;
+  char        dlpath [MAXPATHLEN];
+
+  pathbldMakePath (dlpath, sizeof (dlpath),
+      atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
+  dlHandle = dylibLoad (dlpath);
+  if (dlHandle != NULL) {
+    dylibClose (dlHandle);
+    rc = true;
+  }
+
+  return rc;
+}
+
 ati_t *
 atiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,
@@ -179,7 +197,7 @@ atiInterfaceList (void)
 void
 atiGetSupportedTypes (const char *atipkg, int supported [])
 {
-  dlhandle_t  *dlHandle;
+  dlhandle_t  *dlHandle = NULL;
   void        *(*sproc) (int supported []);
   char        dlpath [MAXPATHLEN];
 

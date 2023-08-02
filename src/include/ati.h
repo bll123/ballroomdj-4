@@ -47,6 +47,7 @@ typedef int (*tagcheck_t)(int, int, const char *, int);
 typedef const char *(*tagname_t)(int);
 typedef const tagaudiotag_t *(*audiotaglookup_t)(int, int);
 
+bool    atiCheck (const char *atipkg);
 ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
 void    atiSupportedTypes (ati_t *ati, int supported []);
