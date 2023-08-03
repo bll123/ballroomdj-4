@@ -109,9 +109,6 @@ pkg_check_modules (LIBOPUSFILE opusfile)
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.
 # ICU has incorrect library versioning procedures.
-if (NOT WIN32)
-  set (ENV{PKG_CONFIG_PATH} "../packages/icu/lib/pkgconfig")
-endif()
 pkg_check_modules (ICUI18N icu-i18n)
 pkg_check_modules (ICUUC icu-uc)
 
