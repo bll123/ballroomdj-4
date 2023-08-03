@@ -157,6 +157,7 @@ START_TEST(callback_norm)
   rc = callbackHandler (cb);
   ck_assert_int_eq (a, -1);
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInit (cbn, &a, NULL);
   rc = callbackHandler (cb);
@@ -179,6 +180,7 @@ START_TEST(callback_double)
   rc = callbackHandlerDouble (cb, 4.0);
   ck_assert_float_eq (a, -1.0);
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInitDouble (cbd, &a);
   rc = callbackHandlerDouble (cb, 5.0);
@@ -205,6 +207,7 @@ START_TEST(callback_intint)
   ck_assert_int_eq (a.a, -1.0);
   ck_assert_int_eq (a.b, -2.0);
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInitIntInt (cbii, &a);
   rc = callbackHandlerIntInt (cb, 4, 5);
@@ -228,6 +231,7 @@ START_TEST(callback_long)
   rc = callbackHandlerLong (cb, 4);
   ck_assert_int_eq (a, -1);
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInitLong (cbl, &a);
   rc = callbackHandlerLong (cb, 4);
@@ -254,6 +258,7 @@ START_TEST(callback_longint)
   ck_assert_int_eq (a.a, -1.0);
   ck_assert_int_eq (a.b, -2.0);
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInitLongInt (cbli, &a);
   rc = callbackHandlerLongInt (cb, 4, 5);
@@ -278,6 +283,7 @@ START_TEST(callback_string)
   rc = callbackHandlerStr (cb, "abcdef");
   ck_assert_str_eq (a, "1234");
   ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
 
   cb = callbackInitStr (cbs, &a);
   rc = callbackHandlerStr (cb, "abcdef");

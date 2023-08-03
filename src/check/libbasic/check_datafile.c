@@ -1223,6 +1223,7 @@ START_TEST(datafile_keyval_save_new)
     }
   }
 
+  nlistFree (list);
   datafileFree (df);
   datafileFree (tdf);
   unlink (fn);
