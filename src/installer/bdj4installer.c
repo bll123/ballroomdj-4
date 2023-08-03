@@ -2532,7 +2532,8 @@ installerMutagenInstall (installer_t *installer)
     }
   }
   snprintf (tbuff, sizeof (tbuff),
-      "%s --quiet install --user --upgrade mutagen", pipnm);
+      "%s --quiet install --user --upgrade --break-system-packages mutagen",
+      pipnm);
   (void) ! system (tbuff);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
   /* CONTEXT: installer: status message */

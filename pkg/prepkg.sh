@@ -10,7 +10,6 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
-isprimary=F
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -34,11 +33,10 @@ case $systype in
     ;;
 esac
 
-case $1 in
-  T)
-    isprimary=T
-    ;;
-esac
+isprimary=F
+if [[ -f devel/primary.txt ]]; then
+  isprimary=T
+fi
 
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
@@ -46,13 +44,13 @@ test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == linux || $tag == macos ]]; then
-  cp -pf packages/icu-release*/LICENSE ${licdir}/icu.LICENCE
+  cp -pf packages/icu-release*/icu4c/LICENSE ${licdir}/icu.LICENCE
 fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libvorbis*/COPYING ${licdir}/libvorbis.LICENSE
+cp -pf packages/flac*/COPYING.Xiph ${licdir}/flac.LICENSE
 if [[ $platform == windows ]]; then
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
-  cp -pf packages/flac*/COPYING.Xiph ${licdir}/flac.LICENSE
   cp -pf packages/libogg*/COPYING ${licdir}/libogg.LICENSE
   cp -pf packages/opus-1*/COPYING ${licdir}/opus.LICENSE
   cp -pf packages/opusfile*/COPYING ${licdir}/opusfile.LICENSE

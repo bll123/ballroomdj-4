@@ -11,6 +11,7 @@
     * Audio Tags: Fallback to mutagen interface if the bdj4-internal interface cannot be loaded.
     * Automatic Dance Selection: Fix some bugs processing prior selections.
     * Installer: Fallback to mutagen interface if bdj4-internal can't be loaded.
+    * Installer: Fix mutagen installation.
     * Installer: MacOS: Fixed an issue which used extra disk space.
     * Installer: Various fixes and updates.
     * Internal: Make sure message processing is finalized on exit.

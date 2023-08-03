@@ -14,11 +14,12 @@ LPATH=@rpath
 
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
 # /Volumes/Users/bll/bdj4/bin/../plocal/lib/libvorbisfile.3.dylib
+# /Volumes/Users/bll/bdj4//plocal/lib/libFLAC.12.dylib
 # @rpath/libid3tag.0.16.3
 count=0
 cmd="install_name_tool "
 for l in libicudata libicui18n libicuuc \
-    libvorbisfile.3 libvorbis.0; do
+    libFLAC.12 libvorbisfile.3 libvorbis.0; do
   path=$(otool -L $target | grep $l | sed 's,^[^/]*,,;s,dylib .*,dylib,')
   if [[ $path != "" ]]; then
     echo "== library updated : $target" >&2

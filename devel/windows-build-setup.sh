@@ -17,4 +17,4 @@ pacman -Sy \
     mingw-w64-x86_64-icu \
     mingw-w64-x86_64-python-pip \
     mingw-w64-x86_64-python-wheel
-pip3 install --user --upgrade mutagen
+pip3 install --user --upgrade --break-system-packages mutagen

@@ -31,7 +31,7 @@ sudo apt -y install \
 
 # python-mutagen
 sudo apt -y remove python-mutagen
-pip3 install --user --upgrade mutagen
+pip3 install --user --upgrade --break-system-packages mutagen
 
 # inkscape / fonts (for editing bdj4 images)
 sudo apt -y install inkscape \

@@ -42,10 +42,10 @@ check_libcommon (SRunner *sr)
    *  mdebug      complete
    *  sysvars
    *  osdir       complete 2022-12-27     // test uses dirop
-   *  fileop_dir  complete 2023-7-31
    *  pathdisp    complete
    *  pathbld     complete
    *  dirop       complete
+   *  fileop_dir  complete 2023-7-31
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
    *  log
@@ -98,13 +98,13 @@ check_libcommon (SRunner *sr)
   s = osdir_suite();
   srunner_add_suite (sr, s);
 
-  s = fileop_dir_suite();
-  srunner_add_suite (sr, s);
-
   s = pathdisp_suite();
   srunner_add_suite (sr, s);
 
   s = dirop_suite();
+  srunner_add_suite (sr, s);
+
+  s = fileop_dir_suite();
   srunner_add_suite (sr, s);
 
   s = filemanip_suite();

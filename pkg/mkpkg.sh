@@ -220,7 +220,7 @@ if [[ -f devel/primary.txt ]]; then
 fi
 
 if [[ $preskip == F && $insttest == F ]]; then
-  ./pkg/prepkg.sh $isprimary
+  ./pkg/prepkg.sh
 fi
 
 if [[ $clean == T ]]; then
