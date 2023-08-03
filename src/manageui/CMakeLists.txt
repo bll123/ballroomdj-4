@@ -22,7 +22,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4manageui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -40,7 +40,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4bpmcounter PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -56,7 +56,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4dbupdate PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -70,7 +70,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4dbtag PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )

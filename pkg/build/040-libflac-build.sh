@@ -32,6 +32,7 @@ if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
     make install
     # don't need the c++ version
     rm -f $INSTLOC/bin/libFLAC++* $INSTLOC/lib/libFLAC++* $INSTLOC/lib/pkgconfig/flac++.pc
+    rm -rf $INSTLOC/include/FLAC++
     if [[ $platform != windows && $clean == T ]]; then
       make distclean
     fi

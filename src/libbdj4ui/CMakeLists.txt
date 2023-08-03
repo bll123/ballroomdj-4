@@ -45,7 +45,7 @@ target_include_directories (libbdj4ui
 )
 target_link_libraries (libbdj4ui PUBLIC
   ${BDJ4_UI_LIB} libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
   z
   m

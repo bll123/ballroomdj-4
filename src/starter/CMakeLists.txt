@@ -74,7 +74,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4starterui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -91,7 +91,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4helperui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
   z
   m

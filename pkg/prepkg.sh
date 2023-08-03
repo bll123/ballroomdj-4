@@ -10,6 +10,7 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+isprimary=F
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -33,13 +34,19 @@ case $systype in
     ;;
 esac
 
+case $1 in
+  T)
+    isprimary=T
+    ;;
+esac
+
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == linux || $tag == macos ]]; then
-  cp -pf packages/icu/share/icu/72.1/LICENSE ${licdir}/icu.LICENCE
+  cp -pf packages/icu-release*/LICENSE ${licdir}/icu.LICENCE
 fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libvorbis*/COPYING ${licdir}/libvorbis.LICENSE
@@ -56,7 +63,7 @@ fi
 # the .po files will be built on linux; the sync to the other
 # platforms must be performed afterwards.
 # (the extraction script is using gnu-sed features)
-if [[ $tag == linux ]]; then
+if [[ $tag == linux && $isprimary == T ]]; then
   (cd src/po; ./extract.sh)
   (cd src/po; ./install.sh)
 
@@ -75,17 +82,8 @@ if [[ $tag == linux ]]; then
     cp -pf ${ttfn} ${htfn}
   fi
   rm -f ${ttfn}.n
-fi
 
-./src/utils/makehtmllist.sh
-
-# test -d img/profile00 || mkdir -p img/profile00
-# cp -pf templates/img/*.svg img/profile00
-
-if [[ $tag == linux || $tag == macos ]]; then
-  rsync -aS packages/icu/lib plocal
-  rm -f plocal/lib/libicutest* plocal/lib/libicutu*
-  rm -rf plocal/lib/icu
+  ./src/utils/makehtmllist.sh
 fi
 
 # on windows, copy all of the required .dll files to plocal/bin

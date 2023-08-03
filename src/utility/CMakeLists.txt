@@ -14,7 +14,7 @@ target_include_directories (bdj4info
 )
 target_link_libraries (bdj4info PUBLIC
   libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4info)
@@ -25,7 +25,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4tags PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -37,7 +37,7 @@ if (WIN32)
 endif()
 target_link_libraries (tdbcompare PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -48,7 +48,7 @@ if (WIN32)
 endif()
 target_link_libraries (tdbsetval PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -58,7 +58,7 @@ add_executable (testsuite
 )
 target_link_libraries (testsuite PUBLIC
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -69,7 +69,7 @@ if (WIN32)
 endif()
 target_link_libraries (tmusicsetup PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -81,7 +81,7 @@ if (WIN32)
 endif()
 target_link_libraries (ttagdbchk PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )
@@ -89,7 +89,7 @@ target_link_libraries (ttagdbchk PUBLIC
 add_executable (vlcsinklist vlcsinklist.c)
 target_link_libraries (vlcsinklist PUBLIC
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   m
 )
 

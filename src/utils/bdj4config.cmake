@@ -112,7 +112,8 @@ pkg_check_modules (LIBOPUSFILE opusfile)
 if (NOT WIN32)
   set (ENV{PKG_CONFIG_PATH} "../packages/icu/lib/pkgconfig")
 endif()
-pkg_check_modules (ICU icu-i18n)
+pkg_check_modules (ICUI18N icu-i18n)
+pkg_check_modules (ICUUC icu-uc)
 
 #### generic compile options
 
@@ -209,7 +210,7 @@ if (WIN32)
   # msys2 puts the include files for ICU in /usr/include
   add_compile_options (-I/usr/include)
 else()
-  add_compile_options (-I${ICU_INCLUDE_DIRS})
+  add_compile_options (-I${ICUI18N_INCLUDE_DIRS})
 endif()
 
 #### more compile options: fortification/address sanitizer

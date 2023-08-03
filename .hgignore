@@ -5,6 +5,8 @@ syntax: regexp
 ^bin/
 ^data/
 ^dev/
+# the primary.txt file must not be transfered to other systems
+^devel/primary\.txt$
 # for the time being, ignore this (doxygen output)
 ^doxygen/
 ^http/.*\.bak.\d$

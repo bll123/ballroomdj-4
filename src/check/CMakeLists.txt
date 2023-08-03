@@ -82,7 +82,7 @@ add_executable (check_all
 )
 target_link_libraries (check_all PUBLIC
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread

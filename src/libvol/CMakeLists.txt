@@ -65,7 +65,7 @@ if (WIN32)
 add_executable (voltest voltest.c)
 target_link_libraries (voltest PUBLIC
   libbdj4vol libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   m
 )
 

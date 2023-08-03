@@ -52,7 +52,7 @@ if [[ $pkgname == "" || $pkgname = "icu" ]]; then
       CFLAGS="-g -O2"
       CXXFLAGS="-g -O2"
       ./configure \
-          --prefix=${cwd}/icu \
+          --prefix=$INSTLOC \
           --with-data-packaging=library \
           --enable-rpath \
           --disable-extras \
@@ -63,9 +63,18 @@ if [[ $pkgname == "" || $pkgname = "icu" ]]; then
     fi
 
     make -j ${procs}
-    test -d icu && rm -rf icu
-    mkdir icu
     make install
+echo "====="
+set -x
+    (
+      cd $INSTLOC
+pwd
+      rm -f bin/gen* bin/icu* bin/makeconv bin/pkgdata
+      rm -f lib/libicutu* lib/libicutest*
+      rm -rf sbin share/icu lib/icu
+    )
+set +x
+echo "====="
     if [[ $platform != windows && $clean == T ]]; then
       make distclean
     fi

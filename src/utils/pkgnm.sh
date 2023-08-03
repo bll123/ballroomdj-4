@@ -47,6 +47,12 @@ function pkgnmgetdata {
       pn_tag=linux
       pn_sfx=
       pn_archtag=
+      dver=$(cat /etc/debian_version)
+      case ${dver} in
+        11*)
+	  pn_tag=linux-older
+	  ;;
+      esac
       ;;
     Darwin)
       pn_tag=macos

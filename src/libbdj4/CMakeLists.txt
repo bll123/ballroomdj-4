@@ -55,7 +55,7 @@ target_include_directories (libbdj4
 )
 target_link_libraries (libbdj4 PUBLIC
   libbdj4ati libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}

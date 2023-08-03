@@ -41,7 +41,7 @@ endif()
 target_link_libraries (bdj4installer PUBLIC
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -56,7 +56,7 @@ endif()
 target_link_libraries (bdj4altinst PUBLIC
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -71,7 +71,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4updater PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m
 )

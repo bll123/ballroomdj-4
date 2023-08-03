@@ -42,7 +42,7 @@ target_include_directories (libuigtk3
 )
 target_link_libraries (libuigtk3 PUBLIC
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
   z
   m

@@ -12,7 +12,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4main PUBLIC
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   z
   m
@@ -27,7 +27,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4player PUBLIC
   libbdj4pli libbdj4vol libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   z
   m
@@ -43,7 +43,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4marquee PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -63,7 +63,7 @@ endif()
 target_link_libraries (bdj4rc PUBLIC
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   z
   m
@@ -81,7 +81,7 @@ endif()
 target_link_libraries (bdj4mobmq PUBLIC
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   z
   m

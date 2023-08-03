@@ -214,8 +214,13 @@ case $systype in
     ;;
 esac
 
+isprimary=F
+if [[ -f devel/primary.txt ]]; then
+  isprimary=T
+fi
+
 if [[ $preskip == F && $insttest == F ]]; then
-  ./pkg/prepkg.sh
+  ./pkg/prepkg.sh $isprimary
 fi
 
 if [[ $clean == T ]]; then
@@ -229,16 +234,18 @@ if [[ $insttest == F ]]; then
 
   # only rebuild the version.txt file on linux.
   if [[ $tag == linux ]]; then
-    echo "-- $(date +%T) updating build number"
-    BUILD=$(($BUILD+1))
-    BUILDDATE=$(date '+%Y-%m-%d')
-    cat > VERSION.txt << _HERE_
+    if [[ $isprimary == T ]]; then
+      echo "-- $(date +%T) updating build number"
+      BUILD=$(($BUILD+1))
+      BUILDDATE=$(date '+%Y-%m-%d')
+      cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
 BUILDDATE=$BUILDDATE
 RELEASELEVEL=$RELEASELEVEL
 DEVELOPMENT=$DEVELOPMENT
 _HERE_
+    fi
   fi
 fi
 

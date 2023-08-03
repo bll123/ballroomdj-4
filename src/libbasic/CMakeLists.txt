@@ -25,7 +25,8 @@ target_include_directories (libbdj4basic
 )
 target_link_libraries (libbdj4basic PUBLIC
   libbdj4common
-  ${ICU_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
+  ${ICUUC_LDFLAGS}
   ${GLIB_LDFLAGS}
   m
 )
