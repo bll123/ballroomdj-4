@@ -511,7 +511,11 @@ playlistGetNextSong (playlist_t *pl,
       sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     }
     ++pl->count;
-    logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
+    if (sfname != NULL) {
+      logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
+    } else {
+      logMsg (LOG_DBG, LOG_BASIC, "songlist: select: no more songs");
+    }
   }
   logProcEnd (LOG_PROC, "playlistGetNextSong", "");
   return song;

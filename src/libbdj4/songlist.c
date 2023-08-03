@@ -132,7 +132,7 @@ songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   ilistidx_t    val;
 
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
     return LIST_VALUE_INVALID;
   }
   val = ilistGetNum (sl->songlist, ikey, lidx);
@@ -144,7 +144,7 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   const char  *val = NULL;
 
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
     return NULL;
   }
   val = ilistGetStr (sl->songlist, ikey, lidx);
@@ -154,7 +154,7 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 void
 songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val)
 {
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
     return;
   }
   ilistSetNum (sl->songlist, ikey, lidx, val);
@@ -163,7 +163,7 @@ songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val
 void
 songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval)
 {
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
     return;
   }
   ilistSetStr (sl->songlist, ikey, lidx, sval);
