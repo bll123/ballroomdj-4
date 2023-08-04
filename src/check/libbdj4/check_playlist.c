@@ -855,9 +855,6 @@ START_TEST(playlist_get_next_sl)
   ck_assert_int_eq (count, 72);
 
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -886,9 +883,6 @@ START_TEST(playlist_get_next_sl_stop_after)
   ck_assert_int_eq (count, 10);
 
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -917,9 +911,6 @@ START_TEST(playlist_get_next_seq)
   ck_assert_int_eq (count, 7);
 
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -948,9 +939,6 @@ START_TEST(playlist_get_next_auto)
   ck_assert_int_eq (count, 8);
 
   playlistFree (pl);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 

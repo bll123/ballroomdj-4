@@ -442,7 +442,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
   mdebug [tidx].fn = fn;
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
-  strcpy (mdebug [tidx].subtag, mdebugsubtag);
+  strncpy (mdebug [tidx].subtag, mdebugsubtag, MAXSUBTAG);
   if (MDEBUG_ENABLE_BACKTRACE) {
     mdebug [tidx].bt = mdebugBacktrace ();
   }
