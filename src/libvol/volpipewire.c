@@ -12,8 +12,9 @@
  * https://docs.pipewire.org/spa_2examples_2adapter-control_8c-example.html
  * possible sink example:
  * https://docs.pipewire.org/spa_2examples_2example-control_8c-example.html
- * search for pw-cli source
- *  and check how list-sources, set-sink, volume controls work.
+ * search for pipewire-pulse source
+ *  and check how get-sink-list, set-sink, volume controls work.
+ * pw-metadata shows the defaults
  */
 
 #include <pipewire/pipewire.h>

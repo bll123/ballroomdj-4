@@ -4,6 +4,7 @@ case ${systype} in
   Linux)
     ;;
   Darwin)
+    exit 0
     ;;
   MINGW64*)
     ;;

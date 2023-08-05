@@ -21,7 +21,8 @@ sudo apt -y autoremove
 sudo apt -y install \
     mercurial tortoisehg \
     ffmpeg librsvg2-bin libcurl4 \
-    libogg-dev libopus-dev libopusfile-dev libavformat-dev libavutil-dev \
+    libogg-dev libopus-dev libopusfile-dev \
+    libavcodec-dev libavformat-dev libavutil-dev \
     g++ gobjc patchelf clang clang-tools gcc-doc cmake \
     check libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev \
     libasound2-dev libcurl4-openssl-dev libxml2-dev \

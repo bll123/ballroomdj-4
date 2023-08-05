@@ -10,7 +10,6 @@ Supported Platforms as of 2023-3-15: Linux 64-bit.
     * Debian based (MX Linux, Ubuntu, etc.)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
-      ffmpeg doesn't seem to be available for recent Fedora distributions.
     * OpenSUSE
 * Desktop Environments that have been tested (as of 2023-5-3).
     * Budgie
@@ -44,14 +43,14 @@ this script.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v7.sh script from sourceforge.
+Download the linux-pre-install-v8.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v7.sh
+bash linux-pre-install-v8.sh
 ~~~
 
 This script performs the following actions:
@@ -79,7 +78,7 @@ The bdj4-install-linux-older-VERSION file is linked with
 
 The bdj4-install-linux-VERSION file is linked with
 <br>&nbsp;&nbsp;libavcodec.so.59, libavformat.so.59, and libavutil.so.57.
-<br>&nbsp;&nbsp;(e.g. Debian 12)
+<br>&nbsp;&nbsp;(e.g. Debian 12, most other Linux)
 
 Be sure to exit BDJ4 if it is already started.
 

@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=7
+ver=8
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -156,7 +156,7 @@ if [[ -f /usr/bin/apt ]]; then
   # updated 2023-7-12
   pkglist="ffmpeg
       python3-setuptools python3-pip python3-wheel
-      libcurl4 flac libogg0 libopus0 libopusfile0"
+      libcurl4 libogg0 libopus0 libopusfile0"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -165,16 +165,16 @@ if [[ -f /usr/bin/dnf ]]; then
   pwpkg=$(instcheck python3-pip-wheel python-pip-wheel python-pip-whl)
   pippkg=$(instcheck python3-pip python-pip)
   stoolspkg=$(instcheck python3-setuptools python-setuptools)
-  pkglist="
+  pkglist="ffmpeg-free
       ${stoolspkg} ${pippkg} ${pwpkg}
-      libcurl flac libogg opus opusfile"
+      libcurl libogg opus opusfile"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
   # updated 2023-7-12
   pkglist="ffmpeg
       python3-setuptools python3-pip
-      libcurl4 flac libogg0 libopus0 libopusfile0"
+      libcurl4 libogg0 libopus0 libopusfile0"
 fi
 
 pkglist="$pkglist vlc"
