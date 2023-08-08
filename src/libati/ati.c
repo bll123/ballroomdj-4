@@ -171,10 +171,12 @@ int
 atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn,
     int tagtype, int filetype)
 {
+  int   rc = -1;
+
   if (ati != NULL && ati->atiiRestoreTags != NULL) {
-    return ati->atiiRestoreTags (ati->atidata, atisaved, ffn, tagtype, filetype);
+    rc = ati->atiiRestoreTags (ati->atidata, atisaved, ffn, tagtype, filetype);
   }
-  return 0;
+  return rc;
 }
 
 void

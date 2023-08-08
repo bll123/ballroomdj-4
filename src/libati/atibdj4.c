@@ -167,7 +167,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     return -1;
   }
 
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write tags %s", ffn);
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%d del:%d", ffn, slistGetCount (updatelist), slistGetCount (dellist));
 
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");

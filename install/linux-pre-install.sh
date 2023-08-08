@@ -160,8 +160,7 @@ if [[ -f /usr/bin/apt ]]; then
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
-  # from the rpmfusion repository: ffmpeg, vlc
-  # latest fedora cannot seem to install ffmpeg
+  # from the rpmfusion repository: vlc
   pwpkg=$(instcheck python3-pip-wheel python-pip-wheel python-pip-whl)
   pippkg=$(instcheck python3-pip python-pip)
   stoolspkg=$(instcheck python3-setuptools python-setuptools)

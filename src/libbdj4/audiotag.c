@@ -314,18 +314,18 @@ audiotagSaveTags (const char *ffn)
   return sdata;
 }
 
-void
+int
 audiotagRestoreTags (const char *ffn, void *sdata)
 {
   int   tagtype;
   int   filetype;
 
   if (sdata == NULL) {
-    return;
+    return -1;
   }
 
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
-  atiRestoreTags (at->ati, sdata, ffn, tagtype, filetype);
+  return atiRestoreTags (at->ati, sdata, ffn, tagtype, filetype);
 }
 
 void

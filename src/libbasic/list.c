@@ -501,6 +501,16 @@ listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   const char  *value = NULL;
 
+  if (list == NULL) {
+    return value;
+  }
+  if (! listCheckKeyType (list, keytype)) {
+    return value;
+  }
+  if (idx >= 0 && idx < list->count) {
+    value = list->data [idx].value.data;
+  }
+
   value = listGetDataByIdx (keytype, list, idx);
   logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%d %s/%d", list->name, idx, value, value == NULL);
   return value;

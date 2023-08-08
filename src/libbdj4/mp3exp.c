@@ -8,6 +8,8 @@
 #include <inttypes.h>
 
 #include "audioadjust.h"
+#include "audiofile.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "callback.h"
@@ -18,6 +20,7 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathutil.h"
+#include "slist.h"
 #include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
@@ -107,6 +110,11 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       long    dur;
       int     gap;
       song_t  *song;
+      void    *savedtags = NULL;
+      slist_t *taglist;
+      int     owrite;
+      int     intagtype, outtagtype;
+      int     infiletype, outfiletype;
 
       dbidx = atol (p);
       p = strtok_r (NULL, MSG_ARGS_RS_STR, &mp3exp->tokstr);
@@ -134,8 +142,25 @@ mp3ExportQueue (mp3exp_t *mp3exp)
           mp3exp->dirname, mp3exp->counter, (int) pi->blen, pi->basename);
 
       nlistSetStr (mp3exp->savelist, dbidx, outfn);
+
+      audiotagDetermineTagType (ffn, &intagtype, &infiletype);
+      audiotagDetermineTagType (outfn, &outtagtype, &outfiletype);
+      if (intagtype == outtagtype && infiletype == outfiletype) {
+        savedtags = audiotagSaveTags (ffn);
+      }
       aaAdjust (mp3exp->musicdb, song, ffn, outfn,
           dur, mp3exp->fadein, mp3exp->fadeout, gap);
+      if (intagtype == outtagtype && infiletype == outfiletype) {
+        audiotagRestoreTags (outfn, savedtags);
+        savedtags = NULL;
+      } else {
+        taglist = songTagList (song);
+        owrite = bdjoptGetNum (OPT_G_WRITETAGS);
+        bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+        audiotagWriteTags (outfn, NULL, taglist, AF_REWRITE_NONE, AT_KEEP_MOD_TIME);
+        bdjoptSetNum (OPT_G_WRITETAGS, owrite);
+        slistFree (taglist);
+      }
 
       pathInfoFree (pi);
       mdfree (ffn);

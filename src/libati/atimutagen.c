@@ -359,6 +359,8 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 {
   int         rc = -1;
 
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%d del:%d", ffn, slistGetCount (updatelist), slistGetCount (dellist));
+
   if (tagtype == TAG_TYPE_ID3 && filetype == AFILE_TYPE_MP3) {
     rc = atimutagenWriteMP3Tags (atidata, ffn, updatelist, dellist, datalist);
   } else {
@@ -384,6 +386,8 @@ atiiSaveTags (atidata_t *atidata,
   if (ofh == NULL) {
     return NULL;
   }
+
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "save-tags: %s", ffn);
 
   tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
 
@@ -455,9 +459,11 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   }
 
   if (atisaved->tagtype != tagtype) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore-tags: mismatched tag type");
     return -1;
   }
   if (atisaved->filetype != filetype) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore-tags: mismatched file type");
     return -1;
   }
 
@@ -466,6 +472,8 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   if (ofh == NULL) {
     return -1;
   }
+
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore-tags: %s", ffn);
 
   atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
   if (tagtype == TAG_TYPE_ID3) {
@@ -552,9 +560,11 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   atimutagenMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
   if (ofh == NULL) {
+    logProcEnd (LOG_PROC, "atimutagenWriteMP3Tags", "open-fail");
     return -1;
   }
 
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-mp3-tags: (%s)", fn);
   atimutagenWritePythonHeader (atidata, ffn, ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
 
   slistStartIterator (dellist, &iteridx);
@@ -661,9 +671,11 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   atimutagenMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
   if (ofh == NULL) {
+    logProcEnd (LOG_PROC, "atimutagenWriteOtherTags", "open-fail");
     return -1;
   }
 
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-other-tags: (%s)", fn);
   atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
 
   slistStartIterator (dellist, &iteridx);
@@ -761,6 +773,7 @@ atimutagenRunUpdate (const char *fn, char *dbuff, size_t sz)
   targv [targc++] = fn;
   targv [targc++] = NULL;
   /* the wait flag is on, the return code is the process return code */
+  // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  process (%s)", fn);
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sz, NULL);
   if (rc == 0) {
     fileopDelete (fn);
