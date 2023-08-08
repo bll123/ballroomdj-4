@@ -1,9 +1,15 @@
 <?php
 
 $resp = "";
-$resp .= "get: " . join ($_GET, ' ');
-$resp .= "post: " . join ($_POST, ' ');
-$resp .= "files: " . join ($_FILES, ' ');
+if (gettype ($_GET) == "array" && count ($_GET) > 0) {
+  $resp .= "get: " . implode (' ', $_GET);
+}
+if (gettype ($_POST) == "array" && count ($_POST) > 0) {
+  $resp .= "post: " . implode (' ', $_POST);
+}
+if (gettype ($_FILES) == "array" && count ($_FILES) > 0) {
+  $resp .= "files: " . implode (' ', $_FILES);
+}
 if (! isset($_POST['key']) || $_POST['key'] != '8634556') {
   echo "NG: bad key: " . $resp;
   exit (0);
