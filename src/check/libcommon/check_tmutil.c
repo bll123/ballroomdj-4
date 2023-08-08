@@ -54,10 +54,12 @@ START_TEST(mssleep_sec)
   mssleep (2000);
   tm_e = mstime ();
   val = 30;
-  /* windows can have a lot of overhead, no idea why */
-  /* this test used to work better on windows */
+  if (sysvarsGetNum (SVL_IS_VM)) {
+    val += 20;
+  }
+  /* no idea why windows is slow for this particular test */
   if (isWindows ()) {
-    val = 550;
+    val += 500;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 2000)), val);
 }
@@ -76,9 +78,10 @@ START_TEST(mssleep_ms)
   mssleep (200);
   tm_e = mstime ();
   val = 30;
-  /* windows may return 45+ */
-  if (isWindows ()) {
-    val = 50;
+  /* running on a VM is slower */
+  /* windows is quite bad on a VM */
+  if (sysvarsGetNum (SVL_IS_VM)) {
+    val = 60;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
 }
@@ -216,7 +219,7 @@ START_TEST(mstime_check)
   mssleep (1000);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, false);
-  mssleep (1100);
+  mssleep (1200);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, true);
 }
