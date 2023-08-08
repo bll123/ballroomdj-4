@@ -219,8 +219,8 @@ dataclean:
 
 .PHONY: distclean
 distclean:
-	@-$(RM) -rf build
 	@-$(MAKE) clean
+	@-$(RM) -rf build
 	@mkdir build
 	@-$(RM) -f ../install/manifest.txt ../install/manifest-src.txt
 

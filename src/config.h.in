@@ -16,6 +16,7 @@
 #cmakedefine01 _hdr_fcntl
 #cmakedefine01 _hdr_gdk_gdkx
 #cmakedefine01 _hdr_gtk_gtk
+#cmakedefine01 _hdr_intrin
 #cmakedefine01 _hdr_io
 #cmakedefine01 _hdr_libintl
 #cmakedefine01 _hdr_MacTypes
@@ -44,6 +45,7 @@
 #cmakedefine01 _sys_wait
 
 /* windows specific */
+#cmakedefine01 _lib___cpuid
 #cmakedefine01 _lib_CloseHandle
 #cmakedefine01 _lib_CompareStringEx
 #cmakedefine01 _lib_CopyFileW

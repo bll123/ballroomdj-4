@@ -26,6 +26,9 @@
 #if _hdr_windows
 # include <windows.h>
 #endif
+#if _hdr_intrin
+# include <intrin.h>
+#endif
 
 #include "bdj4.h"
 #include "sysvars.h"
@@ -121,6 +124,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
   [SVL_IS_MACOS] = { "IS_MACOS" },
+  [SVL_IS_VM] = { "IS_VM" },
   [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
   [SVL_LOCALE_SET] = { "LOCALE_SET" },
   [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
@@ -193,6 +197,7 @@ sysvarsInit (const char *argv0)
   lsysvars [SVL_IS_MACOS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
+  lsysvars [SVL_IS_VM] = false;
 
 #if _lib_uname
   uname (&ubuf);
@@ -637,6 +642,38 @@ sysvarsInit (const char *argv0)
     if (*sysvars [SV_PATH_GSETTINGS]) {
       svGetLinuxDefaultTheme ();
     }
+  }
+
+  /* the SVL_IS_VM flag is only used for the test suite */
+  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+    FILE        *fh;
+    char        tbuff [2048];
+    static char *flagtag = "flags";
+    static char *vmtag = " hypervisor ";
+
+    fh = fileopOpen ("/proc/cpuinfo", "r");
+    if (fh != NULL) {
+      while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
+        if (strncmp (tbuff, flagtag, strlen (flagtag)) == 0) {
+          if (strstr (tbuff, vmtag) != NULL) {
+            lsysvars [SVL_IS_VM] = true;
+	  }
+	  break;
+	}
+      }
+      mdextfclose (fh);
+      fclose (fh);
+    }
+  }
+  if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
+#if _lib___cpuid
+    int     cpuinfo [4];
+
+    __cpuid (cpuinfo, 1);
+    if (cpuinfo [2] >> 31 & 1) {
+      lsysvars [SVL_IS_VM] = true;
+    }
+#endif
   }
 
   svGetSystemFont ();

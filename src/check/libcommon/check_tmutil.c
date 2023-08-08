@@ -104,8 +104,14 @@ START_TEST(mssleep_ms_b)
   if (isMacOS ()) {
     val = 60;
   }
-  /* windows is way, way off */
+  /* windows is currently unknown, this should be fixed someday */
   if (isWindows ()) {
+    val = 100;
+  }
+
+  /* When running on a VM, this timer loop is way off */
+  /* 700ms on a Linux VM, 800ms on a Windows VM */
+  if (sysvarsGetNum (SVL_IS_VM)) {
     val = 900;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
