@@ -25,12 +25,17 @@ if [[ $pkgname == "" || $pkgname = "themes" ]]; then
   if [[ ${platform} == windows ]]; then
     for fn in bundles/Windows-*.zip; do
       ffn="${cwd}/$fn"
-      (cd ${themedir};unzip -q "$ffn")
+      (cd ${themedir};unzip -q -o "$ffn")
     done
     for tn in ../plocal/share/themes/*; do
       nn="$(echo $tn | sed 's,-dark$,,')"
       nn="$(echo $nn | sed 's,-[0-9.]*$,,')"
-      mv "$tn" "$nn"
+      if [[ $tn != $nn ]]; then
+        if [[ -d $nn ]]; then
+          rm -rf "$nn"
+        fi
+        mv "$tn" "$nn"
+      fi
     done
   fi
 fi
