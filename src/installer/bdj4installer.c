@@ -2509,6 +2509,12 @@ installerMutagenCheck (installer_t *installer)
     return;
   }
 
+  /* mutagen is installed via other methods on linux and macos */
+  if (isLinux () || isMacOS ()) {
+    installer->instState = INST_FINALIZE;
+    return;
+  }
+
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
@@ -2532,7 +2538,7 @@ installerMutagenInstall (installer_t *installer)
     }
   }
   snprintf (tbuff, sizeof (tbuff),
-      "%s --quiet install --user --upgrade --break-system-packages mutagen",
+      "%s --quiet install --user --upgrade mutagen",
       pipnm);
   (void) ! system (tbuff);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
@@ -2971,7 +2977,7 @@ installerCheckPackages (installer_t *installer)
     }
 
     if (installer->pythoninstalled) {
-      tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+      tmp = sysvarsGetStr (SV_PATH_MUTAGEN);
       if (installer->guienabled && installer->uiBuilt) {
         if (*tmp) {
           /* CONTEXT: installer: display of package status */

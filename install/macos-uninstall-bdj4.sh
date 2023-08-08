@@ -45,6 +45,9 @@ fi
 
 sudo -v
 
+# remove any old mutagen installed for the user
+pip3 uninstall -y mutagen > /dev/null 2>&1
+
 echo "Uninstall the BallroomDJ 4 Application? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then

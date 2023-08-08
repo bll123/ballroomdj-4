@@ -70,7 +70,7 @@ atiiInit (const char *atipkg, int writetags,
 
   atidata = mdmalloc (sizeof (atidata_t));
   atidata->python = sysvarsGetStr (SV_PATH_PYTHON);
-  atidata->mutagen = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+  atidata->mutagen = sysvarsGetStr (SV_PATH_MUTAGEN);
   atidata->writetags = writetags;
   atidata->tagLookup = tagLookup;
   atidata->tagCheck = tagCheck;

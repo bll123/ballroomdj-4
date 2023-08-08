@@ -94,13 +94,13 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
+  [SV_PATH_MUTAGEN] = { "PATH_MUTAGEN" },
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
   [SV_PATH_PYTHON] = { "PATH_PYTHON" },
   [SV_PATH_PYTHON_PIP] = { "PATH_PYTHON_PIP" },
   [SV_PATH_VLC] = { "PATH_VLC" },
   [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
   [SV_PYTHON_DOT_VERSION] = { "PYTHON_DOT_VERSION" },
-  [SV_PYTHON_MUTAGEN] = { "PYTHON_MUTAGEN" },
   [SV_PYTHON_VERSION] = { "PYTHON_VERSION" },
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
@@ -727,6 +727,7 @@ sysvarsCheckPaths (const char *otherpaths)
 
   strlcpy (sysvars [SV_PATH_FFMPEG], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_MUTAGEN], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
@@ -757,6 +758,10 @@ sysvarsCheckPaths (const char *otherpaths)
 
     if (*sysvars [SV_PATH_FFMPEG] == '\0') {
       checkForFile (tbuff, SV_PATH_FFMPEG, "ffmpeg", NULL);
+    }
+
+    if (*sysvars [SV_PATH_MUTAGEN] == '\0') {
+      checkForFile (tbuff, SV_PATH_MUTAGEN, "mutagen-inspect", "mutagen-inspect-3.11", NULL);
     }
 
     if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
@@ -906,10 +911,16 @@ sysvarsCheckMutagen (void)
 {
   char  buff [SV_MAX_SZ];
 
+  /* use the system installed version if present */
+  /* for windows, be sure to replace the .exe with the actual script */
+  if (! isWindows () && *sysvars [SV_PATH_MUTAGEN] != '\0') {
+    return;
+  }
+
   /* On windows the mutagen-inspect script seems to be no longer installed */
   /* along with the package, and the converted executable pops up command */
   /* windows. */
-  // $HOME/.local/bin/mutagen-inspect  (linux, macos, msys2)
+  // $HOME/.local/bin/mutagen-inspect  (user-install: linux, macos, msys2)
   // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect (macos)
   // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
   // %USERPROFILE%/AppData/Roaming/Python/Python<pyver>/Scripts/mutagen-inspect.exe
@@ -949,18 +960,18 @@ sysvarsCheckMutagen (void)
   }
 
   if (fileopFileExists (buff)) {
-    strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+    strlcpy (sysvars [SV_PATH_MUTAGEN], buff, SV_MAX_SZ);
   } else {
     if (isWindows ()) {
       /* for msys2 testing */
       snprintf (buff, sizeof (buff),
           "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
       if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+        strlcpy (sysvars [SV_PATH_MUTAGEN], buff, SV_MAX_SZ);
       }
     }
   }
-  pathNormalizePath (sysvars [SV_PYTHON_MUTAGEN], SV_MAX_SZ);
+  pathNormalizePath (sysvars [SV_PATH_MUTAGEN], SV_MAX_SZ);
 }
 
 char *

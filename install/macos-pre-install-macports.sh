@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=12
+ver=13
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -170,13 +170,14 @@ sudo port upgrade outdated
 
 sudo -v
 
+# remove any old user-install mutagen
+pip3 uninstall -y mutagen > /dev/null 2>&1
+
 echo "-- Installing packages needed by BDJ4"
 # libid3tag and libvorbis do not have windows unicode fopen support
 # ship our own.
 sudo port -N install \
-    python${pyver} \
-    py${pyver}-pip \
-    py${pyver}-wheel \
+    py${pyver}-mutagen \
     curl \
     curl-ca-bundle \
     librsvg \

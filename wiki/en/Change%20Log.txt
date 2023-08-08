@@ -16,8 +16,8 @@
     * Automatic Dance Selection: Fix some bugs processing prior selections.
     * Export as MP3: Save audio tags to output file.
     * Installer: Fallback to mutagen interface if bdj4-internal can't be loaded.
-    * Installer: Fix mutagen installation.
     * Installer: Linux: No longer crashes if the libraries for the bdj4-internal audio tag interface are not present.
+    * Installer: Linux: Fix mutagen installation.
     * Installer: MacOS: Fixed an issue which used extra disk space.
     * Installer: Various fixes and updates.
     * Internal: Make sure message processing is finalized on exit.

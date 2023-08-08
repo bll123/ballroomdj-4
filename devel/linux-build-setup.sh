@@ -27,12 +27,8 @@ sudo apt -y install \
     check libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev \
     libasound2-dev libcurl4-openssl-dev libxml2-dev \
     gtk-3-examples \
-    python3-setuptools python3-pip \
+    python3-mutagen \
     dos2unix sshpass
-
-# python-mutagen
-sudo apt -y remove python-mutagen
-pip3 install --user --upgrade --break-system-packages mutagen
 
 # inkscape / fonts (for editing bdj4 images)
 sudo apt -y install inkscape \

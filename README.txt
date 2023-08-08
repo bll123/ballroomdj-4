@@ -26,6 +26,12 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.3.3.2:
+    Linux Installation:
+      The linux-pre-install-v8.sh script must be run.
+    MacOS Installation:
+      The macos-pre-install-macports-v13.sh script must be run.
+
   4.3.3:
     MacOS Installation:
       The macos-pre-install-macports-v12.sh script must be run.

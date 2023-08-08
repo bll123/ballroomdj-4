@@ -56,15 +56,9 @@ bash linux-pre-install-v8.sh
 This script performs the following actions:
 
 * Installs the required software used by BallroomDJ 4.
-  (vlc, ffmpeg, libcurl, flac, libopusfile).
+  (vlc, python3-mutagen, ffmpeg, libcurl, flac, libopusfile).
 * Adds the user to the 'audio' group.
-* Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
-
-##### Internet Connection
-
-An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (Mutagen) that need to be
-installed from the internet.
+* If pulseaudio is installed, sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
 
 ##### Install BallroomDJ 4
 

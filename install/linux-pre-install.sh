@@ -145,35 +145,25 @@ pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
   # tested 2023-5-3
-  pkglist="ffmpeg
-      python-setuptools python-pip
-      libmad lame twolame
-      pulseaudio curl"
+  # updated 2023-8-8
+  pkglist="ffmpeg python-mutagen libmad lame twolame curl"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # tested 2022
-  # updated 2023-7-12
-  pkglist="ffmpeg
-      python3-setuptools python3-pip python3-wheel
-      libcurl4 libogg0 libopus0 libopusfile0"
+  # updated 2023-8-8
+  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: vlc
-  pwpkg=$(instcheck python3-pip-wheel python-pip-wheel python-pip-whl)
-  pippkg=$(instcheck python3-pip python-pip)
-  stoolspkg=$(instcheck python3-setuptools python-setuptools)
-  pkglist="ffmpeg-free
-      ${stoolspkg} ${pippkg} ${pwpkg}
-      libcurl libogg opus opusfile"
+  # updated 2023-8-8
+  pkglist="ffmpeg-free python3-mutagen libcurl libogg opus opusfile"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
-  # updated 2023-7-12
-  pkglist="ffmpeg
-      python3-setuptools python3-pip
-      libcurl4 libogg0 libopus0 libopusfile0"
+  # updated 2023-8-8
+  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0"
 fi
 
 pkglist="$pkglist vlc"
@@ -197,6 +187,10 @@ if [[ -f /usr/bin/pacman ]]; then
 fi
 
 sudo -v
+
+# remove any old mutagen installed for the user
+pip3 uninstall -y mutagen > /dev/null 2>&1
+pip3 uninstall -y --break-system-packages mutagen > /dev/null 2>&1
 
 rc=0
 echo "== Install packages" >> $LOG
@@ -226,6 +220,11 @@ sudo -k
 
 pconf=/etc/pulse/daemon.conf
 upconf=$HOME/.config/pulse/daemon.conf
+if [[ ! -f $pconf ]]; then
+  if [[ -f $upconf ]]; then
+    rm -f $upconf
+  fi
+fi
 if [[ -f $pconf ]]; then
   grep -E '^flat-volumes *= *no$' $pconf > /dev/null 2>&1
   grc=$?
