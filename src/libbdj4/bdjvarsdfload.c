@@ -26,6 +26,18 @@
 #include "songfav.h"
 #include "status.h"
 
+static const char *dfloaddbg [] = {
+  [BDJVDF_AUTO_SEL] = "autosel",
+  [BDJVDF_DANCES] = "dances",
+  [BDJVDF_DANCE_TYPES] = "dancetypes",
+  [BDJVDF_GENRES] = "genres",
+  [BDJVDF_LEVELS] = "levels",
+  [BDJVDF_RATINGS] = "ratings",
+  [BDJVDF_STATUS] = "status",
+  [BDJVDF_FAVORITES] = "favorites",
+  [BDJVDF_AUDIO_ADJUST] = "audioadjust",
+};
+
 int
 bdjvarsdfloadInit (void)
 {
@@ -62,7 +74,7 @@ bdjvarsdfloadInit (void)
       if (i == BDJVDF_AUDIO_ADJUST) {
         continue;
       }
-      fprintf (stderr, "Unable to load datafile %d\n", i);
+      fprintf (stderr, "Unable to load datafile %d %s\n", i, dfloaddbg [i]);
       rc = -1;
       break;
     }

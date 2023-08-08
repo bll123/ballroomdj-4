@@ -98,6 +98,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
   [SV_PATH_PYTHON] = { "PATH_PYTHON" },
   [SV_PATH_PYTHON_PIP] = { "PATH_PYTHON_PIP" },
+  [SV_PATH_URI_OPEN] = { "PATH_URI_OPEN" },
   [SV_PATH_VLC] = { "PATH_VLC" },
   [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
   [SV_PYTHON_DOT_VERSION] = { "PYTHON_DOT_VERSION" },
@@ -770,6 +771,10 @@ sysvarsCheckPaths (const char *otherpaths)
 
     if (*sysvars [SV_PATH_PYTHON] == '\0') {
       checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
+    }
+
+    if (*sysvars [SV_PATH_URI_OPEN] == '\0') {
+      checkForFile (tbuff, SV_PATH_URI_OPEN, "xdg-open", "open", NULL);
     }
 
     if (*sysvars [SV_PATH_GSETTINGS] == '\0') {

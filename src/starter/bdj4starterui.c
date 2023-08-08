@@ -321,6 +321,20 @@ main (int argc, char *argv[])
   starter.callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
       starterCreateProfileShortcut, &starter, NULL);
 
+  procutilInitProcesses (starter.processes);
+
+  osSetStandardSignals (starterSigHandler);
+
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
+      BDJ4_INIT_NO_LOCK;
+  starter.loglevel = bdj4startup (argc, argv, NULL, "strt",
+      ROUTE_STARTERUI, &flags);
+  logProcBegin (LOG_PROC, "starterui");
+
+  starter.profilesel = uiSpinboxInit ();
+
+  starterLoadOptions (&starter);
+
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD));
   starter.linkinfo [START_LINK_CB_DOWNLOAD].uri = mdstrdup (uri);
@@ -352,20 +366,6 @@ main (int argc, char *argv[])
     starter.linkinfo [START_LINK_CB_TICKETS].macoscb = callbackInit (
         starterTicketLinkHandler, &starter, NULL);
   }
-
-  procutilInitProcesses (starter.processes);
-
-  osSetStandardSignals (starterSigHandler);
-
-  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
-      BDJ4_INIT_NO_LOCK;
-  starter.loglevel = bdj4startup (argc, argv, NULL, "strt",
-      ROUTE_STARTERUI, &flags);
-  logProcBegin (LOG_PROC, "starterui");
-
-  starter.profilesel = uiSpinboxInit ();
-
-  starterLoadOptions (&starter);
 
   uiUIInitialize ();
   uiSetUICSS (uiutilsGetCurrentFont (),
@@ -1986,7 +1986,7 @@ starterLinkHandler (void *udata, int cbidx)
 
   uri = starter->linkinfo [cbidx].uri;
   if (uri != NULL) {
-    snprintf (tmp, sizeof (tmp), "open %s", uri);
+    snprintf (tmp, sizeof (tmp), "%s '%s'", sysvarsGetStr (SV_PATH_URI_OPEN), uri);
     (void) ! system (tmp);
   }
 }

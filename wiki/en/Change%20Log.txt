@@ -24,6 +24,7 @@
     * Linux: Properly support XDG_CONFIG_HOME.
     * Music Queue: Fix music queue display counter.
     * Player: Windows: Fix clock display to use the windows configuration.
+    * Starter: Fix support links.
 * Changes:
     * Alternate Installer: Add music folder to dialog.
     * Automatic Dance Selection: Added another variable to spread out fast dances better.

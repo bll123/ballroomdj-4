@@ -1387,6 +1387,7 @@ altinstCleanup (altinst_t *altinst)
     }
     dataFree (altinst->target);
     dataFree (altinst->musicdir);
+    dataFree (altinst->name);
   }
 }
 

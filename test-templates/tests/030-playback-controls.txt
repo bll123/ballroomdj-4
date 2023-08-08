@@ -76,33 +76,39 @@ chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 qdbidx 11
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 qdbidx 11
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 # a pause during in-fadeout creates a pause-at-end condition
 msg player PLAY_FADE
+mssleep 100
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate in-fadeout
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate in-fadeout
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk pauseatend 1 playstate in-fadeout
 resptimeout 7500
@@ -431,6 +437,7 @@ mssleep 2000
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 2000
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg player PLAY_SONG_BEGIN

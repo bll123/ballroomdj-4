@@ -173,6 +173,12 @@ typedef struct {
   char            *musicdir;
   int             atiselect;
   /* flags */
+  /* one of newinstall or updateinstall will be true */
+  /* reinstall is simply the state of the checkbox */
+  /* and for a reinstall, updateinstall must be true */
+  bool            newinstall : 1;
+  bool            updateinstall : 1;
+  bool            reinstall : 1;          // button state
   bool            aborted : 1;
   bool            bdjoptloaded : 1;
   bool            clean : 1;
@@ -183,18 +189,15 @@ typedef struct {
   bool            insetconvert : 1;
   bool            localespecified : 1;
   bool            musicdirok : 1;
-  bool            newinstall : 1;
   bool            nomutagen : 1;
   bool            pythoninstalled : 1;
   bool            quiet : 1;
   bool            readonly : 1;
-  bool            reinstall : 1;          // button state
   bool            scrolltoend : 1;
   bool            targetexists : 1;
   bool            testregistration : 1;
   bool            uiBuilt : 1;
   bool            unattended : 1;
-  bool            updateinstall : 1;
   bool            updatepython : 1;
   bool            verbose : 1;
   bool            vlcinstalled : 1;
@@ -1857,8 +1860,8 @@ installerCreateDirs (installer_t *installer)
     installerGetExistingData (installer);
   }
 
-  if (installer->updateinstall) {
-    /* convert-start checks and will bypass if not turned on */
+  if (installer->updateinstall && ! installer->reinstall) {
+    /* if it is an update only, do not create dirs or copy templates */
     installer->instState = INST_CONVERT_START;
     return;
   }
