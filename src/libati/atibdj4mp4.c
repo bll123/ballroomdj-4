@@ -83,6 +83,6 @@ atibdj4CleanMP4Tags (atidata_t *atidata,
 void
 atibdj4LogMP4Version (void)
 {
-  logMsg (LOG_DBG, LOG_INFO, "mp4 version %s", "not-coded");
+  logMsg (LOG_DBG, LOG_INFO, "libmp4tag version %s", "not-coded");
 }
 

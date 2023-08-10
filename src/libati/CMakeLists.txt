@@ -27,6 +27,7 @@ add_library (libatibdj4 SHARED
   atibdj4.c
   atibdj4flac.c
   atibdj4mp3.c
+  atibdj4oggutil.c
   atibdj4ogg.c
   atibdj4opus.c
   atibdj4mp4.c

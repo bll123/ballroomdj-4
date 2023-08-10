@@ -445,16 +445,16 @@ void
 atiiFreeSavedTags (atisaved_t *atisaved, int tagtype, int filetype)
 {
   if (atisaved == NULL) {
-    return -1;
+    return;
   }
   if (! atisaved->hasdata) {
-    return -1;
+    return;
   }
   if (atisaved->tagtype != tagtype) {
-    return -1;
+    return;
   }
   if (atisaved->filetype != filetype) {
-    return -1;
+    return;
   }
 
   atisaved->hasdata = false;

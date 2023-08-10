@@ -51,8 +51,7 @@ int  atibdj4RestoreOggTags (atidata_t *atidata, atisaved_t *atisaved, const char
 void atibdj4CleanOggTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4LogOggVersion (void);
 
-int  atibdj4WriteOggFile (const char *ffn, void *newvc);
-void atibdj4OggAddVorbisComment (void *newvc, int tagkey, const char *tagname, const char *val);
+int  atibdj4WriteOggFile (const char *ffn, void *newvc, int filetype);
 
 /* atibdj4opus.c */
 void atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);

@@ -112,10 +112,14 @@ function setorgregex {
 }
 
 ATIBDJ4=F
+FIRSTONLY=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
       ATIBDJ4=T
+      ;;
+    --firstonly)
+      FIRSTONLY=T
       ;;
   esac
 done
@@ -129,11 +133,11 @@ NUMCC=15
 # regex
 NUMREGEX=13
 if [[ $ATIBDJ4 == T ]]; then
-  NUMNORM=$((NUMNORM-9))    # opus
+#  NUMNORM=$((NUMNORM-9))    # opus
   NUMNORM=$((NUMNORM-9))    # m4a
-  NUMCC=$((NUMCC-1))    # opus
+#  NUMCC=$((NUMCC-1))    # opus
   NUMCC=$((NUMCC-1))    # m4a
-  NUMREGEX=$((NUMREGEX-1))    # opus
+#  NUMREGEX=$((NUMREGEX-1))    # opus
   NUMREGEX=$((NUMREGEX-1))    # m4a
 fi
 # deleted foxtrot
@@ -210,6 +214,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
+if [[ $FIRSTONLY == T ]]; then
+  TESTON=F
+fi
+
 if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes
   tname=checknew-basic
@@ -267,11 +275,11 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# restore the main test database, needed for write tags check
-# only the main db has songs with song-start/song-end/vol-adjust-perc
-cp -f $TMAINDB $DATADB
-
 if [[ $TESTON == T ]]; then
+  # restore the main test database, needed for write tags check
+  # only the main db has songs with song-start/song-end/vol-adjust-perc
+  cp -f $TMAINDB $DATADB
+
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
   # to the audio files, and everything will still look ok.
@@ -315,24 +323,24 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# create test db w/different song-end
-# the problem here is that with bdj3 compatibility off, there is no
-# forced rewrite of the tags, therefore to test, the value must be
-# different
-cp -f $INMAINDB $INCOMPAT
-tfn=$INCOMPAT
-sed -e '/^SONGEND/ { n ; s/.*/..28000/ ; }' \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
-./src/utils/mktestsetup.sh \
-    --infile $INCOMPAT \
-    --outfile $TDBCOMPAT \
-    --debug ${DBG} ${ATIFLAG} \
-    --keepmusic
-# want the fixed version after the udpater has run
-cp -f $DATADB $TDBCOMPAT
-
 if [[ $TESTON == T ]]; then
+  # create test db w/different song-end
+  # the problem here is that with bdj3 compatibility off, there is no
+  # forced rewrite of the tags, therefore to test, the value must be
+  # different
+  cp -f $INMAINDB $INCOMPAT
+  tfn=$INCOMPAT
+  sed -e '/^SONGEND/ { n ; s/.*/..28000/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+  ./src/utils/mktestsetup.sh \
+      --infile $INCOMPAT \
+      --outfile $TDBCOMPAT \
+      --debug ${DBG} ${ATIFLAG} \
+      --keepmusic
+  # want the fixed version after the udpater has run
+  cp -f $DATADB $TDBCOMPAT
+
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
   # to the audio files, and everything will still look ok.
@@ -375,25 +383,25 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# the tags are now incorrect due to the prior test.
-# re-create the main database and test music
-./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
-
-# clean any leftover foxtrot from the tmp dir
-rm -f tmp/*-foxtrot.mp3
-# save all foxtrot
-mv -f test-music/*-foxtrot.mp3 tmp
-
-# create test setup/db w/no foxtrot
-./src/utils/mktestsetup.sh \
-    --infile $INNOFOXTROT \
-    --outfile $TDBNOFOXTROT \
-    --debug ${DBG} ${ATIFLAG}
-
-# restore the main database
-cp -f $TMAINDB $DATADB
-
 if [[ $TESTON == T ]]; then
+  # the tags are now incorrect due to the prior test.
+  # re-create the main database and test music
+  ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
+
+  # clean any leftover foxtrot from the tmp dir
+  rm -f tmp/*-foxtrot.mp3
+  # save all foxtrot
+  mv -f test-music/*-foxtrot.mp3 tmp
+
+  # create test setup/db w/no foxtrot
+  ./src/utils/mktestsetup.sh \
+      --infile $INNOFOXTROT \
+      --outfile $TDBNOFOXTROT \
+      --debug ${DBG} ${ATIFLAG}
+
+  # restore the main database
+  cp -f $TMAINDB $DATADB
+
   # main test db : check-new with deleted files
   tname=checknew-delete
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -414,10 +422,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# restore the main database
-cp -f $TMAINDB $DATADB
-
 if [[ $TESTON == T ]]; then
+  # restore the main database
+  cp -f $TMAINDB $DATADB
+
   # main test db : compact with deleted files
   tname=compact-deleted
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -436,31 +444,31 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# restore all foxtrot
-mv -f tmp/*-foxtrot.mp3 test-music
-
-# create test db w/no data
-./src/utils/mktestsetup.sh \
-    --emptydb \
-    --infile $INCHACHA \
-    --outfile $TDBEMPTY \
-    --debug ${DBG} ${ATIFLAG}
-# create test db w/chacha
-./src/utils/mktestsetup.sh \
-    --infile $INCHACHA \
-    --outfile $TDBCHACHA \
-    --debug ${DBG} ${ATIFLAG}
-# save the cha cha
-rm -f tmp/001-chacha.mp3
-mv -f test-music/001-chacha.mp3 tmp
-# create test db w/o chacha
-# will copy tmp/test-m-b.dat to data/
-./src/utils/mktestsetup.sh \
-    --infile $INNOCHACHA \
-    --outfile $TDBNOCHACHA \
-    --debug ${DBG} ${ATIFLAG}
-
 if [[ $TESTON == T ]]; then
+  # restore all foxtrot
+  mv -f tmp/*-foxtrot.mp3 test-music
+
+  # create test db w/no data
+  ./src/utils/mktestsetup.sh \
+      --emptydb \
+      --infile $INCHACHA \
+      --outfile $TDBEMPTY \
+      --debug ${DBG} ${ATIFLAG}
+  # create test db w/chacha
+  ./src/utils/mktestsetup.sh \
+      --infile $INCHACHA \
+      --outfile $TDBCHACHA \
+      --debug ${DBG} ${ATIFLAG}
+  # save the cha cha
+  rm -f tmp/001-chacha.mp3
+  mv -f test-music/001-chacha.mp3 tmp
+  # create test db w/o chacha
+  # will copy tmp/test-m-b.dat to data/
+  ./src/utils/mktestsetup.sh \
+      --infile $INNOCHACHA \
+      --outfile $TDBNOCHACHA \
+      --debug ${DBG} ${ATIFLAG}
+
   # test db : rebuild of test-m-nochacha
   if [[ -f test-music/001-chacha.mp3 ]]; then
     echo "cha cha present when it should not be"
@@ -486,10 +494,10 @@ if [[ $TESTON == T ]]; then
   fi
 fi
 
-# restore the cha cha
-mv -f tmp/001-chacha.mp3 test-music
-
 if [[ $TESTON == T ]]; then
+  # restore the cha cha
+  mv -f tmp/001-chacha.mp3 test-music
+
   # test db : check-new w/cha cha
   tname=checknew-chacha
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -508,10 +516,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# clean all of the tags from the music files
-cleanallaudiofiletags
-
 if [[ $TESTON == T ]]; then
+  # clean all of the tags from the music files
+  cleanallaudiofiletags
+
   # test db : rebuild with no tags
   tname=rebuild-no-tags
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -527,10 +535,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $rc
 fi
 
-# restore the empty database needed for update from tags check
-cp -f $TDBEMPTY $DATADB
-
 if [[ $TESTON == T ]]; then
+  # restore the empty database needed for update from tags check
+  cp -f $TDBEMPTY $DATADB
+
   # test db : update from tags
   tname=update-from-tags-empty-db
   setwritetagson
@@ -559,10 +567,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# restore the cha cha database
-cp -f $TDBCHACHA $DATADB
-
 if [[ $TESTON == T ]]; then
+  # restore the cha cha database
+  cp -f $TDBCHACHA $DATADB
+
   # test db : write tags
   tname=write-tags
   setwritetagson
@@ -591,39 +599,39 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# create test regex db w/tags (dance/artist - title)
-./src/utils/mktestsetup.sh \
-    --infile $INRDAT \
-    --outfile $TDBRDAT \
-    --debug ${DBG} ${ATIFLAG}
-# create test regex db w/tags (dance/title)
-./src/utils/mktestsetup.sh \
-    --infile $INRDT \
-    --outfile $TDBRDT \
-    --debug ${DBG} ${ATIFLAG}
-# create test regex db w/tags (dance/title) and w/alternate entries
-tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
-./src/utils/mktestsetup.sh \
-    --infile $INRDT \
-    --outfile $TDBRDTALT \
-    --altdir ${tdir}/$TMDT \
-    --debug ${DBG} ${ATIFLAG}
-# create test regex db w/tags (dance/tn-artist - title)
-./src/utils/mktestsetup.sh \
-    --infile $INRDTAT \
-    --outfile $TDBRDTAT \
-    --debug ${DBG} ${ATIFLAG}
-# create test music dir w/o any tags, tmpa is not used
-./src/utils/mktestsetup.sh \
-    --infile $INR \
-    --outfile $TMPA \
-    --debug ${DBG} ${ATIFLAG}
-# copy the test-music to an alternate folder for testing
-# secondary folder builds
-test -d $TMDT && rm -rf $TMDT
-cp -r test-music $TMDT
-
 if [[ $TESTON == T ]]; then
+  # create test regex db w/tags (dance/artist - title)
+  ./src/utils/mktestsetup.sh \
+      --infile $INRDAT \
+      --outfile $TDBRDAT \
+      --debug ${DBG} ${ATIFLAG}
+  # create test regex db w/tags (dance/title)
+  ./src/utils/mktestsetup.sh \
+      --infile $INRDT \
+      --outfile $TDBRDT \
+      --debug ${DBG} ${ATIFLAG}
+  # create test regex db w/tags (dance/title) and w/alternate entries
+  tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
+  ./src/utils/mktestsetup.sh \
+      --infile $INRDT \
+      --outfile $TDBRDTALT \
+      --altdir ${tdir}/$TMDT \
+      --debug ${DBG} ${ATIFLAG}
+  # create test regex db w/tags (dance/tn-artist - title)
+  ./src/utils/mktestsetup.sh \
+      --infile $INRDTAT \
+      --outfile $TDBRDTAT \
+      --debug ${DBG} ${ATIFLAG}
+  # create test music dir w/o any tags, tmpa is not used
+  ./src/utils/mktestsetup.sh \
+      --infile $INR \
+      --outfile $TMPA \
+      --debug ${DBG} ${ATIFLAG}
+  # copy the test-music to an alternate folder for testing
+  # secondary folder builds
+  test -d $TMDT && rm -rf $TMDT
+  cp -r test-music $TMDT
+
   # test regex db : get dance/artist/title from file path
   tname=rebuild-file-path-dat
   setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'

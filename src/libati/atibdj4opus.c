@@ -28,6 +28,8 @@ typedef struct atisaved {
   OpusTags              *tags;
 } atisaved_t;
 
+static void atibdj4OpusAddVorbisComment (OpusTags *newtags, int tagkey, const char *tagname, const char *val);
+
 void
 atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
     const char *ffn, int tagtype, int *rewrite)
@@ -36,6 +38,8 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
   int                   linknum;
   const OpusTags        *tags = NULL;
   int                   rc;
+  double                ddur;
+  char                  tmp [40];
 
   of = op_open_file (ffn, &rc);
   if (rc < 0 || of == NULL) {
@@ -48,6 +52,14 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
   if (tags == NULL) {
     return;
   }
+
+  ddur = op_pcm_total (of, -1);
+  ddur *= 1000.0;
+  /* opus has a fixed sample rate of 48kHz */
+  ddur /= 48000.0;
+  snprintf (tmp, sizeof (tmp), "%.0f", ddur);
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", tmp);
+  slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
 
   for (int i = 0; i < tags->comments; ++i) {
     const char  *kw;
@@ -120,7 +132,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
       }
 
       val = slistGetStr (updatelist, ttag);
-      atibdj4OggAddVorbisComment (&newtags, tagkey, ttag, val);
+      atibdj4OpusAddVorbisComment (&newtags, tagkey, ttag, val);
       slistSetNum (upddone, ttag, 1);
     } else {
       /* the tag has not changed, or is unknown to bdj4 */
@@ -143,14 +155,14 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     }
 
     tval = slistGetStr (updatelist, key);
-    atibdj4OggAddVorbisComment (&newtags, tagkey, key, tval);
+    atibdj4OpusAddVorbisComment (&newtags, tagkey, key, tval);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, tval);
   }
   slistFree (upddone);
 
   op_free (of);
 
-  rc = atibdj4WriteOggFile (ffn, &newtags);
+  rc = atibdj4WriteOggFile (ffn, &newtags, AFILE_TYPE_OPUS);
 
   opus_tags_clear (&newtags);
 
@@ -233,7 +245,7 @@ atibdj4RestoreOpusTags (atidata_t *atidata,
     return -1;
   }
 
-  rc = atibdj4WriteOggFile (ffn, atisaved->tags);
+  rc = atibdj4WriteOggFile (ffn, atisaved->tags, AFILE_TYPE_OPUS);
 
   return -1;
 }
@@ -246,7 +258,7 @@ atibdj4CleanOpusTags (atidata_t *atidata,
   int         rc = -1;
 
   opus_tags_init (&tags);
-  rc = atibdj4WriteOggFile (ffn, &tags);
+  rc = atibdj4WriteOggFile (ffn, &tags, AFILE_TYPE_OPUS);
   opus_tags_clear (&tags);
   return;
 }
@@ -275,4 +287,3 @@ atibdj4OpusAddVorbisComment (OpusTags *newtags, int tagkey,
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", tagname, val);
   slistFree (vallist);
 }
-
