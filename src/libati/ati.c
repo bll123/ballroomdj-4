@@ -31,6 +31,7 @@ typedef struct ati {
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atisaved_t        *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+  void              (*atiiFreeSavedTags) (atisaved_t *atisaved, int tagtype, int filetype);
   int               (*atiiRestoreTags) (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
   void              (*atiiCleanTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   atidata_t         *atidata;
@@ -70,6 +71,7 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
   ati->atiiSaveTags = NULL;
+  ati->atiiFreeSavedTags = NULL;
   ati->atiiRestoreTags = NULL;
   ati->atiiCleanTags = NULL;
 
@@ -91,6 +93,7 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
   ati->atiiSaveTags = dylibLookup (ati->dlHandle, "atiiSaveTags");
+  ati->atiiFreeSavedTags = dylibLookup (ati->dlHandle, "atiiFreeSavedTags");
   ati->atiiRestoreTags = dylibLookup (ati->dlHandle, "atiiRestoreTags");
   ati->atiiCleanTags = dylibLookup (ati->dlHandle, "atiiCleanTags");
 #pragma clang diagnostic pop
@@ -165,6 +168,15 @@ atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
     return ati->atiiSaveTags (ati->atidata, ffn, tagtype, filetype);
   }
   return NULL;
+}
+
+void
+atiFreeSavedTags (ati_t *ati, atisaved_t *atisaved, int tagtype, int filetype)
+{
+  if (ati != NULL && ati->atiiFreeSavedTags != NULL) {
+    ati->atiiFreeSavedTags (atisaved, tagtype, filetype);
+  }
+  return;
 }
 
 int

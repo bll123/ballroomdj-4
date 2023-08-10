@@ -114,9 +114,6 @@ function setorgregex {
 ATIBDJ4=F
 for arg in "$@"; do
   case $arg in
-    --atibdj4ro)
-      ATIBDJ4=RO
-      ;;
     --atibdj4)
       ATIBDJ4=T
       ;;
@@ -126,21 +123,23 @@ done
 # debug level
 DBG=4456459
 # norm
-NUMM=134
+NUMNORM=134
 # cha cha
-NUMB=15
+NUMCC=15
 # regex
-NUMR=13
+NUMREGEX=13
 if [[ $ATIBDJ4 == T ]]; then
-  NUMM=$((NUMM-9))    # opus
-  NUMM=$((NUMM-9))    # m4a
-  NUMB=$((NUMB-2))    # opus, m4a
-  NUMR=$((NUMB-2))    # opus, m4a
+  NUMNORM=$((NUMNORM-9))    # opus
+  NUMNORM=$((NUMNORM-9))    # m4a
+  NUMCC=$((NUMCC-1))    # opus
+  NUMCC=$((NUMCC-1))    # m4a
+  NUMREGEX=$((NUMREGEX-1))    # opus
+  NUMREGEX=$((NUMREGEX-1))    # m4a
 fi
 # deleted foxtrot
-NUMC=$(($NUMM-6))
+NUMNOFT=$(($NUMNORM-6))
 # deleted cha cha
-NUMBL1=$(($NUMB-1))
+NUMNOCC=$(($NUMCC-1))
 
 DATADB=data/musicdb.dat
 TMAINDB=test-templates/musicdb.dat
@@ -176,7 +175,7 @@ if [[ $ATIBDJ4 == T ]]; then
 fi
 ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
-if [[ $ATIBDJ4 == T || $ATIBDJ4 == RO ]]; then
+if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
   hostname=$(hostname)
   tfn=data/${hostname}/bdjconfig.txt
@@ -200,7 +199,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb 0 new ${NUMNORM} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -219,7 +218,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip ${NUMNORM} indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -238,7 +237,7 @@ if [[ $TESTON == T ]]; then
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -257,7 +256,7 @@ if [[ $TESTON == T ]]; then
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -285,7 +284,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated 0 notaudio 0 writetag ${NUMM}"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -345,7 +344,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated 0 notaudio 0 writetag ${NUMM}"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -404,7 +403,7 @@ if [[ $TESTON == T ]]; then
     --cli --wait --verbose)
   # note that the music database still has the entries for the
   # deleted files in it.
-  exp="found ${NUMC} skip ${NUMC} indb ${NUMC} new 0 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNOFT} skip ${NUMNOFT} indb ${NUMNOFT} new 0 updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -426,7 +425,7 @@ if [[ $TESTON == T ]]; then
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMC} skip 0 indb ${NUMC} new 0 updated ${NUMC} notaudio 0 writetag 0"
+  exp="found ${NUMNOFT} skip 0 indb ${NUMNOFT} new 0 updated ${NUMNOFT} notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -475,7 +474,7 @@ if [[ $TESTON == T ]]; then
       --rebuild \
       --dbtopdir "${musicdir}" \
       --cli --wait --verbose)
-    exp="found ${NUMBL1} skip 0 indb 0 new ${NUMBL1} updated 0 notaudio 0 writetag 0"
+    exp="found ${NUMNOCC} skip 0 indb 0 new ${NUMNOCC} updated 0 notaudio 0 writetag 0"
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
@@ -498,7 +497,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip ${NUMNOCC} indb ${NUMNOCC} new 1 updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -520,7 +519,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMB} skip 0 indb 0 new ${NUMB} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip 0 indb 0 new ${NUMCC} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -540,7 +539,7 @@ if [[ $TESTON == T ]]; then
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated ${NUMCC} notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -572,7 +571,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
+  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated 0 notaudio 0 writetag ${NUMCC}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -633,7 +632,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -653,7 +652,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -674,7 +673,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${tdir}/${TMDT}" \
     --cli --wait --verbose)
-  exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -694,7 +693,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc

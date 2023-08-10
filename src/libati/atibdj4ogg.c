@@ -35,8 +35,6 @@ typedef struct atisaved {
 } atisaved_t;
 
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
-static int  atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc);
-static void atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey, const char *tagname, const char *val);
 
 void
 atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
@@ -209,22 +207,14 @@ atibdj4SaveOggTags (atidata_t *atidata, const char *ffn,
 }
 
 void
-atibdj4RestoreOggTags (atidata_t *atidata,
-    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+atibdj4FreeSavedOggTags (atisaved_t *atisaved, int tagtype, int filetype)
 {
-  OggVorbis_File        ovf;
-  int                   rc = -1;
-  struct vorbis_comment *vc;
-  struct vorbis_comment newvc;
-
   if (atisaved == NULL) {
     return;
   }
-
   if (! atisaved->hasdata) {
     return;
   }
-
   if (atisaved->tagtype != tagtype) {
     return;
   }
@@ -232,61 +222,50 @@ atibdj4RestoreOggTags (atidata_t *atidata,
     return;
   }
 
-  rc = ov_fopen (ffn, &ovf);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
-    return;
-  }
-
-  vc = ovf.vc;
-  if (vc == NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
-    return;
-  }
-
-  vorbis_comment_init (&newvc);
-
-  for (int i = 0; i < atisaved->vc->comments; ++i) {
-    const char  *kw;
-
-    kw = atisaved->vc->user_comments [i];
-    vorbis_comment_add (&newvc, kw);
-  }
-
-  ov_clear (&ovf);
-
-  rc = atibdj4WriteOggFile (ffn, &newvc);
-
   vorbis_comment_clear (atisaved->vc);
   atisaved->hasdata = false;
   mdfree (atisaved->vc);
   mdfree (atisaved);
 }
 
+int
+atibdj4RestoreOggTags (atidata_t *atidata,
+    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  OggVorbis_File        ovf;
+  int                   rc = -1;
+  struct vorbis_comment newvc;
+
+  if (atisaved == NULL) {
+    return -1;
+  }
+
+  if (! atisaved->hasdata) {
+    return -1;
+  }
+
+  if (atisaved->tagtype != tagtype) {
+    return -1;
+  }
+  if (atisaved->filetype != filetype) {
+    return -1;
+  }
+
+  rc = atibdj4WriteOggFile (ffn, atisaved->vc);
+
+  return 0;
+}
+
 void
 atibdj4CleanOggTags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
-  OggVorbis_File        ovf;
   int                   rc = -1;
-  struct vorbis_comment *vc;
   struct vorbis_comment newvc;
 
-  rc = ov_fopen (ffn, &ovf);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
-    return;
-  }
-
-  vc = ovf.vc;
-  if (vc == NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
-    return;
-  }
-
   vorbis_comment_init (&newvc);
-  ov_clear (&ovf);
   rc = atibdj4WriteOggFile (ffn, &newvc);
+  vorbis_comment_clear (&newvc);
 
   return;
 }
@@ -297,27 +276,14 @@ atibdj4LogOggVersion (void)
   logMsg (LOG_DBG, LOG_INFO, "libvorbis version %s", vorbis_version_string());
 }
 
-/* internal routines */
+/* ogg file writing */
 
 /* from tagutil: BSD 2-Clause License */
 /* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
-static int
-atibdj4WriteOggPage (ogg_page *p, FILE *fp)
+int
+atibdj4WriteOggFile (const char *ffn, void *tnewvc)
 {
-  if (fwrite (p->header, 1, p->header_len, fp) != (size_t) p->header_len) {
-    return -1;
-  }
-  if (fwrite (p->body, 1, p->body_len, fp) != (size_t) p->body_len) {
-    return -1;
-  }
-  return 0;
-}
-
-/* from tagutil: BSD 2-Clause License */
-/* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
-static int
-atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc)
-{
+  struct vorbis_comment   *newvc = tnewvc;
   FILE             *ifh  = NULL;
   char              outfn [MAXPATHLEN];
   int               rc = -1;
@@ -371,6 +337,7 @@ atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc)
   }
   snprintf (outfn, sizeof (outfn), "%s.ogg.tmp", ffn);
   if ((ofh = fileopOpen (outfn, "wb")) == NULL) {
+
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open output failed %s", ffn);
     goto cleanup_label;
   }
@@ -494,7 +461,7 @@ bos_label:
         }
 
         /*
-         * Decide wether we need to write a page based
+         * Decide whether we need to write a page based
          * on our granulepos computation. The -1 case is
          * very common because only the last packet of a
          * page has its granulepos set by the ogg layer
@@ -589,10 +556,11 @@ cleanup_label:
   return rc;
 }
 
-static void
-atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey,
+void
+atibdj4OggAddVorbisComment (void *tnewvc, int tagkey,
     const char *tagname, const char *val)
 {
+  struct vorbis_comment *newvc = tnewvc;
   slist_t     *vallist;
   slistidx_t  viteridx;
   const char  *tval;
@@ -604,5 +572,21 @@ atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey,
   }
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", tagname, val);
   slistFree (vallist);
+}
+
+/* internal routines */
+
+/* from tagutil: BSD 2-Clause License */
+/* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
+static int
+atibdj4WriteOggPage (ogg_page *p, FILE *fp)
+{
+  if (fwrite (p->header, 1, p->header_len, fp) != (size_t) p->header_len) {
+    return -1;
+  }
+  if (fwrite (p->body, 1, p->body_len, fp) != (size_t) p->body_len) {
+    return -1;
+  }
+  return 0;
 }
 

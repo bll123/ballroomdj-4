@@ -306,6 +306,7 @@ uicopytagsResponseHandler (void *udata, long responseid)
       }
       sdata = audiotagSaveTags (infn);
       audiotagRestoreTags (outfn, sdata);
+      audiotagFreeSavedTags (outfn, sdata);
       /* CONTEXT: copy audio tags: copy of audio tags completed */
       uiLabelSetText (uict->statusMsg, _("Complete"));
       uict->state = BDJ4_STATE_FINISH;

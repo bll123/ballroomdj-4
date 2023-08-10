@@ -104,9 +104,18 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "parse tags %s", ffn);
 
+  if (filetype == AFILE_TYPE_FLAC) {
+    needduration = false;
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
+  }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
+  }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OGG) {
     needduration = false;
@@ -117,15 +126,6 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
-  if (filetype == AFILE_TYPE_FLAC) {
-    needduration = false;
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
-    atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
-  }
-//  if (tagtype == TAG_TYPE_MP4) {
-//    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
-//    atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
-//  }
 
   if (needduration) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");
@@ -169,9 +169,17 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%d del:%d", ffn, slistGetCount (updatelist), slistGetCount (dellist));
 
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    rc = atibdj4WriteFlacTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    rc = atibdj4WriteMP4Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OGG) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
@@ -181,14 +189,6 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     rc = atibdj4WriteOpusTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
-    rc = atibdj4WriteFlacTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
-  }
-//  if (tagtype == TAG_TYPE_MP4) {
-//    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
-//    rc = atibdj4WriteMP4Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
-//  }
 
   return rc;
 }
@@ -198,17 +198,21 @@ atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 {
   atisaved_t *atisaved = NULL;
 
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    atisaved = atibdj4SaveFlacTags (atidata, ffn, tagtype, filetype);
+  }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atisaved = atibdj4SaveMP3Tags (atidata, ffn, tagtype, filetype);
   }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    atisaved = atibdj4SaveMP4Tags (atidata, ffn, tagtype, filetype);
+  }
   if (filetype == AFILE_TYPE_OGG) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atisaved = atibdj4SaveOggTags (atidata, ffn, tagtype, filetype);
-  }
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
-    atisaved = atibdj4SaveFlacTags (atidata, ffn, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OPUS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
@@ -217,21 +221,49 @@ atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
   return atisaved;
 }
 
+void
+atiiFreeSavedTags (atisaved_t *atisaved, int tagtype, int filetype)
+{
+  if (atisaved == NULL) {
+    return;
+  }
+
+  if (filetype == AFILE_TYPE_FLAC) {
+    atibdj4FreeSavedFlacTags (atisaved, tagtype, filetype);
+  }
+  if (tagtype == TAG_TYPE_ID3) {
+    atibdj4FreeSavedMP3Tags (atisaved, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_MP4) {
+    atibdj4FreeSavedMP4Tags (atisaved, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OGG) {
+    atibdj4FreeSavedOggTags (atisaved, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OPUS) {
+    atibdj4FreeSavedOpusTags (atisaved, tagtype, filetype);
+  }
+}
+
 int
 atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     const char *ffn, int tagtype, int filetype)
 {
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    atibdj4RestoreFlacTags (atidata, atisaved, ffn, tagtype, filetype);
+  }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4RestoreMP3Tags (atidata, atisaved, ffn, tagtype, filetype);
   }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    atibdj4RestoreMP4Tags (atidata, atisaved, ffn, tagtype, filetype);
+  }
   if (filetype == AFILE_TYPE_OGG) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4RestoreOggTags (atidata, atisaved, ffn, tagtype, filetype);
-  }
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
-    atibdj4RestoreFlacTags (atidata, atisaved, ffn, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OPUS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
@@ -243,17 +275,21 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
 void
 atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 {
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    atibdj4CleanFlacTags (atidata, ffn, tagtype, filetype);
+  }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4CleanMP3Tags (atidata, ffn, tagtype, filetype);
   }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    atibdj4CleanMP4Tags (atidata, ffn, tagtype, filetype);
+  }
   if (filetype == AFILE_TYPE_OGG) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4CleanOggTags (atidata, ffn, tagtype, filetype);
-  }
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
-    atibdj4CleanFlacTags (atidata, ffn, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OPUS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
@@ -280,6 +316,7 @@ atibdj4LogVersion (void)
     atibdj4LogOggVersion ();
     atibdj4LogOpusVersion ();
     atibdj4LogFlacVersion ();
+    atibdj4LogMP4Version ();
     gversionlogged = true;
   }
 }

@@ -8,6 +8,13 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+. ./VERSION.txt
+
+if [[ $DEVELOPMENT != dev ]]; then
+  echo "Do not run $0 in a non-development environment"
+  exit 1
+fi
+
 . src/utils/pkgnm.sh
 
 tcount=0

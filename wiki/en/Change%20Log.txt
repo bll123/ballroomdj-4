@@ -6,6 +6,11 @@
 
 **4.3.3.3 2023-8---**
 
+* Bug Fixes:
+    * Export as MP3: Update audio tags.
+* New Features:
+    * Audio Tags: BDJ4-Internal now supports Opus audio files.
+
 -->
 
 **4.3.3.2 2023-8-8**

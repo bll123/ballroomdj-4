@@ -29,6 +29,7 @@ add_library (libatibdj4 SHARED
   atibdj4mp3.c
   atibdj4ogg.c
   atibdj4opus.c
+  atibdj4mp4.c
 )
 target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
@@ -63,15 +64,25 @@ target_link_libraries (libatimutagen PUBLIC
   m
 )
 
+add_library (libatinull SHARED atinull.c)
+target_link_libraries (libatinull PUBLIC
+  libbdjatiutil
+  libbdj4basic
+  libbdj4common
+  m
+)
+
 # if another ati library is added, be sure to update the installer.
 # the ati interface names are hard coded there.
 install (TARGETS
   libbdj4ati
   libatibdj4
   libatimutagen
+  libatinull
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (libbdj4ati)
 updateRPath (libatibdj4)
 updateRPath (libatimutagen)
+updateRPath (libatinull)

@@ -162,6 +162,7 @@ main (int argc, char *argv [])
 
     sdata = audiotagSaveTags (infn);
     audiotagRestoreTags (argv [fbidx], sdata);
+    audiotagFreeSavedTags (argv [fbidx], sdata);
     bdj4tagsCleanup ();
     return rc;
   }

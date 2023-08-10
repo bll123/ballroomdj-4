@@ -243,6 +243,28 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
 }
 
 void
+atibdj4FreeSavedFlacTags (atisaved_t *atisaved, int tagtype, int filetype)
+{
+  if (atisaved == NULL) {
+    return;
+  }
+  if (! atisaved->hasdata) {
+    return;
+  }
+  if (atisaved->tagtype != tagtype) {
+    return;
+  }
+  if (atisaved->filetype != filetype) {
+    return;
+  }
+
+  FLAC__metadata_object_delete (atisaved->vcblock);
+  atisaved->hasdata = false;
+  dataFree (atisaved->origfn);
+  mdfree (atisaved);
+}
+
+int
 atibdj4RestoreFlacTags (atidata_t *atidata,
     atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
 {
@@ -253,23 +275,23 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
   bool                    done;
 
   if (atisaved == NULL) {
-    return;
+    return -1;
   }
 
   if (! atisaved->hasdata) {
-    return;
+    return -1;
   }
 
   if (atisaved->tagtype != tagtype) {
-    return;
+    return -1;
   }
   if (atisaved->filetype != filetype) {
-    return;
+    return -1;
   }
 
   chain = FLAC__metadata_chain_new ();
   if (! FLAC__metadata_chain_read (chain, ffn)) {
-    return;
+    return -1;
   }
 
   /* find the comment block */
@@ -311,7 +333,7 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
 
     ochain = FLAC__metadata_chain_new ();
     if (! FLAC__metadata_chain_read (ochain, atisaved->origfn)) {
-      return;
+      return -1;
     }
 
     /* the iterator does not appear to be valid any longer, re-init */
@@ -356,7 +378,7 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
     }
     if (! FLAC__metadata_iterator_insert_block_after (iterator, block)) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert new comment block");
-      return;
+      return -1;
     }
   }
 
@@ -378,11 +400,7 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
     /* in this case, the entire file must be re-written */
   }
 
-  FLAC__metadata_object_delete (atisaved->vcblock);
-  atisaved->hasdata = false;
-  dataFree (atisaved->origfn);
-  mdfree (atisaved);
-  return;
+  return 0;
 }
 
 void

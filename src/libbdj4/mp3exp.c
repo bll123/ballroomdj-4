@@ -152,15 +152,17 @@ mp3ExportQueue (mp3exp_t *mp3exp)
           dur, mp3exp->fadein, mp3exp->fadeout, gap);
       if (intagtype == outtagtype && infiletype == outfiletype) {
         audiotagRestoreTags (outfn, savedtags);
+        audiotagFreeSavedTags (outfn, savedtags);
         savedtags = NULL;
-      } else {
-        taglist = songTagList (song);
-        owrite = bdjoptGetNum (OPT_G_WRITETAGS);
-        bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
-        audiotagWriteTags (outfn, NULL, taglist, AF_REWRITE_NONE, AT_KEEP_MOD_TIME);
-        bdjoptSetNum (OPT_G_WRITETAGS, owrite);
-        slistFree (taglist);
       }
+
+      /* always write the tags, they may have been updated by aaAdjust() */
+      taglist = songTagList (song);
+      owrite = bdjoptGetNum (OPT_G_WRITETAGS);
+      bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+      audiotagWriteTags (outfn, NULL, taglist, AF_REWRITE_NONE, AT_KEEP_MOD_TIME);
+      bdjoptSetNum (OPT_G_WRITETAGS, owrite);
+      slistFree (taglist);
 
       pathInfoFree (pi);
       mdfree (ffn);

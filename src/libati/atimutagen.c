@@ -441,6 +441,27 @@ atiiSaveTags (atidata_t *atidata,
   return atisaved;
 }
 
+void
+atiiFreeSavedTags (atisaved_t *atisaved, int tagtype, int filetype)
+{
+  if (atisaved == NULL) {
+    return -1;
+  }
+  if (! atisaved->hasdata) {
+    return -1;
+  }
+  if (atisaved->tagtype != tagtype) {
+    return -1;
+  }
+  if (atisaved->filetype != filetype) {
+    return -1;
+  }
+
+  atisaved->hasdata = false;
+  dataFree (atisaved->data);
+  mdfree (atisaved);
+}
+
 int
 atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     const char *ffn, int tagtype, int filetype)
@@ -496,9 +517,6 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
-  atisaved->hasdata = false;
-  dataFree (atisaved->data);
-  mdfree (atisaved);
   return 0;
 }
 

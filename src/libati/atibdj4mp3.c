@@ -290,6 +290,7 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
   }
   id3tags = id3_file_tag (id3file);
   nid3tags = id3_tag_new ();
+  mdextalloc (nid3tags);
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
@@ -312,6 +313,28 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
 }
 
 void
+atibdj4FreeSavedMP3Tags (atisaved_t *atisaved, int tagtype, int filetype)
+{
+  if (atisaved == NULL) {
+    return;
+  }
+  if (! atisaved->hasdata) {
+    return;
+  }
+  if (atisaved->tagtype != tagtype) {
+    return;
+  }
+  if (atisaved->filetype != filetype) {
+    return;
+  }
+
+  atisaved->hasdata = false;
+  mdextfree (atisaved->id3tags);
+  id3_tag_delete (atisaved->id3tags);
+  mdfree (atisaved);
+}
+
+int
 atibdj4RestoreMP3Tags (atidata_t *atidata,
     atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
 {
@@ -321,23 +344,23 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
   int               idx;
 
   if (atisaved == NULL) {
-    return;
+    return -1;
   }
 
   if (! atisaved->hasdata) {
-    return;
+    return -1;
   }
 
   if (atisaved->tagtype != tagtype) {
-    return;
+    return -1;
   }
   if (atisaved->filetype != filetype) {
-    return;
+    return -1;
   }
 
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
   if (id3file == NULL) {
-    return;
+    return -1;
   }
   id3tags = id3_file_tag (id3file);
 
@@ -360,11 +383,8 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  file update failed %s", ffn);
   }
   id3_file_close (id3file);
-  atisaved->hasdata = false;
-  id3_tag_delete (atisaved->id3tags);
-  mdfree (atisaved);
 
-  return;
+  return 0;
 }
 
 void
