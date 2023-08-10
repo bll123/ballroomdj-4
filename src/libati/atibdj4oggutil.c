@@ -83,6 +83,7 @@ atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
     numheaderpackets = 2;
   }
   if (numheaderpackets == 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unsupported %s", ffn);
     return -1;
   }
 
@@ -130,7 +131,12 @@ atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open input failed %s", ffn);
     goto cleanup_label;
   }
-  snprintf (outfn, sizeof (outfn), "%s.ogg.tmp", ffn);
+  if (filetype == AFILE_TYPE_OGG) {
+    snprintf (outfn, sizeof (outfn), "%s.ogg.tmp", ffn);
+  }
+  if (filetype == AFILE_TYPE_OGG) {
+    snprintf (outfn, sizeof (outfn), "%s.opus.tmp", ffn);
+  }
   if ((ofh = fileopOpen (outfn, "wb")) == NULL) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open output failed %s", ffn);
     goto cleanup_label;

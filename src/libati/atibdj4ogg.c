@@ -157,7 +157,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
   ov_clear (&ovf);
 
-  rc = atibdj4WriteOggFile (ffn, &newvc, AFILE_TYPE_OGG);
+  rc = atibdj4WriteOggFile (ffn, &newvc, filetype);
 
   vorbis_comment_clear (&newvc);
 
@@ -247,7 +247,7 @@ atibdj4RestoreOggTags (atidata_t *atidata,
     return -1;
   }
 
-  rc = atibdj4WriteOggFile (ffn, atisaved->vc, AFILE_TYPE_OGG);
+  rc = atibdj4WriteOggFile (ffn, atisaved->vc, filetype);
 
   return 0;
 }
@@ -260,7 +260,7 @@ atibdj4CleanOggTags (atidata_t *atidata,
   struct vorbis_comment newvc;
 
   vorbis_comment_init (&newvc);
-  rc = atibdj4WriteOggFile (ffn, &newvc, AFILE_TYPE_OGG);
+  rc = atibdj4WriteOggFile (ffn, &newvc, filetype);
   vorbis_comment_clear (&newvc);
 
   return;

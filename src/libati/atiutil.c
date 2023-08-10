@@ -79,6 +79,10 @@ atiProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata,
   val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
   /* vorbis comments are not case sensitive */
   stringAsciiToUpper (ttag);
+  if (strcmp (ttag, "METADATA_BLOCK_PICTURE") == 0) {
+    /* this is a lot of data to carry around, and it's not needed */
+    return;
+  }
   atiProcessVorbisComment (tagLookup, tagdata, tagtype, ttag, val);
 }
 

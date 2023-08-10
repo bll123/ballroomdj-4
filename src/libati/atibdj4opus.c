@@ -65,10 +65,6 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = tags->user_comments [i];
-    if (opus_tagncompare ("METADATA_BLOCK_PICTURE", 22, kw) == 0) {
-      continue;
-    }
-
     atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   op_free (of);
@@ -110,10 +106,6 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     char        ttag [300];     /* vorbis tag name */
 
     kw = tags->user_comments [i];
-    if (opus_tagncompare ("METADATA_BLOCK_PICTURE", 22, kw) == 0) {
-      continue;
-    }
-
     val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
 
     if (slistGetStr (dellist, ttag) != NULL) {
@@ -162,7 +154,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
 
   op_free (of);
 
-  rc = atibdj4WriteOggFile (ffn, &newtags, AFILE_TYPE_OPUS);
+  rc = atibdj4WriteOggFile (ffn, &newtags, filetype);
 
   opus_tags_clear (&newtags);
 
@@ -191,7 +183,7 @@ atibdj4SaveOpusTags (atidata_t *atidata,
   }
 
   atisaved = mdmalloc (sizeof (atisaved_t));
-  atisaved->hasdata = false;
+  atisaved->hasdata = true;
   atisaved->tagtype = tagtype;
   atisaved->filetype = filetype;
   atisaved->tags = mdmalloc (sizeof (OpusTags));
@@ -231,21 +223,23 @@ atibdj4RestoreOpusTags (atidata_t *atidata,
   int     rc = -1;
 
   if (atisaved == NULL) {
+fprintf (stderr, "no atisaved\n");
     return -1;
   }
-
   if (! atisaved->hasdata) {
+fprintf (stderr, "no atisaved data\n");
     return -1;
   }
-
   if (atisaved->tagtype != tagtype) {
+fprintf (stderr, "tagtype mismatch %d %d\n", atisaved->tagtype, tagtype);
     return -1;
   }
   if (atisaved->filetype != filetype) {
+fprintf (stderr, "filetype mismatch %d %d\n", atisaved->filetype, filetype);
     return -1;
   }
 
-  rc = atibdj4WriteOggFile (ffn, atisaved->tags, AFILE_TYPE_OPUS);
+  rc = atibdj4WriteOggFile (ffn, atisaved->tags, filetype);
 
   return -1;
 }
@@ -258,7 +252,7 @@ atibdj4CleanOpusTags (atidata_t *atidata,
   int         rc = -1;
 
   opus_tags_init (&tags);
-  rc = atibdj4WriteOggFile (ffn, &tags, AFILE_TYPE_OPUS);
+  rc = atibdj4WriteOggFile (ffn, &tags, filetype);
   opus_tags_clear (&tags);
   return;
 }
