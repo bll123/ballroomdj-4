@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Export as MP3: Update audio tags.
+    * Export as MP3: Remember last used folder.
+    * External Request: Remember last used folder.
 * New Features:
     * Audio Tags: BDJ4-Internal now supports Opus audio files.
 

@@ -16,12 +16,14 @@ enum {
 
 typedef struct {
   const char  *title;
+  const char  *defdir;
   uientry_t   *entry;
   uiwcont_t   *window;
 } uisfcb_t;
 
 typedef struct uiselectfile uiselectfile_t;
 
+void selectInitCallback (uisfcb_t *uisfcb);
 void selectFileDialog (int type, uiwcont_t *window, nlist_t *options, callback_t *cb);
 void selectFileFree (uiselectfile_t *selectfile);
 bool selectAudioFileCallback (void *udata);

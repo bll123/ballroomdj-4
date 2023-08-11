@@ -45,6 +45,15 @@ static bool selectFileResponseHandler (void *udata, long responseid);
 static bool selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype);
 
 void
+selectInitCallback (uisfcb_t *uisfcb)
+{
+  uisfcb->title = NULL;
+  uisfcb->defdir = NULL;
+  uisfcb->entry = NULL;
+  uisfcb->window = NULL;
+}
+
+void
 selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     callback_t *cb)
 {
@@ -285,14 +294,20 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
   char        *fn = NULL;
   uiselect_t  *selectdata;
   char        tbuff [100];
+  const char  *defdir = NULL;
 
   if (uisfcb->title == NULL) {
     /* CONTEXT: select audio file: dialog title for selecting audio files */
     snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
   }
+
+  defdir = uisfcb->defdir;
+  if (defdir == NULL || ! *defdir) {
+    defdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  }
   selectdata = uiDialogCreateSelect (uisfcb->window,
       tbuff,
-      bdjoptGetStr (OPT_M_DIR_MUSIC),
+      defdir,
       uiEntryGetValue (uisfcb->entry),
       disp, mimetype);
   fn = uiSelectFileDialog (selectdata);
