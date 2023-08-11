@@ -586,12 +586,12 @@ sysvarsInit (const char *argv0)
     char  *tdata;
 
     strlcpy (sysvars [SV_OSDISP], "macOS", SV_MAX_SZ);
-    data = osRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
+    data = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersion", NULL);
     stringTrim (data);
     strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
     dataFree (data);
 
-    tdata = osRunProgram (sysvars [SV_TEMP_A], "-productVersionExtra", NULL);
+    tdata = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersionExtra", NULL);
     if (tdata != NULL && *tdata == '(') {
       size_t    len;
 
@@ -602,6 +602,12 @@ sysvarsInit (const char *argv0)
       strlcat (sysvars [SV_OSVERS], tdata + 1, SV_MAX_SZ);
     }
     dataFree (tdata);
+
+    strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
+    data = osRunProgram (sysvars [SV_TEMP_A], "-BuildVersion", NULL);
+    stringTrim (data);
+    strlcpy (sysvars [SV_OSBUILD], data, SV_MAX_SZ);
+    dataFree (data);
 
     data = sysvars [SV_OSVERS];
     if (data != NULL) {
