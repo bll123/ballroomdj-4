@@ -274,7 +274,7 @@ atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
   }
   if (filetype == AFILE_TYPE_OPUS) {
     oggpack_buffer  b;
-    const char      *vendor = "Lavc58.91.100";
+    const char      *vendor = newvc->vendor;
 
     oggpack_writeinit (&b);
     atibdj4_oggpack_string (&b, "OpusTags", 8);
