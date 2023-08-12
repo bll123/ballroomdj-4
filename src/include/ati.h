@@ -14,19 +14,6 @@ extern "C" {
 
 #define LIBATI_PFX  "libati"
 
-/* these are file types that have audio tag support */
-/* other audio file types may still be playable by vlc */
-enum {
-  AFILE_TYPE_UNKNOWN,
-  AFILE_TYPE_FLAC,
-  AFILE_TYPE_MP3,
-  AFILE_TYPE_MP4,
-  AFILE_TYPE_OGG,
-  AFILE_TYPE_OPUS,
-  AFILE_TYPE_WMA,
-  AFILE_TYPE_MAX,
-};
-
 enum {
   ATI_READ,
   ATI_READ_WRITE,
@@ -60,6 +47,7 @@ void    atiFreeSavedTags (ati_t *ati, atisaved_t *atisaved, int tagtype, int fil
 int     atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
 void    atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 
+int     atiCheckCodec (const char *ffn, int filetype);
 slist_t *atiInterfaceList (void);
 void    atiGetSupportedTypes (const char *atipkg, int supported []);
 
@@ -80,10 +68,6 @@ void    atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int fil
 /* utility routines */
 const char *atiParsePair (slist_t *tagdata, const char *tagname, const char *value, char *pbuff, size_t sz);
 int atiReplaceFile (const char *ffn, const char *outfn);
-void atiProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *kw);
-void atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *tag, const char *val);
-const char * atiParseVorbisComment (const char *kw, char *buff, size_t sz);
-slist_t *atiSplitVorbisComment (int tagkey, const char *tagname, const char *val);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

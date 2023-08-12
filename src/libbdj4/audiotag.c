@@ -45,7 +45,8 @@ filetypelookup_t filetypelookup [] = {
   { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".m4r",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".mp3",   TAG_TYPE_ID3,     AFILE_TYPE_MP3, },
-  { ".ogg",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
+  { ".ogg",   TAG_TYPE_VORBIS,  AFILE_TYPE_VORBIS, },
+  { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
   { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_WMA, }
 };
@@ -171,7 +172,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   }
 
   if (filetype != AFILE_TYPE_OPUS &&
-      filetype != AFILE_TYPE_OGG &&
+      filetype != AFILE_TYPE_VORBIS &&
       filetype != AFILE_TYPE_FLAC &&
       filetype != AFILE_TYPE_MP3 &&
       filetype != AFILE_TYPE_MP4) {
@@ -386,6 +387,13 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
   }
 
   pathInfoFree (pi);
+
+  /* for .ogx files, check what codec is actually stored */
+  /* if a file has a .ogg extension, the assumption is that it is */
+  /*    ogg/vorbis, and .opus extensions are assumed to be ogg/opus */
+  if (*filetype == AFILE_TYPE_OGG) {
+    *filetype = atiCheckCodec (ffn, *filetype);
+  }
 }
 
 /* internal routines */

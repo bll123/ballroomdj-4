@@ -20,6 +20,7 @@
 
 #include "ati.h"
 #include "atibdj4.h"
+#include "atioggutil.h"
 #include "audiofile.h"
 #include "fileop.h"
 #include "log.h"
@@ -66,7 +67,7 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = vc->user_comments [i];
-    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
+    atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   ov_clear (&ovf);
   return;
@@ -109,7 +110,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
     char        ttag [300];     /* vorbis tag name */
 
     kw = vc->user_comments [i];
-    val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
+    val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
 
     if (slistGetStr (dellist, ttag) != NULL) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
@@ -157,7 +158,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
   ov_clear (&ovf);
 
-  rc = atibdj4WriteOggFile (ffn, &newvc, filetype);
+  rc = atioggWriteOggFile (ffn, &newvc, filetype);
 
   vorbis_comment_clear (&newvc);
 
@@ -247,7 +248,7 @@ atibdj4RestoreOggTags (atidata_t *atidata,
     return -1;
   }
 
-  rc = atibdj4WriteOggFile (ffn, atisaved->vc, filetype);
+  rc = atioggWriteOggFile (ffn, atisaved->vc, filetype);
 
   return 0;
 }
@@ -260,7 +261,7 @@ atibdj4CleanOggTags (atidata_t *atidata,
   struct vorbis_comment newvc;
 
   vorbis_comment_init (&newvc);
-  rc = atibdj4WriteOggFile (ffn, &newvc, filetype);
+  rc = atioggWriteOggFile (ffn, &newvc, filetype);
   vorbis_comment_clear (&newvc);
 
   return;
@@ -280,7 +281,7 @@ atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atiSplitVorbisComment (tagkey, tagname, val);
+  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     vorbis_comment_add_tag (newvc, tagname, tval);

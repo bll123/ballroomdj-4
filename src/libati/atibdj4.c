@@ -68,7 +68,7 @@ atiiSupportedTypes (int supported [])
   supported [AFILE_TYPE_FLAC] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP3] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP4] = ATI_NONE;
-  supported [AFILE_TYPE_OGG] = ATI_READ_WRITE;
+  supported [AFILE_TYPE_VORBIS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_OPUS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_WMA] = ATI_NONE;
 }
@@ -118,7 +118,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4ParseOggTags (atidata, tagdata, ffn, tagtype, rewrite);
@@ -183,7 +183,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     rc = atibdj4WriteMP4Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     rc = atibdj4WriteOggTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
@@ -212,7 +212,7 @@ atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atisaved = atibdj4SaveMP4Tags (atidata, ffn, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atisaved = atibdj4SaveOggTags (atidata, ffn, tagtype, filetype);
   }
@@ -239,7 +239,7 @@ atiiFreeSavedTags (atisaved_t *atisaved, int tagtype, int filetype)
   if (filetype == AFILE_TYPE_MP4) {
     atibdj4FreeSavedMP4Tags (atisaved, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     atibdj4FreeSavedOggTags (atisaved, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OPUS) {
@@ -263,7 +263,7 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4RestoreMP4Tags (atidata, atisaved, ffn, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4RestoreOggTags (atidata, atisaved, ffn, tagtype, filetype);
   }
@@ -289,7 +289,7 @@ atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4CleanMP4Tags (atidata, ffn, tagtype, filetype);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4CleanOggTags (atidata, ffn, tagtype, filetype);
   }

@@ -65,7 +65,7 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = tags->user_comments [i];
-    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
+    atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   op_free (of);
   return;
@@ -106,7 +106,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     char        ttag [300];     /* vorbis tag name */
 
     kw = tags->user_comments [i];
-    val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
+    val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
 
     if (slistGetStr (dellist, ttag) != NULL) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
@@ -154,7 +154,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
 
   op_free (of);
 
-  rc = atibdj4WriteOggFile (ffn, &newtags, filetype);
+  rc = atioggWriteOggFile (ffn, &newtags, filetype);
 
   opus_tags_clear (&newtags);
 
@@ -223,23 +223,19 @@ atibdj4RestoreOpusTags (atidata_t *atidata,
   int     rc = -1;
 
   if (atisaved == NULL) {
-fprintf (stderr, "no atisaved\n");
     return -1;
   }
   if (! atisaved->hasdata) {
-fprintf (stderr, "no atisaved data\n");
     return -1;
   }
   if (atisaved->tagtype != tagtype) {
-fprintf (stderr, "tagtype mismatch %d %d\n", atisaved->tagtype, tagtype);
     return -1;
   }
   if (atisaved->filetype != filetype) {
-fprintf (stderr, "filetype mismatch %d %d\n", atisaved->filetype, filetype);
     return -1;
   }
 
-  rc = atibdj4WriteOggFile (ffn, atisaved->tags, filetype);
+  rc = atioggWriteOggFile (ffn, atisaved->tags, filetype);
 
   return -1;
 }
@@ -252,7 +248,7 @@ atibdj4CleanOpusTags (atidata_t *atidata,
   int         rc = -1;
 
   opus_tags_init (&tags);
-  rc = atibdj4WriteOggFile (ffn, &tags, filetype);
+  rc = atioggWriteOggFile (ffn, &tags, filetype);
   opus_tags_clear (&tags);
   return;
 }
@@ -273,7 +269,7 @@ atibdj4OpusAddVorbisComment (OpusTags *newtags, int tagkey,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atiSplitVorbisComment (tagkey, tagname, val);
+  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     opus_tags_add (newtags, tagname, tval);

@@ -5,20 +5,44 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libbdj4ati SHARED
-  ati.c
+add_library (libbdj4atiutil SHARED
+  atiutil.c
+  atioggutil.c
 )
-target_link_libraries (libbdj4ati PUBLIC
+target_include_directories (libbdj4atiutil
+  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+)
+target_link_libraries (libbdj4atiutil PUBLIC
+  # ogg
+  ${LIBVORBISFILE_LDFLAGS}
+  ${LIBVORBIS_LDFLAGS}
+  ${LIBOGG_LDFLAGS}
+  # opus
+  ${LIBOPUSFILE_LDFLAGS}
+  ${LIBOPUS_LDFLAGS}
   libdylib
   libdyintfc
   libbdj4basic libbdj4common
   m
 )
 
-add_library (libbdjatiutil STATIC
-  atiutil.c
+add_library (libbdj4ati SHARED
+  ati.c
 )
-target_link_libraries (libbdjatiutil PUBLIC
+target_include_directories (libbdj4ati
+  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+)
+target_link_libraries (libbdj4ati PUBLIC
+  # ogg
+  ${LIBVORBISFILE_LDFLAGS}
+  ${LIBVORBIS_LDFLAGS}
+  ${LIBOGG_LDFLAGS}
+  # opus
+  ${LIBOPUSFILE_LDFLAGS}
+  ${LIBOPUS_LDFLAGS}
+  libbdj4atiutil
+  libdylib
+  libdyintfc
   libbdj4basic libbdj4common
   m
 )
@@ -27,7 +51,6 @@ add_library (libatibdj4 SHARED
   atibdj4.c
   atibdj4flac.c
   atibdj4mp3.c
-  atibdj4oggutil.c
   atibdj4ogg.c
   atibdj4opus.c
   atibdj4mp4.c
@@ -37,11 +60,8 @@ target_include_directories (libatibdj4
 )
 target_link_libraries (libatibdj4 PUBLIC
   # put this first, otherwise the wrong libid3tag library is picked up
-  # libidtag
+  # libid3tag
   ${LIBID3TAG_LDFLAGS}
-  libbdjatiutil
-  libbdj4basic
-  libbdj4common
   # ffmpeg
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBAVUTIL_LDFLAGS}
@@ -54,12 +74,15 @@ target_link_libraries (libatibdj4 PUBLIC
   ${LIBOPUS_LDFLAGS}
   # flac
   ${LIBFLAC_LDFLAGS}
+  libbdj4atiutil
+  libbdj4basic
+  libbdj4common
   m
 )
 
 add_library (libatimutagen SHARED atimutagen.c)
 target_link_libraries (libatimutagen PUBLIC
-  libbdjatiutil
+  libbdj4atiutil
   libbdj4basic
   libbdj4common
   m
@@ -67,7 +90,7 @@ target_link_libraries (libatimutagen PUBLIC
 
 add_library (libatinull SHARED atinull.c)
 target_link_libraries (libatinull PUBLIC
-  libbdjatiutil
+  libbdj4atiutil
   libbdj4basic
   libbdj4common
   m
@@ -77,6 +100,7 @@ target_link_libraries (libatinull PUBLIC
 # the ati interface names are hard coded there.
 install (TARGETS
   libbdj4ati
+  libbdj4atiutil
   libatibdj4
   libatimutagen
   libatinull
@@ -84,6 +108,7 @@ install (TARGETS
 )
 
 updateRPath (libbdj4ati)
+updateRPath (libbdj4atiutil)
 updateRPath (libatibdj4)
 updateRPath (libatimutagen)
 updateRPath (libatinull)

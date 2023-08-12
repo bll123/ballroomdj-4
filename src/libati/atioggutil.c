@@ -20,7 +20,7 @@
 
 #include <opus/opusfile.h>
 
-#include "atibdj4.h"
+#include "atioggutil.h"
 #include "audiofile.h"
 #include "fileop.h"
 #include "log.h"
@@ -44,6 +44,179 @@ enum {
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
 static void atibdj4_oggpack_string (oggpack_buffer *b, const char *s, size_t len);
 
+void
+atioggProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata,
+    int tagtype, const char *kw)
+{
+  const char  *val;
+  char        ttag [300];
+
+  val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
+  /* vorbis comments are not case sensitive */
+  stringAsciiToUpper (ttag);
+  if (strcmp (ttag, "METADATA_BLOCK_PICTURE") == 0) {
+    /* this is a lot of data to carry around, and it's not needed */
+    return;
+  }
+  atioggProcessVorbisComment (tagLookup, tagdata, tagtype, ttag, val);
+}
+
+void
+atioggProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
+    int tagtype, const char *tag, const char *val)
+{
+  const char  *tagname;
+  bool        exists = false;
+  char        *tmp;
+
+  /* vorbis comments are not case sensitive */
+  tagname = tagLookup (tagtype, tag);
+  if (tagname == NULL) {
+    tagname = tag;
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s=%s", tagname, tag, val);
+  if (slistGetStr (tagdata, tagname) != NULL) {
+    const char  *oval;
+    size_t      sz;
+
+    oval = slistGetStr (tagdata, tagname);
+    sz = strlen (oval) + strlen (val) + 3;
+    tmp = mdmalloc (sz);
+    snprintf (tmp, sz, "%s; %s\n", oval, val);
+    val = tmp;
+    exists = true;
+  }
+  slistSetStr (tagdata, tagname, val);
+  if (exists) {
+    mdfree (tmp);
+  }
+}
+
+const char *
+atioggParseVorbisComment (const char *kw, char *buff, size_t sz)
+{
+  const char  *val;
+  size_t      len;
+
+  val = strstr (kw, "=");
+  if (val == NULL) {
+    return NULL;
+  }
+  len = val - kw;
+  if (len >= sz) {
+    len = sz - 1;
+  }
+  strlcpy (buff, kw, len + 1);
+  buff [len] = '\0';
+  ++val;
+
+  return val;
+}
+
+/* the caller must free the return value */
+slist_t *
+atioggSplitVorbisComment (int tagkey, const char *tagname, const char *val)
+{
+  slist_t     *vallist = NULL;
+  char        *tokstr;
+  char        *p;
+  bool        split = false;
+
+  /* known tags that should be split: */
+  /* genre, artist, album-artist, composer */
+
+  vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
+  split = tagkey == TAG_ALBUMARTIST ||
+      tagkey == TAG_ARTIST ||
+      tagkey == TAG_COMPOSER ||
+      tagkey == TAG_CONDUCTOR ||
+      tagkey == TAG_GENRE;
+//  split = tagdefs [tagkey].vorbisMulti;
+
+  if (split && strstr (val, ";") != NULL) {
+    char      *tval;
+
+    tval = mdstrdup (val);
+    p = strtok_r (tval, ";", &tokstr);
+    while (p != NULL) {
+      while (*p == ' ') {
+        ++p;
+      }
+      slistSetNum (vallist, p, 0);
+      p = strtok_r (NULL, ";", &tokstr);
+    }
+  } else {
+    slistSetNum (vallist, val, 0);
+  }
+
+  return vallist;
+}
+
+int
+atioggCheckCodec (const char *ffn, int filetype)
+{
+  ogg_sync_state    oy_in;
+  ogg_page          og_in;
+  ogg_stream_state  os_in;
+  ogg_packet        op_in;
+  FILE              *ifh;
+  int               rc = 0;
+  int               orc;
+
+  if ((ifh = fileopOpen (ffn, "rb")) == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open input failed %s", ffn);
+    return filetype;
+  }
+
+  filetype = AFILE_TYPE_UNKNOWN;
+
+  (void) ogg_sync_init (&oy_in);
+  while ((orc = ogg_sync_pageout (&oy_in, &og_in)) != 1) {
+    char    *buf;
+    size_t  s = 0;
+
+    if ((buf = ogg_sync_buffer (&oy_in, BUFSIZ)) == NULL) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "sync failed");
+      rc = -1;
+    }
+    if (rc == 0 && (s = fread (buf, sizeof (char), BUFSIZ, ifh)) == 0) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "fread failed");
+      rc = -1;
+    }
+    if (rc == 0 && ogg_sync_wrote (&oy_in, s) == -1) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "sync-wrote failed");
+      rc = -1;
+    }
+  }
+
+  if (rc == 0 && ogg_stream_init (&os_in, ogg_page_serialno (&og_in)) == -1) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "stream-init failed");
+    rc = -1;
+  }
+
+  if (rc == 0 && ogg_stream_pagein (&os_in, &og_in) == -1) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "page-in failed");
+    rc = -1;
+  }
+
+  if (rc == 0 && ogg_stream_packetout (&os_in, &op_in) > 0) {
+    if (vorbis_synthesis_idheader (&op_in) == 1) {
+      filetype = AFILE_TYPE_VORBIS;
+    }
+    if (opus_head_parse (NULL, op_in.packet, op_in.bytes) == 0) {
+      filetype = AFILE_TYPE_OPUS;
+    }
+  }
+
+  ogg_stream_clear (&os_in);
+  ogg_sync_clear (&oy_in);
+
+  mdextfclose (ifh);
+  fclose (ifh);
+
+  return filetype;
+}
+
 /* ogg file writing */
 
 /* partially from tagutil: BSD 2-Clause License */
@@ -51,7 +224,7 @@ static void atibdj4_oggpack_string (oggpack_buffer *b, const char *s, size_t len
 /* 'struct vorbis_comment' and 'OpusTags' are identical per the opus documentation */
 /* modified to handle opus files based on code in easytag */
 int
-atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
+atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
 {
   struct vorbis_comment   *newvc = tnewvc;
   FILE              *ifh  = NULL;
@@ -76,7 +249,7 @@ atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
   ogg_int64_t       granulepos;
   unsigned long     numheaderpackets = 0;
 
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     numheaderpackets = 3;
   }
   if (filetype == AFILE_TYPE_OPUS) {
@@ -94,7 +267,7 @@ atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
    */
 
   state = VC_BUILD_PACKET;
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     if (vorbis_commentheader_out (newvc, &my_vc_packet) != 0) {
       goto cleanup_label;
     }
@@ -131,10 +304,10 @@ atibdj4WriteOggFile (const char *ffn, void *tnewvc, int filetype)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open input failed %s", ffn);
     goto cleanup_label;
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     snprintf (outfn, sizeof (outfn), "%s.ogg.tmp", ffn);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     snprintf (outfn, sizeof (outfn), "%s.opus.tmp", ffn);
   }
   if ((ofh = fileopOpen (outfn, "wb")) == NULL) {
@@ -218,7 +391,7 @@ bos_label:
       }
 
       if (npacket_in < numheaderpackets) {
-        if (filetype == AFILE_TYPE_OGG) {
+        if (filetype == AFILE_TYPE_VORBIS) {
           if (vorbis_synthesis_headerin (&vi_in, &vc_in, &op_in) != 0) {
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "header-in failed");
             goto cleanup_label;
@@ -262,7 +435,7 @@ bos_label:
          *
          * XXX: check if this is not a vorbis stream ?
          */
-        if (filetype == AFILE_TYPE_OGG) {
+        if (filetype == AFILE_TYPE_VORBIS) {
           blocksz = vorbis_packet_blocksize (&vi_in, &op_in);
           granulepos += (lastblocksz == 0 ? 0 : (blocksz + lastblocksz) / 4);
           lastblocksz = blocksz;

@@ -13,6 +13,7 @@
 #include <errno.h>
 
 #include "ati.h"
+#include "atioggutil.h"
 #include "audiofile.h"
 #include "bdjregex.h"
 #include "bdjstring.h"
@@ -342,7 +343,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
         /* p is pointing to the tag value */
 
         if (p != NULL && *p != '\0') {
-          atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, tagname, p);
+          atioggProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, tagname, p);
         }
       } /* have a tag name */
     } /* tag processing */
@@ -835,7 +836,7 @@ atimutagenWritePythonHeader (atidata_t *atidata, const char *ffn,
     fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
     fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
   }
-  if (filetype == AFILE_TYPE_OGG) {
+  if (filetype == AFILE_TYPE_VORBIS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
     fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
     fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);

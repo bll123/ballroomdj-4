@@ -16,6 +16,7 @@
 
 #include "ati.h"
 #include "atibdj4.h"
+#include "atioggutil.h"
 #include "audiofile.h"
 #include "log.h"
 #include "mdebug.h"
@@ -83,7 +84,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
           FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
           entry = &block->data.vorbis_comment.comments [i];
-          atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype,
+          atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype,
               (const char *) entry->entry);
         }
         break;
@@ -468,7 +469,7 @@ atibdj4FlacAddVorbisComment (FLAC__StreamMetadata *block,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atiSplitVorbisComment (tagkey, tagname, val);
+  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     if (! FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair (

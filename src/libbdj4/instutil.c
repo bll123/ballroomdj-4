@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "ati.h"
+#include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjstring.h"

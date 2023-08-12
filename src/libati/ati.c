@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "ati.h"
+#include "atioggutil.h"
 #include "audiofile.h"
 #include "bdj4.h"
 #include "dyintfc.h"
@@ -197,6 +198,17 @@ atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
   if (ati != NULL && ati->atiiCleanTags != NULL) {
     ati->atiiCleanTags (ati->atidata, ffn, tagtype, filetype);
   }
+}
+
+int
+atiCheckCodec (const char *ffn, int filetype)
+{
+  if (filetype == AFILE_TYPE_OGG ||
+      filetype == AFILE_TYPE_VORBIS ||
+      filetype == AFILE_TYPE_OPUS) {
+    filetype = atioggCheckCodec (ffn, filetype);
+  }
+  return filetype;
 }
 
 slist_t *
