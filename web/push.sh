@@ -32,6 +32,11 @@ case $systype in
     ;;
 esac
 
+isprimary=F
+if [[ -f devel/primary.txt ]]; then
+  isprimary=T
+fi
+
 . ./VERSION.txt
 cvers=$(pkgcurrvers)
 pnm=$(pkginstnm)
@@ -58,7 +63,7 @@ if [[ $platform != windows ]]; then
   export SSHPASS
 fi
 
-if [[ $tag == linux ]]; then
+if [[ $tag == linux && $isprimary == T ]]; then
   fn=README.txt
   sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
   sshpass -e rsync -v -e ssh ${fn}.n \
