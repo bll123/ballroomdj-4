@@ -112,11 +112,17 @@ function setorgregex {
 }
 
 ATIBDJ4=F
+ATIMUTAGEN=F
 FIRSTONLY=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
       ATIBDJ4=T
+      ATIMUTAGEN=F
+      ;;
+    --atimutagen)
+      ATIBDJ4=F
+      ATIMUTAGEN=T
       ;;
     --firstonly)
       FIRSTONLY=T
