@@ -171,6 +171,24 @@ TMSONGEND=test-music/037-all-tags-mp3-a.mp3
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
+MUTAGEN=scripts/mutagen-inspect
+for fn in /usr/bin/mutagen-inspect \
+    /opt/local/bin/mutagen-inspect-3.11; do
+  if [[ -f $fn ]]; then
+    MUTAGEN=$fn
+    break
+  fi
+done
+# msys2: /usr/bin/python3 does not work to execute scripts/mutagen-inspect
+# probably depends on which python3 was used to install mutagen.
+PY3=python3
+for fn in /opt/local/bin/python3 /mingw64/bin/python3 /usr/bin/python3; do
+  if [[ -f $fn ]]; then
+    PY3=$fn
+    break
+  fi
+done
+
 echo "## make test setup"
 ATIFLAG=""
 if [[ $ATIBDJ4 == T ]]; then
@@ -309,16 +327,20 @@ if [[ $TESTON == T ]]; then
     fi
   fi
 
-  # check one of the files with all tags
-  val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
-  case ${val} in
-    TXXX=SONGEND=0:29.0)
-      ;;
-    *)
-      msg+="audio tags not written"
-      rc=1
-      ;;
-  esac
+  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+    # check one of the files with all tags
+    val=""
+    val=$(${PY3} ${MUTAGEN} "${TMSONGEND}" | grep SONGEND)
+    case ${val} in
+      TXXX=SONGEND=0:29.0)
+        ;;
+      *)
+        msg+="audio tags not written"
+        rc=1
+        ;;
+    esac
+    updateCounts $rc
+  fi
   dispres $tname $rc $crc
 fi
 
@@ -369,16 +391,20 @@ if [[ $TESTON == T ]]; then
     fi
   fi
 
-  # check one of the files with all tags
-  val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
-  case ${val} in
-    TXXX=SONGEND=28000)
-      ;;
-    *)
-      msg+="audio tags not written"
-      rc=1
-      ;;
-  esac
+  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+    # check one of the files with all tags
+    val=""
+    val=$(${PY3} ${MUTAGEN} "${TMSONGEND}" | grep SONGEND)
+    case ${val} in
+      TXXX=SONGEND=28000)
+        ;;
+      *)
+        msg+="audio tags not written"
+        rc=1
+        ;;
+    esac
+    updateCounts $rc
+  fi
   dispres $tname $rc $crc
 fi
 

@@ -19,13 +19,13 @@ $HOME/Library/Application&nbsp;Support/BDJ4 folder.
 
 ##### Install the Requisite Software
 
-If a pre-install script before version 12 was run, you must re-run
+If a pre-install script before version 14 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
 update.
 
-Download the macos-pre-install-macports-v13.sh script from sourceforge.
+Download the macos-pre-install-macports-v14.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -34,7 +34,7 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
-    bash macos-pre-install-macports-v13.sh
+    bash macos-pre-install-macports-v14.sh
 
 This script performs the following actions:
 

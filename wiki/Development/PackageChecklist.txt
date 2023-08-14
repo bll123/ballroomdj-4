@@ -3,7 +3,7 @@
 
 * on Linux:
     * update VERSION.txt (check version)
-        * clear DEVELOPMENT tag
+        * leave DEVELOPMENT tag on
     * update change log
     * make sure all debugging is removed
     * make distclean
@@ -13,10 +13,7 @@
     * utils/dbtest.sh --atibdj4
     * utils/insttest.sh
     * make testsuite
-    * pkg/mkpkg.sh
-<br>Recall that any time the mkpkg.sh script is run on Linux, the source
-must be re-synced to the other platforms and mkpkg.sh must be run again
-on the other platforms.
+    * pkg/prepkg.sh
     * sync source with other platforms
 * for each macos, windows
     * make distclean
@@ -28,6 +25,15 @@ on the other platforms.
     * utils/dbtest.sh --atibdj4
     * utils/insttest.sh
     * make testsuite
+
+* on Linux
+    * update VERSION.txt (check version)
+        * turn DEVELOPMENT tag off
+    * pkg/mkpkg.sh
+<br>Recall that any time the mkpkg.sh script is run on Linux, the source
+must be re-synced to the other platforms and mkpkg.sh must be run again
+on the other platforms.
+    * sync source with other platforms
 * for each macos, windows
     * pkg/mkpkg.sh
 * for each linux, macos, windows

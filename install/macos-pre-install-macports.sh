@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=13
+ver=14
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -183,7 +183,7 @@ sudo port -N install \
     librsvg \
     glib2 +quartz \
     gtk3 +quartz \
-    adwaita-icon-theme
+    adwaita-icon-theme \
     libogg \
     libopus \
     opusfile \
@@ -195,8 +195,6 @@ sudo port -N uninstall \
 sudo -v
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
-sudo port select --set pip pip${pyver}
-sudo port select --set pip3 pip${pyver}
 
 echo "-- Cleaning up old MacPorts files"
 for pyver in $oldpyverlist; do
