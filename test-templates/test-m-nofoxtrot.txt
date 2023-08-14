@@ -1,6 +1,6 @@
 # test-m-nofoxtrot.txt
-# 2023-7-3
-# version 2
+# 2023-8-14
+# version 3
 #
 # no foxtrot
 #
@@ -14,7 +14,7 @@
 version
 ..1
 count
-..128
+..130
 
 # standard dances
 
@@ -4898,3 +4898,77 @@ TITLE
 ..ann-tango
 DEST
 ..Announce/tango
+
+
+# ogg/opus as .ogx
+
+KEY
+..134
+SOURCE
+..waltz-opus.ogx
+DURATION
+..30630
+BPM
+..84
+TAGS
+..tag6 tag7 ogx opus bpm
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+TITLE
+..%03d-waltz-opus-ogx
+DEST
+..%03d-waltz-opus-ogx
+
+KEY
+..134
+SOURCE
+..waltz-ogg.ogx
+DURATION
+..30630
+BPM
+..84
+TAGS
+..tag6 tag7 ogx ogg bpm
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+TITLE
+..%03d-waltz-ogg-ogx
+DEST
+..%03d-waltz-ogg-ogx
+

@@ -233,7 +233,7 @@ int
 atibdj4RestoreOggTags (atidata_t *atidata,
     atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
 {
-  int                   rc = -1;
+  int   rc = -1;
 
   if (atisaved == NULL) {
     return -1;
@@ -250,18 +250,17 @@ atibdj4RestoreOggTags (atidata_t *atidata,
 
   rc = atioggWriteOggFile (ffn, atisaved->vc, filetype);
 
-  return 0;
+  return rc;
 }
 
 void
 atibdj4CleanOggTags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
-  int                   rc = -1;
   struct vorbis_comment newvc;
 
   vorbis_comment_init (&newvc);
-  rc = atioggWriteOggFile (ffn, &newvc, filetype);
+  atioggWriteOggFile (ffn, &newvc, filetype);
   vorbis_comment_clear (&newvc);
 
   return;

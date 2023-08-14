@@ -4,9 +4,12 @@
 
 <!--
 
-**4.3.3.3 2023-8---**
+**4.3.3.4 2023-8---**
+
+**4.3.3.3 2023-8-14**
 
 * Bug Fixes:
+    * Audio Tags: Support .ogx extension.
     * Export as MP3: Update audio tags.
     * Export as MP3: Remember last used folder.
     * External Request: Remember last used folder.

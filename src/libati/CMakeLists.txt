@@ -20,8 +20,6 @@ target_link_libraries (libbdj4atiutil PUBLIC
   # opus
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
-  libdylib
-  libdyintfc
   libbdj4basic libbdj4common
   m
 )

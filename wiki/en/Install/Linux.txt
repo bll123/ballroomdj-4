@@ -72,7 +72,7 @@ The bdj4-install-linux-older-VERSION file is linked with
 
 The bdj4-install-linux-VERSION file is linked with
 <br>&nbsp;&nbsp;libavcodec.so.59, libavformat.so.59, and libavutil.so.57.
-<br>&nbsp;&nbsp;(e.g. Debian 12, most other Linux)
+<br>&nbsp;&nbsp;(e.g. Debian 12)
 
 Be sure to exit BDJ4 if it is already started.
 

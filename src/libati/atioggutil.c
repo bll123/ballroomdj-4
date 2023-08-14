@@ -274,7 +274,11 @@ atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
   }
   if (filetype == AFILE_TYPE_OPUS) {
     oggpack_buffer  b;
-    const char      *vendor = newvc->vendor;
+    const char      *vendor = "";
+
+    if (newvc->vendor != NULL) {
+      vendor = newvc->vendor;
+    }
 
     oggpack_writeinit (&b);
     atibdj4_oggpack_string (&b, "OpusTags", 8);
@@ -299,7 +303,7 @@ atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
   }
 
   state = VC_SETUP;
-  (void) ogg_sync_init (&oy_in); /* always return 0 */
+  (void) ogg_sync_init (&oy_in);
   if ((ifh = fileopOpen (ffn, "rb")) == NULL) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open input failed %s", ffn);
     goto cleanup_label;
@@ -307,7 +311,7 @@ atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
   if (filetype == AFILE_TYPE_VORBIS) {
     snprintf (outfn, sizeof (outfn), "%s.ogg.tmp", ffn);
   }
-  if (filetype == AFILE_TYPE_VORBIS) {
+  if (filetype == AFILE_TYPE_OPUS) {
     snprintf (outfn, sizeof (outfn), "%s.opus.tmp", ffn);
   }
   if ((ofh = fileopOpen (outfn, "wb")) == NULL) {

@@ -235,6 +235,7 @@ main (int argc, char *argv [])
   ilistStartIterator (tmlist, &tmiteridx);
   while ((key = ilistIterateKey (tmlist, &tmiteridx)) >= 0) {
     const char  *src;
+    char        from [MAXPATHLEN];
     const char  *dest;
     char        *fn;
     slist_t     *tagdata = NULL;
@@ -244,7 +245,9 @@ main (int argc, char *argv [])
     src = ilistGetStr (tmlist, key, TM_SOURCE);
     dest = ilistGetStr (tmlist, key, TM_DEST);
 
-    audiotagDetermineTagType (src, &tagtype, &filetype);
+    /* need full path to determine tag type */
+    snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);
+    audiotagDetermineTagType (from, &tagtype, &filetype);
     if (supported [filetype] != ATI_READ_WRITE) {
       slistFree (tagdata);
       continue;

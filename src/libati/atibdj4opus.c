@@ -237,7 +237,7 @@ atibdj4RestoreOpusTags (atidata_t *atidata,
 
   rc = atioggWriteOggFile (ffn, atisaved->tags, filetype);
 
-  return -1;
+  return rc;
 }
 
 void
@@ -245,10 +245,9 @@ atibdj4CleanOpusTags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
   OpusTags    tags;
-  int         rc = -1;
 
   opus_tags_init (&tags);
-  rc = atioggWriteOggFile (ffn, &tags, filetype);
+  atioggWriteOggFile (ffn, &tags, filetype);
   opus_tags_clear (&tags);
   return;
 }

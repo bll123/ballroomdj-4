@@ -127,18 +127,17 @@ done
 # debug level
 DBG=4456459
 # norm
-NUMNORM=134
+NUMNORM=136
 # cha cha
 NUMCC=15
 # regex
 NUMREGEX=13
 if [[ $ATIBDJ4 == T ]]; then
-#  NUMNORM=$((NUMNORM-9))    # opus
-  NUMNORM=$((NUMNORM-9))    # m4a
-#  NUMCC=$((NUMCC-1))    # opus
-  NUMCC=$((NUMCC-1))    # m4a
-#  NUMREGEX=$((NUMREGEX-1))    # opus
-  NUMREGEX=$((NUMREGEX-1))    # m4a
+  # the tmusicsetup program will not create files that are not supported
+  # as read/write by the selected ati interface.
+  NUMNORM=$((NUMNORM-9))    # mp4/m4a
+  NUMCC=$((NUMCC-1))    # mp4/m4a
+  NUMREGEX=$((NUMREGEX-1))    # mp4/m4a
 fi
 # deleted foxtrot
 NUMNOFT=$(($NUMNORM-6))

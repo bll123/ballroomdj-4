@@ -786,6 +786,7 @@ main (int argc, char *argv [])
             pathInfoExtCheck (pi, ".flac") ||
             pathInfoExtCheck (pi, ".ogg") ||
             pathInfoExtCheck (pi, ".m4a") ||
+            pathInfoExtCheck (pi, ".ogx") ||
             pathInfoExtCheck (pi, ".opus")) {
           process = true;
         }

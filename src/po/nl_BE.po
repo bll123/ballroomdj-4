@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-07-31\n"
+"PO-Revision-Date: 2023-08-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1368,8 +1368,8 @@ msgid "QR Code"
 msgstr "QR-code"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) history: re-queue the selected song
+#. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Nummer Toevoegen"
