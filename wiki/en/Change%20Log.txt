@@ -6,6 +6,8 @@
 
 **4.3.3.4 2023-8---**
 
+-->
+
 **4.3.3.3 2023-8-14**
 
 * Bug Fixes:
@@ -15,8 +17,6 @@
     * External Request: Remember last used folder.
 * New Features:
     * Audio Tags: The BDJ4-Internal interface now supports Opus audio files.
-
--->
 
 **4.3.3.2 2023-8-8**
 
@@ -484,4 +484,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-08-08 14:09:37; BDJ4 version 4.3.3.2)_
+<br>_(Updated 2023-08-14 12:23:50; BDJ4 version 4.3.3.3)_
