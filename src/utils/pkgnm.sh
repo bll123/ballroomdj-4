@@ -50,8 +50,8 @@ function pkgnmgetdata {
       dver=$(cat /etc/debian_version)
       case ${dver} in
         11*)
-	  pn_tag=linux-older
-	  ;;
+          pn_tag=linux-older
+          ;;
       esac
       ;;
     Darwin)

@@ -400,7 +400,7 @@ bos_label:
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "header-in failed");
             goto cleanup_label;
           }
-	}
+        }
         state = (npacket_in == (numheaderpackets - 1) ? VC_READING_DATA_NEED_FLUSH : VC_READING_HEADERS);
       } else {
         if (state == VC_READING_DATA_NEED_FLUSH) {
@@ -443,10 +443,10 @@ bos_label:
           blocksz = vorbis_packet_blocksize (&vi_in, &op_in);
           granulepos += (lastblocksz == 0 ? 0 : (blocksz + lastblocksz) / 4);
           lastblocksz = blocksz;
-	}
+        }
         if (filetype == AFILE_TYPE_OPUS) {
           granulepos += opus_packet_get_samples_per_frame (op_in.packet, 48000);
-	}
+        }
 
         /*
          * Decide whether we need to write a page based
@@ -454,11 +454,11 @@ bos_label:
          */
         state = VC_READING_DATA;
         if (op_in.granulepos == -1) {
-	  op_in.granulepos = granulepos;
+          op_in.granulepos = granulepos;
         } else if (granulepos <= op_in.granulepos) {
           state = VC_READING_DATA_NEED_PAGEOUT;
         } else {
-	  granulepos = op_in.granulepos;
+          granulepos = op_in.granulepos;
           state = VC_READING_DATA_NEED_FLUSH;
         }
       }

@@ -4,18 +4,18 @@
 #
 
 usage(){
-	fmt <<EOF
+        fmt <<EOF
 DESCRIPTION
-	Add cover art to an OGG file.
-	Adapted from mussync-tools by biapy: https://github.com/biapy/howto.biapy.com/blob/master/various/mussync-tools
+        Add cover art to an OGG file.
+        Adapted from mussync-tools by biapy: https://github.com/biapy/howto.biapy.com/blob/master/various/mussync-tools
 
 USAGE
-	ogg-cover-art [-h|--help] [-d TEXT|--description=TEXT] [COVER-FILENAME] OGG-FILENAME
-		Add cover art to OGG-FILENAME.  If COVER-FILENAME is not specified,
-		use cover.jpg, cover.jpeg, or cover.png located in the same folder
-		as OGG-FILENAME.
+        ogg-cover-art [-h|--help] [-d TEXT|--description=TEXT] [COVER-FILENAME] OGG-FILENAME
+                Add cover art to OGG-FILENAME.  If COVER-FILENAME is not specified,
+                use cover.jpg, cover.jpeg, or cover.png located in the same folder
+                as OGG-FILENAME.
 EOF
-	exit
+        exit
 }
 die(){ printf "Error: %s\n" "${1}" 1>&2; exit 1; }
 require(){ command -v "${1}" > /dev/null 2>&1 || { suggestion=""; if [ ! -z "$2" ]; then suggestion=" $2"; fi; die "$1 is not installed.${suggestion}"; } }
@@ -24,7 +24,7 @@ require(){ command -v "${1}" > /dev/null 2>&1 || { suggestion=""; if [ ! -z "$2"
 require "vorbiscomment" "Try: apt-get install vorbis-tools"
 
 if [ $# -eq 0 ]; then
-	usage
+        usage
 fi
 
 description=''
@@ -33,79 +33,79 @@ file2=''
 files=0
 
 while [ $# -gt 0 ]; do
-	case "$1" in
-	-h|--help)
-		usage
-		;;
-	-d)
-		if [ $# -eq 1 ]; then
-			die "Missing description's text"
-		fi
-		description="$2"
-		shift 2
-		;;
-	--description=*)
-		description="${1#*=}"
-		shift 1
-		;;
-	*)
-		case $files in
-		0) file1="$1";;
-		1) file2="$1";;
-		2) die "Too many files specified";;
-		esac
-		files=$((files+1))
-		shift 1
-		;;
-	esac
+        case "$1" in
+        -h|--help)
+                usage
+                ;;
+        -d)
+                if [ $# -eq 1 ]; then
+                        die "Missing description's text"
+                fi
+                description="$2"
+                shift 2
+                ;;
+        --description=*)
+                description="${1#*=}"
+                shift 1
+                ;;
+        *)
+                case $files in
+                0) file1="$1";;
+                1) file2="$1";;
+                2) die "Too many files specified";;
+                esac
+                files=$((files+1))
+                shift 1
+                ;;
+        esac
 done
 
 case $files in
-0)	;;
-1)	outputFile="$file1";;
-2)	imagePath="$file1"
-	outputFile="$file2";;
+0)        ;;
+1)        outputFile="$file1";;
+2)        imagePath="$file1"
+        outputFile="$file2";;
 esac
 
 unset file1 file2 files
 
 if [ -z "$outputFile" ]; then
-	die "No output file specified"
+        die "No output file specified"
 fi
 
 if [ -z "$imagePath" ]; then
-	dirName=$(dirname "$outputFile")
-	imagePath="${dirName}/cover.jpg"
-	if [ ! -f "${imagePath}" ]; then
-		imagePath="${dirName}/cover.jpeg"
-		if [ ! -f "${imagePath}" ]; then
-			imagePath="${dirName}/cover.png"
-			if [ ! -f "${imagePath}" ]; then
-				die "Couldn't find a cover image in ${dirName}."
-			fi
-		fi
-	fi
-	unset dirName
+        dirName=$(dirname "$outputFile")
+        imagePath="${dirName}/cover.jpg"
+        if [ ! -f "${imagePath}" ]; then
+                imagePath="${dirName}/cover.jpeg"
+                if [ ! -f "${imagePath}" ]; then
+                        imagePath="${dirName}/cover.png"
+                        if [ ! -f "${imagePath}" ]; then
+                                die "Couldn't find a cover image in ${dirName}."
+                        fi
+                fi
+        fi
+        unset dirName
 fi
 
 if [ ! -f "${outputFile}" ]; then
-	die "Couldn't find ogg file."
+        die "Couldn't find ogg file."
 fi
 
 if [ ! -f "${imagePath}" ]; then
-	die "Couldn't find cover image."
+        die "Couldn't find cover image."
 fi
 
 imageMimeType=$(file -b --mime-type "${imagePath}")
 
 if [ "${imageMimeType}" != "image/jpeg" ] && [ "${imageMimeType}" != "image/png" ]; then
-	die "Cover image isn't a jpg or png image."
+        die "Cover image isn't a jpg or png image."
 fi
 
 oggMimeType=$(file -b --mime-type "${outputFile}")
 
 if [ "${oggMimeType}" != "audio/x-vorbis+ogg" ] && [ "${oggMimeType}" != "audio/ogg" ]; then
-	die "Input file isn't an ogg file."
+        die "Input file isn't an ogg file."
 fi
 
 # Export existing comments to file

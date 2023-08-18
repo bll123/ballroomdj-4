@@ -664,9 +664,9 @@ sysvarsInit (const char *argv0)
         if (strncmp (tbuff, flagtag, strlen (flagtag)) == 0) {
           if (strstr (tbuff, vmtag) != NULL) {
             lsysvars [SVL_IS_VM] = true;
-	  }
-	  break;
-	}
+          }
+          break;
+        }
       }
       mdextfclose (fh);
       fclose (fh);
