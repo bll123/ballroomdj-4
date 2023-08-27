@@ -6,22 +6,35 @@ if [[ $# -ne 1 ]]; then
 fi
 
 target=$1
+
+if [[ ! -f $target ]]; then
+  echo "$0: $target does not exist"
+  exit 1
+fi
+
 #LPATH=@executable_path
 #LPATH=@loader_path
-# the rpath has been updated within the cmake files to point
-# to the correct directories.
+# the rpath has now been updated by cmake files to point
+# to the correct paths (it appears to use @loader_path).
 LPATH=@rpath
+
+starget=$(basename $target)
+liblist=""
+
+# someday
+# would probably be good to try and fix libvorbsifile and libicu to
+# have the proper link paths in the pkgconfig files.
 
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
 # /Volumes/Users/bll/bdj4/bin/../plocal/lib/libvorbisfile.3.dylib
-# @rpath/libid3tag.0.16.3
 count=0
 cmd="install_name_tool "
 for l in libicudata libicui18n libicuuc \
     libvorbisfile.3 libvorbis.0; do
   path=$(otool -L $target | grep $l | sed 's,^[^/]*,,;s,dylib .*,dylib,')
   if [[ $path != "" ]]; then
-    echo "== library updated : $target" >&2
+    liblist+=$l
+    liblist+=" "
     fulllib=$(echo $path | sed 's,.*/,,')
     cmd+="-change $path ${LPATH}/${fulllib} "
     count=$(($count+1))
@@ -29,6 +42,7 @@ for l in libicudata libicui18n libicuuc \
 done
 
 if [[ $count -gt 0 ]]; then
+  echo "== updated : $starget ($liblist)" >&2
   cmd+=" $target"
   eval $cmd
 fi

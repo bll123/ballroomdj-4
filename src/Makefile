@@ -113,7 +113,9 @@ cmakeclang:
 
 .PHONY: cmake-unix
 cmake-unix:
+	. ../VERSION.txt; \
 	cmake \
+		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
 		-DCMAKE_C_COMPILER=$(COMP) \
 		-DCMAKE_CXX_COMPILER=$(COMPXX) \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
@@ -122,7 +124,10 @@ cmake-unix:
 
 .PHONY: cmake-windows
 cmake-windows:
+	. ../VERSION.txt; \
 	cmake \
+		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
+		-DCMAKE_C_COMPILER=$(COMP) \
 		-DCMAKE_C_COMPILER="$(COMP)" \
 		-DCMAKE_CXX_COMPILER="$(COMPXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \

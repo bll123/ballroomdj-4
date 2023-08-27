@@ -318,6 +318,9 @@ case $1 in
   putimages)
     updateimages
     ;;
+  hasaccess)
+    hasaccess
+    ;;
   *)
     echo "Usage: $0 {putall|getall|dispfilelist|get <file>|put <file>|putimages}"
     ;;

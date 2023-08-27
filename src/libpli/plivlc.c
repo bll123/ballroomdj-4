@@ -19,12 +19,6 @@
 #include "vlci.h"
 #include "volsink.h"
 
-#if 0  // VLC logging options
-      "-vv",
-      "--file-logging",
-      "--verbose=3",
-#endif
-
 static char *vlcDefaultOptions [] = {
       "--quiet",
       "--audio-filter", "scaletempo",
@@ -38,6 +32,12 @@ static char *vlcDefaultOptions [] = {
       "--no-repeat",
       "--play-and-stop",
       "--novideo",
+      "--no-metadata-network-access",
+#if 0  // VLC logging options
+      "-vv",
+      "--file-logging",
+      "--verbose=3",
+#endif
 };
 enum {
   VLC_DFLT_OPT_SZ = (sizeof (vlcDefaultOptions) / sizeof (char *))

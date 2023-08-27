@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.18)
 set (CMAKE_C_COMPILER_WORKS 1)
 set (CMAKE_CXX_COMPILER_WORKS 1)
 
-set (BDJ4_VERSION 4.0.0)
+set (BDJ4_VERSION ${BDJ4_BUILD_VERS})
 project (BDJ4 VERSION ${BDJ4_VERSION})
 set (BDJ4ICON bdj4_icon.ico)
 set (BDJ4INSTICON bdj4_icon_inst.ico)

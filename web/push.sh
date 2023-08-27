@@ -4,6 +4,8 @@
 #
 #
 
+SFUSER=bll123
+
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
@@ -67,22 +69,22 @@ if [[ $tag == linux && $isprimary == T ]]; then
   fn=README.txt
   sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
   sshpass -e rsync -v -e ssh ${fn}.n \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
   rm -f ${fn}.n
 
   fn=linux-pre-install
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
   fn=linux-uninstall-bdj4
   sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
   server=web.sourceforge.net
   port=22
   project=ballroomdj4
   # ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
-  remuser=bll123
+  remuser=${SFUSER}
   wwwpath=/home/project-web/${project}/htdocs
   ssh="ssh -p $port"
   export ssh
@@ -103,25 +105,25 @@ if [[ $tag == macos ]]; then
   fn=macos-pre-install-macports
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
   fn=macos-run-installer
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
   fn=macos-uninstall-bdj4
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 fi
 
 if [[ $platform != windows ]]; then
   sshpass -e rsync -v -e ssh ${pnm} \
-    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 else
   rsync -v -e ssh ${pnm} \
-    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 
 exit 0

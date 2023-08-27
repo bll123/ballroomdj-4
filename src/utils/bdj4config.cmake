@@ -270,14 +270,14 @@ endif()
 #### system specific compile options
 
 if (NOT WIN32)
-  SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
+  if (NOT APPLE)
+    SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
+  endif()
   if (APPLE)
     # 10.14 = Mojave, 10.15 = Catalina
     # 11 = Big Sur, 12 = Monterey, 13 = Ventura, 14 = Sonoma
     add_compile_options (-mmacosx-version-min=10.14)
     add_link_options (-mmacosx-version-min=10.14)
-    # The following does not work.
-    # SET (CMAKE_INSTALL_RPATH "@executable_path")
   endif()
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
