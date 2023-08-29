@@ -105,6 +105,9 @@ pkg_check_modules (LIBFLAC flac)
 pkg_check_modules (LIBOPUS opus)
 pkg_check_modules (LIBOPUSFILE opusfile)
 
+# libmp4tag
+pkg_check_modules (LIBMP4TAG libmp4tag)
+
 #### ICU string library
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.

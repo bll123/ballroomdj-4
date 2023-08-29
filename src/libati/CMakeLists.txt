@@ -60,6 +60,8 @@ target_link_libraries (libatibdj4 PUBLIC
   # put this first, otherwise the wrong libid3tag library is picked up
   # libid3tag
   ${LIBID3TAG_LDFLAGS}
+  # libmp4tag
+  ${LIBMP4TAG_LDFLAGS}
   # ffmpeg
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBAVUTIL_LDFLAGS}

@@ -11,6 +11,8 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#include <libmp4tag.h>
+
 #include "ati.h"
 #include "atibdj4.h"
 #include "log.h"
