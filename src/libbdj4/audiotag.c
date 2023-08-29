@@ -618,6 +618,9 @@ audiotagTagName (int tagkey)
 {
   const char  *tagname;
 
+  if (tagkey < 0 || tagkey >= TAG_KEY_MAX) {
+    return NULL;
+  }
   tagname = tagdefs [tagkey].tag;
   return tagname;
 }
@@ -625,6 +628,9 @@ audiotagTagName (int tagkey)
 static const tagaudiotag_t *
 audiotagRawLookup (int tagkey, int tagtype)
 {
+  if (tagkey < 0 || tagkey >= TAG_KEY_MAX) {
+    return NULL;
+  }
   return &tagdefs [tagkey].audiotags [tagtype];
 }
 

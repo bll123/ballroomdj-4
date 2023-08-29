@@ -33,6 +33,7 @@ atiParsePair (slist_t *tagdata, const char *tagname,
 
   atiParseNumberPair (value, &tnum, &ttot);
 
+  *pbuff = '\0';
   if (ttot != 0) {
     snprintf (pbuff, sz, "%d", ttot);
     slistSetStr (tagdata, tagname, pbuff);
@@ -74,38 +75,19 @@ atiReplaceFile (const char *ffn, const char *outfn)
 static void
 atiParseNumberPair (const char *data, int *a, int *b)
 {
-  const char  *p;
+  int     rc;
 
   *a = 0;
   *b = 0;
 
-  /* apple style track number */
-  p = data;
-  while (*p == ' ') {
-    ++p;
+  rc = sscanf (data, "%d/%d", a, b);
+  if (rc != 1 && rc != 2) {
+    rc = sscanf (data, "(%d,%d)", a, b);
   }
 
-  if (*p == '(') {
-    ++p;
-    if (isdigit (*p)) {
-      *a = atoi (p);
-      p = strstr (p, " ");
-      if (p != NULL) {
-        ++p;
-        *b = atoi (p);
-      }
-    }
-    return;
-  }
-
-  /* track/total style */
-  if (isdigit (*p)) {
-    p = strstr (data, "/");
-    *a = atoi (data);
-    if (p != NULL) {
-      ++p;
-      *b = atoi (p);
-    }
+  if (rc == 0) {
+    *a = 0;
+    *b = 0;
   }
 
   /* and do a reasonableness check */

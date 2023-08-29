@@ -64,12 +64,12 @@ atiiFree (atidata_t *atidata)
 void
 atiiSupportedTypes (int supported [])
 {
-  /* as of 2023-7-3 */
+  /* as of 2023-8-29 */
   supported [AFILE_TYPE_FLAC] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP3] = ATI_READ_WRITE;
-  supported [AFILE_TYPE_MP4] = ATI_NONE;
   supported [AFILE_TYPE_VORBIS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_OPUS] = ATI_READ_WRITE;
+  supported [AFILE_TYPE_MP4] = ATI_READ_WRITE;
   supported [AFILE_TYPE_WMA] = ATI_NONE;
 }
 
@@ -115,6 +115,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_MP4) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
