@@ -37,7 +37,7 @@ typedef struct {
   int         filetype;
 } filetypelookup_t;
 
-/* must be sorted by extension */
+/* must be ascii sorted by extension */
 filetypelookup_t filetypelookup [] = {
   { ".aac",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".alac",  TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
@@ -45,7 +45,10 @@ filetypelookup_t filetypelookup [] = {
   { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".m4r",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".mp3",   TAG_TYPE_ID3,     AFILE_TYPE_MP3, },
+  { ".mp4",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".oga",   TAG_TYPE_VORBIS,  AFILE_TYPE_VORBIS, },
   { ".ogg",   TAG_TYPE_VORBIS,  AFILE_TYPE_VORBIS, },
+  /* .ogx files must be parsed to see what is in the container */
   { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
   { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_WMA, }
