@@ -54,6 +54,10 @@ typedef enum {
   START_STATE_SUPPORT_SEND_MSG,
   START_STATE_SUPPORT_SEND_INFO,
   START_STATE_SUPPORT_SEND_FILES_DATA,
+  START_STATE_SUPPORT_SEND_FILES_DATA_PL,
+  START_STATE_SUPPORT_SEND_FILES_DATA_PLDANCE,
+  START_STATE_SUPPORT_SEND_FILES_DATA_SL,
+  START_STATE_SUPPORT_SEND_FILES_DATA_SEQ,
   START_STATE_SUPPORT_SEND_FILES_PROFILE,
   START_STATE_SUPPORT_SEND_FILES_MACHINE,
   START_STATE_SUPPORT_SEND_FILES_MACH_PROF,
@@ -68,6 +72,10 @@ typedef enum {
 enum {
   SF_ALL,
   SF_CONF_ONLY,
+  SF_PL_ONLY,
+  SF_PLDANCE_ONLY,
+  SF_SL_ONLY,
+  SF_SEQ_ONLY,
   SF_MAC_DIAG,
   CLOSE_REQUEST,
   CLOSE_CRASH,
@@ -871,9 +879,36 @@ starterMainLoop (void *tstarter)
         break;
       }
 
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_DREL_DATA);
+      pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DREL_DATA);
       starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_DATA_PL;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_DATA_PL: {
+      pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DREL_DATA);
+      starterSendFilesInit (starter, tbuff, SF_PL_ONLY);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_DATA_PLDANCE;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_DATA_PLDANCE: {
+      pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DREL_DATA);
+      starterSendFilesInit (starter, tbuff, SF_PLDANCE_ONLY);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_DATA_SL;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_DATA_SL: {
+      pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DREL_DATA);
+      starterSendFilesInit (starter, tbuff, SF_SL_ONLY);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_DATA_SEQ;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_DATA_SEQ: {
+      pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DREL_DATA);
+      starterSendFilesInit (starter, tbuff, SF_SEQ_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_PROFILE;
       break;
@@ -1883,6 +1918,18 @@ starterSendFilesInit (startui_t *starter, char *dir, int sendType)
 
   if (sendType == SF_ALL) {
     ext = NULL;
+  }
+  if (sendType == SF_PL_ONLY) {
+    ext = BDJ4_PLAYLIST_EXT;
+  }
+  if (sendType == SF_PLDANCE_ONLY) {
+    ext = BDJ4_PL_DANCE_EXT;
+  }
+  if (sendType == SF_SL_ONLY) {
+    ext = BDJ4_SONGLIST_EXT;
+  }
+  if (sendType == SF_SEQ_ONLY) {
+    ext = BDJ4_SEQUENCE_EXT;
   }
   if (sendType == SF_MAC_DIAG) {
     ext = ".crash";

@@ -19,6 +19,7 @@
  *  cfui - configuration ui
  *  dbup - database update
  *  dbtg - database tag
+ *  dmfd - dbg-mk-music-from-db
  *  help - helper
  *  info - bdj4info
  *  inst - installer

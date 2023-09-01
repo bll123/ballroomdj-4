@@ -31,6 +31,17 @@ target_link_libraries (bdj4tags PUBLIC
 )
 addIntlLibrary (bdj4tags)
 
+add_executable (dmkmfromdb dmkmfromdb.c)
+if (WIN32)
+  target_compile_options (dmkmfromdb PRIVATE -municode)
+endif()
+target_link_libraries (dmkmfromdb PUBLIC
+  libbdj4 libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  z
+  m
+)
+
 add_executable (tdbcompare tdbcompare.c)
 if (WIN32)
   target_compile_options (tdbcompare PRIVATE -municode)
@@ -100,13 +111,22 @@ target_link_libraries (vsed PUBLIC
 )
 
 install (TARGETS
-  bdj4info bdj4tags tdbcompare tdbsetval testsuite tmusicsetup ttagdbchk
-  vlcsinklist vsed
+  bdj4info
+  bdj4tags
+  dmkmfromdb
+  tdbcompare
+  tdbsetval
+  testsuite
+  tmusicsetup
+  ttagdbchk
+  vlcsinklist
+  vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
+updateRPath (dmkmfromdb)
 updateRPath (tdbcompare)
 updateRPath (tdbsetval)
 updateRPath (testsuite)

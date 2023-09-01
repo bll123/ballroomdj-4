@@ -6,6 +6,12 @@
 
 **4.3.3.4 2023-8---**
 
+* Bug Fixes:
+    * Windows: Fix installation process (introduced in 4.3.3.2). PENDING
+    * Conversion: Adjust conversion of playlists (dance rating). PENDING
+* New Features:
+    * Audio Tags: The BDJ4-Internal interface now supports MP4 audio files.
+
 -->
 
 **4.3.3.3 2023-8-14**

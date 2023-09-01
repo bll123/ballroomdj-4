@@ -79,6 +79,7 @@ main (int argc, char * argv[])
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
     { "check_all",      no_argument,        NULL,   1 },
+    { "dmkmfromdb",     no_argument,        NULL,   28 },
     { "tdbcompare",     no_argument,        NULL,   23 },
     { "tdbsetval",      no_argument,        NULL,   26 },
     { "testsuite",      no_argument,        NULL,   22 },
@@ -325,6 +326,13 @@ main (int argc, char * argv[])
       }
       case 27: {
         prog = "ttagdbchk";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 28: {
+        prog = "dmkmfromdb";
         nodetach = true;
         wait = true;
         ++validargs;
