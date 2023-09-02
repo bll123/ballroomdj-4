@@ -23,6 +23,20 @@ if { ! [file exists $datatopdir/data] || ! [file isdirectory $datatopdir/data] }
   exit 1
 }
 
+set rfn [file join $datatopdir data ratings.txt]
+set ifh [open $rfn r]
+set flag 0
+while { [gets $ifh line] >= 0 } {
+  if { $flag == 1 } {
+    set unratedtxt [string range $line 2 end]
+    break
+  }
+  if { $line eq "RATING" } {
+    set flag 1
+  }
+}
+close $ifh
+
 try {
   set flist [glob -directory $bdj3dir *.playlist]
 } on error { err res } {
@@ -60,6 +74,9 @@ foreach {fn} $flist {
 
   set pltype automatic
   set keyidx 0
+  set unratedval no
+  set drvalue {}
+
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
     if { $key eq "list" } { continue }
@@ -79,7 +96,6 @@ foreach {fn} $flist {
     if { $tkey eq "STOPAFTERWAIT" } { continue }
     if { $tkey eq "STOPTYPE" } { continue }
     if { $tkey eq "RESUME" } { continue }
-    if { $tkey eq "UNRATEDOK" } { continue }
     if { $tkey eq "MANUALLIST" } { continue }
     if { $tkey eq "SEQUENCE" } { continue }
     if { $tkey eq "MQMESSAGE" } { continue }
@@ -148,11 +164,27 @@ foreach {fn} $flist {
           set value 0
         }
       }
+
+      if { $tkey eq "DANCERATING" } {
+        if { $drvalue eq {} } {
+          set drvalue $value
+        }
+        continue
+      }
+      if { $tkey eq "UNRATEDOK" } {
+        if { $value eq "yes" } {
+          set drvalue ${unratedtxt}
+        }
+        continue
+      }
+
       set key [string toupper $key]
       puts $ofh $key
       puts $ofh "..$value"
     }
   }
+  puts $ofh "DANCERATING"
+  puts $ofh "..$drvalue"
   puts $ofh "TYPE"
   puts $ofh "..$pltype"
   close $ifh

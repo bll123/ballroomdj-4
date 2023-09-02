@@ -74,20 +74,9 @@ if [[ ! -d conv ]]; then
   exit 1
 fi
 
-"$tclsh" conv/auto-selection.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/configuration.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/dances.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/dancetypes.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/database.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/genres.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/levels.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/playlists.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/ratings.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/sequences.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/songlists.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/status.tcl "$bdj3dir" "$datatopdir"
-# do this last
-"$tclsh" conv/z-new.tcl "$bdj3dir" "$datatopdir"
+for fn in conv/0*.tcl; do
+  "$tclsh" $fn "$bdj3dir" "$datatopdir"
+done
 
 echo "OK"
 
