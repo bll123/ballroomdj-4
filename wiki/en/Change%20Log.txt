@@ -10,7 +10,7 @@
     * Conversion: Adjust conversion of playlists (dance rating). PENDING
     * Support: Also send playlists when attaching files.
     * Windows: Fix bug where the processes didn't exit properly (introduced in 4.3.3.2).
-    * Windows: Fix installation process and installation cleanup.
+    * Windows: Fix shortcut creation and installation cleanup.
 * New Features:
     * Audio Tags: The BDJ4-Internal interface now supports MP4 audio files.
 

@@ -771,11 +771,6 @@ mainProcessing (void *udata)
     }
   }
 
-  if (mainData->processes [ROUTE_MARQUEE] != NULL &&
-      ! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
-    connConnect (mainData->conn, ROUTE_MARQUEE);
-  }
-
   if (mainData->marqueeChanged) {
     mainSendMarqueeData (mainData);
     mainData->marqueeChanged = false;

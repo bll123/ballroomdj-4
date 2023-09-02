@@ -70,7 +70,6 @@ typedef struct sockinfo {
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
-static Sock_t   sockCanWrite (Sock_t);
 static int      sockSetNonblocking (Sock_t sock);
  // static int       sockSetBlocking (Sock_t sock);
 static void     sockInit (void);
@@ -139,7 +138,6 @@ sockServer (uint16_t listenPort, int *err)
     *err = errno;
     logError ("listen:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
     logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
 #endif
     mdextclose (lsock);
@@ -191,11 +189,21 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
       (size_t) sockinfo->count * sizeof (socklist_t));
   sockinfo->socklist [idx].sock = sock;
   sockinfo->socklist [idx].havedata = false;
-  ++sockinfo->active;
 
   sockUpdateReadCheck (sockinfo);
 
   return sockinfo;
+}
+
+void
+sockIncrActive (sockinfo_t *sockinfo)
+{
+  if (sockinfo == NULL) {
+    return;
+  }
+
+  ++sockinfo->active;
+  logMsg (LOG_DBG, LOG_SOCKET, "incr active: %d", sockinfo->active);
 }
 
 void
@@ -210,9 +218,9 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     return;
   }
 
+
   for (int i = 0; i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i].sock == sock) {
-      --sockinfo->active;
       sockinfo->socklist [i].sock = INVALID_SOCKET;
       sockinfo->socklist [i].havedata = false;
       break;
@@ -220,6 +228,13 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   sockUpdateReadCheck (sockinfo);
+}
+
+void
+sockDecrActive (sockinfo_t *sockinfo)
+{
+  --sockinfo->active;
+  logMsg (LOG_DBG, LOG_SOCKET, "decr active: %d", sockinfo->active);
 }
 
 void
@@ -243,9 +258,8 @@ sockCheck (sockinfo_t *sockinfo)
     return INVALID_SOCKET;
   }
 
-  /* this was just to prevent any particular socket from being starved */
-  /* from being processed */
-  /* bdj4 is not high volume, this is not really needed */
+  /* prevent any particular socket from being starved out */
+  /* from processing */
   for (int i = 0; sockinfo->havecount && i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i].havedata) {
       sockinfo->socklist [i].havedata = false;
@@ -268,6 +282,7 @@ sockCheck (sockinfo_t *sockinfo)
 #if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
 #endif
+
     return INVALID_SOCKET;
   }
   if (rc > 0) {
@@ -334,7 +349,6 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   int                 rc;
   int                 typ;
   int                 err = 0;
-  bool                already = false;
 
 
   if (! sockInitialized) {
@@ -372,26 +386,14 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       close (clsock);
       return INVALID_SOCKET;
     }
-  } else {
-    struct sockaddr paddr;
-    socklen_t       paddrlen = sizeof (struct sockaddr);
-
-    rc = getpeername (clsock, &paddr, &paddrlen);
-    if (rc == 0) {
-      already = true;
-      rc = 0;
-      err = 0;
-    }
   }
 
-  if (! already) {
-    memset (&raddr, 0, sizeof (struct sockaddr_in));
-    raddr.sin_family = AF_INET;
-    raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-    raddr.sin_port = htons (connPort);
+  memset (&raddr, 0, sizeof (struct sockaddr_in));
+  raddr.sin_family = AF_INET;
+  raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
+  raddr.sin_port = htons (connPort);
 
-    rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
-  }
+  rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
 
   if (rc == 0) {
     *connerr = SOCK_CONN_OK;
@@ -418,12 +420,24 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     *connerr = SOCK_CONN_ERROR;
 
 #if _lib_WSAGetLastError
+    /* 10037 */
+    if (WSAGetLastError() == WSAEALREADY) {
+      *connerr = SOCK_CONN_IN_PROGRESS;
+      errno = EINPROGRESS;
+      err = EINPROGRESS;
+    }
+    /* 10035 */
     if (WSAGetLastError() == WSAEWOULDBLOCK) {
       *connerr = SOCK_CONN_IN_PROGRESS;
       errno = EWOULDBLOCK;
       err = EWOULDBLOCK;
     }
 #endif
+    /* EINPROGRESS == 115 */
+    /* EAGAIN == 11 */
+    /* EWOULDBLOCK == 11 (linux) */
+    /* ECONNREFUSED == 111 */
+    /* ECONNABORTED == 103 */
     if (err == EINPROGRESS || err == EAGAIN || err == EINTR || err == EWOULDBLOCK) {
       *connerr = SOCK_CONN_IN_PROGRESS;
       /* leave the socket open */
@@ -459,6 +473,7 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
   if (rc < 0) {
     return NULL;
   }
+
   len = ntohl (len);
   if (len > maxlen) {
     sockFlush (sock);
@@ -468,6 +483,7 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
   if (rc < 0) {
     return NULL;
   }
+
   *rlen = len;
   return data;
 }
@@ -543,25 +559,16 @@ socketInvalid (Sock_t sock)
 }
 
 bool
-sockWritable (Sock_t sock)
-{
-  Sock_t        sval;
-
-  sval = sockCanWrite (sock);
-  if (sval != sock) {
-    return false;
-  }
-  return true;
-}
-
-bool
 sockWaitClosed (sockinfo_t *sockinfo)
 {
   bool    rc;
 
   rc = false;
+  if (sockinfo != NULL) {
+    logMsg (LOG_ERR, LOG_SOCKET, "socket: wait-closed: active: %d", sockinfo->active);
+  }
   /* do not count the listener socket as open */
-  if (sockinfo == NULL || sockinfo->active <= 1) {
+  if (sockinfo == NULL || sockinfo->active <= 0) {
     rc = true;
   }
   return rc;
@@ -641,7 +648,7 @@ static int
 sockWriteData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
-  Sock_t        sval;
+  // Sock_t        sval;
   ssize_t       rc;
 
   if (socketInvalid (sock)) {
@@ -650,37 +657,57 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 
   logProcBegin (LOG_PROC, "sockWriteData");
   logMsg (LOG_DBG, LOG_SOCKET, "want to send: %"PRIu64" bytes", (uint64_t) len);
+
+#if 0
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
   /* call select() and check the condition the socket is in to see  */
   /* if it is writable.                                             */
   sval = sockCanWrite (sock);
   if (sval != sock) {
-    logMsg (LOG_DBG, LOG_SOCKET, "socket not writable");
+    logMsg (LOG_DBG, LOG_SOCKET, "socket not writable %" PRId64, (int64_t) sock);
     logProcEnd (LOG_PROC, "sockWriteData", "not-writable");
     return -1;
   }
+#endif
+
   rc = send (sock, data, len, 0);
+#if _lib_WSAGetLastError
+  {
+    int   terr;
+
+    terr = WSAGetLastError();
+    logMsg (LOG_DBG, LOG_SOCKET, "send-a: wsa last-error: %d", terr);
+    if (terr == WSAEWOULDBLOCK) {
+      errno = EWOULDBLOCK;
+    }
+    if (terr == WSAEINTR) {
+      errno = EINTR;
+    }
+  }
+#endif
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    logError ("send");
+    logError ("send-a");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error: %d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "send-a: wsa last-error: %d", WSAGetLastError());
 #endif
     logProcEnd (LOG_PROC, "sockWriteData", "send-a-fail");
     return -1;
   }
+
   logMsg (LOG_DBG, LOG_SOCKET, "sent: %"PRIu64" bytes", (uint64_t) rc);
   if (rc > 0) {
     tot += (size_t) rc;
     logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
   }
+
   while (tot < len) {
     rc = send (sock, data + tot, len - tot, 0);
     if (rc < 0 &&
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
       logError ("send-b");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error: %d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "send-b: wsa last-error: %d", WSAGetLastError());
 #endif
       logProcEnd (LOG_PROC, "sockWriteData", "send-b-fail");
       return -1;
@@ -691,6 +718,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
       logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
     }
   }
+
   logProcEnd (LOG_PROC, "sockWriteData", "");
   return 0;
 }
@@ -750,6 +778,7 @@ sockFlush (Sock_t sock)
   }
 }
 
+#if 0
 static Sock_t
 sockCanWrite (Sock_t sock)
 {
@@ -786,6 +815,7 @@ sockCanWrite (Sock_t sock)
   }
   return 0;
 }
+#endif
 
 
 static int
@@ -853,7 +883,6 @@ sockSetOptions (Sock_t sock, int *err)
 {
   int                 opt = 1;
   int                 rc;
-  struct linger       l;
 
   if (socketInvalid (sock)) {
     return INVALID_SOCKET;
@@ -863,19 +892,6 @@ sockSetOptions (Sock_t sock, int *err)
   if (rc != 0) {
     *err = errno;
     logError ("setsockopt-addr:");
-#if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
-#endif
-    mdextclose (sock);
-    close (sock);
-    return INVALID_SOCKET;
-  }
-  l.l_onoff = true;
-  l.l_linger = 1;
-  rc = setsockopt (sock, SOL_SOCKET, SO_LINGER, (const void *) &l, sizeof (l));
-  if (rc != 0) {
-    *err = errno;
-    logError ("setsockopt-linger:");
 #if _lib_WSAGetLastError
     logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
 #endif

@@ -67,7 +67,9 @@ enum {
 Sock_t        sockServer (uint16_t port, int *err);
 void          sockClose (Sock_t);
 sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
+void          sockIncrActive (sockinfo_t *);
 void          sockRemoveCheck (sockinfo_t *, Sock_t);
+void          sockDecrActive (sockinfo_t *);
 void          sockFreeCheck (sockinfo_t *);
 Sock_t        sockCheck (sockinfo_t *);
 Sock_t        sockAccept (Sock_t, int *);
@@ -77,7 +79,6 @@ char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteStr (Sock_t, char *s, size_t slen);
 int           sockWriteBinary (Sock_t, char *data, size_t dlen);
 bool          socketInvalid (Sock_t sock);
-bool          sockWritable (Sock_t sock);
 bool          sockWaitClosed (sockinfo_t *sockinfo);
 
 #endif /* INC_SOCK_H */

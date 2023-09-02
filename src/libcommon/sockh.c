@@ -102,8 +102,10 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   }
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   rc = sockWriteBinary (sock, msgbuff, len);
-  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%"PRIu64" rc:%d",
-      msg, msgDebugText (msg), route, msgRouteDebugText (route), (uint64_t) len, rc);
+  if (rc == 0) {
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%"PRIu64" rc:%d",
+        msg, msgDebugText (msg), route, msgRouteDebugText (route), (uint64_t) len, rc);
+  }
   return rc;
 }
 
@@ -161,10 +163,12 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
        */
       logMsg (LOG_DBG, LOG_SOCKET, "remove sock %" PRId64, (int64_t) msgsock);
       sockRemoveCheck (sockserver->si, msgsock);
+      sockDecrActive (sockserver->si);
       logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
       sockClose (msgsock);
       return rc;
     }
+
     logMsg (LOG_DBG, LOG_SOCKET, "rcvd message: %s", rval);
 
     msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
@@ -179,6 +183,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
       case MSG_SOCKET_CLOSE: {
         logMsg (LOG_DBG, LOG_SOCKET, "rcvd close socket");
         sockRemoveCheck (sockserver->si, msgsock);
+        sockDecrActive (sockserver->si);
         /* the caller will close the socket */
         trc = msgFunc (routefrom, route, msg, args, userData);
         if (trc) {
@@ -186,6 +191,16 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
         }
         logMsg (LOG_DBG, LOG_SOCKET, "close sock %" PRId64, (int64_t) msgsock);
         sockClose (msgsock);
+        break;
+      }
+      /* extra handshake handling so that the active */
+      /* counter can be incremented */
+      case MSG_HANDSHAKE: {
+        sockIncrActive (sockserver->si);
+        trc = msgFunc (routefrom, route, msg, args, userData);
+        if (trc) {
+          rc = MAIN_FINISH;
+        }
         break;
       }
       default: {
