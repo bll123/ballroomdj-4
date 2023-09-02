@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-08-14\n"
+"PO-Revision-Date: 2023-09-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -828,6 +828,9 @@ msgstr "Uitstekend"
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
 msgstr "HTML-sjabloon"
+
+msgid "HTTP Code"
+msgstr ""
 
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"

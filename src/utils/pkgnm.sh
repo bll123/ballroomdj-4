@@ -102,3 +102,9 @@ function pkglongvers {
   echo $currvers
 }
 
+function pkgwebvers {
+  pkgnmgetdata
+  currvers="${VERSION} (${BUILDDATE})"
+  echo $currvers
+}
+

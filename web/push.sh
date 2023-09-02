@@ -92,8 +92,8 @@ if [[ $tag == linux && $isprimary == T ]]; then
   echo "## updating version file"
   VERFILE=bdj4version.txt
   bd=$BUILDDATE
-  cvers=$(pkgcurrvers)
-  echo "$cvers ($bd)" > $VERFILE
+  cvers=$(pkgwebvers)
+  echo "$cvers" > $VERFILE
   for f in $VERFILE; do
     sshpass -e rsync -e "$ssh" -aS \
         $f ${remuser}@${server}:${wwwpath}

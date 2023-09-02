@@ -342,6 +342,8 @@ sockAccept (Sock_t lsock, int *err)
   return nsock;
 }
 
+/* note that in many cases, especially on windows, multiple calls to */
+/* connect are necessary to make the connection */
 Sock_t
 sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {

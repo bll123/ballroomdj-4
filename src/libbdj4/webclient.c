@@ -16,6 +16,7 @@
 #include <zlib.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "log.h"
 #include "mdebug.h"
 #include "filedata.h"
@@ -86,10 +87,19 @@ webclientAlloc (void *userdata, webclientcb_t callback)
 void
 webclientGet (webclient_t *webclient, const char *uri)
 {
+  long    respcode;
+
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
   curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
+  if (respcode != 200) {
+    if (webclient->resp != NULL) {
+      snprintf (webclient->resp, webclient->respAllocated,
+          "%s: %ld", _("HTTP Code"), respcode);
+    }
+  }
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }

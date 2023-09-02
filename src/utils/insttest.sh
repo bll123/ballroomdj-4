@@ -91,8 +91,8 @@ UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
 MUSICDIR="${cwd}/test-music"
-ATI=libatimutagen
-#ATI=libatibdj4
+#ATI=libatimutagen
+ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
 
 currvers=$(pkglongvers)
