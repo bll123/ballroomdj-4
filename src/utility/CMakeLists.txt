@@ -5,6 +5,9 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
+# the executables starting with 't' are used for testing.
+# the executables starting with 'd' are used for debug purposes.
+
 add_executable (bdj4info bdj4info.c)
 if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)

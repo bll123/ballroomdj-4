@@ -113,23 +113,24 @@ function copyreleasefiles {
   echo "   removing exclusions"
   # bdj4se is only used for packaging
   # testing:
-  #   check_all, chkprocess, chkfileshared,
+  #   check_all, chkprocess, chkfileshared, dmkmfromdb
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
-      ${stage}/bin/bdj4se \
-      ${stage}/bin/check_all \
-      ${stage}/bin/chkfileshared \
-      ${stage}/bin/chkprocess \
-      ${stage}/bin/tdbcompare \
-      ${stage}/bin/tdbsetval \
-      ${stage}/bin/testsuite \
-      ${stage}/bin/tmusicsetup \
-      ${stage}/bin/ttagdbchk \
-      ${stage}/bin/vlcsinklist \
-      ${stage}/bin/voltest \
-      ${stage}/bin/vsed \
+      ${stage}/bin/bdj4se* \
+      ${stage}/bin/check_all* \
+      ${stage}/bin/chkfileshared* \
+      ${stage}/bin/chkprocess* \
+      ${stage}/bin/dmkmfromdb* \
+      ${stage}/bin/tdbcompare* \
+      ${stage}/bin/tdbsetval* \
+      ${stage}/bin/testsuite* \
+      ${stage}/bin/tmusicsetup* \
+      ${stage}/bin/ttagdbchk* \
+      ${stage}/bin/vlcsinklist* \
+      ${stage}/bin/voltest* \
+      ${stage}/bin/vsed* \
       ${stage}/http/*.bak.1 \
       ${stage}/http/curl-ca-bundle.crt \
       ${stage}/http/*.html \

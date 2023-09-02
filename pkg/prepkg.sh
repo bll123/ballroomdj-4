@@ -49,6 +49,7 @@ fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libvorbis*/COPYING ${licdir}/libvorbis.LICENSE
 cp -pf packages/flac*/COPYING.Xiph ${licdir}/flac.LICENSE
+cp -pf packages/libmp4tag*/LICENSE.txt ${licdir}/libmp4tag.LICENSE
 if [[ $platform == windows ]]; then
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
   cp -pf packages/libogg*/COPYING ${licdir}/libogg.LICENSE

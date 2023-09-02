@@ -116,10 +116,7 @@ main (int argc, char *argv [])
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
-fprintf (stderr, "tmdir: %s\n", tmdir);
-fprintf (stderr, "dbfn: %s\n", dbfn);
   radb = raOpen (dbfn, MUSICDB_VERSION);
-fprintf (stderr, "bbb\n");
 
   raStartBatch (radb);
 
@@ -127,7 +124,6 @@ fprintf (stderr, "bbb\n");
     song_t    *song;
 
     song = dbReadEntry (radb, i);
-fprintf (stderr, "ccc %d %d\n", i, song != NULL);
 
     if (song != NULL) {
       const char  *fstr;
@@ -138,25 +134,20 @@ fprintf (stderr, "ccc %d %d\n", i, song != NULL);
       char        nfn [MAXPATHLEN];
 
       dkey = songGetNum (song, TAG_DANCE);
-fprintf (stderr, "ddd %d %d\n", i, dkey);
       if (dkey < 0) {
         continue;
       }
       strlcpy (tdnc, danceGetStr (dances, dkey, DANCE_DANCE), sizeof (tdnc));
       stripSpaces (tdnc);
       stringAsciiToLower (tdnc);
-fprintf (stderr, "eee %d %s\n", i, tdnc);
       fstr = songGetStr (song, TAG_FILE);
-fprintf (stderr, "%d: %d %s %s\n", i, dkey, tdnc, fstr);
 
       pi = pathInfo (fstr);
       snprintf (ext, sizeof (ext), "%.*s", (int) pi->elen, pi->extension);
       snprintf (ofn, sizeof (ofn), "%s/%s%s", tofdir, tdnc, ext);
       if (! fileopFileExists (ofn)) {
-fprintf (stderr, "ofn: %s\n", ofn);
         snprintf (ofn, sizeof (ofn), "%s/%s%s", tofdir, "waltz", ext);
         if (! fileopFileExists (ofn)) {
-fprintf (stderr, "ofn: %s\n", ofn);
           continue;
         }
       }
@@ -164,7 +155,6 @@ fprintf (stderr, "ofn: %s\n", ofn);
       diropMakeDir (nfn);
       snprintf (nfn, sizeof (nfn), "%s/%s", tmdir, fstr);
       filemanipCopy (ofn, nfn);
-fprintf (stderr, "  ok\n");
     }
   }
 
