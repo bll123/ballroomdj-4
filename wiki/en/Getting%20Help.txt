@@ -25,8 +25,9 @@ __BDJ4 Built-In Support__: If you have BDJ4 installed, you can use the
 built-in support function.  Start BDJ4, select the __Support__ button,
 select __Send Support Message__.  Enter your e-mail address, the
 subject and the message you want to send.  You can optionally attach
-your data files and/or your database.  Select the __Send Support
-Message__ button when finished.
+your data files and/or your database (these are very useful to me when
+researching bugs).  Select the __Send Support Message__ button when
+finished.
 
 __E-Mail__: E-Mail me (Brad Lanam) : brad.lanam.di AT gmail.com
 
