@@ -2769,11 +2769,14 @@ installerCleanup (installer_t *installer)
 
   if (installer->clean) {
     if (isWindows ()) {
-      targv [0] = ".\\install\\install-rminstdir.bat";
+      targv [0] = ".\\install\\win-rminstdir.bat";
       snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
+      pathDisplayPath (buff, sizeof (buff));
       targv [1] = buff;
       targv [2] = NULL;
       osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+      /* give the windows batch file a little time to start */
+      mssleep (300);
     } else {
       snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
       (void) ! system (buff);
@@ -2824,6 +2827,7 @@ installerSetRundir (installer_t *installer, const char *dir)
     snprintf (installer->rundir, sizeof (installer->rundir),
         "%s%s", dir, installer->macospfx);
     pathNormalizePath (installer->rundir, sizeof (installer->rundir));
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "set rundir: %s", installer->rundir);
   }
 }
 
@@ -3028,6 +3032,7 @@ installerSetTargetDir (installer_t *installer, const char *fn)
   dataFree (installer->target);
   installer->target = tmp;
   pathNormalizePath (installer->target, strlen (installer->target));
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "set target: %s", installer->target);
 }
 
 static void

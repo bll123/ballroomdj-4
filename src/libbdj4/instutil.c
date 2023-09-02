@@ -65,8 +65,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
       snprintf (path, sizeof (path), "%s%s.lnk",
           "%USERPROFILE%\\Desktop\\", name);
       targv [targc++] = path;
-      pathbldMakePath (buff, sizeof (buff),
-          "bdj4", ".exe", PATHBLD_MP_DIR_EXEC);
+      snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", target);
       pathDisplayPath (buff, sizeof (buff));
       targv [targc++] = buff;
       strlcpy (tbuff, target, sizeof (tbuff));

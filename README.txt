@@ -81,6 +81,7 @@ Licenses:
                   Changes made to the library available upon request.
     libvorbis   : Xiph/BSD License
                   Changes made to the library available upon request.
+    libmp4tag   : zlib/libpng License
     img/musicbrainz-logo.svg : GPLv2
     Windows:
       msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )

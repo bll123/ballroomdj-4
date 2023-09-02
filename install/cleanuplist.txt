@@ -94,6 +94,8 @@ templates/volintfc\.txt$
 install/patch-gtk3-devel_Portfile_v0\.2\.diff$
 install/patch-gtk3_Portfile_v0\.2\.diff$
 install/patch-meson_build\.diff$
+# removed 2023-9-1, renamed (4.3.3.4)
+install/install-rminstdir\.bat$
 
 # 2023-5-30
 # taglib doesn't appear to be useful. unsupported tags are not supported.

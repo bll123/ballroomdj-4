@@ -1004,6 +1004,14 @@ updaterCleanFiles (void)
     return;
   }
 
+  /* make sure any old volreg.txt files are gone */
+  snprintf (fname, sizeof (fname), "%s/%s%s",
+      sysvarsGetStr (SV_DIR_CONFIG), VOLREG_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (fname);
+  snprintf (fname, sizeof (fname), "%s/%s%s.bak.1",
+      sysvarsGetStr (SV_DIR_CONFIG), VOLREG_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (fname);
+
   pathbldMakePath (fname, sizeof (fname),
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
 
