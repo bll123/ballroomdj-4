@@ -79,6 +79,7 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4common
   m
 )
+addIntlLibrary (libatibdj4)
 
 add_library (libatimutagen SHARED atimutagen.c)
 target_link_libraries (libatimutagen PUBLIC

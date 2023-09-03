@@ -186,6 +186,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   long            flags;
   const char      *audiosink;
+  char            *volintfc;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("play");
@@ -243,7 +244,10 @@ main (int argc, char *argv[])
   volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "volume interface: %s", bdjoptGetStr (OPT_M_VOLUME_INTFC));
+  volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
+  bdjoptSetStr (OPT_M_VOLUME_INTFC, volintfc);
+  mdfree (volintfc);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "volume interface: %s", volintfc);
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
 
   playerInitSinklist (&playerData);

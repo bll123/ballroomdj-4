@@ -117,6 +117,7 @@ function copyreleasefiles {
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
+  # do not ship libatinull
   rm -f \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
@@ -131,6 +132,7 @@ function copyreleasefiles {
       ${stage}/bin/vlcsinklist* \
       ${stage}/bin/voltest* \
       ${stage}/bin/vsed* \
+      ${stage}/bin/libatinull.* \
       ${stage}/http/*.bak.1 \
       ${stage}/http/curl-ca-bundle.crt \
       ${stage}/http/*.html \

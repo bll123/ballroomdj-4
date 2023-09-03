@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-02 08:10-0700\n"
+"POT-Creation-Date: 2023-09-02 20:05-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -340,6 +340,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
+msgstr ""
+
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
 msgstr ""
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
@@ -827,6 +831,7 @@ msgstr ""
 msgid "HTML Template"
 msgstr ""
 
+#. CONTEXT: HTTP response code (error)
 msgid "HTTP Code"
 msgstr ""
 

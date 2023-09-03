@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -40,6 +41,11 @@ confuiInitPlayer (confuigui_t *gui)
   volume_t        *volume = NULL;
   nlist_t         *tlist = NULL;
   nlist_t         *llist = NULL;
+  char            *volintfc;
+
+  volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
+  bdjoptSetStr (OPT_M_VOLUME_INTFC, volintfc);
+  mdfree (volintfc);
 
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);

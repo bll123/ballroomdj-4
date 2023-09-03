@@ -155,3 +155,38 @@ volumeInterfaceList (void)
   interfaces = dyInterfaceList ("libvol", "voliDesc");
   return interfaces;
 }
+
+char *
+volumeCheckInterface (const char *volintfc)
+{
+  slist_t     *interfaces;
+  slistidx_t  iteridx;
+  const char  *desc;
+  const char  *intfc;
+  const char  *gintfc = NULL;
+  bool        found = false;
+  char        *voli;
+
+  interfaces = volumeInterfaceList ();
+  slistStartIterator (interfaces, &iteridx);
+  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+    intfc = slistGetStr (interfaces, desc);
+    if (gintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
+      gintfc = intfc;
+    }
+    if (strcmp (volintfc, intfc) == 0) {
+      found = true;
+      break;
+    }
+  }
+
+  if (! found) {
+    voli = strdup (gintfc);
+  } else {
+    voli = strdup (volintfc);
+  }
+  slistFree (interfaces);
+
+  return voli;
+}
+

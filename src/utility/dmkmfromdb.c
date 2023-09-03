@@ -135,11 +135,13 @@ main (int argc, char *argv [])
 
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey < 0) {
-        continue;
+        /* unknown dance, just use waltz music */
+        strlcpy (tdnc, "waltz", sizeof (tdnc));
+      } else {
+        strlcpy (tdnc, danceGetStr (dances, dkey, DANCE_DANCE), sizeof (tdnc));
+        stripSpaces (tdnc);
+        stringAsciiToLower (tdnc);
       }
-      strlcpy (tdnc, danceGetStr (dances, dkey, DANCE_DANCE), sizeof (tdnc));
-      stripSpaces (tdnc);
-      stringAsciiToLower (tdnc);
       fstr = songGetStr (song, TAG_FILE);
 
       pi = pathInfo (fstr);

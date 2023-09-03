@@ -96,8 +96,9 @@ webclientGet (webclient_t *webclient, const char *uri)
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   if (respcode != 200) {
     if (webclient->resp != NULL) {
-      snprintf (webclient->resp, webclient->respAllocated,
-          "%s: %ld", _("HTTP Code"), respcode);
+      snprintf (webclient->resp, webclient->respAllocated, "%s: %ld",
+          /* CONTEXT: HTTP response code (error) */
+          _("HTTP Code"), respcode);
     }
   }
   if (webclient->callback != NULL) {

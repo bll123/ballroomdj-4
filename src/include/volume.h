@@ -33,6 +33,7 @@ int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist
 void      volumeSetSystemDefault (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 slist_t   *volumeInterfaceList (void);
+char      *volumeCheckInterface (const char *volintfc);
 
 const char *voliDesc (void);
 int       voliProcess (volaction_t action, const char *sinkname,

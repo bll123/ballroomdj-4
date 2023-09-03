@@ -338,6 +338,10 @@ msgstr ""
 msgid "BDJ3 database version is too old."
 msgstr ""
 
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
+msgstr ""
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -823,6 +827,7 @@ msgstr ""
 msgid "HTML Template"
 msgstr ""
 
+#. CONTEXT: HTTP response code (error)
 msgid "HTTP Code"
 msgstr ""
 

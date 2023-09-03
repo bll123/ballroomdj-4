@@ -16,6 +16,7 @@
 #include "ati.h"
 #include "atibdj4.h"
 #include "audiofile.h"
+#include "bdj4intl.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
@@ -29,7 +30,8 @@ static bool gversionlogged = false;
 const char *
 atiiDesc (void)
 {
-  return "BDJ4 Internal";
+  /* CONTEXT: Name of the BDJ4 internal audio tagging interface */
+  return _("BDJ4 Internal");
 }
 
 atidata_t *
