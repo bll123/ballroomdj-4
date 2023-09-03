@@ -2734,8 +2734,11 @@ installerRegister (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
-  if (installer->bdjoptloaded) {
-    bdjoptCleanup ();
+  /* make sure the installer is not in the bdj4-install dir before */
+  /* the clean-inst process is run. */
+  if (chdir (installer->datatopdir)) {
+    installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
+    return;
   }
 
   if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
@@ -2755,6 +2758,10 @@ installerCleanup (installer_t *installer)
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
   } else {
     fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
+  }
+
+  if (installer->bdjoptloaded) {
+    bdjoptCleanup ();
   }
 
   if (installer->guienabled) {

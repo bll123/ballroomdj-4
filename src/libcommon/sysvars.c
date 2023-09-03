@@ -482,11 +482,13 @@ sysvarsInit (const char *argv0)
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
-    fh = fileopOpen (buff, "r");
     *tbuff = '\0';
-    (void) ! fgets (tbuff, sizeof (tbuff), fh);
-    mdextfclose (fh);
-    fclose (fh);
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
     stringTrim (tbuff);
     if (*tbuff) {
       /* save the system locale */
@@ -501,11 +503,13 @@ sysvarsInit (const char *argv0)
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
-    fh = fileopOpen (buff, "r");
     *tbuff = '\0';
-    (void) ! fgets (tbuff, sizeof (tbuff), fh);
-    mdextfclose (fh);
-    fclose (fh);
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
     stringTrim (tbuff);
     if (*tbuff) {
       if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
@@ -696,9 +700,11 @@ sysvarsInit (const char *argv0)
 
     *tbuff = '\0';
     fh = fileopOpen (buff, "r");
-    (void) ! fgets (tbuff, sizeof (tbuff), fh);
-    mdextfclose (fh);
-    fclose (fh);
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
     stringTrim (tbuff);
     if (*tbuff) {
       lsysvars [SVL_BASEPORT] = atoi (tbuff);
@@ -838,22 +844,26 @@ sysvarsGetPythonVersion (void)
       snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
           SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
       if (fileopFileExists (tfn)) {
-        fh = fileopOpen (tfn, "r");
         *buff = '\0';
-        (void) ! fgets (buff, sizeof (buff), fh);
-        mdextfclose (fh);
-        fclose (fh);
+        fh = fileopOpen (tfn, "r");
+        if (fh != NULL) {
+          (void) ! fgets (buff, sizeof (buff), fh);
+          mdextfclose (fh);
+          fclose (fh);
+        }
         stringTrim (buff);
         strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
       }
       snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
           SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
       if (fileopFileExists (tfn)) {
-        fh = fileopOpen (tfn, "r");
         *buff = '\0';
-        (void) ! fgets (buff, sizeof (buff), fh);
-        mdextfclose (fh);
-        fclose (fh);
+        fh = fileopOpen (tfn, "r");
+        if (fh != NULL) {
+          (void) ! fgets (buff, sizeof (buff), fh);
+          mdextfclose (fh);
+          fclose (fh);
+        }
         stringTrim (buff);
         strlcpy (sysvars [SV_PYTHON_VERSION], buff, SV_MAX_SZ);
       }
@@ -1171,45 +1181,47 @@ svGetLinuxOSInfo (char *fn)
   bool        havevers = false;
 
   fh = fileopOpen (fn, "r");
-  if (fh != NULL) {
-    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-      if (! haveprettyname &&
-          strncmp (tbuff, prettytag, strlen (prettytag)) == 0) {
-        strlcpy (buff, tbuff + strlen (prettytag) + 1, sizeof (buff));
-        stringTrim (buff);
-        stringTrimChar (buff, '"');
-        strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
-        haveprettyname = true;
-        rc = true;
-      }
-      if (! haveprettyname &&
-          strncmp (tbuff, desctag, strlen (desctag)) == 0) {
-        strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
-        stringTrim (buff);
-        stringTrimChar (buff, '"');
-        strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
-        haveprettyname = true;
-        rc = true;
-      }
-      if (! havevers &&
-          strncmp (tbuff, reltag, strlen (reltag)) == 0) {
-        strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
-        stringTrim (buff);
-        strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
-        rc = true;
-      }
-      if (! havevers &&
-          strncmp (tbuff, verstag, strlen (verstag)) == 0) {
-        strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
-        stringTrim (buff);
-        stringTrimChar (buff, '"');
-        strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
-        rc = true;
-      }
-    }
-    mdextfclose (fh);
-    fclose (fh);
+  if (fh == NULL) {
+    return rc;
   }
+
+  while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
+    if (! haveprettyname &&
+        strncmp (tbuff, prettytag, strlen (prettytag)) == 0) {
+      strlcpy (buff, tbuff + strlen (prettytag) + 1, sizeof (buff));
+      stringTrim (buff);
+      stringTrimChar (buff, '"');
+      strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+      haveprettyname = true;
+      rc = true;
+    }
+    if (! haveprettyname &&
+        strncmp (tbuff, desctag, strlen (desctag)) == 0) {
+      strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
+      stringTrim (buff);
+      stringTrimChar (buff, '"');
+      strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+      haveprettyname = true;
+      rc = true;
+    }
+    if (! havevers &&
+        strncmp (tbuff, reltag, strlen (reltag)) == 0) {
+      strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
+      stringTrim (buff);
+      strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+      rc = true;
+    }
+    if (! havevers &&
+        strncmp (tbuff, verstag, strlen (verstag)) == 0) {
+      strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
+      stringTrim (buff);
+      stringTrimChar (buff, '"');
+      strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+      rc = true;
+    }
+  }
+  mdextfclose (fh);
+  fclose (fh);
 
   return rc;
 }

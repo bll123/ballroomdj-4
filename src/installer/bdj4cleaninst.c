@@ -27,10 +27,13 @@ main (int argc, const char *argv [])
 {
   const char  *fn;
   size_t      len;
+  int         count;
 
   if (argc < 3) {
     return 1;
   }
+
+  sysvarsInit (argv [0]);
 
   /* argument 1: the plocal/bin directory */
   /* argument 2: the directory to delete */
@@ -68,12 +71,17 @@ main (int argc, const char *argv [])
     return 1;
   }
 
+  count = 0;
   while (fileopIsDirectory (fn)) {
     diropDeleteDir (fn);
     /* there can be a race condition with the insttest.sh script */
     /* if another sleep is done */
     if (isWindows () && fileopIsDirectory (fn)) {
       mssleep (500);
+    }
+    ++count;
+    if (count > 20) {
+      return 1;
     }
   }
   return 0;

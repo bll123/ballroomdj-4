@@ -732,14 +732,13 @@ function cleanInstTest {
 
 function waitForInstallDirRemoval {
   count=0
-  while test -d "$UNPACKDIR" && test $count -lt 60; do
+  while test -d "$UNPACKDIR" && test $count -lt 30; do
     sleep 1
     count=$(($count+1))
   done
   if [[ -d "$UNPACKDIR" ]]; then
-    # removal failed.  try from here.
     echo "install-dir removal failed".
-    rm -rf "$UNPACKDIR"
+    exit 1
   fi
 }
 
@@ -952,7 +951,6 @@ fi
 if [[ T == T ]]; then
   if [[ $tag == linux || $platform == windows ]]; then
     # alternate installation (linux, windows)
-    waitForInstallDirRemoval
     tname=alt-install
     echo "== $section $tname"
     out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
@@ -964,7 +962,6 @@ if [[ T == T ]]; then
         )
     rc=$?
     checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
-    waitForInstallDirRemoval
   fi
 fi
 
