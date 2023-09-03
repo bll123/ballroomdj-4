@@ -753,7 +753,7 @@ mainProcessing (void *udata)
     }
     if (gKillReceived) {
       progstateShutdownProcess (mainData->progstate);
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal (a)");
     }
     return stop;
   }
@@ -804,7 +804,7 @@ mainProcessing (void *udata)
 
   if (gKillReceived) {
     progstateShutdownProcess (mainData->progstate);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal (b)");
   }
   return stop;
 }

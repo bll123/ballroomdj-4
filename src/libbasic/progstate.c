@@ -30,6 +30,7 @@ typedef struct progstate {
   ilist_t             *callbacks [STATE_MAX];
   mstime_t            tm;
   char                *progtag;
+  bool                closed;
 } progstate_t;
 
 /* for debugging */
@@ -64,6 +65,7 @@ progstateInit (char *progtag)
 
   progstate->progtag = progtag;
   mstimestart (&progstate->tm);
+  progstate->closed = false;
   return progstate;
 }
 
@@ -105,9 +107,10 @@ progstateProcess (progstate_t *progstate)
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
   }
-  if (state == STATE_CLOSED) {
+  if (state == STATE_CLOSED && ! progstate->closed) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
+    progstate->closed = true;
   }
   return state;
 }

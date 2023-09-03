@@ -246,8 +246,8 @@ main (int argc, char *argv[])
 
   volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   bdjoptSetStr (OPT_M_VOLUME_INTFC, volintfc);
-  mdfree (volintfc);
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume interface: %s", volintfc);
+  mdfree (volintfc);
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
 
   playerInitSinklist (&playerData);
