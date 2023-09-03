@@ -43,7 +43,7 @@ localeInit (void)
   /* on windows, returns the locale set for the user, not what's set */
   /* in the environment. but GTK apparently picks up the environmental */
   /* setting and uses the appropriate locale */
-  if (sysvarsGetNum (SVL_LOCALE_SYS_SET) == SYSVARS_LOCALE_NOT_SET) {
+  if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     osGetLocale (lbuff, sizeof (lbuff));
     sysvarsSetStr (SV_LOCALE_SYSTEM, lbuff);
   } else {
