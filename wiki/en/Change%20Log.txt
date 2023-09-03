@@ -8,7 +8,7 @@
 
 * Bug Fixes:
     * Conversion: playlists: propagate unrated-ok to dance rating.
-    * Locale: Fix a bug setting up the locale.
+    * Locale: Fix a bug setting up the locale (introduced in 4.3.3.1).
     * Support: Also send playlists when attaching files.
     * Support: Fix display of latest version on http error.
     * Windows: Fix bug where the processes didn't exit properly (introduced in 4.3.3.2).
