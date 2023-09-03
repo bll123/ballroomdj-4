@@ -9,6 +9,10 @@ if [[ ! -d data ]]; then
   echo "No data directory"
   exit 1
 fi
+if [[ -d dev || -d wiki ]]; then
+  echo "Source directory"
+  exit 1
+fi
 cwd=$(pwd)
 
 systype=$(uname -s)
@@ -63,14 +67,9 @@ sed -e "/^VOLUME/ { n ; s/.*/..${voli}/ ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
-ok=F
 if [[ -d ${BASEDIR}/test-music ]]; then
   rm -rf ${BASEDIR}/test-music
   mkdir ${BASEDIR}/test-music
-  ok=T
-fi
-
-if [[ $ok == T ]]; then
   ${BASEDIR}/bin/bdj4 --dmkmfromdb
 fi
 
