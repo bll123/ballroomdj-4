@@ -165,7 +165,7 @@ volumeCheckInterface (const char *volintfc)
   const char  *intfc;
   const char  *gintfc = NULL;
   bool        found = false;
-  char        *voli;
+  char        *voli = NULL;
 
   interfaces = volumeInterfaceList ();
   slistStartIterator (interfaces, &iteridx);
@@ -181,9 +181,9 @@ volumeCheckInterface (const char *volintfc)
   }
 
   if (! found) {
-    voli = strdup (gintfc);
+    voli = mdstrdup (gintfc);
   } else {
-    voli = strdup (volintfc);
+    voli = mdstrdup (volintfc);
   }
   slistFree (interfaces);
 
