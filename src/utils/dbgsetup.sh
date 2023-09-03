@@ -63,4 +63,15 @@ sed -e "/^VOLUME/ { n ; s/.*/..${voli}/ ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
+ok=F
+if [[ -d ${BASEDIR}/test-music ]]; then
+  rm -rf ${BASEDIR}/test-music
+  mkdir ${BASEDIR}/test-music
+  ok=T
+fi
+
+if [[ $ok == T ]]; then
+  ${BASEDIR}/bin/bdj4 --dmkmfromdb
+fi
+
 exit 0
