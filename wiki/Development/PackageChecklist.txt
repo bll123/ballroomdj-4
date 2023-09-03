@@ -51,6 +51,8 @@ on the other platforms.
     * update VERSION.txt
         * set next version
         * set DEVELOPMENT tag
+    * if there were any localization changes, the update
+      crowdin with the changes.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)

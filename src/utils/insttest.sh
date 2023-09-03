@@ -89,7 +89,7 @@ DATADIR="${DATATOPDIR}/data"
 HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
-UNPACKDIRTMP="$UNPACKDIR.tmp"
+UNPACKDIRSAVE="$UNPACKDIR.save"
 MUSICDIR="${cwd}/test-music"
 #ATI=libatimutagen
 ATI=libatibdj4
@@ -730,15 +730,28 @@ function cleanInstTest {
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
 }
 
-function resetUnpack {
-  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-  rsync -aS "$UNPACKDIRTMP/" "$UNPACKDIR"
+function waitForInstallDirRemoval {
+  count=0
+  while test -d "$UNPACKDIR" && test $count -lt 60; do
+    sleep 1
+    count=$(($count+1))
+  done
+  if [[ -d "$UNPACKDIR" ]]; then
+    # removal failed.  try from here.
+    echo "install-dir removal failed".
+    rm -rf "$UNPACKDIR"
+  fi
 }
 
+function resetInstallDir {
+  rsync -aS "$UNPACKDIRSAVE/" "$UNPACKDIR"
+}
+
+# create the installation dir, and save it off
 test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
 ./pkg/mkpkg.sh --preskip --insttest --noclean
-test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
-mv -f "$UNPACKDIR" "$UNPACKDIRTMP"
+test -d "$UNPACKDIRSAVE" && rm -rf "$UNPACKDIRSAVE"
+mv -f "$UNPACKDIR" "$UNPACKDIRSAVE"
 
 section=basic
 
@@ -752,11 +765,11 @@ if [[ $c -ne 0 ]]; then
 fi
 
 cleanInstTest
-resetUnpack
 
 if [[ $readonly == F ]]; then
   # main test db : rebuild of standard test database
-  tname=new-install-no-bdj3
+  resetInstallDir
+  tname=new-install
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
@@ -773,12 +786,13 @@ if [[ $readonly == F ]]; then
   if [[ $keepfirst == T ]]; then
     exit 1
   fi
+  waitForInstallDirRemoval
 fi
 
 if [[ $readonly == F && $crc -eq 0 ]]; then
   # standard re-install
-  resetUnpack
-  tname=re-install-no-bdj3
+  resetInstallDir
+  tname=re-install
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
@@ -791,10 +805,11 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc r y
+  waitForInstallDirRemoval
 
   # standard update
-  resetUnpack
-  tname=update-no-bdj3
+  resetInstallDir
+  tname=update
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
@@ -806,10 +821,12 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
+  waitForInstallDirRemoval
 
   # update w/various update tasks
   # this should get installed as of version 4.1.0
-  resetUnpack
+  waitForInstallDirRemoval
+  resetInstallDir
   tname=update-chk-updater
   echo "== $section $tname"
   checkUpdaterClean $section
@@ -823,6 +840,7 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
+  waitForInstallDirRemoval
 fi
 
 if [[ $readonly == F ]]; then
@@ -869,7 +887,7 @@ fi
 if [[ T == T ]]; then
   # install w/o data files
   cleanInstTest
-  resetUnpack
+  resetInstallDir
   tname=install-readonly
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
@@ -881,6 +899,7 @@ if [[ T == T ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc n n
+  waitForInstallDirRemoval
 fi
 
 if [[ $readonly == T ]]; then
@@ -891,10 +910,10 @@ section=nl_BE
 locale=nl_BE
 
 cleanInstTest
-resetUnpack
+resetInstallDir
 
 # main test db : rebuild of standard test database, nl_BE
-tname=new-install-no-bdj3
+tname=new-install
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
     --verbose --unattended ${quiet} \
@@ -908,9 +927,10 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
 rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
+waitForInstallDirRemoval
 
 if [[ $crc -eq 0 ]]; then
-  resetUnpack
+  resetInstallDir
   tname=update-chk-updater
   echo "== $section $tname"
 
@@ -926,11 +946,13 @@ if [[ $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
+  waitForInstallDirRemoval
 fi
 
 if [[ T == T ]]; then
   if [[ $tag == linux || $platform == windows ]]; then
     # alternate installation (linux, windows)
+    waitForInstallDirRemoval
     tname=alt-install
     echo "== $section $tname"
     out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
@@ -942,6 +964,7 @@ if [[ T == T ]]; then
         )
     rc=$?
     checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+    waitForInstallDirRemoval
   fi
 fi
 
@@ -949,10 +972,10 @@ section=nl_NL
 locale=nl_NL
 
 cleanInstTest
-resetUnpack
+resetInstallDir
 
 # main test db : rebuild of standard test database, nl_NL
-tname=new-install-no-bdj3
+tname=new-install
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
     --verbose --unattended ${quiet} \
@@ -966,10 +989,11 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
 rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
+waitForInstallDirRemoval
 
 if [[ $keep == F ]]; then
   cleanInstTest
-  test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+  test -d "$UNPACKDIRSAVE" && rm -rf "$UNPACKDIRSAVE"
 fi
 
 echo "tests: $tcount pass: $pass fail: $fail"

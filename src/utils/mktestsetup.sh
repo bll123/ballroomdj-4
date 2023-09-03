@@ -8,6 +8,10 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+# with audiotag/dbupdate
+# DBGLEVEL=$((1+2+4+8+4194304+262144))
+DBGLEVEL=$((1+2+4+8))
+
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -165,7 +169,7 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 tfn=data/bdjconfig.txt
-sed -e '/^DEBUGLVL/ { n ; s/.*/..4456459/ ; }' \
+sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \
     -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
     -e '/^BPM/ { n ; s/.*/..BPM/ ; }' \
     ${tfn} > ${tfn}.n

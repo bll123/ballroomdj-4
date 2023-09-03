@@ -1659,7 +1659,7 @@ installerVerifyInstall (installer_t *installer)
 {
   char        tmp [40];
   char        tbuff [MAXPATHLEN];
-  const char  *targv [2];
+  const char  *targv [3];
 
   if (isWindows ()) {
     /* verification on windows is too slow */
@@ -2734,11 +2734,27 @@ installerRegister (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
-  char  buff [MAXPATHLEN];
-  const char  *targv [10];
-
   if (installer->bdjoptloaded) {
     bdjoptCleanup ();
+  }
+
+  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
+    char  ebuff [MAXPATHLEN];
+    char  pbuff [MAXPATHLEN];
+    char  buff [MAXPATHLEN];
+    const char  *targv [10];
+
+    snprintf (ebuff, sizeof (ebuff), "%s/bin/bdj4cleaninst%s",
+        installer->target, sysvarsGetStr (SV_OS_EXEC_EXT));
+    targv [0] = ebuff;
+    snprintf (pbuff, sizeof (pbuff), "%s/plocal/bin", installer->target);
+    targv [1] = pbuff;
+    strlcpy (buff, installer->unpackdir, sizeof (buff));
+    targv [2] = buff;
+    targv [3] = NULL;
+    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  } else {
+    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
   }
 
   if (installer->guienabled) {
@@ -2762,28 +2778,6 @@ installerCleanup (installer_t *installer)
   dataFree (installer->tclshloc);
 
   webclientClose (installer->webclient);
-
-  if (! fileopIsDirectory (installer->unpackdir)) {
-    return;
-  }
-
-  if (installer->clean) {
-    if (isWindows ()) {
-      targv [0] = ".\\install\\win-rminstdir.bat";
-      snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
-      pathDisplayPath (buff, sizeof (buff));
-      targv [1] = buff;
-      targv [2] = NULL;
-      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-      /* give the windows batch file a little time to start */
-      mssleep (300);
-    } else {
-      snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
-      (void) ! system (buff);
-    }
-  } else {
-    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
-  }
 }
 
 static void

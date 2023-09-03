@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "osprocess.h"
@@ -24,8 +25,6 @@ enum {
 #define TAGSTRPFX  "!~~"
 #define TAGSTR     "BDJ4"
 #define TAGSTRSFX  "~~!"
-
-#define BDJ4_INST_DIR  "bdj4-install"
 
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 

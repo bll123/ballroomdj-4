@@ -438,7 +438,7 @@ main (int argc, char * argv[])
     char      * pbuff = NULL;
     char      * tbuff = NULL;
     char      * path = NULL;
-    size_t    sz = 4096;
+    size_t    sz = 16384;
 
     pbuff = mdmalloc (sz);
     tbuff = mdmalloc (sz);

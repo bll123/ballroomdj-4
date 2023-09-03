@@ -24,6 +24,7 @@
 #include "mdebug.h"
 #include "osdir.h"
 #include "osutils.h"
+#include "sysvars.h"
 
 #if _hdr_windows
 # include <windows.h>
@@ -72,6 +73,11 @@ diropDeleteDir (const char *dirname)
   }
 
   osDirClose (dh);
+
+  if (! isWindows ()) {
+    /* in case the dir is actually a link... */
+    fileopDelete (dirname);
+  }
 
 #if _lib_RemoveDirectoryW
   {

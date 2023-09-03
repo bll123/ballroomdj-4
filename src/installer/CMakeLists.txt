@@ -77,11 +77,23 @@ target_link_libraries (bdj4updater PUBLIC
 )
 addIntlLibrary (bdj4updater)
 
+add_executable (bdj4cleaninst bdj4cleaninst.c)
+if (WIN32)
+  target_compile_options (bdj4cleaninst PRIVATE -municode)
+  target_compile_options (bdj4cleaninst PRIVATE -mwindows)
+endif()
+target_link_libraries (bdj4cleaninst PUBLIC
+  libbdj4common
+  z
+  m
+)
+
 install (TARGETS
-  bdj4se bdj4installer bdj4altinst bdj4updater
+  bdj4se bdj4installer bdj4altinst bdj4updater bdj4cleaninst
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (bdj4installer)
+updateRPath (bdj4cleaninst)
 updateRPath (bdj4altinst)
 updateRPath (bdj4updater)

@@ -83,5 +83,7 @@ enum {
 /* cache files */
 #define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
 #define SYSVARS_PY_VERS_FN      "pyvers"
+/* installation */
+#define BDJ4_INST_DIR  "bdj4-install"
 
 #endif /* INC_BDJ4_H */
