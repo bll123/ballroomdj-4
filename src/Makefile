@@ -165,12 +165,12 @@ testsuite:
 .PHONY: testsection
 testsection:
 	./utils/mktestsetup.sh
-	(cd ..;./bin/bdj4 --testsuite --runsection $(section))
+	(cd ..;./bin/bdj4 --testsuite --runsection $(start))
 
 .PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh
-	(cd ..;./bin/bdj4 --testsuite --runtest $(test))
+	(cd ..;./bin/bdj4 --testsuite --runtest $(start))
 
 .PHONY: teststart
 teststart:

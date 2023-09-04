@@ -1497,7 +1497,8 @@ resetPlayer (testsuite_t *testsuite)
   char  tmp [40];
 
   /* clears both queue and playlist queue, resets manage idx */
-  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, 0);
+  snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
@@ -1506,11 +1507,9 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   /* wait a bit for all the messages to clear */
   mssleep (200);
-  snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
-  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
   /* wait some more for all the messages to clear */
   mssleep (200);
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
 }
 
 static bool

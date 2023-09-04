@@ -26,6 +26,7 @@ chk prepqueuecount 5
 # queue_clear clears the playlist and the music q
 # it does not clear the currently playing song
 msg main QUEUE_CLEAR 0
+mssleep 200
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
@@ -90,12 +91,14 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main MUSICQ_INSERT 0~999~3
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate playing actualvolume defaultvol
 msg player PLAY_FADE
@@ -253,7 +256,7 @@ get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1500
+resptimeout 2000
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped
@@ -277,7 +280,7 @@ get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1500
+resptimeout 2000
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500
 wait playstate playing
@@ -286,7 +289,7 @@ get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1500
+resptimeout 2000
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped

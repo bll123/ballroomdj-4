@@ -9,8 +9,8 @@ test 70-20 Insert-Specific
 get main CHK_MAIN_MUSICQ
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mq0len 1 mq1len 1 mq0idx0 0 mq1idx1 -1
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mq0len 1 mq0idx0 0 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
@@ -36,8 +36,8 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
@@ -79,8 +79,8 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1

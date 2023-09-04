@@ -87,12 +87,13 @@ msg player PLAYER_VOLUME 20
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main CMD_PLAY
-resptimeout 2000
-get player CHK_PLAYER_STATUS
-chk-not actualvolume 20
-# check normal song-end processing
+resptimeout 1000
+# wait until the player hits playing status.
+# the volume at that time should be fade-in.
 get player CHK_PLAYER_STATUS
 wait playstate playing
+chk-not actualvolume 20
+# check normal song-end processing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume 20 realvolume 20 actualvolume 20

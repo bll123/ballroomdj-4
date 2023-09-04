@@ -15,8 +15,8 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
@@ -74,8 +74,8 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500

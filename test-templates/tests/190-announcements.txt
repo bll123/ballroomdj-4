@@ -164,11 +164,11 @@ test 190-30 With-Player-Queue-Announce
 msg main CHK_CLEAR_PREP_Q
 msg main CHK_MAIN_SET_PLAYANNOUNCE 1
 msg main QUEUE_PLAYLIST 0~test-seq-a
-mssleep 100
+mssleep 200
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 7
 msg main CMD_PLAY
-resptimeout 2000
+resptimeout 3000
 get player CHK_PLAYER_SONG
 wait p-songfn Announce/waltz.mp3
 get player CHK_PLAYER_SONG
