@@ -71,7 +71,7 @@
 #cmakedefine01 _lib__wfopen
 #cmakedefine01 _lib__wgetenv
 #cmakedefine01 _lib__wrename
-#cmakedefine01 _lib__wstat
+#cmakedefine01 _lib__wstat64
 #cmakedefine01 _lib__wunlink
 #cmakedefine01 _lib__wutime
 

@@ -31,12 +31,27 @@
 #define EDATA "def123"
 #define WTEST "abcÜÄÑÖ내가 제일 잘 나가ははは夕陽伴我歸Ne_Русский_Шторм"
 
+START_TEST(osutils_getenv)
+{
+  char  *str = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getenv");
+  mdebugSubTag ("osutils_getenv");
+
+  str = getenv ("PATH");
+  ck_assert_ptr_nonnull (str);
+
+  str = getenv ("XYZZY");
+  ck_assert_ptr_null (str);
+}
+END_TEST
+
 START_TEST(osutils_setenv)
 {
   char  *str = NULL;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_chk");
-  mdebugSubTag ("osutils_chk");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_setenv");
+  mdebugSubTag ("osutils_setenv");
 
   str = getenv (ENAME);
   ck_assert_ptr_null (str);
@@ -130,7 +145,7 @@ END_TEST
 START_TEST(osutils_widechar)
 {
   if (isWindows ()) {
-#if _args_mkdir == 1      // windows
+#if _WINNT
     wchar_t *wcs;
     char    *nstr;
 
@@ -158,6 +173,7 @@ osutils_suite (void)
   s = suite_create ("osutils");
   tc = tcase_create ("osutils");
   tcase_set_tags (tc, "libcommon");
+  tcase_add_test (tc, osutils_getenv);
   tcase_add_test (tc, osutils_setenv);
   tcase_add_test (tc, osutils_link);
   tcase_add_test (tc, osutils_getsysfont);

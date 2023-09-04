@@ -48,7 +48,7 @@ START_TEST(vsencdec_encdec)
   for (int i = 0; i < TEST_SZ; ++i) {
     vsencdec (tests [i].d, ebuff, sizeof (ebuff));
     vsencdec (ebuff, dbuff, sizeof (dbuff));
-    // fprintf (stderr, "t: %s e: %s d: %s\n", tests [i].d, ebuff, dbuff);
+    // fprintf (stderr, "%d: t: %s e: %s d: %s\n", i, tests [i].d, ebuff, dbuff);
     ck_assert_str_eq (tests [i].d, dbuff);
   }
 }

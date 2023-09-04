@@ -534,7 +534,7 @@ mdebugLog (const char *fmt, ...)
     return;
   }
 
-#if __WINNT__
+#if _WIN32
   fh = fopen ("mdebug.txt", "a");
 #else
   fh = stderr;
@@ -542,7 +542,7 @@ mdebugLog (const char *fmt, ...)
   va_start (args, fmt);
   vfprintf (fh, fmt, args);
   va_end (args);
-#if __WINNT__
+#if _WIN32
   fclose (fh);
 #endif
 }

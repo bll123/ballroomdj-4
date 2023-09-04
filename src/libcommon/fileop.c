@@ -39,13 +39,13 @@ fileopFileExists (const char *fname)
 {
   int           rc;
 
-#if _lib__wstat
+#if _lib__wstat64
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     wchar_t       *tfname = NULL;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFMT) == S_IFDIR) {
       rc = -1;
     }
@@ -68,14 +68,14 @@ fileopSize (const char *fname)
 {
   ssize_t       sz = -1;
 
-#if _lib__wstat
+#if _lib__wstat64
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     wchar_t       *tfname = NULL;
     int           rc;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0) {
       sz = statbuf.st_size;
     }
@@ -100,14 +100,14 @@ fileopModTime (const char *fname)
 {
   time_t  mtime = 0;
 
-#if _lib__wstat
+#if _lib__wstat64
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     wchar_t       *tfname = NULL;
     int           rc;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0) {
       mtime = statbuf.st_mtime;
     }
@@ -130,15 +130,15 @@ fileopModTime (const char *fname)
 void
 fileopSetModTime (const char *fname, time_t mtime)
 {
-#if _lib__wstat && _lib__wutime
+#if _lib__wstat64 && _lib__wutime
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     struct _utimbuf utimebuf;
     wchar_t       *tfname = NULL;
     int           rc;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0) {
       utimebuf.actime = statbuf.st_atime;
       utimebuf.modtime = mtime;
@@ -167,14 +167,14 @@ fileopCreateTime (const char *fname)
 {
   time_t  ctime = 0;
 
-#if _lib__wstat
+#if _lib__wstat64
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     wchar_t       *tfname = NULL;
     int           rc;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0) {
       ctime = statbuf.st_ctime;
     }
@@ -218,13 +218,13 @@ fileopIsDirectory (const char *fname)
 {
   int         rc;
 
-#if _lib__wstat
+#if _lib__wstat64
   {
-    struct _stat  statbuf;
+    struct __stat64  statbuf;
     wchar_t       *tfname = NULL;
 
     tfname = osToWideChar (fname);
-    rc = _wstat (tfname, &statbuf);
+    rc = _wstat64 (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFDIR) {
       rc = -1;
     }

@@ -16,8 +16,6 @@ add_executable (bdj4manageui
 )
 if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -municode)
-endif()
-if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui PUBLIC
@@ -52,7 +50,6 @@ addWinSockLibrary (bdj4bpmcounter)
 add_executable (bdj4dbupdate bdj4dbupdate.c)
 if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -municode)
-  target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbupdate PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
@@ -66,7 +63,6 @@ addWinSockLibrary (bdj4dbupdate)
 add_executable (bdj4dbtag bdj4dbtag.c)
 if (WIN32)
   target_compile_options (bdj4dbtag PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbtag PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common

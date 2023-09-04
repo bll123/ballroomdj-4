@@ -67,7 +67,6 @@ addIntlLibrary (bdj4altinst)
 add_executable (bdj4updater bdj4updater.c)
 if (WIN32)
   target_compile_options (bdj4updater PRIVATE -municode)
-  target_compile_options (bdj4updater PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4updater PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
@@ -80,7 +79,6 @@ addIntlLibrary (bdj4updater)
 add_executable (bdj4cleaninst bdj4cleaninst.c)
 if (WIN32)
   target_compile_options (bdj4cleaninst PRIVATE -municode)
-  target_compile_options (bdj4cleaninst PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4cleaninst PUBLIC
   libbdj4common

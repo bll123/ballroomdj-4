@@ -22,9 +22,13 @@ case ${systype} in
     shaprog="shasum -a 512"
     macos=T
     ;;
-  MINGW64*|MINGW32*)
+  MINGW64*)
     nproc=$NUMBER_OF_PROCESSORS
     win=T
+    ;;
+  MINGW32*)
+    echo "Platform not supported"
+    exit 1
     ;;
 esac
 

@@ -3,7 +3,7 @@
  */
 #include "config.h"
 
-#if __WINNT__
+#if _WIN32
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -118,4 +118,4 @@ osResumeSleep (void)
   SetThreadExecutionState (ES_CONTINUOUS);
 }
 
-#endif /* __WINNT__ */
+#endif /* _WIN32 */

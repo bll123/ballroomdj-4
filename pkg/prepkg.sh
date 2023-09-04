@@ -93,9 +93,25 @@ if [[ $platform == windows ]]; then
   count=0
 
   # bll@win10-64 MINGW64 ~/bdj4/bin
-  # $ ldd bdj4.exe | grep mingw
+  # $ ldd bdj4.exe | grep '(mingw|ucrt)64'
   #       libintl-8.dll => /mingw64/bin/libintl-8.dll (0x7ff88c570000)
   #       libiconv-2.dll => /mingw64/bin/libiconv-2.dll (0x7ff8837e0000)
+  #       libiconv-2.dll => /ucrt64/bin/libiconv-2.dll (0x7ff8837e0000)
+
+  libtag=""
+  case $MSYSTEM in
+    MINGW64)
+      libtag=mingw64
+      ;;
+    UCRT64)
+      libtag=ucrt64
+      ;;
+  esac
+
+  if [[ $libtag == "" ]]; then
+    echo "Unknown library target"
+    exit 1
+  fi
 
   echo "-- $(date +%T) copying .dll files"
   PBIN=plocal/bin
@@ -103,10 +119,10 @@ if [[ $platform == windows ]]; then
   # librsvg is the SVG library; it is not a direct dependent.
   # gdbus
   exelist="
-      /mingw64/bin/gspawn-win64-helper.exe
-      /mingw64/bin/gspawn-win64-helper-console.exe
-      /mingw64/bin/librsvg-2-2.dll
-      /mingw64/bin/gdbus.exe
+      /${libtag}/bin/gspawn-win64-helper.exe
+      /${libtag}/bin/gspawn-win64-helper-console.exe
+      /${libtag}/bin/librsvg-2-2.dll
+      /${libtag}/bin/gdbus.exe
       "
   for fn in $exelist; do
     bfn=$(basename $fn)
@@ -124,7 +140,7 @@ if [[ $platform == windows ]]; then
 
   for fn in plocal/bin/*.dll bin/*.exe $exelist ; do
     ldd $fn |
-      grep mingw |
+      grep ${libtag} |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
   done
   for fn in $(sort -u $dlllistfn); do
@@ -140,14 +156,14 @@ if [[ $platform == windows ]]; then
   # stage the other required gtk files.
 
   # various gtk stuff
-  cp -prf /mingw64/lib/gdk-pixbuf-2.0 plocal/lib
-  cp -prf /mingw64/lib/girepository-1.0 plocal/lib
+  rsync -aS --delete /${libtag}/lib/gdk-pixbuf-2.0 plocal/lib
+  rsync -aS --delete /${libtag}/lib/girepository-1.0 plocal/lib
   mkdir -p plocal/share/icons
-  cp -prf /mingw64/share/icons/* plocal/share/icons
+  rsync -aS --delete /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
-  cp -prf /mingw64/share/glib-2.0/schemas plocal/share/glib-2.0
+  rsync -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/gtk-3.0
-  cp -pf /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
+  cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
   cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
 [Settings]
@@ -162,7 +178,7 @@ gtk-theme-name = Windows-10-Dark
 _HERE_
 
   mkdir -p plocal/etc/fonts
-  cp -prf /mingw64/etc/fonts plocal/etc
+  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
 
 fi # is windows
 

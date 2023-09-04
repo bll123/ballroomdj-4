@@ -3,7 +3,7 @@
  */
 #include "config.h"
 
-#if __WINNT__
+#if _WIN32
 
 #include <stdio.h>
 #include <stdlib.h>

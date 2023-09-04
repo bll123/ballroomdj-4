@@ -52,7 +52,7 @@ main (int argc, const char *argv [])
   int         targc = 0;
 
 
-#if __WINNT__
+#if _WIN32
   isWindows = true;
   archivenm = "bdj4-install.cab";
 # if BDJ4_USE_GTK3

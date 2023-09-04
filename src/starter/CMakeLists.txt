@@ -24,7 +24,6 @@ endif()
 add_executable (bdj4 bdj4.c)
 if (WIN32)
   target_compile_options (bdj4 PRIVATE -municode)
-  target_compile_options (bdj4 PRIVATE -mwindows)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
 target_link_libraries (bdj4 PUBLIC
@@ -45,7 +44,6 @@ updateRPath (bdj4)
 add_executable (bdj4g bdj4.c)
 if (WIN32)
   target_compile_options (bdj4g PRIVATE -municode)
-  target_compile_options (bdj4g PRIVATE -mwindows)
 endif()
 target_include_directories (bdj4g
   PUBLIC ${GTK_INCLUDE_DIRS}

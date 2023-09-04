@@ -3,7 +3,7 @@
  */
 #include "config.h"
 
-#if __WINNT__
+#if _WIN32
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -268,4 +268,4 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   return rc;
 }
 
-#endif /* __WINNT__ */
+#endif /* _WIN32 */

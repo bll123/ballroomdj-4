@@ -210,6 +210,12 @@ case $systype in
     ;;
   MINGW64*)
     tag=win64
+    case ${MSYSTEM} in
+      UCRT64)
+        ;;
+      MINGW64)
+        ;;
+    esac
     ;;
   MINGW32*)
     echo "Platform not supported"

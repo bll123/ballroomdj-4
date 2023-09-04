@@ -70,6 +70,12 @@ function pkgnmgetdata {
       pn_tag=win64
       pn_sfx=.exe
       pn_archtag=
+      case ${MSYSTEM} in
+        MINGW64)
+          ;;
+        UCRT64)
+          ;;
+      esac
       ;;
     MINGW32*)
       echo "Platform not supported"
