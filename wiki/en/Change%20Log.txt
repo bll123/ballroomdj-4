@@ -4,9 +4,18 @@
 
 <!--
 
-**4.3.3.5 2023-9---**
+**4.3.3.6 2023-9---**
+
+* Bug Fixes:
+    * Windows: fix certain error message displays.
 
 -->
+
+**4.3.3.5 2023-9-4**
+
+* Bug Fixes:
+    * Audio Tags: BDJ4-Internal: Update libmp4tag to version 1.2.4.
+    * Windows: rebuild with the UCRT libraries.
 
 **4.3.3.4 2023-9-4**
 
@@ -496,4 +505,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-09-04 06:06:40; BDJ4 version 4.3.3.4)_
+<br>_(Updated 2023-09-04 15:38:43; BDJ4 version 4.3.3.5)_

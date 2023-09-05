@@ -369,6 +369,7 @@ check_function_exists (Sleep _lib_Sleep)
 check_function_exists (TerminateProcess _lib_TerminateProcess)
 check_function_exists (WideCharToMultiByte _lib_WideCharToMultiByte)
 check_function_exists (WriteFile _lib_WriteFile)
+check_function_exists (_sprintf_p _lib__sprintf_p)
 check_function_exists (_wfopen _lib__wfopen)
 check_function_exists (_wgetenv _lib__wgetenv)
 check_function_exists (_wrename _lib__wrename)
@@ -377,8 +378,8 @@ check_function_exists (_wunlink _lib__wunlink)
 check_function_exists (_wutime _lib__wutime)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-# cmake weirdness
-# these do exist
+# these do exist, would need to use
+# cmake's check_symbol_exists to locate them.
 if (WIN32)
   set (_lib_CreateFile 1)
   set (_lib_CreateProcess 1)
@@ -386,6 +387,7 @@ if (WIN32)
   set (_lib_RegOpenKeyEx 1)
   set (_lib_RtlGetVersion 1)
   set (_lib_LoadLibrary 1)
+  set (_lib__sprintf_p 1)
 endif()
 
 set (CMAKE_REQUIRED_INCLUDES winsock2.h;windows.h)
@@ -436,9 +438,6 @@ check_function_exists (setenv _lib_setenv)
 check_function_exists (setrlimit _lib_setrlimit)
 check_function_exists (sigaction _lib_sigaction)
 check_function_exists (signal _lib_signal)
-# needed for windows positional parameters
-# _sprintf_p does not appear to exist in the library
-check_function_exists (_sprintf_p_l _lib__sprintf_p_l)
 check_function_exists (srand48 _lib_srand48)
 check_function_exists (srand _lib_srand)
 check_function_exists (srandom _lib_srandom)

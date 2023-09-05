@@ -26,6 +26,10 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.3.3.5:
+    Please upgrade to version 4.3.3.5 if you are using
+      version 4.3.3.1 through 4.3.3.4.
+
   4.3.3.3:
     MacOS Installation:
       The macos-pre-install-macports-v14.sh script must be run.

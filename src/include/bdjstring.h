@@ -20,13 +20,12 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
 /* windows snprintf does not support positional parameters. */
-/*_sprintf_p doesn't seem to be in the library... */
-/* use _sprintf_p_l instead with a null locale */
-#if _lib__sprintf_p_l
+/* use _sprintf_p instead */
+#if _lib__sprintf_p
 # ifdef snprintf
 #  undef snprintf   // undo mongoose snprintf define
 # endif
-# define snprintf(s,ssz,fmt,...) _sprintf_p_l (s, ssz, fmt, NULL, ##__VA_ARGS__)
+# define snprintf(s,ssz,fmt,...) _sprintf_p (s, ssz, fmt, ##__VA_ARGS__)
 #endif
 
 #endif /* INC_BDJSTRING */
