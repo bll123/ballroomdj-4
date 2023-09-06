@@ -30,11 +30,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ADJUSTFLAGS",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "ADJUSTFLAGS", NULL, NULL },
-      { "----:BDJ4:ADJUSTFLAGS", "BDJ4", "ADJUSTFLAGS" },
-      { "TXXX=ADJUSTFLAGS", "TXXX", "ADJUSTFLAGS" },
-      { NULL, NULL, NULL },
-      { "ADJUSTFLAGS", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "ADJUSTFLAGS", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:ADJUSTFLAGS", "BDJ4", "ADJUSTFLAGS" },
+      [TAG_TYPE_ID3] = { "TXXX=ADJUSTFLAGS", "TXXX", "ADJUSTFLAGS" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -57,11 +57,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ALBUM",                      /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "ALBUM", NULL, NULL },
-      { "©alb", NULL, NULL },
-      { "TALB", NULL, NULL },
-      { "WM/AlbumTitle", NULL, NULL },
-      { "album", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "ALBUM", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©alb", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TALB", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/AlbumTitle", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Album",                      /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -84,11 +84,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ALBUMARTIST",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "ALBUMARTIST", NULL, NULL },
-      { "aART", NULL, NULL },
-      { "TPE2", NULL, NULL },
-      { "WM/AlbumArtist", NULL, NULL },
-      { "album_artist", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "ALBUMARTIST", NULL, NULL },
+      [TAG_TYPE_MP4] = { "aART", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TPE2", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/AlbumArtist", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Album Artist",               /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -111,11 +111,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ARTIST",                     /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "ARTIST", NULL, NULL },
-      { "©ART", NULL, NULL },
-      { "TPE1", NULL, NULL },
-      { "Author", NULL, NULL },
-      { "artist", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "ARTIST", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©ART", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TPE1", NULL, NULL },
+      [TAG_TYPE_WMA] = { "Author", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Artist",                     /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -138,11 +138,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "BPM",                        /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "BPM", NULL, NULL },
-      { "tmpo", NULL, NULL },
-      { "TBPM", NULL, NULL },
-      { "WM/BeatsPerMinute", NULL, NULL },
-      { "bpm", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "BPM", NULL, NULL },
+      [TAG_TYPE_MP4] = { "tmpo", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TBPM", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/BeatsPerMinute", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "BPM",                        /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -165,11 +165,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "BPMDISPLAY",                 /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { "BPMDISPLAY", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -192,11 +192,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "COMPOSER",                   /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "COMPOSER", NULL, NULL },
-      { "©wrt", NULL, NULL },
-      { "TCOM", NULL, NULL },
-      { "WM/Composer", NULL, NULL },
-      { "composer", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "COMPOSER", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©wrt", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TCOM", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Composer", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Composer",                   /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -219,11 +219,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "CONDUCTOR",                  /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "CONDUCTOR", NULL, NULL },
-      { "----:com.apple.iTunes:CONDUCTOR", "BDJ4", "CONDUCTOR" },
-      { "TPE3", NULL, NULL },
-      { "WM/Conductor", NULL, NULL },
-      { "performer", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "CONDUCTOR", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:com.apple.iTunes:CONDUCTOR", "BDJ4", "CONDUCTOR" },
+      [TAG_TYPE_ID3] = { "TPE3", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Conductor", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -246,11 +246,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DANCE",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DANCE", NULL, NULL },
-      { "----:BDJ4:DANCE", "BDJ4", "DANCE" },
-      { "TXXX=DANCE", "TXXX", "DANCE" },
-      { NULL, NULL, NULL },
-      { "DANCE", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DANCE", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:DANCE", "BDJ4", "DANCE" },
+      [TAG_TYPE_ID3] = { "TXXX=DANCE", "TXXX", "DANCE" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_COMBOBOX,                  /* edit type            */
@@ -273,11 +273,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DANCELEVEL",                 /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DANCELEVEL", NULL, NULL },
-      { "----:BDJ4:DANCELEVEL", "BDJ4", "DANCELEVEL" },
-      { "TXXX=DANCELEVEL", "TXXX", "DANCELEVEL" },
-      { NULL, NULL, NULL },
-      { "DANCELEVEL", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DANCELEVEL", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:DANCELEVEL", "BDJ4", "DANCELEVEL" },
+      [TAG_TYPE_ID3] = { "TXXX=DANCELEVEL", "TXXX", "DANCELEVEL" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -300,11 +300,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DANCERATING",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DANCERATING", NULL, NULL },
-      { "----:BDJ4:DANCERATING", "BDJ4", "DANCERATING" },
-      { "TXXX=DANCERATING", "TXXX", "DANCERATING" },
-      { NULL, NULL, NULL },
-      { "DANCERATING", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DANCERATING", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:DANCERATING", "BDJ4", "DANCERATING" },
+      [TAG_TYPE_ID3] = { "TXXX=DANCERATING", "TXXX", "DANCERATING" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Rating",                     /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -327,11 +327,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DATE",                       /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DATE", NULL, NULL },
-      { "©day", NULL, NULL },
-      { "TDRC", NULL, NULL },
-      { "WM/Year", NULL, NULL },
-      { "date", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DATE", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©day", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TDRC", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Year", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Year",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -354,11 +354,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DBADDDATE",                  /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { "DBADDDATE", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     "Date Added",                 /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -381,11 +381,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DISC",                       /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DISCNUMBER", NULL, NULL },
-      { "disk", NULL, NULL },
-      { "TPOS", NULL, NULL },
-      { "WM/PartOfSet", NULL, NULL },
-      { "disc", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DISCNUMBER", NULL, NULL },
+      [TAG_TYPE_MP4] = { "disk", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TPOS", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/PartOfSet", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Disc Number",                /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -408,11 +408,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DISCTOTAL",                  /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DISCTOTAL", NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DISCTOTAL", NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     "Disc Count",                 /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -435,11 +435,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DURATION",                   /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "DURATION", NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { "DURATION", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "DURATION", NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -462,11 +462,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "FILE",                       /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { "FILE", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     "Location",                   /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -489,11 +489,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "FAVORITE",                   /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "FAVORITE", NULL, NULL },
-      { "----:BDJ4:FAVORITE", "BDJ4", "FAVORITE" },
-      { "TXXX=FAVORITE", "TXXX", "FAVORITE" },
-      { NULL, NULL, NULL },
-      { "FAVORITE", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "FAVORITE", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:FAVORITE", "BDJ4", "FAVORITE" },
+      [TAG_TYPE_ID3] = { "TXXX=FAVORITE", "TXXX", "FAVORITE" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Favorite",                   /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -516,11 +516,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "GENRE",                      /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "GENRE", NULL, NULL },
-      { "©gen", NULL, NULL },
-      { "TCON", NULL, NULL },
-      { "WM/Genre", NULL, NULL },
-      { "genre", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "GENRE", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©gen", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TCON", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Genre", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Genre",                      /* itunes name          */
     ET_COMBOBOX,                  /* edit type            */
@@ -543,11 +543,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "KEYWORD",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "KEYWORD", NULL, NULL },
-      { "----:BDJ4:KEYWORD", "BDJ4", "KEYWORD" },
-      { "TXXX=KEYWORD", "TXXX", "KEYWORD" },
-      { NULL, NULL, NULL },
-      { "KEYWORD", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "KEYWORD", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:KEYWORD", "BDJ4", "KEYWORD" },
+      [TAG_TYPE_ID3] = { "TXXX=KEYWORD", "TXXX", "KEYWORD" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -570,11 +570,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "MQDISPLAY",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "MQDISPLAY", NULL, NULL },
-      { "----:BDJ4:MQDISPLAY", "BDJ4", "MQDISPLAY" },
-      { "TXXX=MQDISPLAY", "TXXX", "MQDISPLAY" },
-      { NULL, NULL, NULL },
-      { "MQDISPLAY", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "MQDISPLAY", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:MQDISPLAY", "BDJ4", "MQDISPLAY" },
+      [TAG_TYPE_ID3] = { "TXXX=MQDISPLAY", "TXXX", "MQDISPLAY" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -597,11 +597,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "RECORDING_ID",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "MUSICBRAINZ_TRACKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Track Id", "BDJ4", "MusicBrainz Track Id" },
-      { "UFID=http://musicbrainz.org", "UFID", "http://musicbrainz.org" },
-      { "MusicBrainz/Track Id", NULL, NULL },
-      { "MusicBrainz Track Id", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "MUSICBRAINZ_TRACKID", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:com.apple.iTunes:MusicBrainz Track Id", "BDJ4", "MusicBrainz Track Id" },
+      [TAG_TYPE_ID3] = { "UFID=http://musicbrainz.org", "UFID", "http://musicbrainz.org" },
+      [TAG_TYPE_WMA] = { "MusicBrainz/Track Id", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -624,11 +624,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "WORK_ID",
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "MUSICBRAINZ_WORKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Work Id", "BDJ4", "MusicBrainz Work Id" },
-      { "TXXX=MusicBrainz Work Id", "TXXX", "MusicBrainz Work Id" },
-      { "MusicBrainz/Work Id", NULL, NULL },
-      { "MusicBrainz Work Id", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "MUSICBRAINZ_WORKID", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:com.apple.iTunes:MusicBrainz Work Id", "BDJ4", "MusicBrainz Work Id" },
+      [TAG_TYPE_ID3] = { "TXXX=MusicBrainz Work Id", "TXXX", "MusicBrainz Work Id" },
+      [TAG_TYPE_WMA] = { "MusicBrainz/Work Id", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -651,11 +651,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TRACK_ID",                    /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "MUSICBRAINZ_RELEASETRACKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Release Track Id", "BDJ4", "MusicBrainz Release Track Id" },
-      { "TXXX=MusicBrainz Release Track Id", "TXXX", "MusicBrainz Release Track Id" },
-      { "MusicBrainz/Release Track Id", NULL, NULL },
-      { "MusicBrainz Release Track Id", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "MUSICBRAINZ_RELEASETRACKID", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:com.apple.iTunes:MusicBrainz Release Track Id", "BDJ4", "MusicBrainz Release Track Id" },
+      [TAG_TYPE_ID3] = { "TXXX=MusicBrainz Release Track Id", "TXXX", "MusicBrainz Release Track Id" },
+      [TAG_TYPE_WMA] = { "MusicBrainz/Release Track Id", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },  /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -678,11 +678,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "NOTES",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "NOTES", NULL, NULL },
-      { "----:BDJ4:NOTES", "BDJ4", "NOTES" },
-      { "TXXX=NOTES", "TXXX", "NOTES" },
-      { NULL, NULL, NULL },
-      { "NOTES", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "NOTES", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:NOTES", "BDJ4", "NOTES" },
+      [TAG_TYPE_ID3] = { "TXXX=NOTES", "TXXX", "NOTES" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -705,11 +705,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "SAMESONG",                 /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "SAMESONG", NULL, NULL },
-      { "----:BDJ4:SAMESONG", "BDJ4", "SAMESONG" },
-      { "TXXX=SAMESONG", "TXXX", "SAMESONG" },
-      { NULL, NULL, NULL },
-      { "SAMESONG", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "SAMESONG", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:SAMESONG", "BDJ4", "SAMESONG" },
+      [TAG_TYPE_ID3] = { "TXXX=SAMESONG", "TXXX", "SAMESONG" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -732,11 +732,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "SONGEND",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "SONGEND", NULL, NULL },
-      { "----:BDJ4:SONGEND", "BDJ4", "SONGEND" },
-      { "TXXX=SONGEND", "TXXX", "SONGEND" },
-      { NULL, NULL, NULL },
-      { "SONGEND", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "SONGEND", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:SONGEND", "BDJ4", "SONGEND" },
+      [TAG_TYPE_ID3] = { "TXXX=SONGEND", "TXXX", "SONGEND" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Stop Time",                  /* itunes name          */
     ET_SPINBOX_TIME,              /* edit type            */
@@ -759,11 +759,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "SONGSTART",                  /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "SONGSTART", NULL, NULL },
-      { "----:BDJ4:SONGSTART", "BDJ4", "SONGSTART" },
-      { "TXXX=SONGSTART", "TXXX", "SONGSTART" },
-      { NULL, NULL, NULL },
-      { "SONGSTART", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "SONGSTART", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:SONGSTART", "BDJ4", "SONGSTART" },
+      [TAG_TYPE_ID3] = { "TXXX=SONGSTART", "TXXX", "SONGSTART" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Start Time",                 /* itunes name          */
     ET_SPINBOX_TIME,              /* edit type            */
@@ -786,11 +786,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "SPEEDADJUSTMENT",            /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "SPEEDADJUSTMENT", NULL, NULL },
-      { "----:BDJ4:SPEEDADJUSTMENT", "BDJ4", "SPEEDADJUSTMENT" },
-      { "TXXX=SPEEDADJUSTMENT", "TXXX", "SPEEDADJUSTMENT" },
-      { NULL, NULL, NULL },
-      { "SPEEDADJUSTMENT", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "SPEEDADJUSTMENT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:SPEEDADJUSTMENT", "BDJ4", "SPEEDADJUSTMENT" },
+      [TAG_TYPE_ID3] = { "TXXX=SPEEDADJUSTMENT", "TXXX", "SPEEDADJUSTMENT" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SCALE,                     /* edit type            */
@@ -813,11 +813,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "STATUS",                     /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "STATUS", NULL, NULL },
-      { "----:BDJ4:STATUS", "BDJ4", "STATUS" },
-      { "TXXX=STATUS", "TXXX", "STATUS" },
-      { NULL, NULL, NULL },
-      { "STATUS", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "STATUS", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:STATUS", "BDJ4", "STATUS" },
+      [TAG_TYPE_ID3] = { "TXXX=STATUS", "TXXX", "STATUS" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -840,11 +840,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TAGS",                       /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "TAGS", NULL, NULL },
-      { "keyw", NULL, NULL },
-      { "TXXX=TAGS", "TXXX", "TAGS" },
-      { NULL, NULL, NULL },
-      { "keywords", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "TAGS", NULL, NULL },
+      [TAG_TYPE_MP4] = { "keyw", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TXXX=TAGS", "TXXX", "TAGS" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -867,11 +867,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TITLE",                      /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "TITLE", NULL, NULL },
-      { "©nam", NULL, NULL },
-      { "TIT2", NULL, NULL },
-      { "Title", NULL, NULL },
-      { "title", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "TITLE", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©nam", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TIT2", NULL, NULL },
+      [TAG_TYPE_WMA] = { "Title", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Name",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -894,11 +894,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TRACKNUMBER",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "TRACKNUMBER", NULL, NULL },
-      { "trkn", NULL, NULL },
-      { "TRCK", NULL, NULL },
-      { "WM/TrackNumber", NULL, NULL },
-      { "track", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "TRACKNUMBER", NULL, NULL },
+      [TAG_TYPE_MP4] = { "trkn", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TRCK", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/TrackNumber", NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Track Number",               /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -921,11 +921,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TRACKTOTAL",                 /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "TRACKTOTAL", NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "TRACKTOTAL", NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     "Track Count",                /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -948,11 +948,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "LASTUPDATED",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { "LASTUPDATED", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -975,11 +975,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "VOLUMEADJUSTPERC",           /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { "VOLUMEADJUSTPERC", NULL, NULL },
-      { "----:BDJ4:VOLUMEADJUSTPERC", "BDJ4", "VOLUMEADJUSTPERC" },
-      { "TXXX=VOLUMEADJUSTPERC", "TXXX", "VOLUMEADJUSTPERC" },
-      { NULL, NULL, NULL },
-      { "VOLUMEADJUSTPERC", NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { "VOLUMEADJUSTPERC", NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:VOLUMEADJUSTPERC", "BDJ4", "VOLUMEADJUSTPERC" },
+      [TAG_TYPE_ID3] = { "TXXX=VOLUMEADJUSTPERC", "TXXX", "VOLUMEADJUSTPERC" },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SCALE,                     /* edit type            */
@@ -1002,11 +1002,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "RRN",                        /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1029,11 +1029,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DBIDX",                      /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1056,11 +1056,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "PFXLEN",                     /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL, },
-      { NULL, NULL, NULL, },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL, },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL, },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },        /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1083,11 +1083,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TEMPORARY",                  /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */

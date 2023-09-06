@@ -33,7 +33,7 @@ int atibdj4RestoreMP3Tags (atidata_t *atidata, atisaved_t *atisaved, const char 
 void atibdj4CleanMP3Tags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4LogMP3Version (void);
 
-/* atibdj4mp4.cpp */
+/* atibdj4mp4.c */
 void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 atisaved_t * atibdj4SaveMP4Tags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
@@ -66,5 +66,14 @@ void atibdj4FreeSavedOpusTags (atisaved_t *atisaved, int tagtype, int filetype);
 int  atibdj4RestoreOpusTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
 void atibdj4CleanOpusTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4LogOpusVersion (void);
+
+/* atibdj4asf.c */
+void atibdj4ParseASFTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
+int  atibdj4WriteASFTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+atisaved_t * atibdj4SaveASFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4FreeSavedASFTags (atisaved_t *atisaved, int tagtype, int filetype);
+int  atibdj4RestoreASFTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void atibdj4CleanASFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4LogASFVersion (void);
 
 #endif /* INC_ATIBDJ4_H */

@@ -31,8 +31,8 @@ enum {
   TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
   TAG_TYPE_MP4,       // .m4a, et.al.
   TAG_TYPE_ID3,       // .mp3
-  TAG_TYPE_WMA,
-  TAG_TYPE_FFMPEG,    // libavformat has its own conversions
+  TAG_TYPE_WMA,       // .wma
+  TAG_TYPE_RIFF,      // .wav
   TAG_TYPE_MAX,
 };
 

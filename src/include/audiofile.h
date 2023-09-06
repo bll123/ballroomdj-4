@@ -20,7 +20,8 @@ enum {
   AFILE_TYPE_OGG,     // ogg container, codec unknown
   AFILE_TYPE_OPUS,
   AFILE_TYPE_VORBIS,
-  AFILE_TYPE_WMA,
+  AFILE_TYPE_RIFF,    // .wav
+  AFILE_TYPE_ASF,     // advanced system format, .wma
   AFILE_TYPE_MAX,
 };
 

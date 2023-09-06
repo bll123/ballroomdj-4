@@ -106,7 +106,7 @@ atiiSupportedTypes (int supported [])
     }
     supported [i] = ATI_READ_WRITE;
   }
-  supported [AFILE_TYPE_WMA] = ATI_READ;
+  supported [AFILE_TYPE_ASF] = ATI_READ;
 }
 
 bool

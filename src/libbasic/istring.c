@@ -150,3 +150,21 @@ istringToUpper (char *str)
     mdfree (dest);
   }
 }
+
+char *
+istring16ToUTF8 (wchar_t *instr)
+{
+  UErrorCode  status = U_ZERO_ERROR;
+  char        *result = NULL;
+  int32_t     capacity = 0;
+  int32_t     resultlen = 0;
+
+  u_strToUTF8 (result, capacity, &resultlen, (const UChar *) instr, -1, &status);
+  if (resultlen > 0) {
+    capacity = resultlen + 1;
+    result = mdmalloc (capacity);
+    status = U_ZERO_ERROR;
+    u_strToUTF8 (result, capacity, &resultlen, (const UChar *) instr, -1, &status);
+  }
+  return result;
+}

@@ -72,7 +72,7 @@ atiiSupportedTypes (int supported [])
   supported [AFILE_TYPE_VORBIS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_OPUS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP4] = ATI_READ_WRITE;
-  supported [AFILE_TYPE_WMA] = ATI_NONE;
+  supported [AFILE_TYPE_ASF] = ATI_NONE;
 }
 
 bool
@@ -130,6 +130,11 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
+  }
+  if (filetype == AFILE_TYPE_ASF) {
+    needduration = false;
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: asf");
+    atibdj4ParseASFTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
 
   if (needduration) {

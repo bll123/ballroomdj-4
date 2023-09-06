@@ -52,6 +52,7 @@ add_library (libatibdj4 SHARED
   atibdj4ogg.c
   atibdj4opus.c
   atibdj4mp4.c
+  atibdj4asf.c
 )
 target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
@@ -77,6 +78,8 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4atiutil
   libbdj4basic
   libbdj4common
+  # icu for asf
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   m
 )
 addIntlLibrary (libatibdj4)
