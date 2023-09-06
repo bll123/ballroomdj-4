@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Windows: fix certain error message displays.
+* New Features:
+    * Audio Tags: BDJ4-Internal: .wma file tags can be read (but not written).
 
 -->
 

@@ -98,7 +98,7 @@ atiiFree (atidata_t *atidata)
 void
 atiiSupportedTypes (int supported [])
 {
-  /* as of 2023-6-29 */
+  /* as of 2023-9-6 */
   /* this needs to be checked */
   for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
     if (i == AFILE_TYPE_UNKNOWN) {
@@ -106,7 +106,6 @@ atiiSupportedTypes (int supported [])
     }
     supported [i] = ATI_READ_WRITE;
   }
-  supported [AFILE_TYPE_ASF] = ATI_READ;
 }
 
 bool

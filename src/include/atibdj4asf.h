@@ -56,7 +56,8 @@ enum {
   ASF_DATA_U32 = 3,
   ASF_DATA_U64 = 4,
   ASF_DATA_U16 = 5,
-  ASF_DATA_BOOL32 = 6,
+  ASF_DATA_GUID = 6,
+  ASF_DATA_BOOL32 = 12,
 } asfdata_t;
 
 typedef struct {

@@ -154,9 +154,16 @@ atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
   size_t      len;
   int         count = 0;
   bool        done = false;
+  int         rc = 0;
 
   while (! done) {
     if (atibdj4ASFReadObjectHead (fh, &objtype, &len) < 0) {
+      rc = -1;
+      break;
+    }
+    if (len == 0) {
+      /* there's junk after the end of the wma data */
+      rc = -1;
       break;
     }
     len -= ASF_GUID_LEN;
@@ -173,6 +180,8 @@ atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
         dur = atibdj4ASFle64toh (fileprop.duration) / 10000;
         dur -= atibdj4ASFle64toh (fileprop.preroll);
         snprintf (tmp, sizeof (tmp), "%" PRId64, dur);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  duration: %s", tmp);
+fprintf (stdout, "  duration: %s\n", tmp);
         slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
         break;
       }
@@ -180,7 +189,11 @@ atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
         asfheaderext_t  headerext;
 
         atibdj4ASFReadData (fh, &headerext, sizeof (headerext));
-        atibdj4ASFProcessData (fh, atidata, tagdata, tagtype, 0, level + 1);
+        if (atibdj4ASFProcessData (fh, atidata, tagdata, tagtype, 0, level + 1) < 0) {
+          /* do not want to do any more processing */
+          rc = -1;
+          done = true;
+        }
         break;
       }
       case ASF_GUID_METADATA: {
@@ -232,7 +245,7 @@ atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
     }
   }
 
-  return 0;
+  return rc;
 }
 
 static int
@@ -321,22 +334,29 @@ atibdj4ASFProcessContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
   const char  *tagname;
 
   for (int i = 0; i < 5; ++i) {
+fprintf (stdout, "  nm: %s %d\n",  asf_content_names [i], content->len [i]);
+    if (content->len [i] == 0) {
+      continue;
+    }
+
     wdata = mdmalloc (content->len [i]);
     if (fread (wdata, content->len [i], 1, fh) != 1) {
       break;
     }
     tagname = atidata->tagLookup (tagtype, asf_content_names [i]);
-    data = istring16ToUTF8 (wdata);
+fprintf (stdout, "  nm: %s %s\n",  asf_content_names [i], tagname);
     if (tagname != NULL) {
+      data = istring16ToUTF8 (wdata);
       /* only use these if the tag is not already set */
       /* assumption being that whatever is in the metadata block is better */
       if (slistGetStr (tagdata, tagname) == NULL) {
-        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, asf_content_names [i], data);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG,"  raw: %s %s=%s", tagname, asf_content_names [i], data);
+fprintf (stdout, "  raw-c: %s %s=%s\n", tagname, asf_content_names [i], data);
         slistSetStr (tagdata, tagname, data);
       }
+      mdfree (data);
     }
     mdfree (wdata);
-    mdfree (data);
   }
 
   return 0;
@@ -377,6 +397,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
 {
   char      tmp [40];
 
+fprintf (stdout, "  tag-nm: %s %d %d\n", nm, datatype, datalen);
   switch (datatype) {
     case ASF_DATA_UTF8: {
       wchar_t     *wbuff;
@@ -404,12 +425,23 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
               p, pbuff, sizeof (pbuff));
         }
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, buff);
+fprintf (stdout, "  raw-s: %s %s=%s\n", tagname, nm, buff);
         slistSetStr (tagdata, tagname, p);
       }
       mdfree (buff);
       break;
     }
     case ASF_DATA_BIN: {
+      wchar_t   *buff;
+
+      buff = mdmalloc (datalen);
+      if (fread (buff, datalen, 1, fh) != 1) {
+        break;
+      }
+      mdfree (buff);
+      break;
+    }
+    case ASF_DATA_GUID: {
       wchar_t   *buff;
 
       buff = mdmalloc (datalen);
@@ -429,6 +461,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle16toh (t16));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+fprintf (stdout, "  raw-16: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -443,6 +476,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle32toh (t32));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+fprintf (stdout, "  raw-32: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -456,6 +490,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%" PRId64, atibdj4ASFle64toh (t64));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+fprintf (stdout, "  raw-64: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -493,6 +528,7 @@ atibdj4ASFCheckGUID (const char *buff)
     tuuid.c = ntohs (tuuid.c);
 
     if (memcmp (buff, &tuuid, ASF_GUID_LEN) == 0) {
+fprintf (stdout, "found %d %s\n", i, asf_guids [i].nm);
       return i;
     }
   }

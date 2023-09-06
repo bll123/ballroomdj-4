@@ -327,6 +327,8 @@ atibdj4LogVersion (void)
     atibdj4LogOpusVersion ();
     atibdj4LogFlacVersion ();
     atibdj4LogMP4Version ();
+    atibdj4LogASFVersion ();
+    atibdj4LogRIFFVersion ();
     gversionlogged = true;
   }
 }

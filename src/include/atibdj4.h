@@ -76,4 +76,13 @@ int  atibdj4RestoreASFTags (atidata_t *atidata, atisaved_t *atisaved, const char
 void atibdj4CleanASFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4LogASFVersion (void);
 
+/* atibdj4riff.c */
+void atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
+int  atibdj4WriteRIFFTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+atisaved_t * atibdj4SaveRIFFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4FreeSavedRIFFTags (atisaved_t *atisaved, int tagtype, int filetype);
+int  atibdj4RestoreRIFFTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void atibdj4CleanRIFFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4LogRIFFVersion (void);
+
 #endif /* INC_ATIBDJ4_H */

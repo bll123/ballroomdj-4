@@ -53,6 +53,7 @@ add_library (libatibdj4 SHARED
   atibdj4opus.c
   atibdj4mp4.c
   atibdj4asf.c
+  atibdj4riff.c
 )
 target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
