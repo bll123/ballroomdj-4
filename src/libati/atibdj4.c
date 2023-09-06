@@ -66,13 +66,13 @@ atiiFree (atidata_t *atidata)
 void
 atiiSupportedTypes (int supported [])
 {
-  /* as of 2023-8-29 */
+  /* as of 2023-9-6 */
   supported [AFILE_TYPE_FLAC] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP3] = ATI_READ_WRITE;
   supported [AFILE_TYPE_VORBIS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_OPUS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP4] = ATI_READ_WRITE;
-  supported [AFILE_TYPE_ASF] = ATI_NONE;
+  supported [AFILE_TYPE_ASF] = ATI_READ;
 }
 
 bool
