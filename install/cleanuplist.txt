@@ -119,6 +119,10 @@ plocal/lib/libicui18n\.(so|dylib)\.72\.1$
 plocal/lib/libicuuc\.(so|dylib)\.72$
 plocal/lib/libicuuc.(so|dylib)\.72\.1$
 
+# 2023-9-6
+# not needed
+bin/libatinull\.(dylib|so|dll)$
+
 ####
 # mac-os
 

@@ -38,13 +38,14 @@ typedef struct atisaved {
 } atisaved_t;
 
 static int atibdj4ASFReadObjectHead (FILE *fh, int *objtype, size_t *len);
-static int atibdj4ASFProcessData (FILE *fh, int numobj, int level);
-static int atibdj4ASFProcessMetaData (FILE *fh, int count);
-static int atibdj4ASFProcessExtContentData (FILE *fh, int count);
-static int atibdj4ASFProcessContentData (FILE *fh, asfcontent_t *content);
+static int atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata, int tagtype, int numobj, int level);
+static int atibdj4ASFProcessMetaData (FILE *fh, atidata_t *atidata, slist_t *tagdata, int tagtype, int count);
+static int atibdj4ASFProcessExtContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata, int tagtype, int count);
+static int atibdj4ASFProcessContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata, int tagtype, asfcontent_t *content);
 static int atibdj4ASFReadHeader (FILE *fh, asfheader_t *header);
 static int atibdj4ASFReadData (FILE *fh, void *data, size_t dlen);
 static void atibdj4ASFSkipData (FILE *fh, size_t len);
+static void atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata, int tagtype, const char *tagname, const char *nm, int datatype, int datalen);
 static int atibdj4ASFCheckGUID (const char *buff);
 static uint64_t atibdj4ASFle64toh (uint64_t val);
 static uint32_t atibdj4ASFle32toh (uint32_t val);
@@ -77,9 +78,10 @@ atibdj4ParseASFTags (atidata_t *atidata, slist_t *tagdata,
     fclose (fh);
     return;
   }
+
   atibdj4ASFReadHeader (fh, &header);
 
-  atibdj4ASFProcessData (fh, header.numobj, 0);
+  atibdj4ASFProcessData (fh, atidata, tagdata, tagtype, header.numobj, 0);
 
   mdextfclose (fh);
   fclose (fh);
@@ -145,7 +147,8 @@ atibdj4ASFReadObjectHead (FILE *fh, int *objtype, size_t *len)
 }
 
 static int
-atibdj4ASFProcessData (FILE *fh, int numobj, int level)
+atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
+    int tagtype, int numobj, int level)
 {
   int         objtype;
   size_t      len;
@@ -163,51 +166,56 @@ atibdj4ASFProcessData (FILE *fh, int numobj, int level)
       case ASF_GUID_FILE_PROP: {
         asffileprop_t   fileprop;
         uint64_t        dur;
+        char            tmp [40];
 
         atibdj4ASFReadData (fh, &fileprop, len);
         /* the specs claim to be in nano seconds, but something is off */
-        dur = fileprop.duration / 10000;
-        dur -= fileprop.preroll;
-fprintf (stdout, "duration=%" PRIu64 "\n", dur);
+        dur = atibdj4ASFle64toh (fileprop.duration) / 10000;
+        dur -= atibdj4ASFle64toh (fileprop.preroll);
+        snprintf (tmp, sizeof (tmp), "%" PRId64, dur);
+        slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
         break;
       }
       case ASF_GUID_HEADER_EXT: {
         asfheaderext_t  headerext;
 
         atibdj4ASFReadData (fh, &headerext, sizeof (headerext));
-        atibdj4ASFProcessData (fh, 0, level + 1);
+        atibdj4ASFProcessData (fh, atidata, tagdata, tagtype, 0, level + 1);
         break;
       }
       case ASF_GUID_METADATA: {
         asfmetadata_t   metadata;
 
         atibdj4ASFReadData (fh, &metadata, sizeof (metadata));
-        atibdj4ASFProcessMetaData (fh, metadata.count);
+        metadata.count = atibdj4ASFle16toh (metadata.count);
+        atibdj4ASFProcessMetaData (fh, atidata, tagdata, tagtype, metadata.count);
         break;
       }
       case ASF_GUID_METADATA_LIBRARY: {
         asfmetadata_t   metadata;
 
         atibdj4ASFReadData (fh, &metadata, sizeof (metadata));
-        atibdj4ASFProcessMetaData (fh, metadata.count);
+        metadata.count = atibdj4ASFle16toh (metadata.count);
+        atibdj4ASFProcessMetaData (fh, atidata, tagdata, tagtype, metadata.count);
         break;
       }
       case ASF_GUID_EXT_CONTENT_DESC: {
         asfmetadata_t   metadata;
 
         /* the extended content description also has a 16-bit count */
-        /* just re-used the metadata structure */
+        /* just re-usethe metadata structure */
         /* the data-types are the same, but the description */
         /* record is different */
         atibdj4ASFReadData (fh, &metadata, sizeof (metadata));
-        atibdj4ASFProcessExtContentData (fh, metadata.count);
+        metadata.count = atibdj4ASFle16toh (metadata.count);
+        atibdj4ASFProcessExtContentData (fh, atidata, tagdata, tagtype, metadata.count);
         break;
       }
       case ASF_GUID_CONTENT_DESC: {
         asfcontent_t    content;
 
         atibdj4ASFReadData (fh, &content, sizeof (content));
-        atibdj4ASFProcessContentData (fh, &content);
+        atibdj4ASFProcessContentData (fh, atidata, tagdata, tagtype, &content);
         break;
       }
       default: {
@@ -228,10 +236,12 @@ fprintf (stdout, "duration=%" PRIu64 "\n", dur);
 }
 
 static int
-atibdj4ASFProcessMetaData (FILE *fh, int count)
+atibdj4ASFProcessMetaData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
+    int tagtype, int count)
 {
   wchar_t     *wnm;
-  char        *nm;
+  char        *nm = NULL;
+  const char  *tagname;
 
   for (int i = 0; i < count; ++i) {
     asfmetadatadesc_t   metadatadesc;
@@ -240,82 +250,33 @@ atibdj4ASFProcessMetaData (FILE *fh, int count)
     if (fread (&metadatadesc, sizeof (metadatadesc), 1, fh) != 1) {
       break;
     }
-    tlen = metadatadesc.nmlen;
+    tlen = atibdj4ASFle16toh (metadatadesc.nmlen);
     wnm = mdmalloc (tlen);
     if (fread (wnm, tlen, 1, fh) != 1) {
       break;
     }
+    dataFree (nm);
     nm = istring16ToUTF8 (wnm);
-fprintf (stdout, "%s=", nm);
+    tagname = atidata->tagLookup (tagtype, nm);
     mdfree (wnm);
-    mdfree (nm);
-    switch (metadatadesc.datatype) {
-      case ASF_DATA_UTF8: {
-        wchar_t   *wbuff;
-        char      *buff;
 
-        tlen = metadatadesc.datalen;
-        wbuff = mdmalloc (tlen);
-        if (fread (wbuff, tlen, 1, fh) != 1) {
-          break;
-        }
-        buff = istring16ToUTF8 (wbuff);
-fprintf (stdout, "%s\n", buff);
-        mdfree (wbuff);
-        mdfree (buff);
-        break;
-      }
-      case ASF_DATA_BIN: {
-        wchar_t   *buff;
-
-        tlen = metadatadesc.datalen;
-        buff = mdmalloc (tlen);
-        if (fread (buff, tlen, 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "(binary data: %d)\n", tlen);
-        mdfree (buff);
-        break;
-      }
-      case ASF_DATA_BOOL:
-      case ASF_DATA_U16: {
-        uint16_t    t16;
-
-        if (fread (&t16, sizeof (uint16_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%d\n", t16);
-        break;
-      }
-      case ASF_DATA_U32: {
-        uint32_t    t32;
-
-        if (fread (&t32, sizeof (uint32_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%d\n", t32);
-        break;
-      }
-      case ASF_DATA_U64: {
-        uint64_t    t64;
-
-        if (fread (&t64, sizeof (uint64_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%ld\n", t64);
-        break;
-      }
-    }
+    metadatadesc.datatype = atibdj4ASFle16toh (metadatadesc.datatype);
+    tlen = atibdj4ASFle32toh (metadatadesc.datalen);
+    atibdj4ASFProcessTag (fh, atidata, tagdata, tagtype, tagname, nm, metadatadesc.datatype, tlen);
   }
+
+  dataFree (nm);
 
   return 0;
 }
 
 static int
-atibdj4ASFProcessExtContentData (FILE *fh, int count)
+atibdj4ASFProcessExtContentData (FILE *fh, atidata_t *atidata,
+    slist_t *tagdata, int tagtype, int count)
 {
   wchar_t     *wnm;
-  char        *nm;
+  char        *nm = NULL;
+  const char  *tagname;
 
   for (int i = 0; i < count; ++i) {
     asfcontentnm_t      contentnm;
@@ -325,94 +286,55 @@ atibdj4ASFProcessExtContentData (FILE *fh, int count)
     if (fread (&contentnm, sizeof (contentnm), 1, fh) != 1) {
       break;
     }
-    tlen = contentnm.nmlen;
+    tlen = atibdj4ASFle16toh (contentnm.nmlen);
     wnm = mdmalloc (tlen);
     if (fread (wnm, tlen, 1, fh) != 1) {
+      mdfree (wnm);
       break;
     }
+    dataFree (nm);
     nm = istring16ToUTF8 (wnm);
-fprintf (stdout, "%s=", nm);
+    tagname = atidata->tagLookup (tagtype, nm);
     mdfree (wnm);
-    mdfree (nm);
 
     if (fread (&contentdata, sizeof (contentdata), 1, fh) != 1) {
       break;
     }
-    switch (contentdata.datatype) {
-      case ASF_DATA_UTF8: {
-        wchar_t   *wbuff;
-        char      *buff;
 
-        tlen = contentdata.datalen;
-        wbuff = mdmalloc (tlen);
-        if (fread (wbuff, tlen, 1, fh) != 1) {
-          break;
-        }
-        buff = istring16ToUTF8 (wbuff);
-fprintf (stdout, "%s\n", buff);
-        mdfree (wbuff);
-        mdfree (buff);
-        break;
-      }
-      case ASF_DATA_BIN: {
-        wchar_t   *buff;
-
-        tlen = contentdata.datalen;
-        buff = mdmalloc (tlen);
-        if (fread (buff, tlen, 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "(binary data: %d)\n", tlen);
-        mdfree (buff);
-        break;
-      }
-      case ASF_DATA_U16: {
-        uint16_t    t16;
-
-        if (fread (&t16, sizeof (uint16_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%d\n", t16);
-        break;
-      }
-      case ASF_DATA_BOOL:
-      case ASF_DATA_U32: {
-        uint32_t    t32;
-
-        if (fread (&t32, sizeof (uint32_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%d\n", t32);
-        break;
-      }
-      case ASF_DATA_U64: {
-        uint64_t    t64;
-
-        if (fread (&t64, sizeof (uint64_t), 1, fh) != 1) {
-          break;
-        }
-fprintf (stdout, "%ld\n", t64);
-        break;
-      }
+    contentdata.datatype = atibdj4ASFle16toh (contentdata.datatype);
+    if (contentdata.datatype == ASF_DATA_BOOL16) {
+      contentdata.datatype = ASF_DATA_BOOL32;
     }
+    tlen = atibdj4ASFle16toh (contentdata.datalen);
+    atibdj4ASFProcessTag (fh, atidata, tagdata, tagtype, tagname, nm, contentdata.datatype, tlen);
   }
 
   return 0;
 }
 
 static int
-atibdj4ASFProcessContentData (FILE *fh, asfcontent_t *content)
+atibdj4ASFProcessContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
+    int tagtype, asfcontent_t *content)
 {
   wchar_t     *wdata;
   char        *data;
+  const char  *tagname;
 
   for (int i = 0; i < 5; ++i) {
     wdata = mdmalloc (content->len [i]);
     if (fread (wdata, content->len [i], 1, fh) != 1) {
       break;
     }
+    tagname = atidata->tagLookup (tagtype, asf_content_names [i]);
     data = istring16ToUTF8 (wdata);
-fprintf (stdout, "%s=%s\n", asf_content_names [i], data);
+    if (tagname != NULL) {
+      /* only use these if the tag is not already set */
+      /* assumption being that whatever is in the metadata block is better */
+      if (slistGetStr (tagdata, tagname) == NULL) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, asf_content_names [i], data);
+        slistSetStr (tagdata, tagname, data);
+      }
+    }
     mdfree (wdata);
     mdfree (data);
   }
@@ -445,6 +367,100 @@ static void
 atibdj4ASFSkipData (FILE *fh, size_t len)
 {
   fseek (fh, len, SEEK_CUR);
+}
+
+
+static void
+atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
+    int tagtype, const char *tagname, const char *nm,
+    int datatype, int datalen)
+{
+  char      tmp [40];
+
+  switch (datatype) {
+    case ASF_DATA_UTF8: {
+      wchar_t     *wbuff;
+      char        *buff;
+
+      wbuff = mdmalloc (datalen);
+      if (fread (wbuff, datalen, 1, fh) != 1) {
+        mdfree (wbuff);
+        break;
+      }
+      buff = istring16ToUTF8 (wbuff);
+      mdfree (wbuff);
+
+      if (tagname != NULL) {
+        const char    *p;
+        char          pbuff [100];
+
+        p = buff;
+        if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
+          p = atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
+              p, pbuff, sizeof (pbuff));
+        }
+        if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
+          p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
+              p, pbuff, sizeof (pbuff));
+        }
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, buff);
+        slistSetStr (tagdata, tagname, p);
+      }
+      mdfree (buff);
+      break;
+    }
+    case ASF_DATA_BIN: {
+      wchar_t   *buff;
+
+      buff = mdmalloc (datalen);
+      if (fread (buff, datalen, 1, fh) != 1) {
+        break;
+      }
+      mdfree (buff);
+      break;
+    }
+    case ASF_DATA_BOOL16:
+    case ASF_DATA_U16: {
+      uint16_t    t16;
+
+      if (fread (&t16, sizeof (uint16_t), 1, fh) != 1) {
+        break;
+      }
+      if (tagname != NULL) {
+        snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle16toh (t16));
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+        slistSetStr (tagdata, tagname, tmp);
+      }
+      break;
+    }
+    case ASF_DATA_BOOL32:
+    case ASF_DATA_U32: {
+      uint32_t    t32;
+
+      if (fread (&t32, sizeof (uint32_t), 1, fh) != 1) {
+        break;
+      }
+      if (tagname != NULL) {
+        snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle32toh (t32));
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+        slistSetStr (tagdata, tagname, tmp);
+      }
+      break;
+    }
+    case ASF_DATA_U64: {
+      uint64_t    t64;
+
+      if (fread (&t64, sizeof (uint64_t), 1, fh) != 1) {
+        break;
+      }
+      if (tagname != NULL) {
+        snprintf (tmp, sizeof (tmp), "%" PRId64, atibdj4ASFle64toh (t64));
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
+        slistSetStr (tagdata, tagname, tmp);
+      }
+      break;
+    }
+  }
 }
 
 static int

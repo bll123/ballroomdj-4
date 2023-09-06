@@ -114,7 +114,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { [TAG_TYPE_VORBIS] = { "ARTIST", NULL, NULL },
       [TAG_TYPE_MP4] = { "©ART", NULL, NULL },
       [TAG_TYPE_ID3] = { "TPE1", NULL, NULL },
-      [TAG_TYPE_WMA] = { "Author", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Author", NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Artist",                     /* itunes name          */
@@ -870,7 +870,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { [TAG_TYPE_VORBIS] = { "TITLE", NULL, NULL },
       [TAG_TYPE_MP4] = { "©nam", NULL, NULL },
       [TAG_TYPE_ID3] = { "TIT2", NULL, NULL },
-      [TAG_TYPE_WMA] = { "Title", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Title", NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL },
     },       /* audio tags */
     "Name",                       /* itunes name          */

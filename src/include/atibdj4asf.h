@@ -52,10 +52,11 @@ typedef struct {
 enum {
   ASF_DATA_UTF8 = 0,
   ASF_DATA_BIN  = 1,
-  ASF_DATA_BOOL = 2,
+  ASF_DATA_BOOL16 = 2,
   ASF_DATA_U32 = 3,
   ASF_DATA_U64 = 4,
   ASF_DATA_U16 = 5,
+  ASF_DATA_BOOL32 = 6,
 } asfdata_t;
 
 typedef struct {
@@ -109,8 +110,8 @@ enum {
 };
 
 static const char *asf_content_names [ASF_CONTENT_MAX] = {
-  [ASF_CONTENT_TITLE] = "Title",
-  [ASF_CONTENT_AUTHOR] = "Author",
+  [ASF_CONTENT_TITLE] = "WM/Title",
+  [ASF_CONTENT_AUTHOR] = "WM/Author",
   [ASF_CONTENT_COPYRIGHT] = "Copyright",
   [ASF_CONTENT_DESC] = "Description",
   [ASF_CONTENT_RATING] = "Rating",
