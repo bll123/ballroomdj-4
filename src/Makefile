@@ -105,8 +105,8 @@ cmakeclang:
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  COMP=/mingw64/bin/clang.exe \
-	  COMPXX=/mingw64/bin/clang++.exe \
+	  COMP=/ucrt64/bin/clang.exe \
+	  COMPXX=/ucrt64/bin/clang++.exe \
 	  $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi

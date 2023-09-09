@@ -177,3 +177,9 @@ uiWindowFind (uiwcont_t *window)
   return;
 }
 
+void
+uiWindowSetNoMaximize (uiwcont_t *uiwindow)
+{
+  return;
+}
+

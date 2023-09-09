@@ -33,5 +33,6 @@ void uiWindowSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiWindowPresent (uiwcont_t *uiwidget);
 void uiWindowRaise (uiwcont_t *uiwidget);
 void uiWindowFind (uiwcont_t *window);
+void uiWindowSetNoMaximize (uiwcont_t *uiwindow);
 
 #endif /* INC_UIWINDOW_H */

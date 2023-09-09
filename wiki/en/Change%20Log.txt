@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Windows: fix certain error message displays.
+* Changes:
+    * Audio Tags: BDJ4-Internal: Update libmp4tag to version 1.2.6.
 * New Features:
     * Audio Tags: BDJ4-Internal: .wma file tags can be read (but not written).
 

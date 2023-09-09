@@ -87,6 +87,7 @@ enum {
   START_CB_CONFIG,
   START_CB_SUPPORT,
   START_CB_EXIT,
+  START_CB_WINSTATE,
   START_CB_SEND_SUPPORT,
   START_CB_MENU_STOP_ALL,
   START_CB_MENU_DEL_PROFILE,
@@ -247,6 +248,7 @@ static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
 static void     starterSendPlayerActive (startui_t *starter);
+static bool     starterWinState (void *udata, int isIconified, int isMaximized);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -552,6 +554,7 @@ starterBuildUI (startui_t  *starter)
   starter->wcont [START_W_WINDOW] = uiCreateMainWindow (
       starter->callbacks [START_CB_EXIT],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
+  uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
@@ -2113,6 +2116,17 @@ starterSendPlayerActive (startui_t *starter)
 
   snprintf (tmp, sizeof (tmp), "%d", starter->started [ROUTE_PLAYERUI]);
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
+}
+
+
+static bool
+starterWinState (void *udata, int isIconified, int isMaximized)
+{
+  if (isMaximized >= 0) {
+    return UICB_STOP;
+  }
+
+  return UICB_CONT;
 }
 
 

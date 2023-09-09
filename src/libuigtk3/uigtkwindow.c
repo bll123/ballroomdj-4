@@ -321,6 +321,16 @@ uiWindowFind (uiwcont_t *window)
   uiWindowRaise (window);
 }
 
+void
+uiWindowSetNoMaximize (uiwcont_t *uiwindow)
+{
+  if (uiwindow == NULL || uiwindow->widget == NULL) {
+    return;
+  }
+
+  gtk_window_set_resizable (GTK_WINDOW (uiwindow->widget), false);
+}
+
 /* internal routines */
 
 static gboolean
@@ -361,7 +371,7 @@ static gboolean
 uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata)
 {
   callback_t  *uicb = udata;
-  bool        rc;
+  bool        rc = UICB_CONT;
   int         isicon = -1;
   int         ismax = -1;
   bool        process = false;
@@ -391,7 +401,10 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     return UICB_CONT;
   }
 
-  rc = callbackHandlerIntInt (uicb, isicon, ismax);
+  if (uicb != NULL) {
+    rc = callbackHandlerIntInt (uicb, isicon, ismax);
+fprintf (stderr, "rc: %d\n", rc);
+  }
   return rc;
 }
 
