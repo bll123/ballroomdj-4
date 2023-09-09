@@ -73,6 +73,7 @@ atiiSupportedTypes (int supported [])
   supported [AFILE_TYPE_OPUS] = ATI_READ_WRITE;
   supported [AFILE_TYPE_MP4] = ATI_READ_WRITE;
   supported [AFILE_TYPE_ASF] = ATI_READ;
+  supported [AFILE_TYPE_RIFF] = ATI_READ;
 }
 
 bool
@@ -93,7 +94,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 {
   AVFormatContext   *ictx = NULL;
   char              pbuff [100];
-  int32_t           duration;
+  int32_t           duration = 0;
   int               rc;
   bool              needduration = true;
 
@@ -135,6 +136,11 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: asf");
     atibdj4ParseASFTags (atidata, tagdata, ffn, tagtype, rewrite);
+  }
+  if (filetype == AFILE_TYPE_RIFF) {
+    needduration = false;
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: riff");
+    atibdj4ParseRIFFTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
 
   if (needduration) {

@@ -80,7 +80,9 @@ atibdj4ParseASFTags (atidata_t *atidata, slist_t *tagdata,
   }
 
   atibdj4ASFReadHeader (fh, &header);
-
+  /* header is a packed structure */
+  /* header.numobj is the first item in the structure so it will be */
+  /* aligned properly */
   atibdj4ASFProcessData (fh, atidata, tagdata, tagtype, header.numobj, 0);
 
   mdextfclose (fh);
@@ -181,7 +183,6 @@ atibdj4ASFProcessData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
         dur -= atibdj4ASFle64toh (fileprop.preroll);
         snprintf (tmp, sizeof (tmp), "%" PRId64, dur);
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  duration: %s", tmp);
-fprintf (stdout, "  duration: %s\n", tmp);
         slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
         break;
       }
@@ -334,7 +335,6 @@ atibdj4ASFProcessContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
   const char  *tagname;
 
   for (int i = 0; i < 5; ++i) {
-fprintf (stdout, "  nm: %s %d\n",  asf_content_names [i], content->len [i]);
     if (content->len [i] == 0) {
       continue;
     }
@@ -344,14 +344,12 @@ fprintf (stdout, "  nm: %s %d\n",  asf_content_names [i], content->len [i]);
       break;
     }
     tagname = atidata->tagLookup (tagtype, asf_content_names [i]);
-fprintf (stdout, "  nm: %s %s\n",  asf_content_names [i], tagname);
     if (tagname != NULL) {
       data = istring16ToUTF8 (wdata);
       /* only use these if the tag is not already set */
       /* assumption being that whatever is in the metadata block is better */
       if (slistGetStr (tagdata, tagname) == NULL) {
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG,"  raw: %s %s=%s", tagname, asf_content_names [i], data);
-fprintf (stdout, "  raw-c: %s %s=%s\n", tagname, asf_content_names [i], data);
         slistSetStr (tagdata, tagname, data);
       }
       mdfree (data);
@@ -397,7 +395,6 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
 {
   char      tmp [40];
 
-fprintf (stdout, "  tag-nm: %s %d %d\n", nm, datatype, datalen);
   switch (datatype) {
     case ASF_DATA_UTF8: {
       wchar_t     *wbuff;
@@ -425,7 +422,6 @@ fprintf (stdout, "  tag-nm: %s %d %d\n", nm, datatype, datalen);
               p, pbuff, sizeof (pbuff));
         }
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, buff);
-fprintf (stdout, "  raw-s: %s %s=%s\n", tagname, nm, buff);
         slistSetStr (tagdata, tagname, p);
       }
       mdfree (buff);
@@ -461,7 +457,6 @@ fprintf (stdout, "  raw-s: %s %s=%s\n", tagname, nm, buff);
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle16toh (t16));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
-fprintf (stdout, "  raw-16: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -476,7 +471,6 @@ fprintf (stdout, "  raw-16: %s %s=%s\n", tagname, nm, tmp);
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle32toh (t32));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
-fprintf (stdout, "  raw-32: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -490,7 +484,6 @@ fprintf (stdout, "  raw-32: %s %s=%s\n", tagname, nm, tmp);
       if (tagname != NULL) {
         snprintf (tmp, sizeof (tmp), "%" PRId64, atibdj4ASFle64toh (t64));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
-fprintf (stdout, "  raw-64: %s %s=%s\n", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
       break;
@@ -528,7 +521,6 @@ atibdj4ASFCheckGUID (const char *buff)
     tuuid.c = ntohs (tuuid.c);
 
     if (memcmp (buff, &tuuid, ASF_GUID_LEN) == 0) {
-fprintf (stdout, "found %d %s\n", i, asf_guids [i].nm);
       return i;
     }
   }

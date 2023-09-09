@@ -52,7 +52,7 @@ filetypelookup_t filetypelookup [] = {
   /* .ogx files must be parsed to see what is in the container */
   { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
-  { ".wav",   TAG_TYPE_RIFF,    AFILE_TYPE_RIFF, },
+  { ".wav",   TAG_TYPE_WAV,     AFILE_TYPE_RIFF, },
   { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_ASF, },
 };
 enum {

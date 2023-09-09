@@ -29,10 +29,10 @@ typedef enum {
 
 enum {
   TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
-  TAG_TYPE_MP4,       // .m4a, et.al.
+  TAG_TYPE_MP4,       // MP4 .m4a, et.al.
   TAG_TYPE_ID3,       // .mp3
-  TAG_TYPE_WMA,       // .wma
-  TAG_TYPE_RIFF,      // .wav
+  TAG_TYPE_WMA,       // ASF .wma
+  TAG_TYPE_WAV,       // RIFF .wav
   TAG_TYPE_MAX,
 };
 
