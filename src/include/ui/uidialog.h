@@ -27,5 +27,6 @@ void  uiDialogAddButtons (uiwcont_t *uidialog, ...);
 void  uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp);
 void  uiDialogDestroy (uiwcont_t *uidialog);
 uiselect_t *uiDialogCreateSelect (uiwcont_t *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
+void  uiDialogSetNoMaximize (uiwcont_t *uidialog);
 
 #endif /* INC_UIDIALOG_H */

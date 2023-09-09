@@ -254,6 +254,11 @@ uiDialogCreateSelect (uiwcont_t *window, const char *label,
   return selectdata;
 }
 
+void
+uiDialogSetNoMaximize (uiwcont_t *uidialog)
+{
+  gtk_window_set_resizable (GTK_WINDOW (uidialog->widget), false);
+}
 
 /* internal routines */
 
