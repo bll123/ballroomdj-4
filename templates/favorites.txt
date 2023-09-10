@@ -102,10 +102,10 @@ COLOR
 ..#6d2828
 USERSEL
 ..yes
-# 'imported' is used to display a symbol
-# for external requests.
-# the name should not be changed.
+# 'imported' is used to display a symbol for external requests.
 # it is not user-selectable.
+# the name should not be changed.
+# the display symbol and color may be changed
 KEY
 ..8
 NAME
