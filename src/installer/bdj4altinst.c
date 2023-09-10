@@ -319,6 +319,7 @@ main (int argc, char *argv[])
         sysvarsSetStr (SV_LOCALE_SHORT, buff);
         sysvarsSetNum (SVL_LOCALE_SET, 1);
         altinst.localespecified = true;
+        localeSetup ();
         break;
       }
       case 'm': {
