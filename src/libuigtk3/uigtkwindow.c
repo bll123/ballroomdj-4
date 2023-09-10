@@ -403,7 +403,6 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
 
   if (uicb != NULL) {
     rc = callbackHandlerIntInt (uicb, isicon, ismax);
-fprintf (stderr, "rc: %d\n", rc);
   }
   return rc;
 }

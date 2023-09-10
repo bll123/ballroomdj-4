@@ -122,6 +122,11 @@ plocal/lib/libicuuc.(so|dylib)\.72\.1$
 # 2023-9-6
 # not needed
 bin/libatinull\.(dylib|so|dll)$
+# replaced
+install/localized-qr\.txt$
+install/localized-auto\.txt$
+install/localized-sr\.txt$
+locale/locales\.txt$
 
 ####
 # mac-os

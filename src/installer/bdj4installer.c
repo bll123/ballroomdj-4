@@ -494,6 +494,7 @@ main (int argc, char *argv[])
         sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
         sysvarsSetNum (SVL_LOCALE_SET, 1);
         installer.localespecified = true;
+        localeSetup ();
         break;
       }
       case 'm': {

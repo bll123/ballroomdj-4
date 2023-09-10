@@ -13,26 +13,121 @@
 #include <math.h>
 
 #include <locale.h>
-/* libintl.h is included by localeutil.h */
+#if _hdr_libintl
+# include <libintl.h>
+#endif
 
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
+#include "datafile.h"
+#include "fileop.h"
+#include "ilist.h"
 #include "istring.h"
 #include "localeutil.h"
+#include "log.h"
+#include "mdebug.h"
 #include "oslocale.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "slist.h"
 #include "sysvars.h"
+
+/* must be sorted in ascii order */
+static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
+  { "AUTO",       LOCALE_KEY_AUTO,      VALUE_STR, NULL, DF_NORM },
+  { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
+  { "ISO639-3",   LOCALE_KEY_ISO639_3,  VALUE_STR, NULL, DF_NORM },
+  { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
+  { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },
+  { "SHORT",      LOCALE_KEY_SHORT,     VALUE_STR, NULL, DF_NORM },
+  { "STDROUNDS",  LOCALE_KEY_STDROUNDS, VALUE_STR, NULL, DF_NORM },
+};
+
+typedef struct bdj4localedata {
+  datafile_t      *df;
+  ilist_t         *locales;
+  ilistidx_t      currlocale;
+  slist_t         *displayList;
+} bdj4localedata_t;
+
+static bdj4localedata_t *localedata = NULL;
+
+static void localePostSetup (void);
 
 void
 localeInit (void)
 {
-  char        lbuff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-  bool        useutf8ext = false;
-  struct lconv *lconv;
+  char              fname [MAXPATHLEN];
+  ilistidx_t        iteridx;
+  ilistidx_t        key;
+  ilistidx_t        gbidx = -1;
+  const char        *svlocale;
 
+  localeSetup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
+
+  pathbldMakePath (fname, sizeof (fname), LOCALIZATION_FN,
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
+  if (! fileopFileExists (fname)) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: missing %s", fname);
+    return;
+  }
+
+  localedata = mdmalloc (sizeof (bdj4localedata_t));
+
+  localedata->df = datafileAllocParse (LOCALIZATION_FN,
+      DFTYPE_INDIRECT, fname,
+      localedfkeys, LOCALE_KEY_MAX, DF_NO_OFFSET, NULL);
+  localedata->locales = datafileGetList (localedata->df);
+  localedata->currlocale = -1;   /* for the moment, mark as invalid */
+
+  localedata->displayList = slistAlloc ("locale-disp", LIST_UNORDERED, NULL);
+  slistSetSize (localedata->displayList, ilistGetCount (localedata->locales));
+
+  svlocale = sysvarsGetStr (SV_LOCALE);
+
+  ilistStartIterator (localedata->locales, &iteridx);
+  while ((key = ilistIterateKey (localedata->locales, &iteridx)) >= 0) {
+    const char    *disp;
+    const char    *llocale;
+    const char    *slocale;
+
+    disp = ilistGetStr (localedata->locales, key, LOCALE_KEY_DISPLAY);
+    llocale = ilistGetStr (localedata->locales, key, LOCALE_KEY_LONG);
+    slocale = ilistGetStr (localedata->locales, key, LOCALE_KEY_SHORT);
+    if (strcmp (llocale, "en_GB") == 0) {
+      gbidx = key;
+    }
+    if (strcmp (llocale, svlocale) == 0) {
+      /* specific match */
+      localedata->currlocale = key;
+    }
+    if (localedata->currlocale == -1 &&
+        strncmp (slocale, svlocale, 2) == 0) {
+      /* basic match */
+      localedata->currlocale = key;
+    }
+    slistSetStr (localedata->displayList, disp, llocale);
+  }
+  slistSort (localedata->displayList);
+
+  if (localedata->currlocale == -1) {
+    localedata->currlocale = gbidx;
+  }
+
+  sysvarsSetStr (SV_LOCALE_ISO639_3, localeGetStr (LOCALE_KEY_ISO639_3));
+
+  return;
+}
+
+void
+localeSetup (void)
+{
+  char          lbuff [MAXPATHLEN];
+  char          tbuff [MAXPATHLEN];
+  bool          useutf8ext = false;
+  struct lconv  *lconv;
 
   /* get the locale from the environment */
   /* works on windows, but windows returns the old style locale name */
@@ -41,8 +136,7 @@ localeInit (void)
   }
 
   /* on windows, returns the locale set for the user, not what's set */
-  /* in the environment. but GTK apparently picks up the environmental */
-  /* setting and uses the appropriate locale */
+  /* in the environment. GTK apparently uses the appropriate locale */
   if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     osGetLocale (lbuff, sizeof (lbuff));
     sysvarsSetStr (SV_LOCALE_SYSTEM, lbuff);
@@ -108,14 +202,42 @@ localeInit (void)
     }
   }
 
-  istringInit (sysvarsGetStr (SV_LOCALE));
-  return;
+  localePostSetup ();
+}
+
+const char *
+localeGetStr (int key)
+{
+  if (localedata == NULL || localedata->locales == NULL) {
+    return NULL;
+  }
+
+  return ilistGetStr (localedata->locales, localedata->currlocale, key);
+}
+
+slist_t *
+localeGetDisplayList (void)
+{
+  if (localedata == NULL) {
+    return NULL;
+  }
+
+  return localedata->displayList;
 }
 
 void
 localeCleanup (void)
 {
   istringCleanup ();
+  if (localedata != NULL) {
+    datafileFree (localedata->df);
+    slistFree (localedata->displayList);
+    localedata->df = NULL;
+    localedata->locales = NULL;
+    localedata->displayList = NULL;
+    mdfree (localedata);
+    localedata = NULL;
+  }
 }
 
 void
@@ -139,4 +261,49 @@ localeDebug (void)
   fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
+}
+
+/* internal routines */
+
+void
+localePostSetup (void)
+{
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  ilistidx_t    gbidx = -1;
+  ilistidx_t    tlocale = -1;
+  const char    *svlocale;
+
+  if (localedata == NULL) {
+    return;
+  }
+
+  svlocale = sysvarsGetStr (SV_LOCALE);
+
+  ilistStartIterator (localedata->locales, &iteridx);
+  while ((key = ilistIterateKey (localedata->locales, &iteridx)) >= 0) {
+    const char  *llocale;
+    const char  *slocale;
+
+    llocale = ilistGetStr (localedata->locales, key, LOCALE_KEY_LONG);
+    slocale = ilistGetStr (localedata->locales, key, LOCALE_KEY_SHORT);
+    if (strcmp (llocale, "en_GB") == 0) {
+      gbidx = key;
+    }
+    if (strcmp (llocale, svlocale) == 0) {
+      tlocale = key;
+      break;
+    }
+    if (tlocale == -1 &&
+        strncmp (slocale, svlocale, 2) == 0) {
+      tlocale = key;
+    }
+  }
+
+  if (tlocale == -1) {
+    tlocale = gbidx;
+  }
+  localedata->currlocale = tlocale;
+
+  sysvarsSetStr (SV_LOCALE_ISO639_3, localeGetStr (LOCALE_KEY_ISO639_3));
 }

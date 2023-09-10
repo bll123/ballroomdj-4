@@ -119,7 +119,6 @@ function mkimgsub {
 }
 
 TMP=temp.txt
-CTMP=tempcomp.txt
 
 echo "-- Creating .mo files"
 for i in *.po; do
@@ -143,11 +142,19 @@ for i in *.po; do
   fi
 done
 
-> $CTMP
+# used by the installer to locate the localized name
+# of the playlists.
+# also include other information that may useful for the locale
+LOCALEDATA=${TMPLDIR}/localization.txt
+> $LOCALEDATA
+keycount=0
+echo "# localization" >> $LOCALEDATA
 
 while read -r line; do
   set $line
   pofile=$1
+  shift
+  iso6393code=$1
   shift
   langdesc=$*
 
@@ -155,15 +162,49 @@ while read -r line; do
     continue
   fi
 
+set -x
   llocale=$(echo $pofile | sed 's,\.po$,,')
   # want the short locale
   locale=$(echo $llocale | sed 's,\(..\).*,\1,')
 
-  desc=$(sed -n -e '1,1p' $pofile)
-  desc=$(echo $desc | sed -e 's/^# == //')
-  echo $desc >> $CTMP
-  echo "..$llocale" >> $CTMP
+  for txt in automatic standardrounds queuedance; do
+    ttxt=$txt
+    if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
+    xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
+    if [[ $xl == "" ]]; then
+      xl=$ttxt
+    fi
+    eval $txt="\"$xl\""
+  done
+set +x
 
+  cwd=$(pwd)
+
+  echo KEY >> $LOCALEDATA
+  echo "..$keycount" >> $LOCALEDATA
+  echo LONG >> $LOCALEDATA
+  echo "..$llocale" >> $LOCALEDATA
+  echo SHORT >> $LOCALEDATA
+  echo "..$locale" >> $LOCALEDATA
+  echo ISO639-3 >> $LOCALEDATA
+  echo "..$iso6393code" >> $LOCALEDATA
+  echo DISPLAY >> $LOCALEDATA
+  echo "..$langdesc" >> $LOCALEDATA
+  echo AUTO >> $LOCALEDATA
+  echo "..${automatic}" >> $LOCALEDATA
+  echo STDROUNDS >> $LOCALEDATA
+  echo "..${standardrounds}" >> $LOCALEDATA
+  echo QDANCE >> $LOCALEDATA
+  echo "..${queuedance}" >> $LOCALEDATA
+
+  keycount=$(($keycount+1))
+
+  # The english locales do not need any substitutions
+  # none of the en_GB -> en_US substitutions are present
+  # in the configuration files.
+  # The en_US configuration files are different than
+  # the base en_GB, and are pre-built.
   case $pofile in
     en*)
       continue
@@ -252,74 +293,36 @@ while read -r line; do
     mkhtmlsub $fn $TMP $locale $pofile
   done
 
-  # these are used by the installer to locate the localized name
-  # of the playlists.
-  ATMP=${INSTDIR}/localized-auto.txt
-  SRTMP=${INSTDIR}/localized-sr.txt
-  QDTMP=${INSTDIR}/localized-qd.txt
-  > $ATMP
-  > $SRTMP
-  > $QDTMP
-  if [[ $pofile != en_US.po && $pofile != en_GB.po ]]; then
-    for txt in automatic standardrounds queuedance; do
-      ttxt=$txt
-      if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
-      xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
-      case $xl in
-        ""|msgstr\ \"\")
-          continue
-          ;;
-      esac
-      xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
-      if [[ $xl == "" ]]; then
-        xl=$txt
-      fi
-      eval $txt="\"$xl\""
-    done
+  cd ${TMPLDIR}/${locale}
 
-    cwd=$(pwd)
-
-    echo $locale >> $ATMP
-    echo "..${automatic}" >> $ATMP
-    echo $locale >> $SRTMP
-    echo "..${standardrounds}" >> $SRTMP
-    echo $locale >> $QDTMP
-    echo "..${queuedance}" >> $QDTMP
-
-    cd ${TMPLDIR}/${locale}
-
-    if [[ -f automatic.pl ]]; then
-      mv -f automatic.pl "${automatic}.pl"
-      mv -f automatic.pldances "${automatic}.pldances"
-    fi
-
-    if [[ -f standardrounds.pl ]]; then
-      mv -f standardrounds.pl "${standardrounds}.pl"
-      mv -f standardrounds.pldances "${standardrounds}.pldances"
-      mv -f standardrounds.sequence "${standardrounds}.sequence"
-    fi
-
-    if [[ -f QueueDance.pl ]]; then
-      mv -f QueueDance.pl "${queuedance}.pl"
-      mv -f QueueDance.pldances "${queuedance}.pldances"
-    fi
-
-    for fn in *.html; do
-      case $fn in
-        mobilemq.html|qrcode.html)
-          continue
-          ;;
-      esac
-      sed -e "s/English/${langdesc}/" "$fn" > "$fn.n"
-      mv -f "$fn.n" "$fn"
-    done
-
-    cd $cwd
+  if [[ -f automatic.pl ]]; then
+    mv -f automatic.pl "${automatic}.pl"
+    mv -f automatic.pldances "${automatic}.pldances"
   fi
+
+  if [[ -f standardrounds.pl ]]; then
+    mv -f standardrounds.pl "${standardrounds}.pl"
+    mv -f standardrounds.pldances "${standardrounds}.pldances"
+    mv -f standardrounds.sequence "${standardrounds}.sequence"
+  fi
+
+  if [[ -f QueueDance.pl ]]; then
+    mv -f QueueDance.pl "${queuedance}.pl"
+    mv -f QueueDance.pldances "${queuedance}.pldances"
+  fi
+
+  for fn in *.html; do
+    case $fn in
+      mobilemq.html|qrcode.html)
+        continue
+        ;;
+    esac
+    sed -e "s/English/${langdesc}/" "$fn" > "$fn.n"
+    mv -f "$fn.n" "$fn"
+  done
+
+  cd $cwd
 done < complete.txt
 
-mv -f $CTMP ${LOCALEDIR}/locales.txt
-
 test -f $TMP && rm -f $TMP
-test -f $CTMP && rm -f $CTMP
 exit 0

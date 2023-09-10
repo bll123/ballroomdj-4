@@ -18,6 +18,7 @@
 #include "bdjstring.h"
 #include "bdjopt.h"
 #include "configui.h"
+#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -189,7 +190,6 @@ confuiSelectShutdown (void *udata)
 static void
 confuiLoadLocaleList (confuigui_t *gui)
 {
-  char          tbuff [MAXPATHLEN];
   nlist_t       *tlist = NULL;
   datafile_t    *df = NULL;
   slist_t       *list = NULL;
@@ -207,11 +207,7 @@ confuiLoadLocaleList (confuigui_t *gui)
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, NULL);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_LOCALE);
-  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
-      NULL, 0, DF_NO_OFFSET, NULL);
-  list = datafileGetList (df);
+  list = localeGetDisplayList ();
 
   slistStartIterator (list, &iteridx);
   count = 0;

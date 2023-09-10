@@ -52,7 +52,7 @@ uiUIInitialize (void)
   uiInitUILog ();
   gtk_init (&argc, NULL);
   /* gtk mucks up the locale settings */
-  localeInit ();
+  localeSetup ();
 }
 
 void

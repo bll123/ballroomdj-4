@@ -20,6 +20,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "instutil.h"
+#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
@@ -91,29 +92,14 @@ void
 instutilCopyTemplates (void)
 {
   slist_t     *dirlist;
-  slist_t     *renamelist;
   slistidx_t  iteridx;
   const char  *fname;
   char        from [MAXPATHLEN];
   char        to [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  datafile_t  *srdf = NULL;
-  datafile_t  *qddf = NULL;
-  datafile_t  *autodf = NULL;
   pathinfo_t  *pi;
 
-
-  renamelist = NULL;
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
+      ilistidx_t  fkey = -1;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 
@@ -197,22 +183,26 @@ instutilCopyTemplates (void)
         pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
 
-      renamelist = NULL;
+      strlcpy (tbuff, fname, sizeof (tbuff));
+
+      fkey = -1;
       if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
-        renamelist = datafileGetList (autodf);
+        fkey = LOCALE_KEY_AUTO;
       }
       if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
-        renamelist = datafileGetList (srdf);
+        fkey = LOCALE_KEY_STDROUNDS;
       }
       if (strncmp (pi->basename, "QueueDance", pi->blen) == 0) {
-        renamelist = datafileGetList (qddf);
+        fkey = LOCALE_KEY_QDANCE;
       }
 
       strlcpy (tbuff, fname, sizeof (tbuff));
-      if (renamelist != NULL) {
+
+      /* localization specific filenames */
+      if (fkey != -1) {
         const char  *tval;
 
-        tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
+        tval = localeGetStr (fkey);
         if (tval != NULL) {
           snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,
               pi->extension);
@@ -237,10 +227,6 @@ instutilCopyTemplates (void)
     pathInfoFree (pi);
   }
   slistFree (dirlist);
-
-  datafileFree (srdf);
-  datafileFree (autodf);
-  datafileFree (qddf);
 }
 
 void

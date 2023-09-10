@@ -63,6 +63,7 @@ enum {
 #define ITUNES_FIELDS_FN    "itunes-fields"
 #define ITUNES_STARS_FN     "itunes-stars"
 #define NEWINSTALL_FN       "newinstall"
+#define LOCALIZATION_FN     "localization"
 /* option data files */
 #define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"

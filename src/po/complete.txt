@@ -1,3 +1,3 @@
-en_GB.po English (GB)
-en_US.po English (US)
-nl_BE.po Nederlands
+en_GB.po eng English (GB)
+en_US.po eng English (US)
+nl_BE.po nld Nederlands
