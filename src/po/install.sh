@@ -151,6 +151,13 @@ keycount=0
 echo "# localization" >> $LOCALEDATA
 
 while read -r line; do
+
+  case $line in
+    '#'*)
+      continue
+      ;;
+  esac
+
   set $line
   pofile=$1
   shift
@@ -162,7 +169,6 @@ while read -r line; do
     continue
   fi
 
-set -x
   llocale=$(echo $pofile | sed 's,\.po$,,')
   # want the short locale
   locale=$(echo $llocale | sed 's,\(..\).*,\1,')
@@ -177,7 +183,6 @@ set -x
     fi
     eval $txt="\"$xl\""
   done
-set +x
 
   cwd=$(pwd)
 
