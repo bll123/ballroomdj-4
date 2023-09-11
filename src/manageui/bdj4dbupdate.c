@@ -901,11 +901,18 @@ dbupdateQueueTagData (dbupdate_t *dbupdate, const char *args)
   dbidx_t       count;
   char          *targs;
 
+  if (dbupdate->stoprequest) {
+    /* crashes below (strdup (ffn)) if the requests are processed after */
+    /* receiving a stop-request */
+    /* do not know why exactly */
+    return;
+  }
+
   targs = mdstrdup (args);
   ffn = strtok_r (targs, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
 
-  if (dbupdate->usereader && data == NULL) {
+  if (dbupdate->usereader && (ffn == NULL || ! *ffn || data == NULL)) {
     /* complete failure */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
     dbupdateIncCount (dbupdate, C_NULL_DATA);

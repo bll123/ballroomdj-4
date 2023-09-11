@@ -94,8 +94,8 @@ if [[ $platform == windows ]]; then
 
   # bll@win10-64 MINGW64 ~/bdj4/bin
   # $ ldd bdj4.exe | grep '(mingw|ucrt)64'
-  #       libintl-8.dll => /mingw64/bin/libintl-8.dll (0x7ff88c570000)
-  #       libiconv-2.dll => /mingw64/bin/libiconv-2.dll (0x7ff8837e0000)
+  #       libintl-8.dll => /ucrt64/bin/libintl-8.dll (0x7ff88c570000)
+  #       libiconv-2.dll => /ucrt64/bin/libiconv-2.dll (0x7ff8837e0000)
   #       libiconv-2.dll => /ucrt64/bin/libiconv-2.dll (0x7ff8837e0000)
 
   libtag=""

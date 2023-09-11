@@ -2737,7 +2737,8 @@ installerCleanup (installer_t *installer)
 {
   /* make sure the installer is not in the bdj4-install dir before */
   /* the clean-inst process is run. */
-  if (chdir (installer->datatopdir)) {
+  /* if installing read-only, there is no data-top-dir */
+  if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
     return;
   }
@@ -2748,8 +2749,8 @@ installerCleanup (installer_t *installer)
     char  buff [MAXPATHLEN];
     const char  *targv [10];
 
-    snprintf (ebuff, sizeof (ebuff), "%s/bin/bdj4cleaninst%s",
-        installer->target, sysvarsGetStr (SV_OS_EXEC_EXT));
+    snprintf (ebuff, sizeof (ebuff), "%s%s/bin/bdj4cleaninst%s",
+        installer->target, installer->macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
     targv [0] = ebuff;
     snprintf (pbuff, sizeof (pbuff), "%s/plocal/bin", installer->target);
     targv [1] = pbuff;

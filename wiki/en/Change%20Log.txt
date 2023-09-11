@@ -4,10 +4,15 @@
 
 <!--
 
-**4.3.3.6 2023-9---**
+**4.3.3.7 2023-9---**
+
+-->
+
+**4.3.3.6 2023-9-11**
 
 * Bug Fixes:
     * Windows: fix certain error message displays.
+    * Database Update: Fix crash when stopping the process (mutagen).
 * Changes:
     * Audio Tags: BDJ4-Internal: Update libmp4tag to version 1.2.6.
 * New Features:
@@ -15,8 +20,6 @@
     * Audio Tags: BDJ4-Internal: .wav file tags can be read (but not written).
 * Internal:
     * Code Cleanup (localization).
-
--->
 
 **4.3.3.5 2023-9-4**
 
@@ -512,4 +515,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-09-04 15:38:43; BDJ4 version 4.3.3.5)_
+<br>_(Updated 2023-09-11 12:20:55; BDJ4 version 4.3.3.6)_

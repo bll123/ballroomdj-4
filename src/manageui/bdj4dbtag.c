@@ -50,9 +50,12 @@ enum {
   DBTAG_STATE_NOT_RUNNING,
   DBTAG_STATE_RUNNING,
   DBTAG_STATE_PAUSED,
+  DBTAG_STATE_STOPPED,
   DBTAG_STATE_WAIT,
   DBTAG_STATE_FINISH,
 };
+
+typedef struct dbtag dbtag_t;
 
 typedef struct {
   pthread_t   thread;
@@ -61,9 +64,10 @@ typedef struct {
   long        count;
   char        *fn;
   void        * data;
+  dbtag_t     *dbtag;
 } dbthread_t;
 
-typedef struct {
+typedef struct dbtag {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
@@ -135,8 +139,9 @@ main (int argc, char *argv[])
     dbtag.threads [i].count = 0;
     dbtag.threads [i].fn = NULL;
     dbtag.threads [i].data = NULL;
+    dbtag.threads [i].dbtag = &dbtag;
   }
-  dbtag.fileQueue = queueAlloc ("file-q", NULL);
+  dbtag.fileQueue = queueAlloc ("file-q", free);
   dbtag.received = 0;
   dbtag.sent = 0;
   dbtag.maxqueuelen = 0;
@@ -215,7 +220,9 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_CONTINUE: {
-          dbtag->state = DBTAG_STATE_RUNNING;
+          if (dbtag->state == DBTAG_STATE_PAUSED) {
+            dbtag->state = DBTAG_STATE_RUNNING;
+          }
           break;
         }
         default: {
@@ -251,7 +258,11 @@ dbtagProcessing (void *udata)
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       gKillReceived = 0;
     }
-    return stop;
+    /* state-stopping waits for all the threads to go away */
+    /* the code below must be run to handle the threads */
+    if (progstateCurrState (dbtag->progstate) != STATE_STOPPING) {
+      return stop;
+    }
   }
 
   connProcessUnconnected (dbtag->conn);
@@ -259,10 +270,12 @@ dbtagProcessing (void *udata)
   for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
       pthread_join (dbtag->threads [i].thread, NULL);
-      snprintf (sbuff, sizeof (sbuff), "%s%c%s",
-          dbtag->threads [i].fn, MSG_ARGS_RS, (char *) dbtag->threads [i].data);
-      ++dbtag->sent;
-      connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
+      if (dbtag->state != DBTAG_STATE_STOPPED) {
+        snprintf (sbuff, sizeof (sbuff), "%s%c%s",
+            dbtag->threads [i].fn, MSG_ARGS_RS, (char *) dbtag->threads [i].data);
+        ++dbtag->sent;
+        connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
+      }
       dataFree (dbtag->threads [i].fn);
       dbtag->threads [i].fn = NULL;
       dataFree (dbtag->threads [i].data);
@@ -381,9 +394,16 @@ dbtagHandshakeCallback (void *tdbtag, programstate_t programState)
 static bool
 dbtagStoppingCallback (void *tdbtag, programstate_t programState)
 {
-  dbtag_t    *dbtag = tdbtag;
+  dbtag_t     *dbtag = tdbtag;
 
   logProcBegin (LOG_PROC, "dbtagStoppingCallback");
+  if (dbtag->state == DBTAG_STATE_RUNNING ||
+      dbtag->state == DBTAG_STATE_PAUSED) {
+    dbtag->state = DBTAG_STATE_STOPPED;
+  }
+  if (dbtag->numActiveThreads > 0) {
+    return STATE_NOT_FINISH;
+  }
   connDisconnect (dbtag->conn, ROUTE_DBUPDATE);
   logProcEnd (LOG_PROC, "dbtagStoppingCallback", "");
   return STATE_FINISHED;
@@ -421,6 +441,9 @@ dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
     dbtag->state = DBTAG_STATE_RUNNING;
     mstimestart (&dbtag->starttm);
   }
+  if (dbtag->state == DBTAG_STATE_STOPPED) {
+    return;
+  }
   ++dbtag->received;
   queuePush (dbtag->fileQueue, mdstrdup (args));
 }
@@ -429,7 +452,6 @@ static void *
 dbtagProcessFile (void *tdbthread)
 {
   dbthread_t    * dbthread = tdbthread;
-
 
   dbthread->data = audiotagReadTags (dbthread->fn);
   dbthread->state = DBTAG_T_STATE_HAVE_DATA;

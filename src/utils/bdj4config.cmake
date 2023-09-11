@@ -136,6 +136,7 @@ add_compile_options (-Wmissing-prototypes)
 add_compile_options (-Wformat)
 add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
+add_compile_options (-Werror=return-type)
 add_compile_options (-Wdeprecated-declarations)
 
 #### compiler-specific compile options

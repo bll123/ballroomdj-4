@@ -181,7 +181,7 @@ done
 # msys2: /usr/bin/python3 does not work to execute scripts/mutagen-inspect
 # probably depends on which python3 was used to install mutagen.
 PY3=python3
-for fn in /opt/local/bin/python3 /mingw64/bin/python3 /usr/bin/python3; do
+for fn in /opt/local/bin/python3 /ucrt64/bin/python3 /usr/bin/python3; do
   if [[ -f $fn ]]; then
     PY3=$fn
     break
