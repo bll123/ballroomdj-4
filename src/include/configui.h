@@ -412,6 +412,7 @@ void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
 char *confuiGetLocalIP (confuigui_t *gui);
 void confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled);
+void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int svidx, int spinboxidx);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);

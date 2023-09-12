@@ -27,7 +27,7 @@ function mkpo {
   dlang=$4
   elang=$5
 
-  if [[ $CHANGED == F ]]; then
+  if [[ $CHANGED == F && -f ${out} ]]; then
     hg diff ${out} > ${POTFILE}.t
     if [[ ! -s ${POTFILE}.t ]]; then
       echo "-- $(date +%T) no changes to $out"
@@ -38,6 +38,15 @@ function mkpo {
   fi
 
   echo "-- $(date +%T) creating $out"
+  if [[ ! -f ${out} && ${out} != en_GB.po ]]; then
+    > ${out}
+    # this is not quite right...there are fields
+    # that need fixing.
+    echo "# == ${dlang}" >> ${out}
+    echo "# -- ${elang}" >> ${out}
+    sed -n '/^msgid/,/^$/ p' ${POTFILE} >> ${out}
+  fi
+
   if [[ -f ${out} && ${out} != en_GB.po ]]; then
     # re-use data from existing file
     mv -f ${out} ${out}.current
@@ -206,12 +215,10 @@ fi
 # the locale/xx files and directories.
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
-# the turkish translation is not done well.
-# mkpo tr tr_TR.po 'Turkish' Türkçe turkish
-
+#mkpo de de_DE.po 'unassigned' Deutsch german
 #mkpo fr fr_FR.po 'unassigned' Français french
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish
-#mkpo de de_DE.po 'unassigned' Deutsch german
+
 #mkpo es es_ES.po 'unassigned' Español spanish
 #mkpo zh zh_TW.po 'unassigned' "繁體中文" "chinese (TW)"
 #mkpo zh zh_CN.po 'unassigned' "简体中文" "chinese (CN)"

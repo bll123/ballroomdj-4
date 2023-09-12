@@ -320,6 +320,39 @@ confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled)
   uiEntrySetValue (gui->uiitem [widx].entry, ip);
 }
 
+void
+confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
+    int svidx, int spinboxidx)
+{
+  slistidx_t  iteridx;
+  const char  *desc;
+  const char  *intfc;
+  int         count;
+  nlist_t     *tlist;
+  nlist_t     *llist;
+
+  tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
+
+  slistStartIterator (interfaces, &iteridx);
+  count = 0;
+  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+    intfc = slistGetStr (interfaces, desc);
+    if (strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
+      gui->uiitem [spinboxidx].listidx = count;
+    }
+    nlistSetStr (tlist, count, desc);
+    nlistSetStr (llist, count, intfc);
+    ++count;
+  }
+  nlistSort (tlist);
+  nlistSort (llist);
+  slistFree (interfaces);
+
+  gui->uiitem [spinboxidx].displist = tlist;
+  gui->uiitem [spinboxidx].sbkeylist = llist;
+}
+
 /* internal routines */
 
 static nlist_t *
@@ -530,3 +563,4 @@ confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp)
 
   return found;
 }
+

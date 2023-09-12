@@ -13,7 +13,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include "ati.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -29,10 +28,8 @@
 #include "volsink.h"
 #include "volume.h"
 
-static void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int svidx, int spinboxidx);
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
-static void confuiLoadAudioTagIntfcList (confuigui_t *gui);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -49,7 +46,6 @@ confuiInitPlayer (confuigui_t *gui)
 
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
-  confuiLoadAudioTagIntfcList (gui);
 
   volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   volumeSinklistInit (&sinklist);
@@ -109,11 +105,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx, NULL);
 
-  /* CONTEXT: configuration: which audio tag interface to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Tags"),
-      CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
-
   /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
@@ -142,39 +133,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
 }
 
 static void
-confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
-    int svidx, int spinboxidx)
-{
-  slistidx_t  iteridx;
-  const char  *desc;
-  const char  *intfc;
-  int         count;
-  nlist_t     *tlist;
-  nlist_t     *llist;
-
-  tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
-  llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
-
-  slistStartIterator (interfaces, &iteridx);
-  count = 0;
-  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-    intfc = slistGetStr (interfaces, desc);
-    if (strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
-      gui->uiitem [spinboxidx].listidx = count;
-    }
-    nlistSetStr (tlist, count, desc);
-    nlistSetStr (llist, count, intfc);
-    ++count;
-  }
-  nlistSort (tlist);
-  nlistSort (llist);
-  slistFree (interfaces);
-
-  gui->uiitem [spinboxidx].displist = tlist;
-  gui->uiitem [spinboxidx].sbkeylist = llist;
-}
-
-static void
 confuiLoadVolIntfcList (confuigui_t *gui)
 {
   slist_t     *interfaces;
@@ -190,14 +148,5 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   interfaces = pliInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC, CONFUI_SPINBOX_PLI);
-}
-
-static void
-confuiLoadAudioTagIntfcList (confuigui_t *gui)
-{
-  slist_t     *interfaces;
-
-  interfaces = atiInterfaceList ();
-  confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC, CONFUI_SPINBOX_ATI);
 }
 

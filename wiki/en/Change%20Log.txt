@@ -6,6 +6,9 @@
 
 **4.3.3.7 2023-9---**
 
+* Changes:
+    * Configuration: Move audio tag interface selection to the general tab.
+
 -->
 
 **4.3.3.6 2023-9-11**
