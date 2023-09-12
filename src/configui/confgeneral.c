@@ -101,24 +101,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
-  /* database */
-
-  /* CONTEXT: configuration: which audio tags will be written to the audio file */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Write Audio File Tags"),
-      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
-
-  /* CONTEXT: configuration: which audio tag interface to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Tags"),
-      CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
-
-  /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
-  snprintf (tbuff, sizeof (tbuff), _("%s Compatible Audio File Tags"), BDJ3_NAME);
-  confuiMakeItemSwitch (gui, vbox, szgrp, tbuff,
-      CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
-      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
-
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Locale"),
@@ -138,6 +120,42 @@ confuiBuildUIGeneral (confuigui_t *gui)
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].entry,
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+
+  /* audio tag stuff */
+
+  /* CONTEXT: configuration: which audio tag interface to use */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Tags"),
+      CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
+
+  /* CONTEXT: configuration: which audio tags will be written to the audio file */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Write Audio File Tags"),
+      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
+
+  /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
+  snprintf (tbuff, sizeof (tbuff), _("%s Compatible Audio File Tags"), BDJ3_NAME);
+  confuiMakeItemSwitch (gui, vbox, szgrp, tbuff,
+      CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
+      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
+
+  /* CONTEXT: configuration: the AcoustID API Key */
+  snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACOUSTID_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_ACOUSTID_API_KEY, OPT_G_ACOUSTID_API_KEY,
+      bdjoptGetStr (OPT_G_ACOUSTID_API_KEY), CONFUI_NO_INDENT);
+
+  /* CONTEXT: configuration: the ACRCloud API Key */
+  snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_ACRCLOUD_API_KEY, OPT_G_ACRCLOUD_API_KEY,
+      bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY), CONFUI_NO_INDENT);
+
+  /* CONTEXT: configuration: the AudioTag API Key */
+  snprintf (tbuff, sizeof (tbuff), _("%s API Key"), AUDIOTAG_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_AUDIOTAG_API_KEY, OPT_G_AUDIOTAG_API_KEY,
+      bdjoptGetStr (OPT_G_AUDIOTAG_API_KEY), CONFUI_NO_INDENT);
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

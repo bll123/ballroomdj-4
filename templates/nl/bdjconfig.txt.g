@@ -1,10 +1,16 @@
 # config-global
-# 2022-5-25
-# version 2
+# 2022-9-12
+# version 3
 version
-..2
+..3
 ACOUSTID_KEY
 ..ENCTFdHUmEcJxkaKAAABRY=
+ACOUSTID_API_KEY
+..
+ACRCLOUD_API_KEY
+..
+AUDIOTAG_API_KEY
+..
 AUTOORGANIZE
 ..no
 BDJ3COMPATTAGS

@@ -114,6 +114,7 @@ main (int argc, char *argv[])
   confui.gui.dispselduallist = NULL;
   confui.gui.filterDisplaySel = NULL;
   confui.gui.edittaglist = NULL;
+  confui.gui.audioidtaglist = NULL;
   confui.gui.listingtaglist = NULL;
   confui.gui.inbuild = false;
   confui.gui.inchange = false;
@@ -184,6 +185,9 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_RC_IPADDR].entry = uiEntryInit (20, 50);
   confui.gui.uiitem [CONFUI_ENTRY_RC_PASS].entry = uiEntryInit (10, 20);
   confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
+  confui.gui.uiitem [CONFUI_ENTRY_ACOUSTID_API_KEY].entry = uiEntryInit (15, 30);
+  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_KEY].entry = uiEntryInit (15, 30);
+  confui.gui.uiitem [CONFUI_ENTRY_AUDIOTAG_API_KEY].entry = uiEntryInit (15, 30);
 
   confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
   confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry = uiEntryInit (50, 300);
@@ -389,8 +393,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     nlistFree (confui->options);
   }
   uinbutilIDFree (confui->gui.nbtabid);
-  slistFree (confui->gui.listingtaglist);
   slistFree (confui->gui.edittaglist);
+  slistFree (confui->gui.audioidtaglist);
+  slistFree (confui->gui.listingtaglist);
   callbackFree (confui->gui.closecb);
   callbackFree (confui->gui.nbcb);
   uiwcontFree (confui->gui.notebook);
@@ -620,11 +625,13 @@ confuiLoadTagList (configui_t *confui)
 {
   slist_t       *llist = NULL;
   slist_t       *elist = NULL;
+  slist_t       *aidlist = NULL;
 
   logProcBegin (LOG_PROC, "confuiLoadTagList");
 
   llist = slistAlloc ("cu-list-tag-list", LIST_ORDERED, NULL);
   elist = slistAlloc ("cu-edit-tag-list", LIST_ORDERED, NULL);
+  aidlist = slistAlloc ("cu-edit-tag-list", LIST_ORDERED, NULL);
 
   for (tagdefkey_t i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].listingDisplay) {
@@ -634,10 +641,14 @@ confuiLoadTagList (configui_t *confui)
         (tagdefs [i].listingDisplay && tagdefs [i].editType == ET_LABEL)) {
       slistSetNum (elist, tagdefs [i].displayname, i);
     }
+    if (tagdefs [i].isAudioID) {
+      slistSetNum (aidlist, tagdefs [i].displayname, i);
+    }
   }
 
   confui->gui.listingtaglist = llist;
   confui->gui.edittaglist = elist;
+  confui->gui.audioidtaglist = aidlist;
   logProcEnd (LOG_PROC, "confuiLoadTagList", "");
 }
 

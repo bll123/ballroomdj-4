@@ -57,6 +57,9 @@ enum {
   CONFUI_ENTRY_RC_IPADDR,
   CONFUI_ENTRY_RC_PASS,
   CONFUI_ENTRY_RC_USER_ID,
+  CONFUI_ENTRY_ACOUSTID_API_KEY,
+  CONFUI_ENTRY_ACRCLOUD_API_KEY,
+  CONFUI_ENTRY_AUDIOTAG_API_KEY,
   CONFUI_ENTRY_MAX,
   CONFUI_ENTRY_CHOOSE_BEGIN,
   CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT,
@@ -385,6 +388,7 @@ typedef struct confuigui {
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;
   slist_t           *edittaglist;
+  slist_t           *audioidtaglist;
   slist_t           *listingtaglist;
   /* filter */
   nlist_t           *filterDisplaySel;

@@ -55,6 +55,11 @@ enum {
 #define ITUNES_MEDIA_NAME "iTunes Media"
 #define ITUNES_XML_NAME   "iTunes Music Library.xml"
 
+/* audio content recognition services */
+#define ACOUSTID_NAME     "AcoustID"
+#define ACRCLOUD_NAME     "ACRCloud"
+#define AUDIOTAG_NAME     "AudioTag"
+
 /* data files */
 #define AUDIOADJ_FN         "audioadjust"
 #define AUDIOTAGINTFC_FN    "audiotagintfc"

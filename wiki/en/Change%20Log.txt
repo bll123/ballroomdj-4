@@ -8,6 +8,7 @@
 
 * Changes:
     * Configuration: Move audio tag interface selection to the general tab.
+    * Configuration: General: re-arranged entries.
 
 -->
 

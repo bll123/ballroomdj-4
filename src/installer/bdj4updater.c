@@ -126,6 +126,7 @@ static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
+static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static int  updaterGetMPMValue (song_t *song);
@@ -617,6 +618,13 @@ main (int argc, char *argv [])
       nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
     }
     logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm complete");
+  }
+
+  {
+    /* 4.4.0 2023-9-12 audio-id data selection */
+    updaterCopyProfileIfNotPresent ("ds-audioid-disp", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("ds-audioid-a", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("ds-audioid-b", BDJ4_CONFIG_EXT);
   }
 
   /* now re-load the data files */
@@ -1195,6 +1203,29 @@ updaterCopyIfNotPresent (const char *fn, const char *ext)
     templateFileCopy (tbuff, tbuff);
     logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
   }
+}
+
+static void
+updaterCopyProfileIfNotPresent (const char *fn, const char *ext)
+{
+  char    tbuff [MAXPATHLEN];
+  int     origprofile;
+
+  origprofile = sysvarsGetNum (SVL_BDJIDX);
+
+  for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
+    sysvarsSetNum (SVL_BDJIDX, i);
+    if (bdjoptProfileExists ()) {
+      pathbldMakePath (tbuff, sizeof (tbuff), fn, ext,
+        PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      if (! fileopFileExists (tbuff)) {
+        snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
+        templateFileCopy (tbuff, tbuff);
+        logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
+      }
+    } /* if the profile exists */
+  } /* for all profiles */
+  sysvarsSetNum (SVL_BDJIDX, origprofile);
 }
 
 static void

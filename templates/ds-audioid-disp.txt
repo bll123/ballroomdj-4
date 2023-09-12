@@ -1,0 +1,10 @@
+# ds-audioid-disp
+# 2022-9-12
+# version 1
+ALBUMARTIST
+ARTIST
+TITLE
+DISC
+TRACKNUMBER
+DURATION
+

@@ -26,14 +26,17 @@ static bool confuiDispSettingChg (void *udata);
 void
 confuiInitDispSettings (confuigui_t *gui)
 {
-  char  tbuff [MAXPATHLEN];
-  char  tbuffb [MAXPATHLEN];
-  char  tbuffc [MAXPATHLEN];
+  char  tbuffse [DISP_SEL_SONGEDIT_MAX][MAXPATHLEN];
+  char  tbuffaid [DISP_SEL_AUDIOID_MAX][MAXPATHLEN];
 
-  /* CONTEXT: configuration: display settings for: song editor column N */
-  snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
-  snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
-  snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
+  for (int i = 0; i < DISP_SEL_SONGEDIT_MAX; ++i) {
+    /* CONTEXT: configuration: display settings for: song editor column N */
+    snprintf (tbuffse [i], MAXPATHLEN, _("Song Editor - Column %d"), i + 1);
+  }
+  for (int i = 0; i < DISP_SEL_AUDIOID_MAX; ++i) {
+    /* CONTEXT: configuration: display settings for: Audio ID column N */
+    snprintf (tbuffaid [i], MAXPATHLEN, _("Audio ID - Column %d"), i + 1);
+  }
   /* as this list is set up manually, it will automatically skip */
   /* the disp-sel-max-player marker */
   confuiSpinboxTextInitDataNum (gui, "cu-disp-settings",
@@ -54,9 +57,13 @@ confuiInitDispSettings (confuigui_t *gui)
       DISP_SEL_EZSONGSEL, _("Side-by-Side Song Selection"),
       /* CONTEXT: configuration: display settings for: music manager */
       DISP_SEL_MM, _("Music Manager"),
-      DISP_SEL_SONGEDIT_A, tbuff,
-      DISP_SEL_SONGEDIT_B, tbuffb,
-      DISP_SEL_SONGEDIT_C, tbuffc,
+      DISP_SEL_SONGEDIT_A, tbuffse [DISP_SEL_SONGEDIT_A - DISP_SEL_SONGEDIT_A],
+      DISP_SEL_SONGEDIT_B, tbuffse [DISP_SEL_SONGEDIT_B - DISP_SEL_SONGEDIT_A],
+      DISP_SEL_SONGEDIT_C, tbuffse [DISP_SEL_SONGEDIT_C - DISP_SEL_SONGEDIT_A],
+      /* CONTEXT: configuration: display settings for: Audio ID match listing */
+      DISP_SEL_AUDIOID_DISP, _("Audio ID Match List"),
+      DISP_SEL_AUDIOID_A, tbuffaid [DISP_SEL_AUDIOID_A - DISP_SEL_AUDIOID_A],
+      DISP_SEL_AUDIOID_B, tbuffaid [DISP_SEL_AUDIOID_B - DISP_SEL_AUDIOID_A],
       -1);
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 }

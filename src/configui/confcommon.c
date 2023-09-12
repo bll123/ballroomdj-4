@@ -41,6 +41,7 @@ static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
 static void confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
+static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, int sidx, int eidx);
 
 
 /* the theme list is used by both the ui and the marquee selections */
@@ -235,7 +236,6 @@ void
 confuiCreateTagListingDisp (confuigui_t *gui)
 {
   dispselsel_t  selidx;
-  slist_t       *editlist = NULL;
 
   logProcBegin (LOG_PROC, "confuiCreateTagListingDisp");
 
@@ -244,28 +244,15 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   if (selidx == DISP_SEL_SONGEDIT_A ||
       selidx == DISP_SEL_SONGEDIT_B ||
       selidx == DISP_SEL_SONGEDIT_C) {
-    const char    *disp;
-    slistidx_t    iteridx;
-
-    editlist = slistAlloc ("dyn-edit-tag-list", LIST_ORDERED, NULL);
-
-    slistStartIterator (gui->edittaglist, &iteridx);
-    while ((disp = slistIterateKey (gui->edittaglist, &iteridx)) != NULL) {
-      bool    found;
-
-      /* this is very inefficient, as the dispsel lists are unordered */
-      found = false;
-      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_A, disp);
-      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_B, disp);
-      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_C, disp);
-
-      if (! found) {
-        slistSetNum (editlist, disp, slistGetNum (gui->edittaglist, disp));
-      }
-    }
-
-    uiduallistSet (gui->dispselduallist, editlist, DUALLIST_TREE_SOURCE);
-    slistFree (editlist);
+    confuiCreateTagListingMultDisp (gui, gui->edittaglist,
+        DISP_SEL_SONGEDIT_A, DISP_SEL_SONGEDIT_C);
+  } else if (selidx == DISP_SEL_AUDIOID_A ||
+      selidx == DISP_SEL_AUDIOID_B) {
+    confuiCreateTagListingMultDisp (gui, gui->audioidtaglist,
+        DISP_SEL_AUDIOID_A, DISP_SEL_AUDIOID_B);
+  } else if (selidx == DISP_SEL_AUDIOID_DISP) {
+    uiduallistSet (gui->dispselduallist, gui->audioidtaglist,
+        DUALLIST_TREE_SOURCE);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
         DUALLIST_TREE_SOURCE);
@@ -562,5 +549,35 @@ confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp)
   }
 
   return found;
+}
+
+static void
+confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist,
+    int sidx, int eidx)
+{
+  slist_t       *editlist = NULL;
+  const char    *disp;
+  slistidx_t    iteridx;
+
+  editlist = slistAlloc ("dyn-edit-tag-list", LIST_ORDERED, NULL);
+
+  slistStartIterator (dlist, &iteridx);
+  while ((disp = slistIterateKey (dlist, &iteridx)) != NULL) {
+    bool    found;
+
+    /* this is all very inefficient, as the dispsel lists are unordered */
+    /* but the lists are relatively short */
+    found = false;
+    for (int i = sidx; i <= eidx; ++i) {
+      found |= confuiSearchDispSel (gui, i, disp);
+    }
+
+    if (! found) {
+      slistSetNum (editlist, disp, slistGetNum (dlist, disp));
+    }
+  }
+
+  uiduallistSet (gui->dispselduallist, editlist, DUALLIST_TREE_SOURCE);
+  slistFree (editlist);
 }
 
