@@ -28,7 +28,6 @@ enum {
 
 enum {
   UIMUSICQ_PEER_MAX = 2,
-  UIMUSICQ_REPEAT_TIME = 200,
 };
 
 enum {

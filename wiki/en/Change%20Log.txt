@@ -4,11 +4,13 @@
 
 <!--
 
-**4.3.3.7 2023-9---**
+**4.4.0 2023-9---**
 
 * Changes:
     * Configuration: Move audio tag interface selection to the general tab.
     * Configuration: General: re-arranged entries.
+* New Features:
+    * Configuration: General: add audio content recognition keys
 
 -->
 

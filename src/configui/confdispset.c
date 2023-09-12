@@ -27,15 +27,10 @@ void
 confuiInitDispSettings (confuigui_t *gui)
 {
   char  tbuffse [DISP_SEL_SONGEDIT_MAX][MAXPATHLEN];
-  char  tbuffaid [DISP_SEL_AUDIOID_MAX][MAXPATHLEN];
 
   for (int i = 0; i < DISP_SEL_SONGEDIT_MAX; ++i) {
     /* CONTEXT: configuration: display settings for: song editor column N */
     snprintf (tbuffse [i], MAXPATHLEN, _("Song Editor - Column %d"), i + 1);
-  }
-  for (int i = 0; i < DISP_SEL_AUDIOID_MAX; ++i) {
-    /* CONTEXT: configuration: display settings for: Audio ID column N */
-    snprintf (tbuffaid [i], MAXPATHLEN, _("Audio ID - Column %d"), i + 1);
   }
   /* as this list is set up manually, it will automatically skip */
   /* the disp-sel-max-player marker */
@@ -62,8 +57,8 @@ confuiInitDispSettings (confuigui_t *gui)
       DISP_SEL_SONGEDIT_C, tbuffse [DISP_SEL_SONGEDIT_C - DISP_SEL_SONGEDIT_A],
       /* CONTEXT: configuration: display settings for: Audio ID match listing */
       DISP_SEL_AUDIOID_DISP, _("Audio ID Match List"),
-      DISP_SEL_AUDIOID_A, tbuffaid [DISP_SEL_AUDIOID_A - DISP_SEL_AUDIOID_A],
-      DISP_SEL_AUDIOID_B, tbuffaid [DISP_SEL_AUDIOID_B - DISP_SEL_AUDIOID_A],
+      /* CONTEXT: configuration: display settings for: Audio Identification */
+      DISP_SEL_AUDIOID, _("Audio ID"),
       -1);
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 }

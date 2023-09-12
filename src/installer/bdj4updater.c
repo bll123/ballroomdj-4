@@ -623,8 +623,7 @@ main (int argc, char *argv [])
   {
     /* 4.4.0 2023-9-12 audio-id data selection */
     updaterCopyProfileIfNotPresent ("ds-audioid-disp", BDJ4_CONFIG_EXT);
-    updaterCopyProfileIfNotPresent ("ds-audioid-a", BDJ4_CONFIG_EXT);
-    updaterCopyProfileIfNotPresent ("ds-audioid-b", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT);
   }
 
   /* now re-load the data files */

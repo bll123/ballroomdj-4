@@ -246,11 +246,8 @@ confuiCreateTagListingDisp (confuigui_t *gui)
       selidx == DISP_SEL_SONGEDIT_C) {
     confuiCreateTagListingMultDisp (gui, gui->edittaglist,
         DISP_SEL_SONGEDIT_A, DISP_SEL_SONGEDIT_C);
-  } else if (selidx == DISP_SEL_AUDIOID_A ||
-      selidx == DISP_SEL_AUDIOID_B) {
-    confuiCreateTagListingMultDisp (gui, gui->audioidtaglist,
-        DISP_SEL_AUDIOID_A, DISP_SEL_AUDIOID_B);
-  } else if (selidx == DISP_SEL_AUDIOID_DISP) {
+  } else if (selidx == DISP_SEL_AUDIOID_DISP ||
+      selidx == DISP_SEL_AUDIOID) {
     uiduallistSet (gui->dispselduallist, gui->audioidtaglist,
         DUALLIST_TREE_SOURCE);
   } else {

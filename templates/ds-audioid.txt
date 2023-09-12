@@ -1,6 +1,11 @@
-# ds-audioid-b
+# ds-audioid-a
 # 2022-9-12
 # version 1
+GENRE
+TITLE
+ARTIST
+ALBUM
+ALBUMARTIST
 DATE
 DURATION
 DISC

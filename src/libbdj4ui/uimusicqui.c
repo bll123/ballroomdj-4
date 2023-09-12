@@ -220,7 +220,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         /* CONTEXT: music queue: button: move the selected song up in the queue */
         _("Move Up"), "button_up");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_UP] = uibutton;
-    uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
+    uiButtonSetRepeat (uibutton, REPEAT_TIME);
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -230,7 +230,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         /* CONTEXT: music queue: button: move the selected song down in the queue */
         _("Move Down"), "button_down");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_DOWN] = uibutton;
-    uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
+    uiButtonSetRepeat (uibutton, REPEAT_TIME);
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
   }

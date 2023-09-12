@@ -360,7 +360,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   seint->buttons [UISE_BUTTON_PREV] = uibutton;
-  uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
+  uiButtonSetRepeat (uibutton, REPEAT_TIME);
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
 
@@ -370,7 +370,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   seint->buttons [UISE_BUTTON_NEXT] = uibutton;
-  uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
+  uiButtonSetRepeat (uibutton, REPEAT_TIME);
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
 

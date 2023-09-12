@@ -30,14 +30,12 @@ typedef enum {
   DISP_SEL_SONGLIST,
   DISP_SEL_SONGSEL,
   DISP_SEL_AUDIOID_DISP,
-  DISP_SEL_AUDIOID_A,
-  DISP_SEL_AUDIOID_B,
+  DISP_SEL_AUDIOID,
   DISP_SEL_MAX,
 } dispselsel_t;
 
 enum {
   DISP_SEL_SONGEDIT_MAX = 3,
-  DISP_SEL_AUDIOID_MAX = 2,
 };
 
 typedef struct dispsel dispsel_t;

@@ -14,12 +14,14 @@
 #include "uisongsel.h"
 #include "ui.h"
 
+typedef struct se_internal se_internal_t;
+
 typedef struct {
   conn_t            *conn;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
   nlist_t           *options;
-  void              *seInternalData;
+  se_internal_t     *seInternalData;
   uiwcont_t         *statusMsg;
   callback_t        *savecb;
   callback_t        *applyadjcb;
@@ -31,10 +33,6 @@ enum {
   UISONGEDIT_ALL,
   UISONGEDIT_EDITALL_OFF,
   UISONGEDIT_EDITALL_ON,
-};
-
-enum {
-  UISONGEDIT_REPEAT_TIME = 200,
 };
 
 /* uisongedit.c */

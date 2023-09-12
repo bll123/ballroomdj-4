@@ -13,6 +13,8 @@ add_library (libbdj4ui SHARED
   osuimacutils.m
   osuiwinutils.c
   uiapplyadj.c
+  uiaudioid.c
+  uiaudioidui.c
   uicopytags.c
   uidance.c
   uiduallist.c

@@ -59,6 +59,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
+#include "uiaudioid.h"
 #include "uicopytags.h"
 #include "uiexpimpbdj4.h"
 #include "uimusicq.h"
@@ -81,6 +82,7 @@ enum {
   MANAGE_TAB_OTHER,
   MANAGE_TAB_SONGLIST,
   MANAGE_TAB_SONGEDIT,
+  MANAGE_TAB_AUDIOID,
   MANAGE_TAB_STATISTICS,
 };
 
@@ -204,6 +206,7 @@ typedef struct {
   uimenu_t          *currmenu;
   uimenu_t          *slmenu;
   uimenu_t          *songeditmenu;
+  uimenu_t          *audioidmenu;
   uimenu_t          *mmmenu;
   uinbtabid_t       *mainnbtabid;
   uinbtabid_t       *slnbtabid;
@@ -233,6 +236,7 @@ typedef struct {
   uimusicq_t        *mmmusicq;
   uisongsel_t       *mmsongsel;
   uisongedit_t      *mmsongedit;
+  uiaudioid_t       *mmaudioid;
   int               lastdisp;
   int               dbchangecount;
   int               editmode;
@@ -336,6 +340,8 @@ static bool     manageEditAllStart (void *udata);
 static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
 static void     manageReloadSongEdit (manageui_t *manage);
+/* audio identification */
+static void     manageAudioIDMenu (manageui_t *manage);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -447,6 +453,7 @@ main (int argc, char *argv[])
   manage.mmlasttab = MANAGE_TAB_MM;
   manage.slmenu = uiMenuAlloc ();
   manage.songeditmenu = uiMenuAlloc ();
+  manage.audioidmenu = uiMenuAlloc ();
   manage.mmmenu = uiMenuAlloc ();
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
@@ -644,6 +651,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   uiMenuFree (manage->slmenu);
   uiMenuFree (manage->songeditmenu);
+  uiMenuFree (manage->audioidmenu);
   uiMenuFree (manage->mmmenu);
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
@@ -684,6 +692,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
+  uiaudioidFree (manage->mmaudioid);
 
   uiplaylistFree (manage->cfpl);
   uiSpinboxFree (manage->cfpltmlimit);
@@ -932,6 +941,8 @@ manageInitializeUI (manageui_t *manage)
 
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->dispsel, manage->options);
+  manage->mmaudioid = uiaudioidInit (manage->conn,
+      manage->musicdb, manage->dispsel, manage->options);
 
   uisongselSetPeer (manage->mmsongsel, manage->slezsongsel);
   uisongselSetPeer (manage->mmsongsel, manage->slsongsel);
@@ -956,6 +967,7 @@ manageInitializeUI (manageui_t *manage)
   manage->callbacks [MANAGE_CB_SAVE] = callbackInitLong (
       manageSongEditSaveCallback, manage);
   uisongeditSetSaveCallback (manage->mmsongedit, manage->callbacks [MANAGE_CB_SAVE]);
+  uiaudioidSetSaveCallback (manage->mmaudioid, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slezsongsel, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_SAVE]);
@@ -1261,6 +1273,10 @@ manageMainLoop (void *tmanage)
     if (manage->mmlasttab == MANAGE_TAB_SONGEDIT) {
       /* the song edit main loop does not need to run all the time */
       uisongeditMainLoop (manage->mmsongedit);
+    }
+    if (manage->mmlasttab == MANAGE_TAB_AUDIOID) {
+      /* the song edit main loop does not need to run all the time */
+      uiaudioidMainLoop (manage->mmaudioid);
     }
   }
 
@@ -1885,7 +1901,34 @@ manageReloadSongEdit (manageui_t *manage)
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   uisongeditLoadData (manage->mmsongedit, song,
       manage->songeditdbidx, UISONGEDIT_ALL);
+  uiaudioidLoadData (manage->mmaudioid, song, manage->songeditdbidx);
   manageSetEditMenuItems (manage);
+}
+
+/* audio identification */
+
+static void
+manageAudioIDMenu (manageui_t *manage)
+{
+  uiwcont_t   *menu = NULL;
+  uiwcont_t   *menuitem = NULL;
+
+  logProcBegin (LOG_PROC, "manageAudioIDMenu");
+  if (! uiMenuInitialized (manage->audioidmenu)) {
+    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
+        /* CONTEXT: managementui: menu selection: actions for audio identification */
+        manage->audioidmenu, _("Actions"));
+    menu = uiCreateSubMenu (menuitem);
+    uiwcontFree (menuitem);
+
+    uiMenuSetInitialized (manage->audioidmenu);
+    uiwcontFree (menu);
+  }
+
+  uiMenuDisplay (manage->audioidmenu);
+  manage->currmenu = manage->audioidmenu;
+
+  logProcEnd (LOG_PROC, "manageAudioIDMenu", "");
 }
 
 /* bpm counter */
@@ -2167,6 +2210,14 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiwidgetp = uiCreateLabel (_("Song Editor"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_MM_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
+  uiwcontFree (uiwidgetp);
+
+  /* music manager: audio identification tab */
+  uip = uiaudioidBuildUI (manage->mmsongsel, manage->mmaudioid, manage->wcont [MANAGE_W_WINDOW], manage->wcont [MANAGE_W_ERROR_MSG]);
+  /* CONTEXT: managementui: name of audio identification notebook tab */
+  uiwidgetp = uiCreateLabel (_("Audio ID"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MM_NB], uip, uiwidgetp);
+  uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_AUDIOID);
   uiwcontFree (uiwidgetp);
 
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitLong (
@@ -3416,6 +3467,10 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     }
     case MANAGE_TAB_SONGEDIT: {
       manageSongEditMenu (manage);
+      break;
+    }
+    case MANAGE_TAB_AUDIOID: {
+      manageAudioIDMenu (manage);
       break;
     }
     default: {

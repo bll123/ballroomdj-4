@@ -36,8 +36,7 @@ static char *dispselmap [DISP_SEL_MAX] = {
   [DISP_SEL_SONGLIST] = "ds-songlist",
   [DISP_SEL_SONGSEL] = "ds-songsel",
   [DISP_SEL_AUDIOID_DISP] = "ds-audioid-disp",
-  [DISP_SEL_AUDIOID_A] = "ds-audioid-a",
-  [DISP_SEL_AUDIOID_B] = "ds-audioid-b",
+  [DISP_SEL_AUDIOID] = "ds-audioid",
 };
 
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
