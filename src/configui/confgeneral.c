@@ -151,6 +151,18 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_ACRCLOUD_API_KEY, OPT_G_ACRCLOUD_API_KEY,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY), CONFUI_NO_INDENT);
 
+  /* CONTEXT: configuration: the ACRCloud API Secret Key */
+  snprintf (tbuff, sizeof (tbuff), _("%s API Secret Key"), ACRCLOUD_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_ACRCLOUD_API_SECRET, OPT_G_ACRCLOUD_API_SECRET,
+      bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET), CONFUI_NO_INDENT);
+
+  /* CONTEXT: configuration: the ACRCloud API Host */
+  snprintf (tbuff, sizeof (tbuff), _("%s API Host"), ACRCLOUD_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
+      bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
+
   /* CONTEXT: configuration: the AudioTag API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), AUDIOTAG_NAME);
   confuiMakeItemEntry (gui, vbox, szgrp, tbuff,

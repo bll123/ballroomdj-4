@@ -185,9 +185,11 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_RC_IPADDR].entry = uiEntryInit (20, 50);
   confui.gui.uiitem [CONFUI_ENTRY_RC_PASS].entry = uiEntryInit (10, 20);
   confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_ACOUSTID_API_KEY].entry = uiEntryInit (15, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_KEY].entry = uiEntryInit (15, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_AUDIOTAG_API_KEY].entry = uiEntryInit (15, 30);
+  confui.gui.uiitem [CONFUI_ENTRY_ACOUSTID_API_KEY].entry = uiEntryInit (15, 20);
+  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_KEY].entry = uiEntryInit (40, 40);
+  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_SECRET].entry = uiEntryInit (45, 45);
+  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_HOST].entry = uiEntryInit (45, 100);
+  confui.gui.uiitem [CONFUI_ENTRY_AUDIOTAG_API_KEY].entry = uiEntryInit (40, 40);
 
   confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
   confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry = uiEntryInit (50, 300);
