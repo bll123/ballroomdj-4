@@ -9,6 +9,7 @@
 * Bug Fixes:
     * Song List Editor, Music Queue: Display numeric values correctly.
     * Song List Editor, Music Queue, Song Selection: Fix duration display.
+    * Translations: Fix some english/GB, english/US spelling differences.
 * Changes:
     * Configuration: Move audio tag interface selection to the general tab.
     * Configuration: General: re-arranged entries.

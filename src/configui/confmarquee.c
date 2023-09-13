@@ -28,7 +28,7 @@ confuiInitMarquee (confuigui_t *gui)
       /* CONTEXT: configuration: show-marquee: off */
       MARQUEE_SHOW_OFF, _("Off"),
       /* CONTEXT: configuration: show-marquee: minimize */
-      MARQUEE_SHOW_MINIMIZE, _("Minimized"),
+      MARQUEE_SHOW_MINIMIZE, _("Minimised"),
       /* CONTEXT: configuration: show-marquee: visible */
       MARQUEE_SHOW_VISIBLE, _("Visible"),
       -1);

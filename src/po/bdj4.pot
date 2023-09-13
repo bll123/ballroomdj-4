@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-13 13:14-0700\n"
+"POT-Creation-Date: 2023-09-13 13:27-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -792,7 +792,7 @@ msgid "Fade Out Time"
 msgstr ""
 
 #. CONTEXT: label: favorite marker
-msgid "Favorite"
+msgid "Favourite"
 msgstr ""
 
 #. CONTEXT: configuration: itunes: which fields should be imported from itunes
@@ -1069,7 +1069,7 @@ msgid "Message"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: minimize
-msgid "Minimized"
+msgid "Minimised"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix

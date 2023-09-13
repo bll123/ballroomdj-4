@@ -9,6 +9,8 @@ function convert (l) {
   l = gensub (/([Cc])olour/, "\\1olor", "g", l);
   l = gensub (/([Oo])rganis/, "\\1rganiz", "g", l);
   l = gensub (/([Cc])entimetre/, "\\1entimeter", "g", l);
+  l = gensub (/([Ff])avourite/, "\\1avorite", "g", l);
+  l = gensub (/([Mm])inimise/, "\\1inimize", "g", l);
   gsub (/LICENCE/, "LICENSE", l);
   return l;
 }

@@ -1263,7 +1263,7 @@ tagdefInit (void)
   /* CONTEXT: label: duration of the song */
   tagdefs [TAG_DURATION].displayname = _("Duration");
   /* CONTEXT: label: favorite marker */
-  tagdefs [TAG_FAVORITE].displayname = _("Favorite");
+  tagdefs [TAG_FAVORITE].displayname = _("Favourite");
   /* CONTEXT: label: genre */
   tagdefs [TAG_GENRE].displayname = _("Genre");
   /* CONTEXT: label: keyword (used to filter out songs) */

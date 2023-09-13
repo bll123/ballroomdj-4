@@ -788,7 +788,7 @@ msgid "Fade Out Time"
 msgstr ""
 
 #. CONTEXT: label: favorite marker
-msgid "Favorite"
+msgid "Favourite"
 msgstr ""
 
 #. CONTEXT: configuration: itunes: which fields should be imported from itunes
@@ -1065,7 +1065,7 @@ msgid "Message"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: minimize
-msgid "Minimized"
+msgid "Minimised"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
