@@ -913,10 +913,10 @@ manageInitializeUI (manageui_t *manage)
       manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
   manage->slsbsmusicq = uimusicqInit ("m-sbs-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, DISP_SEL_SBSSONGLIST);
+      manage->musicdb, manage->dispsel, DISP_SEL_SBS_SONGLIST);
   manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
-      manage->uisongfilter, DISP_SEL_SBSSONGSEL);
+      manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
   manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitLongInt (
@@ -3009,7 +3009,7 @@ static bool
 managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from side-by-side songlist");
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SBSSONGLIST, MANAGE_PLAY);
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SBS_SONGLIST, MANAGE_PLAY);
   return UICB_CONT;
 }
 
@@ -3044,7 +3044,7 @@ static bool
 manageQueueProcessEasySonglist (void *udata, long dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to side-by-side songlist");
-  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SBSSONGLIST, MANAGE_QUEUE);
+  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SBS_SONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 
@@ -3060,7 +3060,7 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
   if (dispsel == DISP_SEL_SONGLIST) {
     uimusicq = manage->slmusicq;
   }
-  if (dispsel == DISP_SEL_SBSSONGLIST) {
+  if (dispsel == DISP_SEL_SBS_SONGLIST) {
     uimusicq = manage->slsbsmusicq;
   }
   if (dispsel == DISP_SEL_MM) {

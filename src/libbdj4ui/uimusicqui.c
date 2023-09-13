@@ -204,7 +204,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_MOVE_TOP] = callbackInit (
         uimusicqMoveTopCallback, uimusicq, "musicq: move-to-top");
     uibutton = uiCreateButton (
@@ -250,7 +250,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_AUDIO_REMOVE] = callbackInit (
         uimusicqRemoveCallback, uimusicq, "musicq: remove-from-queue");
     uibutton = uiCreateButton (
@@ -278,7 +278,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_EDIT_LOCAL] = callbackInit (
         uimusicqSongEditCallback, uimusicq, "musicq: edit");
     uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_EDIT_LOCAL],
@@ -343,7 +343,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     uientry_t   *entryp;
 
     entryp = uimusicq->ui [ci].slname;
@@ -352,7 +352,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
     }
     uiWidgetSetClass (uiEntryGetWidgetContainer (entryp), ACCENT_CLASS);
-    if (uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+    if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
       uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
       uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
       uiBoxPackEndExpand (hbox, uiEntryGetWidgetContainer (entryp));
@@ -419,7 +419,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_SEL_CHG]);
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBSSONGLIST) {
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->uikey = uiKeyAlloc ();
     mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
         uimusicqKeyEvent, uimusicq, NULL);

@@ -59,7 +59,7 @@ START_TEST(dispsel_get_list)
   ck_assert_int_gt (slistGetCount (tlist), 0);
   tlist = dispselGetList (dsel, DISP_SEL_SONGSEL);
   ck_assert_int_gt (slistGetCount (tlist), 0);
-  tlist = dispselGetList (dsel, DISP_SEL_SBSSONGLIST);
+  tlist = dispselGetList (dsel, DISP_SEL_SBS_SONGLIST);
   ck_assert_int_gt (slistGetCount (tlist), 0);
   dispselFree (dsel);
 }

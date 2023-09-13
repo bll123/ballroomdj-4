@@ -263,7 +263,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBSSONGSEL) {
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
     ssint->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
     uibutton = uiCreateButton (ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
@@ -291,7 +291,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBSSONGSEL ||
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
@@ -352,7 +352,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   /* set/clear of same song marks.  also creates a new selection */
   /* mode for the song editor */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBSSONGSEL ||
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewSelectSetMode (ssint->songselTree, SELECT_MULTIPLE);
   }
@@ -1009,7 +1009,7 @@ uisongselCheckFavChgCallback (void *udata, long col)
     /* double-click in the song selection or side-by-side */
     /* song selection adds the song to the song list */
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-        uisongsel->dispselType == DISP_SEL_SBSSONGSEL) {
+        uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
       uisongselSelectCallback (uisongsel);
     }
     /* double-click in the music manager edits the song */

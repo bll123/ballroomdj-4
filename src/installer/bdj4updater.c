@@ -130,6 +130,7 @@ static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static int  updaterGetMPMValue (song_t *song);
+static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 
 int
 main (int argc, char *argv [])
@@ -624,6 +625,9 @@ main (int argc, char *argv [])
     /* 4.4.0 2023-9-12 audio-id data selection */
     updaterCopyProfileIfNotPresent ("ds-audioid-disp", BDJ4_CONFIG_EXT);
     updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT);
+    /* ez renamed to sbs internally */
+    updaterRenameProfileFile ("ds-ezsongsel", "ds-sbssongsel", BDJ4_CONFIG_EXT);
+    updaterRenameProfileFile ("ds-ezsonglist", "ds-sbssonglist", BDJ4_CONFIG_EXT);
   }
 
   /* now re-load the data files */
@@ -1216,7 +1220,7 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext)
     sysvarsSetNum (SVL_BDJIDX, i);
     if (bdjoptProfileExists ()) {
       pathbldMakePath (tbuff, sizeof (tbuff), fn, ext,
-        PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
         snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
         templateFileCopy (tbuff, tbuff);
@@ -1287,3 +1291,30 @@ updaterGetMPMValue (song_t *song)
   tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
   return tval;
 }
+
+static void
+updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
+{
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+  int     origprofile;
+
+  origprofile = sysvarsGetNum (SVL_BDJIDX);
+
+  for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
+    sysvarsSetNum (SVL_BDJIDX, i);
+    if (bdjoptProfileExists ()) {
+      pathbldMakePath (from, sizeof (from), oldfn, ext,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      if (fileopFileExists (from)) {
+        pathbldMakePath (to, sizeof (to), fn, ext,
+            PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+        if (! fileopFileExists (to)) {
+          filemanipMove (from, to);
+        }
+      }
+    } /* if the profile exists */
+  } /* for all profiles */
+  sysvarsSetNum (SVL_BDJIDX, origprofile);
+}
+
