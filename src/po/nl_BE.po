@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-09-02\n"
+"PO-Revision-Date: 2023-09-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -28,6 +28,23 @@ msgstr "%1$s moet groeter zijn dan %2$s"
 #, c-format
 msgid "%d files found"
 msgstr "%d bestanden gevonden"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr ""
+
+#. CONTEXT: configuration: the AcoustID API Key
+#. CONTEXT: configuration: the ACRCloud API Key
+#. CONTEXT: configuration: the AudioTag API Key
+#, c-format
+msgid "%s API Key"
+msgstr ""
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr ""
 
 #. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
 #, c-format
@@ -206,6 +223,7 @@ msgid "Action failed"
 msgstr "Actie mislukt"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for audio identification
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
@@ -318,6 +336,15 @@ msgstr "Audiobestand"
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Audiobestanden"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: managementui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr ""
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr ""
 
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
@@ -536,6 +563,9 @@ msgstr "Mapstructuur maken."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Snelkoppeling maken."
+
+msgid "Current"
+msgstr "Huidige"
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -771,6 +801,7 @@ msgstr "Favoriet"
 msgid "Fields to Import"
 msgstr "Te importeren velden"
 
+#. CONTEXT: audio identification: label for displaying the audio file path
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
 msgstr "Bestand"
@@ -1548,6 +1579,9 @@ msgstr "Schaal"
 msgid "Scanning music folder."
 msgstr "Scannen van de muziekmap."
 
+msgid "Score"
+msgstr "Score"
+
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
 msgstr "Zoeken"
@@ -1609,6 +1643,9 @@ msgstr "Selecteer map"
 #, c-format
 msgid "Select Music Folder Location"
 msgstr "Selecteer Muziekmap Locatie"
+
+msgid "Selected"
+msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
