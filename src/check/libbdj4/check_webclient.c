@@ -166,7 +166,7 @@ START_TEST(webclient_upload_plain)
   query [qc++] = "origfn";
   query [qc++] = UPFILE;
   query [qc++] = NULL;
-  webclientUploadFile (wc, tbuff, query, UPFILE);
+  webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
 
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 2);
@@ -221,7 +221,7 @@ START_TEST(webclient_upload_gzip)
   query [qc++] = "origfn";
   query [qc++] = UPFILE;
   query [qc++] = NULL;
-  webclientUploadFile (wc, tbuff, query, UPFILE);
+  webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
 
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 2);

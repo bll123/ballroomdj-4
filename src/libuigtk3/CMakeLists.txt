@@ -22,6 +22,7 @@ add_library (libuigtk3 SHARED
   uigtkmenu.c
   uigtkmiscbutton.c
   uigtknotebook.c
+  uigtkpanedwindow.c
   uigtkpbar.c
   uigtkscale.c
   uigtkscrollbar.c

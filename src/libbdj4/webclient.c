@@ -152,7 +152,7 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
 
 void
 webclientUploadFile (webclient_t *webclient, const char *uri,
-    const char *query [], const char *fn)
+    const char *query [], const char *fn, const char *fnname)
 {
   curl_off_t  speed_upload;
   curl_off_t  total_time;
@@ -187,7 +187,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   }
 
   part = curl_mime_addpart (mime);
-  curl_mime_name (part, "upfile");
+  curl_mime_name (part, fnname);
   curl_mime_filedata (part, fn);
 
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);

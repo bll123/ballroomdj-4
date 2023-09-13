@@ -30,6 +30,7 @@
 #include "ui/uimenu.h"
 #include "ui/uimiscbutton.h"
 #include "ui/uinotebook.h"
+#include "ui/uipanedwindow.h"
 #include "ui/uipbar.h"
 #include "ui/uiscale.h"
 #include "ui/uiscrollbar.h"

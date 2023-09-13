@@ -112,7 +112,7 @@ supportSendFile (support_t *support, const char *ident,
   query [qc++] = "origfn";
   query [qc++] = origfn;
   query [qc++] = NULL;
-  webclientUploadFile (support->webclient, uri, query, fn);
+  webclientUploadFile (support->webclient, uri, query, fn, "upfile");
   if (compflag == SUPPORT_COMPRESSED) {
     fileopDelete (fn);
   }

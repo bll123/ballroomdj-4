@@ -76,6 +76,7 @@ enum {
   UIAID_W_EDIT_ALL,
   UIAID_W_PARENT_WIN,
   UIAID_W_MAIN_VBOX,
+  UIAID_W_PW,
   UIAID_W_AUDIOID_IMG,
   UIAID_W_FILE_DISP,
   UIAID_W_MAX,
@@ -213,10 +214,22 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   uiKeySetKeyCallback (audioidint->uikey, audioidint->wcont [UIAID_W_MAIN_VBOX],
       audioidint->callbacks [UIAID_CB_KEYB]);
 
+  uiwidgetp = uiPanedWindowCreateHoriz ();
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStart (audioidint->wcont [UIAID_W_MAIN_VBOX], uiwidgetp);
+  audioidint->wcont [UIAID_W_PW] = uiwidgetp;
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (audioidint->wcont [UIAID_W_MAIN_VBOX], hbox);
+  uiPanedWindowPackStart (audioidint->wcont [UIAID_W_PW], hbox);
+
+
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
+  uiPanedWindowPackEnd (audioidint->wcont [UIAID_W_PW], hbox);
 
   audioidint->callbacks [UIAID_CB_FIRST] = callbackInit (
       uiaudioidFirstSelection, uiaudioid, "songedit: first");
