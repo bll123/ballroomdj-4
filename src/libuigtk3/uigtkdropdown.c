@@ -22,9 +22,7 @@
 #include "slist.h"
 #include "uiwcont.h"
 
-#if BDJ4_USE_GTK3
-# include "ui-gtk3.h"
-#endif
+#include "ui-gtk3.h"
 
 #include "ui/uiwcont-int.h"
 

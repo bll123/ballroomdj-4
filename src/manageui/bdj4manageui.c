@@ -105,7 +105,7 @@ enum {
   MANAGE_MENU_CB_SE_APPLY_ADJ,
   MANAGE_MENU_CB_SE_RESTORE_ORIG,
   /* sl options menu */
-  MANAGE_MENU_CB_SL_EZ_EDIT,
+  MANAGE_MENU_CB_SL_SBS_EDIT,
   /* sl edit menu */
   MANAGE_MENU_CB_SL_LOAD,
   MANAGE_MENU_CB_SL_NEW,
@@ -125,13 +125,13 @@ enum {
   MANAGE_MENU_CB_SL_M3U_IMP,
   MANAGE_MENU_CB_SL_ITUNES_IMP,
   /* other callbacks */
-  MANAGE_CB_EZ_SELECT,
+  MANAGE_CB_SBS_SELECT,
   MANAGE_CB_NEW_SEL_SONGSEL,
   MANAGE_CB_NEW_SEL_SONGLIST,
   MANAGE_CB_QUEUE_SL,
-  MANAGE_CB_QUEUE_SL_EZ,
+  MANAGE_CB_QUEUE_SL_SBS,
   MANAGE_CB_PLAY_SL,
-  MANAGE_CB_PLAY_SL_EZ,
+  MANAGE_CB_PLAY_SL_SBS,
   MANAGE_CB_PLAY_MM,
   MANAGE_CB_CLOSE,
   MANAGE_CB_MAIN_NB,
@@ -174,7 +174,7 @@ enum {
   MANAGE_W_MAIN_NB,
   MANAGE_W_SONGLIST_NB,
   MANAGE_W_MM_NB,
-  MANAGE_W_SL_EZ_MUSICQ_TAB,
+  MANAGE_W_SL_SBS_MUSICQ_TAB,
   MANAGE_W_SL_MUSICQ_TAB,         // not owner
   MANAGE_W_SONGSEL_TAB,           // not owner
   MANAGE_W_STATUS_MSG,
@@ -220,8 +220,8 @@ typedef struct {
   uimusicq_t        *slmusicq;
   managestats_t     *slstats;
   uisongsel_t       *slsongsel;
-  uimusicq_t        *slezmusicq;
-  uisongsel_t       *slezsongsel;
+  uimusicq_t        *slsbsmusicq;
+  uisongsel_t       *slsbssongsel;
   char              *sloldname;
   itunes_t          *itunes;
   uidropdown_t      *itunessel;
@@ -291,7 +291,7 @@ static datafilekey_t manageuidfkeys [] = {
   { "APPLY_ADJ_POS_Y",  APPLY_ADJ_POSITION_Y,       VALUE_NUM, NULL, DF_NORM },
   { "COPY_TAGS_POS_X",  COPY_TAGS_POSITION_X,       VALUE_NUM, NULL, DF_NORM },
   { "COPY_TAGS_POS_Y",  COPY_TAGS_POSITION_Y,       VALUE_NUM, NULL, DF_NORM },
-  { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, DF_NORM },
+  { "EASY_SONGLIST",    MANAGE_SBS_SONGLIST,        VALUE_NUM, convBoolean, DF_NO_WRITE },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
   { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, DF_NORM },
@@ -306,6 +306,7 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
   { "MNG_SIZE_X",       MANAGE_SIZE_X,              VALUE_NUM, NULL, DF_NORM },
   { "MNG_SIZE_Y",       MANAGE_SIZE_Y,              VALUE_NUM, NULL, DF_NORM },
+  { "SBS_SONGLIST",     MANAGE_SBS_SONGLIST,        VALUE_NUM, convBoolean, DF_NORM },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, DF_NORM },
 };
 enum {
@@ -435,8 +436,8 @@ main (int argc, char *argv[])
   manage.slmusicq = NULL;
   manage.slstats = NULL;
   manage.slsongsel = NULL;
-  manage.slezmusicq = NULL;
-  manage.slezsongsel = NULL;
+  manage.slsbsmusicq = NULL;
+  manage.slsbssongsel = NULL;
   manage.mmplayer = NULL;
   manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
@@ -539,7 +540,7 @@ main (int argc, char *argv[])
     nlistSetStr (manage.options, SONGSEL_SORT_BY, "TITLE");
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_Y, -1);
-    nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
+    nlistSetNum (manage.options, MANAGE_SBS_SONGLIST, true);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_X, -1);
@@ -685,8 +686,8 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->slsongsel);
   uiDropDownFree (manage->itunessel);
 
-  uimusicqFree (manage->slezmusicq);
-  uisongselFree (manage->slezsongsel);
+  uimusicqFree (manage->slsbsmusicq);
+  uisongselFree (manage->slsbssongsel);
 
   uiplayerFree (manage->mmplayer);
   uimusicqFree (manage->mmmusicq);
@@ -832,7 +833,7 @@ manageBuildUI (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL] = callbackInitLong (
       manageNewSelectionSongSel, manage);
-  uisongselSetSelectionCallback (manage->slezsongsel,
+  uisongselSetSelectionCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
   uisongselSetSelectionCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
@@ -843,7 +844,7 @@ manageBuildUI (manageui_t *manage)
       manageNewSelectionSonglist, manage);
   uimusicqSetSelectionCallback (manage->slmusicq,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
-  uimusicqSetSelectionCallback (manage->slezmusicq,
+  uimusicqSetSelectionCallback (manage->slsbsmusicq,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
 
   manage->callbacks [MANAGE_CB_SEQ_LOAD] = callbackInitStr (
@@ -911,21 +912,21 @@ manageInitializeUI (manageui_t *manage)
   uisongselSetQueueCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
-  manage->slezmusicq = uimusicqInit ("m-ez-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, DISP_SEL_EZSONGLIST);
-  manage->slezsongsel = uisongselInit ("m-ez-songsel", manage->conn,
+  manage->slsbsmusicq = uimusicqInit ("m-sbs-songlist", manage->conn,
+      manage->musicdb, manage->dispsel, DISP_SEL_SBSSONGLIST);
+  manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
-      manage->uisongfilter, DISP_SEL_EZSONGSEL);
-  uimusicqSetPlayIdx (manage->slezmusicq, manage->musicqPlayIdx);
-  uimusicqSetManageIdx (manage->slezmusicq, manage->musicqManageIdx);
-  manage->callbacks [MANAGE_CB_PLAY_SL_EZ] = callbackInitLongInt (
+      manage->uisongfilter, DISP_SEL_SBSSONGSEL);
+  uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
+  uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
+  manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitLongInt (
       managePlayProcessEasySonglist, manage);
-  uisongselSetPlayCallback (manage->slezsongsel,
-      manage->callbacks [MANAGE_CB_PLAY_SL_EZ]);
-  manage->callbacks [MANAGE_CB_QUEUE_SL_EZ] = callbackInitLong (
+  uisongselSetPlayCallback (manage->slsbssongsel,
+      manage->callbacks [MANAGE_CB_PLAY_SL_SBS]);
+  manage->callbacks [MANAGE_CB_QUEUE_SL_SBS] = callbackInitLong (
       manageQueueProcessEasySonglist, manage);
-  uisongselSetQueueCallback (manage->slezsongsel,
-      manage->callbacks [MANAGE_CB_QUEUE_SL_EZ]);
+  uisongselSetQueueCallback (manage->slsbssongsel,
+      manage->callbacks [MANAGE_CB_QUEUE_SL_SBS]);
 
   manage->mmplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
@@ -946,35 +947,35 @@ manageInitializeUI (manageui_t *manage)
   manage->mmaudioid = uiaudioidInit (manage->conn,
       manage->musicdb, manage->dispsel, manage->options);
 
-  uisongselSetPeer (manage->mmsongsel, manage->slezsongsel);
+  uisongselSetPeer (manage->mmsongsel, manage->slsbssongsel);
   uisongselSetPeer (manage->mmsongsel, manage->slsongsel);
 
-  uisongselSetPeer (manage->slsongsel, manage->slezsongsel);
+  uisongselSetPeer (manage->slsongsel, manage->slsbssongsel);
   uisongselSetPeer (manage->slsongsel, manage->mmsongsel);
 
-  uisongselSetPeer (manage->slezsongsel, manage->mmsongsel);
-  uisongselSetPeer (manage->slezsongsel, manage->slsongsel);
+  uisongselSetPeer (manage->slsbssongsel, manage->mmsongsel);
+  uisongselSetPeer (manage->slsbssongsel, manage->slsongsel);
 
-  uimusicqSetPeer (manage->slmusicq, manage->slezmusicq);
-  uimusicqSetPeer (manage->slezmusicq, manage->slmusicq);
+  uimusicqSetPeer (manage->slmusicq, manage->slsbsmusicq);
+  uimusicqSetPeer (manage->slsbsmusicq, manage->slmusicq);
 
   manage->callbacks [MANAGE_CB_EDIT] = callbackInit (
       manageSwitchToSongEditor, manage, NULL);
   uisongselSetEditCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_EDIT]);
-  uisongselSetEditCallback (manage->slezsongsel, manage->callbacks [MANAGE_CB_EDIT]);
+  uisongselSetEditCallback (manage->slsbssongsel, manage->callbacks [MANAGE_CB_EDIT]);
   uisongselSetEditCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_EDIT]);
   uimusicqSetEditCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_EDIT]);
-  uimusicqSetEditCallback (manage->slezmusicq, manage->callbacks [MANAGE_CB_EDIT]);
+  uimusicqSetEditCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_EDIT]);
 
   manage->callbacks [MANAGE_CB_SAVE] = callbackInitLong (
       manageSongEditSaveCallback, manage);
   uisongeditSetSaveCallback (manage->mmsongedit, manage->callbacks [MANAGE_CB_SAVE]);
   uiaudioidSetSaveCallback (manage->mmaudioid, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_SAVE]);
-  uisongselSetSongSaveCallback (manage->slezsongsel, manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->slsbssongsel, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_SAVE]);
   uimusicqSetSongSaveCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_SAVE]);
-  uimusicqSetSongSaveCallback (manage->slezmusicq, manage->callbacks [MANAGE_CB_SAVE]);
+  uimusicqSetSongSaveCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_SAVE]);
 
   manage->uieibdj4 = uieibdj4Init (manage->wcont [MANAGE_W_WINDOW],
       manage->options);
@@ -1019,13 +1020,13 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], mainhbox, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB] = mainhbox;
+  manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB] = mainhbox;
   uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (mainhbox, hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
+  uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
       manage->wcont [MANAGE_W_STATUS_MSG], uiutilsValidatePlaylistName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
@@ -1036,17 +1037,17 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetMarginTop (vbox, 64);
   uiBoxPackStart (hbox, vbox);
 
-  manage->callbacks [MANAGE_CB_EZ_SELECT] = callbackInit (
-      uisongselSelectCallback, manage->slezsongsel, NULL);
+  manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
+      uisongselSelectCallback, manage->slsbssongsel, NULL);
   uibutton = uiCreateButton (
-      manage->callbacks [MANAGE_CB_EZ_SELECT],
+      manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
   manage->selectButton = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->wcont [MANAGE_W_WINDOW]);
+  uiwidgetp = uisongselBuildUI (manage->slsbssongsel, manage->wcont [MANAGE_W_WINDOW]);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
@@ -1068,7 +1069,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->wcont [MANAGE_W_SONGSEL_TAB] = uip;
   uiwcontFree (uiwidgetp);
 
-  uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
+  uimusicqPeerSonglistName (manage->slmusicq, manage->slsbsmusicq);
 
   /* song list editor: statistics tab */
   uip = manageBuildUIStats (manage->slstats);
@@ -1266,8 +1267,8 @@ manageMainLoop (void *tmanage)
   uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
   uisongselMainLoop (manage->slsongsel);
-  uimusicqMainLoop (manage->slezmusicq);
-  uisongselMainLoop (manage->slezsongsel);
+  uimusicqMainLoop (manage->slsbsmusicq);
+  uisongselMainLoop (manage->slsbssongsel);
   uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->mmsongsel);
 
@@ -1427,7 +1428,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           musicqupdate = msgparseMusicQueueData (targs);
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
-            uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
+            uimusicqProcessMusicQueueData (manage->slsbsmusicq, musicqupdate);
             uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
             manageStatsProcessData (manage->slstats, musicqupdate);
           }
@@ -1435,7 +1436,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* indicating that the song is already in the song list */
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
-            uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
+            uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
           }
           msgparseMusicQueueDataFree (musicqupdate);
           if (uimusicqGetCount (manage->slmusicq) > 0) {
@@ -1451,7 +1452,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* the display is offset by 1, as the 0 index is the current song */
           --songselect->loc;
           uimusicqProcessSongSelect (manage->slmusicq, songselect);
-          uimusicqProcessSongSelect (manage->slezmusicq, songselect);
+          uimusicqProcessSongSelect (manage->slsbsmusicq, songselect);
           uimusicqProcessSongSelect (manage->mmmusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
@@ -1465,8 +1466,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           manage->pluiActive = val;
           uimusicqSetPlayButtonState (manage->slmusicq, val);
           uisongselSetPlayButtonState (manage->slsongsel, val);
-          uimusicqSetPlayButtonState (manage->slezmusicq, val);
-          uisongselSetPlayButtonState (manage->slezsongsel, val);
+          uimusicqSetPlayButtonState (manage->slsbsmusicq, val);
+          uisongselSetPlayButtonState (manage->slsbssongsel, val);
           uisongselSetPlayButtonState (manage->mmsongsel, val);
           uisongeditSetPlayButtonState (manage->mmsongedit, val);
           if (! manage->pluiActive) {
@@ -1759,7 +1760,7 @@ manageRePopulateData (manageui_t *manage)
   /* re-populate the song selection displays to display the updated info */
   manage->selbypass = true;
   uisongselPopulateData (manage->slsongsel);
-  uisongselPopulateData (manage->slezsongsel);
+  uisongselPopulateData (manage->slsbssongsel);
   uisongselPopulateData (manage->mmsongsel);
   manage->selbypass = false;
 }
@@ -2414,12 +2415,12 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EZ_EDIT,
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SBS_EDIT,
       manageToggleEasySonglist);
   /* CONTEXT: managementui: menu checkbox: side-by-side view */
   menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
-      nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
-      manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
+      nlistGetNum (manage->options, MANAGE_SBS_SONGLIST),
+      manage->callbacks [MANAGE_MENU_CB_SL_SBS_EDIT]);
   uiwcontFree (menuitem);
 
   uiMenuSetInitialized (manage->slmenu);
@@ -2908,10 +2909,10 @@ manageToggleEasySonglist (void *udata)
   int         val;
 
   logProcBegin (LOG_PROC, "manageToggleEasySonglist");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle ez songlist");
-  val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle side-by-side songlist");
+  val = nlistGetNum (manage->options, MANAGE_SBS_SONGLIST);
   val = ! val;
-  nlistSetNum (manage->options, MANAGE_EASY_SONGLIST, val);
+  nlistSetNum (manage->options, MANAGE_SBS_SONGLIST, val);
   manageSetEasySonglist (manage);
   logProcEnd (LOG_PROC, "manageToggleEasySonglist", "");
   return UICB_CONT;
@@ -2923,14 +2924,14 @@ manageSetEasySonglist (manageui_t *manage)
   int     val;
 
   logProcBegin (LOG_PROC, "manageSetEasySonglist");
-  val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
+  val = nlistGetNum (manage->options, MANAGE_SBS_SONGLIST);
   if (val) {
-    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB]);
+    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 0);
   } else {
-    uiWidgetHide (manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB]);
+    uiWidgetHide (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetShowAll (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetShowAll (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 1);
@@ -3007,8 +3008,8 @@ managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
 static bool
 managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from ez songlist");
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_PLAY);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from side-by-side songlist");
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SBSSONGLIST, MANAGE_PLAY);
   return UICB_CONT;
 }
 
@@ -3042,8 +3043,8 @@ manageQueueProcessSonglist (void *udata, long dbidx)
 static bool
 manageQueueProcessEasySonglist (void *udata, long dbidx)
 {
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to ez songlist");
-  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_EZSONGLIST, MANAGE_QUEUE);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to side-by-side songlist");
+  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SBSSONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 
@@ -3059,8 +3060,8 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
   if (dispsel == DISP_SEL_SONGLIST) {
     uimusicq = manage->slmusicq;
   }
-  if (dispsel == DISP_SEL_EZSONGLIST) {
-    uimusicq = manage->slezmusicq;
+  if (dispsel == DISP_SEL_SBSSONGLIST) {
+    uimusicq = manage->slsbsmusicq;
   }
   if (dispsel == DISP_SEL_MM) {
     uimusicq = manage->mmmusicq;
@@ -3620,12 +3621,12 @@ manageProcessDatabaseUpdate (manageui_t *manage)
   uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
   uisongselSetDatabase (manage->slsongsel, manage->musicdb);
   uisongselSetSamesong (manage->slsongsel, manage->samesong);
-  uisongselSetDatabase (manage->slezsongsel, manage->musicdb);
-  uisongselSetSamesong (manage->slezsongsel, manage->samesong);
+  uisongselSetDatabase (manage->slsbssongsel, manage->musicdb);
+  uisongselSetSamesong (manage->slsbssongsel, manage->samesong);
   uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
   uisongselSetSamesong (manage->mmsongsel, manage->samesong);
   uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
-  uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
+  uimusicqSetDatabase (manage->slsbsmusicq, manage->musicdb);
   uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
 
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);

@@ -69,6 +69,7 @@ enum {
   UIAID_CB_NEXT,
   UIAID_CB_KEYB,
   UIAID_CB_ROW_SELECT,
+  UIAID_CB_ITEM_SELECT,
   UIAID_CB_MAX,
 };
 
@@ -130,6 +131,7 @@ static bool uiaudioidRowSelect (void *udata);
 static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayTypeCallback (int type, void *udata);
 static void uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata);
+static bool uiaudioidItemSelectCallback (void *udata);
 
 void
 uiaudioidUIInit (uiaudioid_t *uiaudioid)
@@ -422,6 +424,9 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   uiwcontFree (uiwidgetp);
   uiwcontFree (hhbox);
 
+  audioidint->callbacks [UIAID_CB_ITEM_SELECT] = callbackInit (
+      uiaudioidItemSelectCallback, uiaudioid, NULL);
+
   uiaudioidAddDisplay (uiaudioid, col);
 
   uiwcontFree (col);
@@ -439,20 +444,13 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   audioidint->typelist = mdmalloc (sizeof (int) * UIAID_COL_MAX);
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
-  /* attributes: ellipsize / font */
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_ELLIPSIZE;
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_STRING;
-  /* color, color-set */
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_STRING;
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_BOOLEAN;
-  /* index */
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_NUM;
-  /* score */
-  audioidint->typelist [audioidint->colcount++] = TREE_TYPE_STRING;
-
-  if (audioidint->colcount != UIAID_COL_MAX) {
-    fprintf (stderr, "ERR: mismatched UIAID_COL_MAX %d %d\n", UIAID_COL_MAX, audioidint->colcount);
-  }
+  audioidint->typelist [UIAID_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
+  audioidint->typelist [UIAID_COL_FONT] = TREE_TYPE_STRING;
+  audioidint->typelist [UIAID_COL_COLOR] = TREE_TYPE_STRING;
+  audioidint->typelist [UIAID_COL_COLOR_SET] = TREE_TYPE_BOOLEAN;
+  audioidint->typelist [UIAID_COL_IDX] = TREE_TYPE_NUM;
+  audioidint->typelist [UIAID_COL_SCORE] = TREE_TYPE_STRING;
+  audioidint->colcount = UIAID_COL_MAX;
 
   uisongAddDisplayTypes (audioidint->listsellist, uiaudioidDisplayTypeCallback,
       uiaudioid);
@@ -503,7 +501,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
     uiTreeViewSetValues (audioidint->alistTree,
         UIAID_COL_FONT, listingFont,
         UIAID_COL_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-        UIAID_COL_COLOR_SET, (treebool_t) true,
+        UIAID_COL_COLOR_SET, (treebool_t) false,
         UIAID_COL_IDX, (treenum_t) 0,
         UIAID_COL_SCORE, "",
         TREE_VALUE_END);
@@ -516,6 +514,8 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   audioidint->currrow = row;
   uisongSetDisplayColumns (audioidint->listsellist, song, UIAID_COL_MAX,
       uiaudioidSetSongDataCallback, uiaudioid);
+  uiTreeViewSetValues (audioidint->alistTree,
+      UIAID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
 
   ++row;
   uiTreeViewValueClear (audioidint->alistTree, row);
@@ -608,9 +608,11 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *data)
     if (row >= audioidint->rowcount) {
       uiTreeViewValueAppend (audioidint->alistTree);
       uiTreeViewSetValueEllipsize (audioidint->alistTree, UIAID_COL_ELLIPSIZE);
+      /* color-set isn't working for me within this module */
+      /* so set the color to null */
       uiTreeViewSetValues (audioidint->alistTree,
           UIAID_COL_FONT, listingFont,
-          UIAID_COL_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+          UIAID_COL_COLOR, NULL,
           UIAID_COL_COLOR_SET, (treebool_t) false,
           UIAID_COL_IDX, (treenum_t) row,
           UIAID_COL_SCORE, nlistGetStr (data, TAG_TEMPORARY),
@@ -726,6 +728,8 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [1], uiwidgetp);
   audioidint->items [audioidint->itemcount].currdisp = uiwidgetp;
+  uiWidgetSetSingleClickCallback (uiwidgetp,
+      audioidint->callbacks [UIAID_CB_ITEM_SELECT]);
 
   audioidint->items [audioidint->itemcount].selchgind = uiCreateChangeIndicator (hbox);
   uichgindMarkNormal (audioidint->items [audioidint->itemcount].selchgind);
@@ -735,6 +739,8 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [2], uiwidgetp);
   audioidint->items [audioidint->itemcount].seldisp = uiwidgetp;
+  uiWidgetSetSingleClickCallback (uiwidgetp,
+      audioidint->callbacks [UIAID_CB_ITEM_SELECT]);
 
   logProcEnd (LOG_PROC, "uiaudioidAddItem", "");
 }
@@ -852,10 +858,7 @@ uiaudioidRowSelect (void *udata)
   }
 
   uiTreeViewSelectCurrent (audioidint->alistTree);
-  idx = uiTreeViewGetValue (audioidint->alistTree, UIAID_COL_COLOR_SET);
-fprintf (stderr, "color-set: %d\n", idx);
   idx = uiTreeViewGetValue (audioidint->alistTree, UIAID_COL_IDX);
-fprintf (stderr, "row-sel: %d\n", idx);
   uiaudioidPopulateSelected (uiaudioid, idx - 1);
 
   return UICB_CONT;
@@ -910,9 +913,12 @@ uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata)
   audioidint = uiaudioid->audioidInternalData;
 
   uitreedispSetDisplayColumn (audioidint->alistTree, col, num, str);
-fprintf (stderr, "set-song-data: row: %d\n", audioidint->currrow);
-//  if (audioidint->currrow == 0) {
-//    uiTreeViewSetValues (audioidint->alistTree,
-//        UIAID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
-//  }
+}
+
+static bool
+uiaudioidItemSelectCallback (void *udata)
+{
+//  uiaudioid_t     *uiaudioid = udata;
+fprintf (stderr, "item-sel callback\n");
+  return UICB_CONT;
 }

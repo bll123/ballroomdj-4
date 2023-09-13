@@ -47,9 +47,9 @@ confuiInitDispSettings (confuigui_t *gui)
       /* CONTEXT: configuration: display settings for: song selection */
       DISP_SEL_SONGSEL, _("Song Selection"),
       /* CONTEXT: configuration: display settings for: side-by-side song list */
-      DISP_SEL_EZSONGLIST, _("Side-by-Side Song List"),
+      DISP_SEL_SBSSONGLIST, _("Side-by-Side Song List"),
       /* CONTEXT: configuration: display settings for: side-by-side song selection */
-      DISP_SEL_EZSONGSEL, _("Side-by-Side Song Selection"),
+      DISP_SEL_SBSSONGSEL, _("Side-by-Side Song Selection"),
       /* CONTEXT: configuration: display settings for: music manager */
       DISP_SEL_MM, _("Music Manager"),
       DISP_SEL_SONGEDIT_A, tbuffse [DISP_SEL_SONGEDIT_A - DISP_SEL_SONGEDIT_A],

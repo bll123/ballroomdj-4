@@ -98,7 +98,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     if (uimusicq->ui [i].dispselType == DISP_SEL_SONGLIST) {
       sz = 25;
     }
-    if (uimusicq->ui [i].dispselType == DISP_SEL_EZSONGLIST) {
+    if (uimusicq->ui [i].dispselType == DISP_SEL_SBSSONGLIST) {
       sz = 15;
     }
     uimusicq->ui [i].slname = uiEntryInit (sz, 40);

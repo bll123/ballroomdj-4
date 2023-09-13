@@ -20,8 +20,8 @@ typedef enum {
   DISP_SEL_REQUEST,
   DISP_SEL_MAX_PLAYER,
   /* the following are used by the management ui */
-  DISP_SEL_EZSONGLIST,
-  DISP_SEL_EZSONGSEL,
+  DISP_SEL_SBSSONGLIST,
+  DISP_SEL_SBSSONGSEL,
   DISP_SEL_MM,
   /* songedit_a through songedit_c must be sequential */
   DISP_SEL_SONGEDIT_A,

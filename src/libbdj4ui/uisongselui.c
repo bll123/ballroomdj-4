@@ -248,8 +248,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
-  /* The ez song selection does not need a select button, as it has */
-  /* the left-arrow button.  Saves real estate. */
+  /* The side-by-side song selection does not need a select button, */
+  /* as it has the left-arrow button.  Saves real estate. */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
@@ -263,7 +263,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+      uisongsel->dispselType == DISP_SEL_SBSSONGSEL) {
     ssint->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
     uibutton = uiCreateButton (ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
@@ -291,7 +291,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
+      uisongsel->dispselType == DISP_SEL_SBSSONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
@@ -352,7 +352,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   /* set/clear of same song marks.  also creates a new selection */
   /* mode for the song editor */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
+      uisongsel->dispselType == DISP_SEL_SBSSONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewSelectSetMode (ssint->songselTree, SELECT_MULTIPLE);
   }
@@ -524,8 +524,8 @@ uisongselSelectCallback (void *udata)
   uisongsel_t       *uisongsel = udata;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
-  /* only the song selection and ez song selection have a select button */
-  /* queue to the song list */
+  /* only the song selection and side-by-side song selection have */
+  /* a select button to queue to the song list */
   uisongselQueueHandler (uisongsel, -1, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
   /* it's confusing for the user */
@@ -754,7 +754,8 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-  /* only song selection, ez song sel and music manager have a play button */
+  /* only song selection, side-by-side song sel and music manager */
+  /* have a play button */
   /* use the hidden manage playback music queue */
   mqidx = MUSICQ_MNG_PB;
   /* the manageui callback clears the queue and plays */
@@ -936,19 +937,14 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   ssint = uisongsel->ssInternalData;
   ssint->typelist = mdmalloc (sizeof (int) * SONGSEL_COL_MAX);
   ssint->colcount = 0;
-  /* attributes ellipsize/font*/
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_ELLIPSIZE;
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_STRING;
-  /* internal idx/sortidx/dbidx */
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_NUM;
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_NUM;
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_NUM;
-  /* fav color/mark color/mark/samesong color */
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_STRING;
-  ssint->typelist [ssint->colcount++] = TREE_TYPE_STRING;
-  if (ssint->colcount != SONGSEL_COL_MAX) {
-    fprintf (stderr, "ERR: mismatched SONGSEL_COL_MAX %d %d\n", SONGSEL_COL_MAX, ssint->colcount);
-  }
+  ssint->typelist [SONGSEL_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
+  ssint->typelist [SONGSEL_COL_FONT] = TREE_TYPE_STRING;
+  ssint->typelist [SONGSEL_COL_IDX] = TREE_TYPE_NUM;
+  ssint->typelist [SONGSEL_COL_SORTIDX] = TREE_TYPE_NUM;
+  ssint->typelist [SONGSEL_COL_DBIDX] = TREE_TYPE_NUM;
+  ssint->typelist [SONGSEL_COL_MARK_MARKUP] = TREE_TYPE_STRING;
+  ssint->typelist [SONGSEL_COL_SAMESONG_MARKUP] = TREE_TYPE_STRING;
+  ssint->colcount = SONGSEL_COL_MAX;
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
@@ -1010,10 +1006,10 @@ uisongselCheckFavChgCallback (void *udata, long col)
   /* double-click processing */
   if (ssint->lastRowDBIdx == uisongsel->lastdbidx &&
       ! mstimeCheck (&ssint->lastRowCheck)) {
-    /* double-click in the song selection or ez-song selection adds */
-    /* the song to the song list */
+    /* double-click in the song selection or side-by-side */
+    /* song selection adds the song to the song list */
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-        uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+        uisongsel->dispselType == DISP_SEL_SBSSONGSEL) {
       uisongselSelectCallback (uisongsel);
     }
     /* double-click in the music manager edits the song */

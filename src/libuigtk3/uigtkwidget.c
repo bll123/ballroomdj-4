@@ -13,10 +13,14 @@
 
 #include "uiwcont.h"
 
+#include "ui-gtk3.h"
+
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
+
+static gboolean uiWidgetSingleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata);
 
 /* widget interface */
 
@@ -311,5 +315,33 @@ uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
 
   gtk_style_context_remove_class (
       gtk_widget_get_style_context (uiwidget->widget), class);
+}
+
+void
+uiWidgetSetSingleClickCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+fprintf (stderr, "set-sc-handler\n");
+  g_signal_connect (uiwidget->widget, "button-press-event",
+      G_CALLBACK (uiWidgetSingleClickHandler), uicb);
+}
+
+/* internal routines */
+
+static gboolean
+uiWidgetSingleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata)
+{
+  callback_t  *uicb = udata;
+  bool        rc = UICB_CONT;
+
+fprintf (stderr, "sc-handler\n");
+  if (gdk_event_get_event_type ((GdkEvent *) event) != GDK_BUTTON_PRESS) {
+fprintf (stderr, "  not button-press\n");
+    return UICB_CONT;
+  }
+
+  if (uicb != NULL) {
+    rc = callbackHandler (uicb);
+  }
+  return rc;
 }
 
