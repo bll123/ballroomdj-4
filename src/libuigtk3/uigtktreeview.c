@@ -460,7 +460,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
   if (uitree->colorcol != TREE_NO_COLUMN && uitree->colorsetcol != TREE_NO_COLUMN) {
     gtk_tree_view_column_add_attribute (column, renderer, "foreground", uitree->colorcol);
     gtk_tree_view_column_add_attribute (column, renderer, "foreground-set", uitree->colorsetcol);
-fprintf (stderr, "title: %s colorcol: %d colorsetcol: %d\n", title, uitree->colorcol, uitree->colorsetcol);
     uitree->colorcol = TREE_NO_COLUMN;
     uitree->colorsetcol = TREE_NO_COLUMN;
   }

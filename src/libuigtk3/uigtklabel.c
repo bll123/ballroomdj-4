@@ -13,6 +13,8 @@
 
 #include "uiwcont.h"
 
+#include "ui-gtk3.h"
+
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"

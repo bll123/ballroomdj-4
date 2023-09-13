@@ -48,6 +48,12 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
   return;
 }
 
+void
+uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
+{
+  return;
+}
+
 bool
 uiToggleButtonIsActive (uiwcont_t *uiwidget)
 {

@@ -105,6 +105,12 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
 }
 
+void
+uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
+{
+  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
+}
+
 bool
 uiToggleButtonIsActive (uiwcont_t *uiwidget)
 {

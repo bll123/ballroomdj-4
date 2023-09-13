@@ -54,10 +54,8 @@ enum {
 
 typedef struct {
   int             tagidx;
-  uichgind_t      *currchgind;
-  uiwcont_t       *currdisp;
-  uichgind_t      *selchgind;
-  uiwcont_t       *seldisp;
+  uiwcont_t       *currrb;
+  uiwcont_t       *selrb;
   callback_t      *callback;
   bool            selection : 1;
 } uiaudioiditem_t;
@@ -186,10 +184,8 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   if (audioidint != NULL) {
     for (int count = 0; count < audioidint->itemcount; ++count) {
       callbackFree (audioidint->items [count].callback);
-      uichgindFree (audioidint->items [count].currchgind);
-      uiwcontFree (audioidint->items [count].currdisp);
-      uichgindFree (audioidint->items [count].selchgind);
-      uiwcontFree (audioidint->items [count].seldisp);
+      uiwcontFree (audioidint->items [count].currrb);
+      uiwcontFree (audioidint->items [count].selrb);
     }
     dataFree (audioidint->typelist);
 
@@ -376,10 +372,8 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   audioidint->items = mdmalloc (sizeof (uiaudioiditem_t) * (count + 1));
   for (int i = 0; i < count + 1; ++i) {
     audioidint->items [i].tagidx = 0;
-    audioidint->items [i].currchgind = NULL;
-    audioidint->items [i].currdisp = NULL;
-    audioidint->items [i].selchgind = NULL;
-    audioidint->items [i].seldisp = NULL;
+    audioidint->items [i].currrb = NULL;
+    audioidint->items [i].selrb = NULL;
     audioidint->items [i].callback = NULL;
   }
 
@@ -487,8 +481,8 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
     int tagidx = audioidint->items [count].tagidx;
 
     tval = uisongGetDisplay (song, tagidx, &val, &dval);
-    uiLabelSetText (audioidint->items [count].currdisp, tval);
-    uiLabelSetText (audioidint->items [count].seldisp, "");
+    uiToggleButtonSetText (audioidint->items [count].currrb, tval);
+    uiToggleButtonSetText (audioidint->items [count].selrb, "");
     dataFree (tval);
     tval = NULL;
   }
@@ -706,6 +700,7 @@ static void
 uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
 {
   uiwcont_t       *uiwidgetp;
+  uiwcont_t       *rb;
   aid_internal_t  *audioidint;
 
   logProcBegin (LOG_PROC, "uiaudioidAddItem");
@@ -719,28 +714,15 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiSizeGroupAdd (audioidint->szgrp [0], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  audioidint->items [audioidint->itemcount].currchgind = uiCreateChangeIndicator (hbox);
-  uichgindMarkChanged (audioidint->items [audioidint->itemcount].currchgind);
+  rb = uiCreateRadioButton (NULL, "", UI_TOGGLE_BUTTON_ON);
+  uiBoxPackStartExpand (hbox, rb);
+  uiSizeGroupAdd (audioidint->szgrp [1], rb);
+  audioidint->items [audioidint->itemcount].currrb = rb;
 
-  uiwidgetp = uiCreateLabel ("");
-  uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiSizeGroupAdd (audioidint->szgrp [1], uiwidgetp);
-  audioidint->items [audioidint->itemcount].currdisp = uiwidgetp;
-  uiWidgetSetSingleClickCallback (uiwidgetp,
-      audioidint->callbacks [UIAID_CB_ITEM_SELECT]);
-
-  audioidint->items [audioidint->itemcount].selchgind = uiCreateChangeIndicator (hbox);
-  uichgindMarkNormal (audioidint->items [audioidint->itemcount].selchgind);
-
-  uiwidgetp = uiCreateLabel ("");
-  uiLabelEllipsizeOn (uiwidgetp);
+  uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [2], uiwidgetp);
-  audioidint->items [audioidint->itemcount].seldisp = uiwidgetp;
-  uiWidgetSetSingleClickCallback (uiwidgetp,
-      audioidint->callbacks [UIAID_CB_ITEM_SELECT]);
+  audioidint->items [audioidint->itemcount].selrb = uiwidgetp;
 
   logProcEnd (LOG_PROC, "uiaudioidAddItem", "");
 }
@@ -881,12 +863,12 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
     int tagidx = audioidint->items [count].tagidx;
-    uichgindMarkChanged (audioidint->items [count].currchgind);
-    uichgindMarkNormal (audioidint->items [count].selchgind);
+    uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
     if (dlist == NULL) {
-      uiLabelSetText (audioidint->items [count].seldisp, "");
+      uiToggleButtonSetText (audioidint->items [count].selrb, "");
     } else {
-      uiLabelSetText (audioidint->items [count].seldisp,
+      uiToggleButtonSetText (audioidint->items [count].selrb,
           nlistGetStr (dlist, tagidx));
     }
   }
