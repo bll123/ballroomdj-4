@@ -132,6 +132,12 @@ uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
 }
 
 void
+uiTreeViewPreColumnSetColorColumn (uitree_t *uitree, int colcol, int colsetcol)
+{
+  return;
+}
+
+void
 uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
     int alignment, int coldisp, const char *title, ...)
 {

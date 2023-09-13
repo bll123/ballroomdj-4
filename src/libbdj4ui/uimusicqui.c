@@ -407,7 +407,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   uitreedispAddDisplayColumns (mqint->musicqTree, sellist,
-      UIMUSICQ_COL_MAX, UIMUSICQ_COL_FONT, UIMUSICQ_COL_ELLIPSIZE);
+      UIMUSICQ_COL_MAX, UIMUSICQ_COL_FONT, UIMUSICQ_COL_ELLIPSIZE,
+      TREE_NO_COLUMN, TREE_NO_COLUMN);
 
   uimusicq->musicqManageIdx = saveci;
 
@@ -449,7 +450,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   mqint->typelist [mqint->colcount++] = TREE_TYPE_IMAGE;
 
   if (mqint->colcount != UIMUSICQ_COL_MAX) {
-    fprintf (stderr, "ERR: mismatched UIMUSICQ_COL_MAX %d\n", mqint->colcount);
+    fprintf (stderr, "ERR: mismatched UIMUSICQ_COL_MAX %d %d\n", UIMUSICQ_COL_MAX, mqint->colcount);
   }
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);

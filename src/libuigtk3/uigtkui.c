@@ -95,8 +95,8 @@ void
 uiSetUICSS (const char *uifont, const char *accentColor,
     const char *errorColor)
 {
-  char            tbuff [4096];
-  char            wbuff [300];
+  char            tbuff [8192];
+  char            wbuff [400];
   char            *p;
   int             sz = 0;
 
@@ -165,6 +165,10 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     snprintf (wbuff, sizeof (wbuff),
         "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }",
         accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+
+    snprintf (wbuff, sizeof (wbuff),
+        "paned." ACCENT_CLASS " > separator { background-color: %s; padding-bottom: 0px; } ", accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
   if (errorColor != NULL) {

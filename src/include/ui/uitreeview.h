@@ -75,6 +75,7 @@ void  uiTreeViewRadioSetRow (uitree_t *uitree, int row);
 uiwcont_t * uiTreeViewGetWidgetContainer (uitree_t *uitree);
 void  uiTreeViewPreColumnSetMinWidth (uitree_t *uitree, int minwidth);
 void  uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn);
+void  uiTreeViewPreColumnSetColorColumn (uitree_t *uitree, int colcol, int colsetcol);
 void  uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype, int alignment, int coldisp, const char *title, ...);
 void  uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag);
 void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);

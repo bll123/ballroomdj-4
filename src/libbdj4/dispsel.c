@@ -35,7 +35,7 @@ static char *dispselmap [DISP_SEL_MAX] = {
   [DISP_SEL_SONGEDIT_C] = "ds-songedit-c",
   [DISP_SEL_SONGLIST] = "ds-songlist",
   [DISP_SEL_SONGSEL] = "ds-songsel",
-  [DISP_SEL_AUDIOID_DISP] = "ds-audioid-disp",
+  [DISP_SEL_AUDIOID_LIST] = "ds-audioid-disp",
   [DISP_SEL_AUDIOID] = "ds-audioid",
 };
 

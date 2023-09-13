@@ -156,9 +156,6 @@ static void uisongselMoveSelection (void *udata, int where, int lines, int movef
 static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
 static bool uisongselSongEditCallback (void *udata);
 
-static int * uiTreeViewAddDisplayType (int *types, int type, int col);
-static int * uiAppendType (int *types, int ncol, int type);
-
 void
 uisongselUIInit (uisongsel_t *uisongsel)
 {
@@ -391,7 +388,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uitreedispAddDisplayColumns (
       ssint->songselTree, sellist, SONGSEL_COL_MAX,
-      SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
+      SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE,
+      TREE_NO_COLUMN, TREE_NO_COLUMN);
 
   uisongselInitializeStore (uisongsel);
   ssint->maxRows = STORE_ROWS;
@@ -949,7 +947,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   ssint->typelist [ssint->colcount++] = TREE_TYPE_STRING;
   ssint->typelist [ssint->colcount++] = TREE_TYPE_STRING;
   if (ssint->colcount != SONGSEL_COL_MAX) {
-    fprintf (stderr, "ERR: mismatched SONGSEL_COL_MAX and %d\n", ssint->colcount);
+    fprintf (stderr, "ERR: mismatched SONGSEL_COL_MAX %d %d\n", SONGSEL_COL_MAX, ssint->colcount);
   }
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
@@ -968,7 +966,8 @@ uisongselInitializeStoreCallback (int type, void *udata)
   ss_internal_t  *ssint;
 
   ssint = uisongsel->ssInternalData;
-  ssint->typelist = uiTreeViewAddDisplayType (ssint->typelist, type, ssint->colcount);
+  ssint->typelist = mdrealloc (ssint->typelist, sizeof (int) * (ssint->colcount + 1));
+  ssint->typelist [ssint->colcount] = type;
   ++ssint->colcount;
 }
 
@@ -1576,27 +1575,5 @@ uisongselSongEditCallback (void *udata)
     callbackHandlerLong (uisongsel->newselcb, dbidx);
   }
   return callbackHandler (uisongsel->editcb);
-}
-
-static int *
-uiTreeViewAddDisplayType (int *types, int type, int col)
-{
-  if (type == TREE_TYPE_NUM) {
-    /* despite being a numeric type, the display needs a string */
-    /* so that empty values can be displayed */
-    type = TREE_TYPE_STRING;
-  }
-  types = uiAppendType (types, col, type);
-
-  return types;
-}
-
-static int *
-uiAppendType (int *types, int ncol, int type)
-{
-  types = mdrealloc (types, (ncol + 1) * sizeof (int));
-  types [ncol] = type;
-
-  return types;
 }
 

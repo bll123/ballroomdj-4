@@ -69,6 +69,8 @@ typedef struct uitree {
   int               selmode;
   int               minwidth;           // prep for append column
   int               ellipsizeColumn;    // prep for append column
+  int               colorcol;             // prep for append column
+  int               colorsetcol;          // prep for append column
   int               radiorow;
   int               activecol;
   int               lastTreeSize;
@@ -122,6 +124,8 @@ uiCreateTreeView (void)
   uitree->colclickcb = NULL;
   uitree->minwidth = TREE_NO_MIN_WIDTH;
   uitree->ellipsizeColumn = TREE_NO_COLUMN;
+  uitree->colorcol = TREE_NO_COLUMN;
+  uitree->colorsetcol = TREE_NO_COLUMN;
   uitree->radiorow = TREE_NO_ROW;
   uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
@@ -297,6 +301,17 @@ uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
 }
 
 void
+uiTreeViewPreColumnSetColorColumn (uitree_t *uitree, int colorcol, int colorsetcol)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  uitree->colorcol = colorcol;
+  uitree->colorsetcol = colorsetcol;
+}
+
+void
 uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
     int alignment, int coldisp, const char *title, ...)
 {
@@ -442,6 +457,13 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
     gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_expand (column, TRUE);
     uitree->ellipsizeColumn = TREE_NO_COLUMN;
+  }
+
+  if (uitree->colorcol != TREE_NO_COLUMN && uitree->colorsetcol != TREE_NO_COLUMN) {
+    gtk_tree_view_column_add_attribute (column, renderer, "foreground", uitree->colorcol);
+    gtk_tree_view_column_add_attribute (column, renderer, "foreground-set", uitree->colorsetcol);
+    uitree->colorcol = TREE_NO_COLUMN;
+    uitree->colorsetcol = TREE_NO_COLUMN;
   }
 
   gtkcoldisp = GTK_TREE_VIEW_COLUMN_AUTOSIZE;

@@ -56,7 +56,7 @@ confuiInitDispSettings (confuigui_t *gui)
       DISP_SEL_SONGEDIT_B, tbuffse [DISP_SEL_SONGEDIT_B - DISP_SEL_SONGEDIT_A],
       DISP_SEL_SONGEDIT_C, tbuffse [DISP_SEL_SONGEDIT_C - DISP_SEL_SONGEDIT_A],
       /* CONTEXT: configuration: display settings for: Audio ID match listing */
-      DISP_SEL_AUDIOID_DISP, _("Audio ID Match List"),
+      DISP_SEL_AUDIOID_LIST, _("Audio ID Match List"),
       /* CONTEXT: configuration: display settings for: Audio Identification */
       DISP_SEL_AUDIOID, _("Audio ID"),
       -1);

@@ -467,7 +467,7 @@ main (int argc, char *argv[])
   manage.selusesonglist = false;
   manage.inload = false;
   manage.lastdisp = MANAGE_DISP_SONG_SEL;
-  manage.selbypass = false;
+  manage.selbypass = true;
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
   manage.songeditdbidx = -1;
@@ -860,6 +860,8 @@ manageBuildUI (manageui_t *manage)
       manageLoadSonglistSeqCB, manage);
   managePlaylistSetLoadCallback (manage->managepl,
       manage->callbacks [MANAGE_CB_PL_LOAD]);
+
+  manage->selbypass = false;
 
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
@@ -1479,6 +1481,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (manage->musicdb, atol (targs));
           manageRePopulateData (manage);
+          manageReloadSongEdit (manage);
           break;
         }
         case MSG_PROCESSING_FAIL: {

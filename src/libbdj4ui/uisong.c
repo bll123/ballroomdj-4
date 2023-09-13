@@ -18,7 +18,6 @@
 #include "ui.h"
 #include "uisong.h"
 
-static valuetype_t uisongDetermineDisplayValueType (int tagidx);
 static valuetype_t uisongDetermineValueType (int tagidx);
 
 void
@@ -104,31 +103,15 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
 
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-    int         type;
-
-    vt = uisongDetermineDisplayValueType (tagidx);
-    type = vt == VALUE_STR ? TREE_TYPE_STRING : TREE_TYPE_NUM;
     if (cb != NULL) {
-      cb (type, udata);
+      /* the type is always a string */
+      /* gtk doesn't have a method to display a blank numeric afaik */
+      cb (TREE_TYPE_STRING, udata);
     }
   }
 }
 
 /* internal routines */
-
-static valuetype_t
-uisongDetermineDisplayValueType (int tagidx)
-{
-  valuetype_t   vt;
-
-  vt = tagdefs [tagidx].valueType;
-  if (tagdefs [tagidx].convfunc != NULL) {
-    vt = VALUE_STR;
-  }
-
-  return vt;
-}
 
 static valuetype_t
 uisongDetermineValueType (int tagidx)

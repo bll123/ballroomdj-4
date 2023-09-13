@@ -27,7 +27,7 @@
 
 void
 uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
-    int fontcol, int ellipsizeColumn)
+    int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol)
 {
   slistidx_t  seliteridx;
   int         tagidx;
@@ -52,11 +52,23 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
       title = tagdefs [tagidx].displayname;
     }
 
+    if (colorcol != TREE_NO_COLUMN) {
+      uiTreeViewPreColumnSetColorColumn (uitree, colorcol, colorsetcol);
+    }
+
     if (tagidx == TAG_TITLE) {
       uiTreeViewPreColumnSetMinWidth (uitree, 200);
       uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
     }
     if (tagidx == TAG_ARTIST) {
+      uiTreeViewPreColumnSetMinWidth (uitree, 100);
+      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+    }
+    if (tagidx == TAG_ALBUM) {
+      uiTreeViewPreColumnSetMinWidth (uitree, 40);
+      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+    }
+    if (tagidx == TAG_ALBUMARTIST) {
       uiTreeViewPreColumnSetMinWidth (uitree, 100);
       uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
     }
