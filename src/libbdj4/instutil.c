@@ -38,12 +38,12 @@ instati_t instati [INST_ATI_MAX] = {
 };
 
 typedef struct {
-  char            *webresponse;
+  const char      *webresponse;
   size_t          webresplen;
 } instweb_t;
 
 static void instutilCopyHttpSVGFile (const char *fn);
-static void instutilWebResponseCallback (void *userdata, char *resp, size_t len);
+static void instutilWebResponseCallback (void *userdata, const char *resp, size_t len);
 
 void
 instutilCreateShortcut (const char *name, const char *maindir,
@@ -552,7 +552,7 @@ instutilCopyHttpSVGFile (const char *fn)
 }
 
 static void
-instutilWebResponseCallback (void *userdata, char *resp, size_t len)
+instutilWebResponseCallback (void *userdata, const char *resp, size_t len)
 {
   instweb_t *instweb = userdata;
 

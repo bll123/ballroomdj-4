@@ -1174,34 +1174,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
-  [TAG_ISWC] =
-  { "ISWC",                       /* tag */
-    NULL,                         /* display name         */
-    NULL,                         /* short display name   */
-    { [TAG_TYPE_VORBIS] = { "ISWC", NULL, NULL },
-      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
-      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
-      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
-    },       /* audio tags */
-    NULL,                         /* itunes name          */
-    ET_NA,                        /* edit type            */
-    VALUE_STR,                    /* value type           */
-    NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
-    false,                        /* listing display      */
-    false,                        /* secondary display    */
-    false,                        /* ellipsize            */
-    false,                        /* align right          */
-    false,                        /* is bdj tag           */
-    true,                         /* is norm tag          */
-    false,                        /* edit-all             */
-    false,                        /* editable             */
-    false,                        /* audio-id             */
-    false,                        /* text search          */
-    false,                        /* is org tag           */
-    false,                        /* vorbis multi         */
-  },
 };
 
 typedef struct {

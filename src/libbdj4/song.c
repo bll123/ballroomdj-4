@@ -180,7 +180,7 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
 }
 
 const char *
-songGetStr (song_t *song, nlistidx_t idx)
+songGetStr (const song_t *song, nlistidx_t idx)
 {
   const char  *value;
 
@@ -193,7 +193,7 @@ songGetStr (song_t *song, nlistidx_t idx)
 }
 
 listnum_t
-songGetNum (song_t *song, nlistidx_t idx)
+songGetNum (const song_t *song, nlistidx_t idx)
 {
   ssize_t     value;
 
@@ -206,7 +206,7 @@ songGetNum (song_t *song, nlistidx_t idx)
 }
 
 double
-songGetDouble (song_t *song, nlistidx_t idx)
+songGetDouble (const song_t *song, nlistidx_t idx)
 {
   double      value;
 
@@ -219,7 +219,7 @@ songGetDouble (song_t *song, nlistidx_t idx)
 }
 
 slist_t *
-songGetList (song_t *song, nlistidx_t idx)
+songGetList (const song_t *song, nlistidx_t idx)
 {
   slist_t   *value;
 

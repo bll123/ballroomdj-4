@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "audioadjust.h"
+#include "audioid.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -237,6 +238,7 @@ typedef struct {
   uisongsel_t       *mmsongsel;
   uisongedit_t      *mmsongedit;
   uiaudioid_t       *mmaudioid;
+  audioid_t         *audioid;
   int               lastdisp;
   int               dbchangecount;
   int               editmode;
@@ -501,6 +503,7 @@ main (int argc, char *argv[])
   manage.uict = NULL;
   manage.ctstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
+  manage.audioid = audioidInit ();
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
   }
@@ -694,6 +697,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
   uiaudioidFree (manage->mmaudioid);
+  audioidFree (manage->audioid);
 
   uiplaylistFree (manage->cfpl);
   uiSpinboxFree (manage->cfpltmlimit);

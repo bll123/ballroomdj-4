@@ -47,6 +47,8 @@ typedef struct {
 
 /* for debugging */
 static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
+  [SV_AUDIOID_MUSICBRAINZ_URI] = { "AUDIOID_MUSICBRAINZ_URI" },
+  [SV_AUDIOID_ACOUSTID_URI] = { "AUDIOID_ACOUSTID_URI" },
   [SV_BDJ4_BUILD] = { "BDJ4_BUILD" },
   [SV_BDJ4_BUILDDATE] = { "BDJ4_BUILDDATE" },
   [SV_BDJ4_DEVELOPMENT] = { "BDJ4_DEVELOPMENT" },
@@ -798,6 +800,11 @@ sysvarsCheckPaths (const char *otherpaths)
 
     p = strtok_r (NULL, tsep, &tokstr);
   }
+
+  strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
+      "https://acoustid.org/webservice", SV_MAX_SZ);
+  strlcpy (sysvars [SV_AUDIOID_MUSICBRAINZ_URI],
+      "https://musicbrainz.org/ws/2/", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {

@@ -154,7 +154,7 @@ typedef struct {
   char            bdj3version [MAXPATHLEN];
   loglevel_t      loglevel;
   webclient_t     *webclient;
-  char            *webresponse;
+  const char      *webresponse;
   size_t          webresplen;
   const char      *pleasewaitmsg;
   /* conversion */
@@ -269,7 +269,7 @@ static void installerSetRundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
 static void installerCheckPackages (installer_t *installer);
-static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
+static void installerWebResponseCallback (void *userdata, const char *resp, size_t len);
 static void installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg);
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
@@ -3004,7 +3004,7 @@ installerCheckPackages (installer_t *installer)
 }
 
 static void
-installerWebResponseCallback (void *userdata, char *resp, size_t len)
+installerWebResponseCallback (void *userdata, const char *resp, size_t len)
 {
   installer_t *installer = userdata;
 

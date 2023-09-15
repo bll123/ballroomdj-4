@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 
-typedef void (*webclientcb_t)(void *userdata, char *resp, size_t len);
+typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len);
 
 typedef struct webclient webclient_t;
 

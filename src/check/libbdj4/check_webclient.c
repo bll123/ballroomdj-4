@@ -26,11 +26,11 @@
 #include "log.h"
 #include "sysvars.h"
 
-static void checkWebclientCB (void *udata, char *resp, size_t len);
+static void checkWebclientCB (void *udata, const char *resp, size_t len);
 
 typedef struct {
-  char    *resp;
-  size_t  len;
+  const char  *resp;
+  size_t      len;
 } checkwc_t;
 
 #define DLFILE "tmp/wc-dl.txt"
@@ -270,7 +270,7 @@ webclient_suite (void)
 }
 
 static void
-checkWebclientCB (void *udata, char *resp, size_t len)
+checkWebclientCB (void *udata, const char *resp, size_t len)
 {
   checkwc_t *r = udata;
   r->resp = resp;

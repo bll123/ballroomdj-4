@@ -106,16 +106,16 @@ add_library (libbdj4launcher STATIC
   libcommon/sysvars.c
 )
 
-# shared libraries that ship
-add_subdirectory (libcommon)
-add_subdirectory (libbasic)
 # static libraries for build
 add_subdirectory (libdylib)
 add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
 # shared libraries that ship
-add_subdirectory (libati)
+add_subdirectory (libcommon)
+add_subdirectory (libbasic)
 add_subdirectory (libbdj4)
+add_subdirectory (libaudioid)
+add_subdirectory (libati)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
 # executables, no gui

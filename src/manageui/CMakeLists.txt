@@ -19,7 +19,7 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui PUBLIC
-  libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4audioid libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}

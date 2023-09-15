@@ -108,7 +108,6 @@ typedef enum {
   TAG_LAST_UPDATED,           //
   TAG_VOLUMEADJUSTPERC,       //
   TAG_WORK_ID,                // musicbrainz_workid
-  TAG_ISWC,                   // iswc
   TAG_KEY_MAX,
 } tagdefkey_t;
 
