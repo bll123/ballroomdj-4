@@ -1,6 +1,7 @@
 #ifndef INC_AUDIOID_H
 #define INC_AUDIOID_H
 
+#include "ilist.h"
 #include "nlist.h"
 #include "song.h"
 
@@ -19,7 +20,7 @@ nlist_t *audioidLookup (audioid_t *audioid, const song_t *song);
 
 audioidmb_t *mbInit (void);
 void mbFree (audioidmb_t *mb);
-nlist_t *mbRecordingIdLookup (audioidmb_t *mb, const char *recid);
+ilist_t *mbRecordingIdLookup (audioidmb_t *mb, const char *recid);
 
 /* acoustid.c */
 

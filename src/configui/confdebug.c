@@ -59,15 +59,17 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_16, -1, (val & 16));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Apply Adjustments",
       CONFUI_WIDGET_DEBUG_2097152, -1, (val & 2097152));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID",
+      CONFUI_WIDGET_DEBUG_8388608, -1, (val & 8388608));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Tags",
       CONFUI_WIDGET_DEBUG_4194304, -1, (val & 4194304));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
-      CONFUI_WIDGET_DEBUG_128, -1, (val & 128));
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
+      CONFUI_WIDGET_DEBUG_128, -1, (val & 128));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Database",
       CONFUI_WIDGET_DEBUG_1024, -1, (val & 1024));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Database Update",
@@ -82,13 +84,13 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_8192, -1, (val & 8192));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Procedures",
       CONFUI_WIDGET_DEBUG_4096, -1, (val & 4096));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
-      CONFUI_WIDGET_DEBUG_32768, -1, (val & 32768));
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
+      CONFUI_WIDGET_DEBUG_32768, -1, (val & 32768));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
       CONFUI_WIDGET_DEBUG_524288, -1, (val & 524288));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Random Access File",
