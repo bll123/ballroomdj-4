@@ -181,7 +181,6 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
       mbParse (mb, xpathCtx, i, 0, respdata);
     }
 
-#if 0
     /* copy the static data to each album */
     ilistStartIterator (respdata, &iteridx);
     while ((key = ilistIterateKey (respdata, &iteridx)) >= 0) {
@@ -200,7 +199,6 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
         ilistSetStr (respdata, key, tagidx, ilistGetStr (respdata, 0, tagidx));
       }
     }
-#endif
 
     xmlXPathFreeContext (xpathCtx);
     xmlFreeDoc (doc);
@@ -215,7 +213,7 @@ while ((key = ilistIterateKey (respdata, &iteridx)) >= 0) {
     if (mbxpaths [i].flag == MB_SKIP) {
       continue;
     }
-    fprintf (stderr, "%d %d/%s %s\n", key, mbxpaths [i].tagidx, tagdefs [mbxpaths [i].tagidx].tag, ilistGetStr (respdata, key, i));
+    fprintf (stderr, "%d %d/%s %s\n", key, mbxpaths [i].tagidx, tagdefs [mbxpaths [i].tagidx].tag, ilistGetStr (respdata, key, mbxpaths [i].tagidx));
   }
 }
 }
@@ -238,7 +236,6 @@ mbParse (audioidmb_t *mb, xmlXPathContextPtr xpathCtx, int xpathidx,
   char                *nval = NULL;
   size_t              nlen = 0;
 
-fprintf (stderr, "xpath: %s\n", mbxpaths [xpathidx].xpath);
   xpathObj = xmlXPathEvalExpression ((xmlChar *) mbxpaths [xpathidx].xpath, xpathCtx);
   if (xpathObj == NULL)  {
     logMsg (LOG_DBG, LOG_IMPORTANT, "mbParse: bad xpath expression");
@@ -283,10 +280,8 @@ fprintf (stderr, "xpath: %s\n", mbxpaths [xpathidx].xpath);
     if (joinphrase == NULL && nval != NULL) {
       if (mbxpaths [xpathidx].tagidx == MB_TYPE_RELCOUNT) {
         mb->respcount = atoi (nval);
-fprintf (stderr, "count: %d ncount: %d\n", mb->respcount, ncount);
         mbParseRelease (mb, cur, respdata);
       } else {
-fprintf (stderr, "a:set %d/%d %s\n", respidx, mbxpaths [xpathidx].tagidx, nval);
         ilistSetStr (respdata, respidx, mbxpaths [xpathidx].tagidx, nval);
         mdfree (nval);
         nval = NULL;
@@ -297,7 +292,6 @@ fprintf (stderr, "a:set %d/%d %s\n", respidx, mbxpaths [xpathidx].tagidx, nval);
     ilistSetStr (respdata, 0, MB_TYPE_JOINPHRASE, NULL);
   }
   if (joinphrase != NULL && nval != NULL) {
-fprintf (stderr, "b:set %d/%d %s\n", mb->respcount, mbxpaths [xpathidx].tagidx, nval);
     ilistSetStr (respdata, mb->respcount, mbxpaths [xpathidx].tagidx, nval);
     mdfree (nval);
     nval = NULL;
@@ -314,44 +308,32 @@ mbParseRelease (audioidmb_t *mb, xmlNodePtr relnode, ilist_t *respdata)
   xmlXPathObjectPtr   xpathObj;
   xmlNodeSetPtr       nodes;
 
-fprintf (stderr, "parse-rel\n");
-
   xpathCtx = xmlXPathNewContext ((xmlDocPtr) relnode);
   if (xpathCtx == NULL) {
-fprintf (stderr, "  ctx fail-a\n");
     return false;
   }
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) mbreleasexpath, xpathCtx);
   if (xpathObj == NULL)  {
-fprintf (stderr, "  bad xpath\n");
     logMsg (LOG_DBG, LOG_IMPORTANT, "mbParse: bad xpath expression");
     return false;
   }
 
   nodes = xpathObj->nodesetval;
   if (xmlXPathNodeSetIsEmpty (nodes)) {
-fprintf (stderr, "  empty\n");
     xmlXPathFreeObject (xpathObj);
     return false;
   }
-{
-int ncount;
-ncount = nodes->nodeNr;
-fprintf (stderr, "  ncount: %d\n", ncount);
-}
 
   for (int i = 0; i < mb->respcount; ++i)  {
     xmlXPathContextPtr  relpathCtx;
 
-fprintf (stderr, "  -- process node %d\n", i);
     if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
       continue;
     }
 
     relpathCtx = xmlXPathNewContext ((xmlDocPtr) nodes->nodeTab [i]);
     if (relpathCtx == NULL) {
-fprintf (stderr, "  ctx fail-b\n");
       continue;
     }
 
@@ -360,7 +342,6 @@ fprintf (stderr, "  ctx fail-b\n");
         continue;
       }
 
-fprintf (stderr, "  parse node %d xpath %d\n", i, j);
       mbParse (mb, relpathCtx, j, i, respdata);
     }
 
