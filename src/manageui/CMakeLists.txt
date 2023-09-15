@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4manageui
   bdj4manageui.c
+  manageaudioid.c
   managedb.c
   managemisc.c
   managepl.c

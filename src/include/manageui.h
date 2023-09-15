@@ -5,12 +5,15 @@
 #define INC_MANAGEUI_H
 
 #include "conn.h"
+#include "dispsel.h"
 #include "msgparse.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "playlist.h"
 #include "procutil.h"
-#include "ui.h"
+#include "song.h"
+#include "uiwcont.h"
+#include "uisongsel.h"
 
 enum {
   MANAGE_PRELOAD,
@@ -90,5 +93,15 @@ void  manageStatsFree (managestats_t *managestats);
 void  manageStatsSetDatabase (managestats_t *managestats, musicdb_t *musicdb);
 uiwcont_t *manageBuildUIStats (managestats_t *managestats);
 void manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupdate);
+
+/* manageaudioid.c */
+typedef struct manageaudioid manageaudioid_t;
+
+manageaudioid_t *manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window, uiwcont_t *errorMsg, uiwcont_t *statusMsg);
+void manageAudioIdFree (manageaudioid_t *maudioid);
+uiwcont_t *manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel);
+void manageAudioIdMainLoop (manageaudioid_t *maudioid);
+void manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx);
+void manageAudioIdSetSaveCallback (manageaudioid_t *maudioid, callback_t *cb);
 
 #endif /* INC_MANAGEUI_H */

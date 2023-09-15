@@ -32,7 +32,12 @@ typedef struct audioidmb {
   size_t        webresplen;
 } audioidmb_t;
 
+static const xmlChar * artistxpath = (const xmlChar *)
+      "/metadata/recording/artist-credit/name-credit";
+
+static bool mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr, slist_t *rawdata);
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void print_element_names (xmlNode * a_node);
 
 audioidmb_t *
 mbInit (void)
@@ -43,6 +48,7 @@ mbInit (void)
   mb->webclient = webclientAlloc (mb, mbWebResponseCallback);
   mb->webresponse = NULL;
   mb->webresplen = 0;
+  xmlInitParser ();
 
   return mb;
 }
@@ -54,6 +60,7 @@ mbFree (audioidmb_t *mb)
     return;
   }
 
+  xmlCleanupParser ();
   webclientClose (mb->webclient);
   mb->webclient = NULL;
   mb->webresponse = NULL;
@@ -79,10 +86,52 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
 
   webclientGet (mb->webclient, uri);
   if (mb->webresponse != NULL) {
+    xmlDocPtr           doc;
+    xmlXPathContextPtr  xpathCtx;
+
+    doc = xmlParseMemory (mb->webresponse, mb->webresplen);
+    if (doc == NULL) {
+      return resp;
+    }
+
+{
+xmlNode *root_element = NULL;
+root_element = xmlDocGetRootElement(doc);
+print_element_names(root_element);
+}
+
+    xpathCtx = xmlXPathNewContext (doc);
+    if (xpathCtx == NULL) {
+      xmlFreeDoc (doc);
+    }
+
+    xmlXPathFreeContext (xpathCtx);
+    xmlFreeDoc (doc);
 fprintf (stderr, "resp:\n%.*s", (int) mb->webresplen, mb->webresponse);
   }
 
   return resp;
+}
+
+/* internal routines */
+
+static bool
+mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
+    slist_t *rawdata)
+{
+  xmlXPathObjectPtr   xpathObj;
+  xmlNodeSetPtr       nodes;
+  xmlNodePtr          cur;
+  xmlChar             *val = NULL;
+
+  xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
+  if (xpathObj == NULL)  {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "mbParse: bad xpath expression");
+    return false;
+  }
+
+  xmlXPathFreeObject (xpathObj);
+  return true;
 }
 
 static void
@@ -93,4 +142,17 @@ mbWebResponseCallback (void *userdata, const char *resp, size_t len)
   mb->webresponse = resp;
   mb->webresplen = len;
   return;
+}
+
+static void
+print_element_names(xmlNode * a_node)
+{
+  xmlNode *cur_node = NULL;
+
+  for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+    if (cur_node->type == XML_ELEMENT_NODE) {
+      printf ("node type: Element, name: %s\n", cur_node->name);
+    }
+    print_element_names(cur_node->children);
+  }
 }

@@ -22,8 +22,7 @@
 #include "uiaudioid.h"
 
 uiaudioid_t *
-uiaudioidInit (conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, nlist_t *options)
+uiaudioidInit (nlist_t *options, dispsel_t *dispsel)
 {
   uiaudioid_t  *uiaudioid;
 
@@ -31,10 +30,8 @@ uiaudioidInit (conn_t *conn, musicdb_t *musicdb,
 
   uiaudioid = mdmalloc (sizeof (uiaudioid_t));
 
-  uiaudioid->conn = conn;
-  uiaudioid->dispsel = dispsel;
-  uiaudioid->musicdb = musicdb;
   uiaudioid->options = options;
+  uiaudioid->dispsel = dispsel;
   uiaudioid->savecb = NULL;
   uiaudioid->statusMsg = NULL;
 
@@ -62,15 +59,6 @@ uiaudioidMainLoop (uiaudioid_t *uiaudioid)
 {
   uiaudioidUIMainLoop (uiaudioid);
   return;
-}
-
-void
-uiaudioidNewSelection (uiaudioid_t *uiaudioid, dbidx_t dbidx)
-{
-  song_t      *song;
-
-  song = dbGetByIdx (uiaudioid->musicdb, dbidx);
-  uiaudioidLoadData (uiaudioid, song, dbidx);
 }
 
 void

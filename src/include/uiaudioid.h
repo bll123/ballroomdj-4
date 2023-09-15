@@ -18,28 +18,24 @@
 typedef struct aid_internal aid_internal_t;
 
 typedef struct {
-  conn_t            *conn;
-  musicdb_t         *musicdb;
-  dispsel_t         *dispsel;
   nlist_t           *options;
-  aid_internal_t    *audioidInternalData;
-  uiwcont_t         *statusMsg;
-  callback_t        *savecb;
+  dispsel_t         *dispsel;
   uisongsel_t       *uisongsel;
+  aid_internal_t    *audioidInternalData;
+  callback_t        *savecb;
+  uiwcont_t         *statusMsg;
 } uiaudioid_t;
 
 /* uiaudioid.c */
-uiaudioid_t * uiaudioidInit (conn_t *conn,
-    musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts);
+uiaudioid_t * uiaudioidInit (nlist_t *opts, dispsel_t *dispsel);
 void  uiaudioidFree (uiaudioid_t *uiaudioid);
 void  uiaudioidMainLoop (uiaudioid_t *uiaudioid);
-void  uiaudioidNewSelection (uiaudioid_t *uiaudioid, dbidx_t dbidx);
 void  uiaudioidSetSaveCallback (uiaudioid_t *uiaudioid, callback_t *uicb);
 
 /* uiaudioidui.c */
 void  uiaudioidUIInit (uiaudioid_t *uiaudioid);
 void  uiaudioidUIFree (uiaudioid_t *uiaudioid);
-uiwcont_t   * uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid, uiwcont_t *parentwin, uiwcont_t *statusMsg);
+uiwcont_t * uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid, uiwcont_t *parentwin, uiwcont_t *statusMsg);
 void  uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx);
 void  uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *data);
 void  uiaudioidUIMainLoop (uiaudioid_t *uiaudioid);

@@ -17,7 +17,6 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "callback.h"
-#include "conn.h"
 #include "dance.h"
 #include "level.h"
 #include "log.h"
