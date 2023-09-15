@@ -67,7 +67,6 @@ typedef struct {
 } tagdef_t;
 
 typedef enum {
-  TAG_ACRID,                  //
   TAG_ADJUSTFLAGS,            //
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //

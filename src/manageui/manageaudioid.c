@@ -90,11 +90,14 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
 void
 manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx)
 {
+  nlist_t   *resp;
+
   if (maudioid == NULL) {
     return;
   }
 
   uiaudioidLoadData (maudioid->uiaudioid, song, dbidx);
+  resp = audioidLookup (maudioid->audioid, song);
 }
 
 void

@@ -24,20 +24,39 @@
 #include "nlist.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "tagdef.h"
+#include "tmutil.h"
 #include "webclient.h"
 
 typedef struct audioidmb {
   webclient_t   *webclient;
   const char    *webresponse;
   size_t        webresplen;
+  mstime_t      globalreqtimer;
 } audioidmb_t;
 
-static const xmlChar * artistxpath = (const xmlChar *)
-      "/metadata/recording/artist-credit/name-credit";
+typedef struct {
+  tagdefkey_t     tagidx;
+  const char      *xpath;
+  const char      *attr;
+} mbxmlinfo_t;
+
+static mbxmlinfo_t mbxmlinfo [] = {
+  { TAG_TITLE, "/metadata/recording/title", NULL },
+  { TAG_ARTIST, "/metadata/recording/artist-credit/name-credit/name", NULL },
+  { TAG_ALBUM, "/metadata/recording/release-list/release/title", NULL },
+  { TAG_DATE, "/metadata/recording/release-list/release/date", NULL },
+  { TAG_ALBUMARTIST, "/metadata/recording/release-list/release/artist-credit/name-credit/artist/name", NULL },
+  { TAG_DISCNUMBER, "/metadata/recording/release-list/release/medium-list/medium/position", NULL },
+  { TAG_TRACKNUMBER, "/metadata/recording/release-list/release/medium-list/medium/track-list/track/position", NULL },
+  // disctotal does not exist
+  { TAG_TRACKTOTAL, "/metadata/recording/release-list/release/medium-list/medium/track-list", "count" },
+  { TAG_WORK_ID, "/metadata/recording/relation-list/relation/target", NULL },
+};
 
 static bool mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr, slist_t *rawdata);
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
-static void print_element_names (xmlNode * a_node);
+static void print_element_names (xmlNode * a_node, int level);
 
 audioidmb_t *
 mbInit (void)
@@ -48,6 +67,7 @@ mbInit (void)
   mb->webclient = webclientAlloc (mb, mbWebResponseCallback);
   mb->webresponse = NULL;
   mb->webresplen = 0;
+  mstimeset (&mb->globalreqtimer, 0);
   xmlInitParser ();
 
   return mb;
@@ -74,7 +94,14 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
   char    uri [MAXPATHLEN];
   nlist_t *resp = NULL;
 
+  /* musicbrainz prefers only one call per second */
+  while (! mstimeCheck (&mb->globalreqtimer)) {
+    mssleep (10);
+  }
+  mstimeset (&mb->globalreqtimer, 1000);
+
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI), sizeof (uri));
+  strlcat (uri, "/recording/", sizeof (uri));
   strlcat (uri, recid, sizeof (uri));
   /* artist-credits retrieves the additional artists for the song */
   /* media is needed to get the track number and track total */
@@ -82,12 +109,15 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
   /* releases is used to get the list of releases for this recording */
   /*    a match can then possibly be made by album name/track number */
   /* releases is used to get the list of releases for this recording */
-  strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media", sizeof (uri));
+  strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
+fprintf (stderr, "uri: %s\n", uri);
 
   webclientGet (mb->webclient, uri);
   if (mb->webresponse != NULL) {
     xmlDocPtr           doc;
     xmlXPathContextPtr  xpathCtx;
+
+fprintf (stderr, "webresp:\n%.*s", (int) mb->webresplen, mb->webresponse);
 
     doc = xmlParseMemory (mb->webresponse, mb->webresplen);
     if (doc == NULL) {
@@ -96,8 +126,8 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
 
 {
 xmlNode *root_element = NULL;
-root_element = xmlDocGetRootElement(doc);
-print_element_names(root_element);
+root_element = xmlDocGetRootElement (doc);
+print_element_names (root_element, 0);
 }
 
     xpathCtx = xmlXPathNewContext (doc);
@@ -107,7 +137,6 @@ print_element_names(root_element);
 
     xmlXPathFreeContext (xpathCtx);
     xmlFreeDoc (doc);
-fprintf (stderr, "resp:\n%.*s", (int) mb->webresplen, mb->webresponse);
   }
 
   return resp;
@@ -120,9 +149,9 @@ mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
     slist_t *rawdata)
 {
   xmlXPathObjectPtr   xpathObj;
-  xmlNodeSetPtr       nodes;
-  xmlNodePtr          cur;
-  xmlChar             *val = NULL;
+//  xmlNodeSetPtr       nodes;
+//  xmlNodePtr          cur;
+//  xmlChar             *val = NULL;
 
   xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
   if (xpathObj == NULL)  {
@@ -145,14 +174,22 @@ mbWebResponseCallback (void *userdata, const char *resp, size_t len)
 }
 
 static void
-print_element_names(xmlNode * a_node)
+print_element_names (xmlNode * a_node, int level)
 {
-  xmlNode *cur_node = NULL;
+  const xmlNode *cur = NULL;
+  const xmlChar *val = NULL;
+  const xmlChar *count = NULL;
 
-  for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-    if (cur_node->type == XML_ELEMENT_NODE) {
-      printf ("node type: Element, name: %s\n", cur_node->name);
+  for (cur = a_node; cur; cur = cur->next) {
+    if (cur->type == XML_ELEMENT_NODE) {
+      val = xmlNodeGetContent (cur);
+      count = (xmlChar *) "";
+      if (strcmp ((const char *) cur->name, "track-list") == 0 ||
+          strcmp ((const char *) cur->name, "medium-list") == 0) {
+        count = xmlGetProp (cur, (xmlChar *) "count");
+      }
+      fprintf (stderr, "%*s%s %s %s\n", level, "", cur->name, val, count);
     }
-    print_element_names(cur_node->children);
+    print_element_names (cur->children, level + 1);
   }
 }

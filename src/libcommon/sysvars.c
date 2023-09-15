@@ -576,9 +576,8 @@ sysvarsInit (const char *argv0)
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CACHE], tbuff, SV_MAX_SZ);
 
-  snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ,
-      "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,
-      sysvars [SV_BDJ4_VERSION]);
+  snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ, "%s/%s ( %s )",
+      BDJ4_NAME, sysvars [SV_BDJ4_VERSION], sysvars [SV_HOST_WEB]);
 
   sysvarsCheckPaths (NULL);
 
@@ -804,7 +803,7 @@ sysvarsCheckPaths (const char *otherpaths)
   strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
       "https://acoustid.org/webservice", SV_MAX_SZ);
   strlcpy (sysvars [SV_AUDIOID_MUSICBRAINZ_URI],
-      "https://musicbrainz.org/ws/2/", SV_MAX_SZ);
+      "https://musicbrainz.org/ws/2", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {
