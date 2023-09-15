@@ -728,7 +728,6 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
   xmlNodeSetPtr       nodes;
   xmlNodePtr          cur;
   int                 size;
-  int                 i;
   xmlChar             *val = NULL;
   char                lastkey [50];
   bool                valset = true;
@@ -744,7 +743,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
 
   /* itunes just dumps everything into a dict structure. */
   /* poor use of xml */
-  for (i = 0; i < size; ++i)  {
+  for (int i = 0; i < size; ++i)  {
     if (nodes->nodeTab [i]->type == XML_ELEMENT_NODE)  {
       cur = nodes->nodeTab [i];
       val = xmlNodeGetContent (cur);

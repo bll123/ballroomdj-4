@@ -36,25 +36,37 @@ typedef struct audioidmb {
 } audioidmb_t;
 
 typedef struct {
-  tagdefkey_t     tagidx;
+  int             processidx;
+  int             tagidx;
   const char      *xpath;
   const char      *attr;
+  int             doprocess;
 } mbxmlinfo_t;
 
-static mbxmlinfo_t mbxmlinfo [] = {
-  { TAG_TITLE, "/metadata/recording/title", NULL },
-  { TAG_ARTIST, "/metadata/recording/artist-credit/name-credit/name", NULL },
-  { TAG_ALBUM, "/metadata/recording/release-list/release/title", NULL },
-  { TAG_DATE, "/metadata/recording/release-list/release/date", NULL },
-  { TAG_ALBUMARTIST, "/metadata/recording/release-list/release/artist-credit/name-credit/artist/name", NULL },
-  { TAG_DISCNUMBER, "/metadata/recording/release-list/release/medium-list/medium/position", NULL },
-  { TAG_TRACKNUMBER, "/metadata/recording/release-list/release/medium-list/medium/track-list/track/position", NULL },
-  // disctotal does not exist
-  { TAG_TRACKTOTAL, "/metadata/recording/release-list/release/medium-list/medium/track-list", "count" },
-  { TAG_WORK_ID, "/metadata/recording/relation-list/relation/target", NULL },
+enum {
+  MB_TYPE_JOINPHRASE = TAG_KEY_MAX + 1,
+  MB_TYPE_COUNT = TAG_KEY_MAX + 2,
 };
 
-static bool mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr, slist_t *rawdata);
+static mbxmlinfo_t mbxmlinfo [] = {
+  { 0, TAG_TITLE, "/metadata/recording/title", NULL, -1 },
+  { 0, TAG_WORK_ID, "/metadata/recording/relation-list/relation/target", NULL, -1 },
+  { 0, MB_TYPE_JOINPHRASE, "/metadata/recording/artist-credit/name-credit", "joinphrase", -1 },
+  { 0, TAG_ARTIST, "/metadata/recording/artist-credit/name-credit/artist/name", NULL, -1 },
+  { 0, MB_TYPE_COUNT, "/metadata/recording/release-list", "count", 1 },
+  { 1, TAG_ALBUM, "/metadata/recording/release-list/release/title", NULL, -1 },
+  { 1, TAG_DATE, "/metadata/recording/release-list/release/date", NULL, -1 },
+  { 1, TAG_ALBUMARTIST, "/metadata/recording/release-list/release/artist-credit/name-credit/artist/name", NULL, -1 },
+  { 1, TAG_DISCNUMBER, "/metadata/recording/release-list/release/medium-list/medium/position", NULL, -1 },
+  { 1, TAG_TRACKNUMBER, "/metadata/recording/release-list/release/medium-list/medium/track-list/track/position", NULL, -1 },
+  { 1, TAG_TRACKTOTAL, "/metadata/recording/release-list/release/medium-list/medium/track-list", "count", -1 },
+};
+enum {
+  mbxmlinfocount = sizeof (mbxmlinfo) / sizeof (mbxmlinfo_t),
+};
+
+
+static bool mbParseXPath (xmlXPathContextPtr xpathCtx, int idx, nlist_t *rawdata);
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
 static void print_element_names (xmlNode * a_node, int level);
 
@@ -93,6 +105,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
 {
   char    uri [MAXPATHLEN];
   nlist_t *resp = NULL;
+  nlist_t *rawdata = NULL;
 
   /* musicbrainz prefers only one call per second */
   while (! mstimeCheck (&mb->globalreqtimer)) {
@@ -116,23 +129,47 @@ fprintf (stderr, "uri: %s\n", uri);
   if (mb->webresponse != NULL) {
     xmlDocPtr           doc;
     xmlXPathContextPtr  xpathCtx;
+    char                *twebresp;
+    char                *p;
 
-fprintf (stderr, "webresp:\n%.*s", (int) mb->webresplen, mb->webresponse);
+// fprintf (stderr, "webresp:\n%.*s", (int) mb->webresplen, mb->webresponse);
 
-    doc = xmlParseMemory (mb->webresponse, mb->webresplen);
+    /* libxml2 doesn't have any way to set the default namespace for xpath */
+    /* which makes it a pain to use when a namespace is set */
+    twebresp = mdmalloc (mb->webresplen);
+    memcpy (twebresp, mb->webresponse, mb->webresplen);
+    p = strstr (twebresp, "xmlns");
+    if (p != NULL) {
+      char    *pe;
+      size_t  len;
+
+      pe = strstr (p, ">");
+      len = pe - p;
+      memset (p, ' ', len);
+    }
+
+    doc = xmlParseMemory (twebresp, mb->webresplen);
     if (doc == NULL) {
       return resp;
     }
 
+#if 0
 {
 xmlNode *root_element = NULL;
 root_element = xmlDocGetRootElement (doc);
 print_element_names (root_element, 0);
 }
+#endif
+
+    rawdata = nlistAlloc ("mb-parse-tmp", LIST_ORDERED, NULL);
 
     xpathCtx = xmlXPathNewContext (doc);
     if (xpathCtx == NULL) {
       xmlFreeDoc (doc);
+    }
+
+    for (int i = 0; i < mbxmlinfocount; ++i) {
+      mbParseXPath (xpathCtx, i, rawdata);
     }
 
     xmlXPathFreeContext (xpathCtx);
@@ -145,18 +182,64 @@ print_element_names (root_element, 0);
 /* internal routines */
 
 static bool
-mbParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
-    slist_t *rawdata)
+mbParseXPath (xmlXPathContextPtr xpathCtx, int idx, nlist_t *rawdata)
 {
   xmlXPathObjectPtr   xpathObj;
-//  xmlNodeSetPtr       nodes;
-//  xmlNodePtr          cur;
-//  xmlChar             *val = NULL;
+  xmlNodeSetPtr       nodes;
+  xmlNodePtr          cur;
+  const xmlChar       *val = NULL;
+  const char          *joinphrase = NULL;
+  int                 ncount;
+  char                *nval = NULL;
+  size_t              nlen = 0;
 
-  xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
+  xpathObj = xmlXPathEvalExpression ((xmlChar *) mbxmlinfo [idx].xpath, xpathCtx);
   if (xpathObj == NULL)  {
     logMsg (LOG_DBG, LOG_IMPORTANT, "mbParse: bad xpath expression");
     return false;
+  }
+
+  nodes = xpathObj->nodesetval;
+  if (xmlXPathNodeSetIsEmpty (nodes)) {
+    xmlXPathFreeObject (xpathObj);
+    return false;
+  }
+  ncount = nodes->nodeNr;
+
+  joinphrase = nlistGetStr (rawdata, MB_TYPE_JOINPHRASE);
+  for (int i = 0; i < ncount; ++i)  {
+    if (nodes->nodeTab [i]->type == XML_ELEMENT_NODE)  {
+      size_t    len;
+
+      cur = nodes->nodeTab [i];
+      val = xmlNodeGetContent (cur);
+      if (mbxmlinfo [idx].attr != NULL) {
+        val = xmlGetProp (cur, (xmlChar *) mbxmlinfo [idx].attr);
+      }
+      if (val == NULL) {
+        continue;
+      }
+fprintf (stderr, "path: %s\n   val: %s\n", mbxmlinfo [idx].xpath, (char *) val);
+      len = strlen ((const char *) val);
+      if (joinphrase == NULL || i == 0) {
+        nlen = len + 1;
+        nval = mdmalloc (nlen);
+        strlcpy (nval, (const char *) val, nlen);
+      } else {
+        nlen += len + strlen (joinphrase);
+        nval = mdrealloc (nval, nlen);
+        strlcat (nval, joinphrase, nlen);
+        strlcat (nval, (const char *) val, nlen);
+      }
+    }
+  }
+  if (joinphrase != NULL) {
+    nlistSetStr (rawdata, MB_TYPE_JOINPHRASE, NULL);
+  }
+  if (nval != NULL) {
+fprintf (stderr, "set %d %s\n", mbxmlinfo [idx].tagidx, nval);
+    nlistSetStr (rawdata, mbxmlinfo [idx].tagidx, nval);
+    mdfree (nval);
   }
 
   xmlXPathFreeObject (xpathObj);
