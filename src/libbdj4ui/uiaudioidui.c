@@ -108,6 +108,7 @@ typedef struct aid_internal {
   uiaudioiditem_t     *items;
   int                 *typelist;
   slist_t             *listsellist;
+  slist_t             *sellist;
   nlist_t             *displaylist;
   uikey_t             *uikey;
   dbidx_t             dbidx;
@@ -155,6 +156,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->selchgbypass = true;
   audioidint->repeating = false;
   audioidint->listsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
+  audioidint->sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
 
   for (int i = 0; i < UIAUID_BUTTON_MAX; ++i) {
     audioidint->buttons [i] = NULL;
@@ -235,7 +237,6 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   int               count;
   uiwcont_t         *col;
   uiwcont_t         *hhbox;
-  slist_t           *sellist;
   char              tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uiaudioidBuildUI");
@@ -373,8 +374,7 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   uiWidgetAlignHorizFill (hbox);
   uiPanedWindowPackEnd (pw, hbox);
 
-  sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
-  count = slistGetCount (sellist);
+  count = slistGetCount (audioidint->sellist);
 
   /* the items must all be alloc'd beforehand so that the callback */
   /* pointer is static */
@@ -574,6 +574,15 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         TREE_VALUE_END);
   }
 
+  /* all data must be copied */
+  slistStartIterator (audioidint->sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (audioidint->sellist, &seliteridx)) >= 0) {
+    const char  *str;
+
+    str = nlistGetStr (dlist, tagidx);
+    nlistSetStr (ndlist, tagidx, str);
+  }
+
   uiTreeViewSelectSet (audioidint->alistTree, audioidint->setrow);
   col = UIAUID_COL_MAX;
   slistStartIterator (audioidint->listsellist, &seliteridx);
@@ -595,6 +604,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
       char        tmp [40];
       long        dur;
 
+      /* duration must be converted */
       str = nlistGetStr (dlist, tagidx);
       dur = atol (str);
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
@@ -603,7 +613,6 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
       const char  *str;
 
       str = nlistGetStr (dlist, tagidx);
-      nlistSetStr (ndlist, tagidx, str);
       uiaudioidSetSongDataCallback (col, 0, str, uiaudioid);
     }
     ++col;
@@ -659,17 +668,15 @@ uiaudioidUIMainLoop (uiaudioid_t *uiaudioid)
 static void
 uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
 {
-  slist_t         *sellist;
   slistidx_t      dsiteridx;
   aid_internal_t  *audioidint;
   int             tagidx;
 
   logProcBegin (LOG_PROC, "uiaudioidAddDisplay");
   audioidint = uiaudioid->audioidInternalData;
-  sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
 
-  slistStartIterator (sellist, &dsiteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &dsiteridx)) >= 0) {
+  slistStartIterator (audioidint->sellist, &dsiteridx);
+  while ((tagidx = slistIterateValueNum (audioidint->sellist, &dsiteridx)) >= 0) {
     uiwcont_t   *hbox;
 
     if (tagidx < 0 || tagidx >= TAG_KEY_MAX) {

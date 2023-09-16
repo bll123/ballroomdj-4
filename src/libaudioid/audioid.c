@@ -58,6 +58,7 @@ audioidInit (void)
   audioid->resp = NULL;
   audioid->state = BDJ4_STATE_OFF;
   audioid->statecount = AUDIOID_TYPE_ACOUSTID;
+  audioid->mbmatch = false;
   return audioid;
 }
 
