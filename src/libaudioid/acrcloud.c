@@ -65,7 +65,7 @@ acrFree (audioidacr_t *acr)
 }
 
 void
-acrLookup (audioidacr_t *acr, song_t *song, ilist_t *respdata)
+acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 {
   char            uri [MAXPATHLEN];
   char            sig [MAXPATHLEN];

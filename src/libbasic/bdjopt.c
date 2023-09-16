@@ -46,7 +46,6 @@ enum {
 static bdjopt_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
-  { "ACOUSTID_API_KEY",   OPT_G_ACOUSTID_API_KEY,   VALUE_STR, NULL, DF_NORM },
   { "ACOUSTID_KEY",       OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },
   { "ACRCLOUD_API_HOST",  OPT_G_ACRCLOUD_API_HOST,  VALUE_STR, NULL, DF_NORM },
   { "ACRCLOUD_API_KEY",   OPT_G_ACRCLOUD_API_KEY,   VALUE_STR, NULL, DF_NORM },

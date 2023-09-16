@@ -179,7 +179,9 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   CloseHandle (handleStdinWrite);
 
   si.hStdOutput = handleStdoutWrite;
-  si.hStdError = handleStdoutWrite;
+  if ((flags & OS_PROC_NOSTDERR) != OS_PROC_NOSTDERR) {
+    si.hStdError = handleStdoutWrite;
+  }
   if (rbuff != NULL) {
     si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
   } else {

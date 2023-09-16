@@ -170,7 +170,12 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
     /* send both stdout and stderr to the same fd */
     dup2 (pipefd [1], STDOUT_FILENO);
-    dup2 (pipefd [1], STDERR_FILENO);
+fprintf (stderr, "flags: %04x\n", flags);
+    if ((flags & OS_PROC_NOSTDERR) != OS_PROC_NOSTDERR) {
+      dup2 (pipefd [1], STDERR_FILENO);
+    } else {
+fprintf (stderr, "not-dup stderr\n");
+    }
     mdextclose (pipefd [1]);
     close (pipefd [1]);
 

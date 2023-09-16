@@ -139,12 +139,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the AcoustID API Key */
-  snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACOUSTID_NAME);
-  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
-      CONFUI_ENTRY_ACOUSTID_API_KEY, OPT_G_ACOUSTID_API_KEY,
-      bdjoptGetStr (OPT_G_ACOUSTID_API_KEY), CONFUI_NO_INDENT);
-
   /* CONTEXT: configuration: the ACRCloud API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
   confuiMakeItemEntry (gui, vbox, szgrp, tbuff,

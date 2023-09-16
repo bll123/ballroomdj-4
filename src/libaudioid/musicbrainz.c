@@ -134,7 +134,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   /*    a match can then possibly be made by album name/track number */
   /* releases is used to get the list of releases for this recording */
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
-  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: mb: uri: %s", uri);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
   webclientGet (mb->webclient, uri);
   if (mb->webresponse != NULL) {

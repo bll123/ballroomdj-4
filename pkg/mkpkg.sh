@@ -71,13 +71,9 @@ function copyreleasefiles {
   fi
   case ${tag} in
     linux)
-      cp -pf packages/fpcalc-${tag} plocal/bin/fpcalc
-      filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
       ;;
     macos)
-      cp -pf packages/fpcalc-${tag} plocal/bin/fpcalc
-      filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes"
       ;;

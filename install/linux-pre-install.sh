@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=8
+ver=9
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -152,7 +152,7 @@ if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # tested 2022
   # updated 2023-8-8
-  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0"
+  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0 libchromaprint-tools"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora

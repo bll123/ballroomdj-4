@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=14
+ver=15
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -188,6 +188,7 @@ sudo port -N install \
     libopus \
     opusfile \
     flac \
+    chromaprint \
     ffmpeg +nonfree -x11
 sudo -v
 sudo port -N uninstall \

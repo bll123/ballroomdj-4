@@ -32,6 +32,7 @@ enum {
 
 enum {
   SUPPORT_BUFF_SZ = (10*1024*1024),
+  SMALL_BUFF_SZ = (1*1024*1024),
 };
 
 typedef struct webclient {
@@ -120,6 +121,36 @@ webclientPost (webclient_t *webclient, const char *uri, const char *query)
 }
 
 void
+webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query)
+{
+  struct curl_slist *list = NULL;
+  size_t            len;
+  size_t            olen;
+  char              *obuff;
+  z_stream          *zs;
+
+  len = strlen (query);
+  obuff = mdmalloc (len * 2);
+
+  zs = webclientGzipInit (obuff, SMALL_BUFF_SZ);
+  webclientGzip (zs, query, len);
+  olen = webclientGzipEnd (zs);
+
+  list = curl_slist_append (list, "Content-Encoding: gzip");
+  webclientInitResp (webclient);
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
+  curl_easy_setopt (webclient->curl, CURLOPT_POST, 1L);
+  curl_easy_setopt (webclient->curl, CURLOPT_HTTPHEADER, list);
+  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDSIZE, olen);
+  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, obuff);
+  curl_easy_perform (webclient->curl);
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
+  }
+  curl_slist_free_all (list);
+}
+
+void
 webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
 {
   FILE    *fh;
@@ -150,28 +181,31 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
 }
 
+/* can be used without passing a file, set fn to null */
 void
 webclientUploadFile (webclient_t *webclient, const char *uri,
     const char *query [], const char *fn, const char *fnname)
 {
   curl_off_t  speed_upload;
   curl_off_t  total_time;
-  curl_off_t  fsize;
+  curl_off_t  fsize = 0;
   curl_mime   *mime = NULL;
   curl_mimepart *part = NULL;
   const char  *key;
   const char  *val;
   int         count;
+  bool        havefile = false;
 
-  if (! fileopFileExists (fn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "upload: no file %s", fn);
-    return;
+  if (fileopFileExists (fn)) {
+    havefile = true;
   }
 
-  fsize = fileopSize (fn);
-  if (fsize == 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "upload: file is empty %s", fn);
-    return;
+  if (havefile) {
+    fsize = fileopSize (fn);
+    if (fsize == 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "upload: file is empty %s", fn);
+      return;
+    }
   }
 
   webclientInitResp (webclient);
@@ -187,8 +221,10 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   }
 
   part = curl_mime_addpart (mime);
-  curl_mime_name (part, fnname);
-  curl_mime_filedata (part, fn);
+  if (havefile) {
+    curl_mime_name (part, fnname);
+    curl_mime_filedata (part, fn);
+  }
 
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_MIMEPOST, mime);
@@ -202,13 +238,15 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   curl_easy_getinfo (webclient->curl, CURLINFO_SPEED_UPLOAD_T, &speed_upload);
   curl_easy_getinfo (webclient->curl, CURLINFO_TOTAL_TIME_T, &total_time);
 
-  logMsg (LOG_DBG, LOG_INFO,
-      "%s : %"PRIu64" : %"PRIu64" b/sec : %"PRIu64".%02"PRIu64" sec",
-      fn,
-      (uint64_t) fsize,
-      (uint64_t) speed_upload,
-      (uint64_t) (total_time / 1000000),
-      (uint64_t) (total_time % 1000000));
+  if (havefile) {
+    logMsg (LOG_DBG, LOG_INFO,
+        "%s : %"PRIu64" : %"PRIu64" b/sec : %"PRIu64".%02"PRIu64" sec",
+        fn,
+        (uint64_t) fsize,
+        (uint64_t) speed_upload,
+        (uint64_t) (total_time / 1000000),
+        (uint64_t) (total_time % 1000000));
+  }
 }
 
 void
@@ -315,7 +353,7 @@ webclientInit (webclient_t *webclient)
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
   curl_easy_setopt (webclient->curl, CURLOPT_BUFFERSIZE, 512L * 1024L);
-  curl_easy_setopt (webclient->curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt (webclient->curl, CURLOPT_ACCEPT_ENCODING, "identity,zstd,deflate,gzip");
   if (isWindows ()) {
     curl_easy_setopt (webclient->curl, CURLOPT_CAINFO, sysvarsGetStr (SV_CA_FILE));
   }

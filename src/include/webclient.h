@@ -16,6 +16,7 @@ typedef struct webclient webclient_t;
 webclient_t * webclientAlloc (void *userdata, webclientcb_t cb);
 void        webclientGet (webclient_t *webclient, const char *uri);
 void        webclientPost (webclient_t *webclient, const char *uri, const char *query);
+void        webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query);
 void        webclientDownload (webclient_t *webclient, const char *uri, const char *outfile);
 void        webclientUploadFile (webclient_t *webclient, const char *uri, const char *query [], const char *fn, const char *fnname);
 void        webclientClose (webclient_t *webclient);

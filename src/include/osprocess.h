@@ -13,9 +13,10 @@ extern "C" {
 #include <sys/types.h>
 
 enum {
-  OS_PROC_NONE    = 0x0000,
-  OS_PROC_DETACH  = 0x0001,
-  OS_PROC_WAIT    = 0x0002,
+  OS_PROC_NONE      = 0x0000,
+  OS_PROC_DETACH    = 0x0001,
+  OS_PROC_WAIT      = 0x0002,
+  OS_PROC_NOSTDERR  = 0x0004,
 };
 
 pid_t osProcessStart (const char *targv[], int flags, void **handle, char *outfname);

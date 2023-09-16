@@ -96,6 +96,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
+  [SV_PATH_FPCALC] = { "PATH_FPCALC" },
   [SV_PATH_MUTAGEN] = { "PATH_MUTAGEN" },
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
   [SV_PATH_PYTHON] = { "PATH_PYTHON" },
@@ -735,6 +736,7 @@ sysvarsCheckPaths (const char *otherpaths)
   char    tpath [4096];
 
   strlcpy (sysvars [SV_PATH_FFMPEG], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_FPCALC], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_MUTAGEN], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
@@ -769,6 +771,10 @@ sysvarsCheckPaths (const char *otherpaths)
       checkForFile (tbuff, SV_PATH_FFMPEG, "ffmpeg", NULL);
     }
 
+    if (*sysvars [SV_PATH_FPCALC] == '\0') {
+      checkForFile (tbuff, SV_PATH_FPCALC, "fpcalc", NULL);
+    }
+
     if (*sysvars [SV_PATH_MUTAGEN] == '\0') {
       checkForFile (tbuff, SV_PATH_MUTAGEN, "mutagen-inspect", "mutagen-inspect-3.11", NULL);
     }
@@ -801,7 +807,7 @@ sysvarsCheckPaths (const char *otherpaths)
   }
 
   strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
-      "https://acoustid.org/webservice", SV_MAX_SZ);
+      "https://api.acoustid.org/v2/lookup", SV_MAX_SZ);
   strlcpy (sysvars [SV_AUDIOID_MUSICBRAINZ_URI],
       "https://musicbrainz.org/ws/2", SV_MAX_SZ);
 

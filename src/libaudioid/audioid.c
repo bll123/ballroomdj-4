@@ -35,13 +35,14 @@ enum {
 #define AUDIOID_SCORE_ADJUST 1.0
 
 typedef struct audioid {
-  audioidmb_t     *mb;
-  nlist_t         *respidx;
-  nlistidx_t      respiter;
-  ilist_t         *resp;
-  int             state;
-  int             statecount;
-  bool            mbmatch : 1;
+  audioidmb_t       *mb;
+  audioidacoustid_t *acoustid;
+  nlist_t           *respidx;
+  nlistidx_t        respiter;
+  ilist_t           *resp;
+  int               state;
+  int               statecount;
+  bool              mbmatch : 1;
 } audioid_t;
 
 static double audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
@@ -53,7 +54,8 @@ audioidInit (void)
   audioid_t *audioid;
 
   audioid = mdmalloc (sizeof (audioid_t));
-  audioid->mb = mbInit ();
+  audioid->mb = NULL;
+  audioid->acoustid = NULL;
   audioid->respidx = NULL;
   audioid->resp = NULL;
   audioid->state = BDJ4_STATE_OFF;
@@ -72,6 +74,7 @@ audioidFree (audioid_t *audioid)
   nlistFree (audioid->respidx);
   ilistFree (audioid->resp);
   mbFree (audioid->mb);
+  acoustidFree (audioid->acoustid);
   mdfree (audioid);
 }
 
@@ -81,6 +84,11 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   const char  *mbrecid;
   ilistidx_t  iteridx;
   ilistidx_t  key;
+
+  if (audioid->mb == NULL) {
+    audioid->mb = mbInit ();
+    audioid->acoustid = acoustidInit ();
+  }
 
   if (audioid == NULL || song == NULL) {
     return 0;
@@ -111,6 +119,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_WAIT) {
     if (audioid->statecount == AUDIOID_TYPE_ACOUSTID) {
+      acoustidLookup (audioid->acoustid, song, audioid->resp);
       ++audioid->statecount;
     } else if (audioid->statecount == AUDIOID_TYPE_ACRCLOUD) {
       ++audioid->statecount;

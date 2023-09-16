@@ -16,7 +16,6 @@ target_include_directories (libbdj4audioid
 )
 target_link_libraries (libbdj4audioid PUBLIC
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${GCRYPT_LDFLAGS}
