@@ -530,10 +530,11 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
 
   if (audioidint->rowcount > 1) {
     uiTreeViewSelectFirst (audioidint->alistTree);
+    audioidint->selchgbypass = false;
     uiTreeViewSelectNext (audioidint->alistTree);
   }
-
   audioidint->selchgbypass = false;
+
   audioidint->setrow = 1;
   nlistFree (audioidint->displaylist);
   audioidint->displaylist = nlistAlloc ("uiaudioid-disp", LIST_UNORDERED, NULL);
@@ -623,9 +624,9 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 
   if (audioidint->rowcount > 1) {
     uiTreeViewSelectFirst (audioidint->alistTree);
+    audioidint->selchgbypass = false;
     uiTreeViewSelectNext (audioidint->alistTree);
   }
-
   audioidint->selchgbypass = false;
 }
 

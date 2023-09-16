@@ -30,7 +30,7 @@ enum {
 /* the duration is often rounded off to the nearest second, */
 /* so there can be a guaranteed difference of 500 milliseconds */
 enum {
-  AUDIOID_DUR_DIFF = 700,
+  AUDIOID_DUR_DIFF = 2000,
 };
 #define AUDIOID_SCORE_ADJUST 1.0
 
@@ -41,9 +41,11 @@ typedef struct audioid {
   ilist_t         *resp;
   int             state;
   int             statecount;
+  bool            mbmatch : 1;
 } audioid_t;
 
-static double audioidAdjustScore (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
+static double audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
+static double audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
 
 audioid_t *
 audioidInit (void)
@@ -91,6 +93,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_START;
     audioid->statecount = AUDIOID_TYPE_ACOUSTID;
+    audioid->mbmatch = false;
   }
 
   if (audioid->state == BDJ4_STATE_START) {
@@ -98,6 +101,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     if (mbrecid != NULL) {
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       audioid->state = BDJ4_STATE_PROCESS;
+      audioid->mbmatch = true;
       return false;
     } else {
       audioid->state = BDJ4_STATE_WAIT;
@@ -118,6 +122,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_PROCESS) {
     nlistSetSize (audioid->respidx, ilistGetCount (audioid->resp));
+
     ilistStartIterator (audioid->resp, &iteridx);
     while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
       double      score;
@@ -125,23 +130,28 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       long        dur;
       long        tdur = -1;
 
-      str = ilistGetStr (audioid->resp, key, TAG_DURATION);
-      if (str != NULL) {
-        tdur = atol (str);
-      }
-      dur = songGetNum (song, TAG_DURATION);
-fprintf (stderr, "dur: %ld tdur: %ld / %ld > %d\n", dur, tdur, labs (dur - tdur), AUDIOID_DUR_DIFF);
-      if (labs (dur - tdur) > AUDIOID_DUR_DIFF) {
-        continue;
-      }
-
       score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
       if (score < 90.0) {
         /* do not add this to the response index list */
         continue;
       }
-      score = audioidAdjustScore (audioid, key, TAG_TRACKNUMBER, song, score);
-      score = audioidAdjustScore (audioid, key, TAG_DISCNUMBER, song, score);
+
+      /* for a musicbrainz match, do not matching checks */
+      if (! audioid->mbmatch) {
+        str = ilistGetStr (audioid->resp, key, TAG_DURATION);
+        if (str != NULL) {
+          tdur = atol (str);
+        }
+        dur = songGetNum (song, TAG_DURATION);
+        if (labs (dur - tdur) > AUDIOID_DUR_DIFF) {
+          continue;
+        }
+      }
+
+      score = audioidAdjustScoreStr (audioid, key, TAG_ALBUM, song, score);
+      score = audioidAdjustScoreStr (audioid, key, TAG_TITLE, song, score);
+      score = audioidAdjustScoreNum (audioid, key, TAG_TRACKNUMBER, song, score);
+      score = audioidAdjustScoreNum (audioid, key, TAG_DISCNUMBER, song, score);
       ilistSetDouble (audioid->resp, key, TAG_AUDIOID_SCORE, score);
       nlistSetNum (audioid->respidx, 1000 - (int) (score * 10.0), key);
     }
@@ -191,7 +201,7 @@ audioidGetList (audioid_t *audioid, int key)
 }
 
 static double
-audioidAdjustScore (audioid_t *audioid, int key, int tagidx,
+audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx,
     const song_t *song, double score)
 {
   const char  *tstr;
@@ -205,6 +215,24 @@ audioidAdjustScore (audioid_t *audioid, int key, int tagidx,
   sval = songGetNum (song, tagidx);
   if (sval != LIST_VALUE_INVALID) {
     if (sval != val) {
+      score -= AUDIOID_SCORE_ADJUST;
+    }
+  }
+
+  return score;
+}
+
+static double
+audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx,
+    const song_t *song, double score)
+{
+  const char  *sstr;
+  const char  *tstr;
+
+  tstr = ilistGetStr (audioid->resp, key, tagidx);
+  sstr = songGetStr (song, tagidx);
+  if (sstr != NULL) {
+    if (tstr == NULL || strcmp (tstr, sstr) != 0) {
       score -= AUDIOID_SCORE_ADJUST;
     }
   }
