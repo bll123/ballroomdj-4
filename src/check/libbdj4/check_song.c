@@ -431,19 +431,19 @@ START_TEST(song_display)
     mdfree (data);
 
     /* standard string */
-    data = songDisplayString (song, TAG_ARTIST);
+    data = songDisplayString (song, TAG_ARTIST, SONG_NORM);
     ck_assert_str_eq (data, "artist");
     mdfree (data);
 
     /* converted - these assume the standard data files */
 
     if (i < 3) {
-      data = songDisplayString (song, TAG_GENRE);
+      data = songDisplayString (song, TAG_GENRE, SONG_NORM);
       ck_assert_str_eq (data, "Classical");
       mdfree (data);
     }
 
-    data = songDisplayString (song, TAG_DANCE);
+    data = songDisplayString (song, TAG_DANCE, SONG_NORM);
     if (i < 3) {
       ck_assert_str_eq (data, "Waltz");
     } else {
@@ -451,15 +451,15 @@ START_TEST(song_display)
     }
     mdfree (data);
 
-    data = songDisplayString (song, TAG_DANCERATING);
+    data = songDisplayString (song, TAG_DANCERATING, SONG_NORM);
     ck_assert_str_eq (data, "Good");
     mdfree (data);
 
-    data = songDisplayString (song, TAG_DANCELEVEL);
+    data = songDisplayString (song, TAG_DANCELEVEL, SONG_NORM);
     ck_assert_str_eq (data, "Normal");
     mdfree (data);
 
-    data = songDisplayString (song, TAG_COMPOSER);
+    data = songDisplayString (song, TAG_COMPOSER, SONG_NORM);
     if (i < 3) {
       ck_assert_str_eq (data, "composer");
     } else {
@@ -468,16 +468,16 @@ START_TEST(song_display)
     mdfree (data);
 
     if (i < 3) {
-      data = songDisplayString (song, TAG_STATUS);
+      data = songDisplayString (song, TAG_STATUS, SONG_NORM);
       ck_assert_str_eq (data, "New");
       mdfree (data);
 
-      data = songDisplayString (song, TAG_FAVORITE);
+      data = songDisplayString (song, TAG_FAVORITE, SONG_NORM);
       rc = strncmp (data, "<span", 5);
       ck_assert_int_eq (rc, 0);
       mdfree (data);
 
-      data = songDisplayString (song, TAG_TAGS);
+      data = songDisplayString (song, TAG_TAGS, SONG_NORM);
       ck_assert_str_eq (data, "tag1 tag2");
       mdfree (data);
     }

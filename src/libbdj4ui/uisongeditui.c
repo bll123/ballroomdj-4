@@ -556,7 +556,11 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       continue;
     }
 
-    tval = uisongGetDisplay (song, tagkey, &val, &dval);
+    if (tagkey == TAG_DURATION) {
+      tval = songDisplayString (song, tagkey, SONG_LONG_DURATION);
+    } else {
+      tval = uisongGetDisplay (song, tagkey, &val, &dval);
+    }
     if (! seint->ineditallapply) {
       seint->items [count].changed = false;
       seint->items [count].lastchanged = false;
@@ -1422,6 +1426,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
         songend = songutilNormalizePosition (songend, speed);
       }
     }
+
     dur = songGetNum (seint->song, TAG_DURATION);
     if (songstart > 0 && songstart > dur) {
       if (uisongedit->statusMsg != NULL) {

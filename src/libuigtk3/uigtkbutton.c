@@ -208,11 +208,13 @@ uiButtonSetRepeat (uibutton_t *uibutton, int repeatms)
       G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->releasecb);
 }
 
-void
+bool
 uiButtonCheckRepeat (uibutton_t *uibutton)
 {
+  bool    rc = false;
+
   if (uibutton == NULL) {
-    return;
+    return rc;
   }
 
   if (uibutton->repeating) {
@@ -224,7 +226,10 @@ uiButtonCheckRepeat (uibutton_t *uibutton)
         uibutton->repeating = true;
       }
     }
+    rc = true;
   }
+
+  return rc;
 }
 
 void

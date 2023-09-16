@@ -113,13 +113,9 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
 
       while ((key = audioidIterate (maudioid->audioid)) >= 0) {
         nlist_t   *dlist;
-        double    dval;
 
         dlist = audioidGetList (maudioid->audioid, key);
-        dval = nlistGetDouble (dlist, TAG_AUDIOID_SCORE);
-        if (dval >= 90.0) {
-          uiaudioidSetDisplayList (maudioid->uiaudioid, dlist);
-        }
+        uiaudioidSetDisplayList (maudioid->uiaudioid, dlist);
       }
       uiaudioidFinishDisplayList (maudioid->uiaudioid);
       maudioid->state = BDJ4_STATE_FINISH;

@@ -20,7 +20,7 @@ void uiButtonSetText (uibutton_t *uibutton, const char *txt);
 void uiButtonSetReliefNone (uibutton_t *uibutton);
 void uiButtonSetFlat (uibutton_t *uibutton);
 void uiButtonSetRepeat (uibutton_t *uibutton, int repeatms);
-void uiButtonCheckRepeat (uibutton_t *uibutton);
+bool uiButtonCheckRepeat (uibutton_t *uibutton);
 void uiButtonSetState (uibutton_t *uibutton, int state);
 
 #endif /* INC_UIBUTTON_H */

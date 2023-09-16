@@ -336,7 +336,7 @@ songAudioFileExists (song_t *song)
 /* Favorite returns the span-display string used by gtk */
 /*     <span color="...">X</span> */
 char *
-songDisplayString (song_t *song, int tagidx)
+songDisplayString (song_t *song, int tagidx, int flag)
 {
   valuetype_t     vt;
   dfConvFunc_t    convfunc;
@@ -388,8 +388,12 @@ songDisplayString (song_t *song, int tagidx)
       char  tmp [40];
 
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
-      snprintf (tbuff, sizeof (tbuff), "%s (%s)", durstr, tmp);
-      str = mdstrdup (tbuff);
+      if (flag == SONG_LONG_DURATION) {
+        snprintf (tbuff, sizeof (tbuff), "%s (%s)", durstr, tmp);
+        str = mdstrdup (tbuff);
+      } else {
+        str = mdstrdup (tmp);
+      }
     } else {
       str = mdstrdup (durstr);
     }

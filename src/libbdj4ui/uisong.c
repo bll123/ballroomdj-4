@@ -55,7 +55,7 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
   if (tagdefs [tagidx].convfunc != NULL ||
       tagidx == TAG_DURATION) {
     dataFree (str);
-    str = songDisplayString (song, tagidx);
+    str = songDisplayString (song, tagidx, SONG_NORM);
   }
   return str;
 }
@@ -71,7 +71,7 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
   *dval = 0.0;
 
   if (vt == VALUE_STR) {
-    str = songDisplayString (song, tagidx);
+    str = songDisplayString (song, tagidx, SONG_NORM);
   } else if (vt == VALUE_NUM) {
     *num = songGetNum (song, tagidx);
     if (tagidx == TAG_SONGSTART || tagidx == TAG_SONGEND) {

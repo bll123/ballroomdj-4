@@ -88,10 +88,10 @@ uiButtonSetRepeat (uibutton_t *uibutton, int repeatms)
   return;
 }
 
-void
+bool
 uiButtonCheckRepeat (uibutton_t *uibutton)
 {
-  return;
+  return false;
 }
 
 void

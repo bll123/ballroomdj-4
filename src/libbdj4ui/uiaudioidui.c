@@ -116,6 +116,7 @@ typedef struct aid_internal {
   int                 setrow;
   int                 changed;
   bool                selchgbypass : 1;
+  bool                repeating : 1;
 } aid_internal_t;
 
 static void uiaudioidAddDisplay (uiaudioid_t *songedit, uiwcont_t *col);
@@ -151,6 +152,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->rowcount = 0;
   /* select-change bypass will be true until the data is first loaded */
   audioidint->selchgbypass = true;
+  audioidint->repeating = false;
   audioidint->listsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
 
   for (int i = 0; i < UIAUID_BUTTON_MAX; ++i) {
@@ -583,6 +585,15 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         snprintf (tmp, sizeof (tmp), "%.1f", dval);
       }
       uiaudioidSetSongDataCallback (col, 0, tmp, uiaudioid);
+    } else if (tagidx == TAG_DURATION) {
+      const char  *str;
+      char        tmp [40];
+      long        dur;
+
+      str = nlistGetStr (dlist, tagidx);
+      dur = atol (str);
+      tmutilToMSD (dur, tmp, sizeof (tmp), 1);
+      uiaudioidSetSongDataCallback (col, 0, tmp, uiaudioid);
     } else {
       const char  *str;
 
@@ -621,12 +632,20 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 void
 uiaudioidUIMainLoop (uiaudioid_t *uiaudioid)
 {
-  aid_internal_t   *audioidint;
+  aid_internal_t  *audioidint;
+  bool            repeat;
 
   audioidint = uiaudioid->audioidInternalData;
 
-  uiButtonCheckRepeat (audioidint->buttons [UIAUID_BUTTON_NEXT]);
-  uiButtonCheckRepeat (audioidint->buttons [UIAUID_BUTTON_PREV]);
+  audioidint->repeating = false;
+  repeat = uiButtonCheckRepeat (audioidint->buttons [UIAUID_BUTTON_NEXT]);
+  if (repeat) {
+    audioidint->repeating = true;
+  }
+  repeat = uiButtonCheckRepeat (audioidint->buttons [UIAUID_BUTTON_PREV]);
+  if (repeat) {
+    audioidint->repeating = true;
+  }
   return;
 }
 

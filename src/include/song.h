@@ -9,6 +9,11 @@
 #include "nlist.h"
 #include "slist.h"
 
+enum {
+  SONG_NORM,
+  SONG_LONG_DURATION,
+};
+
 typedef struct song song_t;
 
 song_t *  songAlloc (void);
@@ -24,7 +29,7 @@ void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);
 void      songSetList (song_t *song, nlistidx_t tagidx, const char *str);
 void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
-char *    songDisplayString (song_t *song, int tagidx);
+char *    songDisplayString (song_t *song, int tagidx, int flag);
 slist_t * songTagList (song_t *song);
 bool      songIsChanged (song_t *song);
 void      songSetChanged (song_t *song);
