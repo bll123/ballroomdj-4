@@ -27,14 +27,17 @@ typedef struct manageaudioid {
   uiwcont_t         *windowp;
   uiwcont_t         *errorMsg;
   uiwcont_t         *statusMsg;
+  const char        *pleasewaitmsg;
   uisongsel_t       *uisongsel;
   audioid_t         *audioid;
   uiaudioid_t       *uiaudioid;
+  song_t            *song;
+  int               state;
 } manageaudioid_t;
 
 manageaudioid_t *
 manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window,
-    uiwcont_t *errorMsg, uiwcont_t *statusMsg)
+    uiwcont_t *errorMsg, uiwcont_t *statusMsg, const char *pleasewaitmsg)
 {
   manageaudioid_t *maudioid;
 
@@ -47,6 +50,9 @@ manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window,
   maudioid->uisongsel = NULL;
   maudioid->audioid = audioidInit ();
   maudioid->uiaudioid = uiaudioidInit (maudioid->options, maudioid->dispsel);
+  maudioid->pleasewaitmsg = pleasewaitmsg;
+  maudioid->song = NULL;
+  maudioid->state = BDJ4_STATE_OFF;
   return maudioid;
 }
 
@@ -85,19 +91,58 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
   }
 
   uiaudioidMainLoop (maudioid->uiaudioid);
+
+  switch (maudioid->state) {
+    case BDJ4_STATE_OFF: {
+      break;
+    }
+    case BDJ4_STATE_START: {
+      uiLabelSetText (maudioid->statusMsg, maudioid->pleasewaitmsg);
+      maudioid->state = BDJ4_STATE_WAIT;
+      break;
+    }
+    case BDJ4_STATE_WAIT: {
+      if (audioidLookup (maudioid->audioid, maudioid->song)) {
+        audioidStartIterator (maudioid->audioid);
+        maudioid->state = BDJ4_STATE_PROCESS;
+      }
+      break;
+    }
+    case BDJ4_STATE_PROCESS: {
+      int   key;
+
+      while ((key = audioidIterate (maudioid->audioid)) >= 0) {
+        nlist_t   *dlist;
+        double    dval;
+
+        dlist = audioidGetList (maudioid->audioid, key);
+        dval = nlistGetDouble (dlist, TAG_AUDIOID_SCORE);
+        if (dval >= 90.0) {
+          uiaudioidSetDisplayList (maudioid->uiaudioid, dlist);
+        }
+      }
+      uiaudioidFinishDisplayList (maudioid->uiaudioid);
+      maudioid->state = BDJ4_STATE_FINISH;
+      break;
+    }
+    case BDJ4_STATE_FINISH: {
+      uiLabelSetText (maudioid->statusMsg, "");
+      maudioid->state = BDJ4_STATE_OFF;
+      break;
+    }
+  }
 }
 
 void
 manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx)
 {
-  nlist_t   *resp;
-
   if (maudioid == NULL) {
     return;
   }
 
   uiaudioidLoadData (maudioid->uiaudioid, song, dbidx);
-  resp = audioidLookup (maudioid->audioid, song);
+  maudioid->song = song;
+  maudioid->state = BDJ4_STATE_START;
 }
 
 void

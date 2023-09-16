@@ -64,10 +64,9 @@ acrFree (audioidacr_t *acr)
   mdfree (acr);
 }
 
-nlist_t *
-acrLookup (audioidacr_t *acr, song_t *song)
+void
+acrLookup (audioidacr_t *acr, song_t *song, ilist_t *respdata)
 {
-  nlist_t         *resp = NULL;
   char            uri [MAXPATHLEN];
   char            sig [MAXPATHLEN];
   unsigned char   digest [100];
@@ -134,7 +133,7 @@ fprintf (stdout, "ts: %s\n", ts);
   gcry_mac_close (gch);
   dataFree (b64sig);
 
-  return resp;
+  return;
 }
 
 static void

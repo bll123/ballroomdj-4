@@ -11,12 +11,6 @@
 #include "slist.h"
 
 typedef enum {
-  DISP_YES,
-  DISP_OPT,
-  DISP_NO,
-} tagdispflag_t;
-
-typedef enum {
   ET_COMBOBOX,
   ET_ENTRY,
   ET_LABEL,
@@ -51,7 +45,6 @@ typedef struct {
   tagedittype_t       editType;
   valuetype_t         valueType;
   dfConvFunc_t        convfunc;
-  tagdispflag_t       audioiddispflag;
   bool                listingDisplay : 1;
   bool                secondaryDisplay : 1;
   bool                ellipsize : 1;
@@ -71,6 +64,7 @@ typedef enum {
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
+  TAG_AUDIOID_SCORE,          //
   TAG_BPM,                    //
   TAG_BPM_DISPLAY,            //
   TAG_COMPOSER,               //

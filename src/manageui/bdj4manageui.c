@@ -1277,7 +1277,7 @@ manageMainLoop (void *tmanage)
       uisongeditMainLoop (manage->mmsongedit);
     }
     if (manage->mmlasttab == MANAGE_TAB_AUDIOID) {
-      /* the song edit main loop does not need to run all the time */
+      /* the audio id main loop does not need to run all the time */
       manageAudioIdMainLoop (manage->manageaudioid);
     }
   }
@@ -2225,7 +2225,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   manage->manageaudioid = manageAudioIdAlloc (manage->dispsel, manage->options,
       manage->wcont [MANAGE_W_WINDOW], manage->wcont [MANAGE_W_ERROR_MSG],
-      manage->wcont [MANAGE_W_STATUS_MSG]);
+      manage->wcont [MANAGE_W_STATUS_MSG], manage->pleasewaitmsg);
   manageAudioIdSetSaveCallback (manage->manageaudioid, manage->callbacks [MANAGE_CB_SAVE]);
 
   uip = manageAudioIdBuildUI (manage->manageaudioid, manage->mmsongsel);

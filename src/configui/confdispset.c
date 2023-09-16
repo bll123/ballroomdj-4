@@ -113,6 +113,9 @@ confuiDispSaveTable (confuigui_t *gui, int selidx)
   tlist = uiduallistGetList (gui->dispselduallist);
   slistStartIterator (tlist, &iteridx);
   while ((val = slistIterateValueNum (tlist, &iteridx)) >= 0) {
+    if (selidx == DISP_SEL_AUDIOID && val == TAG_AUDIOID_SCORE) {
+      continue;
+    }
     tstr = tagdefs [val].tag;
     slistSetNum (nlist, tstr, 0);
   }
@@ -148,6 +151,3 @@ confuiDispSettingChg (void *udata)
   logProcEnd (LOG_PROC, "confuiDispSettingChg", "");
   return UICB_CONT;
 }
-
-
-

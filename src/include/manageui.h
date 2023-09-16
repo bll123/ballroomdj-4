@@ -97,7 +97,7 @@ void manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musi
 /* manageaudioid.c */
 typedef struct manageaudioid manageaudioid_t;
 
-manageaudioid_t *manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window, uiwcont_t *errorMsg, uiwcont_t *statusMsg);
+manageaudioid_t *manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window, uiwcont_t *errorMsg, uiwcont_t *statusMsg, const char *pleasewaitmsg);
 void manageAudioIdFree (manageaudioid_t *maudioid);
 uiwcont_t *manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel);
 void manageAudioIdMainLoop (manageaudioid_t *maudioid);

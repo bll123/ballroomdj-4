@@ -40,7 +40,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     songutilConvAdjustFlags,      /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -68,7 +67,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -96,7 +94,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -124,7 +121,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -137,6 +133,33 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
+  },
+  [TAG_AUDIOID_SCORE] =
+  { "SCORE",                      /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },         /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_NA,                        /* edit type            */
+    VALUE_DOUBLE,                 /* value type           */
+    NULL,                         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    true,                         /* audio-id             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
+    false,                        /* vorbis multi         */
   },
   [TAG_BPM] =
   { "BPM",                        /* tag */
@@ -152,7 +175,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -180,7 +202,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_LABEL,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     true,                         /* secondary display    */
     false,                        /* ellipsize            */
@@ -208,7 +229,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_OPT,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -236,7 +256,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_OPT,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -264,7 +283,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_COMBOBOX,                  /* edit type            */
     VALUE_NUM,                    /* value type           */
     danceConvDance,               /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -292,7 +310,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     levelConv,                    /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -320,7 +337,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     ratingConv,                   /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -348,7 +364,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_OPT,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -376,7 +391,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_LABEL,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -404,7 +418,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -432,7 +445,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -460,7 +472,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_LABEL,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -488,7 +499,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -516,7 +526,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     songFavoriteConv,             /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -544,7 +553,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_COMBOBOX,                  /* edit type            */
     VALUE_NUM,                    /* value type           */
     genreConv,                    /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -553,7 +561,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    true,                         /* audio-id             */
+    false,                        /* audio-id             */
     false,                        /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -572,7 +580,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -600,7 +607,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -628,7 +634,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -656,7 +661,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -684,7 +688,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -712,7 +715,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -740,7 +742,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -768,7 +769,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TIME,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -796,7 +796,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TIME,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -824,7 +823,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SCALE,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -852,7 +850,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
     statusConv,                   /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -880,7 +877,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_LIST,                   /* value type           */
     convTextList,                 /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -908,7 +904,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
@@ -936,7 +931,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -964,7 +958,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_YES,                     /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -992,7 +985,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1020,7 +1012,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_SCALE,                     /* edit type            */
     VALUE_DOUBLE,                 /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1048,7 +1039,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1076,7 +1066,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1104,7 +1093,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1132,7 +1120,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
@@ -1174,6 +1161,7 @@ tagdefInit (void)
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
   /* CONTEXT: label: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
+  tagdefs [TAG_AUDIOID_SCORE].displayname = _("Score");
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     /* CONTEXT: label: beats per minute */
     tagdefs [TAG_BPM].displayname = _("BPM");

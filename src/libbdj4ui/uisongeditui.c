@@ -624,9 +624,6 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
           if (dval <= 0.0) { dval = 100.0; }
           seint->lastspeed = val;
         }
-        if (tval != NULL) {
-          fprintf (stderr, "et_scale: mismatch type\n");
-        }
         uiScaleSetValue (seint->items [count].uiwidgetp, dval);
         uisongeditScaleDisplayCallback (&seint->items [count], dval);
         break;

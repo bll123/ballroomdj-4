@@ -19,10 +19,11 @@
 #include "audioid.h"
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
-#include "nlist.h"
 #include "slist.h"
+#include "song.h"
 #include "sysvars.h"
 #include "webclient.h"
 
@@ -61,13 +62,11 @@ acoustidFree (audioidacoustid_t *acoustid)
   mdfree (acoustid);
 }
 
-nlist_t *
-acoustidRecordingIdLookup (audioidacoustid_t *acoustid, const char *recid)
+void
+acoustidLookup (audioidacoustid_t *acoustid, song_t *song,
+    ilist_t *respdata)
 {
-  nlist_t *resp = NULL;
-
-
-  return resp;
+  return;
 }
 
 static void

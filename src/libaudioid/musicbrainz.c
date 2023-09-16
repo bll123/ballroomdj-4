@@ -22,7 +22,6 @@
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
-#include "nlist.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -112,11 +111,10 @@ mbFree (audioidmb_t *mb)
   mdfree (mb);
 }
 
-ilist_t *
-mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
+void
+mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 {
   char          uri [MAXPATHLEN];
-  ilist_t       *respdata = NULL;
   ilistidx_t    iteridx;
   ilistidx_t    key;
 
@@ -145,7 +143,8 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
     char                *twebresp;
     char                *p;
 
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: resp: %s", mb->webresponse);
+    /* response is too long to log */
+    /* use the uri and paste it into a web browser */
 
     /* libxml2 doesn't have any way to set the default namespace for xpath */
     /* which makes it a pain to use when a namespace is set */
@@ -163,10 +162,9 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
 
     doc = xmlParseMemory (twebresp, mb->webresplen);
     if (doc == NULL) {
-      return respdata;
+      return;
     }
 
-    respdata = ilistAlloc ("mb-parse-tmp", LIST_ORDERED);
     mb->respcount = 0;
 
     xpathCtx = xmlXPathNewContext (doc);
@@ -204,21 +202,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid)
     xmlFreeDoc (doc);
   }
 
-{
-ilistidx_t iteridx;
-ilistidx_t key;
-ilistStartIterator (respdata, &iteridx);
-while ((key = ilistIterateKey (respdata, &iteridx)) >= 0) {
-  for (int i = 0; i < mbxpathcount; ++i) {
-    if (mbxpaths [i].flag == MB_SKIP) {
-      continue;
-    }
-    fprintf (stderr, "%d %d/%s %s\n", key, mbxpaths [i].tagidx, tagdefs [mbxpaths [i].tagidx].tag, ilistGetStr (respdata, key, mbxpaths [i].tagidx));
-  }
-}
-}
-
-  return respdata;
+  return;
 }
 
 /* internal routines */
@@ -282,6 +266,7 @@ mbParse (audioidmb_t *mb, xmlXPathContextPtr xpathCtx, int xpathidx,
         mb->respcount = atoi (nval);
         mbParseRelease (mb, cur, respdata);
       } else {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "mb: raw: set %d %s %s\n", respidx, tagdefs [mbxpaths [xpathidx].tagidx].tag, nval);
         ilistSetStr (respdata, respidx, mbxpaths [xpathidx].tagidx, nval);
         mdfree (nval);
         nval = NULL;
@@ -292,11 +277,13 @@ mbParse (audioidmb_t *mb, xmlXPathContextPtr xpathCtx, int xpathidx,
     ilistSetStr (respdata, 0, MB_TYPE_JOINPHRASE, NULL);
   }
   if (joinphrase != NULL && nval != NULL) {
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "mb: raw: set %d %s %s\n", respidx, tagdefs [mbxpaths [xpathidx].tagidx].tag, nval);
     ilistSetStr (respdata, mb->respcount, mbxpaths [xpathidx].tagidx, nval);
     mdfree (nval);
     nval = NULL;
   }
 
+  ilistSetDouble (respdata, respidx, TAG_AUDIOID_SCORE, 100.0);
   xmlXPathFreeObject (xpathObj);
   return true;
 }
@@ -323,6 +310,10 @@ mbParseRelease (audioidmb_t *mb, xmlNodePtr relnode, ilist_t *respdata)
   if (xmlXPathNodeSetIsEmpty (nodes)) {
     xmlXPathFreeObject (xpathObj);
     return false;
+  }
+  if (nodes->nodeNr < mb->respcount) {
+    /* musicbrainz limits the response count to 25 */
+    mb->respcount = nodes->nodeNr;
   }
 
   for (int i = 0; i < mb->respcount; ++i)  {

@@ -14,25 +14,27 @@ typedef struct audioidacr audioidacr_t;
 
 audioid_t *audioidInit (void);
 void audioidFree (audioid_t *audioid);
-nlist_t *audioidLookup (audioid_t *audioid, const song_t *song);
+bool audioidLookup (audioid_t *audioid, const song_t *song);
+void audioidStartIterator (audioid_t *audioid);
+ilistidx_t audioidIterate (audioid_t *audioid);
+nlist_t * audioidGetList (audioid_t *audioid, int key);
 
 /* musicbrainz.c */
 
 audioidmb_t *mbInit (void);
 void mbFree (audioidmb_t *mb);
-ilist_t *mbRecordingIdLookup (audioidmb_t *mb, const char *recid);
+void mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata);
 
 /* acoustid.c */
 
 audioidacoustid_t * acoustidInit (void);
 void acoustidFree (audioidacoustid_t *acoustid);
-nlist_t * acoustidLookup (audioidacoustid_t *acoustid, song_t *song);
+void acoustidLookup (audioidacoustid_t *acoustid, song_t *song, ilist_t *respdata);
 
 /* acrcloud.c */
 
 audioidacr_t * acrInit (void);
 void acrFree (audioidacr_t *acr);
-nlist_t * acrLookup (audioidacr_t *acr, song_t *song);
-
+void acrLookup (audioidacr_t *acr, song_t *song, ilist_t *respdata);
 
 #endif /* INC_AUDIOID_H */

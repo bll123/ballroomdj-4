@@ -89,6 +89,9 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
     }
   } else if (vt == VALUE_DOUBLE) {
     *dval = songGetDouble (song, tagidx);
+    /* the only double that is displayed is the score, and that value */
+    /* is never store in the song */
+    str = mdstrdup ("");
   }
 
   return str;
