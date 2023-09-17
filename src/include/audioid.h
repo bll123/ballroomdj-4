@@ -4,6 +4,7 @@
 #include "ilist.h"
 #include "nlist.h"
 #include "song.h"
+#include "tagdef.h"
 
 typedef struct audioid audioid_t;
 typedef struct audioidmb audioidmb_t;
@@ -18,6 +19,34 @@ bool audioidLookup (audioid_t *audioid, const song_t *song);
 void audioidStartIterator (audioid_t *audioid);
 ilistidx_t audioidIterate (audioid_t *audioid);
 nlist_t * audioidGetList (audioid_t *audioid, int key);
+
+/* audioidutil.c */
+
+typedef struct {
+  int             flag;
+  int             tagidx;
+  const char      *xpath;
+  const char      *attr;
+} audioidxpath_t;
+
+enum {
+  AUDIOID_XPATH_TREE,
+  AUDIOID_XPATH_END_TREE,
+  AUDIOID_XPATH_DATA,
+  AUDIOID_XPATH_END,
+};
+
+enum {
+  AUDIOID_TYPE_TREE = TAG_KEY_MAX,
+  AUDIOID_TYPE_JOINPHRASE = TAG_KEY_MAX + 1,
+  AUDIOID_TYPE_YEAR = TAG_KEY_MAX + 2,
+  AUDIOID_TYPE_MONTH = TAG_KEY_MAX + 3,
+  AUDIOID_TYPE_RESPONSE = TAG_KEY_MAX + 4,
+};
+
+void audioidParseInit (void);
+void audioidParseCleanup (void);
+int audioidParseAll (const char *data, size_t datalen, audioidxpath_t *xpaths, ilist_t *respdata);
 
 /* musicbrainz.c */
 

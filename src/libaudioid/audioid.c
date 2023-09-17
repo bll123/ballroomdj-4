@@ -33,6 +33,7 @@ enum {
   AUDIOID_DUR_DIFF = 2000,
 };
 #define AUDIOID_SCORE_ADJUST 1.0
+#define AUDIOID_MIN_SCORE 85.0
 
 typedef struct audioid {
   audioidmb_t       *mb;
@@ -61,6 +62,7 @@ audioidInit (void)
   audioid->state = BDJ4_STATE_OFF;
   audioid->statecount = AUDIOID_TYPE_ACOUSTID;
   audioid->mbmatch = false;
+  audioidParseInit ();
   return audioid;
 }
 
@@ -71,6 +73,7 @@ audioidFree (audioid_t *audioid)
     return;
   }
 
+  audioidParseCleanup ();
   nlistFree (audioid->respidx);
   ilistFree (audioid->resp);
   mbFree (audioid->mb);
@@ -108,7 +111,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->state == BDJ4_STATE_START) {
     mbrecid = songGetStr (song, TAG_RECORDING_ID);
 // ### temporary for testing acoustid.
-    if (0 && mbrecid != NULL) {
+    if (mbrecid != NULL) {
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       audioid->state = BDJ4_STATE_PROCESS;
       audioid->mbmatch = true;
@@ -142,7 +145,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       long        tdur = -1;
 
       score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
-      if (score < 90.0) {
+      if (score < AUDIOID_MIN_SCORE) {
         /* do not add this to the response index list */
         continue;
       }

@@ -83,8 +83,6 @@ function copyreleasefiles {
       ;;
     win64)
       rm -rf plocal/lib/libicu*.so*
-      cp -pf packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
-      filelist+=" plocal/bin/fpcalc.exe"
       dirlist+=" plocal/bin plocal/share/themes"
       dirlist+=" plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
       dirlist+=" plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
@@ -447,7 +445,5 @@ chmod a+rx ${nm}
 
 echo "## $(date +%T) release package ${nm} created"
 rm -rf ${stagedir}
-# clean up copied file
-rm -f plocal/bin/fpcalc*
 
 exit 0

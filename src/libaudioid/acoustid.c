@@ -12,11 +12,6 @@
 #include <errno.h>
 #include <math.h>
 
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
 #include "audioid.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -35,6 +30,12 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
+#include "filedata.h" // temporary, remove
+
+enum {
+  ACOUSTID_BUFF_SZ = 16384,
+};
+
 typedef struct audioidacoustid {
   webclient_t   *webclient;
   const char    *webresponse;
@@ -44,46 +45,42 @@ typedef struct audioidacoustid {
   char          akey [100];
 } audioidacoustid_t;
 
-typedef struct {
-  int             flag;
-  int             tagidx;
-  const char      *xpath;
-  const char      *attr;
-} acoustidxpath_t;
+/*
+ * acoustid:
+ *  for each result (score)
+ *    for each recording (recording-id)
+ *      for each release
+ *        : (album-artist, album-title, date, disctotal)
+ *        medium: (discnumber, tracktotal)
+ *        track: (tracknumber, title, artist)
+ */
 
-enum {
-  ACOUSTID_SINGLE,
-  ACOUSTID_RELEASE,
-  ACOUSTID_SKIP,
-};
-
-enum {
-  ACOUSTID_TYPE_JOINPHRASE = TAG_KEY_MAX + 1,
-  ACOUSTID_TYPE_RELCOUNT = TAG_KEY_MAX + 2,
-  ACOUSTID_BUFF_SZ = 16384,
-};
-
-// relative to /metadata/recording/release-list
-static const char *acoustidreleasexpath = "/release";
-static acoustidxpath_t acoustidxpaths [] = {
-  { ACOUSTID_SINGLE,  TAG_TITLE, "/metadata/recording/title", NULL },
-  { ACOUSTID_SINGLE,  TAG_DURATION, "/metadata/recording/length", NULL },
-  { ACOUSTID_SINGLE,  TAG_WORK_ID, "/metadata/recording/relation-list/relation/target", NULL },
-  // joinphrase must appear before artist
-  { ACOUSTID_SKIP,    ACOUSTID_TYPE_JOINPHRASE, "/metadata/recording/artist-credit/name-credit", "joinphrase" },
-  { ACOUSTID_SINGLE,  TAG_ARTIST, "/metadata/recording/artist-credit/name-credit/artist/name", NULL },
-  // relcount must appear before the release xpaths
-  { ACOUSTID_SKIP,    ACOUSTID_TYPE_RELCOUNT, "/metadata/recording/release-list", "count" },
-  // relative to /metadata/recording/release-list/release
-  { ACOUSTID_RELEASE, TAG_ALBUM, "/title", NULL },
-  { ACOUSTID_RELEASE, TAG_DATE, "/date", NULL },
-  { ACOUSTID_RELEASE, TAG_ALBUMARTIST, "/artist-credit/name-credit/artist/name", NULL },
-  { ACOUSTID_RELEASE, TAG_DISCNUMBER, "/medium-list/medium/position", NULL },
-  { ACOUSTID_RELEASE, TAG_TRACKNUMBER, "/medium-list/medium/track-list/track/position", NULL },
-  { ACOUSTID_RELEASE, TAG_TRACKTOTAL, "/medium-list/medium/track-list", "count" },
-};
-enum {
-  acoustidxpathcount = sizeof (acoustidxpaths) / sizeof (acoustidxpath_t),
+static audioidxpath_t acoustidxpaths [] = {
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL },
+  /* relative to /response/results/result */
+  { AUDIOID_XPATH_DATA, TAG_AUDIOID_SCORE, "/score", NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL },
+  /* relative to /response/recordings/recording */
+  { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/releases/release", NULL },
+  /* relative to /response/recordings/recording/releases/release */
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL },
+  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/artists/artist/name", NULL },
+  { AUDIOID_XPATH_DATA, TAG_ALBUM, "/title", NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_YEAR, "/date/year", NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL },
+  { AUDIOID_XPATH_DATA, TAG_DISCTOTAL, "/medium_count", NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL },
+  /* relative to /response/recordings/recording/releases/release/mediums/medium */
+  { AUDIOID_XPATH_DATA, TAG_DISCNUMBER, "/position", NULL },
+  { AUDIOID_XPATH_DATA, TAG_TRACKTOTAL, "/track_count", NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL },
+  /* relative to /response/recordings/recording/releases/release/mediums/medium/tracks/track */
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL },
+  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/artists/artist/name", NULL },
+  { AUDIOID_XPATH_DATA, TAG_TRACKNUMBER, "/position", NULL },
+  { AUDIOID_XPATH_DATA, TAG_TITLE, "/title", NULL },
+  { AUDIOID_XPATH_END, -1, NULL, NULL },
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
@@ -153,6 +150,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   ddur = round ((double) dur / 1000.0);
 
   fpdata = mdmalloc (ACOUSTID_BUFF_SZ);
+#if 0
   targv [targc++] = sysvarsGetStr (SV_PATH_FPCALC);
   targv [targc++] = ffn;
   targv [targc++] = "-plain";
@@ -164,7 +162,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   snprintf (query, ACOUSTID_BUFF_SZ,
       "client=%s"
       "&format=xml"
-      "&meta=recordingids+recordings+releases+tracks+compress"
+      "&meta=recordingids+recordings+releases+tracks+artists"
       "&duration=%.0f"
       "&fingerprint=%.*s",
       acoustid->akey,
@@ -174,13 +172,27 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: acoustid: query: %s", query);
 
   webclientPostCompressed (acoustid->webclient, uri, query);
-{
+
+if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
 FILE *ofh;
 ofh = fopen ("out.xml", "w");
 fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
 fprintf (ofh, "\n");
 fclose (ofh);
 }
+#endif
+
+
+{
+size_t rlen;
+acoustid->webresponse = filedataReadAll ("acoustid.xml", &rlen);
+acoustid->webresplen = rlen;
+}
+
+  if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
+    acoustid->respcount = audioidParseAll (acoustid->webresponse,
+        acoustid->webresplen, acoustidxpaths, respdata);
+  }
 
   dataFree (query);
   dataFree (fpdata);
