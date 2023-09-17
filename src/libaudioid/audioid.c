@@ -107,7 +107,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_START) {
     mbrecid = songGetStr (song, TAG_RECORDING_ID);
-    if (mbrecid != NULL) {
+// ### temporary for testing acoustid.
+    if (0 && mbrecid != NULL) {
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       audioid->state = BDJ4_STATE_PROCESS;
       audioid->mbmatch = true;

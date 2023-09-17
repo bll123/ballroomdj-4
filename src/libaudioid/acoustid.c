@@ -159,7 +159,6 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   targv [targc++] = NULL;
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_NOSTDERR,
       fpdata, ACOUSTID_BUFF_SZ, &retsz);
-fprintf (stderr, "retsz: %ld\n", retsz);
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
   snprintf (query, ACOUSTID_BUFF_SZ,
@@ -175,6 +174,13 @@ fprintf (stderr, "retsz: %ld\n", retsz);
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: acoustid: query: %s", query);
 
   webclientPostCompressed (acoustid->webclient, uri, query);
+{
+FILE *ofh;
+ofh = fopen ("out.xml", "w");
+fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
+fprintf (ofh, "\n");
+fclose (ofh);
+}
 
   dataFree (query);
   dataFree (fpdata);
