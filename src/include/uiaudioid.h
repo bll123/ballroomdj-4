@@ -31,6 +31,7 @@ uiaudioid_t * uiaudioidInit (nlist_t *opts, dispsel_t *dispsel);
 void  uiaudioidFree (uiaudioid_t *uiaudioid);
 void  uiaudioidMainLoop (uiaudioid_t *uiaudioid);
 void  uiaudioidSetSaveCallback (uiaudioid_t *uiaudioid, callback_t *uicb);
+bool  uiaudioidIsRepeating (uiaudioid_t *uiaudioid);
 
 /* uiaudioidui.c */
 void  uiaudioidUIInit (uiaudioid_t *uiaudioid);

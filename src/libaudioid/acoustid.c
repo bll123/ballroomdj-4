@@ -30,7 +30,7 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
-#include "filedata.h" // temporary, remove
+#define ACOUSTID_DEBUG 1
 
 enum {
   ACOUSTID_BUFF_SZ = 16384,
@@ -114,6 +114,9 @@ static audioidxpath_t acoustidxpaths [] = {
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
+#if ACOUSTID_DEBUG
+static void dumpData (audioidacoustid_t *acoustid);
+#endif
 
 audioidacoustid_t *
 acoustidInit (void)
@@ -147,7 +150,7 @@ acoustidFree (audioidacoustid_t *acoustid)
   mdfree (acoustid);
 }
 
-void
+int
 acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     ilist_t *respdata)
 {
@@ -166,7 +169,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   fn = songGetStr (song, TAG_FILE);
   ffn = songutilFullFileName (fn);
   if (! fileopFileExists (ffn)) {
-    return;
+    return 0;
   }
 
   mstimestart (&starttm);
@@ -214,14 +217,9 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64,
       (int64_t) mstimeend (&starttm));
 
-if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
-FILE *ofh;
-ofh = fopen ("out.xml", "w");
-fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
-fprintf (ofh, "\n");
-fclose (ofh);
-}
-
+#if ACOUSTID_DEBUG
+  dumpData (acoustid);
+#endif
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
@@ -233,7 +231,7 @@ fclose (ofh);
 
   dataFree (query);
   dataFree (fpdata);
-  return;
+  return acoustid->respcount;
 }
 
 static void
@@ -245,3 +243,22 @@ acoustidWebResponseCallback (void *userdata, const char *resp, size_t len)
   acoustid->webresplen = len;
   return;
 }
+
+#if ACOUSTID_DEBUG
+
+static void
+dumpData (audioidacoustid_t *acoustid)
+{
+  FILE *ofh;
+
+  if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
+    ofh = fopen ("out-acoustid.xml", "w");
+    if (ofh != NULL) {
+      fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
+      fprintf (ofh, "\n");
+      fclose (ofh);
+    }
+  }
+}
+
+#endif

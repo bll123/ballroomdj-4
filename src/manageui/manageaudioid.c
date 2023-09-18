@@ -98,7 +98,11 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
     }
     case BDJ4_STATE_START: {
       uiLabelSetText (maudioid->statusMsg, maudioid->pleasewaitmsg);
-      maudioid->state = BDJ4_STATE_WAIT;
+      /* if the ui is repeating, don't try to set the display list, */
+      /* stay in the start state and wait for repeat to go off */
+      if (! uiaudioidIsRepeating (maudioid->uiaudioid)) {
+        maudioid->state = BDJ4_STATE_WAIT;
+      }
       break;
     }
     case BDJ4_STATE_WAIT: {

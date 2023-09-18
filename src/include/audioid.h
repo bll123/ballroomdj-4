@@ -52,18 +52,18 @@ int audioidParseAll (const char *data, size_t datalen, audioidxpath_t *xpaths, i
 
 audioidmb_t *mbInit (void);
 void mbFree (audioidmb_t *mb);
-void mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata);
+int mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata);
 
 /* acoustid.c */
 
 audioidacoustid_t * acoustidInit (void);
 void acoustidFree (audioidacoustid_t *acoustid);
-void acoustidLookup (audioidacoustid_t *acoustid, const song_t *song, ilist_t *respdata);
+int acoustidLookup (audioidacoustid_t *acoustid, const song_t *song, ilist_t *respdata);
 
 /* acrcloud.c */
 
 audioidacr_t * acrInit (void);
 void acrFree (audioidacr_t *acr);
-void acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata);
+int acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata);
 
 #endif /* INC_AUDIOID_H */

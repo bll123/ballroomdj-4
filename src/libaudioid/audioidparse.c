@@ -24,8 +24,8 @@
 #include "mdebug.h"
 #include "tagdef.h"
 
-static int audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, int respidx, ilist_t *respdata, int level);
-static int audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, int respidx, ilist_t *respdata, int level);
+static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, int respidx, ilist_t *respdata, int level);
+static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, int respidx, ilist_t *respdata, int level);
 
 void
 audioidParseInit (void)
@@ -47,7 +47,8 @@ audioidParseAll (const char *data, size_t datalen,
   xmlXPathContextPtr  xpathCtx;
   char                *tdata = NULL;
   char                *p;
-  int                 respcount;
+  int                 respcount = 0;
+  int                 respidx;
 
   /* libxml2 doesn't have any way to set the default namespace for xpath */
   /* which makes it a pain to use when a namespace is set */
@@ -65,10 +66,8 @@ audioidParseAll (const char *data, size_t datalen,
 
   doc = xmlParseMemory (tdata, datalen);
   if (doc == NULL) {
-    return false;
+    return 0;
   }
-
-  respcount = 0;
 
   xpathCtx = xmlXPathNewContext (doc);
   if (xpathCtx == NULL) {
@@ -76,15 +75,18 @@ audioidParseAll (const char *data, size_t datalen,
   }
 
   /* the xpaths list must have a tree type in the beginning */
-  audioidParse (xpathCtx, xpaths, 0, 0, respdata, 0);
+  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+  audioidParse (xpathCtx, xpaths, 0, respidx, respdata, 0);
+  respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx + 1;
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: respcount: %d\n", respcount);
 
   xmlXPathFreeContext (xpathCtx);
   xmlFreeDoc (doc);
   mdfree (tdata);
-  return true;
+  return respcount;
 }
 
-static int
+static bool
 audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
     int xpathidx, int respidx, ilist_t *respdata, int level)
 {
@@ -126,7 +128,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, (const char *) val);
     }
     audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respidx, respdata, level);
-    return true;
+    return false;
   }
 
   for (int i = 0; i < ncount; ++i)  {
@@ -202,7 +204,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   return true;
 }
 
-static int
+static bool
 audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
     int parenttagidx, int respidx, ilist_t *respdata, int level)
 {
@@ -221,11 +223,6 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
       nlistidx_t    iteridx;
       nlistidx_t    key;
       nlist_t       *dlist;
-
-      respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-      ++respidx;
-      ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
 
       if (respidx > 0) {
         logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: propagate from %d to %d", level*2, "", respidx - 1, respidx);
@@ -256,6 +253,14 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
     while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
       audioidParse (relpathCtx, xpaths, xidx, respidx, respdata, level + 1);
       ++xidx;
+    }
+
+    /* increment the response index after the parse is done */
+    if (parenttagidx == AUDIOID_TYPE_RESPIDX) {
+      respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+      ++respidx;
+      ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
     }
 
     xmlXPathFreeContext (relpathCtx);

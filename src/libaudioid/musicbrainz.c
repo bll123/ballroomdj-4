@@ -23,11 +23,14 @@
 #include "tmutil.h"
 #include "webclient.h"
 
+#define MB_DEBUG 1
+
 typedef struct audioidmb {
   webclient_t   *webclient;
   const char    *webresponse;
   size_t        webresplen;
   mstime_t      globalreqtimer;
+  int           respcount;
 } audioidmb_t;
 
 
@@ -88,6 +91,9 @@ static audioidxpath_t mbxpaths [] = {
 };
 
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
+#if MB_DEBUG
+static void dumpData (audioidmb_t *mb);
+#endif
 
 audioidmb_t *
 mbInit (void)
@@ -114,10 +120,11 @@ mbFree (audioidmb_t *mb)
   mb->webclient = NULL;
   mb->webresponse = NULL;
   mb->webresplen = 0;
+  mb->respcount = 0;
   mdfree (mb);
 }
 
-void
+int
 mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 {
   char          uri [MAXPATHLEN];
@@ -149,15 +156,19 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64,
       (int64_t) mstimeend (&starttm));
 
+#if MB_DEBUG
+  dumpData (mb);
+#endif
+
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
-    audioidParseAll (mb->webresponse, mb->webresplen,
+    mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
         mbxpaths, respdata);
     logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64,
         (int64_t) mstimeend (&starttm));
   }
 
-  return;
+  return mb->respcount;
 }
 
 /* internal routines */
@@ -172,3 +183,22 @@ mbWebResponseCallback (void *userdata, const char *resp, size_t len)
   return;
 }
 
+
+#if MB_DEBUG
+
+static void
+dumpData (audioidmb_t *mb)
+{
+  FILE *ofh;
+
+  if (mb->webresponse != NULL && mb->webresplen > 0) {
+    ofh = fopen ("out-mb.xml", "w");
+    if (ofh != NULL) {
+      fwrite (mb->webresponse, 1, mb->webresplen, ofh);
+      fprintf (ofh, "\n");
+      fclose (ofh);
+    }
+  }
+}
+
+#endif

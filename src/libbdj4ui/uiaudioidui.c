@@ -667,6 +667,20 @@ uiaudioidUIMainLoop (uiaudioid_t *uiaudioid)
   return;
 }
 
+bool
+uiaudioidIsRepeating (uiaudioid_t *uiaudioid)
+{
+  aid_internal_t  *audioidint;
+
+  if (uiaudioid == NULL) {
+    return false;
+  }
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  return audioidint->repeating;
+}
+
 /* internal routines */
 
 static void

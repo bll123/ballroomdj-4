@@ -64,7 +64,7 @@ acrFree (audioidacr_t *acr)
   mdfree (acr);
 }
 
-void
+int
 acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 {
   char            uri [MAXPATHLEN];
@@ -133,7 +133,7 @@ fprintf (stdout, "ts: %s\n", ts);
   gcry_mac_close (gch);
   dataFree (b64sig);
 
-  return;
+  return 0;
 }
 
 static void
