@@ -20,6 +20,7 @@
 #include "slist.h"
 #include "song.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 enum {
   AUDIOID_TYPE_ACOUSTID,
@@ -87,7 +88,9 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   const char  *mbrecid;
   ilistidx_t  iteridx;
   ilistidx_t  key;
+  mstime_t    starttm;
 
+  mstimestart (&starttm);
   if (audioid->mb == NULL) {
     audioid->mb = mbInit ();
     audioid->acoustid = acoustidInit ();
@@ -116,6 +119,8 @@ fprintf (stderr, "process mb\n");
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       audioid->state = BDJ4_STATE_PROCESS;
       audioid->mbmatch = true;
+      logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
+          audioid->state, (int64_t) mstimeend (&starttm));
       return false;
     } else {
       audioid->state = BDJ4_STATE_WAIT;
@@ -133,6 +138,8 @@ fprintf (stderr, "process acoustid\n");
       audioid->statecount = 0;
       audioid->state = BDJ4_STATE_PROCESS;
     }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
+        audioid->state, (int64_t) mstimeend (&starttm));
     return false;
   }
 
@@ -199,6 +206,8 @@ while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
     audioid->state = BDJ4_STATE_FINISH;
   }
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
+      audioid->state, (int64_t) mstimeend (&starttm));
   return audioid->state == BDJ4_STATE_FINISH ? true : false;
 }
 

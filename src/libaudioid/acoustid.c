@@ -161,6 +161,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   char          *ffn;
   const char    *targv [10];
   int           targc = 0;
+  mstime_t      starttm;
 
   fn = songGetStr (song, TAG_FILE);
   ffn = songutilFullFileName (fn);
@@ -168,11 +169,14 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     return;
   }
 
+  mstimestart (&starttm);
   /* acoustid prefers at most three calls per second */
   while (! mstimeCheck (&acoustid->globalreqtimer)) {
     mssleep (10);
   }
   mstimeset (&acoustid->globalreqtimer, 334);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: wait time: %" PRId64,
+      (int64_t) mstimeend (&starttm));
 
   query = mdmalloc (ACOUSTID_BUFF_SZ);
 
@@ -185,8 +189,11 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   targv [targc++] = ffn;
   targv [targc++] = "-plain";
   targv [targc++] = NULL;
+  mstimestart (&starttm);
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_NOSTDERR,
       fpdata, ACOUSTID_BUFF_SZ, &retsz);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fpcalc: %" PRId64,
+      (int64_t) mstimeend (&starttm));
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
   snprintf (query, ACOUSTID_BUFF_SZ,
@@ -201,7 +208,11 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       );
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: acoustid: query: %s", query);
 
+
+  mstimestart (&starttm);
   webclientPostCompressed (acoustid->webclient, uri, query);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64,
+      (int64_t) mstimeend (&starttm));
 
 if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
 FILE *ofh;
@@ -220,8 +231,11 @@ acoustid->webresplen = rlen;
 }
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
+    mstimestart (&starttm);
     acoustid->respcount = audioidParseAll (acoustid->webresponse,
         acoustid->webresplen, acoustidxpaths, respdata);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64,
+        (int64_t) mstimeend (&starttm));
   }
 
   dataFree (query);

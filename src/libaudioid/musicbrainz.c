@@ -61,7 +61,6 @@ static audioidxpath_t mbmediumxp [] = {
   { AUDIOID_XPATH_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL },
   { AUDIOID_XPATH_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL },
   { AUDIOID_XPATH_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/track-list/track/artist-credit/name-credit", "joinphrase", mbartistxp },
   { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
 };
 
@@ -123,12 +122,16 @@ void
 mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 {
   char          uri [MAXPATHLEN];
+  mstime_t      starttm;
 
   /* musicbrainz prefers only one call per second */
+  mstimestart (&starttm);
   while (! mstimeCheck (&mb->globalreqtimer)) {
     mssleep (10);
   }
   mstimeset (&mb->globalreqtimer, 1000);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64,
+      (int64_t) mstimeend (&starttm));
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI), sizeof (uri));
   strlcat (uri, "/recording/", sizeof (uri));
@@ -142,11 +145,17 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
+  mstimestart (&starttm);
   webclientGet (mb->webclient, uri);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64,
+      (int64_t) mstimeend (&starttm));
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
+    mstimestart (&starttm);
     mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
         mbxpaths, respdata);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64,
+        (int64_t) mstimeend (&starttm));
   }
 
   return;
