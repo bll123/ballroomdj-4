@@ -391,9 +391,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiTreeViewSetSelectChangedCallback (audioidint->alistTree,
         audioidint->callbacks [UIAUID_CB_ROW_SELECT]);
 
-  uitreedispAddDisplayColumns (audioidint->alistTree, audioidint->listsellist,
-      UIAUID_COL_MAX, UIAUID_COL_FONT, UIAUID_COL_ELLIPSIZE,
-      UIAUID_COL_COLOR, UIAUID_COL_COLOR_SET);
+  uitreedispAddDisplayColumns (audioidint->alistTree,
+      audioidint->listsellist, UIAUID_COL_MAX, UIAUID_COL_FONT,
+      UIAUID_COL_ELLIPSIZE, UIAUID_COL_COLOR, UIAUID_COL_COLOR_SET);
 
   /* current/selected box */
 

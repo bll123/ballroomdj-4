@@ -54,7 +54,7 @@ static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
-static bool uiuitilsSpinboxTextKeyCallback (void *udata);
+static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 
@@ -77,7 +77,7 @@ uiSpinboxInit (void)
   uispinbox->idxlist = NULL;
   uispinbox->sbtype = SB_TEXT;
   uispinbox->uikey = uiKeyAlloc ();
-  uispinbox->presscb = callbackInit (&uiuitilsSpinboxTextKeyCallback,
+  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback,
       uispinbox, NULL);
   return uispinbox;
 }
@@ -115,6 +115,7 @@ uiSpinboxTextCreate (uispinbox_t *uispinbox, void *udata)
   uispinbox->spinbox = uiwcontAlloc ();
   uispinbox->spinbox->wtype = WCONT_T_SPINBOX_TEXT;
   uispinbox->spinbox->widget = widget;
+  uiKeySetKeyCallback (uispinbox->uikey, uispinbox->spinbox, uispinbox->presscb);
 
   uiWidgetSetClass (uispinbox->spinbox, SPINBOX_READONLY_CLASS);
 }
@@ -629,7 +630,7 @@ uiSpinboxTextGetDisp (slist_t *list, int idx)
 }
 
 static bool
-uiuitilsSpinboxTextKeyCallback (void *udata)
+uiSpinboxTextKeyCallback (void *udata)
 {
   uispinbox_t   *uispinbox = udata;
   bool          rc;

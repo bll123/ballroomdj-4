@@ -12,9 +12,11 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "bdjvarsdf.h"
 #include "callback.h"
 #include "mdebug.h"
 #include "slist.h"
+#include "songfav.h"
 #include "tagdef.h"
 #include "uiclass.h"
 #include "uitreedisp.h"
@@ -26,8 +28,9 @@
 /* to create the display listings */
 
 void
-uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
-    int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol)
+uitreedispAddDisplayColumns (uitree_t *uitree,
+    slist_t *sellist, int col, int fontcol, int ellipsizeColumn,
+    int colorcol, int colorsetcol)
 {
   slistidx_t  seliteridx;
   int         tagidx;
@@ -74,10 +77,14 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
     }
 
     if (tagidx == TAG_FAVORITE) {
+      songfav_t   *songfav;
+
       /* use the normal sized UI font here */
+      songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
       uiTreeViewAppendColumn (uitree, col,
           TREE_WIDGET_TEXT, TREE_ALIGN_CENTER,
-          TREE_COL_DISP_GROW, "\xE2\x98\x86",
+          TREE_COL_DISP_GROW,
+            songFavoriteGetStr (songfav, SONG_FAVORITE_NONE, SONGFAV_DISPLAY),
           TREE_COL_TYPE_MARKUP, col,
           TREE_COL_TYPE_END);
     } else {
