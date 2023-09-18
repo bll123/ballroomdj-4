@@ -28,7 +28,6 @@ typedef struct audioidmb {
   const char    *webresponse;
   size_t        webresplen;
   mstime_t      globalreqtimer;
-  int           respcount;
 } audioidmb_t;
 
 
@@ -152,7 +151,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
-    mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
+    audioidParseAll (mb->webresponse, mb->webresplen,
         mbxpaths, respdata);
     logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64,
         (int64_t) mstimeend (&starttm));

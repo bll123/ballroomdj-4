@@ -114,16 +114,17 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->state == BDJ4_STATE_START) {
     mbrecid = songGetStr (song, TAG_RECORDING_ID);
 // ### temporary for testing acoustid.
-    if (mbrecid != NULL) {
+    audioid->state = BDJ4_STATE_WAIT;
+    if (0 && mbrecid != NULL) {
 fprintf (stderr, "process mb\n");
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
-      audioid->state = BDJ4_STATE_PROCESS;
-      audioid->mbmatch = true;
+      if (ilistGetCount (audioid->resp) > 0) {
+        audioid->state = BDJ4_STATE_PROCESS;
+        audioid->mbmatch = true;
+      }
       logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
           audioid->state, (int64_t) mstimeend (&starttm));
       return false;
-    } else {
-      audioid->state = BDJ4_STATE_WAIT;
     }
   }
 
@@ -177,7 +178,11 @@ while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
       long        dur;
       long        tdur = -1;
 
-      score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
+      if (audioid->mbmatch) {
+        score = 100.0;
+      } else {
+        score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
+      }
       if (score < AUDIOID_MIN_SCORE) {
         /* do not add this to the response index list */
         continue;

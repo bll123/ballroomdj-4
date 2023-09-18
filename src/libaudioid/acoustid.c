@@ -56,14 +56,14 @@ typedef struct audioidacoustid {
  */
 
 static audioidxpath_t acoustidalbartistxp [] = {
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/artists/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL },
   { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
 static audioidxpath_t acoustidartistxp [] = {
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/artists/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/name", NULL, NULL },
   { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
@@ -97,7 +97,7 @@ static audioidxpath_t acoustidreleasexp [] = {
 /* relative to /response/recordings/recording */
 static audioidxpath_t acoustidrecordingxp [] = {
   { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/releases/release", NULL, acoustidreleasexp },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_RESPONSE, "/releases/release", NULL, acoustidreleasexp },
   { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
 };
 

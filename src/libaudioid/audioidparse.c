@@ -119,6 +119,7 @@ fprintf (stderr, "%*s node-count: %d\n", level*2, "", nodes->nodeNr);
 fprintf (stderr, "%*s tree: xidx: %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: xidx: %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
     if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_RESPONSE) {
+fprintf (stderr, "%*s response-count: %d\n", level*2, "", ncount);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s response-count: %d", level*2, "", ncount);
     }
     if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_JOINPHRASE &&
@@ -138,6 +139,7 @@ fprintf (stderr, "%*s store joinphrase %s\n", level*2, "", (const char *) val);
     const char  *oval = NULL;
 
     if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
+fprintf (stderr, "   **** %d not element node\n", i);
       continue;
     }
 
@@ -171,14 +173,18 @@ fprintf (stderr, "curr joinphrase %s\n", joinphrase);
 
     strlcat (nval, (const char *) val, nlen);
 
+    if (xpaths [xpathidx].tagidx < TAG_KEY_MAX) {
 fprintf (stderr, "%*s set %d %s %s\n", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+    } else {
+fprintf (stderr, "%*s set %d %s\n", level*2, "", respidx, nval);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s", level*2, "", respidx, nval);
+    }
     ilistSetStr (respdata, respidx, xpaths [xpathidx].tagidx, nval);
     mdfree (nval);
     nval = NULL;
   }
 
-  ilistSetDouble (respdata, respidx, TAG_AUDIOID_SCORE, 100.0);
   xmlXPathFreeObject (xpathObj);
   return true;
 }
@@ -209,21 +215,26 @@ fprintf (stderr, "%*s tree: node: %d\n", level*2, "", i);
       nlistidx_t    key;
       nlist_t       *dlist;
 
-      dlist = ilistGetDatalist (respdata, respidx);
-      respidx = i;
+      if (respidx != i) {
+fprintf (stderr, "%*s tree: propagate from %d to %d\n", level*2, "", respidx, i);
+        dlist = ilistGetDatalist (respdata, respidx);
+        respidx = i;
 
-      nlistStartIterator (dlist, &iteridx);
-      while ((key = nlistIterateKey (dlist, &iteridx)) >= 0) {
-        if (key == TAG_AUDIOID_SCORE) {
-          continue;
+        nlistStartIterator (dlist, &iteridx);
+        while ((key = nlistIterateKey (dlist, &iteridx)) >= 0) {
+          if (key == TAG_AUDIOID_SCORE) {
+            ilistSetDouble (respdata, respidx, key, nlistGetDouble (dlist, key));
+            continue;
+          }
+
+          /* propagate all data */
+          ilistSetStr (respdata, respidx, key, nlistGetStr (dlist, key));
         }
-
-        /* propagate all data */
-        ilistSetStr (respdata, respidx, key, nlistGetStr (dlist, key));
       }
+      respidx = i;
+fprintf (stderr, "%*s tree: set respidx: %d\n", level*2, "", respidx);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
     }
-fprintf (stderr, "%*s tree: respidx: %d\n", level*2, "", respidx);
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: respidx: %d", level*2, "", respidx);
 
     xidx = 0;
     while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
