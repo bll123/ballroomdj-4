@@ -189,6 +189,7 @@ sudo port -N install \
     opusfile \
     flac \
     chromaprint \
+    libgcrypt \
     ffmpeg +nonfree -x11
 sudo -v
 sudo port -N uninstall \
