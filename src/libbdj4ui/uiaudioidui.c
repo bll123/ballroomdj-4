@@ -56,6 +56,7 @@ typedef struct {
   int             tagidx;
   uiwcont_t       *currrb;
   uiwcont_t       *selrb;
+  uichgind_t      *chgind;
   callback_t      *callback;
   bool            selection : 1;
 } uiaudioiditem_t;
@@ -108,6 +109,7 @@ typedef struct aid_internal {
   uitree_t            *alistTree;
   song_t              *song;
   uiaudioiditem_t     *items;
+  nlist_t             *currlist;
   int                 *typelist;
   slist_t             *listsellist;
   slist_t             *sellist;
@@ -149,6 +151,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint = mdmalloc (sizeof (aid_internal_t));
   audioidint->itemcount = 0;
   audioidint->items = NULL;
+  audioidint->currlist = nlistAlloc ("curr-list", LIST_ORDERED, NULL);
   audioidint->changed = 0;
   audioidint->uikey = NULL;
   audioidint->dbidx = -1;
@@ -197,10 +200,13 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   if (audioidint != NULL) {
     uiWidgetClearPersistent (audioidint->wcont [UIAUID_W_MUSICBRAINZ]);
 
+    nlistFree (audioidint->currlist);
+
     for (int count = 0; count < audioidint->itemcount; ++count) {
       callbackFree (audioidint->items [count].callback);
       uiwcontFree (audioidint->items [count].currrb);
       uiwcontFree (audioidint->items [count].selrb);
+      uichgindFree (audioidint->items [count].chgind);
     }
     dataFree (audioidint->typelist);
 
@@ -523,8 +529,14 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
       dataFree (tval);
       tval = mdstrdup (tmp);
     }
+    if (tagidx == TAG_DURATION) {
+      dataFree (tval);
+      tval = songDisplayString (song, tagidx, SONG_UNADJUSTED_DURATION);
+    }
+    nlistSetStr (audioidint->currlist, tagidx, tval);
     uiToggleButtonSetText (audioidint->items [count].currrb, tval);
     uiToggleButtonSetText (audioidint->items [count].selrb, "");
+    uichgindMarkNormal (audioidint->items [count].chgind);
     dataFree (tval);
     tval = NULL;
   }
@@ -746,6 +758,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
 {
   uiwcont_t       *uiwidgetp;
   uiwcont_t       *rb;
+  uichgind_t      *uichgind;
   aid_internal_t  *audioidint;
 
   logProcBegin (LOG_PROC, "uiaudioidAddItem");
@@ -768,6 +781,10 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUID_SZGRP_COL_B], uiwidgetp);
   audioidint->items [audioidint->itemcount].selrb = uiwidgetp;
+
+  uichgind = uiCreateChangeIndicator (hbox);
+  uichgindMarkNormal (uichgind);
+  audioidint->items [audioidint->itemcount].chgind = uichgind;
 
   logProcEnd (LOG_PROC, "uiaudioidAddItem", "");
 }
@@ -914,7 +931,9 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
 
     if (dlist == NULL) {
       uiToggleButtonSetText (audioidint->items [count].selrb, "");
+      uichgindMarkNormal (audioidint->items [count].chgind);
     } else {
+      const char  *cval;
       const char  *tval;
       char        tmp [40];
 
@@ -931,6 +950,13 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
       }
 
       uiToggleButtonSetText (audioidint->items [count].selrb, tval);
+      uichgindMarkNormal (audioidint->items [count].chgind);
+      cval = nlistGetStr (audioidint->currlist, tagidx);
+      if (cval != NULL && tval != NULL &&
+          tagidx != TAG_DURATION &&
+          strcmp (cval, tval) != 0) {
+        uichgindMarkChanged (audioidint->items [count].chgind);
+      }
     }
   }
 }

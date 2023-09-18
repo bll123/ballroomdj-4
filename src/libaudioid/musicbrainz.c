@@ -132,7 +132,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
     mssleep (10);
   }
   mstimeset (&mb->globalreqtimer, 1000);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI), sizeof (uri));
@@ -149,7 +149,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 
   mstimestart (&starttm);
   webclientGet (mb->webclient, uri);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
@@ -160,7 +160,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
     mstimestart (&starttm);
     mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
         mbxpaths, respdata);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64,
+    logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }
 

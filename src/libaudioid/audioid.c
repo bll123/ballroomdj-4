@@ -157,7 +157,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid->statecount = AUDIOID_TYPE_ACOUSTID;
       audioid->state = BDJ4_STATE_PROCESS;
     }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64 "ms",
         audioid->state, (int64_t) mstimeend (&starttm));
     return false;
   }
@@ -214,7 +214,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     audioid->state = BDJ4_STATE_FINISH;
   }
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64 "ms",
       audioid->state, (int64_t) mstimeend (&starttm));
   return audioid->state == BDJ4_STATE_FINISH ? true : false;
 }
@@ -288,7 +288,7 @@ audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx,
 
   tstr = ilistGetStr (audioid->resp, key, tagidx);
   sstr = songGetStr (song, tagidx);
-  if (sstr != NULL) {
+  if (sstr != NULL && tstr != NULL && *sstr && *tstr) {
     if (tstr == NULL || strcmp (tstr, sstr) != 0) {
       score -= AUDIOID_SCORE_ADJUST;
     }

@@ -24,8 +24,8 @@
 #include "mdebug.h"
 #include "tagdef.h"
 
-static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, int respidx, ilist_t *respdata, int level);
-static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, int respidx, ilist_t *respdata, int level);
+static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, ilist_t *respdata, int level);
+static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, ilist_t *respdata, int level);
 
 void
 audioidParseInit (void)
@@ -74,9 +74,14 @@ audioidParseAll (const char *data, size_t datalen,
     xmlFreeDoc (doc);
   }
 
-  /* the xpaths list must have a tree type in the beginning */
+  /* beginning response index */
   respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-  audioidParse (xpathCtx, xpaths, 0, respidx, respdata, 0);
+
+  ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, false);
+
+  /* the xpaths list must have a tree type in the beginning */
+  audioidParse (xpathCtx, xpaths, 0, respdata, 0);
+
   respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx + 1;
   logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: respcount: %d\n", respcount);
 
@@ -88,7 +93,7 @@ audioidParseAll (const char *data, size_t datalen,
 
 static bool
 audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
-    int xpathidx, int respidx, ilist_t *respdata, int level)
+    int xpathidx, ilist_t *respdata, int level)
 {
   xmlXPathObjectPtr   xpathObj;
   xmlNodeSetPtr       nodes;
@@ -98,8 +103,10 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   int                 ncount;
   char                *nval = NULL;
   size_t              nlen = 0;
+  int                 respidx;
 
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
+  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s xidx: %d %s respidx %d", level*2, "", xpathidx, xpaths [xpathidx].xpath, respidx);
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].xpath, xpathCtx);
   if (xpathObj == NULL)  {
@@ -127,7 +134,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s store joinphrase %s", level*2, "", (const char *) val);
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, (const char *) val);
     }
-    audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respidx, respdata, level);
+    audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respdata, level);
     return false;
   }
 
@@ -149,52 +156,66 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       continue;
     }
 
+    ttagidx = xpaths [xpathidx].tagidx;
+
     len = strlen ((const char *) val);
     joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
     nlen = len + 1;
+
     if (joinphrase != NULL) {
-      oval = ilistGetStr (respdata, respidx, xpaths [xpathidx].tagidx);
+      nlen += strlen (joinphrase);
+    }
+
+    if ((ttagidx == TAG_ARTIST || ttagidx == TAG_ALBUMARTIST) &&
+        ilistGetNum (respdata, 0, AUDIOID_TYPE_JOINED) == true) {
+      oval = ilistGetStr (respdata, respidx, ttagidx);
       if (oval != NULL) {
-        nlen += strlen (oval) + strlen (joinphrase);
+        nlen += strlen (oval);
       }
     }
+
     nval = mdmalloc (nlen);
     *nval = '\0';
 
-    if (joinphrase != NULL && oval != NULL) {
+    if (oval != NULL &&
+        ilistGetNum (respdata, 0, AUDIOID_TYPE_JOINED) == true) {
       strlcat (nval, oval, nlen);
-      strlcat (nval, joinphrase, nlen);
-      ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
+      ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, false);
     }
 
     strlcat (nval, (const char *) val, nlen);
 
-    ttagidx = xpaths [xpathidx].tagidx;
-    if (ttagidx == AUDIOID_TYPE_MONTH) {
-      char    tmp [40];
+    if (joinphrase != NULL) {
+      strlcat (nval, joinphrase, nlen);
+      ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
+      ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, true);
+    }
 
+    if (ttagidx == AUDIOID_TYPE_MONTH) {
       oval = ilistGetStr (respdata, respidx, TAG_DATE);
       if (oval != NULL) {
-        snprintf (tmp, sizeof (tmp), "%s-%s", oval, (const char *) val);
-        mdfree (nval);
+        char    tmp [40];
+        int     tmonth;
+
+        tmonth = atoi ((const char *) val);
+        snprintf (tmp, sizeof (tmp), "%s-%02d", oval, tmonth);
+        dataFree (nval);
         nval = mdstrdup (tmp);
         ttagidx = TAG_DATE;
       }
     }
 
     if (ttagidx < TAG_KEY_MAX) {
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [ttagidx].tag, nval);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s %s", level*2, "", respidx, ttagidx, tagdefs [ttagidx].tag, nval);
     } else {
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s", level*2, "", respidx, nval);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s", level*2, "", respidx, ttagidx, nval);
     }
     if (ttagidx == TAG_AUDIOID_SCORE) {
       ilistSetDouble (respdata, respidx, ttagidx, atof (nval) * 100.0);
+    } else if (ttagidx == AUDIOID_TYPE_JOINPHRASE) {
+      ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, nval);
     } else {
-      if (ttagidx == AUDIOID_TYPE_JOINPHRASE) {
-        ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, nval);
-      } else {
-        ilistSetStr (respdata, respidx, ttagidx, nval);
-      }
+      ilistSetStr (respdata, respidx, ttagidx, nval);
     }
     mdfree (nval);
     nval = NULL;
@@ -206,9 +227,12 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
 
 static bool
 audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
-    int parenttagidx, int respidx, ilist_t *respdata, int level)
+    int parenttagidx, ilist_t *respdata, int level)
 {
   int   xidx = 0;
+  int   respidx;
+
+  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
 
   for (int i = 0; i < nodes->nodeNr; ++i)  {
     xmlXPathContextPtr  relpathCtx;
@@ -251,7 +275,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
 
     xidx = 0;
     while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
-      audioidParse (relpathCtx, xpaths, xidx, respidx, respdata, level + 1);
+      audioidParse (relpathCtx, xpaths, xidx, respdata, level + 1);
       ++xidx;
     }
 
@@ -265,6 +289,8 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
 
     xmlXPathFreeContext (relpathCtx);
   }
+
+  ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, false);
 
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", xpaths [xidx].xpath);
   return true;

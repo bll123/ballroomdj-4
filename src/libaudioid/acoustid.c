@@ -174,7 +174,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     mssleep (10);
   }
   mstimeset (&acoustid->globalreqtimer, 334);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: wait time: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   query = mdmalloc (ACOUSTID_BUFF_SZ);
@@ -191,10 +191,11 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   mstimestart (&starttm);
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_NOSTDERR,
       fpdata, ACOUSTID_BUFF_SZ, &retsz);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fpcalc: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fpcalc: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
+  /* if meta-compress is on the track artists are not generated */
   snprintf (query, ACOUSTID_BUFF_SZ,
       "client=%s"
       "&format=xml"
@@ -205,12 +206,10 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       ddur,
       (int) retsz, fpdata
       );
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: acoustid: query: %s", query);
-
 
   mstimestart (&starttm);
   webclientPostCompressed (acoustid->webclient, uri, query);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64,
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
@@ -221,7 +220,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     mstimestart (&starttm);
     acoustid->respcount = audioidParseAll (acoustid->webresponse,
         acoustid->webresplen, acoustidxpaths, respdata);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64,
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }
 
