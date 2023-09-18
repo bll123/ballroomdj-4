@@ -125,7 +125,7 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
 {
   struct curl_slist *list = NULL;
   size_t            len;
-  size_t            olen;
+  long              olen;
   char              *obuff;
   z_stream          *zs;
 
