@@ -2,10 +2,8 @@
 
 case ${systype} in
   Linux)
-    exit 0
     ;;
   Darwin)
-    exit 0
     ;;
   MINGW64*)
     ;;
@@ -14,12 +12,12 @@ esac
 # fpcalc is pre-built
 # just install it.
 
-if [[ $pkgname == "" || $pkgname = "fpcalc" ]]; then
+if [[ $pkgname == "" || $pkgname = "acrcloud" ]]; then
   cd $cwd
   if [ $? -eq 0 ]; then
     echo ""
     echo "## install ${pkgname}"
-    cp -f fpcalc-${tag}${archtag}${esuffix} $INSTLOC/bin/fpcalc${esuffix}
+    cp -f acrcloud-${tag}${archtag}${esuffix} $INSTLOC/bin/acrcloud${esuffix}
   fi
 fi
 

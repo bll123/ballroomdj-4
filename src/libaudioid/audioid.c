@@ -40,6 +40,7 @@ enum {
 typedef struct audioid {
   audioidmb_t       *mb;
   audioidacoustid_t *acoustid;
+  audioidacr_t      *acr;
   nlist_t           *respidx;
   nlistidx_t        respiter;
   ilist_t           *resp;
@@ -61,6 +62,7 @@ audioidInit (void)
   audioid = mdmalloc (sizeof (audioid_t));
   audioid->mb = NULL;
   audioid->acoustid = NULL;
+  audioid->acr = NULL;
   audioid->respidx = NULL;
   audioid->resp = NULL;
   audioid->state = BDJ4_STATE_OFF;
@@ -85,6 +87,7 @@ audioidFree (audioid_t *audioid)
   ilistFree (audioid->resp);
   mbFree (audioid->mb);
   acoustidFree (audioid->acoustid);
+  acrFree (audioid->acr);
   mdfree (audioid);
 }
 
@@ -100,6 +103,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->mb == NULL) {
     audioid->mb = mbInit ();
     audioid->acoustid = acoustidInit ();
+    audioid->acr = acrInit ();
   }
 
   if (audioid == NULL || song == NULL) {
@@ -109,7 +113,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->state == BDJ4_STATE_OFF ||
       audioid->state == BDJ4_STATE_FINISH) {
     audioid->state = BDJ4_STATE_START;
-    audioid->statecount = AUDIOID_TYPE_ACOUSTID;
+//    audioid->statecount = AUDIOID_TYPE_ACOUSTID;
+    audioid->statecount = AUDIOID_TYPE_ACRCLOUD;
     audioid->mbmatch = false;
   }
 
@@ -150,6 +155,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       }
       ++audioid->statecount;
     } else if (audioid->statecount == AUDIOID_TYPE_ACRCLOUD) {
+      audioid->respcount [AUDIOID_TYPE_ACRCLOUD] =
+          acrLookup (audioid->acr, song, audioid->resp);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: matches: %d",
           audioid->respcount [AUDIOID_TYPE_ACRCLOUD]);
       ++audioid->statecount;

@@ -95,6 +95,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
+  [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
   [SV_PATH_FPCALC] = { "PATH_FPCALC" },
   [SV_PATH_MUTAGEN] = { "PATH_MUTAGEN" },
@@ -737,6 +738,7 @@ sysvarsCheckPaths (const char *otherpaths)
 
   strlcpy (sysvars [SV_PATH_FFMPEG], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_FPCALC], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_ACRCLOUD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_MUTAGEN], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
@@ -773,6 +775,10 @@ sysvarsCheckPaths (const char *otherpaths)
 
     if (*sysvars [SV_PATH_FPCALC] == '\0') {
       checkForFile (tbuff, SV_PATH_FPCALC, "fpcalc", NULL);
+    }
+
+    if (*sysvars [SV_PATH_ACRCLOUD] == '\0') {
+      checkForFile (tbuff, SV_PATH_ACRCLOUD, "acrcloud", NULL);
     }
 
     if (*sysvars [SV_PATH_MUTAGEN] == '\0') {

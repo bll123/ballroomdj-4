@@ -411,26 +411,35 @@ main (int argc, char * argv[])
 #endif
   osSetEnv ("PYTHONIOENCODING", "utf-8");       // for ati-mutagen
 
-  if (isMacOS ()) {
+  if (isMacOS () || isLinux ()) {
+    char      tbuff [MAXPATHLEN];
+    char      pbuff [MAXPATHLEN];
     char      *path = NULL;
     char      *npath = NULL;
     size_t    sz = 4096;
-
 
     npath = mdmalloc (sz);
 
     path = getenv ("PATH");
     *npath = '\0';
-    strlcat (npath, "/opt/local/bin:", sz);
+    if (isMacOS ()) {
+      strlcat (npath, "/opt/local/bin:", sz);
+    }
     strlcat (npath, path, sz);
+    snprintf (pbuff, sizeof (pbuff), "%s/../plocal/bin",
+        sysvarsGetStr (SV_BDJ4_DIR_EXEC));
+    pathRealPath (tbuff, pbuff, sizeof (tbuff));
+    strlcat (npath, ":", sz);
+    strlcat (npath, tbuff, sz);
     osSetEnv ("PATH", npath);
+    mdfree (npath);
+  }
 
+  if (isMacOS ()) {
     osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
         "/Applications/VLC.app/Contents/MacOS/lib/");
     osSetEnv ("VLC_PLUGIN_PATH",
         "/Applications/VLC.app/Contents/MacOS/plugins");
-    mdfree (npath);
-
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 

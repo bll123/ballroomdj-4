@@ -19,14 +19,15 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
-#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
+#include "osprocess.h"
+#include "pathbld.h"
 #include "song.h"
+#include "songutil.h"
 #include "sysvars.h"
+#include "tmutil.h"
 #include "webclient.h"
-
-static void acrWebResponseCallback (void *userdata, const char *resp, size_t len);
 
 typedef struct audioidacr {
   const char    *key;
@@ -36,6 +37,9 @@ typedef struct audioidacr {
   size_t        secretlen;
   size_t        webresplen;
 } audioidacr_t;
+
+static void acrWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void dumpData (audioidacr_t *acr);
 
 audioidacr_t *
 acrInit (void)
@@ -74,47 +78,60 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   time_t          tm;
   char            *b64sig;
   gcry_mac_hd_t   gch;
-  long            fsize;
-  char            tmp [40];
+  size_t          fpsize;
+  char            fpszstr [40];
   char            ts [40];
   const char      *query [40];
   int             qc = 0;
-  char            *fpfn = NULL;
-
-#if BDJ4_MEM_DEBUG
-  mdebugInit ("acrt");
-#endif
+  const char      *targv [15];
+  int             targc = 0;
+  const char      *fn;
+  char            *ffn;
+  char            fpfn [MAXPATHLEN];
+  mstime_t        starttm;
 
   tm = time (NULL);
 
-/*
-../packages/acrcloud-linux \
-  -i $HOME/../music/m/01.Ahe_Ahe_Orquesta_La_Palabra.mp3  \
-  -cli -o out.txt
-*/
+  fn = songGetStr (song, TAG_FILE);
+  ffn = songutilFullFileName (fn);
+  if (! fileopFileExists (ffn)) {
+    return 0;
+  }
 
-  snprintf (uri, sizeof (uri), "%s", bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST));
+  pathbldMakePath (fpfn, sizeof (fpfn), "acrcloud-fp", BDJ4_CONFIG_EXT,
+      PATHBLD_MP_DREL_TMP);
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_ACRCLOUD);
+  targv [targc++] = "-i";
+  targv [targc++] = ffn;
+  targv [targc++] = "-cli";
+  targv [targc++] = "-o";
+  targv [targc++] = fpfn;
+  targv [targc++] = NULL;
+  mstimestart (&starttm);
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: %" PRId64 "ms",
+      (int64_t) mstimeend (&starttm));
+  dataFree (ffn);
+
+  snprintf (uri, sizeof (uri), "https://%s/v1/identify",
+      bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST));
 
   /* no newline at the end */
   snprintf (sig, sizeof (sig), "POST\n/v1/identify\n%s\nfingerprint\n1\n%ld",
       acr->key, tm);
-fprintf (stdout, "sig: %s\n", sig);
   gcry_mac_open (&gch, GCRY_MAC_HMAC_SHA1, 0, NULL);
   gcry_mac_setkey (gch, acr->secret, acr->secretlen);
   gcry_mac_write (gch, sig, strlen (sig));
   gcry_mac_read (gch, digest, &rdlen);
-fprintf (stdout, "rdlen: %ld\n", rdlen);
   b64sig = g_base64_encode (digest, rdlen);
-fprintf (stdout, "digest: %s\n", b64sig);
 
-  fsize = fileopSize (fpfn);
-  snprintf (tmp, sizeof (tmp), "%ld", fsize);
-fprintf (stdout, "fsize: %s\n", tmp);
+  fpsize = fileopSize (fpfn);
+  snprintf (fpszstr, sizeof (fpszstr), "%ld", (long) fpsize);
   snprintf (ts, sizeof (ts), "%ld", tm);
-fprintf (stdout, "ts: %s\n", ts);
 
   query [qc++] = "sample_bytes";
-  query [qc++] = tmp;
+  query [qc++] = fpszstr;
   query [qc++] = "access_key";
   query [qc++] = acr->key;
   query [qc++] = "data_type";
@@ -127,8 +144,14 @@ fprintf (stdout, "ts: %s\n", ts);
   query [qc++] = ts;
   query [qc++] = NULL;
 
+  mstimestart (&starttm);
   webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
-  fprintf (stdout, "resp: %s\n", acr->webresponse);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %" PRId64 "ms",
+      (int64_t) mstimeend (&starttm));
+
+  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+    dumpData (acr);
+  }
 
   gcry_mac_close (gch);
   dataFree (b64sig);
@@ -145,3 +168,19 @@ acrWebResponseCallback (void *userdata, const char *resp, size_t len)
   acr->webresplen = len;
   return;
 }
+
+static void
+dumpData (audioidacr_t *acr)
+{
+  FILE *ofh;
+
+  if (acr->webresponse != NULL && acr->webresplen > 0) {
+    ofh = fopen ("out-acr.json", "w");
+    if (ofh != NULL) {
+      fwrite (acr->webresponse, 1, acr->webresplen, ofh);
+      fprintf (ofh, "\n");
+      fclose (ofh);
+    }
+  }
+}
+

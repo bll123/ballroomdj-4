@@ -19,6 +19,7 @@ export PKG_CONFIG_PATH=$INSTLOC/lib/pkgconfig
 
 systype=$(uname -s)
 arch=$(uname -m)
+esuffix=
 case $systype in
   Linux)
     tag=linux
@@ -49,6 +50,7 @@ case $systype in
     tag=win64
     platform=windows
     archtag=
+    esuffix=.exe
     CC=gcc
     CXX=g++
     cmg="MSYS Makefiles"
