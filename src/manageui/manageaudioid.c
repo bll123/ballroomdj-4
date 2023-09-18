@@ -63,6 +63,7 @@ manageAudioIdFree (manageaudioid_t *maudioid)
     return;
   }
 
+  uiaudioidFree (maudioid->uiaudioid);
   audioidFree (maudioid->audioid);
   mdfree (maudioid);
 }
@@ -77,7 +78,7 @@ manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel)
   }
 
   maudioid->uisongsel = uisongsel;
-  uip = uiaudioidBuildUI (maudioid->uisongsel, maudioid->uiaudioid,
+  uip = uiaudioidBuildUI (maudioid->uiaudioid, maudioid->uisongsel,
       maudioid->windowp, maudioid->statusMsg);
 
   return uip;
@@ -153,4 +154,10 @@ manageAudioIdSetSaveCallback (manageaudioid_t *maudioid, callback_t *cb)
   }
 
   uiaudioidSetSaveCallback (maudioid->uiaudioid, cb);
+}
+
+void
+manageAudioIdSavePosition (manageaudioid_t *maudioid)
+{
+  uiaudioidSavePanePosition (maudioid->uiaudioid);
 }

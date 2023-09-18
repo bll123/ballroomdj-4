@@ -23,8 +23,6 @@
 #include "tmutil.h"
 #include "webclient.h"
 
-#define MB_DEBUG 1
-
 typedef struct audioidmb {
   webclient_t   *webclient;
   const char    *webresponse;
@@ -91,9 +89,7 @@ static audioidxpath_t mbxpaths [] = {
 };
 
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
-#if MB_DEBUG
 static void dumpData (audioidmb_t *mb);
-#endif
 
 audioidmb_t *
 mbInit (void)
@@ -156,9 +152,9 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64,
       (int64_t) mstimeend (&starttm));
 
-#if MB_DEBUG
-  dumpData (mb);
-#endif
+  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+    dumpData (mb);
+  }
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
@@ -184,8 +180,6 @@ mbWebResponseCallback (void *userdata, const char *resp, size_t len)
 }
 
 
-#if MB_DEBUG
-
 static void
 dumpData (audioidmb_t *mb)
 {
@@ -200,5 +194,3 @@ dumpData (audioidmb_t *mb)
     }
   }
 }
-
-#endif

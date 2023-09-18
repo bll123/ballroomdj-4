@@ -294,6 +294,7 @@ static datafilekey_t manageuidfkeys [] = {
   { "EASY_SONGLIST",    MANAGE_SBS_SONGLIST,        VALUE_NUM, convBoolean, DF_NO_WRITE },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
+  { "MNG_AU_PANE_POS",  MANAGE_AUDIOID_PANE_POSITION, VALUE_NUM, NULL, DF_NORM },
   { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, DF_NORM },
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXPIMP_POS_X", EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
@@ -552,6 +553,7 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, "");
     nlistSetStr (manage.options, MANAGE_IMP_BDJ4_DIR, "");
+    nlistSetNum (manage.options, MANAGE_AUDIOID_PANE_POSITION, -1);
   }
 
   uiUIInitialize ();
@@ -610,6 +612,8 @@ manageStoppingCallback (void *udata, programstate_t programState)
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
   managePlaylistSave (manage->managepl);
+
+  manageAudioIdSavePosition (manage->manageaudioid);
 
   uiWindowGetSize (manage->wcont [MANAGE_W_WINDOW], &x, &y);
   nlistSetNum (manage->options, MANAGE_SIZE_X, x);

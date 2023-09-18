@@ -22,8 +22,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
-#define AUDIOID_DEBUG 1
-
 enum {
   AUDIOID_TYPE_ACOUSTID,
   AUDIOID_TYPE_MUSICBRAINZ,
@@ -53,9 +51,7 @@ typedef struct audioid {
 
 static double audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
 static double audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
-#if AUDIOID_DEBUG
 static void dumpResults (audioid_t *audioid);
-#endif
 
 audioid_t *
 audioidInit (void)
@@ -166,9 +162,9 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     return false;
   }
 
-#if AUDIOID_DEBUG
-  dumpResults (audioid);
-#endif
+  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+    dumpResults (audioid);
+  }
 
   if (audioid->state == BDJ4_STATE_PROCESS) {
     nlistSetSize (audioid->respidx, ilistGetCount (audioid->resp));
@@ -301,8 +297,6 @@ audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx,
   return score;
 }
 
-#if AUDIOID_DEBUG
-
 static void
 dumpResults (audioid_t *audioid)
 {
@@ -315,10 +309,10 @@ dumpResults (audioid_t *audioid)
 
   ilistStartIterator (audioid->resp, &iteridx);
   while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
-    fprintf (stderr, "== resp key: %d\n", key);
+    logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "== resp key: %d", key);
 
     score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
-    fprintf (stderr, "   %d SCORE %.1f\n", key, score);
+    logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   %d SCORE %.1f", key, score);
 
     l = ilistGetDatalist (audioid->resp, key);
     nlistStartIterator (l, &i);
@@ -329,9 +323,8 @@ dumpResults (audioid_t *audioid)
       if (tagidx == TAG_AUDIOID_SCORE) {
         continue;
       }
-      fprintf (stderr, "   %d %d/%s %s\n", key, tagidx, tagdefs [tagidx].tag, nlistGetStr (l, tagidx));
+      logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   %d %d/%s %s", key, tagidx, tagdefs [tagidx].tag, nlistGetStr (l, tagidx));
     }
   }
 }
 
-#endif

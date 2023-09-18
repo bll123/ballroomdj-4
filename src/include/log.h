@@ -72,8 +72,9 @@ enum {
   LOG_AUDIO_ADJUST    = 0x00200000,  // 2097152
   LOG_AUDIO_TAG       = 0x00400000,  // 4194304
   LOG_AUDIO_ID        = 0x00800000,  // 8388608
+  LOG_AUDIOID_DUMP    = 0x01000000,  // 16777216
   /* insert new values here, push redir_inst down */
-  LOG_REDIR_INST      = 0x40000000,
+  LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,
 };
 

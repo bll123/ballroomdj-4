@@ -30,8 +30,6 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
-#define ACOUSTID_DEBUG 1
-
 enum {
   ACOUSTID_BUFF_SZ = 16384,
 };
@@ -114,9 +112,7 @@ static audioidxpath_t acoustidxpaths [] = {
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
-#if ACOUSTID_DEBUG
 static void dumpData (audioidacoustid_t *acoustid);
-#endif
 
 audioidacoustid_t *
 acoustidInit (void)
@@ -217,9 +213,9 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64,
       (int64_t) mstimeend (&starttm));
 
-#if ACOUSTID_DEBUG
-  dumpData (acoustid);
-#endif
+  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+    dumpData (acoustid);
+  }
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
@@ -244,8 +240,6 @@ acoustidWebResponseCallback (void *userdata, const char *resp, size_t len)
   return;
 }
 
-#if ACOUSTID_DEBUG
-
 static void
 dumpData (audioidacoustid_t *acoustid)
 {
@@ -261,4 +255,3 @@ dumpData (audioidacoustid_t *acoustid)
   }
 }
 
-#endif

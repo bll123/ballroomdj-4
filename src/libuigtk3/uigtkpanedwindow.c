@@ -65,6 +65,34 @@ uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
   gtk_paned_pack2 (GTK_PANED (panedwin->widget), box->widget, true, true);
 }
 
+int
+uiPanedWindowGetPosition (uiwcont_t *panedwin)
+{
+  if (panedwin == NULL) {
+    return -1;
+  }
+
+  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
+    return -1;
+  }
+
+  return gtk_paned_get_position (GTK_PANED (panedwin->widget));
+}
+
+void
+uiPanedWindowSetPosition (uiwcont_t *panedwin, int position)
+{
+  if (panedwin == NULL) {
+    return;
+  }
+
+  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
+    return;
+  }
+
+  gtk_paned_set_position (GTK_PANED (panedwin->widget), position);
+}
+
 /* internal routines */
 
 static uiwcont_t *

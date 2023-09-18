@@ -14,6 +14,7 @@
 
 #include "audioid.h"
 #include "bdj4intl.h"
+#include "bdj4ui.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -88,6 +89,7 @@ enum {
   UIAUID_W_AUDIOID_IMG,
   UIAUID_W_FILE_DISP,
   UIAUID_W_MUSICBRAINZ,
+  UIAUID_W_PANED_WINDOW,
   UIAUID_W_MAX,
 };
 
@@ -118,6 +120,7 @@ typedef struct aid_internal {
   int                 currrow;
   int                 setrow;
   int                 changed;
+  int                 paneposition;
   bool                selchgbypass : 1;
   bool                repeating : 1;
 } aid_internal_t;
@@ -158,6 +161,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->repeating = false;
   audioidint->listsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
   audioidint->sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
+  audioidint->paneposition = nlistGetNum (uiaudioid->options, MANAGE_AUDIOID_PANE_POSITION);
 
   for (int i = 0; i < UIAUID_BUTTON_MAX; ++i) {
     audioidint->buttons [i] = NULL;
@@ -181,6 +185,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
 {
   aid_internal_t *audioidint;
 
+
   logProcBegin (LOG_PROC, "uiaudioidUIFree");
   if (uiaudioid == NULL) {
     logProcEnd (LOG_PROC, "uiaudioidUIFree", "null");
@@ -188,6 +193,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   }
 
   audioidint = uiaudioid->audioidInternalData;
+
   if (audioidint != NULL) {
     uiWidgetClearPersistent (audioidint->wcont [UIAUID_W_MUSICBRAINZ]);
 
@@ -225,8 +231,22 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   logProcEnd (LOG_PROC, "uiaudioidUIFree", "");
 }
 
+void
+uiaudioidSavePanePosition (uiaudioid_t *uiaudioid)
+{
+  aid_internal_t    *audioidint;
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  audioidint->paneposition =
+      uiPanedWindowGetPosition (audioidint->wcont [UIAUID_W_PANED_WINDOW]);
+  nlistSetNum (uiaudioid->options, MANAGE_AUDIOID_PANE_POSITION,
+      audioidint->paneposition);
+}
+
+
 uiwcont_t *
-uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
+uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
     uiwcont_t *parentwin, uiwcont_t *statusMsg)
 {
   aid_internal_t    *audioidint;
@@ -342,6 +362,7 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   uiWidgetAlignHorizFill (pw);
   uiBoxPackStartExpand (audioidint->wcont [UIAUID_W_MAIN_VBOX], pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
+  audioidint->wcont [UIAUID_W_PANED_WINDOW] = pw;
 
   /* listing */
 
@@ -432,7 +453,6 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
 
   uiwcontFree (col);
   uiwcontFree (hbox);
-  uiwcontFree (pw);
 
   audioidint->uikey = uiKeyAlloc ();
   audioidint->callbacks [UIAUID_CB_KEYB] = callbackInit (
@@ -455,6 +475,9 @@ uiaudioidBuildUI (uisongsel_t *uisongsel, uiaudioid_t *uiaudioid,
   uisongAddDisplayTypes (audioidint->listsellist, uiaudioidDisplayTypeCallback,
       uiaudioid);
   uiTreeViewCreateValueStoreFromList (audioidint->alistTree, audioidint->colcount, audioidint->typelist);
+  if (audioidint->paneposition >= 0) {
+    uiPanedWindowSetPosition (pw, audioidint->paneposition);
+  }
 
   logProcEnd (LOG_PROC, "uiaudioidBuildUI", "");
   return audioidint->wcont [UIAUID_W_MAIN_VBOX];

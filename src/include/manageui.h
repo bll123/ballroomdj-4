@@ -103,5 +103,6 @@ uiwcont_t *manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongs
 void manageAudioIdMainLoop (manageaudioid_t *maudioid);
 void manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx);
 void manageAudioIdSetSaveCallback (manageaudioid_t *maudioid, callback_t *cb);
+void manageAudioIdSavePosition (manageaudioid_t *maudioid);
 
 #endif /* INC_MANAGEUI_H */

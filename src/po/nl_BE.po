@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-09-13\n"
+"PO-Revision-Date: 2023-09-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -34,7 +34,6 @@ msgstr "%d bestanden gevonden"
 msgid "%s API Host"
 msgstr ""
 
-#. CONTEXT: configuration: the AcoustID API Key
 #. CONTEXT: configuration: the ACRCloud API Key
 #. CONTEXT: configuration: the AudioTag API Key
 #, c-format

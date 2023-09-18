@@ -61,6 +61,8 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_2097152, -1, (val & 2097152));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID",
       CONFUI_WIDGET_DEBUG_8388608, -1, (val & 8388608));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID Dump",
+      CONFUI_WIDGET_DEBUG_16777216, -1, (val & 16777216));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Tags",
       CONFUI_WIDGET_DEBUG_4194304, -1, (val & 4194304));
 
