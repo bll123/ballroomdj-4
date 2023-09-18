@@ -22,6 +22,7 @@ add_library (libuinull SHARED
   uinullmenu.c
   uinullmiscbutton.c
   uinullnotebook.c
+  uinullpanedwindow.c
   uinullpbar.c
   uinullscale.c
   uinullscrollbar.c
