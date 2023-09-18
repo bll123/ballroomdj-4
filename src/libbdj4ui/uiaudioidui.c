@@ -134,6 +134,7 @@ static bool uiaudioidRowSelect (void *udata);
 static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayTypeCallback (int type, void *udata);
 static void uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata);
+static void uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song);
 
 void
 uiaudioidUIInit (uiaudioid_t *uiaudioid)
@@ -525,6 +526,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   audioidint->currrow = row;
   uisongSetDisplayColumns (audioidint->listsellist, song, UIAUID_COL_MAX,
       uiaudioidSetSongDataCallback, uiaudioid);
+  uiaudioidDisplayDuration (uiaudioid, song);
   uiTreeViewSetValues (audioidint->alistTree,
       UIAUID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
 
@@ -598,7 +600,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
       if (dval > 0.0) {
         snprintf (tmp, sizeof (tmp), "%.1f", dval);
       }
-      uiaudioidSetSongDataCallback (col, 0, tmp, uiaudioid);
+      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tmp);
     } else if (tagidx == TAG_DURATION) {
       const char  *str;
       char        tmp [40];
@@ -610,12 +612,12 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         dur = atol (str);
       }
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
-      uiaudioidSetSongDataCallback (col, 0, tmp, uiaudioid);
+      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tmp);
     } else {
       const char  *str;
 
       str = nlistGetStr (dlist, tagidx);
-      uiaudioidSetSongDataCallback (col, 0, str, uiaudioid);
+      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, str);
     }
     ++col;
   }
@@ -877,8 +879,20 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
       uiToggleButtonSetText (audioidint->items [count].selrb, "");
     } else {
       const char  *tval;
+      char        tmp [40];
 
       tval = nlistGetStr (dlist, tagidx);
+      if (tagidx == TAG_DURATION) {
+        long        dur = 0;
+
+        /* duration must be converted */
+        if (tval != NULL) {
+          dur = atol (tval);
+        }
+        tmutilToMSD (dur, tmp, sizeof (tmp), 1);
+        tval = tmp;
+      }
+
       uiToggleButtonSetText (audioidint->items [count].selrb, tval);
     }
   }
@@ -907,3 +921,32 @@ uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata)
   uitreedispSetDisplayColumn (audioidint->alistTree, col, num, str);
 }
 
+static void
+uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song)
+{
+  slistidx_t  seliteridx;
+  int         tagidx;
+  int         col;
+  bool        found = false;
+  aid_internal_t  *audioidint;
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  col = 0;
+  slistStartIterator (audioidint->listsellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
+    if (tagidx == TAG_DURATION) {
+      found = true;
+      break;
+    }
+    ++col;
+  }
+  if (found) {
+    char    *tmp;
+
+    col += UIAUID_COL_MAX;
+    tmp = songDisplayString (song, TAG_DURATION, SONG_UNADJUSTED_DURATION);
+    uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tmp);
+    dataFree (tmp);
+  }
+}

@@ -97,7 +97,6 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   char                *nval = NULL;
   size_t              nlen = 0;
 
-fprintf (stderr, "%*s %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].xpath, xpathCtx);
@@ -107,7 +106,6 @@ fprintf (stderr, "%*s %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
   }
 
   nodes = xpathObj->nodesetval;
-fprintf (stderr, "%*s node-count: %d\n", level*2, "", nodes->nodeNr);
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s node-count: %d", level*2, "", nodes->nodeNr);
   if (xmlXPathNodeSetIsEmpty (nodes)) {
     xmlXPathFreeObject (xpathObj);
@@ -116,17 +114,14 @@ fprintf (stderr, "%*s node-count: %d\n", level*2, "", nodes->nodeNr);
   ncount = nodes->nodeNr;
 
   if (xpaths [xpathidx].flag == AUDIOID_XPATH_TREE) {
-fprintf (stderr, "%*s tree: xidx: %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: xidx: %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
-    if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_RESPONSE) {
-fprintf (stderr, "%*s response-count: %d\n", level*2, "", ncount);
+    if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_RESPIDX) {
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s response-count: %d", level*2, "", ncount);
     }
     if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_JOINPHRASE &&
         xpaths [xpathidx].attr != NULL) {
       cur = nodes->nodeTab [0];
       val = xmlGetProp (cur, (xmlChar *) xpaths [xpathidx].attr);
-fprintf (stderr, "%*s store joinphrase %s\n", level*2, "", (const char *) val);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s store joinphrase %s", level*2, "", (const char *) val);
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, (const char *) val);
     }
@@ -137,9 +132,9 @@ fprintf (stderr, "%*s store joinphrase %s\n", level*2, "", (const char *) val);
   for (int i = 0; i < ncount; ++i)  {
     size_t      len;
     const char  *oval = NULL;
+    int         ttagidx;
 
     if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
-fprintf (stderr, "   **** %d not element node\n", i);
       continue;
     }
 
@@ -154,7 +149,6 @@ fprintf (stderr, "   **** %d not element node\n", i);
 
     len = strlen ((const char *) val);
     joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
-fprintf (stderr, "curr joinphrase %s\n", joinphrase);
     nlen = len + 1;
     if (joinphrase != NULL) {
       oval = ilistGetStr (respdata, respidx, xpaths [xpathidx].tagidx);
@@ -173,14 +167,33 @@ fprintf (stderr, "curr joinphrase %s\n", joinphrase);
 
     strlcat (nval, (const char *) val, nlen);
 
-    if (xpaths [xpathidx].tagidx < TAG_KEY_MAX) {
-fprintf (stderr, "%*s set %d %s %s\n", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+    ttagidx = xpaths [xpathidx].tagidx;
+    if (ttagidx == AUDIOID_TYPE_MONTH) {
+      char    tmp [40];
+
+      oval = ilistGetStr (respdata, respidx, TAG_DATE);
+      if (oval != NULL) {
+        snprintf (tmp, sizeof (tmp), "%s-%s", oval, (const char *) val);
+        mdfree (nval);
+        nval = mdstrdup (tmp);
+        ttagidx = TAG_DATE;
+      }
+    }
+
+    if (ttagidx < TAG_KEY_MAX) {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [ttagidx].tag, nval);
     } else {
-fprintf (stderr, "%*s set %d %s\n", level*2, "", respidx, nval);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s", level*2, "", respidx, nval);
     }
-    ilistSetStr (respdata, respidx, xpaths [xpathidx].tagidx, nval);
+    if (ttagidx == TAG_AUDIOID_SCORE) {
+      ilistSetDouble (respdata, respidx, ttagidx, atof (nval) * 100.0);
+    } else {
+      if (ttagidx == AUDIOID_TYPE_JOINPHRASE) {
+        ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, nval);
+      } else {
+        ilistSetStr (respdata, respidx, ttagidx, nval);
+      }
+    }
     mdfree (nval);
     nval = NULL;
   }
@@ -198,30 +211,31 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
   for (int i = 0; i < nodes->nodeNr; ++i)  {
     xmlXPathContextPtr  relpathCtx;
 
-fprintf (stderr, "%*s tree: node: %d\n", level*2, "", i);
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: node: %d", level*2, "", i);
     if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
       continue;
     }
 
-    relpathCtx = xmlXPathNewContext ((xmlDocPtr) nodes->nodeTab [i]);
-    if (relpathCtx == NULL) {
-      continue;
-    }
-
     /* this is the containing tagidx */
-    if (parenttagidx == AUDIOID_TYPE_RESPONSE) {
+    if (parenttagidx == AUDIOID_TYPE_RESPIDX) {
       nlistidx_t    iteridx;
       nlistidx_t    key;
       nlist_t       *dlist;
 
-      if (respidx != i) {
-fprintf (stderr, "%*s tree: propagate from %d to %d\n", level*2, "", respidx, i);
-        dlist = ilistGetDatalist (respdata, respidx);
-        respidx = i;
+      respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+      ++respidx;
+      ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
+
+      if (respidx > 0) {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: propagate from %d to %d", level*2, "", respidx - 1, respidx);
+        dlist = ilistGetDatalist (respdata, respidx - 1);
 
         nlistStartIterator (dlist, &iteridx);
         while ((key = nlistIterateKey (dlist, &iteridx)) >= 0) {
+          if (key == AUDIOID_TYPE_RESPIDX) {
+            continue;
+          }
           if (key == TAG_AUDIOID_SCORE) {
             ilistSetDouble (respdata, respidx, key, nlistGetDouble (dlist, key));
             continue;
@@ -231,9 +245,11 @@ fprintf (stderr, "%*s tree: propagate from %d to %d\n", level*2, "", respidx, i)
           ilistSetStr (respdata, respidx, key, nlistGetStr (dlist, key));
         }
       }
-      respidx = i;
-fprintf (stderr, "%*s tree: set respidx: %d\n", level*2, "", respidx);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
+    }
+
+    relpathCtx = xmlXPathNewContext ((xmlDocPtr) nodes->nodeTab [i]);
+    if (relpathCtx == NULL) {
+      continue;
     }
 
     xidx = 0;
@@ -245,7 +261,6 @@ fprintf (stderr, "%*s tree: set respidx: %d\n", level*2, "", respidx);
     xmlXPathFreeContext (relpathCtx);
   }
 
-fprintf (stderr, "%*s finish-tree %s\n", level*2, "", xpaths [xidx].xpath);
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", xpaths [xidx].xpath);
   return true;
 }

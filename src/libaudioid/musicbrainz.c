@@ -78,7 +78,7 @@ static audioidxpath_t mbrecordingxp [] = {
   { AUDIOID_XPATH_DATA,  TAG_DURATION, "/length", NULL, NULL },
   { AUDIOID_XPATH_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL },
   { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_RESPONSE, "/release-list/release", NULL, mbreleasexp },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp },
   { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
 };
 

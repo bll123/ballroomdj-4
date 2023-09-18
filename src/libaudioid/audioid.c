@@ -22,6 +22,8 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
+#define AUDIOID_DEBUG 1
+
 enum {
   AUDIOID_TYPE_ACOUSTID,
   AUDIOID_TYPE_ACRCLOUD,
@@ -49,6 +51,9 @@ typedef struct audioid {
 
 static double audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
 static double audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
+#if AUDIOID_DEBUG
+static void dumpResults (audioid_t *audioid);
+#endif
 
 audioid_t *
 audioidInit (void)
@@ -104,6 +109,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid->state == BDJ4_STATE_FINISH) {
     ilistFree (audioid->resp);
     audioid->resp = ilistAlloc ("audioid-resp", LIST_ORDERED);
+    /* start at -1 so that the first increment will properly set it to zero */
+    ilistSetNum (audioid->resp, 0, AUDIOID_TYPE_RESPIDX, -1);
     nlistFree (audioid->respidx);
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_START;
@@ -116,7 +123,6 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 // ### temporary for testing acoustid.
     audioid->state = BDJ4_STATE_WAIT;
     if (0 && mbrecid != NULL) {
-fprintf (stderr, "process mb\n");
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       if (ilistGetCount (audioid->resp) > 0) {
         audioid->state = BDJ4_STATE_PROCESS;
@@ -130,7 +136,10 @@ fprintf (stderr, "process mb\n");
 
   if (audioid->state == BDJ4_STATE_WAIT) {
     if (audioid->statecount == AUDIOID_TYPE_ACOUSTID) {
-fprintf (stderr, "process acoustid\n");
+      char    tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%ld", (long) songGetNum (song, TAG_DURATION));
+      ilistSetStr (audioid->resp, 0, TAG_DURATION, tmp);
       acoustidLookup (audioid->acoustid, song, audioid->resp);
       ++audioid->statecount;
     } else if (audioid->statecount == AUDIOID_TYPE_ACRCLOUD) {
@@ -144,29 +153,9 @@ fprintf (stderr, "process acoustid\n");
     return false;
   }
 
-{
-nlist_t *l;
-nlistidx_t i;
-nlistidx_t tagidx;
-double score;
-ilistStartIterator (audioid->resp, &iteridx);
-while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
-  fprintf (stderr, "== resp key: %d\n", key);
-
-  score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
-  fprintf (stderr, "   %d score %.1f\n", key, score);
-  l = ilistGetDatalist (audioid->resp, key);
-  nlistStartIterator (l, &i);
-  while ((tagidx = nlistIterateKey (l, &i)) >= 0) {
-    if (tagidx >= 0 && tagidx < TAG_KEY_MAX) {
-      if (tagidx == TAG_AUDIOID_SCORE) {
-        continue;
-      }
-      fprintf (stderr, "   %d %d/%s %s\n", key, tagidx, tagdefs [tagidx].tag, nlistGetStr (l, tagidx));
-    }
-  }
-}
-}
+#if AUDIOID_DEBUG
+  dumpResults (audioid);
+#endif
 
   if (audioid->state == BDJ4_STATE_PROCESS) {
     nlistSetSize (audioid->respidx, ilistGetCount (audioid->resp));
@@ -293,3 +282,38 @@ audioidAdjustScoreStr (audioid_t *audioid, int key, int tagidx,
 
   return score;
 }
+
+#if AUDIOID_DEBUG
+
+static void
+dumpResults (audioid_t *audioid)
+{
+  nlist_t     *l;
+  nlistidx_t  i;
+  nlistidx_t  tagidx;
+  nlistidx_t  iteridx;
+  nlistidx_t  key;
+  double      score;
+
+  ilistStartIterator (audioid->resp, &iteridx);
+  while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
+    fprintf (stderr, "== resp key: %d\n", key);
+
+    score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
+    fprintf (stderr, "   %d SCORE %.1f\n", key, score);
+
+    l = ilistGetDatalist (audioid->resp, key);
+    nlistStartIterator (l, &i);
+    while ((tagidx = nlistIterateKey (l, &i)) >= 0) {
+      if (tagidx >= TAG_KEY_MAX) {
+        continue;
+      }
+      if (tagidx == TAG_AUDIOID_SCORE) {
+        continue;
+      }
+      fprintf (stderr, "   %d %d/%s %s\n", key, tagidx, tagdefs [tagidx].tag, nlistGetStr (l, tagidx));
+    }
+  }
+}
+
+#endif

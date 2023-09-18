@@ -388,7 +388,9 @@ songDisplayString (song_t *song, int tagidx, int flag)
       char  tmp [40];
 
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
-      if (flag == SONG_LONG_DURATION) {
+      if (flag == SONG_UNADJUSTED_DURATION) {
+        str = mdstrdup (durstr);
+      } else if (flag == SONG_LONG_DURATION) {
         snprintf (tbuff, sizeof (tbuff), "%s (%s)", durstr, tmp);
         str = mdstrdup (tbuff);
       } else {

@@ -87,7 +87,7 @@ static audioidxpath_t acoustidmediumxp [] = {
 static audioidxpath_t acoustidreleasexp [] = {
   { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp },
   { AUDIOID_XPATH_DATA, TAG_ALBUM, "/title", NULL, NULL },
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_YEAR, "/date/year", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_DATE, "/date/year", NULL, NULL },
   { AUDIOID_XPATH_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL },
   { AUDIOID_XPATH_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL },
   { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp },
@@ -97,7 +97,7 @@ static audioidxpath_t acoustidreleasexp [] = {
 /* relative to /response/recordings/recording */
 static audioidxpath_t acoustidrecordingxp [] = {
   { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_RESPONSE, "/releases/release", NULL, acoustidreleasexp },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp },
   { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
 };
 
@@ -184,7 +184,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   ddur = round ((double) dur / 1000.0);
 
   fpdata = mdmalloc (ACOUSTID_BUFF_SZ);
-#if 0
+
   targv [targc++] = sysvarsGetStr (SV_PATH_FPCALC);
   targv [targc++] = ffn;
   targv [targc++] = "-plain";
@@ -221,14 +221,7 @@ fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
 fprintf (ofh, "\n");
 fclose (ofh);
 }
-#endif
 
-
-{
-size_t rlen;
-acoustid->webresponse = filedataReadAll ("acoustid.xml", &rlen);
-acoustid->webresplen = rlen;
-}
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
