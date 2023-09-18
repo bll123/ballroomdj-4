@@ -22,16 +22,17 @@ nlist_t * audioidGetList (audioid_t *audioid, int key);
 
 /* audioidutil.c */
 
-typedef struct {
+typedef struct audioidxpath audioidxpath_t;
+typedef struct audioidxpath {
   int             flag;
   int             tagidx;
   const char      *xpath;
   const char      *attr;
+  audioidxpath_t  *tree;
 } audioidxpath_t;
 
 enum {
   AUDIOID_XPATH_TREE,
-  AUDIOID_XPATH_END_TREE,
   AUDIOID_XPATH_DATA,
   AUDIOID_XPATH_END,
 };

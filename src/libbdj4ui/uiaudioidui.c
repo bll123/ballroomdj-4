@@ -602,11 +602,13 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
     } else if (tagidx == TAG_DURATION) {
       const char  *str;
       char        tmp [40];
-      long        dur;
+      long        dur = 0;
 
       /* duration must be converted */
       str = nlistGetStr (dlist, tagidx);
-      dur = atol (str);
+      if (str != NULL) {
+        dur = atol (str);
+      }
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
       uiaudioidSetSongDataCallback (col, 0, tmp, uiaudioid);
     } else {

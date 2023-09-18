@@ -112,6 +112,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     mbrecid = songGetStr (song, TAG_RECORDING_ID);
 // ### temporary for testing acoustid.
     if (mbrecid != NULL) {
+fprintf (stderr, "process mb\n");
       mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
       audioid->state = BDJ4_STATE_PROCESS;
       audioid->mbmatch = true;
@@ -123,6 +124,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_WAIT) {
     if (audioid->statecount == AUDIOID_TYPE_ACOUSTID) {
+fprintf (stderr, "process acoustid\n");
       acoustidLookup (audioid->acoustid, song, audioid->resp);
       ++audioid->statecount;
     } else if (audioid->statecount == AUDIOID_TYPE_ACRCLOUD) {
@@ -133,6 +135,30 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     }
     return false;
   }
+
+{
+nlist_t *l;
+nlistidx_t i;
+nlistidx_t tagidx;
+double score;
+ilistStartIterator (audioid->resp, &iteridx);
+while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
+  fprintf (stderr, "== resp key: %d\n", key);
+
+  score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
+  fprintf (stderr, "   %d score %.1f\n", key, score);
+  l = ilistGetDatalist (audioid->resp, key);
+  nlistStartIterator (l, &i);
+  while ((tagidx = nlistIterateKey (l, &i)) >= 0) {
+    if (tagidx >= 0 && tagidx < TAG_KEY_MAX) {
+      if (tagidx == TAG_AUDIOID_SCORE) {
+        continue;
+      }
+      fprintf (stderr, "   %d %d/%s %s\n", key, tagidx, tagdefs [tagidx].tag, nlistGetStr (l, tagidx));
+    }
+  }
+}
+}
 
   if (audioid->state == BDJ4_STATE_PROCESS) {
     nlistSetSize (audioid->respidx, ilistGetCount (audioid->resp));
@@ -150,7 +176,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         continue;
       }
 
-      /* for a musicbrainz match, do not matching checks */
+      /* for a musicbrainz match, do not process matching checks */
       if (! audioid->mbmatch) {
         str = ilistGetStr (audioid->resp, key, TAG_DURATION);
         if (str != NULL) {

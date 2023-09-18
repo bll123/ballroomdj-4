@@ -24,8 +24,8 @@
 #include "mdebug.h"
 #include "tagdef.h"
 
-static int audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, int respidx, ilist_t *respdata);
-static int audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int startxidx, int respcount, ilist_t *respdata);
+static int audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, int respidx, ilist_t *respdata, int level);
+static int audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, int respidx, ilist_t *respdata, int level);
 
 void
 audioidParseInit (void)
@@ -47,7 +47,6 @@ audioidParseAll (const char *data, size_t datalen,
   xmlXPathContextPtr  xpathCtx;
   char                *tdata = NULL;
   char                *p;
-  int                 xpathidx;
   int                 respcount;
 
   /* libxml2 doesn't have any way to set the default namespace for xpath */
@@ -77,7 +76,7 @@ audioidParseAll (const char *data, size_t datalen,
   }
 
   /* the xpaths list must have a tree type in the beginning */
-  respcount = audioidParse (xpathCtx, xpaths, 0, 0, respdata);
+  audioidParse (xpathCtx, xpaths, 0, 0, respdata, 0);
 
 #if 0
   /* copy the static data to each album */
@@ -113,7 +112,7 @@ audioidParseAll (const char *data, size_t datalen,
 
 static int
 audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
-    int xpathidx, int respidx, ilist_t *respdata)
+    int xpathidx, int respidx, ilist_t *respdata, int level)
 {
   xmlXPathObjectPtr   xpathObj;
   xmlNodeSetPtr       nodes;
@@ -123,36 +122,33 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   int                 ncount;
   char                *nval = NULL;
   size_t              nlen = 0;
-  int                 respcount = 0;
 
-  if (xpaths [xpathidx].flag == AUDIOID_XPATH_END_TREE ||
-      xpaths [xpathidx].flag == AUDIOID_XPATH_END) {
-fprintf (stderr, "   end/end-tree\n");
-    return 0;
-  }
-
-fprintf (stderr, "-- %d %s\n", xpathidx, xpaths [xpathidx].xpath);
+fprintf (stderr, "%*s %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].xpath, xpathCtx);
   if (xpathObj == NULL)  {
-fprintf (stderr, "   bad-xpath\n");
     logMsg (LOG_DBG, LOG_IMPORTANT, "audioidParse: bad xpath expression");
-    return 0;
+    return false;
   }
 
   nodes = xpathObj->nodesetval;
-fprintf (stderr, "   node-count: %d\n", nodes->nodeNr);
+fprintf (stderr, "%*s node-count: %d\n", level*2, "", nodes->nodeNr);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s node-count: %d", level*2, "", nodes->nodeNr);
   if (xmlXPathNodeSetIsEmpty (nodes)) {
-fprintf (stderr, "   no-nodes\n");
     xmlXPathFreeObject (xpathObj);
-    return 0;
+    return false;
   }
   ncount = nodes->nodeNr;
 
   if (xpaths [xpathidx].flag == AUDIOID_XPATH_TREE) {
-    respcount = audioidParseTree (nodes, xpaths, xpathidx, respcount, respdata);
-fprintf (stderr, "   tree-parse-fin\n");
-    return 1;
+fprintf (stderr, "%*s tree: xidx: %d %s\n", level*2, "", xpathidx, xpaths [xpathidx].xpath);
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: xidx: %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
+    if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_RESPONSE) {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s response-count: %d", level*2, "", ncount);
+    }
+    audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respidx, respdata, level);
+    return true;
   }
 
   for (int i = 0; i < ncount; ++i)  {
@@ -164,8 +160,10 @@ fprintf (stderr, "   tree-parse-fin\n");
 
     cur = nodes->nodeTab [i];
     val = xmlNodeGetContent (cur);
+    if (xpaths [xpathidx].attr != NULL) {
+      val = xmlGetProp (cur, (xmlChar *) xpaths [xpathidx].attr);
+    }
     if (val == NULL) {
-fprintf (stderr, "   no-data\n");
       continue;
     }
 
@@ -182,8 +180,8 @@ fprintf (stderr, "   no-data\n");
     }
 
     if (joinphrase == NULL && nval != NULL) {
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "raw: set %d %s %s\n", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
-fprintf (stderr, "   set %d %s %s\n", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+fprintf (stderr, "%*s set %d %s %s\n", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
       ilistSetStr (respdata, respidx, xpaths [xpathidx].tagidx, nval);
       mdfree (nval);
       nval = NULL;
@@ -191,45 +189,29 @@ fprintf (stderr, "   set %d %s %s\n", respidx, tagdefs [xpaths [xpathidx].tagidx
   }
 
   if (joinphrase != NULL && nval != NULL) {
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "raw: set %d %s %s\n", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
-fprintf (stderr, "   set %d %s %s\n", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
-    ilistSetStr (respdata, respcount, xpaths [xpathidx].tagidx, nval);
+fprintf (stderr, "%*s set %d %s %s\n", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set %d %s %s", level*2, "", respidx, tagdefs [xpaths [xpathidx].tagidx].tag, nval);
+    ilistSetStr (respdata, respidx, xpaths [xpathidx].tagidx, nval);
     mdfree (nval);
     nval = NULL;
   }
 
   ilistSetDouble (respdata, respidx, TAG_AUDIOID_SCORE, 100.0);
   xmlXPathFreeObject (xpathObj);
-  return 0;
+  return true;
 }
 
 static int
 audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
-    int startxidx, int respcount, ilist_t *respdata)
+    int parenttagidx, int respidx, ilist_t *respdata, int level)
 {
-  xmlXPathContextPtr  xpathCtx;
-  xmlXPathObjectPtr   xpathObj;
-  int                 respidx = respcount;
-
-fprintf (stderr, "-- tree: %d %s\n", startxidx, xpaths [startxidx].xpath);
-
-fprintf (stderr, "      node-count: %d\n", nodes->nodeNr);
-  if (xmlXPathNodeSetIsEmpty (nodes)) {
-    xmlXPathFreeObject (xpathObj);
-fprintf (stderr, "      empty-tree\n");
-    return false;
-  }
-  if (xpaths [startxidx].tagidx == AUDIOID_TYPE_RESPONSE) {
-    respcount = nodes->nodeNr;
-fprintf (stderr, "      response-count: %d\n", respcount);
-  }
+  int   xidx;
 
   for (int i = 0; i < nodes->nodeNr; ++i)  {
     xmlXPathContextPtr  relpathCtx;
-    int                 xidx;
 
-fprintf (stderr, "   tree: %d %s\n", startxidx, xpaths [startxidx].xpath);
-fprintf (stderr, "      tree: node %d\n", i);
+fprintf (stderr, "%*s tree: node: %d\n", level*2, "", i);
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: node: %d", level*2, "", i);
     if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
       continue;
     }
@@ -239,30 +221,23 @@ fprintf (stderr, "      tree: node %d\n", i);
       continue;
     }
 
-    if (xpaths [startxidx].tagidx == AUDIOID_TYPE_RESPONSE) {
+    /* this is the containing tagidx */
+    if (parenttagidx == AUDIOID_TYPE_RESPONSE) {
       respidx = i;
     }
+fprintf (stderr, "%*s tree: respidx: %d\n", level*2, "", respidx);
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: respidx: %d", level*2, "", respidx);
 
-    xidx = startxidx + 1;
-    while (xpaths [xidx].flag != AUDIOID_XPATH_END_TREE &&
-        xpaths [xidx].flag != AUDIOID_XPATH_END) {
-fprintf (stderr, "   tree: %d %s\n", startxidx, xpaths [startxidx].xpath);
-fprintf (stderr, "      tree: parse %d xidx: %d respidx: %d\n", i, xidx, respidx);
-      if (audioidParse (relpathCtx, xpaths, xidx, respidx, respdata)) {
-fprintf (stderr, "      tree: parse-fin: startxidx: %d\n", startxidx);
-        while (xpaths [xidx].flag != AUDIOID_XPATH_END_TREE &&
-            xpaths [xidx].flag != AUDIOID_XPATH_END) {
-          ++xidx;
-        }
-fprintf (stderr, "      tree: new xidx: %d (%d)\n", xidx, xidx+1);
-      }
+    xidx = 0;
+    while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
+      audioidParse (relpathCtx, xpaths, xidx, respidx, respdata, level + 1);
       ++xidx;
     }
 
     xmlXPathFreeContext (relpathCtx);
   }
 
-  xmlXPathFreeContext (xpathCtx);
-fprintf (stderr, "   -- finish-tree %d\n", startxidx);
-  return respcount;
+fprintf (stderr, "%*s finish-tree %s\n", level*2, "", xpaths [xidx].xpath);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", xpaths [xidx].xpath);
+  return true;
 }

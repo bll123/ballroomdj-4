@@ -23,8 +23,6 @@
 #include "tmutil.h"
 #include "webclient.h"
 
-#include "filedata.h"     // temporary, remove
-
 typedef struct audioidmb {
   webclient_t   *webclient;
   const char    *webresponse;
@@ -46,34 +44,49 @@ typedef struct audioidmb {
  *      medium/track-list/track : (track-number, title)
  */
 
+static audioidxpath_t mbartistxp [] = {
+  { AUDIOID_XPATH_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+};
+
+static audioidxpath_t mbalbartistxp [] = {
+  { AUDIOID_XPATH_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+};
+
+/* relative to /metadata/recording/release-list/release/medium */
+static audioidxpath_t mbmediumxp [] = {
+  { AUDIOID_XPATH_DATA,  TAG_DISCNUMBER, "/position", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_TRACKTOTAL, "/track-list", "count", NULL },
+  { AUDIOID_XPATH_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/track-list/track/artist-credit/name-credit", "joinphrase", mbartistxp },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+};
+
+/* relative to /metadata/recording/release-list/release */
+static audioidxpath_t mbreleasexp [] = {
+  { AUDIOID_XPATH_DATA,  TAG_ALBUM, "/title", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_DATE, "/date", NULL, NULL },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbalbartistxp  },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_TREE, "/medium-list/medium", NULL, mbmediumxp },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+};
+
+/* relative to /metadata/recording */
+static audioidxpath_t mbrecordingxp [] = {
+  { AUDIOID_XPATH_DATA,  TAG_TITLE, "/title", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_DURATION, "/length", NULL, NULL },
+  { AUDIOID_XPATH_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_RESPONSE, "/release-list/release", NULL, mbreleasexp },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+};
+
 static audioidxpath_t mbxpaths [] = {
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_TREE, "/metadata", NULL },
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_TREE, "/recording", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_TITLE, "/title", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_DURATION, "/length", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_WORK_ID, "/relation-list/relation/target", NULL },
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase" },
-  { AUDIOID_XPATH_DATA,     TAG_ARTIST, "/artist/name", NULL },
-  { AUDIOID_XPATH_END_TREE, AUDIOID_TYPE_TREE, NULL, NULL },
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_RESPONSE, "/release-list/release", NULL },
-  /* relative to /metadata/recording/release-list/release */
-  /* "medium-list: count" is the count of the number of mediums, not */
-  /* the disc-total :( */
-  /* disc-total does not seem to be present, though the data must be */
-  /* somewhere, as acoustid has it */
-  { AUDIOID_XPATH_DATA,     TAG_ALBUM, "/title", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_DATE, "/date", NULL },
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase" },
-  { AUDIOID_XPATH_DATA,     TAG_ALBUMARTIST, "/artist-credit/name-credit/artist/name", NULL },
-  { AUDIOID_XPATH_END_TREE, AUDIOID_TYPE_TREE, NULL, NULL },
-  { AUDIOID_XPATH_TREE,     AUDIOID_TYPE_TREE, "/medium-list/medium", NULL },
-  /* relative to /metadata/recording/release-list/release/medium */
-  { AUDIOID_XPATH_DATA,     TAG_DISCNUMBER, "/position", NULL },
-  /* relative to /metadata/recording/release-list/release/medium */
-  { AUDIOID_XPATH_DATA,     TAG_TRACKNUMBER, "/track-list/track/position", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_DURATION, "/track-list/track/length", NULL },
-  { AUDIOID_XPATH_DATA,     TAG_TRACKTOTAL, "/track-list", "count" },
-  { AUDIOID_XPATH_END, -1, NULL, NULL },
+  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_TREE, "/metadata/recording", NULL, mbrecordingxp },
+  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL },
 };
 
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
@@ -110,8 +123,6 @@ void
 mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 {
   char          uri [MAXPATHLEN];
-//  ilistidx_t    iteridx;
-//  ilistidx_t    key;
 
   /* musicbrainz prefers only one call per second */
   while (! mstimeCheck (&mb->globalreqtimer)) {
@@ -131,15 +142,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
-#if 0
   webclientGet (mb->webclient, uri);
-#endif
-
-{
-size_t rlen;
-mb->webresponse = filedataReadAll ("mb.xml", &rlen);
-mb->webresplen = rlen;
-}
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,

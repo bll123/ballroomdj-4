@@ -55,32 +55,62 @@ typedef struct audioidacoustid {
  *        track: (tracknumber, title, artist)
  */
 
+static audioidxpath_t acoustidalbartistxp [] = {
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/artists/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+};
+
+static audioidxpath_t acoustidartistxp [] = {
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/artists/artist/name", NULL, NULL },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+};
+
+/* relative to /response/recordings/recording/releases/release/mediums/medium/tracks/track */
+static audioidxpath_t acoustidtrackxp [] = {
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidartistxp },
+  { AUDIOID_XPATH_DATA, TAG_TRACKNUMBER, "/position", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_TITLE, "/title", NULL, NULL },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-track", NULL, NULL },
+};
+
+/* relative to /response/recordings/recording/releases/release/mediums/medium */
+static audioidxpath_t acoustidmediumxp [] = {
+  { AUDIOID_XPATH_DATA, TAG_DISCNUMBER, "/position", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_TRACKTOTAL, "/track_count", NULL, NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL, acoustidtrackxp },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+};
+
+/* relative to /response/recordings/recording/releases/release */
+static audioidxpath_t acoustidreleasexp [] = {
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp },
+  { AUDIOID_XPATH_DATA, TAG_ALBUM, "/title", NULL, NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_YEAR, "/date/year", NULL, NULL },
+  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL },
+  { AUDIOID_XPATH_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+};
+
+/* relative to /response/recordings/recording */
+static audioidxpath_t acoustidrecordingxp [] = {
+  { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/releases/release", NULL, acoustidreleasexp },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+};
+
+/* relative to /response/results/result */
+static audioidxpath_t acoustidresultxp [] = {
+  { AUDIOID_XPATH_DATA, TAG_AUDIOID_SCORE, "/score", NULL, NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL, acoustidrecordingxp },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-result", NULL, NULL },
+};
+
 static audioidxpath_t acoustidxpaths [] = {
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL },
-  /* relative to /response/results/result */
-  { AUDIOID_XPATH_DATA, TAG_AUDIOID_SCORE, "/score", NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL },
-  /* relative to /response/recordings/recording */
-  { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/releases/release", NULL },
-  /* relative to /response/recordings/recording/releases/release */
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL },
-  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/artists/artist/name", NULL },
-  { AUDIOID_XPATH_DATA, TAG_ALBUM, "/title", NULL },
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_YEAR, "/date/year", NULL },
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL },
-  { AUDIOID_XPATH_DATA, TAG_DISCTOTAL, "/medium_count", NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL },
-  /* relative to /response/recordings/recording/releases/release/mediums/medium */
-  { AUDIOID_XPATH_DATA, TAG_DISCNUMBER, "/position", NULL },
-  { AUDIOID_XPATH_DATA, TAG_TRACKTOTAL, "/track_count", NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL },
-  /* relative to /response/recordings/recording/releases/release/mediums/medium/tracks/track */
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/artists/artist/joinphrase", NULL },
-  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/artists/artist/name", NULL },
-  { AUDIOID_XPATH_DATA, TAG_TRACKNUMBER, "/position", NULL },
-  { AUDIOID_XPATH_DATA, TAG_TITLE, "/title", NULL },
-  { AUDIOID_XPATH_END, -1, NULL, NULL },
+  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL, acoustidresultxp },
+  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL },
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
