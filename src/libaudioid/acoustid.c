@@ -16,6 +16,7 @@
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
@@ -40,7 +41,7 @@ typedef struct audioidacoustid {
   size_t        webresplen;
   mstime_t      globalreqtimer;
   int           respcount;
-  char          akey [100];
+  char          key [100];
 } audioidacoustid_t;
 
 /*
@@ -122,12 +123,17 @@ acoustidInit (void)
 
   acoustid = mdmalloc (sizeof (audioidacoustid_t));
   acoustid->webclient = webclientAlloc (acoustid, acoustidWebResponseCallback);
+  webclientSetTimeout (acoustid->webclient, 15);
+  /* if the bdj4 user-agent is used, cloudflare/acoustid occasionally */
+  /* return an http 503 error. */
+  /* so spoof a known user-agent instead */
+  webclientSpoofUserAgent (acoustid->webclient);
   acoustid->webresponse = NULL;
   acoustid->webresplen = 0;
   mstimeset (&acoustid->globalreqtimer, 0);
   acoustid->respcount = 0;
   takey = bdjoptGetStr (OPT_G_ACOUSTID_KEY);
-  vsencdec (takey, acoustid->akey, sizeof (acoustid->akey));
+  vsencdec (takey, acoustid->key, sizeof (acoustid->key));
 
   return acoustid;
 }
@@ -150,6 +156,7 @@ int
 acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     ilist_t *respdata)
 {
+  char          infn [MAXPATHLEN];
   char          uri [MAXPATHLEN];
   char          *query;
   long          dur;
@@ -161,12 +168,20 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   const char    *targv [10];
   int           targc = 0;
   mstime_t      starttm;
+  int           webrc;
 
   fn = songGetStr (song, TAG_FILE);
   ffn = songutilFullFileName (fn);
   if (! fileopFileExists (ffn)) {
     return 0;
   }
+  snprintf (infn, sizeof (infn), "%s%s",
+      ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+  /* check for .original filename */
+  if (! fileopFileExists (infn)) {
+    strlcpy (infn, ffn, sizeof (infn));
+  }
+  mdfree (ffn);
 
   mstimestart (&starttm);
   /* acoustid prefers at most three calls per second */
@@ -180,12 +195,14 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   query = mdmalloc (ACOUSTID_BUFF_SZ);
 
   dur = songGetNum (song, TAG_DURATION);
-  ddur = round ((double) dur / 1000.0);
+  /* acoustid's fpcalc truncates the duration */
+  ddur = floor ((double) dur / 1000.0);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "acoustid: duration: %.0f", ddur);
 
   fpdata = mdmalloc (ACOUSTID_BUFF_SZ);
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FPCALC);
-  targv [targc++] = ffn;
+  targv [targc++] = infn;
   targv [targc++] = "-plain";
   targv [targc++] = NULL;
   mstimestart (&starttm);
@@ -193,7 +210,6 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       fpdata, ACOUSTID_BUFF_SZ, &retsz);
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fpcalc: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
-  dataFree (ffn);
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
   /* if meta-compress is on the track artists are not generated */
@@ -203,15 +219,18 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       "&meta=recordingids+recordings+releases+tracks+artists"
       "&duration=%.0f"
       "&fingerprint=%.*s",
-      acoustid->akey,
+      acoustid->key,
       ddur,
       (int) retsz, fpdata
       );
 
   mstimestart (&starttm);
-  webclientPostCompressed (acoustid->webclient, uri, query);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %" PRId64 "ms",
-      (int64_t) mstimeend (&starttm));
+  webrc = webclientPostCompressed (acoustid->webclient, uri, query);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %d %" PRId64 "ms",
+      webrc, (int64_t) mstimeend (&starttm));
+  if (webrc != WEB_OK) {
+    return 0;
+  }
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
     dumpData (acoustid);

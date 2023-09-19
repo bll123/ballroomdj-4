@@ -85,7 +85,7 @@ webclientAlloc (void *userdata, webclientcb_t callback)
   return webclient;
 }
 
-void
+int
 webclientGet (webclient_t *webclient, const char *uri)
 {
   long    respcode;
@@ -105,22 +105,29 @@ webclientGet (webclient_t *webclient, const char *uri)
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }
+
+  return (int) respcode;
 }
 
-void
+int
 webclientPost (webclient_t *webclient, const char *uri, const char *query)
 {
+  long  respcode;
+
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POST, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
   curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }
+
+  return (int) respcode;
 }
 
-void
+int
 webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query)
 {
   struct curl_slist *list = NULL;
@@ -128,6 +135,7 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
   long              olen;
   char              *obuff;
   z_stream          *zs;
+  long              respcode;
 
   len = strlen (query);
   obuff = mdmalloc (len * 2);
@@ -144,17 +152,21 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDSIZE, olen);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, obuff);
   curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }
   curl_slist_free_all (list);
+
+  return (int) respcode;
 }
 
-void
+int
 webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
 {
   FILE    *fh;
   time_t  tm;
+  long    respcode;
 
   webclient->dlSize = 0;
   webclient->dlChunks = 0;
@@ -163,13 +175,14 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   if (fh == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "download: unable to open %s %d %s",
         outfile, errno, strerror (errno));
-    return;
+    return WEB_BAD_REQUEST;
   }
   webclient->dlFH = fh;
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientDownloadCallback);
   curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   mdextfclose (fh);
   fclose (fh);
   webclient->dlFH = NULL;
@@ -179,10 +192,12 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
       (uint64_t) webclient->dlChunks,
       (double) webclient->dlSize / (double) tm);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
+
+  return (int) respcode;
 }
 
 /* can be used without passing a file, set fn to null */
-void
+int
 webclientUploadFile (webclient_t *webclient, const char *uri,
     const char *query [], const char *fn, const char *fnname)
 {
@@ -195,6 +210,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   const char  *val;
   int         count;
   bool        havefile = false;
+  long        respcode;
 
   if (fileopFileExists (fn)) {
     havefile = true;
@@ -204,7 +220,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
     fsize = fileopSize (fn);
     if (fsize == 0) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "upload: file is empty %s", fn);
-      return;
+      return WEB_BAD_REQUEST;
     }
   }
 
@@ -229,6 +245,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_MIMEPOST, mime);
   curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }
@@ -247,6 +264,8 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
         (uint64_t) (total_time / 1000000),
         (uint64_t) (total_time % 1000000));
   }
+
+  return (int) respcode;
 }
 
 void
@@ -292,6 +311,27 @@ webclientGetLocalIP (void)
   mdfree (webclient);
 
   return ip;
+}
+
+void
+webclientSetTimeout (webclient_t *webclient, long timeout)
+{
+  if (webclient == NULL || webclient->curl == NULL) {
+    return;
+  }
+
+  curl_easy_setopt (webclient->curl, CURLOPT_TIMEOUT, timeout);
+}
+
+void
+webclientSpoofUserAgent (webclient_t *webclient)
+{
+  if (webclient == NULL || webclient->curl == NULL) {
+    return;
+  }
+
+  curl_easy_setopt (webclient->curl, CURLOPT_USERAGENT,
+      "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0");
 }
 
 void
@@ -349,11 +389,10 @@ webclientInit (webclient_t *webclient)
     curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
   }
   curl_easy_setopt (webclient->curl, CURLOPT_FOLLOWLOCATION, 1);
-  curl_easy_setopt (webclient->curl, CURLOPT_TCP_KEEPALIVE, 1);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
   curl_easy_setopt (webclient->curl, CURLOPT_BUFFERSIZE, 512L * 1024L);
-  curl_easy_setopt (webclient->curl, CURLOPT_ACCEPT_ENCODING, "identity,zstd,deflate,gzip");
+  curl_easy_setopt (webclient->curl, CURLOPT_ACCEPT_ENCODING, "zstd, gzip, deflate");
   if (isWindows ()) {
     curl_easy_setopt (webclient->curl, CURLOPT_CAINFO, sysvarsGetStr (SV_CA_FILE));
   }

@@ -113,8 +113,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->state == BDJ4_STATE_OFF ||
       audioid->state == BDJ4_STATE_FINISH) {
     audioid->state = BDJ4_STATE_START;
-//    audioid->statecount = AUDIOID_TYPE_ACOUSTID;
-    audioid->statecount = AUDIOID_TYPE_ACRCLOUD;
+    audioid->statecount = AUDIOID_TYPE_ACOUSTID;
+//    audioid->statecount = AUDIOID_TYPE_ACRCLOUD;
     audioid->mbmatch = false;
   }
 
@@ -125,6 +125,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     nlistFree (audioid->respidx);
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_WAIT;
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s\n", songGetStr (song, TAG_FILE));
   }
 
   if (audioid->state == BDJ4_STATE_WAIT) {

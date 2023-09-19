@@ -18,6 +18,7 @@
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
@@ -71,6 +72,7 @@ acrFree (audioidacr_t *acr)
 int
 acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 {
+  char            infn [MAXPATHLEN];
   char            uri [MAXPATHLEN];
   char            sig [MAXPATHLEN];
   unsigned char   digest [100];
@@ -89,6 +91,12 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   char            *ffn;
   char            fpfn [MAXPATHLEN];
   mstime_t        starttm;
+  int             webrc;
+
+  if (acr->key == NULL || ! *acr->key ||
+      acr->secret == NULL || ! *acr->secret) {
+    return 0;
+  }
 
   tm = time (NULL);
 
@@ -97,13 +105,20 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   if (! fileopFileExists (ffn)) {
     return 0;
   }
+  snprintf (infn, sizeof (infn), "%s%s",
+      ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+  /* check for .original filename */
+  if (! fileopFileExists (infn)) {
+    strlcpy (infn, ffn, sizeof (infn));
+  }
+  mdfree (ffn);
 
   pathbldMakePath (fpfn, sizeof (fpfn), "acrcloud-fp", BDJ4_CONFIG_EXT,
       PATHBLD_MP_DREL_TMP);
 
   targv [targc++] = sysvarsGetStr (SV_PATH_ACRCLOUD);
   targv [targc++] = "-i";
-  targv [targc++] = ffn;
+  targv [targc++] = infn;
   targv [targc++] = "-cli";
   targv [targc++] = "-o";
   targv [targc++] = fpfn;
@@ -145,9 +160,12 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   query [qc++] = NULL;
 
   mstimestart (&starttm);
-  webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %" PRId64 "ms",
-      (int64_t) mstimeend (&starttm));
+  webrc = webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %d %" PRId64 "ms",
+      webrc, (int64_t) mstimeend (&starttm));
+  if (webrc != WEB_OK) {
+    return 0;
+  }
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
     dumpData (acr);

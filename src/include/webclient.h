@@ -11,16 +11,22 @@ typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len);
 
 typedef struct webclient webclient_t;
 
-#define WEB_RESP_SZ   (512*1024)
+enum {
+  WEB_OK = 200,
+  WEB_BAD_REQUEST = 400,
+  WEB_RESP_SZ = 512 * 1024,
+};
 
 webclient_t * webclientAlloc (void *userdata, webclientcb_t cb);
-void        webclientGet (webclient_t *webclient, const char *uri);
-void        webclientPost (webclient_t *webclient, const char *uri, const char *query);
-void        webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query);
-void        webclientDownload (webclient_t *webclient, const char *uri, const char *outfile);
-void        webclientUploadFile (webclient_t *webclient, const char *uri, const char *query [], const char *fn, const char *fnname);
-void        webclientClose (webclient_t *webclient);
-char        * webclientGetLocalIP (void);
-void        webclientCompressFile (const char *infn, const char *outfn);
+int   webclientGet (webclient_t *webclient, const char *uri);
+int   webclientPost (webclient_t *webclient, const char *uri, const char *query);
+int   webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query);
+int   webclientDownload (webclient_t *webclient, const char *uri, const char *outfile);
+int   webclientUploadFile (webclient_t *webclient, const char *uri, const char *query [], const char *fn, const char *fnname);
+void  webclientClose (webclient_t *webclient);
+char  * webclientGetLocalIP (void);
+void  webclientSetTimeout (webclient_t *webclient, long timeout);
+void  webclientSpoofUserAgent (webclient_t *webclient);
+void  webclientCompressFile (const char *infn, const char *outfn);
 
 #endif /* INC_WEBCLIENT_H */

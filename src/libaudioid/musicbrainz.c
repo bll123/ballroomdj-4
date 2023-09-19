@@ -125,6 +125,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 {
   char          uri [MAXPATHLEN];
   mstime_t      starttm;
+  int           webrc;
 
   /* musicbrainz prefers only one call per second */
   mstimestart (&starttm);
@@ -148,9 +149,12 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
   mstimestart (&starttm);
-  webclientGet (mb->webclient, uri);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %" PRId64 "ms",
-      (int64_t) mstimeend (&starttm));
+  webrc = webclientGet (mb->webclient, uri);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %d %" PRId64 "ms",
+      webrc, (int64_t) mstimeend (&starttm));
+  if (webrc != WEB_OK) {
+    return 0;
+  }
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
     dumpData (mb);
