@@ -43,14 +43,14 @@ this script.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v8.sh script from sourceforge.
+Download the linux-pre-install-v9.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v8.sh
+bash linux-pre-install-v9.sh
 ~~~
 
 This script performs the following actions:
@@ -88,8 +88,7 @@ folder will be pre-selected for you.
 
 The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
-BDJ4 will be lost if a re-install is done. __(If you are updating an
-alpha installation, you must do a re-install.)__
+BDJ4 will be lost if a re-install is done.
 
 Choose the location of your music folder.  The installation process
 will scan your music folder to determine certain settings used in

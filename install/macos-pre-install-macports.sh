@@ -171,7 +171,11 @@ sudo port upgrade outdated
 sudo -v
 
 # remove any old user-install mutagen
-pip3 uninstall -y mutagen > /dev/null 2>&1
+pipp=/opt/local/bin/pip
+if [[ -f /opt/local/bin/pip3 ]]; then
+  pipp=/opt/local/bin/pip3
+fi
+${pipp} uninstall -y mutagen > /dev/null 2>&1
 
 echo "-- Installing packages needed by BDJ4"
 # libid3tag and libvorbis do not have windows unicode fopen support

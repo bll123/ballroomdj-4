@@ -26,25 +26,19 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.4.0:
+    Linux Installation:
+      Run the linux-pre-install-v9.sh script.
+    MacOS Installation:
+      Run the macos-pre-install-macports-v15.sh script.
+
   4.3.3.6:
     Please upgrade to version 4.3.3.6 if you are using
       version 4.3.3.1 through 4.3.3.5.
-
-  4.3.3.3:
-    MacOS Installation:
-      The macos-pre-install-macports-v14.sh script must be run.
-
-  4.3.3.2:
     Linux Installation:
-      The linux-pre-install-v8.sh script must be run.
+      Run the linux-pre-install-v8.sh script.
     MacOS Installation:
-      The macos-pre-install-macports-v14.sh script must be run.
-
-  4.3.3:
-    MacOS Installation:
-      The macos-pre-install-macports-v12.sh script must be run.
-    Linux Installation:
-      The linux-pre-install-v6.sh script must be run.
+      Run the macos-pre-install-macports-v14.sh script.
 
   4.3.2.4:
     The Configuration / General option 'BPM' has been set to MPM.

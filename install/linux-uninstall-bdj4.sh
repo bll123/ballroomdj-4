@@ -58,8 +58,12 @@ if [[ $gr == Y ]]; then
   test -f ${desktop}/bdj4.desktop && rm -f ${desktop}/bdj4.desktop
   test -f ${appdir}/BDJ4.desktop && rm -f ${appdir}/BDJ4.desktop
   # remove any old mutagen installed for the user
-  pip3 uninstall -y mutagen > /dev/null 2>&1
-  pip3 uninstall -y --break-system-packages mutagen > /dev/null 2>&1
+  pipp=/usr/bin/pip
+  if [[ -f /usr/bin/pip3 ]]; then
+    pipp=/usr/bin/pip3
+  fi
+  ${pipp} uninstall -y mutagen > /dev/null 2>&1
+  ${pipp} uninstall -y --break-system-packages mutagen > /dev/null 2>&1
   echo "-- BDJ4 application removed."
 fi
 

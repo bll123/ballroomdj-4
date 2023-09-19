@@ -188,9 +188,13 @@ fi
 
 sudo -v
 
+pipp=/usr/bin/pip
+if [[ -f /usr/bin/pip3 ]]; then
+  pipp=/usr/bin/pip3
+fi
 # remove any old mutagen installed for the user
-pip3 uninstall -y mutagen > /dev/null 2>&1
-pip3 uninstall -y --break-system-packages mutagen > /dev/null 2>&1
+${pipp} uninstall -y mutagen > /dev/null 2>&1
+${pipp} uninstall -y --break-system-packages mutagen > /dev/null 2>&1
 
 rc=0
 echo "== Install packages" >> $LOG
