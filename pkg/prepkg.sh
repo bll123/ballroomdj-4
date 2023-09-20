@@ -38,6 +38,15 @@ if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
 
+LIBMP4TAGVER=1.2.7
+if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
+    ! -f plocal/lib64/libmp4tag.so.${LIBMP4TAGVER}  &&
+    ! -f plocal/bin/libmp4tag.dll &&
+    ! -f plocal/lib/libmp4tag.dylib.${LIBMP4TAGVER} ]]; then
+  echo "libmp4tag is not up to date"
+  exit 1
+fi
+
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}

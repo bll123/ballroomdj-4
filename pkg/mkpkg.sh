@@ -225,6 +225,11 @@ fi
 
 if [[ $preskip == F && $insttest == F ]]; then
   ./pkg/prepkg.sh
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "prepkg.sh failed"
+    exit 1
+  fi
 fi
 
 if [[ $clean == T ]]; then

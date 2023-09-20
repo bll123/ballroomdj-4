@@ -36,19 +36,16 @@ FIND_PATH (LIBVLC_INCLUDE_DIR vlc/vlc.h
   PATHS
     # Env
     "$ENV{LIB_DIR}/include"
-    "$ENV{LIB_DIR}/include/vlc"
     # Mac OS
     "/Applications/VLC.app/Contents/MacOS/include"
-    "/Applications/VLC.app/Contents/MacOS/include/vlc"
     #
     "/usr/include"
     "/usr/include/vlc"
     "/usr/local/include"
-    "/usr/local/include/vlc"
     # windows
     "c:/Program Files/VideoLAN/VLC/sdk/include"
     # local
-    "${CMAKE_CURRENT_SOURCE_DIR}/libpli/vlc-3.0.16"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libpli/vlc-3.0.18/include"
   )
 FIND_PATH (LIBVLC_INCLUDE_DIR PATHS "${CMAKE_INCLUDE_PATH}/vlc" NAMES vlc.h)
 
