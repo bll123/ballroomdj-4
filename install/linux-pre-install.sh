@@ -116,8 +116,6 @@ sudo -v
 
 if [[ -f /usr/bin/dnf ]]; then
   # redhat based linux (fedora/rhel/centos, dnf)
-  # in the latest fedora38, ffmpeg cannot be installed due to packaging
-  # conflicts.
   echo "-- To install vlc, the 'rpmfusion' repository"
   echo "-- is required. Proceed with 'rpmfusion' repository installation?"
   gr=$(getresponse)
@@ -144,27 +142,35 @@ sudo -v
 pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
-  # tested 2023-5-3
-  # updated 2023-8-8
-  pkglist="ffmpeg python-mutagen libmad lame twolame curl"
+  # updated 2023-9-20
+  # tested 2023-9-20 on version 23
+  # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
+  pkglist="python-mutagen"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # tested 2022
-  # updated 2023-8-8
-  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0 libchromaprint-tools"
+  # updated 2023-9
+  # use ffmpeg-free, as the development libraries are only available from
+  # the rpmfusion repository.
+  pkglist="ffmpeg-free python3-mutagen libcurl4 libogg0 libopus0 libopusfile0 libchromaprint-tools"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: vlc
-  # updated 2023-8-8
-  pkglist="ffmpeg-free python3-mutagen libcurl libogg opus opusfile"
+  # updated 2023-9-20
+  # the installed libcurl is 'minimal' and should be replaced.
+  # 38: pre-installed: libogg opus
+  pkglist="ffmpeg python3-mutagen libcurl opusfile chromaprint-tools"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
-  # updated 2023-8-8
-  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0 libopusfile0"
+  # updated 2023-9-20
+  sudo systemctl stop pkgkit
+  pkglist="ffmpeg-4 python3-mutagen libcurl4 libogg0 libopus0 libopusfile0 chromaprint-fpcalc"
 fi
+
+sudo -v
 
 pkglist="$pkglist vlc"
 if [[ -f /usr/bin/apt || -f /usr/bin/zypper ]]; then
@@ -178,6 +184,8 @@ if [[ "$pkgprog" != "" && "$pkglist" != "" ]]; then
   echo "-- Proceed with package installation?"
   gr=$(getresponse)
 fi
+
+sudo -v
 
 if [[ -f /usr/bin/pacman ]]; then
   # manjaro linux may have vlc-nightly installed.

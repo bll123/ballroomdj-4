@@ -365,7 +365,7 @@ START_TEST(dance_delete)
   ilistidx_t  diteridx;
   int         count;
   const char  *val;
-  char        *dval;
+  char        *dval = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_delete");
   mdebugSubTag ("dance_delete");
@@ -391,7 +391,7 @@ START_TEST(dance_delete)
     ck_assert_int_ne (dkey, key);
     ck_assert_str_ne (val, dval);
   }
-  mdfree (dval);
+  dataFree (dval);
 
   danceFree (dance);
   bdjvarsdfloadCleanup ();
@@ -405,7 +405,7 @@ START_TEST(dance_add)
   ilistidx_t  key;
   ilistidx_t  diteridx;
   int         rc;
-  const char  *val;
+  const char  *val = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_add");
   mdebugSubTag ("dance_add");

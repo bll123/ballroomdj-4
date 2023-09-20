@@ -10,8 +10,8 @@ cwd=$(pwd)
 
 cd check
 for f in *.c */*.c; do
-  ca=$(egrep START_TEST $f| wc -l)
-  cb=$(egrep END_TEST $f | wc -l)
+  ca=$(grep -E START_TEST $f| wc -l)
+  cb=$(grep -E END_TEST $f | wc -l)
   if [[ $ca -ne $cb ]]; then
     echo $f
   fi

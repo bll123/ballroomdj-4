@@ -17,17 +17,6 @@ find_package (PkgConfig)
 find_package (Intl)
 find_package (Iconv)
 
-# does not work on windows. find_library() fails.
-find_package (LIBVLC)
-
-# so hard-code the paths.
-# the library path will always be valid.
-if (NOT LIBVLC_LIBRARY)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.16")
-  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
-  set (LIBVLC_FOUND TRUE)
-endif()
-
 #### BDJ4 UI type
 
 # check for all supported ui interfaces
@@ -79,6 +68,24 @@ if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PIPEWIRE libpipewire-0.3)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
+
+#### VLC
+
+# pkg_check_modules (LIBVLC libvlc)
+
+if (NOT LIBVLC_FOUND)
+  find_package (LIBVLC)
+endif()
+if (NOT WIN32 AND NOT LIBVLC_FOUND)
+  set (LIBVLC_LIBRARY "-lvlc")
+  set (LIBVLC_FOUND TRUE)
+endif()
+# windows will not find any vlc include files in the vlc dir
+if (WIN32 AND NOT LIBVLC_FOUND)
+  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.16")
+  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+  set (LIBVLC_FOUND TRUE)
+endif()
 
 #### tag parsing modules
 
@@ -212,6 +219,8 @@ if (WIN32)
   # msys2 puts the include files for ICU in /usr/include
   add_compile_options (-I/usr/include)
 else()
+  # suse and fedora put the ffmpeg include files down a level
+  add_compile_options (-I/usr/include/ffmpeg)
   add_compile_options (-I${ICUI18N_INCLUDE_DIRS})
 endif()
 

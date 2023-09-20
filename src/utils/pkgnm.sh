@@ -44,14 +44,27 @@ function pkgnmgetdata {
   pn_arch=$(uname -m)
   case ${pn_systype} in
     Linux)
-      pn_tag=linux
+      pn_tag=linux-debian12
       pn_sfx=
       pn_archtag=
-      dver=$(cat /etc/debian_version)
-      case ${dver} in
-        11*)
-          pn_tag=linux-older
+      tid=$(grep '^ID=' /etc/os-release | sed 's/^ID=//')
+      case ${tid} in
+        fedora)
+          pn_tag=linux-fedora
           ;;
+        *SUSE)
+          pn_tag=linux-suse
+          ;;
+        debian)
+          dver=$(cat /etc/debian_version)
+          case ${dver} in
+            11*)
+              pn_tag=linux-debian11
+              ;;
+            12*)
+              pn_tag=linux-debian12
+              ;;
+          esac
       esac
       ;;
     Darwin)

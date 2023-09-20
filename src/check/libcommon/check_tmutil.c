@@ -80,8 +80,9 @@ START_TEST(mssleep_ms)
   val = 30;
   /* running on a VM is slower */
   /* windows is quite bad on a VM */
+  /* the opensuse VM is quite bad */
   if (sysvarsGetNum (SVL_IS_VM)) {
-    val = 60;
+    val = 200;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
 }

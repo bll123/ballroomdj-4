@@ -60,53 +60,53 @@ sanitizeundef:
 .PHONY: cmake
 cmake:
 	if test $$(uname -s) = Linux; then \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpu
 cmakesinglecpu:
 	if test $$(uname -s) = Linux; then \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  $(MAKE) build; \
 	else \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpuverbose
 cmakesinglecpuverbose:
 	if test $$(uname -s) = Linux; then \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  VERBOSE=1 $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  VERBOSE=1 $(MAKE) build; \
 	else \
-	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
 	  VERBOSE=1 $(MAKE) build; \
 	fi
 
 .PHONY: cmakeclang
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  COMP=/ucrt64/bin/clang.exe \
-	  COMPXX=/ucrt64/bin/clang++.exe \
+	  CC=/ucrt64/bin/clang.exe \
+	  CXX=/ucrt64/bin/clang++.exe \
 	  $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi
@@ -116,8 +116,8 @@ cmake-unix:
 	. ../VERSION.txt; \
 	cmake \
 		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
-		-DCMAKE_C_COMPILER=$(COMP) \
-		-DCMAKE_CXX_COMPILER=$(COMPXX) \
+		-DCMAKE_C_COMPILER=$(CC) \
+		-DCMAKE_CXX_COMPILER=$(CXX) \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
@@ -127,9 +127,8 @@ cmake-windows:
 	. ../VERSION.txt; \
 	cmake \
 		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
-		-DCMAKE_C_COMPILER=$(COMP) \
-		-DCMAKE_C_COMPILER="$(COMP)" \
-		-DCMAKE_CXX_COMPILER="$(COMPXX)" \
+		-DCMAKE_C_COMPILER=$(CC) \
+		-DCMAKE_CXX_COMPILER="$(CXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-G "MSYS Makefiles" \

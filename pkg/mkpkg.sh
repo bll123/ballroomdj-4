@@ -66,12 +66,14 @@ function copyreleasefiles {
   if [[ ! -d plocal/bin ]];then
     mkdir -p plocal/bin
   fi
-  if [[ ! -d plocal/lib ]];then
-    mkdir -p plocal/lib
-  fi
   case ${tag} in
     linux)
-      dirlist+=" plocal/lib"
+      if [[ -d plocal/lib ]]; then
+        dirlist+=" plocal/lib"
+      fi
+      if [[ -d plocal/lib64 ]]; then
+        dirlist+=" plocal/lib64"
+      fi
       ;;
     macos)
       dirlist+=" plocal/lib"
@@ -141,7 +143,8 @@ function copyreleasefiles {
       ${stage}/plocal/bin/mp4*
   rm -rf \
       ${stage}/img/profile0[0-9] \
-      ${stage}/plocal/lib/pkgconfig
+      ${stage}/plocal/lib/pkgconfig \
+      ${stage}/plocal/lib64/pkgconfig
 
   # the graphics-linked launcher is not used on linux or windows
   case ${tag} in

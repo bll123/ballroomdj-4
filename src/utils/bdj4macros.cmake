@@ -52,6 +52,7 @@ macro (updateRPath name)
         PROPERTY INSTALL_RPATH
         "\${ORIGIN}"
         "\${ORIGIN}/../plocal/lib"
+        "\${ORIGIN}/../plocal/lib64"
     )
   endif()
 endmacro()

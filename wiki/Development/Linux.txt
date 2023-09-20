@@ -1,6 +1,29 @@
 [Wiki Home](Home)
 
-Red Hat based
+##### Debian based
+
+~~~
+apt update
+apt full-upgrade
+apt install name
+apt remove name
+apt-cache search name
+~~~
+
+Debian packages for development
+
+~~~
+apt install cmake make gcc g++ gobjc check
+apt install ffmpeg librsvg2-bin libcurl4
+apt install pipewire-devel libcurl-devel libgtk-3-dev
+apt install libvlc-dev libvlccore-dev
+apt install libpulse-dev libpipewire-0.3-dev libssl-dev libgcrypt-dev
+apt install libogg-dev libopus-dev libopusfile-dev
+apt install libavformat-dev libavutil-dev
+usermod -a -G vboxsf <user>
+~~~
+
+##### Red Hat based
 
 ~~~
 dnf upgrade           # update everything
@@ -9,9 +32,27 @@ dnf upgrade name
 dnf remove name
 dnf search name
 dnf info name
+systemctl enable sshd
+systemctl start sshd
 ~~~
 
-Arch based
+Fedora packages for development
+
+~~~
+dnf install cmake make gcc gcc-c++ gcc-objc
+dnf install pipewire-devel libcurl-devel gtk3-devel vlc-devel
+dnf install pulseaudio-libs-devel openssl-devel libgcrypt-devel
+dnf install libogg-devel opus-devel opusfile-devel
+dnf install libavformat-devel check-devel
+~~~
+
+Other notes
+
+~~~
+usermod -a -G vboxsf <user>
+~~~
+
+##### Arch based
 
 ~~~
 pacman -Syu       # update everything
@@ -21,14 +62,52 @@ pacman -Ss name   # search
 pacman -Rcns name # remove and remove dependencies
 ~~~
 
-OpenSUSE
+Manjaro packages for development
 
 ~~~
+pacman -S cmake make gcc gcc-objc
+pacman -S pipewire curl gtk3 vlc
+pacman -S pulseaudio libgcrypt
+pacman -S libogg opus opusfile
+pacman -S ffmpeg4.4 check pkgconfig
+~~~
+
+Other notes
+
+~~~
+usermod -a -G vboxsf <user>
+# edit /etc/locale.gen
+locale-gen
+~~~
+
+##### OpenSUSE
+
+~~~
+systemctl stop pkgkit
 zypper refresh
 zypper update
 zypper install name
 zypper search name
 zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest-tools
+~~~
+
+OpenSUSE packages for development
+
+~~~
+zypper install cmake make gcc12 gcc12-c++ gcc12-objc
+zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
+zypper install libpulse-devel libopenssl-devel libgcrypt-devel
+zypper install libogg-devel libopus-devel opusfile-devel
+zypper install libavformat-devel check-devel libxml2-devel
+zypper remove gcc7
+zypper refresh
+zypper update
+~~~
+
+Other notes:
+
+~~~
+usermod -a -G vboxsf <user>
 ~~~
 
 [Wiki Home](Home)

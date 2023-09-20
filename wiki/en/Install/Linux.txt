@@ -66,13 +66,15 @@ Download the Linux installer from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-The bdj4-install-linux-older-VERSION file is linked with
-<br>&nbsp;&nbsp;libavcodec.so.58, libavformat.so.58, and libavutil.so.56.
-<br>&nbsp;&nbsp;(e.g. Debian 11)
+Choose the appropriate installer.
+<br>The Debian 11 installer is built on MX Linux 21.
+<br>The Debian 12 installer is built on MX Linux 23.
+<br>The Fedora installer is built on Fedora 38.
+<br>The Arch installer is built on Manjaro 23.
+<br>The OpenSUSE installer is built on OpenSUSE 15.4.
 
-The bdj4-install-linux-VERSION file is linked with
-<br>&nbsp;&nbsp;libavcodec.so.59, libavformat.so.59, and libavutil.so.57.
-<br>&nbsp;&nbsp;(e.g. Debian 12)
+If you have a Linux system where BDJ4 fails to work,
+please [let me know](Getting%20Help).
 
 Be sure to exit BDJ4 if it is already started.
 
@@ -80,7 +82,7 @@ Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
 ~~~
-$HOME/Downloads/bdj4-installer-linux-4.3.3.1
+$HOME/Downloads/bdj4-installer-linux-debian12-4.4.0
 ~~~
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4

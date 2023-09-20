@@ -23,7 +23,7 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
     fi
     cmake --build "${bdir}" ${cmpbld}
     cmake --install "${bdir}"
-    rm -rf "${INSTLOC}/lib/cmake"
+    rm -rf "${INSTLOC}/lib/cmake" "${INSTLOC}/lib64/cmake"
     if [[ $platform != windows && $clean == T ]]; then
       rm -rf "${bdir}"
     fi
