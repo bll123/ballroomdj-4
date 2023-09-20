@@ -44,7 +44,7 @@ function pkgnmgetdata {
   pn_arch=$(uname -m)
   case ${pn_systype} in
     Linux)
-      pn_tag=linux-debian12
+      pn_tag=linux-unknown
       pn_sfx=
       pn_archtag=
       tid=$(grep '^ID=' /etc/os-release | sed 's/^ID=//')
@@ -52,8 +52,11 @@ function pkgnmgetdata {
         fedora)
           pn_tag=linux-fedora
           ;;
-        *SUSE)
-          pn_tag=linux-suse
+        opensuse*)
+          pn_tag=linux-opensuse
+          ;;
+        manjaro*)
+          pn_tag=linux-arch
           ;;
         debian)
           dver=$(cat /etc/debian_version)
