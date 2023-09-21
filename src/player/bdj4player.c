@@ -1747,7 +1747,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-        playerData->playerState, plstateDebugText (playerData->playerState));
+        playerData->playerState, logPlstateDebugText (playerData->playerState));
     snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
@@ -1908,7 +1908,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "repeat%c%d%c"
       "prepqueuecount%c%d%c"
       "currentsink%c%s",
-      MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
+      MSG_ARGS_RS, logPlstateDebugText (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,

@@ -573,7 +573,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
-              mainData->playerState, plstateDebugText (mainData->playerState));
+              mainData->playerState, logPlstateDebugText (mainData->playerState));
           mainData->marqueeChanged = true;
           if (mainData->playerState == PL_STATE_STOPPED) {
             ++mainData->pbfinishrcv;
@@ -2146,7 +2146,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   }
 
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-      mainData->playerState, plstateDebugText (mainData->playerState));
+      mainData->playerState, logPlstateDebugText (mainData->playerState));
 
   if (! mainData->finished && mainData->playerState != PL_STATE_PAUSED) {
     /* grab a song out of the music queue and start playing */
@@ -2209,7 +2209,7 @@ mainMusicQueuePlay (maindata_t *mainData)
         }
       } else {
         logMsg (LOG_DBG, LOG_INFO, "no more songs; pl-state: %d/%s; finished <= true",
-            mainData->playerState, plstateDebugText (mainData->playerState));
+            mainData->playerState, logPlstateDebugText (mainData->playerState));
         mainData->finished = true;
         mainData->marqueeChanged = true;
       }

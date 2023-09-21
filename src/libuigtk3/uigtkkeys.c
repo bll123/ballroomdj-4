@@ -357,9 +357,9 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   }
 
   uikey->ismaskedkey = false;
-  if ((event->state & GDK_CONTROL_MASK) ||
-      (event->state & GDK_META_MASK) ||
-      (event->state & GDK_SUPER_MASK)) {
+  if (((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) ||
+      ((event->state & GDK_META_MASK) == GDK_META_MASK) ||
+      ((event->state & GDK_SUPER_MASK) == GDK_SUPER_MASK)) {
     uikey->ismaskedkey = true;
   }
 

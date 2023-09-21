@@ -33,7 +33,7 @@
 #include "bdjstring.h"
 
 /* for debugging and for test suite */
-static char *playerstateTxt [PL_STATE_MAX] = {
+static const char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_UNKNOWN] = "unknown",
   [PL_STATE_STOPPED] = "stopped",
   [PL_STATE_LOADING] = "loading",
@@ -41,6 +41,15 @@ static char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_PAUSED] = "paused",
   [PL_STATE_IN_FADEOUT] = "in-fadeout",
   [PL_STATE_IN_GAP] = "in-gap",
+};
+
+/* for debugging */
+static const char *stateTxt [BDJ4_STATE_MAX] = {
+  [BDJ4_STATE_OFF] = "off",
+  [BDJ4_STATE_START] = "start",
+  [BDJ4_STATE_WAIT] = "wait",
+  [BDJ4_STATE_PROCESS] = "process",
+  [BDJ4_STATE_FINISH] = "finish",
 };
 
 typedef struct bdjlog {
@@ -242,10 +251,24 @@ logCheck (logidx_t idx, loglevel_t level)
 }
 
 /* for debugging */
-char *
-plstateDebugText (playerstate_t plstate)
+const char *
+logPlstateDebugText (playerstate_t plstate)
 {
+  if (plstate < 0 || plstate >= PL_STATE_MAX) {
+    return "invalid";
+  }
+
   return playerstateTxt [plstate];
+}
+
+const char *
+logStateDebugText (int state)
+{
+  if (state < 0 || state >= BDJ4_STATE_MAX) {
+    return "invalid";
+  }
+
+  return stateTxt [state];
 }
 
 enum {

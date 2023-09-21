@@ -44,6 +44,7 @@ typedef struct audioid {
   nlist_t           *respidx;
   nlistidx_t        respiter;
   ilist_t           *resp;
+  nlist_t           *dupchklist;
   int               state;
   int               statecount;
   int               respcount [AUDIOID_TYPE_MAX];
@@ -72,6 +73,19 @@ audioidInit (void)
     audioid->respcount [i] = 0;
   }
   audioidParseInit ();
+
+  audioid->dupchklist = nlistAlloc ("auid-chk-list", LIST_UNORDERED, NULL);
+  for (int i = 0; i < TAG_KEY_MAX; ++i) {
+    if (i == TAG_AUDIOID_SCORE) {
+      /* score is not added to the duplicate check */
+      continue;
+    }
+    if (tagdefs [i].isAudioID) {
+      nlistSetNum (audioid->dupchklist, i, i);
+    }
+  }
+  nlistSort (audioid->dupchklist);
+
   return audioid;
 }
 
@@ -88,6 +102,7 @@ audioidFree (audioid_t *audioid)
   mbFree (audioid->mb);
   acoustidFree (audioid->acoustid);
   acrFree (audioid->acr);
+  nlistFree (audioid->dupchklist);
   mdfree (audioid);
 }
 
@@ -114,7 +129,6 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid->state == BDJ4_STATE_FINISH) {
     audioid->state = BDJ4_STATE_START;
     audioid->statecount = AUDIOID_TYPE_ACOUSTID;
-//    audioid->statecount = AUDIOID_TYPE_ACRCLOUD;
     audioid->mbmatch = false;
   }
 
@@ -165,8 +179,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid->statecount = AUDIOID_TYPE_ACOUSTID;
       audioid->state = BDJ4_STATE_PROCESS;
     }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64 "ms",
-        audioid->state, (int64_t) mstimeend (&starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d/%s time: %" PRId64 "ms",
+        audioid->state, logStateDebugText (audioid->state), (int64_t) mstimeend (&starttm));
     return false;
   }
 
@@ -175,6 +189,11 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   }
 
   if (audioid->state == BDJ4_STATE_PROCESS) {
+    nlist_t     *orespidx;
+    ilistidx_t  prevkey = -1;
+    nlistidx_t  idxkey = -1;
+    nlistidx_t  riiter;
+
     nlistSetSize (audioid->respidx, ilistGetCount (audioid->resp));
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: total responses: %d",
@@ -191,6 +210,15 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       } else {
         score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
       }
+
+      str = ilistGetStr (audioid->resp, key, TAG_TITLE);
+      if (str == NULL || ! *str) {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%d no title, reject", key);
+        /* acoustid can return results with id and score and no data */
+        /* do not add this to the response index list */
+        continue;
+      }
+
       if (score < AUDIOID_MIN_SCORE) {
         logMsg (LOG_DBG, LOG_AUDIO_ID, "%d score %.1f < %.1f, reject",
             key, score, AUDIOID_MIN_SCORE);
@@ -198,7 +226,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         continue;
       }
 
-      /* for a musicbrainz match, do not process matching checks */
+      /* for a musicbrainz match, do not process the duration check */
       if (! audioid->mbmatch) {
         str = ilistGetStr (audioid->resp, key, TAG_DURATION);
         if (str != NULL) {
@@ -219,11 +247,61 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       nlistSetNum (audioid->respidx, 1000 - (int) (score * 10.0), key);
     }
     nlistSort (audioid->respidx);
+
+    orespidx = audioid->respidx;
+    audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
+
+    /* duplicate removal */
+    /* traverse the response index list and build a new response index */
+    /* this is very simplistic and may not do a great job */
+    nlistStartIterator (orespidx, &riiter);
+    while ((idxkey = nlistIterateKey (orespidx, &riiter)) >= 0) {
+      nlistidx_t  dupiter;
+      nlistidx_t  duptag;
+      nlistidx_t  rikey;
+      bool        match = true;
+
+      rikey = nlistGetNum (orespidx, idxkey);
+      if (prevkey < 0) {
+        nlistSetNum (audioid->respidx, idxkey, rikey);
+        prevkey = rikey;
+        continue;
+      }
+
+      nlistStartIterator (audioid->dupchklist, &dupiter);
+      while ((duptag = nlistIterateKey (audioid->dupchklist, &dupiter)) >= 0) {
+        const char  *vala;
+        const char  *valb;
+
+        vala = ilistGetStr (audioid->resp, prevkey, duptag);
+        valb = ilistGetStr (audioid->resp, rikey, duptag);
+        if (vala != NULL && valb != NULL &&
+            strcmp (vala, valb) != 0) {
+          match = false;
+          break;
+        }
+      }
+
+      if (match) {
+        /* there is no difference in data between this and the last */
+        /* do not add it to the respidx list */
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%d dup data, reject", rikey);
+      } else {
+        nlistSetNum (audioid->respidx, idxkey, rikey);
+      }
+
+      prevkey = rikey;
+    }
+    nlistFree (orespidx);
+    nlistSort (audioid->respidx);
+
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: usable responses: %d",
+        nlistGetCount (audioid->respidx));
     audioid->state = BDJ4_STATE_FINISH;
   }
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d time: %" PRId64 "ms",
-      audioid->state, (int64_t) mstimeend (&starttm));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d/%s time: %" PRId64 "ms",
+      audioid->state, logStateDebugText (audioid->state), (int64_t) mstimeend (&starttm));
   return audioid->state == BDJ4_STATE_FINISH ? true : false;
 }
 

@@ -97,7 +97,7 @@ OpenSUSE packages for development
 zypper install cmake make gcc12 gcc12-c++ gcc12-objc
 zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 zypper install libpulse-devel libopenssl-devel libgcrypt-devel
-zypper install libogg-devel libopus-devel opusfile-devel libvorvis-devel
+zypper install libogg-devel libopus-devel opusfile-devel libvorbis-devel
 zypper install flac-devel libavformat-devel check-devel libxml2-devel
 zypper remove gcc7
 zypper refresh

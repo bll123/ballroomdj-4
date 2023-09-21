@@ -126,10 +126,9 @@ typedef struct aid_internal {
   bool                repeating : 1;
 } aid_internal_t;
 
-static void uiaudioidAddDisplay (uiaudioid_t *songedit, uiwcont_t *col);
+static void uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);
 static void uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx);
 static bool uiaudioidSaveCallback (void *udata);
-static bool uiaudioidSave (void *udata, nlist_t *chglist);
 static bool uiaudioidFirstSelection (void *udata);
 static bool uiaudioidPreviousSelection (void *udata);
 static bool uiaudioidNextSelection (void *udata);
@@ -158,6 +157,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->displaylist = NULL;
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
+  audioidint->currrow = -1;
   /* select-change bypass will be true until the data is first loaded */
   audioidint->selchgbypass = true;
   audioidint->repeating = false;
@@ -280,18 +280,18 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStart (audioidint->wcont [UIAUID_W_MAIN_VBOX], hbox);
 
   audioidint->callbacks [UIAUID_CB_FIRST] = callbackInit (
-      uiaudioidFirstSelection, uiaudioid, "songedit: first");
+      uiaudioidFirstSelection, uiaudioid, "audioid: first");
   uibutton = uiCreateButton (audioidint->callbacks [UIAUID_CB_FIRST],
-      /* CONTEXT: song editor : first song */
+      /* CONTEXT: audio identification: first song */
       _("First"), NULL);
   audioidint->buttons [UIAUID_BUTTON_FIRST] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
 
   audioidint->callbacks [UIAUID_CB_PREV] = callbackInit (
-      uiaudioidPreviousSelection, uiaudioid, "songedit: previous");
+      uiaudioidPreviousSelection, uiaudioid, "audioid: previous");
   uibutton = uiCreateButton (audioidint->callbacks [UIAUID_CB_PREV],
-      /* CONTEXT: song editor : previous song */
+      /* CONTEXT: audio identification: previous song */
       _("Previous"), NULL);
   audioidint->buttons [UIAUID_BUTTON_PREV] = uibutton;
   uiButtonSetRepeat (uibutton, REPEAT_TIME);
@@ -299,9 +299,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStart (hbox, uiwidgetp);
 
   audioidint->callbacks [UIAUID_CB_NEXT] = callbackInit (
-      uiaudioidNextSelection, uiaudioid, "songedit: next");
+      uiaudioidNextSelection, uiaudioid, "audioid: next");
   uibutton = uiCreateButton (audioidint->callbacks [UIAUID_CB_NEXT],
-      /* CONTEXT: song editor : next song */
+      /* CONTEXT: audio identification: next song */
       _("Next"), NULL);
   audioidint->buttons [UIAUID_BUTTON_NEXT] = uibutton;
   uiButtonSetRepeat (uibutton, REPEAT_TIME);
@@ -309,9 +309,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStart (hbox, uiwidgetp);
 
   audioidint->callbacks [UIAUID_CB_SAVE] = callbackInit (
-      uiaudioidSaveCallback, uiaudioid, "songedit: save");
+      uiaudioidSaveCallback, uiaudioid, "audioid: save");
   uibutton = uiCreateButton (audioidint->callbacks [UIAUID_CB_SAVE],
-      /* CONTEXT: song editor : save data */
+      /* CONTEXT: audio identification: save data */
       _("Save"), NULL);
   audioidint->buttons [UIAUID_BUTTON_SAVE] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
@@ -469,6 +469,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   audioidint->typelist = mdmalloc (sizeof (int) * UIAUID_COL_MAX);
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
+  audioidint->currrow = -1;
   audioidint->typelist [UIAUID_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
   audioidint->typelist [UIAUID_COL_FONT] = TREE_TYPE_STRING;
   audioidint->typelist [UIAUID_COL_COLOR] = TREE_TYPE_STRING;
@@ -555,7 +556,6 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   }
 
   uiTreeViewSelectSet (audioidint->alistTree, row);
-  audioidint->currrow = row;
   uisongSetDisplayColumns (audioidint->listsellist, song, UIAUID_COL_MAX,
       uiaudioidSetSongDataCallback, uiaudioid);
   uiaudioidDisplayDuration (uiaudioid, song);
@@ -621,7 +621,6 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   col = UIAUID_COL_MAX;
   slistStartIterator (audioidint->listsellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
-    audioidint->currrow = audioidint->setrow;
     if (tagidx == TAG_AUDIOID_SCORE) {
       char    tmp [40];
       double  dval;
@@ -784,25 +783,45 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
 static bool
 uiaudioidSaveCallback (void *udata)
 {
-  uiaudioid_t    *uiaudioid = udata;
-
-  return uiaudioidSave (uiaudioid, NULL);
-}
-
-static bool
-uiaudioidSave (void *udata, nlist_t *chglist)
-{
-  uiaudioid_t    *uiaudioid = udata;
-  aid_internal_t   *audioidint =  NULL;
+  uiaudioid_t       *uiaudioid = udata;
+  aid_internal_t    *audioidint = NULL;
+  nlist_t           *dlist;
 
   logProcBegin (LOG_PROC, "uiaudioidSaveCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: save");
   audioidint = uiaudioid->audioidInternalData;
 
   uiLabelSetText (uiaudioid->statusMsg, "");
+  if (audioidint->currrow < 0) {
+    return UICB_CONT;
+  }
+
+  dlist = nlistGetList (audioidint->displaylist, audioidint->currrow);
+  for (int count = 0; count < audioidint->itemcount; ++count) {
+    int     tagidx;
+
+    tagidx = audioidint->items [count].tagidx;
+    if (uiToggleButtonIsActive (audioidint->items [count].selrb)) {
+      const char  *val;
+      int32_t     nval;
+
+      val = nlistGetStr (dlist, tagidx);
+      nval = LIST_VALUE_INVALID;
+      if (val != NULL && *val) {
+        if (tagdefs [tagidx].valueType == VALUE_NUM) {
+          nval = atol (val);
+fprintf (stderr, "set-n %d/%s to %d\n", tagidx, tagdefs [tagidx].tag, nval);
+          songSetNum (audioidint->song, tagidx, nval);
+        } else {
+fprintf (stderr, "set-s %d/%s to %s\n", tagidx, tagdefs [tagidx].tag, val);
+          songSetStr (audioidint->song, tagidx, val);
+        }
+      }
+    }
+  }
 
   if (uiaudioid->savecb != NULL) {
-    /* the callback re-loads the song editor */
+    /* the callback re-loads the song editor and audio id */
     callbackHandlerLong (uiaudioid->savecb, audioidint->dbidx);
   }
 
@@ -816,7 +835,7 @@ uiaudioidFirstSelection (void *udata)
   uiaudioid_t  *uiaudioid = udata;
 
   logProcBegin (LOG_PROC, "uiaudioidFirstSelection");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: first");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: first");
   uisongselFirstSelection (uiaudioid->uisongsel);
   logProcEnd (LOG_PROC, "uiaudioidFirstSelection", "");
   return UICB_CONT;
@@ -827,8 +846,9 @@ uiaudioidPreviousSelection (void *udata)
 {
   uiaudioid_t  *uiaudioid = udata;
 
+  uiLabelSetText (uiaudioid->statusMsg, "");
   logProcBegin (LOG_PROC, "uiaudioidPreviousSelection");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: previous");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: previous");
   uisongselPreviousSelection (uiaudioid->uisongsel);
   logProcEnd (LOG_PROC, "uiaudioidPreviousSelection", "");
   return UICB_CONT;
@@ -839,8 +859,9 @@ uiaudioidNextSelection (void *udata)
 {
   uiaudioid_t  *uiaudioid = udata;
 
+  uiLabelSetText (uiaudioid->statusMsg, "");
   logProcBegin (LOG_PROC, "uiaudioidNextSelection");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: next");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: next");
   uisongselNextSelection (uiaudioid->uisongsel);
   logProcEnd (LOG_PROC, "uiaudioidNextSelection", "");
   return UICB_CONT;
@@ -911,9 +932,13 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
     return;
   }
 
-  if (idx >= 0 && idx < audioidint->rowcount) {
-    dlist = nlistGetList (audioidint->displaylist, idx);
+  audioidint->currrow = -1;
+  if (idx < 0 || idx >= audioidint->rowcount) {
+    return;
   }
+
+  audioidint->currrow = idx;
+  dlist = nlistGetList (audioidint->displaylist, idx);
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
     int tagidx = audioidint->items [count].tagidx;
