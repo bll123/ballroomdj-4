@@ -42,7 +42,13 @@ LIBMP4TAGVER=1.2.7
 if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
     ! -f plocal/lib64/libmp4tag.so.${LIBMP4TAGVER}  &&
     ! -f plocal/bin/libmp4tag.dll &&
-    ! -f plocal/lib/libmp4tag.dylib.${LIBMP4TAGVER} ]]; then
+    ! -f plocal/lib/libmp4tag.${LIBMP4TAGVER}.dylib ]]; then
+  echo "libmp4tag is not up to date"
+  exit 1
+fi
+grep 'LIBMP4TAG_VERS_REVISION 7' plocal/include/libmp4tag.h > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
   echo "libmp4tag is not up to date"
   exit 1
 fi
