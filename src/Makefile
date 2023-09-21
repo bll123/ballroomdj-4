@@ -59,7 +59,7 @@ sanitizeundef:
 # parallel doesn't seem to work under msys2
 .PHONY: cmake
 cmake:
-	if test $$(uname -s) = Linux; then \
+	@if test $$(uname -s) = Linux; then \
 	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
@@ -72,7 +72,7 @@ cmake:
 
 .PHONY: cmakesinglecpu
 cmakesinglecpu:
-	if test $$(uname -s) = Linux; then \
+	@if test $$(uname -s) = Linux; then \
 	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
@@ -85,7 +85,7 @@ cmakesinglecpu:
 
 .PHONY: cmakesinglecpuverbose
 cmakesinglecpuverbose:
-	if test $$(uname -s) = Linux; then \
+	@if test $$(uname -s) = Linux; then \
 	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
 	  VERBOSE=1 $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
@@ -98,7 +98,7 @@ cmakesinglecpuverbose:
 
 .PHONY: cmakeclang
 cmakeclang:
-	if test $$(uname -s) = Linux; then \
+	@if test $$(uname -s) = Linux; then \
 	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
