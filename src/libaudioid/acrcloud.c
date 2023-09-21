@@ -127,7 +127,6 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
-  dataFree (ffn);
 
   snprintf (uri, sizeof (uri), "https://%s/v1/identify",
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST));

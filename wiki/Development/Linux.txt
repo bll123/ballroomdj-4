@@ -18,8 +18,8 @@ apt install ffmpeg librsvg2-bin libcurl4
 apt install pipewire-devel libcurl-devel libgtk-3-dev
 apt install libvlc-dev libvlccore-dev
 apt install libpulse-dev libpipewire-0.3-dev libssl-dev libgcrypt-dev
-apt install libogg-dev libopus-dev libopusfile-dev
-apt install libavformat-dev libavutil-dev
+apt install libogg-dev libopus-dev libopusfile-dev libvorbis-dev libflac-dev
+apt install libavformat-dev libavutil-dev libicu-dev
 usermod -a -G vboxsf <user>
 ~~~
 
@@ -42,7 +42,7 @@ Fedora packages for development
 dnf install cmake make gcc gcc-c++ gcc-objc
 dnf install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 dnf install pulseaudio-libs-devel openssl-devel libgcrypt-devel
-dnf install libogg-devel opus-devel opusfile-devel
+dnf install libogg-devel opus-devel opusfile-devel flac-devel
 dnf install libavformat-devel check-devel
 ~~~
 
@@ -65,11 +65,11 @@ pacman -Rcns name # remove and remove dependencies
 Manjaro packages for development
 
 ~~~
-pacman -S cmake make gcc gcc-objc
-pacman -S pipewire curl gtk3 vlc
-pacman -S pulseaudio libgcrypt
-pacman -S libogg opus opusfile
-pacman -S ffmpeg4.4 check pkgconfig
+pacman -S --needed cmake make gcc gcc-objc
+pacman -S --needed pipewire curl gtk3 vlc
+pacman -S --needed pulseaudio libgcrypt
+pacman -S --needed libogg opus opusfile libvorbis flac
+pacman -S --needed ffmpeg4.4 check pkgconfig
 ~~~
 
 Other notes
@@ -97,8 +97,8 @@ OpenSUSE packages for development
 zypper install cmake make gcc12 gcc12-c++ gcc12-objc
 zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 zypper install libpulse-devel libopenssl-devel libgcrypt-devel
-zypper install libogg-devel libopus-devel opusfile-devel
-zypper install libavformat-devel check-devel libxml2-devel
+zypper install libogg-devel libopus-devel opusfile-devel libvorvis-devel
+zypper install flac-devel libavformat-devel check-devel libxml2-devel
 zypper remove gcc7
 zypper refresh
 zypper update

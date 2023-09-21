@@ -5,7 +5,16 @@
 # dependents:
 #   libogg
 
-# built on all platforms
+case ${systype} in
+  Linux)
+    exit 0
+    ;;
+  Darwin)
+    exit 0
+    ;;
+  MINGW64*)
+    ;;
+esac
 
 if [[ $pkgname == "" || $pkgname = "libvorbis" ]]; then
   cd $cwd

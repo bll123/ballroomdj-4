@@ -52,18 +52,18 @@ licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
-if [[ $tag == linux || $tag == macos ]]; then
-  cp -pf packages/icu-release*/icu4c/LICENSE ${licdir}/icu.LICENCE
+if [[ $tag == macos ]]; then
+  cp -pf packages/icu-release*/icu4c/LICENSE ${licdir}/icu.LICENSE
 fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
-cp -pf packages/libvorbis*/COPYING ${licdir}/libvorbis.LICENSE
-cp -pf packages/flac*/COPYING.Xiph ${licdir}/flac.LICENSE
 cp -pf packages/libmp4tag*/LICENSE.txt ${licdir}/libmp4tag.LICENSE
 if [[ $platform == windows ]]; then
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
   cp -pf packages/libogg*/COPYING ${licdir}/libogg.LICENSE
   cp -pf packages/opus-1*/COPYING ${licdir}/opus.LICENSE
   cp -pf packages/opusfile*/COPYING ${licdir}/opusfile.LICENSE
+  cp -pf packages/flac*/COPYING.Xiph ${licdir}/flac.LICENSE
+  cp -pf packages/libvorbis*/COPYING ${licdir}/libvorbis.LICENSE
 fi
 
 (cd src; make tclean > /dev/null 2>&1)

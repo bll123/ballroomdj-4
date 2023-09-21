@@ -112,12 +112,10 @@ bin/bdj4altsetup\.exe$
 
 # 2023-8-1
 # icu library updated (linux, macos)
-plocal/lib/libicudata\.(so|dylib)\.72$
-plocal/lib/libicudata\.(so|dylib)\.72\.1$
-plocal/lib/libicui18n\.(so|dylib)\.72$
-plocal/lib/libicui18n\.(so|dylib)\.72\.1$
-plocal/lib/libicuuc\.(so|dylib)\.72$
-plocal/lib/libicuuc.(so|dylib)\.72\.1$
+plocal/lib/libicu[a-z]*\.so\.72$
+plocal/lib/libicu[a-z]*\.so\.72\.[0-9]$
+plocal/lib/libicu[a-z]*\.72\.dylib$
+plocal/lib/libicu[a-z]*\.72\.[0-9]\.dylib$
 
 # 2023-9-6
 # not needed
@@ -146,6 +144,13 @@ plocal/share/themes/macOS-Mojave-light$
 # possible unneeded library installed
 plocal/lib/libap4\.dylib$
 
+# 2023-9-20
+# remove unnecessary libraries
+plocal/lib/libvorbis[a-z]*\.(dylib|la)$
+licenses/icu\.LICENCE$
+licenses/libvorbis\.LICENSE$
+licenses/flac\.LICENSE$
+
 ####
 # linux
 
@@ -153,6 +158,19 @@ plocal/lib/libap4\.dylib$
 
 # 2023-7-19 : never used on linux
 bin/bdj4g
+
+# 2023-9-20
+# remove unnecessary libraries
+plocal/lib/libvorbis[a-z]*\.(so|la).*$
+plocal/lib/libicu[a-z]*\.so$
+plocal/lib/libicu[a-z]*\.so\.7[23]$
+plocal/lib/libicu[a-z]*\.so\.7[23]\.[0-9]$
+plocal/lib/libFLAC*\.(so|la)$
+plocal/lib/libFLAC*\.so\.*$
+licenses/icu\.LICENSE$
+licenses/icu\.LICENCE$
+licenses/libvorbis\.LICENSE$
+licenses/flac\.LICENSE$
 
 ####
 # windows

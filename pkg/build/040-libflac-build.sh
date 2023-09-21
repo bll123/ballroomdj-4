@@ -2,6 +2,7 @@
 
 case ${systype} in
   Linux)
+    exit 0
     ;;
   Darwin)
     exit 0
