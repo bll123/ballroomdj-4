@@ -65,3 +65,10 @@ uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
 {
   return;
 }
+
+void
+uiToggleButtonEllipsize (uiwcont_t *uiwidget)
+{
+  return;
+}
+

@@ -32,6 +32,7 @@ void  uiaudioidFree (uiaudioid_t *uiaudioid);
 void  uiaudioidMainLoop (uiaudioid_t *uiaudioid);
 void  uiaudioidSetSaveCallback (uiaudioid_t *uiaudioid, callback_t *uicb);
 bool  uiaudioidIsRepeating (uiaudioid_t *uiaudioid);
+bool  uiaudioidInSave (uiaudioid_t *uiaudioid);
 
 /* uiaudioidui.c */
 void  uiaudioidUIInit (uiaudioid_t *uiaudioid);
@@ -39,6 +40,7 @@ void  uiaudioidUIFree (uiaudioid_t *uiaudioid);
 void  uiaudioidSavePanePosition (uiaudioid_t *uiaudioid);
 uiwcont_t * uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel, uiwcont_t *parentwin, uiwcont_t *statusMsg);
 void  uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx);
+void  uiaudioidResetDisplayList (uiaudioid_t *uiaudioid);
 void  uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist);
 void  uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid);
 void  uiaudioidUIMainLoop (uiaudioid_t *uiaudioid);

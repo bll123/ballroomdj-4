@@ -239,7 +239,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
     acoustid->respcount = audioidParseAll (acoustid->webresponse,
-        acoustid->webresplen, acoustidxpaths, respdata);
+        acoustid->webresplen, acoustidxpaths, respdata, AUDIOID_ID_ACOUSTID);
     logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }

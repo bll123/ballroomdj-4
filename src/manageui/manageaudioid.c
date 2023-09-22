@@ -103,6 +103,7 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
       /* stay in the start state and wait for repeat to go off */
       if (! uiaudioidIsRepeating (maudioid->uiaudioid)) {
         maudioid->state = BDJ4_STATE_WAIT;
+        uiaudioidResetDisplayList (maudioid->uiaudioid);
       }
       break;
     }
@@ -143,7 +144,9 @@ manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx)
 
   uiaudioidLoadData (maudioid->uiaudioid, song, dbidx);
   maudioid->song = song;
-  maudioid->state = BDJ4_STATE_START;
+  if (! uiaudioidInSave (maudioid->uiaudioid)) {
+    maudioid->state = BDJ4_STATE_START;
+  }
 }
 
 void

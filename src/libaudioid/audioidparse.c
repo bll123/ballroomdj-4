@@ -24,8 +24,8 @@
 #include "mdebug.h"
 #include "tagdef.h"
 
-static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, ilist_t *respdata, int level);
-static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, ilist_t *respdata, int level);
+static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, ilist_t *respdata, int level, audioid_id_t ident);
+static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident);
 
 void
 audioidParseInit (void)
@@ -41,7 +41,7 @@ audioidParseCleanup (void)
 
 int
 audioidParseAll (const char *data, size_t datalen,
-    audioidxpath_t *xpaths, ilist_t *respdata)
+    audioidxpath_t *xpaths, ilist_t *respdata, audioid_id_t ident)
 {
   xmlDocPtr           doc;
   xmlXPathContextPtr  xpathCtx;
@@ -80,7 +80,7 @@ audioidParseAll (const char *data, size_t datalen,
   ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, false);
 
   /* the xpaths list must have a tree type in the beginning */
-  audioidParse (xpathCtx, xpaths, 0, respdata, 0);
+  audioidParse (xpathCtx, xpaths, 0, respdata, 0, ident);
 
   respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx + 1;
   logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: respcount: %d\n", respcount);
@@ -93,7 +93,7 @@ audioidParseAll (const char *data, size_t datalen,
 
 static bool
 audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
-    int xpathidx, ilist_t *respdata, int level)
+    int xpathidx, ilist_t *respdata, int level, audioid_id_t ident)
 {
   xmlXPathObjectPtr   xpathObj;
   xmlNodeSetPtr       nodes;
@@ -134,7 +134,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s store joinphrase %s", level*2, "", (const char *) val);
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, (const char *) val);
     }
-    audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respdata, level);
+    audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respdata, level, ident);
     return false;
   }
 
@@ -211,6 +211,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s", level*2, "", respidx, ttagidx, nval);
     }
     if (ttagidx == TAG_AUDIOID_SCORE) {
+      /* acoustid returns a score between 0 and 1.0 */
       ilistSetDouble (respdata, respidx, ttagidx, atof (nval) * 100.0);
     } else if (ttagidx == AUDIOID_TYPE_JOINPHRASE) {
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, nval);
@@ -227,7 +228,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
 
 static bool
 audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
-    int parenttagidx, ilist_t *respdata, int level)
+    int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident)
 {
   int   xidx = 0;
   int   respidx;
@@ -248,13 +249,20 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
       nlistidx_t    key;
       nlist_t       *dlist;
 
+      ilistSetNum (respdata, respidx, AUDIOID_TYPE_IDENT, ident);
+      if (ident == AUDIOID_ID_MB_LOOKUP) {
+        ilistSetDouble (respdata, respidx, TAG_AUDIOID_SCORE, 100.0);
+      }
+
+      /* propagate values to the next response */
       if (respidx > 0) {
         logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: propagate from %d to %d", level*2, "", respidx - 1, respidx);
         dlist = ilistGetDatalist (respdata, respidx - 1);
 
         nlistStartIterator (dlist, &iteridx);
         while ((key = nlistIterateKey (dlist, &iteridx)) >= 0) {
-          if (key == AUDIOID_TYPE_RESPIDX) {
+          if (key == AUDIOID_TYPE_IDENT ||
+              key == AUDIOID_TYPE_RESPIDX) {
             continue;
           }
           if (key == TAG_AUDIOID_SCORE) {
@@ -275,7 +283,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
 
     xidx = 0;
     while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
-      audioidParse (relpathCtx, xpaths, xidx, respdata, level + 1);
+      audioidParse (relpathCtx, xpaths, xidx, respdata, level + 1, ident);
       ++xidx;
     }
 

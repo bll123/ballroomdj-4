@@ -37,17 +37,25 @@ enum {
   AUDIOID_XPATH_END,
 };
 
+typedef enum {
+  AUDIOID_ID_ACOUSTID,
+  AUDIOID_ID_MB_LOOKUP,
+  AUDIOID_ID_ACRCLOUD,
+  AUDIOID_ID_MAX,
+} audioid_id_t;
+
 enum {
   AUDIOID_TYPE_TREE = TAG_KEY_MAX,
   AUDIOID_TYPE_JOINPHRASE = TAG_KEY_MAX + 1,
   AUDIOID_TYPE_MONTH = TAG_KEY_MAX + 2,
   AUDIOID_TYPE_RESPIDX = TAG_KEY_MAX + 3,
   AUDIOID_TYPE_JOINED = TAG_KEY_MAX + 4,
+  AUDIOID_TYPE_IDENT = TAG_KEY_MAX + 5,
 };
 
 void audioidParseInit (void);
 void audioidParseCleanup (void);
-int audioidParseAll (const char *data, size_t datalen, audioidxpath_t *xpaths, ilist_t *respdata);
+int audioidParseAll (const char *data, size_t datalen, audioidxpath_t *xpaths, ilist_t *respdata, audioid_id_t ident);
 
 /* musicbrainz.c */
 

@@ -145,6 +145,9 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   /* releases is used to get the list of releases for this recording */
   /*    a match can then possibly be made by album name/track number */
   /* releases is used to get the list of releases for this recording */
+  /* musicbrainz limits the number of responses to 25, and there appears */
+  /* to be many duplicates.  I could use better filtering. */
+  /* for this reason, musicbrainz is not used as the primary source. */
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
@@ -163,7 +166,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
     mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
-        mbxpaths, respdata);
+        mbxpaths, respdata, AUDIOID_ID_MB_LOOKUP);
     logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }

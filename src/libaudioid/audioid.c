@@ -22,13 +22,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
-enum {
-  AUDIOID_TYPE_ACOUSTID,
-  AUDIOID_TYPE_MUSICBRAINZ,
-  AUDIOID_TYPE_ACRCLOUD,
-  AUDIOID_TYPE_MAX,
-};
-
 /* the duration is often rounded off to the nearest second, */
 /* so there can be a guaranteed difference of 500 milliseconds */
 enum {
@@ -46,9 +39,8 @@ typedef struct audioid {
   ilist_t           *resp;
   nlist_t           *dupchklist;
   int               state;
-  int               statecount;
-  int               respcount [AUDIOID_TYPE_MAX];
-  bool              mbmatch : 1;
+  int               idstate;
+  int               respcount [AUDIOID_ID_MAX];
 } audioid_t;
 
 static double audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx, const song_t *song, double score);
@@ -67,9 +59,8 @@ audioidInit (void)
   audioid->respidx = NULL;
   audioid->resp = NULL;
   audioid->state = BDJ4_STATE_OFF;
-  audioid->statecount = AUDIOID_TYPE_ACOUSTID;
-  audioid->mbmatch = false;
-  for (int i = 0; i < AUDIOID_TYPE_MAX; ++i) {
+  audioid->idstate = AUDIOID_ID_ACOUSTID;
+  for (int i = 0; i < AUDIOID_ID_MAX; ++i) {
     audioid->respcount [i] = 0;
   }
   audioidParseInit ();
@@ -128,8 +119,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
   if (audioid->state == BDJ4_STATE_OFF ||
       audioid->state == BDJ4_STATE_FINISH) {
     audioid->state = BDJ4_STATE_START;
-    audioid->statecount = AUDIOID_TYPE_ACOUSTID;
-    audioid->mbmatch = false;
+    audioid->idstate = AUDIOID_ID_ACOUSTID;
   }
 
   if (audioid->state == BDJ4_STATE_START) {
@@ -146,38 +136,51 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     /* process acoustid first rather than musicbrainz, as it returns */
     /* more data.  if there are no matches, then musicbrainz will be */
     /* used if a musicbrainz recording-id is present */
-    if (audioid->statecount == AUDIOID_TYPE_ACOUSTID) {
-      char    tmp [40];
+    switch (audioid->idstate) {
+      case AUDIOID_ID_ACOUSTID: {
+        char    tmp [40];
 
-      snprintf (tmp, sizeof (tmp), "%ld", (long) songGetNum (song, TAG_DURATION));
-      ilistSetStr (audioid->resp, 0, TAG_DURATION, tmp);
-      audioid->respcount [AUDIOID_TYPE_ACOUSTID] =
-          acoustidLookup (audioid->acoustid, song, audioid->resp);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "acoustid: matches: %d",
-          audioid->respcount [AUDIOID_TYPE_ACOUSTID]);
-      ++audioid->statecount;
-    } else if (audioid->statecount == AUDIOID_TYPE_MUSICBRAINZ) {
-      mbrecid = songGetStr (song, TAG_RECORDING_ID);
-      if (mbrecid != NULL && audioid->respcount [AUDIOID_TYPE_ACOUSTID] == 0) {
-        audioid->respcount [AUDIOID_TYPE_MUSICBRAINZ] =
-          mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
-        logMsg (LOG_DBG, LOG_AUDIO_ID, "musicbrainz: matches: %d",
-            audioid->respcount [AUDIOID_TYPE_MUSICBRAINZ]);
-        if (audioid->respcount [AUDIOID_TYPE_MUSICBRAINZ] > 0) {
-          audioid->state = BDJ4_STATE_PROCESS;
-          audioid->mbmatch = true;
-        }
+        snprintf (tmp, sizeof (tmp), "%ld", (long) songGetNum (song, TAG_DURATION));
+        ilistSetStr (audioid->resp, 0, TAG_DURATION, tmp);
+        audioid->respcount [AUDIOID_ID_ACOUSTID] =
+            acoustidLookup (audioid->acoustid, song, audioid->resp);
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "acoustid: matches: %d",
+            audioid->respcount [AUDIOID_ID_ACOUSTID]);
+
+        ++audioid->idstate;
+        break;
       }
-      ++audioid->statecount;
-    } else if (audioid->statecount == AUDIOID_TYPE_ACRCLOUD) {
-      audioid->respcount [AUDIOID_TYPE_ACRCLOUD] =
-          acrLookup (audioid->acr, song, audioid->resp);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: matches: %d",
-          audioid->respcount [AUDIOID_TYPE_ACRCLOUD]);
-      ++audioid->statecount;
-    } else if (audioid->statecount == AUDIOID_TYPE_MAX) {
-      audioid->statecount = AUDIOID_TYPE_ACOUSTID;
-      audioid->state = BDJ4_STATE_PROCESS;
+      case AUDIOID_ID_MB_LOOKUP: {
+        mbrecid = songGetStr (song, TAG_RECORDING_ID);
+
+        if (mbrecid != NULL &&
+            audioid->respcount [AUDIOID_ID_ACOUSTID] <= 1) {
+          audioid->respcount [AUDIOID_ID_MB_LOOKUP] =
+              mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
+          logMsg (LOG_DBG, LOG_AUDIO_ID, "musicbrainz: matches: %d",
+              audioid->respcount [AUDIOID_ID_MB_LOOKUP]);
+          if (audioid->respcount [AUDIOID_ID_MB_LOOKUP] > 0) {
+            audioid->state = BDJ4_STATE_PROCESS;
+          }
+        }
+
+        ++audioid->idstate;
+        break;
+      }
+      case AUDIOID_ID_ACRCLOUD: {
+        audioid->respcount [AUDIOID_ID_ACRCLOUD] =
+            acrLookup (audioid->acr, song, audioid->resp);
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: matches: %d",
+            audioid->respcount [AUDIOID_ID_ACRCLOUD]);
+
+        ++audioid->idstate;
+        break;
+      }
+      case AUDIOID_ID_MAX: {
+        audioid->idstate = AUDIOID_ID_ACOUSTID;
+        audioid->state = BDJ4_STATE_PROCESS;
+        break;
+      }
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d/%s time: %" PRId64 "ms",
         audioid->state, logStateDebugText (audioid->state), (int64_t) mstimeend (&starttm));
@@ -200,16 +203,13 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         ilistGetCount (audioid->resp));
     ilistStartIterator (audioid->resp, &iteridx);
     while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
-      double      score;
-      const char  *str;
-      long        dur;
-      long        tdur = -1;
+      audioid_id_t  ident;
+      double        score;
+      const char    *str;
+      long          dur;
+      long          tdur = -1;
 
-      if (audioid->mbmatch) {
-        score = 100.0;
-      } else {
-        score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
-      }
+      score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
 
       str = ilistGetStr (audioid->resp, key, TAG_TITLE);
       if (str == NULL || ! *str) {
@@ -226,8 +226,9 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         continue;
       }
 
-      /* for a musicbrainz match, do not process the duration check */
-      if (! audioid->mbmatch) {
+      /* musicbrainz matches do not have a duration check */
+      ident = ilistGetNum (audioid->resp, key, AUDIOID_TYPE_IDENT);
+      if (ident != AUDIOID_ID_MB_LOOKUP) {
         str = ilistGetStr (audioid->resp, key, TAG_DURATION);
         if (str != NULL) {
           tdur = atol (str);

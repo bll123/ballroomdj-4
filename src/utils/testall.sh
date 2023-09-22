@@ -12,6 +12,9 @@ grc=0
 LOG=test.log
 > $LOG
 
+make distclean
+make >> $LOG 2>&1
+
 echo "== check" >> $LOG
 ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
 ./bin/bdj4 --check_all >> $LOG 2>&1
@@ -27,22 +30,46 @@ if [[ $grc -eq 0 ]]; then
   echo "== dbtest" >> $LOG
   ./src/utils/mktestsetup.sh >> $LOG 2>&1
   # dbtest will rebuild the databases.
-  ./src/utils/dbtest.sh >> $LOG 2>&1
+  ./src/utils/dbtest.sh --atimutagen >> $LOG 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "dbtest: FAIL"
+    echo "dbtest: atimutagen FAIL"
     grc=1
   else
-    echo "dbtest: OK"
+    echo "dbtest: atimutagen OK"
+  fi
+
+  # dbtest will rebuild the databases.
+  ./src/utils/dbtest.sh --atibdj4 >> $LOG 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "dbtest: atibdj4 FAIL"
+    grc=1
+  else
+    echo "dbtest: atibdj4 OK"
   fi
 else
   echo "dbtest not run"
 fi
 
 if [[ $grc -eq 0 ]]; then
+  echo "== insttest" >> $LOG
+  ./src/utils/mktestsetup.sh >> $LOG 2>&1
+  # insttest will rebuild the databases.
+  ./src/utils/insttest.sh >> $LOG 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "insttest: FAIL"
+    grc=1
+  else
+    echo "insttest: OK"
+  fi
+fi
+
+if [[ $grc -eq 0 ]]; then
   echo "== testsuite" >> $LOG
   ./src/utils/mktestsetup.sh >> $LOG 2>&1
-  ./bin/bdj4 --testsuite
+  ./bin/bdj4 --testsuite >> $LOG 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
     echo "testsuite: FAIL"
@@ -54,4 +81,9 @@ else
   echo "testsuite not run"
 fi
 
+if [[ $grc -eq 0 ]]; then
+  ./pkg/mkpkg.sh >> $LOG 2>&1
+fi
+
+echo "LOG: $LOG"
 exit $grc

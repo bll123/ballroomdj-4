@@ -95,6 +95,13 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+    return;
+  }
+
   g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
@@ -102,37 +109,78 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+    return;
+  }
+
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
 }
 
 void
 uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+    return;
+  }
+
   gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
 }
 
 bool
 uiToggleButtonIsActive (uiwcont_t *uiwidget)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return 0;
   }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+    return 0;
+  }
+
   return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
 }
 
 void
 uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
     return;
   }
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
 }
 
+/* gtk appears to re-allocate the radio button label, */
+/* so set the ellipsize on after setting the text value */
+void
+uiToggleButtonEllipsize (uiwcont_t *uiwidget)
+{
+  GtkWidget *widget;
+
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+    return;
+  }
+
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
+  if (GTK_IS_LABEL (widget)) {
+    gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
+  }
+}
+
 /* internal routines */
 
-static inline void
+static void
 uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   callback_t *uicb = udata;

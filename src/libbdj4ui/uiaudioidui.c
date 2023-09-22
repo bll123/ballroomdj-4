@@ -124,6 +124,7 @@ typedef struct aid_internal {
   int                 paneposition;
   bool                selchgbypass : 1;
   bool                repeating : 1;
+  bool                insave : 1;
 } aid_internal_t;
 
 static void uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);
@@ -138,6 +139,7 @@ static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayTypeCallback (int type, void *udata);
 static void uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata);
 static void uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song);
+static void uiaudioidBlankDisplayList (uiaudioid_t *uiaudioid);
 
 void
 uiaudioidUIInit (uiaudioid_t *uiaudioid)
@@ -157,10 +159,12 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->displaylist = NULL;
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
+  audioidint->setrow = 1;
   audioidint->currrow = -1;
   /* select-change bypass will be true until the data is first loaded */
   audioidint->selchgbypass = true;
   audioidint->repeating = false;
+  audioidint->insave = false;
   audioidint->listsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
   audioidint->sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
   audioidint->paneposition = nlistGetNum (uiaudioid->options, MANAGE_AUDIOID_PANE_POSITION);
@@ -500,6 +504,11 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   int             row;
 
   logProcBegin (LOG_PROC, "uiaudioidLoadData");
+
+  if (uiaudioid == NULL) {
+    return;
+  }
+
   audioidint = uiaudioid->audioidInternalData;
   audioidint->song = song;
   audioidint->dbidx = dbidx;
@@ -533,8 +542,12 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
       tval = songDisplayString (song, tagidx, SONG_UNADJUSTED_DURATION);
     }
     nlistSetStr (audioidint->currlist, tagidx, tval);
+    uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
     uiToggleButtonSetText (audioidint->items [count].currrb, tval);
-    uiToggleButtonSetText (audioidint->items [count].selrb, "");
+    /* gtk appears to re-allocate the radio button label, */
+    /* so set the ellipsize on after setting the text value */
+    uiToggleButtonEllipsize (audioidint->items [count].currrb);
     dataFree (tval);
     tval = NULL;
   }
@@ -562,21 +575,39 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   uiTreeViewSetValues (audioidint->alistTree,
       UIAUID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
 
-  ++row;
-  uiTreeViewValueClear (audioidint->alistTree, row);
-  audioidint->rowcount = row;
-
-  if (audioidint->rowcount > 1) {
-    uiTreeViewSelectFirst (audioidint->alistTree);
-    audioidint->selchgbypass = false;
-    uiTreeViewSelectNext (audioidint->alistTree);
+  if (audioidint->setrow < audioidint->rowcount) {
+    /* reset the selection in case this is a save/reload */
+    uiTreeViewSelectSet (audioidint->alistTree, audioidint->setrow);
   }
+
   audioidint->selchgbypass = false;
 
-  audioidint->setrow = 1;
+  logProcEnd (LOG_PROC, "uiaudioidLoadData", "");
+}
+
+void
+uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
+{
+  aid_internal_t  *audioidint;
+
+  if (uiaudioid == NULL) {
+    return;
+  }
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  audioidint->selchgbypass = true;
+
   nlistFree (audioidint->displaylist);
   audioidint->displaylist = nlistAlloc ("uiaudioid-disp", LIST_UNORDERED, NULL);
-  logProcEnd (LOG_PROC, "uiaudioidLoadData", "");
+
+  for (int count = 0; count < audioidint->itemcount; ++count) {
+    uiToggleButtonSetText (audioidint->items [count].selrb, "");
+  }
+
+  uiaudioidBlankDisplayList (uiaudioid);
+
+  audioidint->setrow = 1;
 }
 
 void
@@ -589,9 +620,14 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   slistidx_t      seliteridx;
   nlist_t         *ndlist;
 
+  if (uiaudioid == NULL) {
+    return;
+  }
+
   audioidint = uiaudioid->audioidInternalData;
+
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
-  audioidint->selchgbypass = true;
+
   ndlist = nlistAlloc ("uiaudio-ndlist", LIST_UNORDERED, NULL);
   nlistSetSize (ndlist, nlistGetCount (dlist));
 
@@ -608,7 +644,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         TREE_VALUE_END);
   }
 
-  /* all data must be copied */
+  /* all data must be cloned */
   slistStartIterator (audioidint->sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->sellist, &seliteridx)) >= 0) {
     const char  *str;
@@ -655,8 +691,10 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
 
   nlistSort (ndlist);
   nlistSetList (audioidint->displaylist, audioidint->setrow, ndlist);
+
   ++audioidint->setrow;
-  logProcEnd (LOG_PROC, "uiaudioidLoadData", "");
+
+  logProcEnd (LOG_PROC, "uiaudioidSetDisplayList", "");
 }
 
 void
@@ -667,14 +705,17 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
   audioidint = uiaudioid->audioidInternalData;
 
   uiTreeViewValueClear (audioidint->alistTree, audioidint->setrow);
-  audioidint->rowcount = audioidint->setrow;
+  audioidint->rowcount = audioidint->setrow + 1;
   nlistSort (audioidint->displaylist);
+
+  audioidint->setrow = 1;
 
   if (audioidint->rowcount > 1) {
     uiTreeViewSelectFirst (audioidint->alistTree);
     audioidint->selchgbypass = false;
     uiTreeViewSelectNext (audioidint->alistTree);
   }
+
   audioidint->selchgbypass = false;
 }
 
@@ -710,6 +751,20 @@ uiaudioidIsRepeating (uiaudioid_t *uiaudioid)
   audioidint = uiaudioid->audioidInternalData;
 
   return audioidint->repeating;
+}
+
+bool
+uiaudioidInSave (uiaudioid_t *uiaudioid)
+{
+  aid_internal_t  *audioidint;
+
+  if (uiaudioid == NULL) {
+    return false;
+  }
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  return audioidint->insave;
 }
 
 /* internal routines */
@@ -768,11 +823,13 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiwcontFree (uiwidgetp);
 
   rb = uiCreateRadioButton (NULL, "", UI_TOGGLE_BUTTON_ON);
+  /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, rb);
   uiSizeGroupAdd (audioidint->szgrp [UIAUID_SZGRP_COL_A], rb);
   audioidint->items [audioidint->itemcount].currrb = rb;
 
   uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
+  /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUID_SZGRP_COL_B], uiwidgetp);
   audioidint->items [audioidint->itemcount].selrb = uiwidgetp;
@@ -789,6 +846,7 @@ uiaudioidSaveCallback (void *udata)
 
   logProcBegin (LOG_PROC, "uiaudioidSaveCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: save");
+
   audioidint = uiaudioid->audioidInternalData;
 
   uiLabelSetText (uiaudioid->statusMsg, "");
@@ -810,20 +868,22 @@ uiaudioidSaveCallback (void *udata)
       if (val != NULL && *val) {
         if (tagdefs [tagidx].valueType == VALUE_NUM) {
           nval = atol (val);
-fprintf (stderr, "set-n %d/%s to %d\n", tagidx, tagdefs [tagidx].tag, nval);
           songSetNum (audioidint->song, tagidx, nval);
         } else {
-fprintf (stderr, "set-s %d/%s to %s\n", tagidx, tagdefs [tagidx].tag, val);
           songSetStr (audioidint->song, tagidx, val);
         }
       }
     }
   }
 
+  audioidint->insave = true;
+
   if (uiaudioid->savecb != NULL) {
     /* the callback re-loads the song editor and audio id */
     callbackHandlerLong (uiaudioid->savecb, audioidint->dbidx);
   }
+
+  audioidint->insave = false;
 
   logProcEnd (LOG_PROC, "uiaudioidSaveCallback", "");
   return UICB_CONT;
@@ -916,6 +976,7 @@ uiaudioidRowSelect (void *udata)
 
   uiTreeViewSelectCurrent (audioidint->alistTree);
   idx = uiTreeViewGetValue (audioidint->alistTree, UIAUID_COL_IDX);
+  audioidint->setrow = idx;
   uiaudioidPopulateSelected (uiaudioid, idx);
 
   return UICB_CONT;
@@ -965,6 +1026,9 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
       }
 
       uiToggleButtonSetText (audioidint->items [count].selrb, tval);
+      /* gtk appears to re-allocate the radio button label, */
+      /* so set the ellipsize on after setting the text value */
+      uiToggleButtonEllipsize (audioidint->items [count].selrb);
     }
   }
 }
@@ -1019,5 +1083,32 @@ uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song)
     tmp = songDisplayString (song, TAG_DURATION, SONG_UNADJUSTED_DURATION);
     uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tmp);
     dataFree (tmp);
+  }
+}
+
+static void
+uiaudioidBlankDisplayList (uiaudioid_t *uiaudioid)
+{
+  aid_internal_t  *audioidint;
+
+  if (uiaudioid == NULL) {
+    return;
+  }
+
+  audioidint = uiaudioid->audioidInternalData;
+
+  for (int i = 1; i < audioidint->rowcount; ++i) {
+    ilistidx_t    seliteridx;
+    int           tagidx;
+    int           col;
+
+    uiTreeViewSelectSet (audioidint->alistTree, i);
+
+    col = UIAUID_COL_MAX;
+    slistStartIterator (audioidint->listsellist, &seliteridx);
+    while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
+      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, "");
+      ++col;
+    }
   }
 }
