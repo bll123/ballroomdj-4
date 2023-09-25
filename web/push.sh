@@ -5,6 +5,7 @@
 #
 
 SFUSER=bll123
+INSTSTAGE=$HOME/vbox_shared/bdj4inst
 
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
@@ -39,6 +40,11 @@ if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
 
+if [[ $isprimary == F ]]; then
+  echo "Failed: not on primary development platform"
+  exit 1
+fi
+
 . ./VERSION.txt
 cvers=$(pkgcurrvers)
 pnm=$(pkginstnm)
@@ -51,6 +57,17 @@ esac
 
 if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."
+  exit 1
+fi
+
+if [[ ! -d $INSTSTAGE ]]; then
+  echo "Failed: no installer staging dir"
+  exit 1
+fi
+
+count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
+if [[ $count -ne 8 ]]; then
+  echo "Failed: not all platforms built."
   exit 1
 fi
 
@@ -72,13 +89,33 @@ if [[ $tag == linux && $isprimary == T ]]; then
       ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
   rm -f ${fn}.n
 
+  # linux scripts
+
   fn=linux-pre-install
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
       ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
   fn=linux-uninstall-bdj4
   sshpass -e rsync -v -e ssh install/${fn}.sh \
       ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+
+  # macos scripts
+
+  fn=macos-pre-install-macports
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
+  fn=macos-run-installer
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
+  fn=macos-uninstall-bdj4
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
   server=web.sourceforge.net
   port=22
@@ -101,28 +138,8 @@ if [[ $tag == linux && $isprimary == T ]]; then
   rm -f $VERFILE
 fi
 
-if [[ $tag == macos ]]; then
-  fn=macos-pre-install-macports
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-
-  fn=macos-run-installer
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-
-  fn=macos-uninstall-bdj4
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-fi
-
-if [[ $platform != windows ]]; then
-  sshpass -e rsync -v -e ssh ${pnm} \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
-else
-  rsync -v -e ssh ${pnm} \
+for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
+  sshpass -e rsync -v -e ssh ${fn} \
     ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 

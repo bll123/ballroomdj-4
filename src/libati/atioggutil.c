@@ -74,6 +74,12 @@ atioggProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
   if (tagname == NULL) {
     tagname = tag;
   }
+  if (strcmp (tagname, "TOTALTRACKS") == 0) {
+    tagname = "TRACKTOTAL";
+  }
+  if (strcmp (tagname, "TOTALDISCS") == 0) {
+    tagname = "DISCTOTAL";
+  }
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s=%s", tagname, tag, val);
   if (slistGetStr (tagdata, tagname) != NULL) {
     const char  *oval;

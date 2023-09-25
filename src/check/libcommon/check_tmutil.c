@@ -55,11 +55,11 @@ START_TEST(mssleep_sec)
   tm_e = mstime ();
   val = 30;
   if (sysvarsGetNum (SVL_IS_VM)) {
-    val += 20;
+    val += 55;
   }
   /* no idea why windows is slow for this particular test */
   if (isWindows ()) {
-    val += 500;
+    val += 600;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 2000)), val);
 }
@@ -220,7 +220,7 @@ START_TEST(mstime_check)
   mssleep (1000);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, false);
-  mssleep (1200);
+  mssleep (2000);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, true);
 }

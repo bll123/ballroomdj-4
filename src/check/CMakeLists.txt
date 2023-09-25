@@ -20,7 +20,6 @@ add_executable (check_all
   libcommon/check_fileshared.c
   libcommon/check_fileop.c
   libcommon/check_fileop_dir.c
-  libcommon/check_lock.c
   libcommon/check_mdebug.c
   libcommon/check_osdir.c
   libcommon/check_osnetutils.c
@@ -44,6 +43,7 @@ add_executable (check_all
   libbasic/check_dirlist.c
   libbasic/check_ilist.c
   libbasic/check_istring.c
+  libbasic/check_lock.c
   libbasic/check_nlist.c
   libbasic/check_progstate.c
   libbasic/check_slist.c

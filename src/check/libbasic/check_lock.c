@@ -30,10 +30,10 @@
 
 #define FULL_LOCK_FN "tmp/test_lock.lck"
 #define LOCK_FN "test_lock"
+#define BAD_FULL_LOCK_FN "tmpz/bad_lock.lck"
 
 START_TEST(lock_name)
 {
-
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_name");
   mdebugSubTag ("lock_name");
 
@@ -70,6 +70,25 @@ START_TEST(lock_acquire_release)
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
+}
+END_TEST
+
+START_TEST(lock_acquire_no_dir)
+{
+  int           rc;
+  struct stat   statbuf;
+  FILE          *fh;
+  pid_t         pid;
+  pid_t         fpid;
+  int64_t       temp;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_acquire_no_dir");
+  mdebugSubTag ("lock_acquire_no_dir");
+
+  pid = getpid ();
+  unlink (BAD_FULL_LOCK_FN);
+  rc = lockAcquire (BAD_FULL_LOCK_FN, PATHBLD_LOCK_FFN);
+  ck_assert_int_lt (rc, 0);
 }
 END_TEST
 
@@ -138,6 +157,8 @@ START_TEST(lock_unlock_fail)
   ck_assert_int_lt (rc, 0);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
+  rc = lockRelease (BAD_FULL_LOCK_FN, PATHBLD_LOCK_FFN);
+  ck_assert_int_lt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
@@ -203,6 +224,7 @@ lock_suite (void)
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, lock_name);
   tcase_add_test (tc, lock_acquire_release);
+  tcase_add_test (tc, lock_acquire_no_dir);
   suite_add_tcase (s, tc);
   tc = tcase_create ("lock-already");
   tcase_set_tags (tc, "libbasic");

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 04:40-0700\n"
+"POT-Creation-Date: 2023-09-25 10:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -814,6 +814,7 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
+#. CONTEXT: audio identification: first song
 #. CONTEXT: song editor : first song
 msgid "First"
 msgstr ""
@@ -1193,6 +1194,7 @@ msgid "New Status"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
 msgid "Next"
@@ -1368,6 +1370,7 @@ msgstr ""
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
+#. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr ""
@@ -1554,6 +1557,7 @@ msgstr ""
 msgid "Samba"
 msgstr ""
 
+#. CONTEXT: audio identification: save data
 #. CONTEXT: song editor : save data
 #. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button

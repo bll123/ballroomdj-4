@@ -227,6 +227,7 @@ distclean:
 	@-$(RM) -rf build
 	@mkdir build
 	@-$(RM) -f ../install/manifest.txt ../install/manifest-src.txt
+	@-$(RM) -f testall.log
 
 .PHONY: clean
 clean:
@@ -245,8 +246,8 @@ tclean:
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
 	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
-	@-$(RM) -f po/w po/ww ../asan.* ./asan.* po/*.debug
-	@-$(RM) -f test.log ../mdebug.txt ../out.txt
+	@-$(RM) -f */w */ww ../asan.* ./asan.* po/*.debug
+	@-$(RM) -f ../mdebug.txt ../out.txt
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico

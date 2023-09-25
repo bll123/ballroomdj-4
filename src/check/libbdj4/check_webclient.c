@@ -59,6 +59,7 @@ START_TEST(webclient_get)
   mdebugSubTag ("webclient_get");
 
   wc = webclientAlloc (&r, checkWebclientCB);
+  webclientSetTimeout (wc, 10);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
       sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
   webclientGet (wc, tbuff);

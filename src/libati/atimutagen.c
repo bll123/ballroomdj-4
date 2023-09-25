@@ -248,6 +248,12 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
       }
 
       tagname = atidata->tagLookup (tagtype, p);
+      if (tagname != NULL && strcmp (tagname, "TOTALTRACKS") == 0) {
+        tagname = "TRACKTOTAL";
+      }
+      if (tagname != NULL && strcmp (tagname, "TOTALDISCS") == 0) {
+        tagname = "DISCTOTAL";
+      }
       if (tagname != NULL && *tagname != '\0') {
         int   outidx;
 

@@ -522,7 +522,7 @@ msg player PLAY_SPEED 130
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-chk-lt playtimeplayed 1900
+chk-lt playtimeplayed 2000
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
@@ -534,5 +534,5 @@ msg player PLAY_SPEED 70
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-chk-lt playtimeplayed 1900
+chk-lt playtimeplayed 2000
 end

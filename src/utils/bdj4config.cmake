@@ -82,7 +82,7 @@ if (NOT WIN32 AND NOT LIBVLC_FOUND)
 endif()
 # windows will not find any vlc include files in the vlc dir
 if (WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.16")
+  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.18")
   set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
   set (LIBVLC_FOUND TRUE)
 endif()
@@ -290,8 +290,7 @@ if (NOT WIN32)
   if (APPLE)
     # 10.14 = Mojave, 10.15 = Catalina
     # 11 = Big Sur, 12 = Monterey, 13 = Ventura, 14 = Sonoma
-    add_compile_options (-mmacosx-version-min=10.14)
-    add_link_options (-mmacosx-version-min=10.14)
+    set (CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
   endif()
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)

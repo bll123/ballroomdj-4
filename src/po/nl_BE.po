@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-07-10\n"
-"PO-Revision-Date: 2023-09-20\n"
+"PO-Revision-Date: 2023-09-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -816,6 +816,7 @@ msgstr "Filter Songs"
 msgid "Filters"
 msgstr "Filter"
 
+#. CONTEXT: audio identification: first song
 #. CONTEXT: song editor : first song
 msgid "First"
 msgstr "Eerste"
@@ -1196,6 +1197,7 @@ msgid "New Status"
 msgstr "Nieuwe Status"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
 msgid "Next"
@@ -1371,6 +1373,7 @@ msgstr "Positie"
 msgid "Press 'Enter' to select the default."
 msgstr "Druk op 'Enter' om de standaardwaarde te selecteren."
 
+#. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr "Vorige"
@@ -1557,6 +1560,7 @@ msgstr "Salsa"
 msgid "Samba"
 msgstr "Samba"
 
+#. CONTEXT: audio identification: save data
 #. CONTEXT: song editor : save data
 #. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
