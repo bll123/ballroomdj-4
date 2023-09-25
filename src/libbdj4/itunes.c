@@ -318,6 +318,7 @@ itunesParse (itunes_t *itunes)
   xmlInitParser ();
 
   doc = xmlParseFile (fn);
+  mdextalloc (doc);
   if (doc == NULL)  {
     logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to parse %s", fn);
     xmlCleanupParser ();
@@ -325,27 +326,35 @@ itunesParse (itunes_t *itunes)
   }
 
   xpathCtx = xmlXPathNewContext (doc);
+  mdextalloc (xpathCtx);
   if (xpathCtx == NULL)  {
     logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to create xpath context");
+    mdextfree (doc);
     xmlFreeDoc (doc);
     xmlCleanupParser ();
     return false;
   }
 
   if (! itunesParseData (itunes, xpathCtx, dataxpath)) {
+    mdextfree (xpathCtx);
     xmlXPathFreeContext (xpathCtx);
+    mdextfree (doc);
     xmlFreeDoc (doc);
     xmlCleanupParser ();
     return false;
   }
   if (! itunesParsePlaylists (itunes, xpathCtx, plxpath)) {
+    mdextfree (xpathCtx);
     xmlXPathFreeContext (xpathCtx);
+    mdextfree (doc);
     xmlFreeDoc (doc);
     xmlCleanupParser ();
     return false;
   }
 
+  mdextfree (xpathCtx);
   xmlXPathFreeContext (xpathCtx);
+  mdextfree (doc);
   xmlFreeDoc (doc);
   xmlCleanupParser ();
   itunes->lastparse = xmlts;
@@ -733,6 +742,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
   bool                valset = true;
 
   xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
+  mdextalloc (xpathObj);
   if (xpathObj == NULL)  {
     logMsg (LOG_DBG, LOG_IMPORTANT, "itunesParse: bad xpath expression");
     return false;
@@ -748,6 +758,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
       cur = nodes->nodeTab [i];
       val = xmlNodeGetContent (cur);
       mdextalloc (val);
+
       logMsg (LOG_DBG, LOG_ITUNES, "xml: raw: %s %s", cur->name, val);
       // fprintf (stderr, "i: %s %s\n", cur->name, val);
       if (strcmp ((const char *) cur->name, "key") == 0) {
@@ -770,10 +781,12 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
         // fprintf (stderr, "  b: %s\n", "1");
         valset = true;
       }
-      dataFree (val);
+      mdextfree (val);
+      xmlFree (val);
     }
   }
 
+  mdextfree (xpathObj);
   xmlXPathFreeObject (xpathObj);
   return true;
 }

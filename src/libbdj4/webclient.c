@@ -157,6 +157,7 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
   }
   curl_slist_free_all (list);
+  mdfree (obuff);
 
   return (int) respcode;
 }

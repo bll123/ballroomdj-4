@@ -52,8 +52,9 @@ audioidParseAll (const char *data, size_t datalen,
 
   /* libxml2 doesn't have any way to set the default namespace for xpath */
   /* which makes it a pain to use when a namespace is set */
-  tdata = mdmalloc (datalen);
+  tdata = mdmalloc (datalen + 1);
   memcpy (tdata, data, datalen);
+  tdata [datalen] = '\0';
   p = strstr (tdata, "xmlns");
   if (p != NULL) {
     char    *pe;
@@ -65,13 +66,17 @@ audioidParseAll (const char *data, size_t datalen,
   }
 
   doc = xmlParseMemory (tdata, datalen);
+  mdextalloc (doc);
   if (doc == NULL) {
     return 0;
   }
 
   xpathCtx = xmlXPathNewContext (doc);
+  mdextalloc (xpathCtx);
   if (xpathCtx == NULL) {
+    mdextfree (doc);
     xmlFreeDoc (doc);
+    return 0;
   }
 
   /* beginning response index */
@@ -85,7 +90,9 @@ audioidParseAll (const char *data, size_t datalen,
   respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx + 1;
   logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: respcount: %d\n", respcount);
 
+  mdextfree (xpathCtx);
   xmlXPathFreeContext (xpathCtx);
+  mdextfree (doc);
   xmlFreeDoc (doc);
   mdfree (tdata);
   return respcount;
@@ -98,7 +105,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   xmlXPathObjectPtr   xpathObj;
   xmlNodeSetPtr       nodes;
   xmlNodePtr          cur = NULL;
-  const xmlChar       *val = NULL;
+  xmlChar             *val = NULL;
   const char          *joinphrase = NULL;
   int                 ncount;
   char                *nval = NULL;
@@ -109,6 +116,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s xidx: %d %s respidx %d", level*2, "", xpathidx, xpaths [xpathidx].xpath, respidx);
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].xpath, xpathCtx);
+  mdextalloc (xpathObj);
   if (xpathObj == NULL)  {
     logMsg (LOG_DBG, LOG_IMPORTANT, "audioidParse: bad xpath expression");
     return false;
@@ -117,6 +125,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   nodes = xpathObj->nodesetval;
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s node-count: %d", level*2, "", nodes->nodeNr);
   if (xmlXPathNodeSetIsEmpty (nodes)) {
+    mdextfree (xpathObj);
     xmlXPathFreeObject (xpathObj);
     return false;
   }
@@ -135,6 +144,8 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
       ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, (const char *) val);
     }
     audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, respdata, level, ident);
+    mdextfree (xpathObj);
+    xmlXPathFreeObject (xpathObj);
     return false;
   }
 
@@ -149,8 +160,14 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
 
     cur = nodes->nodeTab [i];
     val = xmlNodeGetContent (cur);
+    mdextalloc (val);
     if (xpaths [xpathidx].attr != NULL) {
+      if (val != NULL) {
+        mdextfree (val);
+        xmlFree (val);
+      }
       val = xmlGetProp (cur, (xmlChar *) xpaths [xpathidx].attr);
+      mdextalloc (val);
     }
     if (val == NULL) {
       continue;
@@ -184,6 +201,8 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
     }
 
     strlcat (nval, (const char *) val, nlen);
+    mdextfree (val);
+    xmlFree (val);
 
     if (joinphrase != NULL) {
       strlcat (nval, joinphrase, nlen);
@@ -222,6 +241,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
     nval = NULL;
   }
 
+  mdextfree (xpathObj);
   xmlXPathFreeObject (xpathObj);
   return true;
 }
@@ -277,6 +297,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
     }
 
     relpathCtx = xmlXPathNewContext ((xmlDocPtr) nodes->nodeTab [i]);
+    mdextalloc (relpathCtx);
     if (relpathCtx == NULL) {
       continue;
     }
@@ -295,6 +316,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
     }
 
+    mdextfree (relpathCtx);
     xmlXPathFreeContext (relpathCtx);
   }
 

@@ -17,14 +17,15 @@
     * Song List Editor, Music Queue: Display numeric values correctly.
     * Song List Editor, Music Queue, Song Selection: Fix duration display.
     * Favorites: Display configured not-set display text in heading.
-    * Linux: Resolved library versioning issues.
+    * Linux: Resolved library versioning issues (separate builds).
     * Translations: Fix some english/GB, english/US spelling differences.
     * User Interface: Fix read-only spinboxes.
 * Changes:
     * Configuration: General: re-arranged entries.
     * Configuration: Move audio tag interface selection to the general tab.
+    * User Interface: Tooltip background is darker.
 * New Features:
-    * Audio Identification (AcoustID).
+    * Audio Identification (AcoustID, MusicBrainz).
 
 **4.3.3.6 2023-9-11**
 

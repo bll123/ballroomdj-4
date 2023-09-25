@@ -103,6 +103,9 @@ mdfree_r (void *data, const char *fn, int lineno)
 void
 mdextfree_r (void *data, const char *fn, int lineno)
 {
+  if (data == NULL) {
+    return;
+  }
   mdfree_a (data, fn, lineno, "ext-free", MDEBUG_EXTFREE);
 }
 
