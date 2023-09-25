@@ -30,6 +30,13 @@ enum {
 #define AUDIOID_SCORE_ADJUST 1.0
 #define AUDIOID_MIN_SCORE 85.0
 
+enum {
+  /* used for debugging */
+  /* must be set to audioid_id_acoustid for production */
+  /* if changed, update prepkg.sh */
+  AUDIOID_START = AUDIOID_ID_ACOUSTID,
+};
+
 typedef struct audioid {
   audioidmb_t       *mb;
   audioidacoustid_t *acoustid;
@@ -118,8 +125,9 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_OFF ||
       audioid->state == BDJ4_STATE_FINISH) {
+    /* audioid_start is set to audioid_id_acoustid unless debugging */
+    audioid->idstate = AUDIOID_START;
     audioid->state = BDJ4_STATE_START;
-    audioid->idstate = AUDIOID_ID_ACOUSTID;
   }
 
   if (audioid->state == BDJ4_STATE_START) {
@@ -136,6 +144,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     /* process acoustid first rather than musicbrainz, as it returns */
     /* more data.  if there are no matches, then musicbrainz will be */
     /* used if a musicbrainz recording-id is present */
+    /* musicbrainz only returns the first 25 matches */
     switch (audioid->idstate) {
       case AUDIOID_ID_ACOUSTID: {
         char    tmp [40];

@@ -313,3 +313,15 @@ uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
       gtk_widget_get_style_context (uiwidget->widget), class);
 }
 
+void
+uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
+{
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_tooltip_text (uiwidget->widget, tooltip);
+}

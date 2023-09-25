@@ -17,6 +17,9 @@ separator {
 scrollbar, scrollbar slider {
   min-width: 9px;
 }
+tooltip {
+  background-color: shade(@theme_base_color,0.7);
+}
 
 /* for some reason, if the selection background color alone is set, the */
 /* text color temporarily becomes white on light colored themes */

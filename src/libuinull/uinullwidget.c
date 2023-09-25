@@ -176,3 +176,8 @@ uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
   return;
 }
 
+void
+uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
+{
+  return;
+}

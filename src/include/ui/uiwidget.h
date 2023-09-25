@@ -34,5 +34,6 @@ bool  uiWidgetIsValid (uiwcont_t *uiwidget);
 void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
 void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
+void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
 
 #endif /* INC_UIWIDGET_H */

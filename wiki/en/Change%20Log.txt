@@ -4,7 +4,14 @@
 
 <!--
 
-**4.4.0 2023-10---**
+**4.4.1 2023-10---**
+
+* New Features:
+    * Configuration: General: add audio content identification keys.
+
+-->
+
+**4.4.0 2023-9---**
 
 * Bug Fixes:
     * Song List Editor, Music Queue: Display numeric values correctly.
@@ -18,9 +25,6 @@
     * Configuration: Move audio tag interface selection to the general tab.
 * New Features:
     * Audio Identification (AcoustID).
-    * Configuration: General: add audio content identification keys.
-
--->
 
 **4.3.3.6 2023-9-11**
 

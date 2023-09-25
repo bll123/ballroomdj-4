@@ -52,6 +52,12 @@ if [[ $rc -ne 0 ]]; then
   echo "libmp4tag is not up to date"
   exit 1
 fi
+grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "audioid debugging is on"
+  exit 1
+fi
 
 echo "-- $(date +%T) copying licenses"
 licdir=licenses

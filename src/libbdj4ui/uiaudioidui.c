@@ -118,9 +118,10 @@ typedef struct aid_internal {
   int                 itemcount;
   int                 colcount;
   int                 rowcount;
-  int                 currrow;
-  int                 setrow;
-  int                 changed;
+  /* selectedrow is which row has been selected by the user */
+  int                 selectedrow;
+  /* fillrow is used during the set-display-list processing */
+  int                 fillrow;
   int                 paneposition;
   bool                selchgbypass : 1;
   bool                repeating : 1;
@@ -152,15 +153,14 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->itemcount = 0;
   audioidint->items = NULL;
   audioidint->currlist = nlistAlloc ("curr-list", LIST_ORDERED, NULL);
-  audioidint->changed = 0;
   audioidint->uikey = NULL;
   audioidint->dbidx = -1;
   audioidint->typelist = NULL;
   audioidint->displaylist = NULL;
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
-  audioidint->setrow = 1;
-  audioidint->currrow = -1;
+  audioidint->selectedrow = -1;
+  audioidint->fillrow = 1;
   /* select-change bypass will be true until the data is first loaded */
   audioidint->selchgbypass = true;
   audioidint->repeating = false;
@@ -473,7 +473,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   audioidint->typelist = mdmalloc (sizeof (int) * UIAUID_COL_MAX);
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
-  audioidint->currrow = -1;
   audioidint->typelist [UIAUID_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
   audioidint->typelist [UIAUID_COL_FONT] = TREE_TYPE_STRING;
   audioidint->typelist [UIAUID_COL_COLOR] = TREE_TYPE_STRING;
@@ -512,7 +511,6 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   audioidint = uiaudioid->audioidInternalData;
   audioidint->song = song;
   audioidint->dbidx = dbidx;
-  audioidint->changed = 0;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
   audioidint->selchgbypass = true;
 
@@ -545,9 +543,13 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
     uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
     uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
     uiToggleButtonSetText (audioidint->items [count].currrb, tval);
-    /* gtk appears to re-allocate the radio button label, */
-    /* so set the ellipsize on after setting the text value */
-    uiToggleButtonEllipsize (audioidint->items [count].currrb);
+
+    if (tagdefs [tagidx].valueType == VALUE_STR) {
+      uiWidgetSetTooltip (audioidint->items [count].currrb, tval);
+      /* gtk appears to re-allocate the radio button label, */
+      /* so set the ellipsize on after setting the text value */
+      uiToggleButtonEllipsize (audioidint->items [count].currrb);
+    }
     dataFree (tval);
     tval = NULL;
   }
@@ -561,11 +563,10 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
         UIAUID_COL_FONT, listingFont,
         UIAUID_COL_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
         UIAUID_COL_COLOR_SET, (treebool_t) false,
-        UIAUID_COL_IDX, (treenum_t) 0,
+        UIAUID_COL_IDX, (treenum_t) row,
         TREE_VALUE_END);
   } else {
     uiTreeViewSelectSet (audioidint->alistTree, row);
-    /* no data in row 0 to update */
   }
 
   uiTreeViewSelectSet (audioidint->alistTree, row);
@@ -575,9 +576,10 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   uiTreeViewSetValues (audioidint->alistTree,
       UIAUID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
 
-  if (audioidint->setrow < audioidint->rowcount) {
+  if (audioidint->selectedrow >0 &&
+      audioidint->selectedrow < audioidint->rowcount) {
     /* reset the selection in case this is a save/reload */
-    uiTreeViewSelectSet (audioidint->alistTree, audioidint->setrow);
+    uiTreeViewSelectSet (audioidint->alistTree, audioidint->selectedrow);
   }
 
   audioidint->selchgbypass = false;
@@ -605,9 +607,12 @@ uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
     uiToggleButtonSetText (audioidint->items [count].selrb, "");
   }
 
+  /* this make the ui look nice when the next song for audio-id */
+  /* is selected */
   uiaudioidBlankDisplayList (uiaudioid);
 
-  audioidint->setrow = 1;
+  audioidint->selectedrow = -1;
+  audioidint->fillrow = 1;
 }
 
 void
@@ -631,7 +636,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   ndlist = nlistAlloc ("uiaudio-ndlist", LIST_UNORDERED, NULL);
   nlistSetSize (ndlist, nlistGetCount (dlist));
 
-  if (audioidint->setrow >= audioidint->rowcount) {
+  if (audioidint->fillrow >= audioidint->rowcount) {
     uiTreeViewValueAppend (audioidint->alistTree);
     uiTreeViewSetValueEllipsize (audioidint->alistTree, UIAUID_COL_ELLIPSIZE);
     /* color-set isn't working for me within this module */
@@ -640,7 +645,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         UIAUID_COL_FONT, listingFont,
         UIAUID_COL_COLOR, NULL,
         UIAUID_COL_COLOR_SET, (treebool_t) false,
-        UIAUID_COL_IDX, (treenum_t) audioidint->setrow,
+        UIAUID_COL_IDX, (treenum_t) audioidint->fillrow,
         TREE_VALUE_END);
   }
 
@@ -653,7 +658,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
     nlistSetStr (ndlist, tagidx, str);
   }
 
-  uiTreeViewSelectSet (audioidint->alistTree, audioidint->setrow);
+  uiTreeViewSelectSet (audioidint->alistTree, audioidint->fillrow);
   col = UIAUID_COL_MAX;
   slistStartIterator (audioidint->listsellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
@@ -690,9 +695,9 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   }
 
   nlistSort (ndlist);
-  nlistSetList (audioidint->displaylist, audioidint->setrow, ndlist);
+  nlistSetList (audioidint->displaylist, audioidint->fillrow, ndlist);
 
-  ++audioidint->setrow;
+  ++audioidint->fillrow;
 
   logProcEnd (LOG_PROC, "uiaudioidSetDisplayList", "");
 }
@@ -704,13 +709,15 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  uiTreeViewValueClear (audioidint->alistTree, audioidint->setrow);
-  audioidint->rowcount = audioidint->setrow + 1;
+  uiTreeViewValueClear (audioidint->alistTree, audioidint->fillrow);
+  audioidint->rowcount = audioidint->fillrow + 1;
   nlistSort (audioidint->displaylist);
 
-  audioidint->setrow = 1;
+  audioidint->fillrow = 1;
+  audioidint->selectedrow = -1;
 
   if (audioidint->rowcount > 1) {
+    /* the row-selection callbacks will set the selected-row */
     uiTreeViewSelectFirst (audioidint->alistTree);
     audioidint->selchgbypass = false;
     uiTreeViewSelectNext (audioidint->alistTree);
@@ -850,11 +857,11 @@ uiaudioidSaveCallback (void *udata)
   audioidint = uiaudioid->audioidInternalData;
 
   uiLabelSetText (uiaudioid->statusMsg, "");
-  if (audioidint->currrow < 0) {
+  if (audioidint->selectedrow < 0) {
     return UICB_CONT;
   }
 
-  dlist = nlistGetList (audioidint->displaylist, audioidint->currrow);
+  dlist = nlistGetList (audioidint->displaylist, audioidint->selectedrow);
   for (int count = 0; count < audioidint->itemcount; ++count) {
     int     tagidx;
 
@@ -976,7 +983,7 @@ uiaudioidRowSelect (void *udata)
 
   uiTreeViewSelectCurrent (audioidint->alistTree);
   idx = uiTreeViewGetValue (audioidint->alistTree, UIAUID_COL_IDX);
-  audioidint->setrow = idx;
+  audioidint->selectedrow = idx;
   uiaudioidPopulateSelected (uiaudioid, idx);
 
   return UICB_CONT;
@@ -993,12 +1000,10 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
     return;
   }
 
-  audioidint->currrow = -1;
   if (idx < 0 || idx >= audioidint->rowcount) {
     return;
   }
 
-  audioidint->currrow = idx;
   dlist = nlistGetList (audioidint->displaylist, idx);
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
@@ -1026,9 +1031,12 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
       }
 
       uiToggleButtonSetText (audioidint->items [count].selrb, tval);
-      /* gtk appears to re-allocate the radio button label, */
-      /* so set the ellipsize on after setting the text value */
-      uiToggleButtonEllipsize (audioidint->items [count].selrb);
+      if (tagdefs [tagidx].valueType == VALUE_STR) {
+        uiWidgetSetTooltip (audioidint->items [count].selrb, tval);
+        /* gtk appears to re-allocate the radio button label, */
+        /* so set the ellipsize on after setting the text value */
+        uiToggleButtonEllipsize (audioidint->items [count].selrb);
+      }
     }
   }
 }
