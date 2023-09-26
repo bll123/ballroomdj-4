@@ -25,6 +25,7 @@
 #include "dirop.h"
 #include "fileop.h"
 #include "instutil.h"
+#include "istring.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -1542,7 +1543,7 @@ starterGetProfiles (startui_t *starter)
 
       pname = bdjoptGetProfileName ();
       if (pname != NULL) {
-        len = strlen (pname);
+        len = istrlen (pname);
         max = len > max ? len : max;
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, i);
@@ -1561,7 +1562,7 @@ starterGetProfiles (startui_t *starter)
   nlistSetStr (proflist, count, _("Create Profile"));
   nlistSetNum (profidxlist, count, availprof);
   starter->newprofile = availprof;
-  len = strlen (nlistGetStr (proflist, count));
+  len = istrlen (nlistGetStr (proflist, count));
   max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
   if (profileinuse) {

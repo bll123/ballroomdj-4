@@ -73,7 +73,7 @@ manageSequenceAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
   manageseq->seqmenu = uiMenuAlloc ();
-  manageseq->seqname = uiEntryInit (20, 50);
+  manageseq->seqname = uiEntryInit (30, 100);
   manageseq->errorMsg = errorMsg;
   manageseq->windowp = window;
   manageseq->options = options;

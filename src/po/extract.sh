@@ -215,6 +215,7 @@ fi
 # the locale/xx files and directories.
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
+mkpo ru ru_RU.po 'ronner' Русский‬ russian
 #mkpo de de_DE.po 'unassigned' Deutsch german
 #mkpo fr fr_FR.po 'unassigned' Français french
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish

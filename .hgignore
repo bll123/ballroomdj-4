@@ -23,6 +23,8 @@ syntax: regexp
 ^locale/nl_BE/
 ^locale/de
 ^locale/de_DE/
+^locale/ru
+^locale/ru_RU/
 ^packages/
 ^plocal/
 ^src/build/

@@ -47,3 +47,19 @@ STDROUNDS
 ..Standaardrondes
 QDANCE
 ..DansToevoegen
+KEY
+..3
+LONG
+..ru_RU
+SHORT
+..ru
+ISO639-3
+..rus
+DISPLAY
+..Русский‬
+AUTO
+..автоматически
+STDROUNDS
+..стандартные циклы
+QDANCE
+..Очередь Танца

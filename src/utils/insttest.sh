@@ -26,6 +26,7 @@ keep=F
 keepfirst=F
 readonly=F
 quiet=--quiet
+tlocale=
 
 while test $# -gt 0; do
   case $1 in
@@ -43,6 +44,10 @@ while test $# -gt 0; do
       ;;
     --noquiet)
       quiet=""
+      ;;
+    --locale)
+      shift
+      tlocale=$1
       ;;
   esac
   shift
@@ -143,6 +148,9 @@ function checkUpdaterClean {
   if [[ $section == nl_BE || $section == nl_NL ]]; then
     fn="$DATADIR/Standaardrondes.pldances"
   fi
+  if [[ $section == ru_RU ]]; then
+    fn="$DATADIR/стандартные циклы.pldances"
+  fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
   fi
@@ -154,6 +162,9 @@ function checkUpdaterClean {
     rm -f "${fn}"
     fn="$DATADIR/DansToevoegen.pldances"
     rm -f "${fn}"
+  fi
+  if [[ $section == ru_RU ]]; then
+    fn="$DATADIR/Очередь Танца.pl"
   fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
@@ -504,9 +515,15 @@ function checkInstallation {
     # automatic.pl file
     fna="${DATADIR}/automatic.pl"
     fnb="${DATADIR}/Automatisch.pl"
+    fnc="${DATADIR}/автоматически.pl"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
+      fnb="$temp"
+    fi
+    if [[ $section == ru_RU ]]; then
+      temp="${fna}"
+      fna="${fnc}"
       fnb="$temp"
     fi
     res=$(($res+1))
@@ -537,9 +554,15 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
     fnb="${DATADIR}/DansToevoegen.pldances"
+    fnc="${DATADIR}/Очередь Танца.pldances"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
+      fnb="$temp"
+    fi
+    if [[ $section == ru_RU ]]; then
+      temp="${fna}"
+      fna="${fnc}"
       fnb="$temp"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
@@ -560,9 +583,15 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb="${DATADIR}/DansToevoegen.pl"
+    fnc="${DATADIR}/Очередь Танца.pl"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
+      fnb="$temp"
+    fi
+    if [[ $section == ru_RU ]]; then
+      temp="${fna}"
+      fna="${fnc}"
       fnb="$temp"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
@@ -579,6 +608,9 @@ function checkInstallation {
     fn="${DATADIR}/standardrounds.pldances"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"
+    fi
+    if [[ $section == ru_RU ]]; then
+      fn="${DATADIR}/стандартные циклы.pldances"
     fi
     if [[ $fin == T && -f ${fn} ]]; then
       grep '# version 2' "${fn}" > /dev/null 2>&1
@@ -754,6 +786,12 @@ mv -f "$UNPACKDIR" "$UNPACKDIRSAVE"
 
 section=basic
 
+localecmd=
+if [[ $tlocale != "" ]]; then
+  localeopt=--locale
+  locale=$tlocale
+fi
+
 echo "-- $(date +%T) creating test music"
 ./src/utils/mktestsetup.sh --force
 
@@ -777,6 +815,7 @@ if [[ $readonly == F ]]; then
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --musicdir "$MUSICDIR" \
+      $localeopt $locale \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc n y
@@ -987,6 +1026,66 @@ rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
 waitForInstallDirRemoval
+
+section=ru_RU
+locale=ru_RU
+
+cleanInstTest
+resetInstallDir
+
+# main test db : rebuild of standard test database, nl_BE
+tname=new-install
+echo "== $section $tname"
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
+    --verbose --unattended ${quiet} \
+    --nomutagen \
+    --ati ${ATI} \
+    --targetdir "$TARGETTOPDIR" \
+    --unpackdir "$UNPACKDIR" \
+    --musicdir "$MUSICDIR" \
+    --locale ${locale} \
+    )
+rc=$?
+checkInstallation $section $tname "$out" $rc n y
+crc=$?
+waitForInstallDirRemoval
+
+if [[ $crc -eq 0 ]]; then
+  resetInstallDir
+  tname=update-chk-updater
+  echo "== $section $tname"
+
+  checkUpdaterClean $section
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
+      --verbose --unattended ${quiet} \
+      --nomutagen \
+      --ati ${ATI} \
+      --targetdir "$TARGETTOPDIR" \
+      --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
+      --locale ${locale} \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc u y
+  waitForInstallDirRemoval
+fi
+
+if [[ T == T ]]; then
+  if [[ $tag == linux || $platform == windows ]]; then
+    # alternate installation (linux, windows)
+    tname=alt-install
+    echo "== $section $tname"
+    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --ati ${ATI} \
+        --targetdir "$TARGETALTDIR" \
+        --musicdir "$MUSICDIR" \
+        --locale ${locale} \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+  fi
+fi
 
 if [[ $keep == F ]]; then
   cleanInstTest

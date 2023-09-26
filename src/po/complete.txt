@@ -5,3 +5,4 @@
 en_GB.po eng English (GB)
 en_US.po eng English (US)
 nl_BE.po nld Nederlands
+ru_RU.po rus Русский‬

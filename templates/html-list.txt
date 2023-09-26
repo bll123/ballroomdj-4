@@ -10,3 +10,9 @@ Nederlands Flex
 ..nl/bdj-flex.html
 Nederlands HTML 5
 ..nl/bdj.html
+Русский‬ Flex Dark
+..ru/bdj-flex-dark.html
+Русский‬ Flex
+..ru/bdj-flex.html
+Русский‬ HTML 5
+..ru/bdj.html

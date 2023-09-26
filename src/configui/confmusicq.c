@@ -17,6 +17,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "configui.h"
+#include "istring.h"
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
@@ -336,7 +337,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
     size_t      len;
 
     val = nlistGetStr (tlist, key);
-    len = strlen (val);
+    len = istrlen (val);
     maxWidth = len > maxWidth ? len : maxWidth;
   }
 

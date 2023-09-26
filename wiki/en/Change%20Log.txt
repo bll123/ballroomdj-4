@@ -4,12 +4,19 @@
 
 <!--
 
-**4.4.1 2023-10---**
+**4.4.2 2023-10---**
 
 * New Features:
     * Configuration: General: add audio content identification keys.
 
 -->
+
+**4.4.1 2023-9-**
+
+* Bug Fixes:
+    * Fixed various width calculation issues.
+* New Features:
+    * Translations: Русский (Russian).  Thanks to 'Ronner'.
 
 **4.4.0 2023-9-25**
 

@@ -18,6 +18,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "configui.h"
+#include "istring.h"
 #include "log.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -236,7 +237,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
       size_t      len;
 
       val = nlistGetStr (list, key);
-      len = strlen (val);
+      len = istrlen (val);
       maxWidth = len > maxWidth ? len : maxWidth;
     }
   }

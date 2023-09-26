@@ -14,6 +14,7 @@
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "istring.h"
 #include "itunes.h"
 #include "log.h"
 #include "manageui.h"
@@ -63,6 +64,7 @@ typedef struct managedb {
   uiwcont_t         *dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
+  int               dblistWidth;
   nlist_t           *dbhelp;
   uiwcont_t         *dbpbar;
   bool              compact : 1;
@@ -81,6 +83,9 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   nlist_t         *tlist;
   nlist_t         *hlist;
   char            tbuff [300];
+  int             maxw = 10;
+  nlistidx_t      iteridx;
+  const char      *str;
 
   managedb = mdmalloc (sizeof (managedb_t));
 
@@ -88,6 +93,7 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->conn = conn;
   managedb->processes = processes;
   managedb->dblist = NULL;
+  managedb->dblistWidth = 0;
   managedb->dbhelp = NULL;
   managedb->dbpbar = NULL;
   managedb->topdirsel = NULL;
@@ -154,6 +160,17 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->dblist = tlist;
   managedb->dbhelp = hlist;
 
+  nlistStartIterator (tlist, &iteridx);
+  while ((str = nlistIterateValueData (tlist, &iteridx)) != NULL) {
+    int     len;
+
+    len = istrlen (str);
+    if (len > maxw) {
+      maxw = len;
+    }
+  }
+  managedb->dblistWidth = maxw;
+
   return managedb;
 }
 
@@ -214,9 +231,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
-  /* currently hard-coded at 30 chars */
   uiSpinboxTextSet (managedb->dbspinbox, 0,
-      nlistGetCount (managedb->dblist), 30,
+      nlistGetCount (managedb->dblist), managedb->dblistWidth,
       managedb->dblist, NULL, NULL);
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
   uiwidgetp = uiSpinboxGetWidgetContainer (managedb->dbspinbox);
