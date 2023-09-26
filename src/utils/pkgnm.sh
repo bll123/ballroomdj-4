@@ -47,12 +47,12 @@ function pkgnmgetdata {
       pn_tag=linux-unknown
       pn_sfx=
       pn_archtag=
-      tid=$(grep '^ID=' /etc/os-release | sed 's/^ID=//')
-      case ${tid} in
+      osid=$(grep '^ID=' /etc/os-release | sed 's/^ID=//')
+      case ${osid} in
         fedora)
           pn_tag=linux-fedora
           ;;
-        opensuse*)
+        *opensuse*)
           pn_tag=linux-opensuse
           ;;
         manjaro*)

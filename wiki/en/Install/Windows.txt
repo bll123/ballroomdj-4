@@ -18,8 +18,8 @@ the entire BDJ4 folder.
 
 ##### Windows 11 bug / Installation Issues
 
-Windows 11 has a bug where the BallroomDJ 4 installer will just exit
-or return an error 0xC0000142.
+Windows 11 has a possible bug where the BallroomDJ 4 installer will
+just exit or return an error 0xC0000142.
 
 This is possibly caused by corruption of the user profile or
 corruption of the user permissions.
@@ -27,7 +27,7 @@ corruption of the user permissions.
 One work around is to right click on the BallroomDJ 4 installer and
 run the installer as administrator. BallroomDJ 4 does not require
 administrative permissions to install, this is a work around for the
-Windows 11 bug.
+Windows 11 issue.
 
 Another method that may work is to delete the user account and
 re-create it. This is an extreme solution, and I do not know if the

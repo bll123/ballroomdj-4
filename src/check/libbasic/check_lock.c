@@ -76,16 +76,10 @@ END_TEST
 START_TEST(lock_acquire_no_dir)
 {
   int           rc;
-  struct stat   statbuf;
-  FILE          *fh;
-  pid_t         pid;
-  pid_t         fpid;
-  int64_t       temp;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_acquire_no_dir");
   mdebugSubTag ("lock_acquire_no_dir");
 
-  pid = getpid ();
   unlink (BAD_FULL_LOCK_FN);
   rc = lockAcquire (BAD_FULL_LOCK_FN, PATHBLD_LOCK_FFN);
   ck_assert_int_lt (rc, 0);

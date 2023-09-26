@@ -10,101 +10,151 @@ cwd=$(pwd)
 
 grc=0
 
-echo "-- $(date +%T) building"
-(
-  cd src
-  make distclean
-)
+TBUILD=T
+TCHECK=T
+DBTEST=T
+INSTTEST=T
+TESTSUITE=T
+for arg in "$@"; do
+  case $arg in
+    --nobuild)
+      TBUILD=F
+      ;;
+    --notest)
+      CHECK=F
+      DBTEST=F
+      INSTTEST=F
+      TESTSUITE=F
+      ;;
+    --testsuite)
+      TBUILD=F
+      CHECK=F
+      DBTEST=F
+      INSTTEST=F
+      ;;
+  esac
+done
+
+
+. ./src/utils/pkgnm.sh
+pkgnmgetdata
+
+if [[ $TBUILD == T ]]; then
+  echo "-- $(date +%T) building"
+  (
+    cd src
+    make distclean
+  )
+fi
+
 LOG=src/testall.log
 > $LOG
-(
-  cd src
-  make
-) >> $LOG 2>&1
 
-echo "-- $(date +%T) warnings"
-# windows has a multitude of warnings in check.h
-grep warning $LOG |
-    grep -v 'ignoring duplicate libraries' |
-    grep -v 'check\.h' |
-    grep -v 'mongoose\.c' |
-    grep -v 'warning generated'
+if [[ $TBUILD == T ]]; then
+  (
+    cd src
+    case ${pn_tag} in
+      linux-opensuse)
+        make GCC=gcc-12 GXX=g++-12
+        ;;
+      *)
+        make
+        ;;
+    esac
+  ) >> $LOG 2>&1
 
-echo "-- check" >> $LOG
-echo "-- $(date +%T) make test setup"
-./src/utils/mktestsetup.sh --force >> $LOG 2>&1
-echo "-- $(date +%T) check"
-./bin/bdj4 --check_all >> $LOG 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "-- $(date +%T) check FAIL"
-  grc=1
-else
-  echo "-- $(date +%T) check OK"
+  echo "-- $(date +%T) warnings"
+  # windows has a multitude of warnings in check.h
+  grep warning $LOG |
+      grep -v 'ignoring duplicate libraries' |
+      grep -v 'check\.h' |
+      grep -v 'mongoose\.c' |
+      grep -v 'warning generated'
 fi
 
-if [[ $grc -eq 0 ]]; then
-  echo "-- dbtest mutagen" >> $LOG
-  echo "-- $(date +%T) dbtest mutagen"
-  # dbtest will rebuild the databases.
-  ./src/utils/dbtest.sh --atimutagen >> $LOG 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "-- $(date +%T) dbtest mutagen FAIL"
-    grc=1
-  else
-    echo "-- $(date +%T) dbtest mutagen OK"
-  fi
-
-  # dbtest will rebuild the databases.
-  echo "-- dbtest atibdj4" >> $LOG
-  echo "-- $(date +%T) dbtest atibdj4"
-  ./src/utils/dbtest.sh --atibdj4 >> $LOG 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "-- $(date +%T) dbtest atibdj4 FAIL"
-    grc=1
-  else
-    echo "-- $(date +%T) dbtest atibdj4 OK"
-  fi
-else
-  echo "dbtest not run"
-fi
-
-if [[ $grc -eq 0 ]]; then
-  echo "-- insttest" >> $LOG
-  echo "-- $(date +%T) insttest"
-  # insttest will rebuild the databases.
-  ./src/utils/insttest.sh >> $LOG 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "-- $(date +%T) insttest FAIL"
-    grc=1
-  else
-    echo "-- $(date +%T) insttest OK"
-  fi
-fi
-
-if [[ $grc -eq 0 ]]; then
-  echo "-- testsuite" >> $LOG
+if [[ $CHECK == T ]]; then
+  echo "-- check" >> $LOG
   echo "-- $(date +%T) make test setup"
   ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
-  echo "-- $(date +%T) testsuite"
-  ./bin/bdj4 --testsuite >> $LOG 2>&1
+  echo "-- $(date +%T) check"
+  ./bin/bdj4 --check_all >> $LOG 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "-- $(date +%T) testsuite FAIL"
+    echo "-- $(date +%T) check FAIL"
     grc=1
   else
-    echo "-- $(date +%T) testsuite OK"
+    echo "-- $(date +%T) check OK"
   fi
-else
-  echo "testsuite not run"
+fi
+
+if [[ $DBTEST == T ]]; then
+  if [[ $grc -eq 0 ]]; then
+    echo "-- dbtest mutagen" >> $LOG
+    echo "-- $(date +%T) dbtest mutagen"
+    # dbtest will rebuild the databases.
+    ./src/utils/dbtest.sh --atimutagen >> $LOG 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "-- $(date +%T) dbtest mutagen FAIL"
+      grc=1
+    else
+      echo "-- $(date +%T) dbtest mutagen OK"
+    fi
+
+    # dbtest will rebuild the databases.
+    echo "-- dbtest atibdj4" >> $LOG
+    echo "-- $(date +%T) dbtest atibdj4"
+    ./src/utils/dbtest.sh --atibdj4 >> $LOG 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "-- $(date +%T) dbtest atibdj4 FAIL"
+      grc=1
+    else
+      echo "-- $(date +%T) dbtest atibdj4 OK"
+    fi
+  else
+    echo "dbtest not run"
+  fi
+fi
+
+if [[ $INSTTEST == T ]]; then
+  if [[ $grc -eq 0 ]]; then
+    echo "-- insttest" >> $LOG
+    echo "-- $(date +%T) insttest"
+    # insttest will rebuild the databases.
+    ./src/utils/insttest.sh >> $LOG 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "-- $(date +%T) insttest FAIL"
+      grc=1
+    else
+      echo "-- $(date +%T) insttest OK"
+    fi
+  fi
+fi
+
+if [[ $TESTSUITE == T ]]; then
+  if [[ $grc -eq 0 ]]; then
+    echo "-- testsuite" >> $LOG
+    echo "-- $(date +%T) make test setup"
+    ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
+    echo "-- $(date +%T) testsuite"
+    ./bin/bdj4 --testsuite >> $LOG 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "-- $(date +%T) testsuite FAIL"
+      grc=1
+    else
+      echo "-- $(date +%T) testsuite OK"
+    fi
+  else
+    echo "testsuite not run"
+  fi
 fi
 
 if [[ $grc -eq 0 ]]; then
-  echo "-- $(date +%T) creating package"
-  ./src/utils/repkg.sh
+  echo "-- $(date +%T) running prepkg.sh"
+  ./pkg/prepkg.sh
   echo "-- $(date +%T) finish OK"
 else
   echo "-- $(date +%T) finish FAIL"

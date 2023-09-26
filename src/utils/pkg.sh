@@ -8,9 +8,13 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+ISTAGENM=bdj4inst
+INSTSTAGE=$HOME/vbox_shared/$ISTAGENM
+LINUXMOUNT=/media/sf_vbox_shared
+
 ./pkg/mkpkg.sh
 . ./src/utils/pkgnm.sh
-nm=$(pkginstnm)
+pnm=$(pkginstnm)
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -19,16 +23,16 @@ case $systype in
       isprimary=T
     fi
     if [[ $isprimary == T ]]; then
-      cp -pf ${nm} $HOME/vbox_shared
+      cp -pf ${pnm} $INSTSTAGE
     else
-      cp -pf ${nm} /media/sf_vbox_shared
+      cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
     fi
     ;;
   Windows)
-    cp -pf ${nm} /z
+    cp -pf ${pnm} /z/$ISTAGENM
     ;;
   Darwin)
-    # this would be better off as a pull from the main build machine
-    scp -P 166 ${nm} 192.168.2.49:vbox_shared
     ;;
 esac
+
+exit 0

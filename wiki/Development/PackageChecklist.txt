@@ -1,49 +1,46 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
+* Platforms:
+    * debian-12 (MX Linux 23)
+    * debian-11 (MX Linux 21)
+    * opensuse (OpenSUSE 15.4)
+    * fedora (Fedora 38)
+    * arch (Manjaro 23)
+    * windows (Windows 10)
+    * macos intel (bll-mac MacOS Ventura)
+    * macos applesilicon (bll-mac-m1 MacOS Ventura)
+
 * on Linux:
     * update VERSION.txt (check version)
         * leave DEVELOPMENT tag on
     * update change log
     * make sure all debugging is removed
-    * make distclean
-    * make 2>&1 | tee w
-    * make check
-    * utils/dbtest.sh
-    * utils/dbtest.sh --atibdj4
-    * utils/insttest.sh
-    * make testsuite
-    * pkg/prepkg.sh
+    * ./utils/testall.sh
     * sync source with other platforms
-* for each macos, windows
-    * make distclean
-    * make 2>&1 | tee w
-    * egrep warnings w
-* for each macos, windows
-    * make check
-    * utils/dbtest.sh
-    * utils/dbtest.sh --atibdj4
-    * utils/insttest.sh
-    * make testsuite
+* for each platform
+    * pull source if necessary
+    * ./utils/testall.sh
 
 * on Linux
     * update VERSION.txt (check version)
         * turn DEVELOPMENT tag off
-    * pkg/mkpkg.sh
-<br>Recall that any time the mkpkg.sh script is run on Linux, the source
-must be re-synced to the other platforms and mkpkg.sh must be run again
-on the other platforms.
+    * ./utils/prerel.sh
+    * ./utils/pkg.sh
+<br>Recall that any time the packaging scripts are run on the primary
+development platform, the source must be re-synced to the other platforms
+and packaging must be run again on the other platforms.
     * sync source with other platforms
-* for each macos, windows
-    * pkg/mkpkg.sh
-* for each linux, macos, windows
-    * web/push.sh
+* for each platform
+    * pull source if necessary
+    * ./utils/pkg.sh
 * on linux
     * hg: check in
     * hg: create a tag for the release
-    * push to sourceforge
-    * update the wiki: web/wikiput.sh putall
-    * update the website (version info): web/install.sh
+    * ../web/push.sh
+    * update the wiki: ../web/wikiput.sh putall
+    * update the website (version info): ../web/install.sh
+    * ./utils/postrel.sh
 * final
     * update sourceforge, mark the packages
     * announce the release on the forum
@@ -51,8 +48,7 @@ on the other platforms.
     * update VERSION.txt
         * set next version
         * set DEVELOPMENT tag
-    * if there were any localization changes, the update
-      crowdin with the changes.
+    * if there were any localization changes, update crowdin with the changes.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
