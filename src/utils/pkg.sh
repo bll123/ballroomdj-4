@@ -28,7 +28,7 @@ case $systype in
       cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
     fi
     ;;
-  Windows)
+  MINGW*)
     cp -pf ${pnm} /z/$ISTAGENM
     ;;
   Darwin)

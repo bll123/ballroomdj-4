@@ -141,6 +141,6 @@ fi
 for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
   sshpass -e rsync -v -e ssh ${fn} \
     ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/v${VERSION}/
-fi
+done
 
 exit 0

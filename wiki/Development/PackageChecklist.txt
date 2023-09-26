@@ -52,4 +52,4 @@ and packaging must be run again on the other platforms.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-09-04 06:04:57; BDJ4 version 4.3.3.4)_
+<br>_(Updated 2023-09-25 17:17:37; BDJ4 version 4.4.0)_
