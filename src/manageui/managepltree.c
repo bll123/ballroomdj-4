@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "dance.h"
+#include "istring.h"
 #include "manageui.h"
 #include "mdebug.h"
 #include "playlist.h"
@@ -63,6 +64,7 @@ static bool managePlaylistTreeChanged (void *udata, long col);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 static int  managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm);
+static void managePlaylistTreeColumnHeader (char *tbuff, size_t sz, const char *disp, const char *bpmstr);
 
 managepltree_t *
 managePlaylistTreeAlloc (uiwcont_t *errorMsg)
@@ -173,7 +175,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   bpmstr = tagdefs [TAG_BPM].displayname;
 
   /* CONTEXT: playlist management: low bpm/mpm column header */
-  snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
+  managePlaylistTreeColumnHeader (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
@@ -184,7 +186,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
       TREE_COL_TYPE_END);
 
   /* CONTEXT: playlist management: high bpm/mpm column header */
-  snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
+  managePlaylistTreeColumnHeader (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
@@ -526,3 +528,18 @@ managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm)
   return bpm;
 }
 
+/* modify long column headers (for low bpm/high bpm) */
+static void
+managePlaylistTreeColumnHeader (char *tbuff, size_t sz, const char *disp,
+    const char *bpmstr)
+{
+  snprintf (tbuff, sz, disp, bpmstr);
+  if (istrlen (tbuff) > 8) {
+    char    *p;
+
+    p = strstr (tbuff, " ");
+    if (p != NULL) {
+      *p = '\n';
+    }
+  }
+}

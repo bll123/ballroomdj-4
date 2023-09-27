@@ -35,10 +35,6 @@ confuiPopulateOptions (confuigui_t *gui)
   confuiouttype_t outtype;
   char        tbuff [MAXPATHLEN];
   long        debug = 0;
-  bool        accentcolorchanged = false;
-  bool        localechanged = false;
-  bool        themechanged = false;
-  bool        scalechanged = false;
 
   logProcBegin (LOG_PROC, "confuiPopulateOptions");
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
@@ -48,6 +44,8 @@ confuiPopulateOptions (confuigui_t *gui)
     sval = "fail";
     nval = -1;
     dval = -1.0;
+
+    gui->uiitem [i].changed = false;
 
     basetype = gui->uiitem [i].basetype;
     outtype = gui->uiitem [i].outtype;
@@ -134,19 +132,18 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_OUT_STR: {
-        if (i == CONFUI_SPINBOX_LOCALE) {
-          if (strcmp (sysvarsGetStr (SV_LOCALE), sval) != 0) {
-            localechanged = true;
+        uispinbox_t  *spinbox;
+
+        if (i == CONFUI_SPINBOX_LOCALE ||
+            i == CONFUI_SPINBOX_UI_THEME) {
+          spinbox = gui->uiitem [i].spinbox;
+          if (uiSpinboxIsChanged (spinbox)) {
+            gui->uiitem [i].changed = true;
           }
         }
         if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
           if (strcmp (bdjoptGetStr (gui->uiitem [i].bdjoptIdx), sval) != 0) {
-            accentcolorchanged = true;
-          }
-        }
-        if (i == CONFUI_SPINBOX_UI_THEME) {
-          if (strcmp (bdjoptGetStr (gui->uiitem [i].bdjoptIdx), sval) != 0) {
-            themechanged = true;
+            gui->uiitem [i].changed = true;
           }
         }
 
@@ -173,7 +170,7 @@ confuiPopulateOptions (confuigui_t *gui)
         } else {
           if (i == CONFUI_WIDGET_UI_SCALE) {
             if (nval != bdjoptGetNum (gui->uiitem [i].bdjoptIdx)) {
-              scalechanged = true;
+              gui->uiitem [i].changed = true;
             }
           }
           bdjoptSetNum (gui->uiitem [i].bdjoptIdx, nval);
@@ -209,7 +206,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
     } /* out type */
 
-    if (i == CONFUI_SPINBOX_LOCALE && localechanged) {
+    if (i == CONFUI_SPINBOX_LOCALE && gui->uiitem [i].changed) {
       sysvarsSetStr (SV_LOCALE, sval);
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
@@ -229,7 +226,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
     }
 
-    if (i == CONFUI_WIDGET_UI_SCALE && scalechanged) {
+    if (i == CONFUI_WIDGET_UI_SCALE && gui->uiitem [i].changed) {
       FILE    *fh;
 
       pathbldMakePath (tbuff, sizeof (tbuff),
@@ -248,7 +245,7 @@ confuiPopulateOptions (confuigui_t *gui)
       bdjoptSetStr (gui->uiitem [i].bdjoptIdx, tbuff);
     }
 
-    if (i == CONFUI_SPINBOX_UI_THEME && themechanged) {
+    if (i == CONFUI_SPINBOX_UI_THEME && gui->uiitem [i].changed) {
       FILE    *fh;
 
       sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
@@ -262,14 +259,20 @@ confuiPopulateOptions (confuigui_t *gui)
       fclose (fh);
     }
 
-    if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
-        accentcolorchanged) {
+    if (i == CONFUI_WIDGET_UI_ACCENT_COLOR && gui->uiitem [i].changed) {
       templateImageCopy (sval);
     }
 
     if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
-      templateHttpCopy (sval, "bdj4remote.html");
+      uispinbox_t  *spinbox;
+
+      /* only copy if the spinbox changed */
+
+      spinbox = gui->uiitem [i].spinbox;
+      if (uiSpinboxIsChanged (spinbox)) {
+        sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
+        templateHttpCopy (sval, "bdj4remote.html");
+      }
     }
   } /* for each item */
 

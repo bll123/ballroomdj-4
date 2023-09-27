@@ -101,7 +101,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     if (uimusicq->ui [i].dispselType == DISP_SEL_SBS_SONGLIST) {
       sz = 15;
     }
-    uimusicq->ui [i].slname = uiEntryInit (sz, 40);
+    uimusicq->ui [i].slname = uiEntryInit (sz, 100);
   }
 
   uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =

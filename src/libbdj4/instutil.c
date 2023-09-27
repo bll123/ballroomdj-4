@@ -98,8 +98,7 @@ instutilCopyTemplates (void)
   char        to [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
-
-      ilistidx_t  fkey = -1;
+  ilistidx_t  fkey = -1;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 
@@ -147,36 +146,29 @@ instutilCopyTemplates (void)
       pathInfoFree (pi);
       continue;
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);
+      strlcpy (from, fname, sizeof (from));
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
+
+      /* use pathbldMakePath without specifying PATHBLD_MP_DREL_DATA */
+      /* as templateFileCopy builds the path with that prefix */
+
       if (pathInfoExtCheck (pi, ".g")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA);
+        strlcpy (to, tbuff, sizeof (to));
       } else if (pathInfoExtCheck (pi, ".p")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+        pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_USEIDX);
       } else if (pathInfoExtCheck (pi, ".txt")) {
-        pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+        pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_USEIDX);
       } else if (pathInfoExtCheck (pi, ".m")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
+        pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_HOSTNAME);
       } else if (pathInfoExtCheck (pi, ".mp")) {
         pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+            tbuff, "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       } else {
         /* unknown extension */
         fprintf (stderr, "unknown extension for bdjconfig %.*s\n", (int) pi->elen, pi->extension);
         pathInfoFree (pi);
         continue;
       }
-
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
-      filemanipBackup (to, 1);
-      filemanipCopy (from, to);
-      pathInfoFree (pi);
-      continue;
     } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
         pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
         pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
@@ -211,9 +203,9 @@ instutilCopyTemplates (void)
 
       strlcpy (from, tbuff, sizeof (from));
       if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "profile00/%s", tbuff);
+        pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_USEIDX);
       } else {
-        snprintf (to, sizeof (to), "%s", tbuff);
+        strlcpy (to, tbuff, sizeof (to));
       }
     } else {
       /* unknown extension */
@@ -221,8 +213,6 @@ instutilCopyTemplates (void)
       continue;
     }
 
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
     templateFileCopy (from, to);
     pathInfoFree (pi);
   }

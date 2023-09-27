@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-25\n"
-"PO-Revision-Date: 2023-09-26\n"
+"PO-Revision-Date: 2023-09-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -875,7 +875,7 @@ msgstr "Скрыть невыбранное"
 #. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
-msgstr "Высокий\n%s"
+msgstr "Высокий %s"
 
 #. CONTEXT: playlist management: High Dance Level
 msgid "High Dance Level"
@@ -1009,7 +1009,7 @@ msgstr "Обнаружен 'tclsh'."
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "Низкий\n%s"
+msgstr "Низкий %s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"

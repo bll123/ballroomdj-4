@@ -221,6 +221,7 @@ typedef struct {
   uiwcont_t   *uiwidgetp;
   callback_t  *callback;
   char        *uri;
+  bool        changed;
 } confuiitem_t;
 
 typedef enum {

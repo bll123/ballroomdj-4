@@ -102,7 +102,7 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   managepl->plmenu = uiMenuAlloc ();
-  managepl->plname = uiEntryInit (20, 50);
+  managepl->plname = uiEntryInit (30, 100);
   managepl->errorMsg = errorMsg;
   managepl->windowp = window;
   managepl->options = options;

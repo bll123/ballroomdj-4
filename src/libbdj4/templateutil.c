@@ -22,6 +22,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "log.h"
 #include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
@@ -121,17 +122,23 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
     }
   }
 
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
+
   if (color == NULL ||
       strcmp (color, "#ffa600") == 0) {
     filemanipBackup (to, 1);
     if (filemanipCopy (tbuff, to) < 0) {
-      fprintf (stderr, "copy failed: %s %s\n", tbuff, to);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: copy failed %s %s", tbuff, to);
+      fprintf (stderr, "ERR: copy failed: %s %s\n", tbuff, to);
     }
   } else {
     char    *data;
     FILE    *fh;
     size_t  len;
     char    *ndata;
+
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "with-color: %s", color);
 
     filemanipBackup (to, 1);
     data = filedataReadAll (tbuff, &len);

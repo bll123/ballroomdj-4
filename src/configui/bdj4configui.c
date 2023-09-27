@@ -158,6 +158,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
     confui.gui.uiitem [i].uri = NULL;
+    confui.gui.uiitem [i].changed = false;
 
     if (i > CONFUI_COMBOBOX_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       confui.gui.uiitem [i].dropdown = uiDropDownInit ();
