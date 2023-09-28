@@ -23,6 +23,7 @@
 * Changes:
     * Management: Replaced play buttons and filter buttons with images.
     * Playlist Management: Re-arranged layout.
+    * Song List Editor: Re-arranged layout.
 * New Features:
     * Translations: Русский (Russian).  Thanks to 'Ronner'.
 

@@ -135,13 +135,17 @@ function checkUpdaterClean {
   sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
-  # gtk-static.css file should be installed if missing
-  rm -f "$DATADIR/gtk-static.css"
-
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
   sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
+
+  # gtk-static version number should be updated to version 3.
+  fn="$DATADIR/gtk-static.css"
+  if [[ -f $fn ]]; then
+    sed -e 's/version 3/version 1/' "${fn}" > "${fn}.n"
+    mv -f "${fn}.n" "${fn}"
+  fi
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
@@ -505,13 +509,6 @@ function checkInstallation {
       echo "  no autoselection.txt file"
     fi
 
-    res=$(($res+1))  # gtk-static.css file
-    if [[ $fin == T && -f "${DATADIR}/gtk-static.css" ]]; then
-      chk=$(($chk+1))
-    else
-      echo "  no gtk-static.css file"
-    fi
-
     # automatic.pl file
     fna="${DATADIR}/automatic.pl"
     fnb="${DATADIR}/Automatisch.pl"
@@ -549,6 +546,20 @@ function checkInstallation {
       fi
     else
       echo "  no itunes-fields.txt file"
+    fi
+
+    res=$(($res+1))  # itunes-fields.txt file
+    fn="${DATADIR}/gtk-static.css"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep 'version 3' "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  gtk-static.css file has wrong version"
+      fi
+    else
+      echo "  no gtk-static.css file"
     fi
 
     res=$(($res+1))  # queuedance.pldances file

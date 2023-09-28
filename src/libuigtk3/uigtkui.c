@@ -142,7 +142,8 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     sz -= 2;
     snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
-    snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
+    ++sz;
+    snprintf (wbuff, sizeof (wbuff), " .leftnotebook tab label { font-size: %dpt; } ", sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 

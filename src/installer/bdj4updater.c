@@ -129,6 +129,7 @@ static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
+static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static int  updaterGetMPMValue (song_t *song);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 
@@ -496,6 +497,7 @@ main (int argc, char *argv [])
     /* 4.0.10 2023-1-29 gtk-static.css */
     /*    This is a new file; simply check and see if it does not exist. */
     updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT);
+    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 3);
   }
 
   {
@@ -1276,6 +1278,35 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateHttpCopy (tmp, tmp);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
+  }
+}
+
+static void
+updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
+{
+  int         version;
+  char        from [MAXPATHLEN];
+  char        tmp [MAXPATHLEN];
+  FILE        *fh;
+
+  pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_DATA);
+  fh = fileopOpen (from, "r");
+  if (fh == NULL) {
+    return;
+  }
+  *tmp = '\0';
+  (void) ! fgets (tmp, sizeof (tmp), fh);
+  mdextfclose (fh);
+  fclose (fh);
+  if (sscanf (tmp, "/* version %d", &version) != 1) {
+    version = 1;
+  }
+
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
+  if (version < currvers) {
+    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
+    templateFileCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
 }
