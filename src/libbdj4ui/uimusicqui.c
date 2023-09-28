@@ -291,8 +291,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->callbacks [MQINT_CB_PLAY] = callbackInit (
         uimusicqPlayCallback, uimusicq, "musicq: play");
     uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_PLAY],
-        /* CONTEXT: music queue: play the selected song */
-        _("Play"), NULL);
+        /* CONTEXT: music queue: tooltip: play the selected song */
+        _("Play"), "button_play");
     mqint->buttons [UIMUSICQ_BUTTON_PLAY] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);

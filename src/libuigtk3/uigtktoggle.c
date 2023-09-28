@@ -20,6 +20,8 @@
 #include "ui/uitoggle.h"
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
+static void uiToggleButtonSetImageAlignment (GtkWidget *widget);
+static void uiToggleButtonSIACallback (GtkWidget *widget, void *udata);
 
 uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
@@ -86,6 +88,10 @@ uiCreateToggleButton (const char *txt,
   if (tooltiptxt != NULL) {
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
+  if (imagewidget != NULL) {
+    uiToggleButtonSetImageAlignment (widget);
+  }
+
   uiwidget = uiwcontAlloc ();
   uiwidget->wtype = WCONT_T_TOGGLE_BUTTON;
   uiwidget->widget = widget;
@@ -98,7 +104,9 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
+      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
+      uiwidget->wtype != WCONT_T_CHECK_BOX) {
     return;
   }
 
@@ -112,7 +120,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON) {
     return;
   }
 
@@ -125,7 +133,7 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON) {
     return;
   }
 
@@ -138,7 +146,9 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return 0;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
+      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
+      uiwidget->wtype != WCONT_T_CHECK_BOX) {
     return 0;
   }
 
@@ -151,7 +161,9 @@ uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
+      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
+      uiwidget->wtype != WCONT_T_CHECK_BOX) {
     return;
   }
 
@@ -168,7 +180,9 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_RADIO_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
+      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
+      uiwidget->wtype != WCONT_T_CHECK_BOX) {
     return;
   }
 
@@ -185,6 +199,29 @@ uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   callback_t *uicb = udata;
 
-  callbackHandler (uicb);
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+}
+
+/* to find the image and center it vertically, it is necessary */
+/* to traverse the child tree of the toggle button */
+
+static void
+uiToggleButtonSetImageAlignment (GtkWidget *widget)
+{
+  gtk_container_foreach (GTK_CONTAINER (widget), uiToggleButtonSIACallback, NULL);
+}
+
+static void
+uiToggleButtonSIACallback (GtkWidget *widget, void *udata)
+{
+  if (GTK_IS_IMAGE (widget)) {
+    gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+    return;
+  }
+  if (GTK_IS_CONTAINER (widget)) {
+    uiToggleButtonSetImageAlignment (widget);
+  }
 }
 

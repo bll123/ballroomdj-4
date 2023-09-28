@@ -293,12 +293,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
-    /* CONTEXT: song-selection: play the selected songs */
+    /* CONTEXT: song-selection: tooltip: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
     ssint->callbacks [SONGSEL_CB_PLAY] = callbackInit (
         uisongselPlayCallback, uisongsel, "songsel: play");
     uibutton = uiCreateButton (
-        ssint->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
+        ssint->callbacks [SONGSEL_CB_PLAY], tbuff, "button_play");
     ssint->buttons [SONGSEL_BUTTON_PLAY] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
@@ -316,8 +316,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisfDialog, uisongsel->uisongfilter, "songsel: filters");
   uibutton = uiCreateButton (
       ssint->callbacks [SONGSEL_CB_FILTER],
-      /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
-      _("Filters"), NULL);
+      /* CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog */
+      _("Filter Songs"), "button_filter");
   ssint->buttons [SONGSEL_BUTTON_FILTER] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);

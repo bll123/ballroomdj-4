@@ -112,7 +112,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
 
   hbox = uiCreateHorizBox ();
   uiWidgetSetAllMargins (hbox, 2);
-  uiWidgetExpandHoriz (hbox);
+//  uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizEnd (hbox);
   uiBoxPackStart (vboxp, hbox);
 

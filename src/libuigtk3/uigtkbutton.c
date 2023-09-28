@@ -70,6 +70,7 @@ uiCreateButton (callback_t *uicb,
     gtk_button_set_image (GTK_BUTTON (widget), image);
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
     gtk_widget_set_tooltip_text (widget, title);
+    gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }

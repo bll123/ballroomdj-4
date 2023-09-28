@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.4.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2023-09-27\n"
+"POT-Creation-Date: 2023-09-28\n"
+"PO-Revision-Date: 2023-09-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -807,11 +807,8 @@ msgid "Filter Display"
 msgstr ""
 
 #. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
-msgstr ""
-
-#. CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog
-msgid "Filters"
 msgstr ""
 
 #. CONTEXT: audio identification: first song
@@ -1289,9 +1286,9 @@ msgstr ""
 msgid "Pause at End"
 msgstr ""
 
-#. CONTEXT: music queue: play the selected song
+#. CONTEXT: music queue: tooltip: play the selected song
 #. CONTEXT: song editor : play song
-#. CONTEXT: song-selection: play the selected songs
+#. CONTEXT: song-selection: tooltip: play the selected songs
 msgid "Play"
 msgstr ""
 

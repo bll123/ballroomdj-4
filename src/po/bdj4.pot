@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-27 18:47-0700\n"
+"POT-Creation-Date: 2023-09-28 02:38-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -811,11 +811,8 @@ msgid "Filter Display"
 msgstr ""
 
 #. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
-msgstr ""
-
-#. CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog
-msgid "Filters"
 msgstr ""
 
 #. CONTEXT: audio identification: first song
@@ -1293,9 +1290,9 @@ msgstr ""
 msgid "Pause at End"
 msgstr ""
 
-#. CONTEXT: music queue: play the selected song
+#. CONTEXT: music queue: tooltip: play the selected song
 #. CONTEXT: song editor : play song
-#. CONTEXT: song-selection: play the selected songs
+#. CONTEXT: song-selection: tooltip: play the selected songs
 msgid "Play"
 msgstr ""
 

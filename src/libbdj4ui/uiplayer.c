@@ -235,6 +235,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   tbox = uiCreateHorizBox ();
   uiBoxPackStart (hbox, tbox);
+  uiWidgetAlignVertCenter (tbox);
   uiSizeGroupAdd (szgrpE, tbox);
 
   uiplayer->images [UIPL_IMG_STATUS] = uiImageNew ();
@@ -248,6 +249,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
+  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_STATUS]);
+  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_STATUS]);
   uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_STATUS]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
@@ -272,6 +275,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_REPEAT], 18, -1);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
+  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_REPEAT]);
+  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_REPEAT]);
   uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
   uiplayer->wcont [UIPL_W_DANCE] = uiCreateLabel ("");
@@ -468,9 +473,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, "pause-at-end");
-  /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
-  uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (_("Pause at End"),
-      NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
+  uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (
+      /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
+      _("Pause at End"), NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_PAUSE_AT_END_B]);
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
       uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
@@ -687,7 +692,7 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
+uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 {
   logProcBegin (LOG_PROC, "uiplayerProcessPauseatend");
 
@@ -695,18 +700,24 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
     logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "no-ui");
     return;
   }
+  if (uiplayer->pauseatendLock) {
+    logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "pae-lock");
+    return;
+  }
+
   uiplayer->pauseatendLock = true;
 
-  if (on && ! uiplayer->pauseatendstate) {
+  if (onoff && ! uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_ON]);
     uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
   }
-  if (! on && uiplayer->pauseatendstate) {
+  if (! onoff && uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_OFF]);
     uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
   }
+  uiplayer->pauseatendstate = onoff;
+
   uiplayer->pauseatendLock = false;
-  uiplayer->pauseatendstate = on;
   logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "");
 }
 
@@ -964,6 +975,7 @@ uiplayerPauseatendCallback (void *udata)
     logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "pae-lock");
     return UICB_STOP;
   }
+
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
   logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "");
   return UICB_CONT;
