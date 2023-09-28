@@ -107,3 +107,7 @@ msgstr "Другие сайты, на которых можно найти ан�
 msgid " (donate button at very top)"
 msgstr " (кнопка поддержки в самом верху)"
 
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr ""
+

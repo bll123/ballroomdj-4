@@ -1458,7 +1458,7 @@ msgstr "Очередь Танца"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "Очередь_noun"
+msgstr "Очередь"
 
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"

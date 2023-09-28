@@ -53,6 +53,20 @@ p {
   left: 5%;
 }
 
+.dflex {
+  display: flex;
+}
+
+.dlang {
+  width: auto;
+  background: #cccccc;
+  padding-right: 20px;
+}
+
+.dtext {
+  flex: 1;
+}
+
 .dinlineblock {
   display: inline-block;
 }

@@ -98,7 +98,13 @@ cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
 cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
 cp -pf ../img/bdj4_icon.png $TMPIMG/bdj4_icon.png
 
+if [[ $server == web.sourceforge.net ]]; then
+  cp -pf htaccess.sf $TMP/.htaccess
+fi
+
 cd $TMP
+# never use --delete here
+# the wikiimg/ directory is also underneath htdocs
 sshpass -e rsync -v -e "$ssh" -aS \
     . \
     ${remuser}@${server}:${wwwpath}

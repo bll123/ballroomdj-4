@@ -100,3 +100,7 @@ msgstr ""
 #. CONTEXT: website : donate information text
 msgid " (donate button at very top)"
 msgstr ""
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr ""
