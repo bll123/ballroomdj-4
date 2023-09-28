@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-09-25\n"
-"PO-Revision-Date: 2023-09-28\n"
+"POT-Creation-Date: 2023-09-28\n"
+"PO-Revision-Date: 2023-09-28 20:03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -221,6 +221,7 @@ msgid "Action failed"
 msgstr "Не удалось выполнить действие"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for audio identification
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
@@ -578,7 +579,7 @@ msgstr "Рейтинг танца"
 
 #. CONTEXT: playlist management: notebook tab title: dances
 msgid "Dances"
-msgstr ""
+msgstr "Танцы"
 
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
 msgid "Database Loads Dance From Genre"
@@ -1055,8 +1056,7 @@ msgid "Marquee Theme"
 msgstr "Тема Маркета"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Максимальное\n"
 "время\n"
@@ -1447,7 +1447,7 @@ msgstr "Название очереди"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
-msgstr "Плейлист очереди"
+msgstr "Очередь плейлиста"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
@@ -1516,9 +1516,7 @@ msgid "Repeat"
 msgstr "Повтор"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Заменяет базу данных BallroomDJ целиком. Все изменения в базе данных будут потеряны."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1653,7 +1651,7 @@ msgstr "Выбрано"
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
 msgid "Send Support Message"
-msgstr "Отправить сообщение поддержки"
+msgstr "Отправить сообщение поддержке"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -1673,7 +1671,7 @@ msgstr "Отправка диагностики"
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Support Message"
-msgstr "Отправка сообщения поддержки"
+msgstr "Отправка сообщения поддержке"
 
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
@@ -1693,7 +1691,7 @@ msgstr "Настроить альтернативную папку"
 
 #. CONTEXT: playlist management: notebook tab title: settings
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
@@ -1887,16 +1885,12 @@ msgid "The conversion process will not be run."
 msgstr "Процесс конверсии не будет запущен."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installs."
+msgid "The conversion process will only run for new installations and for re-installs."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1994,13 +1988,11 @@ msgstr "Обновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Обновляет информацию о базе данных BallroomDJ из базы данных %s."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Обновляет информацию в базе данных BallroomDJ из тегов аудио файлов."
 
 #. CONTEXT: alternate installation: status message
@@ -2078,9 +2070,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Записать теги в аудио файлы"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Запись тегов аудио файла, используя информацию из базы данных BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types
@@ -2133,10 +2123,7 @@ msgstr "Как получить поддержку"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr ""
-"To get support, select the 'Support' button. There are links to the"
-" wiki, forums and problem ticketing system. Or use the"
-" 'Send Support Message' button to send a message."
+msgstr "Чтобы получить поддержку, нажмите кнопку \"Поддержка\". Здесь есть ссылки на вики, форумы и систему выдачи проблемных билетов. Или воспользуйтесь кнопкой \"Отправить сообщение поддержке\", чтобы отправить сообщение."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2144,21 +2131,7 @@ msgstr "Проверка танца на каждую песню"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr ""
-"=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window."
-"<br>"
-" Scroll through the list of songs and check to make sure the dance is set"
-" for each song."
-"<br>To set the dance for a song:"
-"=> Select the song."
-"=> Select the 'Song Editor' tab (below the player, above the list of songs)."
-"=> Next to the 'Dance' label, use the dance drop-down selection and"
-" select the dance for the song."
-"=> In the upper right of the 'Song Editor' tab, select the 'Save' button."
-"<br>"
-" You can switch back to the 'Music Manager' tab and check for other"
-" songs that need to have the dance set."
-"=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Выберите \"Менеджер музыки\" в левой части окна \"Управление BDJ4\". Прокрутите список песен и убедитесь, что для каждой песни задан танец. Чтобы задать танец для песни:=> Выберите песню.=> Выберите вкладку \"Редактор песни\" (под проигрывателем, над списком песен).=> Рядом с надписью \"Танец\" воспользуйтесь выпадающим списком \"Танец\" и выберите танец для песни.=> В правом верхнем углу вкладки \"Редактор песни\"., нажмите кнопку \"Сохранить\". Вы можете вернуться на вкладку \"Менеджер музыки\" и проверить наличие других песен, для которых требуется танцевальный набор.=> Оставьте окно \"Управление BDJ4\" открытым"
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2166,19 +2139,7 @@ msgstr "Впервые создайте базу данных"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr ""
-"In order to function, BallroomDJ 4 maintains a database of all of your songs."
-" This database must be built for the first time."
-"=> Select the 'Manage' button."
-"=> In the 'BDJ4 Management' window, select"
-" the 'Update Database' section in the left side of the window."
-"<br>"
-" The default selection 'Check for New' is used when you add or remove"
-" songs from your music collection."
-"=> Change the selection to 'Rebuild Database'."
-"=> Select the 'Start' button."
-"=> Wait for the database rebuild to finish."
-"=> Leave the 'BDJ4 Management' window open."
+msgstr "Для того чтобы функционировать, BallroomDJ 4 поддерживает базу данных всех ваших песен. Эта база данных должна быть создана в первый раз.=> Нажмите кнопку \"Управление\".=> В окне \"Управление BDJ4\" выберите раздел \"Обновить базу данных\" в левой части окна.<br> Выбор по умолчанию \"Проверить на новые\" используется при добавлении или удалении песен из вашей музыкальной коллекции.=> Измените выбор на \"Восстановить базу данных\".=> Нажмите кнопку \"Начать\".=> Дождитесь завершения Восстановления базы данных.=> Оставьте окно \"BDJ4 Управление\" открытым."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2186,20 +2147,7 @@ msgstr "Создать пример плейлиста"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr ""
-"=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window."
-"<br>"
-" On the right side of the lower section of the window is a list of your songs."
-"=> Select a song by clicking on it."
-"=> Now select the left arrow button in the middle of the lower section."
-"<br>"
-" This will add the song you"
-" selected to the song list that is being created."
-"=> Select a few songs and add each of them to the song list."
-"<br>"
-" Above the song list is an entry box with the name 'New Song List' in it."
-"=> Click in the box and change the name of the song list."
-"=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Выберите \"Редактировать списки песен\" в левой части окна \"Управление BDJ4\".В правой части нижней части окна находится список ваших песен.=> Выберите песню, нажав на нее.=> Теперь нажмите кнопку со стрелкой влево в середине нижней части.<br> Это добавит выбранную вами песню в создаваемый список песен.=> Выберите несколько песен и добавьте каждую из них в список песен.<br> Над списком песен находится поле ввода с названием \"Новый список песен\".=> Нажмите в поле и измените название списка песен.=> Закройте окно \"Управление BDJ4\". Список песен будет сохранен автоматически."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2207,14 +2155,7 @@ msgstr "Установить расположение папки с музыко
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr ""
-"The first step is to configure the location of your music folder."
-"=> Select the 'Configure' button."
-"<br>"
-" In the 'BDJ4 Configuration' window, the 'General' section is displayed."
-" The first item in 'General' is the 'Music Folder'."
-"=> Change the 'Music Folder' to the location of your music."
-"=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Первым шагом является настройка расположения вашей папки музыки.=> Нажмите кнопку \"Конфигурация\".<br> В окне \"Конфигурация BDJ4\" отображается раздел \"Основное\". Первым пунктом в разделе \"Основное\" является \"Папка музыки\".=> Измените \"Папку музыки\" на расположение вашей музыки.=> Оставьте окно \"Конфигурация BDJ4\" открытым."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2222,17 +2163,7 @@ msgstr "Верифицировать настроенные танцы"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr ""
-"The names of the dances need to match what you use."
-"=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window."
-"<br>"
-" Review the list of dances."
-" If a dance has a different name than"
-" what you use, select the dance and change the name."
-" If a dance you use is missing, select the 'Add' button and add the dance."
-" If there are dances you will never use, select the dance,"
-" then select the 'Remove' button."
-"=> Close the 'BDJ4 Configuration' window."
+msgstr "Названия танцев должны соответствовать тому, что вы используете.=> Выберите \"Редактировать танцы\" в левой части окна \"Конфигурация BDJ4\".Просмотрите список танцев. Если название танца отличается от того, которое вы используете, выберите танец и измените название. Если танец, который вы используете, отсутствует, нажмите кнопку \"Добавить\" и добавьте танец. Если есть танцы, которые вы никогда не будете использовать, выберите танец, затем нажмите кнопку \"Удалить\".=> Закройте окно \"Конфигурация BDJ4\"."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2240,9 +2171,7 @@ msgstr "Введение / Начало работы"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr ""
-"This utility will walk you through a few steps to help you get started."
-"=> Select the 'Next' button to continue on to the next step."
+msgstr "Эта утилита проведет вас через несколько шагов, чтобы помочь вам начать работу.=> Выберите кнопку \"Следующее\", чтобы перейти к следующему шагу"
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2250,11 +2179,7 @@ msgstr "Воспроизвести плейлист"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr ""
-"Now you will play the playlist that was just created."
-"=> Select the 'Player' button."
-"=> In the player window, select the 'Queue Playlist' drop-down."
-"=> Select the name of the playlist that you entered previously."
+msgstr "Теперь вы будете воспроизводить только что созданный плейлист.=> Нажмите кнопку \"Плеер\".=> В окне плеера выберите раскрывающийся список \"Очередь плейлиста\".=> Выберите название плейлиста, которое вы ввели ранее."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2262,24 +2187,5 @@ msgstr "Как организована музыка"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr ""
-"Setting the organisation method is important so that BallroomDJ 4"
-"  can determine the information about your songs when the database is built."
-"=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window."
-"<br>"
-" Many people have their music organised by putting each dance into a"
-" separate folder."
-"<br>The default organisation is 'Dance/Title'."
-" If you have iTunes installed, the organization path will be set to"
-" 'Album Artist/Album/Disc - Track0 Title'."
-"=> Select the organisation method you use for your songs in the"
-" 'Organisation Path' drop-down."
-"<br>"
-" If the organisation path you need is not present, select the 'support'"
-" button in the starter window and send a support message."
-" Almost any organisation path can be configured."
-"<br>"
-" If your audio files have the dance stored in the genre audio tag,"
-" turn on 'Database Loads Dance from Genre'."
-"=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Настройка метода организации важна для того, чтобы BallroomDJ 4 мог определить информацию о вашей песне при создании базы данных.=> Выберите \"Организация\" в левой части окна \"Конфигурация BDJ4\".<br> Многие люди упорядочивают свою музыку, помещая каждый танец в отдельную папку.<br>Организация по умолчанию - \"Танец/Заголовок\". Если у вас установлен iTunes, путь к организации будет установлен на \"Исполнитель альбома/Альбом/Название диска - дорожка 0\".=> Выберите метод организации, который вы используете для своих песен, в раскрывающемся списке \"Путь организации\".<br> Если нужного вам пути организации нет, нажмите кнопку \"Поддержка\" в стартовом окне и отправьте сообщение в службу поддержки. Можно настроить практически любой организационный патч.<br> Если в ваших аудиофайлах танец сохранен в теге аудио тег жанра, включите \"База данных загружает танец из жанра\".=> Оставьте окно \"Конфигурация BDJ4\" открытым."
 
