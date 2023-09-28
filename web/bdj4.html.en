@@ -3,13 +3,13 @@
      "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-US">
 <head>
-  <meta name="yandex-verification" content="52297d544556772d" />
-  <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <!-- WT_021 -->
   <title>BallroomDJ 4 - Ballroom Music Player</title>
+  <!-- WT_022 -->
   <meta name="Description" content="BallroomDJ 4 - Ballroom Music Player">
-  <meta name="Keywords" content="ballroomdj, ballroom dj, ballroom music,
+  <meta name="Keywords" content="ballroom music,
       ballroom music dj, ballroom music player, ballroom dance dj,
       ballroom music playback, dancesport music player,
       ballroom dance software,
@@ -17,8 +17,8 @@
       dance sport music player,
       ballroom dj software, ballroom dance software,
       ballroom dance dj software, dance studio music software,
-      dance school music software, mobile ballroom dj software,
-      dj ballroom software, tango music player, tango dance player,
+      dance school music software,
+      ballroom dj software, tango music player, tango dance player,
       country music player, country dance player,
       ballroom dance player">
   <link rel="stylesheet" type="text/css" href="bdj4.css">
@@ -26,11 +26,13 @@
 <body>
   <div class="dbgwhite">
     <div class="menuwidget">
+      <!-- WT_023 -->
       <img src="/img/menu.svg"
           alt="Menu"
           onclick="javascript:setDisplay('menu');">
     </div>
     <div>
+      <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
         alt="BallroomDJ 4 - The Ballroom Music Player"
         width="50%" style="max-width: 420px">
@@ -52,6 +54,7 @@
               onclick="javascript:setDisplay('bdj4');">BallroomDJ 4</li>
           <li id="" class="menuitem"
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
+          <!-- WT_002 -->
           <li id="" class="menuitem"
               onclick="javascript:setDisplay('donate');">Donate</li>
         </ul>
@@ -59,35 +62,47 @@
     </div>
     <div id="dbdj4" class="mdiv dispblock">
       <div class="tleft dinlineblock">
+        <!-- WT_003 -->
         <p>BallroomDJ 4 (BDJ4) is a music player designed for desktop and
 laptop computers (and will work on some tablets).
 It is designed to be able to play music for the
 entire evening without any intervention.</p>
+        <!-- WT_004 -->
         <p>BDJ4 is highly customizable and provides facilities
 to organize ballroom dance music and create song lists, automatic
 playlists and sequenced playlists.</p>
+        <!-- WT_005 -->
         <p>BDJ4 runs on Windows, MacOS and Linux.</p>
+        <!-- WT_006 -->
         <p><b><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj4/files/"
-            >Download BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(latest version <b>#VERSION#</b>)</p>
+            >Download BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>latest version</span> <b>#VERSION#</b>)</p>
+        <!-- WT_007 -->
         <p><a target="_blank"
             href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
             >Change Log</a></p>
+        <!-- WT_008 -->
         <p><a target="_blank"
             href="https://ballroomdj.org/forum/">BDJ4 Forum</a></p>
+        <!-- WT_009 -->
         <p><a target="_blank"
             href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
             >BDJ4 Wiki</a></p>
+        <!-- WT_010 -->
         <p><a target="_blank"
             href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
             >BDJ4 Features</a></p>
+        <!-- WT_011 -->
         <p><a target="_blank"
             href="https://crowdin.com/project/ballroomdj-4/invite"
             >Help Translate BallroomDJ 4</a></p>
+        <!-- WT_012 -->
         <p>Other sites where BallroomDJ 4 release announcements can be found:</p>
+        <!-- WT_013 -->
         <p><a target="_blank"
             href="https://freshcode.club/projects/bdj4"
             >BDJ4 at freshcode.club</a></p>
+        <!-- WT_014 -->
         <p><a target="_blank"
             href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
             >BallroomDJ at pro-linux.de</a>  (Deutsch)</p>
@@ -96,10 +111,13 @@ playlists and sequenced playlists.</p>
 
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
-        <p>BallroomDJ was the previous ballroom music player.  <b><i>It is no
-longer supported.</i></b></p>
+        <!-- WT_015 -->
+        <p>BallroomDJ was the previous ballroom music player. It is no
+longer supported.</p>
+        <!-- WT_016 -->
         <p>All users of BallroomDJ are urged to convert to
-<b>BallroomDJ 4</b></p>
+BallroomDJ 4</p>
+        <!-- WT_017 -->
         <p><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj/files/"
             >Download BallroomDJ 3</a></p>
@@ -107,6 +125,7 @@ longer supported.</i></b></p>
     </div>
 
     <div id="ddonate" class="mdiv dispnone tleft">
+      <!-- WT_018 -->
       <p>Donate to BDJ4:</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
@@ -114,7 +133,9 @@ longer supported.</i></b></p>
         <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
+      <!-- WT_019 -->
       <p>Donate to software projects that BDJ4 uses:</p>
+      <!-- WT_020 -->
       <p><a href="https://videolan.org">VLC</a> (donate button at very top)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>
       <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>

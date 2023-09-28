@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=15
+ver=16
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -63,13 +63,14 @@ fi
 
 # When macports transitions to a new version of python, the builds and
 # dependencies can be unstable.  Be conservative about changing this.
-# 2023-3-10 m1-ventura still has a dependency on python310 for glib2
-oldpyverlist="310"
+# The versions of python listed in oldpyverlist will be uninstalled.
+oldpyverlist="39 310"
 pyver=311
 
 skipmpinst=F
+#  when adding a new version, be sure to update the 'too-new' regex.    ###
 case $vers in
-  1[456789]*)
+  1[56789]*)
     mp_os_nm=$vers
     mp_os_vers=$vers
     echo "This script has no knowledge of this version of MacOS (too new)."
@@ -119,11 +120,20 @@ if [[ $skipmpinst == F ]]; then
       -d /opt/local/share/macports && \
       -f /opt/local/bin/port ]]; then
     mp_installed=T
+  else
+    echo "-- MacPorts is not installed"
+  fi
+
+  if [[ $mp_installed == T ]]; then
+    port version > /dev/null 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "-- MacPorts needs an upgrade"
+      mp_installed=F
+    fi
   fi
 
   if [[ $mp_installed == F ]]; then
-    echo "-- MacPorts is not installed"
-
     url=https://github.com/macports/macports-base/releases
     # find the current version
     mp_tag=$(curl --include --head --silent \
@@ -178,22 +188,24 @@ fi
 ${pipp} uninstall -y mutagen > /dev/null 2>&1
 
 echo "-- Installing packages needed by BDJ4"
-# libid3tag and libvorbis do not have windows unicode fopen support
-# ship our own.
+# using our own icu and libid3tag
 sudo port -N install \
+    mpstats \
     py${pyver}-mutagen \
+    libxml2 \
     curl \
     curl-ca-bundle \
-    librsvg \
-    glib2 +quartz \
-    gtk3 +quartz \
-    adwaita-icon-theme \
     libogg \
     libopus \
+    libvorbis \
     opusfile \
     flac \
     chromaprint \
     libgcrypt \
+    librsvg \
+    glib2 +quartz \
+    gtk3 +quartz \
+    adwaita-icon-theme \
     ffmpeg +nonfree -x11
 sudo -v
 sudo port -N uninstall \
@@ -203,8 +215,8 @@ sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 
 echo "-- Cleaning up old MacPorts files"
-for pyver in $oldpyverlist; do
-  sudo port uninstall -N --follow-dependents python${pyver}
+for opyver in $oldpyverlist; do
+  sudo port uninstall -N --follow-dependents python${opyver}
 done
 
 if [[ -z "$(port -q list inactive)" ]]; then

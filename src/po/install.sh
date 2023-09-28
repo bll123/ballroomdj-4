@@ -122,6 +122,11 @@ TMP=temp.txt
 
 echo "-- Creating .mo files"
 for i in *.po; do
+  case $i in
+    web-*)
+      continue
+      ;;
+  esac
   j=$(echo $i | sed 's,\.po$,,')
   sj=$(echo $j | sed 's,\(..\).*,\1,')
   if [[ -d ${LOCALEDIR}/$sj ]]; then
@@ -133,6 +138,11 @@ for i in *.po; do
 done
 
 for i in *.po; do
+  case $i in
+    web-*)
+      continue
+      ;;
+  esac
   j=$(echo $i | sed 's,\.po$,,')
   sj=$(echo $j | sed 's,\(..\).*,\1,')
   mkdir -p ${LOCALEDIR}/$j/LC_MESSAGES

@@ -1,0 +1,102 @@
+# == English (GB)
+# -- english/gb
+msgid ""
+msgstr ""
+"Project-Id-Version: bdj4-website 4.4.0\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2023-09-27\n"
+"Last-Translator: manually generated\n"
+"Language-Team: english/gb\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr ""
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr ""
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr ""
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr ""
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr ""
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr ""
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr ""
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr ""
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr ""
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr ""
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr ""
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr ""
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr ""
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr ""
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr ""
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr ""
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr ""

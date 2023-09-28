@@ -37,7 +37,7 @@
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
   { "AUTO",       LOCALE_KEY_AUTO,      VALUE_STR, NULL, DF_NORM },
   { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
-  { "ISO639-3",   LOCALE_KEY_ISO639_3,  VALUE_STR, NULL, DF_NORM },
+  { "ISO639-2",   LOCALE_KEY_ISO639_2,  VALUE_STR, NULL, DF_NORM },
   { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
   { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },
   { "SHORT",      LOCALE_KEY_SHORT,     VALUE_STR, NULL, DF_NORM },
@@ -116,7 +116,7 @@ localeInit (void)
     localedata->currlocale = gbidx;
   }
 
-  sysvarsSetStr (SV_LOCALE_ISO639_3, localeGetStr (LOCALE_KEY_ISO639_3));
+  sysvarsSetStr (SV_LOCALE_ISO639_2, localeGetStr (LOCALE_KEY_ISO639_2));
 
   return;
 }
@@ -305,5 +305,5 @@ localePostSetup (void)
   }
   localedata->currlocale = tlocale;
 
-  sysvarsSetStr (SV_LOCALE_ISO639_3, localeGetStr (LOCALE_KEY_ISO639_3));
+  sysvarsSetStr (SV_LOCALE_ISO639_2, localeGetStr (LOCALE_KEY_ISO639_2));
 }

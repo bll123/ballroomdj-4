@@ -9,15 +9,17 @@
 * New Features:
     * Configuration: General: add audio content identification keys.
 
-**4.4.1 2023-9-**
+-->
+
+**4.4.1 2023-9---**
 
 * Bug Fixes:
     * Installation: Fix install of localized files.
     * Localization: Fixed various width calculation issues.
+    * MacOS: Fix macos-pre-install script for MacOS Sonoma.
+    * MacOS: macos-pre-install script now supports OS upgrades.
 * New Features:
     * Translations: Русский (Russian).  Thanks to 'Ronner'.
-
--->
 
 **4.4.0 2023-9-25**
 
