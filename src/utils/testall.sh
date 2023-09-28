@@ -21,14 +21,14 @@ for arg in "$@"; do
       TBUILD=F
       ;;
     --notest)
-      CHECK=F
+      TCHECK=F
       DBTEST=F
       INSTTEST=F
       TESTSUITE=F
       ;;
     --testsuite)
       TBUILD=F
-      CHECK=F
+      TCHECK=F
       DBTEST=F
       INSTTEST=F
       ;;
@@ -72,7 +72,7 @@ if [[ $TBUILD == T ]]; then
       grep -v 'warning generated'
 fi
 
-if [[ $CHECK == T ]]; then
+if [[ $TCHECK == T ]]; then
   echo "-- check" >> $LOG
   echo "-- $(date +%T) make test setup"
   ./src/utils/mktestsetup.sh --force >> $LOG 2>&1

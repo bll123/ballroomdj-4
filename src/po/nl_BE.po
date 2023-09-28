@@ -221,7 +221,6 @@ msgid "Action failed"
 msgstr "Actie mislukt"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for audio identification
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player

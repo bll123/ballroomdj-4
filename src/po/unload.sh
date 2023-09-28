@@ -46,7 +46,7 @@ if [[ $UNPACKONLY == T ]];then
 fi
 
 for f in *.po; do
-  base=$(echo $f | sed 's,\.po$,,')
+  base=$(echo $f | sed -e 's,\.po$,,' -e 's,^web-,,')
   if [[ ! -d $TMP/$base ]]; then
     base=$(echo $base | sed 's,\(..\).*,\1,')
   fi
@@ -59,7 +59,14 @@ for f in *.po; do
   mv -f $f $f.bak
   echo "Processing $f"
   sed -n '1,2 p' $f.bak > $f
-  sed -n '3,$ p' $TMP/$base/en_GB.po >> $f
+  case $f in
+    web-*)
+      sed -n '3,$ p' $TMP/$base/web-en_GB.po >> $f
+      ;;
+    *)
+      sed -n '3,$ p' $TMP/$base/en_GB.po >> $f
+      ;;
+  esac
 done
 
 test -d $TMP && rm -rf $TMP
