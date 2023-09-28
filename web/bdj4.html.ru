@@ -2,6 +2,8 @@
      "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en-US">
 <head>
+  <meta name="yandex-verification" content="52297d544556772d" />
+  <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <!-- WT_021 -->
