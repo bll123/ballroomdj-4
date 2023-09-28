@@ -244,6 +244,18 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
   uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
 
+  if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+    /* need a filler box to match the musicq */
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
+
+    uiwidgetp = uiCreateLabel (" ");
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+    uiwcontFree (hbox);
+  }
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);

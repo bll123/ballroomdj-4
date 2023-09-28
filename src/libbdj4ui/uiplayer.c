@@ -434,7 +434,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->callbacks [UIPL_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, "repeat");
-  uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton ("", tbuff,
+  uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton (NULL, tbuff,
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_REPEAT_B]);

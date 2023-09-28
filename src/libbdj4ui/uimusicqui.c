@@ -194,6 +194,40 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uiWidgetExpandHoriz (uimusicq->ui [ci].mainbox);
   uiWidgetExpandVert (uimusicq->ui [ci].mainbox);
 
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
+    uientry_t   *entryp;
+
+    hbox = uiCreateHorizBox ();
+    uiWidgetSetMarginTop (hbox, 1);
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
+
+    /* CONTEXT: music queue: label for song list name */
+    uiwidgetp = uiCreateColonLabel (_("Song List"));
+    uiWidgetSetMarginStart (uiwidgetp, 2);
+    uiWidgetSetMarginEnd (uiwidgetp, 2);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+
+    entryp = uimusicq->ui [ci].slname;
+    uiEntryCreate (entryp);
+    if (validateFunc != NULL) {
+      uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
+    }
+    uiWidgetSetClass (uiEntryGetWidgetContainer (entryp), ACCENT_CLASS);
+    if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
+      uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
+      uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
+      uiBoxPackStartExpand (hbox, uiEntryGetWidgetContainer (entryp));
+    }
+    if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
+      uiBoxPackStart (hbox, uiEntryGetWidgetContainer (entryp));
+    }
+
+    uiwcontFree (hbox);
+  }
+
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -340,32 +374,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
       uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
     }
-  }
-
-  if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
-      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-    uientry_t   *entryp;
-
-    entryp = uimusicq->ui [ci].slname;
-    uiEntryCreate (entryp);
-    if (validateFunc != NULL) {
-      uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
-    }
-    uiWidgetSetClass (uiEntryGetWidgetContainer (entryp), ACCENT_CLASS);
-    if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-      uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
-      uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
-      uiBoxPackEndExpand (hbox, uiEntryGetWidgetContainer (entryp));
-    }
-    if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
-      uiBoxPackEnd (hbox, uiEntryGetWidgetContainer (entryp));
-    }
-
-    /* CONTEXT: music queue: label for song list name */
-    uiwidgetp = uiCreateColonLabel (_("Song List"));
-    uiWidgetSetMarginStart (uiwidgetp, 6);
-    uiBoxPackEnd (hbox, uiwidgetp);
-    uiwcontFree (uiwidgetp);
   }
 
   /* musicq tree view */

@@ -94,13 +94,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].currSelection = -1;
     uimusicq->ui [i].selchgbypass = false;
     uimusicq->ui [i].playlistsel = uiDropDownInit ();
+    /* with the 4.4.1 re-arrangement, there is more room */
     sz = 20;
-    if (uimusicq->ui [i].dispselType == DISP_SEL_SONGLIST) {
-      sz = 25;
-    }
-    if (uimusicq->ui [i].dispselType == DISP_SEL_SBS_SONGLIST) {
-      sz = 15;
-    }
     uimusicq->ui [i].slname = uiEntryInit (sz, 100);
   }
 

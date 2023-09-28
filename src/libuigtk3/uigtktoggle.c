@@ -20,7 +20,7 @@
 #include "ui/uitoggle.h"
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
-static void uiToggleButtonSetImageAlignment (GtkWidget *widget);
+static void uiToggleButtonSetImageAlignment (GtkWidget *widget, void *udata);
 static void uiToggleButtonSIACallback (GtkWidget *widget, void *udata);
 
 uiwcont_t *
@@ -89,7 +89,10 @@ uiCreateToggleButton (const char *txt,
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
   if (imagewidget != NULL) {
-    uiToggleButtonSetImageAlignment (widget);
+    int   pad;
+
+    pad = txt != NULL;
+    uiToggleButtonSetImageAlignment (widget, &pad);
   }
 
   uiwidget = uiwcontAlloc ();
@@ -117,6 +120,8 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {
+  int   pad = true;
+
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
@@ -125,6 +130,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
   }
 
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
+  uiToggleButtonSetImageAlignment (uiwidget->widget, &pad);
 }
 
 void
@@ -186,6 +192,9 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
     return;
   }
 
+  /* this seems to work for radio buttons. */
+  /* for other buttons, a recursive child descent like the image alignment */
+  /* may be necessary */
   widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
   if (GTK_IS_LABEL (widget)) {
     gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
@@ -208,20 +217,25 @@ uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 /* to traverse the child tree of the toggle button */
 
 static void
-uiToggleButtonSetImageAlignment (GtkWidget *widget)
+uiToggleButtonSetImageAlignment (GtkWidget *widget, void *udata)
 {
-  gtk_container_foreach (GTK_CONTAINER (widget), uiToggleButtonSIACallback, NULL);
+  gtk_container_foreach (GTK_CONTAINER (widget), uiToggleButtonSIACallback, udata);
 }
 
 static void
 uiToggleButtonSIACallback (GtkWidget *widget, void *udata)
 {
+  const int   *pad = udata;
+
   if (GTK_IS_IMAGE (widget)) {
     gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+    if (*pad) {
+      gtk_widget_set_margin_start (widget, 2);
+    }
     return;
   }
   if (GTK_IS_CONTAINER (widget)) {
-    uiToggleButtonSetImageAlignment (widget);
+    uiToggleButtonSetImageAlignment (widget, udata);
   }
 }
 

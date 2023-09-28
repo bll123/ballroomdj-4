@@ -1928,9 +1928,9 @@ manageAudioIDMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageAudioIDMenu");
   if (! uiMenuInitialized (manage->audioidmenu)) {
+    /* empty menu for now */
     menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
-        /* CONTEXT: managementui: menu selection: actions for audio identification */
-        manage->audioidmenu, _("Actions"));
+        manage->audioidmenu, "");
     menu = uiCreateSubMenu (menuitem);
     uiwcontFree (menuitem);
 
