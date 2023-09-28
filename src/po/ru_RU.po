@@ -577,6 +577,10 @@ msgstr "Уровень танца"
 msgid "Dance Rating"
 msgstr "Рейтинг танца"
 
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr ""
+
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
 msgid "Database Loads Dance From Genre"
 msgstr "Нагрузка базы данных танца из жанра"
@@ -1690,6 +1694,10 @@ msgstr "Установить очередь для воспроизвдеени�
 #, c-format
 msgid "Set Up Alternate Folder"
 msgstr "Настроить альтернативную папку"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr ""
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."

@@ -26,6 +26,7 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uilevel.h"
+#include "uinbutil.h"
 #include "uirating.h"
 #include "uiselectfile.h"
 #include "uiutils.h"
@@ -48,7 +49,13 @@ enum {
   MPL_W_HIGH_LEVEL_ITEM,
   MPL_W_ALLOWED_KEYWORDS,
   MPL_W_PL_TYPE,
+  MPL_W_NB,
   MPL_W_MAX,
+};
+
+enum {
+  MPL_TAB_SETTINGS,
+  MPL_TAB_DANCES,
 };
 
 typedef struct managepl {
@@ -72,6 +79,7 @@ typedef struct managepl {
   uilevel_t       *uilowlevel;
   uilevel_t       *uihighlevel;
   uientry_t       *allowedkeywords;
+  uinbtabid_t     *tabids;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;
@@ -111,6 +119,7 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopafter = NULL;
   managepl->uigap = uiSpinboxInit ();
+  managepl->tabids = uinbutilIDInit ();
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
@@ -177,9 +186,7 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 void
 manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 {
-  uiwcont_t          *lcolvbox;
-  uiwcont_t          *rcolvbox;
-  uiwcont_t          *mainhbox;
+  uiwcont_t          *vbox;
   uiwcont_t          *tophbox;
   uiwcont_t          *hbox;
   uiwcont_t          *uiwidgetp;
@@ -190,10 +197,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
 
-  szgrp = uiCreateSizeGroupHoriz ();   // labels
+  szgrp = uiCreateSizeGroupHoriz ();          // labels
   szgrpSpinText = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
-  szgrpNum = uiCreateSizeGroupHoriz ();  // numeric widgets
-  szgrpText = uiCreateSizeGroupHoriz ();  // text widgets
+  szgrpNum = uiCreateSizeGroupHoriz ();       // numeric widgets
+  szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
   uiWidgetSetAllMargins (vboxp, 2);
 
@@ -230,16 +237,22 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_PL_TYPE] = uiwidgetp;
 
-  mainhbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vboxp, mainhbox);
-
-  /* left side */
-  lcolvbox = uiCreateVertBox ();
-  uiBoxPackStart (mainhbox, lcolvbox);
-
   uiwcontFree (hbox);
+
+  managepl->wcont [MPL_W_NB] = uiCreateNotebook ();
+  uiBoxPackStartExpand (vboxp, managepl->wcont [MPL_W_NB]);
+
+  /* settings */
+
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: playlist management: notebook tab title: settings */
+  uiwidgetp = uiCreateLabel (_("Settings"));
+  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
+
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
   uiwidgetp = uiCreateColonLabel (_("Maximum Play Time"));
@@ -257,7 +270,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
   uiwidgetp = uiCreateColonLabel (_("Stop At"));
@@ -277,7 +290,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
   uiwidgetp = uiCreateColonLabel (_("Stop After"));
@@ -293,7 +306,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
   uiwidgetp = uiCreateColonLabel (_("Gap Between Songs"));
@@ -309,7 +322,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Play Announcements */
   uiwidgetp = uiCreateColonLabel (_("Play Announcements"));
@@ -325,7 +338,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* add a blank line between the playlist controls and song selection */
   uiwidgetp = uiCreateLabel ("");
@@ -335,7 +348,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
   managepl->wcont [MPL_W_RATING_ITEM] = hbox;
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
@@ -347,7 +360,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiratingSizeGroupAdd (managepl->uirating, szgrpText);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
   managepl->wcont [MPL_W_LOW_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: Low Dance Level */
@@ -360,7 +373,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
   managepl->wcont [MPL_W_HIGH_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: High Dance Level */
@@ -373,7 +386,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (lcolvbox, hbox);
+  uiBoxPackStart (vbox, hbox);
   managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = hbox;
 
   /* CONTEXT: playlist management: allowed keywords */
@@ -387,22 +400,26 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistAllowedKeywordsChg, managepl, UIENTRY_IMMEDIATE);
   uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->allowedkeywords));
 
-  /* right side to hold the tree */
-  rcolvbox = uiCreateVertBox ();
-  uiWidgetSetMarginStart (rcolvbox, 8);
-  uiBoxPackStartExpand (mainhbox, rcolvbox);
+  uiwcontFree (vbox);
+
+  /* dance settings : holds the tree view */
+
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: playlist management: notebook tab title: dances */
+  uiwidgetp = uiCreateLabel (_("Dances"));
+  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->errorMsg);
-  manageBuildUIPlaylistTree (managepl->managepltree, rcolvbox, tophbox);
+  manageBuildUIPlaylistTree (managepl->managepltree, vbox);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
   managePlaylistNew (managepl, MANAGE_STD);
   managepl->changed = false;
 
-  uiwcontFree (lcolvbox);
-  uiwcontFree (rcolvbox);
-  uiwcontFree (mainhbox);
+  uiwcontFree (vbox);
   uiwcontFree (tophbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpSpinText);

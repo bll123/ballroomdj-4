@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-25 10:39-0700\n"
+"POT-Creation-Date: 2023-09-27 18:47-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -573,6 +573,10 @@ msgstr ""
 
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
+msgstr ""
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
 msgstr ""
 
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
@@ -1685,6 +1689,10 @@ msgstr ""
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
 msgid "Set Up Alternate Folder"
+msgstr ""
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
 msgstr ""
 
 #. CONTEXT: alternate installation: status message

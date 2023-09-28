@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-25\n"
-"PO-Revision-Date: 2023-09-26\n"
+"PO-Revision-Date: 2023-09-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -576,6 +576,10 @@ msgstr "Dans Niveau"
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
 msgstr "Dans beoordeling"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr ""
 
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
 msgid "Database Loads Dance From Genre"
@@ -1689,6 +1693,10 @@ msgstr "Wachtrij instellen voor afspelen"
 #, c-format
 msgid "Set Up Alternate Folder"
 msgstr "Alternatieve Map Instellen"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr ""
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."

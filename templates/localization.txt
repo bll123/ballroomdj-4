@@ -5,7 +5,7 @@ LONG
 ..en_GB
 SHORT
 ..en
-ISO639-3
+ISO639-2
 ..eng
 DISPLAY
 ..English (GB)
@@ -21,7 +21,7 @@ LONG
 ..en_US
 SHORT
 ..en
-ISO639-3
+ISO639-2
 ..eng
 DISPLAY
 ..English (US)
@@ -37,7 +37,7 @@ LONG
 ..nl_BE
 SHORT
 ..nl
-ISO639-3
+ISO639-2
 ..nld
 DISPLAY
 ..Nederlands
@@ -53,7 +53,7 @@ LONG
 ..ru_RU
 SHORT
 ..ru
-ISO639-3
+ISO639-2
 ..rus
 DISPLAY
 ..Русский‬

@@ -101,8 +101,7 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 }
 
 void
-manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
-    uiwcont_t *tophbox)
+manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
 {
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
@@ -112,7 +111,10 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   char        tbuff [100];
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackEnd (tophbox, hbox);
+  uiWidgetSetAllMargins (hbox, 2);
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizEnd (hbox);
+  uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: playlist management: hide unselected dances */
   uiwidgetp = uiCreateCheckButton (_("Hide Unselected"), 0);

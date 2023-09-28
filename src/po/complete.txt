@@ -1,6 +1,8 @@
 # complete.txt
 # list of locales that can be shipped
-# po-file name (long-locale+'.po'), iso636-3 code, descriptive name
+#   po-file name (long-locale+'.po'),
+#   iso636-2 code
+#   descriptive name (to end of line)
 #
 en_GB.po eng English (GB)
 en_US.po eng English (US)

@@ -20,7 +20,7 @@ function mksub {
   pofile=$4
 
   set -o noglob
-  echo "-- Processing $tmpl"
+  echo "-- Processing $locale $tmpl"
   sedcmd=""
   ok=F
   while read -r line; do
@@ -55,7 +55,7 @@ function mkhtmlsub {
   pofile=$4
 
   set -o noglob
-  echo "-- Processing $tmpl"
+  echo "-- Processing $locale $tmpl"
   sedcmd=""
   ok=F
   while read -r line; do
@@ -171,7 +171,7 @@ while read -r line; do
   set $line
   pofile=$1
   shift
-  iso6393code=$1
+  iso6392code=$1
   shift
   langdesc=$*
 
@@ -202,8 +202,8 @@ while read -r line; do
   echo "..$llocale" >> $LOCALEDATA
   echo SHORT >> $LOCALEDATA
   echo "..$locale" >> $LOCALEDATA
-  echo ISO639-3 >> $LOCALEDATA
-  echo "..$iso6393code" >> $LOCALEDATA
+  echo ISO639-2 >> $LOCALEDATA
+  echo "..$iso6392code" >> $LOCALEDATA
   echo DISPLAY >> $LOCALEDATA
   echo "..$langdesc" >> $LOCALEDATA
   echo AUTO >> $LOCALEDATA

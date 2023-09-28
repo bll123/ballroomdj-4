@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.0\n"
+"Project-Id-Version: ballroomdj-4 4.4.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-09-25\n"
-"PO-Revision-Date: 2023-09-25\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2023-09-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -569,6 +569,10 @@ msgstr ""
 
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
+msgstr ""
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
 msgstr ""
 
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
@@ -1681,6 +1685,10 @@ msgstr ""
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
 msgid "Set Up Alternate Folder"
+msgstr ""
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
 msgstr ""
 
 #. CONTEXT: alternate installation: status message

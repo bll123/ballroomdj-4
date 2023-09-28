@@ -9,8 +9,10 @@ done
 cwd=$(pwd)
 
 ISTAGENM=bdj4inst
-INSTSTAGE=$HOME/vbox_shared/$ISTAGENM
-LINUXMOUNT=/media/sf_vbox_shared
+SHNM=vbox_shared
+INSTSTAGE=$HOME/$SHNM/$ISTAGENM
+LINUXMOUNT=/media/sf_${SHNM}
+PRIMARYDEV=bll-g7.local
 
 ./pkg/mkpkg.sh
 . ./src/utils/pkgnm.sh
@@ -32,6 +34,7 @@ case $systype in
     cp -pf ${pnm} /z/$ISTAGENM
     ;;
   Darwin)
+    scp -p 166 ${pnm} $PRIMARYDEV:$SHNM/$ISTAGENM
     ;;
 esac
 
