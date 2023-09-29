@@ -1947,36 +1947,6 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  if (! installer->guienabled && ! installer->unattended) {
-    tbuff [0] = '\0';
-    /* CONTEXT: installer: command line interface: prompt for BDJ3 location */
-    printf (_("Enter the folder where %s is installed."), BDJ3_NAME);
-    printf ("\n");
-    /* CONTEXT: installer: command line interface: instructions */
-    printf (_("The conversion process will only run for new installations and for re-installs."));
-    printf ("\n");
-    /* CONTEXT: installer: command line interface: accept BDJ3 location default */
-    printf (_("Press 'Enter' to select the default."));
-    printf ("\n");
-    /* CONTEXT: installer: command line interface: instructions */
-    printf (_("If there is no %s installation, enter a single '-'."), BDJ3_NAME);
-    printf ("\n");
-    /* CONTEXT: installer: command line interface: BDJ3 location prompt */
-    snprintf (tbuff, sizeof (tbuff), _("%s Folder"), BDJ3_NAME);
-    printf ("%s [%s] : ", tbuff, installer->bdj3loc);
-    fflush (stdout);
-    (void) ! fgets (tbuff, sizeof (tbuff), stdin);
-    stringTrim (tbuff);
-    if (*tbuff != '\0') {
-      installerSetBDJ3LocDir (installer, tbuff);
-    }
-  }
-
-  if (*installer->bdj3loc == '\0') {
-    installer->instState = INST_CREATE_SHORTCUT;
-    return;
-  }
-
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "convertstart");
     return;

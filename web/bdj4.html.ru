@@ -126,7 +126,7 @@
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>Donate to BDJ4:</p>
+      <p>Поддержать BDJ4</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -134,7 +134,7 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>Пожертвовать на программные проекты, которые использует BDJ4:</p>
+      <p>Поддержать программные проекты, которые используют BDJ4:</p>
       <!-- WT_020 -->
       <p><a href="https://videolan.org">VLC</a> (кнопка поддержки в самом верху)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>

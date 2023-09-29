@@ -1434,7 +1434,7 @@ msgstr "Очередь D"
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback
 msgid "Queue Dance"
-msgstr "Добавить танца"
+msgstr "Добавить танец"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -1447,14 +1447,14 @@ msgstr "Название очереди"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
-msgstr "Добавить плейлиста"
+msgstr "Добавить плейлист"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Добавить Танца"
+msgstr "Добавить танец"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"

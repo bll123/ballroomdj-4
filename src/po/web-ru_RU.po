@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2023-09-29 13:12\n"
+"PO-Revision-Date: 2023-09-29 18:59\n"
 "Last-Translator: manually generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -77,7 +77,7 @@ msgstr "Поддержать"
 
 #. CONTEXT: website : donation description
 msgid "Donate to software projects that BDJ4 uses:"
-msgstr "Пожертвовать на программные проекты, которые использует BDJ4:"
+msgstr "Поддержать программные проекты, которые используют BDJ4:"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 3"
@@ -109,5 +109,5 @@ msgstr " (кнопка поддержки в самом верху)"
 
 #. CONTEXT: website : donate text
 msgid "Donate to BDJ4"
-msgstr ""
+msgstr "Поддержать BDJ4"
 
