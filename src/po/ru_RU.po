@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-28\n"
-"PO-Revision-Date: 2023-09-28\n"
+"PO-Revision-Date: 2023-09-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -52,12 +52,12 @@ msgstr "%s Теги совместимых аудио файлов"
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr "%s Конфигурация"
+msgstr "Конфигурация %s"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr "%s Скачать"
+msgstr "Скачать %s"
 
 #. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
@@ -67,18 +67,18 @@ msgstr "%s Папка"
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
-msgstr "%s Форумы"
+msgstr "Форумы %s"
 
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr "%s Помощник"
+msgstr "Помощник %s"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s Установщик"
+msgstr "Установщик %s"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
@@ -88,7 +88,7 @@ msgstr "%s Местоположение"
 #. CONTEXT: managementui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr "%s Управление"
+msgstr "Управление %s"
 
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
@@ -123,7 +123,7 @@ msgstr "%s Версия"
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
 msgid "%s Wiki"
-msgstr "%s Вики"
+msgstr "Вики %s"
 
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
@@ -1418,7 +1418,7 @@ msgstr "Добавить в очередь"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback
 msgid "Queue 5"
-msgstr "Очередь 5"
+msgstr "Добавить 5"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue B"
@@ -1434,7 +1434,7 @@ msgstr "Очередь D"
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback
 msgid "Queue Dance"
-msgstr "Очередь танца"
+msgstr "Добавить танца"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -1447,14 +1447,14 @@ msgstr "Название очереди"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
-msgstr "Очередь плейлиста"
+msgstr "Добавить плейлиста"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Очередь Танца"
+msgstr "Добавить Танца"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
