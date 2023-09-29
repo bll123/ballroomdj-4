@@ -48,12 +48,13 @@ for pofile in web-*.po; do
     esac
     xl=$(printf "%s" "$xl" | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
 
-    sedcmd+="-e '\~\"${nl}\"~ s~\"${nl}\"~\"${xl}\"~g' "
-    sedcmd+="-e '\~>${nl}<~ s~>${nl}<~>${xl}<~g' "
+    sedcmd+="-e 's~\"${nl}\"~\"${xl}\"~g' "
+    sedcmd+="-e 's~>${nl}<~>${xl}<~g' "
   done < $pofile
 
   locale=$(printf "%s" ${pofile} | sed -e 's,web-\([^.]*\)\.po,\1,')
   lang=$(printf "%s" ${locale} | sed -e 's,\(..\).*,\1,')
+  sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${lang}\"~' "
   nfn=${WEBDIR}/${BASEFN}.${lang}
   nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
   nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')

@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-     "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta name="yandex-verification" content="52297d544556772d" />
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
@@ -10,18 +9,17 @@
   <title>BallroomDJ 4 - Ballroom Музыкальный плеер</title>
   <!-- WT_022 -->
   <meta name="Description" content="BallroomDJ 4 - Ballroom Музыкальный плеер">
-  <meta name="Keywords" content="ballroom music,
-      ballroom music dj, ballroom music player, ballroom dance dj,
-      ballroom music playback, dancesport music player,
+  <meta name="Keywords" content="ballroom music player,
+      Ballroom Музыкальный плеер,
+      ballroom music dj, ballroom dance dj,
+      ballroom music playback,
       ballroom dance software,
       ballroom dance music software,
-      dance sport music player,
       ballroom dj software, ballroom dance software,
-      ballroom dance dj software, dance studio music software,
+      dance studio music software,
       dance school music software,
-      ballroom dj software, tango music player, tango dance player,
-      country music player, country dance player,
-      ballroom dance player">
+      tango music player, tango dance player,
+      country music player, country dance player">
   <link rel="stylesheet" type="text/css" href="bdj4.css">
 </head>
 <body>
