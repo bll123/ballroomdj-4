@@ -59,11 +59,6 @@ msgstr "Конфигурация %s"
 msgid "%s Download"
 msgstr "Скачать %s"
 
-#. CONTEXT: installer: command line interface: BDJ3 location prompt
-#, c-format
-msgid "%s Folder"
-msgstr "%s Папка"
-
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
@@ -718,7 +713,6 @@ msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Введите папку назначения, где будет установлен BDJ4."
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
-#. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Введите папку, куда будет установлено %s."
@@ -890,11 +884,6 @@ msgstr "История"
 #. CONTEXT: configuration: remote control: the ip address to use for remote control
 msgid "IP Address"
 msgstr "IP Адрес"
-
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid "If there is no %s installation, enter a single '-'."
-msgstr "Если установка %s отсутствует, введите одиночное '-'."
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
@@ -1368,11 +1357,6 @@ msgstr "Порт"
 #. CONTEXT: playerui: the current position of the song during song playback
 msgid "Position"
 msgstr "Позиция"
-
-#. CONTEXT: installer: command line interface: accept BDJ3 location default
-#, c-format
-msgid "Press 'Enter' to select the default."
-msgstr "Нажмите \"Enter\" для выбора по умолчанию."
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
@@ -1890,13 +1874,6 @@ msgstr "Процесс конверсии не будет запущен."
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
-msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
-
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installs."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: configuration: the theme to use for the user interface

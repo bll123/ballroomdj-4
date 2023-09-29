@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-28\n"
-"PO-Revision-Date: 2023-09-28 20:03\n"
+"PO-Revision-Date: 2023-09-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -58,11 +58,6 @@ msgstr "%s configuratie"
 #, c-format
 msgid "%s Download"
 msgstr "%s Downloaden"
-
-#. CONTEXT: installer: command line interface: BDJ3 location prompt
-#, c-format
-msgid "%s Folder"
-msgstr "%s Map"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
@@ -221,7 +216,6 @@ msgid "Action failed"
 msgstr "Actie mislukt"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for audio identification
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
@@ -719,7 +713,6 @@ msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
-#. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Geef de map op waar %s is geïnstalleerd."
@@ -892,11 +885,6 @@ msgstr "Hystoriek"
 msgid "IP Address"
 msgstr "IP-adres"
 
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid "If there is no %s installation, enter a single '-'."
-msgstr "Als er geen %s installatie is, voer dan een enkele '-' in."
-
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Als er geen BallroomDJ 3 installatie is, laat u de invoer leeg."
@@ -1056,7 +1044,8 @@ msgid "Marquee Theme"
 msgstr "Marquee Thema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -1368,11 +1357,6 @@ msgstr "Poort"
 msgid "Position"
 msgstr "Positie"
 
-#. CONTEXT: installer: command line interface: accept BDJ3 location default
-#, c-format
-msgid "Press 'Enter' to select the default."
-msgstr "Druk op 'Enter' om de standaardwaarde te selecteren."
-
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
@@ -1515,7 +1499,9 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Vervangt de BallroomDJ database in zijn geheel. Alle wijzigingen in de database gaan verloren."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1580,7 +1566,7 @@ msgid "Scanning music folder."
 msgstr "Scannen van de muziekmap."
 
 msgid "Score"
-msgstr ""
+msgstr "Score"
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
@@ -1884,12 +1870,9 @@ msgid "The conversion process will not be run."
 msgstr "Het conversieproces zal niet worden uitgevoerd."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
-msgstr "Het conversieproces zal enkel uitgevoerd worden voor nieuwe of voor her-installaties."
-
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid "The conversion process will only run for new installations and for re-installs."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Het conversieproces zal enkel uitgevoerd worden voor nieuwe of voor her-installaties."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1987,11 +1970,13 @@ msgstr "Bijgewerkt"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Werkt de informatie in de BallroomDJ database bij van de %s database."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Werkt de informatie in de BallroomDJ-database bij via de tags van de audiobestanden."
 
 #. CONTEXT: alternate installation: status message
@@ -2069,7 +2054,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Schrijf Tag info naar audiobestanden"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Schrijft tags van het audiobestand met behulp van de informatie van de BallroomDJ-database."
 
 #. CONTEXT: configuration: dialog: XML file types

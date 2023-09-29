@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 10:38-0700\n"
+"POT-Creation-Date: 2023-09-29 12:18-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,11 +55,6 @@ msgstr ""
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr ""
-
-#. CONTEXT: installer: command line interface: BDJ3 location prompt
-#, c-format
-msgid "%s Folder"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
@@ -716,7 +711,6 @@ msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
-#. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr ""
@@ -887,11 +881,6 @@ msgstr ""
 #. CONTEXT: configuration: the ip address to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the ip address to use for remote control
 msgid "IP Address"
-msgstr ""
-
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid "If there is no %s installation, enter a single '-'."
 msgstr ""
 
 #. CONTEXT: installer: instructions
@@ -1363,11 +1352,6 @@ msgstr ""
 
 #. CONTEXT: playerui: the current position of the song during song playback
 msgid "Position"
-msgstr ""
-
-#. CONTEXT: installer: command line interface: accept BDJ3 location default
-#, c-format
-msgid "Press 'Enter' to select the default."
 msgstr ""
 
 #. CONTEXT: audio identification: previous song
@@ -1886,13 +1870,6 @@ msgstr ""
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
-msgstr ""
-
-#. CONTEXT: installer: command line interface: instructions
-#, c-format
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
