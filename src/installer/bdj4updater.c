@@ -640,6 +640,8 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_BDJIDX, i);
+      bdjoptCleanup ();
+      bdjoptInit ();
       pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
           PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
@@ -647,6 +649,8 @@ main (int argc, char *argv [])
       }
     }
     sysvarsSetNum (SVL_BDJIDX, origprofile);
+    bdjoptCleanup ();
+    bdjoptInit ();
   }
 
   /* now re-load the data files */
@@ -981,7 +985,6 @@ main (int argc, char *argv [])
 
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);
-  bdjoptCleanup ();
   dataFree (musicdir);
   logEnd ();
 #if BDJ4_MEM_DEBUG
