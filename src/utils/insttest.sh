@@ -615,7 +615,7 @@ function checkInstallation {
       echo "  no $(basename ${fna}) file"
     fi
 
-    res=$(($res+1))  # standardround.pldances file
+    res=$(($res+1))  # standardrounds.pldances file
     fn="${DATADIR}/standardrounds.pldances"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"

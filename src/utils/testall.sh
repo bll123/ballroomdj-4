@@ -154,7 +154,7 @@ fi
 
 if [[ $grc -eq 0 ]]; then
   echo "-- $(date +%T) running prepkg.sh"
-  ./pkg/prepkg.sh
+  ./pkg/prepkg.sh >> $LOG 2>&1
   echo "-- $(date +%T) finish OK"
 else
   echo "-- $(date +%T) finish FAIL"

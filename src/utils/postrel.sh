@@ -8,7 +8,9 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
-INSTSTAGE=$HOME/vbox_shared/bdj4inst
+SHNM=vbox_shared
+ISTAGENM=bdj4inst
+INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 
 count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
 if [[ $count -ne 8 ]]; then

@@ -214,7 +214,7 @@ main (int argc, char *argv[])
     { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
     { "wait",       no_argument,        NULL,   0 },
-    { "origcwd",      required_argument,  NULL,   0 },
+    { "origcwd",    required_argument,  NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 

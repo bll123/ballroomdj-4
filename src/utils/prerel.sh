@@ -8,6 +8,10 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+SHNM=vbox_shared
+ISTAGENM=bdj4inst
+INSTSTAGE=$HOME/$SHNM/$ISTAGENM
+
 isprimary=F
 if [[ -f devel/primary.txt ]]; then
   isprimary=T
@@ -27,7 +31,6 @@ case ${pnm} in
     ;;
 esac
 
-INSTSTAGE=$HOME/vbox_shared/bdj4inst
 rm -rf $INSTSTAGE
 mkdir $INSTSTAGE
 

@@ -8,8 +8,8 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
-ISTAGENM=bdj4inst
 SHNM=vbox_shared
+ISTAGENM=bdj4inst
 INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 LINUXMOUNT=/media/sf_${SHNM}
 PRIMARYDEV=bll-g7.local
@@ -34,7 +34,7 @@ case $systype in
     cp -pf ${pnm} /z/$ISTAGENM
     ;;
   Darwin)
-    scp -p 166 ${pnm} $PRIMARYDEV:$SHNM/$ISTAGENM
+    scp -P 166 ${pnm} $PRIMARYDEV:$SHNM/$ISTAGENM
     ;;
 esac
 

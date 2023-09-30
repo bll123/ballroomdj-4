@@ -189,6 +189,7 @@ instutilCopyTemplates (void)
       }
 
       strlcpy (tbuff, fname, sizeof (tbuff));
+      strlcpy (from, fname, sizeof (from));
 
       /* localization specific filenames */
       if (fkey != -1) {
@@ -201,7 +202,6 @@ instutilCopyTemplates (void)
         }
       }
 
-      strlcpy (from, tbuff, sizeof (from));
       if (strncmp (pi->basename, "ds-", 3) == 0) {
         pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_USEIDX);
       } else {

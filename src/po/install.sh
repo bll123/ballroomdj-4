@@ -183,6 +183,7 @@ while read -r line; do
   # want the short locale
   locale=$(echo $llocale | sed 's,\(..\).*,\1,')
 
+  tt
   for txt in automatic standardrounds queuedance; do
     ttxt=$txt
     if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
@@ -309,22 +310,6 @@ while read -r line; do
   done
 
   cd ${TMPLDIR}/${locale}
-
-  if [[ -f automatic.pl ]]; then
-    mv -f automatic.pl "${automatic}.pl"
-    mv -f automatic.pldances "${automatic}.pldances"
-  fi
-
-  if [[ -f standardrounds.pl ]]; then
-    mv -f standardrounds.pl "${standardrounds}.pl"
-    mv -f standardrounds.pldances "${standardrounds}.pldances"
-    mv -f standardrounds.sequence "${standardrounds}.sequence"
-  fi
-
-  if [[ -f QueueDance.pl ]]; then
-    mv -f QueueDance.pl "${queuedance}.pl"
-    mv -f QueueDance.pldances "${queuedance}.pldances"
-  fi
 
   for fn in *.html; do
     case $fn in

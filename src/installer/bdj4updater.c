@@ -125,7 +125,7 @@ static void updaterCleanProcess (bool macosonly, bool windowsonly, bool linuxonl
 static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updaterGetStatus (nlist_t *updlist, int key);
-static void updaterCopyIfNotPresent (const char *fn, const char *ext);
+static void updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn);
 static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
@@ -488,7 +488,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
-    updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
+    updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT, NULL);
     /* 4.3.0.4 2023-4-4 (version number bump) audioadjust.txt */
     updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 4);
   }
@@ -496,14 +496,14 @@ main (int argc, char *argv [])
   {
     /* 4.0.10 2023-1-29 gtk-static.css */
     /*    This is a new file; simply check and see if it does not exist. */
-    updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT);
+    updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT, NULL);
     updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 3);
   }
 
   {
     /* 4.1.0 2023-2-9 nl renamed, just re-install if not there */
-    updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PLAYLIST_EXT);
-    updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PL_DANCE_EXT);
+    updaterCopyIfNotPresent ("QueueDance", BDJ4_PLAYLIST_EXT, _("QueueDance"));
+    updaterCopyIfNotPresent ("QueueDance", BDJ4_PL_DANCE_EXT, _("QueueDance"));
   }
 
   {
@@ -1198,15 +1198,22 @@ updaterGetStatus (nlist_t *updlist, int key)
 }
 
 static void
-updaterCopyIfNotPresent (const char *fn, const char *ext)
+updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn)
 {
-  char    tbuff [MAXPATHLEN];
+  char        from [MAXPATHLEN];
+  char        to [MAXPATHLEN];
+  const char  *tfn;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
-  if (! fileopFileExists (tbuff)) {
-    snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
-    templateFileCopy (tbuff, tbuff);
-    logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
+  tfn = fn;
+  if (newfn != NULL) {
+    tfn = newfn;
+  }
+  pathbldMakePath (to, sizeof (to), tfn, ext, PATHBLD_MP_DREL_DATA);
+  if (! fileopFileExists (to)) {
+    snprintf (from, sizeof (from), "%s%s", fn, ext);
+    snprintf (to, sizeof (to), "%s%s", tfn, ext);
+    templateFileCopy (from, to);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", newfn, ext);
   }
 }
 

@@ -55,88 +55,77 @@ case ${pnm} in
     ;;
 esac
 
-if [[ ! -f ${pnm} ]]; then
-  echo "Failed: no release package found."
-  exit 1
-fi
-
 if [[ ! -d $INSTSTAGE ]]; then
   echo "Failed: no installer staging dir"
   exit 1
 fi
 
-count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
+count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep ${VERSION} | wc -l)
 if [[ $count -ne 8 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi
 
-if [[ $platform != windows ]]; then
-  echo -n "sourceforge Password: "
-  read -s SSHPASS
-  echo ""
-  if [[ $SSHPASS == "" ]]; then
-    echo "No password."
-    exit 1
-  fi
-  export SSHPASS
+ls -1 $INSTSTAGE/bdj4-installer-* | grep -- dev >/dev/null 2>&1
+rc=$?
+if [[ $rc -eq 0 ]]; then
+  echo "Failed: found dev build."
+  exit 1
 fi
 
-if [[ $tag == linux && $isprimary == T ]]; then
-  fn=README.txt
-  sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
-  sshpass -e rsync -v -e ssh ${fn}.n \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
-  rm -f ${fn}.n
+fn=README.txt
+sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
+sshpass -e rsync -v -e ssh ${fn}.n \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
+rm -f ${fn}.n
 
-  # linux scripts
+# linux scripts
 
-  fn=linux-pre-install
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+fn=linux-pre-install
+ver=$(install/${fn}.sh --version)
+sshpass -e rsync -v -e ssh install/${fn}.sh \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
-  fn=linux-uninstall-bdj4
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+fn=linux-uninstall-bdj4
+sshpass -e rsync -v -e ssh install/${fn}.sh \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
-  # macos scripts
+# macos scripts
 
-  fn=macos-pre-install-macports
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+fn=macos-pre-install-macports
+ver=$(install/${fn}.sh --version)
+sshpass -e rsync -v -e ssh install/${fn}.sh \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
-  fn=macos-run-installer
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+fn=macos-run-installer
+ver=$(install/${fn}.sh --version)
+sshpass -e rsync -v -e ssh install/${fn}.sh \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
-  fn=macos-uninstall-bdj4
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+fn=macos-uninstall-bdj4
+ver=$(install/${fn}.sh --version)
+sshpass -e rsync -v -e ssh install/${fn}.sh \
+    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 
-  server=web.sourceforge.net
-  port=22
-  project=ballroomdj4
-  # ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
-  remuser=${SFUSER}
-  wwwpath=/home/project-web/${project}/htdocs
-  ssh="ssh -p $port"
-  export ssh
+server=web.sourceforge.net
+port=22
+project=ballroomdj4
+# ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
+remuser=${SFUSER}
+wwwpath=/home/project-web/${project}/htdocs
+ssh="ssh -p $port"
+export ssh
 
-  echo "## updating version file"
-  VERFILE=bdj4version.txt
-  bd=$BUILDDATE
-  cvers=$(pkgwebvers)
-  echo "$cvers" > $VERFILE
-  for f in $VERFILE; do
-    sshpass -e rsync -e "$ssh" -aS \
-        $f ${remuser}@${server}:${wwwpath}
-  done
-  rm -f $VERFILE
-fi
+echo "## updating version file"
+VERFILE=bdj4version.txt
+bd=$BUILDDATE
+cvers=$(pkgwebvers)
+echo "$cvers" > $VERFILE
+for f in $VERFILE; do
+  sshpass -e rsync -e "$ssh" -aS \
+      $f ${remuser}@${server}:${wwwpath}
+done
+rm -f $VERFILE
 
 for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
   sshpass -e rsync -v -e ssh ${fn} \

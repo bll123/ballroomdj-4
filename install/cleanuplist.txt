@@ -126,6 +126,16 @@ install/localized-auto\.txt$
 install/localized-sr\.txt$
 locale/locales\.txt$
 
+# 2023-9-30
+# removed: installation changed (utf-8 not supported by windows makecab)
+templates/nl/Automatisch\.pl$
+templates/nl/Automatisch\.pldances$
+templates/nl/DansToevoegen\.pl$
+templates/nl/DansToevoegen\.pldances$
+templates/nl/Standaardrondes\.pl$
+templates/nl/Standaardrondes\.pldances$
+templates/nl/Standaardrondes\.sequence$
+
 ####
 # mac-os
 
