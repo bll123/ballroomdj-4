@@ -90,6 +90,7 @@ DATATOPDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
   DATATOPDIR="$HOME/Library/Application Support/BDJ4"
 fi
+IMGDIR="${DATATOPDIR}/img"
 DATADIR="${DATATOPDIR}/data"
 HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
@@ -313,6 +314,14 @@ function checkInstallation {
       else
         echo "  incorrect version in bdjconfig.txt"
       fi
+    else
+      echo "  no ${fn}"
+    fi
+
+    fn=${IMGDIR}/profile00/button_filter.svg
+    res=$(($res+1))
+    if [[ $fin == T && -f ${fn} ]]; then
+      chk=$(($chk+1))
     else
       echo "  no ${fn}"
     fi

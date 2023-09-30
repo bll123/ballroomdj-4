@@ -11,7 +11,7 @@
 
 -->
 
-**4.4.1 2023-9---**
+**4.4.1 2023-9-30**
 
 * Bug Fixes:
     * Installation: Fix install of localized files.
@@ -551,4 +551,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-09-25 17:22:02; BDJ4 version 4.4.0)_
+<br>_(Updated 2023-09-30 12:38:24; BDJ4 version 4.4.1)_

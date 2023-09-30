@@ -73,6 +73,15 @@ if [[ $rc -eq 0 ]]; then
   exit 1
 fi
 
+echo -n "sourceforge Password: "
+read -s SSHPASS
+echo ""
+if [[ $SSHPASS == "" ]]; then
+  echo "No password."
+  exit 1
+fi
+export SSHPASS
+
 fn=README.txt
 sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
 sshpass -e rsync -v -e ssh ${fn}.n \
