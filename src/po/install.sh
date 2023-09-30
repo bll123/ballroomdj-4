@@ -183,7 +183,6 @@ while read -r line; do
   # want the short locale
   locale=$(echo $llocale | sed 's,\(..\).*,\1,')
 
-  tt
   for txt in automatic standardrounds queuedance; do
     ttxt=$txt
     if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
