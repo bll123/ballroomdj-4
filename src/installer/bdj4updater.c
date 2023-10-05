@@ -502,6 +502,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.1.0 2023-2-9 nl renamed, just re-install if not there */
+    /* 4.4.1.2 2023-10-5 nl renamed, just re-install if not there */
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PLAYLIST_EXT, _("QueueDance"));
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PL_DANCE_EXT, _("QueueDance"));
   }

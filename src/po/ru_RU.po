@@ -1398,7 +1398,7 @@ msgstr "QR-код"
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
-msgstr "Добавить в очередь"
+msgstr "Добавить песни в очередь"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)

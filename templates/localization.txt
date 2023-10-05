@@ -46,7 +46,7 @@ AUTO
 STDROUNDS
 ..Standaardrondes
 QDANCE
-..DansToevoegen
+..Dans In Wachtrij
 KEY
 ..3
 LONG

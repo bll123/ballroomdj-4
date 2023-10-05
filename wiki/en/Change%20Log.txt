@@ -9,6 +9,11 @@
 * New Features:
     * Configuration: General: add audio content identification keys.
 
+**4.4.1.2 2023-10---**
+
+* Changes:
+    * Translations: Nederlands: Updated.
+
 -->
 
 **4.4.1.1 2023-10-1**

@@ -1438,7 +1438,7 @@ msgstr "Zet Speellijst In Wachtrij"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "DansToevoegen"
+msgstr "Dans In Wachtrij"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"

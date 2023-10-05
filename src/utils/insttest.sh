@@ -162,10 +162,10 @@ function checkUpdaterClean {
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == nl_BE || $section == nl_NL ]]; then
-    fn="$DATADIR/DansToevoegen.pl"
+    fn="$DATADIR/Dans In Wachtrij.pl"
     # nl was renamed after the bad data situation
     rm -f "${fn}"
-    fn="$DATADIR/DansToevoegen.pldances"
+    fn="$DATADIR/Dans In Wachtrij.pldances"
     rm -f "${fn}"
   fi
   if [[ $section == ru_RU ]]; then
@@ -573,7 +573,7 @@ function checkInstallation {
 
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
-    fnb="${DATADIR}/DansToevoegen.pldances"
+    fnb="${DATADIR}/Dans In Wachtrij.pldances"
     fnc="${DATADIR}/Добавить танец.pldances"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
@@ -602,7 +602,7 @@ function checkInstallation {
 
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
-    fnb="${DATADIR}/DansToevoegen.pl"
+    fnb="${DATADIR}/Dans In Wachtrij.pl"
     fnc="${DATADIR}/Добавить танец.pl"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
