@@ -139,7 +139,9 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON) {
+  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
+      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
+      uiwidget->wtype != WCONT_T_CHECK_BOX) {
     return;
   }
 

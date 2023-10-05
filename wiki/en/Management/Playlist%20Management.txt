@@ -14,12 +14,14 @@ Automatic playlists are created using playlist management.
 
 ##### Playlist Controls
 
-The playlist controls for __Maximum&nbsp;Play&nbsp;Time__,
-__Stop&nbsp;At__ time, __Stop&nbsp;After__ count, __Gap__ and
-__Play&nbsp;Announcements__ are available for all playlist types.
+Playlist controls are in the __Settings__ tab.
+
+The __Maximum&nbsp;Play&nbsp;Time__, __Stop&nbsp;At__ time,
+__Stop&nbsp;After__ count, __Gap__ and __Play&nbsp;Announcements__
+playlist controls are available for all playlist types.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-A.png)
+![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-B.png)
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Playlist Controls**</span> </div>
 
 __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
@@ -41,6 +43,8 @@ for each song for this playlist.
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
 ##### Song Selection Filters
+
+Song selection filters are in the __Settings__ tab.
 
 The song selection filters are used for automatic and sequenced
 playlists.  The filters limit which songs can be played.
@@ -80,6 +84,8 @@ not be played.
 
 ##### Per Dance Playlist Controls
 
+The per dance playlist controls are in the __Dances__ tab.
+
 The per dance playlist controls are different for song lists,
 sequenced playlists and automatic playlists.
 
@@ -99,16 +105,16 @@ To change a setting, select the dance, then click on the field to be
 changed.
 
 The __Hide Unselected__ checkbox may be used to limit which dances are
-displayed.
+displayed for automatic playlists.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-B.png)
+![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-C.png)
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Dance Controls (automatic)**</span> </div>
 
 ##### Naming the Playlist
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-name-entry-A.png)
+![plmgmt-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-name-entry-B.png)
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Playlist Name**</span> </div>
 
 At the top of the window, there is an entry box with the playlist

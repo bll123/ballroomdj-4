@@ -528,8 +528,9 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   }
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
-    int   tagidx = audioidint->items [count].tagidx;
-    char  tmp [40];
+    int         tagidx = audioidint->items [count].tagidx;
+    char        tmp [40];
+    const char  *ttval;
 
     tval = uisongGetDisplay (song, tagidx, &val, &dval);
     if (tval == NULL && val != LIST_VALUE_INVALID) {
@@ -544,10 +545,14 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
     nlistSetStr (audioidint->currlist, tagidx, tval);
     uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
     uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
-    uiToggleButtonSetText (audioidint->items [count].currrb, tval);
+    ttval = tval;
+    if (tval == NULL) {
+      ttval = "";
+    }
+    uiToggleButtonSetText (audioidint->items [count].currrb, ttval);
 
     if (tagdefs [tagidx].valueType == VALUE_STR) {
-      uiWidgetSetTooltip (audioidint->items [count].currrb, tval);
+      uiWidgetSetTooltip (audioidint->items [count].currrb, ttval);
       /* gtk appears to re-allocate the radio button label, */
       /* so set the ellipsize on after setting the text value */
       uiToggleButtonEllipsize (audioidint->items [count].currrb);
@@ -823,7 +828,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   logProcBegin (LOG_PROC, "uiaudioidAddItem");
   audioidint = uiaudioid->audioidInternalData;
 
-  /* line: label, curr-change-ind, curr-display, new-change-ind, new-disp */
+  /* line: label, curr-rb, sel-rb */
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagidx].displayname);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
@@ -1009,13 +1014,14 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
   dlist = nlistGetList (audioidint->displaylist, idx);
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
-    int tagidx = audioidint->items [count].tagidx;
+    int         tagidx = audioidint->items [count].tagidx;
+    const char  *ttval;
 
     uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
     uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
 
     if (dlist == NULL) {
-      uiToggleButtonSetText (audioidint->items [count].selrb, "");
+      uiToggleButtonSetText (audioidint->items [count].selrb, "aaa");
     } else {
       const char  *tval;
       char        tmp [40];
@@ -1032,9 +1038,13 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
         tval = tmp;
       }
 
-      uiToggleButtonSetText (audioidint->items [count].selrb, tval);
+      ttval = tval;
+      if (tval == NULL) {
+        ttval = "";
+      }
+      uiToggleButtonSetText (audioidint->items [count].selrb, ttval);
       if (tagdefs [tagidx].valueType == VALUE_STR) {
-        uiWidgetSetTooltip (audioidint->items [count].selrb, tval);
+        uiWidgetSetTooltip (audioidint->items [count].selrb, ttval);
         /* gtk appears to re-allocate the radio button label, */
         /* so set the ellipsize on after setting the text value */
         uiToggleButtonEllipsize (audioidint->items [count].selrb);

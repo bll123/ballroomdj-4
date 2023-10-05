@@ -63,10 +63,10 @@ selected songs, and not the entire listing.
 ![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-C.png)
 <br><span style="color:#4559bf;">**Manage / Music Manager / Actions Menu**</span> </div>
 
-__Actions_&nbsp;/&nbsp;Mark as Same Song__ will mark the
+__Actions&nbsp;/&nbsp;Mark as Same Song__ will mark the
 selected songs as the same song.
 
-__Actions_&nbsp;/&nbsp;Clear Same Song Mark__ will clear the
+__Actions&nbsp;/&nbsp;Clear Same Song Mark__ will clear the
 same song markers from the selected songs.
 
 ##### Same Song Marks

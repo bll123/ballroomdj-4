@@ -81,6 +81,7 @@
 <br>[Playlist Management](en-Management-Playlist%20Management)
 <br>[Music Manager](en-Management-Music%20Manager)
 <br>[Song Editor](en-Management-Song%20Editor)
+<br>[Audio Identification](en-Management-Audio%20Identification)
 <br>[Update Database](en-Management-Update%20Database)
 
 ### Player

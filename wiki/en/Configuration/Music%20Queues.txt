@@ -46,11 +46,12 @@ each song. <br>See [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 __Play When Queued__: Songs and playlists will start playing
 immediately when queued.
 
-__Show Queue Dance Buttons__: Show the __Queue&nbsp;Dance__
-and __Queue&nbsp;5__ buttons.  These are used for teaching.
+__Show Extra Queue Buttons__: Show the __Queue&nbsp;Dance__ and
+__Queue&nbsp;5__ buttons.  These buttons are usually used for
+teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-B.png)
+![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-C.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)

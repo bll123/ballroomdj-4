@@ -251,6 +251,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiCreateLabel (_("Settings"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -411,6 +412,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiCreateLabel (_("Dances"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
+  uiwcontFree (uiwidgetp);
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->errorMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, vbox);

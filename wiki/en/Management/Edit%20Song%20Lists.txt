@@ -21,12 +21,12 @@ _Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection_ selections.
 
 The left arrow button (![Left
 Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
-in between the two listings will add the current song selection to the
+in-between the two listings will add the current song selection to the
 song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-A.png)
+![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-B.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists (Side-by-Side View)**</span> </div>
 
 ##### Song List Editor
@@ -49,13 +49,13 @@ down the _Control_ key when clicking on each song.  Use the _Select_
 button at the top of the listing to add the songs to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-B.png)
+![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-C.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists (Standard)**</span> </div>
 
 ##### Naming the Song List
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-A.png)
+![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Song List Name**</span> </div>
 
 At the top of the song list, there is an entry box with the song list
@@ -78,17 +78,19 @@ The song selection list can be filtered so that you can find the dance
 and type of song easily.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-filter-button-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-button-A.png)
+![sl-filter-button](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-button-B.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Filter Button**</span> </div>
 
-Use the __Filters__ button to display the filter dialog.  In this
-dialog, select the filters you want activated and select __Apply__.  The
-song selection listing will be updated.  The filter dialog will stay
-open so it can be used again.  The filters displayed can be adjusted
-in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
+Use the filter button (![Filter
+Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
+to display the filter dialog.  In this dialog, select the filters you
+want activated and select __Apply__.  The song selection listing will
+be updated.  The filter dialog will stay open so it can be used again.
+The filters displayed can be adjusted in
+[Filter&nbsp;Display](en-Configuration-Filter%20Display).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-filter-dialog-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)
+![sl-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Filter Dialog**</span> </div>
 
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
@@ -114,7 +116,8 @@ will remove the selection from the song list.
 
 ##### Reviewing a Song
 
-While in the song list or the song selection, select the __Play__ button
+While in the song list or the song selection, select the play button
+(![Play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
 above the listing to play the currently selected song.
 
 ##### Editing a Song

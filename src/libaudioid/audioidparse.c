@@ -201,8 +201,6 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
     }
 
     strlcat (nval, (const char *) val, nlen);
-    mdextfree (val);
-    xmlFree (val);
 
     if (joinphrase != NULL) {
       strlcat (nval, joinphrase, nlen);
@@ -237,6 +235,9 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
     } else {
       ilistSetStr (respdata, respidx, ttagidx, nval);
     }
+
+    mdextfree (val);
+    xmlFree (val);
     mdfree (nval);
     nval = NULL;
   }

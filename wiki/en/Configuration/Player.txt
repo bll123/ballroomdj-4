@@ -12,10 +12,6 @@ _Integrated&nbsp;VLC_ is supported.
 
 __Audio__: Selects the audio interface.
 
-__Audio Tags__: Selects the audio tag interface. _Mutagen_ is currently
-the standard interface.  _BDJ4&nbsp;Internal_ is a newer interface and
-currently only supports MP3, Ogg and FLAC audio files.
-
 __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
 the default device will be used.
