@@ -11,8 +11,8 @@ Each music queue can have the fade-in time, the fade-out time, the gap
 between songs, the maximum play time, and the stop-at time configured.
 
 In addition, each music queue can be set to pause each song, play
-announcements, to play when the song is queued, and to show the queue
-dance buttons.
+announcements, to play when the song is queued, and to show the extra
+queue buttons.
 
 Up to four music queues may be configured.
 
@@ -89,7 +89,7 @@ The __Play&nbsp;Announcements__ switch will enable announcements for
 all songs played with this music queue.
 
 The __Play&nbsp;When&nbsp;Queued__ and
-__Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ are generally used for
+__Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ are generally used for
 teaching.  See the example below for a music queue set up for teaching.
 
 See also:
@@ -104,7 +104,7 @@ maximum play time in this example is set high so that the entire song
 will play.  The name of the music queue is set to "Teach".
 
 The __Play&nbsp;When&nbsp;Queued__ and
-__Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ switches are turned on.
+__Show&nbsp;Extra&nbsp;QueueDance&nbsp;Buttons__ switches are turned on.
 __Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -172,4 +172,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:58:41; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-10-05 13:01:55; BDJ4 version 4.4.1.1)_

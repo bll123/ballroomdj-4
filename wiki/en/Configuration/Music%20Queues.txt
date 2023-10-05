@@ -55,4 +55,4 @@ teaching.
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 07:53:39; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_

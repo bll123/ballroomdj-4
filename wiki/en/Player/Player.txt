@@ -121,7 +121,7 @@ Clears the queue from the selected position to the end of the queue.
 __Queue Playlist__:
 Select a playlist from the drop-down to add the playlist to the queue.
 
-When __Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ is turned on for the
+When __Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ is turned on for the
 selected music queue, two additional buttons are shown.
 
 __Queue Dance__: Select a dance from the drop-down to add that dance
@@ -136,9 +136,11 @@ used to select the songs.
 
 Select the _Request_ tab to view the song selection listing.  The
 dance drop-down may be used to quickly change which dance is
-displayed.  The __Filters__ button will start a dialog where the filters
-can be chosen to limit which songs are displayed in the listing.
-<br>See also: [Filter&nbsp;Display](en-Configuration-Filter%20Display))
+displayed.  The filter button (![Filter
+Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
+will start a dialog where the filters can be chosen to limit which
+songs are displayed in the listing. <br>See also:
+[Filter&nbsp;Display](en-Configuration-Filter%20Display))
 
 Select a song and select the __Queue__ button to add a song to the music
 queue.  The selected song will be added after the currently selected
@@ -211,4 +213,4 @@ See also
 <br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 13:39:05; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-10-05 13:01:55; BDJ4 version 4.4.1.1)_

@@ -1,0 +1,57 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Management : Audio Identification
+
+<span style="color:#4559bf;">_Audio identification uses third party
+services to identify the song and retrieve the song information._</span>
+
+##### Display Columns
+
+The fields displayed in audio identification can be set in
+[Display&nbsp;Settings](en-Configuration-Display%20Settings).  The
+fields displayed in the match list and the fields displayed in the
+current / selected display can be modified.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![audioid](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/audioid-A.png)
+<br><span style="color:#4559bf;">**Manage / Audio Identification**</span> </div>
+
+##### Traversing the Song Listing
+
+Audio identification works in conjunction with the
+[Music&nbsp;Manager](en-Management-Music%20Manager).  The __First__,
+__Next__ and __Previous__ buttons traverse the songs selected in the
+[Music&nbsp;Manager](en-Management-Music%20Manager). See the
+[Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
+details.
+
+##### Match List
+
+When the audio identification tab is selected, a query is sent to
+identify the song.  This may take several seconds to finish.  During
+this time, the _Please&nbsp;Wait..._ message is displayed in the
+status area at the upper right of the screen.
+
+The first row in the match list is the current song data so that a
+comparison can be made against the other matches that are returned.
+
+Each of the other rows in the match list will have a score assigned
+indicating how close of a match the song is to the original.
+
+##### Current and Selected Song Data
+
+Below the match list, the current and selected song data is displayed.
+The left column is always the current data for the song. The right
+column is the data from the selected row in the match list.
+
+Select a row in the match list to view the data for that match.
+
+After selecting the row in the match list that you want to use, select
+either the current song data or the selected song data that you want to use.
+Then select the __Save__ button in the upper right to save the changes
+to the database.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-10-05 12:53:10; BDJ4 version 4.4.1.1)_

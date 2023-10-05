@@ -6,7 +6,8 @@ manager song listings can be filtered to display selected songs._</span>
 ### Filter Dialog
 
 The filter dialog is available in the song selection, request and
-music manager song listings by selecting the __Filters__ button.
+music manager song listings by selecting the filter button (![Filter
+Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png)).
 
 The following filters are available:
 
@@ -80,4 +81,4 @@ turned on (not displayed in default configuration).
 
 [Wiki Home](Home)
 
-<br>_(Updated 2023-05-20 10:40:51; BDJ4 version 4.3.2.3)_
+<br>_(Updated 2023-10-05 12:57:54; BDJ4 version 4.4.1.1)_
