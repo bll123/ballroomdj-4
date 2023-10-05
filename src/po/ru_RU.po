@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-29\n"
-"PO-Revision-Date: 2023-10-01 13:39\n"
+"PO-Revision-Date: 2023-10-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -556,6 +556,7 @@ msgstr "Создание структуры папок."
 msgid "Creating shortcut."
 msgstr "Создание ярлыка."
 
+#. CONTEXT: audio identification: the data for the current song
 msgid "Current"
 msgstr "Текущее"
 
@@ -1044,7 +1045,8 @@ msgid "Marquee Theme"
 msgstr "Тема Маркета"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Максимальное\n"
 "время\n"
@@ -1392,14 +1394,14 @@ msgid "QR Code"
 msgstr "QR-код"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Добавить в очередь"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
 msgid "Queue 5"
 msgstr "Добавить 5"
 
@@ -1415,7 +1417,7 @@ msgstr "Очередь C"
 msgid "Queue D"
 msgstr "Очередь D"
 
-#. CONTEXT: (verb) music queue: button: queue a dance for playback
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
 msgstr "Добавить танец"
 
@@ -1428,7 +1430,7 @@ msgstr "Длина очереди"
 msgid "Queue Name"
 msgstr "Название очереди"
 
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
 msgstr "Добавить плейлист"
 
@@ -1499,7 +1501,9 @@ msgid "Repeat"
 msgstr "Повтор"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Заменяет базу данных BallroomDJ целиком. Все изменения в базе данных будут потеряны."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1563,6 +1567,7 @@ msgstr "Размер"
 msgid "Scanning music folder."
 msgstr "Сканирование папки с музыкой."
 
+#. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
 msgstr "Очки"
 
@@ -1628,6 +1633,7 @@ msgstr "Выбрать папку"
 msgid "Select Music Folder Location"
 msgstr "Выбрать расположение папки с музыкой"
 
+#. CONTEXT: audio identification: the data for the selected matched song
 msgid "Selected"
 msgstr "Выбрано"
 
@@ -1680,6 +1686,10 @@ msgstr "Настройки"
 msgid "Setup complete."
 msgstr "Настройка завершена."
 
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr ""
+
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr "Показать дополнительные очереди"
@@ -1687,10 +1697,6 @@ msgstr "Показать дополнительные очереди"
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
 msgstr "Показать маркет"
-
-#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
-msgid "Show Queue Dance Buttons"
-msgstr "Показать очередь кнопок танца"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
@@ -1868,7 +1874,9 @@ msgid "The conversion process will not be run."
 msgstr "Процесс конверсии не будет запущен."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1966,11 +1974,13 @@ msgstr "Обновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Обновляет информацию о базе данных BallroomDJ из базы данных %s."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Обновляет информацию в базе данных BallroomDJ из тегов аудио файлов."
 
 #. CONTEXT: alternate installation: status message
@@ -2048,7 +2058,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Записать теги в аудио файлы"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Запись тегов аудио файла, используя информацию из базы данных BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

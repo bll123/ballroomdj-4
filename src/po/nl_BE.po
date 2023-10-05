@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-29\n"
-"PO-Revision-Date: 2023-10-01 13:39\n"
+"PO-Revision-Date: 2023-10-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -556,6 +556,7 @@ msgstr "Mapstructuur maken."
 msgid "Creating shortcut."
 msgstr "Snelkoppeling maken."
 
+#. CONTEXT: audio identification: the data for the current song
 msgid "Current"
 msgstr "Huidige"
 
@@ -1044,7 +1045,8 @@ msgid "Marquee Theme"
 msgstr "Marquee Thema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -1391,16 +1393,16 @@ msgid "QR Code"
 msgstr "QR-code"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
-msgstr "Nummer Toevoegen"
+msgstr "Zet Nummer In Wachtrij"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
 msgid "Queue 5"
-msgstr "5 Toevoegen"
+msgstr "5 In Wachtrij"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue B"
@@ -1414,9 +1416,9 @@ msgstr "Wachtrij C"
 msgid "Queue D"
 msgstr "Wachtrij D"
 
-#. CONTEXT: (verb) music queue: button: queue a dance for playback
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
-msgstr "Dans Toevoegen"
+msgstr "Zet Dans In Wachtrij"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -1427,9 +1429,9 @@ msgstr "Wachtrij lengte"
 msgid "Queue Name"
 msgstr "Wachtrij naam"
 
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
-msgstr "Speellijst In Wachtrij"
+msgstr "Zet Speellijst In Wachtrij"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
@@ -1498,7 +1500,9 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Vervangt de BallroomDJ database in zijn geheel. Alle wijzigingen in de database gaan verloren."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1562,8 +1566,9 @@ msgstr "Schaal"
 msgid "Scanning music folder."
 msgstr "Scannen van de muziekmap."
 
+#. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
-msgstr ""
+msgstr "Score"
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
@@ -1627,6 +1632,7 @@ msgstr "Selecteer map"
 msgid "Select Music Folder Location"
 msgstr "Selecteer Muziekmap Locatie"
 
+#. CONTEXT: audio identification: the data for the selected matched song
 msgid "Selected"
 msgstr ""
 
@@ -1679,6 +1685,10 @@ msgstr ""
 msgid "Setup complete."
 msgstr "Setup voltooid."
 
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "Toon Extra Wachtrij knoppen"
+
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr "Toon Extra Wachtrijen"
@@ -1686,10 +1696,6 @@ msgstr "Toon Extra Wachtrijen"
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
 msgstr "Toon Marquee"
-
-#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
-msgid "Show Queue Dance Buttons"
-msgstr "Toon Wachtrij Dansknoppen"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
@@ -1867,7 +1873,9 @@ msgid "The conversion process will not be run."
 msgstr "Het conversieproces zal niet worden uitgevoerd."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Het conversieproces zal enkel uitgevoerd worden voor nieuwe of voor her-installaties."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1965,11 +1973,13 @@ msgstr "Bijgewerkt"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Werkt de informatie in de BallroomDJ database bij van de %s database."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Werkt de informatie in de BallroomDJ-database bij via de tags van de audiobestanden."
 
 #. CONTEXT: alternate installation: status message
@@ -2047,7 +2057,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Schrijf Tag info naar audiobestanden"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Schrijft tags van het audiobestand met behulp van de informatie van de BallroomDJ-database."
 
 #. CONTEXT: configuration: dialog: XML file types

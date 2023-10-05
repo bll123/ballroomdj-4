@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 12:18-0700\n"
+"POT-Creation-Date: 2023-10-05 09:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -554,6 +554,7 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
+#. CONTEXT: audio identification: the data for the current song
 msgid "Current"
 msgstr ""
 
@@ -1389,14 +1390,14 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
 msgid "Queue 5"
 msgstr ""
 
@@ -1412,7 +1413,7 @@ msgstr ""
 msgid "Queue D"
 msgstr ""
 
-#. CONTEXT: (verb) music queue: button: queue a dance for playback
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
 msgstr ""
 
@@ -1425,7 +1426,7 @@ msgstr ""
 msgid "Queue Name"
 msgstr ""
 
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
 msgstr ""
 
@@ -1562,6 +1563,7 @@ msgstr ""
 msgid "Scanning music folder."
 msgstr ""
 
+#. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
 msgstr ""
 
@@ -1627,6 +1629,7 @@ msgstr ""
 msgid "Select Music Folder Location"
 msgstr ""
 
+#. CONTEXT: audio identification: the data for the selected matched song
 msgid "Selected"
 msgstr ""
 
@@ -1679,16 +1682,16 @@ msgstr ""
 msgid "Setup complete."
 msgstr ""
 
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr ""
+
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr ""
-
-#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
-msgid "Show Queue Dance Buttons"
 msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee

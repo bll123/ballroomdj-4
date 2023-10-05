@@ -1161,6 +1161,7 @@ tagdefInit (void)
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
   /* CONTEXT: label: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
+  /* CONTEXT: audio identification: the score or rating of each match */
   tagdefs [TAG_AUDIOID_SCORE].displayname = _("Score");
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     /* CONTEXT: label: beats per minute */

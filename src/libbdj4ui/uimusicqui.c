@@ -336,7 +336,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->callbacks [MQINT_CB_HIST_QUEUE] = callbackInit (
         uimusicqQueueCallback, uimusicq, "musicq: queue");
     uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_HIST_QUEUE],
-        /* CONTEXT: (verb) history: re-queue the selected song */
+        /* CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue' */
         _("Queue"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
@@ -354,7 +354,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
           uimusicqQueuePlaylistCallback, uimusicq);
     }
     uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
-        /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
+        /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
         _("Queue Playlist"), uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST], uimusicq);
     uiBoxPackEnd (hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
@@ -365,12 +365,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
             uimusicqQueueDanceCallback, uimusicq);
       }
       mqint->uidance5 = uidanceDropDownCreate (hbox, parentwin,
-          /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
+          /* CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button) */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
       uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
 
       mqint->uidance = uidanceDropDownCreate (hbox, parentwin,
-          /* CONTEXT: (verb) music queue: button: queue a dance for playback */
+          /* CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue */
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
       uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
     }
