@@ -143,6 +143,7 @@ static int  tsScriptSleep (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptDisp (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptPrint (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptFile (testsuite_t *testsuite, const char *tcmd);
+static int  tsScriptVerbose (testsuite_t *testsuite, const char *tcmd);
 static int  tsParseExpect (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChkResponse (testsuite_t *testsuite);
 static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
@@ -708,6 +709,10 @@ tsProcessScript (testsuite_t *testsuite)
       ok = tsScriptFile (testsuite, tcmd);
       disp = true;
     }
+    if (strncmp (tcmd, "verbose", 7) == 0) {
+      ok = tsScriptVerbose (testsuite, tcmd);
+      disp = true;
+    }
   } else {
     ok = TS_OK;
   }
@@ -1099,6 +1104,30 @@ tsScriptFile (testsuite_t *testsuite, const char *tcmd)
 
   mdfree (tstr);
   return rc;
+}
+
+static int
+tsScriptVerbose (testsuite_t *testsuite, const char *tcmd)
+{
+  char  *p;
+  char  *tokstr;
+  char  *tstr;
+
+  tstr = mdstrdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p = strtok_r (NULL, " ", &tokstr);
+  if (p == NULL) {
+    mdfree (tstr);
+    return TS_BAD_COMMAND;
+  }
+  if (strcmp (p, "on") == 0) {
+    testsuite->verbose = true;
+  }
+  if (strcmp (p, "off") == 0) {
+    testsuite->verbose = false;
+  }
+  mdfree (tstr);
+  return TS_OK;
 }
 
 static int

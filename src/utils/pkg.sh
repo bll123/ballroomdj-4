@@ -13,10 +13,32 @@ ISTAGENM=bdj4inst
 INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 LINUXMOUNT=/media/sf_${SHNM}
 PRIMARYDEV=bll-g7.local
+LOG=pkg.log
+
+. ./src/utils/pkgnm.sh
+pkgnmgetdata
+pnm=$(pkginstnm)
+
+echo "-- $(date +%T) building"
+(
+  cd src
+  make distclean
+)
+
+(
+  cd src
+  case ${pn_tag} in
+    linux-opensuse)
+      make GCC=gcc-12 GXX=g++-12
+      ;;
+    *)
+      make
+      ;;
+  esac
+) > $LOG 2>&1
 
 ./pkg/mkpkg.sh
-. ./src/utils/pkgnm.sh
-pnm=$(pkginstnm)
+
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -37,5 +59,7 @@ case $systype in
     scp -P 166 ${pnm} $PRIMARYDEV:$SHNM/$ISTAGENM
     ;;
 esac
+
+rm -f $LOG
 
 exit 0

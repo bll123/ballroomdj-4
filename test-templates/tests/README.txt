@@ -29,6 +29,7 @@
 #   stop
 #     for debugging; stops processing
 #   test <num> <name>
+#   verbose {on|off}
 #   wait {key value}
 #     (wait-not)
 #

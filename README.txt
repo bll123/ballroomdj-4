@@ -2,6 +2,7 @@ BDJ4 #VERSION# #BUILDDATE#
 
 Contents
   Installation
+  Getting Started
   Change Log
   Converting BallroomDJ 3
   Release Notes
@@ -17,6 +18,9 @@ Installation:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-MacOS/
   Linux:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/
+
+Getting Started:
+    https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Getting%20Started/
 
 Change Log:
   https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log/

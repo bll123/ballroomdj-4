@@ -12,7 +12,7 @@
 **4.4.1.2 2023-10---**
 
 * Bug Fixes:
-    * Audio Identification: Fixed (memory corruption).
+    * Audio Identification: Fixed crash.
     * Audio Identification: Fixed display.
     * Fixed memory leaks.
 * Changes:
