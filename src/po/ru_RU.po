@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-09-29\n"
-"PO-Revision-Date: 2023-10-05\n"
+"POT-Creation-Date: 2023-10-05\n"
+"PO-Revision-Date: 2023-10-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -1398,7 +1398,7 @@ msgstr "QR-код"
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
-msgstr "Добавить песни в очередь"
+msgstr "Добавить в очередь"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
