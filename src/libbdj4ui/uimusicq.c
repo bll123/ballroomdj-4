@@ -249,7 +249,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
     return;
   }
 
-  uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
+  uimusicqGetDBIdxList (uimusicq, uimusicq->musicqManageIdx);
   songlistutilCreateFromList (uimusicq->musicdb, fname, uimusicq->savelist);
 
   uimusicq->changed = false;

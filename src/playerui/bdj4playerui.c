@@ -36,6 +36,7 @@
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "playlist.h"
 #include "progstate.h"
 #include "slist.h"
 #include "sock.h"
@@ -989,6 +990,14 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             }
           }
 
+          if (musicqupdate->mqidx == MUSICQ_HISTORY) {
+            const char  *name = _("History");
+
+            uimusicqSetManageIdx (plui->uimusicq, MUSICQ_HISTORY);
+            uimusicqSave (plui->uimusicq, name);
+            playlistCheckAndCreate (name, PLTYPE_SONGLIST);
+            uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
+          }
           msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
@@ -1533,8 +1542,8 @@ pluiClearQueueCallback (void *udata)
 static void
 pluiPushHistory (playerui_t *plui, const char *args)
 {
-  dbidx_t   dbidx;
-  char      tbuff [100];
+  dbidx_t     dbidx;
+  char        tbuff [100];
 
   dbidx = atol (args);
 
