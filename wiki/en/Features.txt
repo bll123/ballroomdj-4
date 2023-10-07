@@ -4,7 +4,7 @@
 
 * Supported Platforms as of 2023-1-24
     * Windows 10, Windows 11
-    * MacOS Catalina, Big Sur, Monterey, Ventura
+    * MacOS Catalina, Big Sur, Monterey, Ventura, Sonoma
     * Linux
 * Free and open source software.
 * Full unicode support, supports all languages.
@@ -64,7 +64,7 @@
         * Stop after some number of songs have played.
 * Music Manager
     (See: [Management / Music Manager](en-Management-Music%20Manager))
-    * Easily filter your song collection to select the songs to work with
+    * Easily filter your song collection to select the songs to work with.
     * Mark songs as the _same song_ to prevent similar songs from being selected in automatic and sequenced playlists.
     * Column display is fully configurable.
     (See: [Configuration / Display Settings](en-Configuration-Display%20Settings))
@@ -82,6 +82,9 @@
         * Trim Silence.
         * Adjust: apply speed, song start, song end to a song.
     * Batch Edit songs.
+* Audio Identification
+    (See: [Management / Audio Identification](en-Management-Audio%20Identification))
+    * Identify songs and retrieve tags for the song.
 * iTunes Support.
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
@@ -98,8 +101,7 @@
 
 ##### Future Features
 
-* Audio Identification via MusicBrainz and AcoustID.
 * Automatic Organization.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-07-14 09:01:11; BDJ4 version 4.3.3.1)_
+<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_

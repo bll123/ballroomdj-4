@@ -17,18 +17,19 @@ some of the showcase music has already been cut to the appropriate
 length.
 
 For the showcase music queue, in
-__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, configure a music queue
-with the __Gap&nbsp;Between&nbsp;Songs__ set to 0.0, and
-__Fade&nbsp;Out&nbsp;Time__ set to 0.0. Make sure
+__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, use the selector to
+choose a new music queue.  Set the name of the music queue to
+_Showcase_. Change the __Active__ selection to on. Set the
+__Gap&nbsp;Between&nbsp;Songs__ to 0.0, and
+__Fade&nbsp;Out&nbsp;Time__ to 0.0. Make sure
 __Play&nbsp;Announcements__ is off.  Turn
 __Pause&nbsp;Each&nbsp;Song__ on.  The __Maximum&nbsp;Play&nbsp;Time__
-is set to 6:00 minutes to allow the entire song to play. The name of
-the music queue is set to _Showcase_.
+is set to 6:00 minutes to allow the entire song to play.
 
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-A.png)
+![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-A.png)
 <br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 ##### Running the Showcase
@@ -90,4 +91,4 @@ ready to be played.  The Tango will be ready to play, and the Waltz
 will be put back into the music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_

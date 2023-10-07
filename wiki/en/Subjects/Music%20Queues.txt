@@ -116,12 +116,11 @@ select a dance using the _Queue&nbsp;Dance_ button (or five dances
 with the _Queue&nbsp;5_ button) to add it to the queue (the song is
 chosen at random) and start it playing.
 
-__There is a special playlist named QueueDance (Nederlands:
-DansToevoegen) that controls what songs are added to the queue by the
-queue dance buttons__.  If you try this example, you may need to
-adjust this special playlist to allow songs to be queued. (The
-_Request_ tab can also be used to add songs to the music queue).
-<br>(See [Manage / Playlist
+__There is a special playlist named QueueDance that controls what
+songs are added to the queue by the queue dance buttons__.  If you try
+this example, you may need to adjust this special playlist to allow
+songs to be queued. (The _Request_ tab can also be used to add songs
+to the music queue). <br>(See [Manage / Playlist
 Management](en-Management-Playlist%20Management))
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -172,4 +171,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 13:01:55; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_

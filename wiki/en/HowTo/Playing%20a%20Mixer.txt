@@ -14,11 +14,12 @@ The example below outlines one method for playing a mixer.
 ##### Configuring a Music Queue for a Mixer
 
 For the mixer music queue, in
-__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, configure a music queue
-with the __Gap&nbsp;Between&nbsp;Songs__ set to 0.0, and a fast
-fade-out time. Also make sure __Play&nbsp;Announcements__ is off.  For
-this example the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30
-minutes.  The name of the music queue is set to _Mixer_.
+__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, use the selector to
+choose a new music queue.  Change the name of the music queue to
+_Mixer_.  Change the __Active__ selection to on. Set the
+__Gap&nbsp;Between&nbsp;Songs__ to 0.0, and use a fast fade-out time.
+Also make sure __Play&nbsp;Announcements__ is off.  For this example
+the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30 minutes.
 
 Close the configuration window to save the configuration changes.
 
@@ -32,12 +33,16 @@ In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, select
 __Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ from the menu.
 Change the name of the playlist to _Waltz&nbsp;Mixer_.  Set
 __Stop&nbsp;After__ to 4.  Set __Dance&nbsp;Rating__ to _Great_.
-In the list of dances to the right, select _Waltz_, click on the
+In the _Dances_ tab, select _Waltz_, click on the
 __Count__ for _Waltz_, and set the count to 1.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-playlist-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-D.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management**</span> </div>
+![mixer-conf-playlist-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-settings-A.png)
+<br><span style="color:#4559bf;">**Manage / Playlist Management / Settings**</span> </div>
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mixer-conf-playlist-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-dances-A.png)
+<br><span style="color:#4559bf;">**Manage / Playlist Management / Dances**</span> </div>
 
 Be aware that to use an automatic playlist, the dance rating for each
 song must be set.
@@ -52,7 +57,7 @@ __Show&nbsp;Extra&nbsp;Queues__ and
 __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mixer-player-options-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
+![mixer-player-options](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
 <br><span style="color:#4559bf;">**Player / Options**</span> </div>
 
 Select the main music queue and use the __Queue&nbsp;Playlist__ button
@@ -75,4 +80,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_

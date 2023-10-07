@@ -28,7 +28,9 @@ __Control-P__: Moves to the previous song.
 
 __Control-N__: Moves to the next song.
 
-__Control-S__: Saves the changes.
+__Control-S__: Saves the changes.  Note that after changing a field,
+the focus needs to moved to another field in order for the changes to
+be saved.
 
 __Multi-media Play__: Plays the selected song.
 
@@ -39,4 +41,4 @@ __Multi-media Play__: Plays the selected song.
 __Control-S__: Swap songs.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_
