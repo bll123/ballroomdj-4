@@ -8,6 +8,7 @@
 
 * New Features:
     * Configuration: General: add audio content identification keys.
+    * Player: History is saved as a song list.
 
 -->
 
