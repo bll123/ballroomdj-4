@@ -5,7 +5,7 @@
 ### Installing BDJ4 in Other Locales
 
 <span style="color:#4559bf;">_BDJ4 currently supports the English/GB,
-English/US and Nederlands (Dutch) locales_</span>
+English/US, Nederlands (Dutch) and Русский (Russian) locales_</span>
 
 BDJ4 will use the configured system locale to determine which locale
 to use during the installation process and when BDJ4 is running.
@@ -47,4 +47,4 @@ Nederlands.  This configuration may not be what a user in the
 Nederlands locale wants to see.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-07-14 09:01:11; BDJ4 version 4.3.3.1)_
+<br>_(Updated 2023-10-07 08:42:54; BDJ4 version 4.4.1.2)_

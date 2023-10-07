@@ -4,8 +4,7 @@
 
 <span style="color:#4559bf;">_Basic configuration for the player._</span>
 
-The __Player__, __Audio__ and __Audio&nbsp;Tags__ settings generally
-do not change.
+The __Player__ and __Audio__ settings usually do not change.
 
 __Player__: Selects the player interface.  At this time, only
 _Integrated&nbsp;VLC_ is supported.
@@ -28,4 +27,4 @@ is finished (no more songs left to play).
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-10-07 08:52:36; BDJ4 version 4.4.1.2)_

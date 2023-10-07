@@ -115,7 +115,7 @@ dance is set for each song.  It is OK if some songs are left without
 an assigned dance, but most should have a dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-B.png)
+![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 If the dance is not set, select the song in the listing, then select
@@ -148,7 +148,7 @@ of the song list.
 Select some more songs and add each of them to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-B.png)
+![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-C.png)
 <br><span style="color:#4559bf;">__Manage / Song List Editor__</span> </div>
 
 Close the management window.  The song list is automatically saved.
@@ -181,4 +181,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 10:38:26; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-10-07 08:49:32; BDJ4 version 4.4.1.2)_

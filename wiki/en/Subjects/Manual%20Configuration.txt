@@ -21,7 +21,7 @@ These items are not configurable via the user interface.
 
   * FADETYPE : Fade Type
     triangle (blue), quartersine (red), halfsine (green),
-    exponentialsine (cyan), invertedparaboloa (black), quadratic (magenta)
+    exponentialsine (cyan), invertedparabola (black), quadratic (magenta)
 <div markdown style="margin-right: 20px; text-align: center;">
 ![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
 <br><span style="color:#4559bf;">**Fade Types**</span> </div>
@@ -37,4 +37,4 @@ These items are not configurable via the user interface.
     The color for the request list in-queue mark.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_
+<br>_(Updated 2023-10-07 08:38:59; BDJ4 version 4.4.1.2)_
