@@ -146,6 +146,7 @@ static datafilekey_t playeruidfkeys [] = {
   { "PLUI_POS_Y",               PLUI_POSITION_Y,            VALUE_NUM, NULL, DF_NORM },
   { "PLUI_SIZE_X",              PLUI_SIZE_X,                VALUE_NUM, NULL, DF_NORM },
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, DF_NORM },
+  { "PLUI_RESTART_POS",         PLUI_RESTART_POSITION,      VALUE_NUM, NULL, DF_NORM },
   { "REQ_EXT_DIR",              REQ_EXT_DIR,                VALUE_STR, NULL, DF_NORM },
   { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, DF_NORM },
   { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, DF_NORM },
@@ -292,6 +293,7 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_POSITION_Y, -1);
     nlistSetNum (plui.options, PLUI_SIZE_X, 1000);
     nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
+    nlistSetNum (plui.options, PLUI_RESTART_POSITION, -1);
     nlistSetNum (plui.options, REQ_EXT_POSITION_X, -1);
     nlistSetNum (plui.options, REQ_EXT_POSITION_Y, -1);
     nlistSetStr (plui.options, REQ_EXT_DIR, "");
@@ -500,8 +502,8 @@ pluiBuildUI (playerui_t *plui)
   uiwcontFree (menuitem);
 
   /* marquee */
-  /* CONTEXT: playerui: menu selection: marquee related options */
   uiwcontFree (menu);
+  /* CONTEXT: playerui: menu selection: marquee related options (suggested: banner) */
   menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL);
   if (plui->marqueeoff) {
     uiWidgetSetState (menuitem, UIWIDGET_DISABLE);

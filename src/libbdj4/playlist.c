@@ -564,6 +564,11 @@ playlistGetPlaylistList (int flag, const char *dir)
     tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 
+    if (strcmp (tfn, RESTART_FN) == 0) {
+      /* the special restart song list never shows up */
+      continue;
+    }
+
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
         (strcmp (tfn, _("QueueDance")) == 0 ||
