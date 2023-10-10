@@ -27,7 +27,9 @@ uiWidgetSetState (uiwcont_t *uiwidget, int state)
     return;
   }
 
-  gtk_widget_set_sensitive (uiwidget->widget, state);
+  if (GTK_IS_WIDGET (uiwidget->widget)) {
+    gtk_widget_set_sensitive (uiwidget->widget, state);
+  }
 }
 
 void
@@ -37,7 +39,9 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_widget_set_hexpand (uiwidget->widget, TRUE);
+  if (GTK_IS_WIDGET (uiwidget->widget)) {
+    gtk_widget_set_hexpand (uiwidget->widget, TRUE);
+  }
 }
 
 void

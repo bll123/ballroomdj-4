@@ -71,7 +71,9 @@ uiImageClear (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_image_clear (GTK_IMAGE (uiwidget->widget));
+  if (GTK_IS_IMAGE (uiwidget->widget)) {
+    gtk_image_clear (GTK_IMAGE (uiwidget->widget));
+  }
 }
 
 void

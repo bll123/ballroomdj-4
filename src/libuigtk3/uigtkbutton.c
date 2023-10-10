@@ -239,6 +239,10 @@ uiButtonSetState (uibutton_t *uibutton, int state)
   if (uibutton == NULL) {
     return;
   }
+  if (uibutton->button == NULL) {
+    return;
+  }
+
   uiWidgetSetState (uibutton->button, state);
 }
 
