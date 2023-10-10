@@ -346,7 +346,7 @@ marqueeBuildUI (marquee_t *marquee)
   marquee->callbacks [MQ_CB_EXIT] = callbackInit (
       marqueeCloseCallback, marquee, NULL);
   marquee->wcont [MQ_W_WINDOW] = uiCreateMainWindow (marquee->callbacks [MQ_CB_EXIT],
-      /* CONTEXT: marquee: marquee window title (suggested: banner) */
+      /* CONTEXT: marquee: marquee window title (suggested: song display) */
       _("Marquee"), imgbuff);
   uiWindowNoFocusOnStartup (marquee->wcont [MQ_W_WINDOW]);
 

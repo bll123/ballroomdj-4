@@ -47,7 +47,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
 
   /* marquee */
   confuiMakeNotebookTab (vbox, gui,
-      /* CONTEXT: configuration: options associated with the marquee (suggested: banner) */
+      /* CONTEXT: configuration: options associated with the marquee (suggested: song display) */
       _("Marquee"), CONFUI_ID_NONE);
 
   /* CONTEXT: configuration: show-marquee: selection */

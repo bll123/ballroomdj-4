@@ -503,7 +503,7 @@ pluiBuildUI (playerui_t *plui)
 
   /* marquee */
   uiwcontFree (menu);
-  /* CONTEXT: playerui: menu selection: marquee related options (suggested: banner) */
+  /* CONTEXT: playerui: menu selection: marquee related options (suggested: song display) */
   menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL);
   if (plui->marqueeoff) {
     uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
