@@ -1359,12 +1359,11 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   /* bdj3 location validation */
 
-  installer->convdirok = false;
-
   dir = uiEntryGetValue (installer->bdj3locEntry);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
   if (strcmp (tbuff, installer->bdj3loc) != 0) {
+    installer->convdirok = false;
     rc = installerValidateProcessBDJ3Loc (installer, tbuff);
   } else {
     /* no change */
