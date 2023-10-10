@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-05\n"
-"PO-Revision-Date: 2023-10-06\n"
+"PO-Revision-Date: 2023-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -212,6 +212,7 @@ msgstr "Accentkleur"
 msgid "Action"
 msgstr "Actie"
 
+#. CONTEXT: the 'Mix' action failed
 msgid "Action failed"
 msgstr "Actie mislukt"
 
@@ -931,6 +932,7 @@ msgstr "Installatie Locatie"
 msgid "Installation aborted."
 msgstr "Installatie afgebroken."
 
+#. CONTEXT: installer: status message
 msgid "Installation complete."
 msgstr "Installatie voltooid."
 
@@ -1023,8 +1025,9 @@ msgstr "Beheren"
 msgid "Mark as Same Song"
 msgstr "Markeren als hetzelfde nummer"
 
-#. CONTEXT: configuration: options associated with the marquee
-#. CONTEXT: marquee: marquee window title
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
 msgid "Marquee"
 msgstr "Marquee"
 

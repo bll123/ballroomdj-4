@@ -28,7 +28,7 @@ MPMLOW
 COUNT
 ..1
 DANCE
-..Ча-Ча
+..Ча-ча-ча
 MAXPLAYTIME
 ..0
 SELECTED
@@ -42,7 +42,7 @@ MPMLOW
 COUNT
 ..1
 DANCE
-..Фокстрот
+..Медленный фокстрот
 MAXPLAYTIME
 ..0
 SELECTED
@@ -56,7 +56,7 @@ MPMLOW
 COUNT
 ..1
 DANCE
-..Дзива
+..Джайв
 MAXPLAYTIME
 ..0
 SELECTED
@@ -84,7 +84,7 @@ MPMLOW
 COUNT
 ..1
 DANCE
-..Быстрый шаг
+..Квикстеп
 MAXPLAYTIME
 ..0
 SELECTED
@@ -168,7 +168,7 @@ MPMLOW
 COUNT
 ..1
 DANCE
-..Вальс
+..Медленный вальс
 MAXPLAYTIME
 ..0
 SELECTED

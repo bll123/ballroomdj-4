@@ -28,7 +28,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Ча-Ча
+..Ча-ча-ча
 LOWMPM
 ..30
 HIGHMPM
@@ -46,7 +46,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Фокстрот
+..Медленный фокстрот
 LOWMPM
 ..28
 HIGHMPM
@@ -64,7 +64,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Дзива
+..Джайв
 LOWMPM
 ..41
 HIGHMPM
@@ -100,7 +100,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Быстрый шаг
+..Квикстеп
 LOWMPM
 ..50
 HIGHMPM
@@ -208,7 +208,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Вальс
+..Медленный вальс
 LOWMPM
 ..28
 HIGHMPM
