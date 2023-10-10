@@ -1490,6 +1490,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PROCESSING_FAIL: {
+          /* CONTEXT: the 'Mix' action failed */
           uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], _("Action failed"));
           break;
         }

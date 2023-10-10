@@ -1107,8 +1107,8 @@ installerMainLoop (void *udata)
       break;
     }
     case INST_FINISH: {
-      /* CONTEXT: installer: status message */
       if (! installer->aborted) {
+        /* CONTEXT: installer: status message */
         installerDisplayText (installer, INST_DISP_FIN, _("Installation complete."), true);
       }
       installer->aborted = false;
