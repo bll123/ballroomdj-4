@@ -6,9 +6,9 @@ version
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Хорошо
+..Без рейтинга
 GAP
-..9
+..500
 MAXPLAYTIME
 ..0
 PLAYANNOUNCE
@@ -20,6 +20,6 @@ STOPTIME
 DANCELEVELLOW
 ..Легко
 DANCELEVELHIGH
-..Обычный
+..Дополнительное
 TYPE
 ..automatic

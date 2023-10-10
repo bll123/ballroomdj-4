@@ -6,9 +6,9 @@ version
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Goed
+..Onbeoordeeld
 GAP
-..9
+..500
 MAXPLAYTIME
 ..0
 PLAYANNOUNCE
@@ -20,6 +20,6 @@ STOPTIME
 DANCELEVELLOW
 ..Gemakkelijk
 DANCELEVELHIGH
-..Standaard
+..Geavanceerd
 TYPE
 ..automatic

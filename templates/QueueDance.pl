@@ -1,14 +1,14 @@
 # playlist
-# 2023-1-30
-# version 1
+# 2023-10-10
+# version 2
 version
-..1
+..2
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Good
+..Unrated
 GAP
-..9
+..500
 MAXPLAYTIME
 ..0
 PLAYANNOUNCE
@@ -20,6 +20,6 @@ STOPTIME
 DANCELEVELLOW
 ..Easy
 DANCELEVELHIGH
-..Normal
+..Advanced
 TYPE
 ..automatic
