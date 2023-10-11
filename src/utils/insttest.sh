@@ -169,7 +169,7 @@ function checkUpdaterClean {
     rm -f "${fn}"
   fi
   if [[ $section == ru_RU ]]; then
-    fn="$DATADIR/Добавить танец.pl"
+    fn="$DATADIR/Танец в очередь.pl"
   fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
@@ -574,7 +574,7 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
     fnb="${DATADIR}/Dans In Wachtrij.pldances"
-    fnc="${DATADIR}/Добавить танец.pldances"
+    fnc="${DATADIR}/Танец в очередь.pldances"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"
@@ -603,7 +603,7 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb="${DATADIR}/Dans In Wachtrij.pl"
-    fnc="${DATADIR}/Добавить танец.pl"
+    fnc="${DATADIR}/Танец в очередь.pl"
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       temp="${fna}"
       fna="${fnb}"

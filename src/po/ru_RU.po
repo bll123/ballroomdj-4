@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-10\n"
+"PO-Revision-Date: 2023-10-11 04:40\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -784,7 +784,7 @@ msgstr "Постепен. утихание"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
-msgstr "Продолжительность постепенного увеличения"
+msgstr "Продолжительность увеличения громкости"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
@@ -1048,8 +1048,7 @@ msgid "Marquee Theme"
 msgstr "Тема экрана с дисплеем песен"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Максимальное\n"
 "время\n"
@@ -1504,9 +1503,7 @@ msgid "Repeat"
 msgstr "Повтор"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Заменяет базу данных BallroomDJ целиком. Все изменения в базе данных будут потеряны."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1709,15 +1706,15 @@ msgstr "Показать информацию о песне"
 msgid "Shutdown Script"
 msgstr "Скрипт выключения"
 
-#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+#. CONTEXT: configuration: display settings for: side-by-side song list
 msgid "Side-by-Side Song List"
 msgstr "Комбинированный вид: Список песен"
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+#. CONTEXT: configuration: display settings for: side-by-side song selection
 msgid "Side-by-Side Song Selection"
 msgstr "Комбинированный вид: Выбор песни"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: managementui: menu checkbox: side-by-side view
 msgid "Side-by-Side View"
 msgstr "Комбинированный вид"
 
@@ -1877,9 +1874,7 @@ msgid "The conversion process will not be run."
 msgstr "Процесс конверсии не будет запущен."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1977,13 +1972,11 @@ msgstr "Обновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Обновляет информацию о базе данных BallroomDJ из базы данных %s."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Обновляет информацию в базе данных BallroomDJ из тегов аудио файлов."
 
 #. CONTEXT: alternate installation: status message
@@ -2061,9 +2054,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Записать теги в аудио файлы"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Запись тегов аудио файла, используя информацию из базы данных BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

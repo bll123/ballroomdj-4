@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-10\n"
+"PO-Revision-Date: 2023-10-10 23:50\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1048,8 +1048,7 @@ msgid "Marquee Theme"
 msgstr "Marquee Thema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -1503,9 +1502,7 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Vervangt de BallroomDJ database in zijn geheel. Alle wijzigingen in de database gaan verloren."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1571,7 +1568,7 @@ msgstr "Scannen van de muziekmap."
 
 #. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
-msgstr "Score"
+msgstr ""
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
@@ -1708,15 +1705,15 @@ msgstr "Toon Song informatie"
 msgid "Shutdown Script"
 msgstr "Afsluitscript"
 
-#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+#. CONTEXT: configuration: display settings for: side-by-side song list
 msgid "Side-by-Side Song List"
 msgstr "Zij-aan-zij Songlijst"
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+#. CONTEXT: configuration: display settings for: side-by-side song selection
 msgid "Side-by-Side Song Selection"
 msgstr "Zij-aan-zij Song Selectie"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: managementui: menu checkbox: side-by-side view
 msgid "Side-by-Side View"
 msgstr "Zij-aan-zij Weergave"
 
@@ -1876,9 +1873,7 @@ msgid "The conversion process will not be run."
 msgstr "Het conversieproces zal niet worden uitgevoerd."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Het conversieproces zal enkel uitgevoerd worden voor nieuwe of voor her-installaties."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1976,13 +1971,11 @@ msgstr "Bijgewerkt"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Werkt de informatie in de BallroomDJ database bij van de %s database."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Werkt de informatie in de BallroomDJ-database bij via de tags van de audiobestanden."
 
 #. CONTEXT: alternate installation: status message
@@ -2060,9 +2053,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Schrijf Tag info naar audiobestanden"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Schrijft tags van het audiobestand met behulp van de informatie van de BallroomDJ-database."
 
 #. CONTEXT: configuration: dialog: XML file types
