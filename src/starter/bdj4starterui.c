@@ -157,6 +157,7 @@ typedef struct {
   char            ident [80];
   char            latestversion [60];
   support_t       *support;
+  int             startreq [ROUTE_MAX];
   int             mainstart [ROUTE_MAX];
   int             started [ROUTE_MAX];
   int             stopwaitcount;
@@ -247,7 +248,7 @@ static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
-static void     starterSendPlayerActive (startui_t *starter);
+static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -291,6 +292,7 @@ main (int argc, char *argv[])
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
   for (int i = 0; i < ROUTE_MAX; ++i) {
+    starter.startreq [i] = 0;
     starter.mainstart [i] = 0;
     starter.started [i] = 0;
   }
@@ -1055,10 +1057,8 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = false;
           break;
         }
-        case MSG_REQ_PLAYERUI_ACTIVE: {
-          if (routefrom == ROUTE_MANAGEUI) {
-            starterSendPlayerActive (starter);
-          }
+        case MSG_REQ_PROCESS_ACTIVE: {
+          starterSendProcessActive (starter, routefrom, atoi (args));
           break;
         }
         case MSG_START_MAIN: {
@@ -1130,11 +1130,13 @@ starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int request)
   starter->started [routefrom] = 0;
   if (routefrom == ROUTE_MAIN) {
     starter->started [ROUTE_MAIN] = 0;
+    starter->startreq [ROUTE_PLAYERUI] = 0;
+    starter->startreq [ROUTE_MANAGEUI] = 0;
     starter->mainstart [ROUTE_PLAYERUI] = 0;
     starter->mainstart [ROUTE_MANAGEUI] = 0;
   }
   if (routefrom == ROUTE_PLAYERUI) {
-    starterSendPlayerActive (starter);
+    starterSendProcessActive (starter, ROUTE_MANAGEUI, ROUTE_PLAYERUI);
     starterPlayerShutdown ();
   }
 
@@ -1167,15 +1169,22 @@ starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
         ROUTE_MAIN, "bdj4main", flags, targv);
   }
 
-  /* if this ui already requested a start, let the ui know */
+  /* if the ui process already requested a start, let the ui process know */
   if ( starter->mainstart [routefrom] ) {
-    connSendMessage (starter->conn, routefrom, MSG_MAIN_ALREADY, NULL);
+    connSendMessage (starter->conn, routefrom, MSG_MAIN_START_RECONN, NULL);
+  } else {
+    /* if the ui process ever requested a start and main is already started */
+    if (starter->startreq [routefrom] > 0 &&
+        starter->started [ROUTE_MAIN]) {
+      connSendMessage (starter->conn, routefrom, MSG_MAIN_START_REATTACH, NULL);
+    }
   }
   /* prevent multiple starts from the same ui */
   if ( ! starter->mainstart [routefrom] ) {
     ++starter->started [ROUTE_MAIN];
   }
   ++starter->mainstart [routefrom];
+  ++starter->startreq [routefrom];
 }
 
 
@@ -1222,17 +1231,19 @@ starterStartPlayerui (void *udata)
   rc = starterStartProcess (starter, "bdj4playerui", ROUTE_PLAYERUI);
   starter->lastPluiStart = mstime ();
   mstimeset (&starter->pluiCheckTime, 500);
-  starterSendPlayerActive (starter);
   starterPlayerStartup ();
+  starterSendProcessActive (starter, ROUTE_MANAGEUI, ROUTE_PLAYERUI);
   return rc;
 }
 
 static bool
 starterStartManageui (void *udata)
 {
-  startui_t      *starter = udata;
+  startui_t     *starter = udata;
+  int           rc;
 
-  return starterStartProcess (starter, "bdj4manageui", ROUTE_MANAGEUI);
+  rc = starterStartProcess (starter, "bdj4manageui", ROUTE_MANAGEUI);
+  return rc;
 }
 
 static bool
@@ -1266,7 +1277,6 @@ starterStartProcess (startui_t *starter, const char *procname,
   starter->processes [route] = procutilStartProcess (
       route, procname, PROCUTIL_DETACH, targv);
   starter->started [route] = true;
-  starterSendPlayerActive (starter);
   return UICB_CONT;
 }
 
@@ -2110,11 +2120,11 @@ starterSetUpAlternate (void *udata)
 }
 
 static void
-starterSendPlayerActive (startui_t *starter)
+starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto)
 {
   char  tmp [40];
 
-  snprintf (tmp, sizeof (tmp), "%d", starter->started [ROUTE_PLAYERUI]);
-  connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
+  snprintf (tmp, sizeof (tmp), "%d", starter->started [routeto]);
+  connSendMessage (starter->conn, routefrom, MSG_PROCESS_ACTIVE, tmp);
 }
 

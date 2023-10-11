@@ -14,7 +14,9 @@
 
 * Bug Fixes:
     * Installer: Fixed processing of BDJ3 conversion checkbox.
+    * Player: Fix interactions when the management user interface is active.
 * Changes:
+    * QueueDance special playlist: Change to play any song by default.
     * Translations: Русский (Russian) updated.
 
 -->

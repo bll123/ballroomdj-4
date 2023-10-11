@@ -130,12 +130,15 @@ typedef struct {
   mstime_t        expmp3chkTime;
   int             expmp3state;
   /* flags */
-  bool            uibuilt : 1;
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
+  bool            mainreattach : 1;
   bool            marqueeoff : 1;
   bool            mqfontsizeactive : 1;
   bool            optionsalloc : 1;
+  bool            startmainsent : 1;
+  bool            stopping : 1;
+  bool            uibuilt : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -245,7 +248,10 @@ main (int argc, char *argv[])
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
+  plui.startmainsent = false;
+  plui.stopping = false;
   plui.mainalready = false;
+  plui.mainreattach = false;
   plui.marqueeoff = false;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
@@ -341,6 +347,12 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   int           x, y, ws;
 
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
+  if (! plui->marqueeoff &&
+      connHaveHandshake (plui->conn, ROUTE_MAIN) &&
+      connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_STOP_MARQUEE, NULL);
+  }
+
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
   uiWindowGetSize (plui->wcont [PLUI_W_WINDOW], &x, &y);
@@ -350,7 +362,8 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
-  connDisconnect (plui->conn, ROUTE_STARTERUI);
+  connDisconnectAll (plui->conn);
+
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
   return STATE_FINISHED;
 }
@@ -721,6 +734,7 @@ pluiMainLoop (void *tplui)
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      plui->stopping = true;
       progstateShutdownProcess (plui->progstate);
       gKillReceived = 0;
     }
@@ -782,6 +796,7 @@ pluiMainLoop (void *tplui)
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    plui->stopping = true;
     progstateShutdownProcess (plui->progstate);
     gKillReceived = 0;
   }
@@ -833,7 +848,6 @@ pluiConnectingCallback (void *udata, programstate_t programState)
   connProcessUnconnected (plui->conn);
 
   if (connIsConnected (plui->conn, ROUTE_STARTERUI)) {
-    connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_START_MAIN, "0");
     rc = STATE_FINISHED;
   }
 
@@ -864,6 +878,12 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
 
   connProcessUnconnected (plui->conn);
 
+  if (plui->startmainsent == false &&
+      connHaveHandshake (plui->conn, ROUTE_STARTERUI)) {
+    connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_START_MAIN, "0");
+    plui->startmainsent = true;
+  }
+
   if (! plui->marqueeoff &&
       connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       ! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
@@ -875,10 +895,11 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
       (plui->marqueeoff ||
       connHaveHandshake (plui->conn, ROUTE_MARQUEE))) {
+
     if (plui->mainalready) {
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_STATUS, NULL);
     }
-    if (! plui->mainalready) {
+    if (! plui->mainalready || plui->mainreattach) {
       pluiSetPlaybackQueue (plui, plui->musicqPlayIdx, PLUI_UPDATE_MAIN);
       pluiSetManageQueue (plui, plui->musicqManageIdx);
       pluiSetSwitchQueue (plui);
@@ -911,8 +932,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     targs = mdstrdup (args);
   }
 
-  if (/* msg != MSG_MAIN_QUEUE_INFO && */
-      msg != MSG_MUSIC_QUEUE_DATA &&
+  if (msg != MSG_MUSIC_QUEUE_DATA &&
       msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
@@ -928,12 +948,13 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          connDisconnect (plui->conn, routefrom);
+              connDisconnect (plui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
+          plui->stopping = true;
           progstateShutdownProcess (plui->progstate);
           break;
         }
@@ -970,6 +991,10 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MUSIC_QUEUE_DATA: {
           mp_musicqupdate_t   *musicqupdate;
+
+          if (plui->stopping) {
+            break;
+          }
 
           musicqupdate = msgparseMusicQueueData (targs);
           if (musicqupdate == NULL) {
@@ -1017,10 +1042,15 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluiPushHistory (plui, targs);
           break;
         }
-        case MSG_MAIN_ALREADY: {
+        case MSG_MAIN_START_RECONN: {
           plui->mainalready = true;
           /* CONTEXT: player-ui: error message */
           uiLabelSetText (plui->wcont [PLUI_W_ERROR_MSG], _("Recovered from crash."));
+          break;
+        }
+        case MSG_MAIN_START_REATTACH: {
+          plui->mainalready = true;
+          plui->mainreattach = true;
           break;
         }
         case MSG_MAIN_CURR_MANAGE: {
@@ -1085,6 +1115,7 @@ pluiCloseWin (void *udata)
 
   logProcBegin (LOG_PROC, "pluiCloseWin");
   if (progstateCurrState (plui->progstate) <= STATE_RUNNING) {
+    plui->stopping = true;
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "pluiCloseWin", "not-done");

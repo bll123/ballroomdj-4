@@ -46,9 +46,9 @@ confuiInitDispSettings (confuigui_t *gui)
       DISP_SEL_SONGLIST, _("Song List"),
       /* CONTEXT: configuration: display settings for: song selection */
       DISP_SEL_SONGSEL, _("Song Selection"),
-      /* CONTEXT: configuration: display settings for: side-by-side song list */
+      /* CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list) */
       DISP_SEL_SBS_SONGLIST, _("Side-by-Side Song List"),
-      /* CONTEXT: configuration: display settings for: side-by-side song selection */
+      /* CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection) */
       DISP_SEL_SBS_SONGSEL, _("Side-by-Side Song Selection"),
       /* CONTEXT: configuration: display settings for: music manager */
       DISP_SEL_MM, _("Music Manager"),

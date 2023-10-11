@@ -125,6 +125,7 @@ static bool mainListeningCallback (void *tmaindata, programstate_t programState)
 static bool mainConnectingCallback (void *tmaindata, programstate_t programState);
 static bool mainHandshakeCallback (void *tmaindata, programstate_t programState);
 static void mainStartMarquee (maindata_t *mainData);
+static void mainStopMarquee (maindata_t *mainData);
 static bool mainStoppingCallback (void *tmaindata, programstate_t programState);
 static bool mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool mainClosingCallback (void *tmaindata, programstate_t programState);
@@ -327,19 +328,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
 
   procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (mainData->processes);
-
-#if 0
-  script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
-  if (script != NULL &&
-      *script &&
-      fileopFileExists (script)) {
-    const char  *targv [2];
-
-    targv [0] = script;
-    targv [1] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-  }
-#endif
 
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
 
@@ -601,6 +589,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_STOP_MARQUEE: {
+          mainStopMarquee (mainData);
+          dbgdisp = true;
+          break;
+        }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (mainData->musicdb, atol (targs));
           for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -823,21 +816,6 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   }
 
   if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
-#if 0
-    char          *script;
-
-    script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
-    if (script != NULL &&
-        *script &&
-        fileopFileExists (script)) {
-      const char  *targv [2];
-
-      targv [0] = script;
-      targv [1] = NULL;
-      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-    }
-#endif
-
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags, NULL);
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
@@ -1000,6 +978,22 @@ mainStartMarquee (maindata_t *mainData)
   mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
       ROUTE_MARQUEE, "bdj4marquee", flags, targv);
   mainData->marqueestarted = true;
+}
+
+static void
+mainStopMarquee (maindata_t *mainData)
+{
+  if (! mainData->marqueestarted) {
+    return;
+  }
+
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+    return;
+  }
+
+  procutilStopProcess (mainData->processes [ROUTE_MARQUEE],
+      mainData->conn, ROUTE_MARQUEE, PROCUTIL_NORM_TERM);
+  mainData->marqueestarted = false;
 }
 
 

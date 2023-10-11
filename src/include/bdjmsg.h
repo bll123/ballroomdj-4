@@ -72,6 +72,7 @@ typedef enum {
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
   MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,
+  MSG_STOP_MARQUEE,
   MSG_PL_OVERRIDE_STOP_TIME,  // args: stop-time
   MSG_PL_CLEAR_QUEUE,       // args: music-q-idx
                             // tells main to clear the playlist queue.
@@ -120,8 +121,11 @@ typedef enum {
   MSG_SONG_SELECT,          // args: queue number, position
   MSG_FINISHED,             // no more songs, also sent to marquee
   MSG_SONG_FINISH,          // args: dbidx, for history
-  MSG_MAIN_ALREADY,         // the main process was already started
-                            // this message occurs after a crash or the ui.
+  MSG_MAIN_START_RECONN,    // the main process was already started
+                            //  this message occurs after a crash or the ui
+                            //  tries to start the main process again.
+  MSG_MAIN_START_REATTACH,  // the main process was started before and
+                            //  stayed active. re-attach to it.
   MSG_MAIN_REQ_STATUS,      // request current status from main
   MSG_MAIN_CURR_MANAGE,     // status response: current manage idx
   MSG_MAIN_CURR_PLAY,       // status response: current play idx
@@ -135,8 +139,8 @@ typedef enum {
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee
   MSG_STOP_MAIN,
-  MSG_PLAYERUI_ACTIVE,      // arg: true/false
-  MSG_REQ_PLAYERUI_ACTIVE,
+  MSG_PROCESS_ACTIVE,     // arg: count of number of main start requests
+  MSG_REQ_PROCESS_ACTIVE,
   MSG_DEBUG_LEVEL,          // arg: debug level
 
   /* to/from web servers */

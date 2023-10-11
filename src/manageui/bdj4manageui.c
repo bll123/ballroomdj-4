@@ -1344,7 +1344,10 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (manage->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (manage->conn, ROUTE_MAIN) &&
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
-    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_REQ_PLAYERUI_ACTIVE, NULL);
+    char    tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "%d", ROUTE_PLAYERUI);
+    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_REQ_PROCESS_ACTIVE, tmp);
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
     manageSetEasySonglist (manage);
@@ -1461,7 +1464,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           msgparseSongSelectFree (songselect);
           break;
         }
-        case MSG_PLAYERUI_ACTIVE: {
+        case MSG_PROCESS_ACTIVE: {
           int   val;
           char  tmp [40];
 
@@ -2434,7 +2437,7 @@ manageSonglistMenu (manageui_t *manage)
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SBS_EDIT,
       manageToggleEasySonglist);
-  /* CONTEXT: managementui: menu checkbox: side-by-side view */
+  /* CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view) */
   menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
       nlistGetNum (manage->options, MANAGE_SBS_SONGLIST),
       manage->callbacks [MANAGE_MENU_CB_SL_SBS_EDIT]);
