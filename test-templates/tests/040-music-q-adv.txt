@@ -281,6 +281,7 @@ chk actualvolume defaultvol
 resptimeout 2000
 verbose on
 msg player PLAY_FADE
+mssleep 100
 get player CHK_PLAYER_STATUS
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500

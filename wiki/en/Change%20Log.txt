@@ -8,9 +8,10 @@
 
 * New Features:
     * Configuration: General: add audio content identification keys.
-    * Player: History is saved as a song list.
 
-**4.4.1.3 2023-10---**
+-->
+
+**4.4.1.3 2023-10-11**
 
 * Bug Fixes:
     * Installer: Fixed processing of BDJ3 conversion checkbox.
@@ -18,8 +19,7 @@
 * Changes:
     * QueueDance special playlist: Change to play any song by default.
     * Translations: Русский (Russian) updated.
-
--->
+    * Player: History is saved as a song list.
 
 **4.4.1.2 2023-10-6**
 
