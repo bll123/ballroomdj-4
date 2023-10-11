@@ -1,8 +1,8 @@
 # playlist
-# 2023-1-30
-# version 1
+# 2023-10-10
+# version 2
 version
-..1
+..2
 ALLOWEDKEYWORDS
 ..
 DANCERATING

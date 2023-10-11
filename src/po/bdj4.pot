@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-10 01:38-0700\n"
+"POT-Creation-Date: 2023-10-10 16:56-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1705,15 +1705,15 @@ msgstr ""
 msgid "Shutdown Script"
 msgstr ""
 
-#. CONTEXT: configuration: display settings for: side-by-side song list
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
 msgstr ""
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
 msgstr ""
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr ""
 

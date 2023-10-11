@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-05\n"
+"POT-Creation-Date: 2023-10-10\n"
 "PO-Revision-Date: 2023-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
@@ -206,7 +206,7 @@ msgstr "4/4"
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
-msgstr "Цвет акцента"
+msgstr "Главный цвет"
 
 #. CONTEXT: update database: select database update action
 msgid "Action"
@@ -421,11 +421,11 @@ msgstr "Очистить и Играть"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
-msgstr "Убрать с кнопки Кью"
+msgstr "Очистить очередь"
 
 #. CONTEXT: managementui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
-msgstr "Очистить метку Та же песня"
+msgstr "Убрать метку Та же песня"
 
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
@@ -703,7 +703,7 @@ msgstr "Редактировать статус"
 
 #. CONTEXT: configuration: enable mobile marquee
 msgid "Enable Mobile Marquee"
-msgstr "Включить мобильный маркет"
+msgstr "Включить мобильный экран с дисплеем песен"
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
@@ -784,7 +784,7 @@ msgstr "Постепен. утихание"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
-msgstr "Продолжительность затухания"
+msgstr "Продолжительность постепенного увеличения"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
@@ -1033,15 +1033,15 @@ msgstr "Экран с дисплеем песен"
 
 #. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
 msgid "Marquee Display"
-msgstr "Дисплей песен на экране"
+msgstr "Альтернативный дисплей"
 
 #. CONTEXT: configuration: The font to use for the marquee display
 msgid "Marquee Font"
-msgstr "Шрифт на экране с дисплеем песен"
+msgstr "Шрифт отображения песни"
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr "Размер шрифта на экране с дисплеем песен"
+msgstr "Размер шрифта для отображения песни"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
@@ -1304,7 +1304,7 @@ msgstr "Воспроизвести объявления"
 
 #. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
-msgstr "Играть по очереди"
+msgstr "Воспроизводить когда в очереди"
 
 #. CONTEXT: configuration: status: title of the "playable" column
 msgid "Play?"
@@ -1401,7 +1401,7 @@ msgstr "QR-код"
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
-msgstr "Добавить в очередь"
+msgstr "Добавить песню в очередь"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
@@ -1422,7 +1422,7 @@ msgstr "Очередь D"
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
-msgstr "Танец на очереди"
+msgstr "Добавить танец в очередь"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -1435,14 +1435,14 @@ msgstr "Название очереди"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
-msgstr "Плейлист с выбранными треками"
+msgstr "Добавить плейлист в очередь"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Танец на очереди"
+msgstr "Танец в очередь"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
@@ -1474,7 +1474,7 @@ msgstr "Восстановить базу данных"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
-msgstr "Восстановить экран"
+msgstr "Восстановить экран отображения песни"
 
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
@@ -1563,7 +1563,7 @@ msgstr "Сохранение места установки."
 
 #. CONTEXT: configuration: scaling factor for the user interface
 msgid "Scale"
-msgstr "Шкала"
+msgstr "Размер"
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
@@ -1674,7 +1674,7 @@ msgstr "Последовательность"
 
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
-msgstr "Установить очередь для Плейбек"
+msgstr "Выберите очередь для игры"
 
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
@@ -1691,7 +1691,7 @@ msgstr "Настройка завершена."
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
-msgstr "Показать доп. кнопку кью"
+msgstr "Показать дополнительные кнопки очереди"
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
@@ -1699,7 +1699,7 @@ msgstr "Показать дополнительные очереди"
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr "Показать болъшой экран"
+msgstr "Показать экран отображения песни"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
@@ -1709,17 +1709,17 @@ msgstr "Показать информацию о песне"
 msgid "Shutdown Script"
 msgstr "Скрипт выключения"
 
-#. CONTEXT: configuration: display settings for: side-by-side song list
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "Список песен в ряд"
+msgstr "Комбинированный вид: Список песен"
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "Выбор песни из одного ряда"
+msgstr "Комбинированный вид: Выбор песни"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
-msgstr "Боковой обзор"
+msgstr "Комбинированный вид"
 
 #. CONTEXT: installer: status message
 msgid "Skipping conversion."
@@ -1853,7 +1853,7 @@ msgstr "обмен"
 
 #. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"
-msgstr "Переключение очереди когда нет др. настроек"
+msgstr "Переключение очереди когда пусто"
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
@@ -2136,7 +2136,7 @@ msgstr "Для того чтобы функционировать, BallroomDJ 4 
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
-msgstr "Создать пример плейлиста"
+msgstr "Создать плейлист для примера"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
@@ -2144,7 +2144,7 @@ msgstr "=> Выберите \"Редактировать списки песен
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
-msgstr "Установить расположение папки с музыкой"
+msgstr "Установить место для папки с музыкой"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
@@ -2152,7 +2152,7 @@ msgstr "Первым шагом является настройка распол
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
-msgstr "Верифицировать настроенные танцы"
+msgstr "Подтвердить настроенные танцы"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
@@ -2160,7 +2160,7 @@ msgstr "Названия танцев должны соответствоват�
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
-msgstr "Введение / Начало работы"
+msgstr "Введение / Начало "
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
@@ -2168,7 +2168,7 @@ msgstr "Эта утилита проведет вас через несколь�
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
-msgstr "Воспроизвести плейлист"
+msgstr "Играть плейлист"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
@@ -2176,7 +2176,7 @@ msgstr "Теперь вы будете воспроизводить только
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
-msgstr "Как организована музыка"
+msgstr "Как организован список песен"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"

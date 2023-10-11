@@ -1701,15 +1701,15 @@ msgstr ""
 msgid "Shutdown Script"
 msgstr ""
 
-#. CONTEXT: configuration: display settings for: side-by-side song list
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
 msgstr ""
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
 msgstr ""
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr ""
 

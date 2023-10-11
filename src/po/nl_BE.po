@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-05\n"
+"POT-Creation-Date: 2023-10-10\n"
 "PO-Revision-Date: 2023-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
@@ -32,17 +32,17 @@ msgstr "%d bestanden gevonden"
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr ""
+msgstr "%s API Host"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr ""
+msgstr "%s API-sleutel"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr ""
+msgstr "%s API Geheime Sleutel"
 
 #. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
 #, c-format
@@ -333,7 +333,7 @@ msgstr "Audiobestanden"
 #. CONTEXT: configuration: display settings for: Audio Identification
 #. CONTEXT: managementui: name of audio identification notebook tab
 msgid "Audio ID"
-msgstr ""
+msgstr "Audio ID"
 
 #. CONTEXT: configuration: display settings for: Audio ID match listing
 msgid "Audio ID Match List"
@@ -1708,15 +1708,15 @@ msgstr "Toon Song informatie"
 msgid "Shutdown Script"
 msgstr "Afsluitscript"
 
-#. CONTEXT: configuration: display settings for: side-by-side song list
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
 msgstr "Zij-aan-zij Songlijst"
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
 msgstr "Zij-aan-zij Song Selectie"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "Zij-aan-zij Weergave"
 
