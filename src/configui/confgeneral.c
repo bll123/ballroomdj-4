@@ -139,7 +139,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
-#if 0
   /* CONTEXT: configuration: the ACRCloud API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
   confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
@@ -157,7 +156,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
   confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
-#endif
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

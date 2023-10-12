@@ -1,5 +1,8 @@
 /*
  * Copyright 2023 Brad Lanam Pleasant Hill CA
+ *
+ * Parses XML responses
+ *
  */
 #include "config.h"
 
@@ -24,24 +27,24 @@
 #include "mdebug.h"
 #include "tagdef.h"
 
-static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths, int xpathidx, ilist_t *respdata, int level, audioid_id_t ident);
-static bool audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths, int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident);
+static bool audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths, int xpathidx, ilist_t *respdata, int level, audioid_id_t ident);
+static bool audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths, int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident);
 
 void
-audioidParseInit (void)
+audioidParseXMLInit (void)
 {
   xmlInitParser ();
 }
 
 void
-audioidParseCleanup (void)
+audioidParseXMLCleanup (void)
 {
   xmlCleanupParser ();
 }
 
 int
-audioidParseAll (const char *data, size_t datalen,
-    audioidxpath_t *xpaths, ilist_t *respdata, audioid_id_t ident)
+audioidParseXMLAll (const char *data, size_t datalen,
+    audioidparse_t *xpaths, ilist_t *respdata, audioid_id_t ident)
 {
   xmlDocPtr           doc;
   xmlXPathContextPtr  xpathCtx;
@@ -99,7 +102,7 @@ audioidParseAll (const char *data, size_t datalen,
 }
 
 static bool
-audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
+audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
     int xpathidx, ilist_t *respdata, int level, audioid_id_t ident)
 {
   xmlXPathObjectPtr   xpathObj;
@@ -113,9 +116,9 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   int                 respidx;
 
   respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s xidx: %d %s respidx %d", level*2, "", xpathidx, xpaths [xpathidx].xpath, respidx);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s xidx: %d %s respidx %d", level*2, "", xpathidx, xpaths [xpathidx].name, respidx);
 
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].xpath, xpathCtx);
+  xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].name, xpathCtx);
   mdextalloc (xpathObj);
   if (xpathObj == NULL)  {
     logMsg (LOG_DBG, LOG_IMPORTANT, "audioidParse: bad xpath expression");
@@ -131,8 +134,8 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
   }
   ncount = nodes->nodeNr;
 
-  if (xpaths [xpathidx].flag == AUDIOID_XPATH_TREE) {
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: xidx: %d %s", level*2, "", xpathidx, xpaths [xpathidx].xpath);
+  if (xpaths [xpathidx].flag == AUDIOID_PARSE_TREE) {
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: xidx: %d %s", level*2, "", xpathidx, xpaths [xpathidx].name);
     if (xpaths [xpathidx].tagidx == AUDIOID_TYPE_RESPIDX) {
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s response-count: %d", level*2, "", ncount);
     }
@@ -248,7 +251,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidxpath_t *xpaths,
 }
 
 static bool
-audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
+audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths,
     int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident)
 {
   int   xidx = 0;
@@ -304,7 +307,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
     }
 
     xidx = 0;
-    while (xpaths [xidx].flag != AUDIOID_XPATH_END) {
+    while (xpaths [xidx].flag != AUDIOID_PARSE_END) {
       audioidParse (relpathCtx, xpaths, xidx, respdata, level + 1, ident);
       ++xidx;
     }
@@ -323,6 +326,6 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidxpath_t *xpaths,
 
   ilistSetNum (respdata, 0, AUDIOID_TYPE_JOINED, false);
 
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", xpaths [xidx].xpath);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", xpaths [xidx].name);
   return true;
 }

@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=9
+ver=10
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -145,7 +145,7 @@ if [[ -f /usr/bin/pacman ]]; then
   # updated 2023-9-20
   # tested 2023-9-20 on version 23
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
-  # pre-installed: flac, libvorbis
+  # pre-installed: flac, libvorbis, json-c
   pkglist="python-mutagen"
 fi
 if [[ -f /usr/bin/apt ]]; then
@@ -155,7 +155,7 @@ if [[ -f /usr/bin/apt ]]; then
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   pkglist="ffmpeg-free python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libchromaprint-tools libvorbis flac"
+      libopusfile0 libchromaprint-tools libvorbis flac libjson-c"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -164,14 +164,14 @@ if [[ -f /usr/bin/dnf ]]; then
   # the installed libcurl is 'minimal' and should be replaced.
   # 38: pre-installed: libogg opus
   pkglist="ffmpeg python3-mutagen libcurl opusfile libvorbis
-      flac-libs chromaprint-tools"
+      flac-libs chromaprint-tools json-c"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
   # updated 2023-9-20
   sudo systemctl stop pkgkit
   pkglist="ffmpeg-4 python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libvorbis flac chromaprint-fpcalc"
+      libopusfile0 libvorbis flac chromaprint-fpcalc libjson-c"
 fi
 
 sudo -v

@@ -70,7 +70,7 @@ audioidInit (void)
   for (int i = 0; i < AUDIOID_ID_MAX; ++i) {
     audioid->respcount [i] = 0;
   }
-  audioidParseInit ();
+  audioidParseXMLInit ();
 
   audioid->dupchklist = nlistAlloc ("auid-chk-list", LIST_UNORDERED, NULL);
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
@@ -94,7 +94,7 @@ audioidFree (audioid_t *audioid)
     return;
   }
 
-  audioidParseCleanup ();
+  audioidParseXMLCleanup ();
   nlistFree (audioid->respidx);
   ilistFree (audioid->resp);
   mbFree (audioid->mb);
@@ -191,7 +191,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         break;
       }
     }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d/%s time: %" PRId64 "ms",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: state %d/%s: time: %" PRId64 "ms",
         audioid->state, logStateDebugText (audioid->state), (int64_t) mstimeend (&starttm));
     return false;
   }

@@ -20,21 +20,20 @@ void audioidStartIterator (audioid_t *audioid);
 ilistidx_t audioidIterate (audioid_t *audioid);
 nlist_t * audioidGetList (audioid_t *audioid, int key);
 
-/* audioidutil.c */
-
-typedef struct audioidxpath audioidxpath_t;
-typedef struct audioidxpath {
+typedef struct audioidparse audioidparse_t;
+typedef struct audioidparse {
   int             flag;
   int             tagidx;
-  const char      *xpath;
+  const char      *name;
   const char      *attr;
-  audioidxpath_t  *tree;
-} audioidxpath_t;
+  audioidparse_t  *tree;
+} audioidparse_t;
 
 enum {
-  AUDIOID_XPATH_TREE,
-  AUDIOID_XPATH_DATA,
-  AUDIOID_XPATH_END,
+  AUDIOID_PARSE_ARRAY,
+  AUDIOID_PARSE_TREE,
+  AUDIOID_PARSE_DATA,
+  AUDIOID_PARSE_END,
 };
 
 typedef enum {
@@ -51,11 +50,17 @@ enum {
   AUDIOID_TYPE_RESPIDX = TAG_KEY_MAX + 3,
   AUDIOID_TYPE_JOINED = TAG_KEY_MAX + 4,
   AUDIOID_TYPE_IDENT = TAG_KEY_MAX + 5,
+  AUDIOID_TYPE_STATUS_CODE = TAG_KEY_MAX + 6,
+  AUDIOID_TYPE_STATUS_MSG = TAG_KEY_MAX + 7,
+  AUDIOID_TYPE_ARRAY = TAG_KEY_MAX + 8,
+  AUDIOID_TYPE_ROLE = TAG_KEY_MAX + 9,
 };
 
-void audioidParseInit (void);
-void audioidParseCleanup (void);
-int audioidParseAll (const char *data, size_t datalen, audioidxpath_t *xpaths, ilist_t *respdata, audioid_id_t ident);
+/* audioidxml.c */
+
+void audioidParseXMLInit (void);
+void audioidParseXMLCleanup (void);
+int audioidParseXMLAll (const char *data, size_t datalen, audioidparse_t *xpaths, ilist_t *respdata, audioid_id_t ident);
 
 /* musicbrainz.c */
 

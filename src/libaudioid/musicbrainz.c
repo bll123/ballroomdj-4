@@ -31,6 +31,9 @@ typedef struct audioidmb {
   int           respcount;
 } audioidmb_t;
 
+enum {
+  QPS_LIMIT = 1000 / 1 + 1,
+};
 
 /*
  * musicbrainz:
@@ -44,48 +47,48 @@ typedef struct audioidmb {
  *      medium/track-list/track : (track-number, title)
  */
 
-static audioidxpath_t mbartistxp [] = {
-  { AUDIOID_XPATH_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+static audioidparse_t mbartistxp [] = {
+  { AUDIOID_PARSE_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
-static audioidxpath_t mbalbartistxp [] = {
-  { AUDIOID_XPATH_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+static audioidparse_t mbalbartistxp [] = {
+  { AUDIOID_PARSE_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
 /* relative to /metadata/recording/release-list/release/medium */
-static audioidxpath_t mbmediumxp [] = {
-  { AUDIOID_XPATH_DATA,  TAG_DISCNUMBER, "/position", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_TRACKTOTAL, "/track-list", "count", NULL },
-  { AUDIOID_XPATH_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+static audioidparse_t mbmediumxp [] = {
+  { AUDIOID_PARSE_DATA,  TAG_DISCNUMBER, "/position", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TRACKTOTAL, "/track-list", "count", NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
 };
 
 /* relative to /metadata/recording/release-list/release */
-static audioidxpath_t mbreleasexp [] = {
-  { AUDIOID_XPATH_DATA,  TAG_ALBUM, "/title", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_DATE, "/date", NULL, NULL },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbalbartistxp  },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_TREE, "/medium-list/medium", NULL, mbmediumxp },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+static audioidparse_t mbreleasexp [] = {
+  { AUDIOID_PARSE_DATA,  TAG_ALBUM, "/title", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DATE, "/date", NULL, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbalbartistxp  },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/medium-list/medium", NULL, mbmediumxp },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
 };
 
 /* relative to /metadata/recording */
-static audioidxpath_t mbrecordingxp [] = {
-  { AUDIOID_XPATH_DATA,  TAG_TITLE, "/title", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_DURATION, "/length", NULL, NULL },
-  { AUDIOID_XPATH_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp },
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+static audioidparse_t mbrecordingxp [] = {
+  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/title", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/length", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
 };
 
-static audioidxpath_t mbxpaths [] = {
-  { AUDIOID_XPATH_TREE,  AUDIOID_TYPE_TREE, "/metadata/recording", NULL, mbrecordingxp },
-  { AUDIOID_XPATH_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL },
+static audioidparse_t mbmainxp [] = {
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/metadata/recording", NULL, mbrecordingxp },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL },
 };
 
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
@@ -132,7 +135,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   while (! mstimeCheck (&mb->globalreqtimer)) {
     mssleep (10);
   }
-  mstimeset (&mb->globalreqtimer, 1000);
+  mstimeset (&mb->globalreqtimer, QPS_LIMIT);
   logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
@@ -165,8 +168,8 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
-    mb->respcount = audioidParseAll (mb->webresponse, mb->webresplen,
-        mbxpaths, respdata, AUDIOID_ID_MB_LOOKUP);
+    mb->respcount = audioidParseXMLAll (mb->webresponse, mb->webresplen,
+        mbmainxp, respdata, AUDIOID_ID_MB_LOOKUP);
     logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }

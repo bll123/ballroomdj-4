@@ -7,7 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4audioid SHARED
   audioid.c
-  audioidparse.c
+  audioidxml.c
   musicbrainz.c
   acoustid.c
   acrcloud.c
@@ -21,6 +21,7 @@ target_link_libraries (libbdj4audioid PUBLIC
   ${GLIB_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${XML2_LDFLAGS}
+  ${JSONC_LDFLAGS}
   z
   m
 )

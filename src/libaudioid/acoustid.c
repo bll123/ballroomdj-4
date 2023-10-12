@@ -44,6 +44,10 @@ typedef struct audioidacoustid {
   char          key [100];
 } audioidacoustid_t;
 
+enum {
+  QPS_LIMIT = 1000 / 3 + 1,
+};
+
 /*
  * acoustid:
  *  for each result (score)
@@ -54,62 +58,62 @@ typedef struct audioidacoustid {
  *        track: (tracknumber, title, artist)
  */
 
-static audioidxpath_t acoustidalbartistxp [] = {
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+static audioidparse_t acoustidalbartistxp [] = {
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
-static audioidxpath_t acoustidartistxp [] = {
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_ARTIST, "/name", NULL, NULL },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+static audioidparse_t acoustidartistxp [] = {
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_ARTIST, "/name", NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release/mediums/medium/tracks/track */
-static audioidxpath_t acoustidtrackxp [] = {
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidartistxp },
-  { AUDIOID_XPATH_DATA, TAG_TRACKNUMBER, "/position", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_TITLE, "/title", NULL, NULL },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-track", NULL, NULL },
+static audioidparse_t acoustidtrackxp [] = {
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidartistxp },
+  { AUDIOID_PARSE_DATA, TAG_TRACKNUMBER, "/position", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_TITLE, "/title", NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-track", NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release/mediums/medium */
-static audioidxpath_t acoustidmediumxp [] = {
-  { AUDIOID_XPATH_DATA, TAG_DISCNUMBER, "/position", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_TRACKTOTAL, "/track_count", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL, acoustidtrackxp },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+static audioidparse_t acoustidmediumxp [] = {
+  { AUDIOID_PARSE_DATA, TAG_DISCNUMBER, "/position", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_TRACKTOTAL, "/track_count", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL, acoustidtrackxp },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release */
-static audioidxpath_t acoustidreleasexp [] = {
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp },
-  { AUDIOID_XPATH_DATA, TAG_ALBUM, "/title", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_DATE, "/date/year", NULL, NULL },
-  { AUDIOID_XPATH_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL },
-  { AUDIOID_XPATH_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+static audioidparse_t acoustidreleasexp [] = {
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp },
+  { AUDIOID_PARSE_DATA, TAG_ALBUM, "/title", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_DATE, "/date/year", NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
 };
 
 /* relative to /response/recordings/recording */
-static audioidxpath_t acoustidrecordingxp [] = {
-  { AUDIOID_XPATH_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+static audioidparse_t acoustidrecordingxp [] = {
+  { AUDIOID_PARSE_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
 };
 
 /* relative to /response/results/result */
-static audioidxpath_t acoustidresultxp [] = {
-  { AUDIOID_XPATH_DATA, TAG_AUDIOID_SCORE, "/score", NULL, NULL },
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL, acoustidrecordingxp },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-result", NULL, NULL },
+static audioidparse_t acoustidresultxp [] = {
+  { AUDIOID_PARSE_DATA, TAG_AUDIOID_SCORE, "/score", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL, acoustidrecordingxp },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-result", NULL, NULL },
 };
 
-static audioidxpath_t acoustidxpaths [] = {
-  { AUDIOID_XPATH_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL, acoustidresultxp },
-  { AUDIOID_XPATH_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL },
+static audioidparse_t acoustidmainxp [] = {
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL, acoustidresultxp },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL },
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
@@ -188,7 +192,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   while (! mstimeCheck (&acoustid->globalreqtimer)) {
     mssleep (10);
   }
-  mstimeset (&acoustid->globalreqtimer, 334);
+  mstimeset (&acoustid->globalreqtimer, QPS_LIMIT);
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
@@ -238,8 +242,8 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
-    acoustid->respcount = audioidParseAll (acoustid->webresponse,
-        acoustid->webresplen, acoustidxpaths, respdata, AUDIOID_ID_ACOUSTID);
+    acoustid->respcount = audioidParseXMLAll (acoustid->webresponse,
+        acoustid->webresplen, acoustidmainxp, respdata, AUDIOID_ID_ACOUSTID);
     logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }

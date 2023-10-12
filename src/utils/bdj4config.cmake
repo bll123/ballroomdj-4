@@ -68,6 +68,7 @@ if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PIPEWIRE libpipewire-0.3)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
+pkg_check_modules (JSONC json-c)
 
 #### VLC
 
