@@ -15,18 +15,23 @@ test -d $TMP && rm -rf $TMP
 mkdir $TMP
 
 UNPACKONLY=F
+KEEP=F
 zipfile="$(echo 'BallroomDJ 4'*.zip)"
 while test $# -gt 0; do
   case $1 in
     --zipfile)
-        shift
-        zipfile=$1
-        shift
+      shift
+      zipfile=$1
+      shift
       ;;
     --unpack)
-        UNPACKONLY=T
-        shift
-    ;;
+      UNPACKONLY=T
+      shift
+      ;;
+    --keep)
+      KEEP=T
+      shift
+      ;;
   esac
 done
 
@@ -70,6 +75,8 @@ for f in *.po; do
 done
 
 test -d $TMP && rm -rf $TMP
-rm -f 'BallroomDJ 4 '*.zip > /dev/null 2>&1
+if [[ KEEP == F ]]; then
+  rm -f 'BallroomDJ 4 '*.zip > /dev/null 2>&1
+fi
 
 exit 0

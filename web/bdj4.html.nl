@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="nl">
 <head>
   <meta name="yandex-verification" content="52297d544556772d" />
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <!-- WT_021 -->
-  <title>BallroomDJ 4 - Ballroom Музыкальный плеер</title>
+  <title>BallroomDJ 4 - Ballroom Muziekspeler</title>
   <!-- WT_022 -->
-  <meta name="Description" content="BallroomDJ 4 - Ballroom Музыкальный плеер">
+  <meta name="Description" content="BallroomDJ 4 - Ballroom Muziekspeler">
   <meta name="Keywords" content="ballroom music player,
       Ballroom Музыкальный плеер,
       ballroom music dj, ballroom dance dj,
@@ -27,13 +27,13 @@
     <div class="menuwidget">
       <!-- WT_023 -->
       <img src="/img/menu.svg"
-          alt="Меню"
+          alt="Menu"
           onclick="javascript:setDisplay('menu');">
     </div>
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="BallroomDJ 4 - Ballroom Музыкальный плеер"
+        alt="BallroomDJ 4 - De Ballroom Muziekspeler"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -55,7 +55,7 @@
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
           <!-- WT_002 -->
           <li id="" class="menuitem"
-              onclick="javascript:setDisplay('donate');">Поддержать</li>
+              onclick="javascript:setDisplay('donate');">Donaties</li>
         </ul>
       </div>
     </div>
@@ -63,44 +63,44 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4 (BDJ4) - это музыкальный проигрыватель, предназначенный для настольных компьютеров и ноутбуков (а также для некоторых планшетов). Он рассчитан на воспроизведение музыки в течение всего вечера без какого-либо вмешательства.</p>
+          <p>BallroomDJ 4 (BDJ4) is een muziekspeler die ontworpen is voor desktop- en laptopcomputers (en werkt op sommige tablets). Hij is ontworpen om de hele avond muziek af te spelen zonder enige tussenkomst.</p>
           <!-- WT_004 -->
-          <p>BDJ4 обладает широкими возможностями настройки и позволяет организовывать музыку для бальных танцев, создавать списки песен, автоматические и последовательные списки воспроизведения.</p>
+          <p>BDJ4 is in hoge mate aanpasbaar en biedt faciliteiten om stijldansmuziek te organiseren en songlijsten, automatische afspeellijsten en sequentiële afspeellijsten te maken.</p>
           <!-- WT_005 -->
-          <p>BDJ4 работает на Windows, MacOS и Linux.</p>
+          <p>BDJ4 werkt op Windows, MacOS en Linux.</p>
           <!-- WT_006 -->
           <p><b><a target="_blank"
               href="https://sourceforge.net/projects/ballroomdj4/files/"
-              >Скачать BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>последняя версия</span> <b>#VERSION#</b>)</p>
+              >Download BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>laatste versie</span> <b>#VERSION#</b>)</p>
           <!-- WT_007 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
-              >Список изменений</a></p>
+              >Logboek Wijzigingen</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
-              href="https://ballroomdj.org/forum/">Форум BDJ4</a></p>
+              href="https://ballroomdj.org/forum/">BDJ4 Forum</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
-              >Вики BDJ4</a></p>
+              >BDJ4 Wiki</a></p>
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >Функции BDJ4</a></p>
+              >BDJ4 Kenmerken</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4/invite"
-              >Помогите перевести BallroomDJ 4</a></p>
+              >Help BallroomDJ 4 Vertalen</a></p>
           <!-- WT_012 -->
-          <p>Другие сайты, на которых можно найти анонсы релизов BallroomDJ 4:</p>
+          <p>Andere sites waar BallroomDJ 4 release-aankondigingen te vinden zijn:</p>
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
-              >BDJ4 на freshcode.club</a></p>
+              >BDJ4 op freshcode.club</a></p>
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
-              >BallroomDJ на pro-linux.de</a>  (Deutsch)</p>
+              >BallroomDJ op pro-linux.de</a>  (Deutsch)</p>
         </div>
         <div class="tleft dlang">
           <ul>
@@ -115,19 +115,19 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>BallroomDJ был предыдущим ballroom проигрывателем музыки. Он больше не поддерживается.</p>
+        <p>BallroomDJ was de vorige ballroom muziekspeler. Deze wordt niet langer ondersteund.</p>
         <!-- WT_016 -->
-        <p>Всем пользователям BallroomDJ настоятельно рекомендуется перейти на BallroomDJ 4</p>
+        <p>Alle gebruikers van BallroomDJ worden aangeraden om te converteren naar BallroomDJ 4</p>
         <!-- WT_017 -->
         <p><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj/files/"
-            >Скачать BallroomDJ 3</a></p>
+            >Download BallroomDJ 3</a></p>
       </div>
     </div>
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>Поддержать BDJ4</p>
+      <p>Donatie aan BDJ4</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -135,9 +135,9 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>Поддержать программные проекты, которые используют BDJ4:</p>
+      <p>Doneer aan softwareprojecten die BDJ4 gebruikt:</p>
       <!-- WT_020 -->
-      <p><a href="https://videolan.org">VLC</a> (кнопка поддержки в самом верху)</p>
+      <p><a href="https://videolan.org">VLC</a> (doneerknop helemaal bovenaan)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>
       <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
       <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>
