@@ -137,7 +137,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     nlistFree (audioid->respidx);
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_WAIT;
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s\n", songGetStr (song, TAG_FILE));
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s", songGetStr (song, TAG_FILE));
   }
 
   if (audioid->state == BDJ4_STATE_WAIT) {
@@ -155,6 +155,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
             acoustidLookup (audioid->acoustid, song, audioid->resp);
         logMsg (LOG_DBG, LOG_AUDIO_ID, "acoustid: matches: %d",
             audioid->respcount [AUDIOID_ID_ACOUSTID]);
+fprintf (stderr, "acoustid: %d\n", audioid->respcount [AUDIOID_ID_ACOUSTID]);
 
         ++audioid->idstate;
         break;
@@ -169,6 +170,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
           logMsg (LOG_DBG, LOG_AUDIO_ID, "musicbrainz: matches: %d",
               audioid->respcount [AUDIOID_ID_MB_LOOKUP]);
           if (audioid->respcount [AUDIOID_ID_MB_LOOKUP] > 0) {
+fprintf (stderr, "mb found: skip the rest\n");
             audioid->state = BDJ4_STATE_PROCESS;
           }
         }
@@ -177,10 +179,12 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         break;
       }
       case AUDIOID_ID_ACRCLOUD: {
+fprintf (stderr, "process acrcloud\n");
         audioid->respcount [AUDIOID_ID_ACRCLOUD] =
             acrLookup (audioid->acr, song, audioid->resp);
         logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: matches: %d",
             audioid->respcount [AUDIOID_ID_ACRCLOUD]);
+fprintf (stderr, "acrcloud: %d\n", audioid->respcount [AUDIOID_ID_ACRCLOUD]);
 
         ++audioid->idstate;
         break;
@@ -251,8 +255,13 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
       score = audioidAdjustScoreStr (audioid, key, TAG_ALBUM, song, score);
       score = audioidAdjustScoreStr (audioid, key, TAG_TITLE, song, score);
-      score = audioidAdjustScoreNum (audioid, key, TAG_TRACKNUMBER, song, score);
-      score = audioidAdjustScoreNum (audioid, key, TAG_DISCNUMBER, song, score);
+      /* acrcloud doesn't return track and disc information */
+      /* (though there's a mention of track in the doc */
+      /* don't reduce the score for something that's not there */
+      if (ident != AUDIOID_ID_ACRCLOUD) {
+        score = audioidAdjustScoreNum (audioid, key, TAG_TRACKNUMBER, song, score);
+        score = audioidAdjustScoreNum (audioid, key, TAG_DISCNUMBER, song, score);
+      }
       ilistSetDouble (audioid->resp, key, TAG_AUDIOID_SCORE, score);
       nlistSetNum (audioid->respidx, 1000 - (int) (score * 10.0), key);
     }

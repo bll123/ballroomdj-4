@@ -91,7 +91,7 @@ audioidParseXMLAll (const char *data, size_t datalen,
   audioidParse (xpathCtx, xpaths, 0, respdata, 0, ident);
 
   respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx + 1;
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: respcount: %d\n", respcount);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "xml-parse: respcount: %d", respcount);
 
   mdextfree (xpathCtx);
   xmlXPathFreeContext (xpathCtx);
@@ -121,7 +121,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpaths [xpathidx].name, xpathCtx);
   mdextalloc (xpathObj);
   if (xpathObj == NULL)  {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audioidParse: bad xpath expression");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "xml-parse: bad xpath expression");
     return false;
   }
 

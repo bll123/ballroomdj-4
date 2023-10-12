@@ -20,17 +20,25 @@ void audioidStartIterator (audioid_t *audioid);
 ilistidx_t audioidIterate (audioid_t *audioid);
 nlist_t * audioidGetList (audioid_t *audioid, int key);
 
+typedef struct audioidparsedata
+{
+  int         tagidx;
+  const char  *name;
+} audioidparsedata_t;
+
 typedef struct audioidparse audioidparse_t;
 typedef struct audioidparse {
-  int             flag;
-  int             tagidx;
-  const char      *name;
-  const char      *attr;
-  audioidparse_t  *tree;
+  int                 flag;
+  int                 tagidx;
+  const char          *name;
+  const char          *attr;
+  audioidparse_t      *tree;  /* json: object */
+  audioidparsedata_t  *jdata;
 } audioidparse_t;
 
 enum {
   AUDIOID_PARSE_ARRAY,
+  AUDIOID_PARSE_DATA_ARRAY,
   AUDIOID_PARSE_TREE,
   AUDIOID_PARSE_DATA,
   AUDIOID_PARSE_END,
@@ -61,6 +69,10 @@ enum {
 void audioidParseXMLInit (void);
 void audioidParseXMLCleanup (void);
 int audioidParseXMLAll (const char *data, size_t datalen, audioidparse_t *xpaths, ilist_t *respdata, audioid_id_t ident);
+
+/* audioidson.c */
+
+int audioidParseJSONAll (const char *data, size_t datalen, audioidparse_t *xpaths, ilist_t *respdata, audioid_id_t ident);
 
 /* musicbrainz.c */
 

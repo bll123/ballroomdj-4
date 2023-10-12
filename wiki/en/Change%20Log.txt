@@ -6,8 +6,12 @@
 
 **4.4.2 2023-10---**
 
+* Bug Fixes:
+* Changes:
+    * Audio Identification: ACRCloud service implemented. PENDING.
+    * Translations: Nederlands (Dutch) updated.
 * New Features:
-    * Configuration: General: add audio content identification keys.
+    * Configuration: General: Add ACRCloud identification keys for Audio ID.
 
 -->
 

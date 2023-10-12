@@ -48,47 +48,47 @@ enum {
  */
 
 static audioidparse_t mbartistxp [] = {
-  { AUDIOID_PARSE_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t mbalbartistxp [] = {
-  { AUDIOID_PARSE_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 /* relative to /metadata/recording/release-list/release/medium */
 static audioidparse_t mbmediumxp [] = {
-  { AUDIOID_PARSE_DATA,  TAG_DISCNUMBER, "/position", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_TRACKTOTAL, "/track-list", "count", NULL },
-  { AUDIOID_PARSE_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DISCNUMBER, "/position", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TRACKTOTAL, "/track-list", "count", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TRACKNUMBER, "/track-list/track/position", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/track-list/track/title", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/track-list/track/length", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-medium", NULL, NULL, NULL },
 };
 
 /* relative to /metadata/recording/release-list/release */
 static audioidparse_t mbreleasexp [] = {
-  { AUDIOID_PARSE_DATA,  TAG_ALBUM, "/title", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_DATE, "/date", NULL, NULL },
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbalbartistxp  },
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/medium-list/medium", NULL, mbmediumxp },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_ALBUM, "/title", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DATE, "/date", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbalbartistxp , NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/medium-list/medium", NULL, mbmediumxp, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-release", NULL, NULL, NULL },
 };
 
 /* relative to /metadata/recording */
 static audioidparse_t mbrecordingxp [] = {
-  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/title", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/length", NULL, NULL },
-  { AUDIOID_PARSE_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL },
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp },
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_TITLE, "/title", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_DURATION, "/length", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL, NULL },
 };
 
 static audioidparse_t mbmainxp [] = {
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/metadata/recording", NULL, mbrecordingxp },
-  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TREE, "/metadata/recording", NULL, mbrecordingxp, NULL },
+  { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL, NULL },
 };
 
 static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);

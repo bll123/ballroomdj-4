@@ -59,61 +59,68 @@ enum {
  */
 
 static audioidparse_t acoustidalbartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t acoustidartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_ARTIST, "/name", NULL, NULL },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_ARTIST, "/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release/mediums/medium/tracks/track */
 static audioidparse_t acoustidtrackxp [] = {
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidartistxp },
-  { AUDIOID_PARSE_DATA, TAG_TRACKNUMBER, "/position", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_TITLE, "/title", NULL, NULL },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-track", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidartistxp, NULL },
+  { AUDIOID_PARSE_DATA, TAG_TRACKNUMBER, "/position", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_TITLE, "/title", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-track", NULL, NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release/mediums/medium */
 static audioidparse_t acoustidmediumxp [] = {
-  { AUDIOID_PARSE_DATA, TAG_DISCNUMBER, "/position", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_TRACKTOTAL, "/track_count", NULL, NULL },
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL, acoustidtrackxp },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-medium", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_DISCNUMBER, "/position", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_TRACKTOTAL, "/track_count", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/tracks/track", NULL, acoustidtrackxp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-medium", NULL, NULL, NULL },
 };
 
 /* relative to /response/recordings/recording/releases/release */
 static audioidparse_t acoustidreleasexp [] = {
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp },
-  { AUDIOID_PARSE_DATA, TAG_ALBUM, "/title", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_DATE, "/date/year", NULL, NULL },
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL },
-  { AUDIOID_PARSE_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL },
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-release", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/artists/artist", NULL, acoustidalbartistxp, NULL },
+  { AUDIOID_PARSE_DATA, TAG_ALBUM, "/title", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_DATE, "/date/year", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_MONTH, "/date/month", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_DISCTOTAL, "/medium_count", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/mediums/medium", NULL, acoustidmediumxp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-release", NULL, NULL, NULL },
 };
 
 /* relative to /response/recordings/recording */
 static audioidparse_t acoustidrecordingxp [] = {
-  { AUDIOID_PARSE_DATA, TAG_RECORDING_ID, "/id", NULL, NULL },
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_RECORDING_ID, "/id", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL, NULL },
 };
 
 /* relative to /response/results/result */
 static audioidparse_t acoustidresultxp [] = {
-  { AUDIOID_PARSE_DATA, TAG_AUDIOID_SCORE, "/score", NULL, NULL },
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL, acoustidrecordingxp },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-result", NULL, NULL },
+  { AUDIOID_PARSE_DATA, TAG_AUDIOID_SCORE, "/score", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/recordings/recording", NULL, acoustidrecordingxp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-result", NULL, NULL, NULL },
+};
+
+/* relative to /response/results */
+static audioidparse_t acoustidresultsxp [] = {
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_STATUS_CODE, "/status", NULL, NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/result", NULL, acoustidresultxp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-results", NULL, NULL, NULL },
 };
 
 static audioidparse_t acoustidmainxp [] = {
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/response/results/result", NULL, acoustidresultxp },
-  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TREE, "/response/results", NULL, acoustidresultsxp, NULL },
+  { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL, NULL },
 };
 
 static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
@@ -212,7 +219,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   mstimestart (&starttm);
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_NOSTDERR,
       fpdata, ACOUSTID_BUFF_SZ, &retsz);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fpcalc: %" PRId64 "ms",
+  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fp: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
   strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
