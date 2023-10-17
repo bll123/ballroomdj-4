@@ -65,6 +65,17 @@ templateFileCopy (const char *fromfn, const char *tofn)
 }
 
 void
+templateProfileCopy (const char *fromfn, const char *tofn)
+{
+  char    fromdir [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+
+  pathbldMakePath (fromdir, sizeof (fromdir), "", "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  templateCopy (fromdir, fromfn, to, NULL);
+}
+
+void
 templateHttpCopy (const char *fromfn, const char *tofn)
 {
   char    from [MAXPATHLEN];

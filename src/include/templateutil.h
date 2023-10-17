@@ -6,6 +6,7 @@
 
 void templateImageCopy (const char *color);
 void templateFileCopy (const char *fromfn, const char *tofn);
+void templateProfileCopy (const char *fromfn, const char *tofn);
 void templateHttpCopy (const char *fromfn, const char *tofn);
 void templateDisplaySettingsCopy (void);
 

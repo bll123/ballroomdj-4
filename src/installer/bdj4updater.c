@@ -1253,7 +1253,7 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext)
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
         snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
-        templateFileCopy (tbuff, tbuff);
+        templateProfileCopy (tbuff, tbuff);
         logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
       }
     } /* if the profile exists */
