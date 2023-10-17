@@ -88,12 +88,20 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
   while (jsonp [jidx].flag != AUDIOID_PARSE_END) {
     json_object   *jtmp;
-    size_t        len;
     int           ttagidx;
     const char    *val;
-    char          *nval = NULL;
-    size_t        nlen = 0;
+    const char    *tval = NULL;
+    const char    *joinphrase = NULL;
 
+
+    if (jsonp [jidx].flag == AUDIOID_PARSE_SET) {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set: jidx: %d %s", level*2, "", jidx, jsonp [jidx].name);
+      if (jsonp [jidx].tagidx == AUDIOID_TYPE_JOINPHRASE) {
+        ilistSetStr (respdata, 0, jsonp [jidx].tagidx, jsonp [jidx].name);
+      }
+      ++jidx;
+      continue;
+    }
 
     jtmp = json_object_object_get (jtop, jsonp [jidx].name);
     if (jtmp == NULL)  {
@@ -132,26 +140,19 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
     ttagidx = jsonp [jidx].tagidx;
 
-    len = strlen ((const char *) val);
-    nlen = len + 1;
-    nval = mdmalloc (nlen);
-    *nval = '\0';
-    strlcat (nval, (const char *) val, nlen);
+    joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
 
-    if (ttagidx < TAG_KEY_MAX) {
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s %s", level*2, "", respidx, ttagidx, tagdefs [ttagidx].tag, nval);
-    } else {
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s", level*2, "", respidx, ttagidx, nval);
-    }
+    tval = (const char *) val;
     if (ttagidx == TAG_AUDIOID_SCORE) {
       /* acrcloud returns a score between 70 and 100 */
-      ilistSetDouble (respdata, respidx, ttagidx, atof (nval));
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s %s", level*2, "", respidx, ttagidx, tagdefs [ttagidx].tag, tval);
+      ilistSetDouble (respdata, respidx, ttagidx, atof (tval));
     } else {
-      ilistSetStr (respdata, respidx, ttagidx, nval);
+      if (audioidSetResponseData (level, respdata, respidx, ttagidx, tval, joinphrase)) {
+        ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
+      }
     }
 
-    mdfree (nval);
-    nval = NULL;
     ++jidx;
   }
 
@@ -171,6 +172,7 @@ audioidParseTree (json_object *jtop, audioidparse_t *jsonp,
     int     respidx;
 
     respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+    ilistSetNum (respdata, respidx, AUDIOID_TYPE_IDENT, ident);
     ++respidx;
     ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
@@ -204,11 +206,14 @@ audioidParseArray (json_object *jtop, audioidparse_t *jsonp,
     /* increment the response index after the parse is done */
     if (rc && parenttagidx == AUDIOID_TYPE_RESPIDX) {
       respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+      ilistSetNum (respdata, respidx, AUDIOID_TYPE_IDENT, ident);
       ++respidx;
       ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s array: set respidx: %d", level*2, "", respidx);
     }
   }
+
+  ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
 
   return true;
 }
@@ -218,10 +223,12 @@ audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp,
     int parenttagidx, audioidparsedata_t *jdata,
     ilist_t *respdata, int level, audioid_id_t ident)
 {
-  int   respidx;
-  int   mcount;
+  int         respidx;
+  int         mcount;
+  const char  *joinphrase;
 
   respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+  joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
 
   mcount = json_object_array_length (jtop);
   for (int i = 0; i < mcount; ++i)  {
@@ -246,8 +253,9 @@ audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp,
       if (strcmp (val, jdata [jdataidx].name) == 0) {
         ttagidx = jdata [jdataidx].tagidx;
         val = ilistGetStr (respdata, respidx, parenttagidx);
-        ilistSetStr (respdata, respidx, ttagidx, val);
-        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s %s", level*2, "", respidx, ttagidx, tagdefs [ttagidx].tag, val);
+        if (audioidSetResponseData (level, respdata, respidx, ttagidx, val, joinphrase)) {
+          ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
+        }
         break;
       }
       ++jdataidx;

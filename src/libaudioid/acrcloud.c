@@ -62,7 +62,25 @@ static audioidparsedata_t acrroles [] = {
   { -1, NULL },
 };
 
+static audioidparse_t acrmbtrackjp [] = {
+  { AUDIOID_PARSE_DATA,   TAG_RECORDING_ID, "id", NULL, NULL, NULL },
+  { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-mb-track", NULL, NULL, NULL },
+};
+
+static audioidparse_t acrmbjp [] = {
+  { AUDIOID_PARSE_TREE,   AUDIOID_TYPE_TREE, "track", NULL, acrmbtrackjp, NULL },
+  { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-mb", NULL, NULL, NULL },
+};
+
+static audioidparse_t acrextmetajp [] = {
+  { AUDIOID_PARSE_TREE,   AUDIOID_TYPE_TREE, "musicbrainz", NULL, acrmbjp, NULL },
+  { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-ext-meta", NULL, NULL, NULL },
+};
+
 static audioidparse_t acrartistsjp [] = {
+  /* as this is an array, the joinphrase will be set for each new */
+  /* artist object */
+  { AUDIOID_PARSE_SET,    AUDIOID_TYPE_JOINPHRASE, ", ", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,   TAG_ARTIST, "name", NULL, NULL, NULL },
   /* must appear after tag_artist */
   { AUDIOID_PARSE_DATA_ARRAY, TAG_ARTIST, "roles", NULL, NULL, acrroles },
@@ -81,6 +99,7 @@ static audioidparse_t acrmusicjp [] = {
   { AUDIOID_PARSE_DATA,   TAG_DATE, "release_date", NULL, NULL, NULL },
   { AUDIOID_PARSE_TREE,   AUDIOID_TYPE_TREE, "album", NULL, acralbumjp, NULL },
   { AUDIOID_PARSE_ARRAY,  AUDIOID_TYPE_ARRAY, "artists", NULL, acrartistsjp, NULL },
+  { AUDIOID_PARSE_TREE,   AUDIOID_TYPE_TREE, "external_metadata", NULL, acrextmetajp, NULL },
   { AUDIOID_PARSE_END,    AUDIOID_TYPE_ARRAY, "end-music", NULL, NULL, NULL },
 };
 
@@ -251,6 +270,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
     return 0;
   }
   b64sig = g_base64_encode (digest, rdlen);
+  mdextalloc (b64sig);
 
   fpsize = fileopSize (fpfn);
   snprintf (fpszstr, sizeof (fpszstr), "%ld", (long) fpsize);
@@ -279,7 +299,8 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   }
 
   gcry_mac_close (gch);
-  dataFree (b64sig);
+  mdextfree (b64sig);
+  free (b64sig);
 
   if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
     dumpData (acr);
@@ -290,6 +311,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
       acrmainstatusjp, respdata, AUDIOID_ID_ACRCLOUD);
   respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
   tstr = ilistGetStr (respdata, respidx, AUDIOID_TYPE_STATUS_CODE);
+  acr->respcount = 0;
   rc = -1;
   if (tstr != NULL) {
     rc = atoi (tstr);
@@ -297,7 +319,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   if (rc == 0) {
     acr->respcount = audioidParseJSONAll (acr->webresponse, acr->webresplen,
         acrmainjp, respdata, AUDIOID_ID_ACRCLOUD);
-  } else if (rc == -1) {
+  } else if (rc != -1) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: code: %d / %s", rc,
         nlistGetStr (respdata, AUDIOID_TYPE_STATUS_MSG));
   } else {

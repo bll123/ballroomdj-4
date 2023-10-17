@@ -155,7 +155,6 @@ audioidLookup (audioid_t *audioid, const song_t *song)
             acoustidLookup (audioid->acoustid, song, audioid->resp);
         logMsg (LOG_DBG, LOG_AUDIO_ID, "acoustid: matches: %d",
             audioid->respcount [AUDIOID_ID_ACOUSTID]);
-fprintf (stderr, "acoustid: %d\n", audioid->respcount [AUDIOID_ID_ACOUSTID]);
 
         ++audioid->idstate;
         break;
@@ -170,8 +169,8 @@ fprintf (stderr, "acoustid: %d\n", audioid->respcount [AUDIOID_ID_ACOUSTID]);
           logMsg (LOG_DBG, LOG_AUDIO_ID, "musicbrainz: matches: %d",
               audioid->respcount [AUDIOID_ID_MB_LOOKUP]);
           if (audioid->respcount [AUDIOID_ID_MB_LOOKUP] > 0) {
-fprintf (stderr, "mb found: skip the rest\n");
             audioid->state = BDJ4_STATE_PROCESS;
+            audioid->idstate = AUDIOID_ID_MAX;
           }
         }
 
@@ -179,12 +178,10 @@ fprintf (stderr, "mb found: skip the rest\n");
         break;
       }
       case AUDIOID_ID_ACRCLOUD: {
-fprintf (stderr, "process acrcloud\n");
         audioid->respcount [AUDIOID_ID_ACRCLOUD] =
             acrLookup (audioid->acr, song, audioid->resp);
         logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: matches: %d",
             audioid->respcount [AUDIOID_ID_ACRCLOUD]);
-fprintf (stderr, "acrcloud: %d\n", audioid->respcount [AUDIOID_ID_ACRCLOUD]);
 
         ++audioid->idstate;
         break;
@@ -362,6 +359,48 @@ audioidGetList (audioid_t *audioid, int key)
   return list;
 }
 
+bool
+audioidSetResponseData (int level, ilist_t *resp, int respidx, int tagidx,
+    const char *data, const char *joinphrase)
+{
+  bool    rc = false;
+
+  if (data == NULL || ! *data) {
+    return rc;
+  }
+
+  if (joinphrase == NULL) {
+    ilistSetStr (resp, respidx, tagidx, data);
+    if (tagidx < TAG_KEY_MAX) {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx(a): %d tagidx: %d %s %s", level*2, "", respidx, tagidx, tagdefs [tagidx].tag, data);
+    } else {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx(b): %d tagidx: %d %s", level*2, "", respidx, tagidx, data);
+    }
+  } else {
+    const char  *tstr;
+
+    tstr = ilistGetStr (resp, respidx, tagidx);
+    if (tstr != NULL && *tstr) {
+      char        tbuff [400];
+
+      /* the joinphrase may be set before any value has been processed */
+      /* if the data for tagidx already exists, */
+      /* use the join phrase and return true */
+      snprintf (tbuff, sizeof (tbuff), "%s%s%s", tstr, joinphrase, data);
+      ilistSetStr (resp, respidx, tagidx, tbuff);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx(c): %d tagidx: %d %s %s", level*2, "", respidx, tagidx, tagdefs [tagidx].tag, tbuff);
+      rc = true;
+    } else {
+      ilistSetStr (resp, respidx, tagidx, data);
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx(d): %d tagidx: %d %s %s", level*2, "", respidx, tagidx, tagdefs [tagidx].tag, data);
+    }
+  }
+
+  return rc;
+}
+
+/* internal routines */
+
 static double
 audioidAdjustScoreNum (audioid_t *audioid, int key, int tagidx,
     const song_t *song, double score)
@@ -410,7 +449,9 @@ dumpResults (audioid_t *audioid)
   nlistidx_t  tagidx;
   nlistidx_t  iteridx;
   nlistidx_t  key;
+  int         val;
   double      score;
+  const char  *tstr;
 
   ilistStartIterator (audioid->resp, &iteridx);
   while ((key = ilistIterateKey (audioid->resp, &iteridx)) >= 0) {
@@ -418,6 +459,26 @@ dumpResults (audioid_t *audioid)
 
     score = ilistGetDouble (audioid->resp, key, TAG_AUDIOID_SCORE);
     logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   %d SCORE %.1f", key, score);
+    val = ilistGetNum (audioid->resp, key, AUDIOID_TYPE_IDENT);
+    tstr = "Unknown";
+    switch (val) {
+      case AUDIOID_ID_ACOUSTID: {
+        tstr = "AcoustID";
+        break;
+      }
+      case AUDIOID_ID_MB_LOOKUP: {
+        tstr = "MusicBrainz";
+        break;
+      }
+      case AUDIOID_ID_ACRCLOUD: {
+        tstr = "ACRCloud";
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   %d IDENT %s", key, tstr);
 
     l = ilistGetDatalist (audioid->resp, key);
     nlistStartIterator (l, &i);

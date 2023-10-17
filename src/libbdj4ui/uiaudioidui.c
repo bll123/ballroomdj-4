@@ -117,6 +117,7 @@ typedef struct aid_internal {
   dbidx_t             dbidx;
   int                 itemcount;
   int                 colcount;
+  int                 treerowcount;
   int                 rowcount;
   /* selectedrow is which row has been selected by the user */
   int                 selectedrow;
@@ -158,9 +159,10 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->typelist = NULL;
   audioidint->displaylist = NULL;
   audioidint->colcount = 0;
+  audioidint->treerowcount = 0;
   audioidint->rowcount = 0;
   audioidint->selectedrow = -1;
-  audioidint->fillrow = 1;
+  audioidint->fillrow = 0;
   /* select-change bypass will be true until the data is first loaded */
   audioidint->selchgbypass = true;
   audioidint->repeating = false;
@@ -474,7 +476,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->typelist = mdmalloc (sizeof (int) * UIAUID_COL_MAX);
   audioidint->colcount = 0;
-  audioidint->rowcount = 0;
   audioidint->typelist [UIAUID_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
   audioidint->typelist [UIAUID_COL_FONT] = TREE_TYPE_STRING;
   audioidint->typelist [UIAUID_COL_COLOR] = TREE_TYPE_STRING;
@@ -563,7 +564,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
 
   row = 0;
 
-  if (row >= audioidint->rowcount) {
+  if (row >= audioidint->treerowcount) {
     uiTreeViewValueAppend (audioidint->alistTree);
     uiTreeViewSetValueEllipsize (audioidint->alistTree, UIAUID_COL_ELLIPSIZE);
     uiTreeViewSetValues (audioidint->alistTree,
@@ -572,8 +573,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
         UIAUID_COL_COLOR_SET, (treebool_t) false,
         UIAUID_COL_IDX, (treenum_t) row,
         TREE_VALUE_END);
-  } else {
-    uiTreeViewSelectSet (audioidint->alistTree, row);
+    ++audioidint->treerowcount;
   }
 
   uiTreeViewSelectSet (audioidint->alistTree, row);
@@ -583,7 +583,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   uiTreeViewSetValues (audioidint->alistTree,
       UIAUID_COL_COLOR_SET, (treebool_t) true, TREE_VALUE_END);
 
-  if (audioidint->selectedrow >0 &&
+  if (audioidint->selectedrow > 0 &&
       audioidint->selectedrow < audioidint->rowcount) {
     /* reset the selection in case this is a save/reload */
     uiTreeViewSelectSet (audioidint->alistTree, audioidint->selectedrow);
@@ -610,16 +610,17 @@ uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
   nlistFree (audioidint->displaylist);
   audioidint->displaylist = nlistAlloc ("uiaudioid-disp", LIST_UNORDERED, NULL);
 
+  /* blank the field selection */
   for (int count = 0; count < audioidint->itemcount; ++count) {
     uiToggleButtonSetText (audioidint->items [count].selrb, "");
   }
 
-  /* this make the ui look nice when the next song for audio-id */
+  /* this makes the ui look nice when the next/previous song button */
   /* is selected */
   uiaudioidBlankDisplayList (uiaudioid);
 
   audioidint->selectedrow = -1;
-  audioidint->fillrow = 1;
+  audioidint->fillrow = 0;
 }
 
 void
@@ -643,7 +644,8 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   ndlist = nlistAlloc ("uiaudio-ndlist", LIST_UNORDERED, NULL);
   nlistSetSize (ndlist, nlistGetCount (dlist));
 
-  if (audioidint->fillrow >= audioidint->rowcount) {
+  ++audioidint->fillrow;
+  if (audioidint->fillrow >= audioidint->treerowcount) {
     uiTreeViewValueAppend (audioidint->alistTree);
     uiTreeViewSetValueEllipsize (audioidint->alistTree, UIAUID_COL_ELLIPSIZE);
     /* color-set isn't working for me within this module */
@@ -654,9 +656,10 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         UIAUID_COL_COLOR_SET, (treebool_t) false,
         UIAUID_COL_IDX, (treenum_t) audioidint->fillrow,
         TREE_VALUE_END);
+    ++audioidint->treerowcount;
   }
 
-  /* all data must be cloned */
+  /* all data use in the display must be cloned */
   slistStartIterator (audioidint->sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->sellist, &seliteridx)) >= 0) {
     const char  *str;
@@ -696,6 +699,9 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
       const char  *str;
 
       str = nlistGetStr (dlist, tagidx);
+      if (str == NULL) {
+        str = "";
+      }
       uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, str);
     }
     ++col;
@@ -703,8 +709,6 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
 
   nlistSort (ndlist);
   nlistSetList (audioidint->displaylist, audioidint->fillrow, ndlist);
-
-  ++audioidint->fillrow;
 
   logProcEnd (LOG_PROC, "uiaudioidSetDisplayList", "");
 }
@@ -716,11 +720,12 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  uiTreeViewValueClear (audioidint->alistTree, audioidint->fillrow);
+  if (audioidint->fillrow > 0) {
+    uiTreeViewValueClear (audioidint->alistTree, audioidint->fillrow);
+  }
   audioidint->rowcount = audioidint->fillrow + 1;
   nlistSort (audioidint->displaylist);
 
-  audioidint->fillrow = 1;
   audioidint->selectedrow = -1;
 
   if (audioidint->rowcount > 1) {
@@ -1021,7 +1026,7 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
     uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
 
     if (dlist == NULL) {
-      uiToggleButtonSetText (audioidint->items [count].selrb, "aaa");
+      uiToggleButtonSetText (audioidint->items [count].selrb, "");
     } else {
       const char  *tval;
       char        tmp [40];

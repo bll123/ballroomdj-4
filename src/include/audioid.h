@@ -19,6 +19,7 @@ bool audioidLookup (audioid_t *audioid, const song_t *song);
 void audioidStartIterator (audioid_t *audioid);
 ilistidx_t audioidIterate (audioid_t *audioid);
 nlist_t * audioidGetList (audioid_t *audioid, int key);
+bool audioidSetResponseData (int level, ilist_t *resp, int respidx, int tagidx, const char *data, const char *joinphrase);
 
 typedef struct audioidparsedata
 {
@@ -41,6 +42,7 @@ enum {
   AUDIOID_PARSE_DATA_ARRAY,
   AUDIOID_PARSE_TREE,
   AUDIOID_PARSE_DATA,
+  AUDIOID_PARSE_SET,
   AUDIOID_PARSE_END,
 };
 
@@ -56,12 +58,11 @@ enum {
   AUDIOID_TYPE_JOINPHRASE = TAG_KEY_MAX + 1,
   AUDIOID_TYPE_MONTH = TAG_KEY_MAX + 2,
   AUDIOID_TYPE_RESPIDX = TAG_KEY_MAX + 3,
-  AUDIOID_TYPE_JOINED = TAG_KEY_MAX + 4,
-  AUDIOID_TYPE_IDENT = TAG_KEY_MAX + 5,
-  AUDIOID_TYPE_STATUS_CODE = TAG_KEY_MAX + 6,
-  AUDIOID_TYPE_STATUS_MSG = TAG_KEY_MAX + 7,
-  AUDIOID_TYPE_ARRAY = TAG_KEY_MAX + 8,
-  AUDIOID_TYPE_ROLE = TAG_KEY_MAX + 9,
+  AUDIOID_TYPE_IDENT = TAG_KEY_MAX + 4,
+  AUDIOID_TYPE_STATUS_CODE = TAG_KEY_MAX + 5,
+  AUDIOID_TYPE_STATUS_MSG = TAG_KEY_MAX + 6,
+  AUDIOID_TYPE_ARRAY = TAG_KEY_MAX + 7,
+  AUDIOID_TYPE_ROLE = TAG_KEY_MAX + 8,
 };
 
 /* audioidxml.c */
