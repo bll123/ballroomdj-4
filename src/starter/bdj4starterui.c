@@ -1693,7 +1693,6 @@ static bool
 starterDeleteProfile (void *udata)
 {
   startui_t *starter = udata;
-  char      tbuff [MAXPATHLEN];
 
   if (starter->currprofile == 0 ||
       starter->currprofile == starter->newprofile) {
@@ -1704,25 +1703,7 @@ starterDeleteProfile (void *udata)
 
   logEnd ();
 
-  /* data/profileNN */
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-  /* data/<hostname>/profileNN */
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-  /* img/profileNN */
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-
+  bdjoptDeleteProfile ();
   starterResetProfile (starter, 0);
   starterRebuildProfileList (starter);
 

@@ -9,7 +9,7 @@
 **4.4.2 2023-10---**
 
 * Bug Fixes:
-    * Database Update: Fix compact operation.
+    * Database Update: Improve compact operation speed.
     * Audio Identification: Fix installation of audio id display settings on upgrade.
     * Audio Identification: Fix audio ID display.
 * Changes:

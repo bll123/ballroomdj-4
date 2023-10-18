@@ -409,6 +409,31 @@ bdjoptCreateDirectories (void)
 }
 
 void
+bdjoptDeleteProfile (void)
+{
+  char  tbuff [MAXPATHLEN];
+
+  /* data/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+  /* data/<hostname>/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+  /* img/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+}
+
+void
 bdjoptSave (void)
 {
   if (bdjopt == NULL) {

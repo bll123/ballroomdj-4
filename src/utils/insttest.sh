@@ -136,6 +136,14 @@ function checkUpdaterClean {
   sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
+  # ds-audioid.txt file should be installed if missing
+  fn="$DATADIR/profile00/ds-audioid.txt"
+  rm -f "${fn}"
+
+  # bdjconfig.q4.txt file should be installed if missing
+  fn="$DATADIR/profile00/bdjconfig.q4.txt"
+  rm -f "${fn}"
+
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
   sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
@@ -302,6 +310,13 @@ function checkInstallation {
       echo "  no data/profile00 directory"
     fi
 
+    res=$(($res+1))  # data/profile01 dir
+    if [[ $fin == T && ! -d "${DATADIR}/profile01" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  have data/profile01 directory"
+    fi
+
     fn=${DATADIR}/bdjconfig.txt
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
@@ -324,6 +339,30 @@ function checkInstallation {
       chk=$(($chk+1))
     else
       echo "  no ${fn}"
+    fi
+
+    fn=${DATADIR}/profile00/bdjconfig.q4.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f ${fn} ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no ${fn}"
+    fi
+
+    fn=${DATADIR}/profile00/ds-audioid.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f ${fn} ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no ${fn}"
+    fi
+
+    fn=${DATADIR}/ds-audioid.txt
+    res=$(($res+1))
+    if [[ $fin == T && ! -f ${fn} ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  ${fn} should not be present"
     fi
 
     fn=${DATADIR}/profile00/bdjconfig.txt
