@@ -68,8 +68,54 @@ chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
 end
 
 # dual musicq queues
+# check to make sure queue playback selection works after a song is queued
+test 70-40 Select-Playback-Queue-After
+msg main MUSICQ_INSERT 0~999~7
+get main CHK_MAIN_MUSICQ
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 7 mq1idx1 -1
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 1~999~8
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
+msg main MUSICQ_SET_PLAYBACK 1
+get main CHK_MAIN_MUSICQ
+# queue 0 now has the empty head
+# queue 1 no longer has the empty head
+chk mqmanage 1 mqplay 1 mq0len 2 mq1len 1 mq0idx1 7 mq1idx0 8
+msg main MUSICQ_SET_PLAYBACK 0
+get main CHK_MAIN_MUSICQ
+# queue 1 now has the empty head
+# queue 0 no longer has the empty head
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
+end
+
+# dual musicq queues
+# check to make sure queue selection works before a song is queued
+test 70-50 Select-Playback-Queue-Before
+msg main MUSICQ_INSERT 0~999~9
+get main CHK_MAIN_MUSICQ
+# mq 1 len could be 1 or 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 9 mq1idx1 -1
+msg main MUSICQ_SET_PLAYBACK 1
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 1~999~10
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mqplay 1 mq0len 2 mq1len 1 mq0idx1 9 mq1idx0 10
+msg main MUSICQ_SET_PLAYBACK 0
+get main CHK_MAIN_MUSICQ
+# queue 1 now has the empty head
+# queue 0 no longer has the empty head
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 9 mq1idx1 10
+end
+
+# dual musicq queues
 # check to make sure queue selection works for playback
-test 70-40 Select-Playback-Queue
+test 70-70 Select-Playback-Queue
 msg main MUSICQ_INSERT 0~999~2
 msg main CMD_PLAY
 resptimeout 2000
@@ -111,5 +157,17 @@ get main CHK_MAIN_MUSICQ
 # queue 0 now has the empty head
 # queue 1 no longer has the empty head
 chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_PLAYBACK 0
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 2000
+get main CHK_MAIN_MUSICQ
+# queue 1 now has the empty head
+# queue 0 no longer has the empty head
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 4 mq1idx0 -1 mq1idx1 5 dbidx 4
 end
 
