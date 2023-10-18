@@ -625,6 +625,32 @@ main (int argc, char *argv [])
   }
 
   {
+    int     origprofile;
+
+    /* 4.4.2 2023-10-18.  Bug in updater created extra bad profiles */
+    /*   check each profiles to see if ds-mm.txt exists */
+    /*   if not, remove the profile */
+
+    origprofile = sysvarsGetNum (SVL_BDJIDX);
+
+    for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
+      sysvarsSetNum (SVL_BDJIDX, i);
+      pathbldMakePath (tbuff, sizeof (tbuff), "ds-mm", BDJ4_CONFIG_EXT,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      if (! fileopFileExists (tbuff)) {
+        bdjoptDeleteProfile ();
+      }
+      pathbldMakePath (tbuff, sizeof (tbuff), "bdjconfig", BDJ4_CONFIG_EXT,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      if (! fileopFileExists (tbuff)) {
+        bdjoptDeleteProfile ();
+      }
+    }
+    sysvarsSetNum (SVL_BDJIDX, origprofile);
+  }
+
+
+  {
     /* 4.4.0 2023-9-12 audio-id data selection */
     updaterCopyProfileIfNotPresent ("ds-audioid-list", BDJ4_CONFIG_EXT);
     updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT);
@@ -633,16 +659,15 @@ main (int argc, char *argv [])
     updaterRenameProfileFile ("ds-ezsonglist", "ds-sbssonglist", BDJ4_CONFIG_EXT);
   }
 
+  /* profile updates */
   {
     int     origprofile;
 
-    /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
     origprofile = sysvarsGetNum (SVL_BDJIDX);
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_BDJIDX, i);
-      bdjoptCleanup ();
-      bdjoptInit ();
+      /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
       pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
           PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
@@ -650,8 +675,11 @@ main (int argc, char *argv [])
       }
     }
     sysvarsSetNum (SVL_BDJIDX, origprofile);
-    bdjoptCleanup ();
-    bdjoptInit ();
+  }
+
+  {
+    /* 4.4.2 2023-10-18 added another queue */
+    updaterCopyProfileIfNotPresent ("bdjconfig.q4", BDJ4_CONFIG_EXT);
   }
 
   /* now re-load the data files */
