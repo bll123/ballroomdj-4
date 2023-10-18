@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=16
+ver=17
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -193,6 +193,7 @@ sudo port -N install \
     mpstats \
     py${pyver}-mutagen \
     libxml2 \
+    json-c \
     curl \
     curl-ca-bundle \
     libogg \
