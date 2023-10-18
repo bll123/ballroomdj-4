@@ -627,8 +627,8 @@ main (int argc, char *argv [])
   {
     int     origprofile;
 
-    /* 4.4.2 2023-10-18.  Bug in updater created extra bad profiles */
-    /*   check each profiles to see if ds-mm.txt exists */
+    /* 4.4.2 2023-10-18.  Bug in the updater created extra bad profiles */
+    /*   check each profile to see if ds-mm.txt exists (also bdjconfig.txt) */
     /*   if not, remove the profile */
 
     origprofile = sysvarsGetNum (SVL_BDJIDX);
