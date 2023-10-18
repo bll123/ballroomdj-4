@@ -667,11 +667,13 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_BDJIDX, i);
-      /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
-      pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
-          PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-      if (! fileopFileExists (tbuff)) {
-        templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+      if (bdjoptProfileExists ()) {
+        /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
+        pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
+            PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+        if (! fileopFileExists (tbuff)) {
+          templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+        }
       }
     }
     sysvarsSetNum (SVL_BDJIDX, origprofile);
