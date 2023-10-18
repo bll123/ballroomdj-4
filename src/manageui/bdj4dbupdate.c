@@ -475,6 +475,7 @@ dbupdateProcessing (void *udata)
 
     while ((fn =
         slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
+      song_t    *song;
 
       pi = pathInfo (fn);
       /* fast skip of some known file extensions that might show up */
@@ -520,21 +521,34 @@ dbupdateProcessing (void *udata)
       /* 'checknew' skips any processing for an audio file */
       /* that is already present unless the compact flag is on */
       if (! dbupdate->rebuild && fn != NULL) {
-        const char  *p;
+        const char  *tsongfn;
 
-        p = fn;
+        tsongfn = fn;
         if (dbupdate->usingmusicdir) {
-          p = dbupdateGetRelativePath (dbupdate, fn);
+          tsongfn = dbupdateGetRelativePath (dbupdate, fn);
         }
-        if (dbGetByName (dbupdate->musicdb, p) != NULL) {
+        song = dbGetByName (dbupdate->musicdb, tsongfn);
+        if (song != NULL) {
           dbupdateIncCount (dbupdate, C_IN_DB);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
 
           /* if doing a checknew, no need for further processing */
+          /* if doing a compact, the information must be written to */
+          /* the new database. */
           /* the file exists, don't change the file or the database */
-          /* but if the database is being compacted, don't skip */
-          if (dbupdate->checknew && ! dbupdate->compact) {
-            dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+          if (dbupdate->checknew || dbupdate->compact) {
+            if (dbupdate->checknew) {
+              dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+            }
+            if (dbupdate->compact) {
+              slist_t   *tagdata;
+
+              dbupdateIncCount (dbupdate, C_FILE_PROC);
+              dbupdateIncCount (dbupdate, C_UPDATED);
+              tagdata = songTagList (song);
+              dbWrite (dbupdate->newmusicdb, tsongfn, tagdata, MUSICDB_ENTRY_NEW);
+            }
+
             dbupdateOutputProgress (dbupdate);
             ++count;
             if (count > FNAMES_SENT_PER_ITER) {
