@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-11 04:40\n"
+"PO-Revision-Date: 2023-10-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -27,27 +27,27 @@ msgstr "%1$s должно быть больше, чем %2$s"
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%d files found"
-msgstr "%d файлов найдено"
+msgstr "файлов %d найдено"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr "%s API Хост"
+msgstr "API Хост %s"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr "%s API Ключ"
+msgstr "API Ключ %s"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr "%s API Секретный Ключ"
+msgstr "API Секретный Ключ %s"
 
 #. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
 #, c-format
 msgid "%s Compatible Audio File Tags"
-msgstr "%s Теги совместимых аудио файлов"
+msgstr "Теги совместимых аудио файлов %s"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
@@ -88,7 +88,7 @@ msgstr "Управление %s"
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr "%s Медиа папка"
+msgstr "Медиа папка %s"
 
 #. CONTEXT: playerui: main window title
 #, c-format
@@ -98,22 +98,22 @@ msgstr "Плеер %s"
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr "%s Плеер в работе"
+msgstr "Плеер %s в работе"
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr "%s Плейлист"
+msgstr "Плейлист %s"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
-msgstr "%s талон на службу поддержки"
+msgstr "талон на службу поддержки %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr "%s Версия"
+msgstr "Версия %s"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
@@ -123,38 +123,38 @@ msgstr "Вики %s"
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr "%s XML Файл"
+msgstr "XML Файл %s"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr "%s данные будут преобразованы."
+msgstr "Данные %s будут преобразованы."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
-msgstr "%s установлено."
+msgstr "Установлен %s."
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr "%s установлено"
+msgstr "Установлен %s"
 
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s не настроено."
+msgstr "%s не настроен"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
-msgstr "%s не установлено"
+msgstr "%s не установлен"
 
 #. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
 #. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
 #, c-format
 msgid "%s may not exceed the song duration"
-msgstr "%s не может превышать длительность песни"
+msgstr "%s не может превышать длину песни"
 
 #. CONTEXT: validation: must be a numeric value
 #, c-format
@@ -206,7 +206,7 @@ msgstr "4/4"
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
-msgstr "Главный цвет"
+msgstr "Цвет акцента"
 
 #. CONTEXT: update database: select database update action
 msgid "Action"
@@ -226,7 +226,7 @@ msgstr "Действия"
 
 #. CONTEXT: configuration: queue: whether the queue is active
 msgid "Active"
-msgstr "Активная"
+msgstr "Активно"
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
@@ -273,7 +273,7 @@ msgstr "Все теги"
 
 #. CONTEXT: playlist management: allowed keywords
 msgid "Allowed Keywords"
-msgstr "Допустимые ключевые слова"
+msgstr "Допустимые ключ. слова"
 
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 msgid "Already Exists"
@@ -316,7 +316,7 @@ msgstr "Прикрепить файлы данных"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send database
 msgid "Attach Database"
-msgstr "Прикрепить базу-данных"
+msgstr "Прикрепить базу данных"
 
 #. CONTEXT: configuration: which audio interface to use
 msgid "Audio"
@@ -384,7 +384,7 @@ msgstr "Бальные танцы"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
-msgstr "Музыкальный проигрыватель бальной музыки"
+msgstr "Плеер бальной музыки"
 
 #. CONTEXT: bpm counter: number of beats
 msgid "Beats"
@@ -545,7 +545,7 @@ msgstr "Создать сокращ. путь для Профиля"
 #. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
-msgstr "Создать из плейлиста"
+msgstr "Создать из Плейлиста"
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
@@ -641,16 +641,16 @@ msgstr "Щелкните два раза на поле для редактиро
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Download of %s failed."
-msgstr "Скачивание %s провалилась."
+msgstr "Загрузка %s не удалась."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Downloading %s."
-msgstr "Скачивание %s."
+msgstr "Загрузка %s."
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
-msgstr "Продолжительность"
+msgstr "Продолж-ть"
 
 #. CONTEXT: starterui: sending support message: user's e-mail address
 msgid "E-Mail Address"
@@ -658,7 +658,7 @@ msgstr "Адрес электронной почты"
 
 #. CONTEXT: configuration file: dance level
 msgid "Easy"
-msgstr "Легко"
+msgstr "Легкий"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
@@ -691,7 +691,7 @@ msgstr "Редактировать рейтинги"
 
 #. CONTEXT: managementui: notebook tab title: edit sequences
 msgid "Edit Sequences"
-msgstr "Редактировать последовательность"
+msgstr "Редактировать порядок"
 
 #. CONTEXT: managementui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
@@ -717,7 +717,7 @@ msgstr "Введите папку для сохранения BDJ4."
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
-msgstr "Введите папку, куда будет установлено %s."
+msgstr "Введите папку, где будет установлен %s."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -780,15 +780,15 @@ msgstr "Внешний запрос"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
 msgid "Fade"
-msgstr "Постепен. утихание"
+msgstr "Затухание звука"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
-msgstr "Продолжительность увеличения громкости"
+msgstr "Время увеличения громкости"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
-msgstr "Продолжительность затухания"
+msgstr "Время затухания"
 
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
@@ -805,7 +805,7 @@ msgstr "Файл"
 
 #. CONTEXT: configuration: song filter display settings
 msgid "Filter Display"
-msgstr "Отображение фильтра"
+msgstr " Фильтр дисплея"
 
 #. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
@@ -1037,27 +1037,28 @@ msgstr "Альтернативный дисплей"
 
 #. CONTEXT: configuration: The font to use for the marquee display
 msgid "Marquee Font"
-msgstr "Шрифт отображения песни"
+msgstr "Шрифт на экране с дисплеем песен"
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr "Размер шрифта для отображения песни"
+msgstr "Размер шрифта на экране отображения песен"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
 msgstr "Тема экрана с дисплеем песен"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
-msgstr "Максимальное\n"
+msgstr "Максим.\n"
 "время\n"
 "воспроизведения"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
 msgid "Maximum Play Time"
-msgstr "Максимальное время воспроизведения"
+msgstr "Максим. время воспроизведения"
 
 #. CONTEXT: starterui: sending support message: message text
 msgid "Message"
@@ -1101,7 +1102,7 @@ msgstr "Поднять в топ"
 #. CONTEXT: installation: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
 msgid "Music Folder"
-msgstr "Папка музыки"
+msgstr "Папки с музыкой"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: managementui: name of music manager notebook tab
@@ -1120,7 +1121,7 @@ msgstr "Очереди музыки"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Mute"
-msgstr "Заглушить"
+msgstr "Выкл. звук"
 
 #. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
@@ -1140,7 +1141,7 @@ msgstr "Установка новой %s."
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
-msgstr "Новый автоматический плейлист"
+msgstr "Новый авто. плейлист"
 
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
@@ -1175,7 +1176,7 @@ msgstr "Новый рейтинг"
 #. CONTEXT: sequence editor: default name for a new sequence
 #, c-format
 msgid "New Sequence"
-msgstr "Новая последовательность"
+msgstr "Новая послед-ть"
 
 #. CONTEXT: managementui: song list: default name for a new song list
 msgid "New Song List"
@@ -1303,11 +1304,11 @@ msgstr "Воспроизвести объявления"
 
 #. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
-msgstr "Воспроизводить когда в очереди"
+msgstr "Воспроизведение при добавлении в очередь"
 
 #. CONTEXT: configuration: status: title of the "playable" column
 msgid "Play?"
-msgstr "Играть"
+msgstr "Воспроиз-ть?"
 
 #. CONTEXT: configuration: filter display: checkbox: status is playable
 #. CONTEXT: song selection filter: a filter: the song status is marked as playable
@@ -1364,7 +1365,7 @@ msgstr "Позиция"
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
-msgstr "Предыдущее"
+msgstr "Предыдущ."
 
 #. CONTEXT: alternate installation: status message
 msgid "Process aborted."
@@ -1423,6 +1424,10 @@ msgstr "Очередь D"
 msgid "Queue Dance"
 msgstr "Добавить танец в очередь"
 
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "Очередь E"
+
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
 msgid "Queue Length"
@@ -1473,7 +1478,7 @@ msgstr "Восстановить базу данных"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
-msgstr "Восстановить экран отображения песни"
+msgstr "Восстановить экран с дисплеем песен"
 
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
@@ -1492,7 +1497,7 @@ msgstr "Удалить"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
-msgstr "Меняет названия аудио файлов на основании настроек организации."
+msgstr "Меняет названия аудио файлов в соответс. с  настройками организации."
 
 #. CONTEXT: database update: reorganize : renames audio files based on organization settings
 msgid "Reorganise"
@@ -1503,7 +1508,9 @@ msgid "Repeat"
 msgstr "Повтор"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Заменяет базу данных BallroomDJ целиком. Все изменения в базе данных будут потеряны."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1650,7 +1657,7 @@ msgstr "Отправка %s"
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s Information"
-msgstr "Отправка %s информацию"
+msgstr "Отправка информации %s "
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -1671,7 +1678,7 @@ msgstr "Последовательность"
 
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
-msgstr "Выберите очередь для игры"
+msgstr "Установить очередь для воспроизвдеения"
 
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
@@ -1688,15 +1695,15 @@ msgstr "Настройка завершена."
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
-msgstr "Показать дополнительные кнопки очереди"
+msgstr "Показать доп. кнопки очереди"
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
-msgstr "Показать дополнительные очереди"
+msgstr "Показать доп. очереди"
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr "Показать экран отображения песни"
+msgstr "Показать экран с дисплеем песен"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
@@ -1706,15 +1713,15 @@ msgstr "Показать информацию о песне"
 msgid "Shutdown Script"
 msgstr "Скрипт выключения"
 
-#. CONTEXT: configuration: display settings for: side-by-side song list
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
 msgstr "Комбинированный вид: Список песен"
 
-#. CONTEXT: configuration: display settings for: side-by-side song selection
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
 msgstr "Комбинированный вид: Выбор песни"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "Комбинированный вид"
 
@@ -1778,11 +1785,11 @@ msgstr "Регулировка скорости"
 
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr "Начать"
+msgstr "Начало"
 
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
-msgstr "Начать новую последовательность"
+msgstr "Начать новую послед-ть"
 
 #. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
@@ -1790,7 +1797,7 @@ msgstr "Начать новый список песен"
 
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."
-msgstr "Запуск процесса конверсии."
+msgstr "Запуск конверсии."
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1816,7 +1823,7 @@ msgstr "Остановить после"
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
 msgid "Stop All %s Processes"
-msgstr "Остановить все %s процессы"
+msgstr "Остановить все процессы  %s "
 
 #. CONTEXT: configuration: queue: the time when playback will stop
 #. CONTEXT: playlist management: stop at
@@ -1874,7 +1881,9 @@ msgid "The conversion process will not be run."
 msgstr "Процесс конверсии не будет запущен."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1887,7 +1896,7 @@ msgstr "Лимит по времени"
 
 #. CONTEXT: configuration: dances: time signature for the dance
 msgid "Time Signature"
-msgstr "Временная отметка"
+msgstr "Тактовый Размер"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
@@ -1972,11 +1981,13 @@ msgstr "Обновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
-msgstr "Обновляет информацию о базе данных BallroomDJ из базы данных %s."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "Обновляет инфо. о базе данных BallroomDJ из базы данных %s."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Обновляет информацию в базе данных BallroomDJ из тегов аудио файлов."
 
 #. CONTEXT: alternate installation: status message
@@ -1989,7 +2000,7 @@ msgstr "Обновление %s."
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Updating existing %s installation."
-msgstr "Обновление существующей %s установки."
+msgstr "Обновление существующей установки  %s ."
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
@@ -1997,7 +2008,7 @@ msgstr "ID Пользователя"
 
 #. CONTEXT: configuration: options associated with the user interface
 msgid "User Interface"
-msgstr "Пользовательский интерфейс"
+msgstr "Интерфейс пользователя"
 
 #. CONTEXT: installer: status message
 msgid "Verification complete."
@@ -2017,7 +2028,7 @@ msgstr "Венский вальс"
 
 #. CONTEXT: configuration: show-marquee: visible
 msgid "Visible"
-msgstr "Виден"
+msgstr "Видимый"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: The current volume of the song
@@ -2054,7 +2065,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Записать теги в аудио файлы"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Запись тегов аудио файла, используя информацию из базы данных BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types
@@ -2111,7 +2124,7 @@ msgstr "Чтобы получить поддержку, нажмите кноп�
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
-msgstr "Проверка танца на каждую песню"
+msgstr "Проверить танец на каждую песню"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
@@ -2119,7 +2132,7 @@ msgstr "=> Выберите \"Менеджер музыки\" в левой ча
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
-msgstr "Впервые создайте базу данных"
+msgstr "Создать базу данных впервые"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"

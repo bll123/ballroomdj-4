@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.1.3\n"
+"Project-Id-Version: ballroomdj-4 4.4.1.4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-10\n"
+"POT-Creation-Date: 2023-10-18\n"
+"PO-Revision-Date: 2023-10-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1414,6 +1414,10 @@ msgstr ""
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
+msgstr ""
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
 msgstr ""
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee

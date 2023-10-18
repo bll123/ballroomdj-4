@@ -126,8 +126,7 @@ fn=../templates/bdjconfig.txt.p
 echo "// CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' $fn >> $TMP
 
-for qn in 0 1 2 3; do
-  fn=../templates/bdjconfig.q${qn}.txt
+for fn in ../templates/bdjconfig.q?.txt; do
   ctxt="// CONTEXT: (noun) configuration file: name of a music queue"
   sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 done

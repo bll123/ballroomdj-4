@@ -75,7 +75,7 @@ for f in *.po; do
 done
 
 test -d $TMP && rm -rf $TMP
-if [[ KEEP == F ]]; then
+if [[ $KEEP == F ]]; then
   rm -f 'BallroomDJ 4 '*.zip > /dev/null 2>&1
 fi
 

@@ -235,8 +235,7 @@ while read -r line; do
   sed -n -e '/^COMPLETEMSG/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  for qn in 0 1 2 3; do
-    fn=${TMPLDIR}/bdjconfig.q${qn}.txt
+  for fn in ${TMPLDIR}/bdjconfig.q?.txt; do
     sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
     mksub $fn $TMP $locale $pofile
   done

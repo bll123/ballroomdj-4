@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-10 16:56-0700\n"
+"POT-Creation-Date: 2023-10-18 08:40-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1418,6 +1418,10 @@ msgstr ""
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
+msgstr ""
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
 msgstr ""
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
