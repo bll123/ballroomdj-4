@@ -2712,25 +2712,6 @@ installerCleanup (installer_t *installer)
     return;
   }
 
-  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
-    char  ebuff [MAXPATHLEN];
-    char  pbuff [MAXPATHLEN];
-    char  buff [MAXPATHLEN];
-    const char  *targv [10];
-
-    snprintf (ebuff, sizeof (ebuff), "%s%s/bin/bdj4cleaninst%s",
-        installer->target, installer->macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
-    targv [0] = ebuff;
-    snprintf (pbuff, sizeof (pbuff), "%s/plocal/bin", installer->target);
-    targv [1] = pbuff;
-    strlcpy (buff, installer->unpackdir, sizeof (buff));
-    targv [2] = buff;
-    targv [3] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-  } else {
-    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
-  }
-
   if (installer->bdjoptloaded) {
     bdjoptCleanup ();
   }
@@ -2756,6 +2737,34 @@ installerCleanup (installer_t *installer)
   dataFree (installer->tclshloc);
 
   webclientClose (installer->webclient);
+
+  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
+    char  ebuff [MAXPATHLEN];
+    char  pbuff [MAXPATHLEN];
+    char  buff [MAXPATHLEN];
+    const char  *targv [10];
+
+    snprintf (ebuff, sizeof (ebuff), "%s%s/bin/bdj4cleaninst%s",
+        installer->target, installer->macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
+    if (fileopFileExists (ebuff)) {
+      targv [0] = ebuff;
+      snprintf (pbuff, sizeof (pbuff), "%s/plocal/bin", installer->target);
+      targv [1] = pbuff;
+      strlcpy (buff, installer->unpackdir, sizeof (buff));
+      targv [2] = buff;
+      targv [3] = NULL;
+      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+    } else {
+      /* how to clean windows when the installer was exited w/o installing? */
+      if (! isWindows ()) {
+        /* cleaning up on not-windows is easy */
+        snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
+        (void) ! system (buff);
+      }
+    }
+  } else {
+    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
+  }
 }
 
 static void
