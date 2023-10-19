@@ -98,6 +98,13 @@ cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
 cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
 cp -pf ../img/bdj4_icon.png $TMPIMG/bdj4_icon.png
 
+ifn=bdj4_icon
+inkscape ../img/${ifn}.svg -w 16 -h 16 -o ${ifn}-16.png > /dev/null 2>&1
+icotool -c -o favicon.ico ${ifn}-16.png
+mv -f favicon.ico $TMP
+rm -f ${ifn}-16.png > /dev/null 2>&1
+
+
 if [[ $server == web.sourceforge.net ]]; then
   cp -pf htaccess.sf $TMP/.htaccess
 fi
