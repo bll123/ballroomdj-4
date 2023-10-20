@@ -6,12 +6,13 @@
 
 **4.4.2.1 2023-10---**
 
-**4.4.2 2023-10---**
+**4.4.2 2023-10-21**
 
 * Bug Fixes:
-    * Database Update: Improve compact operation speed.
     * Audio Identification: Fix installation of audio id display settings on upgrade.
     * Audio Identification: Fix audio ID display.
+    * Database Update: Fix compact operation.
+    * Installation: Fix post-install cleanup.
 * Changes:
     * Audio Identification: ACRCloud service implemented.
     * Configuration: General: Add ACRCloud keys for Audio ID.

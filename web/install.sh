@@ -57,12 +57,16 @@ if [[ $testweb == Y || $testweb == y ]]; then
   testpath="/test"
 fi
 
+projectb=""
+wwwpathb=""
 case $server in
   web.sourceforge.net)
     port=22
     project=ballroomdj4
+    projectb=ballroomdj
     # ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
     wwwpath=/home/project-web/${project}/htdocs
+    wwwpathb=/home/project-web/${projectb}/htdocs
     ;;
   ballroomdj.org|gentoo.com)
     wwwpath=/var/www/ballroomdj.org
@@ -115,6 +119,11 @@ cd $TMP
 sshpass -e rsync -v -e "$ssh" -aS \
     . \
     ${remuser}@${server}:${wwwpath}
+if [[ ${wwwpathb} != "" ]]; then
+  sshpass -e rsync -v -e "$ssh" -aS \
+      . \
+      ${remuser}@${server}:${wwwpathb}
+fi
 cd ..
 
 test -d $TMP && rm -rf $TMP

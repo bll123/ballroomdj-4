@@ -276,7 +276,7 @@ resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~7
+msg main MUSICQ_INSERT %HISTQ%~999~7
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -295,7 +295,7 @@ resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~8
+msg main MUSICQ_INSERT %HISTQ%~999~8
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -313,7 +313,7 @@ wait-not playstate in-fadeout
 chk-or playstate stopped loading playing
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~6
+msg main MUSICQ_INSERT %HISTQ%~999~6
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -331,7 +331,7 @@ wait-not playstate in-fadeout
 chk-or playstate stopped loading playing
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~5
+msg main MUSICQ_INSERT %HISTQ%~999~5
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -349,7 +349,7 @@ resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~9
+msg main MUSICQ_INSERT %HISTQ%~999~9
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -367,7 +367,7 @@ resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # emulate history
-msg main MUSICQ_INSERT 4~999~10
+msg main MUSICQ_INSERT %HISTQ%~999~10
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol

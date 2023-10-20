@@ -94,6 +94,7 @@ typedef struct {
   char        sectionname [80];
   char        testnum [10];
   char        testname [80];
+  char        histqueue [40];
   slist_t     *testlist;
   slistidx_t  tliteridx;
   FILE        *fh;
@@ -207,6 +208,7 @@ main (int argc, char *argv [])
   *testsuite.sectionname = '\0';
   *testsuite.testnum = '\0';
   *testsuite.testname = '\0';
+  snprintf (testsuite.histqueue, sizeof (testsuite.histqueue), "%d", MUSICQ_HISTORY);
   testsuite.fh = NULL;
   testsuite.runsection = false;
   testsuite.runtest = false;
@@ -1442,6 +1444,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     }
 
     d = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
+    d = regexReplaceLiteral (d, "%HISTQ%", testsuite->histqueue);
   }
   if (type == TS_TYPE_GET) {
     testsuite->waitRoute = route;

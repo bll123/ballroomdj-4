@@ -8,6 +8,10 @@
 # 32+ seconds + 2 = 34, timeout 35000 to next song
 # playing the entire song.
 #
+# 'defaultvol' is replaced with the default volume
+# 'stoptime' is replaced with current time + two minutes
+# '#HISTQ#' is replaced with the history queue number
+#
 # commands:
 #   chk {key value} ...
 #     special values: defaultvol

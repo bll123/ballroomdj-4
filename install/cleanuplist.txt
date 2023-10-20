@@ -136,13 +136,17 @@ templates/nl/Standaardrondes\.pl$
 templates/nl/Standaardrondes\.pldances$
 templates/nl/Standaardrondes\.sequence$
 
+# 2023-10-20 bdj4cleaninst has been retired
+bin/bdj4cleaninst$
+bin/bdj4cleaninst\.exe$
+
 ####
 # mac-os
 
 ::macosonly
 
 # this should have been in the data/ directory (alpha 2022-12)
-# this can be removed later
+# this can be removed at a later date
 img/profile\d\d$
 
 # 2023-7-10
@@ -232,7 +236,7 @@ data/\.songlist$
 data/\.sequence$
 
 # in case an alpha version converted the special raffle songs songlist
-# this can be removed later. (early alpha)
+# this can be removed at a later date. (early alpha)
 data/Raffle\ Songs\.songlist$
 data/Raffle\ Songs\.songlist\.bak\.\d$
 data/Loterij\ liedjes\.songlist$

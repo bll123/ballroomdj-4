@@ -1669,7 +1669,7 @@ installerVerifyInstall (installer_t *installer)
         installer->macospfx);
     targv [0] = tbuff;
     targv [1] = NULL;
-    osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
+    osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp), NULL);
   }
 
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
@@ -2707,9 +2707,15 @@ installerCleanup (installer_t *installer)
   /* make sure the installer is not in the bdj4-install dir before */
   /* the clean-inst process is run. */
   /* if installing read-only, there is no data-top-dir */
+  /* if the installer was exited without installing, there is no rundir */
   if (chdir (installer->rundir)) {
-    installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
-    return;
+    char  tbuff [MAXPATHLEN];
+
+    snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
+    if (chdir (tbuff)) {
+      installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
+      return;
+    }
   }
 
   if (installer->bdjoptloaded) {
@@ -2740,27 +2746,26 @@ installerCleanup (installer_t *installer)
 
   if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
     char  ebuff [MAXPATHLEN];
-    char  pbuff [MAXPATHLEN];
     char  buff [MAXPATHLEN];
     const char  *targv [10];
 
-    snprintf (ebuff, sizeof (ebuff), "%s%s/bin/bdj4cleaninst%s",
-        installer->target, installer->macospfx, sysvarsGetStr (SV_OS_EXEC_EXT));
-    if (fileopFileExists (ebuff)) {
+    if (isWindows ()) {
+      snprintf (ebuff, sizeof (ebuff), "%s/install/win-clean-inst.bat",
+          installer->unpackdir);
+      /* the executable needs to be in windows form, as the path */
+      /* is also used within the batch file */
+      pathDisplayPath (ebuff, strlen (ebuff));
       targv [0] = ebuff;
-      snprintf (pbuff, sizeof (pbuff), "%s/plocal/bin", installer->target);
-      targv [1] = pbuff;
       strlcpy (buff, installer->unpackdir, sizeof (buff));
-      targv [2] = buff;
-      targv [3] = NULL;
+      pathDisplayPath (buff, sizeof (buff));
+      targv [1] = buff;
+      targv [2] = NULL;
       osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-    } else {
-      /* how to clean windows when the installer was exited w/o installing? */
-      if (! isWindows ()) {
-        /* cleaning up on not-windows is easy */
-        snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
-        (void) ! system (buff);
-      }
+    }
+    if (! isWindows ()) {
+      /* cleaning up on not-windows is easy */
+      snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
+      (void) ! system (buff);
     }
   } else {
     fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
