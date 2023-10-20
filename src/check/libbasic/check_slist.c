@@ -648,6 +648,32 @@ START_TEST(slist_free_str)
 }
 END_TEST
 
+START_TEST(slist_delete)
+{
+  slist_t        *list;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_delete");
+  mdebugSubTag ("slist_delete");
+
+  list = slistAlloc ("chk-p", LIST_UNORDERED, NULL);
+  ck_assert_ptr_nonnull (list);
+  slistSetStr (list, "ffff", "0L");
+  slistSetStr (list, "zzzz", "1L");
+  slistSetStr (list, "rrrr", "2L");
+  slistSetStr (list, "kkkk", "3L");
+  slistSetStr (list, "cccc", "4L");
+  slistSetStr (list, "aaaa", "5L");
+  slistSetStr (list, "bbbb", "6L");
+  slistSort (list);
+  ck_assert_int_eq (slistGetCount (list), 7);
+  slistDelete (list, "kkkk");
+  ck_assert_int_eq (slistGetCount (list), 6);
+  slistDelete (list, "aaaa");
+  ck_assert_int_eq (slistGetCount (list), 5);
+  slistFree (list);
+}
+END_TEST
+
 Suite *
 slist_suite (void)
 {
@@ -673,6 +699,7 @@ slist_suite (void)
   tcase_add_test (tc, slist_add_sort_str);
   tcase_add_test (tc, slist_replace_str);
   tcase_add_test (tc, slist_free_str);
+  tcase_add_test (tc, slist_delete);
   suite_add_tcase (s, tc);
   return s;
 }

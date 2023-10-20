@@ -361,11 +361,11 @@ START_TEST(dance_delete)
 {
   dance_t     *dance = NULL;
   ilistidx_t  key;
-  ilistidx_t  dkey;
   ilistidx_t  diteridx;
   int         count;
   const char  *val;
-  char        *dval = NULL;
+  ilistidx_t  dkey;           // deleted value
+  char        *dval = NULL;   // deleted value
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_delete");
   mdebugSubTag ("dance_delete");

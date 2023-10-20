@@ -29,6 +29,7 @@ void      slistSetStr (slist_t *, const char *sidx, const char *data);
 void      slistSetNum (slist_t *, const char *sidx, listnum_t lval);
 void      slistSetDouble (slist_t *, const char *sidx, double dval);
 void      slistSetList (slist_t *, const char *sidx, slist_t *listval);
+void      slistDelete (list_t *list, const char *sidx);
 /* get routines */
 slistidx_t  slistGetIdx (slist_t *, const char *sidx);
 void        *slistGetDataByIdx (slist_t *, slistidx_t idx);

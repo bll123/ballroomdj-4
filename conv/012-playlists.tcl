@@ -106,7 +106,7 @@ foreach {fn} $flist {
     if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
 
     if { $tkey eq "GAP" } {
-      if { $value eq {} } {
+      if { $value eq {} || $value eq "0" } {
         set value -100
       } else {
         set value [expr {int ($value * 1000)}]

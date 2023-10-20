@@ -1,6 +1,6 @@
 # config-profile
-# 2022-11-26
-# version 2
+# 2023-10-20
+# version 3
 version
 ..2
 DEFAULTVOLUME
@@ -15,8 +15,6 @@ MOBILEMARQUEE
 ..off
 MOBILEMQPORT
 ..9009
-MOBILEMQTAG
-..
 MOBILEMQTITLE
 ..
 MQ_ACCENT_COL

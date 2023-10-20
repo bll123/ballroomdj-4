@@ -126,17 +126,18 @@ danceFree (dance_t *dance)
 }
 
 void
-danceStartIterator (dance_t *dances, ilistidx_t *iteridx)
+danceStartIterator (dance_t *dances, slistidx_t *iteridx)
 {
   if (dances == NULL || dances->dances == NULL) {
     return;
   }
 
-  ilistStartIterator (dances->dances, iteridx);
+  /* use the dancelist so that the return is always sorted */
+  slistStartIterator (dances->danceList, iteridx);
 }
 
 ilistidx_t
-danceIterate (dance_t *dances, ilistidx_t *iteridx)
+danceIterate (dance_t *dances, slistidx_t *iteridx)
 {
   ilistidx_t     ikey;
 
@@ -144,7 +145,7 @@ danceIterate (dance_t *dances, ilistidx_t *iteridx)
     return LIST_LOC_INVALID;
   }
 
-  ikey = ilistIterateKey (dances->dances, iteridx);
+  ikey = slistIterateValueNum (dances->danceList, iteridx);
   return ikey;
 }
 
@@ -265,6 +266,10 @@ danceSave (dance_t *dances, ilist_t *list, int newdistvers)
 void
 danceDelete (dance_t *dances, ilistidx_t dkey)
 {
+  const char  *val;
+
+  val = ilistGetStr (dances->dances, dkey, DANCE_DANCE);
+  slistDelete (dances->danceList, val);
   ilistDelete (dances->dances, dkey);
 }
 
@@ -282,6 +287,7 @@ danceAdd (dance_t *dances, char *name)
   ilistSetNum (dances->dances, count, DANCE_MPM_LOW, 0);
   ilistSetStr (dances->dances, count, DANCE_ANNOUNCE, "");
   ilistSetList (dances->dances, count, DANCE_TAGS, NULL);
+  slistSetNum (dances->danceList, name, count);
   return count;
 }
 

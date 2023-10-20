@@ -75,7 +75,7 @@ ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, const char *data)
 {
   nlist_t *datalist = NULL;
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
   nlistSetStr (datalist, lidx, data);
 }
 
@@ -84,7 +84,7 @@ ilistSetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
   nlist_t *datalist = NULL;
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
   nlistSetList (datalist, lidx, data);
 }
 
@@ -93,7 +93,7 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
   nlist_t *datalist = NULL;
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
   nlistSetData (datalist, lidx, data);
 }
 
@@ -106,7 +106,7 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
     return;
   }
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
   nlistSetNum (datalist, lidx, data);
 }
 
@@ -119,7 +119,7 @@ ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
     return;
   }
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
   nlistSetDouble (datalist, lidx, data);
 }
 
@@ -150,7 +150,7 @@ ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     return NULL;
   }
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_GET);
   if (datalist != NULL) {
     value = nlistGetData (datalist, lidx);
   }
@@ -176,7 +176,7 @@ ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     return LIST_VALUE_INVALID;
   }
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_GET);
   if (datalist != NULL) {
     value = nlistGetNum (datalist, lidx);
   }
@@ -193,7 +193,7 @@ ilistGetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     return LIST_DOUBLE_INVALID;
   }
 
-  datalist = ilistGetDatalist (list, ikey);
+  datalist = ilistGetDatalist (list, ikey, ILIST_GET);
   if (datalist != NULL) {
     value = nlistGetDouble (datalist, lidx);
   }
@@ -207,7 +207,7 @@ ilistGetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 }
 
 nlist_t *
-ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
+ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
 {
   nlist_t         *datalist = NULL;
   char            tbuff [40];
@@ -220,7 +220,7 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey)
   idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
   datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
 
-  if (datalist == NULL) {
+  if (gsflag == ILIST_SET && datalist == NULL) {
     snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
         listGetName (LIST_KEY_IND, list), ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);

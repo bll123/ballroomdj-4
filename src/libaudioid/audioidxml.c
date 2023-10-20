@@ -263,7 +263,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths,
       /* propagate values to the next response */
       if (respidx > 0) {
         logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: propagate from %d to %d", level*2, "", respidx - 1, respidx);
-        dlist = ilistGetDatalist (respdata, respidx - 1);
+        dlist = ilistGetDatalist (respdata, respidx - 1, ILIST_GET);
 
         nlistStartIterator (dlist, &iteridx);
         while ((key = nlistIterateKey (dlist, &iteridx)) >= 0) {

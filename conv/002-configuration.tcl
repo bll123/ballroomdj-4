@@ -151,7 +151,18 @@ foreach path [list {} profiles $mpath $mppath] {
       }
       puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
       puts $ofh "version"
-      puts $ofh "..1"
+      if { $path eq {} } {
+        puts $ofh "..3"
+      }
+      if { $path eq "profiles" } {
+        puts $ofh "..3"
+      }
+      if { $path eq $mpath } {
+        puts $ofh "..1"
+      }
+      if { $path eq $mppath } {
+        puts $ofh "..1"
+      }
 
       while { [gets $ifh line] >= 0 } {
         if { [regexp {^#} $line] } {
@@ -228,6 +239,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "CHANGESPACE" } { continue }
         if { $key eq "MUSICDIRDFLT" } { continue }
         if { $key eq "MOBILEMQTAG" } { continue }
+        if { $key eq "version" } { continue }
 
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
@@ -237,8 +249,6 @@ foreach path [list {} profiles $mpath $mppath] {
           set key DIRMUSIC
           set musicdir $value
         }
-
-        if { $key eq "version" } { set value 1 }
 
         if { $key eq "ORIGINALDIR" ||
             $key eq "DELETEDIR" ||
@@ -399,6 +409,12 @@ foreach path [list {} profiles $mpath $mppath] {
       if { $path eq {} } {
         puts $ofh ACOUSTID_KEY
         puts $ofh "..ENCTFdHUmEcJxkaKAAABRY="
+        puts $ofh "ACRCLOUD_API_KEY"
+        puts $ofh ".."
+        puts $ofh "ACRCLOUD_API_SECRET"
+        puts $ofh ".."
+        puts $ofh "ACRCLOUD_API_HOST"
+        puts $ofh ".."
         puts $ofh CLOCKDISP
         puts $ofh "..local"
         puts $ofh DEBUGLVL

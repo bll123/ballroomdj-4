@@ -48,8 +48,8 @@ typedef struct dance dance_t;
 
 dance_t       *danceAlloc (const char *altfname);
 void          danceFree (dance_t *);
-void          danceStartIterator (dance_t *, ilistidx_t *idx);
-ilistidx_t    danceIterate (dance_t *, ilistidx_t *idx);
+void          danceStartIterator (dance_t *, slistidx_t *idx);
+ilistidx_t    danceIterate (dance_t *, slistidx_t *idx);
 ssize_t       danceGetCount (dance_t *);
 const char *  danceGetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 ssize_t       danceGetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx);

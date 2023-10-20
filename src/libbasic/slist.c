@@ -94,6 +94,22 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
   listSetStrList (LIST_KEY_STR, list, sidx, data);
 }
 
+void
+slistDelete (list_t *list, const char *sidx)
+{
+  slistidx_t      idx;
+
+  if (list == NULL) {
+    return;
+  }
+  if (listGetOrdering (LIST_KEY_STR, list) == LIST_UNORDERED) {
+    return;
+  }
+
+  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
+  listDeleteByIdx (LIST_KEY_STR, list, idx);
+}
+
 slistidx_t
 slistGetIdx (slist_t *list, const char *sidx)
 {

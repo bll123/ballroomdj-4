@@ -123,9 +123,10 @@ END_TEST
 
 START_TEST(ilist_iterate)
 {
-  ilist_t *      list;
-  const char     *value;
-  ilistidx_t          key;
+  ilist_t *     list;
+  const char    *value;
+  int           nval;
+  ilistidx_t    key;
   ilistidx_t    iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_iterate");
@@ -134,43 +135,63 @@ START_TEST(ilist_iterate)
   list = ilistAlloc ("chk-d", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
   ilistSetStr (list, 6, 0, "555");
+  ilistSetNum (list, 6, 1, 6);
   ilistSetStr (list, 3, 0, "222");
+  ilistSetNum (list, 3, 1, 3);
   ilistSetStr (list, 5, 0, "444");
+  ilistSetNum (list, 5, 1, 5);
   ilistSetStr (list, 4, 0, "333");
+  ilistSetNum (list, 4, 1, 4);
   ilistSetStr (list, 1, 0, "000");
+  ilistSetNum (list, 1, 1, 1);
   ilistSetStr (list, 2, 0, "111");
+  ilistSetNum (list, 2, 1, 2);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "000");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 1);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 2);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "111");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 2);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 3);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "222");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 3);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 4);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "333");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 4);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 5);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "444");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 5);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 6);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "555");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 6);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, -1);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "000");
+  nval = ilistGetNum (list, key, 1);
+  ck_assert_int_eq (nval, 1);
 
   ilistFree (list);
 }
@@ -381,8 +402,10 @@ END_TEST
 
 START_TEST(ilist_delete)
 {
-  ilist_t   *list;
-  bool      val;
+  ilist_t     *list;
+  bool        val;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_delete");
   mdebugSubTag ("ilist_delete");
@@ -421,6 +444,41 @@ START_TEST(ilist_delete)
   val = ilistExists (list, 26);
   ck_assert_int_eq (val, 1);
 
+  ilistStartIterator (list, &iteridx);
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    ck_assert_int_ne (key, 6);
+  }
+
+  ilistFree (list);
+}
+END_TEST
+
+START_TEST(ilist_bug_20231020)
+{
+  ilist_t     *list;
+  ilistidx_t  iteridx;
+  bool        val;
+  int         nval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_bug_20231020");
+  mdebugSubTag ("ilist_bug_20231020");
+
+  list = ilistAlloc ("chk-h", LIST_ORDERED);
+  ck_assert_ptr_nonnull (list);
+  ilistSetNum (list, 6, 2, 6);
+  ilistSetNum (list, 6, 3, 66);
+  ilistSetNum (list, 26, 2, 26);
+  ilistSetNum (list, 18, 2, 18);
+  ilistSetNum (list, 11, 2, 11);
+  ilistSetNum (list, 3, 2, 3);
+  ilistSetNum (list, 1, 2, 1);
+  ilistSetNum (list, 2, 2, 2);
+  ck_assert_int_eq (ilistGetCount (list), 7);
+
+  /* fetch a number that does not exist */
+  nval = ilistGetNum (list, 76, 2);
+  ck_assert_int_eq (ilistGetCount (list), 7);
+
   ilistFree (list);
 }
 END_TEST
@@ -444,6 +502,7 @@ ilist_suite (void)
   tcase_add_test (tc, ilist_free_str);
   tcase_add_test (tc, ilist_exists);
   tcase_add_test (tc, ilist_delete);
+  tcase_add_test (tc, ilist_bug_20231020);
   suite_add_tcase (s, tc);
   return s;
 }

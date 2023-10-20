@@ -35,7 +35,7 @@ set fh [open $nfn w]
 puts $fh "# dances"
 puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 puts $fh version
-puts $fh "..1"
+puts $fh "..2"
 puts $fh count
 puts $fh "..[expr {[llength $Dance]/2}]"
 set ikey 0
@@ -44,6 +44,8 @@ foreach {key data} $Dance {
   incr ikey;
   puts $fh "DANCE\n..$key"
   foreach {k v} $data {
+    if { $k eq "lowbpm" } { set k LOWMPM }
+    if { $k eq "highbpm" } { set k HIGHMPM }
     if { $k eq "select" } { continue }
     if { $k eq "count" } { continue }
     if { $k eq "ann" } { set k ANNOUNCE }

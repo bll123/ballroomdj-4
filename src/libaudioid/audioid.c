@@ -355,7 +355,7 @@ audioidGetList (audioid_t *audioid, int key)
   if (audioid == NULL) {
     return NULL;
   }
-  list = ilistGetDatalist (audioid->resp, key);
+  list = ilistGetDatalist (audioid->resp, key, ILIST_GET);
   return list;
 }
 
@@ -480,7 +480,7 @@ dumpResults (audioid_t *audioid)
     }
     logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   %d IDENT %s", key, tstr);
 
-    l = ilistGetDatalist (audioid->resp, key);
+    l = ilistGetDatalist (audioid->resp, key, ILIST_GET);
     nlistStartIterator (l, &i);
     while ((tagidx = nlistIterateKey (l, &i)) >= 0) {
       if (tagidx >= TAG_KEY_MAX) {
