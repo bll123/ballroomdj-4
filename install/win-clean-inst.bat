@@ -33,13 +33,13 @@ taskkill /f /im gdbus.exe 2> NUL
 if %sbase% == install (
   : copy the script elsewhere and re-start it
   copy /y %script% "%TEMP%\bdj4-clean-inst.bat"
-  start cmd /c %TEMP%\bdj4-clean-inst.bat %unpackdir%
+  start "Installation Cleanup" /b cmd /c %TEMP%\bdj4-clean-inst.bat %unpackdir%
   goto scriptexit
 )
 
 : this section should only be executed by the copied script
 
-echo "-- Cleaning up installation.  Please wait..."
+echo -- Cleaning up installation.  Please wait...
 : sleep for 3 seconds, wait for the installer and gdbus to exit
 ping 127.0.0.1 -n 3 > nul
 rmdir /s/q %unpackdir%
