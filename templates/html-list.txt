@@ -4,6 +4,12 @@ English Flex
 ..bdj-flex.html
 English HTML 5
 ..bdj.html
+Deutsch Flex Dark
+..de/bdj-flex-dark.html
+Deutsch Flex
+..de/bdj-flex.html
+Deutsch HTML 5
+..de/bdj.html
 Français Flex Dark
 ..fr/bdj-flex-dark.html
 Français Flex

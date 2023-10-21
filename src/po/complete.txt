@@ -6,6 +6,7 @@
 #
 en_GB.po eng English (GB)
 en_US.po eng English (US)
+de_DE.po ger Deutsch
 fr_FR.po fra Français
 it_IT.po ita Italiano
 ja_JP.po jpn 日本語

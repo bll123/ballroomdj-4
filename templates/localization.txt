@@ -34,6 +34,22 @@ QDANCE
 KEY
 ..2
 LONG
+..de_DE
+SHORT
+..de
+ISO639-2
+..ger
+DISPLAY
+..Deutsch
+AUTO
+..automatisch
+STDROUNDS
+..Standardrunden
+QDANCE
+..Schlangentanz
+KEY
+..3
+LONG
 ..fr_FR
 SHORT
 ..fr
@@ -46,9 +62,9 @@ AUTO
 STDROUNDS
 ..les rounds standards
 QDANCE
-..QueueDance
+..Danse en file d'attente
 KEY
-..3
+..4
 LONG
 ..it_IT
 SHORT
@@ -62,9 +78,9 @@ AUTO
 STDROUNDS
 ..giri standard
 QDANCE
-..QueueDance
+..Ballo in coda
 KEY
-..4
+..5
 LONG
 ..ja_JP
 SHORT
@@ -80,7 +96,7 @@ STDROUNDS
 QDANCE
 ..キューダンス
 KEY
-..5
+..6
 LONG
 ..nl_BE
 SHORT
@@ -96,7 +112,7 @@ STDROUNDS
 QDANCE
 ..Dans In Wachtrij
 KEY
-..6
+..7
 LONG
 ..pl_PL
 SHORT
@@ -110,9 +126,9 @@ AUTO
 STDROUNDS
 ..rundy standardowe
 QDANCE
-..QueueDance
+..Taniec w kolejce
 KEY
-..7
+..8
 LONG
 ..ru_RU
 SHORT

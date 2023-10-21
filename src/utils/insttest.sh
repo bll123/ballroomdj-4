@@ -164,20 +164,47 @@ function checkUpdaterClean {
   if [[ $section == ru_RU ]]; then
     fn="$DATADIR/стандартные циклы.pldances"
   fi
+  if [[ $section == fr_FR ]]; then
+    fn="${DATADIR}/les rounds standards.pldances"
+  fi
+  if [[ $section == de_DE ]]; then
+    fn="${DATADIR}/Standardrunden.pldances"
+  fi
+  if [[ $section == pl_PL ]]; then
+    fn="${DATADIR}/rundy standardowe.pldances"
+  fi
+  if [[ $section == it_IT ]]; then
+    fn="${DATADIR}/giri standard.pldances"
+  fi
+  if [[ $section == ja_JP ]]; then
+    fn="${DATADIR}/スタンダードラウンド.pldances"
+  fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
   fi
+
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == nl_BE || $section == nl_NL ]]; then
-    fn="$DATADIR/Dans In Wachtrij.pl"
-    # nl was renamed after the bad data situation
-    rm -f "${fn}"
     fn="$DATADIR/Dans In Wachtrij.pldances"
-    rm -f "${fn}"
   fi
   if [[ $section == ru_RU ]]; then
-    fn="$DATADIR/Танец в очередь.pl"
+    fn="$DATADIR/Танец в очередь.pldances"
+  fi
+  if [[ $section == fr_FR ]]; then
+    fn="$DATADIR/Danse en file d'attente.pldances"
+  fi
+  if [[ $section == de_DE ]]; then
+    fn="${DATADIR}/Schlangentanz.pldances"
+  fi
+  if [[ $section == pl_PL ]]; then
+    fn="${DATADIR}/Taniec w kolejce.pldances"
+  fi
+  if [[ $section == it_IT ]]; then
+    fn="${DATADIR}/Ballo in coda.pldances"
+  fi
+  if [[ $section == ja_JP ]]; then
+    fn="${DATADIR}/キューダンス.pldances"
   fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
@@ -559,17 +586,34 @@ function checkInstallation {
 
     # automatic.pl file
     fna="${DATADIR}/automatic.pl"
-    fnb="${DATADIR}/Automatisch.pl"
-    fnc="${DATADIR}/автоматически.pl"
+    fnb=""
     if [[ $section == nl_BE || $section == nl_NL ]]; then
-      temp="${fna}"
-      fna="${fnb}"
-      fnb="$temp"
+      fna="${DATADIR}/Automatisch.pl"
+      fnb="${DATADIR}/automatic.pl"
     fi
     if [[ $section == ru_RU ]]; then
-      temp="${fna}"
-      fna="${fnc}"
-      fnb="$temp"
+      fna="${DATADIR}/автоматически.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="${DATADIR}/automatique.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == de_DE ]]; then
+      fna="${DATADIR}/automatisch.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/automatyczny.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == it_IT ]]; then
+      fna="${DATADIR}/automatico.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == ja_JP ]]; then
+      fna="${DATADIR}/自動.pl"
+      fnb="${DATADIR}/automatic.pl"
     fi
     res=$(($res+1))
     if [[ -f ${fna} ]]; then
@@ -612,17 +656,34 @@ function checkInstallation {
 
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
-    fnb="${DATADIR}/Dans In Wachtrij.pldances"
-    fnc="${DATADIR}/Танец в очередь.pldances"
+    fnb=""
     if [[ $section == nl_BE || $section == nl_NL ]]; then
-      temp="${fna}"
-      fna="${fnb}"
-      fnb="$temp"
+      fna="${DATADIR}/Dans In Wachtrij.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == ru_RU ]]; then
-      temp="${fna}"
-      fna="${fnc}"
-      fnb="$temp"
+      fna="${DATADIR}/Танец в очередь.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="${DATADIR}/Danse en file d'attente.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == de_DE ]]; then
+      fna="${DATADIR}/Schlangentanz.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/Taniec w kolejce.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == it_IT ]]; then
+      fna="${DATADIR}/Ballo in coda.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == ja_JP ]]; then
+      fna="${DATADIR}/キューダンス.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
@@ -641,17 +702,34 @@ function checkInstallation {
 
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
-    fnb="${DATADIR}/Dans In Wachtrij.pl"
-    fnc="${DATADIR}/Танец в очередь.pl"
+    fnb=""
     if [[ $section == nl_BE || $section == nl_NL ]]; then
-      temp="${fna}"
-      fna="${fnb}"
-      fnb="$temp"
+      fna="${DATADIR}/Dans In Wachtrij.pl"
+      fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == ru_RU ]]; then
-      temp="${fna}"
-      fna="${fnc}"
-      fnb="$temp"
+      fna="${DATADIR}/Танец в очередь.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="$DATADIR/Danse en file d'attente.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == de_DE ]]; then
+      fna="${DATADIR}/Schlangentanz.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/Taniec w kolejce.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == it_IT ]]; then
+      fna="${DATADIR}/Ballo in coda.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == ja_JP ]]; then
+      fna="${DATADIR}/キューダンス.pl"
+      fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
@@ -670,6 +748,21 @@ function checkInstallation {
     fi
     if [[ $section == ru_RU ]]; then
       fn="${DATADIR}/стандартные циклы.pldances"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fn="${DATADIR}/les rounds standards.pldances"
+    fi
+    if [[ $section == de_DE ]]; then
+      fn="${DATADIR}/Standardrunden.pldances"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fn="${DATADIR}/rundy standardowe.pldances"
+    fi
+    if [[ $section == it_IT ]]; then
+      fn="${DATADIR}/giri standard.pldances"
+    fi
+    if [[ $section == ja_JP ]]; then
+      fn="${DATADIR}/スタンダードラウンド.pldances"
     fi
     if [[ $fin == T && -f ${fn} ]]; then
       grep '# version 2' "${fn}" > /dev/null 2>&1
@@ -1003,35 +1096,15 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-section=nl_BE
-locale=nl_BE
+for section in nl_BE nl_NL ru_RU fr_FR de_DE pl_PL it_IT ja_JP; do
+  locale=${section}
 
-cleanInstTest
-resetInstallDir
-
-# main test db : rebuild of standard test database, nl_BE
-tname=new-install
-echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended ${quiet} \
-    --nomutagen \
-    --ati ${ATI} \
-    --targetdir "$TARGETTOPDIR" \
-    --unpackdir "$UNPACKDIR" \
-    --musicdir "$MUSICDIR" \
-    --locale ${locale} \
-    )
-rc=$?
-checkInstallation $section $tname "$out" $rc n y
-crc=$?
-waitForInstallDirRemoval
-
-if [[ $crc -eq 0 ]]; then
+  cleanInstTest
   resetInstallDir
-  tname=update-chk-updater
-  echo "== $section $tname"
 
-  checkUpdaterClean $section
+  # main test db : rebuild of standard test database, nl_BE
+  tname=new-install
+  echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
       --nomutagen \
@@ -1042,109 +1115,49 @@ if [[ $crc -eq 0 ]]; then
       --locale ${locale} \
       )
   rc=$?
-  checkInstallation $section $tname "$out" $rc u y
+  checkInstallation $section $tname "$out" $rc n y
+  crc=$?
   waitForInstallDirRemoval
-fi
 
-if [[ T == T ]]; then
-  if [[ $tag == linux || $platform == windows ]]; then
-    # alternate installation (linux, windows)
-    tname=alt-install
+  if [[ $crc -eq 0 ]]; then
+    resetInstallDir
+    tname=update-chk-updater
     echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+
+    checkUpdaterClean $section
+    out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
         --verbose --unattended ${quiet} \
+        --nomutagen \
         --ati ${ATI} \
-        --targetdir "$TARGETALTDIR" \
+        --targetdir "$TARGETTOPDIR" \
+        --unpackdir "$UNPACKDIR" \
         --musicdir "$MUSICDIR" \
         --locale ${locale} \
         )
     rc=$?
-    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+    checkInstallation $section $tname "$out" $rc u y
+    waitForInstallDirRemoval
   fi
-fi
 
-section=nl_NL
-locale=nl_NL
-
-cleanInstTest
-resetInstallDir
-
-# main test db : rebuild of standard test database, nl_NL
-tname=new-install
-echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended ${quiet} \
-    --nomutagen \
-    --ati ${ATI} \
-    --targetdir "$TARGETTOPDIR" \
-    --unpackdir "$UNPACKDIR" \
-    --musicdir "$MUSICDIR" \
-    --locale ${locale} \
-    )
-rc=$?
-checkInstallation $section $tname "$out" $rc n y
-crc=$?
-waitForInstallDirRemoval
-
-section=ru_RU
-locale=ru_RU
-
-cleanInstTest
-resetInstallDir
-
-# main test db : rebuild of standard test database, nl_BE
-tname=new-install
-echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-    --verbose --unattended ${quiet} \
-    --nomutagen \
-    --ati ${ATI} \
-    --targetdir "$TARGETTOPDIR" \
-    --unpackdir "$UNPACKDIR" \
-    --musicdir "$MUSICDIR" \
-    --locale ${locale} \
-    )
-rc=$?
-checkInstallation $section $tname "$out" $rc n y
-crc=$?
-waitForInstallDirRemoval
-
-if [[ $crc -eq 0 ]]; then
-  resetInstallDir
-  tname=update-chk-updater
-  echo "== $section $tname"
-
-  checkUpdaterClean $section
-  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
-      --verbose --unattended ${quiet} \
-      --nomutagen \
-      --ati ${ATI} \
-      --targetdir "$TARGETTOPDIR" \
-      --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
-      --locale ${locale} \
-      )
-  rc=$?
-  checkInstallation $section $tname "$out" $rc u y
-  waitForInstallDirRemoval
-fi
-
-if [[ T == T ]]; then
-  if [[ $tag == linux || $platform == windows ]]; then
-    # alternate installation (linux, windows)
-    tname=alt-install
-    echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
-        --verbose --unattended ${quiet} \
-        --ati ${ATI} \
-        --targetdir "$TARGETALTDIR" \
-        --musicdir "$MUSICDIR" \
-        --locale ${locale} \
-        )
-    rc=$?
-    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+  if [[ T == T ]]; then
+    if [[ $tag == linux || $platform == windows ]]; then
+      # alternate installation (linux, windows)
+      tname=alt-install
+      echo "== $section $tname"
+      out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+          --verbose --unattended ${quiet} \
+          --ati ${ATI} \
+          --targetdir "$TARGETALTDIR" \
+          --musicdir "$MUSICDIR" \
+          --locale ${locale} \
+          )
+      rc=$?
+      checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+    fi
   fi
-fi
+done
+
+### end tests
 
 if [[ $keep == F ]]; then
   cleanInstTest

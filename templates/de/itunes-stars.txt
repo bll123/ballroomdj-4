@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Schlecht
+20
+..Schlecht
+30
+..Schlecht
+40
+..Schlecht
+50
+..Schlecht
+60
+..Gut
+70
+..Gut
+80
+..Großartig
+90
+..Großartig
+100
+..Großartig
