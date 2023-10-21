@@ -151,11 +151,11 @@ fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # tested 2022
-  # updated 2023-9
+  # updated 2023-10-21
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   pkglist="ffmpeg-free python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libchromaprint-tools libvorbis flac libjson-c"
+      libopusfile0 libchromaprint-tools libvorbis flac libjson-c5"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora

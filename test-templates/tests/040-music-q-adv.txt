@@ -239,33 +239,44 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+# play 3 : 5 7 9 11 13 15
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg main MUSICQ_TOGGLE_PAUSE 0~1
+get main CHK_MAIN_MUSICQ
+chk pae1 1
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1500
 wait pauseatend 0 playstate in-fadeout
+# in-fadeout 3 : 5(p) 7 9 11 13 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk-lt actualvolume defaultvol
 resptimeout 6000
 wait playstate playing
+# play 5(p) : 7 9 11 13 15
+get main CHK_MAIN_MUSICQ
+chk pae0 1
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
+# in-fadeout 5(p) : 7 9 11 13 15
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped
 msg main MUSICQ_TOGGLE_PAUSE 0~2
+get main CHK_MAIN_MUSICQ
+chk pae2 1
 msg main CMD_PLAY
 mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+# play 7 : 9 11(p) 13 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
@@ -275,26 +286,31 @@ resptimeout 1500
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+# play 9 : 11(p) 13 15
+get main CHK_MAIN_MUSICQ
+chk pae1 1
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 resptimeout 2000
-verbose on
 msg player PLAY_FADE
-mssleep 100
 get player CHK_PLAYER_STATUS
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+# play 11(p) : 13 15
+get main CHK_MAIN_MUSICQ
+chk pae0 1
 mssleep 1500
-verbose off
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait pauseatend 1 playstate in-fadeout
+# in-fadeout 11(p) : 13 15
 resptimeout 7500
+get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
 

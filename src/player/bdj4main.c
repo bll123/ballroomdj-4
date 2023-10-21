@@ -3275,6 +3275,12 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       "mq2idx3%c%d%c"
       "mq2idx4%c%d%c"
       "mq2idx5%c%d%c"
+      "pae0%c%d%c"
+      "pae1%c%d%c"
+      "pae2%c%d%c"
+      "pae3%c%d%c"
+      "pae4%c%d%c"
+      "pae5%c%d%c"
       "songplaysentcount%c%d",
       MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
@@ -3305,6 +3311,12 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, mqdbidx [2][3], MSG_ARGS_RS,
       MSG_ARGS_RS, mqdbidx [2][4], MSG_ARGS_RS,
       MSG_ARGS_RS, mqdbidx [2][5], MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 1) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 2) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 3) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 4) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
+      MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 5) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }

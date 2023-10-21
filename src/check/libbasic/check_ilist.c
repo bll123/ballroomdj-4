@@ -456,9 +456,6 @@ END_TEST
 START_TEST(ilist_bug_20231020)
 {
   ilist_t     *list;
-  ilistidx_t  iteridx;
-  bool        val;
-  int         nval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_bug_20231020");
   mdebugSubTag ("ilist_bug_20231020");
@@ -476,7 +473,7 @@ START_TEST(ilist_bug_20231020)
   ck_assert_int_eq (ilistGetCount (list), 7);
 
   /* fetch a number that does not exist */
-  nval = ilistGetNum (list, 76, 2);
+  ilistGetNum (list, 76, 2);
   ck_assert_int_eq (ilistGetCount (list), 7);
 
   ilistFree (list);

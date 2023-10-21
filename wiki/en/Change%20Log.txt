@@ -4,9 +4,11 @@
 
 <!--
 
-**4.4.2 2023-10---**
+**4.4.2.1 2023-10---**
 
-**4.4.1.4 2023-10-21**
+-->
+
+**4.4.2 2023-10-21**
 
 * Bug Fixes:
     * Audio Identification: Fix audio ID display.
@@ -15,15 +17,13 @@
     * Dances: Make sure dance list displays are always sorted.
     * Database Update: Fix compact operation.
     * Installation: Fix post-install cleanup.
-    * Internal: Fix obscure bug (ilist).
+    * Internal: Fix obscure bug (ilist; introduced in 4.3.3.2).
 * Changes:
     * Audio Identification: ACRCloud service implemented.
     * Configuration: General: Add ACRCloud keys for Audio ID.
     * Translations: Nederlands (Dutch) updated.
     * Translations: Русский (Russian) updated.
     * Translations: Machine translations added for Deutsch, Français, Italiano, 日本語‬, Polski.
-
--->
 
 **4.4.1.3 2023-10-11**
 

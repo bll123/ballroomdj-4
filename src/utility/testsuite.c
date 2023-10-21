@@ -431,7 +431,7 @@ tsProcessing (void *udata)
 
   if ((testsuite->chkwait || testsuite->wait) &&
       mstimeCheck (&testsuite->responseTimeoutCheck)) {
-    logMsg (LOG_DBG, LOG_BASIC, "timed out %d", testsuite->lineno);
+    logMsg (LOG_DBG, LOG_BASIC, "[%d] timed out", testsuite->lineno);
     fprintf (stdout, "\n");
     fprintf (stdout, "       %d %d/%d (%ld)\n", testsuite->lineno,
         testsuite->chkwait, testsuite->wait, testsuite->responseTimeout);
@@ -937,7 +937,7 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
   }
   testsuite->chkwait = true;
   ++testsuite->results.chkcount;
-  logMsg (LOG_DBG, LOG_BASIC, "start response timer 200");
+  logMsg (LOG_DBG, LOG_BASIC, "[%d] start response timer 200", testsuite->lineno);
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
   mstimeset (&testsuite->responseStart, 0);
   return TS_OK;
@@ -963,7 +963,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   testsuite->wait = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
-  logMsg (LOG_DBG, LOG_BASIC, "start response timer %ld", testsuite->responseTimeout);
+  logMsg (LOG_DBG, LOG_BASIC, "[%d] start response timer %ld", testsuite->lineno, testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
   mstimeset (&testsuite->responseStart, 0);
   return TS_OK;
@@ -1237,7 +1237,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
         valexp = tmp;
       }
 
-      logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, valexp, valresp);
+      logMsg (LOG_DBG, LOG_BASIC, "[%d] exp-resp: %s %s %s", testsuite->lineno, key, valexp, valresp);
 
       retchk = false;
 
@@ -1356,7 +1356,7 @@ tsProcessChkResponse (testsuite_t *testsuite, char *args)
   char    *a;
   char    *tokstr;
 
-  logMsg (LOG_DBG, LOG_BASIC, "resp: %s", args);
+  logMsg (LOG_DBG, LOG_BASIC, "[%d] resp: %s", testsuite->lineno, args);
   if (testsuite->expectresponse) {
     testsuite->expectresponse = false;
     testsuite->haveresponse = true;

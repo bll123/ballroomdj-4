@@ -45,6 +45,7 @@
 #     qdbidx
 #       only if not playing, from the musicq-play-idx
 #     mqXidxN (mq 0-1 idx 0-5)
+#     paeX (pause-at-end 0-5)
 # player:
 #   status:
 #     playstate
