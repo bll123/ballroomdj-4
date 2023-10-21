@@ -21,6 +21,7 @@
     * Configuration: General: Add ACRCloud keys for Audio ID.
     * Translations: Nederlands (Dutch) updated.
     * Translations: Русский (Russian) updated.
+    * Translations: Machine translations added for Deutsch, Français, Italiano, 日本語‬, Polski.
 
 -->
 

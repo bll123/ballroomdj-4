@@ -1,0 +1,31 @@
+# ratings
+# 2022-8-4
+# version 1
+version
+..1
+count
+..4
+KEY
+..0
+RATING
+..Non évalué
+WEIGHT
+..5
+KEY
+..1
+RATING
+..Pauvre
+WEIGHT
+..0
+KEY
+..2
+RATING
+..Bon
+WEIGHT
+..15
+KEY
+..3
+RATING
+..Superbe
+WEIGHT
+..80

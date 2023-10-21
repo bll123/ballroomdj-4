@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Słaby
+20
+..Słaby
+30
+..Słaby
+40
+..Słaby
+50
+..Słaby
+60
+..Dobry
+70
+..Dobry
+80
+..Świetnie
+90
+..Świetnie
+100
+..Świetnie

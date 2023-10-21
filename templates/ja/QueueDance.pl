@@ -1,0 +1,25 @@
+# playlist
+# 2023-10-10
+# version 2
+version
+..2
+ALLOWEDKEYWORDS
+..
+DANCERATING
+..未評価
+GAP
+..500
+MAXPLAYTIME
+..0
+PLAYANNOUNCE
+..no
+STOPAFTER
+..0
+STOPTIME
+..0
+DANCELEVELLOW
+..簡単
+DANCELEVELHIGH
+..上級
+TYPE
+..automatic

@@ -1,0 +1,19 @@
+# status
+# 2022-8-4
+# version 1
+version
+..1
+count
+..2
+KEY
+..0
+STATUS
+..新しい
+PLAYFLAG
+..1
+KEY
+..1
+STATUS
+..完全
+PLAYFLAG
+..1

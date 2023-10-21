@@ -215,8 +215,11 @@ fi
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
 mkpo ru ru_RU.po 'mira' Русский‬ russian
-#mkpo de de_DE.po 'unassigned' Deutsch german
-#mkpo fr fr_FR.po 'unassigned' Français french
+mkpo de de_DE.po 'unassigned' Deutsch german
+mkpo pl pl_PL.po 'unassigned' Polski polish
+mkpo ja ja_JP.po 'unassigned' 日本語‬ japanese
+mkpo it it_IT.po 'unassigned' Italiano‬ italian
+mkpo fr fr_FR.po 'unassigned' Français french
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish
 
 #mkpo es es_ES.po 'unassigned' Español spanish

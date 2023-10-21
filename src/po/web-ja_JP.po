@@ -1,0 +1,113 @@
+# == 日本語‬
+# -- japanese
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2023-10-20 22:59\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "BallroomDJのすべてのユーザーは、BallroomDJ 4に変換することをお勧めします。"
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - ボールルーム・ミュージック・プレーヤー"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4 (BDJ4)は、デスクトップおよびラップトップコンピュータ用に設計された音楽プレーヤーです（一部のタブレットでも動作します）。何もしなくても、一晩中音楽を再生できるように設計されています。"
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - ボールルーム・ミュージック・プレーヤー"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "pro-linux.deのBallroomDJ"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJは以前のボールルームミュージックプレーヤーです。現在はサポートされていません。"
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 at freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "BDJ4の特徴"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "BDJ4フォーラム"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4は高度なカスタマイズが可能で、社交ダンスの音楽を整理し、曲リスト、自動プレイリスト、シーケンスプレイリストを作成する機能を備えています。"
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4はWindows、MacOS、Linuxで動作します。"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 ウィキ"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "変更履歴"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "寄付する"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "BDJ4が使用しているソフトウェアプロジェクトに寄付する："
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "BallroomDJ 3をダウンロード"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "Download BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "BallroomDJ 4の翻訳を助ける"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "最新版"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "メニュー"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "BallroomDJ 4のリリース発表が見られる他のサイト："
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (一番上に寄付ボタンがあります）"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "BDJ4に寄付する"
+

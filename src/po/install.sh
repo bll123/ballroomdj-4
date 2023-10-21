@@ -32,7 +32,7 @@ function mksub {
         continue
         ;;
     esac
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&,g')
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&,g' -e "s,',!!!,g")
     case $line in
       ..*)
         xl=$(echo "..$xl")
@@ -43,6 +43,7 @@ function mksub {
   done < $tempf
 
   if [[ $ok == T ]]; then
+    sedcmd+="-e \"s,!!!,',g\""
     eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   fi
   set +o noglob
@@ -71,7 +72,7 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g' -e "s,',!!!,g")
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
     sedcmd+="-e '\~alt=\"${nl}\"~ s~alt=\"${nl}\"~alt=\"${xl}\"~' "
     sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
@@ -79,6 +80,7 @@ function mkhtmlsub {
   done < $tempf
 
   if [[ $ok == T ]]; then
+    sedcmd+="-e \"s,!!!,',g\""
     eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   fi
   set +o noglob

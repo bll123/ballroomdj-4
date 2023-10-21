@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="yandex-verification" content="52297d544556772d" />
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <!-- WT_021 -->
   <title>BallroomDJ 4 - Ballroom Музыкальный плеер</title>
   <!-- WT_022 -->
   <meta name="Description" content="BallroomDJ 4 - Ballroom Музыкальный плеер">
   <meta name="Keywords" content="ballroom music player,
       Ballroom Музыкальный плеер,
+      Ballroom Muziekspeler,
+      Odtwarzacz muzyki z sali balowej,
+      ボールルーム・ミュージック・プレーヤー,
+      Lettore di musica da sala da ballo,
+      Lecteur de musique de salon,
+      Ballroom-Musikspieler,
       ballroom music dj, ballroom dance dj,
       ballroom music playback,
       ballroom dance software,
@@ -104,8 +110,13 @@
         </div>
         <div class="tleft dlang">
           <ul>
+            <li><a href="index.html.de">Deutsch</a></li>
             <li><a href="index.html.en">English</a></li>
+            <li><a href="index.html.fr">Français</a></li>
+            <li><a href="index.html.it">Italiano</a></li>
+            <li><a href="index.html.ja">日本語‬</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
+            <li><a href="index.html.pl">Polski</a></li>
             <li><a href="index.html.ru">Русский</a></li>
           </ul>
         </div>

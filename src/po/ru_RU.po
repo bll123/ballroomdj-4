@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-18\n"
+"PO-Revision-Date: 2023-10-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -658,7 +658,7 @@ msgstr "Адрес электронной почты"
 
 #. CONTEXT: configuration file: dance level
 msgid "Easy"
-msgstr "Легкий"
+msgstr "Легко"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
@@ -1426,7 +1426,7 @@ msgstr "Добавить танец в очередь"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue E"
-msgstr "Очередь E"
+msgstr ""
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue

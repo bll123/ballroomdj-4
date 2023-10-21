@@ -1,0 +1,37 @@
+# genres
+# 2022-8-4
+# version 1
+version
+..1
+count
+..5
+KEY
+..0
+GENRE
+..Aucun
+CLASSICAL
+..0
+KEY
+..1
+GENRE
+..Danse de salon
+CLASSICAL
+..0
+KEY
+..2
+GENRE
+..Classique
+CLASSICAL
+..1
+KEY
+..3
+GENRE
+..Le jazz
+CLASSICAL
+..0
+KEY
+..4
+GENRE
+..Le rocher
+CLASSICAL
+..0

@@ -18,7 +18,7 @@ STOPAFTER
 STOPTIME
 ..0
 DANCELEVELLOW
-..Легкий
+..Легко
 DANCELEVELHIGH
 ..Дополнительное
 TYPE

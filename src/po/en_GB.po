@@ -2117,7 +2117,6 @@ msgstr ""
 " wiki, forums and problem ticketing system. Or use the"
 " 'Send Support Message' button to send a message."
 
-
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
 msgstr ""
@@ -2161,7 +2160,6 @@ msgstr ""
 "=> Wait for the database rebuild to finish."
 "=> Leave the 'BDJ4 Management' window open."
 
-
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
 msgstr ""
@@ -2182,7 +2180,6 @@ msgstr ""
 " Above the song list is an entry box with the name 'New Song List' in it."
 "=> Click in the box and change the name of the song list."
 "=> Close the 'BDJ4 Management' window. The song list is automatically saved."
-
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"

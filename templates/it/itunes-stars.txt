@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Povero
+20
+..Povero
+30
+..Povero
+40
+..Povero
+50
+..Povero
+60
+..Buono
+70
+..Buono
+80
+..Grande
+90
+..Grande
+100
+..Grande

@@ -46,7 +46,7 @@ for pofile in web-*.po; do
         continue
         ;;
     esac
-    xl=$(printf "%s" "$xl" | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
+    xl=$(printf "%s" "$xl" | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g' -e "s,',!!!,g")
 
     sedcmd+="-e 's~\"${nl}\"~\"${xl}\"~g' "
     sedcmd+="-e 's~>${nl}<~>${xl}<~g' "
@@ -58,7 +58,7 @@ for pofile in web-*.po; do
   nfn=${WEBDIR}/${BASEFN}.${lang}
   nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
   nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')
-  printf "%s" "$nnhtml" > $nfn
+  printf "%s" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
   set +o noglob
 done
 

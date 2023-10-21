@@ -4,12 +4,36 @@ English Flex
 ..bdj-flex.html
 English HTML 5
 ..bdj.html
+Français Flex Dark
+..fr/bdj-flex-dark.html
+Français Flex
+..fr/bdj-flex.html
+Français HTML 5
+..fr/bdj.html
+Italiano Flex Dark
+..it/bdj-flex-dark.html
+Italiano Flex
+..it/bdj-flex.html
+Italiano HTML 5
+..it/bdj.html
+日本語 Flex Dark
+..ja/bdj-flex-dark.html
+日本語 Flex
+..ja/bdj-flex.html
+日本語 HTML 5
+..ja/bdj.html
 Nederlands Flex Dark
 ..nl/bdj-flex-dark.html
 Nederlands Flex
 ..nl/bdj-flex.html
 Nederlands HTML 5
 ..nl/bdj.html
+Polski Flex Dark
+..pl/bdj-flex-dark.html
+Polski Flex
+..pl/bdj-flex.html
+Polski HTML 5
+..pl/bdj.html
 Русский‬ Flex Dark
 ..ru/bdj-flex-dark.html
 Русский‬ Flex

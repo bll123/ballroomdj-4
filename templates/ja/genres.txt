@@ -1,0 +1,37 @@
+# genres
+# 2022-8-4
+# version 1
+version
+..1
+count
+..5
+KEY
+..0
+GENRE
+..なし
+CLASSICAL
+..0
+KEY
+..1
+GENRE
+..社交ダンス
+CLASSICAL
+..0
+KEY
+..2
+GENRE
+..クラシック
+CLASSICAL
+..1
+KEY
+..3
+GENRE
+..ジャズ
+CLASSICAL
+..0
+KEY
+..4
+GENRE
+..ロック
+CLASSICAL
+..0

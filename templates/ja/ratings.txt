@@ -1,0 +1,31 @@
+# ratings
+# 2022-8-4
+# version 1
+version
+..1
+count
+..4
+KEY
+..0
+RATING
+..未評価
+WEIGHT
+..5
+KEY
+..1
+RATING
+..貧しい
+WEIGHT
+..0
+KEY
+..2
+RATING
+..グッド
+WEIGHT
+..15
+KEY
+..3
+RATING
+..素晴らしい
+WEIGHT
+..80
