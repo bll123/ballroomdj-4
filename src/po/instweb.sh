@@ -55,6 +55,9 @@ for pofile in web-*.po; do
   locale=$(printf "%s" ${pofile} | sed -e 's,web-\([^.]*\)\.po,\1,')
   lang=$(printf "%s" ${locale} | sed -e 's,\(..\).*,\1,')
   sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${lang}\"~' "
+  if [[ $lang == pl ]]; then
+    lang=po
+  fi
   nfn=${WEBDIR}/${BASEFN}.${lang}
   nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
   nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')

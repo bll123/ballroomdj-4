@@ -116,7 +116,7 @@
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
-            <li><a href="index.html.pl">Polski</a></li>
+            <li><a href="index.html.po">Polski</a></li>
             <li><a href="index.html.ru">Русский</a></li>
           </ul>
         </div>
