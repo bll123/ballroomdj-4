@@ -15,7 +15,6 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "mdebug.h"
-#include "pathbld.h"
 #include "sysvars.h"
 
 static char *   bdjvars [BDJV_MAX];
@@ -44,8 +43,6 @@ bdjvarsInit (void)
     snprintf (tbuff, sizeof (tbuff), "%s-", _("delete"));
     bdjvars [BDJV_DELETE_PFX] = mdstrdup (tbuff);
     bdjvarsl [BDJVL_DELETE_PFX_LEN] = strlen (bdjvars [BDJV_DELETE_PFX]);
-    pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_LOCK);
-    bdjvars [BDJV_LOCK_PATH] = mdstrdup (tbuff);
 
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
     bdjvarsAdjustPorts ();

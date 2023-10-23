@@ -47,18 +47,6 @@ static datafilekey_t volregdfkeys [VOLREG_KEY_MAX] = {
 
 static void checkSink (const char *fn, const char *testsink, int origvol, int count);
 
-static void
-setup (void)
-{
-  bdjvarsInit ();
-}
-
-static void
-teardown (void)
-{
-  bdjvarsCleanup ();
-}
-
 START_TEST(volreg_save)
 {
   char        tbuff [MAXPATHLEN];
@@ -170,7 +158,6 @@ volreg_suite (void)
   s = suite_create ("volreg");
   tc = tcase_create ("volreg");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, volreg_save);
   tcase_add_test (tc, volreg_clear);
   tcase_add_test (tc, volreg_bdj3flag);

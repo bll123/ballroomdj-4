@@ -39,14 +39,12 @@ setup (void)
 {
   pathbldMakePath (fulllockfn, sizeof (fulllockfn),
       LOCK_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_LOCK);
-
-  bdjvarsInit ();
 }
 
 static void
 teardown (void)
 {
-  bdjvarsCleanup ();
+  return;
 }
 
 START_TEST(lock_name)

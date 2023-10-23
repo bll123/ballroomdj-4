@@ -18,7 +18,6 @@
 #include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjstring.h"
-#include "bdjvars.h"
 #include "dirop.h"
 #include "fileop.h"
 #include "lock.h"
@@ -50,6 +49,8 @@ static void   lockCheckLockDir (void);
 static int    lockAcquirePid (char *fn, pid_t pid, int flags);
 static int    lockReleasePid (char *fn, pid_t pid, int flags);
 static pid_t  getPidFromFile (char *fn);
+
+static bool   lockdirchecked = false;
 
 char *
 lockName (bdjmsgroute_t route)
@@ -103,14 +104,17 @@ lockRelease (char *fn, int flags)
 static void
 lockCheckLockDir (void)
 {
-  const char  *tdir;
+  char  tdir [MAXPATHLEN];
 
-  tdir = bdjvarsGetStr (BDJV_LOCK_PATH);
-  if (tdir != NULL) {
-    if (! fileopIsDirectory (tdir)) {
-      diropMakeDir (tdir);
-    }
+  if (lockdirchecked) {
+    return;
   }
+
+  pathbldMakePath (tdir, sizeof (tdir), "", "", PATHBLD_MP_DIR_LOCK);
+  if (! fileopIsDirectory (tdir)) {
+    diropMakeDir (tdir);
+  }
+  lockdirchecked = true;
 }
 
 static int
@@ -124,9 +128,6 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   char      tfn [MAXPATHLEN];
   procutil_t process;
 
-  if (bdjvarsIsInitialized () == false) {
-    fprintf (stderr, "ERR: lock-acquire called before bdjvars-init\n");
-  }
   lockCheckLockDir ();
 
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
@@ -184,10 +185,6 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   int       rc;
   pid_t     fpid;
 
-  if (bdjvarsIsInitialized () == false) {
-    fprintf (stderr, "ERR: lock-release called without bdjvars-init\n");
-    return -1;
-  }
   lockCheckLockDir ();
 
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {

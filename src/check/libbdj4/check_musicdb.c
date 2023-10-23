@@ -18,7 +18,6 @@
 
 #include "bdjopt.h"
 #include "bdjregex.h"
-#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
@@ -122,13 +121,12 @@ setup (void)
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
-  bdjvarsInit ();
 }
 
 static void
 teardown (void)
 {
-  bdjvarsCleanup ();
+  return;
 }
 
 START_TEST(musicdb_open_new)

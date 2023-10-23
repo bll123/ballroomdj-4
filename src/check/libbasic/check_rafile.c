@@ -17,7 +17,6 @@
 
 #include <check.h>
 
-#include "bdjvars.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -26,18 +25,6 @@
 #include "mdebug.h"
 
 #define RAFN "tmp/test_rafile.dat"
-
-static void
-setup (void)
-{
-  bdjvarsInit ();
-}
-
-static void
-teardown (void)
-{
-  bdjvarsCleanup ();
-}
 
 START_TEST(rafile_create_new)
 {
@@ -457,7 +444,6 @@ rafile_suite (void)
   s = suite_create ("rafile");
   tc = tcase_create ("rafile");
   tcase_set_tags (tc, "libbasic");
-  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, rafile_create_new);
   tcase_add_test (tc, rafile_reopen);
   tcase_add_test (tc, rafile_write);
