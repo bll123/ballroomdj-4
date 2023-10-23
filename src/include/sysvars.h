@@ -88,6 +88,7 @@ typedef enum {
 } sysvarkey_t;
 
 typedef enum {
+  SVL_ALTIDX,
   SVL_DATAPATH,
   SVL_BASEPORT,
   SVL_BDJIDX,

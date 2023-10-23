@@ -88,6 +88,7 @@ enum {
 /* installation/base port */
 #define ALT_COUNT_FN        "altcount"
 #define ALT_INST_PATH_FN    "altinstdir"
+#define ALT_IDX_FN          "altidx"
 #define BASE_PORT_FN        "baseport"
 #define INST_PATH_FN        "installdir"
 #define NEWINST_FN          "newinstall"

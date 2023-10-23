@@ -123,6 +123,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
+  [SVL_ALTIDX] = { "ALTIDX" },
   [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
   [SVL_BDJIDX] = { "BDJIDX" },
@@ -693,10 +694,11 @@ sysvarsInit (const char *argv0)
   sysvarsGetPythonVersion ();
   sysvarsCheckMutagen ();
 
+  lsysvars [SVL_ALTIDX] = 0;
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_INITIAL_PORT] = 32548;
   lsysvars [SVL_BASEPORT] = 32548;
-  strlcpy (buff, "data/baseport.txt", sizeof (buff));
+  snprintf (buff, sizeof (buff), "data/%s%s", BASE_PORT_FN, BDJ4_CONFIG_EXT);
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
@@ -710,6 +712,23 @@ sysvarsInit (const char *argv0)
     stringTrim (tbuff);
     if (*tbuff) {
       lsysvars [SVL_BASEPORT] = atoi (tbuff);
+    }
+  }
+
+  snprintf (buff, sizeof (buff), "data/%s%s", ALT_IDX_FN, BDJ4_CONFIG_EXT);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      lsysvars [SVL_ALTIDX] = atoi (tbuff);
     }
   }
 

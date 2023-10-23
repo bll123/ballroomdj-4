@@ -1164,11 +1164,22 @@ altinstSetup (altinst_t *altinst)
   /* calculate the new base port */
   baseport = sysvarsGetNum (SVL_INITIAL_PORT);
   baseport += altcount * BDJOPT_MAX_PROFILES * (int) bdjvarsGetNum (BDJVL_NUM_PORTS);
-  snprintf (str, sizeof (str), "%d\n", baseport);
 
   /* write the new base port out */
+  snprintf (str, sizeof (str), "%d\n", baseport);
   pathbldMakePath (buff, sizeof (buff),
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+  fh = fileopOpen (buff, "w");
+  if (fh != NULL) {
+    fputs (str, fh);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  /* write the alt-idx file out */
+  snprintf (str, sizeof (str), "%d\n", altcount);
+  pathbldMakePath (buff, sizeof (buff),
+      ALT_IDX_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fileopOpen (buff, "w");
   if (fh != NULL) {
     fputs (str, fh);
