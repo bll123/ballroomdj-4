@@ -63,7 +63,6 @@ typedef enum {
   /* bdj4 is complete.  It will be removed in a later version */
   OPT_M_DIR_OLD_SKIP,
   OPT_M_ITUNES_XML_FILE,
-  OPT_M_LOCAL_IP_ADDR,
   OPT_M_PLAYER_INTFC,
   OPT_M_SCALE,
   OPT_M_SHUTDOWNSCRIPT,

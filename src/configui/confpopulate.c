@@ -147,16 +147,6 @@ confuiPopulateOptions (confuigui_t *gui)
           }
         }
 
-        /* both the mobile marquee ip-address and remote control ip-address */
-        /* point to the same option field. */
-        /* check the remote control data (...rc_ipaddr > ...mmq_ipaddr) */
-        /* to prevent over-writing the option when empty */
-        if (i == CONFUI_ENTRY_RC_IPADDR) {
-          if (sval == NULL || ! *sval) {
-            break;
-          }
-        }
-
         if (isqueueitem) {
           bdjoptSetStrPerQueue (gui->uiitem [i].bdjoptIdx, sval, musicq);
         } else {

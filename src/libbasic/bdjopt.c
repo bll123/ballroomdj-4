@@ -108,7 +108,6 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,          VALUE_STR, NULL, DF_NORM },
   { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },
   { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, DF_NORM },
-  { "LOCALIPADDR",    OPT_M_LOCAL_IP_ADDR,      VALUE_STR, NULL, DF_NORM },
   { "PLAYER",         OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
   { "SCALE",          OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT,     VALUE_STR, NULL, DF_NORM },

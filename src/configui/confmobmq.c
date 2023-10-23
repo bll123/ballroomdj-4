@@ -23,7 +23,6 @@
 static bool confuiMobmqTypeChg (void *udata);
 static bool confuiMobmqPortChg (void *udata);
 static int  confuiMobmqTitleChg (uientry_t *entry, void *udata);
-static int  confuiMobmqIPAddrChg (uientry_t *entry, void *udata);
 
 void
 confuiInitMobileMarquee (confuigui_t *gui)
@@ -52,13 +51,6 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       CONFUI_SWITCH_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
       bdjoptGetNum (OPT_P_MOBILEMARQUEE), confuiMobmqTypeChg, CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the ip address to use for the mobile marquee */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("IP Address"),
-      CONFUI_ENTRY_MMQ_IPADDR, OPT_M_LOCAL_IP_ADDR,
-      "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MMQ_IPADDR].entry,
-      confuiMobmqIPAddrChg, gui, UIENTRY_IMMEDIATE);
-
   /* CONTEXT: configuration: the port to use for the mobile marquee */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
@@ -79,9 +71,6 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  confuiSetLocalIPAddr (gui, CONFUI_ENTRY_MMQ_IPADDR,
-      bdjoptGetNum (OPT_P_MOBILEMARQUEE));
-
   logProcEnd (LOG_PROC, "confuiBuildUIMobileMarquee", "");
 }
 
@@ -98,8 +87,6 @@ confuiMobmqTypeChg (void *udata)
   value = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_MOBILE_MQ].uiswitch);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
-  confuiSetLocalIPAddr (gui, CONFUI_ENTRY_MMQ_IPADDR,
-      bdjoptGetNum (OPT_P_MOBILEMARQUEE));
   confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
   return UICB_CONT;
@@ -132,20 +119,6 @@ confuiMobmqTitleChg (uientry_t *entry, void *udata)
   bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
   confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
-  return UIENTRY_OK;
-}
-
-static int
-confuiMobmqIPAddrChg (uientry_t *entry, void *udata)
-{
-  confuigui_t     *gui = udata;
-  const char      *sval;
-
-  logProcBegin (LOG_PROC, "confuiMobmqIPAddrChg");
-  sval = uiEntryGetValue (entry);
-  bdjoptSetStr (OPT_M_LOCAL_IP_ADDR, sval);
-  confuiUpdateMobmqQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiMobmqIPAddrChg", "");
   return UIENTRY_OK;
 }
 

@@ -24,7 +24,6 @@
 
 static bool confuiRemctrlChg (void *udata, int value);
 static bool confuiRemctrlPortChg (void *udata);
-static int  confuiRemctrlIPAddrChg (uientry_t *entry, void *udata);
 static void confuiLoadHTMLList (confuigui_t *gui);
 
 void
@@ -70,13 +69,6 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
       bdjoptGetStr (OPT_P_REMCONTROLPASS), CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: remote control: the ip address to use for remote control */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("IP Address"),
-      CONFUI_ENTRY_RC_IPADDR, OPT_M_LOCAL_IP_ADDR,
-      "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_RC_IPADDR].entry,
-      confuiRemctrlIPAddrChg, gui, UIENTRY_IMMEDIATE);
-
   /* CONTEXT: configuration: remote control: the port to use for remote control */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
       CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
@@ -90,9 +82,6 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  confuiSetLocalIPAddr (gui, CONFUI_ENTRY_RC_IPADDR,
-      bdjoptGetNum (OPT_P_REMOTECONTROL));
-
   logProcEnd (LOG_PROC, "confuiBuildUIMobileRemoteControl", "");
 }
 
@@ -105,8 +94,6 @@ confuiRemctrlChg (void *udata, int value)
 
   logProcBegin (LOG_PROC, "confuiRemctrlChg");
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
-  confuiSetLocalIPAddr (gui, CONFUI_ENTRY_RC_IPADDR,
-      bdjoptGetNum (OPT_P_REMOTECONTROL));
   confuiUpdateRemctrlQrcode (gui);
   logProcEnd (LOG_PROC, "confuiRemctrlChg", "");
   return UICB_CONT;
@@ -126,20 +113,6 @@ confuiRemctrlPortChg (void *udata)
   confuiUpdateRemctrlQrcode (gui);
   logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
   return UICB_CONT;
-}
-
-static int
-confuiRemctrlIPAddrChg (uientry_t *entry, void *udata)
-{
-  confuigui_t     *gui = udata;
-  const char      *sval;
-
-  logProcBegin (LOG_PROC, "confuiRemctrlIPAddrChg");
-  sval = uiEntryGetValue (entry);
-  bdjoptSetStr (OPT_M_LOCAL_IP_ADDR, sval);
-  confuiUpdateRemctrlQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiRemctrlIPAddrChg", "");
-  return UIENTRY_OK;
 }
 
 static void

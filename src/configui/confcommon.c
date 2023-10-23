@@ -102,13 +102,10 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    const char  *ip;
+    const char  *host;
 
-    ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
-    if (ip == NULL) {
-      ip = "";
-    }
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%" PRId64, ip,
+    host = sysvarsGetStr (SV_HOSTNAME);
+    snprintf (uridisp, sizeof (uridisp), "http://%s.local:%" PRId64, host,
         bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
@@ -146,13 +143,10 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    const char  *ip;
+    const char  *host;
 
-    ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
-    if (ip == NULL) {
-      ip = "";
-    }
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%" PRId64, ip,
+    host = sysvarsGetStr (SV_HOSTNAME);
+    snprintf (uridisp, sizeof (uridisp), "http://%s.local:%" PRId64, host,
         bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 
@@ -288,20 +282,6 @@ confuiGetLocalIP (confuigui_t *gui)
   }
 
   return gui->localip;
-}
-
-void
-confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled)
-{
-  const char    *ip;
-
-  ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
-  if (enabled && (ip == NULL || ! *ip)) {
-    confuiSetStatusMsg (gui, _("Please wait\xe2\x80\xa6"));
-    ip = confuiGetLocalIP (gui);
-    confuiSetStatusMsg (gui, "");
-  }
-  uiEntrySetValue (gui->uiitem [widx].entry, ip);
 }
 
 void
