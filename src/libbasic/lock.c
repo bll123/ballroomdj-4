@@ -105,11 +105,6 @@ lockCheckLockDir (void)
 {
   const char  *tdir;
 
-  if (bdjvarsIsInitialized () != true) {
-    fprintf (stderr, "ERR: lock called before bdjvars-init\n");
-    return;
-  }
-
   tdir = bdjvarsGetStr (BDJV_LOCK_PATH);
   if (tdir != NULL) {
     if (! fileopIsDirectory (tdir)) {
@@ -129,6 +124,9 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   char      tfn [MAXPATHLEN];
   procutil_t process;
 
+  if (bdjvarsIsInitialized () == false) {
+    fprintf (stderr, "ERR: lock-acquire called before bdjvars-init\n");
+  }
   lockCheckLockDir ();
 
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
@@ -186,6 +184,10 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   int       rc;
   pid_t     fpid;
 
+  if (bdjvarsIsInitialized () == false) {
+    fprintf (stderr, "ERR: lock-release called without bdjvars-init\n");
+    return -1;
+  }
   lockCheckLockDir ();
 
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {

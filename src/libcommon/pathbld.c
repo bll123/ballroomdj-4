@@ -94,7 +94,8 @@ pathbldMakePath (char *buff, size_t buffsz,
   }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
-    if ((flags & PATHBLD_MP_DREL_TMP) == PATHBLD_MP_DREL_TMP) {
+    if ((flags & PATHBLD_MP_DIR_LOCK) == PATHBLD_MP_DIR_LOCK ||
+        (flags & PATHBLD_MP_DREL_TMP) == PATHBLD_MP_DREL_TMP) {
       /* if the tmp dir is being used, there is no prefix directory */
       /* use a filename prefix */
       snprintf (profpath, sizeof (profpath), "l%02" PRId64 "-", sysvarsGetNum (SVL_BDJIDX));
