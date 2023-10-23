@@ -15,6 +15,7 @@
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "fileop.h"
 #include "localeutil.h"
@@ -97,7 +98,7 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
-
+  bdjvarsInit ();
   bdjvarsdfloadInit ();
 
   if (! loglevelset) {
@@ -269,8 +270,9 @@ main (int argc, char *argv [])
     dbClose (db [i]);
   }
 
-  audiotagCleanup ();
   bdjvarsdfloadCleanup ();
+  bdjvarsCleanup ();
+  audiotagCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();

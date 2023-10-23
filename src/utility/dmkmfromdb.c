@@ -98,6 +98,7 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
+  bdjvarsInit ();
 
   (void) ! getcwd (cwd, sizeof (cwd));
   strlcpy (dbfn, "data/musicdb.dat", sizeof (dbfn));
@@ -164,6 +165,7 @@ main (int argc, char *argv [])
   raClose (radb);
 
   bdjvarsdfloadCleanup ();
+  bdjvarsCleanup ();
   tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();

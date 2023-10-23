@@ -15,6 +15,7 @@
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "dance.h"
 #include "datafile.h"
 #include "bdj4.h"
@@ -200,6 +201,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
+  bdjvarsInit ();
 
   if (clbdj3tags) {
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
@@ -292,6 +294,7 @@ main (int argc, char *argv [])
   dbEndBatch (db);
   dbClose (db);
 
+  bdjvarsCleanup ();
   bdjvarsdfloadCleanup ();
   audiotagCleanup ();
   tagdefCleanup ();

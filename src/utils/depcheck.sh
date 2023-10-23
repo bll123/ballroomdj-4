@@ -94,6 +94,14 @@ if [[ $rc -ne 0 ]]; then
   grc=$rc
 fi
 
+if [[ $keep == T ]]; then
+  grep -E '/(libbdj4common|libbdj4string|libbdj4tmutil|libbdj4fileop|libbdj4osutils|libbdj4osprocess).dir/' $TSORT |
+      sed -e 's,.*/,,' > dep-libcommon.txt
+  grep -E '/(libbdj4basic).dir/' $TSORT |
+      sed -e 's,.*/,,' > dep-libbasic.txt
+  grep -E '/(libbdj4).dir/' $TSORT |
+      sed -e 's,.*/,,' > dep-libbdj4.txt
+fi
 if [[ $keep == F ]]; then
   rm -f $TIN $TSORT > /dev/null 2>&1
 fi

@@ -16,33 +16,37 @@
 #include <signal.h>
 
 #include "bdj4.h"
+#include "bdjmsg.h"
 #include "bdjstring.h"
-#include "sysvars.h"
-#include "tmutil.h"
+#include "bdjvars.h"
+#include "dirop.h"
+#include "fileop.h"
 #include "lock.h"
 #include "mdebug.h"
-#include "fileop.h"
 #include "pathbld.h"
 #include "procutil.h"
+#include "sysvars.h"
+#include "tmutil.h"
 
 static char *locknames [ROUTE_MAX] = {
-  [ROUTE_NONE] = "none",
-  [ROUTE_MAIN] = "main",
-  [ROUTE_PLAYERUI] = "playerui",
+  [ROUTE_BPM_COUNTER] = "bpmcounter",
   [ROUTE_CONFIGUI] = "configui",
+  [ROUTE_DBTAG] = "dbtag",
+  [ROUTE_DBUPDATE] = "dbupdate",
+  [ROUTE_HELPERUI] = "helperui",
+  [ROUTE_MAIN] = "main",
   [ROUTE_MANAGEUI] = "manageui",
-  [ROUTE_PLAYER] = "player",
+  [ROUTE_MARQUEE] = "marquee",
   [ROUTE_MOBILEMQ] = "mobilemq",
+  [ROUTE_NONE] = "none",
+  [ROUTE_PLAYER] = "player",
+  [ROUTE_PLAYERUI] = "playerui",
   [ROUTE_REMCTRL] = "remctrl",
   [ROUTE_STARTERUI] = "starterui",
-  [ROUTE_DBUPDATE] = "dbupdate",
-  [ROUTE_DBTAG] = "dbtag",
-  [ROUTE_MARQUEE] = "marquee",
-  [ROUTE_HELPERUI] = "helperui",
-  [ROUTE_BPM_COUNTER] = "bpmcounter",
   [ROUTE_TEST_SUITE] = "testsuite",
 };
 
+static void   lockCheckLockDir (void);
 static int    lockAcquirePid (char *fn, pid_t pid, int flags);
 static int    lockReleasePid (char *fn, pid_t pid, int flags);
 static pid_t  getPidFromFile (char *fn);
@@ -63,8 +67,9 @@ lockExists (char *fn, int flags)
   char      tfn [MAXPATHLEN];
   pid_t     fpid = 0;
 
+  lockCheckLockDir ();
   pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-      flags | PATHBLD_MP_DREL_TMP);
+      flags | PATHBLD_MP_DIR_LOCK);
   fpid = getPidFromFile (tfn);
   process.pid = fpid;
   process.hasHandle = false;
@@ -95,6 +100,24 @@ lockRelease (char *fn, int flags)
 
 /* internal routines */
 
+static void
+lockCheckLockDir (void)
+{
+  const char  *tdir;
+
+  if (bdjvarsIsInitialized () != true) {
+    fprintf (stderr, "ERR: lock called before bdjvars-init\n");
+    return;
+  }
+
+  tdir = bdjvarsGetStr (BDJV_LOCK_PATH);
+  if (tdir != NULL) {
+    if (! fileopIsDirectory (tdir)) {
+      diropMakeDir (tdir);
+    }
+  }
+}
+
 static int
 lockAcquirePid (char *fn, pid_t pid, int flags)
 {
@@ -106,6 +129,8 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   char      tfn [MAXPATHLEN];
   procutil_t process;
 
+  lockCheckLockDir ();
+
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
     pid = 5;
   }
@@ -114,7 +139,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
     strlcpy (tfn, fn, sizeof (tfn));
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-        flags | PATHBLD_MP_DREL_TMP);
+        flags | PATHBLD_MP_DIR_LOCK);
   }
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
@@ -161,6 +186,8 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   int       rc;
   pid_t     fpid;
 
+  lockCheckLockDir ();
+
   if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
     pid = 5;
   }
@@ -169,7 +196,7 @@ lockReleasePid (char *fn, pid_t pid, int flags)
     strlcpy (tfn, fn, sizeof (tfn));
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-        flags | PATHBLD_MP_DREL_TMP);
+        flags | PATHBLD_MP_DIR_LOCK);
   }
 
   rc = -1;

@@ -18,6 +18,7 @@
 
 #include "bdjopt.h"
 #include "bdjregex.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
@@ -121,6 +122,13 @@ setup (void)
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
+  bdjvarsInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsCleanup ();
 }
 
 START_TEST(musicdb_open_new)
@@ -740,7 +748,7 @@ musicdb_suite (void)
 
   tc = tcase_create ("musicdb-basic");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_open_new);
   suite_add_tcase (s, tc);
@@ -748,7 +756,7 @@ musicdb_suite (void)
   tc = tcase_create ("musicdb-write");
   tcase_set_tags (tc, "libbdj4");
   tcase_set_timeout (tc, 4.0);
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, musicdb_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
@@ -763,7 +771,7 @@ musicdb_suite (void)
   tc = tcase_create ("musicdb-batch-write");
   tcase_set_tags (tc, "libbdj4");
   tcase_set_timeout (tc, 4.0);
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, musicdb_batch_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
@@ -778,7 +786,7 @@ musicdb_suite (void)
   tc = tcase_create ("musicdb-write-song");
   tcase_set_tags (tc, "libbdj4");
   tcase_set_timeout (tc, 4.0);
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, musicdb_write_song);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);

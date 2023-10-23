@@ -310,6 +310,10 @@ sysvarsInit (const char *argv0)
       sysvars [SV_USER_MUNGE][i] = '-';
     }
   }
+  lsysvars [SVL_USER_ID] = SVC_USER_ID_NONE;
+#if _lib_getuid
+  lsysvars [SVL_USER_ID] = getuid ();
+#endif
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));

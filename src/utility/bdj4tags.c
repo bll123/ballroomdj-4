@@ -14,6 +14,7 @@
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "fileop.h"
 #include "localeutil.h"
 #include "log.h"
@@ -113,6 +114,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
+  bdjvarsInit ();
   logStartAppend ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
 
   if (clbdj3tags) {
@@ -238,6 +240,7 @@ bdj4tagsCleanup (void)
 {
   tagdefCleanup ();
   bdjoptCleanup ();
+  bdjvarsCleanup ();
   audiotagCleanup ();
   localeCleanup ();
   logEnd ();

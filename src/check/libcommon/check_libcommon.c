@@ -37,18 +37,18 @@ check_libcommon (SRunner *sr)
    *  bdjstring   complete
    *  ossignal    complete
    *  osprocess   complete                // uses procutil, pathbld, ossignal
+   *  mdebug      complete
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
-   *  mdebug      complete
    *  sysvars
    *  osdir       complete 2022-12-27     // test uses dirop
    *  pathdisp    complete
-   *  pathbld     complete
    *  dirop       complete
    *  fileop_dir  complete 2023-7-31
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
+   *  pathbld     complete
    *  log
    *  bdjmsg      complete
    *  sock        partial                 // uses ossignal
@@ -84,6 +84,9 @@ check_libcommon (SRunner *sr)
   s = osprocess_suite();
   srunner_add_suite (sr, s);
 
+  s = mdebug_suite();
+  srunner_add_suite (sr, s);
+
   s = filedata_suite();
   srunner_add_suite (sr, s);
 
@@ -91,9 +94,6 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = pathutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = mdebug_suite();
   srunner_add_suite (sr, s);
 
   /* sysvars */
@@ -144,6 +144,8 @@ check_libcommon (SRunner *sr)
 
   s = osrandom_suite();
   srunner_add_suite (sr, s);
+
+  /* bdjregex */
 
   s = colorutils_suite();
   srunner_add_suite (sr, s);

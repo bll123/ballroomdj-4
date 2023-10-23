@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4audioid SHARED
   audioid.c
+  audioidutil.c
   audioidjson.c
   audioidxml.c
   musicbrainz.c

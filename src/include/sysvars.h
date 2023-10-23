@@ -100,6 +100,7 @@ typedef enum {
   SVL_LOCALE_SYS_SET,
   SVL_NUM_PROC,
   SVL_OSBITS,
+  SVL_USER_ID,
   SVL_MAX
 } sysvarlkey_t;
 
@@ -120,6 +121,10 @@ typedef struct {
   char    *releaselevel;
   char    *dev;
 } sysversinfo_t;
+
+enum {
+  SVC_USER_ID_NONE = -1,
+};
 
 void    sysvarsInit (const char *argv0);
 void    sysvarsCheckPaths (const char *otherpaths);

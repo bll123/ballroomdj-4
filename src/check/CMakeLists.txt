@@ -32,7 +32,6 @@ add_executable (check_all
   libcommon/check_pathutil.c
   libcommon/check_procutil.c
   libcommon/check_queue.c
-  libcommon/check_rafile.c
   libcommon/check_sock.c
   libcommon/check_tmutil.c
   libcommon/check_vsencdec.c
@@ -46,6 +45,7 @@ add_executable (check_all
   libbasic/check_lock.c
   libbasic/check_nlist.c
   libbasic/check_progstate.c
+  libbasic/check_rafile.c
   libbasic/check_slist.c
   # libbdj4
   libbdj4/check_libbdj4.c

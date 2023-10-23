@@ -23,7 +23,6 @@
 #include "bdjstring.h"
 #include "bdjvarsdfload.h"
 #include "bdjvars.h"
-#include "bdjvars.h"
 #include "fileop.h"
 #include "localeutil.h"
 #include "lock.h"

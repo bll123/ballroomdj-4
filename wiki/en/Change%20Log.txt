@@ -20,6 +20,7 @@
     * Internal: Fix obscure bug (ilist; introduced in 4.3.3.2).
 * Changes:
     * Audio Identification: ACRCloud service implemented.
+    * Configuration: Music Queues: Add a fifth music queue.
     * Configuration: General: Add ACRCloud keys for Audio ID.
     * Translations: Nederlands (Dutch) updated.
     * Translations: Русский (Russian) updated.
@@ -589,4 +590,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-21 15:40:17; BDJ4 version 4.4.2)_
+<br>_(Updated 2023-10-23 04:30:44; BDJ4 version 4.4.2)_

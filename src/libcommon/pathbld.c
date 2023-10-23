@@ -10,6 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -19,6 +20,7 @@ char *
 pathbldMakePath (char *buff, size_t buffsz,
     const char *base, const char *extension, int flags)
 {
+  char      tbuff [MAXPATHLEN];
   char      profpath [50];
   char      dstamp [40];
   char      *dirprefix = "";
@@ -31,6 +33,18 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_DREL_DATA) == PATHBLD_MP_DREL_DATA) {
     /* relative */
     dirprefix = sysvarsGetStr (SV_BDJ4_DREL_DATA);
+  }
+  if ((flags & PATHBLD_MP_DIR_LOCK) == PATHBLD_MP_DIR_LOCK) {
+    int     uid;
+
+    uid = sysvarsGetNum (SVL_USER_ID);
+    if (isLinux () && uid != SVC_USER_ID_NONE) {
+      snprintf (tbuff, sizeof (tbuff), "/var/run/user/%d/bdj4", uid);
+      dirprefix = tbuff;
+    }
+    if (! isLinux () || uid == SVC_USER_ID_NONE) {
+      dirprefix = sysvarsGetStr (SV_BDJ4_DREL_TMP);
+    }
   }
   if ((flags & PATHBLD_MP_DREL_TMP) == PATHBLD_MP_DREL_TMP) {
     /* relative */

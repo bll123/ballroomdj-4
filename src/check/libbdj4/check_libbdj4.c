@@ -49,17 +49,18 @@ check_libbdj4 (SRunner *sr)
    *  playlist              complete 2023-7-21
    *      add-count, add-played, set-filter are not tested at this time.
    *  validate              complete
-   *  audiotag
    *  sortopt               complete
+   *  audiotag
    *  dispsel               complete
+   *  samesong              complete
    *  orgutil               partial
    *  webclient             complete 2022-12-27
    *  songdb
-   *  samesong              complete
    *  audioadjust
    *  templateutil          complete // needed by tests; needs localized tests
    *  bdjvarsdfload         complete // needed by tests; uses templateutil
    *  msgparse              complete 2022-12-27
+   *  musicq                complete
    *  orgopt                complete
    *  volreg                complete 2022-12-27 (missing lock tests)
    *  m3u
@@ -69,7 +70,6 @@ check_libbdj4 (SRunner *sr)
    *  instutil
    *  support
    *  mp3exp
-   *  musicq
    *  expimpbdj4
    */
 
@@ -134,10 +134,10 @@ check_libbdj4 (SRunner *sr)
   s = validate_suite();
   srunner_add_suite (sr, s);
 
-  /* audiotag */
-
   s = sortopt_suite();
   srunner_add_suite (sr, s);
+
+  /* audiotag */
 
   s = dispsel_suite();
   srunner_add_suite (sr, s);
@@ -164,6 +164,9 @@ check_libbdj4 (SRunner *sr)
   s = msgparse_suite();
   srunner_add_suite (sr, s);
 
+  s = musicq_suite();
+  srunner_add_suite (sr, s);
+
   s = orgopt_suite();
   srunner_add_suite (sr, s);
 
@@ -183,9 +186,6 @@ check_libbdj4 (SRunner *sr)
   /* support */
 
   /* mp3exp */
-
-  s = musicq_suite();
-  srunner_add_suite (sr, s);
 
   /* expimpbdj4 */
 }

@@ -4,11 +4,13 @@
 #ifndef INC_BDJVARS_H
 #define INC_BDJVARS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef enum {
   BDJV_ORIGINAL_EXT,
   BDJV_DELETE_PFX,
+  BDJV_LOCK_PATH,
   BDJV_DB_TOP_DIR,    // temporary
   BDJV_TS_SECTION,    // temporary
   BDJV_TS_TEST,       // temporary

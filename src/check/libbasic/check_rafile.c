@@ -17,6 +17,7 @@
 
 #include <check.h>
 
+#include "bdjvars.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -25,6 +26,18 @@
 #include "mdebug.h"
 
 #define RAFN "tmp/test_rafile.dat"
+
+static void
+setup (void)
+{
+  bdjvarsInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsCleanup ();
+}
 
 START_TEST(rafile_create_new)
 {
@@ -135,7 +148,7 @@ START_TEST(rafile_write_batch)
   lastsize = statbuf.st_size;
 
   raStartBatch (rafile);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 
   raWrite (rafile, RAFILE_NEW, "dddd");
@@ -161,10 +174,10 @@ START_TEST(rafile_write_batch)
   ck_assert_int_eq (raGetCount (rafile), 6);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 7);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_SKIP_SELF);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_NONE | LOCK_TEST_SKIP_SELF);
   ck_assert_int_eq (rc, getpid());
   raEndBatch (rafile);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 
   raClose (rafile);
@@ -444,6 +457,7 @@ rafile_suite (void)
   s = suite_create ("rafile");
   tc = tcase_create ("rafile");
   tcase_set_tags (tc, "libbasic");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, rafile_create_new);
   tcase_add_test (tc, rafile_reopen);
   tcase_add_test (tc, rafile_write);

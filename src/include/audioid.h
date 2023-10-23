@@ -19,6 +19,9 @@ bool audioidLookup (audioid_t *audioid, const song_t *song);
 void audioidStartIterator (audioid_t *audioid);
 ilistidx_t audioidIterate (audioid_t *audioid);
 nlist_t * audioidGetList (audioid_t *audioid, int key);
+
+/* audioidutil.c */
+
 bool audioidSetResponseData (int level, ilist_t *resp, int respidx, int tagidx, const char *data, const char *joinphrase);
 
 typedef struct audioidparsedata

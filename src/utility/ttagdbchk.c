@@ -14,6 +14,7 @@
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "dirlist.h"
 #include "fileop.h"
@@ -92,6 +93,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
+  bdjvarsInit ();
 
   bdjvarsdfloadInit ();
 
@@ -138,6 +140,7 @@ main (int argc, char *argv [])
   slistFree (flist);
   dbClose (db);
 
+  bdjvarsCleanup ();
   audiotagCleanup ();
   bdjvarsdfloadCleanup ();
   tagdefCleanup ();
