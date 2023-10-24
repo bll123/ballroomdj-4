@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.1.4\n"
+"Project-Id-Version: ballroomdj-4 4.4.2.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-18\n"
-"PO-Revision-Date: 2023-10-18\n"
+"POT-Creation-Date: 2023-10-24\n"
+"PO-Revision-Date: 2023-10-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -874,11 +874,6 @@ msgstr ""
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 msgid "History"
-msgstr ""
-
-#. CONTEXT: configuration: the ip address to use for the mobile marquee
-#. CONTEXT: configuration: remote control: the ip address to use for remote control
-msgid "IP Address"
 msgstr ""
 
 #. CONTEXT: installer: instructions

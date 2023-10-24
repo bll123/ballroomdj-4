@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.1.4\n"
+"Project-Id-Version: ballroomdj-4 4.4.2.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-18\n"
-"PO-Revision-Date: 2023-10-18\n"
+"POT-Creation-Date: 2023-10-24\n"
+"PO-Revision-Date: 2023-10-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -874,11 +874,6 @@ msgstr ""
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 msgid "History"
-msgstr ""
-
-#. CONTEXT: configuration: the ip address to use for the mobile marquee
-#. CONTEXT: configuration: remote control: the ip address to use for remote control
-msgid "IP Address"
 msgstr ""
 
 #. CONTEXT: installer: instructions
@@ -2117,6 +2112,7 @@ msgstr ""
 " wiki, forums and problem ticketing system. Or use the"
 " 'Send Support Message' button to send a message."
 
+
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
 msgstr ""
@@ -2160,6 +2156,7 @@ msgstr ""
 "=> Wait for the database rebuild to finish."
 "=> Leave the 'BDJ4 Management' window open."
 
+
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
 msgstr ""
@@ -2180,6 +2177,7 @@ msgstr ""
 " Above the song list is an entry box with the name 'New Song List' in it."
 "=> Click in the box and change the name of the song list."
 "=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"

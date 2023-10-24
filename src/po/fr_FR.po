@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-21\n"
+"PO-Revision-Date: 2023-10-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -881,11 +881,6 @@ msgstr "Niveau de danse élevé"
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 msgid "History"
 msgstr "L'histoire"
-
-#. CONTEXT: configuration: the ip address to use for the mobile marquee
-#. CONTEXT: configuration: remote control: the ip address to use for remote control
-msgid "IP Address"
-msgstr "Adresse IP"
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."

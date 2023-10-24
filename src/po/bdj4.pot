@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-18 08:40-0700\n"
+"POT-Creation-Date: 2023-10-24 07:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -878,11 +878,6 @@ msgstr ""
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 msgid "History"
-msgstr ""
-
-#. CONTEXT: configuration: the ip address to use for the mobile marquee
-#. CONTEXT: configuration: remote control: the ip address to use for remote control
-msgid "IP Address"
 msgstr ""
 
 #. CONTEXT: installer: instructions
