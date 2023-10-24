@@ -18,17 +18,6 @@ marquee is activated when then player is started.
 
 __Title__: An optional title to display on the mobile marquee.
 
-__IP Address__: The local IP address.  If the computer is connected to
-the internet, this field will automatically be filled in.
-
-If the computer is not connected to the internet, enter the computer's
-local IP address.
-
-If the IP address has already been set, it will not be replaced.  If
-the computer is connected to the internet and you want to reset it,
-blank out the field, then turn _Enable&nbsp;Mobile&nbsp;Marquee_ off
-and on again.
-
 __Port__: The port to connect to.  This usually does not need to be
 changed unless there is another device using this port.
 
