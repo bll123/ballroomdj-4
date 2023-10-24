@@ -37,7 +37,8 @@
 bool
 fileopFileExists (const char *fname)
 {
-  int           rc;
+  int   rc;
+  bool  brc = 0;
 
 #if _lib__wstat64
   {
@@ -60,7 +61,11 @@ fileopFileExists (const char *fname)
     }
   }
 #endif
-  return (rc == 0);
+  if (rc == 0) {
+    brc = 1;
+  }
+
+  return brc;
 }
 
 ssize_t
@@ -216,7 +221,8 @@ fileopCreateTime (const char *fname)
 bool
 fileopIsDirectory (const char *fname)
 {
-  int         rc;
+  int   rc;
+  bool  brc = 0;
 
 #if _lib__wstat64
   {
@@ -233,13 +239,20 @@ fileopIsDirectory (const char *fname)
 #else
   {
     struct stat   statbuf;
+
+    memset (&statbuf, '\0', sizeof (struct stat));
     rc = stat (fname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFDIR) {
       rc = -1;
     }
   }
 #endif
-  return (rc == 0);
+  /* had some trouble with the optimizer, so spell out the values */
+  if (rc == 0) {
+    brc = 1;
+  }
+
+  return brc;
 }
 
 int

@@ -37,20 +37,20 @@ $HOME/BDJ4 folder
 
 ##### Install the Requisite Software
 
-If a pre-install script before version 7 was run, you must re-run
+If a pre-install script before version 9 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v9.sh script from sourceforge.
+Download the linux-pre-install-v10.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v9.sh
+bash linux-pre-install-v10.sh
 ~~~
 
 This script performs the following actions:

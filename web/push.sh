@@ -73,6 +73,15 @@ if [[ $rc -eq 0 ]]; then
   exit 1
 fi
 
+wserver=web.sourceforge.net
+port=22
+project=ballroomdj4
+# ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
+remuser=${SFUSER}
+wwwpath=/home/project-web/${project}/htdocs
+ssh="ssh -p $port"
+export ssh
+
 echo -n "sourceforge Password: "
 read -s SSHPASS
 echo ""
@@ -85,7 +94,7 @@ export SSHPASS
 fn=README.txt
 sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
 sshpass -e rsync -v -e ssh ${fn}.n \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}
 rm -f ${fn}.n
 
 # linux scripts
@@ -93,37 +102,42 @@ rm -f ${fn}.n
 fn=linux-pre-install
 ver=$(install/${fn}.sh --version)
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=linux-uninstall-bdj4
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/
 
 # macos scripts
 
 fn=macos-pre-install-macports
 ver=$(install/${fn}.sh --version)
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=macos-run-installer
 ver=$(install/${fn}.sh --version)
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=macos-uninstall-bdj4
 ver=$(install/${fn}.sh --version)
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
-server=web.sourceforge.net
-port=22
-project=ballroomdj4
-# ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
-remuser=${SFUSER}
-wwwpath=/home/project-web/${project}/htdocs
-ssh="ssh -p $port"
-export ssh
+# windows scripts
+
+fn=win-uninstall-bdj4
+ver=$(grep ver= $fn.bat | sed -e 's,.*ver=,,')
+sshpass -e rsync -v -e ssh install/${fn}.bat \
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.bat
+
+# installers
+
+for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
+  sshpass -e rsync -v -e ssh ${fn} \
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
+done
 
 echo "## updating version file"
 VERFILE=bdj4version.txt
@@ -132,13 +146,8 @@ cvers=$(pkgwebvers)
 echo "$cvers" > $VERFILE
 for f in $VERFILE; do
   sshpass -e rsync -e "$ssh" -aS \
-      $f ${remuser}@${server}:${wwwpath}
+      $f ${remuser}@${wserver}:${wwwpath}
 done
 rm -f $VERFILE
-
-for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
-  sshpass -e rsync -v -e ssh ${fn} \
-    ${SFUSER}@frs.sourceforge.net:/home/frs/project/ballroomdj4/v${VERSION}/
-done
 
 exit 0

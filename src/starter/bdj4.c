@@ -63,6 +63,7 @@ main (int argc, char * argv[])
   static struct option bdj_options [] = {
     { "bdj4altinst",    no_argument,        NULL,   20 },
     { "bdj4bpmcounter", no_argument,        NULL,   19 },
+    { "bdj4cleantmp",   no_argument,        NULL,   29 },
     { "bdj4configui",   no_argument,        NULL,   3 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     { "bdj4helperui",   no_argument,        NULL,   18 },
@@ -333,6 +334,13 @@ main (int argc, char * argv[])
       }
       case 28: {
         prog = "dmkmfromdb";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 29: {
+        prog = "bdj4cleantmp";
         nodetach = true;
         wait = true;
         ++validargs;

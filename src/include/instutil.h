@@ -53,5 +53,6 @@ bool  instutilCheckForExistingInstall (const char *dir, const char *macospfx);
 bool  instutilIsStandardInstall (const char *dir, const char *macospfx);
 void  instutilRegister (const char *data);
 void  instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz);
+void  instutilInstallCleanTmp (const char *rundir);
 
 #endif /* INC_INSTUTIL_H */

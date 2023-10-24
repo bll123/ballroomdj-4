@@ -15,7 +15,7 @@ this script using the following command.
 
     :::bash
     cd Downloads
-    bash macos-uninstall-bdj4-v1.sh
+    bash macos-uninstall-bdj4-v2.sh
 
 This script performs the following actions.  The script will ask for
 confirmation before performing each action.
@@ -26,11 +26,20 @@ confirmation before performing each action.
 
 ##### Windows
 
-Delete the BDJ4 folder from your %USERPROFILE% (home) folder.
+Download the win-uninstall-bdj4-v1.bat script from sourceforge.
+
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
+
+Run the win-uninstall-bdj4-v1.bat script.
+
+e.g. Using cmd.exe:
+
+    cd Downloads
+    .\win-uninstall-bdj4-v1.bat
 
 ##### Linux
 
-Download the linux-uninstall-bdj4.sh script from sourceforge.
+Download the linux-uninstall-bdj4-v2.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -38,7 +47,7 @@ Open a terminal and run this script using the following command.
 
     :::bash
     cd Downloads
-    bash linux-uninstall-bdj4.sh
+    bash linux-uninstall-bdj4-v2.sh
 
 [Wiki Home](Home)
 <br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_

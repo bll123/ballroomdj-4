@@ -43,24 +43,31 @@ START_TEST(fileop_is_dir)
   diropDeleteDir (fn);
   rc = fileopIsDirectory (fn);
   ck_assert_int_eq (rc, 0);
+
   diropMakeDir (fn);
+
   fh = fopen (fnb, "w");
-  ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = osCreateLink ("d-abc", fnc);
 
   rc = fileopIsDirectory (fn);
   ck_assert_int_eq (rc, 1);
+
+  rc = fileopIsDirectory (fnb);
+  ck_assert_int_eq (rc, 0);
+
   if (! isWindows ()) {
     rc = fileopIsDirectory (fnc);
     ck_assert_int_eq (rc, 1);
     rc = osIsLink (fnc);
     ck_assert_int_eq (rc, 1);
   }
-  rc = fileopIsDirectory (fnb);
-  ck_assert_int_eq (rc, 0);
 
   diropDeleteDir (fn);
+
+  rc = fileopIsDirectory (fn);
+  ck_assert_int_eq (rc, 0);
+
   unlink (fnb);
   unlink (fnc);
 }

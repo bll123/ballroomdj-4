@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=2
+ver=3
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -43,6 +43,8 @@ if [[ $gr != Y ]]; then
   exit 1
 fi
 
+TMP=/tmp/bdj4-ct.txt
+
 sudo -v
 
 # remove any old mutagen installed for the user
@@ -63,6 +65,8 @@ if [[ $gr == Y ]]; then
   confdir="${cdir}/BDJ4"
   test -d "$confdir" && rm -rf "$confdir"
 
+  sudo -v
+
   # installed themes
   for fn in "$HOME/.themes/macOS-Mojave-dark" \
       "$HOME/.themes/macOS-Mojave-light" \
@@ -76,9 +80,16 @@ if [[ $gr == Y ]]; then
   dir="$HOME/.themes"
   test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
 
+  sudo -v
+
   # shortcut
   fn="$HOME/Desktop/BDJ4.app"
   test -h "$fn" && rm -f "$fn"
+
+  # crontab
+  crontab -l | sed -e '/BDJ4/ d' > $TMP
+  crontab $TMP
+  rm -f $TMP
 
   echo "-- BDJ4 application removed."
 fi

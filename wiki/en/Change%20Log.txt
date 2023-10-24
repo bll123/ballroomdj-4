@@ -6,6 +6,14 @@
 
 **4.4.2.1 2023-10---**
 
+* Bug Fixes:
+    * Lock files are cleaned up upon restart of the computer.
+    * Mobile Marquee: Use zero-configuration network name.
+    * Remote Control: Use zero-configuration network name.
+    * Windows: Install missing acrcloud fingerprint utility.
+* Changes:
+    * Configuration: Mobile Marquee, Remote Control: Remove IP Address.
+
 -->
 
 **4.4.2 2023-10-21**

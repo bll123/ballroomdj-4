@@ -13,6 +13,7 @@
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "datafile.h"
 #include "dirlist.h"
@@ -523,6 +524,82 @@ instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz)
   if (*versinfo->build) {
     strlcat (buff, "-", sz);
     strlcat (buff, versinfo->build, sz);
+  }
+}
+
+void
+instutilInstallCleanTmp (const char *rundir)
+{
+  if (isWindows ()) {
+    char    *cttext;
+    size_t  sz = 0;
+    char    tbuff [MAXPATHLEN];
+    char    tfn [MAXPATHLEN];
+    FILE    *fh;
+
+    strlcpy (tbuff, rundir, sizeof (tbuff));
+    pathDisplayPath (tbuff, sizeof (tbuff));
+    snprintf (tfn, sizeof (tfn), "%s/bdj4clean.bat",
+        sysvarsGetStr (SV_DIR_CONFIG));
+    cttext = filedataReadAll (tfn, &sz);
+    if (cttext == NULL) {
+      cttext = mdstrdup ("");
+    }
+    if (strstr (cttext, tbuff) == NULL) {
+      char    *btmpl;
+      char    *tmpl;
+
+      btmpl = filedataReadAll ("install/win-cleantmp.bat", &sz);
+      tmpl = regexReplaceLiteral (btmpl, "#BDJ4DIR#", tbuff);
+      dataFree (btmpl);
+
+      fh = fopen (tfn, "a");
+      mdextfopen (fh);
+      if (fh != NULL) {
+        fwrite (tmpl, strlen (tmpl), 1, fh);
+        mdextfclose (fh);
+        fclose (fh);
+      }
+      dataFree (tmpl);
+    }
+    dataFree (cttext);
+  }
+  if (isMacOS ()) {
+    const char  *targv [5];
+    int         targc = 0;
+    char        *cttext;
+    size_t      sz = 0;
+    char        tfn [MAXPATHLEN];
+    char        tstr [MAXPATHLEN];
+    FILE        *fh;
+
+    targv [targc++] = sysvarsGetStr (SV_PATH_CRONTAB);
+    targv [targc++] = "-l";
+    targv [targc++] = NULL;
+    snprintf (tfn, sizeof (tfn), "/tmp/bdj4-ict.txt");
+    osProcessStart (targv, OS_PROC_WAIT, NULL, tfn);
+    cttext = filedataReadAll (tfn, &sz);
+    if (cttext == NULL) {
+      cttext = mdstrdup ("");
+    }
+    snprintf (tstr, sizeof (tstr),
+        "@reboot %s/bin/bdj4 --bdj4cleantmp\n", rundir);
+    if (strstr (cttext, tstr) == NULL) {
+      fh = fopen (tfn, "a");
+      mdextfopen (fh);
+      if (fh != NULL) {
+        fputs (tstr, fh);
+        mdextfclose (fh);
+        fclose (fh);
+      }
+      targc = 0;
+      targv [targc++] = sysvarsGetStr (SV_PATH_CRONTAB);
+      targv [targc++] = tfn;
+      targv [targc++] = NULL;
+      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+    }
+    fileopDelete (tfn);
+    dataFree (cttext);
   }
 }
 

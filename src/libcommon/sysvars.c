@@ -96,6 +96,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
   [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
+  [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
   [SV_PATH_FPCALC] = { "PATH_FPCALC" },
   [SV_PATH_MUTAGEN] = { "PATH_MUTAGEN" },
@@ -136,6 +137,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
   [SVL_NUM_PROC] = { "NUM_PROC" },
   [SVL_OSBITS] = { "OSBITS" },
+  [SVL_USER_ID] = { "USER_ID" },
 };
 
 enum {
@@ -759,13 +761,16 @@ sysvarsCheckPaths (const char *otherpaths)
   char    tbuff [MAXPATHLEN];
   char    tpath [4096];
 
+  strlcpy (sysvars [SV_PATH_ACRCLOUD], "", SV_MAX_SZ);
+  /* crontab is used on macos during installation */
+  strlcpy (sysvars [SV_PATH_CRONTAB], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_FFMPEG], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_FPCALC], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_ACRCLOUD], "", SV_MAX_SZ);
+  /* gsettings is used on linux to get the current theme */
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_MUTAGEN], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
@@ -792,6 +797,14 @@ sysvarsCheckPaths (const char *otherpaths)
     pathNormalizePath (tbuff, sizeof (tbuff));
     stringTrimChar (tbuff, '/');
 
+    if (*sysvars [SV_PATH_ACRCLOUD] == '\0') {
+      checkForFile (tbuff, SV_PATH_ACRCLOUD, "acrcloud", NULL);
+    }
+
+    if (*sysvars [SV_PATH_CRONTAB] == '\0') {
+      checkForFile (tbuff, SV_PATH_CRONTAB, "crontab", NULL);
+    }
+
     if (*sysvars [SV_PATH_FFMPEG] == '\0') {
       checkForFile (tbuff, SV_PATH_FFMPEG, "ffmpeg", NULL);
     }
@@ -800,28 +813,24 @@ sysvarsCheckPaths (const char *otherpaths)
       checkForFile (tbuff, SV_PATH_FPCALC, "fpcalc", NULL);
     }
 
-    if (*sysvars [SV_PATH_ACRCLOUD] == '\0') {
-      checkForFile (tbuff, SV_PATH_ACRCLOUD, "acrcloud", NULL);
+    if (*sysvars [SV_PATH_GSETTINGS] == '\0') {
+      checkForFile (tbuff, SV_PATH_GSETTINGS, "gsettings", NULL);
     }
 
     if (*sysvars [SV_PATH_MUTAGEN] == '\0') {
       checkForFile (tbuff, SV_PATH_MUTAGEN, "mutagen-inspect", "mutagen-inspect-3.11", NULL);
     }
 
-    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
-      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
-    }
-
     if (*sysvars [SV_PATH_PYTHON] == '\0') {
       checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
     }
 
-    if (*sysvars [SV_PATH_URI_OPEN] == '\0') {
-      checkForFile (tbuff, SV_PATH_URI_OPEN, "xdg-open", "open", NULL);
+    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
+      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
     }
 
-    if (*sysvars [SV_PATH_GSETTINGS] == '\0') {
-      checkForFile (tbuff, SV_PATH_GSETTINGS, "gsettings", NULL);
+    if (*sysvars [SV_PATH_URI_OPEN] == '\0') {
+      checkForFile (tbuff, SV_PATH_URI_OPEN, "xdg-open", "open", NULL);
     }
 
     if (*sysvars [SV_PATH_XDGUSERDIR] == '\0') {

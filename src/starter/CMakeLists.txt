@@ -98,9 +98,20 @@ addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
 updateRPath (bdj4helperui)
 
+add_executable (bdj4cleantmp bdj4cleantmp.c)
+if (WIN32)
+  target_compile_options (bdj4cleantmp PRIVATE -municode)
+endif()
+target_link_libraries (bdj4cleantmp PUBLIC
+  libbdj4basic libbdj4common
+  z
+  m
+)
+updateRPath (bdj4cleantmp)
+
 install (TARGETS
   bdj4 bdj4g
-  bdj4starterui bdj4helperui
+  bdj4starterui bdj4helperui bdj4cleantmp
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 

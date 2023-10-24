@@ -54,7 +54,7 @@ static ftest_t tests [] = {
   { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX, false, "data", "test" },
   { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME, false, "data", "test" },
   { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX, false, "data", "test" },
-  { "test", ".txt", PATHBLD_MP_DREL_TMP | PATHBLD_MP_USEIDX, false, "tmp", "l00-test.txt" },
+  { "test", ".txt", PATHBLD_MP_DREL_TMP | PATHBLD_MP_USEIDX, false, "tmp", "l00-00-test.txt" },
   { "test", ".txt", PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX, false, "img", "test.txt" },
 };
 enum {

@@ -75,6 +75,8 @@ typedef enum {
   INST_CONVERT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
+  INST_WIN_STARTUP,
+  INST_INST_CLEAN_TMP,
   INST_SET_ATI,
   INST_SAVE_LOCALE,
   INST_VLC_CHECK,
@@ -143,10 +145,10 @@ typedef struct {
   char            *target;
   char            *hostname;
   char            *macospfx;
-  char            rundir [MAXPATHLEN];
+  char            rundir [MAXPATHLEN];      // installation dir with macospfx
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
-  char            unpackdir [MAXPATHLEN];
+  char            unpackdir [MAXPATHLEN];   // where the installer is unpacked
   char            vlcversion [40];
   char            pyversion [40];
   char            dlfname [MAXPATHLEN];
@@ -246,8 +248,8 @@ static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
-static void installerUpdateProcessInit (installer_t *installer);
-static void installerUpdateProcess (installer_t *installer);
+static void installerWinStartup (installer_t *installer);
+static void installerInstCleanTmp (installer_t *installer);
 static void installerSetATI (installer_t *installer);
 static void installerSaveLocale (installer_t *installer);
 static void installerVLCCheck (installer_t *installer);
@@ -259,6 +261,8 @@ static void installerPythonInstall (installer_t *installer);
 static void installerMutagenCheck (installer_t *installer);
 static void installerMutagenInstall (installer_t *installer);
 static void installerFinalize (installer_t *installer);
+static void installerUpdateProcessInit (installer_t *installer);
+static void installerUpdateProcess (installer_t *installer);
 static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
@@ -1044,6 +1048,14 @@ installerMainLoop (void *udata)
     }
     case INST_CREATE_SHORTCUT: {
       installerCreateShortcut (installer);
+      break;
+    }
+    case INST_WIN_STARTUP: {
+      installerWinStartup (installer);
+      break;
+    }
+    case INST_INST_CLEAN_TMP: {
+      installerInstCleanTmp (installer);
       break;
     }
     case INST_SET_ATI: {
@@ -2150,6 +2162,37 @@ installerCreateShortcut (installer_t *installer)
     (void) ! symlink (installer->target, buff);
 #endif
   }
+
+  installer->instState = INST_WIN_STARTUP;
+}
+
+static void
+installerWinStartup (installer_t *installer)
+{
+  if (chdir (installer->rundir)) {
+    installerFailWorkingDir (installer, installer->rundir, "winstartup");
+    return;
+  }
+
+  if (isWindows ()) {
+    char  tbuff [MAXPATHLEN];
+
+    snprintf (tbuff, sizeof (tbuff), "%s/bdj4.bat", sysvarsGetStr (SV_HOME));
+    filemanipCopy ("install/win-startup.bat", tbuff);
+  }
+
+  installer->instState = INST_INST_CLEAN_TMP;
+}
+
+static void
+installerInstCleanTmp (installer_t *installer)
+{
+  if (chdir (installer->rundir)) {
+    installerFailWorkingDir (installer, installer->rundir, "instcleantmp");
+    return;
+  }
+
+  instutilInstallCleanTmp (installer->rundir);
 
   installer->instState = INST_SET_ATI;
 }
