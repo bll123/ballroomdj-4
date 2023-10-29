@@ -53,8 +53,8 @@ LOG=src/testall.log
 if [[ $TBUILD == T ]]; then
   (
     cd src
-    case ${pn_tag} in
-      linux-opensuse)
+    case ${pn_dist} in
+      -opensuse)
         make GCC=gcc-12 GXX=g++-12
         ;;
       *)

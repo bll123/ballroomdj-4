@@ -42,30 +42,32 @@ function pkgnmgetdata {
 
   pn_systype=$(uname -s)
   pn_arch=$(uname -m)
+  pn_dist=""
   case ${pn_systype} in
     Linux)
-      pn_tag=linux-unknown
+      pn_tag=linux
+      pn_dist=-unknown
       pn_sfx=
       pn_archtag=
       osid=$(grep '^ID=' /etc/os-release | sed 's/^ID=//')
       case ${osid} in
         fedora)
-          pn_tag=linux-fedora
+          pn_dist=-fedora
           ;;
         *opensuse*)
-          pn_tag=linux-opensuse
+          pn_dist=-opensuse
           ;;
         manjaro*)
-          pn_tag=linux-arch
+          pn_dist=-arch
           ;;
         debian)
           dver=$(cat /etc/debian_version)
           case ${dver} in
             11*)
-              pn_tag=linux-debian11
+              pn_dist=-debian11
               ;;
             12*)
-              pn_tag=linux-debian12
+              pn_dist=-debian12
               ;;
           esac
       esac
@@ -102,14 +104,20 @@ function pkgnmgetdata {
 
 function pkgsrcnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}${pn_devtag}.tar.gz
+  nm=${pn_spkgnm}-src-${pn_tag}-${VERSION}${pn_rlstag}${pn_devtag}.tar.gz
   echo $nm
 }
 
 function pkginstnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-installer-${pn_tag}${pn_archtag}-${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}${pn_sfx}
+  nm=${pn_spkgnm}-installer-${pn_tag}${pn_dist}${pn_archtag}-${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}${pn_sfx}
   echo $nm
+}
+
+function pkgbasevers {
+  pkgnmgetdata
+  basevers=${VERSION}${pn_rlstag}${pn_devtag}
+  echo $basevers
 }
 
 function pkgcurrvers {

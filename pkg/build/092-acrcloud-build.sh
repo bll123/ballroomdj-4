@@ -17,7 +17,8 @@ if [[ $pkgname == "" || $pkgname = "acrcloud" ]]; then
   if [ $? -eq 0 ]; then
     echo ""
     echo "## install ${pkgname}"
-    cp -f acrcloud-${tag}${archtag}${esuffix} $INSTLOC/bin/acrcloud${esuffix}
+    test -d "$INSTLOC/bin" || mkdir "$INSTLOC/bin"
+    cp -f acrcloud-${tag}${archtag}${esuffix} "$INSTLOC/bin/acrcloud${esuffix}"
   fi
 fi
 

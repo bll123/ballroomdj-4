@@ -20,7 +20,6 @@ function mksub {
   pofile=$4
 
   set -o noglob
-  # echo "-- Processing $locale $tmpl"
   sedcmd=""
   ok=F
   while read -r line; do
@@ -56,7 +55,6 @@ function mkhtmlsub {
   pofile=$4
 
   set -o noglob
-  # echo "-- Processing $locale $tmpl"
   sedcmd=""
   ok=F
   while read -r line; do
@@ -162,6 +160,7 @@ LOCALEDATA=${TMPLDIR}/localization.txt
 keycount=0
 echo "# localization" >> $LOCALEDATA
 
+echo -n "-- Processing "
 while read -r line; do
 
   case $line in
@@ -228,7 +227,10 @@ while read -r line; do
       ;;
   esac
 
-  echo "-- Processing $locale templates"
+  echo -n "$llocale "
+  echo -n "("
+
+  echo -n "t"
   fn=${TMPLDIR}/dancetypes.txt
   sed -e '/^#/d' $fn > $TMP
   mksub $fn $TMP $locale $pofile
@@ -268,7 +270,7 @@ while read -r line; do
   sed -n -e '/^[0-9]/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  echo "-- Processing $locale playlists"
+  echo -n "p"
   for fn in ${TMPLDIR}/*.pldances; do
     sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
     sort -u $TMP > $TMP.n
@@ -289,7 +291,7 @@ while read -r line; do
     mksub $fn $TMP $locale $pofile
   done
 
-  echo "-- Processing $locale html files"
+  echo -n "h"
   for fn in ${TMPLDIR}/*.html; do
     case $fn in
       *qrcode.html)
@@ -324,8 +326,11 @@ while read -r line; do
     mv -f "$fn.n" "$fn"
   done
 
+  echo -n ") "
+
   cd $cwd
 done < complete.txt
+echo ""
 
 test -f $TMP && rm -f $TMP
 exit 0

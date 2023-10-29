@@ -9,7 +9,7 @@ instdir=bdj4-install
 # macos install needs these
 pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
 pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
-mksrcpkg=F
+mksrcpkg=T
 
 function updatereadme {
   stage=$1
@@ -27,9 +27,9 @@ function copysrcfiles {
   tag=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt"
+  filelist="LICENSE.txt README.txt VERSION.txt BUILD.txt"
   dirlist="src conv img http install licenses scripts locale pkg
-      templates test-templates web wiki"
+      templates test-templates web wiki wiki-i"
 
   echo "-- $(date +%T) copying files to $stage"
   for f in $filelist; do
@@ -54,6 +54,10 @@ function copysrcfiles {
       ${stage}/http/led_o*.svg
   rm -rf \
       ${stage}/img/profile0[0-9]
+
+  dir=devel
+  mkdir ${stage}/${dir}
+  touch ${stage}/${dir}/srcdist.txt
 }
 
 function copyreleasefiles {
@@ -180,8 +184,12 @@ cwd=$(pwd)
 clean=T
 preskip=F
 insttest=F
+sourceonly=F
 while test $# -gt 0; do
   case $1 in
+    --source)
+      sourceonly=T
+      ;;
     --preskip)
       preskip=T
       ;;
@@ -222,6 +230,10 @@ isprimary=F
 if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
+issrcdist=F
+if [[ -f devel/srcdist.txt ]]; then
+  issrcdist=T
+fi
 
 if [[ $preskip == F && $insttest == F ]]; then
   ./pkg/prepkg.sh
@@ -238,10 +250,11 @@ fi
 
 . ./VERSION.txt
 
-if [[ $insttest == F ]]; then
+if [[ $insttest == F && $sourceonly == F ]]; then
   # update build number
 
-  # only rebuild the version.txt file on linux.
+  # only rebuild the version.txt file on linux on the primary development
+  # machine.
   if [[ $tag == linux ]]; then
     if [[ $isprimary == T ]]; then
       echo "-- $(date +%T) updating build number"
@@ -260,8 +273,9 @@ fi
 
 # staging / create packages
 
-if [[ mksrcpkg == T && $insttest == F ]]; then
-  stagedir=tmp/${spkgnm}-src
+if [[ $mksrcpkg == T && $insttest == F && $isprimary == T ]]; then
+  bver=$(pkgbasevers)
+  stagedir=tmp/${spkgnm}-${bver}
   manfn=manifest.txt
   manfnpath=${stagedir}/install/${manfn}
   chksumfn=checksum.txt
@@ -277,6 +291,20 @@ if [[ mksrcpkg == T && $insttest == F ]]; then
 
       copysrcfiles ${tag} ${stagedir}
 
+      filelist="packages/acrcloud-linux"
+      for f in $filelist; do
+        dir=$(dirname ${f})
+        test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+        rsync -aS ${f} ${stage}/${dir}
+      done
+
+      dirlist="packages/libmp4tag* packages/libid3tag* packages/mongoose*"
+      for d in $dirlist; do
+        dir=$(dirname ${d})
+        test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+        rsync -aS ${d} ${stage}/${dir}
+      done
+
       echo "-- $(date +%T) creating source manifest"
       touch ${manfnpath}
       ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
@@ -290,6 +318,10 @@ if [[ mksrcpkg == T && $insttest == F ]]; then
       rm -rf ${stagedir}
       ;;
   esac
+fi
+
+if [[ $sourceonly == T ]]; then
+  exit 0
 fi
 
 echo "-- $(date +%T) create release package"

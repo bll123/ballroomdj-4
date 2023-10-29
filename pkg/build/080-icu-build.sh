@@ -5,13 +5,14 @@
 # all different versions, and the MacPorts ICU library version gets
 # changed on updates.
 #
-# In order to ship software linked with libicu on linux and MacOS, BDJ4
+# In order to ship software linked with libicu on MacOS, BDJ4
 # must ship its own copy of libicu, otherwise the ICU versioning will
 # prevent it from running unless there is an exact match.
 #
 
 case ${systype} in
   Linux)
+    exit 0
     ;;
   Darwin)
     ;;

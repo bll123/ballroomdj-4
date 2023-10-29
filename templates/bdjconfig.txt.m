@@ -1,10 +1,10 @@
 # config-machine
-# 2023-1-27
+# 2023-10-25
 # version 1
 version
 ..1
 AUDIOTAG
-..libatimutagen
+..libatibdj4
 DIRMUSIC
 ..
 DIRITUNESMEDIA

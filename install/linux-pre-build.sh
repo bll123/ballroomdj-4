@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+# Copyright 2023 Brad Lanam Pleasant Hill CA
 #
-ver=11
+ver=1
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -45,7 +45,7 @@ fi
 
 cwd=$(pwd)
 
-LOG=/tmp/bdj4-pre-install.log
+LOG=/tmp/bdj4-pre-build.log
 > $LOG
 gr=N
 pkgprog=
@@ -99,16 +99,6 @@ fi
 
 sudo -v
 
-pipp=/usr/bin/pip
-if [[ -f /usr/bin/pip3 ]]; then
-  pipp=/usr/bin/pip3
-fi
-# remove any old mutagen installed for the user
-${pipp} uninstall -y mutagen > /dev/null 2>&1
-${pipp} uninstall -y --break-system-packages mutagen > /dev/null 2>&1
-
-sudo -v
-
 if [[ -f /usr/bin/dnf ]]; then
   # redhat based linux (fedora/rhel/centos, dnf)
   echo "-- To install vlc, the 'rpmfusion' repository"
@@ -137,45 +127,49 @@ sudo -v
 pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
-  # updated 2023-9-20
-  # tested 2023-9-20 on version 23
+  # tested
+  # updated 2023-10-29
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
-  pkglist="python-mutagen"
+  pkglist="cmake make gcc gcc-objc pipewire curl gtk3 vlc pulseaudio
+      libgcrypt libogg opus opusfile libvorbis flac ffmpeg4.4 check pkgconfig"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
-  # tested 2023-10-29
-  # updated 2023-10-25
-  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libchromaprint-tools libvorbis0a libvorbisfile3
-      flac libjson-c5"
+  # tested
+  # updated 2023-10-29
+  pkglist="cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
+      libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
+      libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
+      libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
+      libcurl4-openssl-dev"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: vlc
-  # updated 2023-9-20
+  # tested
+  # updated 2023-10-29
   # the installed libcurl is 'minimal' and should be replaced.
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   # 38: pre-installed: libogg opus
-  pkglist="ffmpeg-free python3-mutagen libcurl opusfile libvorbis
-      flac-libs chromaprint-tools json-c"
+  pkglist="cmake make gcc gcc-c++ gcc-objc
+      pipewire-devel libcurl-devel gtk3-devel vlc-devel pulseaudio-libs-devel
+      openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
+      flac-devel libavformat-devel check-devel json-c-devel"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
-  # updated 2023-9-20
+  # tested
+  # updated 2023-10-29
   sudo systemctl stop pkgkit
-  pkglist="ffmpeg-4 python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libvorbis flac chromaprint-fpcalc libjson-c"
+  pkglist="cmake make gcc12 gcc12-c++ gcc12-objc
+      pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
+      opusfile-devel libvorbis-devel flac-devel libavformat-devel check-devel
+      libxml2-devel libjson-c-devel libvlc5-devel"
 fi
 
 sudo -v
-
-pkglist="$pkglist vlc"
-if [[ -f /usr/bin/apt || -f /usr/bin/zypper ]]; then
-  pkglist="$pkglist libvlc5"
-fi
 
 rc=N
 if [[ "$pkgprog" != "" && "$pkglist" != "" ]]; then
@@ -193,6 +187,10 @@ if [[ -f /usr/bin/pacman ]]; then
   echo "== Remove vlc-nightly" >> $LOG
   sudo $pkgprog $pkgrm $pkgconfirm vlc-nightly >> $LOG 2>&1
 fi
+if [[ -f /usr/bin/zypper ]]; then
+  echo "== Remove gcc7" >> $LOG
+  sudo $pkgprog $pkgrm $pkgconfirm gcc7 >> $LOG 2>&1
+fi
 
 sudo -v
 
@@ -207,73 +205,9 @@ if [[ "$pkgprog" != "" && "$pkglist" != "" && $gr = Y ]]; then
   fi
 fi
 
-sudo -v
-
-if [[ -f /usr/sbin/usermod ]]; then
-  grep '^audio' /etc/group > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -eq 0 ]]; then
-    echo "-- Running sudo to add $USER to the audio group."
-    # Not sure if this is necessary any more.  It was at one time.
-    echo "-- add $USER to audio group" >> $LOG
-    sudo /usr/sbin/usermod -a -G audio $USER >> $LOG 2>&1
-  fi
-fi
-
 sudo -k
 
-pconf=/etc/pulse/daemon.conf
-upconf=$HOME/.config/pulse/daemon.conf
-if [[ ! -f $pconf ]]; then
-  if [[ -f $upconf ]]; then
-    rm -f $upconf
-  fi
-fi
-if [[ -f $pconf ]]; then
-  grep -E '^flat-volumes *= *no$' $pconf > /dev/null 2>&1
-  grc=$?
-  urc=1
-  if [[ -f $upconf ]]; then
-    grep -E '^flat-volumes *= *no$' $upconf > /dev/null 2>&1
-    urc=$?
-  fi
-  if [[ $grc -ne 0 && $urc -ne 0 ]]; then
-    echo "-- reconfigure flat-volumes" >> $LOG
-    echo "   grc: $grc urc: $urc" >> $LOG
-    echo "Do you want to reconfigure pulseaudio to use flat-volumes (y/n)?"
-    echo -n ": "
-    read answer
-    if [[ "$answer" = "y" || "$answer" = "Y" ]]; then
-      if [[ -f $upconf ]]; then
-        # $upconf exists
-        grep -E '^flat-volumes' $upconf > /dev/null 2>&1
-        rc=$?
-        if [[ $rc -eq 0 ]]; then
-          # there's already a flat-volumes configuration in $upconf, modify it
-          sed -i '/flat-volumes/ s,=.*,= no,' $upconf >> $LOG 2>&1
-        else
-          echo "-- updating flat-volumes in $upconf" >> $LOG
-          grep -E 'flat-volumes' $upconf > /dev/null 2>&1
-          rc=$?
-          if [[ $rc -eq 0 ]]; then
-            # there exists some flat-volumes text in $upconf,
-            # place the config change after that text.
-            sed -i '/flat-volumes/a flat-volumes = no' $upconf  >> $LOG 2>&1
-          else
-            # no flat-volumes text in $upconf, just add it to the end.
-            sed -i '$ a flat-volumes = no' $upconf  >> $LOG 2>&1
-          fi
-        fi
-      else
-        # $upconf does not exist at all
-        echo 'flat-volumes = no' > $upconf
-      fi
-      killall pulseaudio  >> $LOG 2>&1
-    fi
-  fi
-fi
-
-echo "** Installation log is located at: $LOG"
+echo "** Pre-build log is located at: $LOG"
 echo "Press enter to finish."
 read answer
 exit $rc

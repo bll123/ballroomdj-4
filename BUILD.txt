@@ -1,0 +1,36 @@
+BDJ4
+
+Build Instructions
+
+Contents
+  Linux
+  MacOS
+  Windows
+
+Linux
+
+  cd bdj4-4*
+  cd src
+  # the pre-build script has not been tested yet 2023-10-29
+  # tested
+  #   debian 2023-10-29
+  #   opensuse TBD
+  #   fedora TBD
+  #   arch TBD
+  ../install/linux-pre-build.sh
+  ../pkg/build-all.sh
+  make distclean
+  make
+  ../pkg/mkpkg.sh
+  cd ..
+  ./bdj4-install-linux-DIST-VERSION
+
+MacOS
+
+  # not implemented
+
+Windows
+
+  A) Install msys2
+
+  # not implemented

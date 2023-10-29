@@ -82,7 +82,9 @@ Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
 ~~~
-$HOME/Downloads/bdj4-installer-linux-debian12-4.4.0
+cd Downloads
+chmod a+rx bdj4-installer-linux-debian12-4.4.2
+./bdj4-installer-linux-debian12-4.4.2
 ~~~
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
