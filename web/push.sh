@@ -128,7 +128,7 @@ sshpass -e rsync -v -e ssh install/${fn}.sh \
 # windows scripts
 
 fn=win-uninstall-bdj4
-ver=$(grep ver= $fn.bat | sed -e 's,.*ver=,,')
+ver=$(grep ver= install/${fn}.bat | sed -e 's,.*ver=,,')
 sshpass -e rsync -v -e ssh install/${fn}.bat \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.bat
 
