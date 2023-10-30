@@ -31,7 +31,7 @@ Converting BallroomDJ 3:
 Release Notes:
 
   4.4.2 and later:
-    Please upgrade to version 4.4.2 if you are using
+    Please upgrade to version 4.4.2 (or later) if you are using
       version 4.3.3.2 or later.
     Linux Installation:
       Run the linux-pre-install-v11.sh script.

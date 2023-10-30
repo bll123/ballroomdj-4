@@ -43,14 +43,14 @@ this script.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v10.sh script from sourceforge.
+Download the linux-pre-install-v11.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v10.sh
+bash linux-pre-install-v11.sh
 ~~~
 
 This script performs the following actions:

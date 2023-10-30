@@ -169,9 +169,10 @@ if [[ -f /usr/bin/zypper ]]; then
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
   pkglist="cmake make gcc12 gcc12-c++ gcc12-objc ffmpeg-4
+      ffmpeg-4-libavformat-devel
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
-      opusfile-devel libvorbis-devel flac-devel libavformat-devel check-devel
+      opusfile-devel libvorbis-devel flac-devel check-devel
       libxml2-devel libjson-c-devel libvlc5"
 fi
 

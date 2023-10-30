@@ -6,7 +6,9 @@
 
 **4.4.2.2 2023-10---**
 
-**4.4.2.1 2023-10---**
+-->
+
+**4.4.2.1 2023-10-30**
 
 * Bug Fixes:
     * Linux: Fix pre-install script.
@@ -16,8 +18,6 @@
     * Windows: Install missing acrcloud fingerprint utility.
 * Changes:
     * Configuration: Mobile Marquee, Remote Control: Remove IP Address.
-
--->
 
 **4.4.2 2023-10-21**
 

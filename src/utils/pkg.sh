@@ -18,7 +18,6 @@ LOG=pkg.log
 . ./src/utils/pkgnm.sh
 pkgnmgetdata
 pnm=$(pkginstnm)
-spnm=$(pkgsrcnm)
 
 echo "-- $(date +%T) building"
 (
@@ -49,7 +48,6 @@ case $systype in
     fi
     if [[ $isprimary == T ]]; then
       cp -pf ${pnm} $INSTSTAGE
-      cp -pf ${spnm} $INSTSTAGE
     else
       cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
     fi

@@ -139,6 +139,12 @@ for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
 done
 
+# source
+
+spnm=$(pkgsrcnm)
+sshpass -e rsync -v -e ssh ${spnm} \
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
+
 echo "## updating version file"
 VERFILE=bdj4version.txt
 bd=$BUILDDATE

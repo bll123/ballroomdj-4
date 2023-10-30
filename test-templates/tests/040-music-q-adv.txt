@@ -268,6 +268,8 @@ resptimeout 2000
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped
+# wait for finish messages to be processed before setting the toggle-pause
+mssleep 200
 msg main MUSICQ_TOGGLE_PAUSE 0~2
 get main CHK_MAIN_MUSICQ
 chk pae2 1
