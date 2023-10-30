@@ -2177,7 +2177,8 @@ installerWinStartup (installer_t *installer)
   if (isWindows ()) {
     char  tbuff [MAXPATHLEN];
 
-    snprintf (tbuff, sizeof (tbuff), "%s/bdj4.bat", sysvarsGetStr (SV_HOME));
+    snprintf (tbuff, sizeof (tbuff), "%s/Start Menu/Programs/Startup/bdj4.bat",
+        sysvarsGetStr (SV_HOME));
     filemanipCopy ("install/win-startup.bat", tbuff);
   }
 
