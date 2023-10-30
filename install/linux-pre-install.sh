@@ -138,7 +138,7 @@ pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
   # updated 2023-9-20
-  # tested 2023-9-20 on version 23
+  # tested 2023-10-30
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
   pkglist="python-mutagen"
@@ -155,6 +155,7 @@ if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: vlc
   # updated 2023-9-20
+  # tested 2023-10-30
   # the installed libcurl is 'minimal' and should be replaced.
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
@@ -164,10 +165,12 @@ if [[ -f /usr/bin/dnf ]]; then
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
-  # updated 2023-9-20
+  # updated 2023-10-30
+  # tested 2023-10-30
   sudo systemctl stop pkgkit
+  sudo systemctl stop packagekit
   pkglist="ffmpeg-4 python3-mutagen libcurl4 libogg0 libopus0
-      libopusfile0 libvorbis flac chromaprint-fpcalc libjson-c"
+      libopusfile0 libvorbis0 flac chromaprint-fpcalc libjson-c3"
 fi
 
 sudo -v

@@ -18,6 +18,7 @@ LOG=pkg.log
 . ./src/utils/pkgnm.sh
 pkgnmgetdata
 pnm=$(pkginstnm)
+spnm=$(pkgsrcnm)
 
 echo "-- $(date +%T) building"
 (
@@ -29,7 +30,7 @@ echo "-- $(date +%T) building"
   cd src
   case ${pn_dist} in
     -opensuse)
-      make GCC=gcc-12 GXX=g++-12
+      make CC=gcc-12 CXX=g++-12
       ;;
     *)
       make
@@ -48,6 +49,7 @@ case $systype in
     fi
     if [[ $isprimary == T ]]; then
       cp -pf ${pnm} $INSTSTAGE
+      cp -pf ${spnm} $INSTSTAGE
     else
       cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
     fi

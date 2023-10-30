@@ -27,6 +27,10 @@ case $systype in
     archtag=
     CC=gcc
     CXX=g++
+    if [[ -f /usr/bin/gcc-12 ]]; then
+      CC=gcc-12
+      CXX=g++-12
+    fi
     cmg="Unix Makefiles"
     cmpbld="--parallel"
     ;;

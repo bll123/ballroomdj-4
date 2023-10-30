@@ -19,7 +19,8 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
     if [[ $conf == T ]]; then
       cmake -G "$cmg" \
           -B "${bdir}" \
-          -DCMAKE_INSTALL_PREFIX="$INSTLOC"
+          -DCMAKE_INSTALL_PREFIX="$INSTLOC" \
+          -DCMAKE_C_COMPILER="${CC}"
     fi
     cmake --build "${bdir}" ${cmpbld}
     cmake --install "${bdir}"

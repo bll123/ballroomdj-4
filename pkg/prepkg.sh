@@ -38,7 +38,13 @@ if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
 
-LIBMP4TAGVER=1.2.7
+maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
+  sed -e 's,.* ,,')
+min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |
+  sed -e 's,.* ,,')
+rev=$(grep '^#define LIBMP4TAG_VERS_REVISION' packages/libmp4tag*/libmp4tag.h |
+  sed -e 's,.* ,,')
+LIBMP4TAGVER=${maj}.${min}.${rev}
 if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
     ! -f plocal/lib64/libmp4tag.so.${LIBMP4TAGVER}  &&
     ! -f plocal/bin/libmp4tag.dll &&
@@ -46,12 +52,13 @@ if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
   echo "libmp4tag is not up to date"
   exit 1
 fi
-grep 'LIBMP4TAG_VERS_REVISION 7' plocal/include/libmp4tag.h > /dev/null 2>&1
+grep "LIBMP4TAG_VERS_REVISION ${rev}" plocal/include/libmp4tag.h > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "libmp4tag is not up to date"
   exit 1
 fi
+
 grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then

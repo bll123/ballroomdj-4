@@ -42,9 +42,11 @@ Fedora packages for development
 ~~~
 dnf install cmake make gcc gcc-c++ gcc-objc
 dnf install pipewire-devel libcurl-devel gtk3-devel vlc-devel
+dnf install ffmpeg-free-devel libavformat-free-devel
 dnf install pulseaudio-libs-devel openssl-devel libgcrypt-devel
 dnf install libogg-devel opus-devel opusfile-devel flac-devel
-dnf install libavformat-devel check-devel json-c-devel
+dnf install libvorbis-devel
+dnf install check-devel json-c-devel
 ~~~
 
 Other notes

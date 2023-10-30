@@ -9,6 +9,9 @@ Contents
 
 Linux
 
+  # bdj4-src-linux-VERSION.tar.gz
+  tar xf bdj4-src-linux-4*.gz
+  # bdj4-VERSION
   cd bdj4-4*
   cd src
   # the pre-build script has not been tested yet 2023-10-29
@@ -20,17 +23,21 @@ Linux
   ../install/linux-pre-build.sh
   ../pkg/build-all.sh
   make distclean
+  # for opensuse, use: make GCC=gcc-12 GXX=g++-12
   make
   ../pkg/mkpkg.sh
   cd ..
+  ls bdj4-install-l*
   ./bdj4-install-linux-DIST-VERSION
 
 MacOS
 
-  # not implemented
+  # not implemented yet
+  # please contact the developer
 
 Windows
 
   A) Install msys2
 
-  # not implemented
+  # not implemented yet
+  # please contact the developer

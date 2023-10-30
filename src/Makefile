@@ -5,8 +5,6 @@ MAKEFLAGS += --no-print-directory
 
 BINDIR = ../bin
 BUILDDIR = build
-GCC = gcc
-GXX = g++
 CLANG = clang
 CLANGXX = clang++
 
@@ -60,39 +58,39 @@ sanitizeundef:
 .PHONY: cmake
 cmake:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
 	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpu
 cmakesinglecpu:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
 	  $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
 	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  $(MAKE) build; \
 	else \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpuverbose
 cmakesinglecpuverbose:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-unix; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
 	  VERBOSE=1 $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
 	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  VERBOSE=1 $(MAKE) build; \
 	else \
-	  CC=$(GCC) CXX=$(GXX) $(MAKE) cmake-windows; \
+	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
 	  VERBOSE=1 $(MAKE) build; \
 	fi
 
