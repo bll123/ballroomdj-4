@@ -12,6 +12,9 @@
 #include <errno.h>
 
 #include <libavformat/avformat.h>
+#include <libavformat/version.h>
+#include <libavutil/error.h>
+#include <libavutil/version.h>
 
 #include "ati.h"
 #include "atibdj4.h"
@@ -147,7 +150,10 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");
 
     if ((rc = avformat_open_input (&ictx, ffn, NULL, NULL))) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s", rc, ffn);
+      char tbuff [200];
+
+      av_strerror (rc, tbuff, sizeof (tbuff));
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s %s", rc, tbuff, ffn);
       return;
     }
 
@@ -335,6 +341,8 @@ atibdj4LogVersion (void)
     atibdj4LogMP4Version ();
     atibdj4LogASFVersion ();
     atibdj4LogRIFFVersion ();
+    logMsg (LOG_DBG, LOG_INFO, "avformat version %s", AV_STRINGIFY(LIBAVFORMAT_VERSION));
+    logMsg (LOG_DBG, LOG_INFO, "avutil version %s", AV_STRINGIFY(LIBAVUTIL_VERSION));
     gversionlogged = true;
   }
 }
