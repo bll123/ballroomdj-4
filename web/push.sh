@@ -142,7 +142,9 @@ done
 # source
 
 spnm=$(pkgsrcnm)
-sshpass -e rsync -v -e ssh ${spnm} \
+sshpass -e rsync -v -e ssh ${spnm}.zip \
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
+sshpass -e rsync -v -e ssh ${spnm}.tar.gz \
   ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
 
 echo "## updating version file"

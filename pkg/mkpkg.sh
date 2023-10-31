@@ -9,7 +9,7 @@ instdir=bdj4-install
 # macos install needs these
 pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
 pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
-mksrcpkg=T
+mksrcpkg=F
 
 function updatereadme {
   stage=$1
@@ -27,7 +27,8 @@ function copysrcfiles {
   tag=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt BUILD.txt"
+  filelist="LICENSE.txt README.txt VERSION.txt BUILD.txt "
+  filelist+="packages/mongoose*/LICENSE packages/README.txt "
   dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki wiki-i"
 
@@ -188,6 +189,9 @@ sourceonly=F
 while test $# -gt 0; do
   case $1 in
     --source)
+      mksrcpkg=T
+      ;;
+    --sourceonly)
       sourceonly=T
       ;;
     --preskip)
@@ -235,6 +239,10 @@ if [[ -f devel/srcdist.txt ]]; then
   issrcdist=T
 fi
 
+if [[ $insttest == F && $isprimary == T && $tag == linux ]]; then
+  mksrcpkg=T
+fi
+
 if [[ $preskip == F && $insttest == F ]]; then
   ./pkg/prepkg.sh
   rc=$?
@@ -271,9 +279,9 @@ _HERE_
   fi
 fi
 
-# staging / create packages
+# staging / create source packages
 
-if [[ $mksrcpkg == T && $insttest == F && $isprimary == T ]]; then
+if [[ $mksrcpkg == T && $insttest == F ]]; then
   bver=$(pkgbasevers)
   stagedir=tmp/${spkgnm}-${bver}
   manfn=manifest.txt
@@ -291,18 +299,11 @@ if [[ $mksrcpkg == T && $insttest == F && $isprimary == T ]]; then
 
       copysrcfiles ${tag} ${stagedir}
 
-      filelist="packages/acrcloud-linux"
-      for f in $filelist; do
-        dir=$(dirname ${f})
-        test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-        rsync -aS ${f} ${stage}/${dir}
-      done
-
-      dirlist="packages/libmp4tag* packages/libid3tag* packages/mongoose*"
+      dirlist="packages/libmp4tag* packages/libid3tag* "
       for d in $dirlist; do
         dir=$(dirname ${d})
-        test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
-        rsync -aS ${d} ${stage}/${dir}
+        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+        rsync -aS ${d} ${stagedir}/${dir}
       done
 
       echo "-- $(date +%T) creating source manifest"
@@ -313,8 +314,65 @@ if [[ $mksrcpkg == T && $insttest == F && $isprimary == T ]]; then
       ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
       mv -f ${chksumfntmp} ${chksumfnpath}
 
+      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}.tar.gz
+      echo "## source package ${nm}.tar.gz created"
+      (cd tmp;zip -q -9 -r -o ../${nm}.zip $(basename $stagedir))
+      echo "## source package ${nm}.zip created"
+      rm -rf ${stagedir}
+      ;;
+    macos)
+      echo "-- $(date +%T) create ${tag} additional source package"
+      test -d ${stagedir} && rm -rf ${stagedir}
+      mkdir -p ${stagedir}
+      nm=$(pkgsrcadditionalnm)
+
+      filelist="packages/acrcloud-macos* "
+      for f in $filelist; do
+        dir=$(dirname ${f})
+        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+        rsync -aS ${f} ${stagedir}/${dir}
+      done
+
+      dirlist="packages/icu* packages/bundles/Mojave* "
+      for d in $dirlist; do
+        dir=$(dirname ${d})
+        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+        rsync -aS ${d} ${stagedir}/${dir}
+      done
+
       (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-      echo "## source package ${nm} created"
+      echo "## additional source package ${nm} created"
+      sourceonly=T
+      rm -rf ${stagedir}
+      ;;
+    win64)
+      echo "-- $(date +%T) create ${tag} additional source package"
+      test -d ${stagedir} && rm -rf ${stagedir}
+      mkdir -p ${stagedir}
+      nm=$(pkgsrcadditionalnm)
+
+      filelist="packages/acrcloud-win64* packages/fpcalc*"
+      for f in $filelist; do
+        dir=$(dirname ${f})
+        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+        rsync -aS ${f} ${stagedir}/${dir}
+      done
+
+      dirlist="packages/check* packages/curl* packages/ffmpeg* "
+      dirlist+="packages/flac* packages/icu* "
+      dirlist+="packages/libogg* packages/libvorbis* packages/nghttp* "
+      dirlist+="packages/opus* packages/opusfile* "
+      dirlist+="packages/bundles/Windows* "
+      for d in $dirlist; do
+        dir=$(dirname ${d})
+        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+        rsync -aS ${d} ${stagedir}/${dir}
+      done
+
+      (cd tmp;zip -q -9 -r -o ../${nm} $(basename $stagedir))
+      echo "## additional source package ${nm} created"
+      sourceonly=T
+
       rm -rf ${stagedir}
       ;;
   esac
@@ -323,6 +381,8 @@ fi
 if [[ $sourceonly == T ]]; then
   exit 0
 fi
+
+# staging / create release package
 
 echo "-- $(date +%T) create release package"
 

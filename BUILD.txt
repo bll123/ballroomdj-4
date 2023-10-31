@@ -9,21 +9,20 @@ Contents
 
 Linux
 
-  # bdj4-src-linux-VERSION.tar.gz
-  tar xf bdj4-src-linux-4*.gz
+  # bdj4-src-VERSION.tar.gz
+  tar xf bdj4-src-4*.tar.gz
   # bdj4-VERSION
   cd bdj4-4*
   cd src
-  # the pre-build script has not been tested yet 2023-10-29
   # tested
   #   debian 2023-10-29
-  #   opensuse TBD
-  #   fedora TBD
-  #   arch TBD
+  #   opensuse 2023-10-30
+  #   fedora 2023-10-30
+  #   arch 2023-10-30
   ../install/linux-pre-build.sh
   ../pkg/build-all.sh
   make distclean
-  # for opensuse, use: make GCC=gcc-12 GXX=g++-12
+  # for opensuse, use: make CC=gcc-12 CXX=g++-12
   make
   ../pkg/mkpkg.sh
   cd ..
@@ -32,12 +31,45 @@ Linux
 
 MacOS
 
-  # not implemented yet
-  # please contact the developer
+  # bdj4-src-VERSION.tar.gz
+  tar xf bdj4-src-4*.tar.gz
+  # bdj4-src-macos-VERSION.tar.gz
+  tar xf bdj4-src-macos-4*.tar.gz
+  # bdj4-VERSION
+  cd bdj4-4*
+  cd src
+  ../install/macos-pre-build.sh
+  ../pkg/build-all.sh
+  make distclean
+  make
+  ../pkg/mkpkg.sh
+  cd ..
+  ./install/macos-run-installer.sh
 
 Windows
 
-  A) Install msys2
+  A)
 
-  # not implemented yet
-  # please contact the developer
+  Install msys2
+    https://www.msys2.org/
+
+  B)
+
+  pacman -S --noconfirm --needed unzip
+  # bdj4-src-VERSION.zip
+  unzip -q bdj4-src-4*.zip
+  # bdj4-src-win64-VERSION.tar.gz
+  unzip -q bdj4-src-win64-4*.zip
+  # bdj4-VERSION
+  cd bdj4-4*
+  cd src
+  ../install/win-pre-build.sh
+  ../pkg/build-all.sh
+  make distclean
+  make
+  ../pkg/mkpkg.sh
+  # open a cmd.exe window
+  cd \msys64\home\USER
+  # bdj4-installer-win64-VERSION.exe
+  .\bdj4-installer-win*
+

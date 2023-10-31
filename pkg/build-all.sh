@@ -53,10 +53,11 @@ cd packages
 cwd=$(pwd)
 export cwd
 
-for bs in ../pkg/build/*-build.sh; do
-  ${bs}
+for bscript in ../pkg/build/*-build.sh; do
+  ${bscript}
 done
 
 echo "## finalize"
 find $INSTLOC -type f -print0 | xargs -0 chmod u+w
+find $INSTLOC/bin -type f -print0 | xargs -0 chmod a+rx
 exit 0

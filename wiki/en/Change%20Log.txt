@@ -6,6 +6,9 @@
 
 **4.4.2.2 2023-10---**
 
+* Bug Fixes:
+    * MacOS: Fix permissions on acrcloud fingerprint utility.
+
 -->
 
 **4.4.2.1 2023-10-30**

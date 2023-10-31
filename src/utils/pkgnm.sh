@@ -104,7 +104,17 @@ function pkgnmgetdata {
 
 function pkgsrcnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-src-${pn_tag}-${VERSION}${pn_rlstag}${pn_devtag}.tar.gz
+  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}${pn_devtag}
+  echo $nm
+}
+
+function pkgsrcadditionalnm {
+  pkgnmgetdata
+  ext=.tar.gz
+  if [[ ${pn_tag} == win64 ]]; then
+    ext=.zip
+  fi
+  nm=${pn_spkgnm}-src-${pn_tag}-${VERSION}${pn_rlstag}${pn_devtag}${ext}
   echo $nm
 }
 
