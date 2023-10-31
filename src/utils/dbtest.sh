@@ -13,6 +13,8 @@ pass=0
 fail=0
 emsg=""
 
+PATH=$(pwd)/plocal/bin:$PATH
+
 function updateCounts {
   trc=$1
 
@@ -305,9 +307,13 @@ if [[ $TESTON == T ]]; then
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
     # check one of the files with all tags
     val=""
-    val=$(mp4tagcli "${TMSONGEND}" | grep SONGEND)
+    val=$(./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND)
+    # this change was made after mutagen was removed.
+    # this returns the BDJ4 value, and what is wanted here is the
+    # raw value so that it can be seen that it is
+    # set to TXXX=SONGEND=0:29.0
     case ${val} in
-      TXXX=SONGEND=0:29.0)
+      SONGEND*29000)
         ;;
       *)
         msg+="audio tags not written"
@@ -369,9 +375,9 @@ if [[ $TESTON == T ]]; then
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
     # check one of the files with all tags
     val=""
-    val=$(mp4tagcli "${TMSONGEND}" | grep SONGEND)
+    val=$(./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND)
     case ${val} in
-      TXXX=SONGEND=28000)
+      SONGEND*28000)
         ;;
       *)
         msg+="audio tags not written"

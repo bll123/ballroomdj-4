@@ -30,6 +30,14 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.4.2.2:
+    The mutagen audio tag interface has been removed.
+    Windows: To clean up the python installations (no longer needed),
+      open a cmd.exe window, and run:
+        %USERPROFILE%\BDJ4\install\win-clean-python.bat
+      This is a manual process, as python may be installed and
+      needed by other applications.
+
   4.4.2 and later:
     Please upgrade to version 4.4.2 (or later) if you are using
       version 4.3.3.2 or later.

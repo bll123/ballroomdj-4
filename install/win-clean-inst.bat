@@ -1,5 +1,5 @@
 @echo off
-: Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+: Copyright 2023 Brad Lanam Pleasant Hill CA
 
 : windows install dir clean
 

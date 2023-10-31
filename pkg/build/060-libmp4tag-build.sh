@@ -16,8 +16,8 @@ if [[ $pkgname == "" || $pkgname = "libmp4tag" ]]; then
     if [[ $clean == T ]]; then
       make distclean
     fi
-    make
-    make PREFIX=$INSTLOC install
+    make PREFIX=$INSTLOC
+    make install
     rm -f ${INSTLOC}/bin/mp4tagcli*
     if [[ $platform != windows && $clean == T ]]; then
       make distclean
