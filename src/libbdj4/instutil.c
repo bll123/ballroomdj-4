@@ -34,8 +34,7 @@
 #include "webclient.h"
 
 instati_t instati [INST_ATI_MAX] = {
-  [INST_ATI_BDJ4] = { "libatibdj4", false },
-  [INST_ATI_MUTAGEN] = { "libatimutagen", true },
+  [INST_ATI_BDJ4] = { "libatibdj4" },
 };
 
 typedef struct {
@@ -475,7 +474,6 @@ instutilRegister (const char *data)
       "key=%s"
       "&version=%s&build=%s&builddate=%s&releaselevel=%s"
       "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
-      "&pythonvers=%s"
       "&user=%s&host=%s"
       "&systemlocale=%s&locale=%s"
       "%s",
@@ -488,7 +486,6 @@ instutilRegister (const char *data)
       sysvarsGetStr (SV_OSDISP),
       sysvarsGetStr (SV_OSVERS),
       sysvarsGetStr (SV_OSBUILD),
-      sysvarsGetStr (SV_PYTHON_DOT_VERSION),
       sysvarsGetStr (SV_USER),
       sysvarsGetStr (SV_HOSTNAME),
       sysvarsGetStr (SV_LOCALE_SYSTEM),

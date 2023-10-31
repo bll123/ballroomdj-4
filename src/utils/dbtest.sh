@@ -112,17 +112,11 @@ function setorgregex {
 }
 
 ATIBDJ4=F
-ATIMUTAGEN=F
 FIRSTONLY=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
       ATIBDJ4=T
-      ATIMUTAGEN=F
-      ;;
-    --atimutagen)
-      ATIBDJ4=F
-      ATIMUTAGEN=T
       ;;
     --firstonly)
       FIRSTONLY=T
@@ -169,24 +163,6 @@ TMSONGEND=test-music/037-all-tags-mp3-a.mp3
 
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
-
-MUTAGEN=scripts/mutagen-inspect
-for fn in /usr/bin/mutagen-inspect \
-    /opt/local/bin/mutagen-inspect-3.11; do
-  if [[ -f $fn ]]; then
-    MUTAGEN=$fn
-    break
-  fi
-done
-# msys2: /usr/bin/python3 does not work to execute scripts/mutagen-inspect
-# probably depends on which python3 was used to install mutagen.
-PY3=python3
-for fn in /opt/local/bin/python3 /ucrt64/bin/python3 /usr/bin/python3; do
-  if [[ -f $fn ]]; then
-    PY3=$fn
-    break
-  fi
-done
 
 echo "## make test setup"
 ATIFLAG=""
@@ -329,7 +305,7 @@ if [[ $TESTON == T ]]; then
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
     # check one of the files with all tags
     val=""
-    val=$(${PY3} ${MUTAGEN} "${TMSONGEND}" | grep SONGEND)
+    val=$(mp4tagcli "${TMSONGEND}" | grep SONGEND)
     case ${val} in
       TXXX=SONGEND=0:29.0)
         ;;
@@ -393,7 +369,7 @@ if [[ $TESTON == T ]]; then
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
     # check one of the files with all tags
     val=""
-    val=$(${PY3} ${MUTAGEN} "${TMSONGEND}" | grep SONGEND)
+    val=$(mp4tagcli "${TMSONGEND}" | grep SONGEND)
     case ${val} in
       TXXX=SONGEND=28000)
         ;;

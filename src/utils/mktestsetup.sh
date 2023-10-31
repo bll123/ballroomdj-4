@@ -70,14 +70,10 @@ if [[ -f $(basename $FLAG) ]]; then
 fi
 
 ATIBDJ4=F
-ATIMUTAGEN=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
       ATIBDJ4=T
-      ;;
-    --atimutagen)
-      ATIMUTAGEN=T
       ;;
   esac
 done
@@ -153,12 +149,9 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
-ATII=libatimutagen
+ATII=libatibdj4
 if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
-fi
-if [[ $ATIMUTAGEN == T ]]; then
-  ATII=libatimutagen
 fi
 tfn=data/${hostname}/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \

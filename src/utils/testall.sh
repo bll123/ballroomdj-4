@@ -89,18 +89,6 @@ fi
 
 if [[ $DBTEST == T ]]; then
   if [[ $grc -eq 0 ]]; then
-    echo "-- dbtest mutagen" >> $LOG
-    echo "-- $(date +%T) dbtest mutagen"
-    # dbtest will rebuild the databases.
-    ./src/utils/dbtest.sh --atimutagen >> $LOG 2>&1
-    rc=$?
-    if [[ $rc -ne 0 ]]; then
-      echo "-- $(date +%T) dbtest mutagen FAIL"
-      grc=1
-    else
-      echo "-- $(date +%T) dbtest mutagen OK"
-    fi
-
     # dbtest will rebuild the databases.
     echo "-- dbtest atibdj4" >> $LOG
     echo "-- $(date +%T) dbtest atibdj4"

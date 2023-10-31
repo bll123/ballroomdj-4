@@ -85,25 +85,15 @@ target_link_libraries (libatibdj4 PUBLIC
 )
 addIntlLibrary (libatibdj4)
 
-add_library (libatimutagen SHARED atimutagen.c)
-target_link_libraries (libatimutagen PUBLIC
-  libbdj4atiutil
-  libbdj4basic
-  libbdj4common
-  m
-)
-
 # if another ati library is added, be sure to update the installer.
 # the ati interface names are hard coded there.
 install (TARGETS
   libbdj4ati
   libbdj4atiutil
   libatibdj4
-  libatimutagen
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (libbdj4ati)
 updateRPath (libbdj4atiutil)
 updateRPath (libatibdj4)
-updateRPath (libatimutagen)

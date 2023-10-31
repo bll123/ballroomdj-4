@@ -36,8 +36,7 @@ echo "-- $(date +%T) installing"
   cd "$UNPACKDIR"
   ./bin/bdj4 --bdj4installer \
       --unattended \
-      --nomutagen \
-      --ati libatimutagen \
+      --ati libatibdj4 \
       --targetdir "$BDJ4DIR" \
       --unpackdir "$UNPACKDIR" \
       --musicdir "/home/bll/Music" \

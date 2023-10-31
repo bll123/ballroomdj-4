@@ -8,7 +8,6 @@
 
 enum {
   INST_ATI_BDJ4,
-  INST_ATI_MUTAGEN,
   INST_ATI_MAX,
 };
 
@@ -27,7 +26,6 @@ enum {
 
 typedef struct {
   const char  *name;
-  bool        needmutagen;
 } instati_t;
 
 enum {

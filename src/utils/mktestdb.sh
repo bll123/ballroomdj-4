@@ -73,9 +73,6 @@ while test $# -gt 0; do
     --atibdj4)
       # ignored
       ;;
-    --atimutagen)
-      # ignored
-      ;;
     *)
       echo "unknown argument $1" >&2
       exit 1

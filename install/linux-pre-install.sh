@@ -141,13 +141,12 @@ if [[ -f /usr/bin/pacman ]]; then
   # tested 2023-10-30
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
-  pkglist="python-mutagen"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # tested 2023-10-29
   # updated 2023-10-25
-  pkglist="ffmpeg python3-mutagen libcurl4 libogg0 libopus0
+  pkglist="ffmpeg libcurl4 libogg0 libopus0
       libopusfile0 libchromaprint-tools libvorbis0a libvorbisfile3
       flac libjson-c5"
 fi
@@ -160,7 +159,7 @@ if [[ -f /usr/bin/dnf ]]; then
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   # 38: pre-installed: libogg opus
-  pkglist="ffmpeg-free python3-mutagen libcurl opusfile libvorbis
+  pkglist="ffmpeg-free libcurl opusfile libvorbis
       flac-libs chromaprint-tools json-c"
 fi
 if [[ -f /usr/bin/zypper ]]; then
@@ -169,7 +168,7 @@ if [[ -f /usr/bin/zypper ]]; then
   # tested 2023-10-30
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
-  pkglist="ffmpeg-4 python3-mutagen libcurl4 libogg0 libopus0
+  pkglist="ffmpeg-4 libcurl4 libogg0 libopus0
       libopusfile0 libvorbis0 flac chromaprint-fpcalc libjson-c3"
 fi
 
@@ -181,7 +180,7 @@ if [[ -f /usr/bin/apt || -f /usr/bin/zypper ]]; then
 fi
 
 rc=N
-if [[ "$pkgprog" != "" && "$pkglist" != "" ]]; then
+if [[ $pkgprog != "" && $pkglist != "" ]]; then
   echo "-- The following packages will be installed:"
   echo $pkglist | sed -e 's/.\{45\} /&\n    /g' -e 's/^/    /'
   echo "-- Proceed with package installation?"
@@ -196,6 +195,12 @@ if [[ -f /usr/bin/pacman ]]; then
   echo "== Remove vlc-nightly" >> $LOG
   sudo $pkgprog $pkgrm $pkgconfirm vlc-nightly >> $LOG 2>&1
 fi
+
+mutpkg=python3-mutagen
+if [[ -f /usr/bin/pacman ]]; then
+  mutpkg=python-mutagen
+fi
+sudo $pkgprog $pkgrm $pkgconfirm ${mutpkg} >> $LOG 2>&1
 
 sudo -v
 

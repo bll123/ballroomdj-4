@@ -191,7 +191,6 @@ echo "-- Installing packages needed by BDJ4"
 # using our own icu and libid3tag
 sudo port -N install \
     mpstats \
-    py${pyver}-mutagen \
     libxml2 \
     json-c \
     curl \
@@ -209,16 +208,20 @@ sudo port -N install \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11
 sudo -v
-sudo port -N uninstall \
-    taglib
-sudo -v
-sudo port select --set python python${pyver}
-sudo port select --set python3 python${pyver}
 
 echo "-- Cleaning up old MacPorts files"
+
+sudo port -N uninstall \
+    taglib \
+    py${pyver}-mutagen
+
+sudo -v
+
 for opyver in $oldpyverlist; do
   sudo port uninstall -N --follow-dependents python${opyver}
 done
+
+sudo -v
 
 if [[ -z "$(port -q list inactive)" ]]; then
   sudo port reclaim --disable-reminders

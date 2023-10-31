@@ -97,7 +97,6 @@ UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
 MUSICDIR="${cwd}/test-music"
-#ATI=libatimutagen
 ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
 
@@ -861,11 +860,6 @@ function checkInstallation {
       echo "ASAN files found"
       exit 1
     fi
-    c=$(ls -1 "${DATATOPDIR}/tmp/atimutagen*" 2>/dev/null | wc -l)
-    if [[ $c -ne 0 ]]; then
-      echo "atimutagen files found"
-      exit 1
-    fi
   fi
 
   c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
@@ -947,12 +941,6 @@ fi
 echo "-- $(date +%T) creating test music"
 ./src/utils/mktestsetup.sh --force
 
-c=$(ls -1 "${DATATOPDIR}/tmp/atimutagen*" 2>/dev/null | wc -l)
-if [[ $c -ne 0 ]]; then
-  echo "atimutagen files found after mktestsetup.sh"
-  exit 1
-fi
-
 cleanInstTest
 
 if [[ $readonly == F ]]; then
@@ -962,7 +950,6 @@ if [[ $readonly == F ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -986,7 +973,6 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -1003,7 +989,6 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -1022,7 +1007,6 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -1082,7 +1066,6 @@ if [[ T == T ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --readonly \
@@ -1107,7 +1090,6 @@ for section in nl_BE nl_NL ru_RU fr_FR de_DE pl_PL it_IT ja_JP; do
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --nomutagen \
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -1127,7 +1109,6 @@ for section in nl_BE nl_NL ru_RU fr_FR de_DE pl_PL it_IT ja_JP; do
     checkUpdaterClean $section
     out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
         --verbose --unattended ${quiet} \
-        --nomutagen \
         --ati ${ATI} \
         --targetdir "$TARGETTOPDIR" \
         --unpackdir "$UNPACKDIR" \

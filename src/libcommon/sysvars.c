@@ -99,15 +99,10 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
   [SV_PATH_FPCALC] = { "PATH_FPCALC" },
-  [SV_PATH_MUTAGEN] = { "PATH_MUTAGEN" },
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
-  [SV_PATH_PYTHON] = { "PATH_PYTHON" },
-  [SV_PATH_PYTHON_PIP] = { "PATH_PYTHON_PIP" },
   [SV_PATH_URI_OPEN] = { "PATH_URI_OPEN" },
   [SV_PATH_VLC] = { "PATH_VLC" },
   [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
-  [SV_PYTHON_DOT_VERSION] = { "PYTHON_DOT_VERSION" },
-  [SV_PYTHON_VERSION] = { "PYTHON_VERSION" },
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
   [SV_URI_DOWNLOAD] = { "URI_DOWNLOAD" },
@@ -693,8 +688,6 @@ sysvarsInit (const char *argv0)
   }
 
   svGetSystemFont ();
-  sysvarsGetPythonVersion ();
-  sysvarsCheckMutagen ();
 
   lsysvars [SVL_ALTIDX] = 0;
   lsysvars [SVL_BDJIDX] = 0;
@@ -768,9 +761,6 @@ sysvarsCheckPaths (const char *otherpaths)
   strlcpy (sysvars [SV_PATH_FPCALC], "", SV_MAX_SZ);
   /* gsettings is used on linux to get the current theme */
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_MUTAGEN], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
@@ -786,13 +776,6 @@ sysvarsCheckPaths (const char *otherpaths)
   }
   p = strtok_r (tpath, tsep, &tokstr);
   while (p != NULL) {
-    if (strstr (p, "WindowsApps") != NULL) {
-      /* the windows python does not have a regular path for the pip3 */
-      /* user installed scripts */
-      p = strtok_r (NULL, tsep, &tokstr);
-      continue;
-    }
-
     strlcpy (tbuff, p, sizeof (tbuff));
     pathNormalizePath (tbuff, sizeof (tbuff));
     stringTrimChar (tbuff, '/');
@@ -815,18 +798,6 @@ sysvarsCheckPaths (const char *otherpaths)
 
     if (*sysvars [SV_PATH_GSETTINGS] == '\0') {
       checkForFile (tbuff, SV_PATH_GSETTINGS, "gsettings", NULL);
-    }
-
-    if (*sysvars [SV_PATH_MUTAGEN] == '\0') {
-      checkForFile (tbuff, SV_PATH_MUTAGEN, "mutagen-inspect", "mutagen-inspect-3.11", NULL);
-    }
-
-    if (*sysvars [SV_PATH_PYTHON] == '\0') {
-      checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
-    }
-
-    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
-      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
     }
 
     if (*sysvars [SV_PATH_URI_OPEN] == '\0') {
@@ -872,173 +843,7 @@ sysvarsCheckPaths (const char *otherpaths)
   }
 }
 
-void
-sysvarsGetPythonVersion (void)
-{
-  if (*sysvars [SV_PATH_PYTHON]) {
-    char        tfn [MAXPATHLEN];
-    char        buff [SV_MAX_SZ];
-    FILE        *fh;
 
-    *sysvars [SV_PYTHON_DOT_VERSION] = '\0';
-    *sysvars [SV_PYTHON_VERSION] = '\0';
-
-    /* on windows, use the cache files */
-    /* do not use these on linux and macos */
-    if (isWindows ()) {
-      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
-          SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
-      if (fileopFileExists (tfn)) {
-        *buff = '\0';
-        fh = fileopOpen (tfn, "r");
-        if (fh != NULL) {
-          (void) ! fgets (buff, sizeof (buff), fh);
-          mdextfclose (fh);
-          fclose (fh);
-        }
-        stringTrim (buff);
-        strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
-      }
-      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
-          SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
-      if (fileopFileExists (tfn)) {
-        *buff = '\0';
-        fh = fileopOpen (tfn, "r");
-        if (fh != NULL) {
-          (void) ! fgets (buff, sizeof (buff), fh);
-          mdextfclose (fh);
-          fclose (fh);
-        }
-        stringTrim (buff);
-        strlcpy (sysvars [SV_PYTHON_VERSION], buff, SV_MAX_SZ);
-      }
-    }
-
-    if (! *sysvars [SV_PYTHON_DOT_VERSION]) {
-      char        *data;
-      char        *p;
-
-      data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
-
-      // Python 3.9.2
-
-      p = NULL;
-      if (data != NULL) {
-        p = strstr (data, "3");
-      }
-
-      if (p != NULL) {
-        strlcpy (buff, p, sizeof (buff));
-        p = strstr (buff, ".");
-        if (p != NULL) {
-          p = strstr (p + 1, ".");
-          if (p != NULL) {
-            *p = '\0';
-            strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
-          }
-        } /* found the first '.' */
-      }
-      mdfree (data);
-
-      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
-          SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
-      fh = fileopOpen (tfn, "w");
-      if (fh != NULL) {
-        fprintf (fh, "%s\n", sysvars [SV_PYTHON_DOT_VERSION]);
-        mdextfclose (fh);
-        fclose (fh);
-      }
-    }
-
-    if (! *sysvars [SV_PYTHON_VERSION]) {
-      size_t  j = 0;
-
-      for (size_t i = 0; i < strlen (sysvars [SV_PYTHON_DOT_VERSION]); ++i) {
-        if (sysvars [SV_PYTHON_DOT_VERSION][i] != '.') {
-          sysvars [SV_PYTHON_VERSION][j++] = sysvars [SV_PYTHON_DOT_VERSION][i];
-        }
-      }
-      sysvars [SV_PYTHON_VERSION][j] = '\0';
-
-      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
-          SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
-      fh = fileopOpen (tfn, "w");
-      if (fh != NULL) {
-        fprintf (fh, "%s\n", sysvars [SV_PYTHON_VERSION]);
-        mdextfclose (fh);
-        fclose (fh);
-      }
-    }
-  } /* if python was found */
-}
-
-void
-sysvarsCheckMutagen (void)
-{
-  char  buff [SV_MAX_SZ];
-
-  /* use the system installed version if present */
-  /* for windows, be sure to replace the .exe with the actual script */
-  if (! isWindows () && *sysvars [SV_PATH_MUTAGEN] != '\0') {
-    return;
-  }
-
-  /* On windows the mutagen-inspect script seems to be no longer installed */
-  /* along with the package, and the converted executable pops up command */
-  /* windows. */
-  // $HOME/.local/bin/mutagen-inspect  (user-install: linux, macos, msys2)
-  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect (macos)
-  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
-  // %USERPROFILE%/AppData/Roaming/Python/Python<pyver>/Scripts/mutagen-inspect.exe
-
-  *buff = '\0';
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
-  }
-  if (isWindows ()) {
-    char    thome [MAXPATHLEN];
-
-    /* check the msys location first -- use the HOME env var */
-    osGetEnv ("HOME", thome, sizeof (thome));
-    if (*thome) {
-      snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", thome, "mutagen-inspect");
-    }
-    /* use the windows script if it is available */
-    if (! fileopFileExists (buff)) {
-      snprintf (buff, sizeof (buff),
-          "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
-          sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
-    }
-  }
-  if (isMacOS ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/Library/Python/%s/bin/%s",
-        sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
-  }
-
-  /* otherwise use our copy */
-  if (! fileopFileExists (buff)) {
-    snprintf (buff, sizeof (buff),
-        "%s/scripts/%s",
-        sysvars [SV_BDJ4_DIR_MAIN], "mutagen-inspect");
-  }
-
-  if (fileopFileExists (buff)) {
-    strlcpy (sysvars [SV_PATH_MUTAGEN], buff, SV_MAX_SZ);
-  } else {
-    if (isWindows ()) {
-      /* for msys2 testing */
-      snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
-      if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PATH_MUTAGEN], buff, SV_MAX_SZ);
-      }
-    }
-  }
-  pathNormalizePath (sysvars [SV_PATH_MUTAGEN], SV_MAX_SZ);
-}
 
 char *
 sysvarsGetStr (sysvarkey_t idx)

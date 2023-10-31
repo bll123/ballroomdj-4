@@ -82,11 +82,6 @@ typedef enum {
   INST_VLC_CHECK,
   INST_VLC_DOWNLOAD,
   INST_VLC_INSTALL,
-  INST_PYTHON_CHECK,
-  INST_PYTHON_DOWNLOAD,
-  INST_PYTHON_INSTALL,
-  INST_MUTAGEN_CHECK,
-  INST_MUTAGEN_INSTALL,
   INST_FINALIZE,
   INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
@@ -126,8 +121,6 @@ enum {
   /* make sure these are in the same order as the INST_ATI_* enums below */
   INST_W_MUSIC_DIR,
   INST_W_VLC_MSG,
-  INST_W_PYTHON_MSG,
-  INST_W_MUTAGEN_MSG,
   INST_W_MAX,
 };
 
@@ -191,8 +184,6 @@ typedef struct {
   bool            insetconvert : 1;
   bool            localespecified : 1;
   bool            musicdirok : 1;
-  bool            nomutagen : 1;
-  bool            pythoninstalled : 1;
   bool            quiet : 1;
   bool            readonly : 1;
   bool            scrolltoend : 1;
@@ -200,7 +191,6 @@ typedef struct {
   bool            testregistration : 1;
   bool            uiBuilt : 1;
   bool            unattended : 1;
-  bool            updatepython : 1;
   bool            verbose : 1;
   bool            vlcinstalled : 1;
 } installer_t;
@@ -255,11 +245,6 @@ static void installerSaveLocale (installer_t *installer);
 static void installerVLCCheck (installer_t *installer);
 static void installerVLCDownload (installer_t *installer);
 static void installerVLCInstall (installer_t *installer);
-static void installerPythonCheck (installer_t *installer);
-static void installerPythonDownload (installer_t *installer);
-static void installerPythonInstall (installer_t *installer);
-static void installerMutagenCheck (installer_t *installer);
-static void installerMutagenInstall (installer_t *installer);
 static void installerFinalize (installer_t *installer);
 static void installerUpdateProcessInit (installer_t *installer);
 static void installerUpdateProcess (installer_t *installer);
@@ -271,7 +256,6 @@ static void installerDisplayText (installer_t *installer, const char *pfx, const
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerSetRundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
-static void installerPythonGetVersion (installer_t *installer);
 static void installerCheckPackages (installer_t *installer);
 static void installerWebResponseCallback (void *userdata, const char *resp, size_t len);
 static void installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg);
@@ -300,7 +284,6 @@ main (int argc, char *argv[])
     { "locale",     required_argument,  NULL,   'L' },
     { "musicdir",   required_argument,  NULL,   'm' },
     { "noclean",    no_argument,        NULL,   'c' },
-    { "nomutagen",  no_argument,        NULL,   'M' },
     { "readonly",   no_argument,        NULL,   'R' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
@@ -357,8 +340,6 @@ main (int argc, char *argv[])
   installer.localespecified = false;
   installer.musicdirok = false;
   installer.newinstall = true;
-  installer.nomutagen = false;
-  installer.pythoninstalled = false;
   installer.quiet = false;
   installer.readonly = false;
   installer.reinstall = false;
@@ -367,7 +348,6 @@ main (int argc, char *argv[])
   installer.testregistration = false;
   installer.uiBuilt = false;
   installer.unattended = false;
-  installer.updatepython = false;
   installer.verbose = false;
   installer.vlcinstalled = false;
 
@@ -503,10 +483,6 @@ main (int argc, char *argv[])
       }
       case 'm': {
         installerSetMusicDir (&installer, optarg);
-        break;
-      }
-      case 'M': {
-        installer.nomutagen = true;
         break;
       }
       default: {
@@ -859,40 +835,6 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line : python message */
-  /* python status */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateColonLabel ("Python");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  installer->wcont [INST_W_PYTHON_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_PYTHON_MSG], INST_HL_CLASS);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_PYTHON_MSG]);
-
-  uiwcontFree (hbox);
-
-  /* begin line : mutagen message */
-  /* mutagen status */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateColonLabel ("Mutagen");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  installer->wcont [INST_W_MUTAGEN_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_MUTAGEN_MSG], INST_HL_CLASS);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_MUTAGEN_MSG]);
-
-  uiwcontFree (hbox);
-
   /* begin line : buttons */
   /* button box */
   hbox = uiCreateHorizBox ();
@@ -1021,8 +963,6 @@ installerMainLoop (void *udata)
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "re-install: %d", installer->reinstall);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "convert: %d", installer->convprocess);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "vlc-inst: %d", installer->vlcinstalled);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-inst: %d", installer->pythoninstalled);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-upd: %d", installer->updatepython);
 
       break;
     }
@@ -1076,26 +1016,6 @@ installerMainLoop (void *udata)
     }
     case INST_VLC_INSTALL: {
       installerVLCInstall (installer);
-      break;
-    }
-    case INST_PYTHON_CHECK: {
-      installerPythonCheck (installer);
-      break;
-    }
-    case INST_PYTHON_DOWNLOAD: {
-      installerPythonDownload (installer);
-      break;
-    }
-    case INST_PYTHON_INSTALL: {
-      installerPythonInstall (installer);
-      break;
-    }
-    case INST_MUTAGEN_CHECK: {
-      installerMutagenCheck (installer);
-      break;
-    }
-    case INST_MUTAGEN_INSTALL: {
-      installerMutagenInstall (installer);
       break;
     }
     case INST_FINALIZE: {
@@ -2257,11 +2177,7 @@ installerVLCCheck (installer_t *installer)
 
   /* on linux, vlc is installed via other methods */
   if (installer->vlcinstalled || isLinux ()) {
-    if (instati [installer->atiselect].needmutagen) {
-      installer->instState = INST_PYTHON_CHECK;
-    } else {
-      installer->instState = INST_FINALIZE;
-    }
+    installer->instState = INST_FINALIZE;
     return;
   }
 
@@ -2277,11 +2193,7 @@ installerVLCCheck (installer_t *installer)
         _("Unable to determine %s version."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
-    if (instati [installer->atiselect].needmutagen) {
-      installer->instState = INST_PYTHON_CHECK;
-    } else {
-      installer->instState = INST_FINALIZE;
-    }
+    installer->instState = INST_FINALIZE;
   }
 }
 
@@ -2336,11 +2248,7 @@ installerVLCDownload (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
-    if (instati [installer->atiselect].needmutagen) {
-      installer->instState = INST_PYTHON_CHECK;
-    } else {
-      installer->instState = INST_FINALIZE;
-    }
+    installer->instState = INST_FINALIZE;
   }
 }
 
@@ -2368,201 +2276,6 @@ installerVLCInstall (installer_t *installer)
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
   installerCheckPackages (installer);
 
-  if (instati [installer->atiselect].needmutagen) {
-    installer->instState = INST_PYTHON_CHECK;
-  } else {
-    installer->instState = INST_FINALIZE;
-  }
-}
-
-static void
-installerPythonCheck (installer_t *installer)
-{
-  char  tbuff [MAXPATHLEN];
-
-  /* python is installed via other methods on linux and macos */
-  if (isLinux () || isMacOS ()) {
-    installer->instState = INST_MUTAGEN_CHECK;
-    return;
-  }
-
-  installerPythonGetVersion (installer);
-
-  if (installer->pythoninstalled) {
-    char    *p;
-    int     majvers = 0;
-    int     minvers = 0;
-
-    strlcpy (tbuff, installer->pyversion, sizeof (tbuff));
-    majvers = atoi (installer->pyversion);
-    p = strstr (tbuff, ".");
-    if (p != NULL) {
-      minvers = atoi (p + 1);
-      minvers -= 3;
-    }
-    snprintf (tbuff, sizeof (tbuff), "%d.%d", majvers, minvers);
-
-    /* check for old versions of python and update */
-    /* does this conflict w/bdj3? */
-    if (versionCompare (sysvarsGetStr (SV_PYTHON_DOT_VERSION), tbuff) < 0) {
-      installer->updatepython = true;
-    }
-  }
-
-  if (installer->pythoninstalled && ! installer->updatepython) {
-    installer->instState = INST_MUTAGEN_CHECK;
-    return;
-  }
-
-  if (*installer->pyversion) {
-    /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");
-    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->instState = INST_PYTHON_DOWNLOAD;
-  } else {
-    snprintf (tbuff, sizeof (tbuff),
-        /* CONTEXT: installer: status message */
-        _("Unable to determine %s version."), "Python");
-    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->instState = INST_MUTAGEN_CHECK;
-  }
-}
-
-static void
-installerPythonDownload (installer_t *installer)
-{
-  char  url [MAXPATHLEN];
-  char  tbuff [MAXPATHLEN];
-
-  *url = '\0';
-  *installer->dlfname = '\0';
-  if (isWindows ()) {
-    char  *tag;
-
-    /* https://www.python.org/ftp/python/3.10.2/python-3.10.2.exe */
-    /* https://www.python.org/ftp/python/3.10.2/python-3.10.2-amd64.exe */
-    tag = "";
-    if (sysvarsGetNum (SVL_OSBITS) == 64) {
-      tag = "-amd64";
-    }
-    snprintf (installer->dlfname, sizeof (installer->dlfname),
-        "python-%s%s.exe",
-        installer->pyversion, tag);
-    snprintf (url, sizeof (url),
-        "https://www.python.org/ftp/python/%s/%s",
-        installer->pyversion, installer->dlfname);
-  }
-  if (*url && *installer->pyversion) {
-    webclientDownload (installer->webclient, url, installer->dlfname);
-  }
-
-  if (fileopFileExists (installer->dlfname)) {
-    /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
-    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
-    uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
-    installer->instState = INST_PYTHON_INSTALL;
-  } else {
-    /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
-    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->instState = INST_MUTAGEN_CHECK;
-  }
-}
-
-static void
-installerPythonInstall (installer_t *installer)
-{
-  char        tbuff [MAXPATHLEN];
-  int         targc = 0;
-  const char  *targv [20];
-
-  if (fileopFileExists (installer->dlfname)) {
-    snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
-    targv [targc++] = tbuff;
-    targv [targc++] = "/quiet";
-    //targv [targc++] = "/passive";
-    targv [targc++] = "InstallAllUsers=0";
-    targv [targc++] = "Shortcuts=0";
-    targv [targc++] = "CompileAll=1";
-    targv [targc++] = "PrependPath=1";
-    targv [targc++] = "Include_doc=0";
-    targv [targc++] = "Include_launcher=0";
-    targv [targc++] = "InstallLauncherAllUsers=0";
-    targv [targc++] = "Include_tcltk=0";
-    targv [targc++] = "Include_test=0";
-    targv [targc++] = NULL;
-    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-    /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
-    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->pythoninstalled = true;
-  }
-  fileopDelete (installer->dlfname);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
-  installerCheckPackages (installer);
-  installer->instState = INST_MUTAGEN_CHECK;
-}
-
-static void
-installerMutagenCheck (installer_t *installer)
-{
-  char  tbuff [MAXPATHLEN];
-
-  if (installer->readonly) {
-    installer->instState = INST_FINALIZE;
-    return;
-  }
-
-  /* must appear after the readonly check */
-  if (installer->nomutagen) {
-    installer->instState = INST_FINALIZE;
-    return;
-  }
-
-  if (! installer->pythoninstalled) {
-    installer->instState = INST_FINALIZE;
-    return;
-  }
-
-  /* mutagen is installed via other methods on linux and macos */
-  if (isLinux () || isMacOS ()) {
-    installer->instState = INST_FINALIZE;
-    return;
-  }
-
-  /* CONTEXT: installer: status message */
-  snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
-  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
-  installer->instState = INST_MUTAGEN_INSTALL;
-}
-
-static void
-installerMutagenInstall (installer_t *installer)
-{
-  char      tbuff [MAXPATHLEN];
-  char      *pipnm = "pip";
-
-  if (installer->pythoninstalled) {
-    char  *tptr;
-
-    tptr = sysvarsGetStr (SV_PATH_PYTHON_PIP);
-    if (tptr != NULL && *tptr) {
-      pipnm = tptr;
-    }
-  }
-  snprintf (tbuff, sizeof (tbuff),
-      "%s --quiet install --user --upgrade mutagen",
-      pipnm);
-  (void) ! system (tbuff);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
-  /* CONTEXT: installer: status message */
-  snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
-  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-  installerCheckPackages (installer);
   installer->instState = INST_FINALIZE;
 }
 
@@ -2570,14 +2283,6 @@ static void
 installerFinalize (installer_t *installer)
 {
   char        tbuff [MAXPATHLEN];
-
-  /* clear the python version cache files */
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
-      SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
-  fileopDelete (tbuff);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
-      SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
-  fileopDelete (tbuff);
 
   if (! installer->readonly) {
     if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
@@ -2905,65 +2610,11 @@ installerVLCGetVersion (installer_t *installer)
 }
 
 static void
-installerPythonGetVersion (installer_t *installer)
-{
-  char      *p;
-  char      *e;
-
-  *installer->pyversion = '\0';
-  installer->webresponse = NULL;
-  if (installer->webclient == NULL) {
-    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
-  }
-  webclientGet (installer->webclient, "https://www.python.org/downloads/windows/");
-
-  if (installer->webresponse != NULL) {
-    char *srchpy = "Release - Python ";
-    p = strstr (installer->webresponse, srchpy);
-    if (p != NULL) {
-      p += strlen (srchpy);
-      e = strstr (p, "<");
-      strlcpy (installer->pyversion, p, e - p + 1);
-    }
-  }
-}
-
-static void
 installerCheckPackages (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
   char  *tmp;
-  char  pypath [MAXPATHLEN];
 
-
-  tmp = sysvarsGetStr (SV_PATH_PYTHON);
-  *pypath = '\0';
-  if (! *tmp && *installer->pyversion) {
-    char tver [40];
-    int  tverlen;
-    int  dotflag;
-
-    tverlen = 0;
-    dotflag = 0;
-    for (size_t i = 0; i < strlen (installer->pyversion); ++i) {
-      if (installer->pyversion [i] == '.') {
-        if (dotflag) {
-          break;
-        }
-        dotflag = 1;
-        continue;
-      }
-      tver [tverlen] = installer->pyversion [i];
-      ++tverlen;
-    }
-    tver [tverlen] = '\0';
-    snprintf (pypath, sizeof (pypath),
-        "%s/AppData/Local/Programs/Python/Python%s;"
-        "%s/AppData/Local/Programs/Python/Python%s/Scripts",
-        installer->home, tver,
-        installer->home, tver);
-  }
-  sysvarsCheckPaths (pypath);
 
   tmp = sysvarsGetStr (SV_PATH_VLC);
 
@@ -2981,52 +2632,6 @@ installerCheckPackages (installer_t *installer)
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = false;
-  }
-
-  if (instati [installer->atiselect].needmutagen == false) {
-    /* CONTEXT: installer: display of package status */
-    snprintf (tbuff, sizeof (tbuff), _("Not needed"));
-    uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
-    uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-  } else {
-    sysvarsGetPythonVersion ();
-    sysvarsCheckMutagen ();
-
-    tmp = sysvarsGetStr (SV_PATH_PYTHON);
-
-    if (*tmp) {
-      if (installer->guienabled && installer->uiBuilt) {
-        /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
-        uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
-      }
-      installer->pythoninstalled = true;
-    } else {
-      if (installer->guienabled && installer->uiBuilt) {
-        /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
-        uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
-        /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
-        uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-      }
-      installer->pythoninstalled = false;
-    }
-
-    if (installer->pythoninstalled) {
-      tmp = sysvarsGetStr (SV_PATH_MUTAGEN);
-      if (installer->guienabled && installer->uiBuilt) {
-        if (*tmp) {
-          /* CONTEXT: installer: display of package status */
-          snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
-          uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-        } else {
-          /* CONTEXT: installer: display of package status */
-          snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
-          uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-        }
-      }
-    }
   }
 }
 

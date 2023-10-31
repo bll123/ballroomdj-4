@@ -36,7 +36,6 @@ const char *envitems [] = {
   "NUMBER_OF_PROCESSORS",
   "PANGOCAIRO_BACKEND",
   "PATH",
-  "PYTHONIOENCODING",
   "TEMP",
   "TMP",
   "TMPDIR",

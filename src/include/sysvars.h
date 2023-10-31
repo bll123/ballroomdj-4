@@ -62,14 +62,9 @@ typedef enum {
   SV_PATH_FFMPEG,
   SV_PATH_FPCALC,
   SV_PATH_GSETTINGS,
-  SV_PATH_MUTAGEN,
-  SV_PATH_PYTHON,
-  SV_PATH_PYTHON_PIP,
   SV_PATH_URI_OPEN,
   SV_PATH_VLC,
   SV_PATH_XDGUSERDIR,
-  SV_PYTHON_DOT_VERSION,  // 3.10.2 => 3.10
-  SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
   SV_TEMP_A,
   SV_TEMP_B,
@@ -130,8 +125,6 @@ enum {
 
 void    sysvarsInit (const char *argv0);
 void    sysvarsCheckPaths (const char *otherpaths);
-void    sysvarsGetPythonVersion (void);
-void    sysvarsCheckMutagen (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
 int64_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);

@@ -90,7 +90,6 @@ main (int argc, char * argv[])
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
-    { "nomutagen",      no_argument,        NULL,   0 },
     { "readonly",       no_argument,        NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
@@ -417,7 +416,6 @@ main (int argc, char * argv[])
 #if BDJ4_USE_GTK3
   osSetEnv ("GTK_CSD", "0");
 #endif
-  osSetEnv ("PYTHONIOENCODING", "utf-8");       // for ati-mutagen
 
   if (isMacOS () || isLinux ()) {
     char      tbuff [MAXPATHLEN];

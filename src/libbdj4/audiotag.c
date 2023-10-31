@@ -78,8 +78,7 @@ audiotagInit (void)
   /* this is only an issue on linux when running an older install */
   /* on a newer system */
   if (! atiCheck (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC))) {
-    /* for now, just hard-code a fallback to libatimutagen */
-    bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatimutagen");
+    bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatibdj4");
   }
 
   at = mdmalloc (sizeof (audiotag_t));
@@ -606,7 +605,6 @@ audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
 }
 
 /* returns the tag name given the tagtype specific raw name */
-/* the atimutagen library needs this process */
 static const char *
 audiotagTagLookup (int tagtype, const char *val)
 {
