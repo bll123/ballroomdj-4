@@ -19,6 +19,15 @@
 #include "vlci.h"
 #include "volsink.h"
 
+typedef struct plidata {
+  char              *name;
+  void              *plData;
+  ssize_t           duration;
+  ssize_t           playTime;
+  plistate_t        state;
+  int               supported;
+} plidata_t;
+
 static char *vlcDefaultOptions [] = {
       "--quiet",
       "--audio-filter", "scaletempo",
@@ -62,6 +71,7 @@ pliiInit (const char *volpkg, const char *sinkname)
   vlcOptions [0] = NULL;
   pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   pliData->name = "VLC Integrated";
+  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
   return pliData;
 }
 
@@ -234,6 +244,12 @@ pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
   }
 
   return rc;
+}
+
+int
+pliiSupported (plidata_t *pliData)
+{
+  return pliData->supported;
 }
 
 /* internal routines */

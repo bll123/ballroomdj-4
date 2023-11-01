@@ -48,6 +48,7 @@ typedef struct pli {
   plistate_t        (*pliiState) (plidata_t *pliData);
   int               (*pliiSetAudioDevice) (plidata_t *pliData, const char *dev);
   int               (*pliiAudioDeviceList) (plidata_t *pliData, volsinklist_t *sinklist);
+  int               (*pliiSupported) (plidata_t *pliData);
   plidata_t         *pliData;
 } pli_t;
 
@@ -74,6 +75,7 @@ pliInit (const char *plipkg, const char *sinkname)
   pli->pliiState = NULL;
   pli->pliiSetAudioDevice = NULL;
   pli->pliiAudioDeviceList = NULL;
+  pli->pliiSupported = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -101,6 +103,7 @@ pliInit (const char *plipkg, const char *sinkname)
   pli->pliiState = dylibLookup (pli->dlHandle, "pliiState");
   pli->pliiSetAudioDevice = dylibLookup (pli->dlHandle, "pliiSetAudioDevice");
   pli->pliiAudioDeviceList = dylibLookup (pli->dlHandle, "pliiAudioDeviceList");
+  pli->pliiSupported = dylibLookup (pli->dlHandle, "pliiSupported");
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
@@ -243,6 +246,17 @@ pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist)
     return pli->pliiAudioDeviceList (pli->pliData, sinklist);
   }
   return -1;
+}
+
+int
+pliSupported (pli_t *pli)
+{
+  int   rc = PLI_SUPPORT_NONE;
+
+  if (pli != NULL && pli->pliiSupported != NULL) {
+    rc = pli->pliiSupported (pli->pliData);
+  }
+  return rc;
 }
 
 const char *

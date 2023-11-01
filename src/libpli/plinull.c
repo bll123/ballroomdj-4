@@ -15,6 +15,16 @@
 #include "tmutil.h"
 #include "volsink.h"
 
+typedef struct plidata {
+  char              *name;
+  void              *plData;
+  ssize_t           duration;
+  ssize_t           playTime;
+  plistate_t        state;
+  int               supported;
+  mstime_t          playStart;    // for the null player
+} plidata_t;
+
 const char *
 pliiDesc (void)
 {
@@ -32,6 +42,7 @@ pliiInit (const char *volpkg, const char *sinkname)
   pliData->playTime = 0;
   pliData->state = PLI_STATE_STOPPED;
   pliData->name = "null";
+  pliData->supported = PLI_SUPPORT_NONE;
   return pliData;
 }
 
@@ -170,4 +181,10 @@ int
 pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
 {
   return 0;
+}
+
+int
+pliiSupported (plidata_t *pliData)
+{
+  return pliData->supported;
 }

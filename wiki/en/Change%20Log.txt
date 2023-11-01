@@ -4,10 +4,14 @@
 
 <!--
 
-**4.4.2.2 2023-10---**
+**4.4.2.3 2023-11---**
+
+**4.4.2.2 2023-11---**
 
 * Bug Fixes:
     * MacOS: Fix permissions on acrcloud fingerprint utility.
+* Changes:
+    * Audio Tags: The python-mutagen has been removed.
 
 -->
 

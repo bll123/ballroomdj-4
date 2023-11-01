@@ -37,6 +37,7 @@
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "pli.h"
 #include "progstate.h"
 #include "slist.h"
 #include "sock.h"
@@ -109,6 +110,7 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
+  int             pliSupported;
   /* external request */
   int             extreqRow;
   uireqext_t      *uireqext;
@@ -139,6 +141,7 @@ typedef struct {
   bool            startmainsent : 1;
   bool            stopping : 1;
   bool            uibuilt : 1;
+  bool            haveplisupport : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -168,6 +171,7 @@ enum {
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
+static bool     pluiInitDataCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
@@ -189,6 +193,7 @@ static void     pluiSetManageQueue (playerui_t *plui, int newqueue);
 /* option handlers */
 static bool     pluiToggleExtraQueues (void *udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
+static void     pluiSetSupported (playerui_t *plui);
 static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
@@ -227,6 +232,8 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_INITIALIZE_DATA,
+      pluiInitDataCallback, &plui);
 
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
@@ -265,6 +272,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     plui.wcont [i] = NULL;
   }
+  plui.pliSupported = PLI_SUPPORT_NONE;
+  plui.haveplisupport = false;
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -911,11 +920,29 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
     uiUIProcessWaitEvents ();
 
     pluiSetExtraQueues (plui);
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAYER_SUPPORT, NULL);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "pluiHandshakeCallback", "");
+  return rc;
+}
+
+static bool
+pluiInitDataCallback (void *udata, programstate_t programState)
+{
+  playerui_t    *plui = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  logProcBegin (LOG_PROC, "pluiInitDataCallback");
+
+  if (plui->haveplisupport) {
+    pluiSetSupported (plui);
+    rc = STATE_FINISHED;
+  }
+
+  logProcEnd (LOG_PROC, "pluiInitDataCallback", "");
   return rc;
 }
 
@@ -1082,6 +1109,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             mstimeset (&plui->expmp3chkTime, 500);
           }
           dataFree (dir);
+          break;
+        }
+        case MSG_PLAYER_SUPPORT: {
+          plui->pliSupported = atoi (args);
+          plui->haveplisupport = true;
           break;
         }
         default: {
@@ -1332,6 +1364,24 @@ pluiSetExtraQueues (playerui_t *plui)
 
   pluiPlaybackButtonHideShow (plui, plui->currpage);
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
+}
+
+static void
+pluiSetSupported (playerui_t *plui)
+{
+  logProcBegin (LOG_PROC, "pluiSetSupported");
+  if (! plui->uibuilt) {
+    logProcEnd (LOG_PROC, "pluiSetSupported", "no-ui");
+    return;
+  }
+
+  if (! pliCheckSupport (plui->pliSupported, PLI_SUPPORT_SPEED)) {
+    uiplayerDisableSpeed (plui->uiplayer);
+  }
+  if (! pliCheckSupport (plui->pliSupported, PLI_SUPPORT_SEEK)) {
+    uiplayerDisableSeek (plui->uiplayer);
+  }
+  logProcEnd (LOG_PROC, "pluiSetSupported", "");
 }
 
 static bool

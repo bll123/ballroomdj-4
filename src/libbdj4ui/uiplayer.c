@@ -103,23 +103,29 @@ typedef struct uiplayer {
   uiwcont_t       *images [UIPL_IMG_MAX];
   uibutton_t      *buttons [UIPL_BUTTON_MAX];
   /* speed controls / display */
-  bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
-  /* position controls / display */
-  ssize_t         lastdur;
-  bool            seekLock;
-  mstime_t        seekLockTimeout;
-  mstime_t        seekLockSend;
-  /* main controls */
-  bool            repeatLock;
-  bool            pauseatendLock;
-  bool            pauseatendstate;
   /* volume controls / display */
-  bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
-  bool            uibuilt;
+  /* position controls / display */
+  ssize_t         lastdur;
+  mstime_t        seekLockTimeout;
+  mstime_t        seekLockSend;
+  bool            seekLock : 1;
+  /* speed controls / display */
+  bool            speedLock : 1;
+  /* main controls */
+  bool            repeatLock : 1;
+  bool            pauseatendLock : 1;
+  bool            pauseatendstate : 1;
+  /* volume controls */
+  bool            volumeLock : 1;
+  /* display */
+  bool            uibuilt : 1;
+  /* speed/seek enabled */
+  bool            speeddisabled : 1;
+  bool            seekdisabled : 1;
 } uiplayer_t;
 
 static bool  uiplayerInitCallback (void *udata, programstate_t programState);
@@ -150,21 +156,21 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
-  uiplayer->uibuilt = false;
-  uiplayer->curr_dbidx = -1;
-
-  for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
-    uiplayer->buttons [i] = NULL;
-  }
   for (int i = 0; i < UIPL_CB_MAX; ++i) {
     uiplayer->callbacks [i] = NULL;
+  }
+  uiplayer->curr_dbidx = -1;
+  for (int i = 0; i < UIPL_W_MAX; ++i) {
+    uiplayer->wcont [i] = NULL;
   }
   for (int i = 0; i < UIPL_IMG_MAX; ++i) {
     uiplayer->images [i] = NULL;
   }
-  for (int i = 0; i < UIPL_W_MAX; ++i) {
-    uiplayer->wcont [i] = NULL;
+  for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
+    uiplayer->buttons [i] = NULL;
   }
+
+  uiplayer->uibuilt = false;
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -648,6 +654,26 @@ uiplayerGetCurrSongIdx (uiplayer_t *uiplayer)
   return uiplayer->curr_dbidx;
 }
 
+void
+uiplayerDisableSpeed (uiplayer_t *uiplayer)
+{
+  if (uiplayer == NULL) {
+    return;
+  }
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_SPEED], UIWIDGET_DISABLE);
+  uiplayer->speeddisabled = true;
+}
+
+void
+uiplayerDisableSeek (uiplayer_t *uiplayer)
+{
+  if (uiplayer == NULL) {
+    return;
+  }
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_SEEK], UIWIDGET_DISABLE);
+  uiplayer->seekdisabled = true;
+}
+
 /* internal routines */
 
 static bool
@@ -657,19 +683,22 @@ uiplayerInitCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "uiplayerInitCallback");
 
+  uiplayer->playerState = PL_STATE_STOPPED;
+  mstimeset (&uiplayer->speedLockTimeout, 3600000);
+  mstimeset (&uiplayer->speedLockSend, 3600000);
+  mstimeset (&uiplayer->volumeLockTimeout, 3600000);
+  mstimeset (&uiplayer->volumeLockSend, 3600000);
+  uiplayer->lastdur = 180000;
+  mstimeset (&uiplayer->seekLockTimeout, 3600000);
+  mstimeset (&uiplayer->seekLockSend, 3600000);
+  uiplayer->seekLock = false;
+  uiplayer->speedLock = false;
   uiplayer->repeatLock = false;
   uiplayer->pauseatendLock = false;
   uiplayer->pauseatendstate = false;
-  uiplayer->lastdur = 180000;
-  uiplayer->speedLock = false;
-  mstimeset (&uiplayer->speedLockTimeout, 3600000);
-  mstimeset (&uiplayer->speedLockSend, 3600000);
-  uiplayer->seekLock = false;
-  mstimeset (&uiplayer->seekLockTimeout, 3600000);
-  mstimeset (&uiplayer->seekLockSend, 3600000);
   uiplayer->volumeLock = false;
-  mstimeset (&uiplayer->volumeLockTimeout, 3600000);
-  mstimeset (&uiplayer->volumeLockSend, 3600000);
+  uiplayer->speeddisabled = false;
+  uiplayer->seekdisabled = false;
 
   logProcEnd (LOG_PROC, "uiplayerInitCallback", "");
   return STATE_FINISHED;
@@ -736,8 +765,12 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   }
 
   uiWidgetSetState (uiplayer->wcont [UIPL_W_VOLUME], state);
-  uiWidgetSetState (uiplayer->wcont [UIPL_W_SPEED], state);
-  uiWidgetSetState (uiplayer->wcont [UIPL_W_SEEK], state);
+  if (! uiplayer->speeddisabled) {
+    uiWidgetSetState (uiplayer->wcont [UIPL_W_SPEED], state);
+  }
+  if (! uiplayer->seekdisabled) {
+    uiWidgetSetState (uiplayer->wcont [UIPL_W_SEEK], state);
+  }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
   switch (playerState) {

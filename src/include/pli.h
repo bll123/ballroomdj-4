@@ -25,14 +25,22 @@ typedef enum {
   PLI_STATE_MAX,
 } plistate_t;
 
-typedef struct {
-  char              *name;
-  void              *plData;
-  ssize_t           duration;
-  ssize_t           playTime;
-  plistate_t        state;
-  mstime_t          playStart;                    // for the null player
-} plidata_t;
+enum {
+  PLI_SUPPORT_NONE    = 0x0000,
+  PLI_SUPPORT_SEEK    = 0x0001,
+  PLI_SUPPORT_SPEED   = 0x0002,
+};
+
+static inline bool
+pliCheckSupport (int supported, int supportflag)
+{
+  bool  rc;
+
+  rc = (supported & supportflag) == supportflag;
+  return rc;
+}
+
+typedef struct plidata plidata_t;
 
 typedef struct pli pli_t;
 
@@ -51,6 +59,7 @@ ssize_t       pliGetTime (pli_t *pli);
 plistate_t    pliState (pli_t *pli);
 int           pliSetAudioDevice (pli_t *pli, const char *dev);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
+int           pliSupported (pli_t *pli);
 const char    *pliStateText (pli_t *pli);
 slist_t       *pliInterfaceList (void);
 
@@ -69,6 +78,7 @@ ssize_t       pliiGetTime (plidata_t *pliData);
 plistate_t    pliiState (plidata_t *pliData);
 int           pliiSetAudioDevice (plidata_t *pliData, const char *dev);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
+int           pliiSupported (plidata_t *pliData);
 const char    *pliiDesc (void);
 
 #endif

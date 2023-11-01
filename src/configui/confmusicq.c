@@ -22,7 +22,6 @@
 #include "musicq.h"
 #include "nlist.h"
 #include "pathbld.h"
-#include "pli.h"
 #include "sysvars.h"
 #include "ui.h"
 

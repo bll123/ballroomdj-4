@@ -55,6 +55,7 @@ confuiInitPlayer (confuigui_t *gui)
 
     pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC), "default");
     pliAudioDeviceList (pli, &sinklist);
+    pliFree (pli);
   }
 
   tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, NULL);

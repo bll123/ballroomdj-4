@@ -88,6 +88,7 @@ typedef struct {
   qidx_t          prepiteridx;
   prepqueue_t     *currentSong;
   queue_t         *playRequest;
+  int             pliSupported;
   int             originalSystemVolume;
   int             realVolume;     // the real volume that is set (+voladjperc).
   int             currentVolume;  // current volume settings, no adjustments.
@@ -206,6 +207,7 @@ main (int argc, char *argv[])
   playerData.priorGap = 2000;
   playerData.gap = 2000;
   playerData.pli = NULL;
+  playerData.pliSupported = PLI_SUPPORT_NONE;
   playerData.prepQueue = queueAlloc ("prep-q", playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc ("prep-req", playerPrepQueueFree);
   playerData.progstate = progstateInit ("player");
@@ -297,6 +299,7 @@ main (int argc, char *argv[])
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       playerData.currentSink);
+  playerData.pliSupported = pliSupported (playerData.pli);
 
   playerSetDefaultVolume (&playerData);
 
@@ -463,6 +466,13 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYER_VOLUME: {
           logMsg (LOG_DBG, LOG_MSGS, "got: volume %s", args);
           playerVolumeSet (playerData, args);
+          break;
+        }
+        case MSG_PLAYER_SUPPORT: {
+          char  tmp [40];
+
+          snprintf (tmp, sizeof (tmp), "%d", playerData->pliSupported);
+          connSendMessage (playerData->conn, routefrom, MSG_PLAYER_SUPPORT, tmp);
           break;
         }
         case MSG_PLAY_STOP: {
@@ -1384,6 +1394,11 @@ playerSpeed (playerdata_t *playerData, char *trate)
 
   logProcBegin (LOG_PROC, "playerSpeed");
 
+  if (! pliCheckSupport (playerData->pliSupported, PLI_SUPPORT_SPEED)) {
+    logProcEnd (LOG_PROC, "playerSpeed", "not-supported");
+    return;
+  }
+
   if (playerData->playerState == PL_STATE_PLAYING) {
     rate = atof (trate);
     pliRate (playerData->pli, (ssize_t) rate);
@@ -1403,6 +1418,11 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   }
 
   logProcBegin (LOG_PROC, "playerSeek");
+
+  if (! pliCheckSupport (playerData->pliSupported, PLI_SUPPORT_SEEK)) {
+    logProcEnd (LOG_PROC, "playerSeek", "not-supported");
+    return;
+  }
 
   /* the requested position is adjusted for the speed, as the position */
   /* slider is based on the speed adjusted duration. */
