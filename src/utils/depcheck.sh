@@ -87,7 +87,8 @@ fi
 
 # c) check the object file hierarchy for problems.
 echo "## checking object file hierarchy"
-$HOME/bin/lorder $(find ./build -name '*.o') > $TIN
+#
+./utils/lorder $(find ./build -name '*.o') > $TIN
 tsort < $TIN > $TSORT
 rc=$?
 if [[ $rc -ne 0 ]]; then

@@ -6,6 +6,8 @@
 
 #include "config.h"
 
+#if _hdr_vlc_vlc
+
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
 # pragma clang diagnostic push
@@ -45,5 +47,7 @@ int               vlcMedia (vlcData_t *vlcdata, const char *fn);
 vlcData_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcData_t *vlcData);
 void              vlcRelease (vlcData_t *vlcData);
+
+#endif /* _hdr_vlc_vlc */
 
 #endif /* INC_VLCI_H */

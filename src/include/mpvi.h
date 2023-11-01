@@ -6,6 +6,8 @@
 
 #include "config.h"
 
+#if _hdr_mpv_client
+
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
 # pragma clang diagnostic push
@@ -42,5 +44,7 @@ int               mpvMedia (mpvData_t *mpvdata, const char *fn);
 mpvData_t *       mpvInit (void);
 void              mpvClose (mpvData_t *mpvData);
 void              mpvRelease (mpvData_t *mpvData);
+
+#endif /* _hdr_mpv_client */
 
 #endif /* INC_MPVI_H */
