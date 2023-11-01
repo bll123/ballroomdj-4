@@ -123,6 +123,8 @@
 #cmakedefine01 _lib_libvlc_new
 #cmakedefine01 _lib_libvlc_audio_output_device_enum
 
+#cmakedefine01 _lib_mpv_create
+
 #cmakedefine _args_mkdir ${_args_mkdir}
 
 #cmakedefine01 _define_INVALID_SOCKET

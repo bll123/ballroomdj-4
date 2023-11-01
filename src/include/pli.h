@@ -15,6 +15,7 @@ typedef enum {
 
 typedef enum {
   PLI_STATE_NONE,
+  PLI_STATE_IDLE,
   PLI_STATE_OPENING,
   PLI_STATE_BUFFERING,
   PLI_STATE_PLAYING,

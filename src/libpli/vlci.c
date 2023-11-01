@@ -5,11 +5,6 @@
 
 #if _lib_libvlc_new
 
-enum {
-  SILENCE_LOG = 0,
-  STATE_TO_VALUE = 0,
-};
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -34,8 +29,25 @@ enum {
 
 #include "bdjstring.h"
 #include "mdebug.h"
+#include "pli.h"
 #include "vlci.h"
 #include "volsink.h"
+
+typedef struct vlcData {
+  libvlc_instance_t     *inst;
+  char                  version [40];
+  libvlc_media_t        *m;
+  libvlc_media_player_t *mp;
+  libvlc_state_t        state;
+  int                   argc;
+  char                  **argv;
+  char                  *device;
+} vlcData_t;
+
+enum {
+  SILENCE_LOG = 0,
+  STATE_TO_VALUE = 0,
+};
 
 typedef struct {
   libvlc_state_t        state;
@@ -56,7 +68,9 @@ enum {
   stateMapMax = (sizeof (stateMap) / sizeof (stateMap_t))
 };
 
-static const char *   stateToStr (libvlc_state_t state);
+/* static const char *stateToStr (libvlc_state_t state); */ /* for debugging */
+static void       vlcEventHandler (const struct libvlc_event_t *event, void *);
+
 #if STATE_TO_VALUE
 static libvlc_state_t stateToValue (char *name);
 #endif
@@ -179,25 +193,25 @@ vlcPlay (vlcData_t *vlcData)
 }
 
 ssize_t
-vlcSeek (vlcData_t *vlcData, ssize_t dpos)
+vlcSeek (vlcData_t *vlcData, ssize_t pos)
 {
   libvlc_time_t     dur = 0;
-  float             pos = 0.0;
-  ssize_t           newpos = dpos;
+  float             fpos = 0.0;
+  ssize_t           newpos = pos;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    return -1.0;
+    return -1;
   }
 
   if ((vlcData->state == libvlc_Playing ||
       vlcData->state == libvlc_Paused) &&
-      dpos >= 0) {
+      pos >= 0) {
     dur = libvlc_media_player_get_length (vlcData->mp);
-    pos = (float) ((double) dpos / (double) dur);
-    libvlc_media_player_set_position (vlcData->mp, pos);
+    fpos = (float) ((double) pos / (double) dur);
+    libvlc_media_player_set_position (vlcData->mp, fpos);
   }
-  pos = libvlc_media_player_get_position (vlcData->mp);
-  newpos = (ssize_t) round ((double) pos * (double) dur);
+  fpos = libvlc_media_player_get_position (vlcData->mp);
+  newpos = (ssize_t) round ((double) fpos * (double) dur);
   // fprintf (stderr, "vlci: seek: dpos: %" PRId64 " new-pos: %.6f new-pos: %" PRId64 "\n", dpos, pos, newpos);
   return newpos;
 }
@@ -221,15 +235,15 @@ vlcRate (vlcData_t *vlcData, double drate)
 
 /* other commands */
 
-int
+bool
 vlcHaveAudioDevList (void)
 {
-  int       rc;
+  bool    rc;
 
-  rc = 0;
+  rc = false;
 #if _lib_libvlc_audio_output_device_enum && \
     LIBVLC_VERSION_INT >= LIBVLC_VERSION(2,2,0,0)
-  rc = 1;
+  rc = true;
 #endif
   return rc;
 }
@@ -291,43 +305,32 @@ vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist)
 
 #endif /* have libvlc_audio_output_device_enum */
 
-char *
+const char *
 vlcVersion (vlcData_t *vlcData)
 {
   return vlcData->version;
 }
 
-libvlc_state_t
+plistate_t
 vlcState (vlcData_t *vlcData)
 {
-  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    return libvlc_NothingSpecial;
-  }
-
-  return vlcData->state;
-}
-
-const char *
-vlcStateStr (vlcData_t *vlcData)
-{
-  libvlc_state_t    plstate;
+  plistate_t  state = PLI_STATE_NONE;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    return NULL;
+    return state;
   }
 
-  plstate = vlcData->state;
-  return (stateToStr (plstate));
-}
-
-void
-noInitialVolume (vlcData_t *vlcData)
-{
-  if (vlcData == NULL) {
-    return;
+  switch (vlcData->state) {
+    case libvlc_NothingSpecial: { state = PLI_STATE_IDLE; break; }
+    case libvlc_Opening: { state = PLI_STATE_OPENING; break; }
+    case libvlc_Buffering: { state = PLI_STATE_BUFFERING; break; }
+    case libvlc_Playing: { state = PLI_STATE_PLAYING; break; }
+    case libvlc_Paused: { state = PLI_STATE_PAUSED; break; }
+    case libvlc_Stopped: { state = PLI_STATE_STOPPED; break; }
+    case libvlc_Ended: { state = PLI_STATE_ENDED; break; }
+    case libvlc_Error: { state = PLI_STATE_ERROR; break; }
   }
-
-  vlcData->initialvolume = 0;
+  return state;
 }
 
 /* media commands */
@@ -389,7 +392,6 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcData->argv = NULL;
   vlcData->state = libvlc_NothingSpecial;
   vlcData->device = NULL;
-  vlcData->initialvolume = 1;
 
   vlcData->argv = (char **) mdmalloc (sizeof (char *) * (size_t) (vlcargc + 1));
 
@@ -430,9 +432,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   }
 
   if (vlcData->inst != NULL && vlcData->mp != NULL) {
-    if (vlcData->initialvolume) {
-      libvlc_audio_set_volume (vlcData->mp, 100);
-    }
+    libvlc_audio_set_volume (vlcData->mp, 100);
 #if ! defined(VLC_NO_ROLE) && \
       LIBVLC_VERSION_INT >= LIBVLC_VERSION(3,0,0,0)
     libvlc_media_player_set_role (vlcData->mp, libvlc_role_Music);
@@ -487,13 +487,7 @@ vlcRelease (vlcData_t *vlcData)
 
 /* event handlers */
 
-void
-vlcExitHandler (vlcData_t *vlcData)
-{
-  vlcClose (vlcData);
-}
-
-void
+static void
 vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
 {
   vlcData_t     *vlcData = (vlcData_t *) userdata;
@@ -505,6 +499,8 @@ vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
 
 /* internal routines */
 
+/* for debugging */
+#if 0
 static const char *
 stateToStr (libvlc_state_t state)
 {
@@ -520,6 +516,7 @@ stateToStr (libvlc_state_t state)
   }
   return tptr;
 }
+#endif
 
 # if STATE_TO_VALUE
 
