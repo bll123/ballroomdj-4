@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-24\n"
+"PO-Revision-Date: 2023-11-01\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -1220,11 +1220,6 @@ msgstr "Ne pas jouer"
 #, c-format
 msgid "Not a valid %s folder."
 msgstr "Le dossier %s n'est pas valide."
-
-#. CONTEXT: installer: display of package status
-#, c-format
-msgid "Not needed"
-msgstr "Pas nécessaire"
 
 #. CONTEXT: label: notes
 msgid "Notes"

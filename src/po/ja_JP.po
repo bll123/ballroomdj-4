@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-10-24\n"
+"PO-Revision-Date: 2023-11-01\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -1220,11 +1220,6 @@ msgstr "プレーしない"
 #, c-format
 msgid "Not a valid %s folder."
 msgstr "有効な %s フォルダーではありません。"
-
-#. CONTEXT: installer: display of package status
-#, c-format
-msgid "Not needed"
-msgstr "不要"
 
 #. CONTEXT: label: notes
 msgid "Notes"
