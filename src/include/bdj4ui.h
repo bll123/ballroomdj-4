@@ -45,7 +45,23 @@ enum {
   MANAGE_EXP_BDJ4_DIR,
   MANAGE_IMP_BDJ4_DIR,
   MANAGE_AUDIOID_PANE_POSITION,
+  QE_POSITION_X,
+  QE_POSITION_Y,
   PLUI_KEY_MAX,
 };
+
+enum {
+  SPD_DIGITS = 0,
+  VOL_DIGITS = 1,
+};
+
+#define SPD_LOWER 70.0
+#define SPD_UPPER 130.0
+#define SPD_INCA 1.0
+#define SPD_INCB 5.0
+#define VOL_LOWER -50.0
+#define VOL_UPPER 50.0
+#define VOL_INCA 0.1
+#define VOL_INCB 5.0
 
 #endif /* INC_BDJ4UI_H */

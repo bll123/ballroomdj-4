@@ -97,6 +97,7 @@ enum {
   MANAGE_MENU_CB_MM_SET_MARK,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
+  MANAGE_MENU_CB_SE_WRITE_TAGS,
   MANAGE_MENU_CB_SE_COPY_TAGS,
   MANAGE_MENU_CB_SE_APPLY_EDIT_ALL,
   MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL,
@@ -307,6 +308,8 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
   { "MNG_SIZE_X",       MANAGE_SIZE_X,              VALUE_NUM, NULL, DF_NORM },
   { "MNG_SIZE_Y",       MANAGE_SIZE_Y,              VALUE_NUM, NULL, DF_NORM },
+  { "QE_POS_X",         QE_POSITION_X,              VALUE_NUM, NULL, DF_NORM },
+  { "QE_POS_Y",         QE_POSITION_Y,              VALUE_NUM, NULL, DF_NORM },
   { "SBS_SONGLIST",     MANAGE_SBS_SONGLIST,        VALUE_NUM, convBoolean, DF_NORM },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, DF_NORM },
 };
@@ -554,6 +557,8 @@ main (int argc, char *argv[])
     nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, "");
     nlistSetStr (manage.options, MANAGE_IMP_BDJ4_DIR, "");
     nlistSetNum (manage.options, MANAGE_AUDIOID_PANE_POSITION, -1);
+    nlistSetNum (manage.options, QE_POSITION_X, -1);
+    nlistSetNum (manage.options, QE_POSITION_Y, -1);
   }
 
   uiUIInitialize ();
@@ -1573,18 +1578,23 @@ manageSongEditMenu (manageui_t *manage)
     menu = uiCreateSubMenu (menuitem);
     uiwcontFree (menuitem);
 
-    /* I would prefer to have BPM as a stand-alone menu item, but */
-    /* gtk does not appear to have a way to create a top-level */
-    /* menu item in the menu bar. */
     manage->callbacks [MANAGE_MENU_CB_SE_BPM] = callbackInit (
         manageStartBPMCounter, manage, NULL);
     menuitem = uiMenuCreateItem (menu, tagdefs [TAG_BPM].displayname,
         manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
     uiwcontFree (menuitem);
 
+    manage->callbacks [MANAGE_MENU_CB_SE_WRITE_TAGS] = callbackInit (
+        manageCopyTagsStart, manage, NULL);
+    /* CONTEXT: managementui: song editor menu: write audio tags */
+    menuitem = uiMenuCreateItem (menu, _("Write Audio Tags"),
+        manage->callbacks [MANAGE_MENU_CB_SE_WRITE_TAGS]);
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    uiwcontFree (menuitem);
+
     manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
         manageCopyTagsStart, manage, NULL);
-    /* CONTEXT: managementui: menu selection: song editor: copy audio tags */
+    /* CONTEXT: managementui: song editor menu: copy audio tags */
     menuitem = uiMenuCreateItem (menu, _("Copy Audio Tags"),
         manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
     uiwcontFree (menuitem);
@@ -1593,21 +1603,21 @@ manageSongEditMenu (manageui_t *manage)
 
     manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
         manageEditAllStart, manage, NULL);
-    /* CONTEXT: managementui: menu selection: song editor: edit all */
+    /* CONTEXT: managementui: song editor menu: edit all */
     menuitem = uiMenuCreateItem (menu, _("Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
     uiwcontFree (menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
         manageEditAllApply, manage, NULL);
-    /* CONTEXT: managementui: menu selection: song editor: apply edit all */
+    /* CONTEXT: managementui: song editor menu: apply edit all */
     menuitem = uiMenuCreateItem (menu, _("Apply Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
     uiwcontFree (menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
         manageEditAllCancel, manage, NULL);
-    /* CONTEXT: managementui: menu selection: song editor: cancel edit all */
+    /* CONTEXT: managementui: song editor menu: cancel edit all */
     menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
     uiwcontFree (menuitem);
@@ -1617,7 +1627,7 @@ manageSongEditMenu (manageui_t *manage)
     manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
         manageApplyAdjDialog, manage, NULL);
     uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-    /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
+    /* CONTEXT: managementui: song editor menu: apply adjustments */
     menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     p = sysvarsGetStr (SV_PATH_FFMPEG);
@@ -1628,7 +1638,7 @@ manageSongEditMenu (manageui_t *manage)
 
     manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
         manageRestoreOrigCallback, manage, NULL);
-    /* CONTEXT: managementui: menu selection: song editor: restore original */
+    /* CONTEXT: managementui: song editor menu: restore original */
     menuitem = uiMenuCreateItem (menu, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
     manage->wcont [MANAGE_W_MENU_RESTORE_ORIG] = menuitem;

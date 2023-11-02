@@ -207,7 +207,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     uiBoxPackStart (hbox, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
-    gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, false);
+    gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, UIRATING_NORM);
 
     uiratingSetValue (gui->itunes->uirating [i],
         itunesGetStars (gui->itunes->itunes, ITUNES_STARS_10 + i));

@@ -9,6 +9,11 @@
 
 typedef struct uirating uirating_t;
 
+enum {
+  UIRATING_NORM = false,
+  UIRATING_ALL = true,
+};
+
 uirating_t * uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag);
 void uiratingFree (uirating_t *uirating);
 int uiratingGetValue (uirating_t *uirating);

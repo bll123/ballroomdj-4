@@ -577,7 +577,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
 
-  uisf->uirating = uiratingSpinboxCreate (hbox, true);
+  uisf->uirating = uiratingSpinboxCreate (hbox, UIRATING_ALL);
   uiratingSizeGroupAdd (uisf->uirating, szgrpSpinText);
 
   /* level */

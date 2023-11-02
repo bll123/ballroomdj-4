@@ -358,7 +358,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->uirating = uiratingSpinboxCreate (hbox, false);
+  managepl->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
   uiratingSizeGroupAdd (managepl->uirating, szgrpText);
 
   hbox = uiCreateHorizBox ();

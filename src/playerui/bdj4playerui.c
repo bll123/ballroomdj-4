@@ -50,6 +50,7 @@
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
+#include "uiquickedit.h"
 #include "uireqext.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
@@ -59,10 +60,12 @@ enum {
   PLUI_MENU_CB_PLAY_QUEUE,
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
-  PLUI_MENU_CB_REQ_EXTERNAL,
+  PLUI_MENU_CB_REQ_EXT_DIALOG,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
   PLUI_MENU_CB_EXP_MP3,
+  PLUI_MENU_CB_QE_CURRENT,
+  PLUI_MENU_CB_QE_SELECTED,
   PLUI_CB_NOTEBOOK,
   PLUI_CB_CLOSE,
   PLUI_CB_PLAYBACK_QUEUE,
@@ -111,6 +114,8 @@ typedef struct {
   uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
   int             pliSupported;
+  /* quick edit */
+  uiqe_t          *uiqe;
   /* external request */
   int             extreqRow;
   uireqext_t      *uireqext;
@@ -209,6 +214,8 @@ static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiExtReqCallback (void *udata);
+static bool     pluiQuickEditCurrent (void *udata);
+static bool     pluiQuickEditSelected (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -249,6 +256,7 @@ main (int argc, char *argv[])
   plui.stopwaitcount = 0;
   plui.nbtabid = uinbutilIDInit ();
   plui.uisongfilter = NULL;
+  plui.uiqe = NULL;
   plui.extreqRow = -1;
   plui.uireqext = NULL;
   plui.uikey = NULL;
@@ -419,6 +427,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
   uiKeyFree (plui->uikey);
+  uiqeFree (plui->uiqe);
   uireqextFree (plui->uireqext);
   if (plui->optionsalloc) {
     nlistFree (plui->options);
@@ -516,11 +525,25 @@ pluiBuildUI (playerui_t *plui)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL] = callbackInit (
+  plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: external request */
   menuitem = uiMenuCreateItem (menu, _("External Request"),
-      plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
+      plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG]);
+  uiwcontFree (menuitem);
+
+  plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
+      pluiQuickEditCurrent, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: quick edit */
+  menuitem = uiMenuCreateItem (menu, _("Quick Edit: Current"),
+      plui->callbacks [PLUI_MENU_CB_QE_CURRENT]);
+  uiwcontFree (menuitem);
+
+  plui->callbacks [PLUI_MENU_CB_QE_SELECTED] = callbackInit (
+      pluiQuickEditSelected, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: quick edit */
+  menuitem = uiMenuCreateItem (menu, _("Quick Edit: Selected"),
+      plui->callbacks [PLUI_MENU_CB_QE_SELECTED]);
   uiwcontFree (menuitem);
 
   /* marquee */
@@ -703,6 +726,13 @@ static void
 pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
+
+  plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
+      plui->musicdb, plui->options);
+//  plui->callbacks [PLUI_CB_QUICK_EDIT] = callbackInit (
+//      pluiExtReqCallback,
+//      plui, "musicq: quick edit response");
+//  uiqeSetResponseCallback (plui->uiqe, plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
@@ -1681,6 +1711,26 @@ pluiExtReqCallback (void *udata)
     }
   }
   return UICB_CONT;
+}
+
+static bool
+pluiQuickEditCurrent (void *udata)
+{
+  bool          rc;
+  dbidx_t       dbidx = -1;
+
+  rc = uiqeDialog (udata, dbidx);
+  return rc;
+}
+
+static bool
+pluiQuickEditSelected (void *udata)
+{
+  bool          rc;
+  dbidx_t       dbidx = -1;
+
+  rc = uiqeDialog (udata, dbidx);
+  return rc;
 }
 
 static bool

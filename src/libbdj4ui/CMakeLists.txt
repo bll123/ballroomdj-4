@@ -28,6 +28,7 @@ add_library (libbdj4ui SHARED
   uinbutil.c
   uiplayer.c
   uiplaylist.c
+  uiquickedit.c
   uirating.c
   uireqext.c
   uiselectfile.c

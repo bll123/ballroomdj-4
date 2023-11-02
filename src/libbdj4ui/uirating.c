@@ -47,7 +47,7 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
 
   start = 0;
   maxw = ratingGetMaxWidth (uirating->ratings);
-  if (allflag) {
+  if (allflag == UIRATING_ALL) {
     /* CONTEXT: rating: a filter: all dance ratings will be listed */
     len = istrlen (_("All Ratings"));
     if (len > maxw) {
@@ -126,7 +126,7 @@ uiratingRatingGet (void *udata, int idx)
   uirating_t  *uirating = udata;
 
   if (idx == -1) {
-    if (uirating->allflag) {
+    if (uirating->allflag == UIRATING_ALL) {
       /* CONTEXT: rating: a filter: all dance ratings are displayed in the song selection */
       return _("All Ratings");
     }

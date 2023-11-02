@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "bdj4intl.h"
+#include "bdj4ui.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
 #include "bdjvarsdf.h"
@@ -1166,7 +1167,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
       }
       if (tagkey == TAG_DANCERATING) {
         seint->items [seint->itemcount].uirating =
-            uiratingSpinboxCreate (hbox, false);
+            uiratingSpinboxCreate (hbox, UIRATING_NORM);
         uiratingSizeGroupAdd (seint->items [seint->itemcount].uirating, seint->szgrp [UISE_SZGRP_SPIN_TEXT]);
         uiratingSetChangedCallback (seint->items [seint->itemcount].uirating,
             seint->callbacks [UISE_CB_CHANGED]);
@@ -1329,18 +1330,18 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin (LOG_PROC, "uisongeditAddScale");
   seint = uisongedit->seInternalData;
   if (tagkey == TAG_SPEEDADJUSTMENT) {
-    lower = 70.0;
-    upper = 130.0;
-    digits = 0;
-    inca = 1.0;
-    incb = 5.0;
+    lower = SPD_LOWER;
+    upper = SPD_UPPER;
+    digits = SPD_DIGITS;
+    inca = SPD_INCA;
+    incb = SPD_INCB;
   }
   if (tagkey == TAG_VOLUMEADJUSTPERC) {
-    lower = -50.0;
-    upper = 50.0;
-    digits = 1;
-    inca = 0.1;
-    incb = 5.0;
+    lower = VOL_LOWER;
+    upper = VOL_UPPER;
+    digits = VOL_DIGITS;
+    inca = VOL_INCA;
+    incb = VOL_INCB;
   }
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
