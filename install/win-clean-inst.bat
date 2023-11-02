@@ -1,7 +1,7 @@
 @echo off
-: Copyright 2023 Brad Lanam Pleasant Hill CA
-
 : windows install dir clean
+: Copyright 2023 Brad Lanam Pleasant Hill CA
+set ver=1
 
 : arg0 : script
 : arg1 : unpack dir (temporary installation folder)

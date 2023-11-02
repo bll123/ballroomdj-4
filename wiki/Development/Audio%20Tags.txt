@@ -17,6 +17,11 @@ any metadata.
 
 I am still looking for an M4A metadata library.
 
+2023-11-2 I wrote my own MP4 tagging library so that Mutagen could be
+removed.  I also wrote code to support read-only tags in RIFF (.wav)
+and ASF (.wma) files.  What's not supported are ID3 tags in non-MP3
+audio files.
+
 [Mutagen](Development-Mutagen)
 
 Another possibility to look at is taglib.  This will require writing a

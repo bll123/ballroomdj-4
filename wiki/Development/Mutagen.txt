@@ -18,6 +18,9 @@ Mutagen's support level seems to have dropped.  And the
 mutagen-inspect program / pprint() doesn't seem to be supported at all.
 The MP4 output is dumping out python code.
 
+Mutagen will be removed from BDJ4 as of version 4.2.2.2.
+It will no longer be necessary to install python.
+
 [​Quodlibet Mutagen](https://github.com/quodlibet/mutagen)
 
 [Developer Notes](Development-Developer%20Notes)

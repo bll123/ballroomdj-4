@@ -1,7 +1,7 @@
 @echo off
-: Copyright 2023 Brad Lanam Pleasant Hill CA
-
 : windows clean all python installations and data
+: Copyright 2023 Brad Lanam Pleasant Hill CA
+set ver=1
 
 echo -- Cleaning up python.  Please wait...
 
