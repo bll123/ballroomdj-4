@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-10-10\n"
-"PO-Revision-Date: 2023-11-01\n"
+"POT-Creation-Date: 2023-11-02\n"
+"PO-Revision-Date: 2023-11-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -294,11 +294,11 @@ msgstr "Toepassen"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: menu selection: song editor: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr "Aanpassingen toepassen"
 
-#. CONTEXT: managementui: menu selection: song editor: apply edit all
+#. CONTEXT: managementui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr "Alles Bewerken Toepassen"
 
@@ -390,7 +390,7 @@ msgstr "Ballroom muziekspeler"
 msgid "Beats"
 msgstr "Slagen"
 
-#. CONTEXT: managementui: menu selection: song editor: cancel edit all
+#. CONTEXT: managementui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr "Alles Bewerken Annuleren"
 
@@ -434,6 +434,7 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -491,7 +492,7 @@ msgstr "Converteer %s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: menu selection: song editor: copy audio tags
+#. CONTEXT: managementui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr "Audio-tags kopiëren"
 
@@ -669,7 +670,7 @@ msgid "Edit"
 msgstr "Bewerken"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: menu selection: song editor: edit all
+#. CONTEXT: managementui: song editor menu: edit all
 msgid "Edit All"
 msgstr "Alles bewerken"
 
@@ -747,6 +748,7 @@ msgstr "%s afsluiten en opnieuw starten."
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "Exporteren"
 
@@ -1231,6 +1233,7 @@ msgid "Off"
 msgstr "Uit"
 
 #. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr "Opties"
 
@@ -1415,7 +1418,7 @@ msgstr "Zet Dans In Wachtrij"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue E"
-msgstr ""
+msgstr "Wachtrij E"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -1440,6 +1443,18 @@ msgstr "Dans In Wachtrij"
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
 msgstr "Wachtrij"
+
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "Snelle bewerken"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "Snelle bewerken: Huidige"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "Snelle bewerken: Geselecteerd"
 
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"
@@ -1513,7 +1528,7 @@ msgid "Reset"
 msgstr "Resetten"
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: menu selection: song editor: restore original
+#. CONTEXT: managementui: song editor menu: restore original
 msgid "Restore Original"
 msgstr "Origineel herstellen"
 
@@ -1543,6 +1558,7 @@ msgid "Samba"
 msgstr "Samba"
 
 #. CONTEXT: audio identification: save data
+#. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
 #. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
@@ -2046,6 +2062,7 @@ msgid "When the BPM value is stable, select the Save button."
 msgstr "Wanneer de BPM waarde stabiel is, klik dan op Opslaan."
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
+#. CONTEXT: managementui: song editor menu: write audio file tags
 msgid "Write Audio File Tags"
 msgstr "Werk de audio tags bij"
 

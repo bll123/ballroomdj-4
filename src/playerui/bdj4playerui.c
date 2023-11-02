@@ -1724,7 +1724,7 @@ pluiQuickEditCurrent (void *udata)
   bool          rc;
   dbidx_t       dbidx = -1;
 
-// ### get dbidx for current song
+  dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
 // ### pass in current volume, current speed
 
   rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.4.2.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-11-01\n"
-"PO-Revision-Date: 2023-11-01\n"
+"POT-Creation-Date: 2023-11-02\n"
+"PO-Revision-Date: 2023-11-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -288,11 +288,11 @@ msgstr ""
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: menu selection: song editor: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr ""
 
-#. CONTEXT: managementui: menu selection: song editor: apply edit all
+#. CONTEXT: managementui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr ""
 msgid "Beats"
 msgstr ""
 
-#. CONTEXT: managementui: menu selection: song editor: cancel edit all
+#. CONTEXT: managementui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr ""
 
@@ -428,6 +428,7 @@ msgstr ""
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -485,7 +486,7 @@ msgstr ""
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: menu selection: song editor: copy audio tags
+#. CONTEXT: managementui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr ""
 
@@ -663,7 +664,7 @@ msgid "Edit"
 msgstr ""
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: menu selection: song editor: edit all
+#. CONTEXT: managementui: song editor menu: edit all
 msgid "Edit All"
 msgstr ""
 
@@ -741,6 +742,7 @@ msgstr ""
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr ""
 
@@ -1224,6 +1226,7 @@ msgid "Off"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr ""
 
@@ -1434,6 +1437,18 @@ msgstr ""
 msgid "Queue_noun"
 msgstr "Queue"
 
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr ""
+
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"
 msgstr ""
@@ -1506,7 +1521,7 @@ msgid "Reset"
 msgstr ""
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: menu selection: song editor: restore original
+#. CONTEXT: managementui: song editor menu: restore original
 msgid "Restore Original"
 msgstr ""
 
@@ -1536,6 +1551,7 @@ msgid "Samba"
 msgstr ""
 
 #. CONTEXT: audio identification: save data
+#. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
 #. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
@@ -2039,6 +2055,7 @@ msgid "When the BPM value is stable, select the Save button."
 msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
+#. CONTEXT: managementui: song editor menu: write audio file tags
 msgid "Write Audio File Tags"
 msgstr ""
 
