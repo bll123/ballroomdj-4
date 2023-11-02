@@ -534,20 +534,21 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
       pluiQuickEditCurrent, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: quick edit */
+  /* CONTEXT: playerui: menu selection: action: quick edit current song*/
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Current"),
       plui->callbacks [PLUI_MENU_CB_QE_CURRENT]);
   uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_QE_SELECTED] = callbackInit (
       pluiQuickEditSelected, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: quick edit */
+  /* CONTEXT: playerui: menu selection: action: quick edit selected song*/
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Selected"),
       plui->callbacks [PLUI_MENU_CB_QE_SELECTED]);
   uiwcontFree (menuitem);
 
-  /* marquee */
   uiwcontFree (menu);
+
+  /* marquee */
   /* CONTEXT: playerui: menu selection: marquee related options (suggested: song display) */
   menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL);
   if (plui->marqueeoff) {
@@ -570,9 +571,10 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
   uiwcontFree (menuitem);
 
+  uiwcontFree (menu);
+
   /* export */
   /* CONTEXT: playerui: menu selection: export */
-  uiwcontFree (menu);
   menuitem = uiMenuCreateItem (menubar, _("Export"), NULL);
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
@@ -590,9 +592,10 @@ pluiBuildUI (playerui_t *plui)
   }
   uiwcontFree (menuitem);
 
+  uiwcontFree (menu);
+
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */
-  uiwcontFree (menu);
   menuitem = uiMenuCreateItem (menubar, _("Options"), NULL);
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
@@ -729,6 +732,7 @@ pluiInitializeUI (playerui_t *plui)
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
+// ### fix, will need cb for resetting volume.
 //  plui->callbacks [PLUI_CB_QUICK_EDIT] = callbackInit (
 //      pluiExtReqCallback,
 //      plui, "musicq: quick edit response");
@@ -1716,20 +1720,26 @@ pluiExtReqCallback (void *udata)
 static bool
 pluiQuickEditCurrent (void *udata)
 {
+  playerui_t    *plui = udata;
   bool          rc;
   dbidx_t       dbidx = -1;
 
-  rc = uiqeDialog (udata, dbidx);
+// ### get dbidx for current song
+// ### pass in current volume, current speed
+
+  rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
   return rc;
 }
 
 static bool
 pluiQuickEditSelected (void *udata)
 {
+  playerui_t    *plui = udata;
   bool          rc;
-  dbidx_t       dbidx = -1;
+  dbidx_t       dbidx;
 
-  rc = uiqeDialog (udata, dbidx);
+  dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
+  rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
   return rc;
 }
 

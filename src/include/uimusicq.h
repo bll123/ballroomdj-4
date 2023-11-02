@@ -125,10 +125,10 @@ uiwcont_t   * uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int c
 void      uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb);
 void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
-ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
+dbidx_t   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);

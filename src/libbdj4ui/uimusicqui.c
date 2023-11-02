@@ -96,7 +96,6 @@ static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *s
 static bool   uimusicqIterateCallback (void *udata);
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
-static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static bool   uimusicqSelectionChgCallback (void *udata);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
 static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc);
@@ -683,6 +682,30 @@ uimusicqSetRequestLabel (uimusicq_t *uimusicq, const char *txt)
   uiLabelSetText (mqint->wcont [UIMUSICQ_W_REQ_QUEUE], txt);
 }
 
+dbidx_t
+uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
+{
+  int             ci;
+  mq_internal_t   *mqint;
+  dbidx_t         dbidx = -1;
+  int             count;
+
+  ci = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+
+  if (mqint == NULL) {
+    return -1;
+  }
+
+  count = uiTreeViewSelectGetCount (mqint->musicqTree);
+  if (count != 1) {
+    return -1;
+  }
+
+  dbidx = uiTreeViewGetValue (mqint->musicqTree, UIMUSICQ_COL_DBIDX);
+  return dbidx;
+}
+
 /* internal routines */
 
 static bool
@@ -908,30 +931,6 @@ uimusicqQueueCallback (void *udata)
     callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx);
   }
   return UICB_CONT;
-}
-
-static dbidx_t
-uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
-{
-  int             ci;
-  mq_internal_t   *mqint;
-  dbidx_t         dbidx = -1;
-  int             count;
-
-  ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
-
-  if (mqint == NULL) {
-    return -1;
-  }
-
-  count = uiTreeViewSelectGetCount (mqint->musicqTree);
-  if (count != 1) {
-    return -1;
-  }
-
-  dbidx = uiTreeViewGetValue (mqint->musicqTree, UIMUSICQ_COL_DBIDX);
-  return dbidx;
 }
 
 static bool

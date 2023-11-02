@@ -21,6 +21,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -68,6 +69,7 @@ typedef struct uiqe {
   callback_t        *responsecb;
   callback_t        *callbacks [UIQE_CB_MAX];
   uiqescale_t       scaledata [UIQE_SCALE_MAX];
+  song_t            *song;
   dbidx_t           dbidx;
   bool              isactive : 1;
 } uiqe_t;
@@ -148,20 +150,59 @@ uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb)
 }
 
 bool
-uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx)
+uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
 {
   int         x, y;
+  const char  *title;
+  int         ratingidx;
 
   if (uiqe == NULL) {
     return UICB_STOP;
   }
 
   logProcBegin (LOG_PROC, "uiqeDialog");
+
   uiqe->dbidx = dbidx;
+
+  if (dbidx < 0 || dbidx >= dbCount (uiqe->musicdb)) {
+    logProcEnd (LOG_PROC, "uiqeDialog", "bad-dbidx");
+    return UICB_STOP;
+  }
+
   uiqeCreateDialog (uiqe);
   uiqeInitDisplay (uiqe);
   uiDialogShow (uiqe->wcont [UIQE_W_DIALOG]);
   uiqe->isactive = true;
+
+  uiqe->song = dbGetByIdx (uiqe->musicdb, dbidx);
+  if (uiqe->song == NULL) {
+    logProcEnd (LOG_PROC, "uiqeDialog", "null-song");
+    return UICB_STOP;
+  }
+
+  title = songGetStr (uiqe->song, TAG_TITLE);
+  uiLabelSetText (uiqe->wcont [UIQE_W_TITLE_DISP], title);
+
+  ratingidx = songGetNum (uiqe->song, TAG_DANCERATING);
+  uiratingSetValue (uiqe->uirating, ratingidx);
+
+  if (speed == LIST_DOUBLE_INVALID) {
+    speed = songGetDouble (uiqe->song, TAG_SPEEDADJUSTMENT);
+  }
+  if (speed <= 0.0) {
+    speed = 100.0;
+  }
+  uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale, speed);
+  uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_SPD], speed);
+
+  if (voladj == LIST_DOUBLE_INVALID) {
+    voladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
+  }
+  if (voladj == LIST_DOUBLE_INVALID) {
+    voladj = 0.0;
+  }
+  uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_VOL].scale, voladj);
+  uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_VOL], voladj);
 
   x = nlistGetNum (uiqe->options, QE_POSITION_X);
   y = nlistGetNum (uiqe->options, QE_POSITION_Y);
@@ -219,7 +260,8 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("title");
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
 
@@ -349,7 +391,6 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   logProcEnd (LOG_PROC, "uiqeAddScale", "");
 }
 
-/* also sets the changed flag */
 static bool
 uiqeScaleDisplayCallback (void *udata, double value)
 {

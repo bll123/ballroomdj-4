@@ -13,6 +13,6 @@ typedef struct uiqe uiqe_t;
 uiqe_t  *uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts);
 void    uiqeFree (uiqe_t *uiqe);
 void    uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb);
-bool    uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx);
+bool    uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol);
 
 #endif /* INC_UIQUICKEDIT_H */
