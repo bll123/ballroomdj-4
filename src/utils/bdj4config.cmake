@@ -88,10 +88,6 @@ if (WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-#### MPV
-
-pkg_check_modules (LIBMPV mpv)
-
 #### tag parsing modules
 
 # ffmpeg : libavformat / libavutil
@@ -341,10 +337,6 @@ set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-set (CMAKE_REQUIRED_INCLUDES ${LIBMPV_INCLUDE_DIRS})
-check_include_file (mpv/client.h _hdr_mpv_client)
-set (CMAKE_REQUIRED_INCLUDES "")
-
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
   check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
@@ -472,10 +464,6 @@ check_function_exists (uname _lib_uname)
 set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LIBRARY})
 check_function_exists (libvlc_new _lib_libvlc_new)
 check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
-set (CMAKE_REQUIRED_LIBRARIES "")
-
-set (CMAKE_REQUIRED_LIBRARIES ${LIBMPV_LDFLAGS})
-check_function_exists (mpv_create _lib_mpv_create)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
 #### checks for symbols and other stuff
