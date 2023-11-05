@@ -61,27 +61,11 @@ target_link_libraries (bdj4dbupdate PUBLIC
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
 
-add_executable (bdj4dbtag bdj4dbtag.c)
-if (WIN32)
-  target_compile_options (bdj4dbtag PRIVATE -municode)
-endif()
-target_link_libraries (bdj4dbtag PUBLIC
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
-)
-target_compile_options (bdj4dbtag PRIVATE -pthread)
-target_link_options (bdj4dbtag PUBLIC -pthread)
-addIntlLibrary (bdj4dbtag)
-addWinSockLibrary (bdj4dbtag)
-
 install (TARGETS
-  bdj4manageui bdj4bpmcounter bdj4dbupdate bdj4dbtag
+  bdj4manageui bdj4bpmcounter bdj4dbupdate
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (bdj4manageui)
 updateRPath (bdj4bpmcounter)
 updateRPath (bdj4dbupdate)
-updateRPath (bdj4dbtag)

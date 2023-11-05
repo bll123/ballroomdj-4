@@ -27,7 +27,6 @@
 #cmakedefine01 _hdr_netinet_in
 #cmakedefine01 _hdr_pipewire_pipewire
 #cmakedefine01 _hdr_poll
-#cmakedefine01 _hdr_pthread
 #cmakedefine01 _hdr_pulse_pulseaudio
 #cmakedefine01 _hdr_signal
 #cmakedefine01 _hdr_stdint
@@ -100,7 +99,6 @@
 #cmakedefine01 _lib_localtime_r
 #cmakedefine01 _lib_mkdir
 #cmakedefine01 _lib_nanosleep
-#cmakedefine01 _lib_pthread_create
 #cmakedefine01 _lib_rand
 #cmakedefine01 _lib_random
 #cmakedefine01 _lib_realpath

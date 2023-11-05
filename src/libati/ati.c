@@ -27,7 +27,6 @@ typedef struct ati {
   dlhandle_t        *dlHandle;
   atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
-  bool              *(*atiiUseReader) (void);
   char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
@@ -67,7 +66,6 @@ atiInit (const char *atipkg, int writetags,
   ati = mdmalloc (sizeof (ati_t));
   ati->atiiInit = NULL;
   ati->atiiFree = NULL;
-  ati->atiiUseReader = NULL;
   ati->atiiReadTags = NULL;
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
@@ -89,7 +87,6 @@ atiInit (const char *atipkg, int writetags,
 #pragma clang diagnostic ignored "-Wpedantic"
   ati->atiiInit = dylibLookup (ati->dlHandle, "atiiInit");
   ati->atiiFree = dylibLookup (ati->dlHandle, "atiiFree");
-  ati->atiiUseReader = dylibLookup (ati->dlHandle, "atiiUseReader");
   ati->atiiReadTags = dylibLookup (ati->dlHandle, "atiiReadTags");
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
@@ -118,15 +115,6 @@ atiFree (ati_t *ati)
     }
     mdfree (ati);
   }
-}
-
-bool
-atiUseReader (ati_t *ati)
-{
-  if (ati != NULL && ati->atiiUseReader != NULL) {
-    return ati->atiiUseReader ();
-  }
-  return false;
 }
 
 char *

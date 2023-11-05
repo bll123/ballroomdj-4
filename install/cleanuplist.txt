@@ -140,6 +140,10 @@ templates/nl/Standaardrondes\.sequence$
 bin/bdj4cleaninst$
 bin/bdj4cleaninst\.exe$
 
+# 2023-11-5 dbtag is no longer in use (mutagen removed)
+bin/bdj4dbtag$
+bin/bdj4dbtag\.exe$
+
 ####
 # mac-os
 

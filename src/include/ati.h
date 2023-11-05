@@ -38,7 +38,6 @@ bool    atiCheck (const char *atipkg);
 ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
 void    atiSupportedTypes (ati_t *ati, int supported []);
-bool    atiUseReader (ati_t *ati);
 char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
@@ -53,7 +52,6 @@ void    atiGetSupportedTypes (const char *atipkg, int supported []);
 
 const char *atiiDesc (void);
 void    atiiSupportedTypes (int supported []);
-bool    atiiUseReader (void);
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);

@@ -79,12 +79,6 @@ atiiSupportedTypes (int supported [])
   supported [AFILE_TYPE_RIFF] = ATI_READ;
 }
 
-bool
-atiiUseReader (void)
-{
-  return false;
-}
-
 char *
 atiiReadTags (atidata_t *atidata, const char *ffn)
 {

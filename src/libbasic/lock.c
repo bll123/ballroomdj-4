@@ -30,7 +30,6 @@
 static char *locknames [ROUTE_MAX] = {
   [ROUTE_BPM_COUNTER] = "bpmcounter",
   [ROUTE_CONFIGUI] = "configui",
-  [ROUTE_DBTAG] = "dbtag",
   [ROUTE_DBUPDATE] = "dbupdate",
   [ROUTE_HELPERUI] = "helperui",
   [ROUTE_MAIN] = "main",

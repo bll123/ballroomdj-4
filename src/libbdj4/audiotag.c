@@ -110,12 +110,6 @@ audiotagCleanup (void)
   at = NULL;
 }
 
-bool
-audiotagUseReader (void)
-{
-  return atiUseReader (at->ati);
-}
-
 char *
 audiotagReadTags (const char *ffn)
 {
