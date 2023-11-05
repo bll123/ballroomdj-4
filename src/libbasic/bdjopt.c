@@ -457,8 +457,13 @@ bdjoptSave (void)
     snprintf (path, sizeof (path), "%s.q%d%s",
         bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
     offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
-    datafileSave (bdjopt->df [OPTTYPE_QUEUE], path, bdjopt->bdjoptList,
-        offset, bdjopt->distvers [OPTTYPE_QUEUE]);
+
+    /* do not try to save a queue options file if it does not exist. */
+    /* the values will be all mucked up.  this is the job of the updater. */
+    if (fileopFileExists (path)) {
+      datafileSave (bdjopt->df [OPTTYPE_QUEUE], path, bdjopt->bdjoptList,
+          offset, bdjopt->distvers [OPTTYPE_QUEUE]);
+    }
   }
 }
 

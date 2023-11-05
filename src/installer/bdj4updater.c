@@ -59,6 +59,8 @@ enum {
   UPD_NOT_DONE,
   UPD_SKIP,
   UPD_COMPLETE,
+  UPD_NO_FORCE,
+  UPD_FORCE,
 };
 
 /* Fix audio file tags: FIX_AF_...  */
@@ -126,7 +128,7 @@ static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn);
-static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext);
+static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
@@ -654,14 +656,15 @@ main (int argc, char *argv [])
 
   {
     /* 4.4.0 2023-9-12 audio-id data selection */
-    updaterCopyProfileIfNotPresent ("ds-audioid-list", BDJ4_CONFIG_EXT);
-    updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("ds-audioid-list", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+    updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
     /* ez renamed to sbs internally */
     updaterRenameProfileFile ("ds-ezsongsel", "ds-sbssongsel", BDJ4_CONFIG_EXT);
     updaterRenameProfileFile ("ds-ezsonglist", "ds-sbssonglist", BDJ4_CONFIG_EXT);
   }
 
   /* profile updates */
+
   {
     int     origprofile;
 
@@ -676,6 +679,19 @@ main (int argc, char *argv [])
         if (! fileopFileExists (tbuff)) {
           templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
         }
+
+        /* 4.4.2.2 2023-11-5 fix bad installations of .q files */
+        for (int j = 0; j < BDJ4_QUEUE_MAX; ++j) {
+          const char  *tval;
+
+          tval = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, j);
+          if (tval == NULL || ! *tval) {
+            char    tbuff [MAXPATHLEN];
+
+            snprintf (tbuff, sizeof (tbuff), "%s.q%d", "bdjconfig", j);
+            updaterCopyProfileIfNotPresent (tbuff, BDJ4_CONFIG_EXT, UPD_FORCE);
+          }
+        }
       }
     }
     sysvarsSetNum (SVL_BDJIDX, origprofile);
@@ -683,7 +699,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.4.2 2023-10-18 added another queue */
-    updaterCopyProfileIfNotPresent ("bdjconfig.q4", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("bdjconfig.q4", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
   /* now re-load the data files */
@@ -1271,7 +1287,7 @@ updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn)
 }
 
 static void
-updaterCopyProfileIfNotPresent (const char *fn, const char *ext)
+updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag)
 {
   char    tbuff [MAXPATHLEN];
   int     origprofile;
@@ -1283,7 +1299,7 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext)
     if (bdjoptProfileExists ()) {
       pathbldMakePath (tbuff, sizeof (tbuff), fn, ext,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-      if (! fileopFileExists (tbuff)) {
+      if (! fileopFileExists (tbuff) || forceflag == UPD_FORCE) {
         snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
         templateProfileCopy (tbuff, tbuff);
         logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
