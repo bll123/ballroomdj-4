@@ -609,12 +609,6 @@ dbupdateProcessing (void *udata)
         dbupdate->state = DB_UPD_PROC_FN;
       }
     } /* not done */
-
-    /* windows can be slow at writing tags, put in a short delay */
-    /* I think this was needed more for the mutagen interface */
-    if (isWindows () && dbupdate->writetags) {
-      mssleep (20);
-    }
   } /* send or process */
 
   if (dbupdate->state == DB_UPD_FINISH) {
