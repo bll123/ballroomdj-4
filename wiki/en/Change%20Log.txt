@@ -10,8 +10,9 @@
 
 * Bug Fixes:
     * MacOS: Fix permissions on acrcloud fingerprint utility.
+    * Database Update: Fix some internal processing issues when writing tags.
 * Changes:
-    * Audio Tags: The python-mutagen has been removed.
+    * Audio Tags: The python-mutagen audio tag interface has been removed.
 
 -->
 
