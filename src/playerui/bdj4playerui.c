@@ -74,6 +74,7 @@ enum {
   PLUI_CB_SONG_SAVE,
   PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_REQ_EXT,
+  PLUI_CB_QUICK_EDIT,
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
@@ -216,6 +217,7 @@ static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiExtReqCallback (void *udata);
 static bool     pluiQuickEditCurrent (void *udata);
 static bool     pluiQuickEditSelected (void *udata);
+static bool     pluiQuickEditCallback (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -732,11 +734,10 @@ pluiInitializeUI (playerui_t *plui)
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
-// ### fix, will need cb for resetting volume.
-//  plui->callbacks [PLUI_CB_QUICK_EDIT] = callbackInit (
-//      pluiExtReqCallback,
-//      plui, "musicq: quick edit response");
-//  uiqeSetResponseCallback (plui->uiqe, plui->callbacks [PLUI_CB_REQ_EXT]);
+  plui->callbacks [PLUI_CB_QUICK_EDIT] = callbackInit (
+      pluiQuickEditCallback,
+      plui, "musicq: quick edit response");
+  uiqeSetResponseCallback (plui->uiqe, plui->callbacks [PLUI_CB_QUICK_EDIT]);
 
   plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
@@ -1723,11 +1724,16 @@ pluiQuickEditCurrent (void *udata)
   playerui_t    *plui = udata;
   bool          rc;
   dbidx_t       dbidx = -1;
+  double        vol, speed;
+  double        voladj;
+  int           dfltvol;
 
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
-// ### pass in current volume, current speed
+  uiplayerGetVolumeSpeed (plui->uiplayer, &vol, &speed);
+  dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+  voladj = vol - (double) dfltvol;
 
-  rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
+  rc = uiqeDialog (plui->uiqe, dbidx, speed, voladj);
   return rc;
 }
 
@@ -1741,6 +1747,33 @@ pluiQuickEditSelected (void *udata)
   dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
   rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
   return rc;
+}
+
+static bool
+pluiQuickEditCallback (void *udata)
+{
+  playerui_t        *plui = udata;
+  const uiqesave_t  *qeresp;
+  song_t            *song;
+
+  if (plui == NULL || plui->uiqe == NULL) {
+    return UICB_CONT;
+  }
+
+  qeresp = uiqeGetResponseData (plui->uiqe);
+
+  if (qeresp == NULL) {
+    return UICB_CONT;
+  }
+
+  song = dbGetByIdx (plui->musicdb, qeresp->dbidx);
+  songSetNum (song, TAG_SPEEDADJUSTMENT, (int) qeresp->speed);
+  songSetDouble (song, TAG_VOLUMEADJUSTPERC, qeresp->voladj);
+  songSetNum (song, TAG_DANCERATING, qeresp->rating);
+
+  pluiSongSaveCallback (plui, qeresp->dbidx);
+
+  return UICB_CONT;
 }
 
 static bool

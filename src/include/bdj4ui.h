@@ -52,16 +52,21 @@ enum {
 
 enum {
   SPD_DIGITS = 0,
-  VOL_DIGITS = 1,
+  VOL_ADJ_DIGITS = 1,
+  VOL_DIGITS = 0,
 };
 
 #define SPD_LOWER 70.0
 #define SPD_UPPER 130.0
 #define SPD_INCA 1.0
 #define SPD_INCB 5.0
-#define VOL_LOWER -50.0
-#define VOL_UPPER 50.0
-#define VOL_INCA 0.1
-#define VOL_INCB 5.0
+#define VOL_ADJ_LOWER -50.0
+#define VOL_ADJ_UPPER 50.0
+#define VOL_ADJ_INCA 0.1
+#define VOL_ADJ_INCB 5.0
+#define VOL_LOWER 0.0
+#define VOL_UPPER 100.0
+#define VOL_INCA 1.0
+#define VOL_INCB 10.0
 
 #endif /* INC_BDJ4UI_H */

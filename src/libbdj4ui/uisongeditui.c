@@ -1337,11 +1337,11 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
     incb = SPD_INCB;
   }
   if (tagkey == TAG_VOLUMEADJUSTPERC) {
-    lower = VOL_LOWER;
-    upper = VOL_UPPER;
-    digits = VOL_DIGITS;
-    inca = VOL_INCA;
-    incb = VOL_INCB;
+    lower = VOL_ADJ_LOWER;
+    upper = VOL_ADJ_UPPER;
+    digits = VOL_ADJ_DIGITS;
+    inca = VOL_ADJ_INCA;
+    incb = VOL_ADJ_INCB;
   }
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;

@@ -10,9 +10,17 @@
 
 typedef struct uiqe uiqe_t;
 
+typedef struct {
+  dbidx_t           dbidx;
+  double            voladj;
+  double            speed;
+  int               rating;
+} uiqesave_t;
+
 uiqe_t  *uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts);
 void    uiqeFree (uiqe_t *uiqe);
 void    uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb);
 bool    uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol);
+const uiqesave_t  *uiqeGetResponseData (uiqe_t *uiqe);
 
 #endif /* INC_UIQUICKEDIT_H */

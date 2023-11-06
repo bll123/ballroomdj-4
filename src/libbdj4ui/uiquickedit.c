@@ -33,12 +33,13 @@
 enum {
   UIQE_CB_DIALOG,
   UIQE_CB_SPEED_SCALE,
-  UIQE_CB_VOLUME_SCALE,
+  UIQE_CB_VOLADJ_SCALE,
   UIQE_CB_MAX,
 };
 
 enum {
   UIQE_W_DIALOG,
+  UIQE_W_ARTIST_DISP,
   UIQE_W_TITLE_DISP,
   UIQE_W_SZGRP_LABEL,
   UIQE_W_SZGRP_SCALE,
@@ -48,7 +49,7 @@ enum {
 
 enum {
   UIQE_SCALE_SPD,
-  UIQE_SCALE_VOL,
+  UIQE_SCALE_VOLADJ,
   UIQE_SCALE_MAX,
 };
 
@@ -71,6 +72,7 @@ typedef struct uiqe {
   uiqescale_t       scaledata [UIQE_SCALE_MAX];
   song_t            *song;
   dbidx_t           dbidx;
+  uiqesave_t        savedata;
   bool              isactive : 1;
 } uiqe_t;
 
@@ -105,6 +107,10 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   }
   uiqe->isactive = false;
   uiqe->uirating = NULL;
+  uiqe->savedata.dbidx = -1;
+  uiqe->savedata.speed = 100.0;
+  uiqe->savedata.voladj = 0.0;
+  uiqe->savedata.rating = 0;
 
   uiqe->callbacks [UIQE_CB_DIALOG] = callbackInitLong (
       uiqeResponseHandler, uiqe);
@@ -153,6 +159,7 @@ bool
 uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
 {
   int         x, y;
+  const char  *artist;
   const char  *title;
   int         ratingidx;
 
@@ -180,6 +187,9 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
     return UICB_STOP;
   }
 
+  artist = songGetStr (uiqe->song, TAG_ARTIST);
+  uiLabelSetText (uiqe->wcont [UIQE_W_ARTIST_DISP], artist);
+
   title = songGetStr (uiqe->song, TAG_TITLE);
   uiLabelSetText (uiqe->wcont [UIQE_W_TITLE_DISP], title);
 
@@ -187,7 +197,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
   uiratingSetValue (uiqe->uirating, ratingidx);
 
   if (speed == LIST_DOUBLE_INVALID) {
-    speed = songGetDouble (uiqe->song, TAG_SPEEDADJUSTMENT);
+    speed = (double) songGetNum (uiqe->song, TAG_SPEEDADJUSTMENT);
   }
   if (speed <= 0.0) {
     speed = 100.0;
@@ -201,14 +211,23 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
   if (voladj == LIST_DOUBLE_INVALID) {
     voladj = 0.0;
   }
-  uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_VOL].scale, voladj);
-  uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_VOL], voladj);
+  uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale, voladj);
+  uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_VOLADJ], voladj);
 
   x = nlistGetNum (uiqe->options, QE_POSITION_X);
   y = nlistGetNum (uiqe->options, QE_POSITION_Y);
   uiWindowMove (uiqe->wcont [UIQE_W_DIALOG], x, y, -1);
   logProcEnd (LOG_PROC, "uiqeDialog", "");
   return UICB_CONT;
+}
+
+const uiqesave_t *
+uiqeGetResponseData (uiqe_t *uiqe)
+{
+  if (uiqe == NULL) {
+    return NULL;
+  }
+  return &uiqe->savedata;
 }
 
 /* internal routines */
@@ -261,7 +280,15 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
+  uiLabelEllipsizeOn (uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiqe->wcont [UIQE_W_ARTIST_DISP] = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiLabelEllipsizeOn (uiwidgetp);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetMarginStart (uiwidgetp, 10);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
 
@@ -272,14 +299,14 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
   uiwcontFree (hbox);
 
-  /* begin line: volume scale */
+  /* begin line: vol-adj scale */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
-  uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOL);
+  uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
   uiwcontFree (hbox);
 
-  /* begin line: volume scale */
+  /* begin line: vol-adj scale */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -308,7 +335,7 @@ static bool
 uiqeResponseHandler (void *udata, long responseid)
 {
   uiqe_t  *uiqe = udata;
-  int             x, y, ws;
+  int     x, y, ws;
 
   uiWindowGetPosition (uiqe->wcont [UIQE_W_DIALOG], &x, &y, &ws);
   nlistSetNum (uiqe->options, QE_POSITION_X, x);
@@ -328,6 +355,13 @@ uiqeResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: quick edit: save");
+      uiqe->savedata.dbidx = uiqe->dbidx;
+      uiqe->savedata.speed =
+          uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale);
+      uiqe->savedata.voladj =
+          uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale);
+      uiqe->savedata.rating = uiratingGetValue (uiqe->uirating);
+
       if (uiqe->responsecb != NULL) {
         callbackHandler (uiqe->responsecb);
       }
@@ -358,13 +392,13 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
     inca = SPD_INCA;
     incb = SPD_INCB;
   }
-  if (scidx == UIQE_SCALE_VOL) {
+  if (scidx == UIQE_SCALE_VOLADJ) {
     tagkey = TAG_VOLUMEADJUSTPERC;
-    lower = VOL_LOWER;
-    upper = VOL_UPPER;
-    digits = VOL_DIGITS;
-    inca = VOL_INCA;
-    incb = VOL_INCB;
+    lower = VOL_ADJ_LOWER;
+    upper = VOL_ADJ_UPPER;
+    digits = VOL_ADJ_DIGITS;
+    inca = VOL_ADJ_INCA;
+    incb = VOL_ADJ_INCB;
   }
   uiqe->scaledata [scidx].tagkey = tagkey;
 

@@ -14,6 +14,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdj4ui.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
@@ -327,7 +328,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (70.0, 130.0, 1.0, 10.0, 100.0, 0);
+  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
+      SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SPEED]);
   uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
@@ -387,7 +389,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
+  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
+      0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SEEK]);
   uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
@@ -501,7 +504,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (0.0, 100.0, 1.0, 10.0, 0.0, 0);
+  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
+      VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_VOLUME]);
   uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
@@ -672,6 +676,20 @@ uiplayerDisableSeek (uiplayer_t *uiplayer)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SEEK], UIWIDGET_DISABLE);
   uiplayer->seekdisabled = true;
+}
+
+void
+uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, double *volume, double *speed)
+{
+  *volume = 0;
+  *speed = 100;
+
+  if (uiplayer == NULL) {
+    return;
+  }
+
+  *volume = uiScaleGetValue (uiplayer->wcont [UIPL_W_VOLUME]);
+  *speed = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
 }
 
 /* internal routines */
