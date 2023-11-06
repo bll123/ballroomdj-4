@@ -522,6 +522,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->fadeoutTime = atol (args);
           break;
         }
+        case MSG_PLAY_RESET_VOLUME: {
+          playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+          break;
+        }
         case MSG_CHK_PLAYER_STATUS: {
           playerChkPlayerStatus (playerData, routefrom);
           break;
@@ -651,7 +655,7 @@ playerProcessing (void *udata)
       playerData->realVolume = playerData->currentVolume;
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
       playerData->actualVolume = playerData->realVolume;
-      logMsg (LOG_DBG, LOG_INFO, "no fade-in set volume: %d", playerData->currentVolume);
+      logMsg (LOG_DBG, LOG_INFO, "no fade-in set volume: %d", playerData->realVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
     /* pq->songstart is normalized */
@@ -1230,6 +1234,7 @@ playerPause (playerdata_t *playerData)
       playerData->inFadeIn = false;
       if (! playerData->mute) {
         volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+        logMsg (LOG_DBG, LOG_INFO, "play after pause: in-fade: set volume: %d", playerData->realVolume);
         playerData->actualVolume = playerData->realVolume;
       }
     }
@@ -1492,6 +1497,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   playerData->currentVolume += voldiff;
   playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+  logMsg (LOG_DBG, LOG_INFO, "volume-set: %d", playerData->realVolume);
   playerData->actualVolume = playerData->realVolume;
   logProcEnd (LOG_PROC, "playerVolumeSet", "");
 }
@@ -1890,14 +1896,16 @@ playerSetDefaultVolume (playerdata_t *playerData)
   count = volregSave (playerData->actualSink, playerData->originalSystemVolume);
   if (count > 1 || bdj3flag) {
     playerData->currentVolume = playerData->originalSystemVolume;
+    logMsg (LOG_DBG, LOG_INFO, "volume set-default: use orig");
   } else {
     playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+    logMsg (LOG_DBG, LOG_INFO, "volume set-default: use dflt");
   }
   playerData->realVolume = playerData->currentVolume;
 
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
   playerData->actualVolume = playerData->realVolume;
-  logMsg (LOG_DBG, LOG_INFO, "set volume: %d", playerData->realVolume);
+  logMsg (LOG_DBG, LOG_INFO, "set-default volume: %d", playerData->realVolume);
 }
 
 static void

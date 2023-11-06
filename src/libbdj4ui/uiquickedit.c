@@ -15,6 +15,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "callback.h"
 #include "log.h"
@@ -156,12 +157,15 @@ uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb)
 }
 
 bool
-uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
+uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol)
 {
   int         x, y;
   const char  *artist;
   const char  *title;
   int         ratingidx;
+  double      voladj;
+  double      svoladj;
+  int         dfltvol;
 
   if (uiqe == NULL) {
     return UICB_STOP;
@@ -205,8 +209,17 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double voladj)
   uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale, speed);
   uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_SPD], speed);
 
-  if (voladj == LIST_DOUBLE_INVALID) {
+  if (vol == LIST_DOUBLE_INVALID) {
     voladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
+  } else {
+    /* the volume adjustment is the song's volume-adjust-perc plus */
+    /* any changes to the current volume from the default volume */
+    /* doing the calculations here allows the addition of a base-volume */
+    /* scale in the future if it is wanted/needed */
+    dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+    voladj = vol - (double) dfltvol;
+    svoladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
+    voladj += svoladj;
   }
   if (voladj == LIST_DOUBLE_INVALID) {
     voladj = 0.0;

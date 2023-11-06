@@ -95,6 +95,11 @@ enum {
   PLUI_W_MAX,
 };
 
+enum {
+  RESET_VOL_NO,
+  RESET_VOL_CURR,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -117,6 +122,7 @@ typedef struct {
   int             pliSupported;
   /* quick edit */
   uiqe_t          *uiqe;
+  int             resetvolume;
   /* external request */
   int             extreqRow;
   uireqext_t      *uireqext;
@@ -1725,15 +1731,12 @@ pluiQuickEditCurrent (void *udata)
   bool          rc;
   dbidx_t       dbidx = -1;
   double        vol, speed;
-  double        voladj;
-  int           dfltvol;
 
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
   uiplayerGetVolumeSpeed (plui->uiplayer, &vol, &speed);
-  dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
-  voladj = vol - (double) dfltvol;
 
-  rc = uiqeDialog (plui->uiqe, dbidx, speed, voladj);
+  plui->resetvolume = RESET_VOL_CURR;
+  rc = uiqeDialog (plui->uiqe, dbidx, speed, vol);
   return rc;
 }
 
@@ -1745,6 +1748,7 @@ pluiQuickEditSelected (void *udata)
   dbidx_t       dbidx;
 
   dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
+  plui->resetvolume = RESET_VOL_NO;
   rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
   return rc;
 }
@@ -1755,6 +1759,7 @@ pluiQuickEditCallback (void *udata)
   playerui_t        *plui = udata;
   const uiqesave_t  *qeresp;
   song_t            *song;
+  dbidx_t           dbidx;
 
   if (plui == NULL || plui->uiqe == NULL) {
     return UICB_CONT;
@@ -1772,6 +1777,13 @@ pluiQuickEditCallback (void *udata)
   songSetNum (song, TAG_DANCERATING, qeresp->rating);
 
   pluiSongSaveCallback (plui, qeresp->dbidx);
+
+  dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
+  /* what to do if the current song has moved on to the next? */
+  if (qeresp->dbidx == dbidx &&
+      plui->resetvolume == RESET_VOL_CURR) {
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_RESET_VOLUME, NULL);
+  }
 
   return UICB_CONT;
 }

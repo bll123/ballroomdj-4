@@ -92,6 +92,7 @@ typedef enum {
   MSG_PLAY_SONG_BEGIN,      // to player.
   MSG_PLAY_SPEED,           // to player. args: rate as percentage.
   MSG_PLAY_STOP,            // to player.
+  MSG_PLAY_RESET_VOLUME,    // to player.
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, ann-flag
