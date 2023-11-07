@@ -90,10 +90,20 @@ typedef struct {
   queue_t         *playRequest;
   int             pliSupported;
   int             originalSystemVolume;
-  int             realVolume;     // the real volume that is set (+voladjperc).
-  int             currentVolume;  // current volume settings, no adjustments.
-  int             baseVolume;     // the base volume
-  int             actualVolume;   // testsuite: the actualvolume that is set
+  /* the real volume including adjustments. */
+  int             realVolume;
+  /* current volume without adjustments. this is what is displayed in the */
+  /* player ui */
+  int             currentVolume;
+  /* the base volume is the current volume before any changes. */
+  /* it is set when a song starts playing.  */
+  /* the base volume is used by the quick-edit process */
+  /* in order to be able to calculate the volume adjustment and reset */
+  /* the volume back to the base volume level. */
+  int             baseVolume;
+  /* testsuite: the actual volume is used by the test suite. */
+  /* it closely follows the real volume. */
+  int             actualVolume;
   int             currentSpeed;
   const char      *actualSink;
   const char      *currentSink;
@@ -658,7 +668,7 @@ playerProcessing (void *udata)
       playerData->realVolume = playerData->currentVolume;
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
       playerData->actualVolume = playerData->realVolume;
-      logMsg (LOG_DBG, LOG_INFO, "no fade-in set volume: %d", playerData->realVolume);
+      logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
     /* pq->songstart is normalized */
@@ -723,7 +733,7 @@ playerProcessing (void *udata)
 
       /* before going into the fade, check the system volume */
       /* and see if the user changed it */
-      logMsg (LOG_DBG, LOG_INFO, "check sysvol: before fade");
+      logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
       playerStartFadeOut (playerData);
     }
@@ -808,7 +818,7 @@ playerProcessing (void *udata)
         }
 
         if (playerData->fadeoutTime == 0) {
-          logMsg (LOG_DBG, LOG_INFO, "check sysvol: no-fade-out");
+          logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: no-fade-out");
           playerCheckSystemVolume (playerData);
         }
 
@@ -819,7 +829,7 @@ playerProcessing (void *udata)
           playerData->realVolume = 0;
           volumeSet (playerData->volume, playerData->currentSink, 0);
           playerData->actualVolume = 0;
-          logMsg (LOG_DBG, LOG_INFO, "gap set volume: %d", 0);
+          logMsg (LOG_DBG, LOG_VOLUME, "gap set volume: %d", 0);
           playerData->inGap = true;
           mstimeset (&playerData->gapFinishTime, playerData->gap);
         } else {
@@ -915,7 +925,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
 
   tvol = volumeGet (playerData->volume, playerData->currentSink);
   tvol = playerLimitVolume (tvol);
-  // logMsg (LOG_DBG, LOG_INFO, "get volume: %d", tvol);
+  // logMsg (LOG_DBG, LOG_VOLUME, "get volume: %d", tvol);
   voldiff = tvol - playerData->realVolume;
   if (tvol != playerData->realVolume) {
     playerData->realVolume += voldiff;
@@ -1237,7 +1247,7 @@ playerPause (playerdata_t *playerData)
       playerData->inFadeIn = false;
       if (! playerData->mute) {
         volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
-        logMsg (LOG_DBG, LOG_INFO, "play after pause: in-fade: set volume: %d", playerData->realVolume);
+        logMsg (LOG_DBG, LOG_VOLUME, "play after pause: in-fade: set volume: %d", playerData->realVolume);
         playerData->actualVolume = playerData->realVolume;
       }
     }
@@ -1500,7 +1510,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   playerData->currentVolume += voldiff;
   playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
-  logMsg (LOG_DBG, LOG_INFO, "volume-set: %d", playerData->realVolume);
+  logMsg (LOG_DBG, LOG_VOLUME, "volume-set: %d", playerData->realVolume);
   playerData->actualVolume = playerData->realVolume;
   logProcEnd (LOG_PROC, "playerVolumeSet", "");
 }
@@ -1658,7 +1668,7 @@ playerFadeVolSet (playerdata_t *playerData)
       playerData->inFadeOut = false;
       volumeSet (playerData->volume, playerData->currentSink, 0);
       playerData->actualVolume = 0;
-      logMsg (LOG_DBG, LOG_INFO, "fade-out done volume: %d time: %" PRId64,
+      logMsg (LOG_DBG, LOG_VOLUME, "fade-out done volume: %d time: %" PRId64,
           0, (int64_t) mstimeend (&playerData->playEndCheck));
     }
   }

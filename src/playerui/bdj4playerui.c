@@ -92,6 +92,9 @@ enum {
   PLUI_W_MQ_SZ,
   PLUI_W_STATUS_MSG,
   PLUI_W_ERROR_MSG,
+  PLUI_W_MENU_QE_CURR,
+  PLUI_W_MENU_QE_SEL,
+  PLUI_W_MENU_EXT_REQ,
   PLUI_W_MAX,
 };
 
@@ -538,21 +541,21 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: action: external request */
   menuitem = uiMenuCreateItem (menu, _("External Request"),
       plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG]);
-  uiwcontFree (menuitem);
+  plui->wcont [PLUI_W_MENU_EXT_REQ] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
       pluiQuickEditCurrent, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: quick edit current song*/
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Current"),
       plui->callbacks [PLUI_MENU_CB_QE_CURRENT]);
-  uiwcontFree (menuitem);
+  plui->wcont [PLUI_W_MENU_QE_CURR] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_QE_SELECTED] = callbackInit (
       pluiQuickEditSelected, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: quick edit selected song*/
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Selected"),
       plui->callbacks [PLUI_MENU_CB_QE_SELECTED]);
-  uiwcontFree (menuitem);
+  plui->wcont [PLUI_W_MENU_QE_SEL] = menuitem;
 
   uiwcontFree (menu);
 
@@ -1254,6 +1257,20 @@ pluiSwitchPage (void *udata, long pagenum)
   }
   if (tabid == UI_TAB_HISTORY) {
     pluiSetManageQueue (plui, MUSICQ_HISTORY);
+  }
+
+  if (tabid == UI_TAB_SONGSEL) {
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_CURR], UIWIDGET_DISABLE);
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_SEL], UIWIDGET_DISABLE);
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_DISABLE);
+  } else {
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_CURR], UIWIDGET_ENABLE);
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_SEL], UIWIDGET_ENABLE);
+    if (tabid == UI_TAB_MUSICQ) {
+      uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_ENABLE);
+    } else {
+      uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_DISABLE);
+    }
   }
 
   pluiPlaybackButtonHideShow (plui, pagenum);

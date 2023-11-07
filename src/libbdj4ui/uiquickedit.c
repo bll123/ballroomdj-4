@@ -222,6 +222,9 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
     }
     voladj = vol - (double) dfltvol;
     svoladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
+    if (svoladj == LIST_DOUBLE_INVALID) {
+      svoladj = 0.0;
+    }
     voladj += svoladj;
   }
   if (voladj == LIST_DOUBLE_INVALID) {
