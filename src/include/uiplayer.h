@@ -23,6 +23,6 @@ int   uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgms
 dbidx_t uiplayerGetCurrSongIdx (uiplayer_t *uiplayer);
 void  uiplayerDisableSpeed (uiplayer_t *uiplayer);
 void  uiplayerDisableSeek (uiplayer_t *uiplayer);
-void  uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, double *volume, double *speed);
+void  uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, int *baseVolume, double *volume, double *speed);
 
 #endif /* INC_UIPLAYER_H */

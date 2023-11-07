@@ -1731,12 +1731,13 @@ pluiQuickEditCurrent (void *udata)
   bool          rc;
   dbidx_t       dbidx = -1;
   double        vol, speed;
+  int           basevol;
 
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
-  uiplayerGetVolumeSpeed (plui->uiplayer, &vol, &speed);
+  uiplayerGetVolumeSpeed (plui->uiplayer, &basevol, &vol, &speed);
 
   plui->resetvolume = RESET_VOL_CURR;
-  rc = uiqeDialog (plui->uiqe, dbidx, speed, vol);
+  rc = uiqeDialog (plui->uiqe, dbidx, speed, vol, basevol);
   return rc;
 }
 
@@ -1746,10 +1747,14 @@ pluiQuickEditSelected (void *udata)
   playerui_t    *plui = udata;
   bool          rc;
   dbidx_t       dbidx;
+  double        vol, speed;
+  int           basevol;
 
   dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
+  /* don't need vol and speed */
+  uiplayerGetVolumeSpeed (plui->uiplayer, &basevol, &vol, &speed);
   plui->resetvolume = RESET_VOL_NO;
-  rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID);
+  rc = uiqeDialog (plui->uiqe, dbidx, LIST_DOUBLE_INVALID, LIST_DOUBLE_INVALID, basevol);
   return rc;
 }
 

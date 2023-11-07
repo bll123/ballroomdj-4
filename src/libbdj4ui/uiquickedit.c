@@ -157,7 +157,7 @@ uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb)
 }
 
 bool
-uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol)
+uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 {
   int         x, y;
   const char  *artist;
@@ -216,7 +216,10 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol)
     /* any changes to the current volume from the default volume */
     /* doing the calculations here allows the addition of a base-volume */
     /* scale in the future if it is wanted/needed */
-    dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+    dfltvol = basevol;
+    if (dfltvol <= 0) {
+      dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+    }
     voladj = vol - (double) dfltvol;
     svoladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
     voladj += svoladj;

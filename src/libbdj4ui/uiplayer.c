@@ -109,6 +109,7 @@ typedef struct uiplayer {
   /* volume controls / display */
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
+  int             baseVolume;
   /* position controls / display */
   ssize_t         lastdur;
   mstime_t        seekLockTimeout;
@@ -679,8 +680,9 @@ uiplayerDisableSeek (uiplayer_t *uiplayer)
 }
 
 void
-uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, double *volume, double *speed)
+uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, int *baseVolume, double *volume, double *speed)
 {
+  *baseVolume = 0;
   *volume = 0;
   *speed = 100;
 
@@ -688,6 +690,7 @@ uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, double *volume, double *speed)
     return;
   }
 
+  *baseVolume = uiplayer->baseVolume;
   *volume = uiScaleGetValue (uiplayer->wcont [UIPL_W_VOLUME]);
   *speed = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
 }
@@ -706,6 +709,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   mstimeset (&uiplayer->speedLockSend, 3600000);
   mstimeset (&uiplayer->volumeLockTimeout, 3600000);
   mstimeset (&uiplayer->volumeLockSend, 3600000);
+  uiplayer->baseVolume = -1;
   uiplayer->lastdur = 180000;
   mstimeset (&uiplayer->seekLockTimeout, 3600000);
   mstimeset (&uiplayer->seekLockSend, 3600000);
@@ -853,7 +857,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   uiplayerProcessPauseatend (uiplayer, atol (p));
 
-  /* vol */
+  /* current vol */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->volumeLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
@@ -870,6 +874,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     dval = atof (p);
     uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
   }
+
+  /* base vol */
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  uiplayer->baseVolume = atoi (p);
 
   /* playedtime */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

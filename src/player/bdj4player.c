@@ -92,6 +92,7 @@ typedef struct {
   int             originalSystemVolume;
   int             realVolume;     // the real volume that is set (+voladjperc).
   int             currentVolume;  // current volume settings, no adjustments.
+  int             baseVolume;     // the base volume
   int             actualVolume;   // testsuite: the actualvolume that is set
   int             currentSpeed;
   const char      *actualSink;
@@ -523,7 +524,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_RESET_VOLUME: {
-          playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
+          playerData->currentVolume = playerData->baseVolume;
           break;
         }
         case MSG_CHK_PLAYER_STATUS: {
@@ -638,6 +639,8 @@ playerProcessing (void *udata)
     playerData->repeat = temprepeat;
 
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", pq->tempname);
+    /* save the prior current volume before playing a song */
+    playerData->baseVolume = playerData->currentVolume;
     playerData->realVolume = playerData->currentVolume;
     if (pq->voladjperc != 0.0) {
       double      val;
@@ -1831,11 +1834,12 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%"PRIu64"%c%" PRId64,
+  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%"PRIu64"%c%" PRId64,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
       playerData->currentSpeed, MSG_ARGS_RS,
+      playerData->baseVolume, MSG_ARGS_RS,
       (uint64_t) tm, MSG_ARGS_RS,
       (int64_t) dur);
 
@@ -1901,6 +1905,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
     playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
     logMsg (LOG_DBG, LOG_INFO, "volume set-default: use dflt");
   }
+  playerData->baseVolume = playerData->currentVolume;
   playerData->realVolume = playerData->currentVolume;
 
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
