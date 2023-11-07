@@ -95,7 +95,7 @@
               >Функции BDJ4</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
-              href="https://crowdin.com/project/ballroomdj-4/invite"
+              href="https://crowdin.com/project/ballroomdj-4"
               >Помогите перевести BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Другие сайты, на которых можно найти анонсы релизов BallroomDJ 4:</p>

@@ -95,7 +95,7 @@
               >Cechy BDJ4</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
-              href="https://crowdin.com/project/ballroomdj-4/invite"
+              href="https://crowdin.com/project/ballroomdj-4"
               >Pomoc w tłumaczeniu BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Inne strony, na których można znaleźć zapowiedzi wydania BallroomDJ 4:</p>
