@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=17
+ver=18
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -192,6 +192,7 @@ echo "-- Installing packages needed by BDJ4"
 sudo port -N install \
     mpstats \
     libxml2 \
+    glib2 +quartz \
     json-c \
     curl \
     curl-ca-bundle \
@@ -200,13 +201,12 @@ sudo port -N install \
     libvorbis \
     opusfile \
     flac \
-    chromaprint \
     libgcrypt \
     librsvg \
-    glib2 +quartz \
     gtk3 +quartz \
     adwaita-icon-theme \
-    ffmpeg +nonfree -x11
+    ffmpeg +nonfree -x11 -rav1e \
+    chromaprint
 sudo -v
 
 echo "-- Cleaning up old MacPorts files"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-11-02\n"
+"PO-Revision-Date: 2023-11-07\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -1437,7 +1437,7 @@ msgstr "Liste de lecture en attente"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "QueueDance"
+msgstr "Danse en file d'attente"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"

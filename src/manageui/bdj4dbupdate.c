@@ -160,7 +160,6 @@ enum {
 static int      dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      dbupdateProcessing (void *udata);
-static bool     dbupdateListeningCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateConnectingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
@@ -223,8 +222,6 @@ main (int argc, char *argv[])
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
   dbupdate.progstate = progstateInit ("dbupdate");
-  progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
-      dbupdateListeningCallback, &dbupdate);
   progstateSetCallback (dbupdate.progstate, STATE_CONNECTING,
       dbupdateConnectingCallback, &dbupdate);
   progstateSetCallback (dbupdate.progstate, STATE_WAIT_HANDSHAKE,
@@ -713,23 +710,6 @@ dbupdateProcessing (void *udata)
     gKillReceived = 0;
   }
   return stop;
-}
-
-static bool
-dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
-{
-  dbupdate_t    *dbupdate = tdbupdate;
-  int           flags;
-
-  logProcBegin (LOG_PROC, "dbupdateListeningCallback");
-
-  flags = PROCUTIL_DETACH;
-  if ((dbupdate->startflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
-    flags = PROCUTIL_NO_DETACH;
-  }
-
-  logProcEnd (LOG_PROC, "dbupdateListeningCallback", "");
-  return STATE_FINISHED;
 }
 
 static bool

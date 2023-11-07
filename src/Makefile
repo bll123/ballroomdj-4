@@ -141,6 +141,7 @@ build:
 	@-rm -f ../bin/liblib*.a
 
 # testing
+
 .PHONY: check
 check:
 	./utils/mktestsetup.sh --force
@@ -173,45 +174,6 @@ testtest:
 teststart:
 	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite --starttest $(start))
-
-# recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
-# be the null libraries.
-.PHONY: mcheck
-mcheck:
-	(cd ..;valgrind --tool=memcheck \
-		--leak-check=full \
-		--read-inline-info=yes \
-		--trace-children=yes \
-		--track-origins=yes \
-		--show-leak-kinds=all \
-		--read-var-info=yes \
-		$(VALGRIND_OPTS) \
-		./bin/bdj4 --debug 15)
-
-.PHONY: mchecksupp
-mchecksupp:
-	(cd ..;valgrind --tool=memcheck \
-		--leak-check=full \
-		--read-inline-info=yes \
-		--trace-children=yes \
-		--track-origins=yes \
-		--show-leak-kinds=all \
-		--suppressions=src/utils/valgrind-suppression.txt \
-		$(VALGRIND_OPTS) \
-		./bin/bdj4 --debug 15)
-
-.PHONY: mcheckcheck
-mcheckcheck:
-	(cd ..;valgrind --tool=memcheck \
-		--leak-check=full \
-		--read-inline-info=yes \
-		--trace-children=yes \
-		--track-origins=yes \
-		--show-leak-kinds=all \
-		--read-var-info=yes \
-		--suppressions=src/utils/valgrind-suppression.txt \
-		$(VALGRIND_OPTS) \
-		./bin/check_all)
 
 # cleaning
 

@@ -33,6 +33,8 @@
 #include "vlci.h"
 #include "volsink.h"
 
+#define VLCDEBUG 0
+
 typedef struct vlcData {
   libvlc_instance_t     *inst;
   char                  version [40];
@@ -48,6 +50,8 @@ enum {
   SILENCE_LOG = 0,
   STATE_TO_VALUE = 0,
 };
+
+#if VLCDEBUG
 
 typedef struct {
   libvlc_state_t        state;
@@ -67,6 +71,8 @@ static const stateMap_t stateMap[] = {
 enum {
   stateMapMax = (sizeof (stateMap) / sizeof (stateMap_t))
 };
+
+#endif /* VLCDEBUG */
 
 /* static const char *stateToStr (libvlc_state_t state); */ /* for debugging */
 static void       vlcEventHandler (const struct libvlc_event_t *event, void *);
@@ -500,7 +506,8 @@ vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
 /* internal routines */
 
 /* for debugging */
-#if 0
+# if VLCDEBUG
+
 static const char *
 stateToStr (libvlc_state_t state)
 {
@@ -516,7 +523,8 @@ stateToStr (libvlc_state_t state)
   }
   return tptr;
 }
-#endif
+
+# endif /* VLCDEBUG */
 
 # if STATE_TO_VALUE
 

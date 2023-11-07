@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=3
+ver=4
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -115,7 +115,7 @@ if [[ $gr == Y ]]; then
   sudo port list installed > $TMP
   sudo -v
   echo "-- uninstalling all ports"
-  sudo port -N uninstall $(cat $TMP)
+  sudo port -N uninstall --follow-dependents $(cat $TMP)
   sudo -v
   echo "-- cleaning all ports"
   sudo port -N clean --all $(cat $TMP)

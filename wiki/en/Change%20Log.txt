@@ -6,7 +6,9 @@
 
 **4.4.2.3 2023-11---**
 
-**4.4.2.2 2023-11---**
+-->
+
+**4.4.3 2023-11-7**
 
 * Bug Fixes:
     * MacOS: Fix permissions on acrcloud fingerprint utility.
@@ -16,8 +18,6 @@
     * Audio Tags: The python-mutagen audio tag interface has been removed.
 * New Features:
     * Player: Quick Edit
-
--->
 
 **4.4.2.1 2023-10-30**
 

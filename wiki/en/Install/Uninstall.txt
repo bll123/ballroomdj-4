@@ -6,7 +6,7 @@
 
 ##### Mac OS
 
-Download the macos-uninstall-bdj4-v1.sh script from sourceforge.
+Download the macos-uninstall-bdj4-v4.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -15,7 +15,7 @@ this script using the following command.
 
     :::bash
     cd Downloads
-    bash macos-uninstall-bdj4-v2.sh
+    bash macos-uninstall-bdj4-v4.sh
 
 This script performs the following actions.  The script will ask for
 confirmation before performing each action.

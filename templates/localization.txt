@@ -46,7 +46,7 @@ AUTO
 STDROUNDS
 ..Standardrunden
 QDANCE
-..QueueDance
+..Schlangentanz
 KEY
 ..3
 LONG
@@ -62,7 +62,7 @@ AUTO
 STDROUNDS
 ..les rounds standards
 QDANCE
-..QueueDance
+..Danse en file d'attente
 KEY
 ..4
 LONG
@@ -78,7 +78,7 @@ AUTO
 STDROUNDS
 ..giri standard
 QDANCE
-..QueueDance
+..Ballo in coda
 KEY
 ..5
 LONG
@@ -126,7 +126,7 @@ AUTO
 STDROUNDS
 ..rundy standardowe
 QDANCE
-..QueueDance
+..Taniec w kolejce
 KEY
 ..8
 LONG
