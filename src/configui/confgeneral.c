@@ -169,22 +169,12 @@ confuiBuildUIGeneral (confuigui_t *gui)
 static bool
 confuiSelectMusicDir (void *udata)
 {
-  confuigui_t *gui = udata;
-  char        *fn = NULL;
-  uiselect_t  *selectdata;
+  uisfcb_t    *sfcb = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
-  selectdata = uiDialogCreateSelect (gui->window,
+  confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_MUSIC),
       /* CONTEXT: configuration: folder selection dialog: window title */
-      _("Select Music Folder Location"),
-      bdjoptGetStr (OPT_M_DIR_MUSIC), NULL, NULL, NULL);
-  fn = uiSelectDirDialog (selectdata);
-  if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry, fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
+      _("Select Music Folder Location"));
   logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
   return UICB_CONT;
 }
@@ -192,11 +182,10 @@ confuiSelectMusicDir (void *udata)
 static bool
 confuiSelectStartup (void *udata)
 {
-  confuigui_t *gui = udata;
+  uisfcb_t    *sfcb = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectStartup");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_STARTUP,
-      sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
+  confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectStartup", "");
   return UICB_CONT;
 }
@@ -204,11 +193,10 @@ confuiSelectStartup (void *udata)
 static bool
 confuiSelectShutdown (void *udata)
 {
-  confuigui_t *gui = udata;
+  uisfcb_t    *sfcb = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectShutdown");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN,
-      sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
+  confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
   return UICB_CONT;
 }

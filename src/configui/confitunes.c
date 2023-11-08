@@ -277,23 +277,13 @@ confuiBuildUIiTunes (confuigui_t *gui)
 static bool
 confuiSelectiTunesDir (void *udata)
 {
-  confuigui_t *gui = udata;
-  char        *fn = NULL;
-  uiselect_t  *selectdata;
+  uisfcb_t    *sfcb = udata;
   char        tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiSelectiTunesDir");
   /* CONTEXT: configuration: itunes media folder selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Media Location"), ITUNES_NAME);
-  selectdata = uiDialogCreateSelect (gui->window, tbuff,
-      bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), NULL, NULL, NULL);
-  fn = uiSelectDirDialog (selectdata);
-  if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry, fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
+  confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), tbuff);
   logProcEnd (LOG_PROC, "confuiSelectiTunesDir", "");
   return UICB_CONT;
 }
@@ -301,7 +291,7 @@ confuiSelectiTunesDir (void *udata)
 static bool
 confuiSelectiTunesFile (void *udata)
 {
-  confuigui_t *gui = udata;
+  uisfcb_t    *sfcb = udata;
   char        *fn = NULL;
   uiselect_t  *selectdata;
   char        tbuff [MAXPATHLEN];
@@ -316,13 +306,13 @@ confuiSelectiTunesFile (void *udata)
   dirbuff [pi->dlen] = '\0';
   pathInfoFree (pi);
 
-  selectdata = uiDialogCreateSelect (gui->window, tbuff,
+  selectdata = uiDialogCreateSelect (sfcb->window, tbuff,
       dirbuff, NULL,
       /* CONTEXT: configuration: dialog: XML file types */
       _("XML Files"), "application/xml");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, fn);
+    uiEntrySetValue (sfcb->entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     mdfree (fn);
   }
