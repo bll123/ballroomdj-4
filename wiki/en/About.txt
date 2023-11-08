@@ -37,8 +37,9 @@ BDJ4.
 Development Team:
 
 * Brad Lanam
-<br>Architect, Programmer, Tools, Testing, Quality Assurance, Website
-Management, System Administration
+<br>Architect, Programmer, UI/UX Designer, Tools,
+Testing, Quality Assurance, Documentation, Website Management, System
+Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-08 10:41:03; BDJ4 version 4.4.3)_
+<br>_(Updated 2023-11-08 10:57:23; BDJ4 version 4.4.3)_
