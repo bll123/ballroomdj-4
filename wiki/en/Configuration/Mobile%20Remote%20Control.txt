@@ -38,4 +38,4 @@ The QR code can be scanned with your mobile phone or tablet.
 <br><span style="color:#4559bf;">**Mobile Device / Mobile Remote Control**</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-30 14:02:24; BDJ4 version 4.4.2.1)_
+<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_

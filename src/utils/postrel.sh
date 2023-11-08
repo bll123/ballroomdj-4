@@ -23,4 +23,7 @@ mv -f $INSTSTAGE/bdj4-installer-* Archive
 rm -rf $INSTSTAGE
 mkdir $INSTSTAGE
 
+rm -f bdj4-src-*-dev.*
+mv -f bdj4-src-* Archive
+
 exit 0

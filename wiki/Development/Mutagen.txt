@@ -25,4 +25,4 @@ It will no longer be necessary to install python.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_
