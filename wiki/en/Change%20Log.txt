@@ -8,7 +8,7 @@
 
 -->
 
-**4.4.3 2023-11-7**
+**4.4.3 2023-11-8**
 
 * Bug Fixes:
     * MacOS: Fix permissions on acrcloud fingerprint utility.
@@ -612,4 +612,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_
+<br>_(Updated 2023-11-08 10:23:59; BDJ4 version 4.4.3)_
