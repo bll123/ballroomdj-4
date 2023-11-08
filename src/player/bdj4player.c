@@ -92,8 +92,9 @@ typedef struct {
   int             originalSystemVolume;
   /* the real volume including adjustments. */
   int             realVolume;
-  /* current volume without adjustments. this is what is displayed in the */
-  /* player ui */
+  /* current volume without adjustments. */
+  /* the volume which the user has set the player to. */
+  /* this is what is displayed in the player ui. */
   int             currentVolume;
   /* the base volume is the current volume before any changes. */
   /* it is set when a song starts playing.  */

@@ -169,6 +169,13 @@ licenses/icu\.LICENCE$
 licenses/libvorbis\.LICENSE$
 licenses/flac\.LICENSE$
 
+# 2023-11-7
+# make sure some old libraries are gone
+plocal/lib/libvorbis\.0\.dylib$
+plocal/lib/libvorbisenc\.2\.dylib$
+plocal/lib/libvorbisfile\.3\.dylib$
+plocal/lib/libmp4tag-1\.2\.[345678]\.dylib$
+
 ####
 # linux
 
@@ -180,15 +187,18 @@ bin/bdj4g
 # 2023-9-20
 # remove unnecessary libraries
 plocal/lib/libvorbis[a-z]*\.(so|la).*$
-plocal/lib/libicu[a-z]*\.so$
-plocal/lib/libicu[a-z]*\.so\.7[23]$
-plocal/lib/libicu[a-z]*\.so\.7[23]\.[0-9]$
-plocal/lib/libFLAC*\.(so|la)$
-plocal/lib/libFLAC*\.so\.*$
+plocal/lib/libicu[a-z0-9]*\.so$
+plocal/lib/libicu[a-z0-9]*\.so\.7[23]$
+plocal/lib/libicu[a-z0-9]*\.so\.7[23]\.[0-9]$
+plocal/lib/libFLAC*\.(so|la).*$
 licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$
 licenses/libvorbis\.LICENSE$
 licenses/flac\.LICENSE$
+
+# 2023-11-7
+# make sure some old libraries are gone
+plocal/lib/libmp4tag\.so\.1\.2\.[345678]$
 
 ####
 # windows

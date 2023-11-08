@@ -30,7 +30,7 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
-  4.4.2.2:
+  4.4.3:
     The mutagen audio tag interface has been removed.
     Windows: To clean up the python installations (no longer needed),
       open a cmd.exe window, and run:
@@ -53,8 +53,6 @@ Release Notes:
 
   Not yet implemented:
     - Auto-Organization.
-    - Music Manager:
-      - Audio Identification.
 
   This installation will not affect any BallroomDJ 3 installation.
   (The features that rename audio files is not implemented yet).

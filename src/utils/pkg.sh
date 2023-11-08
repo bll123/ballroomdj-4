@@ -39,6 +39,11 @@ echo "-- $(date +%T) building"
 
 ./pkg/mkpkg.sh
 
+if [[ ! -f ${pnm} ]]; then
+  echo "-- Package was not created."
+  exit 1
+fi
+
 systype=$(uname -s)
 case $systype in
   Linux)
