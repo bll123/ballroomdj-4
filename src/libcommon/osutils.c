@@ -27,54 +27,6 @@
 #include "mdebug.h"
 #include "osutils.h"
 
-void
-osGetEnv (const char *name, char *buff, size_t sz)
-{
-#if _lib__wgetenv
-  wchar_t     *wname;
-  wchar_t     *wenv;
-  char        *tenv;
-
-  *buff = '\0';
-  wname = osToWideChar (name);
-  wenv = _wgetenv (wname);
-  mdfree (wname);
-  tenv = osFromWideChar (wenv);
-  strlcpy (buff, tenv, sz);
-  mdfree (tenv);
-#else
-  char    *tptr;
-
-  *buff = '\0';
-  tptr = getenv (name);
-  if (tptr != NULL) {
-    strlcpy (buff, tptr, sz);
-  }
-#endif
-}
-
-int
-osSetEnv (const char *name, const char *value)
-{
-  int     rc;
-
-  /* setenv is better */
-#if _lib_setenv
-  if (*value) {
-    rc = setenv (name, value, 1);
-  } else {
-    rc = unsetenv (name);
-  }
-#else
-  {
-    char    tbuff [4096];
-    snprintf (tbuff, sizeof (tbuff), "%s=%s", name, value);
-    rc = putenv (tbuff);
-  }
-#endif
-  return rc;
-}
-
 #if _lib_symlink    // both linux and macos
 
 int

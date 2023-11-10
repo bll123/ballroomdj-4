@@ -24,6 +24,7 @@
 #include "ilist.h"
 #include "mdebug.h"
 #include "musicdb.h"
+#include "osdirutil.h"
 #include "pathutil.h"
 #include "rafile.h"
 #include "slist.h"
@@ -98,7 +99,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
 
-  (void) ! getcwd (cwd, sizeof (cwd));
+  osGetCurrentDir (cwd, sizeof (cwd));
   strlcpy (dbfn, "data/musicdb.dat", sizeof (dbfn));
   snprintf (tofdir, sizeof (tofdir), "%s/%s",
       sysvarsGetStr (SV_BDJ4_DIR_MAIN), tmusicorig);

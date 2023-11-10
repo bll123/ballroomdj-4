@@ -25,6 +25,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
+#include "osdirutil.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
@@ -61,7 +62,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
   }
 
   if (isWindows ()) {
-    if (! chdir ("install")) {
+    if (! osChangeDir ("install")) {
       targv [targc++] = ".\\winshortcut.bat";
       snprintf (path, sizeof (path), "%s%s.lnk",
           "%USERPROFILE%\\Desktop\\", name);
@@ -76,7 +77,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
       targv [targc++] = tmp;
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      (void) ! chdir (maindir);
+      osChangeDir (maindir);
     }
   }
 

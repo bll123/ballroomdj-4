@@ -23,6 +23,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "log.h"
+#include "osdirutil.h"
 #include "pathutil.h"
 #include "check_bdj.h"
 #include "mdebug.h"
@@ -183,7 +184,7 @@ START_TEST(path_realpath)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
   mdebugSubTag ("path_realpath");
 
-  (void) ! getcwd (cwd, sizeof (cwd));
+  osGetCurrentDir (cwd, sizeof (cwd));
   pathNormalizePath (cwd, sizeof (cwd));
 
   strlcpy (from, "tmp/abc.txt", sizeof (from));

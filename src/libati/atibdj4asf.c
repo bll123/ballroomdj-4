@@ -11,7 +11,6 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
-#include <wchar.h>
 
 #if _hdr_netinet_in
 # include <netinet/in.h>

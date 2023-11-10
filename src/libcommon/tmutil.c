@@ -15,7 +15,6 @@
 #include <unistd.h>
 #include <locale.h>
 #include <math.h>
-#include <wchar.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>

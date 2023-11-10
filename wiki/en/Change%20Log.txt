@@ -4,12 +4,13 @@
 
 <!--
 
-**4.4.4 2023-11---**
+**4.4.5 2023-11---**
 
-**4.4.3.1 2023-11-9**
+**4.4.4 2023-11---**
 
 * Bug Fixes:
     * Configuration: Fixed directory and file chooser buttons (itunes, general).
+    * Windows: Fixed problems with international characters in account names.
 
 -->
 

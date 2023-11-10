@@ -1,0 +1,10 @@
+[Wiki Home](Home)
+
+fsutil.exe 8dot3name query C:
+<br>fsutil.exe 8dot3name set C: 1
+<br>fsutil.exe 8dot3name strip /s /v C:
+
+fsutil.exe behavior set disable8dot3 1
+
+[Wiki Home](Home)
+<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_

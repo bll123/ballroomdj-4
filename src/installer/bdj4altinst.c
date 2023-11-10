@@ -37,9 +37,9 @@
 #include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
+#include "osdirutil.h"
 #include "osprocess.h"
 #include "ossignal.h"
-#include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
@@ -370,7 +370,7 @@ main (int argc, char *argv[])
   altinst.home = sysvarsGetStr (SV_HOME);
   altinst.hostname = sysvarsGetStr (SV_HOSTNAME);
 
-  if (chdir (altinst.maindir)) {
+  if (osChangeDir (altinst.maindir)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst.maindir);
   }
 
@@ -1047,7 +1047,7 @@ altinstMakeTarget (altinst_t *altinst)
 static void
 altinstChangeDir (altinst_t *altinst)
 {
-  if (chdir (altinst->target)) {
+  if (osChangeDir (altinst->target)) {
     altinstFailWorkingDir (altinst, altinst->target);
     return;
   }
@@ -1087,7 +1087,7 @@ altinstCopyTemplates (altinst_t *altinst)
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Copying template files."), false);
 
-  if (chdir (altinst->target)) {
+  if (osChangeDir (altinst->target)) {
     altinstFailWorkingDir (altinst, altinst->target);
     return;
   }
@@ -1221,7 +1221,7 @@ altinstCreateShortcut (altinst_t *altinst)
 {
   const char  *name;
 
-  if (chdir (altinst->maindir)) {
+  if (osChangeDir (altinst->maindir)) {
     altinstFailWorkingDir (altinst, altinst->maindir);
     return;
   }
@@ -1240,7 +1240,7 @@ altinstCreateShortcut (altinst_t *altinst)
 static void
 altinstSetATI (altinst_t *altinst)
 {
-  if (chdir (altinst->target)) {
+  if (osChangeDir (altinst->target)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst->target);
     return;
   }
@@ -1299,7 +1299,7 @@ altinstUpdateProcessInit (altinst_t *altinst)
 {
   char  buff [MAXPATHLEN];
 
-  if (chdir (altinst->target)) {
+  if (osChangeDir (altinst->target)) {
     altinstFailWorkingDir (altinst, altinst->target);
     return;
   }
@@ -1473,8 +1473,8 @@ altinstGetExistingData (altinst_t *altinst)
     return;
   }
 
-  (void) ! getcwd (cwd, sizeof (cwd));
-  if (chdir (altinst->target)) {
+  osGetCurrentDir (cwd, sizeof (cwd));
+  if (osChangeDir (altinst->target)) {
     return;
   }
 
@@ -1492,7 +1492,7 @@ altinstGetExistingData (altinst_t *altinst)
     altinstSetATISelect (altinst);
   }
 
-  if (chdir (cwd)) {
+  if (osChangeDir (cwd)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", cwd);
   }
 }

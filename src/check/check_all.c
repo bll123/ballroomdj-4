@@ -23,7 +23,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "osrandom.h"
-#include "osutils.h"
+#include "osdirutil.h"
 #include "sysvars.h"
 
 int
@@ -45,7 +45,7 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
 
-  if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+  if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
     exit (1);
   }

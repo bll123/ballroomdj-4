@@ -41,10 +41,11 @@
 #include "locatebdj3.h"
 #include "log.h"
 #include "mdebug.h"
+#include "osdirutil.h"
 #include "osprocess.h"
 #include "ossignal.h"
-#include "osutils.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathutil.h"
@@ -359,7 +360,7 @@ main (int argc, char *argv[])
   }
 
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST;
-  (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
+  osGetCurrentDir (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
   strcpy (installer.pyversion, "");
@@ -1578,7 +1579,7 @@ installerVerifyInstInit (installer_t *installer)
 
   /* the unpackdir is not necessarily the same as the rundir */
   /* on mac os, they are different */
-  if (chdir (installer->unpackdir) < 0) {
+  if (osChangeDir (installer->unpackdir) < 0) {
     installerFailWorkingDir (installer, installer->unpackdir, "verifyinstinit");
     return;
   }
@@ -1719,7 +1720,7 @@ installerCopyStart (installer_t *installer)
 
   /* the unpackdir is not necessarily the same as the rundir */
   /* on mac os, they are different */
-  if (chdir (installer->unpackdir) < 0) {
+  if (osChangeDir (installer->unpackdir) < 0) {
     installerFailWorkingDir (installer, installer->unpackdir, "copystart");
     return;
   }
@@ -1751,8 +1752,17 @@ installerCopyFiles (installer_t *installer)
   }
 
   if (isWindows ()) {
+    size_t    len;
+
+    *tmp = '\0';
+    len = strlen (sysvarsGetStr (SV_HOME));
     strlcpy (tmp, installer->rundir, sizeof (tmp));
+    if (strncmp (installer->rundir, sysvarsGetStr (SV_HOME), len) == 0) {
+      strlcpy (tmp, "%USERPROFILE%", sizeof (tmp));
+      strlcat (tmp, installer->rundir + len, sizeof (tmp));
+    }
     pathDisplayPath (tmp, sizeof (tmp));
+
     snprintf (tbuff, sizeof (tbuff),
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         tmp);
@@ -1777,7 +1787,7 @@ installerMakeDataTop (installer_t *installer)
 {
   diropMakeDir (installer->datatopdir);
 
-  if (chdir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "makedatatop");
     return;
   }
@@ -1826,7 +1836,7 @@ installerCopyTemplates (installer_t *installer)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  if (chdir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
     return;
   }
@@ -1878,7 +1888,7 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  if (chdir (installer->rundir)) {
+  if (osChangeDir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "convertstart");
     return;
   }
@@ -2058,7 +2068,7 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateShortcut (installer_t *installer)
 {
-  if (chdir (installer->rundir)) {
+  if (osChangeDir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "createshortcut");
     return;
   }
@@ -2089,7 +2099,7 @@ installerCreateShortcut (installer_t *installer)
 static void
 installerWinStartup (installer_t *installer)
 {
-  if (chdir (installer->rundir)) {
+  if (osChangeDir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "winstartup");
     return;
   }
@@ -2108,7 +2118,7 @@ installerWinStartup (installer_t *installer)
 static void
 installerInstCleanTmp (installer_t *installer)
 {
-  if (chdir (installer->rundir)) {
+  if (osChangeDir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "instcleantmp");
     return;
   }
@@ -2121,7 +2131,7 @@ installerInstCleanTmp (installer_t *installer)
 static void
 installerSetATI (installer_t *installer)
 {
-  if (chdir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->rundir, "setati");
     return;
   }
@@ -2154,7 +2164,7 @@ installerSaveLocale (installer_t *installer)
   char        tbuff [MAXPATHLEN];
   FILE        *fh;
 
-  if (chdir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "savelocale");
     return;
   }
@@ -2357,7 +2367,7 @@ installerUpdateProcessInit (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
 
-  if (chdir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "updprocessinit");
     return;
   }
@@ -2457,11 +2467,11 @@ installerCleanup (installer_t *installer)
   /* the clean-inst process is run. */
   /* if installing read-only, there is no data-top-dir */
   /* if the installer was exited without installing, there is no rundir */
-  if (chdir (installer->rundir)) {
+  if (osChangeDir (installer->rundir)) {
     char  tbuff [MAXPATHLEN];
 
     snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
-    if (chdir (tbuff)) {
+    if (osChangeDir (tbuff)) {
       installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
       return;
     }
@@ -2719,8 +2729,8 @@ installerGetExistingData (installer_t *installer)
     return;
   }
 
-  (void) ! getcwd (cwd, sizeof (cwd));
-  if (chdir (installer->datatopdir)) {
+  osGetCurrentDir (cwd, sizeof (cwd));
+  if (osChangeDir (installer->datatopdir)) {
     return;
   }
 
@@ -2738,7 +2748,7 @@ installerGetExistingData (installer_t *installer)
     installerSetATISelect (installer);
   }
 
-  if (chdir (cwd)) {
+  if (osChangeDir (cwd)) {
     installerFailWorkingDir (installer, installer->datatopdir, "getexistdata");
   }
 }

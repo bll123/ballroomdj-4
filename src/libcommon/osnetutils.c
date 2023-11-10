@@ -20,8 +20,8 @@
 #endif
 
 #include "bdjstring.h"
+#include "osenv.h"
 #include "osnetutils.h"
-#include "osutils.h"
 
 /* this function will fail if the computer name has non-ascii characters */
 char *

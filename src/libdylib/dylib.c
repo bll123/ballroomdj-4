@@ -23,15 +23,17 @@
 #include "bdjstring.h"
 #include "dylib.h"
 #include "mdebug.h"
+#include "osutils.h"
 #include "pathdisp.h"
 
 dlhandle_t *
 dylibLoad (const char *path)
 {
   void      *handle = NULL;
-#if _lib_LoadLibrary
-  HMODULE   whandle;
+#if _lib_LoadLibraryW
+  HMODULE   libhandle;
   char      npath [MAXPATHLEN];
+  wchar_t   *wpath;
 #endif
 
   if (path == NULL || ! *path) {
@@ -41,11 +43,12 @@ dylibLoad (const char *path)
 #if _lib_dlopen
   handle = dlopen (path, RTLD_LAZY);
 #endif
-#if _lib_LoadLibrary
+#if _lib_LoadLibraryW
   strlcpy (npath, path, sizeof (npath));
   pathDisplayPath (npath, sizeof (npath));
-  whandle = LoadLibrary (npath);
-  handle = whandle;
+  wpath = osToWideChar (npath);
+  libhandle = LoadLibraryW (wpath);
+  handle = libhandle;
 #endif
   mdextalloc (handle);
   if (handle == NULL) {
@@ -58,8 +61,8 @@ dylibLoad (const char *path)
 void
 dylibClose (dlhandle_t *handle)
 {
-#if _lib_LoadLibrary
-  HMODULE   whandle = handle;
+#if _lib_LoadLibraryW
+  HMODULE   libhandle = handle;
 #endif
 
   if (handle == NULL) {
@@ -74,9 +77,9 @@ dylibClose (dlhandle_t *handle)
   dlclose (handle);
 # endif
 #endif
-#if _lib_LoadLibrary
+#if _lib_LoadLibraryW
   mdextfree (handle);
-  FreeLibrary (whandle);
+  FreeLibrary (libhandle);
 #endif
 }
 
@@ -84,8 +87,8 @@ void *
 dylibLookup (dlhandle_t *handle, const char *funcname)
 {
   void      *addr = NULL;
-#if _lib_LoadLibrary
-  HMODULE   whandle = handle;
+#if _lib_LoadLibraryW
+  HMODULE   libhandle = handle;
 #endif
 
   if (handle == NULL || funcname == NULL || ! *funcname) {
@@ -95,15 +98,15 @@ dylibLookup (dlhandle_t *handle, const char *funcname)
 #if _lib_dlopen
   addr = dlsym (handle, funcname);
 #endif
-#if _lib_LoadLibrary
-  addr = GetProcAddress (whandle, funcname);
+#if _lib_LoadLibraryW
+  addr = GetProcAddress (libhandle, funcname);
 #endif
 
 /* debugging */
 #if 0
   if (addr == NULL) {
     fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
-#if _lib_LoadLibrary
+#if _lib_LoadLibraryW
     fprintf (stderr, "sym lookup %s getlasterror: %ld\n", funcname, GetLastError() );
 #endif
   } else {

@@ -16,7 +16,7 @@
 #include "fileop.h"
 #include "locatebdj3.h"
 #include "mdebug.h"
-#include "osutils.h"
+#include "osenv.h"
 
 char *
 locatebdj3 (void)

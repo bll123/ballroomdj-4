@@ -36,6 +36,8 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "osdirutil.h"
+#include "osenv.h"
 #include "osnetutils.h"
 #include "osprocess.h"
 #include "osutils.h"
@@ -123,6 +125,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
   [SVL_BDJIDX] = { "BDJIDX" },
+  [SVL_HOME_SZ] = { "HOME_SZ" },
   [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
   [SVL_IS_MACOS] = { "IS_MACOS" },
@@ -188,7 +191,7 @@ sysvarsInit (const char *argv0)
 
   enable_core_dump ();
 
-  (void) ! getcwd (tcwd, sizeof (tcwd));
+  osGetCurrentDir (tcwd, sizeof (tcwd));
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
@@ -301,6 +304,7 @@ sysvarsInit (const char *argv0)
     osGetEnv ("HOME", sysvars [SV_HOME], SV_MAX_SZ);
     osGetEnv ("USER", sysvars [SV_USER], SV_MAX_SZ);
   }
+  lsysvars [SVL_HOME_SZ] = strlen (sysvars [SV_HOME]);
   dlen = strlen (sysvars [SV_USER]);
   strlcpy (sysvars [SV_USER_MUNGE], sysvars [SV_USER], SV_MAX_SZ);
   for (size_t i = 0; i < dlen; ++i) {
@@ -315,6 +319,21 @@ sysvarsInit (const char *argv0)
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
+#if _lib_GetCommandLineW
+  if (isWindows ()) {
+    wchar_t   **wargv;
+    int       wargc;
+    char      *tmp;
+
+    wargv = CommandLineToArgvW(GetCommandLineW(), &wargc);
+    tmp = osFromWideChar (wargv [0]);
+    strlcpy (tbuff, tmp, sizeof (tbuff));
+    strlcpy (buff, tmp, sizeof (buff));
+    mdfree (tmp);
+    LocalFree (wargv);
+  }
+#endif
+
   pathNormalizePath (buff, SV_MAX_SZ);
   /* handle relative pathnames */
   if ((strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/') ||

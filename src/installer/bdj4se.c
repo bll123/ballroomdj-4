@@ -15,8 +15,9 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "osdirutil.h"
+#include "osenv.h"
 #include "osprocess.h"
-#include "osutils.h"
 
 enum {
   BUFFSZ = (10 * 1024 * 1024),
@@ -139,7 +140,7 @@ main (int argc, const char *argv [])
 
   free (buff);
 
-  rc = chdir (tmpdir);
+  rc = osChangeDir (tmpdir);
   if (rc != 0) {
     fprintf (stderr, "Unable to chdir to %s %d %s\n", tmpdir, errno, strerror (errno));
     exit (1);
@@ -173,7 +174,7 @@ main (int argc, const char *argv [])
     fileopDelete (tfn);
   }
 
-  rc = chdir (BDJ4_INST_DIR);
+  rc = osChangeDir (BDJ4_INST_DIR);
   if (rc != 0) {
     fprintf (stderr, "Unable to chdir to %s %d %s\n", BDJ4_INST_DIR, errno, strerror (errno));
     exit (1);
@@ -183,7 +184,7 @@ main (int argc, const char *argv [])
 
   rc = stat ("Contents", &statbuf);
   if (rc == 0) {
-    rc = chdir ("Contents/MacOS");
+    rc = osChangeDir ("Contents/MacOS");
     if (rc != 0) {
       fprintf (stderr, "Unable to chdir to %s %d %s\n", "Contents/MacOS", errno, strerror (errno));
       exit (1);

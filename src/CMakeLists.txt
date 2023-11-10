@@ -55,9 +55,11 @@ add_library (libbdj4string STATIC
 )
 
 add_library (libbdj4osutils STATIC
+  libcommon/osdirutil.c
+  libcommon/osenv.c
+  libcommon/osutils.c
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
-  libcommon/osutils.c
   libcommon/oswinutils.c
 )
 target_link_libraries (libbdj4osutils PUBLIC

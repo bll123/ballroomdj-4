@@ -8,8 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "bdj4.h"
-#include "bdjstring.h"
 #include "mdebug.h"
 #include "pathdisp.h"
 #include "sysvars.h"
@@ -30,4 +28,3 @@ pathDisplayPath (char *buff, size_t len)
     }
   }
 }
-

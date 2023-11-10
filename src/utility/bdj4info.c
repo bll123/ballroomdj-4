@@ -23,7 +23,7 @@
 #include "fileop.h"
 #include "localeutil.h"
 #include "mdebug.h"
-#include "osutils.h"
+#include "osenv.h"
 #include "sysvars.h"
 
 const char *envitems [] = {

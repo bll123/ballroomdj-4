@@ -26,8 +26,9 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "osdirutil.h"
+#include "osenv.h"
 #include "osprocess.h"
-#include "osutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathutil.h"
@@ -392,7 +393,7 @@ main (int argc, char * argv[])
     exit (1);
   }
 
-  (void) ! getcwd (origcwd, sizeof (origcwd));
+  osGetCurrentDir (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));
 
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
@@ -400,14 +401,14 @@ main (int argc, char * argv[])
     nodetach = true;
     wait = true;
     isinstaller = true;
-    if (chdir (sysvarsGetStr (SV_BDJ4_DIR_MAIN)) < 0) {
+    if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_MAIN)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_MAIN));
       exit (1);
     }
   }
 
   if (isinstaller == false) {
-    if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+    if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
       exit (1);
     }

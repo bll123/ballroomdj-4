@@ -23,6 +23,7 @@
 #include "check_bdj.h"
 #include "mdebug.h"
 #include "log.h"
+#include "osdirutil.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "sysvars.h"
@@ -70,7 +71,7 @@ START_TEST(pathbld_chk)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathbld_chk");
   mdebugSubTag ("pathbld_chk");
 
-  (void) ! getcwd (cwd, sizeof (cwd));
+  osGetCurrentDir (cwd, sizeof (cwd));
   pathNormalizePath (cwd, sizeof (cwd));
 
   for (size_t i = 0; i < TCOUNT; ++i) {

@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <wchar.h>
 
 #include <glib.h>
 

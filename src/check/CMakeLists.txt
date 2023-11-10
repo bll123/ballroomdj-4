@@ -22,6 +22,7 @@ add_executable (check_all
   libcommon/check_fileop_dir.c
   libcommon/check_mdebug.c
   libcommon/check_osdir.c
+  libcommon/check_osenv.c
   libcommon/check_osnetutils.c
   libcommon/check_osprocess.c
   libcommon/check_osrandom.c

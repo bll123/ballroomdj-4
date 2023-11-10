@@ -30,6 +30,7 @@
 #include "musicdb.h"
 #include "pathbld.h"
 #include "osrandom.h"
+#include "osdirutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -258,7 +259,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     }
   }
 
-  if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+  if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
     exit (1);
   }

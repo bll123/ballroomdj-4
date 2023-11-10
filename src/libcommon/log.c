@@ -26,7 +26,6 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "fileshared.h"
-#include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "player.h"

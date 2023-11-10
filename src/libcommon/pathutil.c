@@ -21,6 +21,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "mdebug.h"
+#include "osutils.h"
 #include "pathutil.h"
 
 pathinfo_t *
@@ -189,8 +190,17 @@ pathRealPath (char *to, const char *from, size_t sz)
 #if _lib_realpath
   (void) ! realpath (from, to);
 #endif
-#if _lib_GetFullPathName
-  (void) ! GetFullPathName (from, sz, to, NULL);
+#if _lib_GetFullPathNameW
+  wchar_t   *wfrom;
+  wchar_t   wto [MAXPATHLEN];
+  char      *tto;
+
+  wfrom = osToWideChar (from);
+  (void) ! GetFullPathNameW (wfrom, MAXPATHLEN, wto, NULL);
+  tto = osFromWideChar (wto);
+  strlcpy (to, tto, sz);
+  mdfree (wfrom);
+
 #endif
 }
 

@@ -31,47 +31,6 @@
 #define EDATA "def123"
 #define WTEST "abcÜÄÑÖ내가 제일 잘 나가ははは夕陽伴我歸Ne_Русский_Шторм"
 
-START_TEST(osutils_getenv)
-{
-  char  *str = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getenv");
-  mdebugSubTag ("osutils_getenv");
-
-  str = getenv ("PATH");
-  ck_assert_ptr_nonnull (str);
-
-  str = getenv ("XYZZY");
-  ck_assert_ptr_null (str);
-}
-END_TEST
-
-START_TEST(osutils_setenv)
-{
-  char  *str = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_setenv");
-  mdebugSubTag ("osutils_setenv");
-
-  str = getenv (ENAME);
-  ck_assert_ptr_null (str);
-
-  osSetEnv (ENAME, EDATA);
-  str = getenv (ENAME);
-  ck_assert_ptr_nonnull (str);
-  ck_assert_str_eq (str, EDATA);
-
-  osSetEnv (ENAME, "");
-  str = getenv (ENAME);
-  ck_assert_ptr_null (str);
-
-  osSetEnv (ENAME, EDATA);
-  str = getenv (ENAME);
-  ck_assert_ptr_nonnull (str);
-  ck_assert_str_eq (str, EDATA);
-}
-END_TEST
-
 START_TEST(osutils_link)
 {
   const char  *fnad = "tmp/osutils.txt";
@@ -173,8 +132,6 @@ osutils_suite (void)
   s = suite_create ("osutils");
   tc = tcase_create ("osutils");
   tcase_set_tags (tc, "libcommon");
-  tcase_add_test (tc, osutils_getenv);
-  tcase_add_test (tc, osutils_setenv);
   tcase_add_test (tc, osutils_link);
   tcase_add_test (tc, osutils_getsysfont);
   tcase_add_test (tc, osutils_getregistry);

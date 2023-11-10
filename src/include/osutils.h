@@ -10,8 +10,6 @@ extern "C" {
 
 #include "config.h"
 
-#include <wchar.h>
-
 #if _hdr_winsock2
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wmissing-declarations"
@@ -29,10 +27,8 @@ extern "C" {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-void    * osToWideChar (const char *buff);
-char    * osFromWideChar (const void *buff);
-void    osGetEnv (const char *name, char *buff, size_t sz);
-int     osSetEnv (const char *name, const char *value);
+wchar_t * osToWideChar (const char *buff);
+char    * osFromWideChar (const wchar_t *buff);
 int     osCreateLink (const char *target, const char *linkpath);
 bool    osIsLink (const char *path);
 void    osSuspendSleep (void);

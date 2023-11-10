@@ -33,6 +33,7 @@ check_libcommon (SRunner *sr)
    *  strlcpy     --
    *  tmutil      complete
    *  fileop      complete
+   *  osenv       complete 2022-12-27
    *  osutils     complete 2022-12-27
    *  bdjstring   complete
    *  ossignal    complete
@@ -70,6 +71,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = fileop_suite();
+  srunner_add_suite (sr, s);
+
+  s = osenv_suite();
   srunner_add_suite (sr, s);
 
   s = osutils_suite();

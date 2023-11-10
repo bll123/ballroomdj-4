@@ -78,7 +78,7 @@ osIsLink (const char *path)
   return false;
 }
 
-void *
+wchar_t *
 osToWideChar (const char *buff)
 {
   OS_FS_CHAR_TYPE *tbuff = NULL;
@@ -93,7 +93,7 @@ osToWideChar (const char *buff)
 }
 
 char *
-osFromWideChar (const void *buff)
+osFromWideChar (const wchar_t *buff)
 {
   char        *tbuff = NULL;
   size_t      len;
