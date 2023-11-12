@@ -93,10 +93,11 @@ typedef struct {
   /* the real volume including adjustments. */
   int             realVolume;
   /* current volume without adjustments. */
-  /* the volume which the user has set the player to. */
+  /* this is the volume that the user has set. */
   /* this is what is displayed in the player ui. */
   int             currentVolume;
   /* the base volume is the current volume before any changes. */
+  /* it is the volume before any changes have been made to the volume. */
   /* it is set when a song starts playing.  */
   /* the base volume is used by the quick-edit process */
   /* in order to be able to calculate the volume adjustment and reset */
@@ -1854,7 +1855,16 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
       (uint64_t) tm, MSG_ARGS_RS,
       (int64_t) dur);
 
+  /* main will parse the message and pass on the timer information to */
+  /* the marquee.  main also reformats the message into json for */
+  /* the remote control. */
   connSendMessage (playerData->conn, ROUTE_MAIN,
+      MSG_PLAYER_STATUS_DATA, rbuff);
+  /* 4.4.4 send the playerui and manageui the messages from here, */
+  /* avoid some latency by routing through main */
+  connSendMessage (playerData->conn, ROUTE_PLAYERUI,
+      MSG_PLAYER_STATUS_DATA, rbuff);
+  connSendMessage (playerData->conn, ROUTE_MANAGEUI,
       MSG_PLAYER_STATUS_DATA, rbuff);
 
   dataFree (rbuff);

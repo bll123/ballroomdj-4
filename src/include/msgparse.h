@@ -28,9 +28,21 @@ typedef struct {
   int             loc;
 } mp_songselect_t;
 
+typedef struct {
+  bool      repeat;
+  bool      pauseatend;
+  int       currentVolume;
+  int       currentSpeed;
+  int       baseVolume;
+  uint64_t  playedtime;
+  int64_t   duration;
+} mp_playerstatus_t;
+
 mp_musicqupdate_t *msgparseMusicQueueData (char * args);
 void  msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate);
 mp_songselect_t *msgparseSongSelect (char * args);
 void msgparseSongSelectFree (mp_songselect_t *songselect);
+mp_playerstatus_t *msgparsePlayerStatusData (char * args);
+void msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus);
 
 #endif /* INC_MSGPARSE_H */

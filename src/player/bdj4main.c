@@ -37,6 +37,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "osenv.h"
@@ -2399,128 +2400,103 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   char        tbuff2 [40];
   char        *jsbuff = NULL;
   char        *timerbuff = NULL;
-  char        *tokstr = NULL;
-  char        *p;
   int         jsonflag;
   int         musicqLen;
   const char  *data;
+  const char  *p;
   dbidx_t     dbidx;
   song_t      *song;
+  mp_playerstatus_t *ps;
 
   logProcBegin (LOG_PROC, "mainSendPlayerStatus");
 
-  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATUS_DATA, playerResp);
-  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATUS_DATA, playerResp);
-
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
-  if (jsonflag) {
-    jsbuff = mdmalloc (BDJMSG_MAX);
-  }
   timerbuff = mdmalloc (BDJMSG_MAX);
 
-  if (jsonflag) {
-    strlcpy (jsbuff, "{ ", BDJMSG_MAX);
+  ps = msgparsePlayerStatusData (playerResp);
 
-    p = "stop";
-    switch (mainData->playerState) {
-      case PL_STATE_UNKNOWN:
-      case PL_STATE_STOPPED: {
-        p = "stop";
-        break;
-      }
-      case PL_STATE_LOADING:
-      case PL_STATE_PLAYING:
-      case PL_STATE_IN_FADEOUT:
-      case PL_STATE_IN_GAP: {
-        p = "play";
-        break;
-      }
-      case PL_STATE_PAUSED: {
-        p = "pause";
-        break;
-      }
-      default: {
-        /* invalid state - this would be an error */
-        p = "stop";
-        break;
-      }
-    }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"playstate\" : \"%s\"", p);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
+  /* for marquee */
+  snprintf (tbuff, sizeof (tbuff), "%" PRIu64 "%c", ps->playedtime, MSG_ARGS_RS);
+  strlcpy (timerbuff, tbuff, BDJMSG_MAX);
 
-  p = strtok_r (playerResp, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"repeat\" : \"%s\"", p);
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"pauseatend\" : \"%s\"", p);
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"vol\" : \"%s%%\"", p);
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"speed\" : \"%s%%\"", p);
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"playedtime\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  if (p != NULL) {
-    /* for marquee */
-    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-    strlcpy (timerbuff, tbuff, BDJMSG_MAX);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && jsonflag) {
-    snprintf (tbuff, sizeof (tbuff),
-        "\"duration\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
-    strlcat (jsbuff, ", ", BDJMSG_MAX);
-    strlcat (jsbuff, tbuff, BDJMSG_MAX);
-  }
-
-  if (p != NULL) {
-    /* for marquee */
-    snprintf (tbuff, sizeof (tbuff), "%s", p);
-    strlcat (timerbuff, tbuff, BDJMSG_MAX);
-  }
+  /* for marquee */
+  snprintf (tbuff, sizeof (tbuff), "%" PRId64, ps->duration);
+  strlcat (timerbuff, tbuff, BDJMSG_MAX);
 
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
+    mdfree (timerbuff);
   }
 
   if (! jsonflag) {
-    logProcEnd (LOG_PROC, "mainSendPlayerStatus", "no-json");
-    dataFree (jsbuff);
-    dataFree (timerbuff);
+    msgparsePlayerStatusFree (ps);
     return;
   }
+
+  jsbuff = mdmalloc (BDJMSG_MAX);
+
+  strlcpy (jsbuff, "{ ", BDJMSG_MAX);
+
+  p = "stop";
+  switch (mainData->playerState) {
+    case PL_STATE_UNKNOWN:
+    case PL_STATE_STOPPED: {
+      p = "stop";
+      break;
+    }
+    case PL_STATE_LOADING:
+    case PL_STATE_PLAYING:
+    case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_GAP: {
+      p = "play";
+      break;
+    }
+    case PL_STATE_PAUSED: {
+      p = "pause";
+      break;
+    }
+    default: {
+      /* invalid state - this would be an error */
+      p = "stop";
+      break;
+    }
+  }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"playstate\" : \"%s\"", p);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"repeat\" : \"%d\"", ps->repeat);
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"pauseatend\" : \"%d\"", ps->pauseatend);
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"vol\" : \"%d%%\"", ps->currentVolume);
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"speed\" : \"%d%%\"", ps->currentSpeed);
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"playedtime\" : \"%s\"",
+      tmutilToMS (ps->playedtime, tbuff2, sizeof (tbuff2)));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+
+  snprintf (tbuff, sizeof (tbuff),
+      "\"duration\" : \"%s\"",
+      tmutilToMS (ps->duration, tbuff2, sizeof (tbuff2)));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
   snprintf (tbuff, sizeof (tbuff),
@@ -2558,8 +2534,10 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (jsbuff, " }", BDJMSG_MAX);
 
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
+
+  msgparsePlayerStatusFree (ps);
   dataFree (jsbuff);
-  dataFree (timerbuff);
+
   logProcEnd (LOG_PROC, "mainSendPlayerStatus", "");
 }
 

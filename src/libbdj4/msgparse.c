@@ -131,6 +131,72 @@ msgparseSongSelectFree (mp_songselect_t *songselect)
   }
 }
 
+mp_playerstatus_t *
+msgparsePlayerStatusData (char * args)
+{
+  mp_playerstatus_t *ps = NULL;
+  char              *p;
+  char              *tokstr;
+
+  ps = mdmalloc (sizeof (mp_playerstatus_t));
+  ps->repeat = false;
+  ps->pauseatend = false;
+  ps->currentVolume = 0;
+  ps->currentSpeed = 100;
+  ps->baseVolume = 0;
+  ps->playedtime = 0;
+  ps->duration = 0;
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->repeat = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->pauseatend = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->currentVolume = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->currentSpeed = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->baseVolume = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->playedtime = atol (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->duration = atol (p);
+  }
+
+  return ps;
+}
+
+void
+msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus)
+{
+  if (playerstatus == NULL) {
+    return;
+  }
+
+  mdfree (playerstatus);
+}
+
+
+
 /* internal routines */
 
 static void

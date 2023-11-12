@@ -21,6 +21,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "pathbld.h"
 #include "player.h"
@@ -827,67 +828,59 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 static void
 uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 {
-  char          *p;
-  char          *tokstr;
   char          tbuff [100];
   double        dval;
   double        ddur;
   ssize_t       timeleft = 0;
   ssize_t       position = 0;
   ssize_t       dur = 0;
+  mp_playerstatus_t *ps = NULL;
 
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerStatusData");
 
+  ps = msgparsePlayerStatusData (args);
+
   /* repeat */
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL) {
-    uiplayer->repeatLock = true;
-    if (atol (p)) {
-      uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
-      uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
-    } else {
-      uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-      uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
-    }
-    uiplayer->repeatLock = false;
+  uiplayer->repeatLock = true;
+  if (ps->repeat) {
+    uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
+    uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
+    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
+  } else {
+    uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
+    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
   }
+  uiplayer->repeatLock = false;
 
   /* pauseatend */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  uiplayerProcessPauseatend (uiplayer, atol (p));
+  uiplayerProcessPauseatend (uiplayer, ps->pauseatend);
 
   /* current vol */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->volumeLock) {
-    snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], p);
-    dval = atof (p);
+    snprintf (tbuff, sizeof (tbuff), "%3d", ps->currentVolume);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
+    dval = (double) ps->currentVolume;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_VOLUME], dval);
   }
 
   /* speed */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->speedLock) {
-    snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], p);
-    dval = atof (p);
+    snprintf (tbuff, sizeof (tbuff), "%3d", ps->currentSpeed);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
+    dval = (double) ps->currentSpeed;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
   }
 
   /* base vol */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  uiplayer->baseVolume = atoi (p);
+  uiplayer->baseVolume = ps->baseVolume;
 
   /* playedtime */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  position = atol (p);
-  dval = atof (p);    // used below
+  position = ps->playedtime;
+  dval = (double) ps->playedtime;    // used below
 
   /* duration */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  ddur = atof (p);
-  dur = atol (p);
+  ddur = (double) ps->duration;
+  dur = ps->duration;
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
     uiLabelSetText (uiplayer->wcont [UIPL_W_DURATION], tbuff);

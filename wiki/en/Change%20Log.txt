@@ -11,6 +11,7 @@
 * Bug Fixes:
     * Configuration: Fixed directory and file chooser buttons (itunes, general).
     * Windows: Fixed problems with international characters in account names.
+    * Marquee, Remote Control: Fixed countdown timer (introduced in 4.4.3).
 
 -->
 
