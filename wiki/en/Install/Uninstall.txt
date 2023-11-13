@@ -26,16 +26,16 @@ confirmation before performing each action.
 
 ##### Windows
 
-Download the win-uninstall-bdj4-v1.bat script from sourceforge.
+Download the win-uninstall-bdj4-v3.bat script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Run the win-uninstall-bdj4-v1.bat script.
+Run the win-uninstall-bdj4-v3.bat script.
 
 e.g. Using cmd.exe:
 
     cd Downloads
-    .\win-uninstall-bdj4-v1.bat
+    .\win-uninstall-bdj4-v3.bat
 
 ##### Linux
 

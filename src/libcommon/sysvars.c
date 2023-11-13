@@ -325,7 +325,7 @@ sysvarsInit (const char *argv0)
     int       wargc;
     char      *tmp;
 
-    wargv = CommandLineToArgvW(GetCommandLineW(), &wargc);
+    wargv = CommandLineToArgvW (GetCommandLineW(), &wargc);
     tmp = osFromWideChar (wargv [0]);
     strlcpy (tbuff, tmp, sizeof (tbuff));
     strlcpy (buff, tmp, sizeof (buff));

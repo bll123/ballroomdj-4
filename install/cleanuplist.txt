@@ -144,6 +144,10 @@ bin/bdj4cleaninst\.exe$
 bin/bdj4dbtag$
 bin/bdj4dbtag\.exe$
 
+# 2023-11-13 winshortcut replaced with executable
+install/winshortcut\.bat$
+install/winshortcut\.vbs$
+
 ####
 # mac-os
 
@@ -176,6 +180,9 @@ plocal/lib/libvorbisenc\.2\.dylib$
 plocal/lib/libvorbisfile\.3\.dylib$
 plocal/lib/libmp4tag-1\.2\.[345678]\.dylib$
 
+# 2023-11-13 bdj4winmksc is only used by windows
+bin/bdj4winmksc
+
 ####
 # linux
 
@@ -199,6 +206,9 @@ licenses/flac\.LICENSE$
 # 2023-11-7
 # make sure some old libraries are gone
 plocal/lib/libmp4tag\.so\.1\.2\.[345678]$
+
+# 2023-11-13 bdj4winmksc is only used by windows
+bin/bdj4winmksc
 
 ####
 # windows
@@ -312,3 +322,8 @@ data/ds-audioid-list\.txt$
 data/ds-audioid-list\.txt\.bak\.1$
 data/ds-audioid\.txt$
 data/ds-audioid\.txt\.bak\.1$
+
+# 2023-11-13
+# no more python stuff
+data/pydotvers\.txt$
+data/pyvers\.txt$

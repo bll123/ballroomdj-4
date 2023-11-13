@@ -34,6 +34,11 @@ target_link_libraries (bdj4tags PUBLIC
 )
 addIntlLibrary (bdj4tags)
 
+add_executable (bdj4winmksc bdj4winmksc.cpp)
+if (WIN32)
+  target_compile_options (bdj4winmksc PRIVATE -municode)
+endif()
+
 add_executable (dmkmfromdb dmkmfromdb.c)
 if (WIN32)
   target_compile_options (dmkmfromdb PRIVATE -municode)
@@ -116,6 +121,7 @@ target_link_libraries (vsed PUBLIC
 install (TARGETS
   bdj4info
   bdj4tags
+  bdj4winmksc
   dmkmfromdb
   tdbcompare
   tdbsetval
@@ -129,6 +135,7 @@ install (TARGETS
 
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
+updateRPath (bdj4winmksc)
 updateRPath (dmkmfromdb)
 updateRPath (tdbcompare)
 updateRPath (tdbsetval)

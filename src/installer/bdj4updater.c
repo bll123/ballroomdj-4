@@ -302,6 +302,7 @@ main (int argc, char *argv [])
       if (isLinux ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolpa");
       }
+
       bdjoptchanged = true;
     }
 
@@ -327,28 +328,31 @@ main (int argc, char *argv [])
 
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "not converted");
       bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
+      bdjoptchanged = true;
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, statusflags [UPD_FIX_AF_TAGS]);
 
       /* need some decent default fonts for windows and macos */
       if (isWindows () || isMacOS ()) {
-        uifont = "Arial Regular 11";
+        uifont = "Arial 11";
         if (isMacOS ()) {
-          uifont = "Arial Regular 17";
+          uifont = "Arial Regular 16";
         }
         bdjoptSetStr (OPT_MP_UIFONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
-        uifont = "Arial Regular 11";
+        uifont = "Arial 11";
         if (isMacOS ()) {
-          uifont = "Arial Narrow Regular 16";
+          uifont = "Arial Narrow Regular 15";
         }
         bdjoptSetStr (OPT_MP_MQFONT, uifont);
 
-        uifont = "Arial Regular 10";
+        uifont = "Arial 10";
         if (isMacOS ()) {
-          uifont = "Arial Regular 16";
+          uifont = "Arial Regular 15";
         }
         bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
+
+        bdjoptchanged = true;
       }
 
       /* new install and no conversion, so none of these issues are present */
@@ -408,10 +412,12 @@ main (int argc, char *argv [])
   if (musicdir != NULL) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "musicdir: %s", musicdir);
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
+    bdjoptchanged = true;
   }
 
   {
     /* 4.4.2.2 change name of audiotag dylib (prep) */
+    /* 4.4.3 remove mutagen */
     tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
     if (tval != NULL &&
         (strcmp (tval, "libaudiotagmutagen") == 0 ||
@@ -449,7 +455,6 @@ main (int argc, char *argv [])
     if (statusflags [UPD_SET_MPM] == UPD_NOT_DONE) {
       /* 4.3.2.4 : change BPM to default to MPM */
       bdjoptSetNum (OPT_G_BPM, BPM_MPM);
-      bdjoptchanged = true;
       nlistSetNum (updlist, UPD_SET_MPM, UPD_COMPLETE);
     }
 

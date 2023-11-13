@@ -53,7 +53,6 @@ instutilCreateShortcut (const char *name, const char *maindir,
   char        path [MAXPATHLEN];
   char        buff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  char        tmp [40];
   const char  *targv [10];
   int         targc = 0;
 
@@ -62,23 +61,32 @@ instutilCreateShortcut (const char *name, const char *maindir,
   }
 
   if (isWindows ()) {
-    if (! osChangeDir ("install")) {
-      targv [targc++] = ".\\winshortcut.bat";
-      snprintf (path, sizeof (path), "%s%s.lnk",
-          "%USERPROFILE%\\Desktop\\", name);
-      targv [targc++] = path;
-      snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", target);
-      pathDisplayPath (buff, sizeof (buff));
-      targv [targc++] = buff;
-      strlcpy (tbuff, target, sizeof (tbuff));
-      pathDisplayPath (tbuff, sizeof (tbuff));
-      targv [targc++] = tbuff;
-      snprintf (tmp, sizeof (tmp), "%d", profilenum);
-      targv [targc++] = tmp;
-      targv [targc++] = NULL;
-      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      osChangeDir (maindir);
+    char    abuff [MAXPATHLEN];
+
+    /* shortcut location and name */
+    targv [targc++] = "./bin/bdj4winmksc.exe";
+    snprintf (path, sizeof (path), "%s/Desktop/%s.lnk",
+        sysvarsGetStr (SV_HOME), name);
+    pathDisplayPath (path, sizeof (path));
+    targv [targc++] = path;
+
+    /* target executable */
+    snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", target);
+    pathDisplayPath (buff, sizeof (buff));
+    targv [targc++] = buff;
+
+    /* working dir */
+    strlcpy (tbuff, target, sizeof (tbuff));
+    pathDisplayPath (tbuff, sizeof (tbuff));
+    targv [targc++] = tbuff;
+
+    if (profilenum > 0) {
+      /* arguments */
+      snprintf (abuff, sizeof (abuff), " --profile %d ", profilenum);
+      targv [targc++] = abuff;
     }
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 
   if (isLinux ()) {

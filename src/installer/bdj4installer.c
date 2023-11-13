@@ -144,7 +144,6 @@ typedef struct {
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];   // where the installer is unpacked
   char            vlcversion [40];
-  char            pyversion [40];
   char            dlfname [MAXPATHLEN];
   char            oldversion [MAXPATHLEN];
   char            bdj3version [MAXPATHLEN];
@@ -199,6 +198,11 @@ typedef struct {
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
+
+#define WINUSERPROFILE  "%USERPROFILE%"
+enum {
+  WINUSERPROFILESZ = strlen (WINUSERPROFILE),
+};
 
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
@@ -363,7 +367,6 @@ main (int argc, char *argv[])
   osGetCurrentDir (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
-  strcpy (installer.pyversion, "");
   strcpy (installer.oldversion, "");
   strcpy (installer.bdj3version, "");
   for (int i = 0; i < INST_BUTTON_MAX; ++i) {
@@ -400,6 +403,15 @@ main (int argc, char *argv[])
     stringTrim (buff);
     mdextfclose (fh);
     fclose (fh);
+    if (isWindows ()) {
+      char    tmp [MAXPATHLEN];
+
+      if (strncmp (buff, WINUSERPROFILE, WINUSERPROFILESZ) == 0) {
+        snprintf (tmp, sizeof (tmp), "%s%s", sysvarsGetStr (SV_HOME),
+            buff + WINUSERPROFILESZ);
+        strlcpy (buff, tmp, sizeof (buff));
+      }
+    }
   }
 
   /* at this point the target dir will have either a good default */
@@ -550,8 +562,11 @@ main (int argc, char *argv[])
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {
       uifont = "Arial Regular 11";
+      if (isWindows ()) {
+        uifont = "Arial 11";
+      }
       if (isMacOS ()) {
-        uifont = "Arial Regular 17";
+        uifont = "Arial Regular 16";
       }
     }
     uiSetUICSS (uifont, INST_HL_COLOR, NULL);
@@ -1679,12 +1694,15 @@ installerSaveTargetDir (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
-  uiEntrySetValue (installer->targetEntry, installer->target);
-
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "w");
   if (fh != NULL) {
-    fprintf (fh, "%s\n", installer->target);
+    if (isWindows ()) {
+      fprintf (fh, "%s%s\n", WINUSERPROFILE,
+          installer->target + strlen (sysvarsGetStr (SV_HOME)));
+    } else {
+      fprintf (fh, "%s\n", installer->target);
+    }
     mdextfclose (fh);
     fclose (fh);
   }
@@ -2424,7 +2442,8 @@ installerRegisterInit (installer_t *installer)
 {
   char    tbuff [200];
 
-  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+  if ((strcmp (sysvarsGetStr (SV_USER), "bll") == 0 ||
+      strncmp (sysvarsGetStr (SV_USER), "test ", 5) == 0) &&
       ! installer->testregistration) {
     /* no need to register */
     snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
