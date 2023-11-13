@@ -341,7 +341,6 @@ main (int argc, char *argv[])
   installer.convprocess = false;
   installer.convspecified = false;
   installer.guienabled = true;
-  installer.insetconvert = false;
   installer.localespecified = false;
   installer.musicdirok = false;
   installer.newinstall = true;
@@ -579,6 +578,10 @@ main (int argc, char *argv[])
     osuiFinalize ();
   }
 
+  uiEntrySetValue (installer.targetEntry, installer.target);
+  installerSetMusicDirEntry (&installer, installer.musicdir);
+  installerSetBDJ3LocEntry (&installer, installer.bdj3loc);
+
   while (installer.instState != INST_EXIT) {
     if (installer.instState != installer.lastInstState) {
       if (installer.verbose && ! installer.quiet) {
@@ -668,7 +671,6 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   uiEntryCreate (installer->targetEntry);
-  uiEntrySetValue (installer->targetEntry, installer->target);
   uiwidgetp = uiEntryGetWidgetContainer (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -722,7 +724,6 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (installer->musicdirEntry);
-  installerSetMusicDirEntry (installer, installer->musicdir);
   uiwidgetp = uiEntryGetWidgetContainer (installer->musicdirEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -786,7 +787,6 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (installer->bdj3locEntry);
-  installerSetBDJ3LocEntry (installer, installer->bdj3loc);
   uiwidgetp = uiEntryGetWidgetContainer (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -846,6 +846,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
+  uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
   uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
 
@@ -1082,14 +1083,9 @@ installerReinstallCBHandler (void *udata)
   installer_t   *installer = udata;
   int           nval;
 
-  if (installer->insetconvert) {
-    return UICB_STOP;
-  }
-
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
   installer->reinstall = nval;
   installerTargetFeedbackMsg (installer);
-  installerConversionFeedbackMsg (installer);
   return UICB_CONT;
 }
 
@@ -1099,13 +1095,10 @@ installerConversionCBHandler (void *udata)
   installer_t   *installer = udata;
   int           nval;
 
-  if (installer->insetconvert) {
-    return UICB_STOP;
-  }
-
   /* need to force conversion off if the dir is not valid or empty */
   if (! installer->convdirok) {
     installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_OFF);
+    installer->convprocess = false;
   }
 
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
@@ -1220,7 +1213,6 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
   }
 
   installerTargetFeedbackMsg (installer);
-  installerConversionFeedbackMsg (installer);
 
   return rc;
 }
@@ -1266,16 +1258,17 @@ static void
 installerSetConversionFlags (installer_t *installer)
 {
   /* set the conversion flags */
+  if (installer->unattended) {
+    if (installer->convspecified) {
+      installer->convprocess = true;
+    }
+    return;
+  }
+
   if (installer->convdirok) {
     if (installer->newinstall && *installer->bdj3loc) {
-      if (installer->unattended) {
-        if (installer->convspecified) {
-          installer->convprocess = true;
-        }
-      } else {
-        installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_ON);
-        installer->convprocess = true;
-      }
+      installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_ON);
+      installer->convprocess = true;
     }
     if (installer->updateinstall) {
       /* do not automatically convert on a re-install */
@@ -1310,13 +1303,9 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   dir = uiEntryGetValue (installer->bdj3locEntry);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
-  if (strcmp (tbuff, installer->bdj3loc) != 0) {
-    installer->convdirok = false;
-    rc = installerValidateProcessBDJ3Loc (installer, tbuff);
-  } else {
-    /* no change */
-    rc = UIENTRY_OK;
-  }
+
+  installer->convdirok = false;
+  rc = installerValidateProcessBDJ3Loc (installer, tbuff);
 
   return rc;
 }
@@ -1324,7 +1313,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 static int
 installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir)
 {
-  int       rc = UIENTRY_OK;
+  int       rc = UIENTRY_ERROR;
 
   if (*dir == '\0') {
     rc = UIENTRY_OK;
@@ -1347,13 +1336,7 @@ installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir)
   }
 
   if (rc == UIENTRY_ERROR) {
-    char    tbuff [200];
-
-    /* CONTEXT: installer: the location entered is not a valid BDJ3 location. */
-    snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
-    uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
     installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_OFF);
-    installer->convprocess = false;
   }
 
   if (rc == UIENTRY_OK) {
@@ -1527,9 +1510,7 @@ installerSetConvertStatus (installer_t *installer, int state)
     return;
   }
 
-  installer->insetconvert = true;
   uiToggleButtonSetState (installer->wcont [INST_W_CONVERT], state);
-  installer->insetconvert = false;
 }
 
 static void
@@ -1538,7 +1519,6 @@ installerConversionFeedbackMsg (installer_t *installer)
   int           nval = false;
   char          *tptr;
   char          tbuff [200];
-  bool          nodir = false;
 
   if (installer->guienabled) {
     nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
@@ -1550,14 +1530,18 @@ installerConversionFeedbackMsg (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), tptr, BDJ3_NAME);
     uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
   } else {
-    if (nodir) {
+    if (installer->convdirok) {
+      /* CONTEXT: installer: message indicating the conversion action that will be taken */
+      tptr = _("The conversion process will not be run.");
+      uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tptr);
+    } else if (! *installer->bdj3loc) {
       /* CONTEXT: installer: message indicating the conversion action that will be taken */
       tptr = _("No folder specified.");
       uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tptr);
     } else {
-      /* CONTEXT: installer: message indicating the conversion action that will be taken */
-      tptr = _("The conversion process will not be run.");
-      uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tptr);
+      /* CONTEXT: installer: the location entered is not a valid BDJ3 location. */
+      snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
+      uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
     }
   }
 }
