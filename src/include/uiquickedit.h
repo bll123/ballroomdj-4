@@ -14,6 +14,7 @@ typedef struct {
   dbidx_t           dbidx;
   double            voladj;
   double            speed;
+  int               level;
   int               rating;
 } uiqesave_t;
 

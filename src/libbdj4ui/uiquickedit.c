@@ -26,6 +26,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uilevel.h"
 #include "uiquickedit.h"
 #include "uirating.h"
 #include "uiutils.h"
@@ -67,6 +68,7 @@ typedef struct uiqe {
   musicdb_t         *musicdb;
   nlist_t           *options;
   uiwcont_t         *wcont [UIQE_W_MAX];
+  uilevel_t         *uilevel;
   uirating_t        *uirating;
   callback_t        *responsecb;
   callback_t        *callbacks [UIQE_CB_MAX];
@@ -107,11 +109,13 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
     uiqe->callbacks [i] = NULL;
   }
   uiqe->isactive = false;
+  uiqe->uilevel = NULL;
   uiqe->uirating = NULL;
   uiqe->savedata.dbidx = -1;
   uiqe->savedata.speed = 100.0;
   uiqe->savedata.voladj = 0.0;
   uiqe->savedata.rating = 0;
+  uiqe->savedata.level = 0;
 
   uiqe->callbacks [UIQE_CB_DIALOG] = callbackInitLong (
       uiqeResponseHandler, uiqe);
@@ -142,7 +146,9 @@ uiqeFree (uiqe_t *uiqe)
     uiqe->scaledata [i].scale = NULL;
     uiqe->scaledata [i].scaledisp = NULL;
   }
+  uilevelFree (uiqe->uilevel);
   uiratingFree (uiqe->uirating);
+  uiqe->uilevel = NULL;
   uiqe->uirating = NULL;
   mdfree (uiqe);
 }
@@ -162,6 +168,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   int         x, y;
   const char  *artist;
   const char  *title;
+  int         levelidx;
   int         ratingidx;
   double      voladj;
   double      svoladj;
@@ -199,6 +206,9 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 
   ratingidx = songGetNum (uiqe->song, TAG_DANCERATING);
   uiratingSetValue (uiqe->uirating, ratingidx);
+
+  levelidx = songGetNum (uiqe->song, TAG_DANCELEVEL);
+  uilevelSetValue (uiqe->uilevel, levelidx);
 
   if (speed == LIST_DOUBLE_INVALID) {
     speed = (double) songGetNum (uiqe->song, TAG_SPEEDADJUSTMENT);
@@ -325,7 +335,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
   uiwcontFree (hbox);
 
-  /* begin line: vol-adj scale */
+  /* begin line: rating */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -335,6 +345,18 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
+  uiwcontFree (hbox);
+
+  /* begin line: level */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
+  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
+
+  uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
   uiwcontFree (hbox);
 
   uiwcontFree (vbox);
@@ -380,6 +402,7 @@ uiqeResponseHandler (void *udata, long responseid)
       uiqe->savedata.voladj =
           uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale);
       uiqe->savedata.rating = uiratingGetValue (uiqe->uirating);
+      uiqe->savedata.level = uilevelGetValue (uiqe->uilevel);
 
       if (uiqe->responsecb != NULL) {
         callbackHandler (uiqe->responsecb);
