@@ -32,6 +32,11 @@ enum {
   BDJ4_TS_STARTTEST             = 0x00100000,
 };
 
+void bdj4initArgInit (void);
+void bdj4initArgCleanup (void);
+char * bdj4initArgFromWide (int idx, const char *arg);
+void bdj4initFreeArg (void *targ);
+
 int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     char *tag, bdjmsgroute_t route, long *flags);
 musicdb_t * bdj4ReloadDatabase (musicdb_t *musicdb);

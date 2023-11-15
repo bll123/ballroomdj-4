@@ -17,6 +17,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
@@ -46,6 +47,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   int         count = 0;
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
+  char        *targ;
   loglevel_t  loglevel = 0;
   bool        loglevelset = false;
   bool        isbdj4 = false;
@@ -107,9 +109,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { NULL,             0,                  NULL,   0 }
   };
 
+  bdj4argInit ();
+
   mstimestart (&mt);
   sRandom ();
-  sysvarsInit (argv[0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjvarsInit ();
 
@@ -117,10 +123,12 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   while ((c = getopt_long_only (argc, argv, "BChPOUWcld:p:mnNRst:T", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 't': {
-        if (fileopIsDirectory (optarg)) {
-          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, optarg);
+        targ = bdj4argGet (optind - 1, optarg);
+        if (fileopIsDirectory (targ)) {
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, targ);
           sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
         }
+        bdj4argClear (targ);
         break;
       }
       case 'B': {
@@ -156,21 +164,23 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'D': {
-        if (optarg) {
-          logMsg (LOG_DBG, LOG_BASIC, "set dbtopdir %s", optarg);
-          bdjvarsSetStr (BDJV_DB_TOP_DIR, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          logMsg (LOG_DBG, LOG_BASIC, "set dbtopdir %s", targ);
+          bdjvarsSetStr (BDJV_DB_TOP_DIR, targ);
+          bdj4argClear (targ);
         }
         break;
       }
       case 'd': {
-        if (optarg) {
+        if (optarg != NULL) {
           loglevel = (loglevel_t) atol (optarg);
           loglevelset = true;
         }
         break;
       }
       case 'p': {
-        if (optarg) {
+        if (optarg != NULL) {
           sysvarsSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
@@ -200,24 +210,30 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'S': {
-        if (optarg) {
-          bdjvarsSetStr (BDJV_TS_SECTION, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          bdjvarsSetStr (BDJV_TS_SECTION, targ);
+          bdj4argClear (targ);
+          *flags |= BDJ4_TS_RUNSECTION;
         }
-        *flags |= BDJ4_TS_RUNSECTION;
         break;
       }
       case 'T': {
-        if (optarg) {
-          bdjvarsSetStr (BDJV_TS_TEST, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          bdjvarsSetStr (BDJV_TS_TEST, targ);
+          bdj4argClear (targ);
+          *flags |= BDJ4_TS_RUNTEST;
         }
-        *flags |= BDJ4_TS_RUNTEST;
         break;
       }
       case 'U': {
-        if (optarg) {
-          bdjvarsSetStr (BDJV_TS_TEST, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          bdjvarsSetStr (BDJV_TS_TEST, targ);
+          bdj4argClear (targ);
+          *flags |= BDJ4_TS_STARTTEST;
         }
-        *flags |= BDJ4_TS_STARTTEST;
         break;
       }
       case 'V': {
@@ -314,6 +330,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
 
+  bdj4argCleanup ();
   logProcEnd (LOG_PROC, "bdj4startup", "");
   return loglevel;
 }
@@ -365,3 +382,4 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   }
   logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }
+

@@ -13,6 +13,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "fileop.h"
@@ -30,10 +31,10 @@ main (int argc, char *argv [])
 {
   musicdb_t   *db;
   bool        isbdj4 = false;
-  const char  *dbfn = NULL;
-  const char  *tagname = NULL;
-  const char  *valuestr = NULL;
-  const char  *maxcountstr = NULL;
+  char        *dbfn = NULL;
+  char        *tagname = NULL;
+  char        *valuestr = NULL;
+  char        *maxcountstr = NULL;
   long        maxcount = -1;
   long        count = 0;
   int         c;
@@ -44,6 +45,7 @@ main (int argc, char *argv [])
   slistidx_t  dbiteridx;
   dbidx_t     dbkey;
   int         tagidx = -1;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -59,6 +61,8 @@ main (int argc, char *argv [])
   mdebugInit ("tdbs");
 #endif
 
+  bdj4argInit ();
+
   while ((c = getopt_long_only (argc, argv, "BV", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
@@ -73,10 +77,13 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    exit (1);
+    bdj4argCleanup ();
+    return 1;
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -85,19 +92,25 @@ main (int argc, char *argv [])
   bdjvarsdfloadInit ();
 
   for (int i = optind; i < argc; ++i) {
+    char    *targ;
+
     if (argcount == 0 && dbfn == NULL) {
-      dbfn = argv [i];
+      targ = bdj4argGet (i, argv [i]);
+      dbfn = targ;
     }
     if (argcount == 1 && tagname == NULL) {
-      tagname = argv [i];
+      targ = bdj4argGet (i, argv [i]);
+      tagname = targ;
       tagidx = tagdefLookup (tagname);
       if (tagidx < 0) {
         fprintf (stderr, "unknown tag name %s\n", tagname);
+        bdj4argCleanup ();
         exit (1);
       }
     }
     if (argcount == 2 && valuestr == NULL) {
-      valuestr = argv [i];
+      targ = bdj4argGet (i, argv [i]);
+      valuestr = targ;
     }
     if (argcount == 3 && maxcountstr == NULL) {
       maxcountstr = argv [i];
@@ -108,10 +121,12 @@ main (int argc, char *argv [])
 
   if (argcount < 3) {
     fprintf (stderr, "Usage: dbdump <db-a> <tagname> <value> [<count>](%d)\n", argcount);
+    bdj4argCleanup ();
     return 1;
   }
   if (dbfn == NULL || ! fileopFileExists (dbfn)) {
     fprintf (stderr, "no file %s\n", dbfn);
+    bdj4argCleanup ();
     return 1;
   }
 
@@ -121,6 +136,7 @@ main (int argc, char *argv [])
 
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
+    bdj4argCleanup ();
     return 1;
   }
 
@@ -146,12 +162,17 @@ main (int argc, char *argv [])
   dbEndBatch (db);
   dbClose (db);
 
+  bdj4argClear (dbfn);
+  bdj4argClear (tagname);
+  bdj4argClear (valuestr);
+
   audiotagCleanup ();
   bdjvarsdfloadCleanup ();
   tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

@@ -100,6 +100,7 @@ target_link_libraries (libbdj4fileop PUBLIC
 )
 
 add_library (libbdj4launcher STATIC
+  libcommon/bdj4arg.c
   libcommon/filedata.c
   libcommon/osnetutils.c
   libcommon/pathbld.c
@@ -112,6 +113,7 @@ add_library (libbdj4launcher STATIC
 add_subdirectory (libdylib)
 add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
+
 # shared libraries that ship
 add_subdirectory (libcommon)
 add_subdirectory (libbasic)
@@ -120,8 +122,10 @@ add_subdirectory (libaudioid)
 add_subdirectory (libati)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
+
 # executables, no gui
 add_subdirectory (utility)
+
 # ui libraries
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_subdirectory (libuigtk3)
@@ -130,6 +134,7 @@ if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
   add_subdirectory (libuinull)
 endif()
 add_subdirectory (libbdj4ui)
+
 # executables
 add_subdirectory (configui)
 add_subdirectory (installer)
@@ -137,5 +142,6 @@ add_subdirectory (manageui)
 add_subdirectory (player)
 add_subdirectory (playerui)
 add_subdirectory (starter)
+
 # testing
 add_subdirectory (check)

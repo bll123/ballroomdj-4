@@ -10,6 +10,8 @@ extern "C" {
 
 #include "config.h"
 
+#include <stdbool.h>
+
 #if _hdr_winsock2
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wmissing-declarations"

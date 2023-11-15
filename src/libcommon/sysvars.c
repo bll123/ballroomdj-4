@@ -319,20 +319,6 @@ sysvarsInit (const char *argv0)
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
-#if _lib_GetCommandLineW
-  if (isWindows ()) {
-    wchar_t   **wargv;
-    int       wargc;
-    char      *tmp;
-
-    wargv = CommandLineToArgvW (GetCommandLineW(), &wargc);
-    tmp = osFromWideChar (wargv [0]);
-    strlcpy (tbuff, tmp, sizeof (tbuff));
-    strlcpy (buff, tmp, sizeof (buff));
-    mdfree (tmp);
-    LocalFree (wargv);
-  }
-#endif
 
   pathNormalizePath (buff, SV_MAX_SZ);
   /* handle relative pathnames */

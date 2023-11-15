@@ -19,6 +19,7 @@
 #endif
 
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "fileop.h"
 #include "localeutil.h"
@@ -57,6 +58,7 @@ main (int argc, char *argv [])
   int     c = 0;
   int     option_index = 0;
   bool    isbdj4 = false;
+  char    *targ;
 
   static struct option bdj_options [] = {
     { "bdj4info",   no_argument,        NULL,   0 },
@@ -75,12 +77,18 @@ main (int argc, char *argv [])
   mdebugInit ("info");
 #endif
 
+  bdj4argInit ();
+
   while ((c = getopt_long_only (argc, argv, "Bt:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 't': {
-        if (fileopIsDirectory (optarg)) {
-          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, optarg);
-          sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          if (fileopIsDirectory (targ)) {
+            sysvarsSetStr (SV_BDJ4_DIR_DATATOP, targ);
+            sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
+          }
+          bdj4argClear (targ);
         }
         break;
       }
@@ -99,7 +107,9 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
 
   fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
@@ -145,7 +155,7 @@ main (int argc, char *argv [])
   bdjoptDump ();
   bdjoptCleanup ();
   localeCleanup ();
-
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

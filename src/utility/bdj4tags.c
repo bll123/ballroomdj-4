@@ -13,6 +13,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "fileop.h"
 #include "localeutil.h"
@@ -48,6 +49,7 @@ main (int argc, char *argv [])
   int         rc = AUDIOTAG_WRITE_OK;
   char        infn [MAXPATHLEN];
   char        origcwd [MAXPATHLEN];
+  char        *targ;
 
 
   static struct option bdj_options [] = {
@@ -69,6 +71,8 @@ main (int argc, char *argv [])
   mdebugInit ("tags");
 #endif
 
+  bdj4argInit ();
+
   *origcwd = '\0';
 
   while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
@@ -86,7 +90,11 @@ main (int argc, char *argv [])
         break;
       }
       case 'C': {
-        strlcpy (origcwd, optarg, sizeof (origcwd));
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          strlcpy (origcwd, targ, sizeof (origcwd));
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'Q': {
@@ -108,7 +116,9 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -132,38 +142,46 @@ main (int argc, char *argv [])
     }
   }
 
-  strlcpy (infn, argv [fidx], sizeof (infn));
+  targ = bdj4argGet (fidx, argv [fidx]);
+  strlcpy (infn, targ, sizeof (infn));
+
   if (! fileopFileExists (infn)) {
     /* try a relative path name */
-    snprintf (infn, sizeof (infn), "%s/%s", origcwd, argv [fidx]);
+    snprintf (infn, sizeof (infn), "%s/%s", origcwd, targ);
     if (! fileopFileExists (infn)) {
       fprintf (stderr, "no file %s\n", infn);
       rc = AUDIOTAG_WRITE_FAILED;
       bdj4tagsCleanup ();
+      bdj4argCleanup ();
       return rc;
     }
   }
 
-  if (copy && ! fileopFileExists (argv [fbidx])) {
-    fprintf (stderr, "no file %s\n", argv [fbidx]);
+  if (copy && ! fileopFileExists (targ)) {
+    fprintf (stderr, "no file %s\n", targ);
     rc = AUDIOTAG_WRITE_FAILED;
     bdj4tagsCleanup ();
+    bdj4argCleanup ();
     return rc;
   }
+
+  bdj4argClear (targ);
 
   if (copy) {
     void    *sdata;
 
     sdata = audiotagSaveTags (infn);
-    audiotagRestoreTags (argv [fbidx], sdata);
-    audiotagFreeSavedTags (argv [fbidx], sdata);
+    audiotagRestoreTags (targ, sdata);
+    audiotagFreeSavedTags (targ, sdata);
     bdj4tagsCleanup ();
+    bdj4argCleanup ();
     return rc;
   }
 
   if (cleantags) {
     audiotagCleanTags (infn);
     bdj4tagsCleanup ();
+    bdj4argCleanup ();
     return rc;
   }
 
@@ -193,7 +211,9 @@ main (int argc, char *argv [])
       char    *tokstr;
       char    *tval;
 
-      tval = mdstrdup (argv [i]);
+      targ = bdj4argGet (i, argv [i]);
+      tval = mdstrdup (targ);
+      bdj4argClear (targ);
       p = strtok_r (tval, "=", &tokstr);
       if (p != NULL) {
         p = strtok_r (NULL, "=", &tokstr);
@@ -230,6 +250,7 @@ main (int argc, char *argv [])
   slistFree (wlist);
 
   bdj4tagsCleanup ();
+  bdj4argCleanup ();
   return rc;
 }
 

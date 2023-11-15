@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "bdj4arg.h"
 #include "fileop.h"
 #include "dirop.h"
 #include "sysvars.h"
@@ -22,8 +23,13 @@ main (int argc, const char *argv [])
 {
   const char  *fn;
   int         count;
+  char        *targ;
 
-  sysvarsInit (argv [0]);
+  bdj4argInit ();
+
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
 
   fn = "tmp";
 
@@ -38,5 +44,6 @@ main (int argc, const char *argv [])
 
   diropMakeDir (fn);
 
+  bdj4argCleanup ();
   return 0;
 }

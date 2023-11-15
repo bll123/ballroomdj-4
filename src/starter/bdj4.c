@@ -23,6 +23,7 @@
 #endif
 
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "mdebug.h"
@@ -54,12 +55,15 @@ main (int argc, char * argv[])
   bool      forcewait = false;
   bool      isinstaller = false;
   int       flags;
+  const char *targlist [BDJ4_LAUNCHER_MAX_ARGS];
   const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
+  int       argcount;
   bool      havetheme = false;
   bool      havescale = false;
   FILE      *fh = NULL;
   int       rc;
+  char      *targ;
 
   static struct option bdj_options [] = {
     { "bdj4altinst",    no_argument,        NULL,   20 },
@@ -154,6 +158,8 @@ main (int argc, char * argv[])
   mdebugInit ("lnch");
 #endif
 
+  bdj4argInit ();
+
 #if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
@@ -162,7 +168,9 @@ main (int argc, char * argv[])
 
   prog = "bdj4starterui";  // default
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
 #if BDJ4_USE_GTK3
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
@@ -363,15 +371,19 @@ main (int argc, char * argv[])
         break;
       }
       case 'p': {
-        if (optarg) {
+        if (optarg != NULL) {
           sysvarsSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }
       case 'T': {
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
 #if BDJ4_USE_GTK3
-        osSetEnv ("GTK_THEME", optarg);
+          osSetEnv ("GTK_THEME", targ);
 #endif
+          bdj4argClear (targ);
+        }
         havetheme = true;
         break;
       }
@@ -553,12 +565,15 @@ main (int argc, char * argv[])
   }
 
   targc = 0;
+  argcount = 0;
   for (int i = 0; i < argc; ++i) {
     if (targc >= BDJ4_LAUNCHER_MAX_ARGS) {
       fprintf (stderr, "too many arguments\n");
       exit (1);
     }
-    targv [targc++] = argv [i];
+    targ = bdj4argGet (i, argv [i]);
+    targlist [argcount++] = targ;
+    targv [targc++] = targ;
   }
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_ALT) {
     targv [targc++] = "--datatopdir";
@@ -595,11 +610,18 @@ main (int argc, char * argv[])
     flags &= ~OS_PROC_DETACH;
   }
   rc = osProcessStart (targv, flags, NULL, NULL);
+
+  for (int i = 1; i < argcount; ++i) {
+    bdj4argClear (targlist [i]);
+  }
+
 #if BDJ4_MEM_DEBUG
   /* report is generally not needed unless source is changed */
   //mdebugReport ();
   mdebugCleanup ();
 #endif
+
+  bdj4argCleanup ();
   return rc;
 }
 

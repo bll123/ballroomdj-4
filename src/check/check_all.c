@@ -18,6 +18,7 @@
 
 #include <check.h>
 
+#include "bdj4arg.h"
 #include "check_bdj.h"
 #include "localeutil.h"
 #include "log.h"
@@ -32,6 +33,7 @@ main (int argc, char *argv [])
   SRunner *sr = NULL;
   int     number_failed = 0;
   FILE    *fh;
+  char    *targ;
 
   fh = fopen ("data/locale.txt", "w");
   fputs ("en_GB\n", fh);
@@ -41,13 +43,19 @@ main (int argc, char *argv [])
   mdebugInit ("chk");
   // mdebugSetVerbose ();
 #endif
+
+  bdj4argInit ();
+
   sRandom ();
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
 
   if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
-    exit (1);
+    bdj4argCleanup ();
+    return 1;
   }
 
   /* macos's logging is really slow and affects the check suite */
@@ -68,6 +76,7 @@ main (int argc, char *argv [])
 
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

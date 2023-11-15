@@ -13,6 +13,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "dirlist.h"
@@ -46,6 +47,7 @@ main (int argc, char *argv [])
   slist_t     *flist;
   slistidx_t  iteridx;
   const char  *fn;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -61,6 +63,8 @@ main (int argc, char *argv [])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("ttdc");
 #endif
+
+  bdj4argInit ();
 
   while ((c = getopt_long_only (argc, argv, "BV", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -84,10 +88,13 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    exit (1);
+    bdj4argCleanup ();
+    return 1;
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -98,23 +105,27 @@ main (int argc, char *argv [])
   dbfn = NULL;
   for (int i = optind; i < argc; ++i) {
     if (dbfn == NULL) {
-      dbfn = argv [i];
+      targ = bdj4argGet (i, argv [i]);
+      dbfn = targ;
     }
     argcount++;
   }
 
   if (argcount < 1) {
     fprintf (stderr, "Usage: ttagdbchk <db-a> (%d)\n", argcount);
+    bdj4argCleanup ();
     return 1;
   }
   if (dbfn == NULL || ! fileopFileExists (dbfn)) {
     fprintf (stderr, "no db file %s\n", dbfn);
+    bdj4argCleanup ();
     return 1;
   }
 
   db = dbOpen (dbfn);
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
+    bdj4argCleanup ();
     return 1;
   }
 
@@ -138,12 +149,15 @@ main (int argc, char *argv [])
   slistFree (flist);
   dbClose (db);
 
+  bdj4argClear (dbfn);
+
   audiotagCleanup ();
   bdjvarsdfloadCleanup ();
   tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

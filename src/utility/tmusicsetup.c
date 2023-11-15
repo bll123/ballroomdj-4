@@ -14,6 +14,7 @@
 #include "ati.h"
 #include "audiofile.h"
 #include "audiotag.h"
+#include "bdj4arg.h"
 #include "bdjstring.h"
 #include "dance.h"
 #include "datafile.h"
@@ -120,6 +121,7 @@ main (int argc, char *argv [])
   int         supported [AFILE_TYPE_MAX];
   int         tagtype;
   int         filetype;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
@@ -147,6 +149,8 @@ main (int argc, char *argv [])
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
   *altdir = '\0';
 
+  bdj4argInit ();
+
   while ((c = getopt_long_only (argc, argv, "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
@@ -158,7 +162,7 @@ main (int argc, char *argv [])
         break;
       }
       case 'd': {
-        if (optarg) {
+        if (optarg != NULL) {
           loglevel = atol (optarg);
           loglevelset = true;
         }
@@ -169,11 +173,19 @@ main (int argc, char *argv [])
         break;
       }
       case 'O': {
-        strlcpy (dbfn, optarg, sizeof (dbfn));
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          strlcpy (dbfn, targ, sizeof (dbfn));
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'I': {
-        strlcpy (infn, optarg, sizeof (infn));
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          strlcpy (infn, targ, sizeof (infn));
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'K': {
@@ -181,7 +193,11 @@ main (int argc, char *argv [])
         break;
       }
       case 'A': {
-        strlcpy (altdir, optarg, sizeof (altdir));
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          strlcpy (altdir, targ, sizeof (altdir));
+          bdj4argClear (targ);
+        }
         break;
       }
       default: {
@@ -192,10 +208,13 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    exit (1);
+    bdj4argCleanup ();
+    return 1;
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -298,6 +317,7 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

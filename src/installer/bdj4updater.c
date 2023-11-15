@@ -20,6 +20,7 @@
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -161,6 +162,7 @@ main (int argc, char *argv [])
   musicdb_t   *musicdb = NULL;
   long        flags;
   int         origbpmtype;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
@@ -183,6 +185,8 @@ main (int argc, char *argv [])
   mdebugInit ("updt");
 #endif
 
+  bdj4argInit ();
+
   optind = 0;
   while ((c = getopt_long_only (argc, argv, "Bncm", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -203,8 +207,10 @@ main (int argc, char *argv [])
         break;
       }
       case 'm': {
-        if (optarg) {
-          musicdir = mdstrdup (optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          musicdir = mdstrdup (targ);
+          bdj4argClear (targ);
         }
         break;
       }
@@ -1045,6 +1051,7 @@ finish:
   mdebugReport ();
   mdebugCleanup ();
 #endif
+  bdj4argCleanup ();
   return 0;
 }
 

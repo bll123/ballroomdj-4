@@ -23,6 +23,7 @@
 #endif
 
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -191,6 +192,7 @@ main (int argc, char *argv[])
   int           c = 0;
   int           option_index = 0;
   FILE          *fh;
+  char          *targ;
 
   static struct option bdj_options [] = {
     { "ati",        required_argument,  NULL,   'A' },
@@ -221,6 +223,8 @@ main (int argc, char *argv[])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("alt");
 #endif
+
+  bdj4argInit ();
 
   buff [0] = '\0';
 
@@ -262,7 +266,9 @@ main (int argc, char *argv[])
   altinst.musicdirEntry = NULL;
   altinst.nameEntry = NULL;
 
-  sysvarsInit (argv[0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   bdjvarsInit ();
   localeInit ();
 
@@ -314,20 +320,30 @@ main (int argc, char *argv[])
         break;
       }
       case 'L': {
-        sysvarsSetStr (SV_LOCALE, optarg);
-        snprintf (buff, sizeof (buff), "%.2s", optarg);
-        sysvarsSetStr (SV_LOCALE_SHORT, buff);
-        sysvarsSetNum (SVL_LOCALE_SET, 1);
-        altinst.localespecified = true;
-        localeSetup ();
+        if (optarg != NULL) {
+          sysvarsSetStr (SV_LOCALE, optarg);
+          snprintf (buff, sizeof (buff), "%.2s", optarg);
+          sysvarsSetStr (SV_LOCALE_SHORT, buff);
+          sysvarsSetNum (SVL_LOCALE_SET, 1);
+          altinst.localespecified = true;
+          localeSetup ();
+        }
         break;
       }
       case 'm': {
-        altinstSetMusicDir (&altinst, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          altinstSetMusicDir (&altinst, targ);
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'n': {
-        altinstSetMusicDir (&altinst, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          altinstSetMusicDir (&altinst, optarg);
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'V': {
@@ -339,12 +355,20 @@ main (int argc, char *argv[])
         break;
       }
       case 't': {
-        altinstSetTargetDir (&altinst, optarg);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          altinstSetTargetDir (&altinst, optarg);
+          bdj4argClear (targ);
+        }
         break;
       }
       case 'A': {
-        strlcpy (altinst.ati, optarg, sizeof (altinst.ati));
-        altinstSetATISelect (&altinst);
+        if (optarg != NULL) {
+          targ = bdj4argGet (optind - 1, optarg);
+          strlcpy (altinst.ati, optarg, sizeof (altinst.ati));
+          bdj4argClear (targ);
+          altinstSetATISelect (&altinst);
+        }
         break;
       }
       case 'D': {
@@ -413,6 +437,7 @@ main (int argc, char *argv[])
   bdjvarsCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

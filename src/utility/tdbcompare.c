@@ -14,6 +14,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "fileop.h"
@@ -49,6 +50,7 @@ main (int argc, char *argv [])
   dbidx_t     dbidx [DB_MAX];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,        NULL,   'B' },
@@ -64,6 +66,8 @@ main (int argc, char *argv [])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("tdbc");
 #endif
+
+  bdj4argInit ();
 
   while ((c = getopt_long_only (argc, argv, "B3Vd", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -93,7 +97,9 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
@@ -114,7 +120,10 @@ main (int argc, char *argv [])
   }
 
   for (int i = optind; i < argc; ++i) {
-    dbfn [argcount] = argv [i];
+    if (argcount < DB_MAX) {
+      targ = bdj4argGet (i, argv [i]);
+      dbfn [argcount] = targ;
+    }
     argcount++;
   }
 
@@ -268,11 +277,16 @@ main (int argc, char *argv [])
     dbClose (db [i]);
   }
 
+  for (int i = 0; i < DB_MAX; ++i) {
+    bdj4argClear (dbfn [i]);
+  }
+
   bdjvarsdfloadCleanup ();
   audiotagCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

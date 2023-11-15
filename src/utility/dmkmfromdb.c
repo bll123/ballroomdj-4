@@ -11,6 +11,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -53,6 +54,7 @@ main (int argc, char *argv [])
   rafile_t    *radb;
   pathinfo_t  *pi;
   dance_t     *dances;
+  char        *targ;
 
   static struct option bdj_options [] = {
     { "dmkmfromdb",   no_argument,        NULL,   0 },
@@ -69,6 +71,8 @@ main (int argc, char *argv [])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("dmfd");
 #endif
+
+  bdj4argInit ();
 
   while ((c = getopt_long_only (argc, argv, "Bd:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -91,10 +95,13 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    exit (1);
+    bdj4argCleanup ();
+    return 1;
   }
 
-  sysvarsInit (argv [0]);
+  targ = bdj4argGet (0, argv [0]);
+  sysvarsInit (targ);
+  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -168,6 +175,7 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
+  bdj4argCleanup ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
