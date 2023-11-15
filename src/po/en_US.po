@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.2.2\n"
+"Project-Id-Version: ballroomdj-4 4.4.4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-11-02\n"
+"POT-Creation-Date: 2023-11-15\n"
+"PO-Revision-Date: 2023-11-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -2055,7 +2055,6 @@ msgid "When the BPM value is stable, select the Save button."
 msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
-#. CONTEXT: managementui: song editor menu: write audio file tags
 msgid "Write Audio File Tags"
 msgstr ""
 
