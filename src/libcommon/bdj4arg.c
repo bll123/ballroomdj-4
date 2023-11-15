@@ -17,9 +17,6 @@
 #include "osutils.h"
 
 typedef struct bdj4arg {
-#if _lib_GetCommandLineW
-  wchar_t   **wargv;
-#endif
   char      **utf8argv;
   int       nargc;
 } bdj4arg_t;
@@ -28,6 +25,10 @@ bdj4arg_t *
 bdj4argInit (int argc, char *argv [])
 {
   bdj4arg_t   *bdj4arg;
+#if _lib_GetCommandLineW
+  wchar_t   **wargv;
+  int       targc;
+#endif
 
   bdj4arg = mdmalloc (sizeof (bdj4arg_t));
   bdj4arg->nargc = argc;
@@ -36,10 +37,11 @@ bdj4argInit (int argc, char *argv [])
     bdj4arg->utf8argv = mdmalloc (sizeof (char *) * argc);
   }
 #if _lib_GetCommandLineW
-  bdj4arg->wargv = CommandLineToArgvW (GetCommandLineW(), &bdj4arg->nargc);
+  wargv = CommandLineToArgvW (GetCommandLineW(), &targc);
   for (int i = 0; i < argc; ++i) {
-    bdj4arg->utf8argv [i] = osFromWideChar (bdj4arg->wargv [i]);
+    bdj4arg->utf8argv [i] = osFromWideChar (wargv [i]);
   }
+  LocalFree (wargv);
 #else
   for (int i = 0; i < argc; ++i) {
     bdj4arg->utf8argv [i] = mdstrdup (argv [i]);
@@ -56,9 +58,6 @@ bdj4argCleanup (bdj4arg_t *bdj4arg)
     return;
   }
 
-#if _lib_GetCommandLineW
-  LocalFree (bdj4arg->wargv);
-#endif
   if (bdj4arg->utf8argv != NULL) {
     for (int i = 0; i < bdj4arg->nargc; ++i) {
       dataFree (bdj4arg->utf8argv [i]);
@@ -68,6 +67,8 @@ bdj4argCleanup (bdj4arg_t *bdj4arg)
   dataFree (bdj4arg);
 }
 
+/* getopt_long_only re-arranges the argv array, so we need to have */
+/* our own copy of it. */
 char **
 bdj4argGetArgv (bdj4arg_t *bdj4arg)
 {

@@ -63,6 +63,12 @@ Known Issues:
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
+    - Account names with international characters:
+      As of version 4.4.4, this is mostly working, but
+      localization (i.e. language translation) does not work.
+      The helper on new installation doesn't show any useful messages,
+      and the display language is not changed to the current or the
+      selected locale.
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :

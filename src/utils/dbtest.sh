@@ -617,11 +617,11 @@ if [[ $TESTON == T ]]; then
       --outfile $TDBRDT \
       --debug ${DBG} ${ATIFLAG}
   # create test regex db w/tags (dance/title) and w/alternate entries
-  tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
+  tdir="$(echo ${musicdir} | sed 's,/test-music.*,,')"
   ./src/utils/mktestsetup.sh \
       --infile $INRDT \
       --outfile $TDBRDTALT \
-      --altdir ${tdir}/$TMDT \
+      --altdir "${tdir}/$TMDT" \
       --debug ${DBG} ${ATIFLAG}
   # create test regex db w/tags (dance/tn-artist - title)
   ./src/utils/mktestsetup.sh \
@@ -680,7 +680,7 @@ fi
 if [[ $TESTON == T ]]; then
   # test secondary folder: regex db : get dance/title from file path
   tname=rebuild-file-path-dt-alt
-  tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
+  tdir="$(echo ${musicdir} | sed 's,/test-music.*,,')"
   setorgregex '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
     --debug ${DBG} \

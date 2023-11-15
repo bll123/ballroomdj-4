@@ -291,6 +291,7 @@ localePostSetup (void)
       gbidx = key;
     }
     if (strcmp (llocale, svlocale) == 0) {
+      /* this will override any short locale that has been located */
       tlocale = key;
       break;
     }
