@@ -62,7 +62,7 @@ void
 bdj4argClear (void *targ)
 {
 #if _lib_GetCommandLineW
-  bdj4initFreeArg (targ);
+  dataFree (targ);
 #endif
   return;
 }

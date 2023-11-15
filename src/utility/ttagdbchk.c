@@ -39,7 +39,7 @@ main (int argc, char *argv [])
 {
   musicdb_t   *db;
   bool        isbdj4 = false;
-  const char  *dbfn;
+  char        *dbfn;
   int         c;
   int         option_index;
   int         grc = 0;

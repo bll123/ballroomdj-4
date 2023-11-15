@@ -55,7 +55,7 @@ main (int argc, char * argv[])
   bool      forcewait = false;
   bool      isinstaller = false;
   int       flags;
-  const char *targlist [BDJ4_LAUNCHER_MAX_ARGS];
+  char      *targlist [BDJ4_LAUNCHER_MAX_ARGS];
   const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
   int       argcount;

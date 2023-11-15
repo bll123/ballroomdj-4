@@ -39,7 +39,7 @@ main (int argc, char *argv [])
   musicdb_t   *db [DB_MAX];
   bool        isbdj4 = false;
   bool        verbose = false;
-  const char  *dbfn [DB_MAX];
+  char        *dbfn [DB_MAX];
   int         c;
   int         option_index;
   dbidx_t     count [DB_MAX];

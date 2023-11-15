@@ -246,6 +246,10 @@ plocal/bin/swscale-6\.dll$
 plocal/bin/libicudt72\.dll$
 plocal/bin/libicuin72\.dll$
 plocal/bin/libicuuc72\.dll$
+# 2023-11 windows msys2 library updates
+plocal/bin/libicudt73\.dll$
+plocal/bin/libicuin73\.dll$
+plocal/bin/libicuuc73\.dll$
 
 ####
 # data-dir

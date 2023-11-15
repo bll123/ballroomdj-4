@@ -35,7 +35,6 @@ for arg in "$@"; do
   esac
 done
 
-
 . ./src/utils/pkgnm.sh
 pkgnmgetdata
 
@@ -70,6 +69,11 @@ if [[ $TBUILD == T ]]; then
       grep -v 'check\.h' |
       grep -v 'mongoose\.c' |
       grep -v 'warning generated'
+fi
+
+if [[ $TBUILD == T && $pn_tag == win64 ]]; then
+  # for windows, make sure the libraries in plocal are up to date
+  ./pkg/prepkg.sh
 fi
 
 if [[ $TCHECK == T ]]; then
