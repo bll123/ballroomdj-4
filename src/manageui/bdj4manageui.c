@@ -1584,14 +1584,6 @@ manageSongEditMenu (manageui_t *manage)
         manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
     uiwcontFree (menuitem);
 
-    manage->callbacks [MANAGE_MENU_CB_SE_WRITE_TAGS] = callbackInit (
-        manageCopyTagsStart, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: write audio file tags */
-    menuitem = uiMenuCreateItem (menu, _("Write Audio File Tags"),
-        manage->callbacks [MANAGE_MENU_CB_SE_WRITE_TAGS]);
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    uiwcontFree (menuitem);
-
     manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
         manageCopyTagsStart, manage, NULL);
     /* CONTEXT: managementui: song editor menu: copy audio tags */
