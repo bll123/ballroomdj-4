@@ -33,7 +33,8 @@ main (int argc, char *argv [])
   SRunner *sr = NULL;
   int     number_failed = 0;
   FILE    *fh;
-  char    *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   fh = fopen ("data/locale.txt", "w");
   fputs ("en_GB\n", fh);
@@ -44,17 +45,16 @@ main (int argc, char *argv [])
   // mdebugSetVerbose ();
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
   sRandom ();
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   localeInit ();
 
   if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
@@ -76,7 +76,7 @@ main (int argc, char *argv [])
 
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

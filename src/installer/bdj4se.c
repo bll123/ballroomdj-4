@@ -30,7 +30,7 @@ enum {
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 
 int
-main (int argc, const char *argv [])
+main (int argc, char *argv [])
 {
   struct stat statbuf;
   const char  *fn = argv [0];

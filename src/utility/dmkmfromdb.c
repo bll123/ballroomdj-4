@@ -54,7 +54,8 @@ main (int argc, char *argv [])
   rafile_t    *radb;
   pathinfo_t  *pi;
   dance_t     *dances;
-  char        *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "dmkmfromdb",   no_argument,        NULL,   0 },
@@ -72,9 +73,10 @@ main (int argc, char *argv [])
   mdebugInit ("dmfd");
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
-  while ((c = getopt_long_only (argc, argv, "Bd:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "Bd:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -95,13 +97,12 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -175,7 +176,7 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

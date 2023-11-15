@@ -121,7 +121,8 @@ main (int argc, char *argv [])
   int         supported [AFILE_TYPE_MAX];
   int         tagtype;
   int         filetype;
-  char        *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
@@ -149,9 +150,10 @@ main (int argc, char *argv [])
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
   *altdir = '\0';
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
-  while ((c = getopt_long_only (argc, argv, "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
         clbdj3tags = true;
@@ -174,17 +176,15 @@ main (int argc, char *argv [])
       }
       case 'O': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (dbfn, targ, sizeof (dbfn));
-          bdj4argClear (targ);
         }
         break;
       }
       case 'I': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (infn, targ, sizeof (infn));
-          bdj4argClear (targ);
         }
         break;
       }
@@ -194,9 +194,8 @@ main (int argc, char *argv [])
       }
       case 'A': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (altdir, targ, sizeof (altdir));
-          bdj4argClear (targ);
         }
         break;
       }
@@ -208,13 +207,12 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -317,7 +315,7 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

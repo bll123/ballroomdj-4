@@ -192,7 +192,8 @@ main (int argc, char *argv[])
   int           c = 0;
   int           option_index = 0;
   FILE          *fh;
-  char          *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "ati",        required_argument,  NULL,   'A' },
@@ -224,7 +225,7 @@ main (int argc, char *argv[])
   mdebugInit ("alt");
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
   buff [0] = '\0';
 
@@ -266,9 +267,8 @@ main (int argc, char *argv[])
   altinst.musicdirEntry = NULL;
   altinst.nameEntry = NULL;
 
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   bdjvarsInit ();
   localeInit ();
 
@@ -305,7 +305,8 @@ main (int argc, char *argv[])
   strlcpy (altinst.ati, instati [INST_ATI_BDJ4].name, sizeof (altinst.ati));
   altinstSetATISelect (&altinst);
 
-  while ((c = getopt_long_only (argc, argv, "CUrVQt:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "CUrVQt:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'U': {
         altinst.unattended = true;
@@ -332,17 +333,15 @@ main (int argc, char *argv[])
       }
       case 'm': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           altinstSetMusicDir (&altinst, targ);
-          bdj4argClear (targ);
         }
         break;
       }
       case 'n': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           altinstSetMusicDir (&altinst, optarg);
-          bdj4argClear (targ);
         }
         break;
       }
@@ -356,17 +355,15 @@ main (int argc, char *argv[])
       }
       case 't': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           altinstSetTargetDir (&altinst, optarg);
-          bdj4argClear (targ);
         }
         break;
       }
       case 'A': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (altinst.ati, optarg, sizeof (altinst.ati));
-          bdj4argClear (targ);
           altinstSetATISelect (&altinst);
         }
         break;
@@ -437,7 +434,7 @@ main (int argc, char *argv[])
   bdjvarsCleanup ();
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

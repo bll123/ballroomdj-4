@@ -162,7 +162,8 @@ main (int argc, char *argv [])
   musicdb_t   *musicdb = NULL;
   long        flags;
   int         origbpmtype;
-  char        *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
@@ -185,10 +186,11 @@ main (int argc, char *argv [])
   mdebugInit ("updt");
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
   optind = 0;
-  while ((c = getopt_long_only (argc, argv, "Bncm", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "Bncm", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -208,9 +210,8 @@ main (int argc, char *argv [])
       }
       case 'm': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           musicdir = mdstrdup (targ);
-          bdj4argClear (targ);
         }
         break;
       }
@@ -1047,11 +1048,11 @@ finish:
   bdj4shutdown (ROUTE_NONE, NULL);
   dataFree (musicdir);
   logEnd ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
 #endif
-  bdj4argCleanup ();
   return 0;
 }
 

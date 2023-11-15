@@ -19,17 +19,17 @@
 #include "sysvars.h"
 
 int
-main (int argc, const char *argv [])
+main (int argc, char *argv [])
 {
   const char  *fn;
   int         count;
-  char        *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
 
   fn = "tmp";
 
@@ -44,6 +44,6 @@ main (int argc, const char *argv [])
 
   diropMakeDir (fn);
 
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
   return 0;
 }

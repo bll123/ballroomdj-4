@@ -281,7 +281,8 @@ main (int argc, char *argv[])
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
-  char          *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "ati",        required_argument,  NULL,   'A' },
@@ -317,7 +318,7 @@ main (int argc, char *argv[])
   mdebugInit ("inst");
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
   buff [0] = '\0';
 
@@ -381,9 +382,8 @@ main (int argc, char *argv[])
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   localeInit ();
 
   strlcpy (installer.ati, instati [INST_ATI_BDJ4].name, sizeof (installer.ati));
@@ -426,7 +426,8 @@ main (int argc, char *argv[])
   instutilGetMusicDir (buff, sizeof (buff));
   installerSetMusicDir (&installer, buff);
 
-  while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "Cru:l:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg != NULL) {
@@ -467,17 +468,15 @@ main (int argc, char *argv[])
       }
       case 'u': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (installer.unpackdir, targ, sizeof (installer.unpackdir));
-          bdj4argClear (targ);
         }
         break;
       }
       case 'A': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (installer.ati, targ, sizeof (installer.ati));
-          bdj4argClear (targ);
           installerSetATISelect (&installer);
         }
         break;
@@ -492,17 +491,15 @@ main (int argc, char *argv[])
       }
       case 't': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           installerSetTargetDir (&installer, targ);
-          bdj4argClear (targ);
         }
         break;
       }
       case '3': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           installerSetBDJ3LocDir (&installer, targ);
-          bdj4argClear (targ);
         }
         break;
       }
@@ -519,9 +516,8 @@ main (int argc, char *argv[])
       }
       case 'm': {
         if (optarg != NULL) {
-          targ = bdj4argGet (optind - 1, optarg);
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           installerSetMusicDir (&installer, optarg);
-          bdj4argClear (targ);
         }
         break;
       }
@@ -547,11 +543,11 @@ main (int argc, char *argv[])
     dataFree (installer.target);
     dataFree (installer.bdj3loc);
     dataFree (installer.musicdir);
+    bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
     mdebugReport ();
     mdebugCleanup ();
 #endif
-    bdj4argCleanup ();
     return 1;
   }
 
@@ -632,7 +628,7 @@ main (int argc, char *argv[])
   installerCleanup (&installer);
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

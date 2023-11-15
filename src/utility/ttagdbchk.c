@@ -39,7 +39,7 @@ main (int argc, char *argv [])
 {
   musicdb_t   *db;
   bool        isbdj4 = false;
-  char        *dbfn;
+  const char  *dbfn;
   int         c;
   int         option_index;
   int         grc = 0;
@@ -47,7 +47,8 @@ main (int argc, char *argv [])
   slist_t     *flist;
   slistidx_t  iteridx;
   const char  *fn;
-  char        *targ;
+  bdj4arg_t   *bdj4arg;
+  const char  *targ;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -64,9 +65,10 @@ main (int argc, char *argv [])
   mdebugInit ("ttdc");
 #endif
 
-  bdj4argInit ();
+  bdj4arg = bdj4argInit (argc, argv);
 
-  while ((c = getopt_long_only (argc, argv, "BV", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "BV", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -88,13 +90,12 @@ main (int argc, char *argv [])
 
   if (! isbdj4) {
     fprintf (stderr, "not started with launcher\n");
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
-  targ = bdj4argGet (0, argv [0]);
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
-  bdj4argClear (targ);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -105,7 +106,7 @@ main (int argc, char *argv [])
   dbfn = NULL;
   for (int i = optind; i < argc; ++i) {
     if (dbfn == NULL) {
-      targ = bdj4argGet (i, argv [i]);
+      targ = bdj4argGet (bdj4arg, i, argv [i]);
       dbfn = targ;
     }
     argcount++;
@@ -113,19 +114,19 @@ main (int argc, char *argv [])
 
   if (argcount < 1) {
     fprintf (stderr, "Usage: ttagdbchk <db-a> (%d)\n", argcount);
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
   if (dbfn == NULL || ! fileopFileExists (dbfn)) {
     fprintf (stderr, "no db file %s\n", dbfn);
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
   db = dbOpen (dbfn);
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
-    bdj4argCleanup ();
+    bdj4argCleanup (bdj4arg);
     return 1;
   }
 
@@ -149,15 +150,13 @@ main (int argc, char *argv [])
   slistFree (flist);
   dbClose (db);
 
-  bdj4argClear (dbfn);
-
   audiotagCleanup ();
   bdjvarsdfloadCleanup ();
   tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
-  bdj4argCleanup ();
+  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
