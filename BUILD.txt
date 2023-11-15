@@ -34,7 +34,7 @@ MacOS
   # bdj4-src-VERSION.tar.gz
   tar xf bdj4-src-4*.tar.gz
   # bdj4-src-macos-VERSION.tar.gz
-  tar xf bdj4-src-macos-4*.tar.gz
+  tar xf bdj4-src-macos.tar.gz
   # bdj4-VERSION
   cd bdj4-4*
   cd src
@@ -59,7 +59,7 @@ Windows
   # bdj4-src-VERSION.zip
   unzip -q bdj4-src-4*.zip
   # bdj4-src-win64-VERSION.tar.gz
-  unzip -q bdj4-src-win64-4*.zip
+  unzip -q bdj4-src-win64.zip
   # bdj4-VERSION
   cd bdj4-4*
   cd src

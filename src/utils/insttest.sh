@@ -1079,7 +1079,7 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-for section in nl_BE nl_NL ru_RU fr_FR de_DE pl_PL it_IT ja_JP; do
+for section in de_DE fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   locale=${section}
 
   cleanInstTest

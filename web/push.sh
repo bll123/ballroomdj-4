@@ -143,9 +143,9 @@ done
 
 spnm=$(pkgsrcnm)
 sshpass -e rsync -v -e ssh ${spnm}.zip \
-  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 sshpass -e rsync -v -e ssh ${spnm}.tar.gz \
-  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 
 echo "## updating version file"
 VERFILE=bdj4version.txt

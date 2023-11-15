@@ -30,6 +30,9 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.4.4:
+    Please upgrade to version 4.4.4 (or later) if you are using version 4.4.3.
+
   4.4.3:
     The mutagen audio tag interface has been removed.
     Windows: To clean up the python installations (no longer needed),

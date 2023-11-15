@@ -4,9 +4,11 @@
 
 <!--
 
-**4.4.5 2023-11---**
+**4.4.5 2023-12---**
 
-**4.4.4 2023-11---**
+-->
+
+**4.4.4 2023-11-15**
 
 * Bug Fixes:
     * Configuration: Fixed directory and file chooser buttons (itunes, general).
@@ -17,8 +19,6 @@
     * Quick Edit: Added dance level.
 * Internal:
     * Windows: International characters in account names partially working.
-
--->
 
 **4.4.3 2023-11-8**
 
