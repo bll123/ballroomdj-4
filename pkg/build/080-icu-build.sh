@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+# Copyright 2023 Brad Lanam Pleasant Hill CA
+#
+
+#
 # ICU changes the library version number with each release.
 # Because of this, the ICU library on various linux distributions are
 # all different versions, and the MacPorts ICU library version gets

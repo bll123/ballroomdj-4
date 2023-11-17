@@ -1,3 +1,13 @@
+/*
+ * Copyright 2023 Brad Lanam Pleasant Hill CA
+ */
+
+/*
+ * msys2 does not properly convert the command line arguments into utf-8.
+ * Therefore the windows routines are used to grab the wide arguments
+ * and the conversion is done ourselves.
+ */
+
 #include "config.h"
 
 #include <stdio.h>

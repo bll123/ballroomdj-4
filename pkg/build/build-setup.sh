@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2023 Brad Lanam Pleasant Hill CA
+#
 
 # exported variables
 # systype   - uname -s

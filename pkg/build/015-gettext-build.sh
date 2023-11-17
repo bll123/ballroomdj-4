@@ -3,6 +3,9 @@
 # Copyright 2023 Brad Lanam Pleasant Hill CA
 #
 
+# the gettext supplied with msys2 cannot handle windows account names
+# with international characters.
+
 case ${systype} in
   Linux)
     exit 0
@@ -14,24 +17,19 @@ case ${systype} in
     ;;
 esac
 
-if [[ $pkgname == "" || $pkgname = "libogg" ]]; then
+if [[ $pkgname == "" || $pkgname = "gettext" ]]; then
   cd $cwd
-  cd libogg*
+  cd gettext*
   if [[ $? -eq 0 ]]; then
     echo ""
-    echo "## build libogg"
+    echo "## build gettext"
     if [[ $clean == T ]]; then
       make distclean
     fi
     if [[ $conf == T ]]; then
-      ./configure $args \
-          --prefix=$INSTLOC \
-          --disable-static
+      ./configure --prefix=$INSTLOC
     fi
-    if [[ $clean == T ]]; then
-      make clean
-    fi
-    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make -j $procs
     make install
     if [[ $platform != windows && $clean == T ]]; then
       make distclean

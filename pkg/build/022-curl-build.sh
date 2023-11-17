@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+# Copyright 2023 Brad Lanam Pleasant Hill CA
+#
+
+#
 # 2023-5-5
 #   Could not get curl to link with libressl, so I just removed libressl.
 #   This means that the msys2 openssl libraries and dependencies get shipped.

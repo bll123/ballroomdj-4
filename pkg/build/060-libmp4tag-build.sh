@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+# Copyright 2023 Brad Lanam Pleasant Hill CA
 #
 
 # built on all platforms
