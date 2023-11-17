@@ -431,6 +431,9 @@ if (Intl_LIBRARY)
    set (CMAKE_REQUIRED_LIBRARIES ${Intl_LIBRARY} ${Iconv_LIBRARY})
 endif()
 check_function_exists (bind_textdomain_codeset _lib_bind_textdomain_codeset)
+# this is needed on windows
+# libintl has prefixes, for the check, use the prefixed name
+check_function_exists (libintl_wbindtextdomain _lib_wbindtextdomain)
 set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_LIBRARIES "")
 

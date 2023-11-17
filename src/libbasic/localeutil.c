@@ -29,6 +29,7 @@
 #include "mdebug.h"
 #include "osenv.h"
 #include "oslocale.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -182,7 +183,17 @@ localeSetup (void)
   osSetEnv ("LC_COLLATE", tbuff);
 
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_DIR_LOCALE);
+#if _lib_wbindtextdomain
+  {
+    wchar_t   *wbuff;
+
+    wbuff = osToWideChar (lbuff);
+    wbindtextdomain (GETTEXT_DOMAIN, wbuff);
+    dataFree (wbuff);
+  }
+#else
   bindtextdomain (GETTEXT_DOMAIN, lbuff);
+#endif
   textdomain (GETTEXT_DOMAIN);
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset (GETTEXT_DOMAIN, "UTF-8");

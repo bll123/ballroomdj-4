@@ -3,6 +3,11 @@
 
 [MSYS2](https://www.msys2.org/)
 
+##### Bugs:
+
+The argv processing does not properly convert to utf-8 (international
+account names).  I had to re-work all argument processing.
+
 Update all:
 <br> pacman -Syu
 
@@ -23,15 +28,13 @@ Remove and remove dependencies:
 <br># libraries
 <br>pacman -S gettext gettext-devel
 <br># current clang (64)
-<br>pacman -S mingw-w64-x86_64-clang
+<br>pacman -S mingw-w64-ucrt-x86_64-clang
 <br># current gcc (64)
-<br>pacman -S mingw-w64-x86_64-gcc
+<br>pacman -S mingw-w64-ucrt-x86_64-gcc
 <br># objective C compiler
-<br>pacman -S mingw64/mingw-w64-x86_64-gcc-objc
-<br># gdb
-<br>pacman -S mingw-w64-x86_64-gdb
-<br># needed for buildling bdj4/cmake
-<br>pacman -S pkg-config
+<br>pacman -S mingw-w64-ucrt-x86_64-gcc-objc
+<br># needed for building bdj4/cmake
+<br>pacman -S mingw-w64-ucrt-x86_64-pkgconf
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)

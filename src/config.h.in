@@ -73,6 +73,7 @@
 #cmakedefine01 _lib_TerminateProcess
 #cmakedefine01 _lib_WideCharToMultiByte
 #cmakedefine01 _lib_WriteFile
+#cmakedefine01 _lib_wbindtextdomain
 #cmakedefine01 _lib__wchdir
 #cmakedefine01 _lib__wfopen
 #cmakedefine01 _lib__wgetcwd

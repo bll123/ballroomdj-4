@@ -3,9 +3,14 @@ BDJ4
 Build Instructions
 
 Contents
+  Notes
   Linux
   MacOS
   Windows
+
+Notes
+
+  2023-11-17  Windows: added gettext package.
 
 Linux
 
