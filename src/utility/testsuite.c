@@ -1570,8 +1570,7 @@ tsNextFile (testsuite_t *testsuite)
   if (fn != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "-- file: %s", fn);
     snprintf (tbuff, sizeof (tbuff), "test-templates/tests/%s", fn);
-    testsuite->fh = fopen (tbuff, "r");
-    mdextfopen (testsuite->fh);
+    testsuite->fh = fileopOpen (tbuff, "r");
   } else {
     rc = true;
   }

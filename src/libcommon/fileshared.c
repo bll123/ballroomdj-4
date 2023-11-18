@@ -24,8 +24,9 @@
 #endif
 
 #include "bdjstring.h"
-#include "mdebug.h"
 #include "fileshared.h"
+#include "mdebug.h"
+#include "osutils.h"
 
 typedef union filehandle {
 #if _typ_HANDLE
@@ -39,7 +40,8 @@ fileSharedOpen (const char *fname, int truncflag)
 {
   fileshared_t  *fhandle;
 
-#if _lib_CreateFile
+#if _lib_CreateFileW
+  wchar_t   *wfname = NULL;
   HANDLE    handle;
   DWORD     cd;
 #else
@@ -47,15 +49,20 @@ fileSharedOpen (const char *fname, int truncflag)
   int         flags;
 #endif
 
+  if (fname == NULL || ! *fname) {
+    return NULL;
+  }
+
   fhandle = mdmalloc (sizeof (fileshared_t));
 
-#if _lib_CreateFile
+#if _lib_CreateFileW
   cd = OPEN_ALWAYS;
   if (truncflag == FILE_OPEN_TRUNCATE) {
     cd = CREATE_ALWAYS;
   }
 
-  handle = CreateFile (fname,
+  wfname = osToWideChar (fname);
+  handle = CreateFileW (wfname,
       FILE_APPEND_DATA,
       FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
       NULL,
@@ -67,8 +74,13 @@ fileSharedOpen (const char *fname, int truncflag)
     dataFree (fhandle);
     fhandle = NULL;
   }
+  dataFree (wfname);
   mdextfopen (handle);
+
 #else
+
+  /* not windows */
+
   flags = O_WRONLY | O_APPEND | O_CREAT;
 # if _define_O_CLOEXEC
   flags |= O_CLOEXEC;
@@ -76,6 +88,7 @@ fileSharedOpen (const char *fname, int truncflag)
   if (truncflag == FILE_OPEN_TRUNCATE) {
     flags |= O_TRUNC;
   }
+
   fd = open (fname, flags, 0600);
   mdextopen (fd);
   fhandle->fd = fd;
@@ -84,6 +97,7 @@ fileSharedOpen (const char *fname, int truncflag)
     fhandle = NULL;
   }
 #endif
+
   return fhandle;
 }
 
@@ -100,7 +114,7 @@ fileSharedWrite (fileshared_t *fhandle, char *data, size_t len)
   }
 
 #if _lib_WriteFile
-  rc = WriteFile(fhandle->handle, data, len, &wlen, NULL);
+  rc = WriteFile (fhandle->handle, data, len, &wlen, NULL);
 #else
   rc = write (fhandle->fd, data, len);
 #endif

@@ -129,6 +129,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
   [SVL_IS_MACOS] = { "IS_MACOS" },
+  [SVL_IS_MSYS] = { "IS_MSYS" },
   [SVL_IS_VM] = { "IS_VM" },
   [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
   [SVL_LOCALE_SET] = { "LOCALE_SET" },
@@ -201,6 +202,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
   lsysvars [SVL_IS_MACOS] = false;
+  lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
   lsysvars [SVL_IS_VM] = false;
@@ -292,6 +294,11 @@ sysvarsInit (const char *argv0)
   }
   if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
     lsysvars [SVL_IS_WINDOWS] = true;
+  }
+
+  osGetEnv ("MSYSTEM", tbuff, SV_MAX_SZ);
+  if (*tbuff) {
+    lsysvars [SVL_IS_MSYS] = true;
   }
 
   getHostname (sysvars [SV_HOSTNAME], SV_MAX_SZ);
@@ -568,11 +575,8 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_FILE_ALT_INST_PATH], tbuff, SV_MAX_SZ);
 
   if (isWindows ()) {
-    osGetEnv ("TEMP", sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
-    if (! *sysvars [SV_DIR_CACHE_BASE]) {
-      snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
-          "%s/AppData/Local/Temp", sysvars [SV_HOME]);
-    }
+    snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
+        "%s/AppData/Local/Temp", sysvars [SV_HOME]);
   } else {
     osGetEnv ("XDG_CACHE_HOME", sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
     if (! *sysvars [SV_DIR_CACHE_BASE]) {
@@ -661,6 +665,7 @@ sysvarsInit (const char *argv0)
   }
 
   /* the SVL_IS_VM flag is only used for the test suite */
+  /* this is not set for mac-os (how to do is unknown) */
   if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
     FILE        *fh;
     char        tbuff [2048];

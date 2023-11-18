@@ -44,9 +44,8 @@ static size_t rrnToOffset (rafileidx_t rrn);
 rafile_t *
 raOpen (char *fname, int version)
 {
-  struct stat     statbuf;
   rafile_t        *rafile;
-  int             frc;
+  bool            fexists;
   int             rc;
   char            *mode;
 
@@ -54,9 +53,9 @@ raOpen (char *fname, int version)
   rafile = mdmalloc (sizeof (rafile_t));
   rafile->fh = NULL;
 
-  frc = stat (fname, &statbuf);
+  fexists = fileopFileExists (fname);
   mode = "rb+";
-  if (frc != 0) {
+  if (! fexists) {
     mode = "wb+";
   }
 
@@ -66,10 +65,10 @@ raOpen (char *fname, int version)
   rafile->version = version;
   rafile->size = RAFILE_REC_SIZE;
 
-  if (statbuf.st_size == 0L) {
-    frc = 1;
+  if (fileopSize (fname) == 0) {
+    fexists = false;
   }
-  if (frc == 0) {
+  if (fexists) {
     raLock (rafile);
     rc = raReadHeader (rafile);
     raUnlock (rafile);
@@ -82,7 +81,7 @@ raOpen (char *fname, int version)
       return NULL;
     }
   }
-  if (frc != 0) {
+  if (! fexists) {
     rafile->count = 0L;
     raLock (rafile);
     raWriteHeader (rafile, version);

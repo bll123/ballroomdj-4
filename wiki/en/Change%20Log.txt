@@ -4,7 +4,14 @@
 
 <!--
 
-**4.4.5 2023-12---**
+**4.4.6 2023-12---**
+
+**4.4.5 2023-11---**
+
+* Bug Fixes:
+    * Installer: PENDING Fix conversion status display.
+    * Windows: Fix uninstall script.
+    * Windows: PENDING International characters in account names work!
 
 -->
 

@@ -28,6 +28,7 @@
 #include <vlc/libvlc_version.h>
 
 #include "bdjstring.h"
+#include "fileop.h"
 #include "mdebug.h"
 #include "pli.h"
 #include "vlci.h"
@@ -345,13 +346,12 @@ int
 vlcMedia (vlcData_t *vlcData, const char *fn)
 {
   libvlc_event_manager_t  *em;
-  struct stat             statbuf;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
 
-  if (stat (fn, &statbuf) != 0) {
+  if (! fileopFileExists (fn)) {
     return -1;
   }
 

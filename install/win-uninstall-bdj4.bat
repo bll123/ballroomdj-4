@@ -1,7 +1,7 @@
 @echo off
-: BDJ4 removal
-: Copyright 2023 Brad Lanam Pleasant Hill CA
-set ver=3
+@rem BDJ4 removal
+@rem Copyright 2023 Brad Lanam Pleasant Hill CA
+set ver=4
 
 set bdj4dir="%USERPROFILE%\BDJ4"
 set bdj4startup="%USERPROFILE%\Start Menu\Programs\Startup\bdj4.bat"
@@ -16,11 +16,13 @@ if exist %bdj4instloc% (
   set /p x=<%bdj4instloc%
   set bdj4dir="!x!"
   set bdj4dir=!bdj4dir:/=\!
+  @rem version 4.4.4 used USERPROFILE
   set bdj4dir=!bdj4dir:%%USERPROFILE%%=%USERPROFILE%!
+  set bdj4dir=!bdj4dir:%%USERNAME%%=%USERNAME%!
 )
 
-: gdbus must be stopped
-: may or may not exist as a process
+@rem gdbus must be stopped
+@rem may or may not exist as a process
 taskkill /f /im gdbus.exe 2> NUL
 
 if exist %bdj4startup% (
@@ -39,4 +41,4 @@ if exist %bdj4dir% (
   rmdir /s/q %bdj4dir%
 )
 
-exit
+exit /b

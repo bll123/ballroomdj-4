@@ -29,6 +29,7 @@
 #include "bdj4arg.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "callback.h"
 #include "datafile.h"
@@ -200,10 +201,7 @@ typedef struct {
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
-#define WINUSERPROFILE  "%USERPROFILE%"
-enum {
-  WINUSERPROFILESZ = strlen (WINUSERPROFILE),
-};
+#define WINUSERNAME "%USERNAME%"
 
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
@@ -409,13 +407,11 @@ main (int argc, char *argv[])
     mdextfclose (fh);
     fclose (fh);
     if (isWindows ()) {
-      char    tmp [MAXPATHLEN];
+      char    *tmp = NULL;
 
-      if (strncmp (buff, WINUSERPROFILE, WINUSERPROFILESZ) == 0) {
-        snprintf (tmp, sizeof (tmp), "%s%s", sysvarsGetStr (SV_HOME),
-            buff + WINUSERPROFILESZ);
-        strlcpy (buff, tmp, sizeof (buff));
-      }
+      tmp = regexReplaceLiteral (buff, "%USERNAME%", sysvarsGetStr (SV_USER));
+      strlcpy (buff, tmp, sizeof (buff));
+      dataFree (tmp);
     }
   }
 
@@ -1707,14 +1703,24 @@ installerSaveTargetDir (installer_t *installer)
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "w");
   if (fh != NULL) {
+    char  *tmp = installer->target;
+
     if (isWindows ()) {
-      fprintf (fh, "%s%s\n", WINUSERPROFILE,
-          installer->target + strlen (sysvarsGetStr (SV_HOME)));
-    } else {
-      fprintf (fh, "%s\n", installer->target);
+      /* On windows, the uninstall batch script reads the install path from */
+      /* a text file.  International characters cannot be processed */
+      /* in this manner.  Therefore replace the username with the */
+      /* environment variable, and the installer and any windows scripts */
+      /* must replace the variable with the user name. */
+
+      tmp = regexReplaceLiteral (installer->target, sysvarsGetStr (SV_USER),
+          WINUSERNAME);
     }
+    fprintf (fh, "%s\n", tmp);
     mdextfclose (fh);
     fclose (fh);
+    if (isWindows ()) {
+      dataFree (tmp);
+    }
   }
 
   installer->instState = INST_MAKE_TARGET;
@@ -1780,15 +1786,13 @@ installerCopyFiles (installer_t *installer)
   }
 
   if (isWindows ()) {
-    size_t    len;
+    char      *trundir = NULL;
 
     *tmp = '\0';
-    len = strlen (sysvarsGetStr (SV_HOME));
-    strlcpy (tmp, installer->rundir, sizeof (tmp));
-    if (strncmp (installer->rundir, sysvarsGetStr (SV_HOME), len) == 0) {
-      strlcpy (tmp, "%USERPROFILE%", sizeof (tmp));
-      strlcat (tmp, installer->rundir + len, sizeof (tmp));
-    }
+    trundir = regexReplaceLiteral (installer->rundir,
+        sysvarsGetStr (SV_USER), WINUSERNAME);
+    strlcpy (tmp, trundir, sizeof (tmp));
+    dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
 
     snprintf (tbuff, sizeof (tbuff),
@@ -2327,9 +2331,10 @@ installerFinalize (installer_t *installer)
       FILE    *fh;
 
       diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-      fh = fopen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
+      fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
       if (fh != NULL) {
         fputs ("0\n", fh);
+        mdextfclose (fh);
         fclose (fh);
       }
     }
@@ -2533,22 +2538,59 @@ installerCleanup (installer_t *installer)
   webclientClose (installer->webclient);
 
   if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
-    char  ebuff [MAXPATHLEN];
-    char  buff [MAXPATHLEN];
-    const char  *targv [10];
+    char          buff [MAXPATHLEN];
 
     if (isWindows ()) {
+      char          ebuff [MAXPATHLEN];
+      size_t        sz = 0;
+      char          *fdata;
+      char          *ndata;
+      FILE          *fh;
+      const char    *targv [10];
+      int           targc = 0;
+
+      /* create the batch file from a template. */
+      /* solves many quoting and startup issues. */
+
+      /* template */
       snprintf (ebuff, sizeof (ebuff), "%s/install/win-clean-inst.bat",
           installer->unpackdir);
-      /* the executable needs to be in windows form, as the path */
-      /* is also used within the batch file */
+      fdata = filedataReadAll (ebuff, &sz);
+      if (fdata == NULL) {
+        return;
+      }
+
+      /* target filename */
+      snprintf (ebuff, sizeof (ebuff), "%s/bdj4-clean-inst.bat",
+          sysvarsGetStr (SV_DIR_CACHE_BASE));
+      fh = fileopOpen (ebuff, "w");
+      if (fh == NULL) {
+        return;
+      }
+
+
+      ndata = regexReplaceLiteral (installer->unpackdir,
+          sysvarsGetStr (SV_USER), WINUSERNAME);
+      strlcpy (buff, ndata, sizeof (buff));
+      dataFree (ndata);
+      pathDisplayPath (buff, strlen (buff));
+      ndata = regexReplaceLiteral (fdata, "#UNPACKDIR#", buff);
+      fprintf (fh, "%s", ndata);
+      mdextfclose (fh);
+      fclose (fh);
+      dataFree (ndata);
+      dataFree (fdata);
+
+      /* target filename */
       pathDisplayPath (ebuff, strlen (ebuff));
-      targv [0] = ebuff;
-      strlcpy (buff, installer->unpackdir, sizeof (buff));
-      pathDisplayPath (buff, sizeof (buff));
-      targv [1] = buff;
-      targv [2] = NULL;
-      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+      targv [targc++] = ebuff;
+      targv [targc++] = NULL;
+
+      *buff = 0;
+      /* running a batch file seems to need an output source */
+      snprintf (buff, sizeof (buff), "%s/bdj4-clean-log.txt",
+          sysvarsGetStr (SV_DIR_CACHE_BASE));
+      osProcessStart (targv, OS_PROC_DETACH, NULL, buff);
     }
     if (! isWindows ()) {
       /* cleaning up on not-windows is easy */

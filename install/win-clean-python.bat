@@ -1,6 +1,6 @@
 @echo off
-: windows clean all python installations and data
-: Copyright 2023 Brad Lanam Pleasant Hill CA
+@rem windows clean all python installations and data
+@rem Copyright 2023 Brad Lanam Pleasant Hill CA
 set ver=1
 
 echo -- Cleaning up python.  Please wait...
@@ -26,4 +26,4 @@ for %%v in (3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11) do (
   )
 )
 
-exit
+exit /b

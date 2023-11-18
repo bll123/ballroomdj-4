@@ -53,8 +53,8 @@
 #cmakedefine01 _lib_CloseHandle
 #cmakedefine01 _lib_CompareStringEx
 #cmakedefine01 _lib_CopyFileW
-#cmakedefine01 _lib_CreateFile
-#cmakedefine01 _lib_CreateProcess
+#cmakedefine01 _lib_CreateFileW
+#cmakedefine01 _lib_CreateProcessW
 #cmakedefine01 _lib_FlushFileBuffers
 #cmakedefine01 _lib_FindFirstFileW
 #cmakedefine01 _lib_GetCommandLineW

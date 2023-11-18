@@ -3,8 +3,6 @@
 
 [MSYS2](https://www.msys2.org/)
 
-##### Bugs:
-
 The argv processing does not properly convert to utf-8 (international
 account names).  I had to re-work all argument processing.
 

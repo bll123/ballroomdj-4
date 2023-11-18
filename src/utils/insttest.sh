@@ -910,12 +910,12 @@ function cleanInstTest {
 
 function waitForInstallDirRemoval {
   count=0
-  while test -d "$UNPACKDIR" && test $count -lt 30; do
+  while test -d "$UNPACKDIR" && test $count -lt 20; do
     sleep 1
     count=$(($count+1))
   done
   if [[ -d "$UNPACKDIR" ]]; then
-    echo "install-dir removal failed".
+    echo "ERR: install-dir removal failed".
     exit 1
   fi
 }

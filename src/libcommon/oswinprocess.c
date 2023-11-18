@@ -39,20 +39,22 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   int                 val;
   int                 inherit = FALSE;
   wchar_t             *wbuff;
+  wchar_t             *woutfname;
   HANDLE              outhandle = INVALID_HANDLE_VALUE;
 
   memset (&si, '\0', sizeof (si));
   si.cb = sizeof (si);
   memset (&pi, '\0', sizeof (pi));
 
-  if (outfname != NULL) {
+  if (outfname != NULL && *outfname) {
     SECURITY_ATTRIBUTES sao;
 
     sao.nLength = sizeof (SECURITY_ATTRIBUTES);
     sao.lpSecurityDescriptor = NULL;
     sao.bInheritHandle = 1;
 
-    outhandle = CreateFile (outfname,
+    woutfname = osToWideChar (outfname);
+    outhandle = CreateFileW (woutfname,
       GENERIC_WRITE,
       FILE_SHARE_READ | FILE_SHARE_WRITE,
       &sao,
@@ -98,7 +100,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
       &pi )           // PROCESS_INFORMATION structure
   ) {
     int err = GetLastError ();
-    fprintf (stderr, "getlasterr: %d %S\n", err, wbuff);
+    fprintf (stderr, "getlasterr: %d %s\n", err, buff);
     return -1;
   }
 
@@ -116,21 +118,23 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
     pid = rc;
   }
 
-  if (outfname != NULL) {
-    int         rc;
+  if (outfname != NULL && *outfname) {
+    bool        rc;
     int         count;
-    struct stat statbuf;
+    struct __stat64  statbuf;
 
     CloseHandle (outhandle);
-    rc = stat (outfname, &statbuf);
+    rc = _wstat64 (woutfname, &statbuf);
 
     /* windows is mucked up; wait for the redirected output to appear */
     count = 0;
     while (rc == 0 && statbuf.st_size == 0 && count < 60) {
       mssleep (5);
-      rc = stat (outfname, &statbuf);
+      rc = _wstat64 (woutfname, &statbuf);
       ++count;
     }
+
+    mdfree (woutfname);
   }
   mdfree (wbuff);
   return pid;
@@ -221,7 +225,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       &pi )           // PROCESS_INFORMATION structure
   ) {
     int err = GetLastError ();
-    fprintf (stderr, "getlasterr: %d %S\n", err, wbuff);
+    fprintf (stderr, "getlasterr: %d %s\n", err, buff);
     return -1;
   }
 

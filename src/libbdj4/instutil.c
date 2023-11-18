@@ -559,8 +559,7 @@ instutilInstallCleanTmp (const char *rundir)
       tmpl = regexReplaceLiteral (btmpl, "#BDJ4DIR#", tbuff);
       dataFree (btmpl);
 
-      fh = fopen (tfn, "a");
-      mdextfopen (fh);
+      fh = fileopOpen (tfn, "a");
       if (fh != NULL) {
         fwrite (tmpl, strlen (tmpl), 1, fh);
         mdextfclose (fh);
