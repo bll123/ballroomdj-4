@@ -38,8 +38,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   int                 idx;
   int                 val;
   int                 inherit = FALSE;
-  wchar_t             *wbuff;
-  wchar_t             *woutfname;
+  wchar_t             *wbuff = NULL;
+  wchar_t             *woutfname = NULL;
   HANDLE              outhandle = INVALID_HANDLE_VALUE;
 
   memset (&si, '\0', sizeof (si));
@@ -81,7 +81,9 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   val = 0;
   if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
     val |= DETACHED_PROCESS;
-    val |= CREATE_NO_WINDOW;
+    if ((flags & OS_PROC_WINDOW_OK) != OS_PROC_WINDOW_OK) {
+      val |= CREATE_NO_WINDOW;
+    }
   }
 
   /* windows and its stupid space-in-name and quoting issues */

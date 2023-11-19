@@ -2586,16 +2586,16 @@ installerCleanup (installer_t *installer)
       targv [targc++] = ebuff;
       targv [targc++] = NULL;
 
-      *buff = 0;
-      strlcpy (buff, "NUL:", sizeof (buff));
-      /* running a batch file seems to need an output source */
-      // snprintf (buff, sizeof (buff), "%s/bdj4-clean-log.txt",
-      //     sysvarsGetStr (SV_DIR_CACHE_BASE));
-      osProcessStart (targv, OS_PROC_DETACH, NULL, buff);
+      osProcessStart (targv,
+          OS_PROC_DETACH | OS_PROC_NOSTDERR | OS_PROC_WINDOW_OK, NULL, NULL);
+      if (! sysvarsGetNum (SVL_IS_MSYS)) {
+        /* give windows a short bit to start the script */
+        mssleep (100);
+      }
     }
     if (! isWindows ()) {
       /* cleaning up on not-windows is easy */
-      snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
+      snprintf (buff, sizeof(buff), "rm -rf '%s'", installer->unpackdir);
       (void) ! system (buff);
     }
   } else {

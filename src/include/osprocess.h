@@ -17,6 +17,7 @@ enum {
   OS_PROC_DETACH    = 0x0001,
   OS_PROC_WAIT      = 0x0002,
   OS_PROC_NOSTDERR  = 0x0004,
+  OS_PROC_WINDOW_OK = 0x0008,   // windows, default is no window
 };
 
 pid_t osProcessStart (const char *targv[], int flags, void **handle, char *outfname);
