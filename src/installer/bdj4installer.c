@@ -2587,9 +2587,10 @@ installerCleanup (installer_t *installer)
       targv [targc++] = NULL;
 
       *buff = 0;
+      strlcpy (buff, "NUL:", sizeof (buff));
       /* running a batch file seems to need an output source */
-      snprintf (buff, sizeof (buff), "%s/bdj4-clean-log.txt",
-          sysvarsGetStr (SV_DIR_CACHE_BASE));
+      // snprintf (buff, sizeof (buff), "%s/bdj4-clean-log.txt",
+      //     sysvarsGetStr (SV_DIR_CACHE_BASE));
       osProcessStart (targv, OS_PROC_DETACH, NULL, buff);
     }
     if (! isWindows ()) {

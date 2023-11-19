@@ -9,7 +9,7 @@
 **4.4.5 2023-11---**
 
 * Bug Fixes:
-    * Installer: PENDING Fix conversion status display.
+    * Installer: PENDING Fix conversion status display (again).
     * Windows: Fix uninstall script.
     * Windows: PENDING International characters in account names work!
 
