@@ -541,9 +541,13 @@ instutilInstallCleanTmp (const char *rundir)
     size_t  sz = 0;
     char    tbuff [MAXPATHLEN];
     char    tfn [MAXPATHLEN];
+    char    *tmp;
     FILE    *fh;
 
     strlcpy (tbuff, rundir, sizeof (tbuff));
+    tmp = regexReplaceLiteral (rundir, sysvarsGetStr (SV_USER), WINUSERNAME);
+    strlcpy (tbuff, tmp, sizeof (tbuff));
+    mdfree (tmp);
     pathDisplayPath (tbuff, sizeof (tbuff));
     snprintf (tfn, sizeof (tfn), "%s/bdj4clean.bat",
         sysvarsGetStr (SV_DIR_CONFIG));

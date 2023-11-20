@@ -6,14 +6,14 @@
 
 **4.4.6 2023-12---**
 
-**4.4.5 2023-11---**
+-->
+
+**4.4.5 2023-11-20**
 
 * Bug Fixes:
     * Installer: Fix conversion status display (windows).
     * Windows: Fix uninstall script.
-    * Windows: PENDING International characters in account names work!
-
--->
+    * Windows: Account names with international characters now work!
 
 **4.4.4 2023-11-15**
 

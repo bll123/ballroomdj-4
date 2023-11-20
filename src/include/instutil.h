@@ -14,6 +14,8 @@ enum {
 #define BDJ4_MACOS_DIR    "BDJ4.app"
 #define MACOS_PREFIX      "/Contents/MacOS"
 
+#define WINUSERNAME       "%USERNAME%"
+
 #define INST_HL_COLOR "#b16400"
 #define INST_HL_CLASS "insthl"
 #define INST_SEP_COLOR "#733000"

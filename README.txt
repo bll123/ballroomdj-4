@@ -30,6 +30,9 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.4.5:
+    Windows account names with international characters are now working!
+
   4.4.4:
     Please upgrade to version 4.4.4 (or later) if you are using version 4.4.3.
 
@@ -66,12 +69,6 @@ Known Issues:
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
-    - Account names with international characters:
-      As of version 4.4.4, this is mostly working, but
-      localization (i.e. language translation) does not work.
-      The helper on new installation doesn't show any useful messages,
-      and the display language is not changed to the current or the
-      selected locale.
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :

@@ -201,8 +201,6 @@ typedef struct {
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
-#define WINUSERNAME "%USERNAME%"
-
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
 static bool installerExitCallback (void *udata);

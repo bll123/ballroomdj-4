@@ -35,22 +35,10 @@ user account will stay uncorrupted.
 
 As far as I know, this bug does not occur on Windows 10.
 
-##### Windows Account Names with International Characters
-
-As of version 4.4.4, BallroomDJ 4 is mostly working with account names
-that have international characters (e.g. Gergő; accents, umlauts,
-circumflex, slavic, japanese or chinese characters, etc.).
-Unfortunately due to a bug in a software library I use, localization
-(i.e. language translation) does not work.
-
-You will need to change your account name (quite difficult),
-or create a new account for BDJ4 that does not have any international
-characters.
-
 ##### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (VLC, Python, Mutagen) that
+installed.  There are requisite packages (VLC) that
 need to be installed from the internet.
 
 ##### Install BallroomDJ 4
