@@ -602,6 +602,7 @@ main (int argc, char *argv[])
   uiEntrySetValue (installer.targetEntry, installer.target);
   installerSetMusicDirEntry (&installer, installer.musicdir);
   installerSetBDJ3LocEntry (&installer, installer.bdj3loc);
+  installerConversionFeedbackMsg (&installer);
 
   while (installer.instState != INST_EXIT) {
     if (installer.instState != installer.lastInstState) {
@@ -1542,9 +1543,11 @@ installerConversionFeedbackMsg (installer_t *installer)
   char          *tptr;
   char          tbuff [200];
 
-  if (installer->guienabled) {
-    nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
+  if (! installer->guienabled) {
+    return;
   }
+
+  nval = uiToggleButtonIsActive (installer->wcont [INST_W_CONVERT]);
 
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
