@@ -66,8 +66,8 @@ while test $# -gt 0; do
       args+=$1
       args+=" "
       shift
-      altdir=$1
-      args+=$1
+      # altdir can be a full path with spaces and intl characters
+      args+="'$1'"
       args+=" "
       ;;
     --atibdj4)
@@ -93,7 +93,8 @@ if [[ ! -f $FLAG ||
   if [[ $keepmusic == F && -d test-music ]]; then
     rm -rf test-music/*
   fi
-  ./bin/bdj4 --tmusicsetup $args
+  # need to use eval to get the arguments quoted properly
+  eval ./bin/bdj4 --tmusicsetup $args
   touch $FLAG
 fi
 

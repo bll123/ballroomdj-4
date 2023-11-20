@@ -202,7 +202,7 @@ orgAlloc (const char *orgpath)
       mdfree (tmp);
     }
     if (isnumeric) {
-      strlcat (org->regexstr, "([0-9]+)", sizeof (org->regexstr));
+      strlcat (org->regexstr, "(\\d+)", sizeof (org->regexstr));
     } else {
       size_t    len;
 
@@ -227,9 +227,10 @@ orgAlloc (const char *orgpath)
     ++grpcount;
     p = strtok_r (NULL, "{}", &tokstr);
   }
-  strlcat (org->regexstr, "\\.[a-zA-Z0-9]+$", sizeof (org->regexstr));
-  // fprintf (stderr, "path: %s\n", orgpath);
-  // fprintf (stderr, "regexstr: %s\n", org->regexstr);
+  /* the extension; make it any alnum, just in case */
+  /* though usually the extensions will be standard ascii */
+  strlcat (org->regexstr, "\\.[[:alnum:]]+$", sizeof (org->regexstr));
+  logMsg (LOG_DBG, LOG_INFO, "orgpath: %s regex: %s", orgpath, org->regexstr);
   org->rx = regexInit (org->regexstr);
   mdfree (tvalue);
 
