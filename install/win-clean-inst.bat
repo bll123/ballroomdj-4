@@ -15,7 +15,7 @@ echo -- Installation cleanup.  Please wait...
 taskkill /f /im gdbus.exe 2>NUL
 
 @rem sleep for 3 seconds, wait for the installer and gdbus to exit
-timeout /t 3 >NUL
+ping 127.0.0.1 -n 3 >NUL
 
 rmdir /s/q "#UNPACKDIR#"
 
