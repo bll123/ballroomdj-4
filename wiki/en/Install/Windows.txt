@@ -104,4 +104,4 @@ installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-15 15:07:30; BDJ4 version 4.4.4)_
+<br>_(Updated 2023-11-20 14:54:57; BDJ4 version 4.4.5)_
