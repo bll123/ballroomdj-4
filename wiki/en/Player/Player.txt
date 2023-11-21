@@ -238,9 +238,9 @@ queue have been played, the player will check for another queue that
 has songs queued and start playing songs from it.
 
 See also
-<br>[Configuration / Player](en-Configuration-Player)
-<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
-<br>[Configuration / Marquee](en-Configuration-Marquee)
+<br>[Configure / Player](en-Configuration-Player)
+<br>[Configure / Music Queues](en-Configuration-Music%20Queues)
+<br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:06:12; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_

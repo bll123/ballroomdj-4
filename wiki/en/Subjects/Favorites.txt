@@ -1,0 +1,94 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Favorites can be used to mark songs to
+indicate favorite songs or any other category of your choice._</span>
+
+[TOC]
+
+### Favorites
+
+##### Settings up Favorites for Use
+
+In
+[Configuration&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
+add the _Favorite_ selection to the _Music&nbsp;Queue_, _History_,
+_Request_, _Song&nbsp;List_, _Song&nbsp;Selection_,
+_Side-by-Side&nbsp;Song&nbsp;List_,
+_Side-by-Side&nbsp;Song&nbsp;Selection_, _Music&nbsp;Manager_ and to
+one of the _Song&nbsp;Editor_ columns.  Be sure to move the _Favorite_
+selection to the bottom of the list on the right.
+
+These display settings can be adjusted to meet your needs, but for the
+purposes of this example, the _Favorite_ selection is added everywhere.
+The _Favorite_ column that will be displayed is narrow and does not
+take up much space.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-A.png)
+<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+
+In
+[Configuration&nbsp;/&nbsp;Filter&nbsp;Display](en-Configuration-Filter%20Display),
+select the _Favorite_ checkbox.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-filter-disp-A.png)
+<br><span style="color:#4559bf;">__Configure / Filter Display__</span> </div>
+
+##### Favorite Display
+
+Now the _Favorite_ column will be displayed as seen in the song list
+editor side-by-side view example below.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-sample-view-B.png)
+<br><span style="color:#4559bf;">__Song List Editor__</span> </div>
+
+When no favorite is selected, a hollow star is displayed
+( __☆__ ).
+
+There are various colors of solid stars available to choose as a
+favorite selection.
+<br>__<span style="color:#d2322a;">★</span>__
+__<span style="color:#d0711b;">★</span>__
+__<span style="color:#007d26;">★</span>__
+__<span style="color:#362bff;">★</span>__
+__<span style="color:#8c2e9c;">★</span>__
+
+The pink heart and broken heart are used to match the iTunes _Like_
+and _Dislike_ settings when importing from an iTunes database.
+<br>__<span style="color:#ee00e1;">♥</span>__
+<span style="color:#6d2828;">💔</span>
+
+##### Using Favorites
+
+To change the favorite selection, it is not necessary to use the
+[Song&nbsp;Editor](en-Management-Song%20Editor).  The favorite
+selection can be changed anywhere it is displayed, including in the
+[Player](en-Player-Player). Simply click with the mouse button on the favorite symbol for
+the song and it will change to the next favorite symbol/color.
+Continue clicking on the favorite symbol until it is set to your
+choice.  The change to the favorite selection will automatically be
+saved to the database.
+
+##### Filtering the Song Selection
+
+The song selection can be filtered by favorites.  Using the song
+selection filter, select the favorite selection you want
+to view and select _Apply_.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![favorite-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-filter-dialog-A.png)
+<br><span style="color:#4559bf;">__Song Selection / Filter__</span> </div>
+
+##### Configuring the Favorite Display
+
+At this time, there is no easy method to configure the symbols and colors.
+To add or change the symbols and colors, the favorite configuration file must
+[edited manually](en-Subjects-Manual%20Configuration).
+
+If there is enough interest in being able to easily change the symbols
+and colors, I can add a configuration screen for that.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-11-21 04:11:54; BDJ4 version 4.4.5)_

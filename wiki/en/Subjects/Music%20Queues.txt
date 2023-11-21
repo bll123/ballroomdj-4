@@ -93,7 +93,7 @@ __Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ are generally used for
 teaching.  See the example below for a music queue set up for teaching.
 
 See also:
-<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
+<br>[Configure / Music Queues](en-Configuration-Music%20Queues)
 <br>[Manage / Playlist Management](en-Management-Playlist%20Management)
 
 ##### Example: Setting up a Music Queue for Teaching
@@ -171,4 +171,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_
+<br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_

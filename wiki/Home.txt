@@ -97,6 +97,7 @@
 <br>[Announcements](en-Subjects-Announcements)
 <br>[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
 <br>[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
+<br>[Favorites](en-Subjects-Favorites)
 <br>[Filter Dialog](en-Subjects-Filter%20Dialog)
 <br>[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
 <br>[Keyword](en-Subjects-Keyword)
@@ -120,4 +121,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-21 04:11:54; BDJ4 version 4.4.5)_

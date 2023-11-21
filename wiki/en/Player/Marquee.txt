@@ -23,11 +23,11 @@ Each time the marquee is started, BDJ4 will attempt to position and
 size the marquee window where it was before.
 
 See also:
-<br>[Configuration / Marquee](en-Configuration-Marquee)
+<br>[Configure / Marquee](en-Configuration-Marquee)
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-A.png)
 <br><span style="color:#4559bf;">**Player / Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:58:41; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_
