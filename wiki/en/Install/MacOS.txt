@@ -84,7 +84,7 @@ After you have selected the installation folder, select the __Install__
 button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-B.png)
+![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-C.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Mac OS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
@@ -95,5 +95,11 @@ icon to the Applications Folder icon.
 ![VLC Installation on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
 <br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
+##### Getting Started with BDJ4
+
+Visit the
+[Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
+wiki page.
+
 [Wiki Home](Home)
-<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_

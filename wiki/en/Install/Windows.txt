@@ -79,7 +79,7 @@ __Install__ button and wait for the __Installation Completed__
 message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-B.png)
+![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-C.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 If the VLC application is not installed, the VLC installer will be
@@ -103,5 +103,11 @@ Now select __Next__, then select __Install__. After the VLC
 installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
+##### Getting Started with BDJ4
+
+Visit the
+[Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
+wiki page.
+
 [Wiki Home](Home)
-<br>_(Updated 2023-11-20 14:54:57; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_

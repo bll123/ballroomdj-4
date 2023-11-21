@@ -32,7 +32,7 @@ playlist.
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
 have the selected rating or better.
 
-##### Song Selection and the Song Editor
+##### Song Selection with the Song Editor or Audio Identification
 
 When a song is selected in
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
@@ -43,7 +43,7 @@ currently selected playlist.
 This makes it easy to edit the songs in the song list.  Simply select
 the edit button in
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists) to
-switch to the song editor.  Then the __Next__ and __Previous__ buttons
+switch to the song editor.  The __Next__ and __Previous__ buttons
 will traverse the songs in the song list, as the music manager's
 filter has been set to use the loaded playlist.
 
@@ -56,6 +56,10 @@ If you have a listing loaded in the music manager, multiple songs may
 be selected (using control-click or shift-click).  When multiple songs
 are selected in the music manager, the song editor will traverse the
 selected songs, and not the entire listing.
+
+The __First__, __Next__, and __Previous__ previous buttons in
+[Audio&nbsp;Identification](en-Management-Audio%20Identification)
+will also act upon the Music&nbsp;Manager's current selection.
 
 ##### Actions Menu
 
@@ -84,4 +88,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Manage / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_

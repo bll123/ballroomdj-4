@@ -11,7 +11,7 @@ for playback of songs._</span>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-display-A.png)
-<br><span style="color:#4559bf;">**Player / Player Display**</span> </div>
+<br><span style="color:#4559bf;">__Player / Player Display__</span> </div>
 
 The left side of the player display includes the player status, repeat
 status, dance, artist and title display, time remaining to play, total
@@ -29,7 +29,7 @@ displayed.
 ![player-status-play](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-play-B.png)
 ![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-stop-A.png)
 ![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-pause-A.png)
-<br><span style="color:#4559bf;">**Player / Player Status**</span> </div>
+<br><span style="color:#4559bf;">__Player / Player Status__</span> </div>
 
 The time remaining display shows how many seconds are left to play in
 the song.  The time played is displayed to the right of the position
@@ -84,7 +84,7 @@ __Default&nbsp;Volume__ in
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-music-q-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-controls-A.png)
 ![player-music-q-q-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-q-playlist-A.png)
-<br><span style="color:#4559bf;">**Player / Music Queue Controls**</span> </div>
+<br><span style="color:#4559bf;">__Player / Music Queue Controls__</span> </div>
 
 __Move to Top__:
 (![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-B.png))
@@ -109,7 +109,7 @@ the player will stop when it finishes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-toggle-pause](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-toggle-pause-A.png)
-<br><span style="color:#4559bf;">**Player / Toggle Pause**</span> </div>
+<br><span style="color:#4559bf;">__Player / Toggle Pause__</span> </div>
 
 __Remove__:
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png))
@@ -149,8 +149,8 @@ song in the music queue.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-D.png)
-<br><span style="color:#4559bf;">**Player / Actions Menu**</span> </div>
+![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-E.png)
+<br><span style="color:#4559bf;">__Player / Actions Menu__</span> </div>
 
 __Actions / External Request__: Starts a dialog to select an audio file. After
 selecting the audio file, the artist, title and dance are filled in
@@ -163,13 +163,43 @@ a music queue, the external request dialog is started.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-ext-req-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-ext-req-C.png)
-<br><span style="color:#4559bf;">**Player / External Request**</span> </div>
+<br><span style="color:#4559bf;">__Player / External Request__</span> </div>
+
+__Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Current__:
+<br>__Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Selected__: The
+_Quick&nbsp;Edit_ dialog enables making changes to the
+speed&nbsp;adjustment, volume&nbsp;adjustment, dance&nbsp;rating and
+dance&nbsp;level of the song from the player.
+
+When using _Quick&nbsp;Edit_, be sure to give yourself enough time to
+save the changes while the song is still playing or is still selected.
+If the player finishes a song and moves to the next song, the changes
+will not be saved.
+
+__Quick&nbsp;Edit:&nbsp;Current__ will edit the currently playing song.
+The speed&nbsp;adjustment and volume&nbsp;adjustment will
+automatically be set to the appropriate level.
+
+This is especially useful for the volume of the song.  As the song is
+playing, set the volume of the player to adjust the volume of the song
+to the appropriate level.  Then select
+__Quick&nbsp;Edit:&nbsp;Current__ from the actions menu.  The
+volume&nbsp;adjustment will be set correctly for the new volume.
+Select the _Save_ button to save the changes.  The player's volume
+will be reset back to its previous level.
+
+__Quick&nbsp;Edit:&nbsp;Selected__ will edit the song selected in the
+music queue or in the history.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-quick-edit-A.png)
+<br><span style="color:#4559bf;">__Player / Quick Edit__</span> </div>
 
 ##### Marquee Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-C.png)
-<br><span style="color:#4559bf;">**Player / Marquee Menu**</span> </div>
+<br><span style="color:#4559bf;">__Player / Marquee Menu__</span> </div>
 
 __Marquee / Font Size__: Starts a dialog where the marquee's font size may be
 changed.  The font size will be changed immediately.
@@ -182,7 +212,7 @@ to the current screen.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-export-menu-A.png)
-<br><span style="color:#4559bf;">**Player / Export Menu**</span> </div>
+<br><span style="color:#4559bf;">__Player / Export Menu__</span> </div>
 
 __Export / Export as MP3__: Exports the current music queue to a
 folder.  Each song in the queue has the fade-in, fade-out, maximum
@@ -198,7 +228,7 @@ exported files.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-C.png)
-<br><span style="color:#4559bf;">**Player / Options Menu**</span> </div>
+<br><span style="color:#4559bf;">__Player / Options Menu__</span> </div>
 
 __Options / Show Extra Queues__: Displays all music queues that are configured
 ([Configure&nbsp;/&nbsp;Music%20Queues](en-Configuration-Music%20Queues)) to be displayed.
@@ -213,4 +243,4 @@ See also
 <br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 13:01:55; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-21 03:06:12; BDJ4 version 4.4.5)_

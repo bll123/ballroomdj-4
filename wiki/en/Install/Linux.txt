@@ -105,8 +105,14 @@ After you have selected the installation folder, select the __Install__
 button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-B.png)
+![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-C.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
+##### Getting Started with BDJ4
+
+Visit the
+[Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
+wiki page.
+
 [Wiki Home](Home)
-<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_

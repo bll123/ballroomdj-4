@@ -20,15 +20,6 @@ __BPM__: The label to use for _beats&nbsp;per&nbsp;minute_ or
 _measures&nbsp;per&nbsp;minute_. When set to MPM, the BPM counter will
 use the time signature of the dance to select the proper default.
 
-__Write Audio File Tags__: When set to __BDJ Tags Only__, only BDJ
-specific tags will be updated in the audio file when a song is edited.
-When set to __All Tags__, all audio file tags including BDJ specific
-tags will be updated in the audio file when a song is edited.
-
-__BallroomDJ 3 Compatible Audio File Tags__: If enabled, (and write
-audio file tags is on), the audio file tags will be kept compatible
-with BallroomDJ 3.
-
 __Locale__: Which locale is used for the text in BDJ4.
 
 __Startup Script__: A script that is run before the player is started.
@@ -38,12 +29,25 @@ __Shutdown Script__: A script that is run after the player is stopped.
 This is automatically set for Linux installations.
 
 __Audio Tags__: Selects the audio tag interface.  At this time,
-'BDJ4 Internal' and 'Mutagen' are available.  'Mutagen' will be
-removed at a later date.
+only 'BDJ4 Internal' is available.
+
+__Write Audio File Tags__: When set to __BDJ Tags Only__, only BDJ
+specific tags will be updated in the audio file when a song is edited.
+When set to __All Tags__, all audio file tags including BDJ specific
+tags will be updated in the audio file when a song is edited.
+
+__BallroomDJ 3 Compatible Audio File Tags__: If enabled, (and write
+audio file tags is on), the audio file tags will be kept compatible
+with BallroomDJ 3.
+
+The __ACRCloud API__ information is optional and is only used for the
+audio identification process within BDJ4.  If you use the audio
+identification process and have registered an ACRCloud account, copy and
+paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-F.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-G.png)
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_

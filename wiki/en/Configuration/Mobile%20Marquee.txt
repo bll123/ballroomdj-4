@@ -23,10 +23,11 @@ changed unless there is another device using this port.
 
 __QR Code__: Select the link to display a QR code in your browser. The
 QR code can be copied from the browser and embedded in a document to
-be printed out so that the dancers can scan the QR Code.
+be printed out so that the dancers can scan the QR Code. (The link
+will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-E.png)
+![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-F.png)
 <br><span style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -34,4 +35,4 @@ be printed out so that the dancers can scan the QR Code.
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-08 10:08:16; BDJ4 version 4.4.3)_
+<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
