@@ -1,8 +1,120 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_Song lists are lists of songs played in
+the selected order._</span>
+
+[TOC]
+
 ### Song Lists
 
-To be written...
+A song list is the easiest playlist to understand.  It is simply a
+list of songs played in the selected order.
+
+See: [Edit Song Lists](en-Management-Edit%20Song%20Lists) for details
+on the buttons and menus.
+
+##### Changing the Name of the Song List
+
+The song list's name is at the top of the _Song&nbsp;List_ tab. Enter
+the new name of the song list at any time.
+
+If you forget to change the song list's name, it probably has the name
+_New&nbsp;Song&nbsp;List_.  In _Edit&nbsp;Song&nbsp;Lists_, select
+__Load__ from the __Edit__ menu.  Select _New&nbsp;Song&nbsp;List_.
+Change the name of the song list.  The song list will be renamed.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Song List Name**</span> </div>
+
+##### Creating a Song List Manually
+
+Select __Manage__ from the starter window.  The
+Edit&nbsp;Song&nbsp;Lists tab will be displayed.
+
+In the song selection (the right side of the screen in the
+side-by-side view), select the songs to be played and select the left
+arrow button to add them to the song list.  The _Statistics_ tab can
+be used to view how many songs, the total play time and how many songs
+for each dance have been selected.
+
+Move the songs up and down to change the order in which they will be
+played.  The _Swap_ action in the _Actions_ menu can be used to
+swap two songs.
+
+The song list will be automatically saved.
+
+##### Using the Mix Action
+
+Re-arranging all of the songs in a song list can be a large amount of
+work.  To make the process easier, the _Mix_ action can be used.
+
+Again, select the songs to be added to the song list.  Use the
+_Statistics_ tab to check how many songs of each dance are selected.
+After selecting all the songs for the song list, select the __Mix__
+action in the _Actions_ menu.
+
+The song list will be re-ordered based on various rules built in to
+BDJ4.
+
+Review the song list and move the songs up and down to fine tune the
+order which they will be played.  The _Swap_ action in the _Actions_
+menu can be used to swap two songs.
+
+If you don't like the order of the song list, select the __Mix__
+action again to create a new order, then review the song list and fine
+tune the order.
+
+The song list will be automatically saved.
+
+##### Creating a Song List from an Automatic Playlist
+
+A song list can also be created from an
+[Automatic&nbsp;Playlist](en-Subjects-Automatic&nbsp;Playlists) or
+[Sequenced&nbsp;Playlist](en-Subjects-Sequenced&nbsp;Playlists).
+
+Select __Start&nbsp;New&nbsp;Playlist__ in the __Edit__ menu.
+Select __Create&nbsp;From&nbsp;Playlist__ in the __Actions__ menu.
+
+Select the playlist to use, and adjust the time limit (hours and
+minutes) to set how long the song list should play.
+
+Select __Create__, and the song list will be generated based on the
+playlist selected.
+
+Review the song list and move the songs up and down to fine tune the
+order which they will be played.  The _Swap_ action in the _Actions_
+menu can be used to swap two songs.
+
+If you don't like the order of the song list, the __Mix__
+action described above can be used to re-order the song list.
+
+If you don't like the song selections that were made, start a new song
+list and use the _Create&nbsp;From&nbsp;Playlist_ action again.
+
+(See also:
+[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
+
+##### Re-Using Song Lists
+
+Once you have a song list with a good mix, you can create copies and
+modify the copy to create a new song list.
+
+Select __Load__ from the __Edit__ menu and select the song list you
+want to use as the starting point.  Select __Create&nbsp;Copy__ from
+the __Edit__ menu.  A new song list will be created.  Note that the
+name of the song list is now _Copy&nbsp;of&nbsp;..._.
+
+Change the name of the song list.
+
+Select a song in the song list that you want to replace.  From the
+song selection, select a new song of the same dance and add it to the
+song list.  Re-select the song being replaced and select the remove
+button
+(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png)).
+
+Continue to replace songs until you are satisfied with the new song
+list.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-22 07:03:15; BDJ4 version 4.4.5)_

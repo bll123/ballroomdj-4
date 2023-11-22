@@ -102,6 +102,7 @@
 <br>[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
+<br>[Quick Edit](en-Subjects-Quick%20Edit)
 <br>__Playlists__
 <br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
 <br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
@@ -121,4 +122,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-11-21 04:11:54; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_

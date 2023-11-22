@@ -6,6 +6,23 @@
 
 #### Configuring BDJ4
 
+##### Locale
+
+The Nederlands (Dutch) translation is in excellent shape.  The Русский
+(Russian) translation is ok.
+
+The other translations (Deutsch, Français, Italiano, 日本語‬, and
+Polski) are machine generated and are of very low quality.  If the
+translation for your locale is poor, you may want to select
+_English&nbsp;(GB)_ or _English&nbsp;(US)_ in the __Locale__
+selection.
+
+After selecting a locale, exit and restart BDJ4 to display the
+selected language.
+
+If you can help improve a translation, contact support using on of the
+methods listed in [Getting&nbsp;Help](en-Getting%20Help).
+
 ##### Set the location of the music folder
 
 The first step is to configure the location of your music folder.
@@ -28,20 +45,6 @@ Use the directory chooser button with the folder icon on the far right
 to choose the location of your music folder.
 
 Leave the configuration window open.
-
-##### Locale
-
-The Nederlands (Dutch) translation is in excellent shape.  The Русский
-(Russian) translation is ok.
-
-The other translations (Deutsch, Français, Italiano, 日本語‬, and
-Polski) are machine generated and are of very low quality.  If the
-translation for your locale is poor, you may want to select
-_English&nbsp;(GB)_ or _English&nbsp;(US)_ in the __Locale__
-selection.
-
-If you can help improve a translation, contact support using on of the
-methods listed in [Getting&nbsp;Help](en-Getting%20Help).
 
 ##### Choose how your music is organized
 
@@ -196,4 +199,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_

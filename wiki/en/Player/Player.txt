@@ -171,29 +171,7 @@ _Quick&nbsp;Edit_ dialog enables making changes to the
 speed&nbsp;adjustment, volume&nbsp;adjustment, dance&nbsp;rating and
 dance&nbsp;level of the song from the player.
 
-When using _Quick&nbsp;Edit_, be sure to give yourself enough time to
-save the changes while the song is still playing or is still selected.
-If the player finishes a song and moves to the next song, the changes
-will not be saved.
-
-__Quick&nbsp;Edit:&nbsp;Current__ will edit the currently playing song.
-The speed&nbsp;adjustment and volume&nbsp;adjustment will
-automatically be set to the appropriate level.
-
-This is especially useful for the volume of the song.  As the song is
-playing, set the volume of the player to adjust the volume of the song
-to the appropriate level.  Then select
-__Quick&nbsp;Edit:&nbsp;Current__ from the actions menu.  The
-volume&nbsp;adjustment will be set correctly for the new volume.
-Select the _Save_ button to save the changes.  The player's volume
-will be reset back to its previous level.
-
-__Quick&nbsp;Edit:&nbsp;Selected__ will edit the song selected in the
-music queue or in the history.
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![player-quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-quick-edit-A.png)
-<br><span style="color:#4559bf;">__Player / Quick Edit__</span> </div>
+See: [Quick Edit](en-Subjects-Quick%20Edit)
 
 ##### Marquee Menu
 
@@ -243,4 +221,4 @@ See also
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_

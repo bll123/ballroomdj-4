@@ -224,8 +224,6 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   } else {
     /* the volume adjustment is the song's volume-adjust-perc plus */
     /* any changes to the current volume from the default volume */
-    /* doing the calculations here allows the addition of a base-volume */
-    /* scale in the future if it is wanted/needed */
     dfltvol = basevol;
     if (dfltvol <= 0) {
       dfltvol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);

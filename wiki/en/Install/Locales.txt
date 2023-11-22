@@ -47,4 +47,4 @@ Nederlands.  This configuration may not be what a user in the
 Nederlands locale wants to see.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-07 08:42:54; BDJ4 version 4.4.1.2)_
+<br>_(Updated 2023-11-22 07:07:33; BDJ4 version 4.4.5)_

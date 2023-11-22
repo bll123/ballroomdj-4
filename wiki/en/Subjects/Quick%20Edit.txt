@@ -1,0 +1,51 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Quick Edit allows changes to the
+speed&nbsp;adjustment, volume&nbsp;adjustment, dance&nbsp;rating and
+dance&nbsp;level to be made to the song from the player._</span>
+
+[TOC]
+
+### Quick Edit
+
+When using _Quick&nbsp;Edit_, be sure to give yourself enough time to
+save the changes while the song is still playing or is still selected.
+If the player finishes a song and moves to the next song, the changes
+will not be saved.
+
+##### Accessing Quick Edit
+
+Quick Edit is accessed from the [Player's](en-Player-Player) _Actions_ menu.
+
+__Quick&nbsp;Edit:&nbsp;Current__ will edit the currently playing song.
+
+__Quick&nbsp;Edit:&nbsp;Selected__ will edit the currently selected
+song in the music queue or the history.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/quick-edit-A.png)
+<br><span style="color:#4559bf;">__Player / Quick Edit__</span> </div>
+
+##### Quick Edit: Current
+
+When editing the current song, the _Speed&nbsp;Adjustment_ will be set
+to the same speed as is set in the player. The _Volume&nbsp;Adjustment_
+will automatically be set to the correct level based on the song's
+volume&nbsp;adjustment setting and the current volume.
+
+This is especially useful to adjust the volume of the song. As the
+song is playing, set the volume of the player to adjust the volume of
+the song to the appropriate level.  Then select
+__Quick&nbsp;Edit:&nbsp;Current__ from the player's actions menu.  The
+volume&nbsp;adjustment will be set correctly for the new volume.
+Select the __Save__ button to save the changes. The player's volume will
+be reset back to its current setting when the changes are saved.
+
+##### Quick Edit: Selected
+
+__Quick&nbsp;Edit:&nbsp;Selected__ will edit the song selected in the
+music queue or in the history.  The song's current settings will be
+loaded and displayed.  Make any changes and then select __Save__.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_
