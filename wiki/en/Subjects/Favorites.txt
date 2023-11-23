@@ -10,7 +10,7 @@ indicate favorite songs or any other category of your choice._</span>
 ##### Settings up Favorites for Use
 
 In
-[Configuration&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
 add the _Favorite_ selection to the _Music&nbsp;Queue_, _History_,
 _Request_, _Song&nbsp;List_, _Song&nbsp;Selection_,
 _Side-by-Side&nbsp;Song&nbsp;List_,
@@ -28,7 +28,7 @@ take up much space.
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 In
-[Configuration&nbsp;/&nbsp;Filter&nbsp;Display](en-Configuration-Filter%20Display),
+[Configure&nbsp;/&nbsp;Filter&nbsp;Display](en-Configuration-Filter%20Display),
 select the _Favorite_ checkbox.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -56,7 +56,8 @@ __<span style="color:#362bff;">★</span>__
 __<span style="color:#8c2e9c;">★</span>__
 
 The pink heart and broken heart are used to match the iTunes _Like_
-and _Dislike_ settings when importing from an iTunes database.
+and _Dislike_ settings when importing from an iTunes database.  However,
+these two favorites can be used for any purpose.
 <br>__<span style="color:#ee00e1;">♥</span>__
 <span style="color:#6d2828;">💔</span>
 
@@ -91,4 +92,4 @@ If there is enough interest in being able to easily change the symbols
 and colors, I can add a configuration screen for that.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 07:03:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 06:46:39; BDJ4 version 4.4.5)_

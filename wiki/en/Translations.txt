@@ -1,0 +1,23 @@
+[Wiki Home](Home)
+
+### Translations
+
+If you can help with translations please [contact](en-Getting%20Help)
+the development team.
+
+Current Translations and Status:
+
+ Language|Status|Translator
+ --------|------|----------
+ English (GB)|Complete|bll
+ English (US)|Complete|bll
+ Deutsch|Machine Translated<br>Very poor quality|
+ Français|Machine Translated<br>Very poor quality|
+ Italiano|Machine Translated<br>Very poor quality|
+ 日本語|Machine Translated<br>Very poor quality|
+ Nederlands|Complete, needs final QA|marimo
+ Polski|Machine Translated<br>Very poor quality|
+ Русский‬|OK<br>Still needs work|
+
+[Wiki Home](Home)
+<br>_(Updated 2023-11-23 06:55:03; BDJ4 version 4.4.5)_

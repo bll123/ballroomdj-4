@@ -23,7 +23,8 @@
 
 <div markdown style="float: left; margin-right: 20px;">
 
-[About](en-About)
+[Translations](en-Translations)
+<br>[About](en-About)
 <br>[About this Wiki](en-AboutWiki)
 
 </div>
@@ -93,7 +94,11 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 ### Subjects
-[Adding Songs to the Database](en-Subjects-Adding%20Songs)
+__Playlists__
+<br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
+<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>[Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Announcements](en-Subjects-Announcements)
 <br>[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
 <br>[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
@@ -103,10 +108,6 @@
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
 <br>[Quick Edit](en-Subjects-Quick%20Edit)
-<br>__Playlists__
-<br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
-<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
-<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
 <br>__Advanced Setup__
 <br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
 <br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
@@ -122,4 +123,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 06:59:26; BDJ4 version 4.4.5)_

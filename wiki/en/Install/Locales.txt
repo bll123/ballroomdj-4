@@ -11,7 +11,7 @@ BDJ4 will use the configured system locale to determine which locale
 to use during the installation process and when BDJ4 is running.
 
 The locale may be over-ridden in the BDJ4 configuration.
-<br>(See [Configuration&nbsp;/&nbsp;General](en-Configuration-General)).
+<br>(See [Configure&nbsp;/&nbsp;General](en-Configuration-General)).
 
 If the system locale is not supported, BDJ4 will use the English/GB
 locale.
@@ -31,7 +31,7 @@ control and the mobile marquee are also translated.
 ##### Installing in one locale and displaying another
 
 If the locale is set in the BDJ4 configuration,
-([Configuration&nbsp;/&nbsp;General](en-Configuration-General)),
+([Configure&nbsp;/&nbsp;General](en-Configuration-General)),
 then the BDJ4 display text will use the configured locale.
 
 For example, BDJ4 can be installed using the Nederlands (Dutch)
@@ -47,4 +47,4 @@ Nederlands.  This configuration may not be what a user in the
 Nederlands locale wants to see.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 07:07:33; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 06:44:19; BDJ4 version 4.4.5)_
