@@ -41,6 +41,8 @@ An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (VLC) that
 need to be installed from the internet.
 
+If VLC is already installed, no internet connection is required.
+
 ##### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
@@ -110,4 +112,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 09:14:19; BDJ4 version 4.4.5)_

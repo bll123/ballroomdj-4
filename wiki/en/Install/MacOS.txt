@@ -19,11 +19,11 @@ $HOME/Library/Application&nbsp;Support/BDJ4 folder.
 
 ##### Install the Requisite Software
 
-If a pre-install script before version 14 was run, you must re-run
+If a pre-install script before version 18 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
-update.
+update.  An internet connection is required to run this script.
 
 Download the macos-pre-install-macports-v18.sh script from sourceforge.
 
@@ -45,8 +45,10 @@ Note that this process can be very slow for new releases of MacOS.
 ##### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (Mutagen) that
+installed.  There are requisite packages (VLC) that
 need to be installed from the internet.
+
+If VLC is already installed, no internet connection is required.
 
 ##### Install BallroomDJ 4
 
@@ -102,4 +104,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 09:14:19; BDJ4 version 4.4.5)_

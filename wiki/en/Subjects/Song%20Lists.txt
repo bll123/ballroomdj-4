@@ -98,10 +98,11 @@ in the song list editor, switching to the
 will automatically load the associated playlist.
 
 The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
-maximum play time, stop at, stop after, gap and play announcements.
+_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+_Gap_ and _Play&nbsp;Announcements_.
 
-In the _Dances_ tab in _Playlist&nbsp;Management_, the maximum play
-time for a particular dance can be set.
+In the _Dances_ tab in _Playlist&nbsp;Management_, the
+_Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 ##### Creating a Song List from an Automatic or Sequenced Playlist
 
@@ -137,4 +138,4 @@ new song list.
 [Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 06:44:19; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 07:11:05; BDJ4 version 4.4.5)_

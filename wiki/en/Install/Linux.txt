@@ -37,11 +37,11 @@ $HOME/BDJ4 folder
 
 ##### Install the Requisite Software
 
-If a pre-install script before version 9 was run, you must re-run
+If a pre-install script before version 11 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
-update.
+update.  An internet connection is required to run this script.
 
 Download the linux-pre-install-v11.sh script from sourceforge.
 
@@ -115,4 +115,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 09:14:19; BDJ4 version 4.4.5)_

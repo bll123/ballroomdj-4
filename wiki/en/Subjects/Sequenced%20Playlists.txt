@@ -1,7 +1,7 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_A sequenced playlist uses a specific dance
-order and BDJ4 chooses the songs to be played._</span>
+<span style="color:#4559bf;">_A sequenced playlist uses a list
+of dances and BDJ4 chooses the songs to be played._</span>
 
 [TOC]
 
@@ -21,7 +21,7 @@ Select __Manage__ in the start window.  Select __Edit&nbsp;Sequences__.
 
 Change the name of the sequence at the top of the window.
 
-Select the dance to be played and use the right arrow button
+Select each dance to be played and use the right arrow button
 ![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
 to add the dance to the sequence.
 
@@ -50,5 +50,25 @@ criteria.
 In addition, same-song marks are checked to make sure that only one song
 from those marked as the same song is used.
 
+##### Playlist Controls
+
+The sequence has an associated playlist.  If a sequence is loaded
+in the song list editor, switching to the
+[Playlist&nbsp;Management](en-Management-Playlist%20Management) tab
+will automatically load the associated playlist.
+
+The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
+_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+_Gap_ and _Play&nbsp;Announcements_.
+
+The song filter associated with the playlist can also be changed in
+thew _Settings_ tab in _Playlist&nbsp;Management_.  The songs can
+filtered by _Dance&nbsp;Rating_, _Dance&nbsp;Level_, and
+_Allowed&nbsp;Keywords_.  In addition, in the _Dances_ tab, the songs
+can be filtered by _Low&nbsp;MPM_ and _High&nbsp;MPM_ per dance.
+
+In the _Dances_ tab in _Playlist&nbsp;Management_, the maximum play
+time for a particular dance can be set.
+
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 10:59:12; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 07:11:05; BDJ4 version 4.4.5)_
