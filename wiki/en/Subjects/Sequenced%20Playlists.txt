@@ -15,6 +15,8 @@ various criteria.
 In order for a sequenced playlist to work well, the songs should have
 a [rating](en-Configuration-Edit&nbsp;Ratings) assigned to them.
 
+The _standardrounds_ sequence is installed with BDJ4.
+
 ##### Creating a Sequence
 
 Select __Manage__ in the start window.  Select __Edit&nbsp;Sequences__.
@@ -30,13 +32,16 @@ sequence.
 
 The sequence will be saved automatically.
 
-The _standardrounds_ sequence is pre-built and installed with BDJ4.
+##### Changing the Name of the Sequence
+
+The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
+Enter the new name of the sequence playlist at any time.
 
 ##### Song Selection
 
 When a sequence is played, BDJ4 chooses the song from the songs filtered
 by any playlist song selection filters.
-<br>(See [Playlist Management](en-Management-Playlist%20Management))
+<br>(See [Playlist&nbsp;Management](en-Management-Playlist%20Management))
 
 The song to be played is chosen based on the
 [Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
@@ -48,7 +53,7 @@ will be played more often.  The dance rating is the primary selection
 criteria.
 
 In addition, same-song marks are checked to make sure that only one song
-from those marked as the same song is used.
+from those songs marked as the same song is used.
 
 ##### Playlist Controls
 
@@ -62,13 +67,13 @@ _Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
 _Gap_ and _Play&nbsp;Announcements_.
 
 The song filter associated with the playlist can also be changed in
-thew _Settings_ tab in _Playlist&nbsp;Management_.  The songs can
+the _Settings_ tab in _Playlist&nbsp;Management_.  The songs can
 filtered by _Dance&nbsp;Rating_, _Dance&nbsp;Level_, and
 _Allowed&nbsp;Keywords_.  In addition, in the _Dances_ tab, the songs
 can be filtered by _Low&nbsp;MPM_ and _High&nbsp;MPM_ per dance.
 
-In the _Dances_ tab in _Playlist&nbsp;Management_, the maximum play
-time for a particular dance can be set.
+In the _Dances_ tab in _Playlist&nbsp;Management_, the
+_Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 07:11:05; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 09:58:25; BDJ4 version 4.4.5)_

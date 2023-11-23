@@ -1,8 +1,88 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_An automatic playlist selects both
+the dances and the songs to be played._</span>
+
+[TOC]
+
 ### Automatic Playlists
 
-To be written...
+When an automatic playlist is used, BDJ4 will choose both the dances
+to be played, and choose the songs to be played.
+
+A sample automatic playlist is installed with BDJ4.
+
+##### Creating an Automatic Playlist
+
+Select __Manage__ in the start window.  Select
+__Playlist&nbsp;Management__.  In the __Edit__ menu, select
+__New&nbsp;Automatic&nbsp;Playlist__.
+
+Select the __Dances__ tab.  In the first column of the dances tab, the
+checkbox indicates whether the dance may be played.  Select the dances
+that you want to be played when using this playlist.  Once you have
+finished selecting all the dances, the __Hide&nbsp;Unselected__
+checkbox in the upper right corner may be activated to hide the unused
+dances.
+
+For an automatic playlist, each dance must have a __Count__ assigned.
+The count is not an absolute value, but is relative to the other dances.
+E.g. if _Waltz_ is set to 8, and _Rumba_ is set to 4, there will be
+approximately twice as many Waltzes played than Rumbas.  If the count
+is zero, the dance will not be played.
+
+If you know how many of each dance you want played for a dance
+session, use those numbers to set the __Count__.  If the dance session
+is shorter or longer, the same relative number of each dance will be
+played.
+
+To change a count, select the dance row, then click on the count.
+Select the __+__ and __-__ buttons to adjust the count.  Click on a
+different dance to finalize the change.
+
+##### Changing the Name of the Automatic Playlist
+
+The automatic playlist's name is at the top of the
+_Playlist&nbsp;Management_ tab. Enter the new name of the automatic
+playlist at any time.
+
+##### Dance and Song Selection
+
+BDJ4 chooses the next dance to be played using an algorithm based on
+the dance, the type of dance, the speed of the dance and the tags set
+for the dance.
+<br>(See [Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+
+BDJ4 chooses the song from the songs filtered by any playlist song
+selection filters.
+<br>(See [Playlist&nbsp;Management](en-Management-Playlist%20Management))
+
+The song to be played is chosen based on the
+[Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
+[Dance&nbsp;Level](en-Configuration-Edit%20Levels) (optional).
+
+The dance rating and dance level have weights assigned to them that
+adjust which song will be played.  A dance rating with a higher weight
+will be played more often.  The dance rating is the primary selection
+criteria.
+
+In addition, same-song marks are checked to make sure that only one song
+from those songs marked as the same song is used.
+
+##### Playlist Controls
+
+The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
+_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+_Gap_ and _Play&nbsp;Announcements_.
+
+The song filter associated with the playlist can also be changed in
+the _Settings_ tab in _Playlist&nbsp;Management_.  The songs can
+filtered by _Dance&nbsp;Rating_, _Dance&nbsp;Level_, and
+_Allowed&nbsp;Keywords_.  In addition, in the _Dances_ tab, the songs
+can be filtered by _Low&nbsp;MPM_ and _High&nbsp;MPM_ per dance.
+
+In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
+particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 10:12:26; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-23 09:58:25; BDJ4 version 4.4.5)_
