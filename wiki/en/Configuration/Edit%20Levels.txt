@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Edit Levels
-
 <span style="color:#4559bf;">_Dance levels are optional and are used
 in automatic and sequenced playlists._</span>
+
+### Configure : Edit Levels
 
 The dance level can be used to help filter songs according to their
 difficulty.  If you want to use levels, you will also want to change
@@ -34,4 +34,4 @@ songs that do not have a dance level set.
 <br><span style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

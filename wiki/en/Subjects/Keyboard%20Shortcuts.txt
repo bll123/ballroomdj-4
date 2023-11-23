@@ -22,8 +22,6 @@ __Multi-media Play__: Plays the selected song.
 
 ##### Song Editor
 
-__Control-Shift-A__: Starts _Apply Adjustments_ dialog.
-
 __Control-P__: Moves to the previous song.
 
 __Control-N__: Moves to the next song.
@@ -41,4 +39,4 @@ __Multi-media Play__: Plays the selected song.
 __Control-S__: Swap songs.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-07 08:34:29; BDJ4 version 4.4.1.2)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

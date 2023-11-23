@@ -34,15 +34,17 @@ Edit&nbsp;Song&nbsp;Lists tab will be displayed.
 
 In the song selection (the right side of the screen in the
 side-by-side view), select the songs to be played and select the left
-arrow button to add them to the song list.  The _Statistics_ tab can
-be used to view how many songs, the total play time and how many songs
-for each dance have been selected.
+arrow button (![Left
+Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
+to add them to the song list.  The _Statistics_ tab can be used to
+view how many songs, the total play time and how many songs for each
+dance have been selected.
 
 Move the songs up and down to change the order in which they will be
 played.  The _Swap_ action in the _Actions_ menu can be used to
 swap two songs.
 
-The song list will be automatically saved.
+The song list will be saved automatically.
 
 ##### Using the Mix Action
 
@@ -65,9 +67,43 @@ If you don't like the order of the song list, select the __Mix__
 action again to create a new order, then review the song list and fine
 tune the order.
 
-The song list will be automatically saved.
+The song list will be saved automatically.
 
-##### Creating a Song List from an Automatic Playlist
+##### Re-Using Song Lists
+
+Once you have a song list with a good mix, you can create copies and
+modify the copy to create a new song list.
+
+Select __Load__ from the __Edit__ menu and select the song list you
+want to use as the starting point.  Select __Create&nbsp;Copy__ from
+the __Edit__ menu.  A new song list will be created.  Note that the
+name of the song list is now _Copy&nbsp;of&nbsp;..._.
+
+Change the name of the song list.
+
+Select a song in the song list that you want to replace.  From the
+song selection, select a new song of the same dance and add it to the
+song list.  Re-select the song being replaced and select the remove
+button
+(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png)).
+
+Continue to replace songs until you are satisfied with the new song
+list.
+
+##### Playlist Controls
+
+Every song list has an associated playlist.  If a song list is loaded
+in the song list editor, switching to the
+[Playlist&nbsp;Management](en-Management-Playlist%20Management) tab
+will automatically load the associated playlist.
+
+The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
+maximum play time, stop at, stop after, gap and play announcements.
+
+In the _Dances_ tab in _Playlist&nbsp;Management_, the maximum play
+time for a particular dance can be set.
+
+##### Creating a Song List from an Automatic or Sequenced Playlist
 
 A song list can also be created from an
 [Automatic&nbsp;Playlist](en-Subjects-Automatic&nbsp;Playlists) or
@@ -92,29 +128,13 @@ action described above can be used to re-order the song list.
 If you don't like the song selections that were made, start a new song
 list and use the _Create&nbsp;From&nbsp;Playlist_ action again.
 
+The [playlist&nbsp;settings](en-Management-Playlist%20Management)
+(except _Stop&nbsp;After_) and the maximum play time for a dance
+will be propagated from the automatic or sequenced playlist to the
+new song list.
+
 (See also:
 [Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
-##### Re-Using Song Lists
-
-Once you have a song list with a good mix, you can create copies and
-modify the copy to create a new song list.
-
-Select __Load__ from the __Edit__ menu and select the song list you
-want to use as the starting point.  Select __Create&nbsp;Copy__ from
-the __Edit__ menu.  A new song list will be created.  Note that the
-name of the song list is now _Copy&nbsp;of&nbsp;..._.
-
-Change the name of the song list.
-
-Select a song in the song list that you want to replace.  From the
-song selection, select a new song of the same dance and add it to the
-song list.  Re-select the song being replaced and select the remove
-button
-(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png)).
-
-Continue to replace songs until you are satisfied with the new song
-list.
-
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 07:03:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

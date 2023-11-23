@@ -1,8 +1,8 @@
 [Wiki Home](Home)
 
-### Configuration : Edit Genres
-
 <span style="color:#4559bf;">_Genres are optional._</span>
+
+### Configure : Edit Genres
 
 If you want to use genres, you will also want to change the
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
@@ -27,4 +27,4 @@ music support is not yet implemented in BDJ4.___
 <br><span style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

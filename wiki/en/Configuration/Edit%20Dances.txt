@@ -1,6 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Edit Dances
+<span style="color:#4559bf;">_Dances defines which dances can be
+selected._</span>
+
+### Configure : Edit Dances
 
 __Edit Dances__ configures the dances that are known to BDJ4.  Dances
 can be added or removed and the configuration for each dance changed.
@@ -50,4 +53,4 @@ proper default when MPM is selected in the
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 10:35:37; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

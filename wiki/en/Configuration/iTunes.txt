@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : iTunes
-
 <span style="color:#4559bf;">_iTunes configures where the iTunes data
 is found and what fields to import._</span>
+
+### Configure : iTunes
 
 ##### Configuring iTunes
 
@@ -40,4 +40,4 @@ function is used.
 <br><span style="color:#4559bf;">__Configure / iTunes__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:36:40; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

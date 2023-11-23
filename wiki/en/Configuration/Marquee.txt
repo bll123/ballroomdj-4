@@ -1,10 +1,10 @@
 [Wiki Home](Home)
 
-### Configuration : Marquee
-
 <span style="color:#4559bf;">_The marquee can be displayed on a
 monitor or projected on to a screen or wall so that the dancers can
 see the upcoming dances._</span>
+
+### Configure : Marquee
 
 If you do not have a monitor or projector where the marquee can be
 displayed, consider using [Announcements](en-Subjects-Announcements)
@@ -32,4 +32,4 @@ timer.
 <br><span style="color:#4559bf;">**Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

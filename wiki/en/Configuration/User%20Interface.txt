@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : User Interface
-
 <span style="color:#4559bf;">_The user interface tab has settings for
 how the user interface is displayed._</span>
+
+### Configure : User Interface
 
 __Theme__: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
@@ -25,4 +25,4 @@ the color of the buttons.
 <br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:58:41; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

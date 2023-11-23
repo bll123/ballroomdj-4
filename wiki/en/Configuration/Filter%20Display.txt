@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Filter Display
-
 <span style="color:#4559bf;">_Filter display controls which filters
 are displayed in the song selection filter._</span>
+
+### Configure : Filter Display
 
 The song selection filter has several filters that are not normally
 displayed.  These filters can be turned on here.
@@ -27,4 +27,4 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 <br><span style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

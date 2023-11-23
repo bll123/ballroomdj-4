@@ -1,11 +1,11 @@
 [Wiki Home](Home)
 
-[TOC]
-
-### Management : Music Manager
-
 <span style="color:#4559bf;">_The music manager works in conjunction
 with the song editor to manage songs._</span>
+
+[TOC]
+
+### Manage : Music Manager
 
 The music manager displays a listing of songs.  Like the other song
 selection listings, the songs can be filtered to display the song
@@ -88,4 +88,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Manage / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

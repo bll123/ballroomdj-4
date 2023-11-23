@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Edit Ratings
-
 <span style="color:#4559bf;">_Dance ratings are used in automatic and
 sequenced song selection._</span>
+
+### Configure : Edit Ratings
 
 The _Unrated_ rating may not be removed or moved and is assigned to
 any song without a rating.
@@ -37,4 +37,4 @@ weight to change it.
 <br><span style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

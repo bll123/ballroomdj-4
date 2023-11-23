@@ -1,8 +1,54 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_A sequenced playlist uses a specific dance
+order and BDJ4 chooses the songs to be played._</span>
+
+[TOC]
+
 ### Sequenced Playlists
 
-To be written...
+In a sequenced playlist, the dances to play are selected in a specific
+order.  Once the end of the sequence is reached, the sequence starts
+over again.  For each dance, BDJ4 will choose the song to play based on
+various criteria.
+
+In order for a sequenced playlist to work well, the songs should have
+a [rating](en-Configuration-Edit&nbsp;Ratings) assigned to them.
+
+##### Creating a Sequence
+
+Select __Manage__ in the start window.  Select __Edit&nbsp;Sequences__.
+
+Change the name of the sequence at the top of the window.
+
+Select the dance to be played and use the right arrow button
+![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
+to add the dance to the sequence.
+
+Use the up and down arrows to adjust the order of the dances in the
+sequence.
+
+The sequence will be saved automatically.
+
+The _standardrounds_ sequence is pre-built and installed with BDJ4.
+
+##### Song Selection
+
+When a sequence is played, BDJ4 chooses the song from the songs filtered
+by any playlist song selection filters.
+<br>(See [Playlist Management](en-Management-Playlist%20Management))
+
+The song to be played is chosen based on the
+[Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
+[Dance&nbsp;Level](en-Configuration-Edit%20Levels) (optional).
+
+The dance rating and dance level have weights assigned to them that
+adjust which song will be played.  A dance rating with a higher weight
+will be played more often.  The dance rating is the primary selection
+criteria.
+
+In addition, same-song marks are checked to make sure that only one song
+from those marked as the same song is used.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-22 10:59:12; BDJ4 version 4.4.5)_

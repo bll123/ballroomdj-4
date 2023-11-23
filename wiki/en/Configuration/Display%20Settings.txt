@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Display Settings
-
 <span style="color:#4559bf;">_Display settings changes the columns
 displayed in music queues, song listings and in the Song&nbsp;Editor._</span>
+
+### Configure : Display Settings
 
 The display settings are used to configure which columns are displayed
 for the music queues, song selection and song editor.
@@ -30,4 +30,4 @@ to change the order in which the columns are displayed.
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-07-14 09:01:11; BDJ4 version 4.3.3.1)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-[TOC]
-
 <span style="color:#4559bf;">_The player is the main interface used
 for playback of songs._</span>
+
+[TOC]
 
 ### Player
 
@@ -221,4 +221,4 @@ See also
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

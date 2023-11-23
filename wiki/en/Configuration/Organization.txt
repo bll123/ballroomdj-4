@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Organization
-
 <span style="color:#4559bf;">_Organization configures how the audio
 files are stored on your computer._</span>
+
+### Configure : Organization
 
 The organization path is used when the audio file is added to the
 database and for automatic organization of the audio files.
@@ -31,4 +31,4 @@ the organization path. ___This feature is not yet implemented.___
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

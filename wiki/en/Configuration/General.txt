@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : General
-
 <span style="color:#4559bf;">_The general tab provide settings that
 affect the entire BDJ4 application._</span>
+
+### Configure : General
 
 __Music Folder__: The main music folder where the music is found.
 See also [Update&nbsp;Database](en-Management-Update%20Database)
@@ -50,4 +50,4 @@ paste the appropriate information into the configuration.
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

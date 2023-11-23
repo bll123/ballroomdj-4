@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Music Queues
-
 <span style="color:#4559bf;">_The music queue controls configures
 playback for each music queue._</span>
+
+### Configure : Music Queues
 
 __Queue__: Selects which music queue to configure.  The following settings
 apply to the selected music queue.
@@ -55,4 +55,4 @@ teaching.
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

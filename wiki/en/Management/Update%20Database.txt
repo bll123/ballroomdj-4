@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Management : Update Database
-
 <span style="color:#4559bf;">_Update database is used to manage the
 database of songs._</span>
+
+### Manage : Update Database
 
 Update Database has several possible actions. Select the __Action__ you
 want to use, then select the _Start_ button to start processing.  The
@@ -47,4 +47,4 @@ folder.  Set the __Action__ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

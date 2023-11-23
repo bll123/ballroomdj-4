@@ -1,11 +1,11 @@
 [Wiki Home](Home)
 
-[TOC]
-
-### Management : Edit Sequences
-
 <span style="color:#4559bf;">_A sequence is a playlist with an exact
 sequence of dances and the songs are selected by BDJ4._</span>
+
+[TOC]
+
+### Manage : Edit Sequences
 
 In all cases, the sequence is automatically saved.
 
@@ -70,4 +70,4 @@ played, change the settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:48:33; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

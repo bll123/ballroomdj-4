@@ -1,11 +1,11 @@
 [Wiki Home](Home)
 
-[TOC]
-
-### Management : Edit Song Lists
-
 <span style="color:#4559bf;">_A song list is a playlist with
 songs selected and ordered by the DJ._</span>
+
+[TOC]
+
+### Manage : Edit Song Lists
 
 In all cases, the song list is automatically saved.
 
@@ -220,4 +220,4 @@ playlist from iTunes.
 <br><span style="color:#4559bf;">**Manage / Edit Song Lists / Import Menu**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-10-05 12:51:52; BDJ4 version 4.4.1.1)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

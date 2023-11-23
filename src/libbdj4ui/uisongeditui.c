@@ -171,7 +171,6 @@ static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
 static bool uisongeditKeyEvent (void *udata);
-static bool uisongeditApplyAdjCallback (void *udata);
 static int uisongeditEntryChangedCallback (uientry_t *entry, void *udata);
 static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
@@ -1786,12 +1785,6 @@ uisongeditKeyEvent (void *udata)
 
   if (uiKeyIsPressEvent (seint->uikey)) {
     if (uiKeyIsControlPressed (seint->uikey)) {
-      if (uiKeyIsShiftPressed (seint->uikey)) {
-        if (uiKeyIsKey (seint->uikey, 'A')) {
-          uisongeditApplyAdjCallback (uisongedit);
-          return UICB_STOP;
-        }
-      }
       if (uiKeyIsKey (seint->uikey, 'S')) {
         uisongeditSaveCallback (uisongedit);
         return UICB_STOP;
@@ -1807,22 +1800,6 @@ uisongeditKeyEvent (void *udata)
     }
   }
 
-  return UICB_CONT;
-}
-
-static bool
-uisongeditApplyAdjCallback (void *udata)
-{
-  uisongedit_t    *uisongedit = udata;
-
-  logProcBegin (LOG_PROC, "uisongeditApplyAdjCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: apply-adj (kb)");
-
-  if (uisongedit->applyadjcb != NULL) {
-    callbackHandlerLong (uisongedit->applyadjcb, SONG_ADJUST_NONE);
-  }
-
-  logProcEnd (LOG_PROC, "uisongeditApplyAdjCallback", "");
   return UICB_CONT;
 }
 

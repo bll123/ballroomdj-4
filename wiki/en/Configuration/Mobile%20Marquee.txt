@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Mobile Marquee
-
 <span style="color:#4559bf;">_The mobile marquee will display the
 upcoming songs on a mobile device._</span>
+
+### Configure : Mobile Marquee
 
 The mobile marquee is a web page that displays the upcoming songs on a
 mobile phone or tablet.  The computer running BDJ4 must be connected
@@ -35,4 +35,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-21 03:02:15; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

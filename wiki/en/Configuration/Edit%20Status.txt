@@ -1,9 +1,9 @@
 [Wiki Home](Home)
 
-### Configuration : Edit Status
-
 <span style="color:#4559bf;">_Status is optional and can be used to
 track the status of songs._</span>
+
+### Configure : Edit Status
 
 The status field can be used to track the status of songs in the
 database.  If you want to use the status field, you will also want to
@@ -35,4 +35,4 @@ _Playable&nbsp;Status_ filter <br>See
 <br><span style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_
