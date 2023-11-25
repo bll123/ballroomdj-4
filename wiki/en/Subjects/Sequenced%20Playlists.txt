@@ -7,19 +7,29 @@ of dances and BDJ4 chooses the songs to be played._</span>
 
 ### Sequenced Playlists
 
-In a sequenced playlist, the dances to play are selected in a specific
-order.  Once the end of the sequence is reached, the sequence starts
-over again.  For each dance, BDJ4 will choose the song to play based on
-various criteria.
+In a sequenced playlist, a list of dances to play is used. Once the
+end of the sequence is reached, the sequence starts over again.  For
+each dance, BDJ4 will choose the song to play based on various
+criteria.
 
 In order for a sequenced playlist to work well, the songs should have
 a [rating](en-Configuration-Edit&nbsp;Ratings) assigned to them.
 
-The _standardrounds_ sequence is installed with BDJ4.
+A sample _Standard&nbsp;Rounds_ sequence is installed with BDJ4.
+
+##### Changing the Name of the Sequence
+
+The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
+Enter the new name of the sequence playlist at any time.
+
+If you forget to change the name, the sequence will be named
+_New&nbsp;Sequence_.  Select __Load__ from the __Edit__ menu.  Select
+_New&nbsp;Sequence_.  Change the name of the sequence.
 
 ##### Creating a Sequence
 
 Select __Manage__ in the start window.  Select __Edit&nbsp;Sequences__.
+Select __Start&nbsp;New&nbsp;Sequence__ from the __Edit__ menu.
 
 Change the name of the sequence at the top of the window.
 
@@ -31,11 +41,6 @@ Use the up and down arrows to adjust the order of the dances in the
 sequence.
 
 The sequence will be saved automatically.
-
-##### Changing the Name of the Sequence
-
-The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
-Enter the new name of the sequence playlist at any time.
 
 ##### Song Selection
 
@@ -76,4 +81,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 09:58:25; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-25 05:28:29; BDJ4 version 4.4.5)_

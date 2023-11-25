@@ -6,6 +6,9 @@
 
 **4.4.6 2023-12---**
 
+* Bug Fixes:
+    * Starter: Fix incorrect profile creation.
+
 -->
 
 **4.4.5 2023-11-20**

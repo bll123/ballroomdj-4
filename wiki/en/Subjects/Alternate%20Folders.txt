@@ -1,8 +1,15 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_Alternate folders are used to create an
+additional BDJ4 instance with a completely new database._</span>
+
+[TOC]
+
 ### Alternate Folders
+
+At this time, alternate folders only work on Linux and Windows.
 
 To be written...
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 10:12:26; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-25 05:49:53; BDJ4 version 4.4.5)_

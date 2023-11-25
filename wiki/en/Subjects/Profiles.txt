@@ -1,8 +1,84 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_Profiles are used to create a different
+configuration using the same music database._</span>
+
+[TOC]
+
 ### Profiles
 
-To be written...
+A profile is used when a different BDJ4 configuration is desired.
+
+Some configuration profiles could be for teaching, for use with
+headphones, for regular DJ work, or for ballroom dance parties.
+
+##### Creating a New Profile
+
+Start BDJ4, then select __Create&nbsp;Profile__ in the __Profile__
+selection.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![profile-create](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-create-A.png)
+<br><span style="color:#4559bf;">**Starter / Create Profile**</span> </div>
+
+Select __Configure__.
+
+In the __General__ tab in the configuration, there are two fields
+related to profiles.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![profile-setup](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-setup-A.png)
+<br><span style="color:#4559bf;">**Configure / General (profile)**</span> </div>
+
+__Profile Name__: The profile name will appear in the profile
+selection of the starter window and will display in the title bar of
+each window.
+
+__Profile Color__: When a profile is first created, a new profile
+color will be selected.  A small box using the profile color is
+displayed in the top right corner of each window for quick
+identification of which profile is in use.  Select the color button
+to choose a new color for the new profile.
+
+Close the configuration window and re-start BDJ4.
+
+After restart, the starter window will show the new profile names
+in the profile selection along with the selected profile colors.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![profile-new](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-new-A.png)
+<br><span style="color:#4559bf;">**Starter**</span> </div>
+
+The profile order cannot be changed.  BDJ4 chooses the first empty
+profile slot to create a new profile.  A maximum of 10 profiles may be
+created.
+
+##### Selecting Profiles
+
+When BDJ4 is started, the first profile will automatically be selected.
+
+Select the profile to use.  Once a button in the starter window has
+been selected, the profile is set and may not be changed.
+
+##### Deleting Profiles
+
+Start BDJ4, select the profile to be deleted, then in the starter
+window, select __Delete&nbsp;Profile__ from the __Actions__ menu.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![profile-delete](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-delete-A.png)
+<br><span style="color:#4559bf;">**Starter**</span> </div>
+
+##### Using Multiple Profiles
+
+Multiple profiles may be in use at the same time.  Be aware that only
+the first profile that is started has control of the volume settings.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![profile-player-sink](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-player-sink-A.png)
+<br><span style="color:#4559bf;">**Starter**</span> </div>
+
+
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-11-25 06:20:38; BDJ4 version 4.4.5)_

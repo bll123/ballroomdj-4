@@ -12,6 +12,16 @@ to be played, and choose the songs to be played.
 
 A sample automatic playlist is installed with BDJ4.
 
+##### Changing the Name of the Automatic Playlist
+
+The automatic playlist's name is at the top of the
+_Playlist&nbsp;Management_ tab. Enter the new name of the automatic
+playlist at any time.
+
+If you forget to change the name, the automatic playlist will be named
+_New&nbsp;Playlist_.  Select __Load__ from the __Edit__ menu.  Select
+_New&nbsp;Playlist_.  Change the name of the automatic playlist.
+
 ##### Creating an Automatic Playlist
 
 Select __Manage__ in the start window.  Select
@@ -39,12 +49,6 @@ played.
 To change a count, select the dance row, then click on the count.
 Select the __+__ and __-__ buttons to adjust the count.  Click on a
 different dance to finalize the change.
-
-##### Changing the Name of the Automatic Playlist
-
-The automatic playlist's name is at the top of the
-_Playlist&nbsp;Management_ tab. Enter the new name of the automatic
-playlist at any time.
 
 ##### Dance and Song Selection
 
@@ -85,4 +89,4 @@ In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
 particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 09:58:25; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-25 05:28:29; BDJ4 version 4.4.5)_
