@@ -53,6 +53,41 @@ START_TEST(queue_push_one)
 }
 END_TEST
 
+START_TEST(queue_access_after_free)
+{
+  qidx_t        count;
+  queue_t       *q;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_one");
+  mdebugSubTag ("queue_push_one");
+  q = queueAlloc ("push-one", NULL);
+  queuePush (q, "aaaa");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 1);
+  queueFree (q);
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 0);
+}
+END_TEST
+
+START_TEST(queue_bad_access)
+{
+  qidx_t        count;
+  queue_t       *q;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_one");
+  mdebugSubTag ("queue_push_one");
+  q = queueAlloc ("push-one", NULL);
+  queuePush (q, "aaaa");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 1);
+  queueFree (q);
+  q = (queue_t *) &count;
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 0);
+}
+END_TEST
+
 START_TEST(queue_push_two)
 {
   qidx_t        count;
@@ -1513,6 +1548,8 @@ queue_suite (void)
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, queue_alloc_free);
   tcase_add_test (tc, queue_push_one);
+  tcase_add_test (tc, queue_access_after_free);
+  tcase_add_test (tc, queue_bad_access);
   tcase_add_test (tc, queue_push_two);
   tcase_add_test (tc, queue_push_many);
   tcase_add_test (tc, queue_push_pop_one);

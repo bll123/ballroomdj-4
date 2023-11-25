@@ -126,6 +126,7 @@ enum {
   START_W_SUPPORT_MSG_DIALOG,
   START_W_SUPPORT_SEND_FILES,
   START_W_SUPPORT_SEND_DB,
+  START_W_MENU_DEL_PROFILE,
   START_W_MAX,
 };
 
@@ -592,7 +593,9 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: starterui: menu item: delete profile */
   menuitem = uiMenuCreateItem (menu, _("Delete Profile"),
       starter->callbacks [START_CB_MENU_DEL_PROFILE]);
-  uiwcontFree (menuitem);
+  starter->wcont [START_W_MENU_DEL_PROFILE] = menuitem;
+  /* when the starter is first started, disable delete-profile */
+  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
 
   if (! isMacOS ()) {
     /* CONTEXT: starterui: menu item: create shortcut for profile */
@@ -601,15 +604,17 @@ starterBuildUI (startui_t  *starter)
     uiwcontFree (menuitem);
   }
 
-  if (! isMacOS ()) {
-    /* CONTEXT: starterui: menu item: install in alternate folder */
-    snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
-    starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (
-        starterSetUpAlternate, starter, NULL);
-    menuitem = uiMenuCreateItem (menu, tbuff,
-        starter->callbacks [START_CB_MENU_ALT_SETUP]);
-    uiwcontFree (menuitem);
+  /* CONTEXT: starterui: menu item: install in alternate folder */
+  snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
+  starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (
+      starterSetUpAlternate, starter, NULL);
+  menuitem = uiMenuCreateItem (menu, tbuff,
+      starter->callbacks [START_CB_MENU_ALT_SETUP]);
+
+  if (isMacOS ()) {
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   }
+  uiwcontFree (menuitem);
 
   /* main display */
   hbox = uiCreateHorizBox ();
@@ -1568,13 +1573,17 @@ starterGetProfiles (startui_t *starter)
     }
   }
 
-  /* CONTEXT: starterui: selection to create a new profile */
-  nlistSetStr (proflist, count, _("Create Profile"));
-  nlistSetNum (profidxlist, count, availprof);
-  starter->newprofile = availprof;
-  len = istrlen (nlistGetStr (proflist, count));
-  max = len > max ? len : max;
+  if (count < BDJOPT_MAX_PROFILES && availprof != -1) {
+    /* CONTEXT: starterui: selection to create a new profile */
+    nlistSetStr (proflist, count, _("Create Profile"));
+    nlistSetNum (profidxlist, count, availprof);
+    starter->newprofile = availprof;
+    len = istrlen (nlistGetStr (proflist, count));
+    max = len > max ? len : max;
+  }
+
   starter->maxProfileWidth = (int) max;
+
   if (profileinuse) {
     dispidx = count;
     starter->currprofile = availprof;
@@ -1606,6 +1615,12 @@ starterResetProfile (startui_t *starter, int profidx)
 {
   starter->currprofile = profidx;
   sysvarsSetNum (SVL_BDJIDX, profidx);
+
+  if (starter->currprofile == 0) {
+    uiWidgetSetState (starter->wcont [START_W_MENU_DEL_PROFILE], UIWIDGET_DISABLE);
+  } else {
+    uiWidgetSetState (starter->wcont [START_W_MENU_DEL_PROFILE], UIWIDGET_ENABLE);
+  }
 
   /* if the profile is the new profile, there's no option data to load */
   /* the check-profile function will do the actual creation of a new profile */

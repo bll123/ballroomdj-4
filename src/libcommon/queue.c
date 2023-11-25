@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 
@@ -35,6 +36,10 @@ enum {
   Q_DIR_NEXT = 1,
 };
 
+enum {
+  QUEUE_IDENT = 0x717565756500aabb,
+};
+
 typedef struct queuenode {
   void              *data;
   struct queuenode  *prev;
@@ -42,6 +47,7 @@ typedef struct queuenode {
 } queuenode_t;
 
 typedef struct queue {
+  uint64_t      queueident;
   char          *name;
   qidx_t        count;
   queuenode_t   *cacheNode;
@@ -65,6 +71,7 @@ queueAlloc (const char *name, queueFree_t freeHook)
 
   logProcBegin (LOG_PROC, "queueAlloc");
   q = mdmalloc (sizeof (queue_t));
+  q->queueident = QUEUE_IDENT;
   q->name = mdstrdup (name);
   q->count = 0;
   q->cacheNode = NULL;
@@ -86,31 +93,44 @@ queueFree (queue_t *q)
   queuenode_t     *tnode;
 
   logProcBegin (LOG_PROC, "queueFree");
-  if (q != NULL) {
-    if (q->cacheHits > 0) {
-      logMsg (LOG_DBG, LOG_BASIC, "queue: %s cache hits: %ld", q->name, q->cacheHits);
-    }
-    dataFree (q->name);
-    node = q->head;
-    tnode = node;
-    while (node != NULL && node->next != NULL) {
-      node = node->next;
-      if (tnode != NULL) {
-        if (tnode->data != NULL && q->freeHook != NULL) {
-          q->freeHook (tnode->data);
-        }
-        mdfree (tnode);
-      }
-      tnode = node;
-    }
+
+  if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueFree", "null");
+    return;
+  }
+
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueFree", "bad-ident");
+    return;
+  }
+
+  /* make sure this queue is no longer available */
+  q->queueident = 0;
+
+  if (q->cacheHits > 0) {
+    logMsg (LOG_DBG, LOG_BASIC, "queue: %s cache hits: %ld", q->name, q->cacheHits);
+  }
+  dataFree (q->name);
+  node = q->head;
+  tnode = node;
+  while (node != NULL && node->next != NULL) {
+    node = node->next;
     if (tnode != NULL) {
       if (tnode->data != NULL && q->freeHook != NULL) {
         q->freeHook (tnode->data);
       }
       mdfree (tnode);
     }
-    mdfree (q);
+    tnode = node;
   }
+  if (tnode != NULL) {
+    if (tnode->data != NULL && q->freeHook != NULL) {
+      q->freeHook (tnode->data);
+    }
+    mdfree (tnode);
+  }
+  mdfree (q);
+
   logProcEnd (LOG_PROC, "queueFree", "");
 }
 
@@ -122,6 +142,10 @@ queuePush (queue_t *q, void *data)
   logProcBegin (LOG_PROC, "queuePush");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queuePush", "bad-ptr");
+    return;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queuePush", "bad-ident");
     return;
   }
 
@@ -153,6 +177,10 @@ queuePushHead (queue_t *q, void *data)
   logProcBegin (LOG_PROC, "queuePushHead");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queuePushHead", "bad-ptr");
+    return;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queuePushHead", "bad-ident");
     return;
   }
 
@@ -188,6 +216,11 @@ queueGetFirst (queue_t *q)
     logProcEnd (LOG_PROC, "queueGetFirst", "bad-ptr");
     return NULL;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueGetFirst", "bad-ident");
+    return NULL;
+  }
+
   node = q->head;
 
   if (node != NULL) {
@@ -209,6 +242,10 @@ queueGetByIdx (queue_t *q, qidx_t idx)
   logProcBegin (LOG_PROC, "queueGetByIdx");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queueGetByIdx", "bad-ptr");
+    return NULL;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-ident");
     return NULL;
   }
   if (idx >= q->count) {
@@ -238,6 +275,10 @@ queuePop (queue_t *q)
     logProcEnd (LOG_PROC, "queuePop", "bad-ptr");
     return NULL;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queuePop", "bad-ident");
+    return NULL;
+  }
   node = q->head;
 
   /* a pop invalidates the cache */
@@ -258,6 +299,10 @@ queueClear (queue_t *q, qidx_t startIdx)
   logProcBegin (LOG_PROC, "queueClear");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queueClear", "bad-ptr");
+    return;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueClear", "bad-ident");
     return;
   }
   node = q->tail;
@@ -289,6 +334,10 @@ queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
   logProcBegin (LOG_PROC, "queueMove");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queueMove", "bad-ptr");
+    return;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueMove", "bad-ident");
     return;
   }
   if (fromidx < 0 || fromidx >= q->count || toidx < 0 || toidx >= q->count) {
@@ -323,6 +372,10 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
   logProcBegin (LOG_PROC, "queueInsert");
   if (q == NULL) {
     logProcEnd (LOG_PROC, "queueInsert", "bad-ptr");
+    return;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueInsert", "bad-ident");
     return;
   }
   if (idx < 0 || idx >= q->count) {
@@ -375,6 +428,10 @@ queueRemoveByIdx (queue_t *q, qidx_t idx)
     logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-ptr");
     return NULL;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-ident");
+    return NULL;
+  }
   if (idx < 0 || idx >= q->count) {
     logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-idx");
     return NULL;
@@ -394,26 +451,44 @@ queueRemoveByIdx (queue_t *q, qidx_t idx)
 qidx_t
 queueGetCount (queue_t *q)
 {
-  if (q != NULL) {
-    return q->count;
+  if (q == NULL) {
+fprintf (stderr, "ERR: queue: null ptr\n");
+    return 0;
   }
-  return 0;
+  if (q->queueident != QUEUE_IDENT) {
+fprintf (stderr, "ERR: queue: bad ptr\n");
+    return 0;
+  }
+
+  return q->count;
 }
 
 void
 queueStartIterator (queue_t *q, qidx_t *iteridx)
 {
-  if (q != NULL) {
-    *iteridx = -1;
-    q->iteratorNode = q->head;
-    q->currentNode = q->head;
+  if (q == NULL) {
+    return;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    return;
+  }
+
+  *iteridx = -1;
+  q->iteratorNode = q->head;
+  q->currentNode = q->head;
 }
 
 void *
 queueIterateData (queue_t *q, qidx_t *iteridx)
 {
   void      *data = NULL;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  if (q->queueident != QUEUE_IDENT) {
+    return NULL;
+  }
 
   if (q->iteratorNode != NULL) {
     data = q->iteratorNode->data;
@@ -436,6 +511,10 @@ queueIterateRemoveNode (queue_t *q, qidx_t *iteridx)
   if (q == NULL) {
     return NULL;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    return NULL;
+  }
+
   /* queueRemove will invalidate the cache */
   data = queueRemove (q, q->currentNode);
   q->currentNode = q->iteratorNode;
@@ -449,6 +528,10 @@ queueDebugSearchDist (queue_t *q)
   if (q == NULL) {
     return -1;
   }
+  if (q->queueident != QUEUE_IDENT) {
+    return -1;
+  }
+
   return q->searchDist;
 }
 

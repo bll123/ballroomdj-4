@@ -17,6 +17,10 @@
 #include "mdebug.h"
 #include "tmutil.h"
 
+enum {
+  LIST_IDENT = 0x6c69737400aabbcc,
+};
+
 typedef union {
   const char  *strkey;
   listidx_t   idx;
@@ -40,6 +44,7 @@ typedef struct {
 } listitem_t;
 
 typedef struct list {
+  uint64_t        listident;
   char            *name;
   int             version;
   listidx_t       count;
@@ -59,7 +64,7 @@ typedef struct list {
 
 static void     listSet (list_t *list, listitem_t *item);
 static listidx_t listGetIdx_int (list_t *list, listkeylookup_t *key);
-static bool     listCheckKeyType (list_t *list, keytype_t keytype);
+static bool     listCheckIfValid (list_t *list, keytype_t keytype);
 static void     listFreeItem (list_t *, listidx_t);
 static listidx_t listIterateKeyGetNum (list_t *list, listidx_t *iteridx);
 static void     listInsert (list_t *, listidx_t loc, listitem_t *item);
@@ -78,6 +83,7 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   list_t    *list;
 
   list = mdmalloc (sizeof (list_t));
+  list->listident = LIST_IDENT;
   /* always allocate the name so that dynamic names can be created */
   list->name = mdstrdup (name);
   list->data = NULL;
@@ -107,10 +113,9 @@ listFree (keytype_t keytype, void *tlist)
 {
   list_t *list = (list_t *) tlist;
 
-  if (list == NULL) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
-  listCheckKeyType (list, keytype);
 
   logMsg (LOG_DBG, LOG_LIST, "list free %s", list->name);
   if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
@@ -139,11 +144,7 @@ listFree (keytype_t keytype, void *tlist)
 void
 listSetSize (keytype_t keytype, list_t *list, listidx_t siz)
 {
-  if (list == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -165,10 +166,7 @@ listSort (keytype_t keytype, list_t *list)
   time_t        elapsed;
   long          swaps;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -186,10 +184,7 @@ listCalcMaxWidth (keytype_t keytype, list_t *list)
 {
   int     maxlen = 10;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -209,10 +204,7 @@ listCalcMaxWidth (keytype_t keytype, list_t *list)
 const char *
 listGetName (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return 0;
   }
   return list->name;
@@ -221,10 +213,7 @@ listGetName (keytype_t keytype, list_t *list)
 void
 listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook)
 {
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
   list->valueFreeHook = valueFreeHook;
@@ -235,10 +224,7 @@ listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook)
 listidx_t
 listGetCount (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return 0;
   }
   return list->count;
@@ -247,10 +233,7 @@ listGetCount (keytype_t keytype, list_t *list)
 int
 listGetMaxKeyWidth (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return 0;
   }
   return list->maxKeyWidth;
@@ -261,10 +244,7 @@ listGetMaxKeyWidth (keytype_t keytype, list_t *list)
 void
 listSetVersion (keytype_t keytype, list_t *list, int version)
 {
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
   list->version = version;
@@ -273,10 +253,7 @@ listSetVersion (keytype_t keytype, list_t *list, int version)
 int
 listGetVersion (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return LIST_NO_VERSION;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_NO_VERSION;
   }
   return list->version;
@@ -287,7 +264,7 @@ listGetVersion (keytype_t keytype, list_t *list)
 void
 listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -297,10 +274,7 @@ listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
 listidx_t
 listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -312,10 +286,7 @@ listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 listidx_t
 listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -333,10 +304,7 @@ listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   char    *value = NULL;
 
-  if (list == NULL) {
-    return NULL;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return NULL;
   }
 
@@ -361,10 +329,7 @@ listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   void  *value = NULL;
 
-  if (list == NULL) {
-    return NULL;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return NULL;
   }
 
@@ -383,10 +348,7 @@ listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
   listnum_t   value = LIST_VALUE_INVALID;
 
-  if (list == NULL) {
-    return LIST_VALUE_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_VALUE_INVALID;
   }
 
@@ -403,10 +365,7 @@ listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 listidx_t
 listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -418,10 +377,7 @@ listGetIdxNumKey (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listkeylookup_t key;
 
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -434,10 +390,7 @@ listGetIdxStrKey (keytype_t keytype, list_t *list, const char *str)
 {
   listkeylookup_t key;
 
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -448,10 +401,7 @@ listGetIdxStrKey (keytype_t keytype, list_t *list, const char *str)
 listidx_t
 listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
-  if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_LOC_INVALID;
   }
 
@@ -464,10 +414,7 @@ listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 const char *
 listGetKeyStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
-  if (list == NULL) {
-    return NULL;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return NULL;
   }
 
@@ -482,10 +429,7 @@ listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   void    *value = NULL;
 
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return value;
   }
   if (idx >= 0 && idx < list->count) {
@@ -501,10 +445,7 @@ listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   const char  *value = NULL;
 
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return value;
   }
   if (idx >= 0 && idx < list->count) {
@@ -521,10 +462,7 @@ listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listnum_t   value = LIST_VALUE_INVALID;
 
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return value;
   }
   if (idx >= 0 && idx < list->count) {
@@ -539,10 +477,7 @@ listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   double    value = LIST_DOUBLE_INVALID;
 
-  if (list == NULL) {
-    return value;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return value;
   }
   if (idx >= 0 && idx < list->count) {
@@ -558,10 +493,7 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listidx_t   copycount;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
   if (idx < 0 || idx >= list->count) {
@@ -588,10 +520,7 @@ listSetStrData (keytype_t keytype, list_t *list, const char *key, void *data)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -606,10 +535,7 @@ listSetStrList (keytype_t keytype, list_t *list, const char *key, void *data)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -624,10 +550,7 @@ listSetStrStr (keytype_t keytype, list_t *list, const char *key, const char *str
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -645,10 +568,7 @@ listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -663,10 +583,7 @@ listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -681,10 +598,7 @@ listSetNumData (keytype_t keytype, list_t *list, listidx_t key, void *data)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -699,10 +613,7 @@ listSetNumList (keytype_t keytype, list_t *list, listidx_t key, void *data)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -717,10 +628,7 @@ listSetNumStr (keytype_t keytype, list_t *list, listidx_t key, const char *str)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -738,10 +646,7 @@ listSetNumNum (keytype_t keytype, list_t *list, listidx_t key, listnum_t val)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -756,10 +661,7 @@ listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval)
 {
   listitem_t    item;
 
-  if (list == NULL) {
-    return;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
 
@@ -774,7 +676,7 @@ listSetNumDouble (keytype_t keytype, list_t *list, listidx_t key, double dval)
 void
 listDumpInfo (keytype_t keytype, list_t *list)
 {
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return;
   }
   logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
@@ -787,10 +689,7 @@ listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
 {
   bool  rc;
 
-  if (list == NULL) {
-    return false;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return false;
   }
 
@@ -803,10 +702,7 @@ listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key)
 listidx_t
 listGetAllocCount (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return 0;
   }
   return list->allocCount;
@@ -816,10 +712,7 @@ listGetAllocCount (keytype_t keytype, list_t *list)
 int
 listGetOrdering (keytype_t keytype, list_t *list)
 {
-  if (list == NULL) {
-    return LIST_UNORDERED;
-  }
-  if (! listCheckKeyType (list, keytype)) {
+  if (! listCheckIfValid (list, keytype)) {
     return LIST_UNORDERED;
   }
 
@@ -926,17 +819,27 @@ listGetIdx_int (list_t *list, listkeylookup_t *key)
 }
 
 static bool
-listCheckKeyType (list_t *list, keytype_t keytype)
+listCheckIfValid (list_t *list, keytype_t keytype)
 {
-  bool    rc = true;
+  if (list == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "list: null");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "list: null");
+    return false;
+  }
+
+  if (list->listident != LIST_IDENT) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "list: bad ident");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "list: bad ident");
+    return false;
+  }
 
   if (list->keytype != keytype) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
-    rc = false;
+    return false;
   }
 
-  return rc;
+  return true;
 }
 
 static void
