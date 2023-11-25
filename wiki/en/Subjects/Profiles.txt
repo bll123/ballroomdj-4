@@ -9,8 +9,9 @@ configuration using the same music database._</span>
 
 A profile is used when a different BDJ4 configuration is desired.
 
-Some configuration profiles could be for teaching, for use with
-headphones, for regular DJ work, or for ballroom dance parties.
+A profile could be set up for teaching, for use with headphones, for
+use with headphones, for ballroom dance parties, for home, or other
+uses.
 
 ##### Creating a New Profile
 
@@ -71,14 +72,17 @@ window, select __Delete&nbsp;Profile__ from the __Actions__ menu.
 
 ##### Using Multiple Profiles
 
-Multiple profiles may be in use at the same time.  Be aware that only
-the first profile that is started has control of the volume settings.
+Multiple profiles may be in use at the same time.
+
+In the [Configuration&nbsp;/&nbsp;Player](en-Configuration-Player),
+the audio output sink can be configured per-profile.  As an example,
+the DJ could start BDJ4 with one profile for a ballroom party and
+start a second instance of BDJ4 using a different profile to listen to
+music on their USB headphones.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![profile-player-sink](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-player-sink-A.png)
-<br><span style="color:#4559bf;">**Starter**</span> </div>
-
-
+<br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-25 06:20:38; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-25 08:53:33; BDJ4 version 4.4.5)_

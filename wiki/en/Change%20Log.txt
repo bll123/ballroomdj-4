@@ -7,7 +7,7 @@
 **4.4.6 2023-12---**
 
 * Bug Fixes:
-    * Starter: Fix incorrect profile creation.
+    * Starter: Fix minor profile bugs.
 
 -->
 
@@ -634,4 +634,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-20 14:54:57; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-11-25 08:53:33; BDJ4 version 4.4.5)_
