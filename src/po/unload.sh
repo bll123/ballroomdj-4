@@ -52,10 +52,11 @@ fi
 
 for f in *.po; do
   base=$(echo $f | sed -e 's,\.po$,,' -e 's,^web-,,')
-  if [[ ! -d $TMP/$base ]]; then
-    base=$(echo $base | sed 's,\(..\).*,\1,')
+  tbase=$(echo $base | sed -e 's,_,-,')
+  if [[ ! -d $TMP/$tbase ]]; then
+    tbase=$(echo $tbase | sed 's,\(..\).*,\1,')
   fi
-  if [[ ! -d $TMP/$base ]]; then
+  if [[ ! -d $TMP/$tbase ]]; then
     continue
   fi
 
@@ -66,10 +67,10 @@ for f in *.po; do
   sed -n '1,2 p' $f.bak > $f
   case $f in
     web-*)
-      sed -n '3,$ p' $TMP/$base/web-en_GB.po >> $f
+      sed -n '3,$ p' $TMP/$tbase/web-en_GB.po >> $f
       ;;
     *)
-      sed -n '3,$ p' $TMP/$base/en_GB.po >> $f
+      sed -n '3,$ p' $TMP/$tbase/en_GB.po >> $f
       ;;
   esac
 done

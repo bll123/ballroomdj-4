@@ -43,6 +43,8 @@ function mksub {
 
   if [[ $ok == T ]]; then
     sedcmd+="-e \"s,!!!,',g\""
+
+    test -d "${TMPLDIR}/${locale}" || mkdir "${TMPLDIR}/${locale}"
     eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   fi
   set +o noglob
@@ -79,6 +81,7 @@ function mkhtmlsub {
 
   if [[ $ok == T ]]; then
     sedcmd+="-e \"s,!!!,',g\""
+    test -d "${TMPLDIR}/${locale}" || mkdir "${TMPLDIR}/${locale}"
     eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   fi
   set +o noglob
@@ -113,6 +116,7 @@ function mkimgsub {
   done < $tempf
 
   if [[ $ok == T ]]; then
+    test -d "${TMPLDIR}/${locale}" || mkdir "${TMPLDIR}/${locale}"
     eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   fi
   set +o noglob
@@ -298,8 +302,7 @@ while read -r line; do
         continue
         ;;
       *mobilemq.html)
-        # mobilemq has only the title string 'marquee'.
-        # handle this later; nl doesn't change it
+        # 2023-11-28: mobilemq change to not have any title
         continue
         ;;
     esac
@@ -314,7 +317,9 @@ while read -r line; do
     mkhtmlsub $fn $TMP $locale $pofile
   done
 
-  cd ${TMPLDIR}/${locale}
+  cd $cwd
+  test -d "${TMPLDIR}/${locale}" || mkdir "${TMPLDIR}/${locale}"
+  cd "${TMPLDIR}/${locale}"
 
   for fn in *.html; do
     case $fn in

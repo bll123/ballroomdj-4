@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Huono
+20
+..Huono
+30
+..Huono
+40
+..Huono
+50
+..Huono
+60
+..Hyvä
+70
+..Hyvä
+80
+..Suuri
+90
+..Suuri
+100
+..Suuri

@@ -12,6 +12,8 @@ Current Translations and Status:
  English (GB)|Complete|bll
  English (US)|Complete|bll
  Deutsch|Machine Translated<br>Very poor quality|
+ Español|Machine Translated<br>Very poor quality|
+ Suomi‬|Machine Translated<br>Very poor quality|
  Français|Machine Translated<br>Very poor quality|
  Italiano|Machine Translated<br>Very poor quality|
  日本語|Machine Translated<br>Very poor quality|

@@ -50,6 +50,38 @@ QDANCE
 KEY
 ..3
 LONG
+..es_ES
+SHORT
+..es
+ISO639-2
+..spa
+DISPLAY
+..Español
+AUTO
+..automático
+STDROUNDS
+..estándares
+QDANCE
+..QueueDance
+KEY
+..4
+LONG
+..fi_FI
+SHORT
+..fi
+ISO639-2
+..fin
+DISPLAY
+..Suomi
+AUTO
+..automaattinen
+STDROUNDS
+..vakiokierrokset
+QDANCE
+..QueueDance
+KEY
+..5
+LONG
 ..fr_FR
 SHORT
 ..fr
@@ -64,7 +96,7 @@ STDROUNDS
 QDANCE
 ..Danse en file d'attente
 KEY
-..4
+..6
 LONG
 ..it_IT
 SHORT
@@ -80,7 +112,7 @@ STDROUNDS
 QDANCE
 ..Ballo in coda
 KEY
-..5
+..7
 LONG
 ..ja_JP
 SHORT
@@ -96,7 +128,7 @@ STDROUNDS
 QDANCE
 ..キューダンス
 KEY
-..6
+..8
 LONG
 ..nl_BE
 SHORT
@@ -112,7 +144,7 @@ STDROUNDS
 QDANCE
 ..Dans In Wachtrij
 KEY
-..7
+..9
 LONG
 ..pl_PL
 SHORT
@@ -128,7 +160,7 @@ STDROUNDS
 QDANCE
 ..Taniec w kolejce
 KEY
-..8
+..10
 LONG
 ..ru_RU
 SHORT

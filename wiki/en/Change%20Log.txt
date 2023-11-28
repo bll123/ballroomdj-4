@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Starter: Fix minor profile bugs.
+* Internal:
+    * Upgrade libmp4tag to version 1.2.10.
 
 -->
 

@@ -8,12 +8,15 @@
 
 ##### Locale
 
+Start BDJ4.  The window that displays is the _Starter_ window. Select
+the __Configure__ button.
+
 The Nederlands (Dutch) translation is in excellent shape.  The Русский
 (Russian) translation is ok.
 
-The other translations (Deutsch, Français, Italiano, 日本語‬, and
-Polski) are machine generated and are of very low quality.  If the
-translation for your locale is poor, you may want to select
+The other translations (Deutsch, Español, Suomi, Français, Italiano,
+日本語‬, and Polski) are machine generated and are of very low quality.
+If the translation for your locale is poor, you may want to select
 _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the __Locale__
 selection.
 

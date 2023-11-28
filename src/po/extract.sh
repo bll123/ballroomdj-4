@@ -213,16 +213,16 @@ fi
 # If a translation is removed, remember to also remove
 # the locale/xx files and directories.
 
-mkpo nl nl_BE.po 'marimo' Nederlands dutch
-mkpo ru ru_RU.po 'mira' Русский‬ russian
 mkpo de de_DE.po 'unassigned' Deutsch german
-mkpo pl pl_PL.po 'unassigned' Polski polish
-mkpo ja ja_JP.po 'unassigned' 日本語‬ japanese
-mkpo it it_IT.po 'unassigned' Italiano‬ italian
+mkpo es es_ES.po 'unassigned' Español spanish
+mkpo fi fi_FI.po 'unassigned' Suomi finnish
 mkpo fr fr_FR.po 'unassigned' Français french
-#mkpo fi fi_FI.po 'unassigned' Suomi finnish
+mkpo it it_IT.po 'unassigned' Italiano‬ italian
+mkpo ja ja_JP.po 'unassigned' 日本語‬ japanese
+mkpo nl nl_BE.po 'marimo' Nederlands dutch
+mkpo pl pl_PL.po 'unassigned' Polski polish
+mkpo ru ru_RU.po 'unassigned' Русский‬ russian
 
-#mkpo es es_ES.po 'unassigned' Español spanish
 #mkpo zh zh_TW.po 'unassigned' "繁體中文" "chinese (TW)"
 #mkpo zh zh_CN.po 'unassigned' "简体中文" "chinese (CN)"
 

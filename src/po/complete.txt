@@ -7,6 +7,8 @@
 en_GB.po eng English (GB)
 en_US.po eng English (US)
 de_DE.po ger Deutsch
+es_ES.po spa Español
+fi_FI.po fin Suomi
 fr_FR.po fra Français
 it_IT.po ita Italiano
 ja_JP.po jpn 日本語

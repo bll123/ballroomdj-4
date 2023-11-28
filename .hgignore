@@ -22,6 +22,10 @@ syntax: regexp
 ^locale/en_GB/
 ^locale/de
 ^locale/de_DE/
+^locale/es
+^locale/es_ES/
+^locale/fi
+^locale/fi_FI/
 ^locale/fr
 ^locale/fr_FR/
 ^locale/it
