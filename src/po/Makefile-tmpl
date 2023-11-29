@@ -1,0 +1,49 @@
+#
+# Copyright 2023 Brad Lanam Pleasant Hill CA
+#
+
+# SLOCALE must be set to the short locale name
+# LOCALE must be set to the long locale name
+
+TMPLDIR = ../templates
+PODIR = po
+
+PLAYLISTS = \
+	$(TMPLDIR)/$(SLOCALE)/automatic.pl \
+	$(TMPLDIR)/$(SLOCALE)/automatic.pldances \
+	$(TMPLDIR)/$(SLOCALE)/QueueDance.pl \
+	$(TMPLDIR)/$(SLOCALE)/QueueDance.pldances \
+	$(TMPLDIR)/$(SLOCALE)/standardrounds.pl \
+	$(TMPLDIR)/$(SLOCALE)/standardrounds.pldances \
+	$(TMPLDIR)/$(SLOCALE)/standardrounds.sequence
+
+DATAFILES = \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q0.txt \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q1.txt \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q2.txt \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q3.txt \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q4.txt \
+	$(TMPLDIR)/$(SLOCALE)/bdjconfig.txt.p \
+	$(TMPLDIR)/$(SLOCALE)/dances.txt \
+	$(TMPLDIR)/$(SLOCALE)/dancetypes.txt \
+	$(TMPLDIR)/$(SLOCALE)/genres.txt \
+	$(TMPLDIR)/$(SLOCALE)/itunes-stars.txt \
+	$(TMPLDIR)/$(SLOCALE)/levels.txt \
+	$(TMPLDIR)/$(SLOCALE)/ratings.txt \
+	$(TMPLDIR)/$(SLOCALE)/status.txt
+
+HTMLFILES = \
+	$(TMPLDIR)/$(SLOCALE)/bdj-flex-dark.html \
+	$(TMPLDIR)/$(SLOCALE)/bdj-flex.html \
+	$(TMPLDIR)/$(SLOCALE)/bdj.html
+
+all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
+
+$(PLAYLISTS):	$(PODIR)/$(LOCALE).po
+	echo "nl playlist rebuild"
+
+$(DATAFILES):	$(PODIR)/$(LOCALE).po
+	echo "nl datafile rebuild"
+
+$(HTMLFILES):   $(PODIR)/$(LOCALE).po
+	echo "nl html rebuild"

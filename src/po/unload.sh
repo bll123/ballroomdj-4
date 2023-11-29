@@ -50,7 +50,7 @@ if [[ $UNPACKONLY == T ]];then
   exit 0
 fi
 
-for f in *.po; do
+for f in po/*.po; do
   base=$(echo $f | sed -e 's,\.po$,,' -e 's,^web-,,')
   tbase=$(echo $base | sed -e 's,_,-,')
   if [[ ! -d $TMP/$tbase ]]; then
@@ -65,14 +65,25 @@ for f in *.po; do
   mv -f $f $f.bak
   echo "Processing $f"
   sed -n '1,2 p' $f.bak > $f
-  case $f in
-    web-*)
-      sed -n '3,$ p' $TMP/$tbase/web-en_GB.po >> $f
-      ;;
-    *)
-      sed -n '3,$ p' $TMP/$tbase/en_GB.po >> $f
-      ;;
-  esac
+  sed -n '3,$ p' $TMP/$tbase/en_GB.po >> $f
+done
+
+for f in web/*.po; do
+  base=$(echo $f | sed -e 's,\.po$,,' -e 's,^web-,,')
+  tbase=$(echo $base | sed -e 's,_,-,')
+  if [[ ! -d $TMP/$tbase ]]; then
+    tbase=$(echo $tbase | sed 's,\(..\).*,\1,')
+  fi
+  if [[ ! -d $TMP/$tbase ]]; then
+    continue
+  fi
+
+  echo "$f found"
+  cp -f $f $f.backup
+  mv -f $f $f.bak
+  echo "Processing $f"
+  sed -n '1,2 p' $f.bak > $f
+  sed -n '3,$ p' $TMP/$tbase/web-en_GB.po >> $f
 done
 
 test -d $TMP && rm -rf $TMP

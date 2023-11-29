@@ -159,6 +159,7 @@ if [[ $platform == windows ]]; then
     fi
     if [[ $fn -nt $PBIN/$bfn ]]; then
       count=$((count+1))
+      echo "copying $bfn"
       cp -pf $fn $PBIN
     fi
   done
@@ -175,6 +176,7 @@ if [[ $platform == windows ]]; then
     bfn=$(basename $fn)
     if [[ $fn -nt $PBIN/$bfn ]]; then
       count=$((count+1))
+      echo "copying $bfn"
       cp -pf $fn $PBIN
     fi
   done

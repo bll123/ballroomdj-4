@@ -1,17 +1,18 @@
 # complete.txt
 # list of locales that can be shipped
-#   po-file name (long-locale+'.po'),
-#   iso636-2 code
+#   po-file name (long-locale),
+#   iso639-2 code
+#   english name (no spaces)
 #   descriptive name (to end of line)
 #
-en_GB.po eng English (GB)
-en_US.po eng English (US)
-de_DE.po ger Deutsch
-es_ES.po spa Español
-fi_FI.po fin Suomi
-fr_FR.po fra Français
-it_IT.po ita Italiano
-ja_JP.po jpn 日本語
-nl_BE.po nld Nederlands
-pl_PL.po pol Polski
-ru_RU.po rus Русский‬
+en_GB eng english/gb English (GB)
+en_US eng english/us English (US)
+de_DE ger german Deutsch
+es_ES spa spanish Español
+fi_FI fin finnish Suomi
+fr_FR fra french Français
+it_IT ita italian Italiano
+ja_JP jpn japanese 日本語
+nl_BE nld dutch Nederlands
+pl_PL pol polish Polski
+ru_RU rus russian Русский‬
