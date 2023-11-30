@@ -34,7 +34,7 @@ for pofile in "$@"; do
       continue
     fi
 
-    echo "   $(date +%T) processing $oldpo"
+    # echo "   $(date +%T) processing $oldpo"
     if [[ -f $NPOFILE ]]; then
       gawk -f lang-lookup.awk $oldpo $NPOFILE > $TMPPOFILE 2>>$DBGPOFILE
     else

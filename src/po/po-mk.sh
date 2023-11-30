@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-# Copyright 2023 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
+
+# creates a po file from the bdj4.pot file
 
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
@@ -9,7 +11,8 @@ done
 cd src
 cwd=$(pwd)
 
-rm -f po/*~ po/old/*~ > /dev/null 2>&1
+rm -f po/*~ po/po/*~ po/web/*~ po/old/*~ > /dev/null 2>&1
+
 export POTFILE=bdj4.pot
 
 . ../VERSION.txt
@@ -24,6 +27,12 @@ function mkpo {
   dlang=$4
   xlator=$5
 
+  if [[ $locale == en_US ]]; then
+    # en-us is created directly from en-gb, and should never
+    # end up here
+    return
+  fi
+
   lang=$(echo $locale | sed 's,\(..\).*,\1,')
 
   echo "-- $(date +%T) creating $out"
@@ -37,7 +46,7 @@ function mkpo {
     sed -n '/^msgid/,/^$/ p' ${POTFILE} >> ${out}
   fi
 
-  if [[ -f ${out} && ${locale} != en_GB.po ]]; then
+  if [[ -f ${out} && ${locale} != en_GB ]]; then
     # re-use data from existing file
     mv -f ${out} ${out}.current
     > ${out}
@@ -53,10 +62,10 @@ function mkpo {
       ${out}
     sed -n '/^$/,$ p' bdj4.pot >> ${out}
 
-    echo "-- $(date +%T) updating translations from old .po files"
+    # echo "-- $(date +%T) updating translations from old .po files"
     ./lang-lookup.sh ${out}
   else
-    # new en_GB file
+    # new file; $out does not exist or this is the en-gb locale
     > ${out}
     echo "# == $dlang" >> ${out}
     echo "# -- $elang" >> ${out}
@@ -73,6 +82,8 @@ function mkpo {
         bdj4.pot >> ${out}
   fi
 }
+
+cd po
 
 # If a translation is removed, remember to also remove
 # the locale/xx files and directories.
