@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=11
+ver=12
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -141,6 +141,7 @@ if [[ -f /usr/bin/pacman ]]; then
   # tested 2023-10-30
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
+  :
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
