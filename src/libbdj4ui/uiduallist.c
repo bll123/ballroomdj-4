@@ -172,12 +172,14 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
 
-  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
-      /* CONTEXT: side-by-side list: button: remove the selected field */
-      _("Remove"), "button_left");
-  duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (dvbox, uiwidgetp);
+  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
+    uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+        /* CONTEXT: side-by-side list: button: remove the selected field */
+        _("Remove"), "button_left");
+    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
+    uiBoxPackStart (dvbox, uiwidgetp);
+  }
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
@@ -236,6 +238,15 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
+
+  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) == DUALLIST_FLAGS_PERSISTENT) {
+    uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+        /* CONTEXT: side-by-side list: button: remove the selected field */
+        _("Remove"), "button_remove");
+    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
+    uiBoxPackStart (dvbox, uiwidgetp);
+  }
 
   uiwcontFree (scwindow);
   uiwcontFree (dvbox);
