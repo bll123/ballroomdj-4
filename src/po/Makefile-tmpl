@@ -7,11 +7,39 @@
 # LOCALE must be set to the long locale name
 # LANGDESC must be set to the language description
 
-TMPLDIR = ../templates
+# starts in src/po directory
+TMPLDIR = ../../templates
 PODIR = po
 
-PLAYLISTS = \
-	$(TMPLDIR)/$(SLOCALE)/automatic.pl \
+PLAYLISTSRC = $(TMPLDIR)/automatic.pl \
+	$(TMPLDIR)/automatic.pldances \
+	$(TMPLDIR)/QueueDance.pl \
+	$(TMPLDIR)/QueueDance.pldances \
+	$(TMPLDIR)/standardrounds.pl \
+	$(TMPLDIR)/standardrounds.pldances \
+	$(TMPLDIR)/standardrounds.sequence
+
+DATAFILESRC = \
+	$(TMPLDIR)/bdjconfig.q0.txt \
+	$(TMPLDIR)/bdjconfig.q1.txt \
+	$(TMPLDIR)/bdjconfig.q2.txt \
+	$(TMPLDIR)/bdjconfig.q3.txt \
+	$(TMPLDIR)/bdjconfig.q4.txt \
+	$(TMPLDIR)/bdjconfig.txt.p \
+	$(TMPLDIR)/dances.txt \
+	$(TMPLDIR)/dancetypes.txt \
+	$(TMPLDIR)/genres.txt \
+	$(TMPLDIR)/itunes-stars.txt \
+	$(TMPLDIR)/levels.txt \
+	$(TMPLDIR)/ratings.txt \
+	$(TMPLDIR)/status.txt
+
+HTMLFILESRC = \
+	$(TMPLDIR)/bdj-flex-dark.html \
+	$(TMPLDIR)/bdj-flex.html \
+	$(TMPLDIR)/bdj.html
+
+PLAYLISTS = $(TMPLDIR)/$(SLOCALE)/automatic.pl \
 	$(TMPLDIR)/$(SLOCALE)/automatic.pldances \
 	$(TMPLDIR)/$(SLOCALE)/QueueDance.pl \
 	$(TMPLDIR)/$(SLOCALE)/QueueDance.pldances \
@@ -39,14 +67,19 @@ HTMLFILES = \
 	$(TMPLDIR)/$(SLOCALE)/bdj-flex.html \
 	$(TMPLDIR)/$(SLOCALE)/bdj.html
 
+.PHONY: all
 all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
+	@:
 
 # all of the different templates have different strings that need to
 # be pulled out to process.  the script handles this, so use the make
 # group-targets to only run this once.
-$(PLAYLISTS) $(DATAFILES) &:	$(PODIR)/$(LOCALE).po po-tmpl.sh
+$(PLAYLISTS) $(DATAFILES) &:	$(PLAYLISTSRC) $(DATAFILESRC) \
+		$(PODIR)/$(LOCALE).po po-tmpl.sh
+	echo "-- $(date +%T) Update templates for $(SLOCALE)"
 	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(SLOCALE)
 
-$(HTMLFILES) &:   $(PODIR)/$(LOCALE).po po-html.sh
+$(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po po-html.sh
 	@./po-html.sh $(PODIR)/$(LOCALE).po \
             $(LOCALE) $(SLOCALE) "$(LANGDESC)"
+

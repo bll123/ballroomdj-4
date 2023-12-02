@@ -15,15 +15,20 @@
 #     po-en-us.sh (po/en_US.po)
 #       mken_us.awk
 # b) Create the other language .po files
-#     po-mk.sh
-#       lang-lookup.sh
-#         lang-lookup.awk
-# c) Create the localization.txt file while processing the locales.
-# d) Update all of the templates/<locale> directories.
-#     po-tmpl.sh
-#     po-html.sh
-#     po-img.sh
-# e) Update the .mo files
+#     Makefile-po
+#       po-mk.sh
+#         lang-lookup.sh
+#           lang-lookup.awk
+# c) Update the .mo files
+#     Makefile-inst
+# d) Create the localization.txt file while processing the locales.
+# e) Update all of the templates/<locale> directories.
+#     Makefile-tmpl
+#       po-tmpl.sh
+#       po-html.sh
+# f) Update all the web files
+#     Makefile-web
+#       po-instweb.sh
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -36,10 +41,9 @@ cwd=$(pwd)
 # set up the stuff that is needed
 
 TMPLDIR=../../templates
-LOCALEDATA=${TMPLDIR}/localization.txt
-> $LOCALEDATA
+LOCALEDIR=../../locale
+
 export keycount=0
-echo "# localization" >> $LOCALEDATA
 
 function appendlocaledata {
   pofile=$1
@@ -79,6 +83,10 @@ function appendlocaledata {
   keycount=$(($keycount+1))
 }
 
+LOCALEDATA=${TMPLDIR}/localization.txt
+> $LOCALEDATA
+echo "# localization" >> $LOCALEDATA
+
 # first, make bdj4.pot, en_GB.po, en_US.po
 make
 
@@ -106,13 +114,29 @@ while read line; do
 
   # create the .po file
 
-  # en_GB and en_US are already done
+  # The .po files for en_GB and en_US are already created
   if [[ $locale != en_GB && $locale != en_US ]]; then
     make -f Makefile-po \
         LOCALE=${locale} \
         SLOCALE=${slocale} \
         ENGNM=${englishnm} \
         LANGDESC="${langdesc}"
+  fi
+
+  # re-build the .mo file
+
+  make -f Makefile-inst \
+        LOCALE=${locale} \
+        SLOCALE=${slocale}
+
+  # create the short-locale links to the long-locale
+  # en -> en_GB, not en_US.
+  if [[ ${locale} != en_US ]]; then
+    (
+      cd ${LOCALEDIR}
+      # do not replace existing links
+      test -h ${slocale} || ln -s ${locale} ${slocale}
+    )
   fi
 
   # add this entry to the localization.txt file
@@ -125,13 +149,17 @@ while read line; do
 
   if [[ $locale == en_GB || $locale == en_US ]]; then
     # en_US has its own localized templates
+    # en_GB/en_US web page is the base
     continue
   fi
 
-  echo "-- $(date +%T) Update templates for ${locale}"
   make -f Makefile-tmpl \
       LOCALE=${locale} \
       SLOCALE=${slocale} \
       LANGDESC="${langdesc}"
+
+  make -f Makefile-web \
+      LOCALE=${locale} \
+      SLOCALE=${slocale}
 
 done < complete.txt

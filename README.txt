@@ -48,7 +48,7 @@ Release Notes:
     Please upgrade to version 4.4.2 (or later) if you are using
       version 4.3.3.2 or later.
     Linux Installation:
-      Run the linux-pre-install-v11.sh script.
+      Run the linux-pre-install-v12.sh script.
     MacOS Installation:
       Run the macos-pre-install-macports-v17.sh script.
 

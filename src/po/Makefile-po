@@ -15,5 +15,5 @@ all: $(PODIR)/$(LOCALE).po
 	@:
 
 $(PODIR)/$(LOCALE).po:	bdj4.pot po-mk.sh lang-lookup.sh lang-lookup.awk
-	@./po-mk.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(ENGNM) "$(LANGDESC)"
+	@./po-mk.sh $@ $(LOCALE) $(ENGNM) "$(LANGDESC)"
 

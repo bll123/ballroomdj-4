@@ -14,15 +14,14 @@ BASEFN=bdj4.html
 WEBSITE=${WEBDIR}/${BASEFN}.en
 
 pofile=$1
+locale=$2
+slocale=$3
 
 html=$(cat $WEBSITE | tr '\n' '@' |
     sed -e 's,\([A-Za-z0-9 .]\) *@ *\([A-Za-z0-9 .]\),\1 \2,g')
 
-if [[ $pofile == web-en_US.po ]]; then
-  continue
-fi
-if [[ $pofile == web-en_GB.po ]]; then
-  continue
+if [[ $locale == en_GB || $locale == en_US ]]; then
+  exit 0
 fi
 
 set -o noglob
@@ -56,13 +55,12 @@ while read -r line; do
   sedcmd+="-e 's~>${nl}<~>${xl}<~g' "
 done < $pofile
 
-locale=$(printf "%s" ${pofile} | sed -e 's,web-\([^.]*\)\.po,\1,')
-lang=$(printf "%s" ${locale} | sed -e 's,\(..\).*,\1,')
-sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${lang}\"~' "
-if [[ $lang == pl ]]; then
-  lang=po
+sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${slocale}\"~' "
+if [[ $slocale == pl ]]; then
+  # the polish .pl extension was taken over by perl
+  slocale=po
 fi
-nfn=${WEBDIR}/${BASEFN}.${lang}
+nfn=${WEBDIR}/${BASEFN}.${slocale}
 nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
 nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')
 printf "%s" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
