@@ -662,20 +662,79 @@ START_TEST(musicdb_temp)
   ck_assert_ptr_nonnull (song);
   songSetStr (song, TAG_FILE, "tmp/waltz.mp3");
   songSetNum (song, TAG_DURATION, 20000);
-  songSetNum (song, TAG_TEMPORARY, true);
   songSetStr (song, TAG_ARTIST, "temp-artist");
   songSetStr (song, TAG_TITLE, "temp-title");
+  songSetStr (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  /* sets the temporary flag */
   dbidx = dbAddTemporarySong (db, song);
   ck_assert_int_ne (dbidx, -1);
+  ck_assert_int_eq (MUSICDB_TEMP, songGetNum (song, TAG_DB_FLAGS));
 
   dbsong = dbGetByIdx (db, dbidx);
   ck_assert_ptr_nonnull (dbsong);
   ck_assert_int_eq (dbidx, songGetNum (dbsong, TAG_DBIDX));
+  ck_assert_int_eq (MUSICDB_TEMP, songGetNum (dbsong, TAG_DB_FLAGS));
   ck_assert_ptr_eq (dbsong, song);
 
   ++dbidx;
   dbsong = dbGetByIdx (db, dbidx);
   ck_assert_ptr_null (dbsong);
+
+  dbClose (db);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(musicdb_remove)
+{
+  musicdb_t *db;
+  song_t    *song;
+  song_t    *dbsong;
+  dbidx_t   dbidx;
+  dbidx_t   tdbidx;
+  dbidx_t   ldbidx;
+  dbidx_t   curridx;
+  dbidx_t   iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_remove");
+  mdebugSubTag ("musicdb_remove");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  bdjvarsdfloadInit ();
+  db = dbOpen (dbfn);
+
+  song = dbGetByName (db, "argentinetango05.mp3");
+  dbidx = songGetNum (song, TAG_DBIDX);
+  dbRemoveEntry (db, dbidx);
+  ck_assert_int_eq (MUSICDB_REMOVED, songGetNum (song, TAG_DB_FLAGS));
+
+  dbsong = dbGetByIdx (db, dbidx);
+  ck_assert_ptr_null (dbsong);
+
+  dbsong = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_null (dbsong);
+
+  ldbidx = -1;
+  dbStartIterator (db, &iteridx);
+  while ((song = dbIterate (db, &curridx, &iteridx)) != NULL) {
+    tdbidx = songGetNum (song, TAG_DBIDX);
+    ck_assert_int_ne (tdbidx, dbidx);
+    ldbidx = tdbidx;
+  }
+
+  /* remove the last entry in the database */
+  dbRemoveEntry (db, ldbidx);
+
+  /* make sure the iterator works when the last entry was removed */
+  dbStartIterator (db, &iteridx);
+  while ((song = dbIterate (db, &curridx, &iteridx)) != NULL) {
+    tdbidx = songGetNum (song, TAG_DBIDX);
+    ck_assert_int_ne (tdbidx, dbidx);
+    ck_assert_int_ne (tdbidx, ldbidx);
+  }
 
   dbClose (db);
 
@@ -795,6 +854,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_temp);
+  tcase_add_test (tc, musicdb_remove);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);

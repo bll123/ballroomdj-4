@@ -2983,8 +2983,7 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
     return;
   }
   songParse (song, p, 0);
-  songSetNum (song, TAG_TEMPORARY, true);
-
+  /* the temporary music-db flag will be set */
   dbidx = dbAddTemporarySong (mainData->musicdb, song);
   if (dbidx != tdbidx) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: databases out of sync");

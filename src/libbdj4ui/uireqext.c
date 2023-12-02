@@ -471,7 +471,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       uireqext->song = songAlloc ();
       /* populate the song from the tag data */
       songParse (uireqext->song, tbuff, 0);
-      songSetNum (uireqext->song, TAG_TEMPORARY, true);
+      songSetNum (uireqext->song, TAG_DB_FLAGS, MUSICDB_TEMP);
 
       /* update the display */
       uiEntrySetValue (uireqext->artistEntry,

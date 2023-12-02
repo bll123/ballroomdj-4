@@ -19,6 +19,11 @@ LOG=pkg.log
 pkgnmgetdata
 pnm=$(pkginstnm)
 
+if [[ $pn_devtag != "" ]]; then
+  echo "development tag is on"
+  exit 1
+fi
+
 echo "-- $(date +%T) building"
 (
   cd src

@@ -1106,8 +1106,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
-  [TAG_TEMPORARY] =
-  { "TEMPORARY",                  /* tag */
+  [TAG_DB_FLAGS] =
+  { "DB_FLAGS",                   /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },

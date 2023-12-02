@@ -93,7 +93,7 @@ typedef enum {
   TAG_SPEEDADJUSTMENT,        //
   TAG_STATUS,                 //
   TAG_TAGS,                   //
-  TAG_TEMPORARY,              //
+  TAG_DB_FLAGS,               // not saved to db of af
   TAG_TITLE,                  //
   TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,            //

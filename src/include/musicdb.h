@@ -14,6 +14,14 @@ typedef int32_t dbidx_t;
 
 typedef struct musicdb musicdb_t;
 
+/* music db flags */
+enum {
+  MUSICDB_NONE,
+  MUSICDB_TEMP,
+  MUSICDB_REMOVE_MARK,
+  MUSICDB_REMOVED,
+};
+
 enum {
   MUSICDB_VERSION = 10,
 };
@@ -28,6 +36,7 @@ void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);
 void      dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx);
+void      dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbStartBatch (musicdb_t *db);
 void      dbEndBatch (musicdb_t *db);
 void      dbDisableLastUpdateTime (musicdb_t *db);

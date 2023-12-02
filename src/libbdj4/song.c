@@ -22,6 +22,7 @@
 #include "level.h"
 #include "log.h"
 #include "mdebug.h"
+#include "musicdb.h"    /* need db flags */
 #include "nlist.h"
 #include "rating.h"
 #include "slist.h"
@@ -108,6 +109,7 @@ songAlloc (void)
   song->changed = false;
   song->songlistchange = false;
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
+
   ++gsonginit.songcount;
   return song;
 }
@@ -146,9 +148,9 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
 
   /* check and set some defaults */
 
-  /* always set the temporary flag; if it needs to be true, the caller */
-  /* will set it */
-  nlistSetNum (song->songInfo, TAG_TEMPORARY, false);
+  /* always set the db flags; if it needs to be set, */
+  /* the caller will set it */
+  nlistSetNum (song->songInfo, TAG_DB_FLAGS, MUSICDB_NONE);
 
   tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
   if (tval < 0 ||

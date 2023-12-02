@@ -16,6 +16,7 @@
 #include "dance.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -43,6 +44,7 @@ typedef struct musicdb {
 
 static size_t dbWriteInternal (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn);
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
+static void   dbRebuildDanceCounts (musicdb_t *musicdb);
 
 musicdb_t *
 dbOpen (const char *fn)
@@ -180,6 +182,21 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
 }
 
 void
+dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx)
+{
+  song_t      *song;
+  rafileidx_t rrn;
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
+  song = slistGetDataByIdx (musicdb->songs, dbidx);
+  rrn = songGetNum (song, TAG_RRN);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
+  dbRebuildDanceCounts (musicdb);
+}
+
+void
 dbStartBatch (musicdb_t *musicdb)
 {
   if (musicdb == NULL) {
@@ -229,7 +246,13 @@ dbEnableLastUpdateTime (musicdb_t *musicdb)
 song_t *
 dbGetByName (musicdb_t *musicdb, const char *songname)
 {
-  song_t *song = slistGetData (musicdb->songs, songname);
+  song_t  *song;
+
+  song = slistGetData (musicdb->songs, songname);
+  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+    song = NULL;
+  }
+
   return song;
 }
 
@@ -244,6 +267,9 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 
   if (idx < musicdb->count) {
     song = slistGetDataByIdx (musicdb->songs, idx);
+    if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+      song = NULL;
+    }
   } else {
     /* check the temporary list if the dbidx is greater than the count */
     song = nlistGetData (musicdb->tempSongs, idx);
@@ -262,7 +288,8 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     return 0;
   }
 
-  if (songGetNum (song, TAG_TEMPORARY) == true) {
+  /* do not write temporary or removed songs */
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
     return 0;
   }
 
@@ -382,6 +409,10 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
   }
 
   song = slistIterateValueData (musicdb->songs, iteridx);
+  while (song != NULL &&
+      songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+    song = slistIterateValueData (musicdb->songs, iteridx);
+  }
   *idx = slistIterateGetIdx (musicdb->songs, iteridx);
   return song;
 }
@@ -411,7 +442,7 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
     return LIST_VALUE_INVALID;
   }
 
-  songSetNum (song, TAG_TEMPORARY, true);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_TEMP);
   songGetStr (song, TAG_FILE);
   dbidx = musicdb->count;
   dbidx += nlistGetCount (musicdb->tempSongs);
@@ -486,4 +517,39 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   }
 
   return song;
+}
+
+static void
+dbRebuildDanceCounts (musicdb_t *musicdb)
+{
+  song_t        *song;
+  slistidx_t    iteridx;
+  dance_t       *dances;
+  dbidx_t       dcount;
+  ilistidx_t    dkey;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dcount = danceGetCount (dances);
+
+  nlistFree (musicdb->danceCounts);
+  musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
+  slistStartIterator (musicdb->songs, &iteridx);
+  while ((song = slistIterateValueData (musicdb->songs, &iteridx)) != NULL) {
+    if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
+      continue;
+    }
+    dkey = songGetNum (song, TAG_DANCE);
+    if (dkey >= 0) {
+      nlistIncrement (musicdb->danceCounts, dkey);
+    }
+  }
+
+  /* debug information */
+  nlistStartIterator (musicdb->danceCounts, &iteridx);
+  while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
+    dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
+    if (count > 0) {
+      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %d count: %d", dkey, count);
+    }
+  }
 }
