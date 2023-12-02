@@ -158,6 +158,9 @@ while read line; do
       SLOCALE=${slocale} \
       LANGDESC="${langdesc}"
 
+  if [[ $slocale == pl ]]; then
+    slocale=po
+  fi
   make -f Makefile-web \
       LOCALE=${locale} \
       SLOCALE=${slocale}

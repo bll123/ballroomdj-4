@@ -58,6 +58,8 @@ done < $pofile
 sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${slocale}\"~' "
 if [[ $slocale == pl ]]; then
   # the polish .pl extension was taken over by perl
+  # already processed by pobuild.sh, but leave this check in place
+  # in case the script is run manually.
   slocale=po
 fi
 nfn=${WEBDIR}/${BASEFN}.${slocale}
