@@ -36,6 +36,7 @@ typedef enum {
                             // then sent by starterui to playerui, main.
   MSG_DB_ENTRY_UPDATE,      // args: dbidx
   MSG_DB_ENTRY_REMOVE,      // args: dbidx
+  MSG_DB_ENTRY_UNREMOVE,    // args: dbidx
   MSG_WINDOW_FIND,          // recover the window.
 
   /* to main */

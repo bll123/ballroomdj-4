@@ -1050,6 +1050,16 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uisongselPopulateData (plui->uisongsel);
           break;
         }
+        case MSG_DB_ENTRY_REMOVE: {
+          dbMarkEntryRemoved (plui->musicdb, atol (targs));
+          uisongselPopulateData (plui->uisongsel);
+          break;
+        }
+        case MSG_DB_ENTRY_UNREMOVE: {
+          dbClearEntryRemoved (plui->musicdb, atol (targs));
+          uisongselPopulateData (plui->uisongsel);
+          break;
+        }
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 

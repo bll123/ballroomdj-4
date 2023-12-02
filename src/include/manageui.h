@@ -100,6 +100,7 @@ typedef struct manageaudioid manageaudioid_t;
 manageaudioid_t *manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window, uiwcont_t *errorMsg, uiwcont_t *statusMsg, const char *pleasewaitmsg);
 void manageAudioIdFree (manageaudioid_t *maudioid);
 uiwcont_t *manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel);
+uimenu_t *manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar);
 void manageAudioIdMainLoop (manageaudioid_t *maudioid);
 void manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx);
 void manageAudioIdSetSaveCallback (manageaudioid_t *maudioid, callback_t *cb);

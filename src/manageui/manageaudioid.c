@@ -32,6 +32,7 @@ typedef struct manageaudioid {
   audioid_t         *audioid;
   uiaudioid_t       *uiaudioid;
   song_t            *song;
+  uimenu_t          *audioidmenu;
   int               state;
 } manageaudioid_t;
 
@@ -52,6 +53,7 @@ manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window,
   maudioid->uiaudioid = uiaudioidInit (maudioid->options, maudioid->dispsel);
   maudioid->pleasewaitmsg = pleasewaitmsg;
   maudioid->song = NULL;
+  maudioid->audioidmenu = uiMenuAlloc ();
   maudioid->state = BDJ4_STATE_OFF;
   return maudioid;
 }
@@ -65,6 +67,7 @@ manageAudioIdFree (manageaudioid_t *maudioid)
 
   uiaudioidFree (maudioid->uiaudioid);
   audioidFree (maudioid->audioid);
+  uiMenuFree (maudioid->audioidmenu);
   mdfree (maudioid);
 }
 
@@ -82,6 +85,31 @@ manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel)
       maudioid->windowp, maudioid->statusMsg);
 
   return uip;
+}
+
+/* audio identification */
+
+uimenu_t *
+manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar)
+{
+  uiwcont_t   *menu = NULL;
+  uiwcont_t   *menuitem = NULL;
+
+  logProcBegin (LOG_PROC, "manageAudioIDMenu");
+  if (! uiMenuInitialized (maudioid->audioidmenu)) {
+    /* empty menu for now */
+    menuitem = uiMenuAddMainItem (menubar, maudioid->audioidmenu, "");
+    menu = uiCreateSubMenu (menuitem);
+    uiwcontFree (menuitem);
+
+    uiMenuSetInitialized (maudioid->audioidmenu);
+    uiwcontFree (menu);
+  }
+
+  uiMenuDisplay (maudioid->audioidmenu);
+
+  logProcEnd (LOG_PROC, "manageAudioIDMenu", "");
+  return maudioid->audioidmenu;
 }
 
 void
@@ -164,3 +192,4 @@ manageAudioIdSavePosition (manageaudioid_t *maudioid)
 {
   uiaudioidSavePanePosition (maudioid->uiaudioid);
 }
+

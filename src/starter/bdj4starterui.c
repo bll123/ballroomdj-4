@@ -1074,7 +1074,9 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           starterStopMain (starter, routefrom);
           break;
         }
-        case MSG_DB_ENTRY_UPDATE: {
+        case MSG_DB_ENTRY_UPDATE:
+        case MSG_DB_ENTRY_REMOVE:
+        case MSG_DB_ENTRY_UNREMOVE: {
           connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
           if (routefrom != ROUTE_PLAYERUI) {
             connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);

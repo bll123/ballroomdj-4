@@ -143,7 +143,7 @@ if [[ -f /usr/bin/apt ]]; then
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
       libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
-      libcurl4-openssl-dev"
+      libcurl4-openssl-dev libchromaprint-tools"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -160,7 +160,8 @@ if [[ -f /usr/bin/dnf ]]; then
       pipewire-devel libcurl-devel gtk3-devel vlc-devel pulseaudio-libs-devel
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
       libvorbis-devel
-      flac-devel check-devel json-c-devel"
+      flac-devel check-devel json-c-devel
+      chromprint-tools"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
@@ -173,7 +174,8 @@ if [[ -f /usr/bin/zypper ]]; then
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
       opusfile-devel libvorbis-devel flac-devel check-devel
-      libxml2-devel libjson-c-devel libvlc5"
+      libxml2-devel libjson-c-devel libvlc5
+      chromaprint-fpcalc"
 fi
 
 sudo -v

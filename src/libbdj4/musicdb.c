@@ -181,8 +181,9 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   }
 }
 
+/* marks the entry as removed, but does not actually remove it */
 void
-dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx)
+dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
   rafileidx_t rrn;
@@ -194,6 +195,28 @@ dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx)
   rrn = songGetNum (song, TAG_RRN);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
   dbRebuildDanceCounts (musicdb);
+}
+
+/* clears the removed mark */
+void
+dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
+{
+  song_t      *song;
+  rafileidx_t rrn;
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
+  song = slistGetDataByIdx (musicdb->songs, dbidx);
+  rrn = songGetNum (song, TAG_RRN);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  dbRebuildDanceCounts (musicdb);
+}
+
+/* actually removes the song from the database */
+void
+dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx)
+{
 }
 
 void

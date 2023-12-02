@@ -95,6 +95,8 @@ enum {
   /* music manager */
   MANAGE_MENU_CB_MM_CLEAR_MARK,
   MANAGE_MENU_CB_MM_SET_MARK,
+  MANAGE_MENU_CB_MM_REMOVE_SONG,
+  MANAGE_MENU_CB_MM_UNDO_REMOVE,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
   MANAGE_MENU_CB_SE_WRITE_TAGS,
@@ -182,6 +184,7 @@ enum {
   MANAGE_W_MENU_RESTORE_ORIG,
   MANAGE_W_ITUNES_SEL_DIALOG,
   MANAGE_W_CFPL_DIALOG,
+  MANAGE_W_MENU_UNDO_REMOVE,
   MANAGE_W_MAX,
 };
 
@@ -206,7 +209,6 @@ typedef struct {
   uimenu_t          *currmenu;
   uimenu_t          *slmenu;
   uimenu_t          *songeditmenu;
-  uimenu_t          *audioidmenu;
   uimenu_t          *mmmenu;
   uinbtabid_t       *mainnbtabid;
   uinbtabid_t       *slnbtabid;
@@ -265,6 +267,8 @@ typedef struct {
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
+  /* remove song */
+  nlist_t           *removelist;
   /* various flags */
   bool              slbackupcreated : 1;
   bool              selusesonglist : 1;
@@ -345,8 +349,6 @@ static bool     manageEditAllStart (void *udata);
 static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
 static void     manageReloadSongEdit (manageui_t *manage);
-/* audio identification */
-static void     manageAudioIDMenu (manageui_t *manage);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -411,6 +413,9 @@ static void     manageProcessDatabaseUpdate (manageui_t *manage);
 static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
 static void     manageSameSongChangeMark (manageui_t *manage, int flag);
+/* remove song */
+static bool     manageRemoveSong (void *udata);
+static bool     manageUndoRemove (void *udata);
 
 static int gKillReceived = false;
 
@@ -458,7 +463,6 @@ main (int argc, char *argv[])
   manage.mmlasttab = MANAGE_TAB_MM;
   manage.slmenu = uiMenuAlloc ();
   manage.songeditmenu = uiMenuAlloc ();
-  manage.audioidmenu = uiMenuAlloc ();
   manage.mmmenu = uiMenuAlloc ();
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
@@ -509,6 +513,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
   }
+  manage.removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
 
   /* CONTEXT: management ui: please wait... status message */
   manage.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
@@ -662,7 +667,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   uiMenuFree (manage->slmenu);
   uiMenuFree (manage->songeditmenu);
-  uiMenuFree (manage->audioidmenu);
   uiMenuFree (manage->mmmenu);
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
@@ -671,6 +675,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
+  nlistFree (manage->removelist);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
@@ -1925,32 +1930,6 @@ manageReloadSongEdit (manageui_t *manage)
   manageSetEditMenuItems (manage);
 }
 
-/* audio identification */
-
-static void
-manageAudioIDMenu (manageui_t *manage)
-{
-  uiwcont_t   *menu = NULL;
-  uiwcont_t   *menuitem = NULL;
-
-  logProcBegin (LOG_PROC, "manageAudioIDMenu");
-  if (! uiMenuInitialized (manage->audioidmenu)) {
-    /* empty menu for now */
-    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
-        manage->audioidmenu, "");
-    menu = uiCreateSubMenu (menuitem);
-    uiwcontFree (menuitem);
-
-    uiMenuSetInitialized (manage->audioidmenu);
-    uiwcontFree (menu);
-  }
-
-  uiMenuDisplay (manage->audioidmenu);
-  manage->currmenu = manage->audioidmenu;
-
-  logProcEnd (LOG_PROC, "manageAudioIDMenu", "");
-}
-
 /* bpm counter */
 
 static bool
@@ -2282,6 +2261,23 @@ manageMusicManagerMenu (manageui_t *manage)
     menuitem = uiMenuCreateItem (menu, _("Clear Same Song Mark"),
         manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
     uiwcontFree (menuitem);
+
+    uiMenuAddSeparator (menu);
+
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_REMOVE_SONG,
+        manageRemoveSong);
+    /* CONTEXT: managementui: menu selection: music manager: remove song */
+    menuitem = uiMenuCreateItem (menu, _("Remove Song"),
+        manage->callbacks [MANAGE_MENU_CB_MM_REMOVE_SONG]);
+    uiwcontFree (menuitem);
+
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_REMOVE,
+        manageUndoRemove);
+    /* CONTEXT: managementui: menu selection: music manager: undo song removal */
+    menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
+        manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    manage->wcont [MANAGE_W_MENU_UNDO_REMOVE] = menuitem;
 
     uiMenuSetInitialized (manage->mmmenu);
     uiwcontFree (menu);
@@ -3462,7 +3458,8 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     case MANAGE_TAB_MAIN_SEQ: {
       logMsg (LOG_DBG, LOG_INFO, "new tab: main-seq");
       manageSequenceLoadCheck (manage->manageseq);
-      manage->currmenu = manageSequenceMenu (manage->manageseq, manage->wcont [MANAGE_W_MENUBAR]);
+      manage->currmenu = manageSequenceMenu (manage->manageseq,
+          manage->wcont [MANAGE_W_MENUBAR]);
       break;
     }
     default: {
@@ -3503,7 +3500,8 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     case MANAGE_TAB_AUDIOID: {
       song_t  *song;
 
-      manageAudioIDMenu (manage);
+      manage->currmenu = manageAudioIDMenu (manage->manageaudioid,
+          manage->wcont [MANAGE_W_MENUBAR]);
       song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
       manageAudioIdLoad (manage->manageaudioid, song, manage->songeditdbidx);
       break;
@@ -3714,6 +3712,71 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   }
 
   nlistFree (sellist);
+  /* the same song marks only appear in the music manager */
   uisongselPopulateData (manage->mmsongsel);
   logProcEnd (LOG_PROC, "manageSameSongChangeMark", "");
+}
+
+/* remove song */
+
+static bool
+manageRemoveSong (void *udata)
+{
+  manageui_t  *manage = udata;
+  nlist_t     *sellist;
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+
+  logProcBegin (LOG_PROC, "manageRemoveSong");
+
+  sellist = uisongselGetSelectedList (manage->mmsongsel);
+
+  nlistStartIterator (sellist, &iteridx);
+  while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
+    char    tmp [40];
+
+    nlistSetNum (manage->removelist, dbidx, dbidx);
+    dbMarkEntryRemoved (manage->musicdb, dbidx);
+    snprintf (tmp, sizeof (tmp), "%d", dbidx);
+    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_REMOVE, tmp);
+    manage->songeditdbidx = -1;
+  }
+
+  /* need to re-filter the songs */
+  uisongselApplySongFilter (manage->mmsongsel);
+  manageRePopulateData (manage);
+  uisongselSetDefaultSelection (manage->mmsongsel);
+
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENU_UNDO_REMOVE], UIWIDGET_ENABLE);
+
+  nlistFree (sellist);
+  logProcEnd (LOG_PROC, "manageRemoveSong", "");
+  return UICB_CONT;
+}
+
+static bool
+manageUndoRemove (void *udata)
+{
+  manageui_t  *manage = udata;
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+
+  nlistStartIterator (manage->removelist, &iteridx);
+  while ((dbidx = nlistIterateKey (manage->removelist, &iteridx)) >= 0) {
+    char    tmp [40];
+
+    dbClearEntryRemoved (manage->musicdb, dbidx);
+    snprintf (tmp, sizeof (tmp), "%d", dbidx);
+    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UNREMOVE, tmp);
+  }
+
+  nlistFree (manage->removelist);
+  manage->removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENU_UNDO_REMOVE], UIWIDGET_DISABLE);
+
+  /* need to re-filter the songs */
+  uisongselApplySongFilter (manage->mmsongsel);
+  manageRePopulateData (manage);
+
+  return UICB_CONT;
 }
