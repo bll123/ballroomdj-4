@@ -14,6 +14,7 @@
 #include <stdarg.h>
 
 #include "ati.h"
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
@@ -33,12 +34,14 @@ static bool confuiSelectStartup (void *udata);
 static bool confuiSelectShutdown (void *udata);
 static void confuiLoadLocaleList (confuigui_t *gui);
 static void confuiLoadAudioTagIntfcList (confuigui_t *gui);
+static void confuiLoadAudioSourceIntfcList (confuigui_t *gui);
 
 void
 confuiInitGeneral (confuigui_t *gui)
 {
   confuiLoadLocaleList (gui);
   confuiLoadAudioTagIntfcList (gui);
+  confuiLoadAudioSourceIntfcList (gui);
 
   confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
@@ -78,6 +81,11 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
+
+  /* CONTEXT: configuration: which audio source to use */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Source"),
+      CONFUI_SPINBOX_AUDIOSRC, OPT_G_AUDIOSRC_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_AUDIOSRC].listidx, NULL);
 
   /* CONTEXT: configuration: the music folder where the user stores their music */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Music Folder"),
@@ -262,5 +270,14 @@ confuiLoadAudioTagIntfcList (confuigui_t *gui)
 
   interfaces = atiInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC, CONFUI_SPINBOX_ATI);
+}
+
+static void
+confuiLoadAudioSourceIntfcList (confuigui_t *gui)
+{
+  slist_t     *interfaces;
+
+  interfaces = audiosrcInterfaceList ();
+  confuiLoadIntfcList (gui, interfaces, OPT_G_AUDIOSRC_INTFC, CONFUI_SPINBOX_AUDIOSRC);
 }
 

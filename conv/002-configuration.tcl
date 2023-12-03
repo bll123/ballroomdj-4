@@ -415,6 +415,8 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh ".."
         puts $ofh "ACRCLOUD_API_HOST"
         puts $ofh ".."
+        puts $ofh AUDIOSRC
+        puts $ofh "..libaudiosrcfile"
         puts $ofh CLOCKDISP
         puts $ofh "..local"
         puts $ofh DEBUGLVL

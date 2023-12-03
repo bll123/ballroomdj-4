@@ -321,7 +321,7 @@ confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
   count = 0;
   while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
     intfc = slistGetStr (interfaces, desc);
-    if (strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
+    if (intfc != NULL && strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
       gui->uiitem [spinboxidx].listidx = count;
     }
     nlistSetStr (tlist, count, desc);

@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "audioadjust.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -268,6 +269,7 @@ typedef struct {
   datafile_t        *optiondf;
   nlist_t           *options;
   /* remove song */
+  audiosrc_t        *audiosrc;
   nlist_t           *removelist;
   /* various flags */
   bool              slbackupcreated : 1;
@@ -414,8 +416,9 @@ static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
 static void     manageSameSongChangeMark (manageui_t *manage, int flag);
 /* remove song */
-static bool     manageRemoveSong (void *udata);
+static bool     manageMarkSongRemoved (void *udata);
 static bool     manageUndoRemove (void *udata);
+static void     manageRemoveSongs (manageui_t *manage);
 
 static int gKillReceived = false;
 
@@ -513,6 +516,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
   }
+  manage.audiosrc = audiosrcInit (bdjoptGetStr (OPT_G_AUDIOSRC_INTFC));
   manage.removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
 
   /* CONTEXT: management ui: please wait... status message */
@@ -675,6 +679,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
+  audiosrcFree (manage->audiosrc);
   nlistFree (manage->removelist);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
@@ -2265,7 +2270,7 @@ manageMusicManagerMenu (manageui_t *manage)
     uiMenuAddSeparator (menu);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_REMOVE_SONG,
-        manageRemoveSong);
+        manageMarkSongRemoved);
     /* CONTEXT: managementui: menu selection: music manager: remove song */
     menuitem = uiMenuCreateItem (menu, _("Remove Song"),
         manage->callbacks [MANAGE_MENU_CB_MM_REMOVE_SONG]);
@@ -3720,14 +3725,14 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
 /* remove song */
 
 static bool
-manageRemoveSong (void *udata)
+manageMarkSongRemoved (void *udata)
 {
   manageui_t  *manage = udata;
   nlist_t     *sellist;
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
 
-  logProcBegin (LOG_PROC, "manageRemoveSong");
+  logProcBegin (LOG_PROC, "manageMarkSongRemoved");
 
   sellist = uisongselGetSelectedList (manage->mmsongsel);
 
@@ -3750,7 +3755,7 @@ manageRemoveSong (void *udata)
   uiWidgetSetState (manage->wcont [MANAGE_W_MENU_UNDO_REMOVE], UIWIDGET_ENABLE);
 
   nlistFree (sellist);
-  logProcEnd (LOG_PROC, "manageRemoveSong", "");
+  logProcEnd (LOG_PROC, "manageMarkSongRemoved", "");
   return UICB_CONT;
 }
 
@@ -3779,4 +3784,20 @@ manageUndoRemove (void *udata)
   manageRePopulateData (manage);
 
   return UICB_CONT;
+}
+
+
+static void
+manageRemoveSongs (manageui_t *manage)
+{
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+
+  nlistStartIterator (manage->removelist, &iteridx);
+  while ((dbidx = nlistIterateKey (manage->removelist, &iteridx)) >= 0) {
+    song_t    *song;
+
+    song = dbGetByIdx (manage->musicdb, dbidx);
+    audiosrcRemove (manage->audiosrc, songGetStr (song, TAG_FILE));
+  }
 }
