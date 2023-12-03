@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-11-30\n"
+"PO-Revision-Date: 2023-12-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -326,6 +326,7 @@ msgstr "Audio"
 msgid "Audio File"
 msgstr "Äänitiedosto"
 
+#. CONTEXT: audio source: audio files on disk
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Äänitiedostot"
@@ -342,6 +343,10 @@ msgstr "Audio ID Match List"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Äänen ulostulo"
+
+#. CONTEXT: configuration: which audio source to use
+msgid "Audio Source"
+msgstr ""
 
 #. CONTEXT: configuration: which audio tag interface to use
 msgid "Audio Tags"
@@ -1499,6 +1504,10 @@ msgstr "Rekisteröinti %s."
 msgid "Remove"
 msgstr "Poista"
 
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr ""
+
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
 msgstr "Nimeää äänitiedostot uudelleen organisaation asetusten perusteella."
@@ -1961,6 +1970,10 @@ msgstr "Ei löydy osoitteesta %s."
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
 msgstr "BDJ3-tietokantaa ei löydy."
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr ""
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"

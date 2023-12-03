@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-15 12:25-0800\n"
+"POT-Creation-Date: 2023-12-03 08:26-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -324,6 +324,7 @@ msgstr ""
 msgid "Audio File"
 msgstr ""
 
+#. CONTEXT: audio source: audio files on disk
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr ""
@@ -339,6 +340,10 @@ msgstr ""
 
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
+msgstr ""
+
+#. CONTEXT: configuration: which audio source to use
+msgid "Audio Source"
 msgstr ""
 
 #. CONTEXT: configuration: which audio tag interface to use
@@ -1496,6 +1501,10 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr ""
+
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
 msgstr ""
@@ -1957,6 +1966,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
 msgstr ""
 
 #. CONTEXT: configuration file: rating

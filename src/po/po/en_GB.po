@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.4.6\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-11-30\n"
-"PO-Revision-Date: 2023-11-30\n"
+"POT-Creation-Date: 2023-12-03\n"
+"PO-Revision-Date: 2023-12-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -320,6 +320,7 @@ msgstr ""
 msgid "Audio File"
 msgstr ""
 
+#. CONTEXT: audio source: audio files on disk
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr ""
@@ -335,6 +336,10 @@ msgstr ""
 
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
+msgstr ""
+
+#. CONTEXT: configuration: which audio source to use
+msgid "Audio Source"
 msgstr ""
 
 #. CONTEXT: configuration: which audio tag interface to use
@@ -1492,6 +1497,10 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr ""
+
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
 msgstr ""
@@ -1953,6 +1962,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
 msgstr ""
 
 #. CONTEXT: configuration file: rating
