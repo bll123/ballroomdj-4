@@ -179,6 +179,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   const char      *query [40];
   int             qc = 0;
   const char      *targv [15];
+  const char      *acrcloud;
   int             targc = 0;
   const char      *fn;
   char            *ffn;
@@ -192,6 +193,12 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   if (acr->key == NULL || ! *acr->key ||
       acr->secret == NULL || ! *acr->secret) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: not configured");
+    return 0;
+  }
+
+  acrcloud = sysvarsGetStr (SV_PATH_ACRCLOUD);
+  if (acrcloud == NULL || ! *acrcloud) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no acrcloud executable");
     return 0;
   }
 

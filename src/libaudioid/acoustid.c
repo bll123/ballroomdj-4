@@ -177,9 +177,16 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   const char    *fn;
   char          *ffn;
   const char    *targv [10];
+  const char    *fpcalc;
   int           targc = 0;
   mstime_t      starttm;
   int           webrc;
+
+  fpcalc = sysvarsGetStr (SV_PATH_FPCALC);
+  if (fpcalc == NULL || ! *fpcalc) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no fpcalc executable");
+    return 0;
+  }
 
   fn = songGetStr (song, TAG_FILE);
   ffn = songutilFullFileName (fn);
@@ -212,7 +219,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
 
   fpdata = mdmalloc (ACOUSTID_BUFF_SZ);
 
-  targv [targc++] = sysvarsGetStr (SV_PATH_FPCALC);
+  targv [targc++] = fpcalc;
   targv [targc++] = infn;
   targv [targc++] = "-plain";
   targv [targc++] = NULL;
