@@ -188,6 +188,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
   return 0;
 }
 
+/* this function is not in use, but keep the code, as it works */
 int
 raClear (rafile_t *rafile, rafileidx_t rrn)
 {
