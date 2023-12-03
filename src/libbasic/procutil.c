@@ -14,10 +14,10 @@
 #include <unistd.h>
 #include <signal.h>
 
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
+/* compiles without errors if this is left out, */
+/* but windows routines are used */
 #if _hdr_windows
+# define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif
 

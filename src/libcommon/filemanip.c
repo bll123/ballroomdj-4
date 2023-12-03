@@ -13,8 +13,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #include <glib.h>
+
+#if _hdr_windows
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -25,10 +31,6 @@
 #include "osutils.h"
 #include "pathdisp.h"
 #include "sysvars.h"
-
-#if _hdr_windows
-# include <windows.h>
-#endif
 
 int
 filemanipMove (const char *fname, const char *nfn)

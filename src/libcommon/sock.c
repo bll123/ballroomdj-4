@@ -42,9 +42,6 @@
 #if _hdr_ws2tcpip
 # include <ws2tcpip.h>
 #endif
-#if _hdr_windows
-# include <windows.h>
-#endif
 
 #include "bdjstring.h"
 #include "log.h"

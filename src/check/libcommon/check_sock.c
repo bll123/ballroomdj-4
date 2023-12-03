@@ -33,8 +33,8 @@
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
-#if _hdr_windows
-# include <windows.h>
+#if _hdr_ws2tcpip
+# include <ws2tcpip.h>
 #endif
 
 #if _hdr_pthread

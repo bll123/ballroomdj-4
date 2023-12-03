@@ -20,10 +20,8 @@
 # include <sys/utsname.h>
 #endif
 
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
 #if _hdr_windows
+# define NOGDI 1
 # include <windows.h>
 #endif
 #if _hdr_intrin

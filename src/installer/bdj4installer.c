@@ -18,12 +18,6 @@
 #if _sys_xattr
 # include <sys/xattr.h>
 #endif
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
-#if _hdr_windows
-# include <windows.h>
-#endif
 
 #include "bdj4.h"
 #include "bdj4arg.h"

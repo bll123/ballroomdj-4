@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include <winsock2.h>
+#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
 #include "bdj4.h"
@@ -31,21 +31,28 @@ osRegistryGet (char *key, char *name)
   LSTATUS rc;
   unsigned char buff [512];
   DWORD   len = 512;
+  wchar_t *wkey;
+  wchar_t *wname;
 
   *buff = '\0';
 
-  rc = RegOpenKeyEx (
+  wkey = osToWideChar (key);
+
+  rc = RegOpenKeyExW (
       HKEY_CURRENT_USER,
-      key,
+      wkey,
       0,
       KEY_QUERY_VALUE,
       &hkey
       );
+  mdfree (wkey);
 
   if (rc == ERROR_SUCCESS) {
-    rc = RegQueryValueEx (
+    wname = osToWideChar (name);
+
+    rc = RegQueryValueExW (
         hkey,
-        name,
+        wname,
         NULL,
         NULL,
         buff,
@@ -55,6 +62,7 @@ osRegistryGet (char *key, char *name)
       rval = mdstrdup ((char *) buff);
     }
     RegCloseKey (hkey);
+    mdfree (wname);
   }
 
   return rval;

@@ -63,7 +63,6 @@
 #cmakedefine01 _lib_GetNativeSystemInfo
 #cmakedefine01 _lib_GetTimeFormatEx
 #cmakedefine01 _lib_GetUserDefaultUILanguage
-#cmakedefine01 _lib_RegOpenKeyEx
 #cmakedefine01 _lib_RemoveDirectoryW
 #cmakedefine01 _lib_RtlGetVersion
 #cmakedefine01 _lib_LoadLibraryW

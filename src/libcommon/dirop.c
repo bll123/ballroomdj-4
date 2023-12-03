@@ -17,6 +17,11 @@
 
 #include <glib.h>
 
+#if _hdr_windows
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
+
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
@@ -25,10 +30,6 @@
 #include "osdir.h"
 #include "osutils.h"
 #include "sysvars.h"
-
-#if _hdr_windows
-# include <windows.h>
-#endif
 
 static int diropMakeRecursiveDir (const char *dirname);
 static int diropMkdir (const char *dirname);

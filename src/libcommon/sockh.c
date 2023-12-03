@@ -11,6 +11,10 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+
 #include "bdjmsg.h"
 #include "log.h"
 #include "mdebug.h"

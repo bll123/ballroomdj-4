@@ -27,10 +27,6 @@
 #include "pathutil.h"
 #include "queue.h"
 
-#if _hdr_windows
-# include <windows.h>
-#endif
-
 slist_t *
 dirlistBasicDirList (const char *dirname, const char *extension)
 {

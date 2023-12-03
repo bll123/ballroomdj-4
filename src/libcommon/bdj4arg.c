@@ -15,10 +15,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
 #if _hdr_windows
+# define NOCRYPT 1
+# define NOGDI 1
 # include <windows.h>
 #endif
 

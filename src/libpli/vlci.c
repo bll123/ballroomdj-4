@@ -17,13 +17,6 @@
 #include <string.h>
 #include <math.h>
 
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
-#if _hdr_windows
-# include <windows.h>
-#endif
-
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 

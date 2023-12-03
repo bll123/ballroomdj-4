@@ -13,6 +13,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"
