@@ -1796,7 +1796,7 @@ manageSetEditMenuItems (manageui_t *manage)
   bool      hasorig;
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_URI));
   if (hasorig) {
     manage->enablerestoreorig = true;
   } else {
@@ -1825,7 +1825,7 @@ manageApplyAdjDialog (void *udata)
   }
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_URI));
   rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS), hasorig);
   return rc;
 }
@@ -2151,7 +2151,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
       nlistStartIterator (ids, &iteridx);
       while ((ituneskey = nlistIterateKey (ids, &iteridx)) >= 0) {
         idata = itunesGetSongData (manage->itunes, ituneskey);
-        songfn = nlistGetStr (idata, TAG_FILE);
+        songfn = nlistGetStr (idata, TAG_URI);
         song = dbGetByName (manage->musicdb, songfn);
         if (song != NULL) {
           dbidx = songGetNum (song, TAG_DBIDX);
@@ -3743,7 +3743,7 @@ manageMarkSongRemoved (void *udata)
     song_t  *song;
 
     song = dbGetByIdx (manage->musicdb, dbidx);
-    nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_FILE));
+    nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_URI));
     dbMarkEntryRemoved (manage->musicdb, dbidx);
     snprintf (tmp, sizeof (tmp), "%d", dbidx);
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_REMOVE, tmp);

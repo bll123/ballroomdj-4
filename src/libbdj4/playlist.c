@@ -476,7 +476,7 @@ playlistGetNextSong (playlist_t *pl,
     song = songselSelect (pl->songsel, danceIdx);
     count = 0;
     while (song != NULL && count < PL_VALID_SONG_ATTEMPTS) {
-      if (songAudioFileExists (song)) {
+      if (songAudioSourceExists (song)) {
         break;
       }
       song = songselSelect (pl->songsel, danceIdx);
@@ -487,7 +487,7 @@ playlistGetNextSong (playlist_t *pl,
       song = NULL;
     } else {
       songselSelectFinalize (pl->songsel, danceIdx);
-      sfname = songGetStr (song, TAG_FILE);
+      sfname = songGetStr (song, TAG_URI);
       ++pl->count;
       logMsg (LOG_DBG, LOG_BASIC, "select: %d/%s %s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE), sfname);
@@ -501,7 +501,7 @@ playlistGetNextSong (playlist_t *pl,
     sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     while (sfname != NULL) {
       song = dbGetByName (pl->musicdb, sfname);
-      if (song != NULL && songAudioFileExists (song)) {
+      if (song != NULL && songAudioSourceExists (song)) {
         /* is ok */
         break;
       }

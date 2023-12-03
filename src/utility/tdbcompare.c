@@ -166,7 +166,7 @@ main (int argc, char *argv [])
       tag [i] = NULL;
     }
 
-    fn = songGetStr (song [DB_A], TAG_FILE);
+    fn = songGetStr (song [DB_A], TAG_URI);
     if (verbose) {
       fprintf (stderr, "  -- %s\n", fn);
     }

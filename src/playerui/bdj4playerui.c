@@ -1733,7 +1733,7 @@ pluiExtReqCallback (void *udata)
 
       tbuff = mdmalloc (BDJMSG_MAX);
       snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
-          songGetStr (song, TAG_FILE), MSG_ARGS_RS,
+          songGetStr (song, TAG_URI), MSG_ARGS_RS,
           dbidx, MSG_ARGS_RS,
           songentrytext);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);

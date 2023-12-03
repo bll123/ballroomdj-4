@@ -150,7 +150,7 @@ main (int argc, char *argv [])
         stripSpaces (tdnc);
         stringAsciiToLower (tdnc);
       }
-      fstr = songGetStr (song, TAG_FILE);
+      fstr = songGetStr (song, TAG_URI);
 
       pi = pathInfo (fstr);
       snprintf (ext, sizeof (ext), "%.*s", (int) pi->elen, pi->extension);

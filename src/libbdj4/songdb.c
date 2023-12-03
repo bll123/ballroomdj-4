@@ -63,7 +63,7 @@ songWriteAudioTags (song_t *song)
   slist_t *newtaglist;
   int     rewrite;
 
-  ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
+  ffn = songutilFullFileName (songGetStr (song, TAG_URI));
   data = audiotagReadTags (ffn);
   tagdata = audiotagParseData (ffn, data, &rewrite);
   mdfree (data);
@@ -85,7 +85,7 @@ songUpdateAllSonglists (song_t *song)
   ilistidx_t  sliter;
 
   // ### TODO for re-organization, the old filename will be needed.
-  songfn = songGetStr (song, TAG_FILE);
+  songfn = songGetStr (song, TAG_URI);
   filelist = playlistGetPlaylistList (PL_LIST_SONGLIST, NULL);
   slistStartIterator (filelist, &fiteridx);
   while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {

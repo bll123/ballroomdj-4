@@ -188,7 +188,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     return 0;
   }
 
-  fn = songGetStr (song, TAG_FILE);
+  fn = songGetStr (song, TAG_URI);
   ffn = songutilFullFileName (fn);
   if (! fileopFileExists (ffn)) {
     return 0;

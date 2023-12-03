@@ -137,7 +137,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     nlistFree (audioid->respidx);
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_WAIT;
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s", songGetStr (song, TAG_FILE));
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s", songGetStr (song, TAG_URI));
   }
 
   if (audioid->state == BDJ4_STATE_WAIT) {

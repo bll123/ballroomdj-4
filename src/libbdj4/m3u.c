@@ -66,7 +66,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     ffn = (char *) nlistGetStr (list, dbidx);
     ffnallocated = false;
     if (ffn == NULL) {
-      str = songGetStr (song, TAG_FILE);
+      str = songGetStr (song, TAG_URI);
       ffn = songutilFullFileName (str);
       ffnallocated = true;
     }

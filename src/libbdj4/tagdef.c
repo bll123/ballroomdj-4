@@ -485,7 +485,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
-  [TAG_FILE] =
+  /* leave this as 'FILE' for now, will require a big db upgrade to fix */
+  [TAG_URI] =
   { "FILE",                       /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */

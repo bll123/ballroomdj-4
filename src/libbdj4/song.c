@@ -10,6 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -64,7 +65,7 @@ static datafilekey_t songdfkeys [] = {
   /* a special case in uisong.c */
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, DF_NORM },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, DF_NORM },
-  { "FILE",                 TAG_FILE,                 VALUE_STR, NULL, DF_NORM },
+  { "FILE",                 TAG_URI,                 VALUE_STR, NULL, DF_NORM },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, DF_NORM },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, DF_NORM },
   { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, DF_NORM },
@@ -267,7 +268,7 @@ songSetStr (song_t *song, nlistidx_t tagidx, const char *str)
 
   nlistSetStr (song->songInfo, tagidx, str);
   song->changed = true;
-  if (tagidx == TAG_TITLE || tagidx == TAG_FILE) {
+  if (tagidx == TAG_TITLE || tagidx == TAG_URI) {
     song->songlistchange = true;
   }
 }
@@ -317,20 +318,12 @@ songChangeFavorite (song_t *song)
 }
 
 bool
-songAudioFileExists (song_t *song)
+songAudioSourceExists (song_t *song)
 {
   const char  *sfname;
-  char        *ffn;
-  bool        exists = false;
 
-  sfname = songGetStr (song, TAG_FILE);
-  ffn = songutilFullFileName (sfname);
-  exists = false;
-  if (ffn != NULL) {
-    exists = fileopFileExists (ffn);
-    mdfree (ffn);
-  }
-  return exists;
+  sfname = songGetStr (song, TAG_URI);
+  return audiosrcExists (sfname);
 }
 
 /* Used by the song editor via uisong to get the display strings. */

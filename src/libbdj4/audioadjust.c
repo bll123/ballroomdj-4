@@ -112,7 +112,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     return changed;
   }
 
-  songfn = songGetStr (song, TAG_FILE);
+  songfn = songGetStr (song, TAG_URI);
   infn = songutilFullFileName (songfn);
 
   strlcpy (fullfn, infn, sizeof (fullfn));

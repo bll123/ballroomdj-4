@@ -294,7 +294,7 @@ main (int argc, char *argv [])
 
       /* if the alternate dir is set, create a duplicate entry */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, fn + strlen (tmusicdir) + 1);
-      slistSetStr (tagdata, tagdefs [TAG_FILE].tag, tbuff);
+      slistSetStr (tagdata, tagdefs [TAG_URI].tag, tbuff);
       snprintf (tmp, sizeof (tmp), "%d", (int) strlen (altdir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
       dbWrite (db, tbuff, tagdata, MUSICDB_ENTRY_NEW);

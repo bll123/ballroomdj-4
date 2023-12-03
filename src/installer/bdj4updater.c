@@ -871,7 +871,7 @@ main (int argc, char *argv [])
       slist_t     *newtaglist;
       slistidx_t  siteridx;
 
-      ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
+      ffn = songutilFullFileName (songGetStr (song, TAG_URI));
 
       if (processflags [UPD_FIX_AF_TAGS]) {
         pathinfo_t    *pi;
@@ -963,7 +963,7 @@ main (int argc, char *argv [])
         if (songGetStr (song, TAG_DBADDDATE) == NULL) {
           time_t    ctime;
 
-          ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
+          ffn = songutilFullFileName (songGetStr (song, TAG_URI));
           ctime = fileopCreateTime (ffn);
           tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
           songSetStr (song, TAG_DBADDDATE, tbuff);

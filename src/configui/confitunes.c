@@ -96,7 +96,7 @@ confuiSaveiTunes (confuigui_t *gui)
     bool   tval;
     bool   oval;
 
-    if (tagidx == TAG_FILE) {
+    if (tagidx == TAG_URI) {
       continue;
     }
 
@@ -242,7 +242,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
 
-    if (tagidx == TAG_FILE) {
+    if (tagidx == TAG_URI) {
       continue;
     }
 

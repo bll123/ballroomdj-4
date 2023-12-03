@@ -257,7 +257,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     if ((dbidx = nlistIterateKey (eibdj4->dbidxlist, &eibdj4->dbidxiter)) >= 0) {
       song = dbGetByIdx (eibdj4->musicdb, dbidx);
 
-      songfn = songGetStr (song, TAG_FILE);
+      songfn = songGetStr (song, TAG_URI);
       strlcpy (nsongfn, songfn, sizeof (nsongfn));
       ffn = songutilFullFileName (songfn);
       if (fileopIsAbsolutePath (songfn)) {
@@ -273,7 +273,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
       if (isabsolute) {
-        songSetStr (song, TAG_FILE, nsongfn);
+        songSetStr (song, TAG_URI, nsongfn);
       }
 
       doupdate = false;
@@ -390,7 +390,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         bool          doupdate;
         bool          docopy;
 
-        songfn = songGetStr (song, TAG_FILE);
+        songfn = songGetStr (song, TAG_URI);
         nfn = songutilFullFileName (songfn);
         snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
 

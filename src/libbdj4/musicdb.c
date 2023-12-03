@@ -128,7 +128,7 @@ dbLoad (musicdb_t *musicdb)
         nlistIncrement (musicdb->danceCounts, dkey);
       }
       songSetNum (song, TAG_RRN, i);
-      fstr = songGetStr (song, TAG_FILE);
+      fstr = songGetStr (song, TAG_URI);
       slistSetData (musicdb->songs, fstr, song);
       ++musicdb->count;
     }
@@ -173,7 +173,7 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   song = slistGetDataByIdx (musicdb->songs, dbidx);
   rrn = songGetNum (song, TAG_RRN);
   song = dbReadEntry (musicdb, rrn);
-  fstr = songGetStr (song, TAG_FILE);
+  fstr = songGetStr (song, TAG_URI);
   songSetNum (song, TAG_RRN, rrn);
   songSetNum (song, TAG_DBIDX, dbidx);
   if (song != NULL) {
@@ -321,7 +321,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
   taglist = songTagList (song);
-  rc = dbWriteInternal (musicdb, songGetStr (song, TAG_FILE),
+  rc = dbWriteInternal (musicdb, songGetStr (song, TAG_URI),
       taglist, songGetNum (song, TAG_RRN));
   slistFree (taglist);
   return rc;
@@ -359,7 +359,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   tbuff [0] = '\0';
   tmutilDstamp (tmp, sizeof (tmp));
 
-  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_FILE].tag);
+  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_URI].tag);
   tblen = stringAppend (tbuff, sz, tblen, "\n");
   tblen = stringAppend (tbuff, sz, tblen, "..");
   tblen = stringAppend (tbuff, sz, tblen, fn);
@@ -367,7 +367,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
 
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
-    if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
+    if (strcmp (tag, tagdefs [TAG_URI].tag) == 0) {
       /* already handled, must be first */
       continue;
     }
@@ -466,7 +466,7 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   }
 
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_TEMP);
-  songGetStr (song, TAG_FILE);
+  songGetStr (song, TAG_URI);
   dbidx = musicdb->count;
   dbidx += nlistGetCount (musicdb->tempSongs);
   songSetNum (song, TAG_DBIDX, dbidx);
@@ -486,7 +486,7 @@ dbDumpSongList (musicdb_t *musicdb)
   while ((key = slistIterateKey (musicdb->songs, &siteridx)) != NULL) {
     fprintf (stderr, "key: %s\n", key);
     song = slistGetData (musicdb->songs, key);
-    fprintf (stderr, "  song: %s\n", songGetStr (song, TAG_FILE));
+    fprintf (stderr, "  song: %s\n", songGetStr (song, TAG_URI));
   }
 }
 #endif
@@ -532,9 +532,9 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
 
   song = songAlloc ();
   songParse (song, data, rrn);
-  if (! songAudioFileExists (song)) {
+  if (! songAudioSourceExists (song)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found",
-        songGetStr (song, TAG_FILE));
+        songGetStr (song, TAG_URI));
     songFree (song);
     song = NULL;
   }

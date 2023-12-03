@@ -175,12 +175,12 @@ START_TEST(musicdb_write)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
       tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_FILE), tlist, MUSICDB_ENTRY_NEW);
+      dbWrite (db, songGetStr (song, TAG_URI), tlist, MUSICDB_ENTRY_NEW);
       songFree (song);
       slistFree (tlist);
       ++count;
@@ -227,12 +227,12 @@ START_TEST(musicdb_overwrite)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
       tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_FILE),
+      dbWrite (db, songGetStr (song, TAG_URI),
           tlist, songGetNum (song, TAG_RRN));
       songFree (song);
       slistFree (tlist);
@@ -282,12 +282,12 @@ START_TEST(musicdb_batch_write)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
       tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_FILE), tlist, MUSICDB_ENTRY_NEW);
+      dbWrite (db, songGetStr (song, TAG_URI), tlist, MUSICDB_ENTRY_NEW);
       songFree (song);
       slistFree (tlist);
       ++count;
@@ -335,12 +335,12 @@ START_TEST(musicdb_batch_overwrite)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
       tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_FILE),
+      dbWrite (db, songGetStr (song, TAG_URI),
           tlist, songGetNum (song, TAG_RRN));
       songFree (song);
       slistFree (tlist);
@@ -392,7 +392,7 @@ START_TEST(musicdb_write_song)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
@@ -440,7 +440,7 @@ START_TEST(musicdb_overwrite_song)
       mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
       fclose (fh);
 
@@ -538,7 +538,7 @@ START_TEST(musicdb_load_get_byname)
       songSetNum (song, TAG_RRN, count + 1);
       mdfree (ndata);
 
-      dbsong = dbGetByName (db, songGetStr (song, TAG_FILE));
+      dbsong = dbGetByName (db, songGetStr (song, TAG_URI));
       ck_assert_ptr_nonnull (dbsong);
       ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
       ck_assert_int_eq (songGetNum (dbsong, TAG_DBIDX), count);
@@ -660,7 +660,7 @@ START_TEST(musicdb_temp)
 
   song = songAlloc ();
   ck_assert_ptr_nonnull (song);
-  songSetStr (song, TAG_FILE, "tmp/waltz.mp3");
+  songSetStr (song, TAG_URI, "tmp/waltz.mp3");
   songSetNum (song, TAG_DURATION, 20000);
   songSetStr (song, TAG_ARTIST, "temp-artist");
   songSetStr (song, TAG_TITLE, "temp-title");

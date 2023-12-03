@@ -1493,7 +1493,7 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
 
       musicqSetFlag (mainData->musicQueue, mqidx, i, MUSICQ_FLAG_PREP);
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, i);
-      sfname = songGetStr (song, TAG_FILE);
+      sfname = songGetStr (song, TAG_URI);
       annfname = mainPrepSong (mainData, PREP_SONG, mqidx, song, sfname,
           playlistIdx, uniqueidx);
 
@@ -1549,7 +1549,7 @@ mainMusicqClearPrep (maindata_t *mainData, int mqidx, int idx)
       char  tmp [200];
 
       snprintf (tmp, sizeof (tmp), "%ld%c%s",
-          uniqueidx, MSG_ARGS_RS, songGetStr (song, TAG_FILE));
+          uniqueidx, MSG_ARGS_RS, songGetStr (song, TAG_URI));
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_CLEAR_PREP, tmp);
     }
   }
@@ -2108,7 +2108,7 @@ mainMusicQueuePlay (maindata_t *mainData)
           connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
         }
       }
-      sfname = songGetStr (song, TAG_FILE);
+      sfname = songGetStr (song, TAG_URI);
       snprintf (tmp, sizeof (tmp), "%ld%c%s", uniqueidx, MSG_ARGS_RS, sfname);
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
 
@@ -2802,7 +2802,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
       logMsg (LOG_DBG, LOG_BASIC, "mix: (%d) d:%d/%s select: %s",
           currlen, danceIdx,
           danceGetStr (dances, danceIdx, DANCE_DANCE),
-          songGetStr (song, TAG_FILE));
+          songGetStr (song, TAG_URI));
       dbidx = songGetNum (song, TAG_DBIDX);
 
       danceselAddCount (dancesel, danceIdx);
@@ -2910,7 +2910,7 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
     songFree (song);
     return;
   }
-  songSetStr (song, TAG_FILE, p);
+  songSetStr (song, TAG_URI, p);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
@@ -3167,7 +3167,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
     title = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
     dance = mainSongGetDanceDisplay (mainData, mainData->musicqPlayIdx, 0);
     song = dbGetByIdx (mainData->musicdb, dbidx);
-    songfn = songGetStr (song, TAG_FILE);
+    songfn = songGetStr (song, TAG_URI);
     bpm = songGetNum (song, TAG_BPM);
   } else {
     qdbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);

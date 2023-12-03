@@ -79,7 +79,7 @@ typedef enum {
   TAG_DISCTOTAL,              //
   TAG_DURATION,               // not saved to af
   TAG_FAVORITE,               //
-  TAG_FILE,                   //
+  TAG_URI,                   //
   TAG_GENRE,                  //
   TAG_KEYWORD,                //
   TAG_MQDISPLAY,              //

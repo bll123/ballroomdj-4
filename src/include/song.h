@@ -29,7 +29,7 @@ void      songSetDouble (song_t *, nlistidx_t, double val);
 void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);
 void      songSetList (song_t *song, nlistidx_t tagidx, const char *str);
 void      songChangeFavorite (song_t *song);
-bool      songAudioFileExists (song_t *song);
+bool      songAudioSourceExists (song_t *song);
 char *    songDisplayString (song_t *song, int tagidx, int flag);
 slist_t * songTagList (song_t *song);
 bool      songIsChanged (song_t *song);

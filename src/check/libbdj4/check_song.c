@@ -394,14 +394,14 @@ START_TEST(song_audio_file)
     mdfree (data);
 
     snprintf (tbuff, sizeof (tbuff), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
-        songGetStr (song, TAG_FILE));
+        songGetStr (song, TAG_URI));
     fh = fileopOpen (tbuff, "w");
     fclose (fh);
 
-    rc = songAudioFileExists (song);
+    rc = songAudioSourceExists (song);
     ck_assert_int_eq (rc, 1);
     fileopDelete (tbuff);
-    rc = songAudioFileExists (song);
+    rc = songAudioSourceExists (song);
     ck_assert_int_eq (rc, 0);
     songFree (song);
   }
@@ -517,11 +517,11 @@ START_TEST(song_tag_list)
 
     /* this duplicates what the dbWrite() routine does */
     /* to generate the output string for the database */
-    snprintf (tbuff, sizeof (tbuff), "%s\n..%s\n", tagdefs [TAG_FILE].tag,
-        slistGetStr (tlist, tagdefs [TAG_FILE].tag));
+    snprintf (tbuff, sizeof (tbuff), "%s\n..%s\n", tagdefs [TAG_URI].tag,
+        slistGetStr (tlist, tagdefs [TAG_URI].tag));
     slistStartIterator (tlist, &iteridx);
     while ((tag = slistIterateKey (tlist, &iteridx)) != NULL) {
-      if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
+      if (strcmp (tag, tagdefs [TAG_URI].tag) == 0) {
         continue;
       }
       if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0 ||

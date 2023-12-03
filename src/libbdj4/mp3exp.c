@@ -132,7 +132,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       if (song == NULL) {
         return false;
       }
-      ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
+      ffn = songutilFullFileName (songGetStr (song, TAG_URI));
       if (ffn == NULL) {
         return false;
       }

@@ -523,7 +523,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   seint->dbidx = dbidx;
   seint->changed = 0;
 
-  tval = uisongGetDisplay (song, TAG_FILE, &val, &dval);
+  tval = uisongGetDisplay (song, TAG_URI, &val, &dval);
   uiLabelSetText (seint->wcont [UISE_W_FILE_DISP], tval);
   dataFree (tval);
   tval = NULL;

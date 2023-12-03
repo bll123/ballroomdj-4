@@ -13,17 +13,19 @@
 
 #include "bdj4.h"
 #include "audiosrc.h"
-#include "dyintfc.h"
-#include "dylib.h"
 #include "mdebug.h"
 #include "pathbld.h"
 #include "sysvars.h"
 
 #define AUDIOSRC_FILE       "file://"
-#define AUDIOSRC_YOUTUBE    "https://www.youtube"
+#define AUDIOSRC_YOUTUBE    "https://www.youtube.com/"
+#define AUDIOSRC_YOUTUBE_S  "https://youtu.be/"
+#define AUDIOSRC_YOUTUBE_M  "https://m.youtube.com/"
 enum {
   AUDIOSRC_FILE_LEN = strlen (AUDIOSRC_FILE),
   AUDIOSRC_YOUTUBE_LEN = strlen (AUDIOSRC_YOUTUBE),
+  AUDIOSRC_YOUTUBE_S_LEN = strlen (AUDIOSRC_YOUTUBE_S),
+  AUDIOSRC_YOUTUBE_M_LEN = strlen (AUDIOSRC_YOUTUBE_M),
 };
 
 static int audiosrcGetType (const char *nm);
@@ -88,6 +90,10 @@ audiosrcGetType (const char *nm)
   } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
     type = AUDIOSRC_TYPE_FILE;
   } else if (strncmp (nm, AUDIOSRC_YOUTUBE, AUDIOSRC_YOUTUBE_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_S, AUDIOSRC_YOUTUBE_S_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_M, AUDIOSRC_YOUTUBE_M_LEN) == 0) {
     type = AUDIOSRC_TYPE_YOUTUBE;
   }
 

@@ -517,7 +517,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
   audioidint->selchgbypass = true;
 
-  tval = uisongGetDisplay (song, TAG_FILE, &val, &dval);
+  tval = uisongGetDisplay (song, TAG_URI, &val, &dval);
   uiLabelSetText (audioidint->wcont [UIAUID_W_FILE_DISP], tval);
   dataFree (tval);
   tval = NULL;

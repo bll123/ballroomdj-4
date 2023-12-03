@@ -219,7 +219,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 
   tm = time (NULL);
 
-  fn = songGetStr (song, TAG_FILE);
+  fn = songGetStr (song, TAG_URI);
   ffn = songutilFullFileName (fn);
   if (! fileopFileExists (ffn)) {
     return 0;
