@@ -18,6 +18,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "mdebug.h"
+#include "pathutil.h"
 /* eventually songutilfullfilename will be removed and moved here */
 #include "songutil.h"
 
@@ -44,9 +45,10 @@ audiosrciExists (const char *nm)
 bool
 audiosrciRemove (const char *nm)
 {
-  int   rc;
-  char  newnm [MAXPATHLEN];
-  char  *ffn;
+  int           rc = false;
+  char          *ffn;
+  char          newnm [MAXPATHLEN];
+  pathinfo_t    *pi;
 
   ffn = songutilFullFileName (nm);
   if (! fileopFileExists (ffn)) {
@@ -54,10 +56,16 @@ audiosrciRemove (const char *nm)
     return false;
   }
 
-  snprintf (newnm, sizeof (newnm), bdjvarsGetStr (BDJV_DELETE_PFX), ffn);
+  pi = pathInfo (ffn);
+  snprintf (newnm, sizeof (newnm), "%.*s/%s%.*s",
+      (int) pi->dlen, pi->dirname,
+      bdjvarsGetStr (BDJV_DELETE_PFX),
+      (int) pi->flen, pi->filename);
+  pathInfoFree (pi);
 
   /* never overwrite an existing file */
   if (fileopFileExists (newnm)) {
+    mdfree (ffn);
     return false;
   }
 

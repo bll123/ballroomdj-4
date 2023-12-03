@@ -516,7 +516,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
   }
-  manage.audiosrc = audiosrcInit (bdjoptGetStr (OPT_G_AUDIOSRC_INTFC));
   manage.removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
 
   /* CONTEXT: management ui: please wait... status message */
@@ -530,6 +529,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin (LOG_PROC, "manageui");
 
+  manage.audiosrc = audiosrcInit (bdjoptGetStr (OPT_G_AUDIOSRC_INTFC));
   manage.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
@@ -611,6 +611,10 @@ manageStoppingCallback (void *udata, programstate_t programState)
   int           x, y, ws;
 
   logProcBegin (LOG_PROC, "manageStoppingCallback");
+
+  /* remove any songs in the removal list */
+  manageRemoveSongs (manage);
+
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_NORM_TERM);
@@ -3739,8 +3743,10 @@ manageMarkSongRemoved (void *udata)
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
     char    tmp [40];
+    song_t  *song;
 
-    nlistSetNum (manage->removelist, dbidx, dbidx);
+    song = dbGetByIdx (manage->musicdb, dbidx);
+    nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_FILE));
     dbMarkEntryRemoved (manage->musicdb, dbidx);
     snprintf (tmp, sizeof (tmp), "%d", dbidx);
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_REMOVE, tmp);
@@ -3786,18 +3792,22 @@ manageUndoRemove (void *udata)
   return UICB_CONT;
 }
 
-
 static void
 manageRemoveSongs (manageui_t *manage)
 {
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
 
+  if (nlistGetCount (manage->removelist) == 0) {
+    return;
+  }
+
   nlistStartIterator (manage->removelist, &iteridx);
   while ((dbidx = nlistIterateKey (manage->removelist, &iteridx)) >= 0) {
-    song_t    *song;
+    const char  *songfn;
 
-    song = dbGetByIdx (manage->musicdb, dbidx);
-    audiosrcRemove (manage->audiosrc, songGetStr (song, TAG_FILE));
+    songfn = nlistGetStr (manage->removelist, dbidx);
+fprintf (stderr, "remove-list: %d %s\n", dbidx, songfn);
+    audiosrcRemove (manage->audiosrc, songfn);
   }
 }
