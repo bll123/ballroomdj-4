@@ -17,86 +17,79 @@
 #include "dylib.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "slist.h"
 #include "sysvars.h"
 
-typedef struct audiosrc {
-  dlhandle_t        *dlHandle;
-  bool              *(*audiosrciExists) (const char *nm);
-  bool              *(*audiosrciRemove) (const char *nm);
-} audiosrc_t;
+#define AUDIOSRC_FILE       "file://"
+#define AUDIOSRC_YOUTUBE    "https://www.youtube"
+enum {
+  AUDIOSRC_FILE_LEN = strlen (AUDIOSRC_FILE),
+  AUDIOSRC_YOUTUBE_LEN = strlen (AUDIOSRC_YOUTUBE),
+};
 
-audiosrc_t *
-audiosrcInit (const char *pkg)
-{
-  audiosrc_t    *audiosrc;
-  char          dlpath [MAXPATHLEN];
-
-  audiosrc = mdmalloc (sizeof (audiosrc_t));
-  audiosrc->audiosrciExists = NULL;
-  audiosrc->audiosrciRemove = NULL;
-
-  pathbldMakePath (dlpath, sizeof (dlpath),
-      pkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
-  audiosrc->dlHandle = dylibLoad (dlpath);
-  if (audiosrc->dlHandle == NULL) {
-    fprintf (stderr, "Unable to open library %s\n", dlpath);
-    mdfree (audiosrc);
-    return NULL;
-  }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpedantic"
-  audiosrc->audiosrciExists = dylibLookup (audiosrc->dlHandle, "audiosrciExists");
-  audiosrc->audiosrciRemove = dylibLookup (audiosrc->dlHandle, "audiosrciRemove");
-#pragma clang diagnostic pop
-
-  return audiosrc;
-}
-
-void
-audiosrcFree (audiosrc_t *audiosrc)
-{
-  if (audiosrc == NULL) {
-    return;
-  }
-
-  if (audiosrc->dlHandle != NULL) {
-    dylibClose (audiosrc->dlHandle);
-  }
-  mdfree (audiosrc);
-}
+static int audiosrcGetType (const char *nm);
 
 bool
-audiosrcExists (audiosrc_t *audiosrc, const char *nm)
+audiosrcExists (const char *nm)
 {
-  bool rc = false;
+  bool  rc = false;
+  int   type;
 
-  if (audiosrc != NULL && audiosrc->audiosrciExists != NULL && nm != NULL) {
-    rc = audiosrc->audiosrciExists (nm);
+
+  if (nm == NULL) {
+    return false;
+  }
+
+  type = audiosrcGetType (nm);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    rc = audiosrcfileExists (nm);
   }
 
   return rc;
 }
 
 bool
-audiosrcRemove (audiosrc_t *audiosrc, const char *nm)
+audiosrcRemove (const char *nm)
 {
+  int     type;
   bool rc = false;
 
-  if (audiosrc != NULL && audiosrc->audiosrciRemove != NULL && nm != NULL) {
-    rc = audiosrc->audiosrciRemove (nm);
+  type = audiosrcGetType (nm);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    rc = audiosrcfileRemove (nm);
   }
 
   return rc;
 }
 
-slist_t *
-audiosrcInterfaceList (void)
+char *
+audiosrcPrep (const char *nm)
 {
-  slist_t     *interfaces;
+  int     type;
+  char    *tempnm = NULL;
 
-  interfaces = dyInterfaceList (LIBAUDIOSRC_PFX, "audiosrciDesc");
-  return interfaces;
+  type = audiosrcGetType (nm);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    audiosrcfilePrep (nm);
+  }
+
+  return tempnm;
 }
 
+static int
+audiosrcGetType (const char *nm)
+{
+  int     type = AUDIOSRC_TYPE_FILE;
+
+  if (*nm == '/') {
+    type = AUDIOSRC_TYPE_FILE;
+  } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
+    type = AUDIOSRC_TYPE_FILE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE, AUDIOSRC_YOUTUBE_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  }
+
+  return type;
+}

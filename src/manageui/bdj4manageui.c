@@ -269,7 +269,6 @@ typedef struct {
   datafile_t        *optiondf;
   nlist_t           *options;
   /* remove song */
-  audiosrc_t        *audiosrc;
   nlist_t           *removelist;
   /* various flags */
   bool              slbackupcreated : 1;
@@ -529,7 +528,6 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin (LOG_PROC, "manageui");
 
-  manage.audiosrc = audiosrcInit (bdjoptGetStr (OPT_G_AUDIOSRC_INTFC));
   manage.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
@@ -683,7 +681,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
-  audiosrcFree (manage->audiosrc);
   nlistFree (manage->removelist);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
@@ -3808,6 +3805,6 @@ manageRemoveSongs (manageui_t *manage)
 
     songfn = nlistGetStr (manage->removelist, dbidx);
 fprintf (stderr, "remove-list: %d %s\n", dbidx, songfn);
-    audiosrcRemove (manage->audiosrc, songfn);
+    audiosrcRemove (songfn);
   }
 }

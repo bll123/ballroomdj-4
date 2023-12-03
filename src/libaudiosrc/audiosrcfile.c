@@ -22,15 +22,8 @@
 /* eventually songutilfullfilename will be removed and moved here */
 #include "songutil.h"
 
-const char *
-audiosrciDesc (void)
-{
-  /* CONTEXT: audio source: audio files on disk */
-  return _("Audio Files");
-}
-
 bool
-audiosrciExists (const char *nm)
+audiosrcfileExists (const char *nm)
 {
   bool    rc;
   char    *ffn;
@@ -43,7 +36,7 @@ audiosrciExists (const char *nm)
 
 /* does not actually remove the file, renames it with a 'delete-' prefix */
 bool
-audiosrciRemove (const char *nm)
+audiosrcfileRemove (const char *nm)
 {
   int           rc = false;
   char          *ffn;
@@ -72,5 +65,11 @@ audiosrciRemove (const char *nm)
   rc = filemanipMove (ffn, newnm);
   mdfree (ffn);
   return rc == 0 ? true : false;
+}
+
+char *
+audiosrcfilePrep (const char *nm)
+{
+  return NULL;
 }
 

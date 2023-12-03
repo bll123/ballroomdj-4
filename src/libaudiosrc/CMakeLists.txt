@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4audiosrc SHARED
   audiosrc.c
+  audiosrcfile.c
 )
 target_link_libraries (libbdj4audiosrc PUBLIC
   libdylib
@@ -15,17 +16,9 @@ target_link_libraries (libbdj4audiosrc PUBLIC
   m
 )
 
-add_library (libaudiosrcfile SHARED audiosrcfile.c)
-target_link_libraries (libaudiosrcfile PUBLIC
-  libbdj4common
-  m
-)
-
 install (TARGETS
   libbdj4audiosrc
-  libaudiosrcfile
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (libbdj4audiosrc)
-updateRPath (libaudiosrcfile)

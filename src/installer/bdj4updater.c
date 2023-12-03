@@ -470,15 +470,6 @@ main (int argc, char *argv [])
     bdjoptchanged = true;
   }
 
-  {
-    /* 4.4.6 audio source added */
-    tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
-    if (tval == NULL || ! *tval) {
-      bdjoptSetStr (OPT_G_AUDIOSRC_INTFC, "libaudiosrcfile");
-      bdjoptchanged = true;
-    }
-  }
-
   if (bdjoptchanged) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "save bdjopt");
     bdjoptSave ();

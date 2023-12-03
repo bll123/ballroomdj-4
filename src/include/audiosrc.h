@@ -1,20 +1,22 @@
 #ifndef INC_AUDIOSRC_H
 #define INC_AUDIOSRC_H
 
-#include "slist.h"
+/* supported types */
+enum {
+  AUDIOSRC_TYPE_FILE,
+  AUDIOSRC_TYPE_YOUTUBE,
+};
 
-#define LIBAUDIOSRC_PFX  "libaudiosrc"
+/* audiosrc.c */
 
-typedef struct audiosrc audiosrc_t;
+bool audiosrcExists (const char *nm);
+bool audiosrcRemove (const char *nm);
+char *audiosrcPrep (const char *nm);
 
-audiosrc_t *audiosrcInit (const char *pkg);
-void audiosrcFree (audiosrc_t *audiosrc);
-bool audiosrcExists (audiosrc_t *audiosrc, const char *nm);
-bool audiosrcRemove (audiosrc_t *audiosrc, const char *nm);
-slist_t * audiosrcInterfaceList (void);
+/* audiosrcfile.c */
 
-const char *audiosrciDesc (void);
-bool audiosrciExists (const char *nm);
-bool audiosrciRemove (const char *nm);
+bool audiosrcfileExists (const char *nm);
+bool audiosrcfileRemove (const char *nm);
+char *audiosrcfilePrep (const char *nm);
 
 #endif /* INC_AUDIOSRC_H */
