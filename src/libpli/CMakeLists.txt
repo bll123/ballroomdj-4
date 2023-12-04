@@ -31,13 +31,26 @@ target_link_libraries (libplivlc PUBLIC
   m
 )
 
+# MPV is not working right.  The callback thread hangs in a mutex lock.
+# add_library (libplimpv SHARED plimpv.c mpvi.c)
+# target_include_directories (libplimpv
+#   PUBLIC "${LIBMPV_INCLUDE_DIRS}"
+# )
+# target_link_libraries (libplimpv PUBLIC
+#   libbdj4common
+#   ${LIBMPV_LDFLAGS}
+#   m
+# )
+
 install (TARGETS
   libbdj4pli
   libplinull
   libplivlc
+#  libplimpv
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
 updateRPath (libplivlc)
+# updateRPath (libplimpv)

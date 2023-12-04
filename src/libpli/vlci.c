@@ -66,10 +66,11 @@ enum {
   stateMapMax = (sizeof (stateMap) / sizeof (stateMap_t))
 };
 
+static const char *stateToStr (libvlc_state_t state); /* for debugging */
+
 #endif /* VLCDEBUG */
 
-/* static const char *stateToStr (libvlc_state_t state); */ /* for debugging */
-static void       vlcEventHandler (const struct libvlc_event_t *event, void *);
+static void  vlcEventHandler (const struct libvlc_event_t *event, void *);
 
 #if STATE_TO_VALUE
 static libvlc_state_t stateToValue (char *name);
