@@ -112,6 +112,8 @@
           <ul>
             <li><a href="index.html.de">Deutsch</a></li>
             <li><a href="index.html.en">English</a></li>
+            <li><a href="index.html.es">Español</a></li>
+            <li><a href="index.html.fi">Suomi</a></li>
             <li><a href="index.html.fr">Français</a></li>
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>

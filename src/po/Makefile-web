@@ -15,5 +15,6 @@ WEBDIR = ../../web
 all: $(WEBDIR)/bdj4.html.$(SLOCALE)
 	@:
 
-$(WEBDIR)/bdj4.html.$(SLOCALE): $(POWEBDIR)/web-$(LOCALE).po
-	./po-instweb.sh $< $(LOCALE) $(SLOCALE)
+$(WEBDIR)/bdj4.html.$(SLOCALE): $(POWEBDIR)/web-$(LOCALE).po \
+		$(WEBDIR)/bdj4.html.en
+	@./po-instweb.sh $< $(LOCALE) $(SLOCALE)
