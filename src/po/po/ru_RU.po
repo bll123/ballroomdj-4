@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-03\n"
+"PO-Revision-Date: 2023-12-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -326,7 +326,6 @@ msgstr "Аудио"
 msgid "Audio File"
 msgstr "Аудио файл"
 
-#. CONTEXT: audio source: audio files on disk
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Аудио файлы"
@@ -343,10 +342,6 @@ msgstr "Подобный список Аудио ID"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Выxод звука"
-
-#. CONTEXT: configuration: which audio source to use
-msgid "Audio Source"
-msgstr ""
 
 #. CONTEXT: configuration: which audio tag interface to use
 msgid "Audio Tags"

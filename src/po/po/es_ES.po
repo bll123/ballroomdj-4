@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-03\n"
+"PO-Revision-Date: 2023-12-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -326,7 +326,6 @@ msgstr "Audio"
 msgid "Audio File"
 msgstr "Archivo de audio"
 
-#. CONTEXT: audio source: audio files on disk
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Archivos de audio"
@@ -343,10 +342,6 @@ msgstr "Lista de coincidencias de ID de audio"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Salida de audio"
-
-#. CONTEXT: configuration: which audio source to use
-msgid "Audio Source"
-msgstr ""
 
 #. CONTEXT: configuration: which audio tag interface to use
 msgid "Audio Tags"
@@ -1443,11 +1438,11 @@ msgstr "Lista de reproducción en cola"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "QueueDance"
+msgstr "Danza en cola"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "Cola_nombre"
+msgstr "Cola"
 
 #. CONTEXT: quick edit: title of dialog
 msgid "Quick Edit"
