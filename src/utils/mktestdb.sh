@@ -73,6 +73,9 @@ while test $# -gt 0; do
     --atibdj4)
       # ignored
       ;;
+    --plimpv)
+      # ignored
+      ;;
     *)
       echo "unknown argument $1" >&2
       exit 1

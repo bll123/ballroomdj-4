@@ -663,7 +663,7 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
         dbupdate->counts [C_BAD] + dbupdate->counts [C_NULL_DATA] +
         dbupdate->counts [C_NO_TAGS] + dbupdate->counts [C_NON_AUDIO] +
-        dbupdate->counts [C_BDJ_OLD_DIR]);
+        dbupdate->counts [C_BDJ_OLD_DIR] + dbupdate->counts [C_DEL_SKIP]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     if (dbupdate->stoprequest) {

@@ -62,7 +62,7 @@ AUTO
 STDROUNDS
 ..estándares
 QDANCE
-..QueueDance
+..Danza en cola
 KEY
 ..4
 LONG
@@ -78,7 +78,7 @@ AUTO
 STDROUNDS
 ..vakiokierrokset
 QDANCE
-..QueueDance
+..Jonotanssi
 KEY
 ..5
 LONG

@@ -225,9 +225,14 @@ pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
 {
   int   rc = 0;
 
+  /* VLC will use the default sink set by the application. */
+  /* No need to make things more complicated. */
+  /* test 2023-12-4 on Linux, MacOS, Windows */
+# if 0
   if (vlcHaveAudioDevList ()) {
     rc = vlcAudioDevList (pliData->plData, sinklist);
   }
+#endif
 
   return rc;
 }

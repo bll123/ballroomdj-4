@@ -186,13 +186,11 @@ void
 dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
-  rafileidx_t rrn;
 
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
   song = slistGetDataByIdx (musicdb->songs, dbidx);
-  rrn = songGetNum (song, TAG_RRN);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
   dbRebuildDanceCounts (musicdb);
 }
@@ -202,13 +200,11 @@ void
 dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
-  rafileidx_t rrn;
 
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
   song = slistGetDataByIdx (musicdb->songs, dbidx);
-  rrn = songGetNum (song, TAG_RRN);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
   dbRebuildDanceCounts (musicdb);
 }
@@ -541,12 +537,7 @@ dbRebuildDanceCounts (musicdb_t *musicdb)
 {
   song_t        *song;
   slistidx_t    iteridx;
-  dance_t       *dances;
-  dbidx_t       dcount;
   ilistidx_t    dkey;
-
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dcount = danceGetCount (dances);
 
   nlistFree (musicdb->danceCounts);
   musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);

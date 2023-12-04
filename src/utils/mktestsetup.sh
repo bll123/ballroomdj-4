@@ -70,10 +70,14 @@ if [[ -f $(basename $FLAG) ]]; then
 fi
 
 ATIBDJ4=F
+PLIMPV=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
       ATIBDJ4=T
+      ;;
+    --plimpv)
+      PLIMPV=T
       ;;
   esac
 done
@@ -153,11 +157,17 @@ ATII=libatibdj4
 if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
 fi
+PLII=libplivlc
+if [[ $PLIMPV == T ]]; then
+  PLII=libplimpv
+fi
 tfn=data/${hostname}/bdjconfig.txt
-sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
+sed \
+    -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
+    -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     -e "/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }" \
     -e "/^ITUNESXMLFILE/ { n ; s,.*,..${cwd}/test-files/iTunes-test-music.xml, ; }" \
-    -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
+    -e "/^PLAYER/ { n ; s,.*,..${PLII}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

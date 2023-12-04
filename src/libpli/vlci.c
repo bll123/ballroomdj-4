@@ -366,12 +366,13 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   libvlc_event_attach (em, libvlc_MediaStateChanged,
       &vlcEventHandler, vlcData);
 
-#if ! defined(VLC_NO_DEVLIST)
-  /* on mac os x, the device has to be set after the media is set */
-  if (vlcData->device != NULL) {
-    libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);
+  if (vlcHaveAudioDevList ()) {
+    /* on mac os x, the device has to be set *after* the media is set */
+    if (vlcData->device != NULL) {
+      libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);
+    }
   }
-#endif
+
   return 0;
 }
 

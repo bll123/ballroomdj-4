@@ -16,14 +16,6 @@ Español Flex
 ..es/bdj-flex.html
 Español HTML 5
 ..es/bdj.html
-Español Flex Dark
-..es/bdj-flex-dark.html
-Español Flex
-..es/bdj-flex.html
-Español HTML 5
-..es/bdj.html
-Español Flex Dark
-..es/bdj-flex-dark.html templates/es/bdj-flex.html templates/es/bdj.html templates/es/*.html
 Suomi Flex Dark
 ..fi/bdj-flex-dark.html
 Suomi Flex

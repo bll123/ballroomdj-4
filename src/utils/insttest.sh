@@ -157,20 +157,17 @@ function checkUpdaterClean {
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
-  if [[ $section == nl_BE || $section == nl_NL ]]; then
-    fn="$DATADIR/Standaardrondes.pldances"
-  fi
-  if [[ $section == ru_RU ]]; then
-    fn="$DATADIR/стандартные циклы.pldances"
-  fi
-  if [[ $section == fr_FR ]]; then
-    fn="${DATADIR}/les rounds standards.pldances"
-  fi
   if [[ $section == de_DE ]]; then
     fn="${DATADIR}/Standardrunden.pldances"
   fi
-  if [[ $section == pl_PL ]]; then
-    fn="${DATADIR}/rundy standardowe.pldances"
+  if [[ $section == es_ES ]]; then
+    fn="${DATADIR}/estándares.pldances"
+  fi
+  if [[ $section == fi_FI ]]; then
+    fn="${DATADIR}/vakiokierrokset.pldances"
+  fi
+  if [[ $section == fr_FR ]]; then
+    fn="${DATADIR}/les rounds standards.pldances"
   fi
   if [[ $section == it_IT ]]; then
     fn="${DATADIR}/giri standard.pldances"
@@ -178,32 +175,47 @@ function checkUpdaterClean {
   if [[ $section == ja_JP ]]; then
     fn="${DATADIR}/スタンダードラウンド.pldances"
   fi
+  if [[ $section == nl_BE || $section == nl_NL ]]; then
+    fn="$DATADIR/Standaardrondes.pldances"
+  fi
+  if [[ $section == pl_PL ]]; then
+    fn="${DATADIR}/rundy standardowe.pldances"
+  fi
+  if [[ $section == ru_RU ]]; then
+    fn="$DATADIR/стандартные циклы.pldances"
+  fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
   fi
 
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
-  if [[ $section == nl_BE || $section == nl_NL ]]; then
-    fn="$DATADIR/Dans In Wachtrij.pldances"
-  fi
-  if [[ $section == ru_RU ]]; then
-    fn="$DATADIR/Танец в очередь.pldances"
-  fi
-  if [[ $section == fr_FR ]]; then
-    fn="$DATADIR/Danse en file d'attente.pldances"
-  fi
   if [[ $section == de_DE ]]; then
     fn="${DATADIR}/Schlangentanz.pldances"
   fi
-  if [[ $section == pl_PL ]]; then
-    fn="${DATADIR}/Taniec w kolejce.pldances"
+  if [[ $section == es_ES ]]; then
+    fn="${DATADIR}/Danza en cola.pldances"
+  fi
+  if [[ $section == fi_FI ]]; then
+    fn="$DATADIR/Jonotanssi.pldances"
+  fi
+  if [[ $section == fr_FR ]]; then
+    fn="$DATADIR/Danse en file d'attente.pldances"
   fi
   if [[ $section == it_IT ]]; then
     fn="${DATADIR}/Ballo in coda.pldances"
   fi
   if [[ $section == ja_JP ]]; then
     fn="${DATADIR}/キューダンス.pldances"
+  fi
+  if [[ $section == nl_BE || $section == nl_NL ]]; then
+    fn="$DATADIR/Dans In Wachtrij.pldances"
+  fi
+  if [[ $section == pl_PL ]]; then
+    fn="${DATADIR}/Taniec w kolejce.pldances"
+  fi
+  if [[ $section == ru_RU ]]; then
+    fn="$DATADIR/Танец в очередь.pldances"
   fi
   if [[ -f ${fn} ]]; then
     mkBadPldance "${fn}"
@@ -586,24 +598,20 @@ function checkInstallation {
     # automatic.pl file
     fna="${DATADIR}/automatic.pl"
     fnb=""
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fna="${DATADIR}/Automatisch.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fna="${DATADIR}/автоматически.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fna="${DATADIR}/automatique.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
     if [[ $section == de_DE ]]; then
       fna="${DATADIR}/automatisch.pl"
       fnb="${DATADIR}/automatic.pl"
     fi
-    if [[ $section == pl_PL ]]; then
-      fna="${DATADIR}/automatyczny.pl"
+    if [[ $section == es_ES ]]; then
+      fna="${DATADIR}/automático.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == fi_FI ]]; then
+      fna="${DATADIR}/automaattinen.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="${DATADIR}/automatique.pl"
       fnb="${DATADIR}/automatic.pl"
     fi
     if [[ $section == it_IT ]]; then
@@ -612,6 +620,18 @@ function checkInstallation {
     fi
     if [[ $section == ja_JP ]]; then
       fna="${DATADIR}/自動.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
+      fna="${DATADIR}/Automatisch.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/automatyczny.pl"
+      fnb="${DATADIR}/automatic.pl"
+    fi
+    if [[ $section == ru_RU ]]; then
+      fna="${DATADIR}/автоматически.pl"
       fnb="${DATADIR}/automatic.pl"
     fi
     res=$(($res+1))
@@ -656,24 +676,20 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
     fnb=""
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fna="${DATADIR}/Dans In Wachtrij.pldances"
-      fnb="${DATADIR}/QueueDance.pldances"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fna="${DATADIR}/Танец в очередь.pldances"
-      fnb="${DATADIR}/QueueDance.pldances"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fna="${DATADIR}/Danse en file d'attente.pldances"
-      fnb="${DATADIR}/QueueDance.pldances"
-    fi
     if [[ $section == de_DE ]]; then
       fna="${DATADIR}/Schlangentanz.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
-    if [[ $section == pl_PL ]]; then
-      fna="${DATADIR}/Taniec w kolejce.pldances"
+    if [[ $section == es_ES ]]; then
+      fna="${DATADIR}/Danza en cola.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == fi_FI ]]; then
+      fna="${DATADIR}/Jonotanssi.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="${DATADIR}/Danse en file d'attente.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == it_IT ]]; then
@@ -682,6 +698,18 @@ function checkInstallation {
     fi
     if [[ $section == ja_JP ]]; then
       fna="${DATADIR}/キューダンス.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
+      fna="${DATADIR}/Dans In Wachtrij.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/Taniec w kolejce.pldances"
+      fnb="${DATADIR}/QueueDance.pldances"
+    fi
+    if [[ $section == ru_RU ]]; then
+      fna="${DATADIR}/Танец в очередь.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
@@ -702,24 +730,20 @@ function checkInstallation {
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb=""
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fna="${DATADIR}/Dans In Wachtrij.pl"
-      fnb="${DATADIR}/QueueDance.pl"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fna="${DATADIR}/Танец в очередь.pl"
-      fnb="${DATADIR}/QueueDance.pl"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fna="$DATADIR/Danse en file d'attente.pl"
-      fnb="${DATADIR}/QueueDance.pl"
-    fi
     if [[ $section == de_DE ]]; then
       fna="${DATADIR}/Schlangentanz.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
-    if [[ $section == pl_PL ]]; then
-      fna="${DATADIR}/Taniec w kolejce.pl"
+    if [[ $section == es_ES ]]; then
+      fna="$DATADIR/Danza en cola.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == fi_FI ]]; then
+      fna="${DATADIR}/Jonotanssi.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fna="$DATADIR/Danse en file d'attente.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == it_IT ]]; then
@@ -728,6 +752,18 @@ function checkInstallation {
     fi
     if [[ $section == ja_JP ]]; then
       fna="${DATADIR}/キューダンス.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
+      fna="${DATADIR}/Dans In Wachtrij.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fna="${DATADIR}/Taniec w kolejce.pl"
+      fnb="${DATADIR}/QueueDance.pl"
+    fi
+    if [[ $section == ru_RU ]]; then
+      fna="${DATADIR}/Танец в очередь.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
@@ -742,26 +778,32 @@ function checkInstallation {
 
     res=$(($res+1))  # standardrounds.pldances file
     fn="${DATADIR}/standardrounds.pldances"
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fn="${DATADIR}/Standaardrondes.pldances"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fn="${DATADIR}/стандартные циклы.pldances"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fn="${DATADIR}/les rounds standards.pldances"
-    fi
     if [[ $section == de_DE ]]; then
       fn="${DATADIR}/Standardrunden.pldances"
     fi
-    if [[ $section == pl_PL ]]; then
-      fn="${DATADIR}/rundy standardowe.pldances"
+    if [[ $section == es_ES ]]; then
+      fn="${DATADIR}/estándares.pldances"
+    fi
+    if [[ $section == fi_FI ]]; then
+      fn="${DATADIR}/vakiokierrokset.pldances"
+    fi
+    if [[ $section == fr_FR ]]; then
+      fn="${DATADIR}/les rounds standards.pldances"
     fi
     if [[ $section == it_IT ]]; then
       fn="${DATADIR}/giri standard.pldances"
     fi
     if [[ $section == ja_JP ]]; then
       fn="${DATADIR}/スタンダードラウンド.pldances"
+    fi
+    if [[ $section == nl_BE || $section == nl_NL ]]; then
+      fn="${DATADIR}/Standaardrondes.pldances"
+    fi
+    if [[ $section == pl_PL ]]; then
+      fn="${DATADIR}/rundy standardowe.pldances"
+    fi
+    if [[ $section == ru_RU ]]; then
+      fn="${DATADIR}/стандартные циклы.pldances"
     fi
     if [[ $fin == T && -f ${fn} ]]; then
       grep '# version 2' "${fn}" > /dev/null 2>&1
@@ -1079,7 +1121,7 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-for section in de_DE fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   locale=${section}
 
   cleanInstTest

@@ -160,6 +160,11 @@ testsuite:
 	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --testsuite)
 
+.PHONY: testsuitempv
+testsuitempv:
+	./utils/mktestsetup.sh --force --plimpv
+	(cd ..;./bin/bdj4 --testsuite)
+
 .PHONY: testsection
 testsection:
 	./utils/mktestsetup.sh

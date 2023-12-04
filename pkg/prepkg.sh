@@ -91,8 +91,7 @@ fi
 # platforms must be performed afterwards.
 # (the extraction script is using gnu-sed features)
 if [[ $tag == linux && $isprimary == T ]]; then
-  (cd src/po; ./extract.sh)
-  (cd src/po; ./install.sh)
+  (cd src/po; ./pobuild.sh)
 
   tfn=curl-ca-bundle.crt
   ttfn=templates/${tfn}

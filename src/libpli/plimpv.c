@@ -190,6 +190,8 @@ pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
   int   rc;
 
+  /* MPV must set the audio sink. */
+  /* MPV will not use the default sink set by the application. */
   rc = mpvAudioDevSet (pliData->plData, dev);
   return rc;
 }
