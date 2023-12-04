@@ -105,8 +105,8 @@ target_link_libraries (ttagdbchk PUBLIC
   m
 )
 
-add_executable (vlcsinklist vlcsinklist.c)
-target_link_libraries (vlcsinklist PUBLIC
+add_executable (plisinklist plisinklist.c)
+target_link_libraries (plisinklist PUBLIC
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   m
@@ -128,7 +128,7 @@ install (TARGETS
   testsuite
   tmusicsetup
   ttagdbchk
-  vlcsinklist
+  plisinklist
   vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -142,5 +142,5 @@ updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
-updateRPath (vlcsinklist)
+updateRPath (plisinklist)
 updateRPath (vsed)

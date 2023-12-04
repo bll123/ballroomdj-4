@@ -72,6 +72,7 @@ static const stateMap_t stateMap [] = {
  //  { MPV_EVENT_AUDIO_RECONFIG,   "audio-reconf", PLI_STATE_NONE },
  //  { MPV_EVENT_METADATA_UPDATE,  "metadata-upd", PLI_STATE_NONE }
 };
+
 enum {
   stateMapMax = sizeof (stateMap) / sizeof(stateMap_t),
   stateMapIdxMax = 40,          /* mpv currently has 24 states coded */
@@ -80,8 +81,9 @@ enum {
 
 typedef struct mpvData {
   mpv_handle            *inst;
-  const char            *device;
+  char                  *device;
   FILE                  *debugfh;
+  volsinklist_t         sinklist;
   int                   stateMapIdx [stateMapIdxMax];
   plistate_t            state;
   char                  version [40];
@@ -111,7 +113,6 @@ mpvGetDuration (mpvData_t *mpvData)
 
   status = mpv_get_property (mpvData->inst, "duration", MPV_FORMAT_DOUBLE, &mpvdur);
   dur = (ssize_t) (mpvdur * 1000.0);
-  mpvProcessEvents (mpvData);
   return dur;
 }
 
@@ -129,7 +130,6 @@ mpvGetTime (mpvData_t *mpvData)
 
   status = mpv_get_property (mpvData->inst, "time-pos", MPV_FORMAT_DOUBLE, &mpvtm);
   tm = (ssize_t) (mpvtm * 1000.0);
-  mpvProcessEvents (mpvData);
   return tm;
 }
 
@@ -150,7 +150,6 @@ mpvIsPlaying (mpvData_t *mpvData)
       mpvData->state == PLI_STATE_PLAYING) {
     rval = 1;
   }
-  mpvProcessEvents (mpvData);
   return rval;
 }
 
@@ -168,7 +167,6 @@ mpvIsPaused (mpvData_t *mpvData)
   if (mpvData->state == PLI_STATE_PAUSED) {
     rval = 1;
   }
-  mpvProcessEvents (mpvData);
   return rval;
 }
 
@@ -193,7 +191,6 @@ mpvStop (mpvData_t *mpvData)
     fprintf (mpvData->debugfh, "stop:status:%d %s\n", status, mpv_error_string (status));
   }
 # endif
-  mpvProcessEvents (mpvData);
   return 0;
 }
 
@@ -213,6 +210,7 @@ mpvPause (mpvData_t *mpvData)
   if (mpvData->state == PLI_STATE_PLAYING && mpvData->paused == 0) {
     val = 1;
     status = mpv_set_property (mpvData->inst, "pause", MPV_FORMAT_FLAG, &val);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "pause-%d:status:%d %s\n", val, status, mpv_error_string (status));
@@ -224,6 +222,7 @@ mpvPause (mpvData_t *mpvData)
   } else if (mpvData->state == PLI_STATE_PAUSED && mpvData->paused == 1) {
     val = 0;
     status = mpv_set_property (mpvData->inst, "pause", MPV_FORMAT_FLAG, &val);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "pause-%d:status:%d %s\n", val, status, mpv_error_string (status));
@@ -234,7 +233,6 @@ mpvPause (mpvData_t *mpvData)
     rc = 0;
   }
 
-  mpvProcessEvents (mpvData);
   return rc;
 }
 
@@ -255,6 +253,7 @@ mpvPlay (mpvData_t *mpvData)
   if (mpvData->state == PLI_STATE_PAUSED && mpvData->paused == 1) {
     val = 0;
     status = mpv_set_property (mpvData->inst, "pause", MPV_FORMAT_FLAG, &val);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "play:status:%d %s\n", status, mpv_error_string (status));
@@ -265,7 +264,6 @@ mpvPlay (mpvData_t *mpvData)
     rc = 0;
   }
 
-  mpvProcessEvents (mpvData);
   return rc;
 }
 
@@ -290,13 +288,13 @@ mpvSeek (mpvData_t *mpvData, ssize_t pos)
        mpvData->state == PLI_STATE_PAUSED) &&
       pos >= 0) {
     double      dpos;
-    double      mpvdur;
     char        spos [40];
     const char  *cmd [] = { "seek", spos, "absolute", NULL };
 
     dpos = (double) pos / 1000.0;
     snprintf (spos, sizeof (spos), "%.1f", dpos);
     status = mpv_command (mpvData->inst, cmd);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "seek-%s:status:%d %s\n", spos, status, mpv_error_string (status));
@@ -304,7 +302,6 @@ mpvSeek (mpvData_t *mpvData, ssize_t pos)
 # endif
   }
 
-  mpvProcessEvents (mpvData);
   setlocale (LC_NUMERIC, oldlocale);
   return mpvGetTime (mpvData);
 }
@@ -330,6 +327,7 @@ mpvRate (mpvData_t *mpvData, double drate)
   if (mpvData->state == PLI_STATE_PLAYING) {
     rate = drate;
     status = mpv_set_property (mpvData->inst, "speed", MPV_FORMAT_DOUBLE, &rate);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "speed-%.2f:status:%d %s\n", rate, status, mpv_error_string (status));
@@ -338,13 +336,13 @@ mpvRate (mpvData_t *mpvData, double drate)
   }
 
   status = mpv_get_property (mpvData->inst, "speed", MPV_FORMAT_DOUBLE, &rate);
+  mpvProcessEvents (mpvData);
 # if MPVDEBUG
   if (mpvData->debugfh != NULL) {
     fprintf (mpvData->debugfh, "speed-get:status:%d %s\n", status, mpv_error_string (status));
   }
 # endif
 
-  mpvProcessEvents (mpvData);
   setlocale (LC_NUMERIC, oldlocale);
   return rate;
 }
@@ -360,17 +358,39 @@ mpvHaveAudioDevList (void)
 int
 mpvAudioDevSet (mpvData_t *mpvData, const char *dev)
 {
+  size_t    devlen;
+
   if (mpvData == NULL || mpvData->inst == NULL) {
     return -1;
   }
+  mpvProcessEvents (mpvData);
 
-  if (mpvData->device != NULL) {
-    mdfree ((void *) mpvData->device);
-  }
-
+  /* the MPV audio sink must be set.  */
+  /* setting the current sink for pipewire is not enough. */
+  dataFree (mpvData->device);
   mpvData->device = NULL;
-  if (strlen (dev) > 0) {
-    mpvData->device = mdstrdup (dev);
+
+  if (dev != NULL && *dev) {
+    devlen = strlen (dev);
+
+    /* MPV uses different names for the audio devices */
+    /* they are prefixed by pipewire/ or pulse/ or alsa/ */
+    /* and the MPV name must be used. */
+    /* fortunately, the rest of the name matches the alsa sink name */
+    /* search through the list and locate the device name. */
+    for (int i = 0; i < mpvData->sinklist.count; ++i) {
+      volsinkitem_t   *sink;
+      ssize_t         start;
+
+      sink = &mpvData->sinklist.sinklist [i];
+      start = sink->nmlen - devlen;
+      if (start >= 0) {
+        if (strcmp (sink->name + start, dev) == 0) {
+          mpvData->device = mdstrdup (sink->name);
+          break;
+        }
+      }
+    }
   }
 
   return 0;
@@ -394,6 +414,7 @@ mpvAudioDevList (mpvData_t *mpvData, volsinklist_t *sinklist)
   if (mpvData == NULL || mpvData->inst == NULL) {
     return 0;
   }
+  mpvProcessEvents (mpvData);
 
   status = mpv_get_property (mpvData->inst, "audio-device-list", MPV_FORMAT_NODE, &anodes);
   if (anodes.format != MPV_FORMAT_NODE_ARRAY) {
@@ -427,6 +448,7 @@ mpvAudioDevList (mpvData_t *mpvData, volsinklist_t *sinklist)
     sinklist->sinklist [count].defaultFlag = 0;
     sinklist->sinklist [count].idxNumber = count;
     sinklist->sinklist [count].name = mdstrdup (nmptr);
+    sinklist->sinklist [count].nmlen = strlen (sinklist->sinklist [count].name);
     sinklist->sinklist [count].description = mdstrdup (descptr);
     if (count == 0) {
       sinklist->defname = mdstrdup (nmptr);
@@ -435,6 +457,7 @@ mpvAudioDevList (mpvData_t *mpvData, volsinklist_t *sinklist)
   }
 
   mpv_free_node_contents (&anodes);
+  mpvProcessEvents (mpvData);
 
   return 0;
 }
@@ -451,6 +474,7 @@ mpvState (mpvData_t *mpvData)
   if (mpvData == NULL || mpvData->inst == NULL) {
     return PLI_STATE_NONE;
   }
+  mpvProcessEvents (mpvData);
 
   return mpvData->state;
 }
@@ -461,7 +485,6 @@ int
 mpvMedia (mpvData_t *mpvData, const char *fn)
 {
   int           status;
-  struct stat   statbuf;
   double        dval;
   const char    *cmd [] = {"loadfile", fn, "replace", NULL};
 
@@ -469,12 +492,11 @@ mpvMedia (mpvData_t *mpvData, const char *fn)
     return -1;
   }
 
-  if (stat (fn, &statbuf) != 0) {
-    return -1;
-  }
+  mpvProcessEvents (mpvData);
 
   if (mpvData->device != NULL) {
-    status = mpv_set_property (mpvData->inst, "audio-device", MPV_FORMAT_STRING, (void *) mpvData->device);
+    status = mpv_set_property (mpvData->inst, "audio-device", MPV_FORMAT_STRING, &mpvData->device);
+    mpvProcessEvents (mpvData);
 # if MPVDEBUG
     if (mpvData->debugfh != NULL) {
       fprintf (mpvData->debugfh, "set-ad:status:%d %s\n", status, mpv_error_string (status));
@@ -486,6 +508,7 @@ mpvMedia (mpvData_t *mpvData, const char *fn)
   /* command is executed. */
 
   status = mpv_command (mpvData->inst, cmd);
+  mpvProcessEvents (mpvData);
 # if MPVDEBUG
   if (mpvData->debugfh != NULL) {
     fprintf (mpvData->debugfh, "loadfile:status:%d %s\n", status, mpv_error_string (status));
@@ -494,6 +517,7 @@ mpvMedia (mpvData_t *mpvData, const char *fn)
 
   dval = 1.0;
   status = mpv_set_property (mpvData->inst, "speed", MPV_FORMAT_DOUBLE, &dval);
+  mpvProcessEvents (mpvData);
 # if MPVDEBUG
   if (mpvData->debugfh != NULL) {
     fprintf (mpvData->debugfh, "speed-1:status:%d %s\n", status, mpv_error_string (status));
@@ -565,6 +589,9 @@ mpvInit (void)
     mpvData = NULL;
   }
 
+  mpvProcessEvents (mpvData);
+  mpvAudioDevList (mpvData, &mpvData->sinklist);
+
   setlocale (LC_NUMERIC, oldlocale);
 
   return mpvData;
@@ -581,10 +608,8 @@ mpvClose (mpvData_t *mpvData)
     mpv_terminate_destroy (mpvData->inst);
     mpvData->inst = NULL;
   }
-  if (mpvData->device != NULL) {
-    free ((void *) mpvData->device);
-    mpvData->device = NULL;
-  }
+  dataFree (mpvData->device);
+  mpvData->device = NULL;
   if (mpvData->debugfh != NULL) {
     fclose (mpvData->debugfh);
     mpvData->debugfh = NULL;

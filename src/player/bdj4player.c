@@ -298,7 +298,6 @@ main (int argc, char *argv[])
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   playerSetAudioSink (&playerData, audiosink);
-  pliSetAudioDevice (playerData.pli, playerData.actualSink);
 
   /* this is needed for pulse audio, */
   /* otherwise vlc always chooses the default, */
@@ -313,6 +312,9 @@ main (int argc, char *argv[])
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       playerData.currentSink);
   playerData.pliSupported = pliSupported (playerData.pli);
+
+fprintf (stderr, "play:audiosink: %s\n", audiosink);
+  pliSetAudioDevice (playerData.pli, playerData.actualSink);
 
   playerSetDefaultVolume (&playerData);
 
@@ -1451,6 +1453,7 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   seekpos = reqpos;
   seekpos = songutilNormalizePosition (seekpos, pq->speed);
   seekpos += pq->songstart;
+fprintf (stderr, "seek: %ld \n", (long) reqpos);
   pliSeek (playerData->pli, seekpos);
   playerData->playTimePlayed = reqpos;
   playerSetCheckTimes (playerData, pq);

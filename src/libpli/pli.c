@@ -234,6 +234,7 @@ int
 pliSetAudioDevice (pli_t *pli, const char *dev)
 {
   if (pli != NULL && pli->pliiSetAudioDevice != NULL) {
+fprintf (stderr, "pli: set: dev: %s\n", dev);
     return pli->pliiSetAudioDevice (pli->pliData, dev);
   }
   return -1;

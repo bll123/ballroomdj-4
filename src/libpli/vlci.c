@@ -292,6 +292,7 @@ vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist)
     sinklist->sinklist [count].defaultFlag = 0;
     sinklist->sinklist [count].idxNumber = count;
     sinklist->sinklist [count].name = mdstrdup (adevlistptr->psz_device);
+    sinklist->sinklist [count].nmlen = strlen (sinklist->sinklist [count].name);
     sinklist->sinklist [count].description = mdstrdup (adevlistptr->psz_description);
     if (count == 0) {
       sinklist->defname = mdstrdup (adevlistptr->psz_device);

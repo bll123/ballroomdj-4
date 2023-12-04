@@ -450,6 +450,7 @@ getSinkCallback (
   cbdata->sinklist->sinklist [idx].defaultFlag = defflag;
   cbdata->sinklist->sinklist [idx].idxNumber = i->index;
   cbdata->sinklist->sinklist [idx].name = mdstrdup (i->name);
+  cbdata->sinklist->sinklist [idx].nmlen = strlen (cbdata->sinklist->sinklist [idx].name);
   cbdata->sinklist->sinklist [idx].description = mdstrdup (i->description);
   if (defflag) {
     dataFree (cbdata->sinklist->defname);

@@ -70,7 +70,7 @@ pliiInit (const char *volpkg, const char *sinkname)
 
   vlcOptions [0] = NULL;
   pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
-  pliData->name = "VLC Integrated";
+  pliData->name = "Integrated VLC";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
   return pliData;
 }

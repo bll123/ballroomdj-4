@@ -42,7 +42,7 @@ main (int argc, char *argv [])
   pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC), "");
   pliAudioDeviceList (pli, &sinklist);
 
-  for (size_t i = 0; i < sinklist.count; ++i) {
+  for (int i = 0; i < sinklist.count; ++i) {
     fprintf (stderr, "def: %d idx: %3d\n    nm: %s\n  desc: %s\n",
         sinklist.sinklist [i].defaultFlag,
         sinklist.sinklist [i].idxNumber,

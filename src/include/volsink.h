@@ -5,15 +5,16 @@
 #define INC_VOLSINK_H
 
 typedef struct volsinkitem {
-  int       defaultFlag;
-  int       idxNumber;
   char      *name;
   char      *description;
+  int       defaultFlag;
+  int       idxNumber;
+  int       nmlen;
 } volsinkitem_t;
 
 typedef struct volsinklist {
   char            *defname;
-  size_t          count;
+  int             count;
   volsinkitem_t   *sinklist;
 } volsinklist_t;
 

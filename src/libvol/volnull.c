@@ -57,14 +57,17 @@ voliProcess (volaction_t action, const char *sinkname,
     sinklist->sinklist [0].defaultFlag = 1;
     sinklist->sinklist [0].idxNumber = 0;
     sinklist->sinklist [0].name = mdstrdup ("no-volume");
+    sinklist->sinklist [0].nmlen = strlen (sinklist->sinklist [0].name);
     sinklist->sinklist [0].description = mdstrdup ("No Volume");
     sinklist->sinklist [1].defaultFlag = 0;
     sinklist->sinklist [1].idxNumber = 1;
     sinklist->sinklist [1].name = mdstrdup ("silence");
+    sinklist->sinklist [1].nmlen = strlen (sinklist->sinklist [1].name);
     sinklist->sinklist [1].description = mdstrdup ("Silence");
     sinklist->sinklist [2].defaultFlag = 0;
     sinklist->sinklist [2].idxNumber = 2;
     sinklist->sinklist [2].name = mdstrdup ("quiet");
+    sinklist->sinklist [2].nmlen = strlen (sinklist->sinklist [2].name);
     sinklist->sinklist [2].description = mdstrdup ("Quiet");
     return 0;
   }

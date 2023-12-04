@@ -9,6 +9,7 @@
 * Bug Fixes:
     * Starter: Fix minor profile bugs.
     * Audio Identification: Handle missing fingerprint executables.
+    * Player: Fix a bug setting the audio sink.
 * Changes:
     * Edit Sequences: Minor change to user interface.
 * New Features:

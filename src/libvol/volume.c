@@ -135,7 +135,7 @@ void
 volumeFreeSinkList (volsinklist_t *sinklist)
 {
   if (sinklist->sinklist != NULL) {
-    for (size_t i = 0; i < sinklist->count; ++i) {
+    for (int i = 0; i < sinklist->count; ++i) {
       dataFree (sinklist->sinklist [i].name);
       dataFree (sinklist->sinklist [i].description);
     }

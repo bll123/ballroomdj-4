@@ -116,7 +116,7 @@ function copyreleasefiles {
   # testing:
   #   check_all, chkprocess, chkfileshared, dmkmfromdb
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
-  #   vlcsinklist, voltest, vsencdec
+  #   plisinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se* \
@@ -126,12 +126,12 @@ function copyreleasefiles {
       ${stage}/bin/dmkmfromdb* \
       ${stage}/bin/libvolnull* \
       ${stage}/bin/libplinull* \
+      ${stage}/bin/plisinklist* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \
       ${stage}/bin/tmusicsetup* \
       ${stage}/bin/ttagdbchk* \
-      ${stage}/bin/vlcsinklist* \
       ${stage}/bin/voltest* \
       ${stage}/bin/vsed* \
       ${stage}/http/*.bak.1 \

@@ -44,7 +44,7 @@ pliiInit (const char *volpkg, const char *sinkname)
   pliData = mdmalloc (sizeof (plidata_t));
 
   pliData->plData = mpvInit ();
-  pliData->name = "MPV Integrated";
+  pliData->name = "Integrated MPV";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
   return pliData;
 }
@@ -190,6 +190,7 @@ pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
   int   rc;
 
+fprintf (stderr, "plimpv: set: dev: %s\n", dev);
   rc = mpvAudioDevSet (pliData->plData, dev);
   return rc;
 }

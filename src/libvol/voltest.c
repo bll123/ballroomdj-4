@@ -65,7 +65,7 @@ main (int argc, char *argv [])
   if (argc == 2 && strcmp (argv [1], "getsinklist") == 0) {
     volumeGetSinkList (volume, "", &sinklist);
 
-    for (size_t i = 0; i < sinklist.count; ++i) {
+    for (int i = 0; i < sinklist.count; ++i) {
       fprintf (stderr, "def: %d idx: %3d\n    nm: %s\n  desc: %s\n",
           sinklist.sinklist [i].defaultFlag,
           sinklist.sinklist [i].idxNumber,
