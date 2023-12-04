@@ -21,6 +21,7 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
+#include "musicdb.h"
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -664,7 +665,7 @@ START_TEST(musicdb_temp)
   songSetNum (song, TAG_DURATION, 20000);
   songSetStr (song, TAG_ARTIST, "temp-artist");
   songSetStr (song, TAG_TITLE, "temp-title");
-  songSetStr (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
   /* sets the temporary flag */
   dbidx = dbAddTemporarySong (db, song);
   ck_assert_int_ne (dbidx, -1);

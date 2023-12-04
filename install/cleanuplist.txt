@@ -148,6 +148,10 @@ bin/bdj4dbtag\.exe$
 install/winshortcut\.bat$
 install/winshortcut\.vbs$
 
+# 2023-12-3 not needed
+bin/libvolnull\.(dylib|so|dll)$
+bin/libplinull\.(dylib|so|dll)$
+
 ####
 # mac-os
 

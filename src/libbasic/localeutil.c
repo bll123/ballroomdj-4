@@ -146,7 +146,9 @@ localeSetup (void)
   }
   snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
   /* windows uses en-US rather than en_US */
-  tbuff [2] = '_';
+  if (strlen (tbuff) >= 3 && tbuff [2] == '-') {
+    tbuff [2] = '_';
+  }
   sysvarsSetStr (SV_LOCALE_ORIG, tbuff);
 
   /* if sysvars has already read the locale.txt file, do not override */
@@ -166,7 +168,9 @@ localeSetup (void)
       }
     }
   } else {
-    useutf8ext = true;
+    if (strcmp (lbuff, "C") != 0) {
+      useutf8ext = true;
+    }
   }
 
   if (useutf8ext) {

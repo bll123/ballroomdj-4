@@ -10,7 +10,7 @@ add_library (libbdj4audiosrc SHARED
   audiosrcfile.c
 )
 target_link_libraries (libbdj4audiosrc PUBLIC
-  libbdj4common
+  libbdj4basic libbdj4common
   m
 )
 

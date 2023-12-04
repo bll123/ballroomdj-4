@@ -14,23 +14,24 @@
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
+#include "bdjstring.h"
 #include "bdjvars.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "mdebug.h"
 #include "pathutil.h"
-/* eventually songutilfullfilename will be removed and moved here */
-#include "songutil.h"
+
+static void audiosrcfileFullPath (const char *sfname, char *buff, size_t sz);
 
 bool
 audiosrcfileExists (const char *nm)
 {
   bool    rc;
-  char    *ffn;
+  char    ffn [MAXPATHLEN];
 
-  ffn = songutilFullFileName (nm);
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
   rc = fileopFileExists (ffn);
-  mdfree (ffn);
   return rc;
 }
 
@@ -39,13 +40,12 @@ bool
 audiosrcfileRemove (const char *nm)
 {
   int           rc = false;
-  char          *ffn;
+  char          ffn [MAXPATHLEN];
   char          newnm [MAXPATHLEN];
   pathinfo_t    *pi;
 
-  ffn = songutilFullFileName (nm);
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
   if (! fileopFileExists (ffn)) {
-    mdfree (ffn);
     return false;
   }
 
@@ -58,12 +58,10 @@ audiosrcfileRemove (const char *nm)
 
   /* never overwrite an existing file */
   if (fileopFileExists (newnm)) {
-    mdfree (ffn);
     return false;
   }
 
   rc = filemanipMove (ffn, newnm);
-  mdfree (ffn);
   return rc == 0 ? true : false;
 }
 
@@ -71,5 +69,21 @@ char *
 audiosrcfilePrep (const char *nm)
 {
   return NULL;
+}
+
+static void
+audiosrcfileFullPath (const char *sfname, char *buff, size_t sz)
+{
+  *buff = '\0';
+
+  if (sfname == NULL) {
+    return;
+  }
+
+  if (fileopIsAbsolutePath (sfname)) {
+    strlcpy (buff, sfname, sz);
+  } else {
+    snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
+  }
 }
 

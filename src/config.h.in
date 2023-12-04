@@ -38,6 +38,7 @@
 #cmakedefine01 _hdr_ws2tcpip
 
 #cmakedefine01 _hdr_vlc_vlc
+#cmakedefine01 _hdr_mpv_client
 
 #cmakedefine01 _sys_resource
 #cmakedefine01 _sys_select
@@ -126,6 +127,7 @@
 
 #cmakedefine01 _lib_libvlc_new
 #cmakedefine01 _lib_libvlc_audio_output_device_enum
+#cmakedefine01 _lib_mpv_create
 
 #cmakedefine _args_mkdir ${_args_mkdir}
 

@@ -38,7 +38,7 @@ macro (updateRPath name)
         "@loader_path"
         "@loader_path/../plocal/lib"
     )
-    # libvorbis and libicu don't have the proper path when linked
+    # libicu does not have the proper path when linked
     add_custom_command(TARGET ${name}
         POST_BUILD
         COMMAND

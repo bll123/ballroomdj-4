@@ -124,6 +124,8 @@ function copyreleasefiles {
       ${stage}/bin/chkfileshared* \
       ${stage}/bin/chkprocess* \
       ${stage}/bin/dmkmfromdb* \
+      ${stage}/bin/libvolnull* \
+      ${stage}/bin/libplinull* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \

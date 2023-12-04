@@ -11,8 +11,8 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#include "bdj4.h"
 #include "audiosrc.h"
+#include "bdj4.h"
 #include "mdebug.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -99,3 +99,4 @@ audiosrcGetType (const char *nm)
 
   return type;
 }
+
