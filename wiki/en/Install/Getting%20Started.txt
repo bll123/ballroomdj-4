@@ -202,4 +202,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-22 06:46:09; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-12-04 14:57:24; BDJ4 version 4.4.6)_
