@@ -452,11 +452,9 @@ qidx_t
 queueGetCount (queue_t *q)
 {
   if (q == NULL) {
-fprintf (stderr, "ERR: queue: null ptr\n");
     return 0;
   }
   if (q->queueident != QUEUE_IDENT) {
-fprintf (stderr, "ERR: queue: bad ptr\n");
     return 0;
   }
 

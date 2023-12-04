@@ -37,7 +37,6 @@ int       dbLoad (musicdb_t *);
 void      dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx);
-void      dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbStartBatch (musicdb_t *db);
 void      dbEndBatch (musicdb_t *db);
 void      dbDisableLastUpdateTime (musicdb_t *db);

@@ -3804,7 +3804,6 @@ manageRemoveSongs (manageui_t *manage)
     const char  *songfn;
 
     songfn = nlistGetStr (manage->removelist, dbidx);
-fprintf (stderr, "remove-list: %d %s\n", dbidx, songfn);
     audiosrcRemove (songfn);
   }
 }

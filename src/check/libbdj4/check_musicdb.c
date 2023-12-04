@@ -709,8 +709,11 @@ START_TEST(musicdb_remove)
 
   song = dbGetByName (db, "argentinetango05.mp3");
   dbidx = songGetNum (song, TAG_DBIDX);
-  dbRemoveEntry (db, dbidx);
+  dbMarkEntryRemoved (db, dbidx);
   ck_assert_int_eq (MUSICDB_REMOVED, songGetNum (song, TAG_DB_FLAGS));
+  dbClearEntryRemoved (db, dbidx);
+  ck_assert_int_eq (MUSICDB_NONE, songGetNum (song, TAG_DB_FLAGS));
+  dbMarkEntryRemoved (db, dbidx);
 
   dbsong = dbGetByIdx (db, dbidx);
   ck_assert_ptr_null (dbsong);
@@ -727,7 +730,7 @@ START_TEST(musicdb_remove)
   }
 
   /* remove the last entry in the database */
-  dbRemoveEntry (db, ldbidx);
+  dbMarkEntryRemoved (db, ldbidx);
 
   /* make sure the iterator works when the last entry was removed */
   dbStartIterator (db, &iteridx);

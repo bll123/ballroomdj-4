@@ -213,12 +213,6 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
   dbRebuildDanceCounts (musicdb);
 }
 
-/* actually removes the song from the database */
-void
-dbRemoveEntry (musicdb_t *musicdb, dbidx_t dbidx)
-{
-}
-
 void
 dbStartBatch (musicdb_t *musicdb)
 {
