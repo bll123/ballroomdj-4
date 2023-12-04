@@ -64,7 +64,7 @@ confuiInitPlayer (confuigui_t *gui)
   nlistSetStr (tlist, 0, _("Default"));
   nlistSetStr (llist, 0, "default");
   gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
-  for (size_t i = 0; i < sinklist.count; ++i) {
+  for (int i = 0; i < sinklist.count; ++i) {
     if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_MP_AUDIOSINK)) == 0) {
       gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
     }

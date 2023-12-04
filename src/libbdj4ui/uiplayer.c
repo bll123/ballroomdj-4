@@ -37,7 +37,7 @@
 /* back.  Then there are the latency issues on this end. */
 enum {
   UIPLAYER_LOCK_TIME_WAIT = 300,
-  UIPLAYER_LOCK_TIME_SEND = 30,
+  UIPLAYER_LOCK_TIME_SEND = 50,
 };
 
 enum {
@@ -107,14 +107,17 @@ typedef struct uiplayer {
   /* speed controls / display */
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
+  double          speedLastValue;
   /* volume controls / display */
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
+  double          volumeLastValue;
   int             baseVolume;
   /* position controls / display */
   ssize_t         lastdur;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
+  double          seekLastValue;
   bool            seekLock : 1;
   /* speed controls / display */
   bool            speedLock : 1;
@@ -550,12 +553,16 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     char          tbuff [40];
 
     value = uiScaleGetValue (uiplayer->wcont [UIPL_W_VOLUME]);
-    snprintf (tbuff, sizeof (tbuff), "%.0f", value);
-    connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
-    if (uiplayer->volumeLock) {
-      mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_TIME_SEND);
-    } else {
-      mstimeset (&uiplayer->volumeLockSend, 3600000);
+    if (value != uiplayer->volumeLastValue) {
+      uiplayer->volumeLastValue = value;
+      snprintf (tbuff, sizeof (tbuff), "%.0f", value);
+      connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
+      if (uiplayer->volumeLock) {
+        mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_TIME_SEND);
+      } else {
+        mstimeset (&uiplayer->volumeLockSend, 3600000);
+        uiplayer->volumeLastValue = -1.0;
+      }
     }
   }
 
@@ -569,12 +576,16 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     char          tbuff [40];
 
     value = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
-    snprintf (tbuff, sizeof (tbuff), "%.0f", value);
-    connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
-    if (uiplayer->speedLock) {
-      mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
-    } else {
-      mstimeset (&uiplayer->speedLockSend, 3600000);
+    if (value != uiplayer->speedLastValue) {
+      uiplayer->speedLastValue = value;
+      snprintf (tbuff, sizeof (tbuff), "%.0f", value);
+      connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
+      if (uiplayer->speedLock) {
+        mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
+      } else {
+        mstimeset (&uiplayer->speedLockSend, 3600000);
+        uiplayer->speedLastValue = -1.0;
+      }
     }
   }
 
@@ -588,12 +599,17 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     char          tbuff [40];
 
     value = uiScaleGetValue (uiplayer->wcont [UIPL_W_SEEK]);
-    snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
-    connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
-    if (uiplayer->seekLock) {
-      mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
-    } else {
-      mstimeset (&uiplayer->seekLockSend, 3600000);
+    /* do not keep sending the seek value */
+    if (value != uiplayer->seekLastValue) {
+      uiplayer->seekLastValue = value;
+      snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
+      connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
+      if (uiplayer->seekLock) {
+        mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+      } else {
+        mstimeset (&uiplayer->seekLockSend, 3600000);
+        uiplayer->seekLastValue = -1.0;
+      }
     }
   }
 }
@@ -714,6 +730,9 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   uiplayer->lastdur = 180000;
   mstimeset (&uiplayer->seekLockTimeout, 3600000);
   mstimeset (&uiplayer->seekLockSend, 3600000);
+  uiplayer->seekLastValue = -1.0;
+  uiplayer->volumeLastValue = -1.0;
+  uiplayer->speedLastValue = -1.0;
   uiplayer->seekLock = false;
   uiplayer->speedLock = false;
   uiplayer->repeatLock = false;

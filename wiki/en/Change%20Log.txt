@@ -10,10 +10,12 @@
     * Starter: Fix minor profile bugs.
     * Audio Identification: Handle missing fingerprint executables.
     * Player: Fix a bug setting the audio sink.
+    * Player: Improve position/speed/volume sliders.
 * Changes:
     * Edit Sequences: Minor change to user interface.
 * New Features:
     * Music Manager: Remove song.
+    * Player: MPV is now supported (but not well tested).
 * Internal:
     * Upgrade libmp4tag to version 1.2.11.
 

@@ -43,7 +43,7 @@ main (int argc, char *argv [])
   pliAudioDeviceList (pli, &sinklist);
 
   for (int i = 0; i < sinklist.count; ++i) {
-    fprintf (stderr, "def: %d idx: %3d\n    nm: %s\n  desc: %s\n",
+    fprintf (stdout, "def: %d idx: %3d\n    nm: %s\n  desc: %s\n",
         sinklist.sinklist [i].defaultFlag,
         sinklist.sinklist [i].idxNumber,
         sinklist.sinklist [i].name,

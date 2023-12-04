@@ -2356,7 +2356,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   logProcBegin (LOG_PROC, "mainSendPlayerStatus");
 
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
-fprintf (stderr, "main: jsonflag: %d\n", jsonflag);
 
   timerbuff = mdmalloc (BDJMSG_MAX);
 
@@ -2375,13 +2374,11 @@ fprintf (stderr, "main: jsonflag: %d\n", jsonflag);
     mdfree (timerbuff);
   }
 
-fprintf (stderr, "main: jsonflag: %d (test not)\n", jsonflag);
   if (! jsonflag) {
     msgparsePlayerStatusFree (ps);
     return;
   }
 
-fprintf (stderr, "main: continue\n");
   jsbuff = mdmalloc (BDJMSG_MAX);
 
   strlcpy (jsbuff, "{ ", BDJMSG_MAX);

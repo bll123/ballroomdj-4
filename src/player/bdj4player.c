@@ -269,7 +269,7 @@ main (int argc, char *argv[])
 
   if (playerData.sinklist.sinklist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "vol-sinklist");
-    for (size_t i = 0; i < playerData.sinklist.count; ++i) {
+    for (int i = 0; i < playerData.sinklist.count; ++i) {
       logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
                playerData.sinklist.sinklist [i].defaultFlag,
                playerData.sinklist.sinklist [i].idxNumber,
@@ -285,7 +285,7 @@ main (int argc, char *argv[])
     pliAudioDeviceList (playerData.pli, &playerData.sinklist);
     if (playerData.sinklist.sinklist != NULL) {
       logMsg (LOG_DBG, LOG_BASIC, "vlc-sinklist");
-      for (size_t i = 0; i < playerData.sinklist.count; ++i) {
+      for (int i = 0; i < playerData.sinklist.count; ++i) {
         logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
             playerData.sinklist.sinklist [i].defaultFlag,
             playerData.sinklist.sinklist [i].idxNumber,
@@ -313,7 +313,6 @@ main (int argc, char *argv[])
       playerData.currentSink);
   playerData.pliSupported = pliSupported (playerData.pli);
 
-fprintf (stderr, "play:audiosink: %s\n", audiosink);
   pliSetAudioDevice (playerData.pli, playerData.actualSink);
 
   playerSetDefaultVolume (&playerData);
@@ -1453,7 +1452,6 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   seekpos = reqpos;
   seekpos = songutilNormalizePosition (seekpos, pq->speed);
   seekpos += pq->songstart;
-fprintf (stderr, "seek: %ld \n", (long) reqpos);
   pliSeek (playerData->pli, seekpos);
   playerData->playTimePlayed = reqpos;
   playerSetCheckTimes (playerData, pq);
@@ -1577,7 +1575,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
   if (sinkname != NULL) {
     /* the sink list is not ordered */
     found = 0;
-    for (size_t i = 0; i < playerData->sinklist.count; ++i) {
+    for (int i = 0; i < playerData->sinklist.count; ++i) {
       if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {
         found = 1;
         idx = (int) i;

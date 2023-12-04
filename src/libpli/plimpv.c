@@ -190,7 +190,6 @@ pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
   int   rc;
 
-fprintf (stderr, "plimpv: set: dev: %s\n", dev);
   rc = mpvAudioDevSet (pliData->plData, dev);
   return rc;
 }
