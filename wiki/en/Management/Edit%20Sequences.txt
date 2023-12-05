@@ -14,18 +14,21 @@ In all cases, the sequence is automatically saved.
 The left side of the window has the list of dances to choose from, and
 the right side of the window contains the sequence.
 
-Use the left and right arrows
-(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png),
-![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
-to remove and add dances to the sequence.
+Use the right arrow
+(![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png)),
+to add dances to the sequence.
 
 Use the up and down arrows
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order of the sequence.
 
+Use the remove button
+(![remove](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+to remove a dance from the sequence.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-A.png)
+![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-C.png)
 <br><span style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
 
 ##### Naming the Sequence
@@ -70,4 +73,4 @@ played, change the settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-05 06:30:40; BDJ4 version 4.4.6)_

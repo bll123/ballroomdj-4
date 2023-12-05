@@ -108,6 +108,8 @@ __Playlists__
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
 <br>[Quick Edit](en-Subjects-Quick%20Edit)
+<br>[Removing Songs](en-Subjects-Removing%20Songs)
+<br>[Same Song Marks](en-Subjects-Same%20Song%20Marks)
 <br>__Advanced Setup__
 <br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
 <br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
@@ -123,4 +125,4 @@ __Playlists__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-05 07:28:52; BDJ4 version 4.4.6)_

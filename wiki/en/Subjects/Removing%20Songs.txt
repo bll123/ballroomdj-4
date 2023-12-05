@@ -1,0 +1,71 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Removing a song renames the audio file
+so that it will no longer be listed in the database._</span>
+
+[TOC]
+
+### Removing Songs
+
+BDJ4 will never delete an audio file.  The song removal process will
+rename the selected song using a 'delete-' prefix.  For example
+_mysong.mp3_ will be renamed to _delete-mysong.mp3_.
+
+As the song can no longer be located on the storage device, it will
+not be listed in the database.
+
+##### Removing a Song
+
+The [music manager](Management-Music%20Manager) is used to remove
+songs from the database.  Select the song to be removed, then select
+__Remove&nbsp;Song__ in the __Actions__ menu.
+
+<!-- image also in manage/music-manager -->
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-D.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager / Actions__</span> </div>
+
+The song is marked to be removed.  Other than being marked for
+removal, and no longer being listed in the display, no action is taken
+yet. The __Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__
+menu will be active and can be used to reset the songs.
+
+##### Undoing Song Removal
+
+The __Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__ menu
+will revert all songs that have been marked for removal.  The undo
+action will only be active if a song has been removed and the music
+manager has not yet been closed.
+
+##### When the Music Manager is Closed
+
+When the music manager is closed, the final song removal processing
+takes place.  Each audio file that was marked for removal is renamed
+to have a 'delete-' prefix.  For example, _Sway.mp3_ will be renamed
+to _delete-Sway.png_.
+
+##### Fixing an Accidental Removal
+
+If a song was removed, and you want to restore it after having closed
+the music manager, use your file explorer to locate the audio file in
+your music folder.  Rename the audio file and remove the 'delete-'
+prefix.  For example rename _delete-Sway.png_ to _Sway.png_.  Be sure
+to keep the original name intact.  Exit and restart BDJ4.
+
+As the song removal process does not clear the database entry, the
+song will be located and will again show up in the list of songs.
+
+##### Cleaning up Removed Songs
+
+Once you are certain the removed songs are correct and you do not need
+them any more, use your file explorer to locate any audio files with
+the 'delete-' prefix and delete them.
+
+In the [music manager](Management-Music%20Manager), select
+__Update&nbsp;Database__, select __Compact__ for the action and select
+the __Start__ button.  This will remove any unused entries from the
+database.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-12-05 07:32:04; BDJ4 version 4.4.6)_

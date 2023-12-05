@@ -182,7 +182,7 @@ song list that you just created.
 
 The song list will load into the player.  Select the
 __Play&nbsp;/&nbsp;Pause__ button
-(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/en/player-b-playpause-A.png))
+(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
 to start the music playing.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -202,4 +202,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-05 11:06:58; BDJ4 version 4.4.6)_

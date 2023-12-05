@@ -63,15 +63,31 @@ will also act upon the Music&nbsp;Manager's current selection.
 
 ##### Actions Menu
 
+<!-- this image also used in removing-songs -->
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-C.png)
+![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-D.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Actions Menu__</span> </div>
 
 __Actions&nbsp;/&nbsp;Mark as Same Song__ will mark the
 selected songs as the same song.
+<br>
+(See [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks))
 
 __Actions&nbsp;/&nbsp;Clear Same Song Mark__ will clear the
 same song markers from the selected songs.
+<br>
+(See [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks))
+
+__Actions&nbsp;/&nbsp;Remove&nbsp;Song__ will remove a song from the
+database.
+<br>
+(See [Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs))
+
+__Actions&nbsp;/&nbsp;Undo&nbsp;Song&nbsp;Removal__ will undo any
+pending song removals.
+<br>
+(See [Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs))
 
 ##### Same Song Marks
 
@@ -83,9 +99,11 @@ For example, if you have a copy of __Sway__ by __Michael Bublé__
 and also a copy of __Sway__ by __Pussy Cat Dolls__, these can be
 marked as the same song.
 
+(See also [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)).
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-same-song](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-same-song-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Same Song Marks__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-05 11:23:36; BDJ4 version 4.4.6)_
