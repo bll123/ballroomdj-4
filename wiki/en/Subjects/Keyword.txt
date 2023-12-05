@@ -31,4 +31,4 @@ holiday songs:
 <br><span style="color:#4559bf;">__Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 13:06:32; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_

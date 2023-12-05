@@ -32,4 +32,4 @@ finished.
 __E-Mail__: E-Mail me (Brad Lanam) : brad.lanam.di AT gmail.com
 
 [Wiki Home](Home)
-<br>_(Updated 2023-09-04 06:04:57; BDJ4 version 4.3.3.4)_
+<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_

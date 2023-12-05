@@ -138,4 +138,4 @@ new song list.
 [Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 09:58:25; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_

@@ -32,4 +32,4 @@ timer.
 <br><span style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_
+<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
