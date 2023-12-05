@@ -21,14 +21,14 @@ Example of setting the keyword for a song:
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![keyword-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-song-editor-A.png)
-<br><span style="color:#4559bf;">**Music Manager / Song Editor**</span> </div>
+<br><span style="color:#4559bf;">__Music Manager / Song Editor__</span> </div>
 
 Example playlist settings for an automatic playlist that includes
 holiday songs:
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![keyword-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-playlist-A.png)
-<br><span style="color:#4559bf;">**Playlist Management**</span> </div>
+<br><span style="color:#4559bf;">__Playlist Management__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2023-05-18 13:06:32; BDJ4 version 4.3.2.2)_

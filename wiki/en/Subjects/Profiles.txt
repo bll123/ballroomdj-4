@@ -20,7 +20,7 @@ selection.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![profile-create](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-create-A.png)
-<br><span style="color:#4559bf;">**Starter / Create Profile**</span> </div>
+<br><span style="color:#4559bf;">__Starter / Create Profile__</span> </div>
 
 Select __Configure__.
 
@@ -29,7 +29,7 @@ related to profiles.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![profile-setup](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-setup-A.png)
-<br><span style="color:#4559bf;">**Configure / General (profile)**</span> </div>
+<br><span style="color:#4559bf;">__Configure / General (profile)__</span> </div>
 
 __Profile Name__: The profile name will appear in the profile
 selection of the starter window and will display in the title bar of
@@ -51,7 +51,7 @@ in the profile selection along with the selected profile colors.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![profile-new](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-new-A.png)
-<br><span style="color:#4559bf;">**Starter**</span> </div>
+<br><span style="color:#4559bf;">__Starter__</span> </div>
 
 The profile order cannot be changed.  BDJ4 chooses the first empty
 profile slot to create a new profile.  A maximum of 10 profiles may be
@@ -71,7 +71,7 @@ window, select __Delete&nbsp;Profile__ from the __Actions__ menu.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![profile-delete](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-delete-A.png)
-<br><span style="color:#4559bf;">**Starter**</span> </div>
+<br><span style="color:#4559bf;">__Starter__</span> </div>
 
 ##### Using Multiple Profiles
 

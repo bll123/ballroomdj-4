@@ -26,13 +26,13 @@ to change the order of the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-A.png)
-<br><span style="color:#4559bf;">**Manage / Edit Sequences**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
 
 ##### Naming the Sequence
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-name-entry-A.png)
-<br><span style="color:#4559bf;">**Manage / Edit Sequences / Sequence Name**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Sequences / Sequence Name__</span> </div>
 
 At the top of the sequence there is an entry box with the sequence
 name.  This defaults to _New&nbsp;Sequence_.  Click in the entry
@@ -47,7 +47,7 @@ _New&nbsp;Sequence_, then enter the new name of the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-edit-menu-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Sequences / Edit Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Sequences / Edit Menu__</span> </div>
 
 An existing sequence can be loaded by selecting
 __Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open

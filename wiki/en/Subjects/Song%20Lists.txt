@@ -25,7 +25,7 @@ Change the name of the song list.  The song list will be renamed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Song List Name**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Song List Name__</span> </div>
 
 ##### Creating a Song List Manually
 

@@ -25,7 +25,7 @@ Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-D.png)
-<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
+<br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 ##### Creating an Automatic Playlist for a Mixer
 
@@ -38,11 +38,11 @@ __Count__ for _Waltz_, and set the count to 1.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-conf-playlist-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-settings-A.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Settings**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Settings__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-conf-playlist-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-dances-A.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Dances**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Dances__</span> </div>
 
 Be aware that to use an automatic playlist, the dance rating for each
 song must be set.
@@ -58,7 +58,7 @@ __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-player-options](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
-<br><span style="color:#4559bf;">**Player / Options**</span> </div>
+<br><span style="color:#4559bf;">__Player / Options__</span> </div>
 
 Select the main music queue and use the __Queue&nbsp;Playlist__ button
 to queue the regular playlist for the dance.  Select the ___Mixer___

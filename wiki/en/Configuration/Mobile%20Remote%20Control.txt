@@ -31,12 +31,12 @@ will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-F.png)
-<br><span style="color:#4559bf;">**Configure / Mobile Remote Control**</span> </div>
+<br><span style="color:#4559bf;">__Configure / Mobile Remote Control__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen1-B.jpg)
 ![screen-2](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen2-B.jpg)
-<br><span style="color:#4559bf;">**Mobile Device / Mobile Remote Control**</span></div>
+<br><span style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)
 <br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

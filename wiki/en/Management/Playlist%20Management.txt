@@ -22,7 +22,7 @@ playlist controls are available for all playlist types.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-B.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Playlist Controls**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Playlist Controls__</span> </div>
 
 __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
 this playlist.  The maximum play time set here will override the
@@ -51,7 +51,7 @@ playlists.  The filters limit which songs can be played.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-ss](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-ss-A.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Song Selection**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Song Selection__</span> </div>
 
 __Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
 Any song with a rating equal to or better than the dance rating set
@@ -109,13 +109,13 @@ displayed for automatic playlists.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-C.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Dance Controls (automatic)**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Dance Controls (automatic)__</span> </div>
 
 ##### Naming the Playlist
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-name-entry-B.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Playlist Name**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Playlist Name__</span> </div>
 
 At the top of the window, there is an entry box with the playlist
 name.  This defaults to _New&nbsp;Playlist_.  Click in the entry
@@ -131,7 +131,7 @@ then enter the new name of the automatic playlist.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-edit-menu-B.png)
-<br><span style="color:#4559bf;">**Manage / Playlist Management / Edit Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Edit Menu__</span> </div>
 
 An existing playlist can be loaded by selecting
 __Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open allowing

@@ -17,7 +17,7 @@ XML with other applications__ checkbox.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![iTunes Advanced Preferences](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/itunes-pref-A.png)
-<br><span style="color:#4559bf;">**iTunes Advanced Preferences**</span> </div>
+<br><span style="color:#4559bf;">__iTunes Advanced Preferences__</span> </div>
 
 ##### Configuring BallroomDJ 4 for iTunes
 

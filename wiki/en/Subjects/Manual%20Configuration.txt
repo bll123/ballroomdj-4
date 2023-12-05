@@ -24,7 +24,7 @@ These items are not configurable via the user interface.
     exponentialsine (cyan), invertedparabola (black), quadratic (magenta)
 <div markdown style="margin-right: 20px; text-align: center;">
 ![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
-<br><span style="color:#4559bf;">**Fade Types**</span> </div>
+<br><span style="color:#4559bf;">__Fade Types__</span> </div>
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
   * MQ_TEXT_COL

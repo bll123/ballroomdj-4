@@ -29,7 +29,7 @@ timer.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-E.png)
-<br><span style="color:#4559bf;">**Configure / Marquee__</span> </div>
+<br><span style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

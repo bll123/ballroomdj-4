@@ -30,7 +30,7 @@ Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-A.png)
-<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
+<br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 ##### Running the Showcase
 
@@ -44,7 +44,7 @@ __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![showcase-disp-option-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-disp-option-A.png)
-<br><span style="color:#4559bf;">**Player / Options**</span> </div>
+<br><span style="color:#4559bf;">__Player / Options__</span> </div>
 
 ###### Playing a Song not in the Database
 
@@ -61,7 +61,7 @@ the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![showcase-ext-req-b](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-B.png)
-<br><span style="color:#4559bf;">**Player / Actions / External Request**</span> </div>
+<br><span style="color:#4559bf;">__Player / Actions / External Request__</span> </div>
 
 ###### Playing a Song in the Database
 

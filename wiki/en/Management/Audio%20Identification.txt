@@ -16,7 +16,7 @@ current / selected display can be modified.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![audioid](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/audioid-A.png)
-<br><span style="color:#4559bf;">**Manage / Audio Identification**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Audio Identification__</span> </div>
 
 ##### Traversing the Song Listing
 

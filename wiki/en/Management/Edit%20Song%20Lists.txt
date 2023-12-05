@@ -27,13 +27,13 @@ by holding down the _Control_ key when clicking on each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists (Side-by-Side View)**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists (Side-by-Side View)__</span> </div>
 
 ##### Song List Editor
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-options-menu-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Options Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Options Menu__</span> </div>
 
 An alternate layout is available by turning off the
 side&#8209;by&#8209;side view in the __Options__ menu.  The song list
@@ -50,13 +50,13 @@ button at the top of the listing to add the songs to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists (Standard)**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists (Standard)__</span> </div>
 
 ##### Naming the Song List
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Song List Name**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Song List Name__</span> </div>
 
 At the top of the song list, there is an entry box with the song list
 name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
@@ -79,7 +79,7 @@ and type of song easily.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-filter-button](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-button-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Filter Button**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Filter Button__</span> </div>
 
 Use the filter button (![Filter
 Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
@@ -91,7 +91,7 @@ The filters displayed can be adjusted in
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Filter Dialog**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Filter Dialog__</span> </div>
 
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
 have the selected rating or better.
@@ -137,7 +137,7 @@ each dance is displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-statistics-B](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-statistics-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Statistics**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Statistics__</span> </div>
 
 ##### Edit Menu
 
@@ -158,7 +158,7 @@ song list from your storage device and start a new song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Edit Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Edit Menu__</span> </div>
 
 ##### Actions Menu
 
@@ -175,7 +175,7 @@ its sequence number highlighted.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-swap](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-swap-A.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Swap**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Swap__</span> </div>
 
 __Actions&nbsp;/&nbsp;Truncate__ will truncate the song list
 starting from the currently selected song.
@@ -188,7 +188,7 @@ played.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Actions Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Actions Menu__</span> </div>
 
 ##### Export Menu
 
@@ -201,7 +201,7 @@ instance of BDJ4.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-export-menu-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Export Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Export Menu__</span> </div>
 
 ##### Import Menu
 
@@ -217,7 +217,7 @@ playlist from iTunes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-import-menu-d](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-D.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Import Menu**</span> </div>
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Menu__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2023-11-23 05:35:18; BDJ4 version 4.4.5)_

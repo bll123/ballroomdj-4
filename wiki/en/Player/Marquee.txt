@@ -27,7 +27,7 @@ See also:
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-A.png)
-<br><span style="color:#4559bf;">**Player / Marquee**</span> </div>
+<br><span style="color:#4559bf;">__Player / Marquee__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2023-11-21 03:40:06; BDJ4 version 4.4.5)_
