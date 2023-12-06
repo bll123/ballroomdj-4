@@ -23,40 +23,6 @@
 #include "mdebug.h"
 #include "songutil.h"
 
-typedef struct {
-  char  *test;
-  char  *result;
-} chk_su_t;
-
-static chk_su_t tvalues [] = {
-  { "abc123", "/testpath/abc123" },
-  { "/stuff", "/stuff" },
-  { "C:/there", "C:/there" },
-  { "d:/here", "d:/here" }
-};
-enum {
-  tvaluesz = sizeof (tvalues) / sizeof (chk_su_t),
-};
-
-START_TEST(songutil_chk)
-{
-  char  *val;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songutil_chk");
-  mdebugSubTag ("songutil_chk");
-
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
-  for (int i = 0; i < tvaluesz; ++i) {
-    val = songutilFullFileName (tvalues [i].test);
-    ck_assert_str_eq (val, tvalues [i].result);
-    dataFree (val);
-  }
-  bdjoptCleanup ();
-}
-END_TEST
-
-
 START_TEST(songutil_pos)
 {
   ssize_t   pos;
@@ -103,7 +69,6 @@ songutil_suite (void)
   s = suite_create ("songutil");
   tc = tcase_create ("songutil");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_test (tc, songutil_chk);
   tcase_add_test (tc, songutil_pos);
   suite_add_tcase (s, tc);
   return s;

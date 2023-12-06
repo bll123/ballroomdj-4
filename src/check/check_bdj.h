@@ -16,6 +16,7 @@
 void check_libcommon (SRunner *sr);
 void check_libbasic (SRunner *sr);
 void check_libbdj4 (SRunner *sr);
+void check_libaudiosrc (SRunner *sr);
 
 /* libcommon */
 Suite *     bdjmsg_suite (void);
@@ -89,5 +90,8 @@ Suite *     templateutil_suite (void);
 Suite *     validate_suite (void);
 Suite *     volreg_suite (void);
 Suite *     webclient_suite (void);
+
+/* libaudiosrc */
+Suite *     audiosrc_suite (void);
 
 #endif /* INC_CHECK_BDJ */
