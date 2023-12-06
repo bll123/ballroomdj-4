@@ -317,6 +317,7 @@ uiWindowFind (uiwcont_t *window)
 {
   uiWindowMoveToCurrentWorkspace (window);
   uiWindowRaise (window);
+  uiWindowDeIconify (window);
 }
 
 void
