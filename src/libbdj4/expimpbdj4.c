@@ -1,3 +1,6 @@
+/*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
 #include "config.h"
 
 #include <stdio.h>
@@ -7,6 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "bdjopt.h"
@@ -25,7 +29,6 @@
 #include "song.h"
 #include "songdb.h"
 #include "songlist.h"
-#include "songutil.h"
 #include "tagdef.h"
 
 typedef struct eibdj4 {
@@ -250,17 +253,26 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     bool        doupdate = false;
     bool        docopy = false;
     const char  *songfn;
-    char        *ffn = NULL;
+    char        ffn [MAXPATHLEN];
     char        nsongfn [MAXPATHLEN];
     bool        isabsolute = false;
+    int         type;
 
     if ((dbidx = nlistIterateKey (eibdj4->dbidxlist, &eibdj4->dbidxiter)) >= 0) {
       song = dbGetByIdx (eibdj4->musicdb, dbidx);
 
+      if (song == NULL) {
+        return false;
+      }
+
       songfn = songGetStr (song, TAG_URI);
+      type = audiosrcGetType (songfn);
+
       strlcpy (nsongfn, songfn, sizeof (nsongfn));
-      ffn = songutilFullFileName (songfn);
-      if (fileopIsAbsolutePath (songfn)) {
+      audiosrcFullPath (songfn, ffn, sizeof (ffn));
+
+      if (type == AUDIOSRC_TYPE_FILE &&
+          fileopIsAbsolutePath (songfn)) {
         int     pfxlen;
 
         isabsolute = true;
@@ -270,6 +282,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         }
         snprintf (nsongfn, sizeof (nsongfn), "%s", songfn + pfxlen);
       }
+
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
       if (isabsolute) {
@@ -278,13 +291,16 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
 
       doupdate = false;
       docopy = false;
+
       /* a song in a secondary folder w/the same name is going to be */
       /* kicked out, as it will be found in the export music-db */
       tsong = dbGetByName (eibdj4->eimusicdb, nsongfn);
       if (tsong == NULL) {
         songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
         doupdate = true;
-        docopy = true;
+        if (type == AUDIOSRC_TYPE_FILE) {
+          docopy = true;
+        }
       } else {
         time_t    oupd;
         time_t    nupd;
@@ -295,7 +311,8 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
           doupdate = true;
           songSetNum (song, TAG_RRN, songGetNum (tsong, TAG_RRN));
         }
-        if (! docopy && ! fileopFileExists (tbuff)) {
+        if (type == AUDIOSRC_TYPE_FILE &&
+            ! docopy && ! fileopFileExists (tbuff)) {
           docopy = true;
         }
       }
@@ -311,15 +328,17 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         pathinfo_t  *pi;
         char        tdir [MAXPATHLEN];
 
-        pi = pathInfo (tbuff);
-        snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-        diropMakeDir (tdir);
-        pathInfoFree (pi);
+        if (type == AUDIOSRC_TYPE_FILE) {
+          pi = pathInfo (tbuff);
+          snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+          diropMakeDir (tdir);
+          pathInfoFree (pi);
+        }
 
         dbWriteSong (eibdj4->eimusicdb, song);
       }
 
-      if (docopy) {
+      if (type == AUDIOSRC_TYPE_FILE && docopy) {
         filemanipCopy (ffn, tbuff);
       }
       eibdj4->counter += 1;
@@ -327,8 +346,6 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     } else {
       eibdj4->state = BDJ4_STATE_FINISH;
     }
-
-    dataFree (ffn);
   }
 
   if (eibdj4->state == BDJ4_STATE_FINISH) {
@@ -379,64 +396,70 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 
     slidx = songlistIterate (eibdj4->sl, &eibdj4->sliteridx);
     if (slidx >= 0) {
+      const char    *songfn;
+      char          nfn [MAXPATHLEN];
+      char          ifn [MAXPATHLEN];
+      song_t        *tsong;
+      bool          doupdate;
+      bool          docopy;
+      int           type;
+
       slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
       song = dbGetByName (eibdj4->eimusicdb, slfn);
 
-      if (song != NULL) {
-        const char    *songfn;
-        char          *nfn = NULL;
-        char          ifn [MAXPATHLEN];
-        song_t        *tsong;
-        bool          doupdate;
-        bool          docopy;
-
-        songfn = songGetStr (song, TAG_URI);
-        nfn = songutilFullFileName (songfn);
-        snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
-
-        tsong = dbGetByName (eibdj4->musicdb, songfn);
-
-        doupdate = false;
-        docopy = false;
-
-        /* only import an audio file if it does not exist in the database. */
-        if (tsong == NULL) {
-          doupdate = true;
-          docopy = true;
-        }
-        if (tsong != NULL) {
-          time_t    oupd;
-          time_t    nupd;
-
-          oupd = songGetNum (tsong, TAG_LAST_UPDATED);
-          nupd = songGetNum (song, TAG_LAST_UPDATED);
-          if (nupd > oupd) {
-            doupdate = true;
-          }
-        }
-        if (! docopy && ! fileopFileExists (nfn)) {
-          docopy = true;
-        }
-        if (doupdate) {
-          eibdj4->dbchanged = true;
-          songSetChanged (song);
-          songWriteDBSong (eibdj4->musicdb, song);
-        }
-        if (docopy) {
-          pathinfo_t  *pi;
-          char        tdir [MAXPATHLEN];
-
-          pi = pathInfo (nfn);
-          snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-          diropMakeDir (tdir);
-          filemanipCopy (ifn, nfn);
-          pathInfoFree (pi);
-        }
-
-        dataFree (nfn);
-        eibdj4->counter += 1;
-        rc = false;
+      if (song == NULL) {
+        return false;
       }
+
+      songfn = songGetStr (song, TAG_URI);
+      type = audiosrcGetType (songfn);
+      audiosrcFullPath (songfn, nfn, sizeof (nfn));
+      snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
+
+      tsong = dbGetByName (eibdj4->musicdb, songfn);
+
+      doupdate = false;
+      docopy = false;
+
+      /* only import an audio file if it does not exist in the database. */
+      if (tsong == NULL) {
+        doupdate = true;
+        if (type == AUDIOSRC_TYPE_FILE) {
+          docopy = true;
+        }
+      }
+      if (tsong != NULL) {
+        time_t    oupd;
+        time_t    nupd;
+
+        oupd = songGetNum (tsong, TAG_LAST_UPDATED);
+        nupd = songGetNum (song, TAG_LAST_UPDATED);
+        if (nupd > oupd) {
+          doupdate = true;
+        }
+      }
+      if (type == AUDIOSRC_TYPE_FILE &&
+          ! docopy && ! fileopFileExists (nfn)) {
+        docopy = true;
+      }
+      if (doupdate) {
+        eibdj4->dbchanged = true;
+        songSetChanged (song);
+        songWriteDBSong (eibdj4->musicdb, song);
+      }
+      if (docopy) {
+        pathinfo_t  *pi;
+        char        tdir [MAXPATHLEN];
+
+        pi = pathInfo (nfn);
+        snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+        diropMakeDir (tdir);
+        filemanipCopy (ifn, nfn);
+        pathInfoFree (pi);
+      }
+
+      eibdj4->counter += 1;
+      rc = false;
     } else {
       char  from [MAXPATHLEN];
       char  to [MAXPATHLEN];

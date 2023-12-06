@@ -10,6 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -35,8 +36,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   song_t      *song;
   char        tbuff [MAXPATHLEN];
   const char  *str;
-  char        *ffn;
-  bool        ffnallocated = false;
+  char        ffn [MAXPATHLEN];
 
   fh = fileopOpen (fname, "w");
   if (fh == NULL) {
@@ -51,6 +51,13 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
     song = dbGetByIdx (musicdb, dbidx);
 
+    if (song == NULL) {
+      continue;
+    }
+    if (audiosrcGetType (songGetStr (song, TAG_URI)) != AUDIOSRC_TYPE_FILE) {
+      continue;
+    }
+
     *tbuff = '\0';
     str = songGetStr (song, TAG_ARTIST);
     if (str != NULL && *str) {
@@ -63,18 +70,10 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     if (str != NULL && *str) {
       fprintf (fh, "#EXTART:%s\n", str);
     }
-    ffn = (char *) nlistGetStr (list, dbidx);
-    ffnallocated = false;
-    if (ffn == NULL) {
-      str = songGetStr (song, TAG_URI);
-      ffn = songutilFullFileName (str);
-      ffnallocated = true;
-    }
+    str = songGetStr (song, TAG_URI);
+    audiosrcFullPath (str, ffn, sizeof (ffn));
     pathDisplayPath (ffn, strlen (ffn));
     fprintf (fh, "%s\n", ffn);
-    if (ffnallocated) {
-      dataFree (ffn);
-    }
   }
   mdextfclose (fh);
   fclose (fh);
@@ -89,7 +88,6 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   song_t      *song;
   dbidx_t     dbidx;
   char        tbuff [MAXPATHLEN];
-
 
   fh = fileopOpen (fname, "r");
   if (fh == NULL) {
