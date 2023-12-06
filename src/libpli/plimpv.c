@@ -3,6 +3,14 @@
  */
 #include "config.h"
 
+/*
+ * MPV is not currently shipped.
+ *
+ * There are bugs that need to be tracked down.
+ * The testsuite does not complete correctly.
+ *
+ */
+
 #if _lib_mpv_create
 
 #include <stdio.h>
