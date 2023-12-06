@@ -22,6 +22,7 @@
 #include <time.h>
 #include <math.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -160,8 +161,6 @@ static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
 static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *sfname);
-static void     songMakeTempName (playerdata_t *playerData,
-                    char *in, char *out, size_t maxlen);
 static void     playerPause (playerdata_t *playerData);
 static void     playerPlay (playerdata_t *playerData);
 static void     playerNextSong (playerdata_t *playerData);
@@ -945,7 +944,6 @@ playerSongPrep (playerdata_t *playerData, char *args)
   prepqueue_t     *npq;
   char            *tokptr = NULL;
   char            *p;
-  char            stname [MAXPATHLEN];
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -960,9 +958,12 @@ playerSongPrep (playerdata_t *playerData, char *args)
   }
 
   npq = mdmalloc (sizeof (prepqueue_t));
+  npq->songfullpath = NULL;
+  npq->tempname = NULL;
+  npq->songname = NULL;
+
   npq->songname = mdstrdup (p);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
-  npq->songfullpath = songutilFullFileName (npq->songname);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
@@ -988,8 +989,6 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->uniqueidx = atol (p);
   logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %ld", npq->uniqueidx);
 
-  songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
-  npq->tempname = mdstrdup (stname);
   queuePush (playerData->prepRequestQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd (LOG_PROC, "playerSongPrep", "");
@@ -1028,11 +1027,8 @@ void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
   prepqueue_t     *npq;
-  FILE            *fh;
-  ssize_t         sz;
-  char            *buff;
-  mstime_t        mstm;
-  time_t          tm;
+  char            tempnm [MAXPATHLEN];
+  int             rc;
 
   logProcBegin (LOG_PROC, "playerProcessPrepRequest");
 
@@ -1042,37 +1038,14 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
-  mstimestart (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep: %ld %s : %s", npq->uniqueidx, npq->songname, npq->tempname);
-
-  /* VLC still cannot handle internationalized names.
-   * I wonder how they handle them internally.
-   * Symlinks work on Linux/Mac OS.
-   */
-  fileopDelete (npq->tempname);
-  filemanipLinkCopy (npq->songfullpath, npq->tempname);
-  if (! fileopFileExists (npq->tempname)) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
-    logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");
-    playerPrepQueueFree (npq);
-    logProcEnd (LOG_PROC, "playerProcessPrepRequest", "copy-fail");
+  rc = audiosrcPrep (npq->songname, tempnm, sizeof (tempnm));
+  if (! rc) {
+    logProcEnd (LOG_PROC, "playerProcessPrepRequest", "unable-to-prep");
     return;
   }
-
-  /* read the entire file in order to get it into the operating system's */
-  /* filesystem cache */
-  sz = fileopSize (npq->songfullpath);
-  buff = mdmalloc (sz);
-  fh = fileopOpen (npq->songfullpath, "rb");
-  (void) ! fread (buff, sz, 1, fh);
-  mdextfclose (fh);
-  fclose (fh);
-  mdfree (buff);
-
+  npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
-  tm = mstimeend (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%"PRIu64") %ld %s", (uint64_t) tm, npq->uniqueidx, npq->songname);
   logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
 }
 
@@ -1184,36 +1157,6 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
   logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
   logProcEnd (LOG_PROC, "playerLocatePreppedSong", "");
   return pq;
-}
-
-
-static void
-songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
-{
-  char        tnm [MAXPATHLEN];
-  size_t      idx;
-  pathinfo_t  *pi;
-
-  logProcBegin (LOG_PROC, "songMakeTempName");
-
-  pi = pathInfo (in);
-
-  idx = 0;
-  for (const char *p = pi->filename; *p && idx < maxlen && idx < pi->flen; ++p) {
-    if ((isascii (*p) && isalnum (*p)) ||
-        *p == '.' || *p == '-' || *p == '_') {
-      tnm [idx++] = *p;
-    }
-  }
-  tnm [idx] = '\0';
-  pathInfoFree (pi);
-
-    /* the profile index so we don't stomp on other bdj instances   */
-    /* the global count so we don't stomp on ourselves              */
-  snprintf (out, maxlen, "tmp/%02" PRId64 "-%03ld-%s",
-      sysvarsGetNum (SVL_BDJIDX), playerData->globalCount, tnm);
-  ++playerData->globalCount;
-  logProcEnd (LOG_PROC, "songMakeTempName", "");
 }
 
 /* internal routines - player handling */
@@ -1547,10 +1490,10 @@ playerPrepQueueFree (void *data)
 
   if (pq != NULL) {
     logMsg (LOG_DBG, LOG_INFO, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
+    audiosrcPrepClean (pq->songname, pq->tempname);
     dataFree (pq->songfullpath);
     dataFree (pq->songname);
     if (pq->tempname != NULL) {
-      fileopDelete (pq->tempname);
       mdfree (pq->tempname);
     }
     mdfree (pq);

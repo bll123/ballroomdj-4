@@ -20,6 +20,7 @@
 #include <gcrypt.h>
 
 #include "audioid.h"
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -31,7 +32,6 @@
 #include "osprocess.h"
 #include "pathbld.h"
 #include "song.h"
-#include "songutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "webclient.h"
@@ -182,7 +182,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   const char      *acrcloud;
   int             targc = 0;
   const char      *fn;
-  char            *ffn;
+  char            ffn [MAXPATHLEN];
   char            fpfn [MAXPATHLEN];
   mstime_t        starttm;
   int             webrc;
@@ -199,6 +199,12 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   acrcloud = sysvarsGetStr (SV_PATH_ACRCLOUD);
   if (acrcloud == NULL || ! *acrcloud) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no acrcloud executable");
+    return 0;
+  }
+
+  fn = songGetStr (song, TAG_URI);
+  if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: not an audio file");
     return 0;
   }
 
@@ -219,8 +225,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 
   tm = time (NULL);
 
-  fn = songGetStr (song, TAG_URI);
-  ffn = songutilFullFileName (fn);
+  audiosrcFullPath (fn, ffn, sizeof (ffn));
   if (! fileopFileExists (ffn)) {
     return 0;
   }
@@ -230,7 +235,6 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   if (! fileopFileExists (infn)) {
     strlcpy (infn, ffn, sizeof (infn));
   }
-  mdfree (ffn);
 
   pathbldMakePath (fpfn, sizeof (fpfn), "acrcloud-fp", BDJ4_CONFIG_EXT,
       PATHBLD_MP_DREL_TMP);

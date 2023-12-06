@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "audiofile.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "ilist.h"
 #include "mdebug.h"
@@ -20,7 +21,6 @@
 #include "song.h"
 #include "songdb.h"
 #include "songlist.h"
-#include "songutil.h"
 #include "tagdef.h"
 
 static void songWriteAudioTags (song_t *song);
@@ -57,13 +57,20 @@ songWriteDBSong (musicdb_t *musicdb, song_t *song)
 static void
 songWriteAudioTags (song_t *song)
 {
-  char    *ffn;
-  void    *data;
-  slist_t *tagdata;
-  slist_t *newtaglist;
-  int     rewrite;
+  const char  *fn;
+  char        ffn [MAXPATHLEN];
+  void        *data;
+  slist_t     *tagdata;
+  slist_t     *newtaglist;
+  int         rewrite;
 
-  ffn = songutilFullFileName (songGetStr (song, TAG_URI));
+  fn = songGetStr (song, TAG_URI);
+  if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
+    /* for the time being, just ignore tagging other source types */
+    return;
+  }
+
+  audiosrcFullPath (fn, ffn, sizeof (ffn));
   data = audiotagReadTags (ffn);
   tagdata = audiotagParseData (ffn, data, &rewrite);
   mdfree (data);
@@ -71,7 +78,6 @@ songWriteAudioTags (song_t *song)
   audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
   slistFree (tagdata);
   slistFree (newtaglist);
-  mdfree (ffn);
 }
 
 static void

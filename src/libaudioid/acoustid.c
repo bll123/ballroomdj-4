@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "audioid.h"
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -24,7 +25,6 @@
 #include "osprocess.h"
 #include "slist.h"
 #include "song.h"
-#include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -175,7 +175,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   char          *fpdata = NULL;
   size_t        retsz;
   const char    *fn;
-  char          *ffn;
+  char          ffn [MAXPATHLEN];
   const char    *targv [10];
   const char    *fpcalc;
   int           targc = 0;
@@ -184,12 +184,18 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
 
   fpcalc = sysvarsGetStr (SV_PATH_FPCALC);
   if (fpcalc == NULL || ! *fpcalc) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no fpcalc executable");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: no fpcalc executable");
     return 0;
   }
 
   fn = songGetStr (song, TAG_URI);
-  ffn = songutilFullFileName (fn);
+
+  if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: not an audio file");
+    return 0;
+  }
+
+  audiosrcFullPath (fn, ffn, sizeof (ffn));
   if (! fileopFileExists (ffn)) {
     return 0;
   }
@@ -199,7 +205,6 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   if (! fileopFileExists (infn)) {
     strlcpy (infn, ffn, sizeof (infn));
   }
-  mdfree (ffn);
 
   mstimestart (&starttm);
   /* acoustid prefers at most three calls per second */

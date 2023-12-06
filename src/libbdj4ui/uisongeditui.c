@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiosrc.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
@@ -1755,17 +1756,14 @@ uisongeditCopyPath (void *udata)
   uisongedit_t  *uisongedit = udata;
   se_internal_t *seint;
   const char    *txt;
-  char          *ffn;
-  char          tbuff [MAXPATHLEN];
+  char          ffn [MAXPATHLEN];
 
   seint = uisongedit->seInternalData;
 
   txt = uiLabelGetText (seint->wcont [UISE_W_FILE_DISP]);
-  ffn = songutilFullFileName (txt);
-  strlcpy (tbuff, ffn, sizeof (tbuff));
-  mdfree (ffn);
-  pathDisplayPath (tbuff, sizeof (tbuff));
-  uiClipboardSet (tbuff);
+  audiosrcFullPath (txt, ffn, sizeof (ffn));
+  pathDisplayPath (ffn, sizeof (ffn));
+  uiClipboardSet (ffn);
 
   return UICB_CONT;
 }

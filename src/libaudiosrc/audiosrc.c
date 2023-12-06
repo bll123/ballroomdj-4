@@ -13,6 +13,8 @@
 
 #include "audiosrc.h"
 #include "bdj4.h"
+#include "bdjstring.h"
+#include "fileop.h"
 #include "mdebug.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -28,13 +30,31 @@ enum {
   AUDIOSRC_YOUTUBE_M_LEN = strlen (AUDIOSRC_YOUTUBE_M),
 };
 
-static int audiosrcGetType (const char *nm);
+int
+audiosrcGetType (const char *nm)
+{
+  int     type = AUDIOSRC_TYPE_FILE;
+
+  if (fileopIsAbsolutePath (nm)) {
+    type = AUDIOSRC_TYPE_FILE;
+  } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
+    type = AUDIOSRC_TYPE_FILE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE, AUDIOSRC_YOUTUBE_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_S, AUDIOSRC_YOUTUBE_S_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_M, AUDIOSRC_YOUTUBE_M_LEN) == 0) {
+    type = AUDIOSRC_TYPE_YOUTUBE;
+  }
+
+  return type;
+}
 
 bool
 audiosrcExists (const char *nm)
 {
-  bool  rc = false;
-  int   type;
+  int     type = AUDIOSRC_TYPE_FILE;
+  bool    rc = false;
 
 
   if (nm == NULL) {
@@ -53,8 +73,8 @@ audiosrcExists (const char *nm)
 bool
 audiosrcRemove (const char *nm)
 {
-  int     type;
-  bool rc = false;
+  int     type = AUDIOSRC_TYPE_FILE;
+  bool    rc = false;
 
   type = audiosrcGetType (nm);
 
@@ -65,38 +85,52 @@ audiosrcRemove (const char *nm)
   return rc;
 }
 
-char *
-audiosrcPrep (const char *nm)
+bool
+audiosrcPrep (const char *sfname, char *tempnm, size_t sz)
 {
-  int     type;
-  char    *tempnm = NULL;
+  int     type = AUDIOSRC_TYPE_FILE;
+  bool    rc;
 
-  type = audiosrcGetType (nm);
+  type = audiosrcGetType (sfname);
 
   if (type == AUDIOSRC_TYPE_FILE) {
-    audiosrcfilePrep (nm);
+    rc = audiosrcfilePrep (sfname, tempnm, sz);
+  } else {
+    /* in most cases, just return the same URI */
+    strlcpy (tempnm, sfname, sz);
+    rc = true;
   }
 
-  return tempnm;
+  return rc;
 }
 
-static int
-audiosrcGetType (const char *nm)
+void
+audiosrcPrepClean (const char *sfname, const char *tempnm)
+{
+  int   type = AUDIOSRC_TYPE_FILE;
+
+  type = audiosrcGetType (sfname);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    audiosrcfilePrepClean (tempnm);
+  }
+}
+
+void
+audiosrcFullPath (const char *sfname, char *fullpath, size_t sz)
 {
   int     type = AUDIOSRC_TYPE_FILE;
 
-  if (*nm == '/') {
-    type = AUDIOSRC_TYPE_FILE;
-  } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
-    type = AUDIOSRC_TYPE_FILE;
-  } else if (strncmp (nm, AUDIOSRC_YOUTUBE, AUDIOSRC_YOUTUBE_LEN) == 0) {
-    type = AUDIOSRC_TYPE_YOUTUBE;
-  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_S, AUDIOSRC_YOUTUBE_S_LEN) == 0) {
-    type = AUDIOSRC_TYPE_YOUTUBE;
-  } else if (strncmp (nm, AUDIOSRC_YOUTUBE_M, AUDIOSRC_YOUTUBE_M_LEN) == 0) {
-    type = AUDIOSRC_TYPE_YOUTUBE;
-  }
+  type = audiosrcGetType (sfname);
 
-  return type;
+  *fullpath = '\0';
+  if (type == AUDIOSRC_TYPE_FILE) {
+    audiosrcfileFullPath (sfname, fullpath, sz);
+  } else {
+    strlcpy (fullpath, sfname, sz);
+  }
 }
+
+
+
 
