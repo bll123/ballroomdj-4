@@ -18,13 +18,21 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "dirlist.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
 #include "mdebug.h"
 #include "pathutil.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
+
+typedef struct asiterdata {
+  const char      *dir;
+  slist_t         *filelist;
+  slistidx_t      fliter;
+} asiterdata_t;
 
 static void audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
 
@@ -171,6 +179,54 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz)
   } else {
     snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
+}
+
+asiterdata_t *
+audiosrcfileStartIterator (const char *dir)
+{
+  asiterdata_t  *asidata;
+
+  if (dir == NULL) {
+    return NULL;
+  }
+
+  if (! fileopIsDirectory (dir)) {
+    return NULL;
+  }
+
+  asidata = mdmalloc (sizeof (asiterdata_t));
+  asidata->dir = dir;
+
+  asidata->filelist = dirlistRecursiveDirList (dir, DIRLIST_FILES);
+  slistStartIterator (asidata->filelist, &asidata->fliter);
+
+  return asidata;
+}
+
+void
+audiosrcfileCleanIterator (asiterdata_t *asidata)
+{
+  if (asidata == NULL) {
+    return;
+  }
+
+  if (asidata->filelist != NULL) {
+    slistFree (asidata->filelist);
+  }
+  mdfree (asidata);
+}
+
+const char *
+audiosrcfileIterator (asiterdata_t *asidata)
+{
+  const char    *rval = NULL;
+
+  if (asidata == NULL) {
+    return NULL;
+  }
+
+  rval = slistIterateKey (asidata->filelist, &asidata->fliter);
+  return rval;
 }
 
 /* internal routines */

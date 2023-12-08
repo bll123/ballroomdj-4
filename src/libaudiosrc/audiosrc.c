@@ -30,6 +30,12 @@ enum {
   AUDIOSRC_YOUTUBE_M_LEN = strlen (AUDIOSRC_YOUTUBE_M),
 };
 
+typedef struct asiter {
+  int           type;
+  asiterdata_t  *asidata;
+} asiter_t;
+
+
 int
 audiosrcGetType (const char *nm)
 {
@@ -154,6 +160,59 @@ audiosrcFullPath (const char *sfname, char *fullpath, size_t sz)
   }
 }
 
+asiter_t *
+audiosrcStartIterator (const char *uri)
+{
+  asiter_t  *asiter = NULL;
+  int       type;
 
+  if (uri == NULL) {
+    return NULL;
+  }
 
+  asiter = mdmalloc (sizeof (asiter_t));
+  type = audiosrcGetType (uri);
+  asiter->type = type;
+  asiter->asidata = NULL;
 
+  if (type == AUDIOSRC_TYPE_FILE) {
+    asiter->asidata = audiosrcfileStartIterator (uri);
+  }
+
+  if (asiter->asidata == NULL) {
+    mdfree (asiter);
+    asiter = NULL;
+  }
+
+  return asiter;
+}
+
+void
+audiosrcCleanIterator (asiter_t *asiter)
+{
+  if (asiter == NULL) {
+    return;
+  }
+
+  if (asiter->type == AUDIOSRC_TYPE_FILE) {
+    audiosrcfileCleanIterator (asiter->asidata);
+    asiter->asidata = NULL;
+  }
+  mdfree (asiter);
+}
+
+const char *
+audiosrcIterator (asiter_t *asiter)
+{
+  const char    *rval;
+
+  if (asiter == NULL) {
+    return NULL;
+  }
+
+  if (asiter->type == AUDIOSRC_TYPE_FILE) {
+    rval = audiosrcfileIterator (asiter->asidata);
+  }
+
+  return NULL;
+}
