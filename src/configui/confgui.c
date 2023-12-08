@@ -71,6 +71,16 @@ confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
+    const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
+{
+  logProcBegin (LOG_PROC, "confuiMakeItemEntryEncrypt");
+  confuiMakeItemEntry (gui, boxp, szgrp, txt, widx, bdjoptIdx, disp, indent);
+  gui->uiitem [widx].basetype = CONFUI_ENTRY_ENCRYPT;
+  logProcEnd (LOG_PROC, "confuiMakeItemEntryEncrypt", "");
+}
+
+void
 confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
     uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx,
     const char *disp, void *dialogFunc)

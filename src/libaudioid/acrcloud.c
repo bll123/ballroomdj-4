@@ -34,11 +34,12 @@
 #include "song.h"
 #include "sysvars.h"
 #include "tmutil.h"
+#include "vsencdec.h"
 #include "webclient.h"
 
 typedef struct audioidacr {
-  const char    *key;
-  const char    *secret;
+  char          key [50];
+  char          secret [50];
   webclient_t   *webclient;
   mstime_t      globalreqtimer;
   int           globalreqcount;
@@ -132,6 +133,7 @@ acrInit (void)
 {
   audioidacr_t    *acr;
   const char      *tver;
+  const char      *tmp;
 
   acr = mdmalloc (sizeof (audioidacr_t));
   acr->webclient = webclientAlloc (acr, acrWebResponseCallback);
@@ -139,8 +141,18 @@ acrInit (void)
   acr->webresplen = 0;
   mstimeset (&acr->globalreqtimer, 0);
   acr->globalreqcount = 0;
-  acr->key = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
-  acr->secret = bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET);
+
+  *acr->key = '\0';
+  tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
+  if (tmp != NULL) {
+    vsencdec (tmp, acr->key, sizeof (acr->key));
+  }
+
+  *acr->secret = '\0';
+  tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET);
+  if (tmp != NULL) {
+    vsencdec (tmp, acr->secret, sizeof (acr->secret));
+  }
   acr->secretlen = strlen (acr->secret);
 
   /* a call to gcry_check_version is required to initialize */
@@ -190,8 +202,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   const char      *tstr;
   int             respidx;
 
-  if (acr->key == NULL || ! *acr->key ||
-      acr->secret == NULL || ! *acr->secret) {
+  if (! *acr->key || ! *acr->secret) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: not configured");
     return 0;
   }

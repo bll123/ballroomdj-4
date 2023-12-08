@@ -19,6 +19,7 @@
 typedef enum {
   CONFUI_NONE,
   CONFUI_ENTRY,
+  CONFUI_ENTRY_ENCRYPT,
   CONFUI_FONT,
   CONFUI_COLOR,
   CONFUI_COMBOBOX,
@@ -448,6 +449,7 @@ void confuiCreateGenreTable (confuigui_t *gui);
 /* confgui.c */
 void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
+void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
 void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, const char *value);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);

@@ -23,6 +23,7 @@
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
+#include "vsencdec.h"
 
 void
 confuiPopulateOptions (confuigui_t *gui)
@@ -40,6 +41,7 @@ confuiPopulateOptions (confuigui_t *gui)
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     int     musicq = 0;
     bool    isqueueitem = false;
+    char    tbuff [MAXPATHLEN];
 
     sval = "fail";
     nval = -1;
@@ -54,8 +56,13 @@ confuiPopulateOptions (confuigui_t *gui)
       case CONFUI_NONE: {
         break;
       }
+      case CONFUI_ENTRY_ENCRYPT:
       case CONFUI_ENTRY: {
         sval = uiEntryGetValue (gui->uiitem [i].entry);
+        if (basetype == CONFUI_ENTRY_ENCRYPT) {
+          vsencdec (sval, tbuff, sizeof (tbuff));
+          sval = tbuff;
+        }
         break;
       }
       case CONFUI_SPINBOX_TEXT: {

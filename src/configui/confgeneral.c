@@ -27,6 +27,7 @@
 #include "pathdisp.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "vsencdec.h"
 
 static bool confuiSelectMusicDir (void *udata);
 static bool confuiSelectStartup (void *udata);
@@ -64,7 +65,9 @@ confuiBuildUIGeneral (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
+  const char    *tmp;
   char          tbuff [MAXPATHLEN];
+  char          ebuff [50];
 
   logProcBegin (LOG_PROC, "confuiBuildUIGeneral");
   vbox = uiCreateVertBox ();
@@ -140,16 +143,34 @@ confuiBuildUIGeneral (confuigui_t *gui)
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the ACRCloud API Key */
+  *ebuff = '\0';
+  tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
+  if (tmp != NULL) {
+    strlcpy (ebuff, tmp, sizeof (ebuff));
+  }
+  if (tmp != NULL && *tmp &&
+      strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
+    vsencdec (tmp, ebuff, sizeof (ebuff));
+  }
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
-  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+  confuiMakeItemEntryEncrypt (gui, vbox, szgrp, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_KEY, OPT_G_ACRCLOUD_API_KEY,
-      bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY), CONFUI_NO_INDENT);
+      ebuff, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the ACRCloud API Secret Key */
+  *ebuff = '\0';
+  tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET);
+  if (tmp != NULL) {
+    strlcpy (ebuff, tmp, sizeof (ebuff));
+  }
+  if (tmp != NULL && *tmp &&
+      strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
+    vsencdec (tmp, ebuff, sizeof (ebuff));
+  }
   snprintf (tbuff, sizeof (tbuff), _("%s API Secret Key"), ACRCLOUD_NAME);
-  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+  confuiMakeItemEntryEncrypt (gui, vbox, szgrp, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_SECRET, OPT_G_ACRCLOUD_API_SECRET,
-      bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET), CONFUI_NO_INDENT);
+      ebuff, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the ACRCloud API Host */
   snprintf (tbuff, sizeof (tbuff), _("%s API Host"), ACRCLOUD_NAME);
