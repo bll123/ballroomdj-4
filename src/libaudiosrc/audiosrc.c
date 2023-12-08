@@ -160,6 +160,21 @@ audiosrcFullPath (const char *sfname, char *fullpath, size_t sz)
   }
 }
 
+const char *
+audiosrcRelativePath (const char *nm)
+{
+  int         type = AUDIOSRC_TYPE_FILE;
+  const char  *p = nm;
+
+  type = audiosrcGetType (nm);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    p = audiosrcfileRelativePath (nm);
+  }
+
+  return p;
+}
+
 asiter_t *
 audiosrcStartIterator (const char *uri)
 {

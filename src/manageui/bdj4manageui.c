@@ -1184,7 +1184,7 @@ manageMainLoop (void *tmanage)
 
 
       outfn = uicopytagsGetFilename (manage->uict);
-      tfn = songutilGetRelativePath (outfn);
+      tfn = audiosrcRelativePath (outfn);
       song = dbGetByName (manage->musicdb, tfn);
       if (song != NULL) {
         void        *data;

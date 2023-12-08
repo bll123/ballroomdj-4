@@ -22,7 +22,6 @@
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "song.h"
-#include "songutil.h"
 #include "tagdef.h"
 #include "sysvars.h"
 
@@ -120,7 +119,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       continue;
     }
 
-    p = songutilGetRelativePath (tbuff);
+    p = audiosrcRelativePath (tbuff);
 
     song = dbGetByName (musicdb, p);
     dbidx = songGetNum (song, TAG_DBIDX);

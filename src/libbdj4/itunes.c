@@ -17,6 +17,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "datafile.h"
@@ -30,7 +31,6 @@
 #include "rating.h"
 #include "slist.h"
 #include "songfav.h"
-#include "songutil.h"
 #include "tagdef.h"
 
 static const xmlChar * datamainxpath = (const xmlChar *)
@@ -566,12 +566,13 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           char        *nstr;
 
           val += offset;
-          val = songutilGetRelativePath (val);
           /* not sure that the string is decomposed */
           nstr = g_uri_unescape_string (val, NULL);
           mdextalloc (nstr);
-          nlistSetStr (entry, tagidx, nstr);
-          logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, nstr);
+
+          val = audiosrcRelativePath (nstr);
+          nlistSetStr (entry, tagidx, val);
+          logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, val);
           mdfree (nstr);    // allocated by glib
         }
       } else if (tagidx == TAG_DBADDDATE) {

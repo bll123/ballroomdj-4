@@ -181,6 +181,22 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz)
   }
 }
 
+const char *
+audiosrcfileRelativePath (const char *nm)
+{
+  const char  *musicdir;
+  size_t      musicdirlen;
+  const char  *p = nm;
+
+  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  musicdirlen = strlen (musicdir);
+  if (strncmp (nm, musicdir, musicdirlen) == 0) {
+    p += musicdirlen + 1;
+  }
+
+  return p;
+}
+
 asiterdata_t *
 audiosrcfileStartIterator (const char *dir)
 {

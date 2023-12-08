@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -28,7 +29,6 @@
 #include "slist.h"
 #include "song.h"
 #include "songfav.h"
-#include "songutil.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "callback.h"
@@ -435,7 +435,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       int             rewrite;
       song_t          *dbsong;
 
-      tfn = songutilGetRelativePath (ffn);
+      tfn = audiosrcRelativePath (ffn);
       dbsong = dbGetByName (uireqext->musicdb, tfn);
       if (dbsong != NULL) {
         tagdata = songTagList (dbsong);
