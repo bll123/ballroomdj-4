@@ -199,6 +199,9 @@ manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupd
   nlistStartIterator (musicqupdate->dispList, &iteridx);
   while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
     song = dbGetByIdx (managestats->musicdb, musicqupditem->dbidx);
+    if (song == NULL) {
+      continue;
+    }
     danceIdx = songGetNum (song, TAG_DANCE);
     nlistIncrement (dcounts, danceIdx);
     ++managestats->songcount;

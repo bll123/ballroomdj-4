@@ -38,18 +38,20 @@ songWriteDB (musicdb_t *musicdb, dbidx_t dbidx)
 void
 songWriteDBSong (musicdb_t *musicdb, song_t *song)
 {
-  if (song != NULL) {
-    if (! songIsChanged (song)) {
-      return;
-    }
-    dbWriteSong (musicdb, song);
-    songWriteAudioTags (song);
-    if (songHasSonglistChange (song)) {
-      /* need to update all songlists if file/title/dance changed. */
-      songUpdateAllSonglists (song);
-    }
-    songClearChanged (song);
+  if (song == NULL) {
+    return;
   }
+  if (! songIsChanged (song)) {
+    return;
+  }
+
+  dbWriteSong (musicdb, song);
+  songWriteAudioTags (song);
+  if (songHasSonglistChange (song)) {
+    /* need to update all songlists if file/title/dance changed. */
+    songUpdateAllSonglists (song);
+  }
+  songClearChanged (song);
 }
 
 /* internal routines */

@@ -166,7 +166,9 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
     nlistStartIterator (songlist, &iteridx);
     while ((dbidx = nlistIterateKey (songlist, &iteridx)) >= 0) {
       song = dbGetByIdx (musicdb, dbidx);
-      songselAllocAddSong (songsel, dbidx, song, songfilter);
+      if (song != NULL) {
+        songselAllocAddSong (songsel, dbidx, song, songfilter);
+      }
     }
   } else {
     ssize_t   ss;
@@ -246,6 +248,10 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
     nlistStartIterator (tmpdbidxlist, &iteridx);
     while ((dbidx = nlistIterateKey (tmpdbidxlist, &iteridx)) >= 0) {
       song = dbGetByIdx (musicdb, dbidx);
+
+      if (song == NULL) {
+        continue;
+      }
 
       /* and the final filter to skip any songs with same-song marks */
       ss = songGetNum (song, TAG_SAMESONG);

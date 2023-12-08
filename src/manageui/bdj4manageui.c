@@ -1975,6 +1975,9 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
   logProcBegin (LOG_PROC, "manageSetBPMCounter");
 
   danceIdx = songGetNum (song, TAG_DANCE);
+  if (danceIdx < 0) {
+    return;
+  }
   manage->currtimesig = danceGetTimeSignature (danceIdx);
 
   manageSendBPMCounter (manage);
@@ -3743,6 +3746,9 @@ manageMarkSongRemoved (void *udata)
     song_t  *song;
 
     song = dbGetByIdx (manage->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
     nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_URI));
     dbMarkEntryRemoved (manage->musicdb, dbidx);
     snprintf (tmp, sizeof (tmp), "%d", dbidx);

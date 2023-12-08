@@ -1804,6 +1804,9 @@ pluiQuickEditCallback (void *udata)
   }
 
   song = dbGetByIdx (plui->musicdb, qeresp->dbidx);
+  if (song == NULL) {
+    return UICB_CONT;
+  }
   songSetNum (song, TAG_SPEEDADJUSTMENT, (int) qeresp->speed);
   songSetDouble (song, TAG_VOLUMEADJUSTPERC, qeresp->voladj);
   songSetNum (song, TAG_DANCERATING, qeresp->rating);

@@ -1137,8 +1137,10 @@ mainSendMarqueeData (maindata_t *mainData)
       int   plidx;
 
       song = dbGetByIdx (mainData->musicdb, dbidx);
-      plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, qoffset);
-      qdur += mainCalculateSongDuration (mainData, song, plidx, mqidx, MAIN_CALC_WITH_SPEED);
+      if (song != NULL) {
+        plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, qoffset);
+        qdur += mainCalculateSongDuration (mainData, song, plidx, mqidx, MAIN_CALC_WITH_SPEED);
+      }
     }
 
     if (marqueeactive) {
@@ -1479,6 +1481,9 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
     }
 
     song = dbGetByIdx (mainData->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
     announceflag = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
@@ -2183,11 +2188,13 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
   /* let the playlist know this song has been played */
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
-  playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
-    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-    if (playlist != NULL && song != NULL) {
-      playlistAddPlayed (playlist, song);
+  if (song != NULL) {
+    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+    if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
+      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+      if (playlist != NULL && song != NULL) {
+        playlistAddPlayed (playlist, song);
+      }
     }
   }
 
@@ -2754,6 +2761,9 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
     plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
     nlistSetNum (songList, dbidx, plidx);
     song = dbGetByIdx (mainData->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
     danceIdx = songGetNum (song, TAG_DANCE);
     if (danceIdx >= 0) {
       nlistIncrement (danceCounts, danceIdx);
@@ -3098,27 +3108,29 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
   snprintf (sbuff, BDJMSG_MAX, "%d%c", musicqLen, MSG_ARGS_RS);
 
   for (int i = 0; i <= musicqLen; ++i) {
+    long        dur;
+    int         plidx;
+    long        gap;
+
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);
-    if (song != NULL) {
-      long        dur;
-      int         plidx;
-      long        gap;
-
-      plidx = musicqGetPlaylistIdx (mainData->musicQueue, musicqidx, i);
-
-      snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-
-      dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx, MAIN_CALC_NO_SPEED);
-      snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-
-      gap = mainGetGap (mainData, musicqidx, i);
-
-      snprintf (tbuff, sizeof (tbuff), "%ld%c", gap, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
+    if (song == NULL) {
+      continue;
     }
+
+    plidx = musicqGetPlaylistIdx (mainData->musicQueue, musicqidx, i);
+
+    snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+
+    dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx, MAIN_CALC_NO_SPEED);
+    snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+
+    gap = mainGetGap (mainData, musicqidx, i);
+
+    snprintf (tbuff, sizeof (tbuff), "%ld%c", gap, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
   }
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MAIN_QUEUE_INFO, sbuff);
