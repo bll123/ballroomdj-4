@@ -47,7 +47,8 @@ target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ui PUBLIC
-  ${BDJ4_UI_LIB} libbdj4ati libbdj4 libbdj4basic libbdj4common
+  ${BDJ4_UI_LIB} libbdj4ati
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
   z

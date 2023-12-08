@@ -20,8 +20,8 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui PUBLIC
-  libbdj4ui ${BDJ4_UI_LIB} libbdj4audioid libbdj4audiosrc
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4audioid
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
@@ -54,7 +54,7 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -municode)
 endif()
 target_link_libraries (bdj4dbupdate PUBLIC
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   z
   m

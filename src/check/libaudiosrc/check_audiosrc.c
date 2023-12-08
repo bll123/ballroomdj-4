@@ -16,6 +16,7 @@
 
 #include <check.h>
 
+#include "bdj4.h"
 #include "audiosrc.h"
 #include "bdjopt.h"
 #include "check_bdj.h"
@@ -23,15 +24,18 @@
 #include "log.h"
 
 typedef struct {
-  char  *test;
-  char  result [1024];
+  const char  *test;
+  const char  *result;
+  int         type;
 } chk_audsrc_t;
 
 static chk_audsrc_t tvalues [] = {
-  { "abc123", "/testpath/abc123" },
-  { "/stuff", "/stuff" },
-  { "C:/there", "C:/there" },
-  { "d:/here", "d:/here" }
+  { "abc123", "/testpath/abc123", AUDIOSRC_TYPE_FILE },
+  { "/stuff", "/stuff", AUDIOSRC_TYPE_FILE },
+  { "C:/there", "C:/there", AUDIOSRC_TYPE_FILE },
+  { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
+  { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
+  { "https://youtu.be/something", "https://youtu.be/something", AUDIOSRC_TYPE_YOUTUBE },
 };
 enum {
   tvaluesz = sizeof (tvalues) / sizeof (chk_audsrc_t),
@@ -48,7 +52,7 @@ START_TEST(audiosrc_gettype)
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
   for (int i = 0; i < tvaluesz; ++i) {
     rc = audiosrcGetType (tvalues [i].test);
-    ck_assert_int_eq (rc, AUDIOSRC_TYPE_FILE);
+    ck_assert_int_eq (rc, tvalues [i].type);
   }
   bdjoptCleanup ();
 }
@@ -56,7 +60,7 @@ END_TEST
 
 START_TEST(audiosrc_fullpath)
 {
-  char  *val;
+  char  tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_fullpath");
   mdebugSubTag ("audiosrc_fullpath");
@@ -64,12 +68,30 @@ START_TEST(audiosrc_fullpath)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
   for (int i = 0; i < tvaluesz; ++i) {
-    audiosrcFullPath (tvalues [i].test, tvalues [i].result, sizeof (tvalues [i].result));
-    ck_assert_str_eq (val, tvalues [i].result);
+    audiosrcFullPath (tvalues [i].test, tbuff, sizeof (tbuff));
+    ck_assert_str_eq (tbuff, tvalues [i].result);
   }
   bdjoptCleanup ();
 }
 END_TEST
+
+START_TEST(audiosrc_relpath)
+{
+  const char *res;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_relpath");
+  mdebugSubTag ("audiosrc_relpath");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
+  for (int i = 0; i < tvaluesz; ++i) {
+    res = audiosrcRelativePath (tvalues [i].result);
+    ck_assert_str_eq (res, tvalues [i].test);
+  }
+  bdjoptCleanup ();
+}
+END_TEST
+
 
 Suite *
 audiosrc_suite (void)
@@ -82,6 +104,7 @@ audiosrc_suite (void)
   tcase_set_tags (tc, "libaudiosrc");
   tcase_add_test (tc, audiosrc_gettype);
   tcase_add_test (tc, audiosrc_fullpath);
+  tcase_add_test (tc, audiosrc_relpath);
   suite_add_tcase (s, tc);
   return s;
 }

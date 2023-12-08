@@ -24,7 +24,8 @@ if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
 endif()
 target_link_libraries (bdj4player PUBLIC
-  libbdj4pli libbdj4vol libbdj4 libbdj4basic libbdj4common
+  libbdj4pli libbdj4vol
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   z

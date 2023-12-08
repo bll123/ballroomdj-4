@@ -18,7 +18,7 @@ target_include_directories (libbdj4audioid
   PUBLIC "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4audioid PUBLIC
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${CURL_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${GCRYPT_LDFLAGS}

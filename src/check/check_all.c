@@ -66,6 +66,7 @@ main (int argc, char *argv [])
   sr = srunner_create (NULL);
   check_libcommon (sr);
   check_libbasic (sr);
+  check_libaudiosrc (sr);
   check_libbdj4 (sr);
   /* if the durations are needed */
   srunner_set_xml (sr, "tmp/check.xml");
