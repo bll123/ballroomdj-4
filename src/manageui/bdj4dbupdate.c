@@ -39,6 +39,7 @@
 #include <signal.h>
 
 #include "audiofile.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -122,8 +123,7 @@ typedef struct {
   size_t            dbtopdirlen;
   mstime_t          outputTimer;
   org_t             *org;
-  slist_t           *fileList;
-  slistidx_t        filelistIterIdx;
+  asiter_t          *asiter;
   bdjregex_t        *badfnregex;
   dbidx_t           counts [C_MAX];
   size_t            maxWriteLen;
@@ -193,6 +193,7 @@ main (int argc, char *argv[])
   dbupdate.state = DB_UPD_INIT;
   dbupdate.musicdb = NULL;
   dbupdate.newmusicdb = NULL;
+  dbupdate.asiter = NULL;
   for (int i = 0; i < C_MAX; ++i) {
     dbupdate.counts [i] = 0;
   }
@@ -434,9 +435,9 @@ dbupdateProcessing (void *udata)
     dbupdate->dbtopdirlen = strlen (dbupdate->dbtopdir);
 
     logMsg (LOG_DBG, LOG_BASIC, "dbtopdir %s", dbupdate->dbtopdir);
-    dbupdate->fileList = dirlistRecursiveDirList (dbupdate->dbtopdir, DIRLIST_FILES);
+    dbupdate->asiter = audiosrcStartIterator (dbupdate->dbtopdir);
 
-    dbupdate->counts [C_FILE_COUNT] = slistGetCount (dbupdate->fileList);
+    dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
         dbupdate->dbtopdir, (int64_t) mstimeend (&dbupdate->starttm));
@@ -447,7 +448,6 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), _("%d files found"), dbupdate->counts [C_FILE_COUNT]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    slistStartIterator (dbupdate->fileList, &dbupdate->filelistIterIdx);
     dbupdate->state = DB_UPD_PROC_FN;
   }
 
@@ -458,8 +458,7 @@ dbupdateProcessing (void *udata)
     const char  *fn;
     pathinfo_t  *pi;
 
-    while ((fn =
-        slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
+    while ((fn = audiosrcIterate (dbupdate->asiter)) != NULL) {
       song_t    *song;
 
       pi = pathInfo (fn);
@@ -802,7 +801,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   itunesFree (dbupdate->itunes);
   orgFree (dbupdate->org);
   regexFree (dbupdate->badfnregex);
-  slistFree (dbupdate->fileList);
+  audiosrcCleanIterator (dbupdate->asiter);
   queueFree (dbupdate->tagdataq);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");

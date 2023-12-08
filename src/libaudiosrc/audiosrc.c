@@ -216,18 +216,29 @@ audiosrcCleanIterator (asiter_t *asiter)
   mdfree (asiter);
 }
 
-const char *
-audiosrcIterator (asiter_t *asiter)
+int32_t
+audiosrcIterCount (asiter_t *asiter)
 {
-  const char    *rval;
+  int32_t   c = 0;
+
+  if (asiter->type == AUDIOSRC_TYPE_FILE) {
+    c = audiosrcfileIterCount (asiter->asidata);
+  }
+  return c;
+}
+
+const char *
+audiosrcIterate (asiter_t *asiter)
+{
+  const char    *rval = rval;
 
   if (asiter == NULL) {
     return NULL;
   }
 
   if (asiter->type == AUDIOSRC_TYPE_FILE) {
-    rval = audiosrcfileIterator (asiter->asidata);
+    rval = audiosrcfileIterate (asiter->asidata);
   }
 
-  return NULL;
+  return rval;
 }

@@ -232,8 +232,21 @@ audiosrcfileCleanIterator (asiterdata_t *asidata)
   mdfree (asidata);
 }
 
+int32_t
+audiosrcfileIterCount (asiterdata_t *asidata)
+{
+  int32_t   c = 0;
+
+  if (asidata == NULL) {
+    return c;
+  }
+
+  c = slistGetCount (asidata->filelist);
+  return c;
+}
+
 const char *
-audiosrcfileIterator (asiterdata_t *asidata)
+audiosrcfileIterate (asiterdata_t *asidata)
 {
   const char    *rval = NULL;
 
@@ -272,4 +285,3 @@ audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen)
       sysvarsGetNum (SVL_BDJIDX), globalcount, tnm);
   ++globalcount;
 }
-

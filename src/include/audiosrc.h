@@ -1,6 +1,8 @@
 #ifndef INC_AUDIOSRC_H
 #define INC_AUDIOSRC_H
 
+#include <stdint.h>
+
 /* supported types */
 enum {
   AUDIOSRC_TYPE_FILE,
@@ -22,7 +24,8 @@ void audiosrcFullPath (const char *sfname, char *tempnm, size_t sz);
 const char * audiosrcRelativePath (const char *nm);
 asiter_t *audiosrcStartIterator (const char *uri);
 void audiosrcCleanIterator (asiter_t *asiiter);
-const char *audiosrcIterator (asiter_t *asiter);
+int32_t audiosrcIterCount (asiter_t *asiter);
+const char *audiosrcIterate (asiter_t *asiter);
 
 /* audiosrcfile.c */
 
@@ -35,6 +38,7 @@ void audiosrcfileFullPath (const char *sfname, char *tempnm, size_t sz);
 const char * audiosrcfileRelativePath (const char *nm);
 asiterdata_t *audiosrcfileStartIterator (const char *dir);
 void audiosrcfileCleanIterator (asiterdata_t *asidata);
-const char *audiosrcfileIterator (asiterdata_t *asidata);
+int32_t audiosrcfileIterCount (asiterdata_t *asidata);
+const char *audiosrcfileIterate (asiterdata_t *asidata);
 
 #endif /* INC_AUDIOSRC_H */
