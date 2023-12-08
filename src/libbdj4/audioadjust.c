@@ -12,6 +12,7 @@
 
 #include "audioadjust.h"
 #include "audiofile.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -59,6 +60,7 @@ static datafilekey_t aadfkeys [AA_KEY_MAX] = {
   { "TRIMSILENCE_THRESHOLD",  AA_TRIMSILENCE_THRESHOLD, VALUE_NUM,  NULL, DF_NORM },
 };
 
+static void aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx, const char *infn, const char *outfn);
 static void aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
 static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
 static void aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn);
@@ -113,9 +115,12 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   }
 
   songfn = songGetStr (song, TAG_URI);
-  infn = songutilFullFileName (songfn);
+  if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {
+    return changed;
+  }
 
-  strlcpy (fullfn, infn, sizeof (fullfn));
+  audiosrcFullPath (songfn, fullfn, sizeof (fullfn));
+  infn = fullfn;
   snprintf (origfn, sizeof (origfn), "%s%s",
       infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
 
@@ -135,7 +140,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
       aaRestoreTags (musicdb, song, dbidx, fullfn, songfn);
       changed = true;
     }
-    dataFree (infn);
     return changed;
   }
 
@@ -160,7 +164,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
       (int) pi->dlen, pi->dirname,
       (int) pi->flen, pi->filename);
   pathInfoFree (pi);
-  dataFree (infn);
 
   /* ffmpeg (et.al.) does not handle all tags properly. */
   /* save all the original tags */
@@ -231,66 +234,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   dataFree (savedtags);
 
   return changed;
-}
-
-void
-aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
-    const char *infn, const char *outfn)
-{
-  aa_t        *aa;
-  const char  *targv [40];
-  int         targc = 0;
-  char        ffargs [300];
-  int         rc;
-  mstime_t    etm;
-  song_t      *song = NULL;
-  char        *resp;
-
-  song = dbGetByIdx (musicdb, dbidx);
-  if (song == NULL) {
-    return;
-  }
-
-  mstimestart (&etm);
-  aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
-
-  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
-  targv [targc++] = "-hide_banner";
-  targv [targc++] = "-y";
-  targv [targc++] = "-vn";
-  targv [targc++] = "-dn";
-  targv [targc++] = "-sn";
-
-  targv [targc++] = "-i";
-  targv [targc++] = infn;
-
-  snprintf (ffargs, sizeof (ffargs),
-      "silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse",
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
-      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
-      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD));
-  targv [targc++] = "-af";
-  targv [targc++] = ffargs;
-
-  targv [targc++] = "-q:a";
-  targv [targc++] = "0";
-  targv [targc++] = outfn;
-  targv [targc++] = NULL;
-
-  resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaProcess ("aa-trim", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_INFO, "aa-trim: elapsed: %ld",
-      (long) mstimeend (&etm));
-
-  if (rc == 0) {
-    aaSetDuration (musicdb, song, outfn);
-  }
-
-  dataFree (resp);
-  return;
 }
 
 void
@@ -435,6 +378,66 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
     logMsg (LOG_DBG, LOG_INFO, "aa: adjust-with-speed: elapsed: %ld",
         (long) mstimeend (&etm));
   }
+
+  if (rc == 0) {
+    aaSetDuration (musicdb, song, outfn);
+  }
+
+  dataFree (resp);
+  return;
+}
+
+static void
+aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
+    const char *infn, const char *outfn)
+{
+  aa_t        *aa;
+  const char  *targv [40];
+  int         targc = 0;
+  char        ffargs [300];
+  int         rc;
+  mstime_t    etm;
+  song_t      *song = NULL;
+  char        *resp;
+
+  song = dbGetByIdx (musicdb, dbidx);
+  if (song == NULL) {
+    return;
+  }
+
+  mstimestart (&etm);
+  aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
+
+  targv [targc++] = "-i";
+  targv [targc++] = infn;
+
+  snprintf (ffargs, sizeof (ffargs),
+      "silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse",
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
+      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
+      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD));
+  targv [targc++] = "-af";
+  targv [targc++] = ffargs;
+
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
+  targv [targc++] = outfn;
+  targv [targc++] = NULL;
+
+  resp = mdmalloc (AA_RESP_BUFF_SZ);
+  rc = aaProcess ("aa-trim", targv, targc, resp);
+  logMsg (LOG_DBG, LOG_INFO, "aa-trim: elapsed: %ld",
+      (long) mstimeend (&etm));
 
   if (rc == 0) {
     aaSetDuration (musicdb, song, outfn);

@@ -35,6 +35,9 @@ audiosrcGetType (const char *nm)
 {
   int     type = AUDIOSRC_TYPE_FILE;
 
+  /* no point in trying to cache this, as the name comparison */
+  /* is longer than the comparison done to determine the file type */
+
   if (fileopIsAbsolutePath (nm)) {
     type = AUDIOSRC_TYPE_FILE;
   } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
@@ -54,7 +57,7 @@ bool
 audiosrcExists (const char *nm)
 {
   int     type = AUDIOSRC_TYPE_FILE;
-  bool    rc = false;
+  bool    exists = false;
 
 
   if (nm == NULL) {
@@ -64,10 +67,30 @@ audiosrcExists (const char *nm)
   type = audiosrcGetType (nm);
 
   if (type == AUDIOSRC_TYPE_FILE) {
-    rc = audiosrcfileExists (nm);
+    exists = audiosrcfileExists (nm);
   }
 
-  return rc;
+  return exists;
+}
+
+bool
+audiosrcOriginalExists (const char *nm)
+{
+  int     type = AUDIOSRC_TYPE_FILE;
+  bool    exists = false;
+
+
+  if (nm == NULL) {
+    return false;
+  }
+
+  type = audiosrcGetType (nm);
+
+  if (type == AUDIOSRC_TYPE_FILE) {
+    exists = audiosrcfileOriginalExists (nm);
+  }
+
+  return exists;
 }
 
 bool

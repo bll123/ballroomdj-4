@@ -1796,7 +1796,7 @@ manageSetEditMenuItems (manageui_t *manage)
   bool      hasorig;
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songutilHasOriginal (songGetStr (song, TAG_URI));
+  hasorig = audiosrcOriginalExists (songGetStr (song, TAG_URI));
   if (hasorig) {
     manage->enablerestoreorig = true;
   } else {
@@ -1825,7 +1825,7 @@ manageApplyAdjDialog (void *udata)
   }
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songutilHasOriginal (songGetStr (song, TAG_URI));
+  hasorig = audiosrcOriginalExists (songGetStr (song, TAG_URI));
   rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS), hasorig);
   return rc;
 }

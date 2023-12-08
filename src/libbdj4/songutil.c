@@ -20,53 +20,6 @@
 #include "mdebug.h"
 #include "songutil.h"
 
-char *
-songutilFullFileName (const char *sfname)
-{
-  char      *tname;
-
-  if (sfname == NULL) {
-    return NULL;
-  }
-
-  tname = mdmalloc (MAXPATHLEN);
-
-  if (fileopIsAbsolutePath (sfname)) {
-    strlcpy (tname, sfname, MAXPATHLEN);
-  } else {
-    snprintf (tname, MAXPATHLEN, "%s/%s",
-        bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
-  }
-  return tname;
-}
-
-bool
-songutilHasOriginal (const char *sfname)
-{
-  char      origfn [MAXPATHLEN];
-  bool      exists = false;
-  char      *fullfn;
-
-  if (sfname == NULL) {
-    return NULL;
-  }
-
-  fullfn = songutilFullFileName (sfname);
-  snprintf (origfn, sizeof (origfn), "%s%s",
-      fullfn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-  if (fileopFileExists (origfn)) {
-    exists = true;
-  }
-  if (! exists) {
-    snprintf (origfn, sizeof (origfn), "%s%s", fullfn, BDJ4_GENERIC_ORIG_EXT);
-    if (fileopFileExists (origfn)) {
-      exists = true;
-    }
-  }
-  dataFree (fullfn);
-  return exists;
-}
-
 void
 songutilConvAdjustFlags (datafileconv_t *conv)
 {

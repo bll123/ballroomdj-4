@@ -33,12 +33,32 @@ static long globalcount = 0;
 bool
 audiosrcfileExists (const char *nm)
 {
-  bool    rc;
+  bool    exists;
   char    ffn [MAXPATHLEN];
 
   audiosrcfileFullPath (nm, ffn, sizeof (ffn));
-  rc = fileopFileExists (ffn);
-  return rc;
+  exists = fileopFileExists (ffn);
+  return exists;
+}
+
+bool
+audiosrcfileOriginalExists (const char *nm)
+{
+  bool    exists;
+  char    ffn [MAXPATHLEN];
+  char    origfn [MAXPATHLEN];
+
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
+  snprintf (origfn, sizeof (origfn), "%s%s",
+      ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+  exists = fileopFileExists (ffn);
+  if (! exists) {
+    snprintf (origfn, sizeof (origfn), "%s%s", ffn, BDJ4_GENERIC_ORIG_EXT);
+    if (fileopFileExists (origfn)) {
+      exists = true;
+    }
+  }
+  return exists;
 }
 
 /* does not actually remove the file, renames it with a 'delete-' prefix */

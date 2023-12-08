@@ -32,8 +32,6 @@ enum {
   SONG_ADJUST_STR_TEST = 'X',
 };
 
-char  *songutilFullFileName (const char *sfname);
-bool  songutilHasOriginal (const char *sfname);
 void  songutilConvAdjustFlags (datafileconv_t *conv);
 ssize_t songutilAdjustPosReal (ssize_t pos, int speed);
 ssize_t songutilNormalizePosition (ssize_t pos, int speed);

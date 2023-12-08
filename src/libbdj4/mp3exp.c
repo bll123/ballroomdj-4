@@ -9,6 +9,7 @@
 
 #include "audioadjust.h"
 #include "audiofile.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -22,7 +23,6 @@
 #include "pathutil.h"
 #include "slist.h"
 #include "song.h"
-#include "songutil.h"
 #include "tagdef.h"
 #include "tmutil.h"
 
@@ -102,7 +102,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
 
   if (mp3exp->state == BDJ4_STATE_PROCESS) {
     char    outfn [MAXPATHLEN];
-    char    *ffn;
+    char    ffn [MAXPATHLEN];
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &mp3exp->tokstr);
     if (p != NULL) {
@@ -132,10 +132,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       if (song == NULL) {
         return false;
       }
-      ffn = songutilFullFileName (songGetStr (song, TAG_URI));
-      if (ffn == NULL) {
-        return false;
-      }
+      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
       pi = pathInfo (ffn);
 
       snprintf (outfn, sizeof (outfn), "%s/%03d-%.*s.mp3",
@@ -165,7 +162,6 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       slistFree (taglist);
 
       pathInfoFree (pi);
-      mdfree (ffn);
 
       ++mp3exp->counter;
     }

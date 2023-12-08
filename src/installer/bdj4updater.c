@@ -18,6 +18,7 @@
 #include <getopt.h>
 
 #include "audiofile.h"
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4arg.h"
@@ -47,7 +48,6 @@
 #include "playlist.h"
 #include "slist.h"
 #include "song.h"
-#include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "templateutil.h"
@@ -860,7 +860,7 @@ main (int argc, char *argv [])
 
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-      char        *ffn;
+      char        ffn [MAXPATHLEN];
       void        *data;
       const char  *tkey;
       int         rewrite;
@@ -871,7 +871,7 @@ main (int argc, char *argv [])
       slist_t     *newtaglist;
       slistidx_t  siteridx;
 
-      ffn = songutilFullFileName (songGetStr (song, TAG_URI));
+      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
 
       if (processflags [UPD_FIX_AF_TAGS]) {
         pathinfo_t    *pi;
@@ -908,7 +908,6 @@ main (int argc, char *argv [])
       }
 
       if (! process) {
-        mdfree (ffn);
         continue;
       }
 
@@ -940,7 +939,6 @@ main (int argc, char *argv [])
       dataFree (data);
       slistFree (taglist);
       slistFree (newtaglist);
-      mdfree (ffn);
     }
   }
 
@@ -956,21 +954,20 @@ main (int argc, char *argv [])
       bool      dowrite = false;
 
       if (processflags [UPD_FIX_DB_ADDDATE]) {
-        char      *ffn;
+        char      ffn [MAXPATHLEN];
 
         /* 2023-3-13 : the database add date could be missing due to */
         /* bugs in restore-original and restore audio file data */
         if (songGetStr (song, TAG_DBADDDATE) == NULL) {
           time_t    ctime;
 
-          ffn = songutilFullFileName (songGetStr (song, TAG_URI));
+          audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
           ctime = fileopCreateTime (ffn);
           tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
           songSetStr (song, TAG_DBADDDATE, tbuff);
           dowrite = true;
           counters [UPD_FIX_DB_ADDDATE] += 1;
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
-          mdfree (ffn);
         }
       }
 
