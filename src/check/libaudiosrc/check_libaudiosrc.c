@@ -29,6 +29,18 @@ check_libaudiosrc (SRunner *sr)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libaudiosrc");
 
+  /* libaudiosrc:
+   *   audiosrc
+   *    gettype         complete 2023-12-9
+   *    fullpath        complete 2023-12-9
+   *    relpath         complete 2023-12-9
+   *    exists          complete 2023-12-9
+   *    originalexists  complete 2023-12-9
+   *    prep            complete 2023-12-9
+   *    iterate         complete 2023-12-9
+   *    remove          complete 2023-12-9
+   */
+
   s = audiosrc_suite();
   srunner_add_suite (sr, s);
 }

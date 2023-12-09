@@ -59,7 +59,7 @@ audiosrcfileOriginalExists (const char *nm)
   audiosrcfileFullPath (nm, ffn, sizeof (ffn));
   snprintf (origfn, sizeof (origfn), "%s%s",
       ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-  exists = fileopFileExists (ffn);
+  exists = fileopFileExists (origfn);
   if (! exists) {
     snprintf (origfn, sizeof (origfn), "%s%s", ffn, BDJ4_GENERIC_ORIG_EXT);
     if (fileopFileExists (origfn)) {
