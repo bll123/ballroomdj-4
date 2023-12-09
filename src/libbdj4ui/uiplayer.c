@@ -921,6 +921,9 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
       uiScaleSetValue (uiplayer->wcont [UIPL_W_SEEK], dval);
     }
   }
+
+  msgparsePlayerStatusFree (ps);
+
   logProcEnd (LOG_PROC, "uiplayerProcessPlayerStatusData", "");
 }
 

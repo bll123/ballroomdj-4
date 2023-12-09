@@ -34,7 +34,6 @@ confuiPopulateOptions (confuigui_t *gui)
   double      dval;
   confuibasetype_t basetype;
   confuiouttype_t outtype;
-  char        tbuff [MAXPATHLEN];
   long        debug = 0;
 
   logProcBegin (LOG_PROC, "confuiPopulateOptions");

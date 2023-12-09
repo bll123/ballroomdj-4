@@ -45,7 +45,7 @@ enum {
   STATE_TO_VALUE = 0,
 };
 
-#if VLCDEBUG
+# if VLCDEBUG
 
 typedef struct {
   libvlc_state_t        state;
@@ -68,7 +68,7 @@ enum {
 
 static const char *stateToStr (libvlc_state_t state); /* for debugging */
 
-#endif /* VLCDEBUG */
+# endif /* VLCDEBUG */
 
 static void  vlcEventHandler (const struct libvlc_event_t *event, void *);
 

@@ -531,6 +531,7 @@ dbupdateProcessing (void *udata)
               dbupdateIncCount (dbupdate, C_UPDATED);
               tagdata = songTagList (song);
               dbWrite (dbupdate->newmusicdb, tsongfn, tagdata, MUSICDB_ENTRY_NEW);
+              slistFree (tagdata);
             }
 
             dbupdateOutputProgress (dbupdate);

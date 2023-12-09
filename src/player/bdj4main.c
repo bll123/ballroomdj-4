@@ -2351,7 +2351,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   char        tbuff [200];
   char        tbuff2 [40];
   char        *jsbuff = NULL;
-  char        *timerbuff = NULL;
   int         jsonflag;
   int         musicqLen;
   const char  *data;
@@ -2364,19 +2363,20 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
-  timerbuff = mdmalloc (BDJMSG_MAX);
-
   ps = msgparsePlayerStatusData (playerResp);
 
-  /* for marquee */
-  snprintf (tbuff, sizeof (tbuff), "%" PRIu64 "%c", ps->playedtime, MSG_ARGS_RS);
-  strlcpy (timerbuff, tbuff, BDJMSG_MAX);
-
-  /* for marquee */
-  snprintf (tbuff, sizeof (tbuff), "%" PRId64, ps->duration);
-  strlcat (timerbuff, tbuff, BDJMSG_MAX);
-
   if (mainData->marqueestarted) {
+    char  *timerbuff = NULL;
+
+    /* for marquee */
+    timerbuff = mdmalloc (BDJMSG_MAX);
+
+    snprintf (tbuff, sizeof (tbuff), "%" PRIu64 "%c", ps->playedtime, MSG_ARGS_RS);
+    strlcpy (timerbuff, tbuff, BDJMSG_MAX);
+
+    snprintf (tbuff, sizeof (tbuff), "%" PRId64, ps->duration);
+    strlcat (timerbuff, tbuff, BDJMSG_MAX);
+
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
     mdfree (timerbuff);
   }
