@@ -70,7 +70,12 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uisongedit_t  *uisongedit = udata;
-  bool          dbgdisp = false;
+
+  if (msg == MSG_BPM_SET) {
+    logMsg (LOG_DBG, LOG_MSGS, "uisongedit: rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -78,7 +83,6 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_BPM_SET: {
           uisongeditSetBPMValue (uisongedit, atoi (args));
-          dbgdisp = true;
           break;
         }
         default: {
@@ -90,12 +94,6 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
-  }
-
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uisongedit: rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   return 0;

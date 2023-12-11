@@ -568,12 +568,17 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   marquee_t   *marquee = udata;
-  bool        dbgdisp = false;
   char        *targs = NULL;
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
   if (args != NULL) {
     targs = mdstrdup (args);
+  }
+
+  if (msg != MSG_MARQUEE_TIMER) {
+    logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   switch (route) {
@@ -582,18 +587,15 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (marquee->conn, routefrom);
-          dbgdisp = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (marquee->progstate);
-          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_DATA: {
           marqueePopulate (marquee, targs);
-          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_TIMER: {
@@ -602,17 +604,14 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
           marqueeSetFont (marquee, atoi (targs));
-          dbgdisp = true;
           break;
         }
         case MSG_WINDOW_FIND: {
           marqueeRecover (marquee);
-          dbgdisp = true;
           break;
         }
         case MSG_FINISHED: {
           marqueeDisplayCompletion (marquee);
-          dbgdisp = true;
           break;
         }
         default: {
@@ -626,11 +625,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
   dataFree (targs);
 
   logProcEnd (LOG_PROC, "marqueeProcessMsg", "");

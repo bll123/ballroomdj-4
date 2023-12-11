@@ -564,6 +564,7 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: action: restart */
   menuitem = uiMenuCreateItem (menu, _("Restart"),
       plui->callbacks [PLUI_MENU_CB_RESTART]);
+  uiwcontFree (menuitem);
 
   uiwcontFree (menu);
 
@@ -1110,7 +1111,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             char  tmp [50];
 
             uimusicqSetManageIdx (plui->uimusicq, musicqupdate->mqidx);
-            snprintf (tmp, sizeof (tmp), "%s-%d", RESTART_FN, musicqupdate->mqidx);
+            snprintf (tmp, sizeof (tmp), "%s-%d-%d", RESTART_FN,
+                (int) sysvarsGetNum (SVL_BDJIDX), musicqupdate->mqidx);
             uimusicqSave (plui->uimusicq, tmp);
             playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
             uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
@@ -1853,7 +1855,8 @@ pluiRestart (void *udata)
 
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
-    snprintf (tmp, sizeof (tmp), "%s-%d", RESTART_FN, mqidx);
+    snprintf (tmp, sizeof (tmp), "%s-%d-%d", RESTART_FN,
+        (int) sysvarsGetNum (SVL_BDJIDX), mqidx);
     msgbuildQueuePlaylist (tbuff, sizeof (tbuff), mqidx, tmp, EDIT_FALSE);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
