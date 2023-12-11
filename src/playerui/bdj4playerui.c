@@ -561,7 +561,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_MENU_CB_RESTART] = callbackInit (
       pluiRestart, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: load restart */
+  /* CONTEXT: playerui: menu selection: action: restart */
   menuitem = uiMenuCreateItem (menu, _("Restart"),
       plui->callbacks [PLUI_MENU_CB_RESTART]);
 

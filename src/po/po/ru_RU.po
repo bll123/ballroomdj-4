@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-04\n"
+"PO-Revision-Date: 2023-12-11\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -1531,6 +1531,10 @@ msgstr "Запрос"
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
 msgstr "Сброс"
+
+#. CONTEXT: playerui: menu selection: action: restart
+msgid "Restart"
+msgstr ""
 
 #. CONTEXT: apply adjustment dialog: restore original file
 #. CONTEXT: managementui: song editor menu: restore original

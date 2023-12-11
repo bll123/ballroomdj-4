@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-04 09:10-0800\n"
+"POT-Creation-Date: 2023-12-11 11:56-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1526,6 +1526,10 @@ msgstr ""
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: action: restart
+msgid "Restart"
 msgstr ""
 
 #. CONTEXT: apply adjustment dialog: restore original file

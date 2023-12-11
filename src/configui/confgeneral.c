@@ -142,7 +142,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the ACRCloud API Key */
   *ebuff = '\0';
   tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
   if (tmp != NULL) {
@@ -152,12 +151,12 @@ confuiBuildUIGeneral (confuigui_t *gui)
       strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
     vsencdec (tmp, ebuff, sizeof (ebuff));
   }
+  /* CONTEXT: configuration: the ACRCloud API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
   confuiMakeItemEntryEncrypt (gui, vbox, szgrp, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_KEY, OPT_G_ACRCLOUD_API_KEY,
       ebuff, CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the ACRCloud API Secret Key */
   *ebuff = '\0';
   tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET);
   if (tmp != NULL) {
@@ -167,6 +166,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
     vsencdec (tmp, ebuff, sizeof (ebuff));
   }
+  /* CONTEXT: configuration: the ACRCloud API Secret Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Secret Key"), ACRCLOUD_NAME);
   confuiMakeItemEntryEncrypt (gui, vbox, szgrp, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_SECRET, OPT_G_ACRCLOUD_API_SECRET,
