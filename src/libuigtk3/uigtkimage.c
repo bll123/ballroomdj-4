@@ -36,6 +36,7 @@ uiImageFromFile (const char *fn)
   uiwcont_t *uiwidget;
   GtkWidget *image;
 
+  /* using this function creates memory leaks. */
   image = gtk_image_new_from_file (fn);
   uiwidget = uiwcontAlloc ();
   uiwidget->wtype = WCONT_T_IMAGE;

@@ -236,7 +236,7 @@ osRunProgram (const char *prog, ...)
 {
   char        data [4096];
   char        *arg;
-  const char  *targv [10];
+  const char  *targv [30];
   int         targc;
   va_list     valist;
 
@@ -250,6 +250,7 @@ osRunProgram (const char *prog, ...)
   targv [targc++] = NULL;
   va_end (valist);
 
+  *data = '\0';
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
   return mdstrdup (data);
 }

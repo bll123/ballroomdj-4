@@ -206,6 +206,8 @@ endif()
 if (BDJ4_BUILD STREQUAL "Debug")
   message ("Debug Build")
   add_compile_options (-O0)
+  add_compile_options (-ggdb3)
+  add_link_options (-g)
 endif()
 
 if (BDJ4_BUILD STREQUAL "Profile")
