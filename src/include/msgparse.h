@@ -45,4 +45,6 @@ void msgparseSongSelectFree (mp_songselect_t *songselect);
 mp_playerstatus_t *msgparsePlayerStatusData (char * args);
 void msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus);
 
+void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);
+
 #endif /* INC_MSGPARSE_H */

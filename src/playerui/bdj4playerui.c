@@ -66,6 +66,7 @@ enum {
   PLUI_MENU_CB_EXP_MP3,
   PLUI_MENU_CB_QE_CURRENT,
   PLUI_MENU_CB_QE_SELECTED,
+  PLUI_MENU_CB_RESTART,
   PLUI_CB_NOTEBOOK,
   PLUI_CB_CLOSE,
   PLUI_CB_PLAYBACK_QUEUE,
@@ -227,6 +228,7 @@ static bool     pluiExtReqCallback (void *udata);
 static bool     pluiQuickEditCurrent (void *udata);
 static bool     pluiQuickEditSelected (void *udata);
 static bool     pluiQuickEditCallback (void *udata);
+static bool     pluiRestart (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -545,17 +547,23 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
       pluiQuickEditCurrent, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: quick edit current song*/
+  /* CONTEXT: playerui: menu selection: action: quick edit current song */
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Current"),
       plui->callbacks [PLUI_MENU_CB_QE_CURRENT]);
   plui->wcont [PLUI_W_MENU_QE_CURR] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_QE_SELECTED] = callbackInit (
       pluiQuickEditSelected, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: quick edit selected song*/
+  /* CONTEXT: playerui: menu selection: action: quick edit selected song */
   menuitem = uiMenuCreateItem (menu, _("Quick Edit: Selected"),
       plui->callbacks [PLUI_MENU_CB_QE_SELECTED]);
   plui->wcont [PLUI_W_MENU_QE_SEL] = menuitem;
+
+  plui->callbacks [PLUI_MENU_CB_RESTART] = callbackInit (
+      pluiRestart, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: load restart */
+  menuitem = uiMenuCreateItem (menu, _("Restart"),
+      plui->callbacks [PLUI_MENU_CB_RESTART]);
 
   uiwcontFree (menu);
 
@@ -1096,6 +1104,16 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               /* indicating that the song is already in the song list */
               uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
             }
+          }
+
+          if ((int) musicqupdate->mqidx < MUSICQ_PB_MAX) {
+            char  tmp [50];
+
+            uimusicqSetManageIdx (plui->uimusicq, musicqupdate->mqidx);
+            snprintf (tmp, sizeof (tmp), "%s-%d", RESTART_FN, musicqupdate->mqidx);
+            uimusicqSave (plui->uimusicq, tmp);
+            playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
+            uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
           }
 
           if (musicqupdate->mqidx == MUSICQ_HISTORY) {
@@ -1819,6 +1837,25 @@ pluiQuickEditCallback (void *udata)
   if (qeresp->dbidx == dbidx &&
       plui->resetvolume == RESET_VOL_CURR) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_RESET_VOLUME, NULL);
+  }
+
+  return UICB_CONT;
+}
+
+static bool
+pluiRestart (void *udata)
+{
+  playerui_t    *plui = udata;
+
+  for (int mqidx = 0; mqidx < MUSICQ_PB_MAX; ++mqidx) {
+    char    tmp [100];
+    char    tbuff [200];
+
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
+    snprintf (tmp, sizeof (tmp), "%s-%d", RESTART_FN, mqidx);
+    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), mqidx, tmp, EDIT_FALSE);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
 
   return UICB_CONT;

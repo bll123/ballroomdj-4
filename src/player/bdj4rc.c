@@ -24,6 +24,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "musicq.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -206,7 +207,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         if (hm->query.len > strlen (querystr)) {
           qstrptr += strlen (querystr) + 1;
           logMsg (LOG_DBG, LOG_BASIC, "  args: %s", qstrptr);
-          snprintf (tbuff, sizeof (tbuff), "0%c%s", MSG_ARGS_RS, qstrptr);
+          snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, qstrptr);
         }
       }
     }

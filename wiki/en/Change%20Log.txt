@@ -9,6 +9,8 @@
 * Bug Fixes:
     * Starter: Display windows when they are iconified.
     * Fix some minor memory leaks.
+* New Features:
+    * Player: Restart. PENDING name???
 
 -->
 

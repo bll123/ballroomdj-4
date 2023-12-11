@@ -1287,10 +1287,10 @@ mainQueueDance (maindata_t *mainData, char *args, int count)
 static void
 mainQueuePlaylist (maindata_t *mainData, char *args)
 {
-  int             mi;
+  int             mi = MUSICQ_PB_A;
   playlistitem_t  *plitem = NULL;
   playlist_t      *playlist = NULL;
-  char            *plname;
+  char            *plname = NULL;
   ilistidx_t      musicqLen;
   int             editmode;
   bool            playwhenqueued;
@@ -2541,15 +2541,19 @@ mainMusicqIndexNumParse (maindata_t *mainData, char *args, ilistidx_t *b, ilisti
 static int
 mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode)
 {
-  int   mi;
-  char  *p;
-  char  *tokstr;
+  int   mi = MUSICQ_PB_A;
+  char  *p = NULL;
+  char  *tokstr = NULL;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  mi = mainMusicqIndexParse (mainData, p);
+  if (p != NULL) {
+    mi = mainMusicqIndexParse (mainData, p);
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  *b = p;
+  if (p != NULL) {
+    *b = p;
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *editmode = EDIT_FALSE;

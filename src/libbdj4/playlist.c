@@ -133,6 +133,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   nlist_t       *tlist;
 
   if (fname == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: null");
     return NULL;
   }
 
@@ -564,7 +565,7 @@ playlistGetPlaylistList (int flag, const char *dir)
     tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 
-    if (strcmp (tfn, RESTART_FN) == 0) {
+    if (strncmp (tfn, RESTART_FN, strlen (RESTART_FN)) == 0) {
       /* the special restart song list never shows up */
       continue;
     }

@@ -12,8 +12,8 @@ enum {
 
 /* used for queueing playlists */
 enum {
-  EDIT_TRUE,
   EDIT_FALSE,
+  EDIT_TRUE,
 };
 
 /* processing states */

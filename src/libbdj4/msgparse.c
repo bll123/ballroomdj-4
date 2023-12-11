@@ -196,6 +196,13 @@ msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus)
 }
 
 
+void
+msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx,
+    const char *fn, int editflag)
+{
+  snprintf (buff, sz, "%d%c%s%c%d",
+      mqidx, MSG_ARGS_RS, fn, MSG_ARGS_RS, editflag);
+}
 
 /* internal routines */
 
@@ -206,3 +213,4 @@ msgparseMusicQueueDispFree (void *data)
 
   dataFree (musicqupditem);
 }
+
