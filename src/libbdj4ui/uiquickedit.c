@@ -100,6 +100,7 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
     uiqe->scaledata [i].label = NULL;
     uiqe->scaledata [i].scale = NULL;
     uiqe->scaledata [i].scaledisp = NULL;
+    uiqe->scaledata [i].scalecb = NULL;
   }
   uiqe->responsecb = NULL;
   uiqe->parentwin = windowp;
@@ -142,6 +143,7 @@ uiqeFree (uiqe_t *uiqe)
     uiwcontFree (uiqe->scaledata [i].label);
     uiwcontFree (uiqe->scaledata [i].scale);
     uiwcontFree (uiqe->scaledata [i].scaledisp);
+    callbackFree (uiqe->scaledata [i].scalecb);
     uiqe->scaledata [i].label = NULL;
     uiqe->scaledata [i].scale = NULL;
     uiqe->scaledata [i].scaledisp = NULL;

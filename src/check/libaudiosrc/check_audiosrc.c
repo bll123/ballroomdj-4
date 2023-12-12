@@ -126,8 +126,8 @@ setup (void)
     if (lvalues [i].type == CHK_LINK) {
       if (! isWindows ()) {
         filemanipLinkCopy (lvalues [i].fname, lvalues [i].name);
+        ++lcount;
       }
-      ++lcount;
     }
     if (lvalues [i].type == CHK_FILE) {
       fh = fileopOpen (lvalues [i].name, "w");

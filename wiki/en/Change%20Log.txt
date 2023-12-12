@@ -4,15 +4,18 @@
 
 <!--
 
+**4.4.8 2023-12---**
+
+-->
+
 **4.4.7 2023-12---**
 
 * Bug Fixes:
-    * Starter: De-iconify windows when they are iconified.
     * Fix some memory leaks.
+    * Player: Fix issue switching queues when the player was not stopped.
+    * Starter: De-iconify windows when they are iconified.
 * New Features:
-    * Player: Restart.
-
--->
+    * Player: Reload.
 
 **4.4.6 2023-12-4**
 

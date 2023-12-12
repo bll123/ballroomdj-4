@@ -2085,15 +2085,15 @@ mainMusicQueuePlay (maindata_t *mainData)
     mainData->nStopTime [mainData->musicqPlayIdx] = 0;
   }
 
-  if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
-    mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
-    mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
-  }
-
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
       mainData->playerState, logPlstateDebugText (mainData->playerState));
 
   if (! mainData->finished && mainData->playerState != PL_STATE_PAUSED) {
+    if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
+      mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
+      mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
+    }
+
     /* grab a song out of the music queue and start playing */
     logMsg (LOG_DBG, LOG_INFO, "player sent a finish; get song, start");
     dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
