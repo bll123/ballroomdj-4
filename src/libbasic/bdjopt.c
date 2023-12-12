@@ -171,7 +171,7 @@ bdjoptInit (void)
   bdjopt->shorttag [OPTTYPE_MACHINE] = "m";
   bdjopt->shorttag [OPTTYPE_MACH_PROF] = "mp";
 
-  bdjopt->currprofile = sysvarsGetNum (SVL_BDJIDX);
+  bdjopt->currprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
@@ -753,17 +753,17 @@ bdjoptCreateNewConfigs (void)
   }
 
   /* global */
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_GLOBAL]);
 
   /* profile */
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_PROFILE]);
 
   /* queue */
@@ -771,13 +771,13 @@ bdjoptCreateNewConfigs (void)
     char  fpath [MAXPATHLEN];
     char  tpath [MAXPATHLEN];
 
-    sysvarsSetNum (SVL_BDJIDX, 0);
+    sysvarsSetNum (SVL_PROFILE_IDX, 0);
     pathbldMakePath (path, sizeof (path),
         BDJ_CONFIG_BASEFN, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
     snprintf (fpath, sizeof (fpath), "%s.q%d%s",
         path, i, BDJ4_CONFIG_EXT);
 
-    sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+    sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
     snprintf (tpath, sizeof (tpath), "%s.q%d%s",
         bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
 
@@ -785,17 +785,17 @@ bdjoptCreateNewConfigs (void)
   }
 
   /* per machine */
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
-  sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACHINE]);
 
   /* per machine per profile */
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }
 

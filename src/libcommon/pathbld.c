@@ -99,10 +99,10 @@ pathbldMakePath (char *buff, size_t buffsz,
       /* if the lock/tmp dir is being used, there is no prefix directory */
       /* use a filename prefix */
       snprintf (profpath, sizeof (profpath), "l%02d-%02d-",
-          (int) sysvarsGetNum (SVL_ALTIDX), (int) sysvarsGetNum (SVL_BDJIDX));
+          (int) sysvarsGetNum (SVL_ALTIDX), (int) sysvarsGetNum (SVL_PROFILE_IDX));
     } else {
       snprintf (profpath, sizeof (profpath), "profile%02" PRId64 "/",
-          sysvarsGetNum (SVL_BDJIDX));
+          sysvarsGetNum (SVL_PROFILE_IDX));
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {

@@ -47,6 +47,8 @@ enum {
   MANAGE_AUDIOID_PANE_POSITION,
   QE_POSITION_X,
   QE_POSITION_Y,
+  /* the reload data is in its own data file, not the options file */
+  RELOAD_CURR,
   PLUI_KEY_MAX,
 };
 

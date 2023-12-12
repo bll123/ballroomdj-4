@@ -122,7 +122,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_ALTIDX] = { "ALTIDX" },
   [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
-  [SVL_BDJIDX] = { "BDJIDX" },
+  [SVL_PROFILE_IDX] = { "BDJIDX" },
   [SVL_HOME_SZ] = { "HOME_SZ" },
   [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
@@ -698,7 +698,7 @@ sysvarsInit (const char *argv0)
   svGetSystemFont ();
 
   lsysvars [SVL_ALTIDX] = 0;
-  lsysvars [SVL_BDJIDX] = 0;
+  lsysvars [SVL_PROFILE_IDX] = 0;
   lsysvars [SVL_INITIAL_PORT] = 32548;
   lsysvars [SVL_BASEPORT] = 32548;
   snprintf (buff, sizeof (buff), "data/%s%s", BASE_PORT_FN, BDJ4_CONFIG_EXT);

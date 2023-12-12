@@ -1524,7 +1524,7 @@ starterGetProfiles (startui_t *starter)
   int         dispidx = -1;
 
   starter->newprofile = -1;
-  starter->currprofile = sysvarsGetNum (SVL_BDJIDX);
+  starter->currprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
   /* want the 'new profile' selection to always be last */
   /* and its index may not be last */
@@ -1535,7 +1535,7 @@ starterGetProfiles (startui_t *starter)
 
   count = 0;
   for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-    sysvarsSetNum (SVL_BDJIDX, i);
+    sysvarsSetNum (SVL_PROFILE_IDX, i);
 
     if (bdjoptProfileExists ()) {
       pid_t   pid;
@@ -1596,7 +1596,7 @@ starterGetProfiles (startui_t *starter)
   nlistFree (starter->profidxlist);
   starter->profidxlist = profidxlist;
 
-  sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, starter->currprofile);
 
   if (starter->currprofile != starter->newprofile) {
     starterResetProfile (starter, starter->currprofile);
@@ -1616,7 +1616,7 @@ static void
 starterResetProfile (startui_t *starter, int profidx)
 {
   starter->currprofile = profidx;
-  sysvarsSetNum (SVL_BDJIDX, profidx);
+  sysvarsSetNum (SVL_PROFILE_IDX, profidx);
 
   if (starter->currprofile == 0) {
     uiWidgetSetState (starter->wcont [START_W_MENU_DEL_PROFILE], UIWIDGET_DISABLE);
@@ -1668,12 +1668,12 @@ starterCheckProfile (startui_t *starter)
 
   uiLabelSetText (starter->wcont [START_W_STATUS_MSG], "");
 
-  if (sysvarsGetNum (SVL_BDJIDX) == starter->newprofile) {
+  if (sysvarsGetNum (SVL_PROFILE_IDX) == starter->newprofile) {
     char  tbuff [100];
     int   profidx;
 
     bdjoptInit ();
-    profidx = sysvarsGetNum (SVL_BDJIDX);
+    profidx = sysvarsGetNum (SVL_PROFILE_IDX);
 
     /* CONTEXT: starterui: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);

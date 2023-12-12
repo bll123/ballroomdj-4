@@ -282,6 +282,6 @@ audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen)
   /* the profile index so we don't stomp on other bdj instances   */
   /* the global count so we don't stomp on ourselves              */
   snprintf (tempnm, maxlen, "tmp/%02" PRId64 "-%03ld-%s",
-      sysvarsGetNum (SVL_BDJIDX), globalcount, tnm);
+      sysvarsGetNum (SVL_PROFILE_IDX), globalcount, tnm);
   ++globalcount;
 }

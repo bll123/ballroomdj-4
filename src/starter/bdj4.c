@@ -364,7 +364,7 @@ main (int argc, char * argv[])
       }
       case 'p': {
         if (optarg != NULL) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
+          sysvarsSetNum (SVL_PROFILE_IDX, atol (optarg));
         }
         break;
       }

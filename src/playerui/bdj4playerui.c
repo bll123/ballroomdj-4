@@ -96,6 +96,7 @@ enum {
   PLUI_W_MENU_QE_CURR,
   PLUI_W_MENU_QE_SEL,
   PLUI_W_MENU_EXT_REQ,
+  PLUI_W_MENU_RELOAD,
   PLUI_W_MAX,
 };
 
@@ -154,6 +155,8 @@ typedef struct {
   bool            marqueeoff : 1;
   bool            mqfontsizeactive : 1;
   bool            optionsalloc : 1;
+  bool            reloadinit : 1;
+  bool            inreload : 1;
   bool            startmainsent : 1;
   bool            stopping : 1;
   bool            uibuilt : 1;
@@ -178,6 +181,13 @@ static datafilekey_t playeruidfkeys [] = {
 };
 enum {
   PLAYERUI_DFKEY_COUNT = (sizeof (playeruidfkeys) / sizeof (datafilekey_t)),
+};
+
+static datafilekey_t reloaddfkeys [] = {
+  { "CURRENT",  RELOAD_CURR, VALUE_STR, NULL, DF_NORM },
+};
+enum {
+  RELOAD_DFKEY_COUNT = (sizeof (reloaddfkeys) / sizeof (datafilekey_t)),
 };
 
 enum {
@@ -229,6 +239,9 @@ static bool     pluiQuickEditCurrent (void *udata);
 static bool     pluiQuickEditSelected (void *udata);
 static bool     pluiQuickEditCallback (void *udata);
 static bool     pluiReload (void *udata);
+static void     pluiReloadCurrent (playerui_t *plui);
+static void     pluiReloadSave (playerui_t *plui, int mqidx);
+static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -281,6 +294,8 @@ main (int argc, char *argv[])
   plui.mainalready = false;
   plui.mainreattach = false;
   plui.marqueeoff = false;
+  plui.reloadinit = false;
+  plui.inreload = false;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
   plui.setPlaybackButton = NULL;
@@ -564,7 +579,7 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: action: reload */
   menuitem = uiMenuCreateItem (menu, _("Reload"),
       plui->callbacks [PLUI_MENU_CB_RELOAD]);
-  uiwcontFree (menuitem);
+  plui->wcont [PLUI_W_MENU_RELOAD] = menuitem;
 
   uiwcontFree (menu);
 
@@ -1093,7 +1108,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
           if ((int) musicqupdate->mqidx >= MUSICQ_DISP_MAX ||
               ! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
-            logMsg (LOG_DBG, LOG_INFO, "music queue data: mq idx %d not valid", musicqupdate->mqidx);
+            logMsg (LOG_DBG, LOG_INFO, "ERR: music queue data: mq idx %d not valid", musicqupdate->mqidx);
             break;
           }
 
@@ -1107,17 +1122,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             }
           }
 
-          /* save history also */
-          if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
-            char  tmp [50];
-
-            uimusicqSetManageIdx (plui->uimusicq, musicqupdate->mqidx);
-            snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
-                (int) sysvarsGetNum (SVL_BDJIDX), musicqupdate->mqidx);
-            uimusicqSave (plui->uimusicq, tmp);
-            playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
-            uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
-          }
+          pluiReloadSave (plui, musicqupdate->mqidx);
 
           if (musicqupdate->mqidx == MUSICQ_HISTORY) {
             const char  *name = _("History");
@@ -1206,6 +1211,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
+
+  /* for reload processing, if a musicq-status-data message was received, */
+  /* update reload-curr */
+  if (msg == MSG_MUSICQ_STATUS_DATA) {
+    pluiReloadSaveCurrent (plui);
+  }
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -1850,6 +1861,8 @@ pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
 
+  plui->inreload = true;
+
   for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
     char    tmp [100];
     char    tbuff [200];
@@ -1857,12 +1870,114 @@ pluiReload (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
-        (int) sysvarsGetNum (SVL_BDJIDX), mqidx);
+        (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
     msgbuildQueuePlaylist (tbuff, sizeof (tbuff), mqidx, tmp, EDIT_FALSE);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
 
+  pluiReloadCurrent (plui);
+
+  plui->inreload = false;
   return UICB_CONT;
+}
+
+static void
+pluiReloadCurrent (playerui_t *plui)
+{
+  datafile_t      *reloaddf;
+  nlist_t         *reloaddata;
+  char            tbuff [200];
+  dbidx_t         dbidx;
+  const char      *nm;
+  song_t          *song;
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      RELOAD_CURR_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  reloaddf = datafileAllocParse ("reload-curr", DFTYPE_KEY_VAL, tbuff,
+      reloaddfkeys, RELOAD_DFKEY_COUNT, DF_NO_OFFSET, NULL);
+  reloaddata = datafileGetList (reloaddf);
+  if (reloaddata == NULL) {
+    datafileFree (reloaddf);
+    return;
+  }
+
+  nm = nlistGetStr (reloaddata, RELOAD_CURR);
+  song = dbGetByName (plui->musicdb, nm);
+  dbidx = songGetNum (song, TAG_DBIDX);
+  if (song != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_PB_A,
+        MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 1);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
+  }
+  datafileFree (reloaddf);
+}
+
+static void
+pluiReloadSave (playerui_t *plui, int mqidx)
+{
+  char      tmp [MAXPATHLEN];
+
+  if (plui->inreload) {
+    return;
+  }
+
+  /* any time any music queue data is received, disable the */
+  /* reload menu item */
+  if (! plui->reloadinit) {
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_RELOAD], UIWIDGET_DISABLE);
+
+    /* any old reload data must be removed */
+    /* this only needs to be done once */
+    for (int tmqidx = 0; tmqidx < MUSICQ_DISP_MAX; ++tmqidx) {
+      snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
+          (int) sysvarsGetNum (SVL_PROFILE_IDX), tmqidx);
+      playlistDelete (tmp);
+    }
+
+    plui->reloadinit = true;
+  }
+
+  /* reload: save history also */
+  if (mqidx < MUSICQ_DISP_MAX) {
+    uimusicqSetManageIdx (plui->uimusicq, mqidx);
+    /* the profile number must be added to the filename */
+    /* as playlists are global and not per-profile */
+    snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
+        (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
+    uimusicqSave (plui->uimusicq, tmp);
+    playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
+    uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
+  }
+}
+
+static void
+pluiReloadSaveCurrent (playerui_t *plui)
+{
+  datafile_t      *reloaddf;
+  nlist_t         *reloaddata;
+  char            tbuff [MAXPATHLEN];
+  dbidx_t         dbidx;
+  song_t          *song;
+
+  if (plui->inreload) {
+    return;
+  }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      RELOAD_CURR_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  reloaddf = datafileAllocParse ("reload-curr", DFTYPE_KEY_VAL, tbuff,
+      reloaddfkeys, RELOAD_DFKEY_COUNT, DF_NO_OFFSET, NULL);
+  reloaddata = nlistAlloc ("reload-curr", LIST_ORDERED, NULL);
+  dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
+  song = dbGetByIdx (plui->musicdb, dbidx);
+  if (song != NULL) {
+    nlistSetStr (reloaddata, RELOAD_CURR, songGetStr (song, TAG_URI));
+    datafileSave (reloaddf, NULL, reloaddata, DF_NO_OFFSET, 1);
+  }
+  nlistFree (reloaddata);
+  datafileFree (reloaddf);
 }
 
 static bool

@@ -180,7 +180,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'p': {
         if (optarg != NULL) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
+          sysvarsSetNum (SVL_PROFILE_IDX, atol (optarg));
         }
         break;
       }
@@ -279,7 +279,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   pathbldMakePath (tbuff, sizeof (tbuff),
       "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   if (! fileopIsDirectory (tbuff)) {
-    sysvarsSetNum (SVL_BDJIDX, 0);
+    sysvarsSetNum (SVL_PROFILE_IDX, 0);
   }
 
   bdjoptInit ();
@@ -297,7 +297,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     logStartAppend (lockName (route), tag, loglevel);
   }
   logProcBegin (LOG_PROC, "bdj4startup");
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_BDJIDX));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
   if (route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));

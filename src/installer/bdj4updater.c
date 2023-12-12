@@ -647,10 +647,10 @@ main (int argc, char *argv [])
     /*   check each profile to see if ds-mm.txt exists (also bdjconfig.txt) */
     /*   if not, remove the profile */
 
-    origprofile = sysvarsGetNum (SVL_BDJIDX);
+    origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-      sysvarsSetNum (SVL_BDJIDX, i);
+      sysvarsSetNum (SVL_PROFILE_IDX, i);
       pathbldMakePath (tbuff, sizeof (tbuff), "ds-mm", BDJ4_CONFIG_EXT,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
@@ -662,7 +662,7 @@ main (int argc, char *argv [])
         bdjoptDeleteProfile ();
       }
     }
-    sysvarsSetNum (SVL_BDJIDX, origprofile);
+    sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
   }
 
 
@@ -680,10 +680,10 @@ main (int argc, char *argv [])
   {
     int     origprofile;
 
-    origprofile = sysvarsGetNum (SVL_BDJIDX);
+    origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-      sysvarsSetNum (SVL_BDJIDX, i);
+      sysvarsSetNum (SVL_PROFILE_IDX, i);
       if (bdjoptProfileExists ()) {
         /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
         pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
@@ -706,7 +706,7 @@ main (int argc, char *argv [])
         }
       }
     }
-    sysvarsSetNum (SVL_BDJIDX, origprofile);
+    sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
   }
 
   {
@@ -1302,10 +1302,10 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag)
   char    tbuff [MAXPATHLEN];
   int     origprofile;
 
-  origprofile = sysvarsGetNum (SVL_BDJIDX);
+  origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
   for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-    sysvarsSetNum (SVL_BDJIDX, i);
+    sysvarsSetNum (SVL_PROFILE_IDX, i);
     if (bdjoptProfileExists ()) {
       pathbldMakePath (tbuff, sizeof (tbuff), fn, ext,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -1316,7 +1316,7 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag)
       }
     } /* if the profile exists */
   } /* for all profiles */
-  sysvarsSetNum (SVL_BDJIDX, origprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
 }
 
 static void
@@ -1416,10 +1416,10 @@ updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
   char    to [MAXPATHLEN];
   int     origprofile;
 
-  origprofile = sysvarsGetNum (SVL_BDJIDX);
+  origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
 
   for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-    sysvarsSetNum (SVL_BDJIDX, i);
+    sysvarsSetNum (SVL_PROFILE_IDX, i);
     if (bdjoptProfileExists ()) {
       pathbldMakePath (from, sizeof (from), oldfn, ext,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -1432,6 +1432,6 @@ updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
       }
     } /* if the profile exists */
   } /* for all profiles */
-  sysvarsSetNum (SVL_BDJIDX, origprofile);
+  sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
 }
 

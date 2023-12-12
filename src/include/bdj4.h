@@ -75,6 +75,7 @@ enum {
 #define NEWINSTALL_FN       "newinstall"
 #define LOCALIZATION_FN     "localization"
 #define RELOAD_FN           "reload"
+#define RELOAD_CURR_FN      "reload-curr"
 /* option data files */
 #define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"

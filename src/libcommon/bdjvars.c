@@ -106,7 +106,7 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
 void
 bdjvarsAdjustPorts (void)
 {
-  int       idx = sysvarsGetNum (SVL_BDJIDX);
+  int       idx = sysvarsGetNum (SVL_PROFILE_IDX);
   uint16_t  port;
 
   port = sysvarsGetNum (SVL_BASEPORT) +

@@ -233,7 +233,7 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
-  process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
+  process = procutilStart (tbuff, sysvarsGetNum (SVL_PROFILE_IDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag, aargs);
   if (isWindows ()) {
     char  tmp [MAXPATHLEN];

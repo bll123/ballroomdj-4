@@ -32,7 +32,7 @@ START_TEST(bdjvars_init)
   ck_assert_int_eq (bdjvarsIsInitialized (), 0);
   bdjvarsInit ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
-      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_BDJIDX),
+      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
       bdjvarsGetNum (BDJVL_MAIN_PORT));
   ck_assert_int_eq (bdjvarsIsInitialized (), 1);
   bdjvarsCleanup ();
@@ -46,12 +46,12 @@ START_TEST(bdjvars_init_idx)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvars_init_idx");
   mdebugSubTag ("bdjvars_init_idx");
 
-  sysvarsSetNum (SVL_BDJIDX, 2);
+  sysvarsSetNum (SVL_PROFILE_IDX, 2);
   bdjvarsInit ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
-      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_BDJIDX),
+      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
       bdjvarsGetNum (BDJVL_MAIN_PORT));
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   bdjvarsCleanup ();
 }
 END_TEST
@@ -63,12 +63,12 @@ START_TEST(bdjvars_adjust)
   mdebugSubTag ("bdjvars_adjust");
 
   bdjvarsInit ();
-  sysvarsSetNum (SVL_BDJIDX, 3);
+  sysvarsSetNum (SVL_PROFILE_IDX, 3);
   bdjvarsAdjustPorts ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
-      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_BDJIDX),
+      bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
       bdjvarsGetNum (BDJVL_MAIN_PORT));
-  sysvarsSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_PROFILE_IDX, 0);
   bdjvarsCleanup ();
 }
 END_TEST
