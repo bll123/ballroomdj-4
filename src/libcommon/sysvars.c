@@ -1095,7 +1095,9 @@ svGetLinuxDefaultTheme (void)
     /* gsettings puts quotes around the data */
     stringTrim (tptr);
     stringTrimChar (tptr, '\'');
-    strlcpy (sysvars [SV_THEME_DEFAULT], tptr + 1, SV_MAX_SZ);
+    if (strlen (tptr) > 0) {
+      strlcpy (sysvars [SV_THEME_DEFAULT], tptr + 1, SV_MAX_SZ);
+    }
   }
   mdfree (tptr);
 }

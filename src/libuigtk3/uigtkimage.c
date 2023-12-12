@@ -33,14 +33,19 @@ uiImageNew (void)
 uiwcont_t *
 uiImageFromFile (const char *fn)
 {
-  uiwcont_t *uiwidget;
+  uiwcont_t *uiwidget = NULL;
   GtkWidget *image;
+  GdkPixbuf *pixbuf;
 
-  /* using this function creates memory leaks. */
-  image = gtk_image_new_from_file (fn);
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wtype = WCONT_T_IMAGE;
-  uiwidget->widget = image;
+  /* using gtk_image_new_from_file creates memory leaks. */
+  pixbuf = gdk_pixbuf_new_from_file (fn, NULL);
+  if (pixbuf != NULL) {
+    image = gtk_image_new_from_pixbuf (pixbuf);
+    uiwidget = uiwcontAlloc ();
+    uiwidget->wtype = WCONT_T_IMAGE;
+    uiwidget->widget = image;
+    g_object_unref (pixbuf);
+  }
   return uiwidget;
 }
 
@@ -58,6 +63,7 @@ uiImageScaledFromFile (const char *fn, int scale)
     uiwidget = uiwcontAlloc ();
     uiwidget->wtype = WCONT_T_IMAGE;
     uiwidget->widget = image;
+    g_object_unref (pixbuf);
   }
   return uiwidget;
 }

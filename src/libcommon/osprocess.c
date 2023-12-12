@@ -27,6 +27,11 @@
 #include "osprocess.h"
 #include "tmutil.h"
 
+enum {
+  OSPROCESS_RUN_DATA_SZ = 4096,
+  OSPROCESS_RUN_ARGV_SZ = 30,
+};
+
 #if _define_WIFEXITED
 
 static int osProcessWaitStatus (int wstatus);
@@ -231,27 +236,32 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
 #endif /* if _lib_fork */
 
+/* valgrind complains about using an uninitialized variable, */
+/* but it appears to be an incorrect error */
 char *
 osRunProgram (const char *prog, ...)
 {
-  char        data [4096];
-  char        *arg;
-  const char  *targv [30];
-  int         targc;
+  char        data [OSPROCESS_RUN_DATA_SZ];
+  char        *arg = NULL;
+  const char  *targv [OSPROCESS_RUN_ARGV_SZ];
+  int         targc = 0;
   va_list     valist;
 
   va_start (valist, prog);
 
+  *data = '\0';
+
   targc = 0;
   targv [targc++] = prog;
-  while ((arg = va_arg (valist, char *)) != NULL) {
+  while (targc < (OSPROCESS_RUN_ARGV_SZ - 1) &&
+      (arg = va_arg (valist, char *)) != NULL) {
     targv [targc++] = arg;
   }
   targv [targc++] = NULL;
   va_end (valist);
 
-  *data = '\0';
-  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH,
+      data, OSPROCESS_RUN_DATA_SZ, NULL);
   return mdstrdup (data);
 }
 
