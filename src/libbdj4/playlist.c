@@ -565,7 +565,7 @@ playlistGetPlaylistList (int flag, const char *dir)
     tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 
-    if (strncmp (tfn, RESTART_FN, strlen (RESTART_FN)) == 0) {
+    if (strncmp (tfn, RELOAD_FN, strlen (RELOAD_FN)) == 0) {
       /* the special restart song list never shows up */
       continue;
     }

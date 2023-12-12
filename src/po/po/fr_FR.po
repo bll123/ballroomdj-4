@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-11\n"
+"PO-Revision-Date: 2023-12-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -1493,6 +1493,10 @@ msgstr "Récupéré après l'accident."
 msgid "Registering %s."
 msgstr "Enregistrement de %s."
 
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr ""
+
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
 msgid "Remove"
@@ -1529,10 +1533,6 @@ msgstr "Demande"
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
 msgstr "Remise à zéro"
-
-#. CONTEXT: playerui: menu selection: action: restart
-msgid "Restart"
-msgstr ""
 
 #. CONTEXT: apply adjustment dialog: restore original file
 #. CONTEXT: managementui: song editor menu: restore original

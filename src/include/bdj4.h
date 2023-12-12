@@ -74,7 +74,7 @@ enum {
 #define ITUNES_STARS_FN     "itunes-stars"
 #define NEWINSTALL_FN       "newinstall"
 #define LOCALIZATION_FN     "localization"
-#define RESTART_FN          "restart"
+#define RELOAD_FN           "reload"
 /* option data files */
 #define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"

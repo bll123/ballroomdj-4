@@ -8,9 +8,9 @@
 
 * Bug Fixes:
     * Starter: De-iconify windows when they are iconified.
-    * Fix some minor memory leaks.
+    * Fix some memory leaks.
 * New Features:
-    * Player: Restart. PENDING name???
+    * Player: Restart.
 
 -->
 

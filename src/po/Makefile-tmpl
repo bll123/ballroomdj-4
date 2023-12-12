@@ -76,7 +76,7 @@ all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
 # group-targets to only run this once.
 $(PLAYLISTS) $(DATAFILES) &:	$(PLAYLISTSRC) $(DATAFILESRC) \
 		$(PODIR)/$(LOCALE).po po-tmpl.sh
-	@echo "-- $(date +%T) Update templates for $(SLOCALE)"
+	@# echo "-- $(date +%T) Update templates for $(SLOCALE)"
 	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(SLOCALE)
 
 $(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po po-html.sh

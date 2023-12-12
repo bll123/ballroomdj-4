@@ -66,7 +66,7 @@ enum {
   PLUI_MENU_CB_EXP_MP3,
   PLUI_MENU_CB_QE_CURRENT,
   PLUI_MENU_CB_QE_SELECTED,
-  PLUI_MENU_CB_RESTART,
+  PLUI_MENU_CB_RELOAD,
   PLUI_CB_NOTEBOOK,
   PLUI_CB_CLOSE,
   PLUI_CB_PLAYBACK_QUEUE,
@@ -228,7 +228,7 @@ static bool     pluiExtReqCallback (void *udata);
 static bool     pluiQuickEditCurrent (void *udata);
 static bool     pluiQuickEditSelected (void *udata);
 static bool     pluiQuickEditCallback (void *udata);
-static bool     pluiRestart (void *udata);
+static bool     pluiReload (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -559,11 +559,11 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_MENU_CB_QE_SELECTED]);
   plui->wcont [PLUI_W_MENU_QE_SEL] = menuitem;
 
-  plui->callbacks [PLUI_MENU_CB_RESTART] = callbackInit (
-      pluiRestart, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: restart */
-  menuitem = uiMenuCreateItem (menu, _("Restart"),
-      plui->callbacks [PLUI_MENU_CB_RESTART]);
+  plui->callbacks [PLUI_MENU_CB_RELOAD] = callbackInit (
+      pluiReload, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: reload */
+  menuitem = uiMenuCreateItem (menu, _("Reload"),
+      plui->callbacks [PLUI_MENU_CB_RELOAD]);
   uiwcontFree (menuitem);
 
   uiwcontFree (menu);
@@ -1107,11 +1107,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             }
           }
 
-          if ((int) musicqupdate->mqidx < MUSICQ_PB_MAX) {
+          /* save history also */
+          if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
             char  tmp [50];
 
             uimusicqSetManageIdx (plui->uimusicq, musicqupdate->mqidx);
-            snprintf (tmp, sizeof (tmp), "%s-%d-%d", RESTART_FN,
+            snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
                 (int) sysvarsGetNum (SVL_BDJIDX), musicqupdate->mqidx);
             uimusicqSave (plui->uimusicq, tmp);
             playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
@@ -1845,17 +1846,17 @@ pluiQuickEditCallback (void *udata)
 }
 
 static bool
-pluiRestart (void *udata)
+pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
 
-  for (int mqidx = 0; mqidx < MUSICQ_PB_MAX; ++mqidx) {
+  for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
     char    tmp [100];
     char    tbuff [200];
 
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
-    snprintf (tmp, sizeof (tmp), "%s-%d-%d", RESTART_FN,
+    snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_BDJIDX), mqidx);
     msgbuildQueuePlaylist (tbuff, sizeof (tbuff), mqidx, tmp, EDIT_FALSE);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
