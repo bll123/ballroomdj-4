@@ -122,9 +122,11 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     p = audiosrcRelativePath (tbuff);
 
     song = dbGetByName (musicdb, p);
-    dbidx = songGetNum (song, TAG_DBIDX);
-    if (dbidx >= 0) {
-      nlistSetNum (list, dbidx, 0);
+    if (song != NULL) {
+      dbidx = songGetNum (song, TAG_DBIDX);
+      if (dbidx >= 0) {
+        nlistSetNum (list, dbidx, 0);
+      }
     }
   }
 

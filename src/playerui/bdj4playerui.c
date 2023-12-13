@@ -1903,8 +1903,8 @@ pluiReloadCurrent (playerui_t *plui)
 
   nm = nlistGetStr (reloaddata, RELOAD_CURR);
   song = dbGetByName (plui->musicdb, nm);
-  dbidx = songGetNum (song, TAG_DBIDX);
   if (song != NULL) {
+    dbidx = songGetNum (song, TAG_DBIDX);
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_PB_A,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
