@@ -22,56 +22,50 @@ typedef struct uiscrollbar {
   int         junk;
 } uiscrollbar_t;
 
-uiscrollbar_t *
+uiwcont_t *
 uiCreateVerticalScrollbar (double upper)
 {
   return NULL;
 }
 
 void
-uiScrollbarFree (uiscrollbar_t *sb)
-{
-  return;
-}
-
-uiwcont_t *
-uiScrollbarGetWidgetContainer (uiscrollbar_t *sb)
-{
-  return NULL;
-}
-
-void
-uiScrollbarSetChangeCallback (uiscrollbar_t *sb, callback_t *cb)
+uiScrollbarFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiScrollbarSetUpper (uiscrollbar_t *sb, double upper)
+uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiScrollbarSetPosition (uiscrollbar_t *sb, double pos)
+uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 {
   return;
 }
 
 void
-uiScrollbarSetStepIncrement (uiscrollbar_t *sb, double step)
+uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 {
   return;
 }
 
 void
-uiScrollbarSetPageIncrement (uiscrollbar_t *sb, double page)
+uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 {
   return;
 }
 
 void
-uiScrollbarSetPageSize (uiscrollbar_t *sb, double sz)
+uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
+{
+  return;
+}
+
+void
+uiScrollbarSetPageSize (uiwcont_t *uiwidget, double sz)
 {
   return;
 }
