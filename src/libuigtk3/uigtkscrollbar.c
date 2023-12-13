@@ -53,7 +53,7 @@ uiCreateVerticalScrollbar (double upper)
 void
 uiScrollbarFree (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -66,7 +66,7 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -81,7 +81,7 @@ uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -94,7 +94,7 @@ uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -107,7 +107,7 @@ uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -120,7 +120,7 @@ uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
@@ -133,7 +133,7 @@ uiScrollbarSetPageSize (uiwcont_t *uiwidget, double sz)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
   }
 
