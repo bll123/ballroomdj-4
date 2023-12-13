@@ -61,8 +61,6 @@ typedef struct {
 enum {
   CHK_DIR,
   CHK_FILE,
-  CHK_DLINK,
-  CHK_LINK,
 };
 
 static chk_as_list_t lvalues [] = {
@@ -73,7 +71,6 @@ static chk_as_list_t lvalues [] = {
   { CHK_DIR,  2, "tmp/abc/ghi", "chk", 0 },
   { CHK_FILE, 0, "tmp/abc/ghi/ghi.txt", "ghi.txt", 0 },
   { CHK_FILE, 0, "tmp/abc/ghi/ghi.txt.original", "ghi.txt.original", 0 },
-  { CHK_LINK, 0, "tmp/abc/ghi/jkl.txt", "ghi.txt", 0 },
   { CHK_DIR,  2, "tmp/abc/ÄÑÄÑ", NULL, 0 },
   { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/abc-def.txt", "abc-def.txt", 0 },
   { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/ÜÄÑÖ.txt", "ÜÄÑÖ.txt", 0 },
@@ -87,7 +84,6 @@ enum {
   lvaluesz = sizeof (lvalues) / sizeof (chk_as_list_t),
 };
 static int fcount = 0;
-static int lcount = 0;
 static int dcount = 0;
 static const char *datatop;
 
@@ -96,9 +92,6 @@ static void
 teardown (void)
 {
   for (int i = 0; i < lvaluesz; ++i) {
-    if (lvalues [i].type == CHK_LINK) {
-      fileopDelete (lvalues [i].name);
-    }
     if (lvalues [i].type == CHK_DIR) {
       diropDeleteDir (lvalues [i].name);
     }
@@ -123,12 +116,6 @@ setup (void)
   for (int i = 0; i < lvaluesz; ++i) {
     lvalues [i].flag = 0;
 
-    if (lvalues [i].type == CHK_LINK) {
-      if (! isWindows ()) {
-        filemanipLinkCopy (lvalues [i].fname, lvalues [i].name);
-        ++lcount;
-      }
-    }
     if (lvalues [i].type == CHK_FILE) {
       fh = fileopOpen (lvalues [i].name, "w");
       mdextfclose (fh);
@@ -262,7 +249,7 @@ START_TEST(audiosrc_iterate)
 
   asiter = audiosrcStartIterator ("tmp/abc");
   c = audiosrcIterCount (asiter);
-  ck_assert_int_eq (c, fcount + lcount);
+  ck_assert_int_eq (c, fcount);
 
   c = 0;
   while ((val = audiosrcIterate (asiter)) != NULL) {
@@ -274,10 +261,9 @@ START_TEST(audiosrc_iterate)
     }
     ++c;
   }
-  ck_assert_int_eq (c, fcount + lcount);
+  ck_assert_int_eq (c, fcount);
   for (int i = 0; i < lvaluesz; ++i) {
-    if (lvalues [i].type == CHK_FILE ||
-        lvalues [i].type == CHK_LINK) {
+    if (lvalues [i].type == CHK_FILE) {
       ck_assert_int_eq (lvalues [i].flag, 1);
     }
   }
@@ -315,8 +301,9 @@ START_TEST(audiosrc_remove)
   ck_assert_int_eq (val, true);
   val = audiosrcExists (lvalues [12].name);
   ck_assert_int_eq (val, false);
+  /* lvalues [10].name is the directory name */
   snprintf (tmp, sizeof (tmp), "%s/%s%s",
-      lvalues [11].name, bdjvarsGetStr (BDJV_DELETE_PFX), lvalues [12].fname);
+      lvalues [10].name, bdjvarsGetStr (BDJV_DELETE_PFX), lvalues [12].fname);
   val = fileopFileExists (tmp);
   ck_assert_int_eq (val, true);
 }

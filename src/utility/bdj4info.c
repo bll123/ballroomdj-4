@@ -113,7 +113,7 @@ main (int argc, char *argv [])
   localeInit ();
 
   fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
-  fprintf (stdout, " i: short  %d\n", (int) sizeof (short));
+  fprintf (stdout, " i: short  %d %d\n", (int) sizeof (short), SHRT_MAX);
   fprintf (stdout, " i: int    %d %ld\n", (int) sizeof (int), (long) INT_MAX);
   fprintf (stdout, " i: long   %d %ld\n", (int) sizeof (long), (long) LONG_MAX);
   fprintf (stdout, " i: pid_t  %d\n", (int) sizeof (pid_t));
