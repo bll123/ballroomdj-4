@@ -1,0 +1,21 @@
+[Wiki Home](Home)
+
+###### VLC
+
+* Support for speed changes, including during playback.
+* Good API.
+* Not likely to go away.
+
+###### MPV
+
+* Support for speed changes.
+* The library interfaces requires that LC_NUMERIC be set to "C".
+<br>Incompetent programmers.  This required saving the current
+LC_NUMERIC and restoring it afterwards within the MPV interface.
+* The MPV library is linked with graphics libraries.
+<br>More incompetent programmers.
+* Status: an interface has been written, but it is not working
+right.  MPV is low priority.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-12-13 14:25:11; BDJ4 version 4.4.7)_

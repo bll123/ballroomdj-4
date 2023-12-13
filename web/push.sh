@@ -152,7 +152,7 @@ if [[ -f ${spnm} ]]; then
   sshpass -e rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 fi
-spnm=bdj4-src-win64-${pn_date}.tar.gz
+spnm=bdj4-src-win64-${pn_date}.zip
 if [[ -f ${spnm} ]]; then
   sshpass -e rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/

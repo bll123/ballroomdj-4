@@ -34,6 +34,12 @@ and packaging must be run again on the other platforms.
 * for each platform
     * pull source if necessary
     * ./utils/pkg.sh
+* on macos
+    * if there were any library changes (libmp4tag, libicu) build the
+source package and copy it to the primary development machine.
+* on windows
+    * if there were any library changes build the
+source package and copy it to the primary development machine.
 * on linux
     * hg: check in
     * hg: create a tag for the release
@@ -52,4 +58,4 @@ and packaging must be run again on the other platforms.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-13 14:16:58; BDJ4 version 4.4.7)_
