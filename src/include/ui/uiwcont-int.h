@@ -67,6 +67,7 @@ typedef enum {
 /* the widget pointer will be moved out of the below structure */
 /* and into the uiwcont_t union */
 typedef union {
+    void          *voidwidget;
     uibutton_t    *uibutton;
     uichgind_t    *uichgind;
     uidropdown_t  *uidropdown;

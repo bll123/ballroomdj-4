@@ -20,7 +20,9 @@ uiwcontAlloc (void)
   uiwcont_t    *uiwidget;
 
   uiwidget = mdmalloc (sizeof (uiwcont_t));
+  uiwidget->wtype = WCONT_T_UNKNOWN;
   uiwidget->widget = NULL;
+  uiwidget->uiint.voidwidget = NULL;    // union
   return uiwidget;
 }
 
@@ -31,3 +33,4 @@ uiwcontFree (uiwcont_t *uiwidget)
     mdfree (uiwidget);
   }
 }
+
