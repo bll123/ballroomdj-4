@@ -89,7 +89,6 @@ static int  mdebugComp (const void *a, const void *b);
 static void mdebugSort (void);
 static void mdebugLog (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
-static char *mdebugBacktrace (void);
 
 void
 mdfree_r (void *data, const char *fn, int lineno)
@@ -550,7 +549,7 @@ mdebugLog (const char *fmt, ...)
 #endif
 }
 
-static char *
+char *
 mdebugBacktrace (void)
 {
   char    *disp = NULL;

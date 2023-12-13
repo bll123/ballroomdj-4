@@ -12,7 +12,7 @@
 
 * Bug Fixes:
     * Fix some memory leaks.
-    * Player: Fix issue switching queues when the player was not stopped.
+    * Player: Fix issue switching queues when playback was paused.
     * Starter: De-iconify windows when they are iconified.
 * New Features:
     * Player: Reload.

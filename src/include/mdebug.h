@@ -57,6 +57,7 @@ long mdebugCount (void);
 long mdebugErrors (void);
 void mdebugSetVerbose (void);
 void mdebugSetNoOutput (void);
+char *mdebugBacktrace (void);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

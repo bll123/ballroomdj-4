@@ -219,11 +219,6 @@ bdjoptInit (void)
     bdjopt->distvers [i] = datafileDistVersion (bdjopt->df [i]);
   }
 
-  /* 4.0.10 OPT_M_SCALE added */
-  if (bdjoptGetNum (OPT_M_SCALE) <= 0) {
-    bdjoptSetNum (OPT_M_SCALE, 1);
-  }
-
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     int   offset;
 
@@ -241,6 +236,11 @@ bdjoptInit (void)
   }
 
   bdjopt->bdjoptList = datafileGetList (bdjopt->df [OPTTYPE_GLOBAL]);
+
+  /* 4.0.10 OPT_M_SCALE added */
+  if (bdjoptGetNum (OPT_M_SCALE) <= 0) {
+    bdjoptSetNum (OPT_M_SCALE, 1);
+  }
 
   /* added 4.3.2.4, make sure it has a default */
   if (nlistGetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD) < 0) {

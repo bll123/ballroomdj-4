@@ -822,20 +822,16 @@ static bool
 listCheckIfValid (list_t *list, keytype_t keytype)
 {
   if (list == NULL) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "list: null");
-    logMsg (LOG_DBG, LOG_IMPORTANT, "list: null");
     return false;
   }
 
   if (list->listident != LIST_IDENT) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "list: bad ident");
-    logMsg (LOG_DBG, LOG_IMPORTANT, "list: bad ident");
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: bad ident");
     return false;
   }
 
   if (list->keytype != keytype) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
     return false;
   }
 
