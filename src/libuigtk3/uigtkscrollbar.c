@@ -21,108 +21,124 @@
 #include "ui/uiscrollbar.h"
 
 typedef struct uiscrollbar {
-  uiwcont_t     *wcont;
-  callback_t    *changecb;
+  callback_t      *changecb;
+  GtkAdjustment   *adjustment;
 } uiscrollbar_t;
 
 static gboolean uiScrollbarChangeHandler (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
 
-uiscrollbar_t *
+uiwcont_t *
 uiCreateVerticalScrollbar (double upper)
 {
+  uiwcont_t     *uiwidget;
   uiscrollbar_t *sb;
   GtkWidget     *widget;
   GtkAdjustment *adjustment;
 
+  uiwidget = uiwcontAlloc ();
   sb = mdmalloc (sizeof (uiscrollbar_t));
   sb->changecb = NULL;
-  sb->wcont = uiwcontAlloc ();
-  sb->wcont->wtype = WCONT_T_SCROLLBAR;
+  uiwidget->wtype = WCONT_T_SCROLLBAR;
 
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
   widget = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
-  sb->wcont->widget = widget;
+  sb->adjustment = adjustment;
+  uiwidget->widget = widget;
+  uiwidget->uiint.uiscrollbar = sb;
 
-  uiWidgetExpandVert (sb->wcont);
-  return sb;
+  uiWidgetExpandVert (uiwidget);
+  return uiwidget;
 }
 
 void
-uiScrollbarFree (uiscrollbar_t *sb)
+uiScrollbarFree (uiwcont_t *uiwidget)
 {
-  if (sb == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
 
-  uiwcontFree (sb->wcont);
-  mdfree (sb);
-}
-
-uiwcont_t *
-uiScrollbarGetWidgetContainer (uiscrollbar_t *sb)
-{
-  if (sb == NULL) {
-    return NULL;
-  }
-
-  return sb->wcont;
+  dataFree (uiwidget->uiint.uiscrollbar);
+  uiwcontFree (uiwidget);
 }
 
 void
-uiScrollbarSetChangeCallback (uiscrollbar_t *sb, callback_t *cb)
+uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (sb == NULL) {
+  uiscrollbar_t   *sb;
+
+  if (uiwidget == NULL) {
     return;
   }
 
+  sb = uiwidget->uiint.uiscrollbar;
   sb->changecb = cb;
-  g_signal_connect (sb->wcont->widget, "change-value",
+  g_signal_connect (uiwidget->widget, "change-value",
       G_CALLBACK (uiScrollbarChangeHandler), cb);
 }
 
 void
-uiScrollbarSetUpper (uiscrollbar_t *sb, double upper)
+uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 {
-  GtkAdjustment   *adjustment;
+  uiscrollbar_t   *sb;
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (sb->wcont->widget));
-  gtk_adjustment_set_upper (adjustment, upper);
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  sb = uiwidget->uiint.uiscrollbar;
+  gtk_adjustment_set_upper (sb->adjustment, upper);
 }
 
 void
-uiScrollbarSetPosition (uiscrollbar_t *sb, double pos)
+uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 {
-  GtkAdjustment   *adjustment;
+  uiscrollbar_t   *sb;
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (sb->wcont->widget));
-  gtk_adjustment_set_value (adjustment, pos);
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  sb = uiwidget->uiint.uiscrollbar;
+  gtk_adjustment_set_value (sb->adjustment, pos);
 }
 
 void
-uiScrollbarSetStepIncrement (uiscrollbar_t *sb, double step)
+uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 {
-  GtkAdjustment   *adjustment;
+  uiscrollbar_t   *sb;
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (sb->wcont->widget));
-  gtk_adjustment_set_step_increment (adjustment, step);
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  sb = uiwidget->uiint.uiscrollbar;
+  gtk_adjustment_set_step_increment (sb->adjustment, step);
 }
 
 void
-uiScrollbarSetPageIncrement (uiscrollbar_t *sb, double page)
+uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
 {
-  GtkAdjustment   *adjustment;
+  uiscrollbar_t   *sb;
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (sb->wcont->widget));
-  gtk_adjustment_set_page_increment (adjustment, page);
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  sb = uiwidget->uiint.uiscrollbar;
+  gtk_adjustment_set_page_increment (sb->adjustment, page);
 }
 
 void
-uiScrollbarSetPageSize (uiscrollbar_t *sb, double sz)
+uiScrollbarSetPageSize (uiwcont_t *uiwidget, double sz)
 {
-  GtkAdjustment   *adjustment;
+  uiscrollbar_t   *sb;
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (sb->wcont->widget));
-  gtk_adjustment_set_page_size (adjustment, sz);
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  sb = uiwidget->uiint.uiscrollbar;
+  gtk_adjustment_set_page_size (sb->adjustment, sz);
 }
 
 /* internal routines */

@@ -95,6 +95,7 @@ enum {
   SONGSEL_W_MAIN_VBOX,
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
+  SONGSEL_W_SCROLLBAR,
   SONGSEL_W_MAX,
 };
 
@@ -105,7 +106,6 @@ typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *wcont [SONGSEL_W_MAX];
   uitree_t            *songselTree;
-  uiscrollbar_t       *songselScrollbar;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   uiwcont_t           *reqQueueLabel;
   uikey_t             *uikey;
@@ -163,7 +163,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
 
   ssint = mdmalloc (sizeof (ss_internal_t));
   ssint->songselTree = NULL;
-  ssint->songselScrollbar = NULL;
   ssint->maxRows = 0;
   ssint->controlPressed = false;
   ssint->shiftPressed = false;
@@ -203,7 +202,6 @@ uisongselUIFree (uisongsel_t *uisongsel)
 
     ssint = uisongsel->ssInternalData;
 
-    uiScrollbarFree (ssint->songselScrollbar);
     uiKeyFree (ssint->uikey);
     nlistFree (ssint->selectedBackup);
     nlistFree (ssint->selectedList);
@@ -342,11 +340,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (hbox, vbox);
 
-  ssint->songselScrollbar = uiCreateVerticalScrollbar (uisongsel->dfilterCount);
-  uiBoxPackEnd (hbox, uiScrollbarGetWidgetContainer (ssint->songselScrollbar));
+  ssint->wcont [SONGSEL_W_SCROLLBAR] =
+      uiCreateVerticalScrollbar (uisongsel->dfilterCount);
+  uiBoxPackEnd (hbox, ssint->wcont [SONGSEL_W_SCROLLBAR]);
   ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitDouble (
       uisongselScroll, uisongsel);
-  uiScrollbarSetChangeCallback (ssint->songselScrollbar,
+  uiScrollbarSetChangeCallback (ssint->wcont [SONGSEL_W_SCROLLBAR],
       ssint->callbacks [SONGSEL_CB_SCROLL_CHG]);
 
   ssint->wcont [SONGSEL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
@@ -445,7 +444,7 @@ uisongselClearData (uisongsel_t *uisongsel)
 
   /* having cleared the list, the rows must be re-created */
   uisongselCreateRows (uisongsel);
-  uiScrollbarSetPosition (ssint->songselScrollbar, 0.0);
+  uiScrollbarSetPosition (ssint->wcont [SONGSEL_W_SCROLLBAR], 0.0);
   logProcEnd (LOG_PROC, "uisongselClearData", "");
 }
 
@@ -470,7 +469,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   /* processed by this instance */
   uisongsel->dfilterCount = (double) songfilterGetCount (uisongsel->songfilter);
 
-  uiScrollbarSetUpper (ssint->songselScrollbar, uisongsel->dfilterCount);
+  uiScrollbarSetUpper (ssint->wcont [SONGSEL_W_SCROLLBAR], uisongsel->dfilterCount);
 
   row = 0;
   idx = uisongsel->idxStart;
@@ -1067,9 +1066,9 @@ uisongselProcessTreeSize (void *udata, long rows)
 
   /* the step increment does not work correctly with smooth scrolling */
   /* and it appears there's no easy way to turn smooth scrolling off */
-  uiScrollbarSetStepIncrement (ssint->songselScrollbar, 4.0);
-  uiScrollbarSetPageIncrement (ssint->songselScrollbar, (double) ssint->maxRows);
-  uiScrollbarSetPageSize (ssint->songselScrollbar, (double) ssint->maxRows);
+  uiScrollbarSetStepIncrement (ssint->wcont [SONGSEL_W_SCROLLBAR], 4.0);
+  uiScrollbarSetPageIncrement (ssint->wcont [SONGSEL_W_SCROLLBAR], (double) ssint->maxRows);
+  uiScrollbarSetPageSize (ssint->wcont [SONGSEL_W_SCROLLBAR], (double) ssint->maxRows);
 
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: tree size change", uisongsel->tag);
   uisongselPopulateData (uisongsel);
@@ -1132,7 +1131,7 @@ uisongselScroll (void *udata, double value)
 
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
   uisongselPopulateData (uisongsel);
-  uiScrollbarSetPosition (ssint->songselScrollbar, value);
+  uiScrollbarSetPosition (ssint->wcont [SONGSEL_W_SCROLLBAR], value);
   uisongselUpdateSelections (uisongsel);
 
   ssint->inscroll = false;

@@ -8,7 +8,6 @@
 #include "ui/uientry.h"
 #include "ui/uikeys.h"
 #include "ui/uimenu.h"
-#include "ui/uiscrollbar.h"
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
@@ -62,6 +61,8 @@ typedef enum {
   WCONT_T_UNKNOWN,
   WCONT_T_WINDOW,
 } uiwconttype_t;
+
+typedef struct uiscrollbar uiscrollbar_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */
