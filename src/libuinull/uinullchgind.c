@@ -16,36 +16,33 @@
 #include "ui/uiwidget.h"
 #include "ui/uichgind.h"
 
-typedef struct uichgind {
-  int         junk;
-} uichgind_t;
 
-uichgind_t *
+uiwcont_t *
 uiCreateChangeIndicator (uiwcont_t *boxp)
 {
   return NULL;
 }
 
 void
-uichgindFree (uichgind_t *uichgind)
+uichgindFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uichgindMarkNormal (uichgind_t *uichgind)
+uichgindMarkNormal (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uichgindMarkError (uichgind_t *uichgind)
+uichgindMarkError (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uichgindMarkChanged (uichgind_t *uichgind)
+uichgindMarkChanged (uiwcont_t *uiwidget)
 {
   return;
 }
