@@ -22,17 +22,13 @@
 #include "ui/uiwidget.h"
 #include "ui/uichgind.h"
 
-typedef struct uichgind {
-  uiwcont_t  *label;
-} uichgind_t;
-
-uichgind_t *
+uiwcont_t *
 uiCreateChangeIndicator (uiwcont_t *boxp)
 {
-  uichgind_t  *uichgind;
+  uiwcont_t   *uiwidget;
   GtkWidget   *widget;
 
-  uichgind = mdmalloc (sizeof (uichgind_t));
+  uiwidget = uiwcontAlloc ();
 
   widget = gtk_label_new ("");
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
@@ -40,42 +36,54 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
-  uichgind->label = uiwcontAlloc ();
-  uichgind->label->wtype = WCONT_T_CHGIND;
-  uichgind->label->widget = widget;
-  uiBoxPackStart (boxp, uichgind->label);
-  return uichgind;
+  uiwidget->wtype = WCONT_T_CHGIND;
+  uiwidget->widget = widget;
+  /* the change indicator is a label packed in the beginning of */
+  /* the supplied box */
+  uiBoxPackStart (boxp, uiwidget);
+  return uiwidget;
 }
 
 void
-uichgindFree (uichgind_t *uichgind)
+uichgindFree (uiwcont_t *uiwidget)
 {
-  if (uichgind != NULL) {
-    uiwcontFree (uichgind->label);
-    mdfree (uichgind);
+  if (uiwidget != NULL) {
+    uiwcontFree (uiwidget);
   }
 }
 
 void
-uichgindMarkNormal (uichgind_t *uichgind)
+uichgindMarkNormal (uiwcont_t *uiwidget)
 {
-  uiWidgetRemoveClass (uichgind->label, CHGIND_CHANGED_CLASS);
-  uiWidgetRemoveClass (uichgind->label, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (uichgind->label, CHGIND_NORMAL_CLASS);
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+    return;
+  }
+
+  uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
+  uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (uiwidget, CHGIND_NORMAL_CLASS);
 }
 
 void
-uichgindMarkError (uichgind_t *uichgind)
+uichgindMarkError (uiwcont_t *uiwidget)
 {
-  uiWidgetRemoveClass (uichgind->label, CHGIND_NORMAL_CLASS);
-  uiWidgetRemoveClass (uichgind->label, CHGIND_CHANGED_CLASS);
-  uiWidgetSetClass (uichgind->label, CHGIND_ERROR_CLASS);
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+    return;
+  }
+
+  uiWidgetRemoveClass (uiwidget, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
+  uiWidgetSetClass (uiwidget, CHGIND_ERROR_CLASS);
 }
 
 void
-uichgindMarkChanged (uichgind_t *uichgind)
+uichgindMarkChanged (uiwcont_t *uiwidget)
 {
-  uiWidgetRemoveClass (uichgind->label, CHGIND_NORMAL_CLASS);
-  uiWidgetRemoveClass (uichgind->label, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (uichgind->label, CHGIND_CHANGED_CLASS);
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+    return;
+  }
+
+  uiWidgetRemoveClass (uiwidget, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (uiwidget, CHGIND_CHANGED_CLASS);
 }

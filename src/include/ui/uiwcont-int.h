@@ -2,7 +2,6 @@
 #define INC_UIWCONT_INT_H
 
 #include "ui/uibutton.h"
-#include "ui/uichgind.h"
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
@@ -70,7 +69,6 @@ typedef struct uiscrollbar uiscrollbar_t;
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;
-    uichgind_t    *uichgind;
     uidropdown_t  *uidropdown;
     uientry_t     *uientry;
     uikey_t       *uikey;

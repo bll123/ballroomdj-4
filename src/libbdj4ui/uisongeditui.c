@@ -74,7 +74,7 @@ typedef struct se_internal se_internal_t;
 
 typedef struct {
   int             tagkey;
-  uichgind_t      *chgind;
+  uiwcont_t       *chgind;
   uiwcont_t       *label;
   union {
     uientry_t     *entry;
