@@ -50,6 +50,7 @@ typedef struct bdj4localedata {
   ilist_t         *locales;
   ilistidx_t      currlocale;
   slist_t         *displayList;
+  int             direction;
 } bdj4localedata_t;
 
 static bdj4localedata_t *localedata = NULL;
@@ -65,9 +66,6 @@ localeInit (void)
   ilistidx_t        gbidx = -1;
   const char        *svlocale;
 
-  localeSetup ();
-  istringInit (sysvarsGetStr (SV_LOCALE));
-
   pathbldMakePath (fname, sizeof (fname), LOCALIZATION_FN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
   if (! fileopFileExists (fname)) {
@@ -75,13 +73,20 @@ localeInit (void)
     return;
   }
 
+  localeSetup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
+
   localedata = mdmalloc (sizeof (bdj4localedata_t));
+  localedata->df = NULL;
+  localedata->displayList = NULL;
+  localedata->locales = NULL;
+  localedata->currlocale = -1;   /* for the moment, mark as invalid */
+  localedata->direction = TEXT_DIR_DEFAULT;
 
   localedata->df = datafileAllocParse (LOCALIZATION_FN,
       DFTYPE_INDIRECT, fname,
       localedfkeys, LOCALE_KEY_MAX, DF_NO_OFFSET, NULL);
   localedata->locales = datafileGetList (localedata->df);
-  localedata->currlocale = -1;   /* for the moment, mark as invalid */
 
   localedata->displayList = slistAlloc ("locale-disp", LIST_UNORDERED, NULL);
   slistSetSize (localedata->displayList, ilistGetCount (localedata->locales));
@@ -117,7 +122,7 @@ localeInit (void)
     localedata->currlocale = gbidx;
   }
 
-  sysvarsSetStr (SV_LOCALE_ISO639_2, localeGetStr (LOCALE_KEY_ISO639_2));
+  localePostSetup ();
 
   return;
 }
@@ -129,6 +134,8 @@ localeSetup (void)
   char          tbuff [MAXPATHLEN];
   bool          useutf8ext = false;
   struct lconv  *lconv;
+
+  *lbuff = '\0';
 
   /* get the locale from the environment */
   /* works on windows, but windows returns the old style locale name */
@@ -189,11 +196,11 @@ localeSetup (void)
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
   {
-    wchar_t   *wbuff;
+    wchar_t   *wlocale;
 
-    wbuff = osToWideChar (lbuff);
-    wbindtextdomain (GETTEXT_DOMAIN, wbuff);
-    dataFree (wbuff);
+    wlocale = osToWideChar (lbuff);
+    wbindtextdomain (GETTEXT_DOMAIN, wlocale);
+    dataFree (wlocale);
   }
 #else
   bindtextdomain (GETTEXT_DOMAIN, lbuff);
@@ -250,17 +257,18 @@ localeCleanup (void)
     localedata->df = NULL;
     localedata->locales = NULL;
     localedata->displayList = NULL;
+    localedata->direction = TEXT_DIR_DEFAULT;
     mdfree (localedata);
     localedata = NULL;
   }
 }
 
 void
-localeDebug (void)
+localeDebug (const char *tag)
 {
   char    tbuff [200];
 
-  fprintf (stderr, "-- locale\n");
+  fprintf (stderr, "-- locale : %s\n", tag);
   fprintf (stderr, "  set-locale-all:%s\n", setlocale (LC_ALL, NULL));
   fprintf (stderr, "  set-locale-collate:%s\n", setlocale (LC_COLLATE, NULL));
   fprintf (stderr, "  set-locale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
@@ -272,6 +280,7 @@ localeDebug (void)
   fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
   fprintf (stderr, "  locale-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SET));
   fprintf (stderr, "  locale-sys-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SYS_SET));
+  fprintf (stderr, "  env-lang:%s\n", getenv ("LANG"));
   fprintf (stderr, "  env-all:%s\n", getenv ("LC_ALL"));
   fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
@@ -294,6 +303,9 @@ localePostSetup (void)
   }
 
   svlocale = sysvarsGetStr (SV_LOCALE);
+
+  localedata->direction = osLocaleDirection (svlocale);
+  sysvarsSetNum (SVL_LOCALE_DIR, localedata->direction);
 
   ilistStartIterator (localedata->locales, &iteridx);
   while ((key = ilistIterateKey (localedata->locales, &iteridx)) >= 0) {

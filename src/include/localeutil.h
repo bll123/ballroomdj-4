@@ -24,7 +24,7 @@ void  localeSetup (void);
 void  localeCleanup (void);
 const char *localeGetStr (int key);
 slist_t *localeGetDisplayList (void);
-void  localeDebug (void);
+void  localeDebug (const char *tag);
 
 #endif /* INC_LOCALEUTIL_H */
 

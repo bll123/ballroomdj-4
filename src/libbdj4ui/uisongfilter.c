@@ -466,7 +466,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiDialogPackInDialog (uisf->filterDialog, vbox);
 
   /* accent color */
-  uiutilsAddAccentColorDisplay (vbox, &accent);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 

@@ -30,6 +30,7 @@
 #include "procutil.h"
 #include "progstate.h"
 #include "sockh.h"
+#include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
@@ -193,7 +194,7 @@ main (int argc, char *argv[])
     nlistSetNum (bpmcounter.options, BPMCOUNTER_SIZE_Y, 800);
   }
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -352,7 +353,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetSetAllMargins (vboxmain, 2);
   uiBoxPackInWindow (bpmcounter->window, vboxmain);
 
-  uiutilsAddAccentColorDisplay (vboxmain, &accent);
+  uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 

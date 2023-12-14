@@ -10,8 +10,8 @@ enum {
 };
 #endif
 
-/* used for queueing playlists */
 enum {
+  /* used for queueing playlists */
   EDIT_FALSE,
   EDIT_TRUE,
 };

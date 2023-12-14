@@ -9,17 +9,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <errno.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <signal.h>
+
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
-#include "bdj4.h"
 #include "mdebug.h"
 #include "osutils.h"
 

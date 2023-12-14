@@ -260,7 +260,7 @@ main (int argc, char *argv[])
   progstateSetCallback (confui.progstate, STATE_CLOSING,
       confuiClosingCallback, &confui);
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -431,7 +431,7 @@ confuiBuildUI (configui_t *confui)
   uiWidgetSetAllMargins (confui->gui.vbox, 2);
   uiBoxPackInWindow (confui->gui.window, confui->gui.vbox);
 
-  uiutilsAddAccentColorDisplay (confui->gui.vbox, &accent);
+  uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 

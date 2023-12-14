@@ -19,7 +19,10 @@ add_library (libbdj4common SHARED
   fileshared.c
   log.c
   osdir.c
+  oslinuxlocale.c
   oslocale.c
+  osmaclocale.m
+  oswinlocale.c
   osnetutils.c
   osrandom.c
   ossignal.c

@@ -29,6 +29,7 @@
 #include "pathbld.h"
 #include "progstate.h"
 #include "sockh.h"
+#include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -134,7 +135,7 @@ main (int argc, char *argv[])
   ilistStartIterator (helper.helplist, &helper.helpiter);
   helper.helpkey = ilistIterateKey (helper.helplist, &helper.helpiter);
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));

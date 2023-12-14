@@ -354,7 +354,7 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -524,7 +524,7 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  uiutilsAddAccentColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
+  uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
   uiWidgetExpandHoriz (hbox);

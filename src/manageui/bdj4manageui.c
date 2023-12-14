@@ -568,7 +568,7 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, QE_POSITION_Y, -1);
   }
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -764,7 +764,7 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 4);
   uiBoxPackInWindow (manage->wcont [MANAGE_W_WINDOW], vbox);
 
-  uiutilsAddAccentColorDisplay (vbox, &accent);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 

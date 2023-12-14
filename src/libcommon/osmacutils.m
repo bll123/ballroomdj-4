@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#import <Foundation/NSLocale.h>
 #import <IOKit/pwr_mgt/IOPMLib.h>
 
 #include "bdj4.h"

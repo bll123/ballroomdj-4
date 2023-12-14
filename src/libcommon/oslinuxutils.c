@@ -11,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osprocess.h"
@@ -52,6 +53,5 @@ osResumeSleep (void)
 {
   return;
 }
-
 
 #endif

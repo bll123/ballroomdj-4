@@ -379,7 +379,7 @@ main (int argc, char *argv[])
         starterTicketLinkHandler, &starter, NULL);
   }
 
-  uiUIInitialize ();
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -562,7 +562,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (vbox, 2);
   uiBoxPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
-  uiutilsAddAccentColorDisplay (vbox, &accent);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   starter->wcont [START_W_PROFILE_ACCENT] = accent.label;
 
@@ -1338,7 +1338,7 @@ starterProcessSupport (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
 
   /* status message line */
-  uiutilsAddAccentColorDisplay (vbox, &accent);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
@@ -1630,7 +1630,7 @@ starterResetProfile (startui_t *starter, int profidx)
   if (profidx != starter->newprofile) {
     bdjoptInit ();
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
-    uiutilsSetAccentColor (starter->wcont [START_W_PROFILE_ACCENT]);
+    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT]);
     starterLoadOptions (starter);
     bdjvarsAdjustPorts ();
   }
@@ -1683,7 +1683,7 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiutilsSetAccentColor (starter->wcont [START_W_PROFILE_ACCENT]);
+    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT]);
 
     bdjoptSave ();
 
@@ -1791,7 +1791,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
 
   /* profile color line */
-  uiutilsAddAccentColorDisplay (vbox, &accent);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 

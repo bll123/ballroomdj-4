@@ -13,7 +13,7 @@ enum {
 extern int uiBaseMarginSz;
 
 const char * uiBackend (void);
-void  uiUIInitialize (void);
+void  uiUIInitialize (int direction);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay
 void  uiCleanup (void);

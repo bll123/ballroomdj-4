@@ -5,6 +5,7 @@
 * Support for speed changes, including during playback.
 * Good API.
 * Not likely to go away.
+* VLC will use the volume sink set by the application.
 
 ###### MPV
 
@@ -14,6 +15,8 @@
 LC_NUMERIC and restoring it afterwards within the MPV interface.
 * The MPV library is linked with graphics libraries.
 <br>More incompetent programmers.
+* MPV will NOT use the volume sink set by the application.  The volume
+sink must be set via the MPV API, and the MPV internal name must be used.
 * Status: an interface has been written, but it is not working
 right.  MPV is low priority.
 

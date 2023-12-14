@@ -12,12 +12,14 @@
 #include <math.h>
 
 #include <gtk/gtk.h>
+#include <hb.h>
+#include <hb-glib.h>
 
 #include "bdjstring.h"
 #include "colorutils.h"
 #include "filedata.h"
-#include "localeutil.h"
 #include "log.h"          // needed for glogwriteroutput
+#include "oslocale.h"
 #include "pathbld.h"
 #include "mdebug.h"
 #include "sysvars.h"
@@ -30,6 +32,7 @@
 
 static char **cssdata = NULL;
 static int  csscount = 0;
+static bool initialized = false;
 
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields, gsize n_fields, gpointer udata);
@@ -45,14 +48,31 @@ uiBackend (void)
 }
 
 void
-uiUIInitialize (void)
+uiUIInitialize (int direction)
 {
-  int argc = 0;
+  int   argc = 0;
+  int   gtdir = GTK_TEXT_DIR_LTR;
+
+  if (initialized) {
+    return;
+  }
 
   uiInitUILog ();
+
+  /* gtk's gtk_get_locale_direction() gets very confused if the locale */
+  /* settings are changed before gtk_init() is called. */
+
+  /* the locale has already been set */
+  gtk_disable_setlocale ();
   gtk_init (&argc, NULL);
-  /* gtk mucks up the locale settings */
-  localeSetup ();
+
+  if (direction == TEXT_DIR_RTL) {
+    gtdir = GTK_TEXT_DIR_RTL;
+  }
+
+  gtk_widget_set_default_direction (gtdir);
+
+  initialized = true;
 }
 
 void

@@ -569,7 +569,7 @@ main (int argc, char *argv[])
   if (installer.guienabled) {
     char *uifont;
 
-    uiUIInitialize ();
+    uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
 
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {

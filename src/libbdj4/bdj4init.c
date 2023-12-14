@@ -72,9 +72,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "scale",          required_argument,  NULL,   0 },
     { "theme",          required_argument,  NULL,   0 },
     /* normal options */
-    { "profile",        required_argument,  NULL,   'p' },
     { "debug",          required_argument,  NULL,   'd' },
     { "hidemarquee",    no_argument,        NULL,   'h' },
+    { "locale",         required_argument,  NULL,   'L' },
+    { "profile",        required_argument,  NULL,   'p' },
     /* debug options */
     { "nostart",        no_argument,        NULL,   'n' },
     { "nomarquee",      no_argument,        NULL,   'm' },
@@ -181,6 +182,16 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       case 'p': {
         if (optarg != NULL) {
           sysvarsSetNum (SVL_PROFILE_IDX, atol (optarg));
+        }
+        break;
+      }
+      case 'L': {
+        if (optarg != NULL) {
+          sysvarsSetStr (SV_LOCALE, optarg);
+          snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
+          sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+          sysvarsSetNum (SVL_LOCALE_SET, 1);
+          localeSetup ();
         }
         break;
       }

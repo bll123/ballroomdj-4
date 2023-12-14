@@ -15,15 +15,16 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
+#include "oslocale.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"
 #include "validate.h"
 
 /* as a side effect, hbox is set, and */
-/* uiwidget is set to the accent color box (needed by bdj4starterui) */
+/* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
-uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
+uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
   uiwcont_t       *label;
@@ -33,9 +34,14 @@ uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 
   /* right half block 0xE2 0x96 0x90 */
   /* full block 0xE2 0x96 0x88 */
-  label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
+  /* left half block 0xE2 0x96 0x8c */
+  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+    label = uiCreateLabel ("\xE2\x96\x88\xE2\x96\x8c");
+  } else {
+    label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
+  }
   uiWidgetSetMarginStart (label, 3);
-  uiutilsSetAccentColor (label);
+  uiutilsSetProfileColor (label);
   uiBoxPackEnd (hbox, label);
 
   accent->hbox = hbox;
@@ -43,7 +49,7 @@ uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 }
 
 void
-uiutilsSetAccentColor (uiwcont_t *uiwidgetp)
+uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
 {
   char      classnm [100];
 

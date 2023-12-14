@@ -61,6 +61,7 @@
 #cmakedefine01 _lib_GetCommandLineW
 #cmakedefine01 _lib_GetDateFormatEx
 #cmakedefine01 _lib_GetFullPathNameW
+#cmakedefine01 _lib_GetLocaleInfoEx
 #cmakedefine01 _lib_GetNativeSystemInfo
 #cmakedefine01 _lib_GetTimeFormatEx
 #cmakedefine01 _lib_GetUserDefaultUILanguage

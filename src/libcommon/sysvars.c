@@ -130,6 +130,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_IS_MSYS] = { "IS_MSYS" },
   [SVL_IS_VM] = { "IS_VM" },
   [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
+  [SVL_LOCALE_DIR] = { "LOCALE_DIR" },
   [SVL_LOCALE_SET] = { "LOCALE_SET" },
   [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
   [SVL_NUM_PROC] = { "NUM_PROC" },
