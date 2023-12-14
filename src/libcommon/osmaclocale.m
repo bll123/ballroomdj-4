@@ -14,16 +14,18 @@
 
 #include "oslocale.h"
 
-static char             *reasonstr = NULL;
-
 int
 osLocaleDirection (const char *locale)
 {
   int       tdir = TEXT_DIR_LTR;
   int       mtdir = NSLocaleLanguageDirectionLeftToRight;
+  NSString  *nslocale = NULL;
+  NSLocale  *mlocale = NULL;
 
+  nslocale = [NSString stringWithUTF8String: locale];
+  mlocale = [[[NSLocale alloc] initWithLocaleIdentifier:nslocale] autorelease];
   mtdir = [NSLocale characterDirectionForLanguage:
-      [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]];
+      [mlocale objectForKey:NSLocaleLanguageCode]];
   if (mtdir == NSLocaleLanguageDirectionRightToLeft) {
     tdir = TEXT_DIR_RTL;
   }

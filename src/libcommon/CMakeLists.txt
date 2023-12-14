@@ -38,6 +38,12 @@ add_library (libbdj4common SHARED
 target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
+if (APPLE)
+  # not sure if this is correct, but it works
+  target_link_libraries (libbdj4common PUBLIC
+    "-framework Cocoa"
+  )
+endif()
 target_link_libraries (libbdj4common PUBLIC
   libbdj4fileop     # fileop.c
   libbdj4osprocess  # osprocess.c

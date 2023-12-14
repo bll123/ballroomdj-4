@@ -13,7 +13,9 @@
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
+#include "mdebug.h"
 #include "oslocale.h"
+#include "osutils.h"
 
 int
 osLocaleDirection (const char *locale)
