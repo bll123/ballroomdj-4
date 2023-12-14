@@ -13,11 +13,13 @@
 
 #include <gtk/gtk.h>
 
+#include "oslocale.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
 
 #include "ui/uibox.h"
+#include "ui/uiui.h"
 
 static uiwcont_t * uiCreateBox (int orientation);
 

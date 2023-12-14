@@ -39,6 +39,7 @@ static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
 static void uiAddScreenCSS (const char *css);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
+int uiTextDirection = TEXT_DIR_DEFAULT;
 static bool inprocess = false;
 
 const char *
@@ -66,6 +67,7 @@ uiUIInitialize (int direction)
   gtk_disable_setlocale ();
   gtk_init (&argc, NULL);
 
+  uiTextDirection = direction;
   if (direction == TEXT_DIR_RTL) {
     gtdir = GTK_TEXT_DIR_RTL;
   }

@@ -464,7 +464,8 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   logProcBegin (LOG_PROC, "confuiMakeItemLabel");
   ttxt = txt;
   if (indent == CONFUI_INDENT) {
-    strlcpy (ntxt, "   ", sizeof (ntxt));
+    *ntxt = '\0';
+    strlcat (ntxt, "   ", sizeof (ntxt));
     strlcat (ntxt, txt, sizeof (ntxt));
     ttxt = ntxt;
   }

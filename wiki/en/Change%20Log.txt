@@ -6,6 +6,9 @@
 
 **4.4.8 2023-12---**
 
+* Bug Fixes:
+    * Fix issues with right-to-left language layout.
+
 -->
 
 **4.4.7 2023-12-13**

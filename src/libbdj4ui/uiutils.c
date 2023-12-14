@@ -36,7 +36,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   /* full block 0xE2 0x96 0x88 */
   /* left half block 0xE2 0x96 0x8c */
   if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
-    label = uiCreateLabel ("\xE2\x96\x88\xE2\x96\x8c");
+    label = uiCreateLabel ("\xE2\x96\x8c\xE2\x96\x88");
   } else {
     label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
   }
