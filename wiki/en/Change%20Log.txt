@@ -7,7 +7,9 @@
 **4.4.8 2023-12---**
 
 * Bug Fixes:
-    * Fix issues with right-to-left language layout.
+    * Fixed right-to-left language layout.
+* New Features:
+    * Re-Organize. PENDING
 
 -->
 

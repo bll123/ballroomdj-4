@@ -12,12 +12,12 @@ The customers are being ignored.
 I would not subject my users to these.
 * The application level interface should be completely separated.
 I was not able to use the application level interface as it made macos
-complete non-performant.
-* gtk_init mucks up the locale, it has to be reset after calling
-gtk_init.
+completely non-performant.
 * Bug: I have three identical treeviews (same code) within the window.
 One of them does not get initialized with the same height as the others.
-
+* Bug: gtk_init() and gtk_get_locale_direction() only work if and only if
+the locale has not been set.  Setting a new locale and calling
+gtk_get_locale_direction() again does not work.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
