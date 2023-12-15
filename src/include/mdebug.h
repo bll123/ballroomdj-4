@@ -4,6 +4,8 @@
 #ifndef INC_MDEBUG_H
 #define INC_MDEBUG_H
 
+#define MDEBUG_ENABLE_BACKTRACE 0
+
 #if defined (BDJ4_MEM_DEBUG)
 # define mdfree(d)        mdfree_r (d, __FILE__, __LINE__)
 # define mdextfree(d)     mdextfree_r (d, __FILE__, __LINE__)
@@ -57,7 +59,9 @@ long mdebugCount (void);
 long mdebugErrors (void);
 void mdebugSetVerbose (void);
 void mdebugSetNoOutput (void);
+#if MDEBUG_ENABLE_BACKTRACE
 char *mdebugBacktrace (void);
+#endif
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

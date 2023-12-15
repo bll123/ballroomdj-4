@@ -35,7 +35,6 @@ typedef enum {
 enum {
   MDEBUG_ALLOC_BUMP = 1000,
   MDEBUG_BACKTRACE_SIZE = 30,
-  MDEBUG_ENABLE_BACKTRACE = false,
 };
 
 enum {
@@ -264,11 +263,11 @@ mdebugInit (const char *tag)
     for (int i = 0; i < MDEBUG_MAX; ++i) {
       mdebugcounts [i] = 0;
     }
-    if (MDEBUG_ENABLE_BACKTRACE) {
-      for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
-        mdebug [i].bt = NULL;
-      }
+#if MDEBUG_ENABLE_BACKTRACE
+    for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+      mdebug [i].bt = NULL;
     }
+#endif
     initialized = true;
   }
 }
@@ -296,13 +295,13 @@ mdebugReport (void)
           mdebug [i].subtag,
           (int64_t) mdebug [i].addr, mdebug [i].type,
           mdebug [i].fn, mdebug [i].lineno);
-      if (MDEBUG_ENABLE_BACKTRACE) {
-        if (mdebug [i].bt != NULL) {
-          mdebugLog ("%s\n", mdebug [i].bt);
-          free (mdebug [i].bt);
-        }
-        mdebug [i].bt = NULL;
+#if MDEBUG_ENABLE_BACKTRACE
+      if (mdebug [i].bt != NULL) {
+        mdebugLog ("%s\n", mdebug [i].bt);
+        free (mdebug [i].bt);
       }
+      mdebug [i].bt = NULL;
+#endif
     }
 
     if (mdebugnooutput) {
@@ -330,13 +329,13 @@ void
 mdebugCleanup (void)
 {
   if (initialized) {
-    if (MDEBUG_ENABLE_BACKTRACE) {
-      for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
-        if (mdebug [i].bt != NULL) {
-          free (mdebug [i].bt);
-        }
+#if MDEBUG_ENABLE_BACKTRACE
+    for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+      if (mdebug [i].bt != NULL) {
+        free (mdebug [i].bt);
       }
     }
+#endif
     if (mdebug != NULL) {
       free (mdebug);
       mdebug = NULL;
@@ -425,11 +424,11 @@ mdebugResize (void)
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] *
         sizeof (mdebug_t));
-    if (MDEBUG_ENABLE_BACKTRACE) {
-      for (int i = tval; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
-        mdebug [i].bt = NULL;
-      }
+#if MDEBUG_ENABLE_BACKTRACE
+    for (int i = tval; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+      mdebug [i].bt = NULL;
     }
+#endif
   }
 }
 
@@ -445,9 +444,9 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
   strncpy (mdebug [tidx].subtag, mdebugsubtag, MAXSUBTAG);
-  if (MDEBUG_ENABLE_BACKTRACE) {
-    mdebug [tidx].bt = mdebugBacktrace ();
-  }
+#if MDEBUG_ENABLE_BACKTRACE
+  mdebug [tidx].bt = mdebugBacktrace ();
+#endif
   mdebugcounts [MDEBUG_COUNT] += 1;
   if (mdebugcounts [MDEBUG_COUNT] > mdebugcounts [MDEBUG_COUNT_MAX]) {
     mdebugcounts [MDEBUG_COUNT_MAX] = mdebugcounts [MDEBUG_COUNT];
@@ -458,12 +457,12 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
 static void
 mdebugDel (long idx)
 {
-  if (MDEBUG_ENABLE_BACKTRACE) {
-    if (mdebug [idx].bt != NULL) {
-      free (mdebug [idx].bt);
-    }
-    mdebug [idx].bt = NULL;
+#if MDEBUG_ENABLE_BACKTRACE
+  if (mdebug [idx].bt != NULL) {
+    free (mdebug [idx].bt);
   }
+  mdebug [idx].bt = NULL;
+#endif
   for (long i = idx; i + 1 < mdebugcounts [MDEBUG_COUNT]; ++i) {
     memcpy (&mdebug [i], &mdebug [i + 1], sizeof (mdebug_t));
     mdebug [i].loc = i;
@@ -549,12 +548,14 @@ mdebugLog (const char *fmt, ...)
 #endif
 }
 
+#if MDEBUG_ENABLE_BACKTRACE
+
 char *
 mdebugBacktrace (void)
 {
   char    *disp = NULL;
 
-#if _lib_backtrace
+# if _lib_backtrace
   void    *array [MDEBUG_BACKTRACE_SIZE];
   char    **out;
   size_t  size;
@@ -574,8 +575,9 @@ mdebugBacktrace (void)
     strcat (disp, tmp);
   }
   free (out);
-#endif
+# endif
 
   return disp;
 }
 
+#endif /* MDEBUG_ENABLE_BACKTRACE */
