@@ -96,6 +96,7 @@ enum {
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
   SONGSEL_W_SCROLLBAR,
+  SONGSEL_W_KEY_HNDLR,
   SONGSEL_W_MAX,
 };
 
@@ -108,7 +109,6 @@ typedef struct ss_internal {
   uitree_t            *songselTree;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   uiwcont_t           *reqQueueLabel;
-  uikey_t             *uikey;
   /* other data */
   int                 maxRows;
   nlist_t             *selectedBackup;
@@ -185,7 +185,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->lastRowDBIdx = -1;
   mstimeset (&ssint->lastRowCheck, 0);
 
-  ssint->uikey = uiKeyAlloc ();
+  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiKeyAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
   ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitLong (
@@ -202,7 +202,6 @@ uisongselUIFree (uisongsel_t *uisongsel)
 
     ssint = uisongsel->ssInternalData;
 
-    uiKeyFree (ssint->uikey);
     nlistFree (ssint->selectedBackup);
     nlistFree (ssint->selectedList);
     for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
@@ -368,7 +367,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewSelectSetMode (ssint->songselTree, SELECT_MULTIPLE);
   }
-  uiKeySetKeyCallback (ssint->uikey, uitreewidgetp,
+  uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uitreewidgetp,
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (ssint->songselTree, uisongsel->dfilterCount);
@@ -1239,33 +1238,33 @@ uisongselKeyEvent (void *udata)
 
   ssint->shiftPressed = false;
   ssint->controlPressed = false;
-  if (uiKeyIsShiftPressed (ssint->uikey)) {
+  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     ssint->shiftPressed = true;
   }
-  if (uiKeyIsControlPressed (ssint->uikey)) {
+  if (uiKeyIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     ssint->controlPressed = true;
   }
 
-  if (uiKeyIsPressEvent (ssint->uikey) &&
-      uiKeyIsAudioPlayKey (ssint->uikey)) {
+  if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongsel);
   }
 
-  if (uiKeyIsMovementKey (ssint->uikey)) {
+  if (uiKeyIsMovementKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     int     dir;
     int     lines;
 
     dir = UISONGSEL_DIR_NONE;
     lines = 1;
 
-    if (uiKeyIsPressEvent (ssint->uikey)) {
-      if (uiKeyIsUpKey (ssint->uikey)) {
+    if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+      if (uiKeyIsUpKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         dir = UISONGSEL_PREVIOUS;
       }
-      if (uiKeyIsDownKey (ssint->uikey)) {
+      if (uiKeyIsDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         dir = UISONGSEL_NEXT;
       }
-      if (uiKeyIsPageUpDownKey (ssint->uikey)) {
+      if (uiKeyIsPageUpDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         lines = ssint->maxRows;
       }
 

@@ -128,6 +128,7 @@ enum {
   UISE_W_MODIFIED,
   UISE_W_AUDIOID_IMG,
   UISE_W_FILE_DISP,
+  UISE_W_KEY_HNDLR,
   UISE_W_MAX,
 };
 
@@ -142,7 +143,6 @@ typedef struct se_internal {
   int                 itemcount;
   uisongedititem_t    *items;
   int                 changed;
-  uikey_t             *uikey;
   int                 bpmidx;
   int                 songstartidx;
   int                 songendidx;
@@ -189,7 +189,6 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->itemcount = 0;
   seint->items = NULL;
   seint->changed = 0;
-  seint->uikey = NULL;
   seint->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   seint->bpmidx = UISE_NOT_DISPLAYED;
   seint->songstartidx = UISE_NOT_DISPLAYED;
@@ -305,7 +304,6 @@ uisongeditUIFree (uisongedit_t *uisongedit)
     }
 
     dataFree (seint->items);
-    uiKeyFree (seint->uikey);
     mdfree (seint);
     uisongedit->seInternalData = NULL;
   }
@@ -335,11 +333,11 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->wcont [UISE_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (seint->wcont [UISE_W_MAIN_VBOX]);
 
-  seint->uikey = uiKeyAlloc ();
+  seint->wcont [UISE_W_KEY_HNDLR] = uiKeyAlloc ();
   seint->callbacks [UISE_CB_KEYB] = callbackInit (
       uisongeditKeyEvent, uisongedit, NULL);
-  uiKeySetKeyCallback (seint->uikey, seint->wcont [UISE_W_MAIN_VBOX],
-      seint->callbacks [UISE_CB_KEYB]);
+  uiKeySetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
+      seint->wcont [UISE_W_MAIN_VBOX], seint->callbacks [UISE_CB_KEYB]);
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -1776,22 +1774,22 @@ uisongeditKeyEvent (void *udata)
 
   seint = uisongedit->seInternalData;
 
-  if (uiKeyIsPressEvent (seint->uikey) &&
-      uiKeyIsAudioPlayKey (seint->uikey)) {
+  if (uiKeyIsPressEvent (seint->wcont [UISE_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPlayKey (seint->wcont [UISE_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongedit->uisongsel);
   }
 
-  if (uiKeyIsPressEvent (seint->uikey)) {
-    if (uiKeyIsControlPressed (seint->uikey)) {
-      if (uiKeyIsKey (seint->uikey, 'S')) {
+  if (uiKeyIsPressEvent (seint->wcont [UISE_W_KEY_HNDLR])) {
+    if (uiKeyIsControlPressed (seint->wcont [UISE_W_KEY_HNDLR])) {
+      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'S')) {
         uisongeditSaveCallback (uisongedit);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (seint->uikey, 'N')) {
+      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'N')) {
         uisongeditNextSelection (uisongedit);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (seint->uikey, 'P')) {
+      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'P')) {
         uisongeditPreviousSelection (uisongedit);
         return UICB_STOP;
       }

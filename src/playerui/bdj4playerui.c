@@ -97,6 +97,7 @@ enum {
   PLUI_W_MENU_QE_SEL,
   PLUI_W_MENU_EXT_REQ,
   PLUI_W_MENU_RELOAD,
+  PLUI_W_KEY_HNDLR,
   PLUI_W_MAX,
 };
 
@@ -122,7 +123,6 @@ typedef struct {
   int             stopwaitcount;
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
-  uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
   int             pliSupported;
   /* quick edit */
@@ -285,7 +285,6 @@ main (int argc, char *argv[])
   plui.uiqe = NULL;
   plui.extreqRow = -1;
   plui.uireqext = NULL;
-  plui.uikey = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
@@ -454,7 +453,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
-  uiKeyFree (plui->uikey);
   uiqeFree (plui->uiqe);
   uireqextFree (plui->uireqext);
   if (plui->optionsalloc) {
@@ -517,11 +515,11 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 2);
 
-  plui->uikey = uiKeyAlloc ();
+  plui->wcont [PLUI_W_KEY_HNDLR] = uiKeyAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
       pluiKeyEvent, plui, NULL);
-  uiKeySetKeyCallback (plui->uikey, plui->wcont [PLUI_W_MAIN_VBOX],
-      plui->callbacks [PLUI_CB_KEYB]);
+  uiKeySetKeyCallback (plui->wcont [PLUI_W_KEY_HNDLR],
+      plui->wcont [PLUI_W_MAIN_VBOX], plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
   uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
@@ -1985,24 +1983,24 @@ pluiKeyEvent (void *udata)
 {
   playerui_t  *plui = udata;
 
-  if (uiKeyIsPressEvent (plui->uikey) &&
-      uiKeyIsAudioPlayKey (plui->uikey)) {
+  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
     return UICB_STOP;
   }
   /* isaudiopausekey() also checks for the stop key */
-  if (uiKeyIsPressEvent (plui->uikey) &&
-      uiKeyIsAudioPauseKey (plui->uikey)) {
+  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->uikey) &&
-      uiKeyIsAudioNextKey (plui->uikey)) {
+  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiKeyIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->uikey) &&
-      uiKeyIsAudioPrevKey (plui->uikey)) {
+  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
     return UICB_STOP;
   }

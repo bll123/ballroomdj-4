@@ -7,26 +7,24 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-typedef struct uikey uikey_t;
-
-uikey_t * uiKeyAlloc (void);
-void    uiKeyFree (uikey_t *uikey);
-void    uiKeySetKeyCallback (uikey_t *uikey, uiwcont_t *uiwidgetp, callback_t *uicb);
-int     uiKeyEvent (uikey_t *uikey);
-bool    uiKeyIsPressEvent (uikey_t *uikey);
-bool    uiKeyIsReleaseEvent (uikey_t *uikey);
-bool    uiKeyIsMovementKey (uikey_t *uikey);
-bool    uiKeyIsKey (uikey_t *uikey, unsigned char keyval);
-bool    uiKeyIsAudioPlayKey (uikey_t *uikey);
-bool    uiKeyIsAudioPauseKey (uikey_t *uikey);
-bool    uiKeyIsAudioNextKey (uikey_t *uikey);
-bool    uiKeyIsAudioPrevKey (uikey_t *uikey);
-bool    uiKeyIsUpKey (uikey_t *uikey);
-bool    uiKeyIsDownKey (uikey_t *uikey);
-bool    uiKeyIsPageUpDownKey (uikey_t *uikey);
-bool    uiKeyIsNavKey (uikey_t *uikey);
-bool    uiKeyIsMaskedKey (uikey_t *uikey);
-bool    uiKeyIsControlPressed (uikey_t *uikey);
-bool    uiKeyIsShiftPressed (uikey_t *uikey);
+uiwcont_t * uiKeyAlloc (void);
+void    uiKeyFree (uiwcont_t *uiwidget);
+void    uiKeySetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
+int     uiKeyEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsPressEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsReleaseEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsMovementKey (uiwcont_t *uiwidget);
+bool    uiKeyIsKey (uiwcont_t *uiwidget, unsigned char keyval);
+bool    uiKeyIsAudioPlayKey (uiwcont_t *uiwidget);
+bool    uiKeyIsAudioPauseKey (uiwcont_t *uiwidget);
+bool    uiKeyIsAudioNextKey (uiwcont_t *uiwidget);
+bool    uiKeyIsAudioPrevKey (uiwcont_t *uiwidget);
+bool    uiKeyIsUpKey (uiwcont_t *uiwidget);
+bool    uiKeyIsDownKey (uiwcont_t *uiwidget);
+bool    uiKeyIsPageUpDownKey (uiwcont_t *uiwidget);
+bool    uiKeyIsNavKey (uiwcont_t *uiwidget);
+bool    uiKeyIsMaskedKey (uiwcont_t *uiwidget);
+bool    uiKeyIsControlPressed (uiwcont_t *uiwidget);
+bool    uiKeyIsShiftPressed (uiwcont_t *uiwidget);
 
 #endif /* INC_UIKEYS_H */

@@ -90,6 +90,7 @@ enum {
   UIAUID_W_FILE_DISP,
   UIAUID_W_MUSICBRAINZ,
   UIAUID_W_PANED_WINDOW,
+  UIAUID_W_KEY_HNDLR,
   UIAUID_W_MAX,
 };
 
@@ -113,7 +114,6 @@ typedef struct aid_internal {
   slist_t             *listsellist;
   slist_t             *sellist;
   nlist_t             *displaylist;
-  uikey_t             *uikey;
   dbidx_t             dbidx;
   int                 itemcount;
   int                 colcount;
@@ -154,7 +154,6 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->itemcount = 0;
   audioidint->items = NULL;
   audioidint->currlist = nlistAlloc ("curr-list", LIST_ORDERED, NULL);
-  audioidint->uikey = NULL;
   audioidint->dbidx = -1;
   audioidint->typelist = NULL;
   audioidint->displaylist = NULL;
@@ -233,7 +232,6 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
     nlistFree (audioidint->displaylist);
     uiTreeViewFree (audioidint->alistTree);
     dataFree (audioidint->items);
-    uiKeyFree (audioidint->uikey);
     mdfree (audioidint);
     uiaudioid->audioidInternalData = NULL;
   }
@@ -466,10 +464,11 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (col);
   uiwcontFree (hbox);
 
-  audioidint->uikey = uiKeyAlloc ();
+  audioidint->wcont [UIAUID_W_KEY_HNDLR] = uiKeyAlloc ();
   audioidint->callbacks [UIAUID_CB_KEYB] = callbackInit (
       uiaudioidKeyEvent, uiaudioid, NULL);
-  uiKeySetKeyCallback (audioidint->uikey, audioidint->wcont [UIAUID_W_MAIN_VBOX],
+  uiKeySetKeyCallback (audioidint->wcont [UIAUID_W_KEY_HNDLR],
+      audioidint->wcont [UIAUID_W_MAIN_VBOX],
       audioidint->callbacks [UIAUID_CB_KEYB]);
 
   /* create tree value store */
@@ -955,22 +954,22 @@ uiaudioidKeyEvent (void *udata)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  if (uiKeyIsPressEvent (audioidint->uikey) &&
-      uiKeyIsAudioPlayKey (audioidint->uikey)) {
+  if (uiKeyIsPressEvent (audioidint->wcont [UIAUID_W_KEY_HNDLR]) &&
+      uiKeyIsAudioPlayKey (audioidint->wcont [UIAUID_W_KEY_HNDLR])) {
     uisongselPlayCallback (uiaudioid->uisongsel);
   }
 
-  if (uiKeyIsPressEvent (audioidint->uikey)) {
-    if (uiKeyIsControlPressed (audioidint->uikey)) {
-      if (uiKeyIsKey (audioidint->uikey, 'S')) {
+  if (uiKeyIsPressEvent (audioidint->wcont [UIAUID_W_KEY_HNDLR])) {
+    if (uiKeyIsControlPressed (audioidint->wcont [UIAUID_W_KEY_HNDLR])) {
+      if (uiKeyIsKey (audioidint->wcont [UIAUID_W_KEY_HNDLR], 'S')) {
         uiaudioidSaveCallback (uiaudioid);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (audioidint->uikey, 'N')) {
+      if (uiKeyIsKey (audioidint->wcont [UIAUID_W_KEY_HNDLR], 'N')) {
         uiaudioidNextSelection (uiaudioid);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (audioidint->uikey, 'P')) {
+      if (uiKeyIsKey (audioidint->wcont [UIAUID_W_KEY_HNDLR], 'P')) {
         uiaudioidPreviousSelection (uiaudioid);
         return UICB_STOP;
       }

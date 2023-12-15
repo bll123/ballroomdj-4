@@ -34,7 +34,6 @@ osLocaleDirection (const char *locale)
   dataFree (wlocale);
 #endif
 
-fprintf (stderr, "os-locale-dir: %d ltr:%d rtl:%d\n", tdir, TEXT_DIR_LTR, TEXT_DIR_RTL);
   return tdir;
 }
 

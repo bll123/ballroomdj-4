@@ -41,7 +41,7 @@ typedef struct uispinbox {
   nlist_t         *keylist;
   nlist_t         *idxlist;
   callback_t      *presscb;
-  uikey_t         *uikey;
+  uiwcont_t       *uikey;
   bool            processing : 1;
   bool            changed : 1;
 } uispinbox_t;
@@ -90,7 +90,7 @@ uiSpinboxFree (uispinbox_t *uispinbox)
     uiwcontFree (uispinbox->spinbox);
     callbackFree (uispinbox->presscb);
     nlistFree (uispinbox->idxlist);
-    uiKeyFree (uispinbox->uikey);
+    uiwcontFree (uispinbox->uikey);
     mdfree (uispinbox);
   }
 }

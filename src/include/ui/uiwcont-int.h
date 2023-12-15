@@ -5,7 +5,6 @@
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
-#include "ui/uikeys.h"
 #include "ui/uimenu.h"
 #include "ui/uispinbox.h"
 #include "ui/uitextbox.h"
@@ -62,6 +61,7 @@ typedef enum {
 
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uiswitch uiswitch_t;
+typedef struct uikey uikey_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */

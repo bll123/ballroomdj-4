@@ -41,10 +41,13 @@ typedef struct uikey {
 
 static gboolean uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
-uikey_t *
+uiwcont_t *
 uiKeyAlloc (void)
 {
-  uikey_t *uikey;
+  uiwcont_t *uiwidget;
+  uikey_t   *uikey;
+
+  uiwidget = uiwcontAlloc ();
 
   uikey = mdmalloc (sizeof (uikey_t));
   uikey->presscb = NULL;
@@ -53,54 +56,84 @@ uiKeyAlloc (void)
   uikey->controlpressed = false;
   uikey->shiftpressed = false;
   uikey->ismaskedkey = false;
-  return uikey;
+
+  uiwidget->wtype = WCONT_T_KEY;
+  uiwidget->widget = NULL;
+  uiwidget->uiint.uikey = uikey;
+
+  return uiwidget;
 }
 
 void
-uiKeyFree (uikey_t *uikey)
+uiKeyFree (uiwcont_t *uiwidget)
 {
-  if (uikey != NULL) {
-    mdfree (uikey);
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
+    return;
   }
+
+  uikey = uiwidget->uiint.uikey;
+  mdfree (uikey);
+  /* the container is freed by uiwcontFree() */
 }
 
 void
-uiKeySetKeyCallback (uikey_t *uikey, uiwcont_t *uiwidgetp, callback_t *uicb)
+uiKeySetKeyCallback (uiwcont_t *uikeywidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
 {
+  uikey_t   *uikey;
+
+  if (uikeywidget == NULL || uikeywidget->wtype != WCONT_T_KEY) {
+    return;
+  }
+  uikey = uikeywidget->uiint.uikey;
+
   uikey->presscb = uicb;
   uikey->releasecb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-press-event",
-      G_CALLBACK (uiKeyCallback), uikey);
+      G_CALLBACK (uiKeyCallback), uikeywidget);
   g_signal_connect (uiwidgetp->widget, "key-release-event",
-      G_CALLBACK (uiKeyCallback), uikey);
+      G_CALLBACK (uiKeyCallback), uikeywidget);
 }
 
 bool
-uiKeyIsPressEvent (uikey_t *uikey)
+uiKeyIsPressEvent (uiwcont_t *uiwidget)
 {
-  if (uikey == NULL) {
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return KEY_EVENT_NONE;
   }
+
+  uikey = uiwidget->uiint.uikey;
   return uikey->eventtype == KEY_EVENT_PRESS;
 }
 
 bool
-uiKeyIsReleaseEvent (uikey_t *uikey)
+uiKeyIsReleaseEvent (uiwcont_t *uiwidget)
 {
-  if (uikey == NULL) {
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return KEY_EVENT_NONE;
   }
+
+  uikey = uiwidget->uiint.uikey;
   return uikey->eventtype == KEY_EVENT_RELEASE;
 }
 
 bool
-uiKeyIsMovementKey (uikey_t *uikey)
+uiKeyIsMovementKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   /* the up and down arrows are spinbox increment controls */
   /* page up and down are spinbox increment controls */
@@ -121,14 +154,17 @@ uiKeyIsMovementKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsKey (uikey_t *uikey, unsigned char keyval)
+uiKeyIsKey (uiwcont_t *uiwidget, unsigned char keyval)
 {
-  bool  rc = false;
-  guint tval1, tval2;
+  uikey_t   *uikey;
+  bool      rc = false;
+  guint     tval1, tval2;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   tval1 = GDK_KEY_A - 'A' + toupper (keyval);
   tval2 = GDK_KEY_a - 'a' + tolower (keyval);
@@ -141,13 +177,16 @@ uiKeyIsKey (uikey_t *uikey, unsigned char keyval)
 }
 
 bool
-uiKeyIsAudioPlayKey (uikey_t *uikey)
+uiKeyIsAudioPlayKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_AudioPlay) {
     rc = true;
@@ -157,13 +196,16 @@ uiKeyIsAudioPlayKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsAudioPauseKey (uikey_t *uikey)
+uiKeyIsAudioPauseKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_AudioPause) {
     rc = true;
@@ -172,18 +214,20 @@ uiKeyIsAudioPauseKey (uikey_t *uikey)
     rc = true;
   }
 
-
   return rc;
 }
 
 bool
-uiKeyIsAudioNextKey (uikey_t *uikey)
+uiKeyIsAudioNextKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_AudioNext) {
     rc = true;
@@ -193,13 +237,16 @@ uiKeyIsAudioNextKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsAudioPrevKey (uikey_t *uikey)
+uiKeyIsAudioPrevKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_AudioPrev) {
     rc = true;
@@ -210,13 +257,16 @@ uiKeyIsAudioPrevKey (uikey_t *uikey)
 
 /* includes page up */
 bool
-uiKeyIsUpKey (uikey_t *uikey)
+uiKeyIsUpKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_Up ||
       uikey->keyval == GDK_KEY_KP_Up ||
@@ -231,13 +281,16 @@ uiKeyIsUpKey (uikey_t *uikey)
 
 /* includes page down */
 bool
-uiKeyIsDownKey (uikey_t *uikey)
+uiKeyIsDownKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_Down ||
       uikey->keyval == GDK_KEY_KP_Down ||
@@ -251,13 +304,16 @@ uiKeyIsDownKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsPageUpDownKey (uikey_t *uikey)
+uiKeyIsPageUpDownKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   if (uikey->keyval == GDK_KEY_Page_Up ||
       uikey->keyval == GDK_KEY_KP_Page_Up ||
@@ -271,13 +327,16 @@ uiKeyIsPageUpDownKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsNavKey (uikey_t *uikey)
+uiKeyIsNavKey (uiwcont_t *uiwidget)
 {
-  bool  rc = false;
+  uikey_t   *uikey;
+  bool      rc = false;
 
-  if (uikey == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return rc;
   }
+
+  uikey = uiwidget->uiint.uikey;
 
   /* tab and left tab are navigation controls */
   if (uikey->keyval == GDK_KEY_Tab ||
@@ -291,29 +350,41 @@ uiKeyIsNavKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsMaskedKey (uikey_t *uikey)
+uiKeyIsMaskedKey (uiwcont_t *uiwidget)
 {
-  if (uikey == NULL) {
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return false;
   }
+
+  uikey = uiwidget->uiint.uikey;
   return uikey->ismaskedkey;
 }
 
 bool
-uiKeyIsControlPressed (uikey_t *uikey)
+uiKeyIsControlPressed (uiwcont_t *uiwidget)
 {
-  if (uikey == NULL) {
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return false;
   }
+
+  uikey = uiwidget->uiint.uikey;
   return uikey->controlpressed;
 }
 
 bool
-uiKeyIsShiftPressed (uikey_t *uikey)
+uiKeyIsShiftPressed (uiwcont_t *uiwidget)
 {
-  if (uikey == NULL) {
+  uikey_t   *uikey;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
     return false;
   }
+
+  uikey = uiwidget->uiint.uikey;
   return uikey->shiftpressed;
 }
 
@@ -322,11 +393,17 @@ uiKeyIsShiftPressed (uikey_t *uikey)
 static gboolean
 uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
 {
-  uikey_t *uikey = udata;
-  guint   keyval;
-  int     rc = UICB_CONT;
+  uiwcont_t *uiwidget = udata;
+  uikey_t   *uikey;
+  guint     keyval;
+  int       rc = UICB_CONT;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_KEY) {
+    return rc;
+  }
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
+  uikey = uiwidget->uiint.uikey;
   uikey->keyval = keyval;
 
   uikey->eventtype = KEY_EVENT_NONE;
@@ -341,15 +418,14 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = true;
   }
+  if (event->type == GDK_KEY_RELEASE &&
+      (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
+    uikey->shiftpressed = false;
+  }
 
   if (event->type == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = true;
-  }
-
-  if (event->type == GDK_KEY_RELEASE &&
-      (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
-    uikey->shiftpressed = false;
   }
   if (event->type == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {

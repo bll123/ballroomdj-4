@@ -23,112 +23,112 @@ typedef struct uikey {
   int         junk;
 } uikey_t;
 
-uikey_t *
+uiwidget_t *
 uiKeyAlloc (void)
 {
   return NULL;
 }
 
 void
-uiKeyFree (uikey_t *uikey)
+uiKeyFree (uiwidget_t *uiwidget)
 {
   return;
 }
 
 void
-uiKeySetKeyCallback (uikey_t *uikey, uiwcont_t *uiwidgetp, callback_t *uicb)
+uiKeySetKeyCallback (uiwidget_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb)
 {
   return;
 }
 
 bool
-uiKeyIsPressEvent (uikey_t *uikey)
+uiKeyIsPressEvent (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsReleaseEvent (uikey_t *uikey)
+uiKeyIsReleaseEvent (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsMovementKey (uikey_t *uikey)
+uiKeyIsMovementKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsKey (uikey_t *uikey, unsigned char keyval)
+uiKeyIsKey (uiwidget_t *uiwidget, unsigned char keyval)
 {
   return false;
 }
 
 bool
-uiKeyIsAudioPlayKey (uikey_t *uikey)
+uiKeyIsAudioPlayKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsAudioPauseKey (uikey_t *uikey)
+uiKeyIsAudioPauseKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsAudioNextKey (uikey_t *uikey)
+uiKeyIsAudioNextKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsAudioPrevKey (uikey_t *uikey)
+uiKeyIsAudioPrevKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 /* includes page up */
 bool
-uiKeyIsUpKey (uikey_t *uikey)
+uiKeyIsUpKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 /* includes page down */
 bool
-uiKeyIsDownKey (uikey_t *uikey)
+uiKeyIsDownKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsPageUpDownKey (uikey_t *uikey)
+uiKeyIsPageUpDownKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsNavKey (uikey_t *uikey)
+uiKeyIsNavKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsMaskedKey (uikey_t *uikey)
+uiKeyIsMaskedKey (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsControlPressed (uikey_t *uikey)
+uiKeyIsControlPressed (uiwidget_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsShiftPressed (uikey_t *uikey)
+uiKeyIsShiftPressed (uiwidget_t *uiwidget)
 {
   return false;
 }

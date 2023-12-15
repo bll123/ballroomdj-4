@@ -71,6 +71,7 @@ enum {
 
 enum {
   UIMUSICQ_W_REQ_QUEUE,
+  UIMUSICQ_W_KEY_HNDLR,
   UIMUSICQ_W_MAX,
 };
 
@@ -82,7 +83,6 @@ typedef struct mq_internal {
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   uiwcont_t         *wcont [UIMUSICQ_W_MAX];
   int               *typelist;
-  uikey_t           *uikey;
   int               colcount;         // for the display type callback
   int               rowcount;         // current size of tree view storage
 } mq_internal_t;
@@ -124,7 +124,6 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     mqint->uidance = NULL;
     mqint->uidance5 = NULL;
     mqint->musicqTree = NULL;
-    mqint->uikey = NULL;
     for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
       mqint->buttons [j] = NULL;
     }
@@ -157,7 +156,6 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       uidanceFree (mqint->uidance);
       uidanceFree (mqint->uidance5);
       uiTreeViewFree (mqint->musicqTree);
-      uiKeyFree (mqint->uikey);
       mdfree (mqint);
     }
   }
@@ -427,10 +425,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-    mqint->uikey = uiKeyAlloc ();
+    mqint->wcont [UIMUSICQ_W_KEY_HNDLR] = uiKeyAlloc ();
     mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
         uimusicqKeyEvent, uimusicq, NULL);
-    uiKeySetKeyCallback (mqint->uikey, uitreewidgetp,
+    uiKeySetKeyCallback (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], uitreewidgetp,
         mqint->callbacks [MQINT_CB_KEYB]);
   }
 
@@ -1249,22 +1247,22 @@ uimusicqKeyEvent (void *udata)
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
-  if (uiKeyIsPressEvent (mqint->uikey)) {
-    if (uiKeyIsAudioPlayKey (mqint->uikey)) {
+  if (uiKeyIsPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+    if (uiKeyIsAudioPlayKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
       uimusicqPlayCallback (uimusicq);
     }
-    if (uiKeyIsKey (mqint->uikey, 'S')) {
+    if (uiKeyIsKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], 'S')) {
       uimusicqSwap (uimusicq, ci);
     }
   }
 
-  if (uiKeyIsControlPressed (mqint->uikey) &&
-      uiKeyIsMovementKey (mqint->uikey)) {
-    if (uiKeyIsPressEvent (mqint->uikey)) {
-      if (uiKeyIsUpKey (mqint->uikey)) {
+  if (uiKeyIsControlPressed (mqint->wcont [UIMUSICQ_W_KEY_HNDLR]) &&
+      uiKeyIsMovementKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+    if (uiKeyIsPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+      if (uiKeyIsUpKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
         uimusicqMoveUpCallback (uimusicq);
       }
-      if (uiKeyIsDownKey (mqint->uikey)) {
+      if (uiKeyIsDownKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
         uimusicqMoveDownCallback (uimusicq);
       }
     }
