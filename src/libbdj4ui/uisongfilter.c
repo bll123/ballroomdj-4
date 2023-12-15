@@ -92,7 +92,7 @@ typedef struct uisongfilter {
   uilevel_t         *uilevel;
   uistatus_t        *uistatus;
   uifavorite_t      *uifavorite;
-  uiswitch_t        *playstatusswitch;
+  uiwcont_t         *playstatusswitch;
   uiwcont_t         *labels [UISF_LABEL_MAX];
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
@@ -179,7 +179,7 @@ uisfFree (uisongfilter_t *uisf)
     uilevelFree (uisf->uilevel);
     uistatusFree (uisf->uistatus);
     uifavoriteFree (uisf->uifavorite);
-    uiSwitchFree (uisf->playstatusswitch);
+    uiwcontFree (uisf->playstatusswitch);
     sortoptFree (uisf->sortopt);
     songfilterFree (uisf->songfilter);
     playlistFree (uisf->playlist);
@@ -637,7 +637,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uisf->labels [UISF_LABEL_PLAY_STATUS] = uiwidgetp;
 
     uisf->playstatusswitch = uiCreateSwitch (uisf->dfltpbflag);
-    uiBoxPackStart (hbox, uiSwitchGetWidgetContainer (uisf->playstatusswitch));
+    uiBoxPackStart (hbox, uisf->playstatusswitch);
   }
 
   /* the dialog doesn't have any space above the buttons */

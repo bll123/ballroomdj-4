@@ -29,44 +29,44 @@ typedef struct uiswitch {
   int       junk;
 } uiswitch_t;
 
-uiswitch_t *
+uiwcont_t *
 uiCreateSwitch (int value)
 {
   return NULL;
 }
 
 void
-uiSwitchFree (uiswitch_t *uiswitch)
+uiSwitchFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiSwitchSetValue (uiswitch_t *uiswitch, int value)
+uiSwitchSetValue (uiwcont_t *uiwidget, int value)
 {
   return;
 }
 
 int
-uiSwitchGetValue (uiswitch_t *uiswitch)
+uiSwitchGetValue (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 uiwcont_t *
-uiSwitchGetWidgetContainer (uiswitch_t *uiswitch)
+uiSwitchGetWidgetContainer (uiwcont_t *uiwidget)
 {
   return NULL;
 }
 
 void
-uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb)
+uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }
 
 void
-uiSwitchSetState (uiswitch_t *uiswitch, int state)
+uiSwitchSetState (uiwcont_t *uiwidget, int state)
 {
   return;
 }

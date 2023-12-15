@@ -50,6 +50,7 @@ uiCreateVerticalScrollbar (double upper)
   return uiwidget;
 }
 
+/* only frees up the internals */
 void
 uiScrollbarFree (uiwcont_t *uiwidget)
 {
@@ -58,7 +59,7 @@ uiScrollbarFree (uiwcont_t *uiwidget)
   }
 
   dataFree (uiwidget->uiint.uiscrollbar);
-  uiwcontFree (uiwidget);
+  /* the container is freed by uiwcontFree() */
 }
 
 void

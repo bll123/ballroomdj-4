@@ -8,7 +8,6 @@
 #include "ui/uikeys.h"
 #include "ui/uimenu.h"
 #include "ui/uispinbox.h"
-#include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uitreeview.h"
 
@@ -62,10 +61,13 @@ typedef enum {
 } uiwconttype_t;
 
 typedef struct uiscrollbar uiscrollbar_t;
+typedef struct uiswitch uiswitch_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */
 /* and into the uiwcont_t union */
+/* done: 2023-12 scrollbar, chgind */
+/* done: 2023-12-15: switch */
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;
@@ -85,7 +87,8 @@ typedef union {
 
 #  include <gtk/gtk.h>
 
-typedef struct uiwidget {
+/* a container may contain various types of gtk widgets */
+typedef struct uiwcont {
   uiwconttype_t   wtype;
   union {
     GtkWidget     *widget;
@@ -101,7 +104,7 @@ typedef struct uiwidget {
 
 # if BDJ4_USE_NULLUI
 
-typedef struct uiwidget {
+typedef struct uiwcont {
   uiwconttype_t   wtype;
   union {
     void          *widget;

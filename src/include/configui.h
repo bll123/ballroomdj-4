@@ -99,7 +99,7 @@ enum {
   CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
-  CONFUI_SWITCH_BEGIN,
+  CONFUI_WIDGET_BEGIN,
   CONFUI_SWITCH_AUTO_ORGANIZE,
   CONFUI_SWITCH_BDJ3_COMPAT_TAGS,
   CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
@@ -113,8 +113,6 @@ enum {
   CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED,
   CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE,
   CONFUI_SWITCH_RC_ENABLE,
-  CONFUI_SWITCH_MAX,
-  CONFUI_WIDGET_BEGIN,
   CONFUI_WIDGET_AO_EXAMPLE_1,
   CONFUI_WIDGET_AO_EXAMPLE_2,
   CONFUI_WIDGET_AO_EXAMPLE_3,
@@ -205,7 +203,7 @@ typedef struct {
     uidropdown_t  *dropdown;
     uientry_t     *entry;
     uispinbox_t   *spinbox;
-    uiswitch_t    *uiswitch;
+    uiwcont_t     *uiswitch;
   };
   uibutton_t  *uibutton;      // for entry chooser
   uisfcb_t    sfcb;           // for entry chooser

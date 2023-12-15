@@ -7,14 +7,12 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-typedef struct uiswitch uiswitch_t;
-
-uiswitch_t *uiCreateSwitch (int value);
-void uiSwitchFree (uiswitch_t *uiswitch);
-void uiSwitchSetValue (uiswitch_t *uiswitch, int value);
-int uiSwitchGetValue (uiswitch_t *uiswitch);
-uiwcont_t *uiSwitchGetWidgetContainer (uiswitch_t *uiswitch);
-void uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb);
-void uiSwitchSetState (uiswitch_t *uiswitch, int state);
+uiwcont_t *uiCreateSwitch (int value);
+void uiSwitchFree (uiwcont_t *uiwidget);
+void uiSwitchSetValue (uiwcont_t *uiwidget, int value);
+int uiSwitchGetValue (uiwcont_t *uiwidget);
+uiwcont_t *uiSwitchGetWidgetContainer (uiwcont_t *uiwidget);
+void uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiSwitchSetState (uiwcont_t *uiwidget, int state);
 
 #endif /* INC_UISWITCH_H */

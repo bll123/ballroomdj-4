@@ -396,12 +396,12 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, indent);
 
-  gui->uiitem [widx].uiswitch = uiCreateSwitch (value);
-  uiwidgetp = uiSwitchGetWidgetContainer (gui->uiitem [widx].uiswitch);
+  uiwidgetp = uiCreateSwitch (value);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  gui->uiitem [widx].uiswitch = uiwidgetp;
 
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);

@@ -1,6 +1,10 @@
 /*
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
+
+/* A switch is a toggle button with different images set up. */
+/* I felt the gtk switch widget was messy and not worth the trouble. */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -28,7 +32,6 @@
 #include "ui/uiswitch.h"
 
 typedef struct uiswitch {
-  uiwcont_t  *switchw;
   uiwcont_t  *switchoffimg;
   uiwcont_t  *switchonimg;
 } uiswitch_t;
@@ -37,9 +40,10 @@ static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
 static void uiSwitchToggleHandler (GtkButton *b, gpointer udata);
 static void uiSwitchSetImage (GtkWidget *w, void *udata);
 
-uiswitch_t *
+uiwcont_t *
 uiCreateSwitch (int value)
 {
+  uiwcont_t   *uiwidget;
   uiswitch_t  *uiswitch;
   GtkWidget   *widget;
   char        tbuff [MAXPATHLEN];
@@ -47,8 +51,11 @@ uiCreateSwitch (int value)
   /* the gtk switch is different in every theme, some of which are not */
   /* great.  use a toggle button instead and set our own image */
 
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_SWITCH;
+  uiwidget->widget = NULL;
+
   uiswitch = mdmalloc (sizeof (uiswitch_t));
-  uiswitch->switchw = NULL;
   uiswitch->switchoffimg = NULL;
   uiswitch->switchonimg = NULL;
 
@@ -56,83 +63,85 @@ uiCreateSwitch (int value)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiswitch->switchoffimg = uiImageFromFile (tbuff);
   uiWidgetMakePersistent (uiswitch->switchoffimg);
+
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiswitch->switchonimg = uiImageFromFile (tbuff);
   uiWidgetMakePersistent (uiswitch->switchonimg);
 
   widget = gtk_toggle_button_new ();
-  uiswitch->switchw = uiwcontAlloc ();
-  uiswitch->switchw->wtype = WCONT_T_SWITCH;
-  uiswitch->switchw->widget = widget;
+  uiwidget->widget = widget;
+  uiwidget->uiint.uiswitch = uiswitch;
 
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  uiSwitchSetImage (widget, uiswitch);
+
+  uiWidgetSetClass (uiwidget, SWITCH_CLASS);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiWidgetSetClass (uiswitch->switchw, SWITCH_CLASS);
+  uiSwitchSetImage (widget, uiwidget);
+
   g_signal_connect (widget, "toggled",
-      G_CALLBACK (uiSwitchImageHandler), uiswitch);
-  return uiswitch;
+      G_CALLBACK (uiSwitchImageHandler), uiwidget);
+
+  return uiwidget;
 }
 
+/* only frees the internals */
 void
-uiSwitchFree (uiswitch_t *uiswitch)
+uiSwitchFree (uiwcont_t *uiwidget)
 {
-  if (uiswitch != NULL) {
-    uiWidgetClearPersistent (uiswitch->switchoffimg);
-    uiWidgetClearPersistent (uiswitch->switchonimg);
-    uiwcontFree (uiswitch->switchoffimg);
-    uiwcontFree (uiswitch->switchonimg);
-    uiwcontFree (uiswitch->switchw);
-    mdfree (uiswitch);
-  }
-}
+  uiswitch_t    *sw;
 
-void
-uiSwitchSetValue (uiswitch_t *uiswitch, int value)
-{
-  if (uiswitch == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
     return;
   }
 
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiswitch->switchw->widget), value);
-  uiSwitchSetImage (uiswitch->switchw->widget, uiswitch);
-}
-
-int
-uiSwitchGetValue (uiswitch_t *uiswitch)
-{
-  if (uiswitch == NULL) {
-    return 0;
-  }
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->switchw->widget));
-}
-
-uiwcont_t *
-uiSwitchGetWidgetContainer (uiswitch_t *uiswitch)
-{
-  if (uiswitch == NULL) {
-    return NULL;
-  }
-  return uiswitch->switchw;
+  sw = uiwidget->uiint.uiswitch;
+  uiWidgetClearPersistent (sw->switchoffimg);
+  uiWidgetClearPersistent (sw->switchonimg);
+  uiwcontBaseFree (sw->switchoffimg);
+  uiwcontBaseFree (sw->switchonimg);
+  mdfree (sw);
+  /* the container is freed by uiwcontFree() */
 }
 
 void
-uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb)
+uiSwitchSetValue (uiwcont_t *uiwidget, int value)
 {
-  g_signal_connect (uiswitch->switchw->widget, "toggled",
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+    return;
+  }
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), value);
+  uiSwitchSetImage (uiwidget->widget, uiwidget);
+}
+
+int
+uiSwitchGetValue (uiwcont_t *uiwidget)
+{
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+    return false;
+  }
+
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
+}
+
+void
+uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
 void
-uiSwitchSetState (uiswitch_t *uiswitch, int state)
+uiSwitchSetState (uiwcont_t *uiwidget, int state)
 {
-  if (uiswitch == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
     return;
   }
-  uiWidgetSetState (uiswitch->switchw, state);
+
+  uiWidgetSetState (uiwidget, state);
 }
 
 /* internal routines */
@@ -157,17 +166,23 @@ uiSwitchImageHandler (GtkButton *b, gpointer udata)
 static void
 uiSwitchSetImage (GtkWidget *w, void *udata)
 {
-  uiswitch_t  *uiswitch = udata;
-  int         value;
+  uiwcont_t     *uiwidget = udata;
+  int           value;
+  uiswitch_t    *sw;
 
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+    return;
+  }
   if (w == NULL) {
     return;
   }
 
-  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->switchw->widget));
+  sw = uiwidget->uiint.uiswitch;
+
+  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
   if (value) {
-    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchonimg->widget);
+    gtk_button_set_image (GTK_BUTTON (w), sw->switchonimg->widget);
   } else {
-    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchoffimg->widget);
+    gtk_button_set_image (GTK_BUTTON (w), sw->switchoffimg->widget);
   }
 }

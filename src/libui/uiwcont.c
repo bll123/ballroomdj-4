@@ -27,10 +27,13 @@ uiwcontAlloc (void)
 }
 
 void
-uiwcontFree (uiwcont_t *uiwidget)
+uiwcontBaseFree (uiwcont_t *uiwidget)
 {
-  if (uiwidget != NULL) {
-    mdfree (uiwidget);
+  if (uiwidget == NULL) {
+    return;
   }
+
+  uiwidget->wtype = WCONT_T_UNKNOWN;
+  mdfree (uiwidget);
 }
 

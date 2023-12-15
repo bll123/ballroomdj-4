@@ -36,7 +36,8 @@ add_library (libuinull SHARED
   uinullui.c
   uinullwidget.c
   uinullwindow.c
-  uiwcont.c
+  ../libui/uiwcont.c
+  ../libui/uiwcontfree.c
 )
 target_link_libraries (libuinull PUBLIC
   libbdj4 libbdj4basic libbdj4common

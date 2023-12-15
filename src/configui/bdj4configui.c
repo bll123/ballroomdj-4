@@ -171,9 +171,6 @@ main (int argc, char *argv[])
         confui.gui.uiitem [i].spinbox = uiSpinboxInit ();
       }
     }
-    if (i > CONFUI_SWITCH_BEGIN && i < CONFUI_SWITCH_MAX) {
-      confui.gui.uiitem [i].uiswitch = NULL;
-    }
   }
 
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_TAGS].entry = uiEntryInit (30, 100);
@@ -365,9 +362,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
     }
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
-  }
-  for (int i = CONFUI_SWITCH_BEGIN + 1; i < CONFUI_SWITCH_MAX; ++i) {
-    uiSwitchFree (confui->gui.uiitem [i].uiswitch);
   }
   for (int i = CONFUI_WIDGET_BEGIN + 1; i < CONFUI_WIDGET_MAX; ++i) {
     dataFree (confui->gui.uiitem [i].uri);

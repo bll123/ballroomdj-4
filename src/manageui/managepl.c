@@ -50,6 +50,7 @@ enum {
   MPL_W_ALLOWED_KEYWORDS,
   MPL_W_PL_TYPE,
   MPL_W_NB,
+  MPL_W_PLAY_ANN,
   MPL_W_MAX,
 };
 
@@ -82,7 +83,6 @@ typedef struct managepl {
   uinbtabid_t     *tabids;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
-  uiswitch_t      *plannswitch;
   bool            changed : 1;
   bool            inload : 1;
 } managepl_t;
@@ -131,7 +131,6 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
-  managepl->plannswitch = NULL;
   managepl->plloadcb = NULL;
   for (int i = 0; i < MPL_CB_MAX; ++i) {
     managepl->callbacks [i] = NULL;
@@ -160,7 +159,6 @@ managePlaylistFree (managepl_t *managepl)
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
     uilevelFree (managepl->uihighlevel);
-    uiSwitchFree (managepl->plannswitch);
     uiSpinboxFree (managepl->uimaxplaytime);
     uiSpinboxFree (managepl->uistopat);
     uiSpinboxFree (managepl->uigap);
@@ -332,8 +330,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->plannswitch = uiCreateSwitch (0);
-  uiBoxPackStart (hbox, uiSwitchGetWidgetContainer (managepl->plannswitch));
+  managepl->wcont [MPL_W_PLAY_ANN] = uiCreateSwitch (0);
+  uiBoxPackStart (hbox, managepl->wcont [MPL_W_PLAY_ANN]);
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
@@ -720,7 +718,7 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uiSpinboxSetValue (uiSpinboxGetWidgetContainer (managepl->uigap),
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
-  uiSwitchSetValue (managepl->plannswitch,
+  uiSwitchSetValue (managepl->wcont [MPL_W_PLAY_ANN],
       playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
   uiratingSetValue (managepl->uirating,
       playlistGetConfigNum (pl, PLAYLIST_RATING));
@@ -869,7 +867,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
   playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
-  tval = uiSwitchGetValue (managepl->plannswitch);
+  tval = uiSwitchGetValue (managepl->wcont [MPL_W_PLAY_ANN]);
   playlistSetConfigNum (pl, PLAYLIST_ANNOUNCE, tval);
 
   tval = uiratingGetValue (managepl->uirating);
@@ -923,7 +921,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  tval = uiSwitchGetValue (managepl->plannswitch);
+  tval = uiSwitchGetValue (managepl->wcont [MPL_W_PLAY_ANN]);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE)) {
     managepl->changed = true;
   }

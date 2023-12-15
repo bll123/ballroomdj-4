@@ -36,7 +36,8 @@ add_library (libuigtk3 SHARED
   uigtkui.c
   uigtkwidget.c
   uigtkwindow.c
-  uiwcont.c
+  ../libui/uiwcont.c
+  ../libui/uiwcontfree.c
 )
 target_include_directories (libuigtk3
   PUBLIC ${GTK_INCLUDE_DIRS}
