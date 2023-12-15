@@ -10,9 +10,9 @@
 #include "ui/uitextbox.h"
 #include "ui/uitreeview.h"
 
-/* for future use.  the widget container will become more generic and */
+/* partially in use. */
+/* The widget container will be more generic and */
 /* hold uitree_t, uibutton_t, etc. */
-/* will probably want to add in all the various types of widgets */
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,
