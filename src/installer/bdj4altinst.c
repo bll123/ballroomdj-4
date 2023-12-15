@@ -57,7 +57,6 @@ typedef enum {
   ALT_COPY_TEMPLATES,
   ALT_SETUP,
   ALT_CREATE_SHORTCUT,
-  ALT_SET_ATI,
   ALT_FINALIZE,
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
@@ -72,7 +71,6 @@ enum {
   ALT_CB_EXIT,
   ALT_CB_START,
   ALT_CB_REINST,
-  ALT_CB_MUSIC_DIR,
   ALT_CB_MAX,
 };
 
@@ -80,13 +78,11 @@ enum {
   ALT_BUTTON_TARGET_DIR,
   ALT_BUTTON_EXIT,
   ALT_BUTTON_START,
-  ALT_BUTTON_MUSIC_DIR,
   ALT_BUTTON_MAX,
 };
 
 enum {
   ALT_TARGET,
-  ALT_MUSICDIR,
 };
 
 enum {
@@ -111,19 +107,16 @@ typedef struct {
   /* conversion */
   uiwcont_t       *wcont [ALT_W_MAX];
   uientry_t       *targetEntry;
-  uientry_t       *musicdirEntry;
   uientry_t       *nameEntry;
   uitextbox_t     *disptb;
   /* ati */
   char            ati [40];
-  char            *musicdir;
   int             atiselect;
   /* flags */
   bool            bdjoptloaded : 1;
   bool            firstinstall : 1;
   bool            guienabled : 1;
   bool            localespecified : 1;
-  bool            musicdirok : 1;
   bool            newinstall : 1;
   bool            quiet : 1;
   bool            reinstall : 1;
@@ -141,13 +134,9 @@ static int  altinstMainLoop (void *udata);
 static bool altinstExitCallback (void *udata);
 static bool altinstReinstallCBHandler (void *udata);
 static bool altinstTargetDirDialog (void *udata);
-static void altinstSetMusicDirEntry (altinst_t *altinst, const char *musicdir);
-static bool altinstMusicDirDialog (void *udata);
 static int  altinstValidateTarget (uientry_t *entry, void *udata);
 static int  altinstValidateProcessTarget (altinst_t *altinst, const char *dir);
 static void altinstTargetFeedbackMsg (altinst_t *altinst);
-static int  altinstValidateMusicDir (uientry_t *entry, void *udata);
-static int  altinstValidateProcessMusicDir (altinst_t *altinst, const char *dir);
 static bool altinstSetupCallback (void *udata);
 static void altinstSetPaths (altinst_t *altinst);
 
@@ -160,7 +149,6 @@ static void altinstCreateDirs (altinst_t *altinst);
 static void altinstCopyTemplates (altinst_t *altinst);
 static void altinstSetup (altinst_t *altinst);
 static void altinstCreateShortcut (altinst_t *altinst);
-static void altinstSetATI (altinst_t *altinst);
 static void altinstUpdateProcessInit (altinst_t *altinst);
 static void altinstUpdateProcess (altinst_t *altinst);
 static void altinstFinalize (altinst_t *altinst);
@@ -171,10 +159,7 @@ static void altinstCleanup (altinst_t *altinst);
 static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold);
 static void altinstFailWorkingDir (altinst_t *altinst, const char *dir);
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
-static void altinstSetMusicDir (altinst_t *altinst, const char *fn);
 static void altinstGetExistingData (altinst_t *altinst);
-static void altinstSetATISelect (altinst_t *altinst);
-static void altinstScanMusicDir (altinst_t *altinst);
 
 int
 main (int argc, char *argv[])
@@ -189,11 +174,9 @@ main (int argc, char *argv[])
   const char  *targ;
 
   static struct option bdj_options [] = {
-    { "ati",        required_argument,  NULL,   'A' },
     { "bdj4altinst",no_argument,       NULL,   0 },
     { "datatopdir", required_argument,  NULL,   'D' },
     { "locale",     required_argument,  NULL,   'L' },
-    { "musicdir",   required_argument,  NULL,   'm' },
     { "name",       required_argument,  NULL,   'n' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
@@ -226,7 +209,6 @@ main (int argc, char *argv[])
   altinst.lastInstState = ALT_PRE_INIT;
   altinst.target = mdstrdup ("");
   altinst.macospfx = "";
-  altinst.musicdir = mdstrdup ("");
   strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
   altinst.home = NULL;
@@ -236,7 +218,6 @@ main (int argc, char *argv[])
   altinst.firstinstall = false;
   altinst.guienabled = true;
   altinst.localespecified = false;
-  altinst.musicdirok = false;
   altinst.newinstall = false;
   altinst.quiet = false;
   altinst.reinstall = false;
@@ -257,7 +238,6 @@ main (int argc, char *argv[])
     altinst.callbacks [i] = NULL;
   }
   altinst.targetEntry = NULL;
-  altinst.musicdirEntry = NULL;
   altinst.nameEntry = NULL;
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
@@ -282,9 +262,6 @@ main (int argc, char *argv[])
 
   altinstSetTargetDir (&altinst, buff);
 
-  instutilGetMusicDir (buff, sizeof (buff));
-  altinstSetMusicDir (&altinst, buff);
-
   /* the altcount.txt lives in the configuration dir */
   if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
     altinst.firstinstall = true;
@@ -294,9 +271,6 @@ main (int argc, char *argv[])
     dataFree (altinst.name);
     altinst.name = mdstrdup (BDJ4_NAME);
   }
-
-  strlcpy (altinst.ati, instati [INST_ATI_BDJ4].name, sizeof (altinst.ati));
-  altinstSetATISelect (&altinst);
 
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "CUrVQt:", bdj_options, &option_index)) != -1) {
@@ -324,20 +298,6 @@ main (int argc, char *argv[])
         }
         break;
       }
-      case 'm': {
-        if (optarg != NULL) {
-          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          altinstSetMusicDir (&altinst, targ);
-        }
-        break;
-      }
-      case 'n': {
-        if (optarg != NULL) {
-          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          altinstSetMusicDir (&altinst, optarg);
-        }
-        break;
-      }
       case 'V': {
         altinst.verbose = true;
         break;
@@ -350,14 +310,6 @@ main (int argc, char *argv[])
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           altinstSetTargetDir (&altinst, optarg);
-        }
-        break;
-      }
-      case 'A': {
-        if (optarg != NULL) {
-          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (altinst.ati, optarg, sizeof (altinst.ati));
-          altinstSetATISelect (&altinst);
         }
         break;
       }
@@ -376,7 +328,6 @@ main (int argc, char *argv[])
 
   if (altinst.guienabled) {
     altinst.targetEntry = uiEntryInit (80, MAXPATHLEN);
-    altinst.musicdirEntry = uiEntryInit (60, MAXPATHLEN);
     altinst.nameEntry = uiEntryInit (30, 30);
   }
 
@@ -516,38 +467,6 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
-  /* begin line : music dir */
-  /* the music dir is scanned in order to set the audio tag interface */
-  /* appropriately */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  /* CONTEXT: installation: the music folder where the user stores their music */
-  uiwidgetp = uiCreateColonLabel (_("Music Folder"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiEntryCreate (altinst->musicdirEntry);
-  altinstSetMusicDirEntry (altinst, altinst->musicdir);
-  uiwidgetp = uiEntryGetWidgetContainer (altinst->musicdirEntry);
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (altinst->musicdirEntry,
-      altinstValidateMusicDir, altinst, UIENTRY_DELAYED);
-
-  altinst->callbacks [ALT_CB_MUSIC_DIR] = callbackInit (
-      altinstMusicDirDialog, altinst, NULL);
-  uibutton = uiCreateButton (
-      altinst->callbacks [ALT_CB_MUSIC_DIR],
-      "", NULL);
-  altinst->buttons [ALT_BUTTON_MUSIC_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (hbox, uiwidgetp);
-
   uiwcontFree (hbox);
 
   /* begin line : alternate name */
@@ -614,7 +533,6 @@ altinstMainLoop (void *udata)
     uiUIProcessEvents ();
 
     uiEntryValidate (altinst->targetEntry, false);
-    uiEntryValidate (altinst->musicdirEntry, false);
 
     if (altinst->scrolltoend) {
       uiTextBoxScrollToEnd (altinst->disptb);
@@ -664,7 +582,6 @@ altinstMainLoop (void *udata)
           LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altinst->target);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "musicdir: %s", altinst->musicdir);
       break;
     }
     case ALT_COPY_TEMPLATES: {
@@ -677,10 +594,6 @@ altinstMainLoop (void *udata)
     }
     case ALT_CREATE_SHORTCUT: {
       altinstCreateShortcut (altinst);
-      break;
-    }
-    case ALT_SET_ATI: {
-      altinstSetATI (altinst);
       break;
     }
     case ALT_FINALIZE: {
@@ -874,47 +787,6 @@ altinstTargetFeedbackMsg (altinst_t *altinst)
   return;
 }
 
-static int
-altinstValidateMusicDir (uientry_t *entry, void *udata)
-{
-  altinst_t    *altinst = udata;
-  char          tbuff [200];
-  int           rc = UIENTRY_ERROR;
-
-  if (! altinst->guienabled) {
-    return UIENTRY_ERROR;
-  }
-
-  if (! altinst->uiBuilt) {
-    return UIENTRY_RESET;
-  }
-
-  /* music dir validation */
-
-  strlcpy (tbuff, uiEntryGetValue (altinst->musicdirEntry), sizeof (tbuff));
-  pathNormalizePath (tbuff, strlen (tbuff));
-  rc = altinstValidateProcessMusicDir (altinst, tbuff);
-  return rc;
-}
-
-static int
-altinstValidateProcessMusicDir (altinst_t *altinst, const char *dir)
-{
-  int   rc = UIENTRY_ERROR;
-
-  if (*dir && fileopIsDirectory (dir)) {
-    rc = UIENTRY_OK;
-  }
-
-  altinst->musicdirok = false;
-  if (rc == UIENTRY_OK) {
-    altinstSetMusicDir (altinst, dir);
-    altinst->musicdirok = true;
-  }
-
-  return rc;
-}
-
 static bool
 altinstTargetDirDialog (void *udata)
 {
@@ -935,40 +807,6 @@ altinstTargetDirDialog (void *udata)
     /* validation gets called again upon set */
     uiEntrySetValue (altinst->targetEntry, tbuff);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altinst->target);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
-  return UICB_CONT;
-}
-
-static void
-altinstSetMusicDirEntry (altinst_t *altinst, const char *musicdir)
-{
-  char    tbuff [MAXPATHLEN];
-
-  strlcpy (tbuff, musicdir, sizeof (tbuff));
-  pathDisplayPath (tbuff, sizeof (tbuff));
-  if (altinst->guienabled) {
-    uiEntrySetValue (altinst->musicdirEntry, tbuff);
-  }
-}
-
-static bool
-altinstMusicDirDialog (void *udata)
-{
-  altinst_t *altinst = udata;
-  char        *fn = NULL;
-  uiselect_t  *selectdata;
-  char        tbuff [100];
-
-  /* CONTEXT: alternate installation: music folder selection dialog: window title */
-  snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
-  selectdata = uiDialogCreateSelect (altinst->wcont [ALT_W_WINDOW],
-      tbuff, uiEntryGetValue (altinst->musicdirEntry), NULL, NULL, NULL);
-  fn = uiSelectDirDialog (selectdata);
-  if (fn != NULL) {
-    altinstSetMusicDirEntry (altinst, fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected music dir: %s", altinst->musicdir);
     mdfree (fn);
   }
   mdfree (selectdata);
@@ -1008,7 +846,6 @@ altinstPrepare (altinst_t *altinst)
 {
   altinstValidateProcessTarget (altinst, altinst->target);
   altinstSetPaths (altinst);
-  altinstValidateProcessMusicDir (altinst, altinst->musicdir);
   altinst->instState = ALT_WAIT_USER;
 }
 
@@ -1249,37 +1086,6 @@ altinstCreateShortcut (altinst_t *altinst)
   }
   instutilCreateShortcut (name, altinst->maindir, altinst->target, 0);
 
-  altinst->instState = ALT_SET_ATI;
-}
-
-static void
-altinstSetATI (altinst_t *altinst)
-{
-  if (osChangeDir (altinst->target)) {
-    fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst->target);
-    return;
-  }
-
-  if (! altinst->bdjoptloaded) {
-    /* the audio tag interface must be saved */
-    bdjoptInit ();
-    altinst->bdjoptloaded = true;
-  }
-
-  if (altinst->newinstall || altinst->reinstall) {
-    /* CONTEXT: alternate installation: status message */
-    altinstDisplayText (altinst, INST_DISP_ACTION, _("Scanning music folder."), false);
-
-    /* this will scan the music dir and set the audio tag interface */
-    altinstScanMusicDir (altinst);
-  }
-
-  if (altinst->bdjoptloaded) {
-    bdjoptSetStr (OPT_M_DIR_MUSIC, altinst->musicdir);
-    bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, altinst->ati);
-    bdjoptSetStr (OPT_P_PROFILENAME, uiEntryGetValue (altinst->nameEntry));
-    bdjoptSave ();
-  }
   altinst->instState = ALT_FINALIZE;
 }
 
@@ -1408,12 +1214,10 @@ altinstCleanup (altinst_t *altinst)
         uiButtonFree (altinst->buttons [i]);
       }
       uiEntryFree (altinst->targetEntry);
-      uiEntryFree (altinst->musicdirEntry);
       uiEntryFree (altinst->nameEntry);
       uiTextBoxFree (altinst->disptb);
     }
     dataFree (altinst->target);
-    dataFree (altinst->musicdir);
     dataFree (altinst->name);
   }
 }
@@ -1463,20 +1267,8 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
 }
 
 static void
-altinstSetMusicDir (altinst_t *altinst, const char *fn)
-{
-  char      *tmp;
-
-  tmp = mdstrdup (fn);
-  dataFree (altinst->musicdir);
-  altinst->musicdir = tmp;
-  pathNormalizePath (altinst->musicdir, strlen (altinst->musicdir));
-}
-
-static void
 altinstGetExistingData (altinst_t *altinst)
 {
-  const char  *tmp = NULL;
   char        cwd [MAXPATHLEN];
 
   if (altinst->bdjoptloaded) {
@@ -1496,37 +1288,8 @@ altinstGetExistingData (altinst_t *altinst)
   bdjoptInit ();
   altinst->bdjoptloaded = true;
 
-  tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  if (tmp != NULL && *tmp) {
-    altinstSetMusicDir (altinst, tmp);
-    altinstSetMusicDirEntry (altinst, altinst->musicdir);
-  }
-  tmp = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
-  if (tmp != NULL && *tmp) {
-    strlcpy (altinst->ati, tmp, sizeof (altinst->ati));
-    altinstSetATISelect (altinst);
-  }
-
   if (osChangeDir (cwd)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", cwd);
   }
 }
 
-static void
-altinstSetATISelect (altinst_t *altinst)
-{
-  for (int i = 0; i < INST_ATI_MAX; ++i) {
-    if (strcmp (altinst->ati, instati [i].name) == 0) {
-      altinst->atiselect = i;
-      break;
-    }
-  }
-}
-
-static void
-altinstScanMusicDir (altinst_t *altinst)
-{
-  instutilScanMusicDir (altinst->musicdir, altinst->maindir,
-      altinst->ati, sizeof (altinst->ati));
-  altinstSetATISelect (altinst);
-}

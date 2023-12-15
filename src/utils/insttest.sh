@@ -96,8 +96,6 @@ HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
-MUSICDIR="${cwd}/test-music"
-ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
 
 currvers=$(pkglongvers)
@@ -432,17 +430,6 @@ function checkInstallation {
         chk=$(($chk+1))
       else
         echo "  incorrect version in ${hostname}/bdjconfig.txt"
-      fi
-
-      # check <hostname>/bdjconfig.txt for proper ati interface
-      res=$(($res+1))
-      grep "${ATI}" "${fn}" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
-      else
-        tval=$(grep "${ATI}" "${fn}")
-        echo "  incorrect ati interface $tval"
       fi
 
       # check for null volume
@@ -992,10 +979,8 @@ if [[ $readonly == F ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       $localeopt $locale \
       )
   rc=$?
@@ -1015,10 +1000,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       --reinstall \
       )
   rc=$?
@@ -1031,10 +1014,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
@@ -1049,10 +1030,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
@@ -1066,9 +1045,7 @@ if [[ $readonly == F ]]; then
     echo "== $section $tname"
     out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
         --verbose --unattended ${quiet} \
-        --ati ${ATI} \
         --targetdir "$TARGETALTDIR" \
-        --musicdir "$MUSICDIR" \
         )
     rc=$?
     checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
@@ -1078,9 +1055,7 @@ if [[ $readonly == F ]]; then
     echo "== $section $tname"
     out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
         --verbose --unattended ${quiet} \
-        --ati ${ATI} \
         --targetdir "$TARGETALTDIR" \
-        --musicdir "$MUSICDIR" \
         --reinstall \
         )
     rc=$?
@@ -1091,9 +1066,7 @@ if [[ $readonly == F ]]; then
     echo "== $section $tname"
     out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
         --verbose --unattended ${quiet} \
-        --ati ${ATI} \
         --targetdir "$TARGETALTDIR" \
-        --musicdir "$MUSICDIR" \
         )
     rc=$?
     checkInstallation $section $tname "$out" $rc u o "${TARGETALTDIR}"
@@ -1132,10 +1105,8 @@ for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
       --verbose --unattended ${quiet} \
-      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "$MUSICDIR" \
       --locale ${locale} \
       )
   rc=$?
@@ -1151,10 +1122,8 @@ for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
     checkUpdaterClean $section
     out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \
         --verbose --unattended ${quiet} \
-        --ati ${ATI} \
         --targetdir "$TARGETTOPDIR" \
         --unpackdir "$UNPACKDIR" \
-        --musicdir "$MUSICDIR" \
         --locale ${locale} \
         )
     rc=$?
@@ -1169,9 +1138,7 @@ for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
       echo "== $section $tname"
       out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
           --verbose --unattended ${quiet} \
-          --ati ${ATI} \
           --targetdir "$TARGETALTDIR" \
-          --musicdir "$MUSICDIR" \
           --locale ${locale} \
           )
       rc=$?

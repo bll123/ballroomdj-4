@@ -91,7 +91,6 @@ main (int argc, char * argv[])
     { "testregistration", no_argument,      NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
     /* used by installer, altinst */
-    { "ati",            required_argument,  NULL,   0 },
     { "locale",         required_argument,  NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },

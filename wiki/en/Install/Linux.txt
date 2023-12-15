@@ -94,10 +94,6 @@ The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
-Choose the location of your music folder.  The installation process
-will scan your music folder to determine certain settings used in
-BDJ4.
-
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
 
