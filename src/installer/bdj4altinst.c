@@ -159,7 +159,7 @@ static void altinstCleanup (altinst_t *altinst);
 static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold);
 static void altinstFailWorkingDir (altinst_t *altinst, const char *dir);
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
-static void altinstGetExistingData (altinst_t *altinst);
+static void altinstLoadBdjOpt (altinst_t *altinst);
 
 int
 main (int argc, char *argv[])
@@ -837,7 +837,7 @@ static void
 altinstSetPaths (altinst_t *altinst)
 {
   if (altinst->targetexists) {
-    altinstGetExistingData (altinst);
+    altinstLoadBdjOpt (altinst);
   }
 }
 
@@ -915,7 +915,7 @@ static void
 altinstCreateDirs (altinst_t *altinst)
 {
   if (altinst->updateinstall) {
-    altinstGetExistingData (altinst);
+    altinstLoadBdjOpt (altinst);
   }
 
   /* CONTEXT: alternate installation: status message */
@@ -1267,7 +1267,7 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
 }
 
 static void
-altinstGetExistingData (altinst_t *altinst)
+altinstLoadBdjOpt (altinst_t *altinst)
 {
   char        cwd [MAXPATHLEN];
 
