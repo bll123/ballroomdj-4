@@ -16,10 +16,12 @@
 
 #include <check.h>
 
+#include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
 #include "log.h"
 #include "orgutil.h"
+#include "sysvars.h"
 
 char *orgpaths [] = {
   "{%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUMBER% - }{%TITLE%}",
@@ -67,6 +69,115 @@ char *testpathd [] = {
   "Theme_of_Violet_Evergarden.mp3",
   NULL,
 };
+
+char *testsongdata [] = {
+  /* unknown genre */
+  "FILE\n..none1.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
+      "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
+      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 1\n",
+  /* no genre */
+  "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
+      "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
+      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
+      "GENRE\n..\nCOMPOSER\n..Composer 2\n",
+  "FILE\n..none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+      "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
+      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
+      "GENRE\n..Ballroom Dance\nCOMPOSER\n..Composer 3\n",
+  /* empty albumartist */
+  "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
+      "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
+      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me Voy\n"
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 4\n",
+  "FILE\n..none5.mp3\nDISC\n..3\nTRACKNUMBER\n..5\n"
+      "ALBUM\n..Album 5\nALBUMARTIST\n..AlbumArtist 5\n"
+      "ARTIST\n..Artist 5\nDANCE\n..Rumba\nTITLE\n..こんにちは-ja\n"
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 5\n",
+  "FILE\n..none6.mp3\nDISC\n..3\nTRACKNUMBER\n..6\n"
+      "ALBUM\n..Album 6\nALBUMARTIST\n..AlbumArtist 6\n"
+      "ARTIST\n..Artist 6\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
+      "GENRE\n..Rock\nCOMPOSER\n..Composer 6\n",
+  "FILE\n..none7.mp3\nDISC\n..3\nTRACKNUMBER\n..7\n"
+      "ALBUM\n..Album 7\nALBUMARTIST\n..AlbumArtist 7\n"
+      "ARTIST\n..Artist 7\nDANCE\n..Cha Cha\nTITLE\n..Title 7\n"
+      "GENRE\n..Classical\nCOMPOSER\n..Composer 7\n",
+  /* dot at end of album artist, on windows this must not be present */
+  /* if the album artist is a directory name */
+  "FILE\n..none8.mp3\nDISC\n..3\nTRACKNUMBER\n..8\n"
+      "ALBUM\n..Album 8\nALBUMARTIST\n..AlbumArtist 8.\n"
+      "ARTIST\n..Artist 8\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
+      "GENRE\n..Rock\nCOMPOSER\n..Composer 8\n",
+  NULL,
+};
+
+typedef struct {
+  const char    *orgpath;
+  const char    *results [20];
+} testsong_t;
+
+testsong_t testsongresults [] = {
+  {
+    "{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
+    {
+      "Santana/Smooth/01-001.Smooth.mp3",
+      "WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
+      "Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
+      /* empty album artist is replaced with the artist */
+      "Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
+      "AlbumArtist 5/Album 5/03-005.こんにちは-ja.mp3",
+      "AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
+      "AlbumArtist 7/Album 7/03-007.Title 7.mp3",
+      "AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
+      NULL,
+    },
+  },
+  {
+    "{%DANCE%/}{%ARTIST% - }{%TITLE%}",
+    {
+      "Cha Cha/Santana - Smooth.mp3",
+      "Rumba/Gizelle DCole - Asi.mp3",
+      "Waltz/Léa - Je Vole! (from La Famille Bélier).mp3",
+      "Rumba/Gloria Estefan - Me Voy.mp3",
+      "Rumba/Artist 5 - こんにちは-ja.mp3",
+      "Rumba/Artist 6 - Ne_Русский_Шторм-ru.mp3",
+      "Cha Cha/Artist 7 - Title 7.mp3",
+      "Rumba/Artist 8 - Ne_Русский_Шторм-ru.mp3",
+      NULL,
+    },
+  },
+  {
+    "{%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
+    {
+      "Jazz/Santana/Smooth/01-001.Smooth.mp3",
+      /* no genre */
+      "WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
+      "Ballroom Dance/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
+      "Jazz/Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
+      "Jazz/AlbumArtist 5/Album 5/03-005.こんにちは-ja.mp3",
+      "Rock/AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
+      "Classical/Composer 7/AlbumArtist 7/Album 7/03-007.Title 7.mp3",
+      "Rock/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
+      NULL,
+    }
+  },
+  {
+    NULL,
+    { NULL },
+  },
+};
+
+static void
+setup (void)
+{
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
+}
 
 START_TEST(orgutil_parse)
 {
@@ -211,6 +322,71 @@ START_TEST(orgutil_regex)
 }
 END_TEST
 
+START_TEST(orgutil_makepath)
+{
+  org_t     *org;
+  int       ri;
+  int       i;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_makepath");
+  mdebugSubTag ("orgutil_makepath");
+
+  if (isWindows ()) {
+    /* windows does not allow a colon in the path */
+    testsongresults [0].results [1] =
+        "WRD/The Ultimate Latin Album 4 Latin Eyes/01-002.Asi.mp3",
+    testsongresults [0].results [3] =
+        "Gloria Estefan/The Ultimate Latin Album 9 Footloose/02-004.Me Voy.mp3",
+    testsongresults [2].results [1] =
+        "WRD/The Ultimate Latin Album 4 Latin Eyes/01-002.Asi.mp3",
+    testsongresults [2].results [3] =
+        "Jazz/Gloria Estefan/The Ultimate Latin Album 9 Footloose/02-004.Me Voy.mp3",
+
+    /* parentheses not allowed on windows */
+    testsongresults [0].results [2] =
+        "Various Artists/Ballroom Stars 6/01-003.Je Vole! from La Famille Bélier.mp3";
+    testsongresults [1].results [2] =
+        "Waltz/Léa - Je Vole! from La Famille Bélier.mp3";
+    testsongresults [2].results [2] =
+        "Ballroom Dance/Various Artists/Ballroom Stars 6/01-003.Je Vole! from La Famille Bélier.mp3";
+
+    /* windows does not allow a period at the end of a directory name */
+    testsongresults [0].results [7] =
+        "AlbumArtist 8/Album 8/03-008.Ne_Русский_Шторм-ru.mp3";
+    testsongresults [2].results [7] =
+        "Rock/AlbumArtist 8/Album 8/03-008.Ne_Русский_Шторм-ru.mp3";
+  }
+
+  ri = 0;
+  while (testsongresults [ri].orgpath != NULL) {
+    i = 0;
+    // fprintf (stderr, "ri: %d %s\n", ri, testsongresults [ri].orgpath);
+    org = orgAlloc (testsongresults [ri].orgpath);
+    ck_assert_ptr_nonnull (org);
+
+    while (testsongresults [ri].results [i] != NULL) {
+      char      *tdata;
+      char      *disp;
+      song_t    *song;
+
+      // fprintf (stderr, "i: %d %s\n", i, testsongresults [ri].results [i]);
+      tdata = mdstrdup (testsongdata [i]);
+      song = songAlloc ();
+      songParse (song, tdata, 0);
+      disp = orgMakeSongPath (org, song);
+      ck_assert_str_eq (testsongresults [ri].results [i], disp);
+      songFree (song);
+      mdfree (tdata);
+      mdfree (disp);
+      ++i;
+    }
+
+    orgFree (org);
+    ++ri;
+  }
+}
+END_TEST
+
 Suite *
 orgutil_suite (void)
 {
@@ -220,8 +396,10 @@ orgutil_suite (void)
   s = suite_create ("orgutil");
   tc = tcase_create ("orgutil");
   tcase_set_tags (tc, "libbdj4");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, orgutil_parse);
   tcase_add_test (tc, orgutil_regex);
+  tcase_add_test (tc, orgutil_makepath);
   suite_add_tcase (s, tc);
   return s;
 }

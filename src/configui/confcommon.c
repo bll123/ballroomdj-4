@@ -179,19 +179,35 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (orgpath);
 
-  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
+  /* the only genres that are shipped are : */
+  /* ballroom dance, jazz, rock, classical */
+
+  data = "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
+      "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
+      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
+      "GENRE\n..Ballroom Dance\n",
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
-  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
+  data = "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
+      "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
+      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
+      "GENRE\n..Ballroom Dance\n",
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
-  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
+  data = "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+      "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
+      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
+      "GENRE\n..Ballroom Dance",
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
-  data = "FILE\n..none\nDISC\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
+  /* empty album artist */
+  data = "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
+      "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
+      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me voy\n"
+      "GENRE\n..Ballroom Dance",
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 

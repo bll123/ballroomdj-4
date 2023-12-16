@@ -9,9 +9,11 @@
 * Bug Fixes:
     * Fixed right-to-left language layout.
 * Changes:
-    * Installer: Remove music folder selection (not needed).
+    * Installer: Remove music folder selection.
 * New Features:
     * Re-Organize. PENDING
+* Internal:
+    * Code cleanup.
 
 -->
 

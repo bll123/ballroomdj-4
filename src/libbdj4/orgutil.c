@@ -28,6 +28,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "orgutil.h"
+#include "pathutil.h"
 #include "rating.h"
 #include "song.h"
 #include "status.h"
@@ -103,7 +104,6 @@ orgAlloc (const char *orgpath)
   bool          haveorgkey;
   bool          isnumeric;
   bool          isoptional;
-
 
   if (orgpath == NULL) {
     return NULL;
@@ -227,6 +227,7 @@ orgAlloc (const char *orgpath)
     ++grpcount;
     p = strtok_r (NULL, "{}", &tokstr);
   }
+
   /* the extension; make it any alnum, just in case */
   /* though usually the extensions will be standard ascii */
   strlcat (org->regexstr, "\\.[[:alnum:]]+$", sizeof (org->regexstr));
@@ -327,8 +328,9 @@ orgMakeSongPath (org_t *org, song_t *song)
 {
   slistidx_t      iteridx;
   const char      *p;
-  const char      *tp;
-  char            *rp;
+  const char      *tdata;
+  const char      *datap;
+  char            *retval;
   char            tbuff [MAXPATHLEN];
   char            gbuff [MAXPATHLEN];
   char            tmp [40];
@@ -337,13 +339,20 @@ orgMakeSongPath (org_t *org, song_t *song)
   bool            grpok = false;
   bool            doclean = false;
   datafileconv_t  conv;
+  pathinfo_t      *pi;
+  const char      *fn;
+  const char      *ext;
 
+  fn = songGetStr (song, TAG_URI);
+  pi = pathInfo (fn);
+  ext = pi->extension;
 
   *tbuff = '\0';
   *gbuff = '\0';
   slistStartIterator (org->orgparsed, &iteridx);
   while ((p = slistIterateKey (org->orgparsed, &iteridx)) != NULL) {
     doclean = false;
+    datap = "";
 
     orginfo = slistGetData (org->orgparsed, p);
     if (orginfo->groupnum != grpnum) {
@@ -353,6 +362,10 @@ orgMakeSongPath (org_t *org, song_t *song)
       *gbuff = '\0';
       grpok = false;
       grpnum = orginfo->groupnum;
+    }
+
+    if (orginfo->orgkey == ORG_TEXT) {
+      datap = p;
     }
 
     if (orginfo->orgkey != ORG_TEXT) {
@@ -365,24 +378,24 @@ orgMakeSongPath (org_t *org, song_t *song)
         val = songGetNum (song, orginfo->tagkey);
         if (orginfo->orgkey == ORG_TRACKNUM) {
           snprintf (tmp, sizeof (tmp), "%" PRId64, val);
-          p = tmp;
+          datap = tmp;
         }
         if (orginfo->orgkey == ORG_DISC) {
           snprintf (tmp, sizeof (tmp), "%02" PRId64, val);
-          p = tmp;
+          datap = tmp;
         }
         if (orginfo->orgkey == ORG_TRACKNUM0) {
           snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
-          p = tmp;
+          datap = tmp;
         }
         if (orginfo->convFunc != NULL) {
           conv.invt = VALUE_NUM;
           conv.num = val;
           orginfo->convFunc (&conv);
-          p = conv.str;
+          datap = conv.str;
         }
       } else {
-        p = songGetStr (song, orginfo->tagkey);
+        datap = songGetStr (song, orginfo->tagkey);
         doclean = true;
       }
 
@@ -391,17 +404,17 @@ orgMakeSongPath (org_t *org, song_t *song)
       if (orginfo->orgkey == ORG_ARTIST &&
           org->havealbumartist &&
           org->haveartist) {
-        tp = songGetStr (song, TAG_ALBUMARTIST);
-        if (tp != NULL && strcmp (p, tp) == 0) {
-          p = "";
+        tdata = songGetStr (song, orginfo->tagkey);
+        if (tdata != NULL && strcmp (datap, tdata) == 0) {
+          datap = "";
         }
       }
 
       /* rule:  if the albumartist is empty replace it with the artist */
       if (orginfo->orgkey == ORG_ALBUMARTIST) {
         /* if the albumartist is empty, replace it with the artist */
-        if (p == NULL || *p == '\0') {
-          p = songGetStr (song, TAG_ARTIST);
+        if (datap == NULL || *datap == '\0') {
+          datap = songGetStr (song, TAG_ARTIST);
           doclean = true;
         }
       }
@@ -414,10 +427,14 @@ orgMakeSongPath (org_t *org, song_t *song)
         genre_t     *genres;
 
         genreidx = songGetNum (song, TAG_GENRE);
-        genres = bdjvarsdfGet (BDJVDF_GENRES);
-        clflag = genreGetClassicalFlag (genres, genreidx);
-        if (! clflag) {
-          p = "";
+        if (genreidx >= 0) {
+          genres = bdjvarsdfGet (BDJVDF_GENRES);
+          clflag = genreGetClassicalFlag (genres, genreidx);
+          if (clflag >= 0 && ! clflag) {
+            datap = "";
+          }
+        } else {
+          datap = "";
         }
       }
 
@@ -426,30 +443,31 @@ orgMakeSongPath (org_t *org, song_t *song)
       if (orginfo->orgkey == ORG_COMPOSER) {
         /* if the composer is the same as the albumartist or artist */
         /* leave it empty */
-        if (p != NULL && *p) {
-          tp = songGetStr (song, TAG_ALBUMARTIST);
-          if (tp != NULL && strcmp (p, tp) == 0) {
-            p = "";
+        if (datap != NULL && *datap) {
+          tdata = songGetStr (song, TAG_ALBUMARTIST);
+          if (tdata != NULL && strcmp (datap, tdata) == 0) {
+            datap = "";
             doclean = false;
           }
-          tp = songGetStr (song, TAG_ARTIST);
-          if (tp != NULL && strcmp (p, tp) == 0) {
-            p = "";
+          tdata = songGetStr (song, TAG_ARTIST);
+          if (tdata != NULL && strcmp (datap, tdata) == 0) {
+            datap = "";
             doclean = false;
           }
         }
       }
 
-      if (p != NULL && *p) {
+      if (datap != NULL && *datap) {
         grpok = true;
       }
     }
-    if (p != NULL && *p) {
+
+    if (datap != NULL && *datap) {
       char  sbuff [MAXPATHLEN];
 
-      strlcpy (sbuff, p, sizeof (sbuff));
+      strlcpy (sbuff, datap, sizeof (sbuff));
       if (doclean) {
-        orgutilClean (sbuff, p, sizeof (sbuff));
+        orgutilClean (sbuff, datap, sizeof (sbuff));
       }
       strlcat (gbuff, sbuff, sizeof (gbuff));
     }
@@ -459,8 +477,11 @@ orgMakeSongPath (org_t *org, song_t *song)
     strlcat (tbuff, gbuff, sizeof (tbuff));
   }
 
-  rp = mdstrdup (tbuff);
-  return rp;
+  strlcat (tbuff, ext, sizeof (tbuff));
+  pathInfoFree (pi);
+
+  retval = mdstrdup (tbuff);
+  return retval;
 }
 
 bool
@@ -553,6 +574,7 @@ orgutilClean (char *target, const char *from, size_t sz)
   const char  *tstr;
   char        *tgtp;
   size_t      tgtlen;
+  int         dotcount;
 
   tgtp = target;
   tgtlen = 0;
@@ -561,6 +583,7 @@ orgutilClean (char *target, const char *from, size_t sz)
   bytelen = strlen (from);
   slen = bytelen;
   tstr = from;
+  dotcount = 0;
 
   while (slen > 0) {
     mlen = mbrlen (tstr, slen, &ps);
@@ -575,9 +598,11 @@ orgutilClean (char *target, const char *from, size_t sz)
       bool skip = false;
 
       /* period at the end of the string is not valid on windows */
-      /* this does not handle multiple . at the end of the string */
+      /* keep track of these */
       if (*tstr == '.' && slen == 1) {
-        skip = true;
+        ++dotcount;
+      } else {
+        dotcount = 0;
       }
 
       /* always skip / and \ characters */
@@ -585,6 +610,7 @@ orgutilClean (char *target, const char *from, size_t sz)
         skip = true;
       }
 
+      /*     windows: dot at end of directory name */
       /*      mp3tag: * :             | < >     " */
       /*     windows: * : ( ) &     ^ | < > ? ' " */
       /* linux/macos: *       & [ ]   | < > ? ' " */
@@ -629,6 +655,12 @@ orgutilClean (char *target, const char *from, size_t sz)
     tgtlen += mlen;
     tstr += mlen;
     slen -= mlen;
+  }
+
+  /* period at the end of the string used as a directory name */
+  /* is not valid on windows. remove these */
+  if (isWindows () && dotcount > 0) {
+    tgtp -= dotcount;
   }
 
   *tgtp = '\0';
