@@ -172,20 +172,23 @@ enum {
 };
 
 enum {
-  MANAGE_W_WINDOW,
-  MANAGE_W_MENUBAR,
+  MANAGE_W_CFPL_DIALOG,
+  MANAGE_W_ERROR_MSG,
+  MANAGE_W_ITUNES_SEL_DIALOG,
   MANAGE_W_MAIN_NB,
-  MANAGE_W_SONGLIST_NB,
+  MANAGE_W_MENUBAR,
+  MANAGE_W_MENUITEM_RESTORE_ORIG,
+  MANAGE_W_MENUITEM_UNDO_REMOVE,
+  MANAGE_W_MENU_MM,
+  MANAGE_W_MENU_SL,
+  MANAGE_W_MENU_SONGEDIT,
   MANAGE_W_MM_NB,
-  MANAGE_W_SL_SBS_MUSICQ_TAB,
   MANAGE_W_SL_MUSICQ_TAB,         // not owner
+  MANAGE_W_SL_SBS_MUSICQ_TAB,
+  MANAGE_W_SONGLIST_NB,
   MANAGE_W_SONGSEL_TAB,           // not owner
   MANAGE_W_STATUS_MSG,
-  MANAGE_W_ERROR_MSG,
-  MANAGE_W_MENU_RESTORE_ORIG,
-  MANAGE_W_ITUNES_SEL_DIALOG,
-  MANAGE_W_CFPL_DIALOG,
-  MANAGE_W_MENU_UNDO_REMOVE,
+  MANAGE_W_WINDOW,
   MANAGE_W_MAX,
 };
 
@@ -207,10 +210,7 @@ typedef struct {
   int               mainlasttab;
   int               sllasttab;
   int               mmlasttab;
-  uimenu_t          *currmenu;
-  uimenu_t          *slmenu;
-  uimenu_t          *songeditmenu;
-  uimenu_t          *mmmenu;
+  uiwcont_t         *currmenu;
   uinbtabid_t       *mainnbtabid;
   uinbtabid_t       *slnbtabid;
   uinbtabid_t       *mmnbtabid;
@@ -463,9 +463,9 @@ main (int argc, char *argv[])
   manage.mainlasttab = MANAGE_TAB_MAIN_SL;
   manage.sllasttab = MANAGE_TAB_SONGLIST;
   manage.mmlasttab = MANAGE_TAB_MM;
-  manage.slmenu = uiMenuAlloc ();
-  manage.songeditmenu = uiMenuAlloc ();
-  manage.mmmenu = uiMenuAlloc ();
+  manage.wcont [MANAGE_W_MENU_MM] = uiMenuAlloc ();
+  manage.wcont [MANAGE_W_MENU_SL] = uiMenuAlloc ();
+  manage.wcont [MANAGE_W_MENU_SONGEDIT] = uiMenuAlloc ();
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
   manage.mmnbtabid = uinbutilIDInit ();
@@ -671,9 +671,6 @@ manageClosingCallback (void *udata, programstate_t programState)
     }
     uiwcontFree (manage->wcont [i]);
   }
-  uiMenuFree (manage->slmenu);
-  uiMenuFree (manage->songeditmenu);
-  uiMenuFree (manage->mmmenu);
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
   uiButtonFree (manage->selectButton);
@@ -1576,7 +1573,7 @@ manageSongEditMenu (manageui_t *manage)
   void        *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
-  if (! uiMenuInitialized (manage->songeditmenu)) {
+  if (! uiMenuInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
     manage->uict = uicopytagsInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
@@ -1585,7 +1582,7 @@ manageSongEditMenu (manageui_t *manage)
 
     menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
         /* CONTEXT: managementui: menu selection: actions for song editor */
-        manage->songeditmenu, _("Actions"));
+        manage->wcont [MANAGE_W_MENU_SONGEDIT], _("Actions"));
     menu = uiCreateSubMenu (menuitem);
     uiwcontFree (menuitem);
 
@@ -1644,7 +1641,7 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: song editor menu: restore original */
     menuitem = uiMenuCreateItem (menu, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
-    manage->wcont [MANAGE_W_MENU_RESTORE_ORIG] = menuitem;
+    manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] = menuitem;
     if (manage->enablerestoreorig) {
       uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
     } else {
@@ -1657,12 +1654,12 @@ manageSongEditMenu (manageui_t *manage)
     }
     /* do not free this menu item here */
 
-    uiMenuSetInitialized (manage->songeditmenu);
+    uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
     uiwcontFree (menu);
   }
 
-  uiMenuDisplay (manage->songeditmenu);
-  manage->currmenu = manage->songeditmenu;
+  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
+  manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
 
   logProcEnd (LOG_PROC, "manageSongEditMenu", "");
 }
@@ -1802,13 +1799,13 @@ manageSetEditMenuItems (manageui_t *manage)
   } else {
     manage->enablerestoreorig = false;
   }
-  if (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG] == NULL) {
+  if (manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] == NULL) {
     return;
   }
   if (hasorig) {
-    uiWidgetSetState (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG], UIWIDGET_ENABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG], UIWIDGET_ENABLE);
   } else {
-    uiWidgetSetState (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG], UIWIDGET_DISABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG], UIWIDGET_DISABLE);
   }
 }
 
@@ -2250,10 +2247,10 @@ manageMusicManagerMenu (manageui_t *manage)
   uiwcont_t  *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
-  if (! uiMenuInitialized (manage->mmmenu)) {
+  if (! uiMenuInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
     menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
         /* CONTEXT: managementui: menu selection: actions for music manager */
-        manage->mmmenu, _("Actions"));
+        manage->wcont [MANAGE_W_MENU_MM], _("Actions"));
     menu = uiCreateSubMenu (menuitem);
     uiwcontFree (menuitem);
 
@@ -2286,14 +2283,14 @@ manageMusicManagerMenu (manageui_t *manage)
     menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
         manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
     uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    manage->wcont [MANAGE_W_MENU_UNDO_REMOVE] = menuitem;
+    manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE] = menuitem;
 
-    uiMenuSetInitialized (manage->mmmenu);
+    uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
     uiwcontFree (menu);
   }
 
-  uiMenuDisplay (manage->mmmenu);
-  manage->currmenu = manage->mmmenu;
+  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
+  manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
 
   logProcEnd (LOG_PROC, "manageMusicManagerMenu", "");
 }
@@ -2308,9 +2305,9 @@ manageSonglistMenu (manageui_t *manage)
   uiwcont_t   *menuitem;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
-  if (uiMenuInitialized (manage->slmenu)) {
-    uiMenuDisplay (manage->slmenu);
-    manage->currmenu = manage->slmenu;
+  if (uiMenuInitialized (manage->wcont [MANAGE_W_MENU_SL])) {
+    uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SL]);
+    manage->currmenu = manage->wcont [MANAGE_W_MENU_SL];
     logProcEnd (LOG_PROC, "manageSonglistMenu", "already");
     return;
   }
@@ -2318,7 +2315,7 @@ manageSonglistMenu (manageui_t *manage)
   /* edit */
   menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: song list: edit menu */
-      manage->slmenu, _("Edit"));
+      manage->wcont [MANAGE_W_MENU_SL], _("Edit"));
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
@@ -2350,7 +2347,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menu);
   menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: actions for song list */
-      manage->slmenu, _("Actions"));
+      manage->wcont [MANAGE_W_MENU_SL], _("Actions"));
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
@@ -2384,7 +2381,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menu);
   menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: export actions for song list */
-      manage->slmenu, _("Export"));
+      manage->wcont [MANAGE_W_MENU_SL], _("Export"));
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
@@ -2407,7 +2404,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menu);
   menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: import actions for song list */
-      manage->slmenu, _("Import"));
+      manage->wcont [MANAGE_W_MENU_SL], _("Import"));
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
@@ -2438,7 +2435,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menu);
   menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: song list: options menu */
-      manage->slmenu, _("Options"));
+      manage->wcont [MANAGE_W_MENU_SL], _("Options"));
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
@@ -2450,10 +2447,10 @@ manageSonglistMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SL_SBS_EDIT]);
   uiwcontFree (menuitem);
 
-  uiMenuSetInitialized (manage->slmenu);
+  uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SL]);
 
-  uiMenuDisplay (manage->slmenu);
-  manage->currmenu = manage->slmenu;
+  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SL]);
+  manage->currmenu = manage->wcont [MANAGE_W_MENU_SL];
 
   uiwcontFree (menu);
 
@@ -3761,7 +3758,7 @@ manageMarkSongRemoved (void *udata)
   manageRePopulateData (manage);
   uisongselSetDefaultSelection (manage->mmsongsel);
 
-  uiWidgetSetState (manage->wcont [MANAGE_W_MENU_UNDO_REMOVE], UIWIDGET_ENABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
 
   nlistFree (sellist);
   logProcEnd (LOG_PROC, "manageMarkSongRemoved", "");
@@ -3786,7 +3783,7 @@ manageUndoRemove (void *udata)
 
   nlistFree (manage->removelist);
   manage->removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
-  uiWidgetSetState (manage->wcont [MANAGE_W_MENU_UNDO_REMOVE], UIWIDGET_DISABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_DISABLE);
 
   /* need to re-filter the songs */
   uisongselApplySongFilter (manage->mmsongsel);

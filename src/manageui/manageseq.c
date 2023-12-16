@@ -43,7 +43,7 @@ enum {
 typedef struct manageseq {
   uiwcont_t       *windowp;
   nlist_t         *options;
-  uimenu_t        *seqmenu;
+  uiwcont_t       *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
   callback_t      *seqloadcb;
   callback_t      *seqnewcb;
@@ -95,7 +95,7 @@ void
 manageSequenceFree (manageseq_t *manageseq)
 {
   if (manageseq != NULL) {
-    uiMenuFree (manageseq->seqmenu);
+    uiwcontFree (manageseq->seqmenu);
     uiduallistFree (manageseq->seqduallist);
     dataFree (manageseq->seqoldname);
     uiEntryFree (manageseq->seqname);
@@ -168,7 +168,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   logProcEnd (LOG_PROC, "manageBuildUISequence", "");
 }
 
-uimenu_t *
+uiwcont_t *
 manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
 {
   uiwcont_t   *menu = NULL;

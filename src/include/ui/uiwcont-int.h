@@ -5,7 +5,6 @@
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
-#include "ui/uimenu.h"
 #include "ui/uispinbox.h"
 #include "ui/uitextbox.h"
 #include "ui/uitreeview.h"
@@ -32,7 +31,8 @@ typedef enum {
   WCONT_T_MENUBAR,
   WCONT_T_MENU_CHECK_BOX,
   WCONT_T_MENU_ITEM,
-  WCONT_T_MENU_MAIN_ITEM,
+  WCONT_T_MENU_MENUBAR_ITEM,
+  WCONT_T_MENU_DROPDOWN,
   WCONT_T_MENU_SUB,
   WCONT_T_NOTEBOOK,
   WCONT_T_PANED_WINDOW,
@@ -59,9 +59,10 @@ typedef enum {
   WCONT_T_WINDOW,
 } uiwconttype_t;
 
+typedef struct uikey uikey_t;
+typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uiswitch uiswitch_t;
-typedef struct uikey uikey_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */

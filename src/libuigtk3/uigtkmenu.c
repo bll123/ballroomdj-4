@@ -103,9 +103,10 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
   return uimenuitem;
 }
 
-uimenu_t *
+uiwcont_t *
 uiMenuAlloc (void)
 {
+  uiwcont_t  *uiwidget;
   uimenu_t    *menu;
 
   menu = mdmalloc (sizeof (uimenu_t));
@@ -114,45 +115,72 @@ uiMenuAlloc (void)
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
     menu->menuitem [i] = NULL;
   }
-  return menu;
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_MENU_DROPDOWN;
+  uiwidget->uiint.uimenu = menu;
+  return uiwidget;
 }
 
 void
-uiMenuFree (uimenu_t *menu)
+uiMenuFree (uiwcont_t *uiwidget)
 {
-  if (menu != NULL) {
-    for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
-      uiwcontFree (menu->menuitem [i]);
-    }
-    mdfree (menu);
+  uimenu_t    *menu;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_MENU_DROPDOWN) {
+    return;
   }
+
+  menu = uiwidget->uiint.uimenu;
+  for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
+    uiwcontFree (menu->menuitem [i]);
+  }
+  mdfree (menu);
+  /* the container will be freed in uiwcontFree() */
 }
 
 bool
-uiMenuInitialized (uimenu_t *menu)
+uiMenuInitialized (uiwcont_t *uiwidget)
 {
-  if (menu == NULL) {
+  uimenu_t    *menu;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_MENU_DROPDOWN) {
     return false;
   }
 
+  menu = uiwidget->uiint.uimenu;
   return menu->initialized;
 }
 
 void
-uiMenuSetInitialized (uimenu_t *menu)
+uiMenuSetInitialized (uiwcont_t *uiwidget)
 {
-  if (menu == NULL) {
+  uimenu_t    *menu;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_MENU_DROPDOWN) {
     return;
   }
 
+  menu = uiwidget->uiint.uimenu;
   menu->initialized = true;
 }
 
 uiwcont_t *
-uiMenuAddMainItem (uiwcont_t *uimenubar, uimenu_t *menu, const char *txt)
+uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
 {
   uiwcont_t *uimenuitem;
+  uimenu_t  *menu;
   int       i;
+
+  if (uimenubar == NULL || uimenubar->wtype != WCONT_T_MENUBAR) {
+    return NULL;
+  }
+
+  if (uimenu == NULL || uimenu->wtype != WCONT_T_MENU_DROPDOWN) {
+    return NULL;
+  }
+
+  menu = uimenu->uiint.uimenu;
 
   if (menu->menucount >= UIUTILS_MENU_MAX) {
     return NULL;
@@ -161,29 +189,43 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uimenu_t *menu, const char *txt)
   i = menu->menucount;
   ++menu->menucount;
   uimenuitem = uiwcontAlloc ();
-  uimenuitem->wtype = WCONT_T_MENU_MAIN_ITEM;
+  uimenuitem->wtype = WCONT_T_MENU_MENUBAR_ITEM;
   uimenuitem->widget = gtk_menu_item_new_with_label (txt);
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
   /* create our own copy here */
   menu->menuitem [i] = uiwcontAlloc ();
-  menu->menuitem [i]->wtype = WCONT_T_MENU_MAIN_ITEM;
+  menu->menuitem [i]->wtype = WCONT_T_MENU_MENUBAR_ITEM;
   menu->menuitem [i]->widget = uimenuitem->widget;
   return uimenuitem;
 }
 
 void
-uiMenuDisplay (uimenu_t *menu)
+uiMenuDisplay (uiwcont_t *uiwidget)
 {
+  uimenu_t    *menu;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_MENU_DROPDOWN) {
+    return;
+  }
+
+  menu = uiwidget->uiint.uimenu;
   for (int i = 0; i < menu->menucount; ++i) {
     uiWidgetShowAll (menu->menuitem [i]);
   }
 }
 
 void
-uiMenuClear (uimenu_t *menu)
+uiMenuClear (uiwcont_t *uiwidget)
 {
+  uimenu_t    *menu;
+
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_MENU_DROPDOWN) {
+    return;
+  }
+
+  menu = uiwidget->uiint.uimenu;
   for (int i = 0; i < menu->menucount; ++i) {
     uiWidgetHide (menu->menuitem [i]);
   }
@@ -201,5 +243,6 @@ static void
 uiMenuToggleHandler (GtkWidget *mi, gpointer udata)
 {
   callback_t  *uicb = udata;
+
   callbackHandler (uicb);
 }

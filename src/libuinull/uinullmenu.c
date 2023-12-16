@@ -53,44 +53,44 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
   return NULL;
 }
 
-uimenu_t *
+uiwcont_t *
 uiMenuAlloc (void)
 {
   return NULL;
 }
 
 void
-uiMenuFree (uimenu_t *menu)
+uiMenuFree (uiwcont_t uiwidget)
 {
   return;
 }
 
 bool
-uiMenuInitialized (uimenu_t *menu)
+uiMenuInitialized (uiwcont_t uiwidget)
 {
   return true;
 }
 
 void
-uiMenuSetInitialized (uimenu_t *menu)
+uiMenuSetInitialized (uiwcont_t uiwidget)
 {
   return;
 }
 
 uiwcont_t *
-uiMenuAddMainItem (uiwcont_t *uimenubar, uimenu_t *menu, const char *txt)
+uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
 {
   return NULL;
 }
 
 void
-uiMenuDisplay (uimenu_t *menu)
+uiMenuDisplay (uiwcont_t uiwidget)
 {
   return;
 }
 
 void
-uiMenuClear (uimenu_t *menu)
+uiMenuClear (uiwcont_t uiwidget)
 {
   return;
 }

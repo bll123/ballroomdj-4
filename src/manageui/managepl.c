@@ -44,13 +44,15 @@ enum {
 };
 
 enum {
-  MPL_W_RATING_ITEM,
-  MPL_W_LOW_LEVEL_ITEM,
-  MPL_W_HIGH_LEVEL_ITEM,
   MPL_W_ALLOWED_KEYWORDS,
-  MPL_W_PL_TYPE,
+  MPL_W_HIGH_LEVEL_ITEM,
+  MPL_W_LOW_LEVEL_ITEM,
+  MPL_W_MENUITEM_DELETE,
+  MPL_W_MENU_PL,
   MPL_W_NB,
   MPL_W_PLAY_ANN,
+  MPL_W_PL_TYPE,
+  MPL_W_RATING_ITEM,
   MPL_W_MAX,
 };
 
@@ -63,8 +65,6 @@ typedef struct managepl {
   uiwcont_t       *windowp;
   nlist_t         *options;
   uiwcont_t       *errorMsg;
-  uimenu_t        *plmenu;
-  uiwcont_t       *menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -106,10 +106,13 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl_t *managepl;
 
   managepl = mdmalloc (sizeof (managepl_t));
-  managepl->menuDelete = NULL;
+  for (int i = 0; i < MPL_W_MAX; ++i) {
+    managepl->wcont [i] = NULL;
+  }
+  managepl->wcont [MPL_W_MENUITEM_DELETE] = NULL;
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
-  managepl->plmenu = uiMenuAlloc ();
+  managepl->wcont [MPL_W_MENU_PL] = uiMenuAlloc ();
   managepl->plname = uiEntryInit (30, 100);
   managepl->errorMsg = errorMsg;
   managepl->windowp = window;
@@ -125,9 +128,6 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
   managepl->allowedkeywords = uiEntryInit (15, 50);
-  for (int i = 0; i < MPL_W_MAX; ++i) {
-    managepl->wcont [i] = NULL;
-  }
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
@@ -148,8 +148,6 @@ managePlaylistFree (managepl_t *managepl)
   if (managepl != NULL) {
     uinbutilIDFree (managepl->tabids);
     uiwcontFree (managepl->uistopafter);
-    uiwcontFree (managepl->menuDelete);
-    uiMenuFree (managepl->plmenu);
     dataFree (managepl->ploldname);
     if (managepl->managepltree != NULL) {
       managePlaylistTreeFree (managepl->managepltree);
@@ -430,17 +428,17 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   logProcEnd (LOG_PROC, "manageBuildUIPlaylist", "");
 }
 
-uimenu_t *
+uiwcont_t *
 managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 {
   uiwcont_t   *menu = NULL;
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
-  if (! uiMenuInitialized (managepl->plmenu)) {
+  if (! uiMenuInitialized (managepl->wcont [MPL_W_MENU_PL])) {
     menuitem = uiMenuAddMainItem (uimenubar,
         /* CONTEXT: playlist management: menu selection: playlist: edit menu */
-        managepl->plmenu, _("Edit"));
+        managepl->wcont [MPL_W_MENU_PL], _("Edit"));
     menu = uiCreateSubMenu (menuitem);
     uiwcontFree (menuitem);
 
@@ -470,17 +468,17 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     menuitem = uiMenuCreateItem (menu, _("Delete"),
         managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
-    managepl->menuDelete = menuitem;
+    managepl->wcont [MPL_W_MENUITEM_DELETE] = menuitem;
     /* do not free this menu item here */
 
-    uiMenuSetInitialized (managepl->plmenu);
+    uiMenuSetInitialized (managepl->wcont [MPL_W_MENU_PL]);
     uiwcontFree (menu);
   }
 
-  uiMenuDisplay (managepl->plmenu);
+  uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
 
   logProcEnd (LOG_PROC, "managePlaylistMenu", "");
-  return managepl->plmenu;
+  return managepl->wcont [MPL_W_MENU_PL];
 }
 
 void
@@ -575,12 +573,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     return;
   }
 
-  if (managepl->menuDelete != NULL) {
-    uiWidgetSetState (managepl->menuDelete, UIWIDGET_ENABLE);
+  if (managepl->wcont [MPL_W_MENUITEM_DELETE] != NULL) {
+    uiWidgetSetState (managepl->wcont [MPL_W_MENUITEM_DELETE], UIWIDGET_ENABLE);
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0 ||
         strcmp (playlistGetName (pl), "QueueDance") == 0) {
-      uiWidgetSetState (managepl->menuDelete, UIWIDGET_DISABLE);
+      uiWidgetSetState (managepl->wcont [MPL_W_MENUITEM_DELETE], UIWIDGET_DISABLE);
     }
   }
 

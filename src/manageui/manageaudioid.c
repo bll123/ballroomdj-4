@@ -32,7 +32,7 @@ typedef struct manageaudioid {
   audioid_t         *audioid;
   uiaudioid_t       *uiaudioid;
   song_t            *song;
-  uimenu_t          *audioidmenu;
+  uiwcont_t         *audioidmenu;
   int               state;
 } manageaudioid_t;
 
@@ -67,7 +67,6 @@ manageAudioIdFree (manageaudioid_t *maudioid)
 
   uiaudioidFree (maudioid->uiaudioid);
   audioidFree (maudioid->audioid);
-  uiMenuFree (maudioid->audioidmenu);
   mdfree (maudioid);
 }
 
@@ -89,7 +88,7 @@ manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel)
 
 /* audio identification */
 
-uimenu_t *
+uiwcont_t *
 manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar)
 {
   uiwcont_t   *menu = NULL;
