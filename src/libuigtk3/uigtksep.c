@@ -40,6 +40,13 @@ uiSeparatorAddClass (const char *classnm, const char *color)
 {
   char    tbuff [100];
 
+  if (classnm == NULL) {
+    return;
+  }
+  if (color == NULL) {
+    return;
+  }
+
   snprintf (tbuff, sizeof (tbuff), "separator.%s", classnm);
   uiAddBGColorClass (tbuff, color);
 }

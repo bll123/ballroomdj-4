@@ -107,12 +107,7 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
-      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
-      uiwidget->wtype != WCONT_T_CHECK_BOX) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-cb")) {
     return;
   }
 
@@ -125,10 +120,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {
   int   pad = true;
 
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-img")) {
     return;
   }
 
@@ -139,12 +131,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 void
 uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
-      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
-      uiwidget->wtype != WCONT_T_CHECK_BOX) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-txt")) {
     return;
   }
 
@@ -154,12 +141,7 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
 bool
 uiToggleButtonIsActive (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return 0;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
-      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
-      uiwidget->wtype != WCONT_T_CHECK_BOX) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-is-active")) {
     return 0;
   }
 
@@ -169,12 +151,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
 void
 uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
-      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
-      uiwidget->wtype != WCONT_T_CHECK_BOX) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-state")) {
     return;
   }
 
@@ -188,12 +165,7 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
 {
   GtkWidget *widget;
 
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  if (uiwidget->wtype != WCONT_T_TOGGLE_BUTTON &&
-      uiwidget->wtype != WCONT_T_RADIO_BUTTON &&
-      uiwidget->wtype != WCONT_T_CHECK_BOX) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-ellipsize")) {
     return;
   }
 

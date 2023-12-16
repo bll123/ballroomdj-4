@@ -50,10 +50,7 @@ uiCreateLink (const char *label, const char *uri)
 void
 uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
 {
-  if (uilink == NULL) {
-    return;
-  }
-  if (uilink->widget == NULL) {
+  if (! uiwcontValid (uilink, WCONT_T_LINK, "link-set")) {
     return;
   }
 
@@ -68,6 +65,10 @@ uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
 void
 uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
 {
+  if (! uiwcontValid (uilink, WCONT_T_LINK, "link-set-cb")) {
+    return;
+  }
+
   g_signal_connect (uilink->widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
 }

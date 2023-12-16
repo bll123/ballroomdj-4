@@ -41,5 +41,9 @@ uiCreateProgressBar (void)
 void
 uiProgressBarSet (uiwcont_t *uipb, double val)
 {
+  if (! uiwcontValid (uipb, WCONT_T_PROGRESS_BAR, "pbar-set")) {
+    return;
+  }
+
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->widget), val);
 }

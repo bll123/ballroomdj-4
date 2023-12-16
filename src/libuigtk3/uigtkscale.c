@@ -60,6 +60,10 @@ uiCreateScale (double lower, double upper,
 void
 uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb)
 {
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-set-cb")) {
+    return;
+  }
+
   g_signal_connect (uiscale->widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
@@ -69,6 +73,10 @@ uiScaleEnforceMax (uiwcont_t *uiscale, double value)
 {
   GtkAdjustment   *adjustment;
   double          max;
+
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-enforce-max")) {
+    return value;
+  }
 
   /* gtk scale's lower limit works, but upper limit is not respected */
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->widget));
@@ -83,7 +91,11 @@ uiScaleEnforceMax (uiwcont_t *uiscale, double value)
 double
 uiScaleGetValue (uiwcont_t *uiscale)
 {
-  double value;
+  double value = 0.0;
+
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-get")) {
+    return value;
+  }
 
   value = gtk_range_get_value (GTK_RANGE (uiscale->widget));
   return value;
@@ -92,7 +104,11 @@ uiScaleGetValue (uiwcont_t *uiscale)
 int
 uiScaleGetDigits (uiwcont_t *uiscale)
 {
-  int value;
+  int value = 0;
+
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-get-digits")) {
+    return value;
+  }
 
   value = gtk_scale_get_digits (GTK_SCALE (uiscale->widget));
   return value;
@@ -101,21 +117,30 @@ uiScaleGetDigits (uiwcont_t *uiscale)
 void
 uiScaleSetValue (uiwcont_t *uiscale, double value)
 {
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-set")) {
+    return;
+  }
+
   gtk_range_set_value (GTK_RANGE (uiscale->widget), value);
 }
 
 void
 uiScaleSetRange (uiwcont_t *uiscale, double start, double end)
 {
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-set-range")) {
+    return;
+  }
+
   gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
 }
 
 void
 uiScaleSetState (uiwcont_t *uiscale, int state)
 {
-  if (uiscale == NULL) {
+  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-set-state")) {
     return;
   }
+
   uiWidgetSetState (uiscale, state);
 }
 
