@@ -403,7 +403,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   mainvbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (mainvbox);
   uiWidgetExpandVert (mainvbox);
-  uiBoxPackInWindow (dropdown->window, mainvbox);
+  uiWindowPackInWindow (dropdown->window, mainvbox);
 
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (mainvbox, vbox);
@@ -421,7 +421,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiTreeViewSelectSetMode (dropdown->uitree, SELECT_SINGLE);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
-  uiBoxPackInWindow (uiscwin, uiwidgetp);
+  uiWindowPackInWindow (uiscwin, uiwidgetp);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",

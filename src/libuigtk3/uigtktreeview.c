@@ -103,6 +103,7 @@ uiCreateTreeView (void)
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
   uitree->tree = uiwcontAlloc ();
+  uitree->tree->wbasetype = WCONT_T_TREE;
   uitree->tree->wtype = WCONT_T_TREE;
   uitree->tree->widget = tree;
   uitree->sel = sel;

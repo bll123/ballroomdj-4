@@ -759,7 +759,7 @@ manageBuildUI (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
-  uiBoxPackInWindow (manage->wcont [MANAGE_W_WINDOW], vbox);
+  uiWindowPackInWindow (manage->wcont [MANAGE_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
@@ -1573,7 +1573,7 @@ manageSongEditMenu (manageui_t *manage)
   void        *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
-  if (! uiMenuInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
+  if (! uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
     manage->uict = uicopytagsInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
@@ -2247,7 +2247,7 @@ manageMusicManagerMenu (manageui_t *manage)
   uiwcont_t  *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
-  if (! uiMenuInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
+  if (! uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
     menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
         /* CONTEXT: managementui: menu selection: actions for music manager */
         manage->wcont [MANAGE_W_MENU_MM], _("Actions"));
@@ -2305,7 +2305,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcont_t   *menuitem;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
-  if (uiMenuInitialized (manage->wcont [MANAGE_W_MENU_SL])) {
+  if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SL])) {
     uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SL]);
     manage->currmenu = manage->wcont [MANAGE_W_MENU_SL];
     logProcEnd (LOG_PROC, "manageSonglistMenu", "already");

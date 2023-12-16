@@ -39,8 +39,10 @@ uiTextBoxCreate (int height, const char *hlcolor)
   tb = mdmalloc (sizeof (uitextbox_t));
   tb->scw = NULL;
   tb->textbox = uiwcontAlloc ();
+  tb->textbox->wbasetype = WCONT_T_TEXT_BOX;
   tb->textbox->wtype = WCONT_T_TEXT_BOX;
   tb->buffer = uiwcontAlloc ();
+  tb->textbox->wbasetype = WCONT_T_TEXT_BUFFER;
   tb->buffer->wtype = WCONT_T_TEXT_BUFFER;
   tb->buffer->buffer = gtk_text_buffer_new (NULL);
 
@@ -57,7 +59,7 @@ uiTextBoxCreate (int height, const char *hlcolor)
   uiWidgetSetAllMargins (tb->textbox, 2);
   uiWidgetSetSizeRequest (tb->textbox, -1, -1);
   uiWidgetAlignVertStart (tb->textbox);
-  uiBoxPackInWindow (tb->scw, tb->textbox);
+  uiWindowPackInWindow (tb->scw, tb->textbox);
 
   return tb;
 }

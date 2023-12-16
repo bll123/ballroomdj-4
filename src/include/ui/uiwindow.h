@@ -34,5 +34,6 @@ void uiWindowPresent (uiwcont_t *uiwidget);
 void uiWindowRaise (uiwcont_t *uiwidget);
 void uiWindowFind (uiwcont_t *window);
 void uiWindowSetNoMaximize (uiwcont_t *uiwindow);
+void uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget);
 
 #endif /* INC_UIWINDOW_H */

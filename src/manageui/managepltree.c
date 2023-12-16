@@ -137,7 +137,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
       managepltree->callbacks [MPLTREE_CB_CHANGED]);
 
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (scwindow, uitreewidgetp);
+  uiWindowPackInWindow (scwindow, uitreewidgetp);
 
   /* done with the scrolled window */
   uiwcontFree (scwindow);

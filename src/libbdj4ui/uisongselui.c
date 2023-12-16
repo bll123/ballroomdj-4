@@ -371,7 +371,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (ssint->songselTree, uisongsel->dfilterCount);
-  uiBoxPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uitreewidgetp);
+  uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uitreewidgetp);
 
   ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
         uisongselCheckFavChgCallback, uisongsel);

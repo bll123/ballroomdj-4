@@ -57,7 +57,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
   uiTreeViewEnableHeaders (gui->tables [id].uitree);
-  uiBoxPackInWindow (scwindow, uiwidgetp);
+  uiWindowPackInWindow (scwindow, uiwidgetp);
 
   uiwcontFree (scwindow);
 

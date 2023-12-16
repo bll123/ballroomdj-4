@@ -16,7 +16,7 @@ uiwcont_t *uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const cha
 
 uiwcont_t *uiMenuAlloc (void);
 void uiMenuFree (uiwcont_t *);
-bool uiMenuInitialized (uiwcont_t *);
+bool uiMenuIsInitialized (uiwcont_t *);
 void uiMenuSetInitialized (uiwcont_t *uiwidget);
 
 uiwcont_t *uiCreateSubMenu (uiwcont_t *uimenuitem);

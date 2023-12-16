@@ -73,6 +73,7 @@ uiEntryCreate (uientry_t *uientry)
 {
   uientry->buffer = gtk_entry_buffer_new (NULL, -1);
   uientry->entry = uiwcontAlloc ();
+  uientry->entry->wbasetype = WCONT_T_ENTRY;
   uientry->entry->wtype = WCONT_T_ENTRY;
   uientry->entry->widget = gtk_entry_new_with_buffer (uientry->buffer);
   gtk_entry_set_width_chars (GTK_ENTRY (uientry->entry->widget), uientry->entrySize);

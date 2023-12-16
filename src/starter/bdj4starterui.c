@@ -560,7 +560,7 @@ starterBuildUI (startui_t  *starter)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
-  uiBoxPackInWindow (starter->wcont [START_W_WINDOW], vbox);
+  uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;

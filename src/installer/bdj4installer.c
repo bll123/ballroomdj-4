@@ -611,7 +611,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
-  uiBoxPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
+  uiWindowPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
 
   /* begin line : status message */
   hbox = uiCreateHorizBox ();

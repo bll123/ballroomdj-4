@@ -52,6 +52,7 @@ uiCreateSwitch (int value)
   /* great.  use a toggle button instead and set our own image */
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_SWITCH;
   uiwidget->wtype = WCONT_T_SWITCH;
   uiwidget->widget = NULL;
 
@@ -93,7 +94,7 @@ uiSwitchFree (uiwcont_t *uiwidget)
 {
   uiswitch_t    *sw;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-free")) {
     return;
   }
 
@@ -109,7 +110,7 @@ uiSwitchFree (uiwcont_t *uiwidget)
 void
 uiSwitchSetValue (uiwcont_t *uiwidget, int value)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-set")) {
     return;
   }
 
@@ -120,7 +121,7 @@ uiSwitchSetValue (uiwcont_t *uiwidget, int value)
 int
 uiSwitchGetValue (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-get")) {
     return false;
   }
 
@@ -130,6 +131,10 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
 void
 uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-set-cb")) {
+    return;
+  }
+
   g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
@@ -137,7 +142,7 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiSwitchSetState (uiwcont_t *uiwidget, int state)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-set-state")) {
     return;
   }
 

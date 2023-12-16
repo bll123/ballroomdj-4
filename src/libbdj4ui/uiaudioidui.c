@@ -385,7 +385,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetExpandHoriz (uitreewidgetp);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (uiwidgetp, uitreewidgetp);
+  uiWindowPackInWindow (uiwidgetp, uitreewidgetp);
   uiwcontFree (uiwidgetp);  // scrolled window
 
   audioidint->callbacks [UIAUID_CB_ROW_SELECT] = callbackInit (

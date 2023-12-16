@@ -435,7 +435,7 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
-  if (! uiMenuInitialized (managepl->wcont [MPL_W_MENU_PL])) {
+  if (! uiMenuIsInitialized (managepl->wcont [MPL_W_MENU_PL])) {
     menuitem = uiMenuAddMainItem (uimenubar,
         /* CONTEXT: playlist management: menu selection: playlist: edit menu */
         managepl->wcont [MPL_W_MENU_PL], _("Edit"));

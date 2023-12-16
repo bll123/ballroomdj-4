@@ -967,9 +967,6 @@ if [[ $tlocale != "" ]]; then
   locale=$tlocale
 fi
 
-echo "-- $(date +%T) creating test music"
-./src/utils/mktestsetup.sh --force
-
 cleanInstTest
 
 if [[ $readonly == F ]]; then

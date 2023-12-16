@@ -66,7 +66,7 @@ uiMenuFree (uiwcont_t uiwidget)
 }
 
 bool
-uiMenuInitialized (uiwcont_t uiwidget)
+uiMenuIsInitialized (uiwcont_t uiwidget)
 {
   return true;
 }

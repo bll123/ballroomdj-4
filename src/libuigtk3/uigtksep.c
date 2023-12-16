@@ -27,6 +27,7 @@ uiCreateHorizSeparator (void)
 
   sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_SEPARATOR;
   uiwidget->wtype = WCONT_T_SEPARATOR;
   uiwidget->widget = sep;
   uiWidgetExpandHoriz (uiwidget);

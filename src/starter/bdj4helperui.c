@@ -216,7 +216,7 @@ helperBuildUI (helperui_t  *helper)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
-  uiBoxPackInWindow (helper->window, vbox);
+  uiWindowPackInWindow (helper->window, vbox);
 
   helper->tb = uiTextBoxCreate (400, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetParagraph (helper->tb, 0, 5);

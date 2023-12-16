@@ -33,17 +33,22 @@ uiCreateLabel (const char *label)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_LABEL;
   uiwidget->wtype = WCONT_T_LABEL;
   uiwidget->widget = widget;
   return uiwidget;
 }
 
 uiwcont_t *
-uiCreateColonLabel (const char *label)
+uiCreateColonLabel (const char *txt)
 {
   char      tbuff [300];
 
-  snprintf (tbuff, sizeof (tbuff), "%s:", label);
+  if (txt == NULL) {
+    return NULL;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
   return uiCreateLabel (tbuff);
 }
 
@@ -51,6 +56,10 @@ void
 uiLabelAddClass (const char *classnm, const char *color)
 {
   char    tbuff [100];
+
+  if (classnm == NULL || color == NULL) {
+    return;
+  }
 
   snprintf (tbuff, sizeof (tbuff), "label.%s", classnm);
   uiAddColorClass (tbuff, color);
@@ -63,6 +72,11 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
   PangoAttribute        *attr;
   PangoAttrList         *attrlist;
 
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
+    return;
+  }
+
   attrlist = pango_attr_list_new ();
   font_desc = pango_font_description_from_string (font);
   attr = pango_attr_font_desc_new (font_desc);
@@ -74,7 +88,8 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 
@@ -86,7 +101,8 @@ uiLabelGetText (uiwcont_t *uiwidget)
 {
   const char *txt;
 
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return NULL;
   }
 
@@ -97,7 +113,8 @@ uiLabelGetText (uiwcont_t *uiwidget)
 void
 uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 
@@ -107,7 +124,8 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 void
 uiLabelWrapOn (uiwcont_t *uiwidget)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 
@@ -117,7 +135,8 @@ uiLabelWrapOn (uiwcont_t *uiwidget)
 void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 
@@ -127,7 +146,8 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
 void
 uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 
@@ -137,7 +157,8 @@ uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width)
 void
 uiLabelAlignEnd (uiwcont_t *uiwidget)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
+        uiwidget->widget == NULL) {
     return;
   }
 

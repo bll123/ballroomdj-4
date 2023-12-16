@@ -38,6 +38,7 @@ uiCreateNotebook (void)
   gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_NOTEBOOK;
   uiwidget->wtype = WCONT_T_NOTEBOOK;
   uiwidget->widget = widget;
   return uiwidget;

@@ -13,6 +13,7 @@ typedef struct uiwcont uiwcont_t;
 uiwcont_t *uiwcontAlloc (void);
 /* basefree only frees the uiwidget, not any internals */
 void uiwcontBaseFree (uiwcont_t *uiwidget);
+const char * uiwcontDesc (int wtype);
 
 /* uiwcontfree.c */
 

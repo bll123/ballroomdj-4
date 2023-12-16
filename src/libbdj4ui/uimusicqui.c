@@ -386,7 +386,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetExpandHoriz (uitreewidgetp);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (scwin, uitreewidgetp);
+  uiWindowPackInWindow (scwin, uitreewidgetp);
   uiwcontFree (scwin);
 
   mqint->callbacks [MQINT_CB_CHK_FAV_CHG] = callbackInitLong (

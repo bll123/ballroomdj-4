@@ -88,6 +88,7 @@ uiCreateButton (callback_t *uicb,
   uibutton->repeatMS = 250;
 
   uibutton->button = uiwcontAlloc ();
+  uibutton->button->wbasetype = WCONT_T_BUTTON;
   uibutton->button->wtype = WCONT_T_BUTTON;
   uibutton->button->widget = widget;
 

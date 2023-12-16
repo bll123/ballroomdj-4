@@ -179,6 +179,7 @@ uiCreateDialog (uiwcont_t *window,
   gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->widget));
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_DIALOG;
   uiwidget->wtype = WCONT_T_DIALOG;
   uiwidget->widget = dialog;
 

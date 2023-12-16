@@ -423,7 +423,7 @@ confuiBuildUI (configui_t *confui)
   uiWidgetExpandHoriz (confui->gui.vbox);
   uiWidgetExpandVert (confui->gui.vbox);
   uiWidgetSetAllMargins (confui->gui.vbox, 2);
-  uiBoxPackInWindow (confui->gui.window, confui->gui.vbox);
+  uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
 
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
   hbox = accent.hbox;

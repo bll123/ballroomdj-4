@@ -144,7 +144,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (scwindow, uitreewidgetp);
+  uiWindowPackInWindow (scwindow, uitreewidgetp);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -203,7 +203,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (scwindow, uitreewidgetp);
+  uiWindowPackInWindow (scwindow, uitreewidgetp);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);

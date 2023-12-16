@@ -36,6 +36,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
+  uiwidget->wbasetype = WCONT_T_CHGIND;
   uiwidget->wtype = WCONT_T_CHGIND;
   uiwidget->widget = widget;
   /* the change indicator is a label packed in the beginning of */
@@ -45,17 +46,9 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 }
 
 void
-uichgindFree (uiwcont_t *uiwidget)
-{
-  if (uiwidget != NULL) {
-    uiwcontFree (uiwidget);
-  }
-}
-
-void
 uichgindMarkNormal (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-norm")) {
     return;
   }
 
@@ -67,7 +60,7 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
 void
 uichgindMarkError (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-err")) {
     return;
   }
 
@@ -79,7 +72,7 @@ uichgindMarkError (uiwcont_t *uiwidget)
 void
 uichgindMarkChanged (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_CHGIND) {
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-chg")) {
     return;
   }
 

@@ -95,7 +95,7 @@ manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar)
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageAudioIDMenu");
-  if (! uiMenuInitialized (maudioid->audioidmenu)) {
+  if (! uiMenuIsInitialized (maudioid->audioidmenu)) {
     /* empty menu for now */
     menuitem = uiMenuAddMainItem (menubar, maudioid->audioidmenu, "");
     menu = uiCreateSubMenu (menuitem);

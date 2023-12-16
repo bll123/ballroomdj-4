@@ -512,7 +512,7 @@ pluiBuildUI (playerui_t *plui)
   pluiInitializeUI (plui);
 
   plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiBoxPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
+  uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 2);
 
   plui->wcont [PLUI_W_KEY_HNDLR] = uiKeyAlloc ();

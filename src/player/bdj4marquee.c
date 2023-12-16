@@ -369,7 +369,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   mainvbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (mainvbox, 10);
-  uiBoxPackInWindow (marquee->wcont [MQ_W_WINDOW], mainvbox);
+  uiWindowPackInWindow (marquee->wcont [MQ_W_WINDOW], mainvbox);
   uiWidgetExpandHoriz (mainvbox);
   uiWidgetExpandVert (mainvbox);
   marquee->marginTotal = 20;

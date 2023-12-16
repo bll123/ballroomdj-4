@@ -175,7 +175,7 @@ manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
-  if (! uiMenuInitialized (manageseq->seqmenu)) {
+  if (! uiMenuIsInitialized (manageseq->seqmenu)) {
     menuitem = uiMenuAddMainItem (uimenubar,
         /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
         manageseq->seqmenu, _("Edit"));

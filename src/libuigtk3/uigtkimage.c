@@ -25,6 +25,7 @@ uiImageNew (void)
 
   image = gtk_image_new ();
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_IMAGE;
   uiwidget->wtype = WCONT_T_IMAGE;
   uiwidget->widget = image;
   return uiwidget;
@@ -42,6 +43,7 @@ uiImageFromFile (const char *fn)
   if (pixbuf != NULL) {
     image = gtk_image_new_from_pixbuf (pixbuf);
     uiwidget = uiwcontAlloc ();
+    uiwidget->wbasetype = WCONT_T_IMAGE;
     uiwidget->wtype = WCONT_T_IMAGE;
     uiwidget->widget = image;
     g_object_unref (pixbuf);
@@ -61,6 +63,7 @@ uiImageScaledFromFile (const char *fn, int scale)
     image = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
     uiwidget = uiwcontAlloc ();
+    uiwidget->wbasetype = WCONT_T_IMAGE;
     uiwidget->wtype = WCONT_T_IMAGE;
     uiwidget->widget = image;
     g_object_unref (pixbuf);
@@ -96,6 +99,7 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
   }
 
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->widget));
+  uiwidget->wbasetype = WCONT_T_PIXBUF;
   uiwidget->wtype = WCONT_T_PIXBUF;
   uiwidget->pixbuf = pixbuf;
 }

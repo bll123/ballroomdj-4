@@ -53,6 +53,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   uiwin = uiwcontAlloc ();
+  uiwin->wbasetype = WCONT_T_WINDOW;
   uiwin->wtype = WCONT_T_WINDOW;
   uiwin->widget = window;
   return uiwin;
@@ -215,6 +216,7 @@ uiCreateScrolledWindow (int minheight)
   gtk_widget_set_vexpand (widget, FALSE);
 
   scwindow = uiwcontAlloc ();
+  scwindow->wbasetype = WCONT_T_WINDOW;
   scwindow->wtype = WCONT_T_SCROLL_WINDOW;
   scwindow->widget = widget;
   return scwindow;
@@ -261,6 +263,7 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
   }
 
   uiwindow = uiwcontAlloc ();
+  uiwindow->wbasetype = WCONT_T_WINDOW;
   uiwindow->wtype = WCONT_T_DIALOG_WINDOW;
   uiwindow->widget = window;
   return uiwindow;
@@ -328,6 +331,20 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
   }
 
   gtk_window_set_resizable (GTK_WINDOW (uiwindow->widget), false);
+}
+
+void
+uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
+    return;
+  }
+  /* the type of the uiwidget is not known */
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_container_add (GTK_CONTAINER (uiwindow->widget), uiwidget->widget);
 }
 
 /* internal routines */

@@ -25,6 +25,7 @@ uiCreateAdjustment (double value, double start, double end,
   GtkAdjustment   *adjustment;
 
   uiadj = uiwcontAlloc ();
+  uiadj->wbasetype = WCONT_T_ADJUSTMENT;
   uiadj->wtype = WCONT_T_ADJUSTMENT;
   uiadj->widget = NULL;
 
@@ -36,7 +37,7 @@ uiCreateAdjustment (double value, double start, double end,
 void *
 uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
 {
-  if (uiadj == NULL) {
+  if (! uiwcontValid (uiadj, WCONT_T_ADJUSTMENT, "adj-get")) {
     return NULL;
   }
 

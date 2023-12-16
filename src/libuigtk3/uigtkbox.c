@@ -36,57 +36,48 @@ uiCreateHorizBox (void)
 }
 
 void
-uiBoxPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uibox)
-{
-  if (uiwindow == NULL || uiwindow->widget == NULL) {
-    return;
-  }
-  if (uibox == NULL || uibox->widget == NULL) {
-    return;
-  }
-  gtk_container_add (GTK_CONTAINER (uiwindow->widget), uibox->widget);
-}
-
-void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  if (uibox == NULL || uibox->widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
+
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  if (uibox == NULL || uibox->widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
+
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
 
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  if (uibox == NULL || uibox->widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
   }
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
+
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  if (uibox == NULL || uibox->widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
   }
   if (uiwidget == NULL || uiwidget->widget == NULL) {
@@ -94,6 +85,8 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
+
+/* internal routines */
 
 static uiwcont_t *
 uiCreateBox (int orientation)
@@ -103,6 +96,7 @@ uiCreateBox (int orientation)
 
   box = gtk_box_new (orientation, 0);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_BOX;
   uiwidget->wtype = WCONT_T_BOX;
   uiwidget->widget = box;
   return uiwidget;

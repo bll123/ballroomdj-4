@@ -188,7 +188,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiTreeViewDisableSingleClick (selectfile->selfiletree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetAlignVertFill (uitreewidgetp);
-  uiBoxPackInWindow (scwindow, uitreewidgetp);
+  uiWindowPackInWindow (scwindow, uitreewidgetp);
 
   uiwcontFree (scwindow);
 

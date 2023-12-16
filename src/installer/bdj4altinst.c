@@ -415,7 +415,7 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
-  uiBoxPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
+  uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
 
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: alternate installation: ask for installation folder */

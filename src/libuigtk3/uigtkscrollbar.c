@@ -38,6 +38,7 @@ uiCreateVerticalScrollbar (double upper)
   uiwidget = uiwcontAlloc ();
   sb = mdmalloc (sizeof (uiscrollbar_t));
   sb->changecb = NULL;
+  uiwidget->wbasetype = WCONT_T_SCROLLBAR;
   uiwidget->wtype = WCONT_T_SCROLLBAR;
 
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
@@ -54,7 +55,7 @@ uiCreateVerticalScrollbar (double upper)
 void
 uiScrollbarFree (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-free")) {
     return;
   }
 
@@ -67,7 +68,7 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-chg-cb")) {
     return;
   }
 
@@ -82,7 +83,7 @@ uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-upper")) {
     return;
   }
 
@@ -95,7 +96,7 @@ uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-pos")) {
     return;
   }
 
@@ -107,6 +108,10 @@ void
 uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 {
   uiscrollbar_t   *sb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-step-inc")) {
+    return;
+  }
 
   if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
     return;
@@ -121,7 +126,7 @@ uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-page-inc")) {
     return;
   }
 
@@ -134,7 +139,7 @@ uiScrollbarSetPageSize (uiwcont_t *uiwidget, double sz)
 {
   uiscrollbar_t   *sb;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SCROLLBAR) {
+  if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-page-sz")) {
     return;
   }
 

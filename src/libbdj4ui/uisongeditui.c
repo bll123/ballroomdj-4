@@ -231,7 +231,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
     for (int count = 0; count < seint->itemcount; ++count) {
       int   tagkey;
 
-      uichgindFree (seint->items [count].chgind);
+      uiwcontFree (seint->items [count].chgind);
 
       tagkey = seint->items [count].tagkey;
 

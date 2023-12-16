@@ -15,6 +15,7 @@
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,
+  /* base type for color-button, font-button */
   WCONT_T_BUTTON,
   WCONT_T_CHECK_BOX,
   WCONT_T_CHGIND,
@@ -28,6 +29,8 @@ typedef enum {
   WCONT_T_KEY,
   WCONT_T_LABEL,
   WCONT_T_LINK,
+  /* base type for menubar, menu-dropdown, menu-sub */
+  WCONT_T_MENU,
   WCONT_T_MENUBAR,
   WCONT_T_MENU_CHECK_BOX,
   WCONT_T_MENU_ITEM,
@@ -45,6 +48,8 @@ typedef enum {
   WCONT_T_SELECT,
   WCONT_T_SEPARATOR,
   WCONT_T_SIZE_GROUP,       // gtk widget
+  /* base type for all spinbox types */
+  WCONT_T_SPINBOX,
   WCONT_T_SPINBOX_DOUBLE,
   WCONT_T_SPINBOX_DOUBLE_DFLT,
   WCONT_T_SPINBOX_NUM,
@@ -53,11 +58,19 @@ typedef enum {
   WCONT_T_SWITCH,
   WCONT_T_TEXT_BOX,
   WCONT_T_TEXT_BUFFER,      // gtk widget
+  /* base type for check-box, readio-button */
   WCONT_T_TOGGLE_BUTTON,
   WCONT_T_TREE,
   WCONT_T_UNKNOWN,
+  /* base type for scroll-window, dialog-window, paned-window */
   WCONT_T_WINDOW,
+  WCONT_T_MAX,
 } uiwconttype_t;
+
+enum {
+  /* used so that the validity check will work (keys) */
+  WCONT_EMPTY_WIDGET = 0x0001,
+};
 
 typedef struct uikey uikey_t;
 typedef struct uimenu uimenu_t;
@@ -90,6 +103,7 @@ typedef union {
 
 /* a container may contain various types of gtk widgets */
 typedef struct uiwcont {
+  uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
   union {
     GtkWidget     *widget;
@@ -114,5 +128,22 @@ typedef struct uiwcont {
 } uiwcont_t;
 
 # endif /* BDJ4_USE_NULLUI */
+
+static inline bool
+uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
+{
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return false;
+  }
+  if ((int) uiwidget->wbasetype != exptype) {
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
+        tag,
+        exptype, uiwcontDesc (exptype),
+        uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+    return false;
+  }
+
+  return true;
+}
 
 #endif /* INC_UIWCONT_INT_H */
