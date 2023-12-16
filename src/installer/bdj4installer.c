@@ -2115,6 +2115,17 @@ installerFinalize (installer_t *installer)
 {
   char        tbuff [MAXPATHLEN];
 
+
+  if (installer->newinstall) {
+    if (! installer->bdjoptloaded) {
+      bdjoptInit ();
+      installer->bdjoptloaded = true;
+    }
+    instutilGetMusicDir (tbuff, sizeof (tbuff));
+    bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+    bdjoptSave ();
+  }
+
   if (! installer->readonly) {
     if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
       FILE    *fh;
