@@ -243,7 +243,7 @@ static void installerWebResponseCallback (void *userdata, const char *resp, size
 static void installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg);
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
-static void installerGetExistingData (installer_t *installer);
+static void installerLoadBdjOpt (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -1286,7 +1286,7 @@ installerSetPaths (installer_t *installer)
         installer->home);
   }
   if (installer->targetexists) {
-    installerGetExistingData (installer);
+    installerLoadBdjOpt (installer);
   }
 }
 
@@ -1650,7 +1650,7 @@ static void
 installerCreateDirs (installer_t *installer)
 {
   if (installer->updateinstall) {
-    installerGetExistingData (installer);
+    installerLoadBdjOpt (installer);
   }
 
   if (installer->updateinstall && ! installer->reinstall) {
@@ -1909,7 +1909,7 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
-  installerGetExistingData (installer);
+  installerLoadBdjOpt (installer);
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
@@ -2118,12 +2118,13 @@ installerFinalize (installer_t *installer)
 
   if (installer->newinstall) {
     if (! installer->bdjoptloaded) {
-      bdjoptInit ();
-      installer->bdjoptloaded = true;
+      installerLoadBdjOpt (installer);
     }
-    instutilGetMusicDir (tbuff, sizeof (tbuff));
-    bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
-    bdjoptSave ();
+    if (installer->bdjoptloaded) {
+      instutilGetMusicDir (tbuff, sizeof (tbuff));
+      bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+      bdjoptSave ();
+    }
   }
 
   if (! installer->readonly) {
@@ -2563,7 +2564,7 @@ installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 }
 
 static void
-installerGetExistingData (installer_t *installer)
+installerLoadBdjOpt (installer_t *installer)
 {
   char        cwd [MAXPATHLEN];
 
@@ -2572,12 +2573,9 @@ installerGetExistingData (installer_t *installer)
     installer->bdjoptloaded = false;
   }
 
-  if (installer->newinstall) {
-    return;
-  }
-
   osGetCurrentDir (cwd, sizeof (cwd));
   if (osChangeDir (installer->datatopdir)) {
+    /* no datatopdir as yet */
     return;
   }
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-12\n"
+"PO-Revision-Date: 2023-12-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -1094,7 +1094,6 @@ msgid "Move to Top"
 msgstr "このページのトップへ"
 
 #. CONTEXT: configuration: the music folder where the user stores their music
-#. CONTEXT: installation: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
 msgid "Music Folder"
 msgstr "音楽フォルダ"
@@ -1581,11 +1580,6 @@ msgstr "インストール場所の保存"
 msgid "Scale"
 msgstr "スケール"
 
-#. CONTEXT: alternate installation: status message
-#. CONTEXT: installer: status message
-msgid "Scanning music folder."
-msgstr "音楽フォルダをスキャン"
-
 #. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
 msgstr "スコア"
@@ -1645,8 +1639,6 @@ msgid "Select Folder"
 msgstr "フォルダを選択"
 
 #. CONTEXT: configuration: folder selection dialog: window title
-#. CONTEXT: alternate installation: music folder selection dialog: window title
-#. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
 msgid "Select Music Folder Location"
