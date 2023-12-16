@@ -1573,93 +1573,95 @@ manageSongEditMenu (manageui_t *manage)
   void        *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
-  if (! uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
-    manage->uict = uicopytagsInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
-    manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
-    manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
-        manageApplyAdjCallback, manage);
-    uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
 
-    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
-        /* CONTEXT: managementui: menu selection: actions for song editor */
-        manage->wcont [MANAGE_W_MENU_SONGEDIT], _("Actions"));
-    menu = uiCreateSubMenu (menuitem);
-    uiwcontFree (menuitem);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_BPM] = callbackInit (
-        manageStartBPMCounter, manage, NULL);
-    menuitem = uiMenuCreateItem (menu, tagdefs [TAG_BPM].displayname,
-        manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
-    uiwcontFree (menuitem);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
-        manageCopyTagsStart, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: copy audio tags */
-    menuitem = uiMenuCreateItem (menu, _("Copy Audio Tags"),
-        manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
-    uiwcontFree (menuitem);
-
-    uiMenuAddSeparator (menu);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
-        manageEditAllStart, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: edit all */
-    menuitem = uiMenuCreateItem (menu, _("Edit All"),
-        manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
-    uiwcontFree (menuitem);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
-        manageEditAllApply, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: apply edit all */
-    menuitem = uiMenuCreateItem (menu, _("Apply Edit All"),
-        manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
-    uiwcontFree (menuitem);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
-        manageEditAllCancel, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: cancel edit all */
-    menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"),
-        manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
-    uiwcontFree (menuitem);
-
-    uiMenuAddSeparator (menu);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
-        manageApplyAdjDialog, manage, NULL);
-    uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-    /* CONTEXT: managementui: song editor menu: apply adjustments */
-    menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
-        manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-    p = sysvarsGetStr (SV_PATH_FFMPEG);
-    if (p == NULL || ! *p) {
-      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    }
-    uiwcontFree (menuitem);
-
-    manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
-        manageRestoreOrigCallback, manage, NULL);
-    /* CONTEXT: managementui: song editor menu: restore original */
-    menuitem = uiMenuCreateItem (menu, _("Restore Original"),
-        manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
-    manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] = menuitem;
-    if (manage->enablerestoreorig) {
-      uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
-    } else {
-      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    }
-    /* a missing audio adjust file will not stop startup */
-    tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
-    if (tempp == NULL) {
-      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    }
-    /* do not free this menu item here */
-
-    uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
-    uiwcontFree (menu);
+  if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
+    uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
+    manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
+    return;
   }
 
-  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
-  manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
+  manage->uict = uicopytagsInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
+  manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
+  manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
+      manageApplyAdjCallback, manage);
+  uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
+
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
+      /* CONTEXT: managementui: menu selection: actions for song editor */
+      manage->wcont [MANAGE_W_MENU_SONGEDIT], _("Actions"));
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_BPM] = callbackInit (
+      manageStartBPMCounter, manage, NULL);
+  menuitem = uiMenuCreateItem (menu, tagdefs [TAG_BPM].displayname,
+      manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
+  uiwcontFree (menuitem);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
+      manageCopyTagsStart, manage, NULL);
+  /* CONTEXT: managementui: song editor menu: copy audio tags */
+  menuitem = uiMenuCreateItem (menu, _("Copy Audio Tags"),
+      manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
+  uiwcontFree (menuitem);
+
+  uiMenuAddSeparator (menu);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
+      manageEditAllStart, manage, NULL);
+  /* CONTEXT: managementui: song editor menu: edit all */
+  menuitem = uiMenuCreateItem (menu, _("Edit All"),
+      manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
+  uiwcontFree (menuitem);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
+      manageEditAllApply, manage, NULL);
+  /* CONTEXT: managementui: song editor menu: apply edit all */
+  menuitem = uiMenuCreateItem (menu, _("Apply Edit All"),
+      manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
+  uiwcontFree (menuitem);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
+      manageEditAllCancel, manage, NULL);
+  /* CONTEXT: managementui: song editor menu: cancel edit all */
+  menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"),
+      manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
+  uiwcontFree (menuitem);
+
+  uiMenuAddSeparator (menu);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
+      manageApplyAdjDialog, manage, NULL);
+  uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+  /* CONTEXT: managementui: song editor menu: apply adjustments */
+  menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
+      manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+  p = sysvarsGetStr (SV_PATH_FFMPEG);
+  if (p == NULL || ! *p) {
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  }
+  uiwcontFree (menuitem);
+
+  manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
+      manageRestoreOrigCallback, manage, NULL);
+  /* CONTEXT: managementui: song editor menu: restore original */
+  menuitem = uiMenuCreateItem (menu, _("Restore Original"),
+      manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
+  manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] = menuitem;
+  if (manage->enablerestoreorig) {
+    uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
+  } else {
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  }
+  /* a missing audio adjust file will not stop startup */
+  tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+  if (tempp == NULL) {
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  }
+  /* do not free this menu item here */
+
+  uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
+  uiwcontFree (menu);
 
   logProcEnd (LOG_PROC, "manageSongEditMenu", "");
 }
@@ -2247,50 +2249,51 @@ manageMusicManagerMenu (manageui_t *manage)
   uiwcont_t  *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
-  if (! uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
-    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
-        /* CONTEXT: managementui: menu selection: actions for music manager */
-        manage->wcont [MANAGE_W_MENU_MM], _("Actions"));
-    menu = uiCreateSubMenu (menuitem);
-    uiwcontFree (menuitem);
-
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
-        manageSameSongSetMark);
-    /* CONTEXT: managementui: menu selection: music manager: set same-song mark */
-    menuitem = uiMenuCreateItem (menu, _("Mark as Same Song"),
-        manage->callbacks [MANAGE_MENU_CB_MM_SET_MARK]);
-    uiwcontFree (menuitem);
-
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_CLEAR_MARK,
-        manageSameSongClearMark);
-    /* CONTEXT: managementui: menu selection: music manager: clear same-song mark */
-    menuitem = uiMenuCreateItem (menu, _("Clear Same Song Mark"),
-        manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
-    uiwcontFree (menuitem);
-
-    uiMenuAddSeparator (menu);
-
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_REMOVE_SONG,
-        manageMarkSongRemoved);
-    /* CONTEXT: managementui: menu selection: music manager: remove song */
-    menuitem = uiMenuCreateItem (menu, _("Remove Song"),
-        manage->callbacks [MANAGE_MENU_CB_MM_REMOVE_SONG]);
-    uiwcontFree (menuitem);
-
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_REMOVE,
-        manageUndoRemove);
-    /* CONTEXT: managementui: menu selection: music manager: undo song removal */
-    menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
-        manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-    manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE] = menuitem;
-
-    uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
-    uiwcontFree (menu);
+  if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
+    uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
+    manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
+    return;
   }
 
-  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
-  manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
+      /* CONTEXT: managementui: menu selection: actions for music manager */
+      manage->wcont [MANAGE_W_MENU_MM], _("Actions"));
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
+      manageSameSongSetMark);
+  /* CONTEXT: managementui: menu selection: music manager: set same-song mark */
+  menuitem = uiMenuCreateItem (menu, _("Mark as Same Song"),
+      manage->callbacks [MANAGE_MENU_CB_MM_SET_MARK]);
+  uiwcontFree (menuitem);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_CLEAR_MARK,
+      manageSameSongClearMark);
+  /* CONTEXT: managementui: menu selection: music manager: clear same-song mark */
+  menuitem = uiMenuCreateItem (menu, _("Clear Same Song Mark"),
+      manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
+  uiwcontFree (menuitem);
+
+  uiMenuAddSeparator (menu);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_REMOVE_SONG,
+      manageMarkSongRemoved);
+  /* CONTEXT: managementui: menu selection: music manager: remove song */
+  menuitem = uiMenuCreateItem (menu, _("Remove Song"),
+      manage->callbacks [MANAGE_MENU_CB_MM_REMOVE_SONG]);
+  uiwcontFree (menuitem);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_REMOVE,
+      manageUndoRemove);
+  /* CONTEXT: managementui: menu selection: music manager: undo song removal */
+  menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
+      manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
+  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE] = menuitem;
+
+  uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
+  uiwcontFree (menu);
 
   logProcEnd (LOG_PROC, "manageMusicManagerMenu", "");
 }

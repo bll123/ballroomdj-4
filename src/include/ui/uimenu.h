@@ -8,7 +8,7 @@
 #include "uiwcont.h"
 
 enum {
-  UIUTILS_MENU_MAX = 5,
+  UIUTILS_MENU_MAX = 10,
 };
 
 uiwcont_t *uiCreateMenubar (void);

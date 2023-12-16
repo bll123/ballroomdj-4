@@ -279,7 +279,7 @@ uiCreateScrolledWindow (int minheight)
 void
 uiWindowSetPolicyExternal (uiwcont_t *uiscw)
 {
-  if (! uiwcontValid (uiscw, WCONT_T_SCROLL_WINDOW, "win-set-policy-ext")) {
+  if (! uiwcontValid (uiscw, WCONT_T_WINDOW, "win-set-policy-ext")) {
     return;
   }
 

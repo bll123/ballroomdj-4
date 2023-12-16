@@ -20,7 +20,6 @@ typedef enum {
   WCONT_T_CHECK_BOX,
   WCONT_T_CHGIND,
   WCONT_T_COLOR_BUTTON,
-  WCONT_T_DIALOG,
   WCONT_T_DIALOG_WINDOW,
   WCONT_T_DROPDOWN,
   WCONT_T_ENTRY,
@@ -33,9 +32,9 @@ typedef enum {
   WCONT_T_MENU,
   WCONT_T_MENUBAR,
   WCONT_T_MENU_CHECK_BOX,
+  /* base type for menubar-item */
   WCONT_T_MENU_ITEM,
   WCONT_T_MENU_MENUBAR_ITEM,
-  WCONT_T_MENU_DROPDOWN,
   WCONT_T_MENU_SUB,
   WCONT_T_NOTEBOOK,
   WCONT_T_PANED_WINDOW,
@@ -135,10 +134,12 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return false;
   }
-  if ((int) uiwidget->wbasetype != exptype) {
-    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
+  if ((int) uiwidget->wbasetype != exptype &&
+     (int) uiwidget->wtype != exptype) {
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
         tag,
         exptype, uiwcontDesc (exptype),
+        uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
         uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
     return false;
   }

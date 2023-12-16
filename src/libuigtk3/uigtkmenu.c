@@ -90,7 +90,7 @@ uiMenuAddSeparator (uiwcont_t *uimenu)
 {
   GtkWidget *menuitem;
 
-  if (! uiwcontValid (uimenu, WCONT_T_MENU_DROPDOWN, "menu-add-sep")) {
+  if (! uiwcontValid (uimenu, WCONT_T_MENU, "menu-add-sep")) {
     return;
   }
 
@@ -105,7 +105,7 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
   uiwcont_t *uimenuitem;
   GtkWidget *menuitem;
 
-  if (! uiwcontValid (uimenu, WCONT_T_MENU_DROPDOWN, "menu-create-chkbox")) {
+  if (! uiwcontValid (uimenu, WCONT_T_MENU, "menu-create-chkbox")) {
     return NULL;
   }
 
@@ -117,7 +117,7 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
         G_CALLBACK (uiMenuToggleHandler), uicb);
   }
   uimenuitem = uiwcontAlloc ();
-  uimenuitem->wbasetype = WCONT_T_MENU_CHECK_BOX;
+  uimenuitem->wbasetype = WCONT_T_MENU_ITEM;
   uimenuitem->wtype = WCONT_T_MENU_CHECK_BOX;
   uimenuitem->widget = menuitem;
   return uimenuitem;
@@ -138,7 +138,8 @@ uiMenuAlloc (void)
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_MENU;
-  uiwidget->wtype = WCONT_T_MENU_DROPDOWN;
+  uiwidget->wtype = WCONT_T_MENU;
+  uiwidget->widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
   uiwidget->uiint.uimenu = menu;
   return uiwidget;
 }
@@ -148,7 +149,7 @@ uiMenuFree (uiwcont_t *uiwidget)
 {
   uimenu_t    *menu;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_MENU_DROPDOWN, "menu-free")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-free")) {
     return;
   }
 
@@ -165,7 +166,7 @@ uiMenuIsInitialized (uiwcont_t *uiwidget)
 {
   uimenu_t    *menu;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_MENU_DROPDOWN, "menu-is-init")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-is-init")) {
     return false;
   }
 
@@ -178,7 +179,7 @@ uiMenuSetInitialized (uiwcont_t *uiwidget)
 {
   uimenu_t    *menu;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_MENU_DROPDOWN, "menu-set-init")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-set-init")) {
     return;
   }
 
@@ -193,33 +194,37 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
   uimenu_t  *menu;
   int       i;
 
-  if (! uiwcontValid (uimenubar, WCONT_T_MENU, "menu-add-mbar")) {
+  if (! uiwcontValid (uimenubar, WCONT_T_MENUBAR, "menu-add-mbar")) {
     return NULL;
   }
-  if (! uiwcontValid (uimenu, WCONT_T_MENU_DROPDOWN, "menu-add-menu")) {
+  if (! uiwcontValid (uimenu, WCONT_T_MENU, "menu-add-menu")) {
     return NULL;
   }
 
   menu = uimenu->uiint.uimenu;
 
   if (menu->menucount >= UIUTILS_MENU_MAX) {
+    fprintf (stderr, "ERR exceeds menu max\n");
     return NULL;
   }
 
   i = menu->menucount;
   ++menu->menucount;
+
   uimenuitem = uiwcontAlloc ();
-  uimenuitem->wbasetype = WCONT_T_MENU_MENUBAR_ITEM;
+  uimenuitem->wbasetype = WCONT_T_MENU_ITEM;
   uimenuitem->wtype = WCONT_T_MENU_MENUBAR_ITEM;
   uimenuitem->widget = gtk_menu_item_new_with_label (txt);
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
+
   /* create our own copy here */
   menu->menuitem [i] = uiwcontAlloc ();
-  menu->menuitem [i]->wbasetype = WCONT_T_MENU_MENUBAR_ITEM;
+  menu->menuitem [i]->wbasetype = WCONT_T_MENU_ITEM;
   menu->menuitem [i]->wtype = WCONT_T_MENU_MENUBAR_ITEM;
   menu->menuitem [i]->widget = uimenuitem->widget;
+
   return uimenuitem;
 }
 
@@ -228,7 +233,7 @@ uiMenuDisplay (uiwcont_t *uiwidget)
 {
   uimenu_t    *menu;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_MENU_DROPDOWN, "menu-disp")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-disp")) {
     return;
   }
 
@@ -243,7 +248,7 @@ uiMenuClear (uiwcont_t *uiwidget)
 {
   uimenu_t    *menu;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_MENU_DROPDOWN, "menu-clear")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-clear")) {
     return;
   }
 

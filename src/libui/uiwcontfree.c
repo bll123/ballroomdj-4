@@ -35,7 +35,7 @@ uiwcontFree (uiwcont_t *uiwidget)
       uiKeyFree (uiwidget);
       break;
     }
-    case WCONT_T_MENU_DROPDOWN: {
+    case WCONT_T_MENU: {
       uiMenuFree (uiwidget);
       break;
     }
