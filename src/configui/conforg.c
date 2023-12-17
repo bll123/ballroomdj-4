@@ -39,6 +39,9 @@ confuiInitOrganization (confuigui_t *gui)
   gui->org->orgopt = orgoptAlloc ();
   tlist = orgoptGetList (gui->org->orgopt);
 
+  /* save the old organization path */
+  bdjoptSetStr (OPT_G_OLDORGPATH, bdjoptGetStr (OPT_G_ORGPATH));
+
   gui->uiitem [CONFUI_COMBOBOX_ORGPATH].displist = tlist;
   slistStartIterator (tlist, &iteridx);
   gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = 0;

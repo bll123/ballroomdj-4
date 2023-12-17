@@ -37,6 +37,7 @@ confuiPopulateOptions (confuigui_t *gui)
   long        debug = 0;
 
   logProcBegin (LOG_PROC, "confuiPopulateOptions");
+
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     int     musicq = 0;
     bool    isqueueitem = false;
@@ -279,4 +280,3 @@ confuiPopulateOptions (confuigui_t *gui)
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
   logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
 }
-

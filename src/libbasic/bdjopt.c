@@ -57,7 +57,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "DANCESELMETHOD",     OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, DF_NORM },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, DF_NORM },
-  { "OLDRGPATH",          OPT_G_OLDORGPATH,         VALUE_STR, NULL, DF_NORM },
+  { "OLDORGPATH",         OPT_G_OLDORGPATH,         VALUE_STR, NULL, DF_NORM },
   { "ORGPATH",            OPT_G_ORGPATH,            VALUE_STR, NULL, DF_NORM },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, DF_NORM },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, DF_NORM },
