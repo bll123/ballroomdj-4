@@ -21,34 +21,33 @@
 #include "check_bdj.h"
 #include "mdebug.h"
 #include "log.h"
-#include "vsencdec.h"
+#include "aesencdec.h"
 
 typedef struct {
   const char  *d;
-} vsec_t;
+} aesec_t;
 
-static vsec_t tests [] = {
+static aesec_t tests [] = {
   { "abcdef", },
   { "12345693", },
   { ".,mdfvda", },
 };
 
 enum {
-  TEST_SZ = sizeof (tests) / sizeof (vsec_t),
+  TEST_SZ = sizeof (tests) / sizeof (aesec_t),
 };
 
-START_TEST(vsencdec_encdec)
+START_TEST(aesencdec_encdec)
 {
-  char  dbuff [50];
-  char  ebuff [50];
+  char  dbuff [300];
+  char  ebuff [300];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- vsencdec_encdec");
-  mdebugSubTag ("vsencdec_encdec");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- aesencdec_encdec");
+  mdebugSubTag ("aesencdec_encdec");
 
   for (int i = 0; i < TEST_SZ; ++i) {
-    vsencdec (tests [i].d, ebuff, sizeof (ebuff));
-    vsencdec (ebuff, dbuff, sizeof (dbuff));
-    // fprintf (stderr, "%d: t: %s e: %s d: %s\n", i, tests [i].d, ebuff, dbuff);
+    aesencrypt (tests [i].d, ebuff, sizeof (ebuff));
+    aesdecrypt (ebuff, dbuff, sizeof (dbuff));
     ck_assert_str_eq (tests [i].d, dbuff);
   }
 }
@@ -56,19 +55,18 @@ END_TEST
 
 
 Suite *
-vsencdec_suite (void)
+aesencdec_suite (void)
 {
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("vsencdec");
-  tc = tcase_create ("vsencdec");
+  s = suite_create ("aesencdec");
+  tc = tcase_create ("aesencdec");
   tcase_set_tags (tc, "libcommon");
-  tcase_add_test (tc, vsencdec_encdec);
+  tcase_add_test (tc, aesencdec_encdec);
   suite_add_tcase (s, tc);
   return s;
 }
-
 
 #pragma clang diagnostic pop
 #pragma GCC diagnostic pop

@@ -58,6 +58,7 @@ main (int argc, char * argv[])
   const char  *targ;
 
   static struct option bdj_options [] = {
+    { "aesed",          no_argument,        NULL,   30 },
     { "bdj4altinst",    no_argument,        NULL,   20 },
     { "bdj4bpmcounter", no_argument,        NULL,   19 },
     { "bdj4cleantmp",   no_argument,        NULL,   29 },
@@ -340,6 +341,13 @@ main (int argc, char * argv[])
       }
       case 29: {
         prog = "bdj4cleantmp";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 30: {
+        prog = "aesed";
         nodetach = true;
         wait = true;
         ++validargs;

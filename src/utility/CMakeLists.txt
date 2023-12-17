@@ -112,6 +112,14 @@ target_link_libraries (plisinklist PUBLIC
   m
 )
 
+add_executable (aesed aesed.c)
+target_link_libraries (aesed PUBLIC
+  libbdj4 libbdj4basic libbdj4common
+  ${GCRYPT_LDFLAGS}
+  ${GLIB_LDFLAGS}
+  m
+)
+
 add_executable (vsed vsed.c)
 target_link_libraries (vsed PUBLIC
   libbdj4common
@@ -129,6 +137,7 @@ install (TARGETS
   tmusicsetup
   ttagdbchk
   plisinklist
+  aesed
   vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -144,3 +153,4 @@ updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
 updateRPath (plisinklist)
 updateRPath (vsed)
+updateRPath (aesed)

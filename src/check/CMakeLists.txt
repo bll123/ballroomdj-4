@@ -50,6 +50,7 @@ add_executable (check_all
   libbasic/check_slist.c
   # libbdj4
   libbdj4/check_libbdj4.c
+  libbdj4/check_aesencdec.c
   libbdj4/check_autosel.c
   libbdj4/check_bdjvarsdf.c
   libbdj4/check_bdjvarsdfload.c
@@ -88,6 +89,8 @@ target_link_libraries (check_all PUBLIC
   libbdj4audiosrc libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GCRYPT_LDFLAGS}
+  ${GLIB_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
   z

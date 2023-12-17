@@ -36,6 +36,7 @@
  *  tags - bdj4tags
  *  tset - tmusicsetup
  *  ts   - testsuite
+ *  taes - aesed
  *  ttdc - ttagdbchk
  *  tvlc - vlcsinklist
  *  tvol - voltest

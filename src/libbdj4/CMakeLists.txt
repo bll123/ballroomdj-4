@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4 SHARED
+  aesencdec.c
   audioadjust.c
   audiotag.c
   autosel.c
@@ -57,6 +58,7 @@ target_link_libraries (libbdj4 PUBLIC
   libbdj4ati libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
   z

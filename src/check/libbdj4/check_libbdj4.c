@@ -28,6 +28,7 @@ check_libbdj4 (SRunner *sr)
   Suite   *s;
 
   /* libbdj4
+   *  aesencdec             --
    *  bdjvarsdf             complete // needed by tests
    *  dnctypes              complete
    *  dance                 complete
@@ -74,6 +75,9 @@ check_libbdj4 (SRunner *sr)
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
+
+  s = aesencdec_suite();
+  srunner_add_suite (sr, s);
 
   s = bdjvarsdf_suite();
   srunner_add_suite (sr, s);
