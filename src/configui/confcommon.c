@@ -512,7 +512,7 @@ confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp)
   tdata = mdstrdup (data);
   song = songAlloc ();
   songParse (song, tdata, 0);
-  disp = orgMakeSongPath (org, song);
+  disp = orgMakeSongPath (org, song, NULL);
   pathDisplayPath (disp, strlen (disp));
   uiLabelSetText (uiwidgetp, disp);
   songFree (song);

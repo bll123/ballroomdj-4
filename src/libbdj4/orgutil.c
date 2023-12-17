@@ -47,7 +47,7 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
   [ORG_ALBUMARTIST] = { "ALBUMARTIST",  TAG_ALBUMARTIST,  NULL, },
   [ORG_ARTIST]      = { "ARTIST",       TAG_ARTIST,       NULL, },
   [ORG_BPM]         = { "BPM",          TAG_BPM,          NULL, },
-  [ORG_BYPASS]      = { "BYPASS",       -1,               NULL, },
+  [ORG_BYPASS]      = { "BYPASS",       (tagdefkey_t) ORG_TAG_BYPASS,   NULL, },
   [ORG_COMPOSER]    = { "COMPOSER",     TAG_COMPOSER,     NULL, },
   [ORG_CONDUCTOR]   = { "CONDUCTOR",    TAG_CONDUCTOR,    NULL, },
   [ORG_DANCE]       = { "DANCE",        TAG_DANCE,        danceConvDance },
@@ -262,7 +262,7 @@ orgGetList (org_t *org)
   return org->orgparsed;
 }
 
-char *
+const char *
 orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
 {
   slistidx_t  iteridx;
@@ -270,6 +270,9 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
   int         inc;
 
   if (org == NULL) {
+    return NULL;
+  }
+  if (tagkey >= TAG_KEY_MAX && tagkey != (tagdefkey_t) ORG_TAG_BYPASS) {
     return NULL;
   }
 
@@ -301,8 +304,8 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     }
 
     if (orginfo->orgkey != ORG_TEXT && orginfo->tagkey == tagkey) {
-      int   idx;
-      char  *val;
+      int         idx;
+      const char  *val = "";
 
       idx = orginfo->groupnum + inc;
       if (idx >= org->rxlen) {
@@ -324,7 +327,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
 }
 
 char *
-orgMakeSongPath (org_t *org, song_t *song)
+orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
 {
   slistidx_t      iteridx;
   const char      *p;
@@ -395,7 +398,14 @@ orgMakeSongPath (org_t *org, song_t *song)
           datap = conv.str;
         }
       } else {
-        datap = songGetStr (song, orginfo->tagkey);
+        if (orginfo->orgkey == ORG_BYPASS) {
+          datap = "";
+          if (bypass != NULL) {
+            datap = bypass;
+          }
+        } else {
+          datap = songGetStr (song, orginfo->tagkey);
+        }
         doclean = true;
       }
 

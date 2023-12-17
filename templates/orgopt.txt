@@ -1,13 +1,21 @@
 # org-opt
-# 2022-8-4
-# version 1
+# 2022-12-17
+# version 2
 #
 # There are many entries that are commented out that can be easily added
 # by removing the # <space> from in front of the line.
 #
 # recognized keywords:
-#   ALBUM ALBUMARTIST ARTIST COMPOSER CONDUCTOR DANCE DISC GENRE
+#   ALBUM ALBUMARTIST ARTIST BPM COMPOSER CONDUCTOR DANCE DISC GENRE
 #   RATING STATUS TITLE TRACKNUMBER TRACKNUMBER0
+#
+#   BYPASS
+#
+# BYPASS will skip a directory level.
+# When re-organizing and renaming an audio file, a BYPASS entry will
+# be populated with the current information.
+#
+# TRACKNUMBER0 is the tracknumber with leading zeros.
 #
 # {} groups text : if the keyword is empty, the entire group is ignored.
 #
@@ -23,7 +31,6 @@
 #   If the composer is the same as the albumartist or the artist, then
 #     the composer group is omitted.
 #
-# version 1
 ## album artist
 {%ALBUMARTIST% - }{%TITLE%}
 # used by itunes

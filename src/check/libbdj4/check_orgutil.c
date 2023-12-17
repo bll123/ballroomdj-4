@@ -32,6 +32,7 @@ char *orgpaths [] = {
   "{%ALBUMARTIST%/}{%TITLE%}",
   "{%ARTIST% - }{%TITLE%}",
   "{%ARTIST%/}{%TITLE%}",
+  "{%BYPASS%}{%DANCE% - }{%TITLE%}",
   "{%DANCE% - }{%TITLE%}",
   "{%DANCE%/}{%ARTIST% - }{%TITLE%}",
   "{%DANCE%/}{%TITLE%}",
@@ -52,12 +53,12 @@ char *testpathb [] = {
   NULL,
 };
 char *testpathc [] = {
-  "Ballroom_Dance/Various/White_Owl/01.松居慶子_-_White_Owl.mp3",
-  "Unknown/Various/The_Ultimate_Ballroom_Album_3/2-03.Starlight_(Waltz,_29mpm).mp3",
-  "Classical/Secret_Garden/Dreamcatcher/04.Dreamcatcher.mp3",
-  "Unknown/Various/The_Ultimate_Ballroom_Album_3/03.Starlight_(Waltz,_29mpm).mp3",
-  "Unknown/Various/The_Ultimate_Ballroom_Album_3/Starlight_(Waltz,_29mpm).mp3",
-  "/home/music/m/Anime/Evan_Call/VIOLET_EVERGARDEN_Automemories/01.Theme_of_Violet_Evergarden.mp3",
+  "BypassA/Ballroom_Dance/Various/White_Owl/01.松居慶子_-_White_Owl.mp3",
+  "BypassA/Unknown/Various/The_Ultimate_Ballroom_Album_3/2-03.Starlight_(Waltz,_29mpm).mp3",
+  "BypassB/Classical/Secret_Garden/Dreamcatcher/04.Dreamcatcher.mp3",
+  "BypassA/Unknown/Various/The_Ultimate_Ballroom_Album_3/03.Starlight_(Waltz,_29mpm).mp3",
+  "BypassA/Unknown/Various/The_Ultimate_Ballroom_Album_3/Starlight_(Waltz,_29mpm).mp3",
+  "/home/music/m/BypassB/Anime/Evan_Call/VIOLET_EVERGARDEN_Automemories/01.Theme_of_Violet_Evergarden.mp3",
   NULL,
 };
 char *testpathd [] = {
@@ -70,41 +71,45 @@ char *testpathd [] = {
   NULL,
 };
 
+/* note that to retrieve the bypass data, the filename must */
+/* be parsed using the old path. */
+/* for this test data, the old path will be {%BYPASS%/}{%TITLE} */
 char *testsongdata [] = {
   /* unknown genre */
-  "FILE\n..none1.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
+  "FILE\n..bypass2/none1.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
       "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
       "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
       "GENRE\n..Jazz\nCOMPOSER\n..Composer 1\n",
   /* no genre */
-  "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
+  "FILE\n..bypass1/none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
       "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
       "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
       "GENRE\n..\nCOMPOSER\n..Composer 2\n",
-  "FILE\n..none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+  "FILE\n..bypass0/none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
       "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
       "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
       "GENRE\n..Ballroom Dance\nCOMPOSER\n..Composer 3\n",
   /* empty albumartist */
-  "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
+  "FILE\n..bypassA/none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
       "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
       "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me Voy\n"
       "GENRE\n..Jazz\nCOMPOSER\n..Composer 4\n",
+  /* no bypass directory */
   "FILE\n..none5.mp3\nDISC\n..3\nTRACKNUMBER\n..5\n"
       "ALBUM\n..Album 5\nALBUMARTIST\n..AlbumArtist 5\n"
       "ARTIST\n..Artist 5\nDANCE\n..Rumba\nTITLE\n..こんにちは-ja\n"
       "GENRE\n..Jazz\nCOMPOSER\n..Composer 5\n",
-  "FILE\n..none6.mp3\nDISC\n..3\nTRACKNUMBER\n..6\n"
+  "FILE\n..bypassC/none6.mp3\nDISC\n..3\nTRACKNUMBER\n..6\n"
       "ALBUM\n..Album 6\nALBUMARTIST\n..AlbumArtist 6\n"
       "ARTIST\n..Artist 6\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
       "GENRE\n..Rock\nCOMPOSER\n..Composer 6\n",
-  "FILE\n..none7.mp3\nDISC\n..3\nTRACKNUMBER\n..7\n"
+  "FILE\n..bypassD/none7.mp3\nDISC\n..3\nTRACKNUMBER\n..7\n"
       "ALBUM\n..Album 7\nALBUMARTIST\n..AlbumArtist 7\n"
       "ARTIST\n..Artist 7\nDANCE\n..Cha Cha\nTITLE\n..Title 7\n"
       "GENRE\n..Classical\nCOMPOSER\n..Composer 7\n",
   /* dot at end of album artist, on windows this must not be present */
   /* if the album artist is a directory name */
-  "FILE\n..none8.mp3\nDISC\n..3\nTRACKNUMBER\n..8\n"
+  "FILE\n..bypassE/none8.mp3\nDISC\n..3\nTRACKNUMBER\n..8\n"
       "ALBUM\n..Album 8\nALBUMARTIST\n..AlbumArtist 8.\n"
       "ARTIST\n..Artist 8\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
       "GENRE\n..Rock\nCOMPOSER\n..Composer 8\n",
@@ -118,17 +123,18 @@ typedef struct {
 
 testsong_t testsongresults [] = {
   {
-    "{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
+    "{%BYPASS%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
     {
-      "Santana/Smooth/01-001.Smooth.mp3",
-      "WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
-      "Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
+      "bypass2/Santana/Smooth/01-001.Smooth.mp3",
+      "bypass1/WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
+      "bypass0/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
       /* empty album artist is replaced with the artist */
-      "Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
+      "bypassA/Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
+      /* no bypass dir */
       "AlbumArtist 5/Album 5/03-005.こんにちは-ja.mp3",
-      "AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
-      "AlbumArtist 7/Album 7/03-007.Title 7.mp3",
-      "AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
+      "bypassC/AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
+      "bypassD/AlbumArtist 7/Album 7/03-007.Title 7.mp3",
+      "bypassE/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
       NULL,
     },
   },
@@ -198,10 +204,10 @@ END_TEST
 
 START_TEST(orgutil_regex)
 {
-  int       i = 0;
-  org_t     *org;
-  char      *path;
-  char      *val;
+  int         i = 0;
+  org_t       *org;
+  const char  *path;
+  const char  *val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_regex");
   mdebugSubTag ("orgutil_regex");
@@ -236,12 +242,23 @@ START_TEST(orgutil_regex)
   }
   orgFree (org);
 
-  path = "{%GENRE%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}";
+  path = "{%BYPASS%/}{%GENRE%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}";
 
   org = orgAlloc (path);
   ck_assert_ptr_nonnull (org);
   i = 0;
   while (testpathc [i] != NULL) {
+    val = orgGetFromPath (org, testpathc [i], (tagdefkey_t) ORG_TAG_BYPASS);
+    if (i == 0) {
+      ck_assert_str_eq (val, "BypassA");
+    }
+    if (i == 5) {
+      ck_assert_str_eq (val, "BypassB");
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_GENRE);
+    if (i == 5) {
+      ck_assert_str_eq (val, "Anime");
+    }
     val = orgGetFromPath (org, testpathc [i], TAG_GENRE);
     if (i == 5) {
       ck_assert_str_eq (val, "Anime");
@@ -318,12 +335,14 @@ START_TEST(orgutil_regex)
     }
     ++i;
   }
+
   orgFree (org);
 }
 END_TEST
 
 START_TEST(orgutil_makepath)
 {
+  org_t     *orgbp;
   org_t     *org;
   int       ri;
   int       i;
@@ -357,6 +376,9 @@ START_TEST(orgutil_makepath)
         "Rock/AlbumArtist 8/Album 8/03-008.Ne_Русский_Шторм-ru.mp3";
   }
 
+  orgbp = orgAlloc ("{%BYPASS%/}{%TITLE%}");
+  ck_assert_ptr_nonnull (orgbp);
+
   ri = 0;
   while (testsongresults [ri].orgpath != NULL) {
     i = 0;
@@ -365,15 +387,22 @@ START_TEST(orgutil_makepath)
     ck_assert_ptr_nonnull (org);
 
     while (testsongresults [ri].results [i] != NULL) {
-      char      *tdata;
-      char      *disp;
-      song_t    *song;
+      char        *tdata;
+      char        *disp;
+      song_t      *song;
+      const char  *bypass;
 
       // fprintf (stderr, "i: %d %s\n", i, testsongresults [ri].results [i]);
       tdata = mdstrdup (testsongdata [i]);
       song = songAlloc ();
       songParse (song, tdata, 0);
-      disp = orgMakeSongPath (org, song);
+      bypass = "";
+      if (strstr (testsongresults [ri].orgpath, "BYPASS") != NULL) {
+        bypass = orgGetFromPath (orgbp, songGetStr (song, TAG_URI),
+            (tagdefkey_t) ORG_TAG_BYPASS);
+        // fprintf (stderr, "ri: %d i: %d bypass: %s\n", ri, i, bypass);
+      }
+      disp = orgMakeSongPath (org, song, bypass);
       ck_assert_str_eq (testsongresults [ri].results [i], disp);
       songFree (song);
       mdfree (tdata);
@@ -384,6 +413,8 @@ START_TEST(orgutil_makepath)
     orgFree (org);
     ++ri;
   }
+
+  orgFree (orgbp);
 }
 END_TEST
 
