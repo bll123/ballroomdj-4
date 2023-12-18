@@ -41,15 +41,13 @@ enum {
 };
 
 typedef struct manageseq {
-  uiwcont_t       *windowp;
-  nlist_t         *options;
+  manageinfo_t    *minfo;
   uiwcont_t       *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
   callback_t      *seqloadcb;
   callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
-  uiwcont_t       *errorMsg;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
@@ -64,19 +62,17 @@ static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
-manageSequenceAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
+manageSequenceAlloc (manageinfo_t *minfo)
 {
   manageseq_t *manageseq;
 
   manageseq = mdmalloc (sizeof (manageseq_t));
+  manageseq->minfo = minfo;
   manageseq->seqduallist = NULL;
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
   manageseq->seqmenu = uiMenuAlloc ();
   manageseq->seqname = uiEntryInit (30, 100);
-  manageseq->errorMsg = errorMsg;
-  manageseq->windowp = window;
-  manageseq->options = options;
   manageseq->changed = false;
   manageseq->inload = false;
   manageseq->seqloadcb = NULL;
@@ -147,7 +143,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   uiEntryCreate (manageseq->seqname);
   uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
-      manageseq->errorMsg, UIENTRY_IMMEDIATE);
+      manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
   uiWidgetSetClass (uiEntryGetWidgetContainer (manageseq->seqname), ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
@@ -379,7 +375,8 @@ manageSequenceLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSequenceLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
   manageSequenceSave (manageseq);
-  selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
+  selectFileDialog (SELFILE_SEQUENCE, manageseq->minfo->window,
+      manageseq->minfo->options,
       manageseq->callbacks [MSEQ_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSequenceLoad", "");
   return UICB_CONT;
@@ -411,7 +408,7 @@ manageSequenceCopy (void *udata)
 
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (manageseq->errorMsg, oname, newname)) {
+  if (manageCreatePlaylistCopy (manageseq->minfo->errorMsg, oname, newname)) {
     manageSetSequenceName (manageseq, newname);
     manageseq->seqbackupcreated = false;
     uiduallistClearChanged (manageseq->seqduallist);
@@ -459,7 +456,7 @@ manageSequenceDelete (void *udata)
   logProcBegin (LOG_PROC, "manageSequenceDelete");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
   oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
-  manageDeletePlaylist (manageseq->errorMsg, oname);
+  manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
   mdfree (oname);

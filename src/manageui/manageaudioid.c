@@ -22,12 +22,7 @@
 #include "uiwcont.h"
 
 typedef struct manageaudioid {
-  dispsel_t         *dispsel;
-  nlist_t           *options;
-  uiwcont_t         *windowp;
-  uiwcont_t         *errorMsg;
-  uiwcont_t         *statusMsg;
-  const char        *pleasewaitmsg;
+  manageinfo_t      *minfo;
   uisongsel_t       *uisongsel;
   audioid_t         *audioid;
   uiaudioid_t       *uiaudioid;
@@ -37,21 +32,16 @@ typedef struct manageaudioid {
 } manageaudioid_t;
 
 manageaudioid_t *
-manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window,
-    uiwcont_t *errorMsg, uiwcont_t *statusMsg, const char *pleasewaitmsg)
+manageAudioIdAlloc (manageinfo_t *minfo)
 {
   manageaudioid_t *maudioid;
 
   maudioid = mdmalloc (sizeof (manageaudioid_t));
-  maudioid->dispsel = dispsel;
-  maudioid->options = options;
-  maudioid->windowp = window;
-  maudioid->errorMsg = errorMsg;
-  maudioid->statusMsg = statusMsg;
+  maudioid->minfo = minfo;
   maudioid->uisongsel = NULL;
   maudioid->audioid = audioidInit ();
-  maudioid->uiaudioid = uiaudioidInit (maudioid->options, maudioid->dispsel);
-  maudioid->pleasewaitmsg = pleasewaitmsg;
+  maudioid->uiaudioid = uiaudioidInit (maudioid->minfo->options,
+      maudioid->minfo->dispsel);
   maudioid->song = NULL;
   maudioid->audioidmenu = uiMenuAlloc ();
   maudioid->state = BDJ4_STATE_OFF;
@@ -81,7 +71,7 @@ manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel)
 
   maudioid->uisongsel = uisongsel;
   uip = uiaudioidBuildUI (maudioid->uiaudioid, maudioid->uisongsel,
-      maudioid->windowp, maudioid->statusMsg);
+      maudioid->minfo->window, maudioid->minfo->statusMsg);
 
   return uip;
 }
@@ -125,7 +115,7 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
       break;
     }
     case BDJ4_STATE_START: {
-      uiLabelSetText (maudioid->statusMsg, maudioid->pleasewaitmsg);
+      uiLabelSetText (maudioid->minfo->statusMsg, maudioid->minfo->pleasewaitmsg);
       /* if the ui is repeating, don't try to set the display list, */
       /* stay in the start state and wait for repeat to go off */
       if (! uiaudioidIsRepeating (maudioid->uiaudioid)) {
@@ -155,7 +145,7 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
       break;
     }
     case BDJ4_STATE_FINISH: {
-      uiLabelSetText (maudioid->statusMsg, "");
+      uiLabelSetText (maudioid->minfo->statusMsg, "");
       maudioid->state = BDJ4_STATE_OFF;
       break;
     }

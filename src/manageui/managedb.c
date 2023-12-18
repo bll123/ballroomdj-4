@@ -48,11 +48,7 @@ enum {
 };
 
 typedef struct managedb {
-  uiwcont_t         *windowp;
-  nlist_t           *options;
-  uiwcont_t         *statusMsg;
-  uiwcont_t         *errorMsg;
-  const char        *pleasewaitmsg;
+  manageinfo_t      *minfo;
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
@@ -75,9 +71,7 @@ static bool manageDbStop (void *udata);
 static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
-manageDbAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *statusMsg, uiwcont_t *errorMsg, const char *pleasewaitmsg,
-    conn_t *conn, procutil_t **processes)
+manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
 {
   managedb_t      *managedb;
   nlist_t         *tlist;
@@ -89,7 +83,7 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
 
   managedb = mdmalloc (sizeof (managedb_t));
 
-  managedb->windowp = window;
+  managedb->minfo = minfo;
   managedb->conn = conn;
   managedb->processes = processes;
   managedb->dblist = NULL;
@@ -102,9 +96,6 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->dbhelpdisp = NULL;
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
-  managedb->statusMsg = statusMsg;
-  managedb->errorMsg = errorMsg;
-  managedb->pleasewaitmsg = pleasewaitmsg;
   managedb->compact = false;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     managedb->callbacks [i] = NULL;
@@ -349,7 +340,7 @@ manageDbChg (void *udata)
   value = uiSpinboxTextGetValue (managedb->dbspinbox);
   nval = (int) value;
 
-  uiLabelSetText (managedb->errorMsg, "");
+  uiLabelSetText (managedb->minfo->errorMsg, "");
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
@@ -369,7 +360,7 @@ manageDbChg (void *udata)
 
         /* CONTEXT: manage ui: status message: itunes is not configured */
         snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
-        uiLabelSetText (managedb->errorMsg, tbuff);
+        uiLabelSetText (managedb->minfo->errorMsg, tbuff);
         uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
         uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
       }
@@ -424,9 +415,9 @@ manageDbResetButtons (managedb_t *managedb)
 
     /* CONTEXT: update database: exit BDJ4 and restart */
     snprintf (tbuff, sizeof (tbuff), _("Exit %s and restart."), BDJ4_NAME);
-    uiLabelSetText (managedb->statusMsg, tbuff);
+    uiLabelSetText (managedb->minfo->statusMsg, tbuff);
   } else {
-    uiLabelSetText (managedb->statusMsg, "");
+    uiLabelSetText (managedb->minfo->statusMsg, "");
   }
   managedb->compact = false;
 
@@ -449,8 +440,8 @@ manageDbStart (void *udata)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
 
-  uiLabelSetText (managedb->statusMsg, "");
-  uiLabelSetText (managedb->errorMsg, "");
+  uiLabelSetText (managedb->minfo->statusMsg, "");
+  uiLabelSetText (managedb->minfo->errorMsg, "");
 
   uiButtonSetState (managedb->dbstart, UIWIDGET_DISABLE);
   uiButtonSetState (managedb->dbstop, UIWIDGET_ENABLE);
@@ -466,7 +457,7 @@ manageDbStart (void *udata)
   uiTextBoxAppendStr (managedb->dbstatus, sval);
   uiTextBoxAppendStr (managedb->dbstatus, "\n");
 
-  uiLabelSetText (managedb->statusMsg, managedb->pleasewaitmsg);
+  uiLabelSetText (managedb->minfo->statusMsg, managedb->minfo->pleasewaitmsg);
 
   switch (nval) {
     case MANAGE_DB_CHECK_NEW: {
@@ -537,7 +528,7 @@ manageDbSelectDirCallback (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db select top dir");
   /* CONTEXT: update database: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
-  selectdata = uiDialogCreateSelect (managedb->windowp,
+  selectdata = uiDialogCreateSelect (managedb->minfo->window,
       tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {

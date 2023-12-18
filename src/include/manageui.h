@@ -26,11 +26,19 @@ enum {
   MANAGE_DB_COUNT_SAVE = 10,
 };
 
+typedef struct {
+  uiwcont_t         *window;
+  dispsel_t         *dispsel;
+  uiwcont_t         *statusMsg;
+  uiwcont_t         *errorMsg;
+  nlist_t           *options;
+  const char        *pleasewaitmsg;
+} manageinfo_t;
+
 /* managepl.c */
 typedef struct managepl managepl_t;
 
-managepl_t *managePlaylistAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *errorMsg);
+managepl_t *managePlaylistAlloc (manageinfo_t *minfo);
 void managePlaylistFree (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
 void manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp);
@@ -54,8 +62,7 @@ void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
 /* manageseq.c */
 typedef struct manageseq manageseq_t;
 
-manageseq_t *manageSequenceAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *errorMsg);
+manageseq_t *manageSequenceAlloc (manageinfo_t *minfo);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb);
 void manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb);
@@ -68,7 +75,7 @@ void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preload
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg, uiwcont_t *errorMsg, const char *pleasewaitmsg, conn_t *conn, procutil_t **processes);
+managedb_t *manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
 void  manageDbProcess (managedb_t *managedb);
 void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp);
@@ -97,7 +104,7 @@ void manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musi
 /* manageaudioid.c */
 typedef struct manageaudioid manageaudioid_t;
 
-manageaudioid_t *manageAudioIdAlloc (dispsel_t *dispsel, nlist_t *options, uiwcont_t *window, uiwcont_t *errorMsg, uiwcont_t *statusMsg, const char *pleasewaitmsg);
+manageaudioid_t *manageAudioIdAlloc (manageinfo_t *minfo);
 void manageAudioIdFree (manageaudioid_t *maudioid);
 uiwcont_t *manageAudioIdBuildUI (manageaudioid_t *maudioid, uisongsel_t *uisongsel);
 uiwcont_t *manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar);

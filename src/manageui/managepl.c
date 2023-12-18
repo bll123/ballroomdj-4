@@ -62,9 +62,7 @@ enum {
 };
 
 typedef struct managepl {
-  uiwcont_t       *windowp;
-  nlist_t         *options;
-  uiwcont_t       *errorMsg;
+  manageinfo_t    *minfo;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -101,11 +99,12 @@ static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
-managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
+managePlaylistAlloc (manageinfo_t *minfo)
 {
   managepl_t *managepl;
 
   managepl = mdmalloc (sizeof (managepl_t));
+  managepl->minfo = minfo;
   for (int i = 0; i < MPL_W_MAX; ++i) {
     managepl->wcont [i] = NULL;
   }
@@ -114,9 +113,6 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
   managepl->plbackupcreated = false;
   managepl->wcont [MPL_W_MENU_PL] = uiMenuAlloc ();
   managepl->plname = uiEntryInit (30, 100);
-  managepl->errorMsg = errorMsg;
-  managepl->windowp = window;
-  managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
   managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
@@ -215,7 +211,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, uiutilsValidatePlaylistName,
-      managepl->errorMsg, UIENTRY_IMMEDIATE);
+      managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
   uiWidgetSetClass (uiEntryGetWidgetContainer (managepl->plname), ACCENT_CLASS);
   uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->plname));
 
@@ -410,7 +406,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 
-  managepl->managepltree = managePlaylistTreeAlloc (managepl->errorMsg);
+  managepl->managepltree = managePlaylistTreeAlloc (managepl->minfo->errorMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, vbox);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
@@ -435,47 +431,49 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
-  if (! uiMenuIsInitialized (managepl->wcont [MPL_W_MENU_PL])) {
-    menuitem = uiMenuAddMainItem (uimenubar,
-        /* CONTEXT: playlist management: menu selection: playlist: edit menu */
-        managepl->wcont [MPL_W_MENU_PL], _("Edit"));
-    menu = uiCreateSubMenu (menuitem);
-    uiwcontFree (menuitem);
-
-    managepl->callbacks [MPL_CB_MENU_PL_LOAD] = callbackInit (
-        managePlaylistLoad, managepl, NULL);
-    /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
-        managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
-    uiwcontFree (menuitem);
-
-    managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
-        managePlaylistNewCB, managepl, NULL);
-    /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
-    menuitem = uiMenuCreateItem (menu, _("New Automatic Playlist"),
-        managepl->callbacks [MPL_CB_MENU_PL_NEW]);
-    uiwcontFree (menuitem);
-
-    managepl->callbacks [MPL_CB_MENU_PL_COPY] = callbackInit (
-        managePlaylistCopy, managepl, NULL);
-    /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
-        managepl->callbacks [MPL_CB_MENU_PL_COPY]);
-    uiwcontFree (menuitem);
-
-    managepl->callbacks [MPL_CB_MENU_PL_DELETE] = callbackInit (
-        managePlaylistDelete, managepl, NULL);
-    /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
-    menuitem = uiMenuCreateItem (menu, _("Delete"),
-        managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
-    managepl->wcont [MPL_W_MENUITEM_DELETE] = menuitem;
-    /* do not free this menu item here */
-
-    uiMenuSetInitialized (managepl->wcont [MPL_W_MENU_PL]);
-    uiwcontFree (menu);
+  if (uiMenuIsInitialized (managepl->wcont [MPL_W_MENU_PL])) {
+    uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
+    logProcEnd (LOG_PROC, "managePlaylistMenu", "menu-is-init");
+    return managepl->wcont [MPL_W_MENU_PL];
   }
 
-  uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
+  menuitem = uiMenuAddMainItem (uimenubar,
+      /* CONTEXT: playlist management: menu selection: playlist: edit menu */
+      managepl->wcont [MPL_W_MENU_PL], _("Edit"));
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  managepl->callbacks [MPL_CB_MENU_PL_LOAD] = callbackInit (
+      managePlaylistLoad, managepl, NULL);
+  /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
+  menuitem = uiMenuCreateItem (menu, _("Load"),
+      managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
+  uiwcontFree (menuitem);
+
+  managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
+      managePlaylistNewCB, managepl, NULL);
+  /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
+  menuitem = uiMenuCreateItem (menu, _("New Automatic Playlist"),
+      managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+  uiwcontFree (menuitem);
+
+  managepl->callbacks [MPL_CB_MENU_PL_COPY] = callbackInit (
+      managePlaylistCopy, managepl, NULL);
+  /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
+  menuitem = uiMenuCreateItem (menu, _("Create Copy"),
+      managepl->callbacks [MPL_CB_MENU_PL_COPY]);
+  uiwcontFree (menuitem);
+
+  managepl->callbacks [MPL_CB_MENU_PL_DELETE] = callbackInit (
+      managePlaylistDelete, managepl, NULL);
+  /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
+  menuitem = uiMenuCreateItem (menu, _("Delete"),
+      managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
+  managepl->wcont [MPL_W_MENUITEM_DELETE] = menuitem;
+  /* do not free this menu item here */
+
+  uiMenuSetInitialized (managepl->wcont [MPL_W_MENU_PL]);
+  uiwcontFree (menu);
 
   logProcEnd (LOG_PROC, "managePlaylistMenu", "");
   return managepl->wcont [MPL_W_MENU_PL];
@@ -644,8 +642,8 @@ managePlaylistLoad (void *udata)
   logProcBegin (LOG_PROC, "managePlaylistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   managePlaylistSave (managepl);
-  selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
-      managepl->callbacks [MPL_CB_SEL_FILE]);
+  selectFileDialog (SELFILE_PLAYLIST, managepl->minfo->window,
+      managepl->minfo->options, managepl->callbacks [MPL_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "managePlaylistLoad", "");
   return UICB_CONT;
 }
@@ -743,7 +741,7 @@ managePlaylistCopy (void *udata)
   oname = manageTrimName (uiEntryGetValue (managepl->plname));
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (managepl->errorMsg, oname, newname)) {
+  if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
     uiSpinboxResetChanged (managepl->uimaxplaytime);
@@ -769,7 +767,7 @@ managePlaylistDelete (void *udata)
   logProcBegin (LOG_PROC, "managePlaylistDelete");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageTrimName (uiEntryGetValue (managepl->plname));
-  manageDeletePlaylist (managepl->errorMsg, oname);
+  manageDeletePlaylist (managepl->minfo->errorMsg, oname);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
@@ -801,11 +799,11 @@ managePlaylistValMSCallback (void *udata, const char *txt)
   long        value;
 
   logProcBegin (LOG_PROC, "managePlaylistValMSCallback");
-  uiLabelSetText (managepl->errorMsg, "");
+  uiLabelSetText (managepl->minfo->errorMsg, "");
   valstr = validate (txt, VAL_MIN_SEC);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
-    uiLabelSetText (managepl->errorMsg, tbuff);
+    uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd (LOG_PROC, "managePlaylistValMSCallback", "not-valid");
     return -1;
   }
@@ -824,11 +822,11 @@ managePlaylistValHMCallback (void *udata, const char *txt)
   long        value;
 
   logProcBegin (LOG_PROC, "managePlaylistValHMCallback");
-  uiLabelSetText (managepl->errorMsg, "");
+  uiLabelSetText (managepl->minfo->errorMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
-    uiLabelSetText (managepl->errorMsg, tbuff);
+    uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd (LOG_PROC, "managePlaylistValHMCallback", "not-valid");
     return -1;
   }
