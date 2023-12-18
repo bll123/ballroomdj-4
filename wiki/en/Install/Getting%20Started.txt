@@ -6,10 +6,14 @@
 
 #### Configuring BDJ4
 
-##### Locale
-
 Start BDJ4.  The window that displays is the _Starter_ window. Select
 the __Configure__ button.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-B.png)
+<br><span style="color:#4559bf;">__Starter__</span> </div>
+
+##### Locale
 
 The Nederlands (Dutch) translation is in excellent shape.  The Русский
 (Russian) translation is ok.
@@ -29,16 +33,9 @@ methods listed in [Getting&nbsp;Help](en-Getting%20Help).
 ##### Set the location of the music folder
 
 The first step is to configure the location of your music folder.
-Start BDJ4.  The window that displays is the _Starter_ window. Select
-the __Configure__ button.
 
-<div markdown style="margin-right: 20px; text-align: center;">
-![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-B.png)
-<br><span style="color:#4559bf;">__Starter__</span> </div>
-
-The configuration window will open and the _General_ section will be
-displayed. In the _General_ section, the first item is the
-__Music&nbsp;Folder__.
+In the configuration window, the _General_ section will be displayed.
+In the _General_ section, the first item is the __Music&nbsp;Folder__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
@@ -202,4 +199,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 11:06:58; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-18 09:28:34; BDJ4 version 4.4.7)_

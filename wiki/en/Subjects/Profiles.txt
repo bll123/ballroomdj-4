@@ -10,8 +10,7 @@ configuration using the same music database._</span>
 A profile is used when a different BDJ4 configuration is desired.
 
 A profile could be set up for teaching, for use with headphones, for
-use with headphones, for ballroom dance parties, for home, or other
-uses.
+ballroom dance parties, for home, or other uses.
 
 ##### Creating a New Profile
 
@@ -88,4 +87,4 @@ on their USB headphones.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-18 09:16:31; BDJ4 version 4.4.7)_
