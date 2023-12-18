@@ -1655,6 +1655,9 @@ manageSongEditMenu (manageui_t *manage)
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
   uiwcontFree (menu);
 
+  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
+  manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
+
   logProcEnd (LOG_PROC, "manageSongEditMenu", "");
 }
 

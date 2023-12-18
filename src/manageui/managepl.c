@@ -475,6 +475,8 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
   uiMenuSetInitialized (managepl->wcont [MPL_W_MENU_PL]);
   uiwcontFree (menu);
 
+  uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
+
   logProcEnd (LOG_PROC, "managePlaylistMenu", "");
   return managepl->wcont [MPL_W_MENU_PL];
 }

@@ -171,44 +171,48 @@ manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
   uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
-  if (! uiMenuIsInitialized (manageseq->seqmenu)) {
-    menuitem = uiMenuAddMainItem (uimenubar,
-        /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
-        manageseq->seqmenu, _("Edit"));
-    menu = uiCreateSubMenu (menuitem);
-    uiwcontFree (menuitem);
-
-    manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD] = callbackInit (
-        manageSequenceLoad, manageseq, NULL);
-    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
-        manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD]);
-    uiwcontFree (menuitem);
-
-    manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW] = callbackInit (
-        manageSequenceNew, manageseq, NULL);
-    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
-    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
-        manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW]);
-    uiwcontFree (menuitem);
-
-    manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY] = callbackInit (
-        manageSequenceCopy, manageseq, NULL);
-    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
-        manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY]);
-    uiwcontFree (menuitem);
-
-    manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE] = callbackInit (
-        manageSequenceDelete, manageseq, NULL);
-    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence */
-    menuitem = uiMenuCreateItem (menu, _("Delete"),
-        manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE]);
-    uiwcontFree (menuitem);
-
-    uiMenuSetInitialized (manageseq->seqmenu);
-    uiwcontFree (menu);
+  if (uiMenuIsInitialized (manageseq->seqmenu)) {
+    uiMenuDisplay (manageseq->seqmenu);
+    logProcEnd (LOG_PROC, "manageSequenceMenu", "is-init");
+    return manageseq->seqmenu;
   }
+
+  menuitem = uiMenuAddMainItem (uimenubar,
+      /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
+      manageseq->seqmenu, _("Edit"));
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD] = callbackInit (
+      manageSequenceLoad, manageseq, NULL);
+  /* CONTEXT: sequence editor: menu selection: sequence: edit menu: load */
+  menuitem = uiMenuCreateItem (menu, _("Load"),
+      manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD]);
+  uiwcontFree (menuitem);
+
+  manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW] = callbackInit (
+      manageSequenceNew, manageseq, NULL);
+  /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
+  menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
+      manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW]);
+  uiwcontFree (menuitem);
+
+  manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY] = callbackInit (
+      manageSequenceCopy, manageseq, NULL);
+  /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
+  menuitem = uiMenuCreateItem (menu, _("Create Copy"),
+      manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY]);
+  uiwcontFree (menuitem);
+
+  manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE] = callbackInit (
+      manageSequenceDelete, manageseq, NULL);
+  /* CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence */
+  menuitem = uiMenuCreateItem (menu, _("Delete"),
+      manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE]);
+  uiwcontFree (menuitem);
+
+  uiMenuSetInitialized (manageseq->seqmenu);
+  uiwcontFree (menu);
 
   uiMenuDisplay (manageseq->seqmenu);
 
