@@ -9,12 +9,10 @@ add_executable (bdj4main bdj4main.c)
 if (WIN32)
   target_compile_options (bdj4main PRIVATE -municode)
 endif()
-target_link_libraries (bdj4main PUBLIC
+target_link_libraries (bdj4main PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4main)
 addWinSockLibrary (bdj4main)
@@ -23,12 +21,11 @@ add_executable (bdj4player bdj4player.c)
 if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
 endif()
-target_link_libraries (bdj4player PUBLIC
+target_link_libraries (bdj4player PRIVATE
   libbdj4pli libbdj4vol
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  z
   m
 )
 addIntlLibrary (bdj4player)
@@ -40,12 +37,11 @@ if (WIN32)
   target_compile_options (bdj4marquee PRIVATE -municode)
   target_compile_options (bdj4marquee PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4marquee PUBLIC
+target_link_libraries (bdj4marquee PRIVATE
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
   m
 )
 addIntlLibrary (bdj4marquee)
@@ -58,13 +54,11 @@ target_include_directories (bdj4rc
 if (WIN32)
   target_compile_options (bdj4rc PRIVATE -municode)
 endif()
-target_link_libraries (bdj4rc PUBLIC
+target_link_libraries (bdj4rc PRIVATE
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  z
-  m
 )
 addWinSockLibrary (bdj4rc)
 
@@ -75,14 +69,13 @@ target_include_directories (bdj4mobmq
 if (WIN32)
   target_compile_options (bdj4mobmq PRIVATE -municode)
 endif()
-target_link_libraries (bdj4mobmq PUBLIC
+target_link_libraries (bdj4mobmq PRIVATE
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  z
-  m
 )
+addIntlLibrary (bdj4mobmq)
 addWinSockLibrary (bdj4mobmq)
 
 install (TARGETS

@@ -9,9 +9,8 @@ add_library (libbdj4audiosrc SHARED
   audiosrc.c
   audiosrcfile.c
 )
-target_link_libraries (libbdj4audiosrc PUBLIC
+target_link_libraries (libbdj4audiosrc PRIVATE
   libbdj4basic libbdj4common
-  m
 )
 
 install (TARGETS

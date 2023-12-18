@@ -15,20 +15,19 @@ add_library (libbdj4audioid SHARED
   acrcloud.c
 )
 target_include_directories (libbdj4audioid
-  PUBLIC "${XML2_INCLUDE_DIRS}"
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${XML2_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4audioid PUBLIC
+target_link_libraries (libbdj4audioid PRIVATE
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${CURL_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${XML2_LDFLAGS}
   ${JSONC_LDFLAGS}
-  z
-  m
 )
 # if (APPLE)
-#  target_link_libraries (libbdj4audioid PUBLIC
+#  target_link_libraries (libbdj4audioid PRIVATE
 #    "-framework Cocoa"
 #  )
 #endif()

@@ -10,12 +10,11 @@ if (WIN32)
   target_compile_options (bdj4playerui PRIVATE -municode)
   target_compile_options (bdj4playerui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4playerui PUBLIC
+target_link_libraries (bdj4playerui PRIVATE
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
   m
 )
 addIntlLibrary (bdj4playerui)

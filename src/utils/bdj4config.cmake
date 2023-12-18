@@ -124,9 +124,8 @@ pkg_check_modules (LIBMP4TAG libmp4tag)
 #### ICU string library
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.
-# ICU has incorrect library versioning procedures.
+# ICU has incorrect library versioning packaging.
 pkg_check_modules (ICUI18N icu-i18n)
-pkg_check_modules (ICUUC icu-uc)
 
 #### generic compile options
 

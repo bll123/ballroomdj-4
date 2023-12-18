@@ -5,7 +5,8 @@
 
 #if __APPLE__
 
-#import "Foundation/NSObject.h"
+#import <Foundation/NSObject.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

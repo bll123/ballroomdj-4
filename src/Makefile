@@ -188,18 +188,18 @@ dataclean:
 
 .PHONY: distclean
 distclean:
-	@-$(MAKE) clean
 	@-$(RM) -rf build
-	@mkdir build
+	@-$(MAKE) clean
 	@-$(RM) -f ../install/manifest.txt ../install/manifest-src.txt
 	@-$(RM) -f testall.log
+	@mkdir build
 
 .PHONY: clean
 clean:
 	@-$(MAKE) tclean
 	@-$(RM) -f zz ../zz ../*/zz
 	@-$(MAKE) eclean
-	@-test -d build && cmake --build build --target clean
+	@-test -f build/CMakeCache.txt && cmake --build build --target clean
 
 .PHONY: eclean
 eclean:

@@ -13,12 +13,11 @@ if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
 endif()
 target_include_directories (bdj4info
-  PUBLIC ${GTK_INCLUDE_DIRS}
+  PRIVATE ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (bdj4info PUBLIC
+target_link_libraries (bdj4info PRIVATE
   libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  m
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4info)
 
@@ -26,11 +25,9 @@ add_executable (bdj4tags bdj4tags.c)
 if (WIN32)
   target_compile_options (bdj4tags PRIVATE -municode)
 endif()
-target_link_libraries (bdj4tags PUBLIC
+target_link_libraries (bdj4tags PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4tags)
 
@@ -43,54 +40,45 @@ add_executable (dmkmfromdb dmkmfromdb.c)
 if (WIN32)
   target_compile_options (dmkmfromdb PRIVATE -municode)
 endif()
-target_link_libraries (dmkmfromdb PUBLIC
+target_link_libraries (dmkmfromdb PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
+addIntlLibrary (dmkmfromdb)
 
 add_executable (tdbcompare tdbcompare.c)
 if (WIN32)
   target_compile_options (tdbcompare PRIVATE -municode)
 endif()
-target_link_libraries (tdbcompare PUBLIC
+target_link_libraries (tdbcompare PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 add_executable (tdbsetval tdbsetval.c)
 if (WIN32)
   target_compile_options (tdbsetval PRIVATE -municode)
 endif()
-target_link_libraries (tdbsetval PUBLIC
+target_link_libraries (tdbsetval PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 add_executable (testsuite
   testsuite.c
 )
-target_link_libraries (testsuite PUBLIC
+target_link_libraries (testsuite PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 add_executable (tmusicsetup tmusicsetup.c)
 if (WIN32)
   target_compile_options (tmusicsetup PRIVATE -municode)
 endif()
-target_link_libraries (tmusicsetup PUBLIC
+target_link_libraries (tmusicsetup PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (tmusicsetup)
 
@@ -98,32 +86,27 @@ add_executable (ttagdbchk ttagdbchk.c)
 if (WIN32)
   target_compile_options (ttagdbchk PRIVATE -municode)
 endif()
-target_link_libraries (ttagdbchk PUBLIC
+target_link_libraries (ttagdbchk PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 add_executable (plisinklist plisinklist.c)
-target_link_libraries (plisinklist PUBLIC
+target_link_libraries (plisinklist PRIVATE
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 add_executable (aesed aesed.c)
-target_link_libraries (aesed PUBLIC
+target_link_libraries (aesed PRIVATE
   libbdj4 libbdj4basic libbdj4common
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
-  m
 )
 
 add_executable (vsed vsed.c)
-target_link_libraries (vsed PUBLIC
+target_link_libraries (vsed PRIVATE
   libbdj4common
-  m
 )
 
 install (TARGETS

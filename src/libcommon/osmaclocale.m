@@ -5,12 +5,16 @@
 
 #if __APPLE__
 
+#import <Foundation/NSObject.h>
+#import <Foundation/NSLocale.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-#import <Foundation/NSLocale.h>
+#include <MacTypes.h>
+#include <Cocoa/Cocoa.h>
 
 #include "oslocale.h"
 

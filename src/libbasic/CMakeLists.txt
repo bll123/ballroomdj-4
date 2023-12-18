@@ -21,14 +21,13 @@ add_library (libbdj4basic SHARED
   slist.c
 )
 target_include_directories (libbdj4basic
-  PUBLIC "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4basic PUBLIC
+target_link_libraries (libbdj4basic PRIVATE
   libbdj4common
   ${ICUI18N_LDFLAGS}
   ${ICUUC_LDFLAGS}
   ${GLIB_LDFLAGS}
-  m
 )
 
 install (TARGETS

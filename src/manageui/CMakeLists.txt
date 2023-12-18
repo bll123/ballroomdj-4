@@ -19,14 +19,12 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -municode)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4manageui PUBLIC
+target_link_libraries (bdj4manageui PRIVATE
   libbdj4ui ${BDJ4_UI_LIB} libbdj4audioid
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
@@ -38,12 +36,11 @@ if (WIN32)
   target_compile_options (bdj4bpmcounter PRIVATE -municode)
   target_compile_options (bdj4bpmcounter PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4bpmcounter PUBLIC
-  libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+target_link_libraries (bdj4bpmcounter PRIVATE
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
   m
 )
 addIntlLibrary (bdj4bpmcounter)
@@ -53,11 +50,10 @@ add_executable (bdj4dbupdate bdj4dbupdate.c)
 if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -municode)
 endif()
-target_link_libraries (bdj4dbupdate PUBLIC
-  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+target_link_libraries (bdj4dbupdate PRIVATE
+  libbdj4ati
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)

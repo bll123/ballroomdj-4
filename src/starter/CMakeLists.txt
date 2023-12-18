@@ -26,14 +26,11 @@ if (WIN32)
   target_compile_options (bdj4 PRIVATE -municode)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
-target_link_libraries (bdj4 PUBLIC
+target_link_libraries (bdj4 PRIVATE
   libbdj4launcher
   libbdj4fileop
-  libbdj4osprocess
-  libbdj4osutils
+  libbdj4osprocess    # include osutils,bdj4string
   libbdj4tmutil
-  libbdj4string
-  m
 )
 # for gethostname
 addWinSockLibrary (bdj4)
@@ -46,17 +43,14 @@ if (WIN32)
   target_compile_options (bdj4g PRIVATE -municode)
 endif()
 target_include_directories (bdj4g
-  PUBLIC ${GTK_INCLUDE_DIRS}
+  PRIVATE ${GTK_INCLUDE_DIRS}
 )
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
-target_link_libraries (bdj4g PUBLIC
+target_link_libraries (bdj4g PRIVATE
   libbdj4launcher
   libbdj4fileop
-  libbdj4osprocess
-  libbdj4osutils
-  libbdj4string
+  libbdj4osprocess    # include osutils,bdj4string
   ${GTK_LDFLAGS}
-  m
 )
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
@@ -70,13 +64,11 @@ if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -municode)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4starterui PUBLIC
+target_link_libraries (bdj4starterui PRIVATE
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
@@ -87,12 +79,10 @@ if (WIN32)
   target_compile_options (bdj4helperui PRIVATE -municode)
   target_compile_options (bdj4helperui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4helperui PUBLIC
+target_link_libraries (bdj4helperui PRIVATE
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
@@ -102,10 +92,8 @@ add_executable (bdj4cleantmp bdj4cleantmp.c)
 if (WIN32)
   target_compile_options (bdj4cleantmp PRIVATE -municode)
 endif()
-target_link_libraries (bdj4cleantmp PUBLIC
+target_link_libraries (bdj4cleantmp PRIVATE
   libbdj4basic libbdj4common
-  z
-  m
 )
 updateRPath (bdj4cleantmp)
 

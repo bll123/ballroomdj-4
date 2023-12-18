@@ -44,15 +44,18 @@ add_library (libbdj4ui SHARED
   uiutils.c
 )
 target_include_directories (libbdj4ui
-  PUBLIC ${GTK_INCLUDE_DIRS}
+  PRIVATE ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (libbdj4ui PUBLIC
+if (APPLE)
+  target_link_libraries (libbdj4ui PRIVATE
+    "-framework Cocoa"
+  )
+endif()
+target_link_libraries (libbdj4ui PRIVATE
   ${BDJ4_UI_LIB} libbdj4ati
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)

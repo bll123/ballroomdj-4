@@ -8,37 +8,33 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4pli SHARED
   pli.c
 )
-target_link_libraries (libbdj4pli PUBLIC
+target_link_libraries (libbdj4pli PRIVATE
   libdylib
   libdyintfc
   libbdj4basic libbdj4common
-  m
 )
 
 add_library (libplinull SHARED plinull.c)
-target_link_libraries (libplinull PUBLIC
+target_link_libraries (libplinull PRIVATE
   libbdj4common
-  m
 )
 
 add_library (libplivlc SHARED plivlc.c vlci.c)
 target_include_directories (libplivlc
-  PUBLIC "${LIBVLC_INCLUDE_DIR}"
+  PRIVATE "${LIBVLC_INCLUDE_DIR}"
 )
-target_link_libraries (libplivlc PUBLIC
+target_link_libraries (libplivlc PRIVATE
   libbdj4common
   ${LIBVLC_LIBRARY}
-  m
 )
 
 add_library (libplimpv SHARED plimpv.c mpvi.c)
 target_include_directories (libplimpv
-  PUBLIC "${LIBMPV_INCLUDE_DIRS}"
+  PRIVATE "${LIBMPV_INCLUDE_DIRS}"
 )
-target_link_libraries (libplimpv PUBLIC
+target_link_libraries (libplimpv PRIVATE
   libbdj4common
   ${LIBMPV_LDFLAGS}
-  m
 )
 
 install (TARGETS

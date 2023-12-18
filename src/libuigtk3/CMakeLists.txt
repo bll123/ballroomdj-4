@@ -40,14 +40,12 @@ add_library (libuigtk3 SHARED
   ../libui/uiwcontfree.c
 )
 target_include_directories (libuigtk3
-  PUBLIC ${GTK_INCLUDE_DIRS}
+  PRIVATE ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (libuigtk3 PUBLIC
+target_link_libraries (libuigtk3 PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (libuigtk3)
 addWinSockLibrary (libuigtk3)

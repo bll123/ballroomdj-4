@@ -10,9 +10,9 @@ add_library (libbdj4atiutil SHARED
   atioggutil.c
 )
 target_include_directories (libbdj4atiutil
-  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
-target_link_libraries (libbdj4atiutil PUBLIC
+target_link_libraries (libbdj4atiutil PRIVATE
   # ogg
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}
@@ -21,16 +21,15 @@ target_link_libraries (libbdj4atiutil PUBLIC
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
   libbdj4basic libbdj4common
-  m
 )
 
 add_library (libbdj4ati SHARED
   ati.c
 )
 target_include_directories (libbdj4ati
-  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
-target_link_libraries (libbdj4ati PUBLIC
+target_link_libraries (libbdj4ati PRIVATE
   # ogg
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}
@@ -42,7 +41,6 @@ target_link_libraries (libbdj4ati PUBLIC
   libdylib
   libdyintfc
   libbdj4basic libbdj4common
-  m
 )
 
 add_library (libatibdj4 SHARED
@@ -56,9 +54,10 @@ add_library (libatibdj4 SHARED
   atibdj4riff.c
 )
 target_include_directories (libatibdj4
-  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${LIBOPUS_INCLUDE_DIRS}
+  PRIVATE ${LIBOPUSFILE_INCLUDE_DIRS}
 )
-target_link_libraries (libatibdj4 PUBLIC
+target_link_libraries (libatibdj4 PRIVATE
   # put this first, otherwise the wrong libid3tag library is picked up
   # libid3tag
   ${LIBID3TAG_LDFLAGS}
@@ -80,10 +79,10 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4basic
   libbdj4common
   # icu for asf
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  m
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (libatibdj4)
+addWinSockLibrary (libatibdj4)
 
 # if another ati library is added, be sure to update the installer.
 # the ati interface names are hard coded there.

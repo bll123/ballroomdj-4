@@ -85,16 +85,14 @@ add_executable (check_all
   libaudiosrc/check_libaudiosrc.c
   libaudiosrc/check_audiosrc.c
 )
-target_link_libraries (check_all PUBLIC
-  libbdj4audiosrc libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+target_link_libraries (check_all PRIVATE
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
-  z
-  m
 )
 target_compile_options (check_all PRIVATE -I${PROJECT_SOURCE_DIR}/check)
 target_compile_options (check_all PRIVATE -pthread)
@@ -102,10 +100,8 @@ addIntlLibrary (check_all)
 addWinSockLibrary (check_all)
 
 add_executable (chkfileshared chkfileshared.c)
-target_link_libraries (chkfileshared PUBLIC
+target_link_libraries (chkfileshared PRIVATE
   libbdj4common
-  z
-  m
 )
 
 add_executable (chkprocess chkprocess.c)

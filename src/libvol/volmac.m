@@ -5,11 +5,12 @@
 
 #if _hdr_MacTypes
 
-#import "AudioToolbox/AudioServices.h"
-#import "Foundation/NSObject.h"
+#import <AudioToolbox/AudioServices.h>
+#import <Foundation/NSObject.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <MacTypes.h>
 #include <Cocoa/Cocoa.h>
 

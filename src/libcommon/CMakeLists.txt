@@ -36,29 +36,20 @@ add_library (libbdj4common SHARED
   vsencdec.c
 )
 target_include_directories (libbdj4common
-  PUBLIC "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
 )
 if (APPLE)
-  # not sure if this is correct, but it works
-  target_link_libraries (libbdj4common PUBLIC
+  target_link_libraries (libbdj4common PRIVATE
     "-framework Cocoa"
   )
 endif()
-target_link_libraries (libbdj4common PUBLIC
+target_link_libraries (libbdj4common PRIVATE
   libbdj4fileop     # fileop.c
   libbdj4osprocess  # osprocess.c
   libbdj4tmutil     # tmutil.c
-  libbdj4osutils    # osutils.c
-  libbdj4string     # bdjstring, strlcat, strlcpy, mdebug
+  libbdj4osutils    # osutils (bdjstring, strlcat, strlcpy, mdebug)
   ${GLIB_LDFLAGS}
-  m
 )
-# have to see if this is needed
-#if (WIN32)
-#  target_link_libraries (bdj4dbupdate PUBLIC
-#    -lregex
-#  )
-#endif()
 addIOKitFramework (libbdj4common)
 addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)

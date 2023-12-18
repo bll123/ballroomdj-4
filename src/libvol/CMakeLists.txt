@@ -8,21 +8,20 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4vol SHARED
   volume.c
 )
-target_link_libraries (libbdj4vol PUBLIC
+target_link_libraries (libbdj4vol PRIVATE
   libdyintfc
   libdylib
   libbdj4basic libbdj4common
-  m
 )
 
 add_library (libvolnull SHARED volnull.c)
-target_link_libraries (libvolnull PUBLIC
+target_link_libraries (libvolnull PRIVATE
   libbdj4string
 )
 
 if (APPLE)
   add_library (libvolmac SHARED volmac.m)
-  target_link_libraries (libvolmac PUBLIC
+  target_link_libraries (libvolmac PRIVATE
     "-framework Cocoa" "-framework CoreAudio"
   )
 endif()
@@ -31,11 +30,10 @@ if (NOT WIN32 AND NOT APPLE)
   if (PA_FOUND)
     add_library (libvolpa SHARED volpa.c)
     target_include_directories (libvolpa
-      PUBLIC "${PA_INCLUDE_DIRS}"
+      PRIVATE "${PA_INCLUDE_DIRS}"
     )
-    target_link_libraries (libvolpa PUBLIC
+    target_link_libraries (libvolpa PRIVATE
       ${PA_LDFLAGS}
-      m
     )
   endif()
 endif()
@@ -44,29 +42,27 @@ if (NOT WIN32 AND NOT APPLE)
   if (PIPEWIRE_FOUND)
     add_library (libvolpipewire SHARED volpipewire.c)
     target_include_directories (libvolpipewire
-      PUBLIC "${PIPEWIRE_INCLUDE_DIRS}"
+      PRIVATE "${PIPEWIRE_INCLUDE_DIRS}"
     )
-    target_link_libraries (libvolpipewire PUBLIC
+    target_link_libraries (libvolpipewire PRIVATE
       ${PIPEWIRE_LDFLAGS}
-      m
     )
-      endif()
+  endif()
 endif()
 
 if (WIN32)
   add_library (libvolwin SHARED volwin.cpp)
   target_compile_options (libvolwin PRIVATE -static-libstdc++)
-  target_link_libraries (libvolwin PUBLIC
+  target_link_libraries (libvolwin PRIVATE
     libbdj4fileop
     libbdj4string
   )
   endif()
 
 add_executable (voltest voltest.c)
-target_link_libraries (voltest PUBLIC
+target_link_libraries (voltest PRIVATE
   libbdj4vol libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  m
+  ${ICUI18N_LDFLAGS}
 )
 
 install (TARGETS

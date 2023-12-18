@@ -51,21 +51,22 @@ add_library (libbdj4 SHARED
   webclient.c
 )
 target_include_directories (libbdj4
-  PUBLIC "${CURL_INCLUDE_DIRS}"
-  PUBLIC "${XML2_INCLUDE_DIRS}"
+  PRIVATE "${CURL_INCLUDE_DIRS}"
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${XML2_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4 PUBLIC
-  libbdj4ati libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+target_link_libraries (libbdj4 PRIVATE
+  libbdj4ati
+  libbdj4audiosrc libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
   z
-  m
 )
 if (APPLE)
-  target_link_libraries (libbdj4 PUBLIC
+  target_link_libraries (libbdj4 PRIVATE
     "-framework Cocoa"
   )
 endif()

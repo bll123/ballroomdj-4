@@ -39,11 +39,9 @@ add_library (libuinull SHARED
   ../libui/uiwcont.c
   ../libui/uiwcontfree.c
 )
-target_link_libraries (libuinull PUBLIC
+target_link_libraries (libuinull PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (libuinull)
 addWinSockLibrary (libuinull)

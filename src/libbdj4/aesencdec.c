@@ -185,13 +185,11 @@ aesdecrypt (const char *str, char *buff, size_t sz)
 static void
 aesInit (void)
 {
-  const char        *tver;
-
   if (initialized) {
     return;
   }
 
-  tver = gcry_check_version (NULL);
+  (void) ! gcry_check_version (NULL);
   initialized = true;
 }
 

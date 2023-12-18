@@ -23,12 +23,11 @@ add_executable (bdj4se bdj4se.c)
 if (WIN32)
   target_compile_options (bdj4se PRIVATE -municode)
 endif()
-target_link_libraries (bdj4se PUBLIC
+target_link_libraries (bdj4se PRIVATE
   libbdj4fileop
   libbdj4osprocess
   libbdj4osutils
   libbdj4string
-  m
 )
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
@@ -38,14 +37,12 @@ add_executable (bdj4installer bdj4installer.c)
 if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
 endif()
-target_link_libraries (bdj4installer PUBLIC
+target_link_libraries (bdj4installer PRIVATE
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4installer)
 
@@ -53,14 +50,12 @@ add_executable (bdj4altinst bdj4altinst.c)
 if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -municode)
 endif()
-target_link_libraries (bdj4altinst PUBLIC
+target_link_libraries (bdj4altinst PRIVATE
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
-  z
-  m
 )
 addIntlLibrary (bdj4altinst)
 
@@ -68,11 +63,10 @@ add_executable (bdj4updater bdj4updater.c)
 if (WIN32)
   target_compile_options (bdj4updater PRIVATE -municode)
 endif()
-target_link_libraries (bdj4updater PUBLIC
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
-  z
-  m
+target_link_libraries (bdj4updater PRIVATE
+  libbdj4ati
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4updater)
 

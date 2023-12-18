@@ -62,7 +62,7 @@ add_library (libbdj4osutils STATIC
   libcommon/osmacutils.m
   libcommon/oswinutils.c
 )
-target_link_libraries (libbdj4osutils PUBLIC
+target_link_libraries (libbdj4osutils PRIVATE
   libbdj4string
   m
 )
@@ -72,7 +72,7 @@ addIntlLibrary (libbdj4osutils)
 add_library (libbdj4tmutil STATIC
   libcommon/tmutil.c
 )
-target_link_libraries (libbdj4tmutil PUBLIC
+target_link_libraries (libbdj4tmutil PRIVATE
   libbdj4osutils
   m
 )
@@ -81,7 +81,7 @@ add_library (libbdj4osprocess STATIC
   libcommon/osprocess.c
   libcommon/oswinprocess.c
 )
-target_link_libraries (libbdj4osprocess PUBLIC
+target_link_libraries (libbdj4osprocess PRIVATE
   libbdj4tmutil
   libbdj4osutils
   libbdj4string
@@ -92,7 +92,7 @@ addIOKitFramework (libbdj4osprocess)
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
 )
-target_link_libraries (libbdj4fileop PUBLIC
+target_link_libraries (libbdj4fileop PRIVATE
   libbdj4osutils
   libbdj4tmutil
   libbdj4string
@@ -117,9 +117,10 @@ add_subdirectory (libwebsrv)
 # shared libraries that ship
 add_subdirectory (libcommon)
 add_subdirectory (libbasic)
-add_subdirectory (libbdj4)
-add_subdirectory (libaudioid)
 add_subdirectory (libaudiosrc)
+add_subdirectory (libbdj4)
+
+add_subdirectory (libaudioid)
 add_subdirectory (libati)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
