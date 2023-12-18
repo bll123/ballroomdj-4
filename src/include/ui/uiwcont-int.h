@@ -57,7 +57,7 @@ typedef enum {
   WCONT_T_SWITCH,
   WCONT_T_TEXT_BOX,
   WCONT_T_TEXT_BUFFER,      // gtk widget
-  /* base type for check-box, readio-button */
+  /* base type for check-box, radio-button */
   WCONT_T_TOGGLE_BUTTON,
   WCONT_T_TREE,
   WCONT_T_UNKNOWN,
@@ -106,21 +106,6 @@ typedef union {
   GdkPixbuf     *pixbuf; \
   GtkTextBuffer *buffer; \
   GtkAdjustment *adjustment;
-
-#if 0
-typedef struct uiwcont {
-  uiwconttype_t   wbasetype;
-  uiwconttype_t   wtype;
-  union {
-    GtkWidget     *widget;
-    GtkSizeGroup  *sg;
-    GdkPixbuf     *pixbuf;
-    GtkTextBuffer *buffer;
-    GtkAdjustment *adjustment;
-  };
-  uiwcontint_t    uiint;
-} uiwcont_t;
-#endif
 
 # endif /* BDJ4_USE_GTK3 */
 
