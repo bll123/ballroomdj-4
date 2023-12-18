@@ -1,0 +1,36 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Reload reloads the music queues, history
+and current song to the last known state._</span>
+
+### Reload
+
+If the player is accidentally exited, the computer must be rebooted,
+or BDJ4 becomes unstable and must be re-started, the
+_Actions&nbsp;/&nbsp;Reload_ menu selection will reload the music
+queues, the history and the currently playing song from the last saved
+state.
+
+In the player, every time a music queue, history or the currently
+playing song is changed, the music queues, history queue and current
+song will be automatically saved.
+
+When the player is first started, the _Actions&nbsp;/&nbsp;Reload_
+menu selection is active.  After any change to the music queue, the
+_Reload_ menu selection is disabled and can no longer be used.
+
+Selecting __Actions&nbsp;/&nbsp;Reload__ will load the music queues,
+the history queue and the current playing song from the last save.
+
+##### Reload and Automatic or Sequenced Playlists
+
+When an automatic or sequenced playlist is queued, the reload process
+will only reload the songs that were in the music queue.  The
+automatic or sequenced playlist is not re-queued.
+
+Wait until after several songs in the music queue have been played, then
+queue the automatic or sequenced playlist again.  Scroll to the end of
+the music queue and adjust the songs in the queue if needed.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-12-18 09:08:38; BDJ4 version 4.4.7)_

@@ -149,7 +149,7 @@ song in the music queue.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-E.png)
+![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-F.png)
 <br><span style="color:#4559bf;">__Player / Actions Menu__</span> </div>
 
 __Actions / External Request__: Starts a dialog to select an audio file. After
@@ -166,12 +166,18 @@ a music queue, the external request dialog is started.
 <br><span style="color:#4559bf;">__Player / External Request__</span> </div>
 
 __Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Current__:
-<br>__Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Selected__: The
+<br>
+__Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Selected__: The
 _Quick&nbsp;Edit_ dialog enables making changes to the
 speed&nbsp;adjustment, volume&nbsp;adjustment, dance&nbsp;rating and
 dance&nbsp;level of the song from the player.
-
+<br>
 See: [Quick Edit](en-Subjects-Quick%20Edit)
+
+__Actions&nbsp;/&nbsp;Reload__: Reloads the music queues, the
+history queue and the current song from the last saved state.
+<br>
+See: [Player&nbsp;/&nbsp;Reload](en-Player-Reload)
 
 ##### Marquee Menu
 
@@ -221,4 +227,4 @@ See also
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2023-12-18 09:08:38; BDJ4 version 4.4.7)_
