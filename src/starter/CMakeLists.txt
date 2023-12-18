@@ -29,7 +29,9 @@ endif()
 target_link_libraries (bdj4 PRIVATE
   libbdj4launcher
   libbdj4fileop
-  libbdj4osprocess    # include osutils,bdj4string
+  libbdj4osprocess
+  libbdj4osutils
+  libbdj4string
   libbdj4tmutil
 )
 # for gethostname
@@ -49,7 +51,10 @@ target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g PRIVATE
   libbdj4launcher
   libbdj4fileop
-  libbdj4osprocess    # include osutils,bdj4string
+  libbdj4osprocess
+  libbdj4osutils
+  libbdj4string
+  libbdj4tmutil
   ${GTK_LDFLAGS}
 )
 addWinSockLibrary (bdj4g)

@@ -55,6 +55,7 @@ if (WIN32)
   target_compile_options (libvolwin PRIVATE -static-libstdc++)
   target_link_libraries (libvolwin PRIVATE
     libbdj4fileop
+    libbdj4osutils
     libbdj4string
   )
   endif()

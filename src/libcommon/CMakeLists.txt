@@ -46,8 +46,9 @@ endif()
 target_link_libraries (libbdj4common PRIVATE
   libbdj4fileop     # fileop.c
   libbdj4osprocess  # osprocess.c
+  libbdj4osutils    # osutils.c
+  libbdj4string     # bdjstring.c strlcat.c strlcpy.c mdebug.c
   libbdj4tmutil     # tmutil.c
-  libbdj4osutils    # osutils (bdjstring, strlcat, strlcpy, mdebug)
   ${GLIB_LDFLAGS}
 )
 addIOKitFramework (libbdj4common)

@@ -64,11 +64,9 @@ if [[ $TBUILD == T ]]; then
 
   echo "-- $(date +%T) warnings"
   # 'warning generated' the compiler's display of the warning count.
-  # macos: 'ignoring duplicate libraries'
-  # windows has a multitude of warnings in check.h
+  # windows has a multitude of warnings in check.h about %jd
   # mongoose.c is a third-party library.
   grep warning $LOG |
-      grep -v 'ignoring duplicate libraries' |
       grep -v 'check\.h' |
       grep -v 'mongoose\.c' |
       grep -v 'warning generated'

@@ -38,8 +38,8 @@ target_link_libraries (libbdj4ati PRIVATE
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
   libbdj4atiutil
-  libdylib
   libdyintfc
+  libdylib
   libbdj4basic libbdj4common
 )
 

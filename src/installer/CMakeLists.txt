@@ -28,6 +28,7 @@ target_link_libraries (bdj4se PRIVATE
   libbdj4osprocess
   libbdj4osutils
   libbdj4string
+  libbdj4tmutil
 )
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)

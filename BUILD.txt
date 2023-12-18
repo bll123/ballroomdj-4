@@ -17,9 +17,13 @@ Linux
   # tested
   #   debian 2023-10-29
   #   opensuse 2023-10-30
-  #   fedora 2023-10-30
+  #   fedora 2023-10-30 broken 2023-12 not working for me after an os update.
   #   arch 2023-10-30
+  # the pre-build script only needs to be run once.
+  # check the release notes in the README.txt file for updates.
   ../install/linux-pre-build.sh
+  # build-all only needs to be run when the dependent packages are updated
+  # not every time.
   ../pkg/build-all.sh
   make distclean
   # for opensuse, use: make CC=gcc-12 CXX=g++-12
@@ -38,7 +42,11 @@ MacOS
   # bdj4-VERSION
   cd bdj4-4*
   cd src
+  # the pre-build script only needs to be run once.
+  # check the release notes in the README.txt file for updates.
   ../install/macos-pre-build.sh
+  # build-all only needs to be run when the dependent packages are updated
+  # not every time.
   ../pkg/build-all.sh
   make distclean
   make
@@ -63,7 +71,11 @@ Windows
   # bdj4-VERSION
   cd bdj4-4*
   cd src
+  # the pre-build script only needs to be run once.
+  # thereafter, a "pacman -Syu" can be done to update the packages.
   ../install/win-pre-build.sh
+  # build-all only needs to be run when the dependent packages are updated
+  # not every time.
   ../pkg/build-all.sh
   make distclean
   make

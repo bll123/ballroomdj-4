@@ -9,8 +9,8 @@ add_library (libbdj4pli SHARED
   pli.c
 )
 target_link_libraries (libbdj4pli PRIVATE
-  libdylib
   libdyintfc
+  libdylib
   libbdj4basic libbdj4common
 )
 
