@@ -2232,6 +2232,9 @@ manageMusicManagerMenu (manageui_t *manage)
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
   uiwcontFree (menu);
 
+  uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
+  manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
+
   logProcEnd (LOG_PROC, "manageMusicManagerMenu", "");
 }
 
