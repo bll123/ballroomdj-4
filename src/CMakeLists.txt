@@ -18,7 +18,7 @@ set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
-set (CMAKE_PREFIX_PATH /opt/local;${PROJECT_SOURCE_DIR}/../plocal)
+set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/local)
 
 # this doesn't seem to help with locating header files...
 include_directories (

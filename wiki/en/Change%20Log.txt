@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Fixed right-to-left language layout.
+    * MacOS: Fix build when other versions of libraries are installed.
 * Changes:
     * Installer: Remove music folder selection.
 * New Features:
