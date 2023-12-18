@@ -21,13 +21,19 @@ static uiwcont_t * uiPanedWindowCreate (int orientation);
 uiwcont_t *
 uiPanedWindowCreateHoriz (void)
 {
+  uiwcont_t *uiwidget;
+
+  uiwidget = uiPanedWindowCreate (1);
   return NULL;
 }
 
 uiwcont_t *
 uiPanedWindowCreateVert (void)
 {
-  return NULL;
+  uiwcont_t *uiwidget;
+
+  uiwidget = uiPanedWindowCreate (0);
+  return uiwidget;
 }
 
 void

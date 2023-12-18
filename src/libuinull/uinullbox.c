@@ -30,12 +30,6 @@ uiCreateHorizBox (void)
 }
 
 void
-uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uibox)
-{
-  return;
-}
-
-void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   return;

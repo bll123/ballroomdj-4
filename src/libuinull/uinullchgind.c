@@ -24,12 +24,6 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 }
 
 void
-uichgindFree (uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
 uichgindMarkNormal (uiwcont_t *uiwidget)
 {
   return;

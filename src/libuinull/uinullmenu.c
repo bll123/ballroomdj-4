@@ -60,19 +60,19 @@ uiMenuAlloc (void)
 }
 
 void
-uiMenuFree (uiwcont_t uiwidget)
+uiMenuFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 bool
-uiMenuIsInitialized (uiwcont_t uiwidget)
+uiMenuIsInitialized (uiwcont_t *uiwidget)
 {
   return true;
 }
 
 void
-uiMenuSetInitialized (uiwcont_t uiwidget)
+uiMenuSetInitialized (uiwcont_t *uiwidget)
 {
   return;
 }
@@ -84,13 +84,13 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
 }
 
 void
-uiMenuDisplay (uiwcont_t uiwidget)
+uiMenuDisplay (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiMenuClear (uiwcont_t uiwidget)
+uiMenuClear (uiwcont_t *uiwidget)
 {
   return;
 }

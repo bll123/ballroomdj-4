@@ -26,7 +26,7 @@ uiBackend (void)
 }
 
 void
-uiUIInitialize (void)
+uiUIInitialize (int direction)
 {
   return;
 }

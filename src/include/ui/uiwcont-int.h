@@ -100,7 +100,14 @@ typedef union {
 
 #  include <gtk/gtk.h>
 
-/* a container may contain various types of gtk widgets */
+#define UISPECIFIC \
+  GtkWidget     *widget; \
+  GtkSizeGroup  *sg; \
+  GdkPixbuf     *pixbuf; \
+  GtkTextBuffer *buffer; \
+  GtkAdjustment *adjustment;
+
+#if 0
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
@@ -113,20 +120,25 @@ typedef struct uiwcont {
   };
   uiwcontint_t    uiint;
 } uiwcont_t;
+#endif
 
 # endif /* BDJ4_USE_GTK3 */
 
 # if BDJ4_USE_NULLUI
 
-typedef struct uiwcont {
-  uiwconttype_t   wtype;
-  union {
-    void          *widget;
-  };
-  uiwcontint_t    uiint;
-} uiwcont_t;
+#define UISPECIFIC \
+  void      *widget;
 
 # endif /* BDJ4_USE_NULLUI */
+
+typedef struct uiwcont {
+  uiwconttype_t   wbasetype;
+  uiwconttype_t   wtype;
+  uiwcontint_t    uiint;
+  union {
+    UISPECIFIC
+  };
+} uiwcont_t;
 
 static inline bool
 uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
