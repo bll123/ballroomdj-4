@@ -197,7 +197,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb 0 new ${NUMNORM} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb 0 new ${NUMNORM} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -220,7 +220,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip ${NUMNORM} indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip ${NUMNORM} indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -239,7 +239,7 @@ if [[ $TESTON == T ]]; then
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -258,7 +258,7 @@ if [[ $TESTON == T ]]; then
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} notaudio 0 writetag 0"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -286,7 +286,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag ${NUMNORM}"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -354,7 +354,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 notaudio 0 writetag ${NUMNORM}"
+  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -439,7 +439,7 @@ if [[ $TESTON == T ]]; then
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMNOFT} skip 0 indb ${NUMNOFT} new 0 updated ${NUMNOFT} notaudio 0 writetag 0"
+  exp="found ${NUMNOFT} skip 0 indb ${NUMNOFT} new 0 updated ${NUMNOFT} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -488,7 +488,7 @@ if [[ $TESTON == T ]]; then
       --rebuild \
       --dbtopdir "${musicdir}" \
       --cli --wait --verbose)
-    exp="found ${NUMNOCC} skip 0 indb 0 new ${NUMNOCC} updated 0 notaudio 0 writetag 0"
+    exp="found ${NUMNOCC} skip 0 indb 0 new ${NUMNOCC} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
@@ -511,7 +511,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMCC} skip ${NUMNOCC} indb ${NUMNOCC} new 1 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip ${NUMNOCC} indb ${NUMNOCC} new 1 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -533,7 +533,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMCC} skip 0 indb 0 new ${NUMCC} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip 0 indb 0 new ${NUMCC} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -553,7 +553,7 @@ if [[ $TESTON == T ]]; then
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated ${NUMCC} notaudio 0 writetag 0"
+  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated ${NUMCC} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -585,7 +585,7 @@ if [[ $TESTON == T ]]; then
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated 0 notaudio 0 writetag ${NUMCC}"
+  exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMCC}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -646,7 +646,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -666,7 +666,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -687,7 +687,7 @@ if [[ $TESTON == T ]]; then
     --checknew \
     --dbtopdir "${tdir}/${TMDT}" \
     --cli --wait --verbose)
-  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -707,7 +707,7 @@ if [[ $TESTON == T ]]; then
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc

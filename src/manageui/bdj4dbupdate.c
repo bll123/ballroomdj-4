@@ -60,6 +60,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
+#include "orgopt.h"
 #include "orgutil.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -93,6 +94,8 @@ enum {
   C_NEW,
   C_UPDATED,
   C_WRITE_TAGS,
+  C_RENAMED,
+  C_CANNOT_RENAME,
   C_BAD,
   C_NON_AUDIO,
   C_ORIG_SKIP,
@@ -123,6 +126,7 @@ typedef struct {
   size_t            dbtopdirlen;
   mstime_t          outputTimer;
   org_t             *org;
+  org_t             *orgold;
   asiter_t          *asiter;
   bdjregex_t        *badfnregex;
   dbidx_t           counts [C_MAX];
@@ -165,12 +169,13 @@ static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
-static void     dbupdateQueueTagData (dbupdate_t *dbupdate, const char *args);
+static void     dbupdateQueueFile (dbupdate_t *dbupdate, const char *args);
 static void     dbupdateTagDataFree (void *data);
-static void     dbupdateProcessTagDataQueue (dbupdate_t *dbupdate);
-static void     dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data);
+static void     dbupdateProcessFileQueue (dbupdate_t *dbupdate);
+static void     dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data);
 static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
+static void     dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
@@ -185,6 +190,7 @@ main (int argc, char *argv[])
   dbupdate_t    dbupdate;
   uint16_t      listenPort;
   char          *p;
+  const char    *topt;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("dbup");
@@ -202,6 +208,7 @@ main (int argc, char *argv[])
   dbupdate.itunes = NULL;
   dbupdate.tagdataq = queueAlloc ("tagdata-q", dbupdateTagDataFree);
   dbupdate.org = NULL;
+  dbupdate.orgold = NULL;
   dbupdate.checknew = false;
   dbupdate.compact = false;
   dbupdate.rebuild = false;
@@ -248,7 +255,11 @@ main (int argc, char *argv[])
     dbupdate.haveolddirlist = true;
   }
 
-  dbupdate.org = orgAlloc (bdjoptGetStr (OPT_G_ORGPATH));
+  topt = bdjoptGetStr (OPT_G_ORGPATH);
+  dbupdate.org = orgAlloc (topt);
+  if (strstr (topt, "BYPASS") != NULL) {
+    dbupdate.orgold = orgAlloc (bdjoptGetStr (OPT_G_OLDORGPATH));
+  }
 
   /* any file with a double quote or backslash is rejected */
   /* on windows, only the double quote is rejected */
@@ -461,6 +472,13 @@ dbupdateProcessing (void *udata)
     while ((fn = audiosrcIterate (dbupdate->asiter)) != NULL) {
       song_t    *song;
 
+      if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_NON_AUDIO);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  audsrc-skip-not-file");
+        continue;
+      }
+
       pi = pathInfo (fn);
       /* fast skip of some known file extensions that might show up */
       if (pathInfoExtCheck (pi, ".jpg") ||
@@ -550,7 +568,7 @@ dbupdateProcessing (void *udata)
         continue;
       }
 
-      dbupdateQueueTagData (dbupdate, fn);
+      dbupdateQueueFile (dbupdate, fn);
 
       dbupdateIncCount (dbupdate, C_FILE_QUEUED);
       if (queueGetCount (dbupdate->tagdataq) >= QUEUE_PROCESS_LIMIT) {
@@ -568,7 +586,7 @@ dbupdateProcessing (void *udata)
 
   if (dbupdate->state == DB_UPD_PROC_FN ||
       dbupdate->state == DB_UPD_PROCESS) {
-    dbupdateProcessTagDataQueue (dbupdate);
+    dbupdateProcessFileQueue (dbupdate);
     dbupdateOutputProgress (dbupdate);
 
     logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
@@ -588,12 +606,14 @@ dbupdateProcessing (void *udata)
         }
         if (dbupdate->verbose) {
           fprintf (stdout,
-              "found %u skip %u indb %u new %u updated %u notaudio %u writetag %u\n",
+              "found %u skip %u indb %u new %u updated %u renamed %u norename %u notaudio %u writetag %u\n",
               dbupdate->counts [C_FILE_COUNT],
               dbupdate->counts [C_FILE_SKIPPED],
               dbupdate->counts [C_IN_DB],
               dbupdate->counts [C_NEW],
               dbupdate->counts [C_UPDATED],
+              dbupdate->counts [C_RENAMED],
+              dbupdate->counts [C_CANNOT_RENAME],
               dbupdate->counts [C_NON_AUDIO],
               dbupdate->counts [C_WRITE_TAGS]);
         }
@@ -652,6 +672,17 @@ dbupdateProcessing (void *udata)
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
 
+    if (dbupdate->reorganize) {
+      /* CONTEXT: database update: status message: number of files renamed */
+      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Renamed"), dbupdate->counts [C_RENAMED]);
+      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      if (dbupdate->counts [C_CANNOT_RENAME] > 0) {
+        /* CONTEXT: database update: status message: number of files that cannot be renamed */
+        snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Cannot Rename"), dbupdate->counts [C_CANNOT_RENAME]);
+        connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      }
+    }
+
     if (dbupdate->writetags) {
       /* re-use the 'Updated' label for write-tags */
       /* CONTEXT: database update: status message: number of files updated */
@@ -686,6 +717,8 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->counts [C_IN_DB]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->counts [C_NEW]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->counts [C_UPDATED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  renamed: %u", dbupdate->counts [C_RENAMED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "no rename: %u", dbupdate->counts [C_CANNOT_RENAME]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %u", dbupdate->counts [C_WRITE_TAGS]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->counts [C_BAD]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->counts [C_NULL_DATA]);
@@ -801,6 +834,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 
   itunesFree (dbupdate->itunes);
   orgFree (dbupdate->org);
+  orgFree (dbupdate->orgold);
   regexFree (dbupdate->badfnregex);
   audiosrcCleanIterator (dbupdate->asiter);
   queueFree (dbupdate->tagdataq);
@@ -810,7 +844,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 }
 
 static void
-dbupdateQueueTagData (dbupdate_t *dbupdate, const char *args)
+dbupdateQueueFile (dbupdate_t *dbupdate, const char *args)
 {
   char          *ffn;
   char          *data;
@@ -858,7 +892,7 @@ dbupdateTagDataFree (void *data)
 }
 
 static void
-dbupdateProcessTagDataQueue (dbupdate_t *dbupdate)
+dbupdateProcessFileQueue (dbupdate_t *dbupdate)
 {
   tagdataitem_t *tdi;
 
@@ -868,12 +902,12 @@ dbupdateProcessTagDataQueue (dbupdate_t *dbupdate)
 
   tdi = queuePop (dbupdate->tagdataq);
   // fprintf (stderr, "  pop: %s\n", tdi->ffn);
-  dbupdateProcessTagData (dbupdate, tdi->ffn, tdi->data);
+  dbupdateProcessFile (dbupdate, tdi->ffn, tdi->data);
   dbupdateTagDataFree (tdi);
 }
 
 static void
-dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
+dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
 {
   slist_t     *tagdata;
   const char  *songfname;
@@ -909,6 +943,13 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
   /* update-from-itunes has its own processing */
   if (dbupdate->updfromitunes) {
     dbupdateFromiTunes (dbupdate, ffn, tagdata);
+    slistFree (tagdata);
+    return;
+  }
+
+  /* reorganize has its own processing */
+  if (dbupdate->reorganize) {
+    dbupdateReorganize (dbupdate, ffn, tagdata);
     slistFree (tagdata);
     return;
   }
@@ -1124,6 +1165,104 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
       dbupdateIncCount (dbupdate, C_UPDATED);
     }
   }
+  dbupdateIncCount (dbupdate, C_FILE_PROC);
+}
+
+static void
+dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+{
+  const char  *songfname = NULL;
+  song_t      *song = NULL;
+  musicdb_t   *currdb = NULL;
+  char        *newfn = NULL;
+  char        tbuff [MAXPATHLEN];
+  char        newffn [MAXPATHLEN];
+  const char  *bypass = NULL;
+  int         rc;
+  pathinfo_t  *pi;
+
+  if (ffn == NULL) {
+    return;
+  }
+
+  songfname = ffn;
+  if (dbupdate->usingmusicdir) {
+    songfname = dbupdateGetRelativePath (dbupdate, ffn);
+  }
+
+  song = dbGetByName (dbupdate->musicdb, songfname);
+  if (song == NULL) {
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+  if (songGetNum (song, TAG_DB_LOC_LOCK)) {
+    /* user requested location lock */
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+  currdb = dbupdate->musicdb;
+  if (dbupdate->cleandatabase) {
+    currdb = dbupdate->newmusicdb;
+  }
+
+  bypass = "";
+  if (dbupdate->orgold != NULL) {
+    bypass = orgGetFromPath (dbupdate->orgold, songGetStr (song, TAG_URI),
+        (tagdefkey_t) ORG_TAG_BYPASS);
+  }
+  newfn = orgMakeSongPath (dbupdate->org, song, bypass);
+  if (strcmp (newfn, songfname) == 0) {
+    /* no change */
+    dataFree (newfn);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+  audiosrcFullPath (newfn, newffn, sizeof (newffn));
+
+  if (*newffn && fileopFileExists (newffn)) {
+    /* unable to rename */
+    dataFree (newfn);
+    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+  pi = pathInfo (newffn);
+  snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+  if (! fileopIsDirectory (tbuff)) {
+    rc = diropMakeDir (tbuff);
+    if (rc != 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to create dir %s", tbuff);
+    }
+  }
+
+  rc = filemanipMove (ffn, newffn);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s", newffn);
+    /* unable to rename */
+    dataFree (newfn);
+    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+  songSetStr (song, TAG_URI, newfn);
+  dbWriteSong (currdb, song);
+
+  if (audiosrcOriginalExists (ffn)) {
+    strlcpy (tbuff, ffn, sizeof (tbuff));
+    strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
+    strlcat (newffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
+    rc = filemanipMove (tbuff, newffn);
+    if (rc != 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s", newffn);
+    }
+  }
+
+  dataFree (newfn);
+  dbupdateIncCount (dbupdate, C_RENAMED);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
 }
 

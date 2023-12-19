@@ -162,7 +162,9 @@ static void uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int t
 static void uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
 static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
 static void uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
+static void uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
+static bool uisongeditSwitchCallback (void *udata, long value);
 static bool uisongeditSaveCallback (void *udata);
 static bool uisongeditSave (void *udata, nlist_t *chglist);
 static int  uisongeditGetCheckValue (uisongedit_t *uisongedit, int tagkey);
@@ -264,6 +266,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           }
           break;
         }
+        case ET_SWITCH:
         case ET_SCALE:
         case ET_LABEL:
         case ET_SPINBOX: {
@@ -631,6 +634,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         uisongeditScaleDisplayCallback (&seint->items [count], dval);
         break;
       }
+      case ET_SWITCH: {
+        uiSwitchSetValue (seint->items [count].uiwidgetp, val);
+        break;
+      }
       case ET_LABEL: {
         if (tval != NULL) {
           uiLabelSetText (seint->items [count].uiwidgetp, tval);
@@ -790,6 +797,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
         }
         break;
       }
+      case ET_SWITCH:
       case ET_SCALE:
       case ET_SPINBOX: {
         uiWidgetSetState (seint->items [count].uiwidgetp, newstate);
@@ -867,7 +875,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
   se_internal_t   *seint;
   double          dval;
   double          ndval = LIST_DOUBLE_INVALID;
-  long            val;
+  long            val = LIST_VALUE_INVALID;
   long            nval = LIST_VALUE_INVALID;
   char            *songdata = NULL;
   const char      *ndata = NULL;
@@ -954,6 +962,9 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
           if (isnan (dval)) { dval = 0.0; }
           break;
+        }
+        case ET_SWITCH: {
+          nval = uiSwitchGetValue (seint->items [count].uiwidgetp);
         }
         default: {
           break;
@@ -1211,6 +1222,10 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
       }
       break;
     }
+    case ET_SWITCH: {
+      uisongeditAddSwitch (uisongedit, hbox, tagkey);
+      break;
+    }
     case ET_NA: {
       break;
     }
@@ -1358,6 +1373,25 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcEnd (LOG_PROC, "uisongeditAddScale", "");
 }
 
+static void
+uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
+{
+  se_internal_t   *seint;
+  uiwcont_t       *uiwidgetp;
+
+  logProcBegin (LOG_PROC, "uisongeditAddSwitch");
+
+  seint = uisongedit->seInternalData;
+  uiwidgetp = uiCreateSwitch (0);
+  seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
+  uiBoxPackStart (hbox, uiwidgetp);
+  seint->items [seint->itemcount].callback = callbackInitLong (
+      uisongeditSwitchCallback, &seint->items [seint->itemcount]);
+  uiSwitchSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
+
+  logProcEnd (LOG_PROC, "uisongeditAddSwitch", "");
+}
+
 /* also sets the changed flag */
 static bool
 uisongeditScaleDisplayCallback (void *udata, double value)
@@ -1375,6 +1409,17 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   snprintf (tbuff, sizeof (tbuff), "%4.*f%%", digits, value);
   uiLabelSetText (item->display, tbuff);
   logProcEnd (LOG_PROC, "uisongeditScaleDisplayCallback", "");
+  return UICB_CONT;
+}
+
+static bool
+uisongeditSwitchCallback (void *udata, long value)
+{
+  uisongedititem_t  *item = udata;
+  se_internal_t     *seint;
+
+  seint = item->seint;
+  seint->checkchanged = true;
   return UICB_CONT;
 }
 
@@ -1607,6 +1652,10 @@ uisongeditGetCheckValue (uisongedit_t *uisongedit, int tagkey)
       }
       break;
     }
+    case ET_SWITCH: {
+      chkvalue = UISE_CHK_NUM;
+      break;
+    }
     default: {
       chkvalue = UISE_CHK_NONE;
       break;
@@ -1680,6 +1729,10 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         if (tagkey == TAG_SPEEDADJUSTMENT) {
           nval = round (ndval);
         }
+        break;
+      }
+      case ET_SWITCH: {
+        nval = uiSwitchGetValue (seint->items [count].uiwidgetp);
         break;
       }
       default: {

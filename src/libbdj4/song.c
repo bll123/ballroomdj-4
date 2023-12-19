@@ -59,6 +59,7 @@ static datafilekey_t songdfkeys [] = {
   { "DANCERATING",          TAG_DANCERATING,          VALUE_NUM, ratingConv, DF_NORM },
   { "DATE",                 TAG_DATE,                 VALUE_STR, NULL, DF_NORM },
   { "DBADDDATE",            TAG_DBADDDATE,            VALUE_STR, NULL, DF_NORM },
+  { "DB_LOC_LOCK",          TAG_DB_LOC_LOCK,          VALUE_NUM, NULL, DF_NORM },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_NUM, NULL, DF_NORM },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, DF_NORM },
   /* no conversion is defined for duration. it is handled as */
@@ -176,6 +177,13 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
   if (lkey < 0) {
     // Unrated
     nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
+  }
+
+  /* 2023-12-19: new: db location lock */
+  lkey = nlistGetNum (song->songInfo, TAG_DB_LOC_LOCK);
+  if (lkey < 0) {
+    // Unrated
+    nlistSetNum (song->songInfo, TAG_DB_LOC_LOCK, 0);
   }
 
   song->changed = false;

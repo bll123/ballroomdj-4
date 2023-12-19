@@ -19,6 +19,7 @@ typedef enum {
   ET_SPINBOX,
   ET_SPINBOX_TIME,
   ET_SPINBOX_TEXT,
+  ET_SWITCH,
 } tagedittype_t;
 
 enum {
@@ -75,6 +76,7 @@ typedef enum {
   TAG_DATE,                   //
   TAG_DBADDDATE,              // only in the database, treated as special case
   TAG_DBIDX,                  // not saved to db or af
+  TAG_DB_LOC_LOCK,            // only in the database
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
   TAG_DURATION,               // not saved to af

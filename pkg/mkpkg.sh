@@ -118,6 +118,7 @@ function copyreleasefiles {
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   dbustest, plisinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
+  # 2023-12-19 for now, do not ship the pli-mpris interface, not implemented.
   rm -f \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
@@ -128,6 +129,7 @@ function copyreleasefiles {
       ${stage}/bin/libplinull* \
       ${stage}/bin/dbustest* \
       ${stage}/bin/plisinklist* \
+      ${stage}/bin/libplimpris* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \

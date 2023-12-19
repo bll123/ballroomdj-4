@@ -122,6 +122,9 @@ uisongDetermineValueType (int tagidx)
   valuetype_t   vt;
 
   vt = tagdefs [tagidx].valueType;
+  if (tagidx == TAG_DB_LOC_LOCK) {
+    return vt;
+  }
   if (tagdefs [tagidx].convfunc != NULL) {
     if (vt == VALUE_LIST) {
       vt = VALUE_STR;

@@ -1080,6 +1080,33 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
+  [TAG_DB_LOC_LOCK] =
+  { "DB_LOC_LOCK",                /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },         /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_SWITCH,                    /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    convBoolean,                  /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
+    false,                        /* vorbis multi         */
+  },
   [TAG_PREFIX_LEN] =
   { "PFXLEN",                     /* tag */
     NULL,                         /* display name         */
@@ -1190,6 +1217,8 @@ tagdefInit (void)
   tagdefs [TAG_DATE].displayname = _("Date");
   /* CONTEXT: label: date added to the database */
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
+  /* CONTEXT: label: lock audio file location */
+  tagdefs [TAG_DB_LOC_LOCK].displayname = _("Prevent Rename");
   /* CONTEXT: label: disc number */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
   /* CONTEXT: label: total disc count */
