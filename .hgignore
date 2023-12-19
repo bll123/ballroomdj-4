@@ -50,5 +50,6 @@ syntax: regexp
 ^test-music-org/
 ^test-music-orig/
 ^tmp/
+^voices/
 ^web/lastversion.txt$
 ^web/marquee4.html$
