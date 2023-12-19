@@ -28,6 +28,15 @@ target_link_libraries (libplivlc PRIVATE
   ${LIBVLC_LIBRARY}
 )
 
+add_library (libplimpris SHARED plimpris.c dbusi.c)
+target_include_directories (libplimpris
+  PRIVATE "${GIO_INCLUDE_DIRS}"
+)
+target_link_libraries (libplimpris PRIVATE
+  libbdj4common
+  ${GIO_LDFLAGS}
+)
+
 add_library (libplimpv SHARED plimpv.c mpvi.c)
 target_include_directories (libplimpv
   PRIVATE "${LIBMPV_INCLUDE_DIRS}"
@@ -41,6 +50,7 @@ install (TARGETS
   libbdj4pli
   libplinull
   libplivlc
+  libplimpris
   libplimpv
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -48,4 +58,5 @@ install (TARGETS
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
 updateRPath (libplivlc)
+updateRPath (libplimpris)
 updateRPath (libplimpv)

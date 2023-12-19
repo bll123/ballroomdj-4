@@ -57,8 +57,11 @@ if (NOT WIN32 AND NOT APPLE)
 endif()
 pkg_check_modules (CHECK check)
 pkg_check_modules (CURL libcurl)
-pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (GCRYPT libgcrypt)
+pkg_check_modules (GIO gio-2.0)
+pkg_check_modules (GLIB glib-2.0)
+pkg_check_modules (JSONC json-c)
+
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (GTK gtk+-3.0)
 endif()
@@ -68,7 +71,6 @@ if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PIPEWIRE libpipewire-0.3)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
-pkg_check_modules (JSONC json-c)
 
 #### VLC
 
@@ -337,6 +339,10 @@ check_include_file (unistd.h _hdr_unistd)
 check_include_file (windows.h _hdr_windows)
 check_include_file (winsock2.h _hdr_winsock2)
 check_include_file (ws2tcpip.h _hdr_ws2tcpip)
+
+set (CMAKE_REQUIRED_INCLUDES ${GIO_INCLUDE_DIRS})
+check_include_file (gio/gio.h _hdr_gio_gio)
+set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)

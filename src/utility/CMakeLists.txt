@@ -97,6 +97,11 @@ target_link_libraries (plisinklist PRIVATE
   ${ICUI18N_LDFLAGS}
 )
 
+add_executable (dbustest dbustest.c)
+target_link_libraries (dbustest PRIVATE
+  libplimpris libbdj4common
+)
+
 add_executable (aesed aesed.c)
 target_link_libraries (aesed PRIVATE
   libbdj4 libbdj4basic libbdj4common
@@ -120,6 +125,7 @@ install (TARGETS
   tmusicsetup
   ttagdbchk
   plisinklist
+  dbustest
   aesed
   vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
@@ -134,6 +140,7 @@ updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
+updateRPath (dbustest)
 updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)

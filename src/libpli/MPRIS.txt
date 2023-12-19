@@ -1,0 +1,183 @@
+# check to see what media players are available:
+
+  # ListNames
+    org.freedesktop.DBus
+    /org/freedesktop/DBus
+    org.freedesktop.DBus
+    ListNames
+    # (as)
+    # check for any org.mpris.MediaPlayer2.*
+
+# check what the player can do
+
+  # Introspect
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Introspectable
+    Introspect
+    # (s)
+    # looks like xml data
+    #   Rate prop rw
+    #   MaximumRate prop rw
+    #   MinimumRate prop rw
+    #   Position prop r
+    #   Volume prop rw
+    #   Position prop r
+    #   SetPosition method "ox"
+    #   CanSeek r
+
+# properties
+
+  # SupportedUriSchemes
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2
+    SupportedUriSchemes
+    # (v) ; as
+    #   (<['file', 'http', 'https', 'rtsp', 'realrtsp', 'pnm',
+    #   'ftp', 'mtp', 'smb', 'mms', 'mmsu', 'mmst', 'mmsh', 'unsv', 'itpc',
+    #   'icyx', 'rtmp', 'rtp', 'dccp', 'dvd', 'vcd']>,)
+
+  # CanControl
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    CanControl
+    # (v) ; b
+    #   (<true>,)
+
+  # PlaybackStatus
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    (ss)
+    org.mpris.MediaPlayer2
+    PlaybackStatus
+    #  (v) ; s
+    #    (<'Paused'>,)
+
+  # Metadata
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    Metadata
+    # (v) ; a{sv}
+    #   (<{'mpris:trackid': <objectpath
+    #   '/org/videolan/vlc/playlist/4'>, 'xesam:url':
+    #   <'file:///home/bll/Music/m/Alejandro_Sanz/Si_t%C3%BA_me_miras/14.Te_echo_de_menos.mp3'>,
+    #   'xesam:title': <'Te echo de menos'>, 'xesam:artist': <['Alejandro
+    #   Sanz']>, 'xesam:album': <'Si tú me miras'>, 'xesam:tracknumber':
+    #   <'14'>, 'vlc:time': <uint32 241>, 'mpris:length': <int64 241093946>,
+    #   'mb:trackId': <'cd8515f8-2d79-4ff7-9363-f73be68ed397'>,
+    #   'xesam:comment': <['ddj T129 T129']>, 'vlc:length': <int64 241093>,
+    #   'vlc:publisher': <5>}>,)
+
+  # Position
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    Position
+    #  (v) ; x
+    #     (<int64 4006424>,)
+
+  # MinimumRate
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    MinimumRate
+    #  (v) ; d
+    #     (<0.032000000000000001>,)
+
+  # MaximumRate
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    MaximumRate
+    #  (v) ; d
+    #     (<32.0>,)
+
+# set properties
+
+  # Volume
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Set
+    (ssd)
+    org.mpris.MediaPlayer2.Player
+    Volume
+    <vol>
+    # this works as a parse value (ssv) :
+    #   ('org.mpris.MediaPlayer2.Player', 'Volume', <1.0>)
+
+  # Rate
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Set
+    (ssd)
+    org.mpris.MediaPlayer2.Player
+    Rate
+    <rate>
+
+# methods
+
+  # OpenUri
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    OpenUri
+    (s)
+    <uri>
+    # file://<file>
+
+  # Stop
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    Stop
+
+  # Play
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    Play
+
+  # Pause
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    Pause
+
+  # Next
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    Next
+
+  # SetPosition
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.mpris.MediaPlayer2.Player
+    SetPosition
+    (ox)
+    <mpris:trackid> # from metadata
+    <nanoseconds> # verify
+
