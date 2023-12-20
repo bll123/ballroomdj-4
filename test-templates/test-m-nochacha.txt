@@ -454,7 +454,7 @@ DEST
 KEY
 ..13
 SOURCE
-..ann-waltz.mp3
+..ann-waltz.flac
 DURATION
 ..1700
 NOTES
@@ -491,7 +491,7 @@ DB_LOC_LOCK
 KEY
 ..14
 SOURCE
-..ann-tango.mp3
+..ann-tango.flac
 DURATION
 ..1510
 NOTES
