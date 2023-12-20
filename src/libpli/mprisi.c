@@ -124,12 +124,14 @@ static bool mprisGetPropBool (mpris_t *mpris, const char *prop, const char *prop
 static const char *mprisGetPropString (mpris_t *mpris, const char *prop, const char *propnm);
 static int64_t mprisGetPropInt64 (mpris_t *mpris, const char *prop, const char *propnm);
 static double mprisGetPropDouble (mpris_t *mpris, const char *prop, const char *propnm);
+static bool mprisSetPropDouble (mpris_t *mpris, const char *prop, const char *propnm, double val);
 
 mpris_t *
 mprisInit (void)
 {
   mpris_t   *mpris;
   int       rc;
+  double    minrate, maxrate;
 
   mpris = mdmalloc (sizeof (mpris_t));
   mpris->dbus = dbusConnInit ();
@@ -138,6 +140,10 @@ mprisInit (void)
 
   rc = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_CAN_CONTROL]);
+  minrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_MIN_RATE]);
+  maxrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_MAX_RATE]);
 
   return mpris;
 }
@@ -153,6 +159,24 @@ mprisFree (mpris_t *mpris)
   mdfree (mpris);
 }
 
+void
+mprisMedia (mpris_t *mpris, const char *uri)
+{
+  dbusMessageInit (mpris->dbus);
+  dbusMessageSetData (mpris->dbus, "(s)", uri, NULL);
+  dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
+      interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_OPENURI]);
+}
+
+const char *
+mprisPlaybackStatus (mpris_t *mpris)
+{
+  const char  *rval;
+
+  rval = mprisGetPropString (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_PB_STATUS]);
+  return rval;
+}
 
 int64_t
 mprisGetPosition (mpris_t *mpris)
@@ -162,15 +186,6 @@ mprisGetPosition (mpris_t *mpris)
   val = mprisGetPropInt64 (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_POS]);
   return val;
-}
-
-void
-mprisMedia (mpris_t *mpris, const char *uri)
-{
-  dbusMessageInit (mpris->dbus);
-  dbusMessageSetData (mpris->dbus, "(s)", uri, NULL);
-  dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
-      interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_OPENURI]);
 }
 
 void
@@ -203,6 +218,38 @@ mprisNext (mpris_t *mpris)
   dbusMessageInit (mpris->dbus);
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_NEXT]);
+}
+
+bool
+mprisSetVolume (mpris_t *mpris, double vol)
+{
+  bool    rc;
+
+  rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_VOLUME], vol);
+  return rc;
+}
+
+bool
+mprisSetPosition (mpris_t *mpris, int64_t pos)
+{
+  bool    rc = false;
+
+  // type (ox)
+  // mpris:trackid nanoseconds (check this)
+//  rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+//      propname [MPRIS_PROPNM_SET_POS], vol);
+  return rc;
+}
+
+bool
+mprisSetRate (mpris_t *mpris, double rate)
+{
+  bool    rc;
+
+  rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_RATE], rate);
+  return rc;
 }
 
 /* internal routines */
@@ -261,5 +308,18 @@ mprisGetPropDouble (mpris_t *mpris, const char *prop, const char *propnm)
     dbusResultGet (mpris->dbus, &rval, NULL);
   }
   return rval;
+}
+
+static bool
+mprisSetPropDouble (mpris_t *mpris,
+    const char *prop, const char *propnm, double val)
+{
+  bool      rc;
+
+  dbusMessageInit (mpris->dbus);
+  dbusMessageSetData (mpris->dbus, "(ssd)", prop, propnm, &val, NULL);
+  rc = dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
+      interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
+  return rc;
 }
 

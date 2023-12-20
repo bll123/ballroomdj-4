@@ -6,7 +6,7 @@
 
 #if ! defined (MAXPATHLEN)
 enum {
-  MAXPATHLEN = 512,
+  MAXPATHLEN = 1024,
 };
 #endif
 
