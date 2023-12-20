@@ -28,12 +28,20 @@ target_link_libraries (libplivlc PRIVATE
   ${LIBVLC_LIBRARY}
 )
 
-add_library (libplimpris SHARED plimpris.c dbusi.c)
-target_include_directories (libplimpris
+# make this an object in case something else needs it
+# but leave it in libpli/ for now
+add_library (libbdj4dbusi OBJECT dbusi.c)
+target_include_directories (libbdj4dbusi
   PRIVATE "${GIO_INCLUDE_DIRS}"
 )
+target_link_libraries (libbdj4dbusi PRIVATE
+  ${GIO_LDFLAGS}
+)
+
+add_library (libplimpris SHARED plimpris.c mprisi.c)
 target_link_libraries (libplimpris PRIVATE
   libbdj4common
+  libbdj4dbusi
   ${GIO_LDFLAGS}
 )
 
