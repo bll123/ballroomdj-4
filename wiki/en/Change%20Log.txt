@@ -7,6 +7,7 @@
 **4.4.8 2023-12---**
 
 * Bug Fixes:
+    * Edit Dances: Fix bugs. PENDING
     * Fixed right-to-left language layout.
     * MacOS: Fix build when other versions of libraries are installed.
 * Changes:

@@ -337,3 +337,7 @@ data/ds-audioid\.txt\.bak\.1$
 # no more python stuff
 data/pydotvers\.txt$
 data/pyvers\.txt$
+
+# 2023-12-20
+# not needed here
+data/localization\.txt$

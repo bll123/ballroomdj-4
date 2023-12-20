@@ -84,7 +84,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_HOST_WEB] = { "HOST_WEB" },
   [SV_HOST_WIKI] = { "HOST_WIKI" },
   [SV_LOCALE] = { "LOCALE" },
-  [SV_LOCALE_ISO639_2] = { "LOCALE_ISO639_3" },
   [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
@@ -488,7 +487,6 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_LOCALE_ORIG], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE_ISO639_2], "eng", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
 
   lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;

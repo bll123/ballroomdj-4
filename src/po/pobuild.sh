@@ -49,7 +49,6 @@ function appendlocaledata {
   pofile=$1
   locale=$2
   slocale=$3
-  iso6392=$4
   langdesc=$5
 
   for txt in automatic standardrounds queuedance; do
@@ -69,8 +68,6 @@ function appendlocaledata {
   echo "..$locale" >> $LOCALEDATA
   echo SHORT >> $LOCALEDATA
   echo "..$slocale" >> $LOCALEDATA
-  echo ISO639-2 >> $LOCALEDATA
-  echo "..$iso6392" >> $LOCALEDATA
   echo DISPLAY >> $LOCALEDATA
   echo "..$langdesc" >> $LOCALEDATA
   echo AUTO >> $LOCALEDATA
@@ -103,9 +100,7 @@ while read line; do
   set $line
   locale=$1
 
-  iso6392=$2
-  englishnm=$3
-  shift
+  englishnm=$2
   shift
   shift
   langdesc="$*"
@@ -143,7 +138,7 @@ while read line; do
 
   pofile=po/${locale}.po
 
-  appendlocaledata ${pofile} ${locale} ${slocale} ${iso6392} "${langdesc}"
+  appendlocaledata ${pofile} ${locale} ${slocale} "${langdesc}"
 
   # create the localized template files
 

@@ -132,6 +132,9 @@ instutilCopyTemplates (void)
     if (strcmp (fname, "playerintfc.txt") == 0) {
       continue;
     }
+    if (strcmp (fname, "localization.txt") == 0) {
+      continue;
+    }
 
     strlcpy (from, fname, sizeof (from));
 
