@@ -87,7 +87,7 @@ annlist['ann-bachata']='Next Dance, Bachata'
 annlist['ann-hustle']='Next Dance, Hhustle'
 annlist['ann-lindy-hop']='Next Dance, Lindy Hop'
 annlist['ann-mambo']='Next Dance, Maambo'
-annlist['ann-merengue']='Next Dance, Murreingue'
+annlist['ann-merengue']='Next Dance, Murreingay'
 annlist['ann-polka']='Next Dance, Polka'
 annlist['ann-country-western-two-step']='Next Dance, Country Western Two Step'
 
