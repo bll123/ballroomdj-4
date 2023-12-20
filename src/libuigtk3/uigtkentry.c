@@ -27,6 +27,11 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
+enum {
+  UIENTRY_VAL_TIMER = 400,
+  UIENTRY_VAL_TIMER_OFF = 3600000,
+};
+
 typedef struct uientry {
   GtkEntryBuffer  *buffer;
   uiwcont_t       *entry;
@@ -53,7 +58,7 @@ uiEntryInit (int entrySize, int maxSize)
   uientry->entry = NULL;
   uientry->validateFunc = NULL;
   uientry->udata = NULL;
-  mstimeset (&uientry->validateTimer, 3600000);
+  mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
   uientry->valdelay = false;
   return uientry;
 }
@@ -157,7 +162,7 @@ uiEntrySetValidate (uientry_t *uientry, uientryval_t valfunc, void *udata,
   uientry->udata = udata;
   if (valfunc != NULL) {
     if (valdelay == UIENTRY_DELAYED) {
-      mstimeset (&uientry->validateTimer, 500);
+      mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
       uientry->valdelay = true;
     }
     g_signal_connect (uientry->entry->widget, "changed",
@@ -187,9 +192,10 @@ uiEntryValidate (uientry_t *uientry, bool forceflag)
     return UIENTRY_OK;
   }
 
+  mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
   rc = uientry->validateFunc (uientry, uientry->udata);
   if (rc == UIENTRY_RESET) {
-    mstimeset (&uientry->validateTimer, 500);
+    mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
   }
   if (rc == UIENTRY_ERROR) {
     uiEntrySetIcon (uientry, "dialog-error");
@@ -197,8 +203,15 @@ uiEntryValidate (uientry_t *uientry, bool forceflag)
   if (rc == UIENTRY_OK) {
     uiEntryClearIcon (uientry);
   }
-  mstimeset (&uientry->validateTimer, 3600000);
   return rc;
+}
+
+void
+uiEntryValidateClear (uientry_t *uientry)
+{
+  if (uientry->validateFunc != NULL) {
+    mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
+  }
 }
 
 int
@@ -268,7 +281,7 @@ uiEntryValidateStart (uientry_t *uientry)
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   if (uientry->validateFunc != NULL) {
-    mstimeset (&uientry->validateTimer, 500);
+    mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
   }
 }
 
@@ -277,11 +290,12 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
 {
   uientry_t  *uientry = udata;
 
-  if (uientry->validateFunc != NULL) {
-    uientry->validateFunc (uientry, uientry->udata);
-  }
   if (uientry->valdelay) {
     uiEntryValidateStart (uientry);
+  } else {
+    if (uientry->validateFunc != NULL) {
+      uientry->validateFunc (uientry, uientry->udata);
+    }
   }
   return;
 }

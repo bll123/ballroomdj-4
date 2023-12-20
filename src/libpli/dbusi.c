@@ -56,11 +56,9 @@ dbusConnInit (void)
 void
 dbusConnClose (dbus_t *dbus)
 {
-fprintf (stderr, "unref-dconn\n");
   g_object_unref (dbus->dconn);
   /* apparently, the data variant does not need to be unref'd */
   if (dbus->result != NULL) {
-fprintf (stderr, "unref-result-a\n");
     g_variant_unref (dbus->result);
   }
   dbus->dconn = NULL;
@@ -105,7 +103,6 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   bool    rc;
 
   if (dbus->result != NULL) {
-fprintf (stderr, "unref-result-b\n");
     g_variant_unref (dbus->result);
   }
   dbus->result = NULL;

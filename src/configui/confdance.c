@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
@@ -172,10 +173,11 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
       gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
 
-  uiTreeViewSelectSet (gui->tables [CONFUI_ID_DANCE].uitree, 0);
-  confuiDanceSelect (gui, 0);
 
   gui->inchange = false;
+
+  uiTreeViewSelectSet (gui->tables [CONFUI_ID_DANCE].uitree, 0);
+  confuiDanceSelect (gui, 0);
 
   uiwcontFree (dvbox);
   uiwcontFree (vbox);
@@ -402,19 +404,18 @@ confuiDanceSpinboxChg (void *udata, int widx)
 static int
 confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
 {
-  int         rc;
+  int         rc = UIENTRY_ERROR;
   const char  *fn;
-  char        tbuff [MAXPATHLEN];
   char        nfn [MAXPATHLEN];
-  const char  *musicdir;
-  size_t      mlen;
 
   logProcBegin (LOG_PROC, "confuiDanceValidateAnnouncement");
+  if (gui->inchange) {
+    logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "in-dance-select");
+    return UIENTRY_OK;
+  }
 
-  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  mlen = strlen (musicdir);
+  gui->inchange = true;
 
-  rc = UIENTRY_ERROR;
   fn = uiEntryGetValue (entry);
   if (fn == NULL) {
     logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
@@ -423,32 +424,33 @@ confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
 
   strlcpy (nfn, fn, sizeof (nfn));
   pathNormalizePath (nfn, sizeof (nfn));
-  if (strncmp (musicdir, fn, mlen) == 0) {
-    strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
-    uiEntrySetValue (entry, nfn);
-  }
 
   if (*nfn == '\0') {
     rc = UIENTRY_OK;
   } else {
-    *tbuff = '\0';
-    if (*nfn != '/' && *(nfn + 1) != ':') {
-      strlcpy (tbuff, musicdir, sizeof (tbuff));
-      strlcat (tbuff, "/", sizeof (tbuff));
-    }
-    strlcat (tbuff, nfn, sizeof (tbuff));
-    if (fileopFileExists (tbuff)) {
+    const char  *rfn;
+    char        ffn [MAXPATHLEN];
+
+    rfn = audiosrcRelativePath (nfn);
+    audiosrcFullPath (nfn, ffn, sizeof (ffn));
+
+    if (fileopFileExists (ffn)) {
+      if (strcmp (rfn, nfn) != 0) {
+        uiEntrySetValue (entry, rfn);
+      }
       rc = UIENTRY_OK;
     }
   }
 
-  /* sanitizeaddress creates a buffer underflow error */
+  /* sanitizeaddress indicates a buffer underflow error */
   /* if tablecurr is set to CONFUI_ID_NONE */
   /* also this validation routine gets called at most any time, but */
   /* the changed flag should only be set for the edit dance tab */
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
+  if (rc == UIENTRY_OK && gui->tablecurr == CONFUI_ID_DANCE) {
     gui->tables [gui->tablecurr].changed = true;
   }
+
+  gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "");
   return rc;
 }

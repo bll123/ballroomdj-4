@@ -32,6 +32,7 @@ void uiEntrySetValue (uientry_t *entry, const char *value);
 void uiEntrySetValidate (uientry_t *entry,
     uientryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uientry_t *entry, bool forceflag);
+void uiEntryValidateClear (uientry_t *entry);
 int uiEntryValidateDir (uientry_t *edata, void *udata);
 int uiEntryValidateFile (uientry_t *edata, void *udata);
 void uiEntrySetState (uientry_t *entry, int state);
