@@ -4863,6 +4863,8 @@ TITLE
 ..ann-waltz
 DEST
 ..Announce/waltz
+DB_LOC_LOCK
+..on
 
 KEY
 ..133
@@ -4898,6 +4900,8 @@ TITLE
 ..ann-tango
 DEST
 ..Announce/tango
+DB_LOC_LOCK
+..on
 
 
 # ogg/opus as .ogx

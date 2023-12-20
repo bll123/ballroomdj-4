@@ -521,7 +521,9 @@ DANCERATING
 TITLE
 ..ann-waltz
 DEST
-..ann-waltz
+..Announce/ann-waltz
+DB_LOC_LOCK
+..on
 
 KEY
 ..14
@@ -556,4 +558,6 @@ DANCERATING
 TITLE
 ..ann-tango
 DEST
-..ann-tango
+..Announce/ann-tango
+DB_LOC_LOCK
+..on

@@ -59,7 +59,7 @@ static datafilekey_t songdfkeys [] = {
   { "DANCERATING",          TAG_DANCERATING,          VALUE_NUM, ratingConv, DF_NORM },
   { "DATE",                 TAG_DATE,                 VALUE_STR, NULL, DF_NORM },
   { "DBADDDATE",            TAG_DBADDDATE,            VALUE_STR, NULL, DF_NORM },
-  { "DB_LOC_LOCK",          TAG_DB_LOC_LOCK,          VALUE_NUM, NULL, DF_NORM },
+  { "DB_LOC_LOCK",          TAG_DB_LOC_LOCK,          VALUE_NUM, convBoolean, DF_NORM },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_NUM, NULL, DF_NORM },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, DF_NORM },
   /* no conversion is defined for duration. it is handled as */

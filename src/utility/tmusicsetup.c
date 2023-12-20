@@ -61,6 +61,7 @@ static datafilekey_t tmdfkeys [] = {
   { "DANCELEVEL",   TAG_DANCELEVEL,           VALUE_STR, NULL, DF_NORM },
   { "DANCERATING",  TAG_DANCERATING,          VALUE_STR, NULL, DF_NORM },
   { "DATE",         TAG_DATE,                 VALUE_STR, NULL, DF_NORM },
+  { "DB_LOC_LOCK",  TAG_DB_LOC_LOCK,          VALUE_STR, NULL, DF_NORM },
   { "DEST",         TM_DEST,                  VALUE_STR, NULL, DF_NORM },
   { "DISC",         TAG_DISCNUMBER,           VALUE_STR, NULL, DF_NORM },
   { "DISCTOTAL",    TAG_DISCTOTAL,            VALUE_STR, NULL, DF_NORM },
@@ -89,7 +90,7 @@ enum {
   tmdfcount = sizeof (tmdfkeys) / sizeof (datafilekey_t),
 };
 
-static slist_t *updateData (ilist_t *tmlist, ilistidx_t key);
+static slist_t *updateData (ilist_t *tmusiclist, ilistidx_t key);
 static char *createFile (const char *src, const char *dest, bool keepmusic);
 
 static int  gtracknum [TM_MAX_DANCE];
@@ -106,7 +107,7 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   bool        emptydb = false;
   datafile_t  *df = NULL;
-  ilist_t     *tmlist = NULL;
+  ilist_t     *tmusiclist = NULL;
   ilistidx_t  tmiteridx;
   ilistidx_t  key;
   char        dbfn [MAXPATHLEN];
@@ -247,20 +248,21 @@ main (int argc, char *argv [])
 
   df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, infn,
       tmdfkeys, tmdfcount, DF_NO_OFFSET, NULL);
-  tmlist = datafileGetList (df);
+  tmusiclist = datafileGetList (df);
 
-  ilistStartIterator (tmlist, &tmiteridx);
-  while ((key = ilistIterateKey (tmlist, &tmiteridx)) >= 0) {
+  ilistStartIterator (tmusiclist, &tmiteridx);
+  while ((key = ilistIterateKey (tmusiclist, &tmiteridx)) >= 0) {
     const char  *src;
     char        from [MAXPATHLEN];
     const char  *dest;
     char        *fn;
     slist_t     *tagdata = NULL;
+    const char  *songfn;
 
-    tagdata = updateData (tmlist, key);
+    tagdata = updateData (tmusiclist, key);
 
-    src = ilistGetStr (tmlist, key, TM_SOURCE);
-    dest = ilistGetStr (tmlist, key, TM_DEST);
+    src = ilistGetStr (tmusiclist, key, TM_SOURCE);
+    dest = ilistGetStr (tmusiclist, key, TM_DEST);
 
     /* need full path to determine tag type */
     snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);
@@ -275,8 +277,8 @@ main (int argc, char *argv [])
       audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
     }
     if (emptydb) {
-      char    *dur;
-      char    *title;
+      char        *dur;
+      char        *title;
 
       dur = mdstrdup (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
       title = mdstrdup (slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
@@ -288,12 +290,14 @@ main (int argc, char *argv [])
       mdfree (title);
     }
     slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, "0");
-    dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
+    songfn = fn + strlen (tmusicdir) + 1;
+    dbWrite (db, songfn, tagdata, MUSICDB_ENTRY_NEW);
+
     if (*altdir) {
       char    tmp [40];
 
       /* if the alternate dir is set, create a duplicate entry */
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, fn + strlen (tmusicdir) + 1);
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, songfn);
       slistSetStr (tagdata, tagdefs [TAG_URI].tag, tbuff);
       snprintf (tmp, sizeof (tmp), "%d", (int) strlen (altdir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
@@ -324,14 +328,14 @@ main (int argc, char *argv [])
 }
 
 static slist_t *
-updateData (ilist_t *tmlist, ilistidx_t key)
+updateData (ilist_t *tmusiclist, ilistidx_t key)
 {
   slist_t       *tagdata;
   datafilekey_t *dfkey;
   datafileconv_t  conv;
   ilistidx_t    danceIdx = LIST_VALUE_INVALID;
 
-  conv.str = ilistGetStr (tmlist, key, TAG_DANCE);
+  conv.str = ilistGetStr (tmusiclist, key, TAG_DANCE);
   conv.invt = VALUE_STR;
   danceConvDance (&conv);
   danceIdx = conv.num;
@@ -345,7 +349,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
     int         sn;
 
     dfkey = &tmdfkeys [i];
-    val = ilistGetStr (tmlist, key, dfkey->itemkey);
+    val = ilistGetStr (tmusiclist, key, dfkey->itemkey);
     if (val == NULL || *val == '\0') {
       continue;
     }
@@ -363,7 +367,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
       snprintf (nval, sizeof (nval), val, sn);
     }
 
-    ilistSetStr (tmlist, key, dfkey->itemkey, nval);
+    ilistSetStr (tmusiclist, key, dfkey->itemkey, nval);
     if (dfkey->itemkey != TM_SOURCE && dfkey->itemkey != TM_DEST) {
       slistSetStr (tagdata, tagdefs [dfkey->itemkey].tag, nval);
     }

@@ -210,6 +210,7 @@ done
 
 cat >> data/profile00/ds-songedit-b.txt << _HERE_
 FAVORITE
+DB_LOC_LOCK
 _HERE_
 
 args=""
