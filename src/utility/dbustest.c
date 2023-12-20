@@ -9,14 +9,13 @@
 #include <string.h>
 #include <errno.h>
 
-#include "dbus.h"
+#include "dbusi.h"
 
 enum {
   MAXSZ = 80,
 };
 
 static void getstr (char *str, size_t sz);
-static void prompt (const char *str);
 static void getstd (char *bus, char *orgpath, char *intfc, char *method);
 
 int
@@ -37,7 +36,6 @@ main (int argc, char *argv [])
   }
 
   while (1) {
-//    prompt (": ");
     getstr (cmd, sizeof (cmd));
 
     if (strcmp (cmd, "exit") == 0 ||
@@ -49,7 +47,7 @@ main (int argc, char *argv [])
     }
     if (strcmp (cmd, "data") == 0) {
       getstr (data, sizeof (data));
-      dbusMessageSetData (dbus, data, NULL);
+      dbusMessageSetDataString (dbus, data, NULL);
     }
     if (strcmp (cmd, "call") == 0) {
       getstd (bus, orgpath, intfc, method);
@@ -78,21 +76,10 @@ getstr (char *str, size_t sz)
 }
 
 static void
-prompt (const char *str)
-{
-  fprintf (stdout, "%s", str);
-  fflush (stdout);
-}
-
-static void
 getstd (char *bus, char *orgpath, char *intfc, char *method)
 {
-//  prompt ("bus: ");
   getstr (bus, MAXSZ);
-//  prompt ("orgpath: ");
   getstr (orgpath, MAXSZ);
-//  prompt ("intfc: ");
   getstr (intfc, MAXSZ);
-//  prompt ("method: ");
   getstr (method, MAXSZ);
 }

@@ -39,6 +39,9 @@ target_link_libraries (libbdj4dbusi PRIVATE
 )
 
 add_library (libplimpris SHARED plimpris.c mprisi.c)
+target_include_directories (libplimpris
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+)
 target_link_libraries (libplimpris PRIVATE
   libbdj4common
   libbdj4dbusi

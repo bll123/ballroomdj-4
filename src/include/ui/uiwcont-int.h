@@ -96,6 +96,9 @@ typedef union {
     uitree_t      *uitree;
 } uiwcontint_t;
 
+/* UISPECIFIC is defined as the contents of the anonymous union. */
+/* UISPECIFIC must contain a value named 'widget' */
+
 # if BDJ4_USE_GTK3 /* gtk3 */
 
 #  include <gtk/gtk.h>

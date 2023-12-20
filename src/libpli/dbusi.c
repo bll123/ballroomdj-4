@@ -13,7 +13,7 @@
 
 #include <gio/gio.h>
 
-#include "dbus.h"
+#include "dbusi.h"
 #include "mdebug.h"
 
 enum {
@@ -56,24 +56,22 @@ dbusConnInit (void)
 void
 dbusConnClose (dbus_t *dbus)
 {
+fprintf (stderr, "unref-dconn\n");
   g_object_unref (dbus->dconn);
-  if (dbus->data != NULL) {
-    g_variant_unref (dbus->data);
-  }
+  /* apparently, the data variant does not need to be unref'd */
   if (dbus->result != NULL) {
+fprintf (stderr, "unref-result-a\n");
     g_variant_unref (dbus->result);
   }
   dbus->dconn = NULL;
-  dbus->dconn = NULL;
+  dbus->data = NULL;
+  dbus->result = NULL;
   dbus->state = DBUS_STATE_CLOSED;
 }
 
 void
 dbusMessageInit (dbus_t *dbus)
 {
-  if (dbus->data != NULL) {
-    g_variant_unref (dbus->data);
-  }
   dbus->data = g_variant_new_parsed ("()");
 }
 
@@ -83,22 +81,72 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_list   args;
 
   va_start (args, sdata);
-  dbus->data = g_variant_new_parsed_va (sdata, &args);
-  dumpResult ("data-a", dbus->data);
+  dbus->data = g_variant_new_va (sdata, NULL, &args);
+  dumpResult ("data-va", dbus->data);
   va_end (args);
 }
 
+/* use a gvariant string to set the data */
 void
+dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
+{
+  va_list   args;
+
+  va_start (args, sdata);
+  dbus->data = g_variant_new_parsed_va (sdata, &args);
+  dumpResult ("data-parsed", dbus->data);
+  va_end (args);
+}
+
+bool
 dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
     const char *intfc, const char *method)
 {
+  bool    rc;
+
+  if (dbus->result != NULL) {
+fprintf (stderr, "unref-result-b\n");
+    g_variant_unref (dbus->result);
+  }
+  dbus->result = NULL;
+
   fprintf (stdout, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
-  dumpResult ("data-b", dbus->data);
+  dumpResult ("data-msg", dbus->data);
   dbus->result = g_dbus_connection_call_sync (dbus->dconn,
       bus, objpath, intfc, method,
       dbus->data, NULL, G_DBUS_CALL_FLAGS_NONE, DBUS_TIMEOUT, NULL, NULL);
   dumpResult ("result", dbus->result);
+
+  rc = dbus->result == NULL ? false : true;
+  return rc;
 }
+
+bool
+dbusResultGet (dbus_t *dbus, ...)
+{
+  const char  *type;
+  GVariant    *val;
+  va_list     args;
+
+  val = dbus->result;
+  if (val == NULL) {
+    return false;
+  }
+
+  type = g_variant_get_type_string (val);
+  if (strcmp (type, "(v)") == 0) {
+    g_variant_get (val, type, &val);
+    type = g_variant_get_type_string (val);
+  }
+
+  va_start (args, dbus);
+  g_variant_get_va (val, type, NULL, &args);
+  va_end (args);
+
+  return true;
+}
+
+/* internal routines */
 
 static void
 dumpResult (const char *tag, GVariant *data)
