@@ -423,19 +423,19 @@ bdjoptDeleteProfile (void)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
       PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
+    diropDeleteDir (tbuff, DIROP_ALL);
   }
   /* data/<hostname>/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
       PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
+    diropDeleteDir (tbuff, DIROP_ALL);
   }
   /* img/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
       PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
+    diropDeleteDir (tbuff, DIROP_ALL);
   }
 }
 

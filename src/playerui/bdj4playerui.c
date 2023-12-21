@@ -111,6 +111,7 @@ typedef struct {
   char            *locknm;
   conn_t          *conn;
   musicdb_t       *musicdb;
+  songdb_t        *songdb;
   int             musicqPlayIdx;
   int             musicqRequestIdx;
   int             musicqManageIdx;
@@ -317,6 +318,8 @@ main (int argc, char *argv[])
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
   logProcBegin (LOG_PROC, "playerui");
 
+  plui.songdb = songdbAlloc (plui.musicdb);
+
   if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
     plui.marqueeoff = true;
   }
@@ -450,6 +453,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
+  songdbFree (plui->songdb);
 
   uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
@@ -1697,7 +1701,7 @@ pluiSongSaveCallback (void *udata, long dbidx)
   playerui_t  *plui = udata;
   char        tmp [40];
 
-  songWriteDB (plui->musicdb, dbidx, NULL);
+  songdbWriteDB (plui->songdb, dbidx);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

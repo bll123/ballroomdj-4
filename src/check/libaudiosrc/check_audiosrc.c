@@ -93,7 +93,7 @@ teardown (void)
 {
   for (int i = 0; i < lvaluesz; ++i) {
     if (lvalues [i].type == CHK_DIR) {
-      diropDeleteDir (lvalues [i].name);
+      diropDeleteDir (lvalues [i].name, DIROP_ALL);
     }
   }
   bdjoptCleanup ();

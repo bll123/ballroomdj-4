@@ -93,7 +93,7 @@ START_TEST(osdir_chk)
     snprintf (tbuff, sizeof (tbuff), "%s/%s", OSDIRTESTDIR, osdirtestdata [i]);
     fileopDelete (tbuff);
   }
-  diropDeleteDir (OSDIRTESTDIR);
+  diropDeleteDir (OSDIRTESTDIR, DIROP_ALL);
 }
 END_TEST
 

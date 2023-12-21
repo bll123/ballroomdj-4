@@ -33,6 +33,7 @@
 
 typedef struct eibdj4 {
   musicdb_t   *musicdb;
+  songdb_t    *songdb;
   musicdb_t   *eimusicdb;
   const char  *dirname;
   char        datadir [MAXPATHLEN];
@@ -65,6 +66,7 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
 
   eibdj4 = mdmalloc (sizeof (eibdj4_t));
   eibdj4->musicdb = musicdb;
+  eibdj4->songdb = songdbAlloc (musicdb);
   eibdj4->dirname = dirname;
   eibdj4->dbidxlist = NULL;
   eibdj4->plName = NULL;
@@ -92,6 +94,7 @@ void
 eibdj4Free (eibdj4_t *eibdj4)
 {
   if (eibdj4 != NULL) {
+    songdbFree (eibdj4->songdb);
     dataFree (eibdj4->plName);
     dataFree (eibdj4->newName);
     songlistFree (eibdj4->sl);
@@ -443,9 +446,12 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         docopy = true;
       }
       if (doupdate) {
+        int     songdbflags;
+
         eibdj4->dbchanged = true;
         songSetChanged (song);
-        songWriteDBSong (eibdj4->musicdb, song, NULL);
+        songdbflags = SONGDB_NONE;
+        songdbWriteDBSong (eibdj4->songdb, song, &songdbflags);
       }
       if (docopy) {
         pathinfo_t  *pi;

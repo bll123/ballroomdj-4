@@ -22,6 +22,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "fileop.h"
 #include "log.h"
 #include "osdirutil.h"
 #include "pathutil.h"
@@ -188,7 +189,7 @@ START_TEST(path_realpath)
   pathNormalizePath (cwd, sizeof (cwd));
 
   strlcpy (from, "tmp/abc.txt", sizeof (from));
-  fh = fopen (from, "w");
+  fh = fileopOpen (from, "w");
   fclose (fh);
   snprintf (actual, sizeof (actual), "%s/%s", cwd, from);
 

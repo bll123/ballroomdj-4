@@ -406,7 +406,7 @@ START_TEST(song_audio_file)
     songFree (song);
   }
 
-  diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
+  diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC), DIROP_ALL);
 
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();

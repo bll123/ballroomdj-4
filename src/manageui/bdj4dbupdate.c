@@ -120,6 +120,7 @@ typedef struct {
   int               state;
   musicdb_t         *musicdb;
   musicdb_t         *newmusicdb;
+  songdb_t          *songdb;
   const char        *musicdir;
   size_t            musicdirlen;
   const char        *dbtopdir;
@@ -253,6 +254,8 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &dbupdate.musicdb,
       "dbup", ROUTE_DBUPDATE, &dbupdate.startflags);
   logProcBegin (LOG_PROC, "dbupdate");
+
+  dbupdate.songdb = songdbAlloc (dbupdate.musicdb);
 
   dbupdate.olddirlist = bdjoptGetStr (OPT_M_DIR_OLD_SKIP);
   if (dbupdate.olddirlist != NULL && *dbupdate.olddirlist) {
@@ -838,6 +841,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (dbupdate->processes);
 
+  songdbFree (dbupdate->songdb);
   itunesFree (dbupdate->itunes);
   orgFree (dbupdate->org);
   orgFree (dbupdate->orgold);
@@ -1055,6 +1059,8 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
+  songdbSetMusicDB (dbupdate->songdb, currdb);
+
   len = dbWrite (currdb, songfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
     dbupdateIncCount (dbupdate, C_NEW);
@@ -1132,6 +1138,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
+  songdbSetMusicDB (dbupdate->songdb, currdb);
 
   /* for itunes, just update the song data directly, */
   /* write the song to the db, and write the song tags */
@@ -1187,17 +1194,14 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   const char  *songfname = NULL;
   song_t      *song = NULL;
   musicdb_t   *currdb = NULL;
-  char        *newfn = NULL;
-  char        tbuff [MAXPATHLEN];
-  char        newffn [MAXPATHLEN];
-  const char  *bypass = NULL;
-  int         rc;
-  pathinfo_t  *pi;
+  int         songdbflags;
 
   if (ffn == NULL) {
     return;
   }
 
+  // ### should use audiosrc-relative-path probably.
+  // ### will see what happens when non-music-dirs are used.
   songfname = ffn;
   if (dbupdate->usingmusicdir) {
     songfname = dbupdateGetRelativePath (dbupdate, ffn);
@@ -1208,77 +1212,26 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
-  if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
-    /* user requested location lock */
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
-  }
 
   currdb = dbupdate->musicdb;
   if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
+  songdbSetMusicDB (dbupdate->songdb, currdb);
 
-  bypass = "";
-  if (dbupdate->orgold != NULL) {
-    bypass = orgGetFromPath (dbupdate->orgold, songGetStr (song, TAG_URI),
-        (tagdefkey_t) ORG_TAG_BYPASS);
-  }
-  newfn = orgMakeSongPath (dbupdate->org, song, bypass);
-  if (strcmp (newfn, songfname) == 0) {
-    /* no change */
-    dataFree (newfn);
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
-  }
+  /* override the auto-organize setting */
+  songdbflags = SONGDB_FORCE_RENAME;
+  songdbWriteDBSong (dbupdate->songdb, song, &songdbflags);
 
-  audiosrcFullPath (newfn, newffn, sizeof (newffn));
-
-  if (*newffn && fileopFileExists (newffn)) {
-    /* new filename already exists */
-    logMsg (LOG_DBG, LOG_DBUPDATE, "new file exists %s %s", songfname, newffn);
-    dataFree (newfn);
+  if ((songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
+    dbupdateIncCount (dbupdate, C_RENAMED);
+  } else if ((songdbflags & SONGDB_RET_FILE_EXISTS) == SONGDB_RET_FILE_EXISTS) {
     dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
-  }
-
-  pi = pathInfo (newffn);
-  snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
-  if (! fileopIsDirectory (tbuff)) {
-    rc = diropMakeDir (tbuff);
-    if (rc != 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to create dir %s", tbuff);
-    }
-  }
-
-  rc = filemanipMove (ffn, newffn);
-  if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s %s", songfname, newffn);
-    /* unable to rename */
-    dataFree (newfn);
+  } else if ((songdbflags & SONGDB_RET_RENAME_FAIL) == SONGDB_RET_RENAME_FAIL) {
     dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
   }
+  /* otherwise, the audio file was not renamed */
 
-  logMsg (LOG_DBG, LOG_DBUPDATE, "renamed %s %s", songfname, newffn);
-  songSetStr (song, TAG_URI, newfn);
-  songWriteDBSong (currdb, song, songfname);
-
-  if (audiosrcOriginalExists (ffn)) {
-    strlcpy (tbuff, ffn, sizeof (tbuff));
-    strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
-    strlcat (newffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
-    logMsg (LOG_DBG, LOG_DBUPDATE, "renamed original");
-    rc = filemanipMove (tbuff, newffn);
-    if (rc != 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s", songfname);
-    }
-  }
-
-  dataFree (newfn);
-  dbupdateIncCount (dbupdate, C_RENAMED);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
 }
 

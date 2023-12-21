@@ -26,18 +26,18 @@
 #include "osutils.h"
 #include "sysvars.h"
 
-START_TEST(fileop_exists_a)
+START_TEST(fileop_open_exists_a)
 {
   FILE      *fh;
   int       rc;
   char *fn = "tmp/def.txt";
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_a");
-  mdebugSubTag ("fileop_exists_a");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_open_exists_a");
+  mdebugSubTag ("fileop_open_exists_a");
 
   unlink (fn);
   fn = "tmp/abc.txt";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileopFileExists (fn);
@@ -61,7 +61,7 @@ START_TEST(fileop_exists_symlink)
   unlink (fn);
   unlink (fnb);
 
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = osCreateLink ("slabc.txt", fnb);
@@ -102,7 +102,7 @@ START_TEST(fileop_size_a)
 
   unlink (fn);
   fn = "tmp/abc.txt";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   fprintf (fh, "abcdef");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
@@ -127,7 +127,7 @@ START_TEST(fileop_modtime_a)
   ctm = time (NULL);
   unlink (fn);
   fn = "tmp/abc.txt";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   tm = fileopModTime (fn);
@@ -150,7 +150,7 @@ START_TEST(fileop_setmodtime_a)
   ctm = time (NULL);
   unlink (fn);
   fn = "tmp/abc.txt";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   tm = fileopModTime (fn);
@@ -175,7 +175,7 @@ START_TEST(fileop_delete_a)
 
   unlink (fn);
   fn = "tmp/abc.txt";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileopFileExists (fn);
@@ -201,7 +201,7 @@ START_TEST(fileop_delete_symlink)
   mdebugSubTag ("fileop_delete_symlink");
 
   unlink (fn);
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = osCreateLink ("slghi.txt", fnb);
@@ -411,7 +411,7 @@ fileop_suite (void)
   s = suite_create ("fileop");
   tc = tcase_create ("fileop");
   tcase_set_tags (tc, "libcommon");
-  tcase_add_test (tc, fileop_exists_a);
+  tcase_add_test (tc, fileop_open_exists_a);
   tcase_add_test (tc, fileop_exists_symlink);
   tcase_add_test (tc, fileop_size_a);
   tcase_add_test (tc, fileop_modtime_a);

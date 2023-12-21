@@ -193,7 +193,7 @@ START_TEST(osprocess_start_redirect)
     sleep (1);    // give windows a bit more time
   }
   ck_assert_int_eq (fileopFileExists (outfn), 1);
-  fh = fopen (outfn, "r");
+  fh = fileopOpen (outfn, "r");
   if (fh != NULL) {
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);

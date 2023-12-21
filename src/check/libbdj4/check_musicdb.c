@@ -794,7 +794,7 @@ START_TEST(musicdb_cleanup)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   fileopDelete (dbfn);
-  diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
+  diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC), DIROP_ALL);
   bdjoptCleanup ();
 }
 END_TEST

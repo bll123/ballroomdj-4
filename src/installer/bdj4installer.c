@@ -1595,12 +1595,12 @@ installerCopyFiles (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), "%s%s/locale/en",
         installer->target, installer->macospfx);
     if (! osIsLink (tbuff) && fileopIsDirectory (tbuff)) {
-      diropDeleteDir (tbuff);
+      diropDeleteDir (tbuff, DIROP_ALL);
     }
     snprintf (tbuff, sizeof (tbuff), "%s%s/locale/nl",
         installer->target, installer->macospfx);
     if (! osIsLink (tbuff) && fileopIsDirectory (tbuff)) {
-      diropDeleteDir (tbuff);
+      diropDeleteDir (tbuff, DIROP_ALL);
     }
   }
 

@@ -1252,7 +1252,7 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
           fileopDelete (fn);
         } else if (fileopIsDirectory (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete dir %s", fn);
-          diropDeleteDir (fn);
+          diropDeleteDir (fn, DIROP_ALL);
         } else if (fileopFileExists (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete %s", fn);
           fileopDelete (fn);

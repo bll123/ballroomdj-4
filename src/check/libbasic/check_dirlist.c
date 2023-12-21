@@ -74,7 +74,7 @@ teardown (void)
       fileopDelete (tvalues [i].name);
     }
     if (tvalues [i].type == CHK_DIR) {
-      diropDeleteDir (tvalues [i].name);
+      diropDeleteDir (tvalues [i].name, DIROP_ALL);
     }
   }
 }

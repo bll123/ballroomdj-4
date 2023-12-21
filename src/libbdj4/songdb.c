@@ -13,9 +13,17 @@
 #include "audiofile.h"
 #include "audiosrc.h"
 #include "audiotag.h"
+#include "bdjopt.h"
+#include "bdjvars.h"
+#include "dirop.h"
+#include "fileop.h"
+#include "filemanip.h"
 #include "ilist.h"
+#include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
+#include "orgutil.h"
+#include "pathutil.h"
 #include "playlist.h"
 #include "slist.h"
 #include "song.h"
@@ -23,21 +31,86 @@
 #include "songlist.h"
 #include "tagdef.h"
 
-static void songWriteAudioTags (song_t *song);
-static void songUpdateAllSonglists (song_t *song, const char *olduri);
+static void songdbWriteAudioTags (song_t *song);
+static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
 
-void
-songWriteDB (musicdb_t *musicdb, dbidx_t dbidx, const char *olduri)
+typedef struct songdb {
+  musicdb_t *musicdb;
+  org_t     *org;
+  org_t     *orgold;
+} songdb_t;
+
+songdb_t *
+songdbAlloc (musicdb_t *musicdb)
 {
-  song_t    *song;
+  songdb_t *songdb;
+  const char  *torgpath;
 
-  song = dbGetByIdx (musicdb, dbidx);
-  songWriteDBSong (musicdb, song, olduri);
+  songdb = mdmalloc (sizeof (songdb_t));
+  songdb->musicdb = musicdb;
+
+  torgpath = bdjoptGetStr (OPT_G_ORGPATH);
+  songdb->org = orgAlloc (torgpath);
+  songdb->orgold = NULL;
+  if (strstr (torgpath, "BYPASS") != NULL) {
+    songdb->orgold = orgAlloc (bdjoptGetStr (OPT_G_OLDORGPATH));
+  }
+
+  return songdb;
 }
 
 void
-songWriteDBSong (musicdb_t *musicdb, song_t *song, const char *olduri)
+songdbFree (songdb_t *songdb)
 {
+  if (songdb == NULL) {
+    return;
+  }
+
+  orgFree (songdb->org);
+  songdb->org = NULL;
+  orgFree (songdb->orgold);
+  mdfree (songdb);
+}
+
+void
+songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb)
+{
+  if (songdb == NULL) {
+    return;
+  }
+
+  songdb->musicdb = musicdb;
+}
+
+void
+songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
+{
+  song_t    *song;
+
+  if (songdb == NULL || songdb->musicdb == NULL) {
+    return;
+  }
+  song = dbGetByIdx (songdb->musicdb, dbidx);
+  songdbWriteDBSong (songdb, song, SONGDB_NONE);
+}
+
+/* flags is both input and output */
+void
+songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
+{
+  char        newfn [MAXPATHLEN];
+  char        newffn [MAXPATHLEN];
+  char        oldfn [MAXPATHLEN];
+  char        ffn [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  bool        dorename = false;
+  bool        rename = false;
+  pathinfo_t  *pi;
+  int         rc;
+
+  if (songdb == NULL || songdb->musicdb == NULL) {
+    return;
+  }
   if (song == NULL) {
     return;
   }
@@ -45,19 +118,136 @@ songWriteDBSong (musicdb_t *musicdb, song_t *song, const char *olduri)
     return;
   }
 
-  dbWriteSong (musicdb, song);
-  songWriteAudioTags (song);
-  if (songHasSonglistChange (song) || olduri != NULL) {
+  rename = bdjoptGetNum (OPT_G_AUTOORGANIZE) ||
+      ((*flags & SONGDB_FORCE_RENAME) == SONGDB_FORCE_RENAME);
+
+  strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
+
+  if (rename) {
+    if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
+      strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
+      songSetStr (song, TAG_URI, newfn);
+      dorename = true;
+    }
+  }
+
+  *newfn = '\0';
+
+  if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
+    /* user requested location lock */
+    dorename = false;
+  }
+
+  if (dorename) {
+    audiosrcFullPath (oldfn, ffn, sizeof (ffn));
+    audiosrcFullPath (newfn, newffn, sizeof (newffn));
+
+    if (*newffn && fileopFileExists (newffn)) {
+      *flags |= SONGDB_RET_FILE_EXISTS;
+      dorename = false;
+    }
+
+    if (dorename) {
+      pi = pathInfo (newffn);
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+      if (! fileopIsDirectory (tbuff)) {
+        rc = diropMakeDir (tbuff);
+        if (rc != 0) {
+          logMsg (LOG_DBG, LOG_IMPORTANT, "unable to create dir %s", tbuff);
+          dorename = false;
+          *flags |= SONGDB_RET_RENAME_FAIL;
+        }
+      }
+      pathInfoFree (pi);
+    }
+
+    if (dorename) {
+      rc = filemanipMove (ffn, newffn);
+      if (rc != 0) {
+        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s %s", oldfn, newffn);
+        *flags |= SONGDB_RET_RENAME_FAIL;
+      } else {
+        *flags |= SONGDB_RET_RENAME_SUCCESS;
+
+        /* try to remove the old dir */
+        pi = pathInfo (ffn);
+        snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+        pathInfoFree (pi);
+      }
+    }
+
+    if (dorename && audiosrcOriginalExists (ffn)) {
+      strlcpy (tbuff, ffn, sizeof (tbuff));
+      strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
+      strlcat (newffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
+      rc = filemanipMove (tbuff, newffn);
+      if (rc != 0) {
+        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s %s", oldfn, tbuff);
+        *flags |= SONGDB_RET_ORIG_RENAME_FAIL;
+      }
+    }
+  }
+
+  dbWriteSong (songdb->musicdb, song);
+  if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
+    songdbWriteAudioTags (song);
+  }
+  if (songHasSonglistChange (song) || dorename) {
     /* need to update all songlists if file/title/dance changed. */
-    songUpdateAllSonglists (song, olduri);
+    songdbUpdateAllSonglists (song, oldfn);
   }
   songClearChanged (song);
+}
+
+bool
+songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
+{
+  char        ffn [MAXPATHLEN];
+  const char  *songfname;
+  const char  *bypass;
+  char        *tnewfn;
+
+  if (song == NULL) {
+    return false;
+  }
+  if (songdb->org == NULL) {
+    /* org_t have not been set up */
+    return false;
+  }
+
+  *newuri = '\0';
+  songfname = songGetStr (song, TAG_URI);
+  audiosrcFullPath (songfname, ffn, sizeof (ffn));
+  if (audiosrcGetType (ffn) != AUDIOSRC_TYPE_FILE) {
+    return false;
+  }
+  if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
+    return false;
+  }
+
+  bypass = "";
+  if (songdb->orgold != NULL) {
+    bypass = orgGetFromPath (songdb->orgold, songfname,
+        (tagdefkey_t) ORG_TAG_BYPASS);
+  }
+
+  tnewfn = orgMakeSongPath (songdb->org, song, bypass);
+  if (strcmp (tnewfn, songfname) == 0) {
+    /* no change */
+    dataFree (tnewfn);
+    return false;
+  }
+
+  strlcpy (newuri, tnewfn, sz);
+  dataFree (tnewfn);
+
+  return true;
 }
 
 /* internal routines */
 
 static void
-songWriteAudioTags (song_t *song)
+songdbWriteAudioTags (song_t *song)
 {
   const char  *fn;
   char        ffn [MAXPATHLEN];
@@ -83,7 +273,7 @@ songWriteAudioTags (song_t *song)
 }
 
 static void
-songUpdateAllSonglists (song_t *song, const char *olduri)
+songdbUpdateAllSonglists (song_t *song, const char *olduri)
 {
   slist_t     *filelist;
   slistidx_t  fiteridx;

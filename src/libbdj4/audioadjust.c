@@ -223,13 +223,17 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   }
 
   if (changed) {
+    songdb_t    *songdb;
+
     /* ffmpeg (et.al.) does not handle all tags properly. */
     /* restore all the original tags */
     audiotagRestoreTags (fullfn, savedtags);
     audiotagFreeSavedTags (fullfn, savedtags);
     savedtags = NULL;
 
-    songWriteDB (musicdb, dbidx, NULL);
+    songdb = songdbAlloc (musicdb);
+    songdbWriteDB (songdb, dbidx);
+    songdbFree (songdb);
   }
   dataFree (savedtags);
 

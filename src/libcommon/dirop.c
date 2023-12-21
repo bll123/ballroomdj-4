@@ -42,16 +42,15 @@ diropMakeDir (const char *dirname)
   return rc;
 }
 
-void
-diropDeleteDir (const char *dirname)
+bool
+diropDeleteDir (const char *dirname, int flags)
 {
   dirhandle_t   *dh;
   char          *fname;
   char          temp [MAXPATHLEN];
 
-
   if (! fileopIsDirectory (dirname)) {
-    return;
+    return false;
   }
 
   dh = osDirOpen (dirname);
@@ -65,8 +64,15 @@ diropDeleteDir (const char *dirname)
     snprintf (temp, sizeof (temp), "%s/%s", dirname, fname);
     if (fname != NULL) {
       if (fileopIsDirectory (temp)) {
-        diropDeleteDir (temp);
+        if (! diropDeleteDir (temp, flags)) {
+          mdfree (fname);
+          return false;
+        }
       } else {
+        if ((flags & DIROP_ONLY_IF_EMPTY) == DIROP_ONLY_IF_EMPTY) {
+          mdfree (fname);
+          return false;
+        }
         fileopDelete (temp);
       }
     }
@@ -91,6 +97,8 @@ diropDeleteDir (const char *dirname)
 #else
   rmdir (dirname);
 #endif
+
+  return true;
 }
 
 /* internal routines */

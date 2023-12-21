@@ -45,7 +45,7 @@ START_TEST(osutils_link)
   fileopDelete (fnad);
   fileopDelete (fnb);
 
-  fh = fopen (fnad, "w");
+  fh = fileopOpen (fnad, "w");
   if (fh != NULL) {
     fclose (fh);
   }

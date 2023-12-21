@@ -23,6 +23,7 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "fileop.h"
 #include "mdebug.h"
 #include "lock.h"
 #include "log.h"
@@ -75,7 +76,7 @@ START_TEST(lock_acquire_release)
   rc = stat (fulllockfn, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_gt (statbuf.st_size, 0);
-  fh = fopen (fulllockfn, "r");
+  fh = fileopOpen (fulllockfn, "r");
   rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
@@ -191,7 +192,7 @@ START_TEST(lock_exists)
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
 
-  fh = fopen (fulllockfn, "r");
+  fh = fileopOpen (fulllockfn, "r");
   rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
@@ -211,7 +212,7 @@ START_TEST(lock_exists)
   tpid = lockExists (LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (tpid, 0);
 
-  fh = fopen (fulllockfn, "w");
+  fh = fileopOpen (fulllockfn, "w");
   temp = 94534;
   fprintf (fh, "%" PRId64, temp);
   fclose (fh);

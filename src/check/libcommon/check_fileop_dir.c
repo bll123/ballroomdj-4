@@ -40,13 +40,13 @@ START_TEST(fileop_is_dir)
 
   unlink (fnb);
   unlink (fnc);
-  diropDeleteDir (fn);
+  diropDeleteDir (fn, DIROP_ALL);
   rc = fileopIsDirectory (fn);
   ck_assert_int_eq (rc, 0);
 
   diropMakeDir (fn);
 
-  fh = fopen (fnb, "w");
+  fh = fileopOpen (fnb, "w");
   fclose (fh);
   rc = osCreateLink ("d-abc", fnc);
 
@@ -63,7 +63,7 @@ START_TEST(fileop_is_dir)
     ck_assert_int_eq (rc, 1);
   }
 
-  diropDeleteDir (fn);
+  diropDeleteDir (fn, DIROP_ALL);
 
   rc = fileopIsDirectory (fn);
   ck_assert_int_eq (rc, 0);

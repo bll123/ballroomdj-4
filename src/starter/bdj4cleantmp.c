@@ -35,7 +35,7 @@ main (int argc, char *argv [])
 
   count = 0;
   while (fileopIsDirectory (fn)) {
-    diropDeleteDir (fn);
+    diropDeleteDir (fn, DIROP_ALL);
     ++count;
     if (count > 5) {
       return 1;

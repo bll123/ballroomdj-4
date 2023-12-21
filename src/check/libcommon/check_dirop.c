@@ -28,89 +28,15 @@
 #include "slist.h"
 #include "sysvars.h"
 
-START_TEST(dirop_mkdir_isdir_a)
-{
-  int       rc;
-  char *fn = "tmp/def";
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mkdir_isdir_a");
-  mdebugSubTag ("dirop_mkdir_isdir_a");
-
-  unlink (fn);
-  rmdir (fn);
-  fn = "tmp/abc/def";
-  rc = diropMakeDir (fn);
-  ck_assert_int_eq (rc, 0);
-  fn = "tmp/abc/xyz";
-  rc = diropMakeDir (fn);
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopIsDirectory ("tmp/def");
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopFileExists ("tmp/def");
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopIsDirectory ("tmp/abc");
-  ck_assert_int_eq (rc, 1);
-
-  rc = fileopFileExists ("tmp/abc");
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopIsDirectory (fn);
-  ck_assert_int_eq (rc, 1);
-  /* exists will return false on a directory */
-  rc = fileopFileExists ("fn");
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopIsDirectory ("tmp/abc/xyz");
-  ck_assert_int_eq (rc, 1);
-
-  rmdir (fn);
-  rmdir ("tmp/abc/xyz");
-  rmdir ("tmp/abc");
-}
-END_TEST
-
-START_TEST(dirop_del_dir_a)
-{
-  FILE      *fh;
-  int       rc;
-  char *dfn = "tmp/abc";
-  char *ofn = "tmp/abc/def";
-  char *nfn = "tmp/abc/def/xyz.txt";
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del_dir_a");
-  mdebugSubTag ("dirop_del_dir_a");
-
-  /* note that this fails on windows running under msys2 */
-  rc = diropMakeDir (dfn);
-  ck_assert_int_eq (rc, 0);
-  rc = diropMakeDir (ofn);
-  ck_assert_int_eq (rc, 0);
-  fh = fopen (nfn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fclose (fh);
-  rc = fileopIsDirectory (dfn);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopIsDirectory (ofn);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 1);
-
-  diropDeleteDir (dfn);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopIsDirectory (ofn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopIsDirectory (dfn);
-  ck_assert_int_eq (rc, 0);
-}
-END_TEST
-
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
-static char *fnlist [] = {
+static const char *fnlist [] = {
   "tmp/abc-def",
+  "tmp/def",
+  "tmp/def/ghi",
+  "tmp/jkl",
+  "tmp/jkl/abc",
+  "tmp/jkl/def",
+  "tmp/jkl/ghi",
   "tmp/ÜÄÑÖ",
   "tmp/I Am the Best_내가 제일 잘 나가",
   "tmp/ははは",
@@ -121,17 +47,18 @@ enum {
   fnlistsz = sizeof (fnlist) / sizeof (char *),
 };
 
-START_TEST(dirop_mk_is_del_u)
+START_TEST(dirop_make)
 {
-  int     rc;
+  int       rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mk_is_del_u");
-  mdebugSubTag ("dirop_mk_is_del_u");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mkdir_isdir_a");
+  mdebugSubTag ("dirop_mkdir_isdir_a");
 
   for (int i = 0; i < fnlistsz; ++i) {
-    char *fn = fnlist [i];
+    const char *fn = fnlist [i];
+
     fileopDelete (fn);
-    diropDeleteDir (fn);
+    diropDeleteDir (fn, DIROP_ALL);
 
     rc = diropMakeDir (fn);
     ck_assert_int_eq (rc, 0);
@@ -139,9 +66,106 @@ START_TEST(dirop_mk_is_del_u)
     ck_assert_int_eq (rc, 0);
     rc = fileopIsDirectory (fn);
     ck_assert_int_eq (rc, 1);
-    diropDeleteDir (fn);
-    rc = fileopIsDirectory (fn);
+  }
+}
+END_TEST
+
+START_TEST(dirop_del)
+{
+  int       rc;
+  char      tbuff [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del");
+  mdebugSubTag ("dirop_del");
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    const char  *fn = fnlist [i];
+    FILE        *fh;
+
+    fileopDelete (fn);
+    diropDeleteDir (fn, DIROP_ALL);
+    rc = diropMakeDir (fn);
     ck_assert_int_eq (rc, 0);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
+    fh = fileopOpen (tbuff, "w");
+    ck_assert_ptr_nonnull (fh);
+    fclose (fh);
+    rc = fileopFileExists (tbuff);
+    ck_assert_int_eq (rc, true);
+
+    diropDeleteDir (fn, DIROP_ALL);
+    rc = fileopIsDirectory (fn);
+    ck_assert_int_eq (rc, false);
+  }
+}
+END_TEST
+
+START_TEST(dirop_del_not_empty)
+{
+  int     rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del_not_empty");
+  mdebugSubTag ("dirop_del_not_empty");
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    const char *fn = fnlist [i];
+
+    fileopDelete (fn);
+    diropDeleteDir (fn, DIROP_ALL);
+
+    rc = diropMakeDir (fn);
+  }
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    const char  *fn = fnlist [i];
+    FILE        *fh;
+    char        tbuff [MAXPATHLEN];
+
+    if (i == 0 || i == 5 || i == 6 || i == 8) {
+      snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
+      fh = fileopOpen (tbuff, "w");
+      ck_assert_ptr_nonnull (fh);
+      fclose (fh);
+      rc = fileopFileExists (tbuff);
+      ck_assert_int_eq (rc, true);
+    }
+  }
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    const char  *fn = fnlist [i];
+    bool        ret;
+    char        tbuff [MAXPATHLEN];
+
+    ret = diropDeleteDir (fn, DIROP_ONLY_IF_EMPTY);
+    rc = fileopIsDirectory (fn);
+    if (i == 0 || i == 5 || i == 6 || i == 8) {
+      ck_assert_int_eq (ret, false);
+      ck_assert_int_eq (rc, true);
+      snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
+      rc = fileopFileExists (tbuff);
+      ck_assert_int_eq (rc, true);
+    } else if (i == 3) {
+      /* top level directory, files exist underneath */
+      ck_assert_int_eq (ret, false);
+      ck_assert_int_eq (rc, true);
+    } else if (i == 2) {
+      /* sub directory got deleted already */
+      ck_assert_int_eq (ret, false);
+      ck_assert_int_eq (rc, false);
+    } else if (i == 4) {
+      /* unknown state, could have been deleted or not */
+    } else {
+      /* empty directories */
+      ck_assert_int_eq (ret, true);
+      ck_assert_int_eq (rc, false);
+    }
+  }
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    const char *fn = fnlist [i];
+
+    diropDeleteDir (fn, DIROP_ALL);
   }
 }
 END_TEST
@@ -155,9 +179,9 @@ dirop_suite (void)
   s = suite_create ("dirop");
   tc = tcase_create ("dirop");
   tcase_set_tags (tc, "libcommon");
-  tcase_add_test (tc, dirop_mkdir_isdir_a);
-  tcase_add_test (tc, dirop_del_dir_a);
-  tcase_add_test (tc, dirop_mk_is_del_u);
+  tcase_add_test (tc, dirop_make);
+  tcase_add_test (tc, dirop_del);
+  tcase_add_test (tc, dirop_del_not_empty);
   suite_add_tcase (s, tc);
   return s;
 }

@@ -20,6 +20,7 @@
 
 #include "check_bdj.h"
 #include "mdebug.h"
+#include "fileop.h"
 #include "filedata.h"
 #include "log.h"
 #include "mdebug.h"
@@ -35,7 +36,7 @@ START_TEST(filedata_readall)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_readall");
   mdebugSubTag ("filedata_readall");
 
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   fclose (fh);
   /* empty file */
   data = filedataReadAll (fn, &len);
@@ -43,7 +44,7 @@ START_TEST(filedata_readall)
   ck_assert_ptr_null (data);
   dataFree (data);
 
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", "a");
   fclose (fh);
   /* one byte file */
@@ -54,7 +55,7 @@ START_TEST(filedata_readall)
   mdfree (data);
 
   tdata = "lkjsdflkdjsfljsdfljsdfd\n";
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tdata);
   fclose (fh);
   data = filedataReadAll (fn, &len);

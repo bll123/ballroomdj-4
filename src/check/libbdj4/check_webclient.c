@@ -91,7 +91,7 @@ START_TEST(webclient_dl)
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
   ck_assert_int_eq (exists, 1);
-  fh = fopen (DLFILE, "r");
+  fh = fileopOpen (DLFILE, "r");
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (r.resp, tbuff);
   ck_assert_int_eq (r.len, sz);
@@ -153,7 +153,7 @@ START_TEST(webclient_upload_plain)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_plain");
   mdebugSubTag ("webclient_upload_plain");
 
-  fh = fopen (UPFILE, "w");
+  fh = fileopOpen (UPFILE, "w");
   if (fh != NULL) {
     fputs (tdata, fh);
     fclose (fh);
@@ -180,7 +180,7 @@ START_TEST(webclient_upload_plain)
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
   ck_assert_int_eq (exists, 1);
-  fh = fopen (DLFILE, "r");
+  fh = fileopOpen (DLFILE, "r");
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
   ck_assert_int_eq (sz, 6);
@@ -205,7 +205,7 @@ START_TEST(webclient_upload_gzip)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_gzip");
   mdebugSubTag ("webclient_upload_gzip");
 
-  fh = fopen (UPFILE, "w");
+  fh = fileopOpen (UPFILE, "w");
   if (fh != NULL) {
     fputs (tdata, fh);
     fclose (fh);
@@ -234,7 +234,7 @@ START_TEST(webclient_upload_gzip)
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
   ck_assert_int_eq (exists, 1);
-  fh = fopen (DLFILE, "r");
+  fh = fileopOpen (DLFILE, "r");
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
   ck_assert_int_eq (sz, 6);

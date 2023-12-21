@@ -200,6 +200,7 @@ typedef struct {
   callback_t        *callbacks [MANAGE_CB_MAX];
   manageinfo_t      minfo;
   musicdb_t         *musicdb;
+  songdb_t          *songdb;
   samesong_t        *samesong;
   musicqidx_t       musicqPlayIdx;
   musicqidx_t       musicqManageIdx;
@@ -526,6 +527,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin (LOG_PROC, "manageui");
 
+  manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
@@ -690,6 +692,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   manageDbFree (manage->managedb);
   manageAudioIdFree (manage->manageaudioid);
 
+  songdbFree (manage->songdb);
   uisfFree (manage->uisongfilter);
   dataFree (manage->sloldname);
   dataFree (manage->slpriorname);
@@ -1750,7 +1753,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   }
 
   /* this fetches the song from in-memory, which has already been updated */
-  songWriteDB (manage->musicdb, dbidx, NULL);
+  songdbWriteDB (manage->songdb, dbidx);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
@@ -3721,7 +3724,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
 
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    songWriteDB (manage->musicdb, dbidx, NULL);
+    songdbWriteDB (manage->songdb, dbidx);
   }
 
   nlistFree (sellist);
