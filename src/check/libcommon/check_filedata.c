@@ -37,6 +37,7 @@ START_TEST(filedata_readall)
   mdebugSubTag ("filedata_readall");
 
   fh = fileopOpen (fn, "w");
+  mdextfclose (fh);
   fclose (fh);
   /* empty file */
   data = filedataReadAll (fn, &len);
@@ -46,6 +47,7 @@ START_TEST(filedata_readall)
 
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", "a");
+  mdextfclose (fh);
   fclose (fh);
   /* one byte file */
   data = filedataReadAll (fn, &len);
@@ -57,6 +59,7 @@ START_TEST(filedata_readall)
   tdata = "lkjsdflkdjsfljsdfljsdfd\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tdata);
+  mdextfclose (fh);
   fclose (fh);
   data = filedataReadAll (fn, &len);
   ck_assert_int_eq (len, strlen (tdata));

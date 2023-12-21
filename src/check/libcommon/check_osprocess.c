@@ -196,6 +196,7 @@ START_TEST(osprocess_start_redirect)
   fh = fileopOpen (outfn, "r");
   if (fh != NULL) {
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
+    mdextfclose (fh);
     fclose (fh);
   }
   stringTrim (tbuff);

@@ -63,6 +63,7 @@ START_TEST(osdir_chk)
     snprintf (tbuff, sizeof (tbuff), "%s/%s", OSDIRTESTDIR, osdirtestdata [i]);
     fh = fileopOpen (tbuff, "w");
     if (fh != NULL) {
+      mdextfclose (fh);
       fclose (fh);
     }
     found [i] = false;

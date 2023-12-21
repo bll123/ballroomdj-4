@@ -90,6 +90,7 @@ START_TEST(dirop_del)
     snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
     fh = fileopOpen (tbuff, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (tbuff);
     ck_assert_int_eq (rc, true);
@@ -126,6 +127,7 @@ START_TEST(dirop_del_not_empty)
       snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
       fh = fileopOpen (tbuff, "w");
       ck_assert_ptr_nonnull (fh);
+      mdextfclose (fh);
       fclose (fh);
       rc = fileopFileExists (tbuff);
       ck_assert_int_eq (rc, true);

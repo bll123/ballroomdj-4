@@ -39,6 +39,7 @@ START_TEST(fileop_open_exists_a)
   fn = "tmp/abc.txt";
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 1);
@@ -63,6 +64,7 @@ START_TEST(fileop_exists_symlink)
 
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   rc = osCreateLink ("slabc.txt", fnb);
   rc = fileopFileExists (fn);
@@ -105,6 +107,7 @@ START_TEST(fileop_size_a)
   fh = fileopOpen (fn, "w");
   fprintf (fh, "abcdef");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   sz = fileopSize (fn);
   ck_assert_int_eq (sz, 6);
@@ -129,6 +132,7 @@ START_TEST(fileop_modtime_a)
   fn = "tmp/abc.txt";
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   tm = fileopModTime (fn);
   ck_assert_int_ne (tm, 0);
@@ -152,6 +156,7 @@ START_TEST(fileop_setmodtime_a)
   fn = "tmp/abc.txt";
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   tm = fileopModTime (fn);
   ck_assert_int_ne (tm, 0);
@@ -177,6 +182,7 @@ START_TEST(fileop_delete_a)
   fn = "tmp/abc.txt";
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 1);
@@ -203,6 +209,7 @@ START_TEST(fileop_delete_symlink)
   unlink (fn);
   fh = fileopOpen (fn, "w");
   ck_assert_ptr_nonnull (fh);
+  mdextfclose (fh);
   fclose (fh);
   rc = osCreateLink ("slghi.txt", fnb);
 
@@ -276,6 +283,7 @@ START_TEST(fileop_open_u)
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 }
@@ -293,6 +301,7 @@ START_TEST(fileop_exists_u)
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (fn);
     ck_assert_int_eq (rc, 1);
@@ -312,6 +321,7 @@ START_TEST(fileop_del_u)
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (fn);
     ck_assert_int_eq (rc, 1);
@@ -336,6 +346,7 @@ START_TEST(fileop_size_u)
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
     fprintf (fh, "abcdef");
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (fn);
     ck_assert_int_eq (rc, 1);
@@ -361,6 +372,7 @@ START_TEST(fileop_modtime_u)
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (fn);
     ck_assert_int_eq (rc, 1);
@@ -387,6 +399,7 @@ START_TEST(fileop_setmodtime_u)
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
+    mdextfclose (fh);
     fclose (fh);
     rc = fileopFileExists (fn);
     ck_assert_int_eq (rc, 1);

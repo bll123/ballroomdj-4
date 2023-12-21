@@ -112,6 +112,7 @@ START_TEST(volreg_bdj3flag)
   ck_assert_int_eq (exists, 0);
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
+    mdextfclose (fh);
     fclose (fh);
   }
   exists = volregCheckBDJ3Flag ();

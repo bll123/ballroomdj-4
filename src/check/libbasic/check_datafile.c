@@ -305,6 +305,7 @@ START_TEST(datafile_simple)
   tstr = "# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-a", DFTYPE_LIST, fn, NULL, 0,
@@ -396,6 +397,7 @@ START_TEST(datafile_keyval_dfkey)
   tstr = "# test 6a\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-b1", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -509,6 +511,7 @@ START_TEST(datafile_keyval_dfkey_missing)
   tstr = "# test 6b\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-b2", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -614,6 +617,7 @@ START_TEST(datafile_keyval_df_extra)
   tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-c", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -728,6 +732,7 @@ START_TEST(datafile_indirect)
       "KEY\n..3\nA\n..a\nB\n..3\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-d", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
@@ -819,6 +824,7 @@ START_TEST(datafile_indirect_missing)
       "KEY\n..3\nB\n..3\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-f", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
@@ -917,6 +923,7 @@ START_TEST(datafile_keyval_savelist)
   tstr = "# version 10\nversion\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-g", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -1000,6 +1007,7 @@ START_TEST(datafile_keyval_savebuffer)
   tstr = "# version 11\nversion\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-h", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -1015,6 +1023,7 @@ START_TEST(datafile_keyval_savebuffer)
   fn = "tmp/dftesth.txt";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tbuff);
+  mdextfclose (fh);
   fclose (fh);
   tdf = datafileAllocParse ("chk-df-h", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
       DF_NO_OFFSET, NULL);
@@ -1081,6 +1090,7 @@ START_TEST(datafile_keyval_save)
   tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT,
@@ -1257,6 +1267,7 @@ START_TEST(datafile_indirect_save)
       "KEY\n..3\nA\n..d\nB\n..4\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-m", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
@@ -1316,6 +1327,7 @@ START_TEST(datafile_simple_save)
   tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-o", DFTYPE_LIST, fn, NULL, 0,

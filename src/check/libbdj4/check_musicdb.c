@@ -178,6 +178,7 @@ START_TEST(musicdb_write)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       tlist = songTagList (song);
@@ -230,6 +231,7 @@ START_TEST(musicdb_overwrite)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       tlist = songTagList (song);
@@ -285,6 +287,7 @@ START_TEST(musicdb_batch_write)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       tlist = songTagList (song);
@@ -338,6 +341,7 @@ START_TEST(musicdb_batch_overwrite)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       tlist = songTagList (song);
@@ -395,6 +399,7 @@ START_TEST(musicdb_write_song)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       dbWriteSong (db, song);
@@ -443,6 +448,7 @@ START_TEST(musicdb_overwrite_song)
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_URI));
       fh = fileopOpen (tmp, "w");
+      mdextfclose (fh);
       fclose (fh);
 
       dbWriteSong (db, song);
@@ -772,6 +778,7 @@ START_TEST(musicdb_db)
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // rasize
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // racount
   racount = atoi (tbuff);
+  mdextfclose (fh);
   fclose (fh);
 
   count = dbCount (db);

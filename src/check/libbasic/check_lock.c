@@ -79,6 +79,7 @@ START_TEST(lock_acquire_release)
   fh = fileopOpen (fulllockfn, "r");
   rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
+  mdextfclose (fh);
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_NONE);
@@ -195,6 +196,7 @@ START_TEST(lock_exists)
   fh = fileopOpen (fulllockfn, "r");
   rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
+  mdextfclose (fh);
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
 
@@ -215,6 +217,7 @@ START_TEST(lock_exists)
   fh = fileopOpen (fulllockfn, "w");
   temp = 94534;
   fprintf (fh, "%" PRId64, temp);
+  mdextfclose (fh);
   fclose (fh);
   /* lock file exists, no associated process */
   tpid = lockExists (LOCK_FN, PATHBLD_MP_NONE);

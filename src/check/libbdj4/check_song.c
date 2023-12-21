@@ -396,6 +396,7 @@ START_TEST(song_audio_file)
     snprintf (tbuff, sizeof (tbuff), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
         songGetStr (song, TAG_URI));
     fh = fileopOpen (tbuff, "w");
+    mdextfclose (fh);
     fclose (fh);
 
     rc = songAudioSourceExists (song);

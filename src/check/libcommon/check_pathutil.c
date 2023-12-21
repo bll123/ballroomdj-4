@@ -190,6 +190,7 @@ START_TEST(path_realpath)
 
   strlcpy (from, "tmp/abc.txt", sizeof (from));
   fh = fileopOpen (from, "w");
+  mdextfclose (fh);
   fclose (fh);
   snprintf (actual, sizeof (actual), "%s/%s", cwd, from);
 

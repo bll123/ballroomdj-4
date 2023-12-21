@@ -19,12 +19,10 @@
 #include "pathbld.h"
 #include "sysvars.h"
 
-#define AUDIOSRC_FILE       "file://"
 #define AUDIOSRC_YOUTUBE    "https://www.youtube.com/"
 #define AUDIOSRC_YOUTUBE_S  "https://youtu.be/"
 #define AUDIOSRC_YOUTUBE_M  "https://m.youtube.com/"
 enum {
-  AUDIOSRC_FILE_LEN = strlen (AUDIOSRC_FILE),
   AUDIOSRC_YOUTUBE_LEN = strlen (AUDIOSRC_YOUTUBE),
   AUDIOSRC_YOUTUBE_S_LEN = strlen (AUDIOSRC_YOUTUBE_S),
   AUDIOSRC_YOUTUBE_M_LEN = strlen (AUDIOSRC_YOUTUBE_M),
@@ -39,14 +37,12 @@ typedef struct asiter {
 int
 audiosrcGetType (const char *nm)
 {
-  int     type = AUDIOSRC_TYPE_FILE;
+  int     type = AUDIOSRC_TYPE_FILE;      // default
 
   /* no point in trying to cache this, as the name comparison */
   /* is longer than the comparison done to determine the file type */
 
   if (fileopIsAbsolutePath (nm)) {
-    type = AUDIOSRC_TYPE_FILE;
-  } else if (strncmp (nm, AUDIOSRC_FILE, AUDIOSRC_FILE_LEN) == 0) {
     type = AUDIOSRC_TYPE_FILE;
   } else if (strncmp (nm, AUDIOSRC_YOUTUBE, AUDIOSRC_YOUTUBE_LEN) == 0) {
     type = AUDIOSRC_TYPE_YOUTUBE;

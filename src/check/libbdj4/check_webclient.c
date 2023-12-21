@@ -95,6 +95,7 @@ START_TEST(webclient_dl)
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (r.resp, tbuff);
   ck_assert_int_eq (r.len, sz);
+  mdextfclose (fh);
   fclose (fh);
   webclientClose (wc);
   unlink (DLFILE);
@@ -156,6 +157,7 @@ START_TEST(webclient_upload_plain)
   fh = fileopOpen (UPFILE, "w");
   if (fh != NULL) {
     fputs (tdata, fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -184,6 +186,7 @@ START_TEST(webclient_upload_plain)
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
   ck_assert_int_eq (sz, 6);
+  mdextfclose (fh);
   fclose (fh);
 
   webclientClose (wc);
@@ -208,6 +211,7 @@ START_TEST(webclient_upload_gzip)
   fh = fileopOpen (UPFILE, "w");
   if (fh != NULL) {
     fputs (tdata, fh);
+    mdextfclose (fh);
     fclose (fh);
   }
 
@@ -238,6 +242,7 @@ START_TEST(webclient_upload_gzip)
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
   ck_assert_int_eq (sz, 6);
+  mdextfclose (fh);
   fclose (fh);
 
   webclientClose (wc);

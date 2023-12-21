@@ -47,6 +47,7 @@ START_TEST(osutils_link)
 
   fh = fileopOpen (fnad, "w");
   if (fh != NULL) {
+    mdextfclose (fh);
     fclose (fh);
   }
 

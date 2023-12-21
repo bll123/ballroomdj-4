@@ -47,6 +47,7 @@ START_TEST(fileop_is_dir)
   diropMakeDir (fn);
 
   fh = fileopOpen (fnb, "w");
+  mdextfclose (fh);
   fclose (fh);
   rc = osCreateLink ("d-abc", fnc);
 
