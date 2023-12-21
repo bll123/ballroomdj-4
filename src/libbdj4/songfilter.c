@@ -385,7 +385,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
       const char  *sfname;
 
-      sfname = songlistGetStr (sl, slkey, SONGLIST_FILE);
+      sfname = songlistGetStr (sl, slkey, SONGLIST_URI);
       song = dbGetByName (musicdb, sfname);
 
       if (song != NULL) {

@@ -138,7 +138,7 @@ START_TEST(songlist_iterate)
 
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     ck_assert_int_ge (vala, 0);
-    stra = songlistGetStr (sl, key, SONGLIST_FILE);
+    stra = songlistGetStr (sl, key, SONGLIST_URI);
     ck_assert_ptr_nonnull (stra);
     stra = songlistGetStr (sl, key, SONGLIST_TITLE);
     ck_assert_ptr_nonnull (stra);
@@ -231,8 +231,8 @@ START_TEST(songlist_save)
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     valb = songlistGetNum (slb, key, SONGLIST_DANCE);
     ck_assert_int_eq (vala, valb);
-    stra = songlistGetStr (sl, key, SONGLIST_FILE);
-    strb = songlistGetStr (slb, key, SONGLIST_FILE);
+    stra = songlistGetStr (sl, key, SONGLIST_URI);
+    strb = songlistGetStr (slb, key, SONGLIST_URI);
     ck_assert_str_eq (stra, strb);
     stra = songlistGetStr (sl, key, SONGLIST_TITLE);
     strb = songlistGetStr (slb, key, SONGLIST_TITLE);
@@ -278,8 +278,8 @@ START_TEST(songlist_save_new)
 
     vala = songlistGetNum (slb, key, SONGLIST_DANCE);
     songlistSetNum (sl, key, SONGLIST_DANCE, vala);
-    stra = songlistGetStr (slb, key, SONGLIST_FILE);
-    songlistSetStr (sl, key, SONGLIST_FILE, stra);
+    stra = songlistGetStr (slb, key, SONGLIST_URI);
+    songlistSetStr (sl, key, SONGLIST_URI, stra);
     stra = songlistGetStr (slb, key, SONGLIST_TITLE);
     songlistSetStr (sl, key, SONGLIST_TITLE, stra);
   }
@@ -300,8 +300,8 @@ START_TEST(songlist_save_new)
     vala = songlistGetNum (sl, key, SONGLIST_DANCE);
     valb = songlistGetNum (slb, key, SONGLIST_DANCE);
     ck_assert_int_eq (vala, valb);
-    stra = songlistGetStr (sl, key, SONGLIST_FILE);
-    strb = songlistGetStr (slb, key, SONGLIST_FILE);
+    stra = songlistGetStr (sl, key, SONGLIST_URI);
+    strb = songlistGetStr (slb, key, SONGLIST_URI);
     ck_assert_str_eq (stra, strb);
     stra = songlistGetStr (sl, key, SONGLIST_TITLE);
     strb = songlistGetStr (slb, key, SONGLIST_TITLE);

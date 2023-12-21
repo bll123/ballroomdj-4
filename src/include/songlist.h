@@ -8,7 +8,7 @@
 #include "ilist.h"
 
 typedef enum {
-  SONGLIST_FILE,
+  SONGLIST_URI,
   SONGLIST_TITLE,
   SONGLIST_DANCE,
   SONGLIST_KEY_MAX

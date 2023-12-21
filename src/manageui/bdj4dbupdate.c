@@ -72,6 +72,7 @@
 #include "slist.h"
 #include "sockh.h"
 #include "song.h"
+#include "songdb.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -147,6 +148,7 @@ typedef struct {
   /* database handling */
   bool              cleandatabase : 1;
   /* other stuff */
+  bool              autoorg : 1;
   bool              cli : 1;
   bool              dancefromgenre : 1;
   bool              haveolddirlist : 1;
@@ -217,6 +219,7 @@ main (int argc, char *argv[])
   dbupdate.updfromtags = false;
   dbupdate.writetags = false;
   dbupdate.cleandatabase = false;
+  dbupdate.autoorg = false;
   dbupdate.cli = false;
   dbupdate.dancefromgenre = false;
   dbupdate.haveolddirlist = false;
@@ -227,6 +230,7 @@ main (int argc, char *argv[])
   dbupdate.verbose = false;
   mstimeset (&dbupdate.outputTimer, 0);
 
+  dbupdate.autoorg = bdjoptGetNum (OPT_G_AUTOORGANIZE);
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
   dbupdate.progstate = progstateInit ("dbupdate");
@@ -672,10 +676,12 @@ dbupdateProcessing (void *udata)
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
 
-    if (dbupdate->reorganize) {
-      /* CONTEXT: database update: status message: number of files renamed */
-      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Renamed"), dbupdate->counts [C_RENAMED]);
-      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    if (dbupdate->reorganize || dbupdate->checknew || dbupdate->rebuild) {
+      if (dbupdate->counts [C_RENAMED] > 0) {
+        /* CONTEXT: database update: status message: number of files renamed */
+        snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Renamed"), dbupdate->counts [C_RENAMED]);
+        connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      }
       if (dbupdate->counts [C_CANNOT_RENAME] > 0) {
         /* CONTEXT: database update: status message: number of files that cannot be renamed */
         snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Cannot Rename"), dbupdate->counts [C_CANNOT_RENAME]);
@@ -1017,9 +1023,11 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
     songfname = relfname;
   }
 
-  rrn = MUSICDB_ENTRY_NEW;
   /* rebuild and compact create entirely new databases */
-  /* always use a new rrn */
+  /* always use a new rrn when adding a new song */
+
+  rrn = MUSICDB_ENTRY_NEW;
+
   if (! dbupdate->rebuild && ! dbupdate->compact) {
     song = dbGetByName (dbupdate->musicdb, songfname);
     if (song != NULL) {
@@ -1050,6 +1058,11 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   len = dbWrite (currdb, songfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
     dbupdateIncCount (dbupdate, C_NEW);
+
+    /* only do an auto-organize when running a check-for-new or a rebuild */
+    if (dbupdate->autoorg && (dbupdate->checknew || dbupdate->rebuild)) {
+      dbupdateReorganize (dbupdate, ffn, tagdata);
+    }
   } else {
     dbupdateIncCount (dbupdate, C_UPDATED);
   }
@@ -1195,7 +1208,7 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
-  if (songGetNum (song, TAG_DB_LOC_LOCK)) {
+  if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
     /* user requested location lock */
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
@@ -1222,7 +1235,8 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   audiosrcFullPath (newfn, newffn, sizeof (newffn));
 
   if (*newffn && fileopFileExists (newffn)) {
-    /* unable to rename */
+    /* new filename already exists */
+    logMsg (LOG_DBG, LOG_DBUPDATE, "new file exists %s %s", songfname, newffn);
     dataFree (newfn);
     dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
     dbupdateIncCount (dbupdate, C_FILE_PROC);
@@ -1240,7 +1254,7 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 
   rc = filemanipMove (ffn, newffn);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s", newffn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s %s", songfname, newffn);
     /* unable to rename */
     dataFree (newfn);
     dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
@@ -1248,16 +1262,18 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_DBUPDATE, "renamed %s %s", songfname, newffn);
   songSetStr (song, TAG_URI, newfn);
-  dbWriteSong (currdb, song);
+  songWriteDBSong (currdb, song, songfname);
 
   if (audiosrcOriginalExists (ffn)) {
     strlcpy (tbuff, ffn, sizeof (tbuff));
     strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
     strlcat (newffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
+    logMsg (LOG_DBG, LOG_DBUPDATE, "renamed original");
     rc = filemanipMove (tbuff, newffn);
     if (rc != 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s", newffn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s", songfname);
     }
   }
 

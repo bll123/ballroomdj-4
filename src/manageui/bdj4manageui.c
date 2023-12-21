@@ -1750,7 +1750,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   }
 
   /* this fetches the song from in-memory, which has already been updated */
-  songWriteDB (manage->musicdb, dbidx);
+  songWriteDB (manage->musicdb, dbidx, NULL);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
@@ -3721,7 +3721,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
 
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    songWriteDB (manage->musicdb, dbidx);
+    songWriteDB (manage->musicdb, dbidx, NULL);
   }
 
   nlistFree (sellist);

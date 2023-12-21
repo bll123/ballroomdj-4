@@ -229,7 +229,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     audiotagFreeSavedTags (fullfn, savedtags);
     savedtags = NULL;
 
-    songWriteDB (musicdb, dbidx);
+    songWriteDB (musicdb, dbidx, NULL);
   }
   dataFree (savedtags);
 

@@ -499,7 +499,7 @@ playlistGetNextSong (playlist_t *pl,
     ilistidx_t    slkey;
 
     slkey = songlistIterate (pl->songlist, &pl->songlistiter);
-    sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
+    sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_URI);
     while (sfname != NULL) {
       song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL && songAudioSourceExists (song)) {
@@ -509,7 +509,7 @@ playlistGetNextSong (playlist_t *pl,
       song = NULL;
       logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: songlist: missing: %s", sfname);
       slkey = songlistIterate (pl->songlist, &pl->songlistiter);
-      sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
+      sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_URI);
     }
     ++pl->count;
     if (sfname != NULL) {

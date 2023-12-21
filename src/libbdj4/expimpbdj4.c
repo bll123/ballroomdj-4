@@ -317,7 +317,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         }
       }
 
-      songlistSetStr (eibdj4->sl, eibdj4->slkey, SONGLIST_FILE, nsongfn);
+      songlistSetStr (eibdj4->sl, eibdj4->slkey, SONGLIST_URI, nsongfn);
       songlistSetStr (eibdj4->sl, eibdj4->slkey, SONGLIST_TITLE,
           songGetStr (song, TAG_TITLE));
       songlistSetNum (eibdj4->sl, eibdj4->slkey, SONGLIST_DANCE,
@@ -404,7 +404,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       bool          docopy;
       int           type;
 
-      slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
+      slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_URI);
       song = dbGetByName (eibdj4->eimusicdb, slfn);
 
       if (song == NULL) {
@@ -445,7 +445,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       if (doupdate) {
         eibdj4->dbchanged = true;
         songSetChanged (song);
-        songWriteDBSong (eibdj4->musicdb, song);
+        songWriteDBSong (eibdj4->musicdb, song, NULL);
       }
       if (docopy) {
         pathinfo_t  *pi;

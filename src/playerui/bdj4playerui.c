@@ -1697,7 +1697,7 @@ pluiSongSaveCallback (void *udata, long dbidx)
   playerui_t  *plui = udata;
   char        tmp [40];
 
-  songWriteDB (plui->musicdb, dbidx);
+  songWriteDB (plui->musicdb, dbidx, NULL);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

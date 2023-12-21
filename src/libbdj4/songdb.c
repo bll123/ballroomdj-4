@@ -24,19 +24,19 @@
 #include "tagdef.h"
 
 static void songWriteAudioTags (song_t *song);
-static void songUpdateAllSonglists (song_t *song);
+static void songUpdateAllSonglists (song_t *song, const char *olduri);
 
 void
-songWriteDB (musicdb_t *musicdb, dbidx_t dbidx)
+songWriteDB (musicdb_t *musicdb, dbidx_t dbidx, const char *olduri)
 {
   song_t    *song;
 
   song = dbGetByIdx (musicdb, dbidx);
-  songWriteDBSong (musicdb, song);
+  songWriteDBSong (musicdb, song, olduri);
 }
 
 void
-songWriteDBSong (musicdb_t *musicdb, song_t *song)
+songWriteDBSong (musicdb_t *musicdb, song_t *song, const char *olduri)
 {
   if (song == NULL) {
     return;
@@ -47,9 +47,9 @@ songWriteDBSong (musicdb_t *musicdb, song_t *song)
 
   dbWriteSong (musicdb, song);
   songWriteAudioTags (song);
-  if (songHasSonglistChange (song)) {
+  if (songHasSonglistChange (song) || olduri != NULL) {
     /* need to update all songlists if file/title/dance changed. */
-    songUpdateAllSonglists (song);
+    songUpdateAllSonglists (song, olduri);
   }
   songClearChanged (song);
 }
@@ -83,30 +83,38 @@ songWriteAudioTags (song_t *song)
 }
 
 static void
-songUpdateAllSonglists (song_t *song)
+songUpdateAllSonglists (song_t *song, const char *olduri)
 {
   slist_t     *filelist;
   slistidx_t  fiteridx;
-  const char  *songfn;
-  const char  *fn;
+  const char  *slfn;
+  const char  *songuri;
+  const char  *newuri = NULL;
   songlist_t  *songlist;
   ilistidx_t  sliter;
 
-  // ### TODO for re-organization, the old filename will be needed.
-  songfn = songGetStr (song, TAG_URI);
+  if (olduri != NULL) {
+    songuri = olduri;
+    newuri = songGetStr (song, TAG_URI);
+  } else {
+    songuri = songGetStr (song, TAG_URI);
+  }
   filelist = playlistGetPlaylistList (PL_LIST_SONGLIST, NULL);
   slistStartIterator (filelist, &fiteridx);
-  while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {
+  while ((slfn = slistIterateKey (filelist, &fiteridx)) != NULL) {
     ilistidx_t  key;
-    const char  *slfn;
     bool        chg;
+    const char  *tfn;
 
     chg = false;
-    songlist = songlistLoad (fn);
+    songlist = songlistLoad (slfn);
     songlistStartIterator (songlist, &sliter);
     while ((key = songlistIterate (songlist, &sliter)) >= 0) {
-      slfn = songlistGetStr (songlist, key, SONGLIST_FILE);
-      if (strcmp (slfn, songfn) == 0) {
+      tfn = songlistGetStr (songlist, key, SONGLIST_URI);
+      if (strcmp (tfn, songuri) == 0) {
+        if (newuri != NULL) {
+          songlistSetStr (songlist, key, SONGLIST_URI, newuri);
+        }
         songlistSetStr (songlist, key, SONGLIST_TITLE,
             songGetStr (song, TAG_TITLE));
         songlistSetNum (songlist, key, SONGLIST_DANCE,

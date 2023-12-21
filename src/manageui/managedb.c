@@ -64,6 +64,7 @@ typedef struct managedb {
   nlist_t           *dbhelp;
   uiwcont_t         *dbpbar;
   bool              compact : 1;
+  bool              reorganize : 1;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -97,6 +98,7 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->compact = false;
+  managedb->reorganize = false;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     managedb->callbacks [i] = NULL;
   }
@@ -410,7 +412,7 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
-  if (managedb->compact) {
+  if (managedb->compact || managedb->reorganize) {
     char  tbuff [200];
 
     /* CONTEXT: update database: exit BDJ4 and restart */
@@ -420,6 +422,7 @@ manageDbResetButtons (managedb_t *managedb)
     uiLabelSetText (managedb->minfo->statusMsg, "");
   }
   managedb->compact = false;
+  managedb->reorganize = false;
 
   uiButtonSetState (managedb->dbstart, UIWIDGET_ENABLE);
   uiButtonSetState (managedb->dbstop, UIWIDGET_DISABLE);
@@ -470,6 +473,7 @@ manageDbStart (void *udata)
       break;
     }
     case MANAGE_DB_REORGANIZE: {
+      managedb->reorganize = true;
       targv [targc++] = "--reorganize";
       break;
     }

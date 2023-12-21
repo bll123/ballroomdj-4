@@ -43,7 +43,7 @@ songlistutilCreateFromList (musicdb_t *musicdb, const char *fname,
       continue;
     }
 
-    songlistSetStr (songlist, key, SONGLIST_FILE, songGetStr (song, TAG_URI));
+    songlistSetStr (songlist, key, SONGLIST_URI, songGetStr (song, TAG_URI));
     songlistSetStr (songlist, key, SONGLIST_TITLE, songGetStr (song, TAG_TITLE));
     songlistSetNum (songlist, key, SONGLIST_DANCE, songGetNum (song, TAG_DANCE));
     ++key;

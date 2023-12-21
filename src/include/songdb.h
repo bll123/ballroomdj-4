@@ -7,7 +7,7 @@
 #include "musicdb.h"
 #include "song.h"
 
-void  songWriteDB (musicdb_t *musicdb, dbidx_t dbidx);
-void  songWriteDBSong (musicdb_t *musicdb, song_t *song);
+void  songWriteDB (musicdb_t *musicdb, dbidx_t dbidx, const char *olduri);
+void  songWriteDBSong (musicdb_t *musicdb, song_t *song, const char *olduri);
 
 #endif /* INC_SONGDB_H */

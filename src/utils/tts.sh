@@ -37,7 +37,8 @@ fi
 function mkann {
   for voice in ${!vlist[@]}; do
     lang=${vlist[$voice]}
-    test -d $voice || mkdir $voice
+    test -d $voice && rm -rf $voice
+    mkdir $voice
     for fn in ${!annlist[@]}; do
       text=${annlist[$fn]}
       ffn=$voice/$fn
@@ -106,12 +107,11 @@ annlist['ann-jive']='Volgende dans, Jive'
 annlist['ann-quickstep']='Volgende dans, Quickstep'
 annlist['ann-rumba']='Volgende dans, Rumba'
 annlist['ann-salsa']='Volgende dans, Salsa'
-annlist['ann-samba']='Volgende dans, Samba'
-annlist['ann-langzaam-foxtrot']='Volgende dans, Langzaam foxtrot'
-annlist['ann-langzaam-wals']='Volgende dans, Langzaam wals'
+annlist['ann-samba']='Volgende dans, Saamba'
+annlist['ann-slowfox']='Volgende dans, Slowfox'
+annlist['ann-langzame-wals']='Volgende dans, Langzame Wals'
 annlist['ann-tango']='Volgende dans, Tango'
 annlist['ann-viennese-wals']='Volgende dans, Weense wals'
-annlist['ann-wals']='Volgende dans, Wals'
 annlist['ann-west-coast-swing']='Volgende dans, West Coast Swing'
 # uncommon
 annlist['ann-paso-doble']='Volgende dans, Paaso Doble'
