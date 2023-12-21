@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#if __linux__
+
 #include <glib.h>
 
 #include "dbusi.h"
@@ -323,3 +325,4 @@ mprisSetPropDouble (mpris_t *mpris,
   return rc;
 }
 
+#endif /* __linux__ */

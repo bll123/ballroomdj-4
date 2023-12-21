@@ -86,12 +86,14 @@ void
 songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
 {
   song_t    *song;
+  int       songdbflags;
 
   if (songdb == NULL || songdb->musicdb == NULL) {
     return;
   }
   song = dbGetByIdx (songdb->musicdb, dbidx);
-  songdbWriteDBSong (songdb, song, SONGDB_NONE);
+  songdbflags = SONGDB_NONE;
+  songdbWriteDBSong (songdb, song, &songdbflags);
 }
 
 /* flags is both input and output */

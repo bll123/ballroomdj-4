@@ -15,12 +15,15 @@ enum {
   MAXSZ = 80,
 };
 
+#if __linux__
 static void getstr (char *str, size_t sz);
 static void getstd (char *bus, char *orgpath, char *intfc, char *method);
+#endif /* __linux__ */
 
 int
 main (int argc, char *argv [])
 {
+#if __linux__
   dbus_t    *dbus;
   char      cmd [MAXSZ];
   char      bus [MAXSZ];
@@ -60,8 +63,11 @@ main (int argc, char *argv [])
   }
 
   dbusConnClose (dbus);
+#endif /* __linux__ */
   return 0;
 }
+
+#if __linux__
 
 static void
 getstr (char *str, size_t sz)
@@ -83,3 +89,5 @@ getstd (char *bus, char *orgpath, char *intfc, char *method)
   getstr (intfc, MAXSZ);
   getstr (method, MAXSZ);
 }
+
+#endif /* __linux__ */

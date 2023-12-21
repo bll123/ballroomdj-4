@@ -10,6 +10,8 @@
 #include <string.h>
 #include <errno.h>
 
+#if __linux__
+
 #include "bdj4.h"
 #include "mprisi.h"
 #include "mdebug.h"
@@ -204,3 +206,5 @@ pliiSupported (plidata_t *pliData)
 {
   return pliData->supported;
 }
+
+#endif /* __linux__ */
