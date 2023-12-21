@@ -120,10 +120,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
     return;
   }
 
-  rename = bdjoptGetNum (OPT_G_AUTOORGANIZE) ||
+  rename = (bdjoptGetNum (OPT_G_AUTOORGANIZE) == true) ||
       ((*flags & SONGDB_FORCE_RENAME) == SONGDB_FORCE_RENAME);
 
   strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
+  *newfn = '\0';
 
   if (rename) {
     if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
@@ -132,8 +133,6 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
       dorename = true;
     }
   }
-
-  *newfn = '\0';
 
   if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
     /* user requested location lock */
