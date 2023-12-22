@@ -5,6 +5,6 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (liblocatebdj3 OBJECT
+add_library (liblocbdj3obj OBJECT
   locatebdj3.c
 )

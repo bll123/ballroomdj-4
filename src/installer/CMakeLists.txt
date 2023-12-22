@@ -42,7 +42,7 @@ if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
 endif()
 target_link_libraries (bdj4installer PRIVATE
-  liblocatebdj3
+  liblocbdj3obj
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -55,7 +55,7 @@ if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -municode)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
-  liblocatebdj3
+  liblocbdj3obj
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
