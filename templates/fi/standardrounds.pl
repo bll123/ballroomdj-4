@@ -1,6 +1,6 @@
 # playlist
-# 2022-10-19
-# version 1
+# 2022-12-22
+# version 2
 version
 ..1
 ALLOWEDKEYWORDS
@@ -12,7 +12,7 @@ GAP
 MAXPLAYTIME
 ..0
 PLAYANNOUNCE
-..yes
+..no
 STOPAFTER
 ..0
 STOPTIME

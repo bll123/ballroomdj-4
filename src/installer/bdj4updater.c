@@ -533,14 +533,19 @@ main (int argc, char *argv [])
     /*             display the queuedance playlist properly. */
     /* 2023-5-23 : 4.3.2.4 */
     /*             Updated internal key names */
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 4);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 3);
-    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, 2);
+    /* 2023-12-22 : 4.4.8 */
+    /*             Cleanup, fix en-us */
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PLAYLIST_EXT, 2);
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PLAYLIST_EXT, 2);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
+    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, 3);
   }
 
   {
     /* 4.3.2: 2023-4-27 : Mobile marquee HTML file has minor updates. */
-    updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 2);
+    /* 4.4.8: 2023-12-22 : fix version check, update version */
+    updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 3);
   }
 
   /* The datafiles must be loaded for the MPM update process */
@@ -1364,6 +1369,9 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   mdextfclose (fh);
   fclose (fh);
   if (sscanf (tmp, "<!-- VERSION %d", &version) != 1) {
+    version = 1;
+  }
+  if (version > 2000) {
     version = 1;
   }
 

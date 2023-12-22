@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.4.8\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-12-16\n"
-"PO-Revision-Date: 2023-12-16\n"
+"POT-Creation-Date: 2023-12-22\n"
+"PO-Revision-Date: 2023-12-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -386,6 +386,10 @@ msgstr ""
 
 #. CONTEXT: managementui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
+msgstr ""
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
 msgstr ""
 
 #. CONTEXT: configuration file: dance
@@ -1346,6 +1350,10 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr ""
+
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
@@ -1497,6 +1505,10 @@ msgstr ""
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
+msgstr ""
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
 msgstr ""
 
 #. CONTEXT: database update: reorganize : help text

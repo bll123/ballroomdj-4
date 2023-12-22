@@ -5,10 +5,8 @@ LONG
 ..en_GB
 SHORT
 ..en
-ISO639-2
-..eng
 DISPLAY
-..English (GB)
+..
 AUTO
 ..automatic
 STDROUNDS
@@ -21,10 +19,8 @@ LONG
 ..en_US
 SHORT
 ..en
-ISO639-2
-..eng
 DISPLAY
-..English (US)
+..
 AUTO
 ..automatic
 STDROUNDS
@@ -37,10 +33,8 @@ LONG
 ..de_DE
 SHORT
 ..de
-ISO639-2
-..ger
 DISPLAY
-..Deutsch
+..
 AUTO
 ..automatisch
 STDROUNDS
@@ -53,10 +47,8 @@ LONG
 ..es_ES
 SHORT
 ..es
-ISO639-2
-..spa
 DISPLAY
-..Español
+..
 AUTO
 ..automático
 STDROUNDS
@@ -69,10 +61,8 @@ LONG
 ..fi_FI
 SHORT
 ..fi
-ISO639-2
-..fin
 DISPLAY
-..Suomi
+..
 AUTO
 ..automaattinen
 STDROUNDS
@@ -85,10 +75,8 @@ LONG
 ..fr_FR
 SHORT
 ..fr
-ISO639-2
-..fra
 DISPLAY
-..Français
+..
 AUTO
 ..automatique
 STDROUNDS
@@ -101,10 +89,8 @@ LONG
 ..it_IT
 SHORT
 ..it
-ISO639-2
-..ita
 DISPLAY
-..Italiano
+..
 AUTO
 ..automatico
 STDROUNDS
@@ -117,10 +103,8 @@ LONG
 ..ja_JP
 SHORT
 ..ja
-ISO639-2
-..jpn
 DISPLAY
-..日本語
+..
 AUTO
 ..自動
 STDROUNDS
@@ -133,10 +117,8 @@ LONG
 ..nl_BE
 SHORT
 ..nl
-ISO639-2
-..nld
 DISPLAY
-..Nederlands
+..
 AUTO
 ..Automatisch
 STDROUNDS
@@ -149,10 +131,8 @@ LONG
 ..pl_PL
 SHORT
 ..pl
-ISO639-2
-..pol
 DISPLAY
-..Polski
+..
 AUTO
 ..automatyczny
 STDROUNDS
@@ -165,10 +145,8 @@ LONG
 ..ru_RU
 SHORT
 ..ru
-ISO639-2
-..rus
 DISPLAY
-..Русский‬
+..
 AUTO
 ..автоматически
 STDROUNDS

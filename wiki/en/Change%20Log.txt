@@ -7,6 +7,7 @@
 **4.4.8 2023-12---**
 
 * Bug Fixes:
+    * Fixes for automatic, standard, queuedance pre-installed playlists.
     * Fixed right-to-left language layout.
     * MacOS: Fix build when other versions of libraries are installed.
     * Edit Dances: Fix bug causing entry fields to get copied to other dances.

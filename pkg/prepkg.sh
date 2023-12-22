@@ -66,6 +66,15 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
+for f in automatic.pldances standardrounds.pldances QueueDance.pldances dances.txt; do
+  a=$(grep '^# version' templates/$f)
+  b=$(grep '^# version' templates/en_US/$f)
+  if [[ $a != $b ]]; then
+    echo "version mismatch $f"
+    exit 1
+  fi
+done
+
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}

@@ -30,6 +30,10 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.4.8:
+    There have been a lot of internal changes.
+    Chances that something is broken is higher than usual.
+
   4.4.5:
     Windows account names with international characters are now working!
 
