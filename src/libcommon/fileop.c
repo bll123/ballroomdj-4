@@ -11,9 +11,9 @@
 #include <string.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <utime.h>
 #include <wchar.h>
@@ -206,7 +206,12 @@ fileopCreateTime (const char *fname)
 #if _mem_struct_stat_st_birthtime
         ctime = statbuf.st_birthtime;
 #else
-        ctime = statbuf.st_ctime;
+        /* use the smaller of ctime and mtime */
+        if (statbuf.st_ctime < statbuf.st_mtime) {
+          ctime = statbuf.st_ctime;
+        } else {
+          ctime = statbuf.st_mtime;
+        }
 #endif
       }
     }

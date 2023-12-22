@@ -27,6 +27,7 @@
 #include "bdjopt.h"
 #include "bdjregex.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "datafile.h"
@@ -78,9 +79,11 @@ enum {
   /* a) variousartists removed */
   /* b) mangled (by mutagen) musizbrainz tag */
   UPD_FIX_AF_TAGS,
-  /* 2023-3-13 4.3.0.2 */
-  /* fix-db-adddate sets any missing date-added fields in the database */
-  UPD_FIX_DB_ADDDATE,
+  /* 2023-12 4.4.8 replaced fix-db-add-date */
+  /* fix-db-add-date will be set to skip by default, the user will need */
+  /* to edit the updater file to set this value to 'force' */
+  /* the name was changed to disambiguate from the old name */
+  UPD_FIX_DB_DATE_ADDED,
   /* 2023-5-22 4.3.2.4 */
   /* fix-dance-mpm dances.txt bpm/mpm settings are re-written in mpm */
   UPD_FIX_DANCE_MPM,
@@ -114,7 +117,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_AF_MPM",       UPD_FIX_AF_MPM,     VALUE_NUM, NULL, DF_NORM },
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, DF_NORM },
   { "FIX_PL_MPM",       UPD_FIX_PL_MPM,     VALUE_NUM, NULL, DF_NORM },
@@ -822,9 +825,9 @@ main (int argc, char *argv [])
     }
   }
 
-  if (statusflags [UPD_FIX_DB_ADDDATE] == UPD_NOT_DONE) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.0.2 : process db : fix db add date");
-    processflags [UPD_FIX_DB_ADDDATE] = true;
+  if (statusflags [UPD_FIX_DB_DATE_ADDED] == UPD_FORCE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.4.8 : process db : fix db add date");
+    processflags [UPD_FIX_DB_DATE_ADDED] = true;
     processdb = true;
   }
   if (statusflags [UPD_FIX_DB_MPM] == UPD_NOT_DONE) {
@@ -953,22 +956,26 @@ main (int argc, char *argv [])
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       bool      dowrite = false;
 
-      if (processflags [UPD_FIX_DB_ADDDATE]) {
+      /* 2023-3-13 : the database add date could be missing due to */
+      /* bugs in restore-original and restore audio file data */
+      /* 2023-12 : the database add date could have been munged */
+      /* by bugs in the db-updater, update all add-dates */
+      if (processflags [UPD_FIX_DB_DATE_ADDED] ||
+            songGetStr (song, TAG_DBADDDATE) == NULL) {
         char      ffn [MAXPATHLEN];
+        time_t    ctime;
 
-        /* 2023-3-13 : the database add date could be missing due to */
-        /* bugs in restore-original and restore audio file data */
-        if (songGetStr (song, TAG_DBADDDATE) == NULL) {
-          time_t    ctime;
-
-          audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
-          ctime = fileopCreateTime (ffn);
-          tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
-          songSetStr (song, TAG_DBADDDATE, tbuff);
-          dowrite = true;
-          counters [UPD_FIX_DB_ADDDATE] += 1;
-          logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
+        audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
+        ctime = fileopCreateTime (ffn);
+        if (audiosrcOriginalExists (ffn)) {
+          snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+          ctime = fileopCreateTime (tbuff);
         }
+        tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
+        songSetStr (song, TAG_DBADDDATE, tbuff);
+        dowrite = true;
+        counters [UPD_FIX_DB_DATE_ADDED] += 1;
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
       }
 
       if (processflags [UPD_FIX_DB_MPM]) {
@@ -1007,8 +1014,8 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_AF_MPM]) {
       nlistSetNum (updlist, UPD_FIX_AF_MPM, UPD_COMPLETE);
     }
-    if (processflags [UPD_FIX_DB_ADDDATE]) {
-      nlistSetNum (updlist, UPD_FIX_DB_ADDDATE, UPD_COMPLETE);
+    if (processflags [UPD_FIX_DB_DATE_ADDED]) {
+      nlistSetNum (updlist, UPD_FIX_DB_DATE_ADDED, UPD_COMPLETE);
     }
     if (processflags [UPD_FIX_DB_MPM]) {
       nlistSetNum (updlist, UPD_FIX_DB_MPM, UPD_COMPLETE);
@@ -1025,8 +1032,8 @@ main (int argc, char *argv [])
   if (counters [UPD_FIX_AF_MPM] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: af-mpm: %d", counters [UPD_FIX_AF_MPM]);
   }
-  if (counters [UPD_FIX_DB_ADDDATE] > 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-adddate: %d", counters [UPD_FIX_DB_ADDDATE]);
+  if (counters [UPD_FIX_DB_DATE_ADDED] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-added: %d", counters [UPD_FIX_DB_DATE_ADDED]);
   }
   if (counters [UPD_FIX_DB_MPM] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-mpm: %d", counters [UPD_FIX_DB_MPM]);

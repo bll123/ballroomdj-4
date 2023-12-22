@@ -469,6 +469,7 @@ check_function_exists (signal _lib_signal)
 check_function_exists (srand48 _lib_srand48)
 check_function_exists (srand _lib_srand)
 check_function_exists (srandom _lib_srandom)
+# requires _GNU_SOURCE to be declared, but statx is still located correctly.
 check_function_exists (statx _lib_statx)
 check_function_exists (strlcat _lib_strlcat)
 check_function_exists (strlcpy _lib_strlcpy)
