@@ -46,7 +46,7 @@ typedef struct plidata plidata_t;
 
 typedef struct pli pli_t;
 
-pli_t         *pliInit (const char *plipkg);
+pli_t         *pliInit (const char *plipkg, const char *plinm);
 void          pliFree (pli_t *pli);
 void          pliMediaSetup (pli_t *pli, const char *mediaPath);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
@@ -65,7 +65,7 @@ int           pliSupported (pli_t *pli);
 const char    *pliStateText (pli_t *pli);
 ilist_t       *pliInterfaceList (void);
 
-plidata_t     *pliiInit (const char *intfcnm);
+plidata_t     *pliiInit (const char *plinm);
 void          pliiFree (plidata_t *pliData);
 void          pliiMediaSetup (plidata_t *pliData, const char *mediaPath);
 void          pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed);

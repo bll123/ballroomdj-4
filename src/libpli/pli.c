@@ -33,7 +33,7 @@ static char *plistateTxt [PLI_STATE_MAX] = {
 
 typedef struct pli {
   dlhandle_t        *dlHandle;
-  plidata_t         *(*pliiInit) (const char *intfcnm);
+  plidata_t         *(*pliiInit) (const char *plinm);
   void              (*pliiFree) (plidata_t *pliData);
   void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediapath);
   void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
@@ -53,7 +53,7 @@ typedef struct pli {
 } pli_t;
 
 pli_t *
-pliInit (const char *plipkg)
+pliInit (const char *plipkg, const char *plinm)
 {
   pli_t     *pli;
   char      dlpath [MAXPATHLEN];
@@ -107,7 +107,7 @@ pliInit (const char *plipkg)
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
-    pli->pliData = pli->pliiInit ("");
+    pli->pliData = pli->pliiInit (plinm);
   }
   return pli;
 }

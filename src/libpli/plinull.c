@@ -43,7 +43,7 @@ pliiDesc (dylist_t *ret, int max)
 }
 
 plidata_t *
-pliiInit (const char *intfcnm)
+pliiInit (const char *plinm)
 {
   plidata_t *pliData;
 

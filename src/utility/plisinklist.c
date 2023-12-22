@@ -39,7 +39,8 @@ main (int argc, char *argv [])
 
   volumeSinklistInit (&sinklist);
 
-  pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC));
+  pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+      bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   pliAudioDeviceList (pli, &sinklist);
 
   for (int i = 0; i < sinklist.count; ++i) {

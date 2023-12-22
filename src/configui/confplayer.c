@@ -54,7 +54,8 @@ confuiInitPlayer (confuigui_t *gui)
   if (! volumeHaveSinkList (volume)) {
     pli_t     *pli;
 
-    pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC));
+    pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+        bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
     pliAudioDeviceList (pli, &sinklist);
     pliFree (pli);
   }

@@ -110,6 +110,7 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },
   { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, DF_NORM },
   { "PLAYER",         OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
+  { "PLAYER_I_NM",    OPT_M_PLAYER_INTFC_NM,    VALUE_STR, NULL, DF_NORM },
   { "SCALE",          OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT,     VALUE_STR, NULL, DF_NORM },
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,      VALUE_STR, NULL, DF_NORM },
@@ -253,6 +254,11 @@ bdjoptInit (void)
   if (nlistGetStr (bdjopt->bdjoptList, OPT_G_OLDORGPATH) == NULL) {
     nlistSetStr (bdjopt->bdjoptList, OPT_G_OLDORGPATH,
         nlistGetStr (bdjopt->bdjoptList, OPT_G_ORGPATH));
+  }
+
+  /* added 4.4.8, make sure it is set */
+  if (nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM) == NULL) {
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
   }
 }
 
