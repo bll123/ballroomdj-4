@@ -24,15 +24,18 @@ if (WIN32)
   target_compile_options (bdj4se PRIVATE -municode)
 endif()
 target_link_libraries (bdj4se PRIVATE
-  libbdj4fileop
-  libbdj4osprocess
-  libbdj4osutils
-  libbdj4string
-  libbdj4tmutil
+  libfileopobj
+  libosprocessobj
+  libosutilsobj
+  libstringobj
+  libtmutilobj
+  m
 )
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
 endif()
+addIOKitFramework (bdj4se)
+addIntlLibrary (bdj4se)
 
 add_executable (bdj4installer bdj4installer.c)
 if (WIN32)

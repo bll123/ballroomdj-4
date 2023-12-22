@@ -38,9 +38,9 @@ target_link_libraries (libbdj4ati PRIVATE
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
   libbdj4atiutil
-  libdyintfc
-  libdylib
+  libdylibobj
   libbdj4basic libbdj4common
+  ${CMAKE_DL_LIBS}
 )
 
 add_library (libatibdj4 SHARED

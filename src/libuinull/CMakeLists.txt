@@ -36,11 +36,9 @@ add_library (libuinull SHARED
   uinullui.c
   uinullwidget.c
   uinullwindow.c
-  ../libui/uiwcont.c
-  ../libui/uiwcontfree.c
 )
 target_link_libraries (libuinull PRIVATE
-  libbdj4 libbdj4basic libbdj4common
+  libuiwcontobj libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (libuinull)

@@ -5,18 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libdylib OBJECT
-  dylib.c
-)
-target_link_libraries (libdylib PRIVATE
-  ${CMAKE_DL_LIBS}
-)
-
-add_library (libdyintfc OBJECT
+add_library (libdylibobj OBJECT
   dyintfc.c
-)
-target_link_libraries (libdyintfc PRIVATE
-  libdylib
-  libbdj4basic libbdj4common
-  ${CMAKE_DL_LIBS}
+  dylib.c
 )

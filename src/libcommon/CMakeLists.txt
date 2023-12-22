@@ -44,11 +44,11 @@ if (APPLE)
   )
 endif()
 target_link_libraries (libbdj4common PRIVATE
-  libbdj4fileop     # fileop.c
-  libbdj4osprocess  # osprocess.c
-  libbdj4osutils    # osutils.c
-  libbdj4string     # bdjstring.c strlcat.c strlcpy.c mdebug.c
-  libbdj4tmutil     # tmutil.c
+  libfileopobj     # fileop.c
+  libosprocessobj  # osprocess.c
+  libosutilsobj    # osutils.c
+  libstringobj     # bdjstring.c strlcat.c strlcpy.c mdebug.c
+  libtmutilobj     # tmutil.c
   ${GLIB_LDFLAGS}
 )
 addIOKitFramework (libbdj4common)

@@ -47,14 +47,14 @@ include (utils/bdj4macros.cmake)
 
 # reusable objects; there's no need to compile these twice
 
-add_library (libbdj4string OBJECT
+add_library (libstringobj OBJECT
   libcommon/bdjstring.c
   libcommon/strlcat.c
   libcommon/strlcpy.c
   libcommon/mdebug.c
 )
 
-add_library (libbdj4osutils OBJECT
+add_library (libosutilsobj OBJECT
   libcommon/osdirutil.c
   libcommon/osenv.c
   libcommon/osutils.c
@@ -62,47 +62,24 @@ add_library (libbdj4osutils OBJECT
   libcommon/osmacutils.m
   libcommon/oswinutils.c
 )
-target_link_libraries (libbdj4osutils PRIVATE
-  libbdj4string
-  m
-)
-addIOKitFramework (libbdj4osutils)
-addIntlLibrary (libbdj4osutils)
 
-add_library (libbdj4tmutil OBJECT
+add_library (libtmutilobj OBJECT
   libcommon/tmutil.c
 )
-target_link_libraries (libbdj4tmutil PRIVATE
-  libbdj4osutils
-  m
-)
 
-add_library (libbdj4osprocess OBJECT
+add_library (libosprocessobj OBJECT
   libcommon/osprocess.c
   libcommon/oswinprocess.c
 )
-target_link_libraries (libbdj4osprocess PRIVATE
-  libbdj4tmutil
-  libbdj4osutils
-  libbdj4string
-  m
-)
-addIOKitFramework (libbdj4osprocess)
 
-add_library (libbdj4fileop OBJECT
+add_library (libfileopobj OBJECT
   libcommon/fileop.c
-)
-target_link_libraries (libbdj4fileop PRIVATE
-  libbdj4osutils
-  libbdj4tmutil
-  libbdj4string
-  m
 )
 
 # the bdj4launcher library is a collection of all the other
 # modules that the launcher needs that are not in any of the
 # above libraries.
-add_library (libbdj4launcher OBJECT
+add_library (liblauncherobj OBJECT
   libcommon/bdj4arg.c
   libcommon/filedata.c
   libcommon/osnetutils.c
@@ -132,6 +109,7 @@ add_subdirectory (libvol)
 add_subdirectory (utility)
 
 # ui libraries
+add_subdirectory (libuiwcont)
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_subdirectory (libuigtk3)
 endif()

@@ -36,14 +36,12 @@ add_library (libuigtk3 SHARED
   uigtkui.c
   uigtkwidget.c
   uigtkwindow.c
-  ../libui/uiwcont.c
-  ../libui/uiwcontfree.c
 )
 target_include_directories (libuigtk3
   PRIVATE ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libuigtk3 PRIVATE
-  libbdj4 libbdj4basic libbdj4common
+  libuiwcontobj libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}
 )

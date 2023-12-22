@@ -27,14 +27,17 @@ if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
 target_link_libraries (bdj4 PRIVATE
-  libbdj4launcher
-  libbdj4fileop
-  libbdj4osprocess
-  libbdj4osutils
-  libbdj4string
-  libbdj4tmutil
+  liblauncherobj
+  libfileopobj
+  libosprocessobj
+  libosutilsobj
+  libstringobj
+  libtmutilobj
+  m
 )
 # for gethostname
+addIOKitFramework (bdj4)
+addIntlLibrary (bdj4)
 addWinSockLibrary (bdj4)
 addWinNtdllLibrary (bdj4)
 updateRPath (bdj4)
@@ -49,14 +52,17 @@ target_include_directories (bdj4g
 )
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g PRIVATE
-  libbdj4launcher
-  libbdj4fileop
-  libbdj4osprocess
-  libbdj4osutils
-  libbdj4string
-  libbdj4tmutil
+  liblauncherobj
+  libfileopobj
+  libosprocessobj
+  libosutilsobj
+  libstringobj
+  libtmutilobj
   ${GTK_LDFLAGS}
+  m
 )
+addIOKitFramework (bdj4g)
+addIntlLibrary (bdj4g)
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
 updateRPath (bdj4g)
