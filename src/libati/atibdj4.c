@@ -20,6 +20,7 @@
 #include "atibdj4.h"
 #include "audiofile.h"
 #include "bdj4intl.h"
+#include "dyintfc.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
@@ -30,11 +31,21 @@ static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list 
 static void atibdj4LogVersion (void);
 static bool gversionlogged = false;
 
-const char *
-atiiDesc (void)
+void
+atiiDesc (dylist_t *ret, int max)
 {
+  int   c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
   /* CONTEXT: Name of the BDJ4 internal audio tagging interface */
-  return _("BDJ4 Internal");
+  ret [c].desc = _("BDJ4 Internal");
+  ret [c].index = 0;
+  c++;
+  ret [c].desc = NULL;
+  ret [c].index = 0;
 }
 
 atidata_t *

@@ -8,8 +8,9 @@
 extern "C" {
 #endif
 
+#include "dyintfc.h"
 #include "dylib.h"
-#include "slist.h"
+#include "ilist.h"
 
 typedef struct volsinklist volsinklist_t;
 
@@ -32,14 +33,13 @@ int       volumeSet (volume_t *volume, const char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);
 void      volumeSetSystemDefault (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
-slist_t   *volumeInterfaceList (void);
+ilist_t   *volumeInterfaceList (void);
 char      *volumeCheckInterface (const char *volintfc);
 
-const char *voliDesc (void);
-int       voliProcess (volaction_t action, const char *sinkname,
-              int *vol, volsinklist_t *sinklist, void **udata);
-void      voliDisconnect (void);
-void      voliCleanup (void **udata);
+void  voliDesc (dylist_t *ret, int max);
+int   voliProcess (volaction_t action, const char *sinkname, int *vol, volsinklist_t *sinklist, void **udata);
+void  voliDisconnect (void);
+void  voliCleanup (void **udata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

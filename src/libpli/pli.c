@@ -14,9 +14,9 @@
 #include "pathbld.h"
 #include "dyintfc.h"
 #include "dylib.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "pli.h"
-#include "slist.h"
 #include "sysvars.h"
 #include "volsink.h"
 
@@ -33,7 +33,7 @@ static char *plistateTxt [PLI_STATE_MAX] = {
 
 typedef struct pli {
   dlhandle_t        *dlHandle;
-  plidata_t         *(*pliiInit) (const char *plipkg, const char *sinkname);
+  plidata_t         *(*pliiInit) (const char *intfcnm);
   void              (*pliiFree) (plidata_t *pliData);
   void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediapath);
   void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
@@ -53,7 +53,7 @@ typedef struct pli {
 } pli_t;
 
 pli_t *
-pliInit (const char *plipkg, const char *sinkname)
+pliInit (const char *plipkg)
 {
   pli_t     *pli;
   char      dlpath [MAXPATHLEN];
@@ -107,7 +107,7 @@ pliInit (const char *plipkg, const char *sinkname)
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
-    pli->pliData = pli->pliiInit (plipkg, sinkname);
+    pli->pliData = pli->pliiInit ("");
   }
   return pli;
 }
@@ -272,10 +272,10 @@ pliStateText (pli_t *pli)
   return plistateTxt [pli->pliiState (pli->pliData)];
 }
 
-slist_t *
+ilist_t *
 pliInterfaceList (void)
 {
-  slist_t   *interfaces;
+  ilist_t   *interfaces;
 
   interfaces = dyInterfaceList ("libpli", "pliiDesc");
   return interfaces;

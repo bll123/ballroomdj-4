@@ -18,6 +18,7 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
@@ -53,7 +54,7 @@ confuiInitPlayer (confuigui_t *gui)
   if (! volumeHaveSinkList (volume)) {
     pli_t     *pli;
 
-    pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC), "default");
+    pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC));
     pliAudioDeviceList (pli, &sinklist);
     pliFree (pli);
   }
@@ -136,7 +137,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
 static void
 confuiLoadVolIntfcList (confuigui_t *gui)
 {
-  slist_t     *interfaces;
+  ilist_t     *interfaces;
 
   interfaces = volumeInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC, CONFUI_SPINBOX_VOL_INTFC);
@@ -145,7 +146,7 @@ confuiLoadVolIntfcList (confuigui_t *gui)
 static void
 confuiLoadPlayerIntfcList (confuigui_t *gui)
 {
-  slist_t     *interfaces;
+  ilist_t     *interfaces;
 
   interfaces = pliInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC, CONFUI_SPINBOX_PLI);

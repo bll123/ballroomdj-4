@@ -22,7 +22,7 @@
 #include "dyintfc.h"
 #include "dylib.h"
 #include "mdebug.h"
-#include "slist.h"
+#include "ilist.h"
 #include "sysvars.h"
 #include "volsink.h"
 #include "volume.h"
@@ -147,10 +147,10 @@ volumeFreeSinkList (volsinklist_t *sinklist)
   }
 }
 
-slist_t *
+ilist_t *
 volumeInterfaceList (void)
 {
-  slist_t     *interfaces;
+  ilist_t     *interfaces;
 
   interfaces = dyInterfaceList ("libvol", "voliDesc");
   return interfaces;
@@ -159,18 +159,22 @@ volumeInterfaceList (void)
 char *
 volumeCheckInterface (const char *volintfc)
 {
-  slist_t     *interfaces;
-  slistidx_t  iteridx;
-  const char  *desc;
+  ilist_t     *interfaces;
+  ilistidx_t  iteridx;
   const char  *intfc;
   const char  *gintfc = NULL;
   bool        found = false;
   char        *voli = NULL;
+  ilistidx_t  key;
 
   interfaces = volumeInterfaceList ();
-  slistStartIterator (interfaces, &iteridx);
-  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-    intfc = slistGetStr (interfaces, desc);
+  ilistStartIterator (interfaces, &iteridx);
+  while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
+fprintf (stderr, "key: %ld\n", (long) key);
+    intfc = ilistGetStr (interfaces, key, DYI_LIB);
+fprintf (stderr, "  intfc: %s\n", intfc);
+fprintf (stderr, "  desc: %s\n", ilistGetStr (interfaces, key, DYI_DESC));
+fprintf (stderr, "  idx: %ld\n", (long) ilistGetNum (interfaces, key, DYI_INDEX));
     if (gintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
       gintfc = intfc;
     }
@@ -185,7 +189,7 @@ volumeCheckInterface (const char *volintfc)
   } else {
     voli = mdstrdup (volintfc);
   }
-  slistFree (interfaces);
+  ilistFree (interfaces);
 
   return voli;
 }

@@ -199,10 +199,10 @@ atiCheckCodec (const char *ffn, int filetype)
   return filetype;
 }
 
-slist_t *
+ilist_t *
 atiInterfaceList (void)
 {
-  slist_t     *interfaces;
+  ilist_t     *interfaces;
 
   interfaces = dyInterfaceList (LIBATI_PFX, "atiiDesc");
   return interfaces;

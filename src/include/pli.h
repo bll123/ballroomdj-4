@@ -4,7 +4,8 @@
 #ifndef INC_PLI_H
 #define INC_PLI_H
 
-#include "slist.h"
+#include "dyintfc.h"
+#include "ilist.h"
 #include "tmutil.h"
 #include "volsink.h"
 
@@ -45,7 +46,7 @@ typedef struct plidata plidata_t;
 
 typedef struct pli pli_t;
 
-pli_t         *pliInit (const char *volpkg, const char *sinkname);
+pli_t         *pliInit (const char *plipkg);
 void          pliFree (pli_t *pli);
 void          pliMediaSetup (pli_t *pli, const char *mediaPath);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
@@ -62,9 +63,9 @@ int           pliSetAudioDevice (pli_t *pli, const char *dev);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
 const char    *pliStateText (pli_t *pli);
-slist_t       *pliInterfaceList (void);
+ilist_t       *pliInterfaceList (void);
 
-plidata_t     *pliiInit (const char *volpkg, const char *sinkname);
+plidata_t     *pliiInit (const char *intfcnm);
 void          pliiFree (plidata_t *pliData);
 void          pliiMediaSetup (plidata_t *pliData, const char *mediaPath);
 void          pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed);
@@ -80,6 +81,6 @@ plistate_t    pliiState (plidata_t *pliData);
 int           pliiSetAudioDevice (plidata_t *pliData, const char *dev);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
-const char    *pliiDesc (void);
+void          pliiDesc (dylist_t *ret, int max);
 
 #endif

@@ -1,16 +1,19 @@
 #ifndef INC_DYINTFC_H
 #define INC_DYINTFC_H
 
-#include "slist.h"
+#include "ilist.h"
 
-typedef struct dyiter dyiter_t;
+typedef struct {
+  const char    *desc;
+  int           index;
+} dylist_t;
 
-slist_t * dyInterfaceList (const char *pfx, const char *funcnm);
+enum {
+  DYI_LIB,
+  DYI_DESC,
+  DYI_INDEX,
+};
 
-#if 0
-dyiter_t  *dyInterfaceStartIterator (const char *pfx, const char *funcnm);
-void      *dyInterfaceIterate (dyiter_t *dyiter);
-void      dyInterfaceCleanIterator (dyiter_t *dyiter);
-#endif
+ilist_t * dyInterfaceList (const char *pfx, const char *funcnm);
 
 #endif /* INC_DYINTFC_H */

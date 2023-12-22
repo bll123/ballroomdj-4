@@ -21,6 +21,7 @@
 #include <pulse/pulseaudio.h>
 
 #include "bdjstring.h"
+#include "dyintfc.h"
 #include "tmutil.h"
 #include "mdebug.h"
 #include "volsink.h"
@@ -64,10 +65,20 @@ typedef union {
   volsinklist_t   *sinklist;
 } pacallback_t;
 
-const char *
-voliDesc (void)
+void
+voliDesc (dylist_t *ret, int max)
 {
-  return "Pulse Audio";
+  int   c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c].desc = "Pulse Audio";
+  ret [c].index = 0;
+  ++c;
+  ret [c].desc = NULL;
+  ret [c].index = -1;
 }
 
 void

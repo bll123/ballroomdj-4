@@ -21,10 +21,12 @@
 #include "configui.h"
 #include "localeutil.h"
 #include "log.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "vsencdec.h"
@@ -279,7 +281,7 @@ confuiLoadLocaleList (confuigui_t *gui)
 static void
 confuiLoadAudioTagIntfcList (confuigui_t *gui)
 {
-  slist_t     *interfaces;
+  ilist_t     *interfaces;
 
   interfaces = atiInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC, CONFUI_SPINBOX_ATI);

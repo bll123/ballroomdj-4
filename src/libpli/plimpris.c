@@ -12,7 +12,9 @@
 
 #if __linux__
 
+#include "dyintfc.h"
 #include "bdj4.h"
+#include "dyintfc.h"
 #include "mprisi.h"
 #include "mdebug.h"
 #include "pli.h"
@@ -25,14 +27,20 @@ typedef struct plidata {
   int               supported;
 } plidata_t;
 
-const char *
-pliiDesc (void)
+void
+pliiDesc (dylist_t *ret, int max)
 {
-  return "MPRIS";
+  int         c = 0;
+
+  ret [c].desc = "MPRIS";
+  ret [c].index = 0;
+  ++c;
+  ret [c].desc = NULL;
+  ret [c].index = -1;
 }
 
 plidata_t *
-pliiInit (const char *volpkg, const char *sinkname)
+pliiInit (const char *intfcnm)
 {
   plidata_t *pliData;
 

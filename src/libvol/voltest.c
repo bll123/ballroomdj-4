@@ -16,7 +16,7 @@
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
-#include "slist.h"
+#include "ilist.h"
 #include "sysvars.h"
 
 int
@@ -44,16 +44,18 @@ main (int argc, char *argv [])
   bdjoptInit ();
 
   if (argc == 2 && strcmp (argv [1], "interfaces") == 0) {
-    slist_t     *interfaces;
-    slistidx_t  iteridx;
-    const char  *desc;
+    ilist_t     *interfaces;
+    ilistidx_t  iteridx;
+    ilistidx_t  key;
 
     interfaces = volumeInterfaceList ();
-    slistStartIterator (interfaces, &iteridx);
-    while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-      fprintf (stderr, "%s %s\n", desc, slistGetStr (interfaces, desc));
+    ilistStartIterator (interfaces, &iteridx);
+    while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
+      fprintf (stderr, "%s %s\n",
+          ilistGetStr (interfaces, key, DYI_DESC),
+          ilistGetStr (interfaces, key, DYI_LIB));
     }
-    slistFree (interfaces);
+    ilistFree (interfaces);
     doinit = false;
   }
 

@@ -22,10 +22,12 @@
 #include "configui.h"
 #include "dirlist.h"
 #include "dispsel.h"
+#include "dyintfc.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "orgutil.h"
@@ -320,11 +322,11 @@ confuiGetLocalIP (confuigui_t *gui)
 }
 
 void
-confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
+confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
     int svidx, int spinboxidx)
 {
-  slistidx_t  iteridx;
-  const char  *desc;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
   const char  *intfc;
   int         count;
   nlist_t     *tlist;
@@ -333,14 +335,14 @@ confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
   tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
   llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
 
-  slistStartIterator (interfaces, &iteridx);
+  ilistStartIterator (interfaces, &iteridx);
   count = 0;
-  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-    intfc = slistGetStr (interfaces, desc);
+  while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
+    intfc = ilistGetStr (interfaces, key, DYI_LIB);
     if (intfc != NULL && strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
       gui->uiitem [spinboxidx].listidx = count;
     }
-    nlistSetStr (tlist, count, desc);
+    nlistSetStr (tlist, count, ilistGetStr (interfaces, key, DYI_DESC));
     nlistSetStr (llist, count, intfc);
     ++count;
   }

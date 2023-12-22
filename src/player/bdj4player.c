@@ -308,8 +308,7 @@ main (int argc, char *argv[])
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
-  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
-      playerData.currentSink);
+  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC));
   playerData.pliSupported = pliSupported (playerData.pli);
 
   pliSetAudioDevice (playerData.pli, playerData.actualSink);

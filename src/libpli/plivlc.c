@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <math.h>
 
+#include "dyintfc.h"
 #include "pli.h"
 #include "mdebug.h"
 #include "tmutil.h"
@@ -54,14 +55,24 @@ enum {
 
 static void     pliiWaitUntilPlaying (plidata_t *pliData);
 
-const char *
-pliiDesc (void)
+void
+pliiDesc (dylist_t *ret, int max)
 {
-  return "Integrated VLC";
+  int         c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c].desc = "Integrated VLC";
+  ret [c].index = 0;
+  ++c;
+  ret [c].desc = NULL;
+  ret [c].index = -1;
 }
 
 plidata_t *
-pliiInit (const char *volpkg, const char *sinkname)
+pliiInit (const char *intfcnm)
 {
   plidata_t *pliData;
   char      * vlcOptions [5];
