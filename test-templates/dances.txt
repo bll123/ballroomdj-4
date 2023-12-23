@@ -170,7 +170,7 @@ TYPE
 KEY
 ..9
 ANNOUNCE
-..Announce/tango.mp3
+..Announce/tango.flac
 DANCE
 ..Tango
 LOWBPM
@@ -206,7 +206,7 @@ TYPE
 KEY
 ..11
 ANNOUNCE
-..Announce/waltz.mp3
+..Announce/waltz.flac
 DANCE
 ..Waltz
 LOWBPM

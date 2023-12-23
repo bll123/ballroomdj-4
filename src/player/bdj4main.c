@@ -185,6 +185,7 @@ static long mainGetGap (maindata_t *mainData, int mqidx, int index);
 static void mainSendPlayerUISwitchQueue (maindata_t *mainData, int mqidx);
 static playlist_t * mainNextPlaylist (maindata_t *mainData);
 static void mainSetMusicQueuesChanged (maindata_t *mainData);
+static bool mainGetAnnounceFlag (maindata_t *mainData, int mqidx, int playlistIdx);
 /* routines for testing */
 static void mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom, const char *args);
 static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime);
@@ -1451,8 +1452,7 @@ mainMusicQueueFill (maindata_t *mainData)
 static void
 mainMusicQueuePrep (maindata_t *mainData, int mqidx)
 {
-  playlist_t    *playlist = NULL;
-  int           announceflag = false;
+  bool          announceflag = false;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
 
@@ -1486,11 +1486,7 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
     }
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
-    announceflag = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
-    if (announceflag != 1 && playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
-      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-      announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
-    }
+    announceflag = mainGetAnnounceFlag (mainData, mqidx, playlistIdx);
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
@@ -1502,7 +1498,7 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
       annfname = mainPrepSong (mainData, PREP_SONG, mqidx, song, sfname,
           playlistIdx, uniqueidx);
 
-      if (announceflag == 1) {
+      if (announceflag == true) {
         if (annfname != NULL && *annfname) {
           musicqSetFlag (mainData->musicQueue, mqidx, i, MUSICQ_FLAG_ANNOUNCE);
           musicqSetAnnounce (mainData->musicQueue, mqidx, i, annfname);
@@ -1565,12 +1561,11 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
     song_t *song, const char *sfname, int playlistIdx, long uniqueidx)
 {
   char          tbuff [1024];
-  playlist_t    *playlist = NULL;
   ssize_t       dur = 0;
   ssize_t       songstart = 0;
   int           speed = 100;
   double        voladjperc = 0;
-  int           announceflag = false;
+  bool          announceflag = false;
   ilistidx_t    danceidx;
   const char    *annfname = NULL;
 
@@ -1595,13 +1590,9 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
   if (prepflag != PREP_ANNOUNCE) {
     dur = mainCalculateSongDuration (mainData, song, playlistIdx, mqidx, MAIN_CALC_WITH_SPEED);
 
-    announceflag =
-        bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mainData->musicqManageIdx);
-    if (announceflag != 1) {
-      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-      announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
-    }
-    if (announceflag == 1) {
+    announceflag = mainGetAnnounceFlag (mainData, mainData->musicqManageIdx, playlistIdx);
+
+    if (announceflag == true) {
       dance_t       *dances;
       song_t        *tsong;
 
@@ -3080,6 +3071,27 @@ mainSetMusicQueuesChanged (maindata_t *mainData)
     mainData->musicqChanged [i] = MAIN_CHG_START;
     mainData->marqueeChanged = true;
   }
+}
+
+static bool
+mainGetAnnounceFlag (maindata_t *mainData, int mqidx, int playlistIdx)
+{
+  bool  announceflag = false;
+
+  announceflag = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
+  if (announceflag != 1) {
+    playlist_t  *playlist;
+
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+    announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+  }
+  /* announcements should not be played for the song list editor */
+  /* or the music manager */
+  if (mqidx >= MUSICQ_PB_MAX) {
+    announceflag = false;
+  }
+
+  return announceflag;
 }
 
 /* routines for testing */
