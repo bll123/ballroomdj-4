@@ -19,7 +19,6 @@
 
 #include <pipewire/pipewire.h>
 
-#include "dyintfc.h"
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
@@ -41,7 +40,7 @@ static const struct pw_registry_events registry_events = {
 static void pipewireSigHandler (void *udata, int signal_number);
 
 void
-voliDesc (dylist_t *ret, int max)
+voliDesc (char **ret, int max)
 {
   int   c = 0;
 
@@ -49,11 +48,8 @@ voliDesc (dylist_t *ret, int max)
     return;
   }
 
-  ret [c].desc = "PipeWire";
-  ret [c].index = 0;
-  ++c;
-  ret [c].desc = NULL;
-  ret [c].index = -1;
+  ret [c++] = "PipeWire";
+  ret [c++] = NULL;
 }
 
 void

@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-#include "dyintfc.h"
 #include "ilist.h"
 #include "nlist.h"
 #include "tagdef.h"
@@ -51,7 +50,7 @@ int     atiCheckCodec (const char *ffn, int filetype);
 ilist_t *atiInterfaceList (void);
 void    atiGetSupportedTypes (const char *atipkg, int supported []);
 
-void    atiiDesc (dylist_t *ret, int max);
+void    atiiDesc (char **ret, int max);
 void    atiiSupportedTypes (int supported []);
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);

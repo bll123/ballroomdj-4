@@ -37,10 +37,17 @@
 
 extern "C" {
 
-const char *
-voliDesc (void)
+void
+voliDesc (char **ret, int max)
 {
-  return "Windows";
+  int   c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c++] = "Windows";
+  ret [c++] = NULL;
 }
 
 void

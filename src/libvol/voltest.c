@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "bdjopt.h"
+#include "dyintfc.h"
 #include "fileop.h"
 #include "mdebug.h"
 #include "volsink.h"

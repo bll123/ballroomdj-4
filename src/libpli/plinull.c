@@ -10,7 +10,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "dyintfc.h"
 #include "mdebug.h"
 #include "pli.h"
 #include "tmutil.h"
@@ -27,7 +26,7 @@ typedef struct plidata {
 } plidata_t;
 
 void
-pliiDesc (dylist_t *ret, int max)
+pliiDesc (char **ret, int max)
 {
   int         c = 0;
 
@@ -35,11 +34,8 @@ pliiDesc (dylist_t *ret, int max)
     return;
   }
 
-  ret [c].desc = "Null Player";
-  ret [c].index = 0;
-  ++c;
-  ret [c].desc = NULL;
-  ret [c].index = -1;
+  ret [c++] = "Null Player";
+  ret [c++] = NULL;
 }
 
 plidata_t *

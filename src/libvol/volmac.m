@@ -27,10 +27,17 @@ enum {
   CHAN_STEREO = 2,
 };
 
-const char *
-voliDesc (void)
+void
+voliDesc (char **ret, int max)
 {
-  return "MacOS";
+  int   c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c++] = "MacOS";
+  ret [c++] = NULL;
 }
 
 void

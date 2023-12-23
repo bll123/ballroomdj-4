@@ -33,8 +33,8 @@ dyInterfaceList (const char *pfx, const char *funcnm)
   dlhandle_t  *dlHandle;
   char        dlpath [MAXPATHLEN];
   char        tmp [100];
-  void        (*descProc) (dylist_t *, int);
-  dylist_t    descarr [MAX_DESC];
+  void        (*descProc) (char **, int);
+  char        *descarr [MAX_DESC];
   size_t      pfxlen;
 
   pfxlen = strlen (pfx);
@@ -52,16 +52,13 @@ dyInterfaceList (const char *pfx, const char *funcnm)
         if (descProc != NULL) {
           const char  *desc;
           int         c = 0;
-          int         idx;
 
           descProc (descarr, MAX_DESC);
-          while ((desc = descarr [c].desc) != NULL) {
-            idx = descarr [c].index;
+          while ((desc = descarr [c]) != NULL) {
             strlcpy (tmp, fn, sizeof (tmp));
             tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
             ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
             ilistSetStr (interfaces, ikey, DYI_DESC, desc);
-            ilistSetNum (interfaces, ikey, DYI_INDEX, idx);
             ++c;
             ++ikey;
           }

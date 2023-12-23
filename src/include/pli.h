@@ -4,7 +4,6 @@
 #ifndef INC_PLI_H
 #define INC_PLI_H
 
-#include "dyintfc.h"
 #include "ilist.h"
 #include "tmutil.h"
 #include "volsink.h"
@@ -81,6 +80,6 @@ plistate_t    pliiState (plidata_t *pliData);
 int           pliiSetAudioDevice (plidata_t *pliData, const char *dev);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
-void          pliiDesc (dylist_t *ret, int max);
+void          pliiDesc (char **ret, int max);
 
 #endif

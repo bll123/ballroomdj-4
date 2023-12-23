@@ -15,7 +15,6 @@
 # endif
 #endif
 
-#include "dyintfc.h"
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
@@ -24,7 +23,7 @@ static int gvol [3] = { 30, 20, 10 };
 static int gsink = 0;
 
 void
-voliDesc (dylist_t *ret, int max)
+voliDesc (char **ret, int max)
 {
   int   c = 0;
 
@@ -32,11 +31,8 @@ voliDesc (dylist_t *ret, int max)
     return;
   }
 
-  ret [c].desc = "Null Audio";
-  ret [c].index = 0;
-  ++c;
-  ret [c].desc = NULL;
-  ret [c].index = -1;
+  ret [c++] = "Null Audio";
+  ret [c++] = NULL;
 }
 
 void

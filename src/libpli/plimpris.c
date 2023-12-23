@@ -12,7 +12,6 @@
 
 #if __linux__
 
-#include "dyintfc.h"
 #include "bdj4.h"
 #include "dyintfc.h"
 #include "mprisi.h"
@@ -28,7 +27,7 @@ typedef struct plidata {
 } plidata_t;
 
 void
-pliiDesc (dylist_t *ret, int max)
+pliiDesc (char **ret, int max)
 {
   int         c = 0;
   mpris_t     *mpris;
@@ -36,14 +35,8 @@ pliiDesc (dylist_t *ret, int max)
 //  mpris = mprisInit (NULL);
 //  mprisFree (mpris);
 
-  ret [c].desc = "MPRIS VLC";
-  ret [c].index = 0;
-  ++c;
-  ret [c].desc = "MPRIS Test";
-  ret [c].index = 0;
-  ++c;
-  ret [c].desc = NULL;
-  ret [c].index = -1;
+  ret [c++] = "MPRIS VLC";
+  ret [c++] = NULL;
 }
 
 plidata_t *
