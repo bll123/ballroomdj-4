@@ -163,26 +163,26 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
   if (lkey < 0) {
     lkey = levelGetDefaultKey (gsonginit.levels);
-    // Use default setting
+    /* Use default setting */
     nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
   }
 
   lkey = nlistGetNum (song->songInfo, TAG_STATUS);
   if (lkey < 0) {
-    // New
+    /* New */
     nlistSetNum (song->songInfo, TAG_STATUS, 0);
   }
 
   lkey = nlistGetNum (song->songInfo, TAG_DANCERATING);
   if (lkey < 0) {
-    // Unrated
+    /* Unrated */
     nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
   }
 
-  /* 2023-12-19: new: db location lock */
+  /* 2023-12-19: db location lock */
   lkey = nlistGetNum (song->songInfo, TAG_DB_LOC_LOCK);
   if (lkey < 0) {
-    // Unrated
+    /* false */
     nlistSetNum (song->songInfo, TAG_DB_LOC_LOCK, 0);
   }
 
@@ -442,6 +442,17 @@ songTagList (song_t *song)
 
   taglist = datafileSaveKeyValList ("song-tag", songdfkeys, SONG_DFKEY_COUNT, song->songInfo);
   return taglist;
+}
+
+char *
+songCreateSaveData (song_t *song)
+{
+  char      *sbuffer;
+
+  sbuffer = mdmalloc (MUSICDB_MAX_SAVE);
+  datafileSaveKeyValBuffer (sbuffer, MUSICDB_MAX_SAVE, "song-buff",
+      songdfkeys, SONG_DFKEY_COUNT, song->songInfo, 0);
+  return sbuffer;
 }
 
 bool

@@ -32,6 +32,7 @@ void      songChangeFavorite (song_t *song);
 bool      songAudioSourceExists (song_t *song);
 char *    songDisplayString (song_t *song, int tagidx, int flag);
 slist_t * songTagList (song_t *song);
+char *    songCreateSaveData (song_t *song);
 bool      songIsChanged (song_t *song);
 void      songSetChanged (song_t *song);
 bool      songHasSonglistChange (song_t *song);

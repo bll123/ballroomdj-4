@@ -61,6 +61,7 @@ static datafilekey_t tmdfkeys [] = {
   { "DANCELEVEL",   TAG_DANCELEVEL,           VALUE_STR, NULL, DF_NORM },
   { "DANCERATING",  TAG_DANCERATING,          VALUE_STR, NULL, DF_NORM },
   { "DATE",         TAG_DATE,                 VALUE_STR, NULL, DF_NORM },
+  { "DBADDDATE",    TAG_DBADDDATE,            VALUE_STR, NULL, DF_NORM },
   { "DB_LOC_LOCK",  TAG_DB_LOC_LOCK,          VALUE_STR, NULL, DF_NORM },
   { "DEST",         TM_DEST,                  VALUE_STR, NULL, DF_NORM },
   { "DISC",         TAG_DISCNUMBER,           VALUE_STR, NULL, DF_NORM },

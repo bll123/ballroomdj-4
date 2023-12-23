@@ -43,6 +43,7 @@ typedef struct musicdb {
 } musicdb_t;
 
 static size_t dbWriteInternal (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn);
+static size_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, dbidx_t rrn);
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
 static void   dbRebuildDanceCounts (musicdb_t *musicdb);
 
@@ -293,8 +294,6 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 size_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
-  slist_t   *taglist;
-  bool      rc;
   time_t    currtime;
 
   if (song == NULL) {
@@ -310,11 +309,9 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     currtime = time (NULL);
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
-  taglist = songTagList (song);
-  rc = dbWriteInternal (musicdb, songGetStr (song, TAG_URI),
-      taglist, songGetNum (song, TAG_RRN));
-  slistFree (taglist);
-  return rc;
+  dbWriteInternalSong (musicdb, songGetStr (song, TAG_URI),
+      song, songGetNum (song, TAG_RRN));
+  return -1;
 }
 
 size_t
@@ -336,7 +333,7 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 
 size_t
 dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
-    const char *fn, dbidx_t rrn)
+    const char *fn)
 {
   size_t        tblen = 0;
   slistidx_t    iteridx;
@@ -379,7 +376,8 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
     tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
 
-  if (rrn == MUSICDB_ENTRY_NEW) {
+  data = slistGetStr (tagList, tagdefs [TAG_DBADDDATE].tag);
+  if (data == NULL) {
     tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_DBADDDATE].tag);
     tblen = stringAppend (tbuff, sz, tblen, "\n");
     tblen = stringAppend (tbuff, sz, tblen, "..");
@@ -397,6 +395,43 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   }
 
   return tblen;
+}
+
+size_t
+dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
+    const char *fn)
+{
+  const char  *data;
+  char        *sbuff;
+  int         tstatus;
+
+  tbuff [0] = '\0';
+
+  /* make sure the filename is set */
+//  songSetStr (song, TAG_URI, fn);
+
+  /* make sure the db-add-date is set */
+  data = songGetStr (song, TAG_DBADDDATE);
+  if (data == NULL || ! *data) {
+    char    tmp [40];
+
+    tmutilDstamp (tmp, sizeof (tmp));
+    songSetStr (song, TAG_DBADDDATE, tmp);
+  }
+
+  /* make sure a status is set */
+  tstatus = songGetNum (song, TAG_STATUS);
+  if (tstatus < 0) {
+//    /* CONTEXT: music database: default status */
+//    songSetNum (song, TAG_STATUS, _("New"));
+    songSetNum (song, TAG_STATUS, 0);
+  }
+
+  sbuff = songCreateSaveData (song);
+  strlcpy (tbuff, sbuff, sz);
+  mdfree (sbuff);
+
+  return -1;
 }
 
 void
@@ -488,20 +523,42 @@ dbWriteInternal (musicdb_t *musicdb, const char *fn,
     slist_t *tagList, dbidx_t rrn)
 {
   char          tbuff [RAFILE_REC_SIZE];
-  size_t        tblen;
+  ssize_t       tblen = -1;
+  int           rc;
 
   if (musicdb == NULL) {
-    return false;
+    return 0;
   }
 
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
-  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
-  raWrite (musicdb->radb, rrn, tbuff);
+  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn);
+  rc = raWrite (musicdb->radb, rrn, tbuff, tblen);
 
   return tblen;
+}
+
+static size_t
+dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
+    song_t *song, dbidx_t rrn)
+{
+  char          tbuff [RAFILE_REC_SIZE];
+  int           rc;
+
+  if (musicdb == NULL) {
+    return 0;
+  }
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
+
+  dbCreateSongEntryFromSong (tbuff, sizeof (tbuff), song, fn);
+  rc = raWrite (musicdb->radb, rrn, tbuff, -1);
+
+  return -1;
 }
 
 static song_t *

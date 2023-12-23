@@ -113,6 +113,7 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
+DBCOMPVERBOSE=""
 ATIBDJ4=F
 FIRSTONLY=F
 for arg in "$@"; do
@@ -123,17 +124,22 @@ for arg in "$@"; do
     --firstonly)
       FIRSTONLY=T
       ;;
+    --verbose)
+      DBCOMPVERBOSE=--verbose
+      ;;
   esac
 done
 
 # debug level
-DBG=4456459
+# DBG=4456459
+# with DB
+DBG=4457483
 # norm
-NUMNORM=136
+NUMNORM=137
 # cha cha
-NUMCC=15
+NUMCC=16
 # regex
-NUMREGEX=13
+NUMREGEX=14
 # deleted foxtrot
 NUMNOFT=$(($NUMNORM-6))
 # deleted cha cha
@@ -201,7 +207,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -224,7 +230,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -243,7 +249,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -262,7 +268,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -290,7 +296,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -358,7 +364,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCOMPAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCOMPAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -417,11 +423,11 @@ if [[ $TESTON == T ]]; then
     --cli --wait --verbose)
   # note that the music database still has the entries for the
   # deleted files in it.
-  exp="found ${NUMNOFT} skip ${NUMNOFT} indb ${NUMNOFT} new 0 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMNOFT} skip ${NUMNOFT} indb ${NUMNOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -443,7 +449,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -492,7 +498,7 @@ if [[ $TESTON == T ]]; then
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
-    msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOCHACHA)"
+    msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOCHACHA)"
     crc=$?
     updateCounts $crc
     msg+="$(compcheck $tname $rc)"
@@ -515,7 +521,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -557,7 +563,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBEMPTY)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBEMPTY)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -589,7 +595,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -650,7 +656,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -670,7 +676,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -691,7 +697,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDTALT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -711,7 +717,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDTAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"

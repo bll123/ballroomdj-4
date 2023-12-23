@@ -227,6 +227,9 @@ main (int argc, char *argv [])
       if (strcmp (tag [DB_A], tagdefs [TAG_DBIDX].tag) == 0) {
         continue;
       }
+      if (strcmp (tag [DB_A], tagdefs [TAG_DB_LOC_LOCK].tag) == 0) {
+        continue;
+      }
 
       for (int i = 0; i < DB_MAX; ++i) {
         val [i] = slistGetStr (taglist [i], tag [DB_A]);

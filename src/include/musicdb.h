@@ -23,6 +23,7 @@ enum {
 
 enum {
   MUSICDB_VERSION = 10,
+  MUSICDB_MAX_SAVE = RAFILE_REC_SIZE,
 };
 
 #define MUSICDB_FNAME     "musicdb"
@@ -43,7 +44,8 @@ void      dbDisableLastUpdateTime (musicdb_t *db);
 void      dbEnableLastUpdateTime (musicdb_t *db);
 size_t    dbWriteSong (musicdb_t *musicdb, song_t *song);
 size_t    dbWrite (musicdb_t *db, const char *fn, slist_t *tagList, dbidx_t rrn);
-size_t    dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList, const char *fn, dbidx_t rrn);
+size_t    dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList, const char *fn);
+size_t    dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song, const char *fn);
 song_t    *dbGetByName (musicdb_t *db, const char *);
 song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);
 void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);

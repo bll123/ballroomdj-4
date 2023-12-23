@@ -512,7 +512,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   if (data != NULL) {
     slist_t     *tagdata;
     int         rewrite;
-    char        tbuff [3096];
+    char        tbuff [MUSICDB_MAX_SAVE];
     char        dbadddate [40];
     const char  *tmp;
     dbidx_t     rrn;
@@ -533,8 +533,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
     /* the data in the database must be replaced with the original data */
     dbWrite (musicdb, songfn, tagdata, rrn);
     /* and the song's data must be replaced with the original data */
-    dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
-        songfn, rrn);
+    dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfn);
     songParse (song, tbuff, dbidx);
 
     /* make sure the internal entry is correct */

@@ -12,7 +12,7 @@
 version
 ..1
 count
-..136
+..137
 
 # standard dances
 
@@ -52,6 +52,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-1-1
 
 KEY
 ..1
@@ -87,6 +89,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-2-2
 
 KEY
 ..2
@@ -122,6 +126,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-3-3
 
 KEY
 ..3
@@ -153,6 +159,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-4-4
 
 KEY
 ..4
@@ -186,6 +194,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-5-5
 
 KEY
 ..5
@@ -221,6 +231,8 @@ TITLE
 ..%03d-argentinetango
 DEST
 ..%03d-argentinetango
+DBADDDATE
+..2016-6-6
 
 # Cha Cha
 
@@ -5034,7 +5046,7 @@ KEY
 SOURCE
 ..ann-waltz.flac
 DURATION
-..1700
+..1984
 NOTES
 ..
 BPM
@@ -5064,14 +5076,14 @@ TITLE
 DEST
 ..Announce/waltz
 DB_LOC_LOCK
-..on
+..yes
 
 KEY
 ..133
 SOURCE
 ..ann-tango.flac
 DURATION
-..1510
+..2048
 NOTES
 ..
 BPM
@@ -5101,12 +5113,49 @@ TITLE
 DEST
 ..Announce/tango
 DB_LOC_LOCK
-..on
+..yes
+
+KEY
+..134
+SOURCE
+..ann-samba.flac
+DURATION
+..1952
+NOTES
+..
+BPM
+..
+TAGS
+..announcement
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..
+ALBUMARTIST
+..
+ARTIST
+..
+ALBUM
+..
+TRACKNUMBER
+..%d
+DANCE
+..
+DANCERATING
+..Great
+TITLE
+..ann-samba
+DEST
+..Announce/samba
+DB_LOC_LOCK
+..yes
 
 # ogg/opus as .ogx
 
 KEY
-..134
+..135
 SOURCE
 ..waltz-opus.ogx
 DURATION
@@ -5141,7 +5190,7 @@ DEST
 ..%03d-waltz-opus-ogx
 
 KEY
-..134
+..136
 SOURCE
 ..waltz-ogg.ogx
 DURATION

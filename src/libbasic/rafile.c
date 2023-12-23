@@ -143,11 +143,13 @@ raEndBatch (rafile_t *rafile)
 }
 
 int
-raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
+raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
 {
-  size_t  len = strlen (data);
   bool    isnew = false;
 
+  if (len == -1) {
+    len = strlen (data);
+  }
   logProcBegin (LOG_PROC, "raWrite");
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {

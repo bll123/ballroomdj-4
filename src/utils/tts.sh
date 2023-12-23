@@ -54,8 +54,8 @@ function mkann {
 }
 
 vlist=()
-vlist['Eddy']='en_GB.UTF8'
-vlist['Shelley']='en_GB.UTF8'
+vlist['Samantha']='en_US.UTF8'
+vlist['Daniel']='en_GB.UTF8'
 
 # the misspellings are deliberate in order to make the voice correct.
 annlist=()
@@ -91,6 +91,9 @@ annlist['ann-mambo']='Next Dance, Maambo'
 annlist['ann-merengue']='Next Dance, Murreingay'
 annlist['ann-polka']='Next Dance, Polka'
 annlist['ann-country-western-two-step']='Next Dance, Country Western Two Step'
+annlist['ann-shag']='Next Dance, Shag'
+annlist['ann-bossa-nova']='Next Dance, Bossa Nova'
+annlist['ann-balboa']='Next Dance, Balboa'
 
 mkann
 

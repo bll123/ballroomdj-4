@@ -210,6 +210,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
           strcmp (tag, "LASTUPDATED") == 0 ||
           strcmp (tag, "PFXLEN") == 0 ||
           strcmp (tag, "RRN") == 0 ||
+          strcmp (tag, "DB_LOC_LOCK") == 0 ||
           strcmp (tag, "DURATION") == 0) {
         continue;
       }

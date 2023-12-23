@@ -178,12 +178,14 @@ static void     dbupdateProcessFileQueue (dbupdate_t *dbupdate);
 static void     dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data);
 static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
-static void     dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
+static void     dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata, int songdbdefault);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
 static void     dbupdateIncCount (dbupdate_t *dbupdate, int tag);
+static void     dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song, int *songdbflags, dbidx_t rrn);
+static musicdb_t * dbupdateSetCurrentDB (dbupdate_t *dbupdate);
 
 static int  gKillReceived = 0;
 
@@ -278,25 +280,32 @@ main (int argc, char *argv[])
 
   if ((dbupdate.startflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== check-new");
   }
   if ((dbupdate.startflags & BDJ4_DB_COMPACT) == BDJ4_DB_COMPACT) {
     dbupdate.compact = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== compact");
   }
   if ((dbupdate.startflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== rebuild");
   }
   if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
     dbupdate.updfromtags = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-tags");
   }
   if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_ITUNES) == BDJ4_DB_UPD_FROM_ITUNES) {
     dbupdate.updfromitunes = true;
     dbupdate.itunes = itunesAlloc ();
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-itunes");
   }
   if ((dbupdate.startflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
     dbupdate.writetags = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== write-tags");
   }
   if ((dbupdate.startflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
     dbupdate.reorganize = true;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "== reorganize");
   }
   if ((dbupdate.startflags & BDJ4_PROGRESS) == BDJ4_PROGRESS) {
     dbupdate.progress = true;
@@ -554,6 +563,8 @@ dbupdateProcessing (void *udata)
 
               dbupdateIncCount (dbupdate, C_FILE_PROC);
               dbupdateIncCount (dbupdate, C_UPDATED);
+              /* the audio files are not being modified, using dbWrite() */
+              /* here is ok */
               tagdata = songTagList (song);
               dbWrite (dbupdate->newmusicdb, tsongfn, tagdata, MUSICDB_ENTRY_NEW);
               slistFree (tagdata);
@@ -926,10 +937,11 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   dbidx_t     rrn;
   musicdb_t   *currdb = NULL;
   song_t      *song = NULL;
-  size_t      len;
   const char  *relfname;
   const char  *val;
   int         rewrite;
+  char        tbuff [MUSICDB_MAX_SAVE];
+  int         songdbflags;
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", ffn);
 
@@ -959,7 +971,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
 
   /* reorganize has its own processing */
   if (dbupdate->reorganize) {
-    dbupdateReorganize (dbupdate, ffn, tagdata);
+    dbupdateReorganize (dbupdate, ffn, tagdata, SONGDB_FORCE_RENAME);
     slistFree (tagdata);
     return;
   }
@@ -1032,12 +1044,17 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
 
   rrn = MUSICDB_ENTRY_NEW;
 
-  if (! dbupdate->rebuild && ! dbupdate->compact) {
+  /* on a rebuild, the database add date will be reset */
+  /* on a compact, the rrn is not wanted, but the add date is wanted */
+  /* for all other modes, both the rrn and the add date are wanted */
+  if (! dbupdate->rebuild) {
     song = dbGetByName (dbupdate->musicdb, songfname);
     if (song != NULL) {
       const char  *tmp;
 
-      rrn = songGetNum (song, TAG_RRN);
+      if (! dbupdate->compact) {
+        rrn = songGetNum (song, TAG_RRN);
+      }
       tmp = songGetStr (song, TAG_DBADDDATE);
       if (tmp != NULL) {
         slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
@@ -1054,26 +1071,26 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
     slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
   }
 
-  /* the dbWrite() procedure will set the FILE tag */
-  currdb = dbupdate->musicdb;
-  if (dbupdate->cleandatabase) {
-    currdb = dbupdate->newmusicdb;
+  currdb = dbupdateSetCurrentDB (dbupdate);
+
+  /* this is rather inefficient */
+  /* see what can be done about this */
+  /* the problem being that orgutil works based on a song, not a taglist */
+  song = songAlloc ();
+  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfname);
+  songParse (song, tbuff, rrn);
+  songdbflags = SONGDB_NONE;
+  if (dbupdate->autoorg && (dbupdate->checknew || dbupdate->rebuild)) {
+    songdbflags = SONGDB_NONE;
   }
-  songdbSetMusicDB (dbupdate->songdb, currdb);
+  dbupdateWriteSong (dbupdate, song, &songdbflags, rrn);
 
-  len = dbWrite (currdb, songfname, tagdata, rrn);
-  if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
-    dbupdateIncCount (dbupdate, C_NEW);
-
-    /* only do an auto-organize when running a check-for-new or a rebuild */
-    if (dbupdate->autoorg && (dbupdate->checknew || dbupdate->rebuild)) {
-      dbupdateReorganize (dbupdate, ffn, tagdata);
+  if ((songdbflags & SONGDB_RET_SUCCESS) == SONGDB_RET_SUCCESS) {
+    if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
+      dbupdateIncCount (dbupdate, C_NEW);
+    } else {
+      dbupdateIncCount (dbupdate, C_UPDATED);
     }
-  } else {
-    dbupdateIncCount (dbupdate, C_UPDATED);
-  }
-  if (len > dbupdate->maxWriteLen) {
-    dbupdate->maxWriteLen = len;
   }
 
   slistFree (tagdata);
@@ -1134,11 +1151,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
-  currdb = dbupdate->musicdb;
-  if (dbupdate->cleandatabase) {
-    currdb = dbupdate->newmusicdb;
-  }
-  songdbSetMusicDB (dbupdate->songdb, currdb);
+  currdb = dbupdateSetCurrentDB (dbupdate);
 
   /* for itunes, just update the song data directly, */
   /* write the song to the db, and write the song tags */
@@ -1178,9 +1191,10 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     }
 
     if (changed) {
+      int     songdbflags = SONGDB_NONE;
+
       newtaglist = songTagList (song);
-      dbWriteSong (currdb, song);
-      audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+      dbupdateWriteSong (dbupdate, song, &songdbflags, songGetNum (song, TAG_RRN));
       slistFree (newtaglist);
       dbupdateIncCount (dbupdate, C_UPDATED);
     }
@@ -1189,12 +1203,13 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 }
 
 static void
-dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn,
+    slist_t *tagdata, int songdbdefault)
 {
   const char  *songfname = NULL;
   song_t      *song = NULL;
   musicdb_t   *currdb = NULL;
-  int         songdbflags;
+  int         songdbflags = songdbdefault;
 
   if (ffn == NULL) {
     return;
@@ -1213,25 +1228,8 @@ dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
-  currdb = dbupdate->musicdb;
-  if (dbupdate->cleandatabase) {
-    currdb = dbupdate->newmusicdb;
-  }
-  songdbSetMusicDB (dbupdate->songdb, currdb);
-
-  /* override the auto-organize setting */
-  songdbflags = SONGDB_FORCE_RENAME;
-  songdbWriteDBSong (dbupdate->songdb, song, &songdbflags);
-
-  if ((songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
-    dbupdateIncCount (dbupdate, C_RENAMED);
-  } else if ((songdbflags & SONGDB_RET_FILE_EXISTS) == SONGDB_RET_FILE_EXISTS) {
-    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
-  } else if ((songdbflags & SONGDB_RET_RENAME_FAIL) == SONGDB_RET_RENAME_FAIL) {
-    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
-  }
-  /* otherwise, the audio file was not renamed */
-
+  currdb = dbupdateSetCurrentDB (dbupdate);
+  dbupdateWriteSong (dbupdate, song, &songdbflags, songGetNum (song, TAG_RRN));
   dbupdateIncCount (dbupdate, C_FILE_PROC);
 }
 
@@ -1325,3 +1323,39 @@ dbupdateIncCount (dbupdate_t *dbupdate, int tag)
   ++dbupdate->counts [tag];
 }
 
+static void
+dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
+    int *songdbflags, dbidx_t rrn)
+{
+  size_t    len;
+
+  songSetChanged (song);
+  len = songdbWriteDBSong (dbupdate->songdb, song, songdbflags, rrn);
+  if (len > dbupdate->maxWriteLen) {
+    dbupdate->maxWriteLen = len;
+  }
+
+  if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {
+    dbupdateIncCount (dbupdate, C_BAD);
+    dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+  } else if ((*songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
+    dbupdateIncCount (dbupdate, C_RENAMED);
+  } else if ((*songdbflags & SONGDB_RET_REN_FILE_EXISTS) == SONGDB_RET_REN_FILE_EXISTS) {
+    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+  } else if ((*songdbflags & SONGDB_RET_RENAME_FAIL) == SONGDB_RET_RENAME_FAIL) {
+    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+  }
+}
+
+static musicdb_t *
+dbupdateSetCurrentDB (dbupdate_t *dbupdate)
+{
+  musicdb_t   *currdb;
+
+  currdb = dbupdate->musicdb;
+  if (dbupdate->cleandatabase) {
+    currdb = dbupdate->newmusicdb;
+  }
+  songdbSetMusicDB (dbupdate->songdb, currdb);
+  return currdb;
+}

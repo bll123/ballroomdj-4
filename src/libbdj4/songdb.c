@@ -93,12 +93,12 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
   }
   song = dbGetByIdx (songdb->musicdb, dbidx);
   songdbflags = SONGDB_NONE;
-  songdbWriteDBSong (songdb, song, &songdbflags);
+  songdbWriteDBSong (songdb, song, &songdbflags, songGetNum (song, TAG_RRN));
 }
 
 /* flags is both input and output */
-void
-songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
+size_t
+songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 {
   char        newfn [MAXPATHLEN];
   char        newffn [MAXPATHLEN];
@@ -109,15 +109,19 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
   bool        rename = false;
   pathinfo_t  *pi;
   int         rc;
+  size_t      len;
 
   if (songdb == NULL || songdb->musicdb == NULL) {
-    return;
+    *flags |= SONGDB_RET_NULL;
+    return 0;
   }
   if (song == NULL) {
-    return;
+    *flags |= SONGDB_RET_NULL;
+    return 0;
   }
   if (! songIsChanged (song)) {
-    return;
+    *flags |= SONGDB_RET_NO_CHANGE;
+    return 0;
   }
 
   rename = (bdjoptGetNum (OPT_G_AUTOORGANIZE) == true) ||
@@ -136,6 +140,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
 
   if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
     /* user requested location lock */
+    *flags |= SONGDB_RET_LOC_LOCK;
     dorename = false;
   }
 
@@ -144,7 +149,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
     audiosrcFullPath (newfn, newffn, sizeof (newffn));
 
     if (*newffn && fileopFileExists (newffn)) {
-      *flags |= SONGDB_RET_FILE_EXISTS;
+      *flags |= SONGDB_RET_REN_FILE_EXISTS;
       dorename = false;
     }
 
@@ -189,7 +194,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
     }
   }
 
-  dbWriteSong (songdb->musicdb, song);
+  *flags |= SONGDB_RET_SUCCESS;
+
+  songSetNum (song, TAG_RRN, rrn);
+  len = dbWriteSong (songdb->musicdb, song);
+
   if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
     songdbWriteAudioTags (song);
   }
@@ -198,6 +207,8 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags)
     songdbUpdateAllSonglists (song, oldfn);
   }
   songClearChanged (song);
+
+  return len;
 }
 
 bool

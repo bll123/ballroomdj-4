@@ -85,7 +85,7 @@ START_TEST(rafile_write)
   lastsize = statbuf.st_size;
 
   ck_assert_int_eq (raGetNextRRN (rafile), 1);
-  raWrite (rafile, RAFILE_NEW, "aaaa");
+  raWrite (rafile, RAFILE_NEW, "aaaa", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -93,7 +93,7 @@ START_TEST(rafile_write)
   ck_assert_int_eq (raGetCount (rafile), 1);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 2);
-  raWrite (rafile, RAFILE_NEW, "bbbb");
+  raWrite (rafile, RAFILE_NEW, "bbbb", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -101,7 +101,7 @@ START_TEST(rafile_write)
   ck_assert_int_eq (raGetCount (rafile), 2);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 3);
-  raWrite (rafile, RAFILE_NEW, "cccc");
+  raWrite (rafile, RAFILE_NEW, "cccc", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -138,7 +138,7 @@ START_TEST(rafile_write_batch)
   rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 
-  raWrite (rafile, RAFILE_NEW, "dddd");
+  raWrite (rafile, RAFILE_NEW, "dddd", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -146,7 +146,7 @@ START_TEST(rafile_write_batch)
   ck_assert_int_eq (raGetCount (rafile), 4);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 5);
-  raWrite (rafile, RAFILE_NEW, "eeee");
+  raWrite (rafile, RAFILE_NEW, "eeee", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -154,7 +154,7 @@ START_TEST(rafile_write_batch)
   ck_assert_int_eq (raGetCount (rafile), 5);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 6);
-  raWrite (rafile, RAFILE_NEW, "ffff");
+  raWrite (rafile, RAFILE_NEW, "ffff", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
@@ -220,19 +220,19 @@ START_TEST(rafile_rewrite)
   ck_assert_int_eq (rc, 0);
   lastsize = statbuf.st_size;
 
-  raWrite (rafile, 3, "gggg");
+  raWrite (rafile, 3, "gggg", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
   lastsize = statbuf.st_size;
 
-  raWrite (rafile, 2, "hhhh");
+  raWrite (rafile, 2, "hhhh", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
   lastsize = statbuf.st_size;
 
-  raWrite (rafile, 1, "iiii");
+  raWrite (rafile, 1, "iiii", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
@@ -287,7 +287,7 @@ START_TEST(rafile_write_read)
   ck_assert_int_eq (rc, 0);
   lastsize = statbuf.st_size;
 
-  raWrite (rafile, 4, "jjjj");
+  raWrite (rafile, 4, "jjjj", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
@@ -297,7 +297,7 @@ START_TEST(rafile_write_read)
   ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "jjjj");
 
-  raWrite (rafile, 4, "mmmm");
+  raWrite (rafile, 4, "mmmm", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
@@ -307,7 +307,7 @@ START_TEST(rafile_write_read)
   ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "mmmm");
 
-  raWrite (rafile, 3, "kkkk");
+  raWrite (rafile, 3, "kkkk", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
@@ -317,7 +317,7 @@ START_TEST(rafile_write_read)
   ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "kkkk");
 
-  raWrite (rafile, 2, "llll");
+  raWrite (rafile, 2, "llll", -1);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
@@ -350,7 +350,7 @@ START_TEST(rafile_bad_write_len)
 
   memset (data, 0, sizeof (data));
   memset (data, 'a', sizeof (data)-4);
-  rc = raWrite (rafile, 0, data);
+  rc = raWrite (rafile, 0, data, -1);
   ck_assert_int_ne (rc, 0);
   raClose (rafile);
 }

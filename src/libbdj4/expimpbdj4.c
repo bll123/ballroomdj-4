@@ -451,7 +451,8 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         eibdj4->dbchanged = true;
         songSetChanged (song);
         songdbflags = SONGDB_NONE;
-        songdbWriteDBSong (eibdj4->songdb, song, &songdbflags);
+        songdbWriteDBSong (eibdj4->songdb, song,
+            &songdbflags, songGetNum (song, TAG_RRN));
       }
       if (docopy) {
         pathinfo_t  *pi;

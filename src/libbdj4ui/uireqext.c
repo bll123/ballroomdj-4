@@ -419,7 +419,7 @@ static void
 uireqextProcessAudioFile (uireqext_t *uireqext)
 {
   const char  *ffn;
-  char        tbuff [3096];
+  char        tbuff [MUSICDB_MAX_SAVE];
 
   if (uireqext == NULL) {
     return;
@@ -462,8 +462,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       /* the change */
       slistSetStr (tagdata, tagdefs [TAG_FAVORITE].tag, "imported");
 
-      dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
-          ffn, MUSICDB_ENTRY_NEW);
+      dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, ffn);
       slistFree (tagdata);
       dataFree (uireqext->songEntryText);
       uireqext->songEntryText = mdstrdup (tbuff);
