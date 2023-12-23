@@ -170,11 +170,7 @@ volumeCheckInterface (const char *volintfc)
   interfaces = volumeInterfaceList ();
   ilistStartIterator (interfaces, &iteridx);
   while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
-fprintf (stderr, "key: %ld\n", (long) key);
     intfc = ilistGetStr (interfaces, key, DYI_LIB);
-fprintf (stderr, "  intfc: %s\n", intfc);
-fprintf (stderr, "  desc: %s\n", ilistGetStr (interfaces, key, DYI_DESC));
-fprintf (stderr, "  idx: %ld\n", (long) ilistGetNum (interfaces, key, DYI_INDEX));
     if (gintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
       gintfc = intfc;
     }

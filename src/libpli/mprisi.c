@@ -129,18 +129,23 @@ static double mprisGetPropDouble (mpris_t *mpris, const char *prop, const char *
 static bool mprisSetPropDouble (mpris_t *mpris, const char *prop, const char *propnm, double val);
 
 mpris_t *
-mprisInit (void)
+mprisInit (const char *plinm)
 {
   mpris_t   *mpris;
-  int       rc;
+  int       cc;
   double    minrate, maxrate;
 
   mpris = mdmalloc (sizeof (mpris_t));
   mpris->dbus = dbusConnInit ();
+
   // temporary
   mpris->mpbus = "org.mpris.MediaPlayer2.vlc";
 
-  rc = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
+  if (plinm != NULL) {
+    ;
+  }
+
+  cc = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_CAN_CONTROL]);
   minrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_MIN_RATE]);

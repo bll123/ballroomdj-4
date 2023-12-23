@@ -158,6 +158,10 @@ confuiPopulateOptions (confuigui_t *gui)
           bdjoptSetStrPerQueue (gui->uiitem [i].bdjoptIdx, sval, musicq);
         } else {
           bdjoptSetStr (gui->uiitem [i].bdjoptIdx, sval);
+          if (i == CONFUI_SPINBOX_PLI) {
+            bdjoptSetStr (OPT_M_PLAYER_INTFC_NM,
+                nlistGetStr (gui->uiitem [i].displist, nval));
+          }
         }
         break;
       }

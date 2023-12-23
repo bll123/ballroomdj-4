@@ -5,7 +5,7 @@
 
 typedef struct mpris mpris_t;
 
-mpris_t *mprisInit (void);
+mpris_t *mprisInit (const char *plinm);
 void mprisFree (mpris_t *mpris);
 void mprisMedia (mpris_t *mpris, const char *uri);
 int64_t mprisGetPosition (mpris_t *mpris);

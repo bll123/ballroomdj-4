@@ -62,11 +62,6 @@ dyInterfaceList (const char *pfx, const char *funcnm)
             ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
             ilistSetStr (interfaces, ikey, DYI_DESC, desc);
             ilistSetNum (interfaces, ikey, DYI_INDEX, idx);
-fprintf (stderr, "set: %ld %s %s %d\n", (long) ikey, tmp, desc, idx);
-fprintf (stderr, "set: %ld %s %s %d\n", (long) ikey,
-    ilistGetStr (interfaces, ikey, DYI_LIB),
-    ilistGetStr (interfaces, ikey, DYI_DESC),
-    (int) ilistGetNum (interfaces, ikey, DYI_INDEX));
             ++c;
             ++ikey;
           }

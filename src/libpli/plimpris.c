@@ -31,8 +31,15 @@ void
 pliiDesc (dylist_t *ret, int max)
 {
   int         c = 0;
+  mpris_t     *mpris;
 
-  ret [c].desc = "MPRIS";
+//  mpris = mprisInit (NULL);
+//  mprisFree (mpris);
+
+  ret [c].desc = "MPRIS VLC";
+  ret [c].index = 0;
+  ++c;
+  ret [c].desc = "MPRIS Test";
   ret [c].index = 0;
   ++c;
   ret [c].desc = NULL;
@@ -45,7 +52,7 @@ pliiInit (const char *plinm)
   plidata_t *pliData;
 
   pliData = mdmalloc (sizeof (plidata_t));
-  pliData->mpris = mprisInit ();
+  pliData->mpris = mprisInit (plinm);
   pliData->state = PLI_STATE_STOPPED;
   pliData->supported = PLI_SUPPORT_NONE;
 
