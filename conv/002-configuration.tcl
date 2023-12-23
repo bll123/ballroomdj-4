@@ -456,8 +456,13 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $::tcl_platform(platform) eq "windows" } { set value libvolwin }
         if { $::tcl_platform(os) eq "Darwin" } { set value libvolmac }
         puts $ofh "..$value"
-        puts $ofh PLAYER
+
         set value libplivlc
+        puts $ofh PLAYER
+        puts $ofh "..$value"
+
+        set value ""
+        puts $ofh PLAYER_I_NM
         puts $ofh "..$value"
 
         set value {}
