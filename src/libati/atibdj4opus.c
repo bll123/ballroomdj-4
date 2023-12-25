@@ -86,6 +86,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
   const char            *key;
   int                   writetags;
   int                   tagkey;
+  const tagaudiotag_t   *audiotag = NULL;
 
   writetags = atidata->writetags;
   of = op_open_file (ffn, &rc);
@@ -104,28 +105,32 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     const char  *kw;
     const char  *val;
     char        ttag [300];     /* vorbis tag name */
+    const char  *tagname;
 
     kw = tags->user_comments [i];
     val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
+    tagname = atidata->tagLookup (tagtype, ttag);
 
-    if (slistGetStr (dellist, ttag) != NULL) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
+    if (slistGetStr (dellist, tagname) != NULL) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", audiotag->tag);
       continue;
     }
 
-    if (slistGetStr (updatelist, ttag) != NULL) {
-      if (slistGetNum (upddone, ttag) == 1) {
+    tagkey = atidata->tagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
+    if (tagkey >= 0) {
+      audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    }
+
+    if (slistGetStr (updatelist, tagname) != NULL) {
+      if (slistGetNum (upddone, tagname) == 1) {
         continue;
       }
-
-      tagkey = atidata->tagCheck (writetags, tagtype, ttag, AF_REWRITE_NONE);
       if (tagkey < 0) {
         continue;
       }
-
-      val = slistGetStr (updatelist, ttag);
-      atibdj4OpusAddVorbisComment (&newtags, tagkey, ttag, val);
-      slistSetNum (upddone, ttag, 1);
+      val = slistGetStr (updatelist, tagname);
+      atibdj4OpusAddVorbisComment (&newtags, tagkey, audiotag->tag, val);
+      slistSetNum (upddone, tagname, 1);
     } else {
       /* the tag has not changed, or is unknown to bdj4 */
       opus_tags_add_comment (&newtags, kw);
@@ -145,10 +150,11 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     if (tagkey < 0) {
       continue;
     }
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
 
     tval = slistGetStr (updatelist, key);
-    atibdj4OpusAddVorbisComment (&newtags, tagkey, key, tval);
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, tval);
+    atibdj4OpusAddVorbisComment (&newtags, tagkey, audiotag->tag, tval);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", audiotag->tag, tval);
   }
   slistFree (upddone);
 

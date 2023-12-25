@@ -65,6 +65,7 @@ atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
 
     tagname = atidata->tagLookup (tagtype, mp4tagpub.tag);
     if (tagname == NULL) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: unk %s=%s", mp4tagpub.tag, mp4tagpub.data);
       continue;
     }
 

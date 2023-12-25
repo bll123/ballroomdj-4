@@ -168,7 +168,7 @@ main (int argc, char *argv [])
 
     fn = songGetStr (song [DB_A], TAG_URI);
     if (verbose) {
-      fprintf (stderr, "  -- %s\n", fn);
+      fprintf (stderr, "  -- tdbcomp: %s\n", fn);
     }
 
     song [DB_B] = dbGetByName (db [DB_B], fn);

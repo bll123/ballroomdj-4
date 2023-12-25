@@ -4860,7 +4860,7 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-waltz
+..waltz
 DEST
 ..Announce/waltz
 DB_LOC_LOCK
@@ -4897,7 +4897,7 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-tango
+..tango
 DEST
 ..Announce/tango
 DB_LOC_LOCK
@@ -4934,7 +4934,7 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-samba
+..samba
 DEST
 ..Announce/samba
 DB_LOC_LOCK

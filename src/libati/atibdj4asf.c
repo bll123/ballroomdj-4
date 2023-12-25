@@ -343,6 +343,10 @@ atibdj4ASFProcessContentData (FILE *fh, atidata_t *atidata, slist_t *tagdata,
       break;
     }
     tagname = atidata->tagLookup (tagtype, asf_content_names [i]);
+    if (tagname == NULL) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG,"  raw: unk %s", asf_content_names [i]);
+    }
+
     if (tagname != NULL) {
       data = istring16ToUTF8 (wdata);
       /* only use these if the tag is not already set */

@@ -49,10 +49,13 @@ main (int argc, char *argv [])
   const char  *fn;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
+  bool        loglevelset = false;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "ttagdbchk",    no_argument,      NULL,   0 },
+    { "debug",        required_argument,  NULL,   'd' },
     { "debugself",    no_argument,      NULL,   0 },
     { "wait",         no_argument,      NULL,   0, },
     { "nodetach",     no_argument,      NULL,   0, },
@@ -82,6 +85,13 @@ main (int argc, char *argv [])
         verbose = true;
         break;
       }
+      case 'd': {
+        if (optarg) {
+          loglevel = atol (optarg);
+          loglevelset = true;
+        }
+        break;
+      }
       default: {
         break;
       }
@@ -102,6 +112,11 @@ main (int argc, char *argv [])
   audiotagInit ();
 
   bdjvarsdfloadInit ();
+
+  if (! loglevelset) {
+    loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+  }
+  logStartAppend ("ttagdbchk", "ttdc", loglevel);
 
   dbfn = NULL;
   for (int i = optind; i < argc; ++i) {
@@ -172,7 +187,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
   song_t      *song;
 
   if (verbose) {
-    fprintf (stderr, "-- %s\n", fn);
+    fprintf (stderr, "-- ttagdbchk: %s\n", fn);
   }
   songnm = fn + strlen (TEST_MUSIC_DIR) + 1;
   song = dbGetByName (db, songnm);
@@ -189,6 +204,13 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
 
     processed = slistAlloc ("ttagdbchk-proc", LIST_ORDERED, NULL);
     taglist = songTagList (song);
+
+    if (verbose) {
+      fprintf (stderr, "  audio tagdata: %d\n", slistGetCount (tagdata));
+    }
+    if (verbose) {
+      fprintf (stderr, "  song tags: %d\n", slistGetCount (taglist));
+    }
 
     slistStartIterator (tagdata, &tagiteridx);
     while ((tag = slistIterateKey (tagdata, &tagiteridx)) != NULL) {
@@ -217,7 +239,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
 
       tagval = slistGetStr (tagdata, tag);
       val = slistGetStr (taglist, tag);
-      if (verbose) {
+      if (verbose && tagval != NULL) {
         fprintf (stderr, "  db tag: %s %s/%s\n", tag, val, tagval);
       }
       if (val == NULL && tagval != NULL && *tagval) {
@@ -236,9 +258,6 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
 
     slistStartIterator (tagdata, &tagiteridx);
     while ((tag = slistIterateKey (tagdata, &tagiteridx)) != NULL) {
-      if (strcmp (tag, "ENCODER") == 0) {
-        continue;
-      }
       if (slistGetNum (processed, tag) == 0) {
         fprintf (stderr, "  missing from db: %s\n", tag);
         rc = 1;

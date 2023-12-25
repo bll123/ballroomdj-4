@@ -519,9 +519,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-waltz
+..waltz
 DEST
-..Announce/ann-waltz
+..Announce/waltz
 DB_LOC_LOCK
 ..yes
 
@@ -556,9 +556,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-tango
+..tango
 DEST
-..Announce/ann-tango
+..Announce/tango
 DB_LOC_LOCK
 ..yes
 
@@ -593,8 +593,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..ann-samba
+..samba
 DEST
-..Announce/ann-samba
+..Announce/samba
 DB_LOC_LOCK
 ..yes

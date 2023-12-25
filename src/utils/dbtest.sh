@@ -58,7 +58,7 @@ function checkaudiotags {
   tname=$1
   flags=$2
 
-  ./bin/bdj4 --ttagdbchk data/musicdb.dat ${flags}
+  ./bin/bdj4 --ttagdbchk ${VERBOSE} --debug ${DBG} data/musicdb.dat ${flags}
   atrc=$?
   return $atrc
 }
@@ -99,7 +99,7 @@ function setbdj3compatoff {
 }
 
 function cleanallaudiofiletags {
-  for f in test-music/*; do
+  for f in $(find test-music -type f -print); do
     ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
   done
 }
@@ -113,9 +113,10 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
-DBCOMPVERBOSE=""
+VERBOSE=""
 ATIBDJ4=F
 FIRSTONLY=F
+EXITONFAIL=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
@@ -125,21 +126,25 @@ for arg in "$@"; do
       FIRSTONLY=T
       ;;
     --verbose)
-      DBCOMPVERBOSE=--verbose
+      VERBOSE=--verbose
+      ;;
+    --exitonfail)
+      EXITONFAIL=T
       ;;
   esac
 done
 
 # debug level
+# audiotag+dbupdate+info+basic+important
 # DBG=4456459
-# with DB
+# audiotag+dbupdate+info+basic+important + db
 DBG=4457483
 # norm
 NUMNORM=137
 # cha cha
 NUMCC=16
 # regex
-NUMREGEX=14
+NUMREGEX=13
 # deleted foxtrot
 NUMNOFT=$(($NUMNORM-6))
 # deleted cha cha
@@ -207,7 +212,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -216,6 +221,10 @@ fi
 
 if [[ $FIRSTONLY == T ]]; then
   TESTON=F
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -230,11 +239,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -249,11 +262,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -268,11 +285,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -296,7 +317,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -329,6 +350,10 @@ if [[ $TESTON == T ]]; then
     updateCounts $rc
   fi
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -364,7 +389,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCOMPAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBCOMPAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -393,6 +418,10 @@ if [[ $TESTON == T ]]; then
     updateCounts $rc
   fi
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -427,11 +456,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOFOXTROT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -449,11 +482,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOFOXTROT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -498,12 +535,16 @@ if [[ $TESTON == T ]]; then
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
-    msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBNOCHACHA)"
+    msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOCHACHA)"
     crc=$?
     updateCounts $crc
     msg+="$(compcheck $tname $rc)"
     dispres $tname $rc $crc
   fi
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -521,11 +562,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCHACHA)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -547,6 +592,10 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $rc
 fi
 
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
 if [[ $TESTON == T ]]; then
   # restore the empty database needed for update from tags check
   cp -f $TDBEMPTY $DATADB
@@ -563,7 +612,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBEMPTY)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBEMPTY)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -577,6 +626,10 @@ if [[ $TESTON == T ]]; then
     fi
   fi
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -595,7 +648,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBCHACHA)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -609,6 +662,10 @@ if [[ $TESTON == T ]]; then
     fi
   fi
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -656,11 +713,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -676,11 +737,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -697,11 +762,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDTALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDTALT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -717,11 +786,15 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${DBCOMPVERBOSE} $DATADB $TDBRDTAT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDTAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
 fi
 
 # remove test db, temporary files

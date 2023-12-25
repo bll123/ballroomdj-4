@@ -7,6 +7,7 @@
 **4.4.8 2023-12---**
 
 * Bug Fixes:
+    * Audio Tags: Fixed incorrect tag processing for flac, ogg, opus.
     * Fixes for automatic, standard, queuedance pre-installed playlists.
     * Fixed right-to-left language layout.
     * MacOS: Fix build when other versions of libraries are installed.

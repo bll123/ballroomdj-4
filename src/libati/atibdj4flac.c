@@ -114,6 +114,7 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   bool                    cont;
   int                     writetags;
   int                     tagkey;
+  const tagaudiotag_t     *audiotag = NULL;
 
   writetags = atidata->writetags;
   chain = FLAC__metadata_chain_new ();
@@ -155,13 +156,18 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
     if (tagkey < 0) {
       continue;
     }
-
-    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, audiotag->tag);
   }
   slistStartIterator (dellist, &iteridx);
   while ((key = slistIterateKey (dellist, &iteridx)) != NULL) {
+    tagkey = atidata->tagCheck (writetags, tagtype, key, AF_REWRITE_NONE);
+    if (tagkey < 0) {
+      continue;
+    }
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", key);
-    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, audiotag->tag);
   }
 
   /* add all the updates back into the vorbis comment */
@@ -173,9 +179,9 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
     if (tagkey < 0) {
       continue;
     }
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
 
-    atibdj4FlacAddVorbisComment (block, &entry, tagkey, key, slistGetStr (updatelist, key));
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", key, slistGetStr (updatelist, key));
+    atibdj4FlacAddVorbisComment (block, &entry, tagkey, audiotag->tag, slistGetStr (updatelist, key));
   }
 
   FLAC__metadata_chain_sort_padding (chain);

@@ -64,11 +64,8 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
     ufid = NULL;
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
 
-    if (tagname == NULL) {
-      /* this is not a tag that bdj4 uses */
-      ++idx;
-      continue;
-    }
+    /* null tagnames are checked in each field type */
+    /* so that the raw data can be logged */
 
     /* ufid: field 0 is the name, field 1 is the data */
     /* txxx: field 0 is the text encoding, field 1 is the name, field 2 is the data */
@@ -93,7 +90,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             ufid = (const char *) str;
           } else {
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (1): %s %s=%s", tagname, id3frame->id, str);
-            slistSetStr (tagdata, tagname, (const char *) str);
+            if (tagname != NULL) {
+              slistSetStr (tagdata, tagname, (const char *) str);
+            }
           }
           break;
         }
@@ -102,7 +101,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           str = id3_field_getfulllatin1 (field);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (2): %s %s=%s", tagname, id3frame->id, str);
-          slistSetStr (tagdata, tagname, (const char *) str);
+          if (tagname != NULL) {
+            slistSetStr (tagdata, tagname, (const char *) str);
+          }
           break;
         }
         case ID3_FIELD_TYPE_LATIN1LIST: {
@@ -118,7 +119,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           mdextalloc (str);
           if (i != 1 || strcmp (id3frame->id, "TXXX") != 0) {
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (3): %s %s=%s", tagname, id3frame->id, str);
-            slistSetStr (tagdata, tagname, (const char *) str);
+            if (tagname != NULL) {
+              slistSetStr (tagdata, tagname, (const char *) str);
+            }
           }
           dataFree (str);
           break;
@@ -131,7 +134,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           str = id3_ucs4_utf8duplicate (ustr);
           mdextalloc (str);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (4): %s %s=%s", tagname, id3frame->id, str);
-          slistSetStr (tagdata, tagname, (const char *) str);
+          if (tagname != NULL) {
+            slistSetStr (tagdata, tagname, (const char *) str);
+          }
           dataFree (str);
           break;
         }
@@ -159,7 +164,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             }
 // ### need to handle multiple items; each should have a different language
 // or somesuch. does this need to be checked?  I need an example file.
-            slistSetStr (tagdata, tagname, p);
+            if (tagname != NULL) {
+              slistSetStr (tagdata, tagname, p);
+            }
             dataFree (str);
           }
           break;
@@ -172,7 +179,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           str = id3_field_getlatin1 (field);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (6): %s %s=%s", tagname, id3frame->id, str);
-          slistSetStr (tagdata, tagname, (const char *) str);
+          if (tagname != NULL) {
+            slistSetStr (tagdata, tagname, (const char *) str);
+          }
           break;
         }
         case ID3_FIELD_TYPE_INT8:
@@ -186,7 +195,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           val = id3_field_getint (field);
           snprintf (tmp, sizeof (tmp), "%ld", val);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (7): %s %s=%s", tagname, id3frame->id, tmp);
-          slistSetStr (tagdata, tagname, tmp);
+          if (tagname != NULL) {
+            slistSetStr (tagdata, tagname, tmp);
+          }
           break;
         }
         case ID3_FIELD_TYPE_BINARYDATA: {
@@ -202,9 +213,13 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             tmp [blen] = '\0';
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (8): %s %s=%s", tagname, id3frame->id, tmp);
             /* the musicbrainz recording id is not binary */
-            slistSetStr (tagdata, tagname, tmp);
+            if (tagname != NULL) {
+              slistSetStr (tagdata, tagname, tmp);
+            }
           } else {
-            slistSetData (tagdata, tagname, tmp);
+            if (tagname != NULL) {
+              slistSetData (tagdata, tagname, tmp);
+            }
           }
           mdfree (tmp);
           break;

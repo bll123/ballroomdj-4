@@ -71,9 +71,12 @@ atioggProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
 
   /* vorbis comments are not case sensitive */
   tagname = tagLookup (tagtype, tag);
+
   if (tagname == NULL) {
-    tagname = tag;
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: unk %s=%s", tag, val);
+    return;
   }
+
   if (strcmp (tagname, "TOTALTRACKS") == 0) {
     tagname = "TRACKTOTAL";
   }
@@ -129,15 +132,10 @@ atioggSplitVorbisComment (int tagkey, const char *tagname, const char *val)
   bool        split = false;
 
   /* known tags that should be split: */
-  /* genre, artist, album-artist, composer */
+  /* album-artist, artist, composer, conductor, genre */
 
   vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
-  split = tagkey == TAG_ALBUMARTIST ||
-      tagkey == TAG_ARTIST ||
-      tagkey == TAG_COMPOSER ||
-      tagkey == TAG_CONDUCTOR ||
-      tagkey == TAG_GENRE;
-//  split = tagdefs [tagkey].vorbisMulti;
+  split = tagdefs [tagkey].vorbisMulti;
 
   if (split && strstr (val, ";") != NULL) {
     char      *tval;

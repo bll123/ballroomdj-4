@@ -149,7 +149,7 @@ main (int argc, char *argv [])
     /* try a relative path name */
     snprintf (infn, sizeof (infn), "%s/%s", origcwd, targ);
     if (! fileopFileExists (infn)) {
-      fprintf (stderr, "no file %s\n", infn);
+      fprintf (stderr, "bdj4tags: no file %s\n", infn);
       rc = AUDIOTAG_WRITE_FAILED;
       bdj4tagsCleanup ();
       bdj4argCleanup (bdj4arg);
@@ -158,7 +158,7 @@ main (int argc, char *argv [])
   }
 
   if (copy && ! fileopFileExists (targ)) {
-    fprintf (stderr, "no file %s\n", targ);
+    fprintf (stderr, "bdj4tags: no file %s\n", targ);
     rc = AUDIOTAG_WRITE_FAILED;
     bdj4tagsCleanup ();
     bdj4argCleanup (bdj4arg);
