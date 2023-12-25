@@ -40,10 +40,12 @@ typedef struct {
 /* must be ascii sorted by extension */
 filetypelookup_t filetypelookup [] = {
   { ".3g2",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".3gp",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".aac",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".alac",  TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".flac",  TAG_TYPE_VORBIS,  AFILE_TYPE_FLAC, },
   { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".m4b",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".m4r",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".mp3",   TAG_TYPE_ID3,     AFILE_TYPE_MP3, },
   { ".mp4",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
