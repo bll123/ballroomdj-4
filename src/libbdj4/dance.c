@@ -36,6 +36,7 @@ typedef struct dance {
 } dance_t;
 
 enum {
+  DANCE_BPM_VERSION = 1,
   DANCE_DF_VERSION = 2,
 };
 
@@ -79,6 +80,7 @@ danceAlloc (const char *altfname)
   const char  *val;
   int         key;
   ilistidx_t  iteridx;
+  bool        fixbpm;
 
   if (altfname != NULL) {
     strlcpy (fname, altfname, sizeof (fname));
@@ -100,6 +102,11 @@ danceAlloc (const char *altfname)
       dancedfkeys, dancedfcount, DF_NO_OFFSET, NULL);
   dance->dances = datafileGetList (dance->df);
 
+  fixbpm = false;
+  if (ilistGetVersion (dance->dances) == DANCE_BPM_VERSION) {
+    fixbpm = true;
+  }
+
   dance->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
   slistSetSize (dance->danceList, ilistGetCount (dance->dances));
 
@@ -107,6 +114,18 @@ danceAlloc (const char *altfname)
   while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
     val = ilistGetStr (dance->dances, key, DANCE_DANCE);
     slistSetNum (dance->danceList, val, key);
+
+    if (fixbpm) {
+      int   tval;
+
+      tval = ilistGetNum (dance->dances, key, DANCE_MPM_HIGH);
+      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
+      ilistSetNum (dance->dances, key, DANCE_MPM_HIGH, tval);
+
+      tval = ilistGetNum (dance->dances, key, DANCE_MPM_LOW);
+      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
+      ilistSetNum (dance->dances, key, DANCE_MPM_LOW, tval);
+    }
   }
   slistSort (dance->danceList);
   slistCalcMaxWidth (dance->danceList);
@@ -315,7 +334,6 @@ danceGetTimeSignature (ilistidx_t danceIdx)
 int
 danceConvertBPMtoMPM (int danceidx, int bpm, int forceflag)
 {
-fprintf (stderr, "bpm: %d g-bpm: %d/%d ff: %d/%d\n", bpm, (int) bdjoptGetNum (OPT_G_BPM), BPM_BPM, forceflag, DANCE_FORCE_CONV);
   if (bpm > 0 &&
       (bdjoptGetNum (OPT_G_BPM) == BPM_BPM ||
       forceflag == DANCE_FORCE_CONV)) {

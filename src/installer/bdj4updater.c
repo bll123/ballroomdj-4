@@ -85,9 +85,6 @@ enum {
   /* the name was changed to disambiguate from the old name */
   UPD_FIX_DB_DATE_ADDED,
   /* 2023-5-22 4.3.2.4 */
-  /* fix-dance-mpm dances.txt bpm/mpm settings are re-written in mpm */
-  UPD_FIX_DANCE_MPM,
-  /* 2023-5-22 4.3.2.4 */
   /* set-mpm changes the configure/general/bpm setting to mpm */
   /* only want to do this once */
   UPD_SET_MPM,
@@ -106,7 +103,6 @@ static datafilekey_t upddfkeys[] = {
   { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, DF_NORM },
   { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, DF_NORM },
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
 };
@@ -528,91 +524,6 @@ main (int argc, char *argv [])
   }
 
   logMsg (LOG_INSTALL, LOG_INFO, "loaded data files A");
-
-  /* 4.3.2.4 */
-  /* this requires that the data files be loaded */
-  if (statusflags [UPD_FIX_DANCE_MPM] == UPD_NOT_DONE) {
-    dance_t     *odances;
-    dance_t     *ndances = NULL;
-    slist_t     *ndancelist = NULL;
-    ilistidx_t  oiteridx;
-    ilistidx_t  didx, ndidx;
-    char        from [MAXPATHLEN];
-    char        tbuff [MAXPATHLEN];
-
-    logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm");
-
-    /* need a copy of the new dances.txt file */
-    snprintf (from, sizeof (from), "%s%s", DANCE_FN, BDJ4_CONFIG_EXT);
-    snprintf (tbuff, sizeof (tbuff), "%s%s", UPDATER_TMP_FILE, BDJ4_CONFIG_EXT);
-    templateFileCopy (from, tbuff);
-
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        UPDATER_TMP_FILE, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    ndances = danceAlloc (tbuff);
-    ndancelist = danceGetDanceList (ndances);
-
-    /* convert the bpm values */
-    odances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceStartIterator (odances, &oiteridx);
-    while ((didx = danceIterate (odances, &oiteridx)) >= 0) {
-      int   olowmpm, ohighmpm, otimesig, otype;
-      int   nlowmpm, nhighmpm, ntimesig, ntype;
-
-      if (origbpmtype == BPM_BPM) {
-        olowmpm = danceGetNum (odances, didx, DANCE_MPM_LOW);
-        ohighmpm = danceGetNum (odances, didx, DANCE_MPM_HIGH);
-        otimesig = danceGetNum (odances, didx, DANCE_TIMESIG);
-        otype = danceGetNum (odances, didx, DANCE_TYPE);
-
-        ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
-        if (ndidx >= 0) {
-          /* if the dance exists in the new dances.txt, copy the data over */
-          nlowmpm = danceGetNum (ndances, ndidx, DANCE_MPM_LOW);
-          nhighmpm = danceGetNum (ndances, ndidx, DANCE_MPM_HIGH);
-          /* time signature was changed for tango, argentine tango and merengue */
-          ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
-          /* type was fixed for en_US, changed for some dances */
-          ntype = danceGetNum (ndances, ndidx, DANCE_TYPE);
-        } else {
-          /* otherwise convert the data that is present */
-          nlowmpm = olowmpm;
-          nhighmpm = ohighmpm;
-          ntimesig = otimesig;
-          ntype = otype;
-          /* dance does not exist, convert the BPM value */
-          nhighmpm = danceConvertBPMtoMPM (didx, nhighmpm, DANCE_FORCE_CONV);
-          nlowmpm = danceConvertBPMtoMPM (didx, nlowmpm, DANCE_FORCE_CONV);
-        }
-
-        /* this is a bit difficult if there is a user-entered dance */
-        /* and no prior known dances have been processed */
-        if (ohighmpm > 0 && ndidx >= 0 && ohighmpm < nhighmpm + 10) {
-          /* handle case where label is bpm, values are mpm */
-          /* keep the user's settings */
-          nlowmpm = olowmpm;
-          nhighmpm = ohighmpm;
-          ntimesig = otimesig;
-          ntype = otype;
-        }
-
-        danceSetNum (odances, didx, DANCE_MPM_LOW, nlowmpm);
-        danceSetNum (odances, didx, DANCE_MPM_HIGH, nhighmpm);
-        danceSetNum (odances, didx, DANCE_TIMESIG, ntimesig);
-        danceSetNum (odances, didx, DANCE_TYPE, ntype);
-      }
-    }
-
-    /* 4.3.2.4: 2023-5-22 : Update dances.txt to dist version 2 */
-
-    danceSave (odances, NULL, 2);
-    danceFree (ndances);
-    fileopDelete (tbuff);
-    if (statusflags [UPD_FIX_DANCE_MPM] == UPD_NOT_DONE) {
-      nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
-    }
-    logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm complete");
-  }
 
   {
     int     origprofile;
