@@ -142,7 +142,7 @@ raEndBatch (rafile_t *rafile)
   logProcEnd (LOG_PROC, "raEndBatch", "");
 }
 
-int
+size_t
 raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
 {
   bool    isnew = false;
@@ -154,7 +154,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
     logMsg (LOG_DBG, LOG_RAFILE, "bad data len %" PRId64, (int64_t) len);
-    return 1;
+    return 0;
   }
 
   raLock (rafile);
@@ -187,7 +187,8 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
   }
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raWrite", "");
-  return 0;
+
+  return len;
 }
 
 /* this function is not in use, but keep the code, as it works */

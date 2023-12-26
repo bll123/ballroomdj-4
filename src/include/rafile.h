@@ -20,7 +20,7 @@ enum {
 
 rafile_t *    raOpen (char *fname, int version);
 void          raClose (rafile_t *rafile);
-int           raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
+size_t        raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
 int           raClear (rafile_t *rafile, rafileidx_t rrn);
 rafileidx_t   raRead (rafile_t *rafile, rafileidx_t rrn, char *data);
 rafileidx_t   raGetCount (rafile_t *rafile);

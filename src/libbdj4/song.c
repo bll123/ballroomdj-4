@@ -451,7 +451,7 @@ songCreateSaveData (song_t *song)
 
   sbuffer = mdmalloc (MUSICDB_MAX_SAVE);
   datafileSaveKeyValBuffer (sbuffer, MUSICDB_MAX_SAVE, "song-buff",
-      songdfkeys, SONG_DFKEY_COUNT, song->songInfo, 0);
+      songdfkeys, SONG_DFKEY_COUNT, song->songInfo, 0, DF_SKIP_EMPTY);
   return sbuffer;
 }
 

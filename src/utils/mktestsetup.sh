@@ -50,27 +50,10 @@ function copytestf {
   fi
 }
 
-# copy this stuff before creating the database...
-# otherwise the dances.txt file may be incorrect.
-
-if [[ -f $FLAG ]]; then
-  # preserve the flag file
-  mv $FLAG .
-fi
-test -d data && rm -rf data
-rm -rf img/profile0[1-9]
-
-hostname=$(hostname)
-mkdir -p data/profile00
-mkdir -p data/${hostname}/profile00
-
-if [[ -f $(basename $FLAG) ]]; then
-  # preserve the flag file
-  mv $(basename $FLAG) $FLAG
-fi
-
 ATIBDJ4=F
 PLIMPV=F
+DBCOPY=T
+KEEPDB=F
 for arg in "$@"; do
   case $arg in
     --atibdj4)
@@ -79,8 +62,39 @@ for arg in "$@"; do
     --plimpv)
       PLIMPV=T
       ;;
+    --nodbcopy)
+      DBCOPY=F
+      ;;
+    --keepdb)
+      KEEPDB=T
+      ;;
   esac
 done
+
+# copy this stuff before creating the database...
+# otherwise the dances.txt file may be incorrect.
+
+if [[ -f $FLAG ]]; then
+  # preserve the flag file
+  mv $FLAG .
+fi
+if [[ $KEEPDB == T ]]; then
+  mv -f data/musicdb.dat .
+fi
+test -d data && rm -rf data
+rm -rf img/profile0[1-9]
+
+hostname=$(hostname)
+mkdir -p data/profile00
+mkdir -p data/${hostname}/profile00
+
+if [[ $KEEPDB == T ]]; then
+  mv musicdb.dat data
+fi
+if [[ -f $(basename $FLAG) ]]; then
+  # preserve the flag file
+  mv $(basename $FLAG) $FLAG
+fi
 
 for f in templates/ds-*.txt; do
   cp -f $f data/profile00
@@ -218,10 +232,12 @@ args=""
 
 outfile=$(./src/utils/mktestdb.sh "$@")
 # copy the db to the data dir after it is created
-if [[ $outfile != "" ]]; then
-  cp -f $outfile data/musicdb.dat
-else
-  cp -f test-templates/musicdb.dat data
+if [[ $DBCOPY == T ]]; then
+  if [[ $outfile != "" ]]; then
+    cp -f $outfile data/musicdb.dat
+  else
+    cp -f test-templates/musicdb.dat data
+  fi
 fi
 
 cwd=$(pwd)
@@ -230,15 +246,9 @@ cwd=$(pwd)
 # set correctly.
 # remove the updater config to make sure all updates get run
 rm -f data/updater.txt
-./bin/bdj4 --bdj4updater --newinstall \
-   --musicdir "${cwd}/test-music"
+./bin/bdj4 --bdj4updater --newinstall
 # run again w/o newinstall to perform the updates
 ./bin/bdj4 --bdj4updater --writetags
-
-tfn=data/updater.txt
-sed -e '/^FIX_AF_MPM/ { n ; s/.*/..0/ ; }' \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
 
 if [[ $os == macos ]]; then
   # reset the debug level on macos back to 31

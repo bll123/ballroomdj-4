@@ -10,7 +10,7 @@
 typedef enum {
   BDJV_ORIGINAL_EXT,
   BDJV_DELETE_PFX,
-  BDJV_DB_TOP_DIR,    // temporary
+  BDJV_UPDB_MUSIC_DIR,    // temporary
   BDJV_TS_SECTION,    // temporary
   BDJV_TS_TEST,       // temporary
   BDJV_MAX,

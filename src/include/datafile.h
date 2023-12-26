@@ -17,6 +17,11 @@ typedef enum {
   DFTYPE_MAX,
 } datafiletype_t;
 
+enum {
+  DF_NONE         = 0x0000,
+  DF_SKIP_EMPTY   = 0x0001,
+};
+
 typedef struct parseinfo parseinfo_t;
 
 typedef struct datafile datafile_t;
@@ -86,7 +91,7 @@ listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const c
 list_t *      datafileGetList (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
-void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
+size_t        datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset, int flags);
 void          datafileSave (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
 int           datafileDistVersion (datafile_t *df);

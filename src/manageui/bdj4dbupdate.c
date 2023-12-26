@@ -123,9 +123,9 @@ typedef struct {
   songdb_t          *songdb;
   const char        *musicdir;
   size_t            musicdirlen;
-  const char        *dbtopdir;
+  const char        *processmusicdir;
   int               prefixlen;
-  size_t            dbtopdirlen;
+  size_t            processmusicdirlen;
   mstime_t          outputTimer;
   org_t             *org;
   org_t             *orgold;
@@ -416,6 +416,8 @@ dbupdateProcessing (void *udata)
   connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
+    char  tbuff [MAXPATHLEN];
+
     if (dbupdate->rebuild) {
       dbupdate->cleandatabase = true;
     }
@@ -426,8 +428,7 @@ dbupdateProcessing (void *udata)
     dbBackup ();
 
     if (dbupdate->cleandatabase) {
-      char  tbuff [MAXPATHLEN];
-
+      logMsg (LOG_DBG, LOG_IMPORTANT, "new database");
       pathbldMakePath (tbuff, sizeof (tbuff),
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
       fileopDelete (tbuff);
@@ -435,6 +436,7 @@ dbupdateProcessing (void *udata)
       dbStartBatch (dbupdate->newmusicdb);
     }
 
+    logMsg (LOG_DBG, LOG_BASIC, "existing db count: %d", dbCount (dbupdate->musicdb));
     dbStartBatch (dbupdate->musicdb);
 
     dbupdate->state = DB_UPD_PREP;
@@ -452,22 +454,24 @@ dbupdateProcessing (void *udata)
     dbupdate->usingmusicdir = true;
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
-    dbupdate->dbtopdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-    tstr = bdjvarsGetStr (BDJV_DB_TOP_DIR);
+    /* the default */
+    dbupdate->processmusicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+    /* check if a different music-dir was specified */
+    tstr = bdjvarsGetStr (BDJV_UPDB_MUSIC_DIR);
     if (strcmp (tstr, dbupdate->musicdir) != 0) {
       dbupdate->usingmusicdir = false;
-      dbupdate->dbtopdir = tstr;
+      dbupdate->processmusicdir = tstr;
       dbupdate->prefixlen = strlen (tstr) + 1;  // include the slash
     }
-    dbupdate->dbtopdirlen = strlen (dbupdate->dbtopdir);
+    dbupdate->processmusicdirlen = strlen (dbupdate->processmusicdir);
 
-    logMsg (LOG_DBG, LOG_BASIC, "dbtopdir %s", dbupdate->dbtopdir);
-    dbupdate->asiter = audiosrcStartIterator (dbupdate->dbtopdir);
+    logMsg (LOG_DBG, LOG_BASIC, "processmusicdir %s", dbupdate->processmusicdir);
+    dbupdate->asiter = audiosrcStartIterator (dbupdate->processmusicdir);
 
     dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
-        dbupdate->dbtopdir, (int64_t) mstimeend (&dbupdate->starttm));
+        dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
 
     /* message to manageui */
@@ -582,7 +586,8 @@ dbupdateProcessing (void *udata)
       if (regexMatch (dbupdate->badfnregex, fn)) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
         dbupdateIncCount (dbupdate, C_BAD);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad (%u) ", dbupdate->counts [C_BAD]);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%u) ", dbupdate->counts [C_BAD]);
+
         continue;
       }
 
@@ -1014,7 +1019,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
   orgStartIterator (dbupdate->org, &orgiteridx);
 
-  /* use the relative path here, want the dbupdate->dbtopdir stripped */
+  /* use the relative path here, want the dbupdate->processmusicdir stripped */
   /* before running the regex match */
   relfname = dbupdateGetRelativePath (dbupdate, ffn);
 
@@ -1084,6 +1089,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
     songdbflags = SONGDB_NONE;
   }
   dbupdateWriteSong (dbupdate, song, &songdbflags, rrn);
+  songFree (song);
 
   if ((songdbflags & SONGDB_RET_SUCCESS) == SONGDB_RET_SUCCESS) {
     if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
@@ -1288,7 +1294,7 @@ dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn)
   const char  *p;
 
   p = fn;
-  p += dbupdate->dbtopdirlen + 1;
+  p += dbupdate->processmusicdirlen + 1;
   return p;
 }
 
@@ -1301,7 +1307,7 @@ checkOldDirList (dbupdate_t *dbupdate, const char *fn)
   char        *tokstr;
   size_t      len;
 
-  fp = fn + dbupdate->dbtopdirlen + 1;
+  fp = fn + dbupdate->processmusicdirlen + 1;
   olddirs = mdstrdup (dbupdate->olddirlist);
   p = strtok_r (olddirs, ";", &tokstr);
   while (p != NULL) {
@@ -1338,6 +1344,7 @@ dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
   if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {
     dbupdateIncCount (dbupdate, C_BAD);
     dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  bad-null (%u) ", dbupdate->counts [C_BAD]);
   } else if ((*songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
     dbupdateIncCount (dbupdate, C_RENAMED);
   } else if ((*songdbflags & SONGDB_RET_REN_FILE_EXISTS) == SONGDB_RET_REN_FILE_EXISTS) {

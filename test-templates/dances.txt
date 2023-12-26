@@ -1,8 +1,8 @@
 # dances
-# 2022-8-4
-# version 1
+# 2023-5-22
+# version 2
 version
-..1
+..2
 count
 ..13
 KEY
@@ -11,16 +11,16 @@ ANNOUNCE
 ..
 DANCE
 ..Argentine Tango
-LOWBPM
-..120
-HIGHBPM
-..128
+LOWMPM
+..30
+HIGHMPM
+..32
 SPEED
 ..normal
 TAGS
 ..tango
 TIMESIG
-..2/4
+..4/4
 TYPE
 ..standard
 KEY
@@ -29,10 +29,10 @@ ANNOUNCE
 ..
 DANCE
 ..Cha Cha
-LOWBPM
-..124
-HIGHBPM
-..124
+LOWMPM
+..30
+HIGHMPM
+..30
 SPEED
 ..normal
 TAGS
@@ -47,10 +47,10 @@ ANNOUNCE
 ..
 DANCE
 ..Foxtrot
-LOWBPM
-..112
-HIGHBPM
-..120
+LOWMPM
+..28
+HIGHMPM
+..28
 SPEED
 ..normal
 TAGS
@@ -65,10 +65,10 @@ ANNOUNCE
 ..
 DANCE
 ..Jive
-LOWBPM
-..152
-HIGHBPM
-..176
+LOWMPM
+..41
+HIGHMPM
+..41
 SPEED
 ..fast
 TAGS
@@ -83,10 +83,10 @@ ANNOUNCE
 ..
 DANCE
 ..Paso Doble
-LOWBPM
-..120
-HIGHBPM
-..124
+LOWMPM
+..60
+HIGHMPM
+..60
 SPEED
 ..normal
 TAGS
@@ -101,10 +101,10 @@ ANNOUNCE
 ..
 DANCE
 ..Quickstep
-LOWBPM
-..192
-HIGHBPM
-..208
+LOWMPM
+..50
+HIGHMPM
+..52
 SPEED
 ..fast
 TAGS
@@ -119,10 +119,10 @@ ANNOUNCE
 ..
 DANCE
 ..Rumba
-LOWBPM
-..104
-HIGHBPM
-..108
+LOWMPM
+..24
+HIGHMPM
+..24
 SPEED
 ..normal
 TAGS
@@ -137,10 +137,10 @@ ANNOUNCE
 ..
 DANCE
 ..Salsa
-LOWBPM
-..160
-HIGHBPM
-..200
+LOWMPM
+..40
+HIGHMPM
+..55
 SPEED
 ..fast
 TAGS
@@ -155,10 +155,10 @@ ANNOUNCE
 ..
 DANCE
 ..Samba
-LOWBPM
-..96
-HIGHBPM
-..100
+LOWMPM
+..49
+HIGHMPM
+..49
 SPEED
 ..normal
 TAGS
@@ -173,16 +173,16 @@ ANNOUNCE
 ..Announce/tango.flac
 DANCE
 ..Tango
-LOWBPM
-..128
-HIGHBPM
-..128
+LOWMPM
+..31
+HIGHMPM
+..31
 SPEED
 ..normal
 TAGS
 ..tango
 TIMESIG
-..2/4
+..4/4
 TYPE
 ..standard
 KEY
@@ -191,10 +191,10 @@ ANNOUNCE
 ..
 DANCE
 ..Viennese Waltz
-LOWBPM
-..174
-HIGHBPM
-..180
+LOWMPM
+..58
+HIGHMPM
+..58
 SPEED
 ..fast
 TAGS
@@ -209,10 +209,10 @@ ANNOUNCE
 ..Announce/waltz.flac
 DANCE
 ..Waltz
-LOWBPM
-..84
-HIGHBPM
-..90
+LOWMPM
+..28
+HIGHMPM
+..29
 SPEED
 ..normal
 TAGS
@@ -227,10 +227,10 @@ ANNOUNCE
 ..
 DANCE
 ..West Coast Swing
-LOWBPM
-..90
-HIGHBPM
-..120
+LOWMPM
+..28
+HIGHMPM
+..32
 SPEED
 ..normal
 TAGS

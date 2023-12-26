@@ -295,6 +295,7 @@ size_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
   time_t    currtime;
+  size_t    len;
 
   if (song == NULL) {
     return 0;
@@ -309,9 +310,9 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     currtime = time (NULL);
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
-  dbWriteInternalSong (musicdb, songGetStr (song, TAG_URI),
+  len = dbWriteInternalSong (musicdb, songGetStr (song, TAG_URI),
       song, songGetNum (song, TAG_RRN));
-  return -1;
+  return len;
 }
 
 size_t
@@ -346,6 +347,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   tbuff [0] = '\0';
   tmutilDstamp (tmp, sizeof (tmp));
 
+  /* the URI tag must be created */
   tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_URI].tag);
   tblen = stringAppend (tbuff, sz, tblen, "\n");
   tblen = stringAppend (tbuff, sz, tblen, "..");
@@ -355,9 +357,9 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
     if (strcmp (tag, tagdefs [TAG_URI].tag) == 0) {
-      /* already handled, must be first */
       continue;
     }
+
     if (strcmp (tag, tagdefs [TAG_STATUS].tag) == 0) {
       havestatus = true;
     }
@@ -524,7 +526,7 @@ dbWriteInternal (musicdb_t *musicdb, const char *fn,
 {
   char          tbuff [RAFILE_REC_SIZE];
   ssize_t       tblen = -1;
-  int           rc;
+  size_t        len;
 
   if (musicdb == NULL) {
     return 0;
@@ -535,9 +537,9 @@ dbWriteInternal (musicdb_t *musicdb, const char *fn,
   }
 
   tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn);
-  rc = raWrite (musicdb->radb, rrn, tbuff, tblen);
+  len = raWrite (musicdb->radb, rrn, tbuff, tblen);
 
-  return tblen;
+  return len;
 }
 
 static size_t
@@ -545,7 +547,7 @@ dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
     song_t *song, dbidx_t rrn)
 {
   char          tbuff [RAFILE_REC_SIZE];
-  int           rc;
+  size_t        len;
 
   if (musicdb == NULL) {
     return 0;
@@ -556,9 +558,9 @@ dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
   }
 
   dbCreateSongEntryFromSong (tbuff, sizeof (tbuff), song, fn);
-  rc = raWrite (musicdb->radb, rrn, tbuff, -1);
+  len = raWrite (musicdb->radb, rrn, tbuff, -1);
 
-  return -1;
+  return len;
 }
 
 static song_t *

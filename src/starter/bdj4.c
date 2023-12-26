@@ -100,8 +100,6 @@ main (int argc, char * argv[])
     { "name",           required_argument,  NULL,   0 },
     /* updater, installer */
     { "convert",        no_argument,        NULL,   0 },
-    /* updater, installer, altinst */
-    { "musicdir",       required_argument,  NULL,   0 },
     /* updater */
     { "newinstall",     no_argument,        NULL,   0 },
     /* standard stuff */
@@ -117,7 +115,7 @@ main (int argc, char * argv[])
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
     { "compact",        no_argument,        NULL,   0 },
-    { "dbtopdir",       required_argument,  NULL,   0 },
+    { "dbupmusicdir",   required_argument,  NULL,   0 },
     { "rebuild",        no_argument,        NULL,   0 },
     { "reorganize",     no_argument,        NULL,   0 },
     { "updfromtags",    no_argument,        NULL,   0 },

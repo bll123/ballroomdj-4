@@ -96,8 +96,8 @@ static char *createFile (const char *src, const char *dest, bool keepmusic);
 
 static int  gtracknum [TM_MAX_DANCE];
 static int  gseqnum [TM_MAX_DANCE];
-static char *tmusicorig = "test-music-orig";
-static char *tmusicdir = "test-music";
+static const char *tmusicorig = "test-music-orig";
+static const char *tmusicdir = "test-music";
 
 int
 main (int argc, char *argv [])
@@ -120,6 +120,7 @@ main (int argc, char *argv [])
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
   bool        keepmusic = false;
+  bool        verbose = false;
   int         supported [AFILE_TYPE_MAX];
   int         tagtype;
   int         filetype;
@@ -135,6 +136,8 @@ main (int argc, char *argv [])
     { "keepmusic",    no_argument,        NULL,   'K' },
     { "outfile",      required_argument,  NULL,   'O' },
     { "tmusicsetup",  no_argument,        NULL,   0 },
+    { "dbupmusicdir", required_argument,  NULL,   'D' },
+    { "verbose",      no_argument,        NULL,   'V', },
     /* launcher options */
     { "debugself",    no_argument,        NULL,   0 },
     { "debug",        required_argument,  NULL,   'd' },
@@ -163,6 +166,10 @@ main (int argc, char *argv [])
       }
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'D': {
+        tmusicdir = optarg;
         break;
       }
       case 'd': {
@@ -199,6 +206,10 @@ main (int argc, char *argv [])
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (altdir, targ, sizeof (altdir));
         }
+        break;
+      }
+      case 'V': {
+        verbose = true;
         break;
       }
       default: {
@@ -242,7 +253,6 @@ main (int argc, char *argv [])
   logMsg (LOG_DBG, LOG_IMPORTANT, "ati: %s", bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
   atiGetSupportedTypes (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), supported);
 
-  /* create an entirely new database */
   fileopDelete (dbfn);
   db = dbOpen (dbfn);
   dbStartBatch (db);
@@ -258,7 +268,7 @@ main (int argc, char *argv [])
     const char  *dest;
     char        *fn;
     slist_t     *tagdata = NULL;
-    const char  *songfn;
+    const char  *songfn = NULL;
 
     tagdata = updateData (tmusiclist, key);
 
@@ -290,8 +300,17 @@ main (int argc, char *argv [])
       mdfree (dur);
       mdfree (title);
     }
+
     slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, "0");
-    songfn = fn + strlen (tmusicdir) + 1;
+    songfn = fn;
+    if (strcmp (tmusicdir, "test-music") == 0) {
+      songfn = fn + strlen (tmusicdir) + 1;
+    } else {
+      char  tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%d", (int) strlen (tmusicdir) + 1);
+      slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
+    }
     dbWrite (db, songfn, tagdata, MUSICDB_ENTRY_NEW);
 
     if (*altdir) {

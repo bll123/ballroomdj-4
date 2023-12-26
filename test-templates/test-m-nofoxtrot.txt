@@ -2182,7 +2182,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 bpm
 STATUS
@@ -2225,7 +2225,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 bpm
 STATUS
@@ -2268,7 +2268,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 bpm
 STATUS
@@ -2309,7 +2309,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 bpm
 STATUS
@@ -2350,7 +2350,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 bpm ss
 STATUS
@@ -2393,7 +2393,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 bpm
 STATUS
@@ -2438,7 +2438,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 flac bpm
 STATUS
@@ -2473,7 +2473,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 flac bpm
 STATUS
@@ -2510,7 +2510,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 flac bpm
 STATUS
@@ -2547,7 +2547,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 m4a bpm
 STATUS
@@ -2582,7 +2582,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 m4a bpm
 STATUS
@@ -2617,7 +2617,7 @@ SOURCE
 DURATION
 ..30660
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 m4a bpm
 STATUS
@@ -2656,7 +2656,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 opus bpm
 STATUS
@@ -2693,7 +2693,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 opus bpm
 STATUS
@@ -2726,7 +2726,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 opus bpm
 STATUS
@@ -2755,7 +2755,7 @@ DEST
 # West Coast Swing
 
 KEY
-..84
+..28
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2864,7 +2864,7 @@ DEST
 ..%03d-westcoastswing
 
 KEY
-..87
+..29
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2973,7 +2973,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm ss
 STATUS
@@ -3012,7 +3012,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm ss ogg
 STATUS
@@ -3051,7 +3051,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm ss opus
 STATUS
@@ -3090,7 +3090,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm ss flac
 STATUS
@@ -3129,7 +3129,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm ss m4a
 STATUS
@@ -3166,7 +3166,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 utf8 bpm ss
 STATUS
@@ -3205,7 +3205,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 utf8 bpm
 STATUS
@@ -3241,7 +3241,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 utf8 bpm
 STATUS
@@ -3276,7 +3276,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 utf8 bpm
 STATUS
@@ -3311,7 +3311,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 spaces utf8 bpm
 STATUS
@@ -3383,7 +3383,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 utf8 sort bpm
 STATUS
@@ -3455,7 +3455,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 KEYWORD
 ..aaa
 TAGS
@@ -3490,7 +3490,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 KEYWORD
 ..aaa
 TAGS
@@ -3529,7 +3529,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..87
+..29
 KEYWORD
 ..aaa
 TAGS
@@ -3568,7 +3568,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 KEYWORD
 ..bbb
 TAGS
@@ -3607,7 +3607,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 KEYWORD
 ..bbb
 TAGS
@@ -3642,7 +3642,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..87
+..29
 KEYWORD
 ..bbb
 TAGS
@@ -4000,7 +4000,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 ogg bpm
 STATUS
@@ -4035,7 +4035,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 ogg bpm
 STATUS
@@ -4070,7 +4070,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 ogg bpm
 STATUS
@@ -4109,7 +4109,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..87
+..29
 TAGS
 ..tag4 TAG5 spaces bpm
 STATUS
@@ -4150,7 +4150,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4221,7 +4221,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4288,7 +4288,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4359,7 +4359,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4426,7 +4426,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4497,7 +4497,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4564,7 +4564,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4635,7 +4635,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4702,7 +4702,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4773,7 +4773,7 @@ ALBUMARTIST
 ARTIST
 ..%03d-utf8-artist
 BPM
-..87
+..29
 COMPOSER
 ..%03d-composer
 CONDUCTOR
@@ -4949,7 +4949,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 ogx opus bpm
 STATUS
@@ -4984,7 +4984,7 @@ SOURCE
 DURATION
 ..30630
 BPM
-..84
+..28
 TAGS
 ..tag6 tag7 ogx ogg bpm
 STATUS

@@ -30,6 +30,8 @@
 enum {
   DB_A,
   DB_B,
+  DB_C,
+  DB_D,
   DB_MAX,
 };
 
@@ -40,6 +42,8 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   bool        verbose = false;
   const char  *dbfn [DB_MAX];
+  int         dblocidx = 0;
+  dbidx_t     totcount;
   int         c;
   int         option_index;
   dbidx_t     count [DB_MAX];
@@ -129,27 +133,32 @@ main (int argc, char *argv [])
   }
 
   if (argcount < 2) {
-    fprintf (stderr, "Usage: dbcompare <db-a> <db-b> (%d)\n", argcount);
+    fprintf (stderr, "Usage: dbcompare <db-a> {<db-b>...} (%d)\n", argcount);
     return 1;
   }
-  for (int i = 0; i < DB_MAX; ++i) {
+
+  for (int i = 0; i < argcount; ++i) {
     if (dbfn [i] == NULL || ! fileopFileExists (dbfn [i])) {
-      fprintf (stderr, "no file %s\n", dbfn [i]);
+      fprintf (stderr, "tdbcompare: no file %s\n", dbfn [i]);
       return 1;
     }
   }
 
-  for (int i = 0; i < DB_MAX; ++i) {
+  totcount = 0;
+  for (int i = 0; i < argcount; ++i) {
     db [i] = dbOpen (dbfn [i]);
     if (db [i] == NULL) {
-      fprintf (stderr, "unable to open %s\n", dbfn [i]);
+      fprintf (stderr, "tdbcompare: unable to open %s\n", dbfn [i]);
       return 1;
     }
     count [i] = dbCount (db [i]);
+    if (i > DB_A) {
+      totcount += count [i];
+    }
   }
 
-  if (count [DB_A] != count [DB_B]) {
-    fprintf (stderr, "  dbcompare: count mismatch /%d/%d/\n", count [DB_A], count [DB_B]);
+  if (count [DB_A] != totcount) {
+    fprintf (stderr, "  tdbcompare: count mismatch /%d/%d/\n", count [DB_A], totcount);
     grc = 1;
   }
 
@@ -159,6 +168,7 @@ main (int argc, char *argv [])
     slistidx_t  tagiteridx [DB_MAX];
     const char  *tag [DB_MAX];
     const char  *fn;
+    const char  *val;
 
 
     for (int i = 0; i < DB_MAX; ++i) {
@@ -171,44 +181,52 @@ main (int argc, char *argv [])
       fprintf (stderr, "  -- tdbcomp: %s\n", fn);
     }
 
-    song [DB_B] = dbGetByName (db [DB_B], fn);
-    if (song [DB_B] == NULL) {
-      fprintf (stderr, "    song %s not found\n", fn);
+    for (int i = DB_B; i < DB_MAX; ++i) {
+      song [i] = dbGetByName (db [i], fn);
+      if (song [i] != NULL) {
+        dblocidx = i;
+        break;
+      }
+    }
+
+    if (song [dblocidx] == NULL) {
+      fprintf (stderr, "    tdbcomp: song %s not found\n", fn);
       grc = 1;
       continue;
     }
 
-    for (int i = 0; i < DB_MAX; ++i) {
-      taglist [i] = songTagList (song [i]);
-    }
+    taglist [DB_A] = songTagList (song [DB_A]);
+    taglist [dblocidx] = songTagList (song [dblocidx]);
 
-    if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [DB_B])) {
-      fprintf (stderr, "    song tag count mismatch /%d/%d/ %s\n",
-          slistGetCount (taglist [DB_A]), slistGetCount (taglist [DB_B]), fn);
+    if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [dblocidx])) {
+      fprintf (stderr, "    tdbcomp: song tag count mismatch /%d/%d/ %s\n",
+          slistGetCount (taglist [DB_A]), slistGetCount (taglist [dblocidx]), fn);
       grc = 1;
       continue;
     }
 
     /* it's ok for dbadddate to be mismatched, but it must exist in both */
-    for (int i = 0; i < DB_MAX; ++i) {
-      const char  *val;
-
-      val = songGetStr (song [i], TAG_DBADDDATE);
-      if (val == NULL) {
-        fprintf (stderr, "    dbadddate missing in %d %s\n", i, fn);
-        grc = 1;
-      }
+    val = songGetStr (song [DB_A], TAG_DBADDDATE);
+    if (val == NULL) {
+      fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", DB_A, fn);
+      grc = 1;
+    }
+    val = songGetStr (song [dblocidx], TAG_DBADDDATE);
+    if (val == NULL) {
+      fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", dblocidx, fn);
+      grc = 1;
     }
 
     /* it's ok for lastupdated to be mismatched, but it must exist in both */
-    for (int i = 0; i < DB_MAX; ++i) {
-      const char  *val;
-
-      val = songGetStr (song [i], TAG_LAST_UPDATED);
-      if (val == NULL) {
-        fprintf (stderr, "    last-updated missing in %d %s\n", i, fn);
-        grc = 1;
-      }
+    val = songGetStr (song [DB_A], TAG_LAST_UPDATED);
+    if (val == NULL) {
+      fprintf (stderr, "    tdbcomp: last-updated missing in %d %s\n", DB_A, fn);
+      grc = 1;
+    }
+    val = songGetStr (song [dblocidx], TAG_LAST_UPDATED);
+    if (val == NULL) {
+      fprintf (stderr, "    tdbcomp: last-updated missing in %d %s\n", dblocidx, fn);
+      grc = 1;
     }
 
     slistStartIterator (taglist [DB_A], &tagiteridx [DB_A]);
@@ -230,43 +248,57 @@ main (int argc, char *argv [])
       if (strcmp (tag [DB_A], tagdefs [TAG_DB_LOC_LOCK].tag) == 0) {
         continue;
       }
+//      if (strcmp (tag [DB_A], tagdefs [TAG_PFXLEN].tag) == 0) {
+//        continue;
+//      }
 
-      for (int i = 0; i < DB_MAX; ++i) {
-        val [i] = slistGetStr (taglist [i], tag [DB_A]);
-      }
+      val [DB_A] = slistGetStr (taglist [DB_A], tag [DB_A]);
+      val [dblocidx] = slistGetStr (taglist [dblocidx], tag [DB_A]);
 
-      if (val [DB_A] == NULL && val [DB_B] != NULL) {
-        fprintf (stderr, "    null tag %s mismatch /(null)/%s/ %s\n", tag [DB_A], val [DB_B], fn);
+      if (val [DB_A] == NULL && val [dblocidx] != NULL) {
+        fprintf (stderr, "    tdbcomp: null tag %s mismatch /(null)/%s/ %s\n", tag [DB_A], val [dblocidx], fn);
         grc = 1;
       }
-      if (val [DB_A] != NULL && val [DB_B] == NULL) {
-        fprintf (stderr, "    null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
+      if (val [DB_A] != NULL && val [dblocidx] == NULL) {
+        fprintf (stderr, "    tdbcomp: null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
       if (val [DB_A] != NULL && strcmp (val [DB_A], "(null)") == 0) {
-        fprintf (stderr, "    tag %s has '(null)' string (db-a) %s\n", tag [DB_A], fn);
+        fprintf (stderr, "    tdbcomp: tag %s has '(null)' string (db-a) %s\n", tag [DB_A], fn);
         grc = 1;
       }
-      if (val [DB_B] != NULL && strcmp (val [DB_B], "(null)") == 0) {
-        fprintf (stderr, "    tag %s has '(null)' string (db-b) %s\n", tag [DB_A], fn);
+      if (val [dblocidx] != NULL && strcmp (val [dblocidx], "(null)") == 0) {
+        fprintf (stderr, "    tdbcomp: tag %s has '(null)' string (db-b) %s\n", tag [DB_A], fn);
         grc = 1;
       }
 
       if (strcmp (tag [DB_A], tagdefs [TAG_DURATION].tag) == 0) {
-        if (val [DB_A] != NULL && val [DB_B] != NULL) {
+        if (val [DB_A] != NULL && val [dblocidx] != NULL) {
           int32_t     dura, durb;
 
           dura = atol (val [DB_A]);
-          durb = atol (val [DB_B]);
+          durb = atol (val [dblocidx]);
           if (abs (dura - durb) > 100) {
-            fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
+            fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
             grc = 1;
           }
         }
+      } else if (strcmp (tag [DB_A], tagdefs [TAG_DISCNUMBER].tag) == 0) {
+        bool    def;
+        bool    empty;
+
+        def = strcmp (val [DB_A], "1") == 0;
+        empty = strcmp (val [dblocidx], "") == 0;
+        if (val [DB_A] != NULL && val [dblocidx] != NULL &&
+            ! (def && empty) &&
+            strcmp (val [DB_A], val [dblocidx]) != 0) {
+          fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
+          grc = 1;
+        }
       } else {
-        if (val [DB_A] != NULL && val [DB_B] != NULL &&
-            strcmp (val [DB_A], val [DB_B]) != 0) {
-          fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
+        if (val [DB_A] != NULL && val [dblocidx] != NULL &&
+            strcmp (val [DB_A], val [dblocidx]) != 0) {
+          fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
           grc = 1;
         }
       }

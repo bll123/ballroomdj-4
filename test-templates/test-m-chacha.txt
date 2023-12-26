@@ -308,7 +308,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 bpm
 STATUS
@@ -351,7 +351,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 flac bpm
 STATUS
@@ -388,7 +388,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 m4a bpm
 STATUS
@@ -423,7 +423,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 opus bpm
 STATUS
@@ -460,7 +460,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
-..84
+..28
 TAGS
 ..tag1 tag2 tag3 ogg bpm
 STATUS

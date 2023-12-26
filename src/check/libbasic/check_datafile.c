@@ -1019,7 +1019,7 @@ START_TEST(datafile_keyval_savebuffer)
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 12);
 
-  datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list, 0);
+  datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list, 0, DF_NONE);
   fn = "tmp/dftesth.txt";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tbuff);

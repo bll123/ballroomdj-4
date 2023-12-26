@@ -95,7 +95,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "updfromtags",    no_argument,        NULL,   'u' },
     { "updfromitunes",  no_argument,        NULL,   'I' },
     { "writetags",      no_argument,        NULL,   'W' },
-    { "dbtopdir",       required_argument,  NULL,   'D' },
+    { "dbupmusicdir",   required_argument,  NULL,   'D' },
     /* generic options, some used by dbupdate, test suite */
     { "progress",       no_argument,        NULL,   'P' },
     { "cli",            no_argument,        NULL,   'c' },
@@ -167,8 +167,8 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       case 'D': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          logMsg (LOG_DBG, LOG_BASIC, "set dbtopdir %s", targ);
-          bdjvarsSetStr (BDJV_DB_TOP_DIR, targ);
+          logMsg (LOG_DBG, LOG_BASIC, "set dbupmusicdir %s", targ);
+          bdjvarsSetStr (BDJV_UPDB_MUSIC_DIR, targ);
         }
         break;
       }

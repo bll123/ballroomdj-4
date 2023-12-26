@@ -51,7 +51,7 @@ typedef struct managedb {
   manageinfo_t      *minfo;
   procutil_t        **processes;
   conn_t            *conn;
-  uientry_t         *dbtopdir;
+  uientry_t         *dbupmusicdir;
   uibutton_t        *topdirsel;
   callback_t        *callbacks [MDB_CB_MAX];
   uispinbox_t       *dbspinbox;
@@ -95,7 +95,7 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   managedb->dbstart = NULL;
   managedb->dbstop = NULL;
   managedb->dbhelpdisp = NULL;
-  managedb->dbtopdir = uiEntryInit (50, 200);
+  managedb->dbupmusicdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->compact = false;
   managedb->reorganize = false;
@@ -177,7 +177,7 @@ manageDbFree (managedb_t *managedb)
 
     uiwcontFree (managedb->dbpbar);
     uiTextBoxFree (managedb->dbstatus);
-    uiEntryFree (managedb->dbtopdir);
+    uiEntryFree (managedb->dbupmusicdir);
     uiSpinboxFree (managedb->dbspinbox);
     uiButtonFree (managedb->topdirsel);
     uiButtonFree (managedb->dbstart);
@@ -197,7 +197,7 @@ manageDbProcess (managedb_t *managedb)
     return;
   }
 
-  uiEntryValidate (managedb->dbtopdir, false);
+  uiEntryValidate (managedb->dbupmusicdir, false);
 }
 
 void
@@ -266,15 +266,15 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (managedb->dbtopdir);
+  uiEntryCreate (managedb->dbupmusicdir);
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (managedb->dbtopdir, tbuff);
-  uiwidgetp = uiEntryGetWidgetContainer (managedb->dbtopdir);
+  uiEntrySetValue (managedb->dbupmusicdir, tbuff);
+  uiwidgetp = uiEntryGetWidgetContainer (managedb->dbupmusicdir);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (managedb->dbtopdir,
+  uiEntrySetValidate (managedb->dbupmusicdir,
       uiEntryValidateDir, NULL, UIENTRY_DELAYED);
 
   managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (
@@ -496,12 +496,12 @@ manageDbStart (void *udata)
   }
 
   targv [targc++] = "--progress";
-  targv [targc++] = "--dbtopdir";
-  strlcpy (tbuff, uiEntryGetValue (managedb->dbtopdir), sizeof (tbuff));
+  targv [targc++] = "--dbupmusicdir";
+  strlcpy (tbuff, uiEntryGetValue (managedb->dbupmusicdir), sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));
   targv [targc++] = tbuff;
   targv [targc++] = NULL;
-  logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbtopdir));
+  logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbupmusicdir));
 
   uiProgressBarSet (managedb->dbpbar, 0.0);
   managedb->processes [ROUTE_DBUPDATE] = procutilStartProcess (
@@ -533,10 +533,10 @@ manageDbSelectDirCallback (void *udata)
   /* CONTEXT: update database: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
   selectdata = uiDialogCreateSelect (managedb->minfo->window,
-      tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL, NULL);
+      tbuff, uiEntryGetValue (managedb->dbupmusicdir), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (managedb->dbtopdir, fn);
+    uiEntrySetValue (managedb->dbupmusicdir, fn);
     mdfree (fn);
   }
   mdfree (selectdata);

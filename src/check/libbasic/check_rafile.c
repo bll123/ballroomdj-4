@@ -351,7 +351,7 @@ START_TEST(rafile_bad_write_len)
   memset (data, 0, sizeof (data));
   memset (data, 'a', sizeof (data)-4);
   rc = raWrite (rafile, 0, data, -1);
-  ck_assert_int_ne (rc, 0);
+  ck_assert_int_eq (rc, 0);
   raClose (rafile);
 }
 END_TEST

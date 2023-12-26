@@ -58,6 +58,7 @@ typedef struct playlist {
 } playlist_t;
 
 enum {
+  PL_BPM_VERSION = 1,
   PL_DANCE_VERSION = 2,
 };
 
@@ -131,6 +132,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   ilistidx_t    didx;
   ilistidx_t    iteridx;
   nlist_t       *tlist;
+  bool          fixbpm;
 
   if (fname == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: null");
@@ -168,6 +170,10 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
     return NULL;
   }
   tpldances = datafileGetList (pl->pldancesdf);
+  fixbpm = false;
+  if (ilistGetVersion (tpldances) == PL_BPM_VERSION) {
+    fixbpm = true;
+  }
 
   /* pldances must be rebuilt to use the dance key as the index   */
   /* the playlist datafiles have a generic key value */
@@ -188,6 +194,23 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
         }
         ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
             ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
+      }
+
+      if (fixbpm) {
+        int   tval;
+
+        tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_HIGH);
+        if (tval > 0) {
+fprintf (stderr, "=== pl high bpm\n");
+          tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
+          ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, tval);
+        }
+        tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_LOW);
+        if (tval > 0) {
+fprintf (stderr, "=== pl low bpm\n");
+          tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
+          ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, tval);
+        }
       }
     }
   }

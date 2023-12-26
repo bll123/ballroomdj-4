@@ -58,7 +58,7 @@ static void     datafileSaveKeyVal (datafile_t *df, const char *fn, nlist_t *lis
 static void     datafileSaveIndirect (datafile_t *df, const char *fn, nlist_t *list, int distvers);
 static void     datafileSaveList (datafile_t *df, const char *fn, nlist_t *list, int distvers);
 static FILE *   datafileSavePrep (const char *fn, const char *tag, int distvers);
-static void     datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
+static size_t   datafileSaveItem (char *buff, size_t sz, size_t currsz, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv, int flags);
 static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv, int offset);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileDumpItem (const char *tag, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
@@ -314,18 +314,21 @@ datafileSaveKeyValList (const char *tag,
 }
 
 /* save the key-value data to a buffer */
-void
+size_t
 datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
-    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset)
+    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset, int flags)
 {
   datafileconv_t  conv;
+  size_t          currsz = 0;
 
   *buff = '\0';
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     datafileLoadConv (&dfkeys [i], list, &conv, offset);
-    datafileSaveItem (buff, sz, dfkeys [i].name, dfkeys [i].convFunc, &conv);
+    currsz = datafileSaveItem (buff, sz, currsz, dfkeys [i].name, dfkeys [i].convFunc, &conv, flags);
   }
+
+  return currsz;
 }
 
 void
@@ -823,7 +826,7 @@ datafileSaveKeyVal (datafile_t *df, const char *fn,
 
   fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, nlistGetVersion (list));
   datafileSaveKeyValBuffer (buff, sizeof (buff), df->tag,
-      df->dfkeys, df->dfkeycount, list, offset);
+      df->dfkeys, df->dfkeycount, list, offset, DF_NONE);
   fprintf (fh, "%s", buff);
   mdextfclose (fh);
   fclose (fh);
@@ -840,6 +843,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   ilistidx_t      iteridx;
   ilistidx_t      key;
   char            buff [DATAFILE_MAX_SIZE];
+  size_t          currsz = 0;
 
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
@@ -858,7 +862,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
     conv.invt = VALUE_NUM;
     /* on save, re-order the keys */
     conv.num = count++;
-    datafileSaveItem (buff, sizeof (buff), "KEY", NULL, &conv);
+    currsz = datafileSaveItem (buff, sizeof (buff), currsz, "KEY", NULL, &conv, DF_NONE);
 
     for (ssize_t i = 0; i < df->dfkeycount; ++i) {
       if (df->dfkeys [i].writeFlag == DF_NO_WRITE) {
@@ -883,11 +887,11 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
         conv.dval = ilistGetDouble (list, key, df->dfkeys [i].itemkey);
       }
 
-      datafileSaveItem (buff, sizeof (buff), df->dfkeys [i].name,
-          df->dfkeys [i].convFunc, &conv);
+      currsz = datafileSaveItem (buff, sizeof (buff), currsz,
+          df->dfkeys [i].name, df->dfkeys [i].convFunc, &conv, DF_NONE);
     }
   }
-  fprintf (fh, "%s", buff);
+  fwrite (buff, currsz, 1, fh);
   mdextfclose (fh);
   fclose (fh);
 }
@@ -946,18 +950,24 @@ datafileSavePrep (const char *fn, const char *tag, int distvers)
   return fh;
 }
 
-static void
-datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc,
-    datafileconv_t *conv)
+static size_t
+datafileSaveItem (char *buff, size_t sz, size_t currsz, const char *name,
+    dfConvFunc_t convFunc, datafileconv_t *conv, int flags)
 {
-  char            tbuff [1024];
+  char            valbuff [2048];
 
-  snprintf (tbuff, sizeof (tbuff), "%s\n", name);
-  strlcat (buff, tbuff, sz);
-  datafileConvertValue (tbuff, sizeof (tbuff), convFunc, conv);
-  strlcat (buff, "..", sz);
-  strlcat (buff, tbuff, sz);
-  strlcat (buff, "\n", sz);
+  datafileConvertValue (valbuff, sizeof (valbuff), convFunc, conv);
+  if ((flags & DF_SKIP_EMPTY) == DF_SKIP_EMPTY) {
+    if (! *valbuff) {
+      return currsz;
+    }
+  }
+  currsz = stringAppend (buff, sz, currsz, name);
+  currsz = stringAppend (buff, sz, currsz, "\n");
+  currsz = stringAppend (buff, sz, currsz, "..");
+  currsz = stringAppend (buff, sz, currsz, valbuff);
+  currsz = stringAppend (buff, sz, currsz, "\n");
+  return currsz;
 }
 
 static void

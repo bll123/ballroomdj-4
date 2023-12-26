@@ -1,13 +1,48 @@
-# test-m-nochacha.txt
-# 2022-11-4
+# test-m-alt.txt
+# 2023-12-25
 # version 1
-#
-# without the cha cha
 #
 version
 ..1
 count
-..15
+..13
+
+# Cha Cha
+
+KEY
+..0
+SOURCE
+..chacha.mp3
+DURATION
+..30620
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+TAGS
+..tag1 tag2 tag3
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-alt-albartist
+ARTIST
+..%03d-alt-artist
+ALBUM
+..%03d-alt-album
+TRACKNUMBER
+..%d
+DANCE
+..Cha Cha
+DANCERATING
+..Great
+FAVORITE
+..purplestar
+TITLE
+..%03d-alt-chacha
+DEST
+..%03d-alt-chacha
 
 # Foxtrot
 
@@ -28,11 +63,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -40,9 +75,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-foxtrot
+..%03d-alt-foxtrot
 DEST
-..%03d-foxtrot
+..%03d-alt-foxtrot
 
 # Jive
 
@@ -63,11 +98,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -75,9 +110,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-jive
+..%03d-alt-jive
 DEST
-..%03d-jive
+..%03d-alt-jive
 
 # Quickstep
 
@@ -98,11 +133,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -112,9 +147,9 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-quickstep
+..%03d-alt-quickstep
 DEST
-..%03d-quickstep
+..%03d-alt-quickstep
 
 # Rumba
 
@@ -135,11 +170,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -149,9 +184,9 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-rumba
+..%03d-alt-rumba
 DEST
-..%03d-rumba
+..%03d-alt-rumba
 
 # Salsa
 
@@ -172,11 +207,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -186,9 +221,9 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-salsa
+..%03d-alt-salsa
 DEST
-..%03d-salsa
+..%03d-alt-salsa
 
 # Samba
 
@@ -209,11 +244,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -221,9 +256,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-samba
+..%03d-alt-samba
 DEST
-..%03d-samba
+..%03d-alt-samba
 
 # Tango
 
@@ -244,11 +279,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -256,9 +291,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-tango
+..%03d-alt-tango
 DEST
-..%03d-tango
+..%03d-alt-tango
 
 # Waltz
 
@@ -281,11 +316,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 TRACKTOTAL
@@ -301,9 +336,9 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-waltz
+..%03d-alt-waltz
 DEST
-..%03d-waltz
+..%03d-alt-waltz
 
 KEY
 ..9
@@ -324,11 +359,11 @@ DANCELEVEL
 GENRE
 ..Jazz
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -338,9 +373,9 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-waltz-flac
+..%03d-alt-waltz-flac
 DEST
-..%03d-waltz-flac
+..%03d-alt-waltz-flac
 
 KEY
 ..10
@@ -361,11 +396,11 @@ DANCELEVEL
 GENRE
 ..Rock
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -373,9 +408,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-waltz
+..%03d-alt-waltz
 DEST
-..%03d-waltz
+..%03d-alt-waltz
 
 KEY
 ..11
@@ -396,11 +431,11 @@ DANCELEVEL
 GENRE
 ..Rock
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -410,9 +445,9 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-waltz-opus
+..%03d-alt-waltz-opus
 DEST
-..%03d-waltz-opus
+..%03d-alt-waltz-opus
 
 KEY
 ..12
@@ -433,11 +468,11 @@ DANCELEVEL
 GENRE
 ..Rock
 ALBUMARTIST
-..%03d-albartist
+..%03d-alt-albartist
 ARTIST
-..%03d-artist
+..%03d-alt-artist
 ALBUM
-..%03d-album
+..%03d-alt-album
 TRACKNUMBER
 ..%d
 DANCE
@@ -445,120 +480,6 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-waltz-ogg
+..%03d-alt-waltz-ogg
 DEST
-..%03d-waltz-ogg
-
-# announcements
-
-KEY
-..13
-SOURCE
-..ann-waltz.flac
-DURATION
-..1984
-NOTES
-..
-BPM
-..
-TAGS
-..announcement
-STATUS
-..Complete
-DANCELEVEL
-..Normal
-GENRE
-..
-ALBUMARTIST
-..
-ARTIST
-..
-ALBUM
-..
-TRACKNUMBER
-..%d
-DANCE
-..
-DANCERATING
-..Great
-TITLE
-..waltz
-DEST
-..Announce/waltz
-DB_LOC_LOCK
-..yes
-
-KEY
-..14
-SOURCE
-..ann-tango.flac
-DURATION
-..2048
-NOTES
-..
-BPM
-..
-TAGS
-..announcement
-STATUS
-..Complete
-DANCELEVEL
-..Normal
-GENRE
-..
-ALBUMARTIST
-..
-ARTIST
-..
-ALBUM
-..
-TRACKNUMBER
-..%d
-DANCE
-..
-DANCERATING
-..Great
-TITLE
-..tango
-DEST
-..Announce/tango
-DB_LOC_LOCK
-..yes
-
-KEY
-..15
-SOURCE
-..ann-samba.flac
-DURATION
-..1952
-NOTES
-..
-BPM
-..
-TAGS
-..announcement
-STATUS
-..Complete
-DANCELEVEL
-..Normal
-GENRE
-..
-ALBUMARTIST
-..
-ARTIST
-..
-ALBUM
-..
-TRACKNUMBER
-..%d
-DANCE
-..
-DANCERATING
-..Great
-TITLE
-..samba
-DEST
-..Announce/samba
-DB_LOC_LOCK
-..yes
-
+..%03d-alt-waltz-ogg

@@ -133,14 +133,14 @@ main (int argc, char *argv [])
     return 1;
   }
   if (dbfn == NULL || ! fileopFileExists (dbfn)) {
-    fprintf (stderr, "no db file %s\n", dbfn);
+    fprintf (stderr, "ttagdbchk: no db file %s\n", dbfn);
     bdj4argCleanup (bdj4arg);
     return 1;
   }
 
   db = dbOpen (dbfn);
   if (db == NULL) {
-    fprintf (stderr, "unable to open %s\n", dbfn);
+    fprintf (stderr, "ttagdbchk: unable to open %s\n", dbfn);
     bdj4argCleanup (bdj4arg);
     return 1;
   }
@@ -192,7 +192,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
   songnm = fn + strlen (TEST_MUSIC_DIR) + 1;
   song = dbGetByName (db, songnm);
   if (song == NULL) {
-    fprintf (stderr, "  song %s not found\n", songnm);
+    fprintf (stderr, "  ttag: song %s not found\n", songnm);
     return 1;
   }
 
@@ -206,16 +206,16 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
     taglist = songTagList (song);
 
     if (verbose) {
-      fprintf (stderr, "  audio tagdata: %d\n", slistGetCount (tagdata));
+      fprintf (stderr, "  ttag: audio tagdata: %d\n", slistGetCount (tagdata));
     }
     if (verbose) {
-      fprintf (stderr, "  song tags: %d\n", slistGetCount (taglist));
+      fprintf (stderr, "  ttag: song tags: %d\n", slistGetCount (taglist));
     }
 
     slistStartIterator (tagdata, &tagiteridx);
     while ((tag = slistIterateKey (tagdata, &tagiteridx)) != NULL) {
       if (verbose) {
-        fprintf (stderr, "  audio tag: %s\n", tag);
+        fprintf (stderr, "  ttag: audio tag: %s\n", tag);
       }
       slistSetNum (processed, tag, 0);
     }
@@ -240,18 +240,18 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
       tagval = slistGetStr (tagdata, tag);
       val = slistGetStr (taglist, tag);
       if (verbose && tagval != NULL) {
-        fprintf (stderr, "  db tag: %s %s/%s\n", tag, val, tagval);
+        fprintf (stderr, "  ttag: db tag: %s %s/%s\n", tag, val, tagval);
       }
       if (val == NULL && tagval != NULL && *tagval) {
-        fprintf (stderr, "  missing from db: %s %s\n", tag, tagval);
+        fprintf (stderr, "  ttag: missing from db: %s %s\n", tag, tagval);
         rc = 1;
       } else if (ignoremissing == false &&
           val != NULL && *val && tagval == NULL) {
-        fprintf (stderr, "  missing audio tag: %s %s\n", tag, val);
+        fprintf (stderr, "  ttag: missing audio tag: %s %s\n", tag, val);
         rc = 1;
       } else if (val != NULL && tagval != NULL &&
           strcmp (val, tagval) != 0) {
-        fprintf (stderr, "  mismatch: %s %s %s\n", tag, val, tagval);
+        fprintf (stderr, "  ttag: mismatch: %s %s %s\n", tag, val, tagval);
         rc = 1;
       }
     }
@@ -259,7 +259,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
     slistStartIterator (tagdata, &tagiteridx);
     while ((tag = slistIterateKey (tagdata, &tagiteridx)) != NULL) {
       if (slistGetNum (processed, tag) == 0) {
-        fprintf (stderr, "  missing from db: %s\n", tag);
+        fprintf (stderr, "  ttag: missing from db: %s\n", tag);
         rc = 1;
       }
     }

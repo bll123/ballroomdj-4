@@ -82,8 +82,8 @@ START_TEST(bdjvars_set)
   bdjvarsInit ();
   bdjvarsSetNum (BDJVL_BPM_COUNTER_PORT, 12);
   ck_assert_int_eq (bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT), 12);
-  bdjvarsSetStr (BDJV_DB_TOP_DIR, "test");
-  ck_assert_str_eq (bdjvarsGetStr (BDJV_DB_TOP_DIR), "test");
+  bdjvarsSetStr (BDJV_UPDB_MUSIC_DIR, "test");
+  ck_assert_str_eq (bdjvarsGetStr (BDJV_UPDB_MUSIC_DIR), "test");
   bdjvarsCleanup ();
 }
 END_TEST

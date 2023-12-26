@@ -22,6 +22,7 @@ infile=$TESTMUSIC
 rmflag=F
 outfile=""
 keepmusic=F
+MUSICDIR=test-music
 while test $# -gt 0; do
   case $1 in
     --debug)
@@ -57,6 +58,8 @@ while test $# -gt 0; do
       args+=" "
       rmflag=T
       ;;
+    --keepdb)
+      ;;
     --keepmusic)
       args+=$1
       args+=" "
@@ -76,6 +79,17 @@ while test $# -gt 0; do
     --plimpv)
       # ignored
       ;;
+    --nodbcopy)
+      # ignored
+      ;;
+    --dbupmusicdir)
+      args+=$1
+      args+=" "
+      shift
+      args+="'$1'"
+      args+=" "
+      MUSICDIR=$1
+      ;;
     *)
       echo "unknown argument $1" >&2
       exit 1
@@ -93,8 +107,8 @@ if [[ ! -f $FLAG ||
     echo "invalid current dir $(pwd)" >&2
     exit 1
   fi
-  if [[ $keepmusic == F && -d test-music ]]; then
-    rm -rf test-music/*
+  if [[ $keepmusic == F && $MUSICDIR != "" && -d $MUSICDIR ]]; then
+    rm -rf $MUSICDIR/*
   fi
   # need to use eval to get the arguments quoted properly
   eval ./bin/bdj4 --tmusicsetup $args
