@@ -59,7 +59,9 @@ vsencdec (const char *str, char *buff, size_t sz)
     mdextalloc (data);
     p = data;
     len -= VSEC_SALT_SIZE;
-    memcpy (salt, data + len, VSEC_SALT_SIZE);
+    for (int i = 0; i < VSEC_SALT_SIZE; ++i) {
+      salt [i] = data [len + i];
+    }
     buff [count++] = VSEC_DECRYPT;
   }
 

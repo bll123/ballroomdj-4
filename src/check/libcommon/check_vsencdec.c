@@ -39,8 +39,8 @@ enum {
 
 START_TEST(vsencdec_encdec)
 {
-  char  dbuff [50];
-  char  ebuff [50];
+  char  dbuff [200];
+  char  ebuff [200];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- vsencdec_encdec");
   mdebugSubTag ("vsencdec_encdec");

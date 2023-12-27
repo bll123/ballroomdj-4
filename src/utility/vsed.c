@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "osrandom.h"
 #include "vsencdec.h"
 
 int
@@ -16,6 +17,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
+  sRandom ();
   vsencdec (argv [1], buff, sizeof (buff));
   fprintf (stderr, "%s\n", buff);
   return 0;

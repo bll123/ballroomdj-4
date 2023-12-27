@@ -9,6 +9,7 @@
 #include "aesencdec.h"
 #include "bdjopt.h"
 #include "log.h"
+#include "osrandom.h"
 #include "sysvars.h"
 
 int
@@ -40,6 +41,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
+  sRandom ();
   sysvarsInit (argv [0]);
   logStartAppend ("aesed", "taes", LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
   bdjoptInit ();
