@@ -1189,18 +1189,15 @@ manageMainLoop (void *tmanage)
         dbidx_t     rrn;
         dbidx_t     dbidx;
         char        tmp [40];
+        slist_t     *tagdata;
+        int         rewrite;
 
         rrn = songGetNum (song, TAG_RRN);
         dbidx = songGetNum (song, TAG_DBIDX);
-        data = audiotagReadTags (outfn);
-        if (data != NULL) {
-          slist_t     *tagdata;
-          int         rewrite;
 
-          tagdata = audiotagParseData (outfn, data, &rewrite);
-          if (slistGetCount (tagdata) > 0) {
-            dbWrite (manage->musicdb, tfn, tagdata, rrn);
-          }
+        tagdata = audiotagParseData (outfn, &rewrite);
+        if (slistGetCount (tagdata) > 0) {
+          dbWrite (manage->musicdb, tfn, tagdata, rrn);
 
           dbLoadEntry (manage->musicdb, dbidx);
           manageRePopulateData (manage);
@@ -1211,8 +1208,6 @@ manageMainLoop (void *tmanage)
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
         }
       }
-      // send the db entry update message
-      //   (see apply adj processing below)
     }
     if (state != BDJ4_STATE_WAIT) {
       manage->ctstate = BDJ4_STATE_OFF;

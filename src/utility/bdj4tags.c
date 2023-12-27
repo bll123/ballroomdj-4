@@ -184,8 +184,7 @@ main (int argc, char *argv [])
     return rc;
   }
 
-  data = audiotagReadTags (infn);
-  tagdata = audiotagParseData (infn, data, &rewrite);
+  tagdata = audiotagParseData (infn, &rewrite);
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
   wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, NULL);

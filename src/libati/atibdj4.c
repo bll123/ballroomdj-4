@@ -86,15 +86,9 @@ atiiSupportedTypes (int supported [])
   supported [AFILE_TYPE_RIFF] = ATI_READ;
 }
 
-char *
-atiiReadTags (atidata_t *atidata, const char *ffn)
-{
-  return NULL;
-}
-
 void
 atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
-    char *data, int filetype, int tagtype, int *rewrite)
+    int filetype, int tagtype, int *rewrite)
 {
   AVFormatContext   *ictx = NULL;
   char              pbuff [100];

@@ -263,7 +263,6 @@ songdbWriteAudioTags (song_t *song)
 {
   const char  *fn;
   char        ffn [MAXPATHLEN];
-  void        *data;
   slist_t     *tagdata;
   slist_t     *newtaglist;
   int         rewrite;
@@ -275,9 +274,7 @@ songdbWriteAudioTags (song_t *song)
   }
 
   audiosrcFullPath (fn, ffn, sizeof (ffn));
-  data = audiotagReadTags (ffn);
-  tagdata = audiotagParseData (ffn, data, &rewrite);
-  mdfree (data);
+  tagdata = audiotagParseData (ffn, &rewrite);
   newtaglist = songTagList (song);
   audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
   slistFree (tagdata);

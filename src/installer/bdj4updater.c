@@ -674,7 +674,6 @@ main (int argc, char *argv [])
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       char        ffn [MAXPATHLEN];
-      void        *data;
       const char  *tkey;
       int         rewrite;
       bool        process = false;
@@ -703,8 +702,7 @@ main (int argc, char *argv [])
         continue;
       }
 
-      data = audiotagReadTags (ffn);
-      taglist = audiotagParseData (ffn, data, &rewrite);
+      taglist = audiotagParseData (ffn, &rewrite);
 
       newtaglist = slistAlloc ("new-taglist", LIST_UNORDERED, NULL);
       slistSetSize (newtaglist, slistGetCount (taglist));
@@ -720,7 +718,6 @@ main (int argc, char *argv [])
         audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
-      dataFree (data);
       slistFree (taglist);
       slistFree (newtaglist);
     }

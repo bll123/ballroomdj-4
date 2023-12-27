@@ -27,8 +27,7 @@ typedef struct ati {
   dlhandle_t        *dlHandle;
   atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
-  char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
-  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
+  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atisaved_t        *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   void              (*atiiFreeSavedTags) (atisaved_t *atisaved, int tagtype, int filetype);
@@ -66,7 +65,6 @@ atiInit (const char *atipkg, int writetags,
   ati = mdmalloc (sizeof (ati_t));
   ati->atiiInit = NULL;
   ati->atiiFree = NULL;
-  ati->atiiReadTags = NULL;
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
   ati->atiiSaveTags = NULL;
@@ -87,7 +85,6 @@ atiInit (const char *atipkg, int writetags,
 #pragma clang diagnostic ignored "-Wpedantic"
   ati->atiiInit = dylibLookup (ati->dlHandle, "atiiInit");
   ati->atiiFree = dylibLookup (ati->dlHandle, "atiiFree");
-  ati->atiiReadTags = dylibLookup (ati->dlHandle, "atiiReadTags");
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
   ati->atiiSaveTags = dylibLookup (ati->dlHandle, "atiiSaveTags");
@@ -117,21 +114,12 @@ atiFree (ati_t *ati)
   }
 }
 
-char *
-atiReadTags (ati_t *ati, const char *ffn)
-{
-  if (ati != NULL && ati->atiiReadTags != NULL) {
-    return ati->atiiReadTags (ati->atidata, ffn);
-  }
-  return NULL;
-}
-
 void
 atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn,
-    char *data, int filetype, int tagtype, int *rewrite)
+    int filetype, int tagtype, int *rewrite)
 {
   if (ati != NULL && ati->atiiParseTags != NULL) {
-    ati->atiiParseTags (ati->atidata, tagdata, ffn, data, filetype, tagtype, rewrite);
+    ati->atiiParseTags (ati->atidata, tagdata, ffn, filetype, tagtype, rewrite);
   }
 
   return;

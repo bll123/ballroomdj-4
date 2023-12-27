@@ -149,16 +149,13 @@ main (int argc, char *argv [])
   flist = dirlistRecursiveDirList (TEST_MUSIC_DIR, DIRLIST_FILES);
   slistStartIterator (flist, &iteridx);
   while ((fn = slistIterateKey (flist, &iteridx)) != NULL) {
-    void    *atdata;
     slist_t *tagdata;
     int     rewrite;
 
-    atdata = audiotagReadTags (fn);
-    tagdata = audiotagParseData (fn, atdata, &rewrite);
+    tagdata = audiotagParseData (fn, &rewrite);
     if (dbCompare (db, fn, tagdata)) {
       grc = 1;
     }
-    dataFree (atdata);
     slistFree (tagdata);
   }
 

@@ -430,7 +430,6 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
   if (*ffn) {
     if (fileopFileExists (ffn)) {
       const char      *tfn;
-      void            *data;
       slist_t         *tagdata;
       int             rewrite;
       song_t          *dbsong;
@@ -444,13 +443,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
           return;
         }
       } else {
-        data = audiotagReadTags (ffn);
-        if (data == NULL) {
-          return;
-        }
-
-        tagdata = audiotagParseData (ffn, data, &rewrite);
-        mdfree (data);
+        tagdata = audiotagParseData (ffn, &rewrite);
         if (slistGetCount (tagdata) == 0) {
           slistFree (tagdata);
           return;

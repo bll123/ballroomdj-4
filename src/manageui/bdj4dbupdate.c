@@ -109,7 +109,8 @@ enum {
 
 typedef struct {
   char        *ffn;
-  char        *data;
+  char        *songfn;
+  char        *relfn;
 } tagdataitem_t;
 
 typedef struct {
@@ -130,6 +131,7 @@ typedef struct {
   org_t             *org;
   org_t             *orgold;
   asiter_t          *asiter;
+  slistidx_t        dbiter;
   bdjregex_t        *badfnregex;
   dbidx_t           counts [C_MAX];
   size_t            maxWriteLen;
@@ -153,6 +155,8 @@ typedef struct {
   bool              cli : 1;
   bool              dancefromgenre : 1;
   bool              haveolddirlist : 1;
+  bool              iterfromaudiosrc : 1;
+  bool              iterfromdb : 1;
   bool              progress : 1;
   bool              stoprequest : 1;
   bool              usingmusicdir : 1;
@@ -172,20 +176,20 @@ static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
-static void     dbupdateQueueFile (dbupdate_t *dbupdate, const char *args);
+static void     dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn, const char *tsongfn, const char *relfn);
 static void     dbupdateTagDataFree (void *data);
 static void     dbupdateProcessFileQueue (dbupdate_t *dbupdate);
-static void     dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data);
-static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
-static void     dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
-static void     dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata, int songdbdefault);
+static void     dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi);
+static void     dbupdateWriteTags (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata);
+static void     dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata);
+static void     dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata, int songdbdefault);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
-static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
 static void     dbupdateIncCount (dbupdate_t *dbupdate, int tag);
 static void     dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song, int *songdbflags, dbidx_t rrn);
 static musicdb_t * dbupdateSetCurrentDB (dbupdate_t *dbupdate);
+static const char * dbupdateIterate (dbupdate_t *dbupdate);
 
 static int  gKillReceived = 0;
 
@@ -205,6 +209,7 @@ main (int argc, char *argv[])
   dbupdate.musicdb = NULL;
   dbupdate.newmusicdb = NULL;
   dbupdate.asiter = NULL;
+  dbupdate.dbiter = -1;
   for (int i = 0; i < C_MAX; ++i) {
     dbupdate.counts [i] = 0;
   }
@@ -226,6 +231,8 @@ main (int argc, char *argv[])
   dbupdate.cli = false;
   dbupdate.dancefromgenre = false;
   dbupdate.haveolddirlist = false;
+  dbupdate.iterfromaudiosrc = false;
+  dbupdate.iterfromdb = false;
   dbupdate.olddirlist = NULL;
   dbupdate.progress = false;
   dbupdate.stoprequest = false;
@@ -280,31 +287,38 @@ main (int argc, char *argv[])
 
   if ((dbupdate.startflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
+    dbupdate.iterfromaudiosrc = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== check-new");
   }
   if ((dbupdate.startflags & BDJ4_DB_COMPACT) == BDJ4_DB_COMPACT) {
     dbupdate.compact = true;
+    dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== compact");
   }
   if ((dbupdate.startflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
+    dbupdate.iterfromaudiosrc = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== rebuild");
   }
   if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
     dbupdate.updfromtags = true;
+    dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-tags");
   }
   if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_ITUNES) == BDJ4_DB_UPD_FROM_ITUNES) {
     dbupdate.updfromitunes = true;
     dbupdate.itunes = itunesAlloc ();
+    dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-itunes");
   }
   if ((dbupdate.startflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
     dbupdate.writetags = true;
+    dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== write-tags");
   }
   if ((dbupdate.startflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
     dbupdate.reorganize = true;
+    dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== reorganize");
   }
   if ((dbupdate.startflags & BDJ4_PROGRESS) == BDJ4_PROGRESS) {
@@ -463,16 +477,27 @@ dbupdateProcessing (void *udata)
       dbupdate->processmusicdir = tstr;
       dbupdate->prefixlen = strlen (tstr) + 1;  // include the slash
     }
-    dbupdate->processmusicdirlen = strlen (dbupdate->processmusicdir);
+    dbupdate->processmusicdirlen = strlen (dbupdate->processmusicdir) + 1;
 
     logMsg (LOG_DBG, LOG_BASIC, "processmusicdir %s", dbupdate->processmusicdir);
-    dbupdate->asiter = audiosrcStartIterator (dbupdate->processmusicdir);
 
-    dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
-    mstimeend (&dbupdate->starttm);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
-        dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+
+    if (dbupdate->iterfromaudiosrc) {
+      dbupdate->asiter = audiosrcStartIterator (dbupdate->processmusicdir);
+
+      dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
+          dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+    }
+
+    if (dbupdate->iterfromdb) {
+      dbStartIterator (dbupdate->musicdb, &dbupdate->dbiter);
+      dbupdate->counts [C_FILE_COUNT] = dbCount (dbupdate->musicdb);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "prep: %" PRId64 " ms",
+          (int64_t) mstimeend (&dbupdate->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+    }
 
     /* message to manageui */
     /* CONTEXT: database update: status message */
@@ -489,8 +514,11 @@ dbupdateProcessing (void *udata)
     const char  *fn;
     pathinfo_t  *pi;
 
-    while ((fn = audiosrcIterate (dbupdate->asiter)) != NULL) {
-      song_t    *song;
+    while ((fn = dbupdateIterate (dbupdate)) != NULL) {
+      song_t      *song;
+      char        ffn [MAXPATHLEN];
+      const char  *tsongfn;     // the db entry filename
+      const char  *relfn;       // the relative path name
 
       if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
@@ -499,43 +527,64 @@ dbupdateProcessing (void *udata)
         continue;
       }
 
-      pi = pathInfo (fn);
-      /* fast skip of some known file extensions that might show up */
-      if (pathInfoExtCheck (pi, ".jpg") ||
-          pathInfoExtCheck (pi, ".png") ||
-          pathInfoExtCheck (pi, ".bak") ||
-          pathInfoExtCheck (pi, ".txt") ||
-          pathInfoExtCheck (pi, ".svg")) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_NON_AUDIO);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-not-audio");
-        pathInfoFree (pi);
-        continue;
+      /* if the filename is from the audio-source iterator, */
+      /*    it is a full path */
+      /* if the filename is from the db iterator, */
+      /*    it could be a full path or a relative path */
+      tsongfn = fn;
+      strlcpy (ffn, fn, sizeof (ffn));
+      if (dbupdate->iterfromaudiosrc) {
+        tsongfn = audiosrcRelativePath (fn);
       }
-      if (pathInfoExtCheck (pi, BDJ4_GENERIC_ORIG_EXT) ||
-          pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_ORIG_SKIP);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig");
-        pathInfoFree (pi);
-        continue;
+      if (dbupdate->iterfromdb) {
+        audiosrcFullPath (fn, ffn, sizeof (ffn));
       }
-      if (strncmp (pi->filename, bdjvarsGetStr (BDJV_DELETE_PFX),
-          bdjvarsGetNum (BDJVL_DELETE_PFX_LEN)) == 0) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_DEL_SKIP);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-del");
-        pathInfoFree (pi);
-        continue;
-      }
-      pathInfoFree (pi);
+      song = dbGetByName (dbupdate->musicdb, tsongfn);
+      relfn = ffn + dbupdate->prefixlen;
+      // fprintf (stderr, "     fn: %s\n", fn);
+      // fprintf (stderr, "    ffn: %s\n", ffn);
+      // fprintf (stderr, "tsongfn: %s\n", tsongfn);
+      // fprintf (stderr, "relfn-a: %s\n", relfn);
 
-      if (dbupdate->haveolddirlist &&
-          checkOldDirList (dbupdate, fn)) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_BDJ_OLD_DIR);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-old-dir");
-        continue;
+      if (dbupdate->iterfromaudiosrc) {
+        pi = pathInfo (fn);
+        /* fast skip of some known file extensions that might show up */
+        if (pathInfoExtCheck (pi, ".jpg") ||
+            pathInfoExtCheck (pi, ".png") ||
+            pathInfoExtCheck (pi, ".bak") ||
+            pathInfoExtCheck (pi, ".txt") ||
+            pathInfoExtCheck (pi, ".svg")) {
+          dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+          dbupdateIncCount (dbupdate, C_NON_AUDIO);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-not-audio");
+          pathInfoFree (pi);
+          continue;
+        }
+        if (pathInfoExtCheck (pi, BDJ4_GENERIC_ORIG_EXT) ||
+            pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
+          dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+          dbupdateIncCount (dbupdate, C_ORIG_SKIP);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig");
+          pathInfoFree (pi);
+          continue;
+        }
+        if (strncmp (pi->filename, bdjvarsGetStr (BDJV_DELETE_PFX),
+            bdjvarsGetNum (BDJVL_DELETE_PFX_LEN)) == 0) {
+          dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+          dbupdateIncCount (dbupdate, C_DEL_SKIP);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-del");
+          pathInfoFree (pi);
+          continue;
+        }
+        pathInfoFree (pi);
+
+        if (dbupdate->haveolddirlist &&
+            checkOldDirList (dbupdate, fn)) {
+          dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+          dbupdateIncCount (dbupdate, C_BDJ_OLD_DIR);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-old-dir");
+          continue;
+        }
       }
 
       /* check to see if the audio file is already in the database */
@@ -543,14 +592,13 @@ dbupdateProcessing (void *udata)
       /* 'checknew' skips any processing for an audio file */
       /* that is already present unless the compact flag is on */
       if (! dbupdate->rebuild && fn != NULL) {
-        const char  *tsongfn;
+        int         pfxlen;
 
-        tsongfn = fn;
-        if (dbupdate->usingmusicdir) {
-          tsongfn = dbupdateGetRelativePath (dbupdate, fn);
-        }
-        song = dbGetByName (dbupdate->musicdb, tsongfn);
         if (song != NULL) {
+          pfxlen = songGetNum (song, TAG_PREFIX_LEN);
+          relfn = fn + pfxlen;
+          // fprintf (stderr, "relfn-b: %s\n", relfn);
+
           dbupdateIncCount (dbupdate, C_IN_DB);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
 
@@ -591,7 +639,7 @@ dbupdateProcessing (void *udata)
         continue;
       }
 
-      dbupdateQueueFile (dbupdate, fn);
+      dbupdateQueueFile (dbupdate, ffn, tsongfn, relfn);
 
       dbupdateIncCount (dbupdate, C_FILE_QUEUED);
       if (queueGetCount (dbupdate->tagdataq) >= QUEUE_PROCESS_LIMIT) {
@@ -870,14 +918,11 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 }
 
 static void
-dbupdateQueueFile (dbupdate_t *dbupdate, const char *args)
+dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn,
+    const char *songfn, const char *relfn)
 {
-  char          *ffn;
-  char          *data;
   tagdataitem_t *tdi;
-  char          *tokstr;
   dbidx_t       count;
-  char          *targs;
 
   if (dbupdate->stoprequest) {
     /* crashes below (strdup (ffn)) if the requests are processed after */
@@ -886,23 +931,16 @@ dbupdateQueueFile (dbupdate_t *dbupdate, const char *args)
     return;
   }
 
-  targs = mdstrdup (args);
-  ffn = strtok_r (targs, MSG_ARGS_RS_STR, &tokstr);
-  data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-
   tdi = mdmalloc (sizeof (tagdataitem_t));
-  tdi->ffn = mdstrdup (ffn);
-  tdi->data = NULL;
-  if (data != NULL) {
-    tdi->data = mdstrdup (data);
-  }
+  tdi->ffn = mdstrdup (fn);
+  tdi->songfn = mdstrdup (songfn);
+  tdi->relfn = mdstrdup (relfn);
   queuePush (dbupdate->tagdataq, tdi);
   count = queueGetCount (dbupdate->tagdataq);
   // fprintf (stderr, "q-push: %s %d\n", ffn, count);
   if (count > dbupdate->counts [C_QUEUE_MAX]) {
     dbupdate->counts [C_QUEUE_MAX] = count;
   }
-  mdfree (targs);
 }
 
 static void
@@ -912,7 +950,8 @@ dbupdateTagDataFree (void *data)
 
   if (tdi != NULL) {
     dataFree (tdi->ffn);
-    dataFree (tdi->data);
+    dataFree (tdi->songfn);
+    dataFree (tdi->relfn);
     mdfree (tdi);
   }
 }
@@ -928,29 +967,27 @@ dbupdateProcessFileQueue (dbupdate_t *dbupdate)
 
   tdi = queuePop (dbupdate->tagdataq);
   // fprintf (stderr, "  pop: %s\n", tdi->ffn);
-  dbupdateProcessFile (dbupdate, tdi->ffn, tdi->data);
+  dbupdateProcessFile (dbupdate, tdi);
   dbupdateTagDataFree (tdi);
 }
 
 static void
-dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
+dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 {
   slist_t     *tagdata;
-  const char  *songfname;
   slistidx_t  orgiteridx;
   int         tagkey;
   dbidx_t     rrn;
   musicdb_t   *currdb = NULL;
   song_t      *song = NULL;
-  const char  *relfname;
   const char  *val;
   int         rewrite;
   char        tbuff [MUSICDB_MAX_SAVE];
   int         songdbflags;
 
-  logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", ffn);
+  logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", tdi->ffn);
 
-  tagdata = audiotagParseData (ffn, data, &rewrite);
+  tagdata = audiotagParseData (tdi->ffn, &rewrite);
   if (slistGetCount (tagdata) == 0) {
     /* if there is not even a duration, then file is no good */
     /* probably not an audio file */
@@ -962,21 +999,21 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
 
   /* write-tags has its own processing */
   if (dbupdate->writetags) {
-    dbupdateWriteTags (dbupdate, ffn, tagdata);
+    dbupdateWriteTags (dbupdate, tdi, tagdata);
     slistFree (tagdata);
     return;
   }
 
   /* update-from-itunes has its own processing */
   if (dbupdate->updfromitunes) {
-    dbupdateFromiTunes (dbupdate, ffn, tagdata);
+    dbupdateFromiTunes (dbupdate, tdi, tagdata);
     slistFree (tagdata);
     return;
   }
 
   /* reorganize has its own processing */
   if (dbupdate->reorganize) {
-    dbupdateReorganize (dbupdate, ffn, tagdata, SONGDB_FORCE_RENAME);
+    dbupdateReorganize (dbupdate, tdi, tagdata, SONGDB_FORCE_RENAME);
     slistFree (tagdata);
     return;
   }
@@ -1019,10 +1056,6 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
   orgStartIterator (dbupdate->org, &orgiteridx);
 
-  /* use the relative path here, want the dbupdate->processmusicdir stripped */
-  /* before running the regex match */
-  relfname = dbupdateGetRelativePath (dbupdate, ffn);
-
   while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
     val = slistGetStr (tagdata, tagdefs [tagkey].tag);
     if (val != NULL && *val) {
@@ -1032,16 +1065,11 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
     }
 
     /* a regex check */
-    val = orgGetFromPath (dbupdate->org, relfname, tagkey);
+    val = orgGetFromPath (dbupdate->org, tdi->relfn, tagkey);
     if (val != NULL && *val) {
       slistSetStr (tagdata, tagdefs [tagkey].tag, val);
       logMsg (LOG_DBG, LOG_DBUPDATE, "  regex: %s : %s", tagdefs [tagkey].tag, val);
     }
-  }
-
-  songfname = ffn;
-  if (dbupdate->usingmusicdir) {
-    songfname = relfname;
   }
 
   /* rebuild and compact create entirely new databases */
@@ -1053,7 +1081,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   /* on a compact, the rrn is not wanted, but the add date is wanted */
   /* for all other modes, both the rrn and the add date are wanted */
   if (! dbupdate->rebuild) {
-    song = dbGetByName (dbupdate->musicdb, songfname);
+    song = dbGetByName (dbupdate->musicdb, tdi->songfn);
     if (song != NULL) {
       const char  *tmp;
 
@@ -1082,7 +1110,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
   /* see what can be done about this */
   /* the problem being that orgutil works based on a song, not a taglist */
   song = songAlloc ();
-  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfname);
+  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, tdi->songfn);
   songParse (song, tbuff, rrn);
   songdbflags = SONGDB_NONE;
   if (dbupdate->autoorg && (dbupdate->checknew || dbupdate->rebuild)) {
@@ -1104,37 +1132,31 @@ dbupdateProcessFile (dbupdate_t *dbupdate, const char *ffn, char *data)
 }
 
 static void
-dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+dbupdateWriteTags (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
 {
-  const char  *songfname;
   song_t      *song;
   slist_t     *newtaglist;
 
-  if (ffn == NULL) {
+  if (tdi->ffn == NULL) {
     return;
   }
 
-  songfname = ffn;
-  if (dbupdate->usingmusicdir) {
-    songfname = dbupdateGetRelativePath (dbupdate, ffn);
-  }
-  song = dbGetByName (dbupdate->musicdb, songfname);
+  song = dbGetByName (dbupdate->musicdb, tdi->songfn);
   if (song == NULL) {
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
 
   newtaglist = songTagList (song);
-  audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+  audiotagWriteTags (tdi->ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
   slistFree (newtaglist);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
   dbupdateIncCount (dbupdate, C_WRITE_TAGS);
 }
 
 static void
-dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
 {
-  const char  *songfname = NULL;
   song_t      *song = NULL;
   slist_t     *newtaglist = NULL;
   int         tagidx;
@@ -1143,15 +1165,11 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   bool        changed = false;
   musicdb_t   *currdb = NULL;
 
-  if (ffn == NULL) {
+  if (tdi->ffn == NULL) {
     return;
   }
 
-  songfname = ffn;
-  if (dbupdate->usingmusicdir) {
-    songfname = dbupdateGetRelativePath (dbupdate, ffn);
-  }
-  song = dbGetByName (dbupdate->musicdb, songfname);
+  song = dbGetByName (dbupdate->musicdb, tdi->songfn);
   if (song == NULL) {
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
@@ -1161,10 +1179,10 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 
   /* for itunes, just update the song data directly, */
   /* write the song to the db, and write the song tags */
-  entry = itunesGetSongDataByName (dbupdate->itunes, songfname);
+  entry = itunesGetSongDataByName (dbupdate->itunes, tdi->songfn);
   changed = false;
   if (entry != NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", songfname);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", tdi->songfn);
     nlistStartIterator (entry, &iteridx);
     while ((tagidx = nlistIterateKey (entry, &iteridx)) >= 0) {
       if (itunesGetField (dbupdate->itunes, tagidx) <= 0) {
@@ -1209,26 +1227,18 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 }
 
 static void
-dbupdateReorganize (dbupdate_t *dbupdate, const char *ffn,
+dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi,
     slist_t *tagdata, int songdbdefault)
 {
-  const char  *songfname = NULL;
   song_t      *song = NULL;
   musicdb_t   *currdb = NULL;
   int         songdbflags = songdbdefault;
 
-  if (ffn == NULL) {
+  if (tdi->ffn == NULL) {
     return;
   }
 
-  // ### should use audiosrc-relative-path probably.
-  // ### will see what happens when non-music-dirs are used.
-  songfname = ffn;
-  if (dbupdate->usingmusicdir) {
-    songfname = dbupdateGetRelativePath (dbupdate, ffn);
-  }
-
-  song = dbGetByName (dbupdate->musicdb, songfname);
+  song = dbGetByName (dbupdate->musicdb, tdi->songfn);
   if (song == NULL) {
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
@@ -1285,19 +1295,6 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   }
 }
 
-/* this gets the relative path w/o regards to whether the standard musicdir */
-/* or a secondary directory is in use */
-/* the full file name is always passed in */
-static const char *
-dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn)
-{
-  const char  *p;
-
-  p = fn;
-  p += dbupdate->processmusicdirlen + 1;
-  return p;
-}
-
 static bool
 checkOldDirList (dbupdate_t *dbupdate, const char *fn)
 {
@@ -1307,7 +1304,7 @@ checkOldDirList (dbupdate_t *dbupdate, const char *fn)
   char        *tokstr;
   size_t      len;
 
-  fp = fn + dbupdate->processmusicdirlen + 1;
+  fp = fn + dbupdate->processmusicdirlen;
   olddirs = mdstrdup (dbupdate->olddirlist);
   p = strtok_r (olddirs, ";", &tokstr);
   while (p != NULL) {
@@ -1365,4 +1362,22 @@ dbupdateSetCurrentDB (dbupdate_t *dbupdate)
   }
   songdbSetMusicDB (dbupdate->songdb, currdb);
   return currdb;
+}
+
+static const char *
+dbupdateIterate (dbupdate_t *dbupdate)
+{
+  const char  *fn = NULL;
+  dbidx_t     dbidx;
+  song_t      *song;
+
+  if (dbupdate->iterfromaudiosrc) {
+    fn = audiosrcIterate (dbupdate->asiter);
+  }
+  if (dbupdate->iterfromdb) {
+    song = dbIterate (dbupdate->musicdb, &dbidx, &dbupdate->dbiter);
+    fn = songGetStr (song, TAG_URI);
+  }
+
+  return fn;
 }

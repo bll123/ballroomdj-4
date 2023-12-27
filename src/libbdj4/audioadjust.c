@@ -506,66 +506,54 @@ static void
 aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
     const char *infn, const char *songfn)
 {
-  void      *data = NULL;
+  slist_t     *tagdata;
+  int         rewrite;
+  char        tbuff [MUSICDB_MAX_SAVE];
+  char        dbadddate [40];
+  const char  *tmp;
+  dbidx_t     rrn;
 
-  data = audiotagReadTags (infn);
-  if (data != NULL) {
-    slist_t     *tagdata;
-    int         rewrite;
-    char        tbuff [MUSICDB_MAX_SAVE];
-    char        dbadddate [40];
-    const char  *tmp;
-    dbidx_t     rrn;
-
-    rrn = songGetNum (song, TAG_RRN);
-    tmp = songGetStr (song, TAG_DBADDDATE);
-    *dbadddate = '\0';
-    if (tmp != NULL) {
-      strlcpy (dbadddate, tmp, sizeof (dbadddate));
-    }
-    tagdata = audiotagParseData (infn, data, &rewrite);
-    slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
-
-    /* reset the values that are only in the database back to the original */
-    songSetStr (song, TAG_DBADDDATE, dbadddate);
-    songSetNum (song, TAG_RRN, rrn);
-
-    /* the data in the database must be replaced with the original data */
-    dbWrite (musicdb, songfn, tagdata, rrn);
-    /* and the song's data must be replaced with the original data */
-    dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfn);
-    songParse (song, tbuff, dbidx);
-
-    /* make sure the internal entry is correct */
-    songSetStr (song, TAG_DBADDDATE, dbadddate);
-    songSetNum (song, TAG_RRN, rrn);
-    slistFree (tagdata);
+  rrn = songGetNum (song, TAG_RRN);
+  tmp = songGetStr (song, TAG_DBADDDATE);
+  *dbadddate = '\0';
+  if (tmp != NULL) {
+    strlcpy (dbadddate, tmp, sizeof (dbadddate));
   }
-  dataFree (data);
+  tagdata = audiotagParseData (infn, &rewrite);
+  slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
+
+  /* reset the values that are only in the database back to the original */
+  songSetStr (song, TAG_DBADDDATE, dbadddate);
+  songSetNum (song, TAG_RRN, rrn);
+
+  /* the data in the database must be replaced with the original data */
+  dbWrite (musicdb, songfn, tagdata, rrn);
+  /* and the song's data must be replaced with the original data */
+  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfn);
+  songParse (song, tbuff, dbidx);
+
+  /* make sure the internal entry is correct */
+  songSetStr (song, TAG_DBADDDATE, dbadddate);
+  songSetNum (song, TAG_RRN, rrn);
+  slistFree (tagdata);
 }
 
 
 static void
 aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn)
 {
-  void    *data = NULL;
+  slist_t     *tagdata;
+  int         rewrite;
+  long        dur;
 
   if (! fileopFileExists (ffn)) {
     return;
   }
 
-  data = audiotagReadTags (ffn);
-  if (data != NULL) {
-    slist_t     *tagdata;
-    int         rewrite;
-    long        dur;
-
-    tagdata = audiotagParseData (ffn, data, &rewrite);
-    dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
-    songSetNum (song, TAG_DURATION, dur);
-    slistFree (tagdata);
-    dataFree (data);
-  }
+  tagdata = audiotagParseData (ffn, &rewrite);
+  dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+  songSetNum (song, TAG_DURATION, dur);
+  slistFree (tagdata);
 }
 
 static int

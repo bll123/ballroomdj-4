@@ -63,7 +63,7 @@ enum {
 
 static audiotag_t *at = NULL;
 
-static void audiotagParseTags (slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
+static void audiotagParseTags (slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
@@ -112,14 +112,8 @@ audiotagCleanup (void)
   at = NULL;
 }
 
-char *
-audiotagReadTags (const char *ffn)
-{
-  return atiReadTags (at->ati, ffn);
-}
-
 slist_t *
-audiotagParseData (const char *ffn, char *data, int *rewrite)
+audiotagParseData (const char *ffn, int *rewrite)
 {
   slist_t     *tagdata;
   int         tagtype;
@@ -129,7 +123,7 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
   tagdata = slistAlloc ("atag", LIST_ORDERED, NULL);
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
   audiotagCreateLookupTable (tagtype);
-  audiotagParseTags (tagdata, ffn, data, filetype, tagtype, rewrite);
+  audiotagParseTags (tagdata, ffn, filetype, tagtype, rewrite);
   return tagdata;
 }
 
@@ -399,13 +393,13 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 /* internal routines */
 
 static void
-audiotagParseTags (slist_t *tagdata, const char *ffn, char *data,
+audiotagParseTags (slist_t *tagdata, const char *ffn,
     int filetype, int tagtype, int *rewrite)
 {
   slistidx_t    iteridx;
   const char    *tag;
 
-  atiParseTags (at->ati, tagdata, ffn, data, filetype, tagtype, rewrite);
+  atiParseTags (at->ati, tagdata, ffn, filetype, tagtype, rewrite);
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
