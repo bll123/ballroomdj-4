@@ -52,10 +52,35 @@
 #   ((⏱️=200))Next Dance, Veinnese Waltz((⏱️=400))
 #
 # NL
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is djaaif((⏱️=400))   (Jive)
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is een djaaif((⏱️=400))   (Jive)
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is disco((⏱️=400))
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is een disco((⏱️=400))
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is discofox((⏱️=400))
-#   ((⏱️=200))Dank u((⏱️=800))De volgende dans is een discofox((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is argentijnse tango((⏱️=400))
+#   Bachata
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is batsjata((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Bolero((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Boogie Woogie((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is disco((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is discofox((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is discoswing((⏱️=400))
+#   Jive
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is djaaif((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Engelse Wals((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is foxtrot((⏱️=400))
+#   Quickstep
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is kwikstep((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is langzame wals((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Mambo((⏱️=400))
+#   Merengue
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is mee ren-gay((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Passo dooblee((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Rock-en-Roll((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is rumba((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is salsa((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is samba((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Swing((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is tango ((⏱️=400))
+#   Alternate Slow Waltz
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is trage wals((⏱️=400))
+#   Cha Cha
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is tsja-tsja((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is Weense Wals((⏱️=400))
+#   ((⏱️=200))Dank u((⏱️=600))De volgende dans is West Koost Swing((⏱️=400))
 #
