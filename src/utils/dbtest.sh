@@ -38,6 +38,10 @@ function checkres {
     echo "    Expected: $e"
     trc=1
   fi
+  if [[ -f core ]]; then
+    echo "   core dump"
+    trc=1
+  fi
   return $trc
 }
 
@@ -99,7 +103,9 @@ function setbdj3compatoff {
 }
 
 function cleanallaudiofiletags {
-  for f in $(find test-music -type f -print); do
+  mdir=$1
+
+  for f in $(find $mdir -type f -print); do
     ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
   done
 }
@@ -149,8 +155,14 @@ NUMREGEX=13
 NUMNOFT=$(($NUMNORM-6))
 # deleted cha cha
 NUMNOCC=$(($NUMCC-1))
+
 # alt
 NUMALT=13
+NUMALTTOT=150
+# deleted foxtrot (only the alt dir)
+NUMALTNOFT=$(($NUMALT-1))
+# deleted foxtrot (total)
+NUMALTTOTNOFT=$(($NUMALTTOT-6-1))
 
 DATADB=data/musicdb.dat
 TMAINDB=test-templates/musicdb.dat
@@ -172,15 +184,21 @@ TDBCOMPAT=tmp/test-m-compat.dat
 TDBRDAT=tmp/test-m-r-dat.dat
 TDBRDT=tmp/test-m-r-dt.dat
 TDBRDTALT=tmp/test-m-r-dt-alt.dat
-TMDT=tmp/test-music-dt
 TDBRDTAT=tmp/test-m-r-dtat.dat
 TMSONGEND=test-music/037-all-tags-mp3-a.mp3
 
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
+TMPDIRA=tmp/ka
+TMPDIRB=tmp/kb
+TMPDIRDT=tmp/test-music-dt
 
 INALT=test-templates/test-m-alt.txt
+INALTNOFT=test-templates/test-m-alt-noft.txt
 TDBALT=tmp/test-m-alt.dat
+TDBALTNOFT=tmp/test-m-alt-noft.dat
+KDBALT=tmp/alt-db.dat
+# must use full path
 ALTMUSICDIR=$(pwd)/tmp/music-alt
 
 echo "## make test setup"
@@ -262,7 +280,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --updfromtags \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -285,7 +302,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --compact \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated ${NUMNORM} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -317,7 +333,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --writetags \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
@@ -389,7 +404,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --writetags \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMNORM}"
   msg+=$(checkres $tname "$got" "$exp")
@@ -436,9 +450,10 @@ if [[ $TESTON == T ]]; then
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
   # clean any leftover foxtrot from the tmp dir
-  rm -f tmp/*-foxtrot.mp3
+  rm -rf $TMPDIRA
+  mkdir $TMPDIRA
   # save all foxtrot
-  mv -f test-music/*-foxtrot.mp3 tmp
+  mv -f $musicdir/*-foxtrot.mp3 $TMPDIRA
 
   # create test setup/db w/no foxtrot
   ./src/utils/mktestsetup.sh \
@@ -482,7 +497,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --compact \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNOFT} skip 0 indb ${NUMNOFT} new 0 updated ${NUMNOFT} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -501,7 +515,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # restore all foxtrot
-  mv -f tmp/*-foxtrot.mp3 test-music
+  mv -f $TMPDIRA/* $musicdir
 
   # create test db w/no data
   ./src/utils/mktestsetup.sh \
@@ -515,8 +529,8 @@ if [[ $TESTON == T ]]; then
       --outfile $TDBCHACHA \
       --debug ${DBG} ${ATIFLAG}
   # save the cha cha
-  rm -f tmp/001-chacha.mp3
-  mv -f test-music/001-chacha.mp3 tmp
+  rm -f $TMPDIRA/001-chacha.mp3
+  mv -f $musicdir/001-chacha.mp3 $TMPDIRA
   # create test db w/o chacha
   # will copy tmp/test-m-b.dat to data/
   ./src/utils/mktestsetup.sh \
@@ -525,7 +539,7 @@ if [[ $TESTON == T ]]; then
       --debug ${DBG} ${ATIFLAG}
 
   # test db : rebuild of test-m-nochacha
-  if [[ -f test-music/001-chacha.mp3 ]]; then
+  if [[ -f $musicdir/001-chacha.mp3 ]]; then
     echo "cha cha present when it should not be"
     rc=1
     crc=0
@@ -555,7 +569,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # restore the cha cha
-  mv -f tmp/001-chacha.mp3 test-music
+  mv -f $TMPDIRA/001-chacha.mp3 $musicdir
 
   # test db : check-new w/cha cha
   tname=checknew-chacha
@@ -581,7 +595,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # clean all of the tags from the music files
-  cleanallaudiofiletags
+  cleanallaudiofiletags $musicdir
 
   # test db : rebuild with no tags
   tname=rebuild-no-tags
@@ -612,7 +626,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --updfromtags \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated ${NUMCC} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -648,7 +661,6 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --writetags \
-      --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMCC} skip 0 indb ${NUMCC} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMCC}"
   msg+=$(checkres $tname "$got" "$exp")
@@ -686,11 +698,11 @@ if [[ $TESTON == T ]]; then
       --outfile $TDBRDT \
       --debug ${DBG} ${ATIFLAG}
   # create test regex db w/tags (dance/title) and w/alternate entries
-  tdir="$(echo ${musicdir} | sed 's,/test-music.*,,')"
+  tdir="$(dirname ${musicdir})"
   ./src/utils/mktestsetup.sh \
       --infile $INRDT \
       --outfile $TDBRDTALT \
-      --altdir "${tdir}/$TMDT" \
+      --altdir "${tdir}/$TMPDIRDT" \
       --debug ${DBG} ${ATIFLAG}
   # create test regex db w/tags (dance/tn-artist - title)
   ./src/utils/mktestsetup.sh \
@@ -702,10 +714,10 @@ if [[ $TESTON == T ]]; then
       --infile $INR \
       --outfile $TMPA \
       --debug ${DBG} ${ATIFLAG}
-  # copy the test-music to an alternate folder for testing
+  # copy the music-dir to an alternate folder for testing
   # secondary folder builds
-  test -d $TMDT && rm -rf $TMDT
-  cp -r test-music $TMDT
+  test -d $TMPDIRDT && rm -rf $TMPDIRDT
+  cp -r $musicdir $TMPDIRDT
 
   # test regex db : get dance/artist/title from file path
   tname=rebuild-file-path-dat
@@ -757,12 +769,12 @@ fi
 if [[ $TESTON == T ]]; then
   # test secondary folder: regex db : get dance/title from file path
   tname=rebuild-file-path-dt-alt
-  tdir="$(echo ${musicdir} | sed 's,/test-music.*,,')"
+  tdir="$(dirname ${musicdir})"
   setorgregex '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${tdir}/${TMDT}" \
+      --dbupmusicdir "${tdir}/${TMPDIRDT}" \
       --cli --wait --verbose)
   exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -806,7 +818,7 @@ fi
 if [[ $TESTON == T ]]; then
   test -d $ALTMUSICDIR || mkdir -p $ALTMUSICDIR
 
-  # re-create the main test-music dir
+  # re-create the main music dir
 
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
@@ -841,6 +853,117 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+
+  # keep a copy of the combined alternate database.
+  cp -f $DATADB $KDBALT
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  # alt test db : compact with no changes
+  # compact must iterate through the database, not just
+  # the specified directory.
+  tname=alt-compact-basic
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --compact \
+      --cli --wait --verbose)
+  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated ${NUMALTTOT} renamed 0 norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $rc)"
+  dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  # clean any leftovers from the tmp dir
+  rm -rf $TMPDIRA $TMPDIRB
+  mkdir $TMPDIRA
+  mkdir $TMPDIRB
+  # save all foxtrot
+  mv -f $musicdir/*-foxtrot.mp3 $TMPDIRA
+  mv -f $ALTMUSICDIR/*-foxtrot.mp3 $TMPDIRB
+
+  ./src/utils/mktestsetup.sh \
+      --infile $INALTNOFT \
+      --outfile $TDBALTNOFT \
+      --dbupmusicdir $ALTMUSICDIR \
+      --keepmusic \
+      --debug ${DBG} ${ATIFLAG}
+
+  # restore the alt database
+  cp -f $KDBALT $DATADB
+
+  # alt test db : check-new with deleted files
+  tname=alt-checknew-delete
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --checknew \
+      --dbupmusicdir "${musicdir}" \
+      --cli --wait --verbose)
+  # note that the music database still has the entries for the
+  # deleted files in it.
+  exp="found ${NUMNOFT} skip ${NUMNOFT} indb ${NUMNOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --checknew \
+      --dbupmusicdir "${ALTMUSICDIR}" \
+      --cli --wait --verbose)
+  exp="found ${NUMALTNOFT} skip ${NUMALTNOFT} indb ${NUMALTNOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  # no db comparison
+  dispres $tname $rc $rc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  # restore the full alt database
+  cp -f $KDBALT $DATADB
+
+  # alt test db : compact with deleted files
+  # compact must iterate through the database, not just
+  # the specified directory.
+  tname=alt-compact-deleted
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --compact \
+      --cli --wait --verbose)
+  exp="found ${NUMALTTOTNOFT} skip 0 indb ${NUMALTTOTNOFT} new 0 updated ${NUMALTTOTNOFT} renamed 0 norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOFOXTROT $TDBALTNOFT)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $rc)"
+  dispres $tname $rc $crc
+
+  # restore all foxtrot
+  mv -f $TMPDIRA/* $musicdir
+  mv -f $TMPDIRB/* $ALTMUSICDIR
+
+  # restore the full alt database
+  cp -f $KDBALT $DATADB
 fi
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
@@ -848,13 +971,12 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 # remove test db, temporary files
-rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT $TDBALT
 rm -f $INCOMPAT
+rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT $TDBNOFOXTROT
 rm -f $TDBRDAT $TDBRDT $TDBRDTALT $TDBRDTAT
+rm -f $TDBALT $KDBALT $TDBALTNOFT
 rm -f $TMPA $TMPB
-rm -rf $TMDT $ALTMUSICDIR
-# clean any leftover foxtrot
-rm -f tmp/*-foxtrot.mp3
+rm -rf $TMPDIRDT $ALTMUSICDIR $TMPDIRA $TMPDIRB
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1

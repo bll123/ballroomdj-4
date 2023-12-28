@@ -152,6 +152,10 @@ main (int argc, char *argv [])
       return 1;
     }
     count [i] = dbCount (db [i]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "count: %d %s", count [i], dbfn [i]);
+    if (verbose) {
+      fprintf (stderr, "count: %d %s\n", count [i], dbfn [i]);
+    }
     if (i > DB_A) {
       totcount += count [i];
     }
@@ -169,7 +173,6 @@ main (int argc, char *argv [])
     const char  *tag [DB_MAX];
     const char  *fn;
     const char  *val;
-
 
     for (int i = 0; i < DB_MAX; ++i) {
       taglist [i] = NULL;

@@ -78,26 +78,28 @@ dbOpen (const char *fn)
 void
 dbClose (musicdb_t *musicdb)
 {
-  if (musicdb != NULL) {
-    if (musicdb->inbatch) {
-      dbEndBatch (musicdb);
-    }
-    raClose (musicdb->radb);
-    musicdb->radb = NULL;
-
-    slistFree (musicdb->songs);
-    nlistFree (musicdb->danceCounts);
-    dataFree (musicdb->fn);
-    nlistFree (musicdb->tempSongs);
-    mdfree (musicdb);
+  if (musicdb == NULL) {
+    return;
   }
-  musicdb = NULL;
+
+  if (musicdb->inbatch) {
+    dbEndBatch (musicdb);
+  }
+  raClose (musicdb->radb);
+  musicdb->radb = NULL;
+
+  slistFree (musicdb->songs);
+  nlistFree (musicdb->danceCounts);
+  dataFree (musicdb->fn);
+  nlistFree (musicdb->tempSongs);
+  mdfree (musicdb);
 }
 
 dbidx_t
 dbCount (musicdb_t *musicdb)
 {
   dbidx_t tcount = 0L;
+
   if (musicdb != NULL) {
     tcount = musicdb->count;
   }
@@ -114,6 +116,9 @@ dbLoad (musicdb_t *musicdb)
   slistidx_t  dbidx;
   slistidx_t  siteridx;
 
+  if (musicdb == NULL) {
+    return -1;
+  }
 
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   slistSetSize (musicdb->songs, raGetCount (musicdb->radb));
@@ -168,6 +173,10 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   rafileidx_t rrn;
   const char  *fstr;
 
+  if (musicdb == NULL) {
+    return;
+  }
+
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
@@ -188,6 +197,10 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
 
+  if (musicdb == NULL) {
+    return;
+  }
+
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
@@ -201,6 +214,10 @@ void
 dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
+
+  if (musicdb == NULL) {
+    return;
+  }
 
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
@@ -262,6 +279,10 @@ dbGetByName (musicdb_t *musicdb, const char *songname)
 {
   song_t  *song;
 
+  if (musicdb == NULL) {
+    return NULL;
+  }
+
   song = slistGetData (musicdb->songs, songname);
   if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
     song = NULL;
@@ -274,6 +295,10 @@ song_t *
 dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 {
   song_t  *song;
+
+  if (musicdb == NULL) {
+    return NULL;
+  }
 
   if (idx < 0) {
     return NULL;
@@ -296,6 +321,10 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
   time_t    currtime;
   size_t    len;
+
+  if (musicdb == NULL) {
+    return 0;
+  }
 
   if (song == NULL) {
     return 0;
@@ -321,6 +350,10 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
   size_t    tblen;
   time_t    currtime;
 
+  if (musicdb == NULL) {
+    return 0;
+  }
+
   if (musicdb->updatelast) {
     char tmp [40];
 
@@ -345,6 +378,11 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
 
 
   tbuff [0] = '\0';
+
+  if (tagList == NULL) {
+    return 0;
+  }
+
   tmutilDstamp (tmp, sizeof (tmp));
 
   /* the URI tag must be created */
@@ -409,8 +447,9 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
 
   tbuff [0] = '\0';
 
-  /* make sure the filename is set */
-//  songSetStr (song, TAG_URI, fn);
+  if (song == NULL) {
+    return 0;
+  }
 
   /* make sure the db-add-date is set */
   data = songGetStr (song, TAG_DBADDDATE);

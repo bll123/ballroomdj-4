@@ -468,21 +468,21 @@ dbupdateProcessing (void *udata)
     dbupdate->usingmusicdir = true;
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
+
     /* the default */
     dbupdate->processmusicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     /* check if a different music-dir was specified */
     tstr = bdjvarsGetStr (BDJV_UPDB_MUSIC_DIR);
-    if (strcmp (tstr, dbupdate->musicdir) != 0) {
+    if (tstr != NULL && strcmp (tstr, dbupdate->musicdir) != 0) {
       dbupdate->usingmusicdir = false;
       dbupdate->processmusicdir = tstr;
       dbupdate->prefixlen = strlen (tstr) + 1;  // include the slash
     }
     dbupdate->processmusicdirlen = strlen (dbupdate->processmusicdir) + 1;
 
-    logMsg (LOG_DBG, LOG_BASIC, "processmusicdir %s", dbupdate->processmusicdir);
-
-
     if (dbupdate->iterfromaudiosrc) {
+      logMsg (LOG_DBG, LOG_BASIC, "processmusicdir %s", dbupdate->processmusicdir);
+
       dbupdate->asiter = audiosrcStartIterator (dbupdate->processmusicdir);
 
       dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
