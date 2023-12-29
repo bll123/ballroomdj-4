@@ -65,7 +65,7 @@ while test $# -gt 0; do
       args+=" "
       keepmusic=T
       ;;
-    --altdir)
+    --seconddir)
       args+=$1
       args+=" "
       shift

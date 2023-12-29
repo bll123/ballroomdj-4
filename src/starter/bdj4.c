@@ -129,7 +129,7 @@ main (int argc, char * argv[])
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
     /* tmusicsetup */
-    { "altdir",         required_argument,  NULL,   0 },
+    { "seconddir",      required_argument,  NULL,   0 },
     { "emptydb",        no_argument,        NULL,   0 },
     { "infile",         required_argument,  NULL,   0 },
     { "keepmusic",      no_argument,        NULL,   0 },

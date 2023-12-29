@@ -155,13 +155,13 @@ NUMNOFT=$(($NUMNORM-6))
 # deleted cha cha
 NUMNOCC=$(($NUMCC-1))
 
-# alt
-NUMALT=13
-NUMALTTOT=150
-# deleted foxtrot (only the alt dir)
-NUMALTNOFT=$(($NUMALT-1))
+# second
+NUMSECOND=13
+NUMSECONDTOT=150
+# deleted foxtrot (only the second dir)
+NUMSECONDNOFT=$(($NUMSECOND-1))
 # deleted foxtrot (total)
-NUMALTTOTNOFT=$(($NUMALTTOT-6-1))
+NUMSECONDTOTNOFT=$(($NUMSECONDTOT-6-1))
 
 DATADB=data/musicdb.dat
 TMAINDB=test-templates/musicdb.dat
@@ -182,7 +182,7 @@ TDBCOMPACT=tmp/test-m-compact.dat
 TDBCOMPAT=tmp/test-m-compat.dat
 TDBRDAT=tmp/test-m-r-dat.dat
 TDBRDT=tmp/test-m-r-dt.dat
-TDBRDTALT=tmp/test-m-r-dt-alt.dat
+TDBRDTSECOND=tmp/test-m-r-dt-second.dat
 TDBRDTAT=tmp/test-m-r-dtat.dat
 TMSONGEND=test-music/037-all-tags-mp3-a.mp3
 
@@ -192,14 +192,14 @@ TMPDIRA=tmp/ka
 TMPDIRB=tmp/kb
 TMPDIRDT=tmp/test-music-dt
 
-INALT=test-templates/test-m-alt.txt
-INALTNOFT=test-templates/test-m-alt-noft.txt
-TDBALT=tmp/test-m-alt.dat
-TDBALTNOFT=tmp/test-m-alt-noft.dat
-TDBALTEMPTY=tmp/test-m-alt-empty.dat
-KDBALT=tmp/alt-db.dat
+INSECOND=test-templates/test-m-second.txt
+INSECONDNOFT=test-templates/test-m-second-noft.txt
+TDBSECOND=tmp/test-m-second.dat
+TDBSECONDNOFT=tmp/test-m-second-noft.dat
+TDBSECONDEMPTY=tmp/test-m-second-empty.dat
+KDBSECOND=tmp/second-db.dat
 # must use full path
-ALTMUSICDIR=$(pwd)/tmp/music-alt
+SECONDMUSICDIR=$(pwd)/tmp/music-second
 
 echo "## make test setup"
 ATIFLAG=""
@@ -697,12 +697,12 @@ if [[ $TESTON == T ]]; then
       --infile $INRDT \
       --outfile $TDBRDT \
       --debug ${DBG} ${ATIFLAG}
-  # create test regex db w/tags (dance/title) and w/alternate entries
+  # create test regex db w/tags (dance/title) and w/secondary entries
   tdir="$(dirname ${musicdir})"
   ./src/utils/mktestsetup.sh \
       --infile $INRDT \
-      --outfile $TDBRDTALT \
-      --altdir "${tdir}/$TMPDIRDT" \
+      --outfile $TDBRDTSECOND \
+      --seconddir "${tdir}/$TMPDIRDT" \
       --debug ${DBG} ${ATIFLAG}
   # create test regex db w/tags (dance/tn-artist - title)
   ./src/utils/mktestsetup.sh \
@@ -768,7 +768,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # test secondary folder: regex db : get dance/title from file path
-  tname=rebuild-file-path-dt-alt
+  tname=rebuild-file-path-dt-second
   tdir="$(dirname ${musicdir})"
   setorgregex '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -780,7 +780,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDTALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDTSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -816,9 +816,9 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
-  test -d $ALTMUSICDIR || mkdir -p $ALTMUSICDIR
+  test -d $SECONDMUSICDIR || mkdir -p $SECONDMUSICDIR
 
-  # re-create both the main and alt music dir
+  # re-create both the main and second music dir
 
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
@@ -829,33 +829,33 @@ if [[ $TESTON == T ]]; then
       --cli --wait
 
   ./src/utils/mktestsetup.sh \
-      --infile $INALT \
-      --outfile $TDBALT \
+      --infile $INSECOND \
+      --outfile $TDBSECOND \
       --debug ${DBG} ${ATIFLAG} \
-      --dbupmusicdir $ALTMUSICDIR \
+      --dbupmusicdir $SECONDMUSICDIR \
       --nodbcopy \
       --keepdb
 
-  # alt test db : check-new with an alternate db
-  tname=alt-checknew
+  # second test db : check-new with a second dir
+  tname=second-checknew
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${ALTMUSICDIR}" \
+      --dbupmusicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
 
-  exp="found ${NUMALT} skip 0 indb 0 new ${NUMALT} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECOND} skip 0 indb 0 new ${NUMSECOND} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB $TDBALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB $TDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 
-  # keep a copy of the combined alternate database.
-  cp -f $DATADB $KDBALT
+  # keep a copy of the combined main+second database.
+  cp -f $DATADB $KDBSECOND
 fi
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
@@ -863,19 +863,19 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
-  # alt test db : compact with no changes
+  # main+second test db : compact with no changes
   # compact must iterate through the database, not just
   # the specified directory.
-  tname=alt-compact-basic
+  tname=second-compact-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --compact \
       --cli --wait --verbose)
-  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated ${NUMALTTOT} renamed 0 norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated ${NUMSECONDTOT} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -893,20 +893,20 @@ if [[ $TESTON == T ]]; then
   mkdir $TMPDIRB
   # save all foxtrot
   mv -f $musicdir/*-foxtrot.mp3 $TMPDIRA
-  mv -f $ALTMUSICDIR/*-foxtrot.mp3 $TMPDIRB
+  mv -f $SECONDMUSICDIR/*-foxtrot.mp3 $TMPDIRB
 
   ./src/utils/mktestsetup.sh \
-      --infile $INALTNOFT \
-      --outfile $TDBALTNOFT \
-      --dbupmusicdir $ALTMUSICDIR \
+      --infile $INSECONDNOFT \
+      --outfile $TDBSECONDNOFT \
+      --dbupmusicdir $SECONDMUSICDIR \
       --keepmusic \
       --debug ${DBG} ${ATIFLAG}
 
-  # restore the alt database
-  cp -f $KDBALT $DATADB
+  # restore the main+second database
+  cp -f $KDBSECOND $DATADB
 
-  # alt test db : check-new with deleted files
-  tname=alt-checknew-delete
+  # main+second test db : check-new with deleted files
+  tname=second-checknew-delete
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
@@ -922,9 +922,9 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${ALTMUSICDIR}" \
+      --dbupmusicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
-  exp="found ${NUMALTNOFT} skip ${NUMALTNOFT} indb ${NUMALTNOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECONDNOFT} skip ${NUMSECONDNOFT} indb ${NUMSECONDNOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -937,22 +937,22 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
-  # restore the full alt database
-  cp -f $KDBALT $DATADB
+  # restore the full main+second database
+  cp -f $KDBSECOND $DATADB
 
-  # alt test db : compact with deleted files
+  # main+second test db : compact with deleted files
   # compact must iterate through the database, not just
   # the specified directory.
-  tname=alt-compact-deleted
+  tname=second-compact-deleted
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --compact \
       --cli --wait --verbose)
-  exp="found ${NUMALTTOTNOFT} skip 0 indb ${NUMALTTOTNOFT} new 0 updated ${NUMALTTOTNOFT} renamed 0 norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECONDTOTNOFT} skip 0 indb ${NUMSECONDTOTNOFT} new 0 updated ${NUMSECONDTOTNOFT} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOFOXTROT $TDBALTNOFT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOFOXTROT $TDBSECONDNOFT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -960,10 +960,10 @@ if [[ $TESTON == T ]]; then
 
   # restore all foxtrot
   mv -f $TMPDIRA/* $musicdir
-  mv -f $TMPDIRB/* $ALTMUSICDIR
+  mv -f $TMPDIRB/* $SECONDMUSICDIR
 
-  # restore the full alt database
-  cp -f $KDBALT $DATADB
+  # restore the full main+second database
+  cp -f $KDBSECOND $DATADB
 fi
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
@@ -973,7 +973,7 @@ fi
 if [[ $TESTON == T ]]; then
   # clean all of the tags from the music files
   cleanallaudiofiletags $musicdir
-  cleanallaudiofiletags $ALTMUSICDIR
+  cleanallaudiofiletags $SECONDMUSICDIR
 
   # while there are no tags, create an empty database for future use.
 
@@ -984,30 +984,30 @@ if [[ $TESTON == T ]]; then
       --dbupmusicdir "${musicdir}" \
       --cli --wait --verbose)
 
-  # add the alternate music dir
+  # add the secondary music dir
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${ALTMUSICDIR}" \
+      --dbupmusicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
 
-  cp -f $DATADB $TDBALTEMPTY
+  cp -f $DATADB $TDBSECONDEMPTY
 
-  # restore the full alt database for use in the write-tags test
-  cp -f $KDBALT $DATADB
+  # restore the full main+second database for use in the write-tags test
+  cp -f $KDBSECOND $DATADB
 
-  # main + alt db : write tags
-  tname=alt-write-tags
+  # main+second db : write tags
+  tname=second-write-tags
   setwritetagson
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --writetags \
       --cli --wait --verbose)
-  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMALTTOT}"
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMSECONDTOT}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -1028,20 +1028,20 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
-  # restore the empty alt database for update-from-tags
-  cp -f $TDBALTEMPTY $DATADB
+  # restore the empty main+second database for update-from-tags
+  cp -f $TDBSECONDEMPTY $DATADB
 
-  # alt empty db : write tags
-  tname=alt-update-from-tags-empty-db
+  # main+second empty db : write tags
+  tname=second-update-from-tags-empty-db
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --updfromtags \
       --cli --wait --verbose)
-  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated ${NUMALTTOT} renamed 0 norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated ${NUMSECONDTOT} renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -1055,10 +1055,10 @@ fi
 # remove test db, temporary files
 rm -f $INCOMPAT
 rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT $TDBNOFOXTROT
-rm -f $TDBRDAT $TDBRDT $TDBRDTALT $TDBRDTAT
-rm -f $TDBALT $KDBALT $TDBALTNOFT $TDBALTEMPTY
+rm -f $TDBRDAT $TDBRDT $TDBRDTSECOND $TDBRDTAT
+rm -f $TDBSECOND $KDBSECOND $TDBSECONDNOFT $TDBSECONDEMPTY
 rm -f $TMPA $TMPB
-rm -rf $TMPDIRDT $ALTMUSICDIR $TMPDIRA $TMPDIRB
+rm -rf $TMPDIRDT $SECONDMUSICDIR $TMPDIRA $TMPDIRB
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1

@@ -113,7 +113,7 @@ main (int argc, char *argv [])
   ilistidx_t  key;
   char        dbfn [MAXPATHLEN];
   char        infn [MAXPATHLEN];
-  char        altdir [MAXPATHLEN];
+  char        seconddir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty = NULL;
@@ -130,7 +130,7 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
     { "bdj4",         no_argument,        NULL,   'B' },
-    { "altdir",       required_argument,  NULL,   'A' },
+    { "seconddir",    required_argument,  NULL,   'A' },
     { "emptydb",      no_argument,        NULL,   'E' },
     { "infile",       required_argument,  NULL,   'I' },
     { "keepmusic",    no_argument,        NULL,   'K' },
@@ -153,7 +153,7 @@ main (int argc, char *argv [])
 
   strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
-  *altdir = '\0';
+  *seconddir = '\0';
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -204,7 +204,7 @@ main (int argc, char *argv [])
       case 'A': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (altdir, targ, sizeof (altdir));
+          strlcpy (seconddir, targ, sizeof (seconddir));
         }
         break;
       }
@@ -313,13 +313,13 @@ main (int argc, char *argv [])
     }
     dbWrite (db, songfn, tagdata, MUSICDB_ENTRY_NEW);
 
-    if (*altdir) {
+    if (*seconddir) {
       char    tmp [40];
 
       /* if the alternate dir is set, create a duplicate entry */
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, songfn);
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", seconddir, songfn);
       slistSetStr (tagdata, tagdefs [TAG_URI].tag, tbuff);
-      snprintf (tmp, sizeof (tmp), "%d", (int) strlen (altdir) + 1);
+      snprintf (tmp, sizeof (tmp), "%d", (int) strlen (seconddir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
       dbWrite (db, tbuff, tagdata, MUSICDB_ENTRY_NEW);
     }

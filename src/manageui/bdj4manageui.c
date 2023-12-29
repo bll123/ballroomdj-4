@@ -1185,7 +1185,6 @@ manageMainLoop (void *tmanage)
       tfn = audiosrcRelativePath (outfn);
       song = dbGetByName (manage->musicdb, tfn);
       if (song != NULL) {
-        void        *data;
         dbidx_t     rrn;
         dbidx_t     dbidx;
         char        tmp [40];
