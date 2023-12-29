@@ -41,7 +41,6 @@ typedef struct {
 filetypelookup_t filetypelookup [] = {
   { ".3g2",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".3gp",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
-  { ".aac",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".alac",  TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".flac",  TAG_TYPE_VORBIS,  AFILE_TYPE_FLAC, },
   { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },

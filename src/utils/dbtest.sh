@@ -105,9 +105,8 @@ function setbdj3compatoff {
 function cleanallaudiofiletags {
   mdir=$1
 
-  for f in $(find $mdir -type f -print); do
-    ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
-  done
+  find $mdir -type f -print0 |
+      xargs -n1 -0 ./bin/bdj4 --bdj4tags --cleantags --quiet
 }
 
 function setorgregex {
@@ -197,6 +196,7 @@ INALT=test-templates/test-m-alt.txt
 INALTNOFT=test-templates/test-m-alt-noft.txt
 TDBALT=tmp/test-m-alt.dat
 TDBALTNOFT=tmp/test-m-alt-noft.dat
+TDBALTEMPTY=tmp/test-m-alt-empty.dat
 KDBALT=tmp/alt-db.dat
 # must use full path
 ALTMUSICDIR=$(pwd)/tmp/music-alt
@@ -276,7 +276,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # main test db : update-from-tags with no changes
-  tname=updfromtags-basic
+  tname=update-from-tags-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --updfromtags \
@@ -818,7 +818,7 @@ fi
 if [[ $TESTON == T ]]; then
   test -d $ALTMUSICDIR || mkdir -p $ALTMUSICDIR
 
-  # re-create the main music dir
+  # re-create both the main and alt music dir
 
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
@@ -836,7 +836,7 @@ if [[ $TESTON == T ]]; then
       --nodbcopy \
       --keepdb
 
-  # main test db : check-new with an alternate db
+  # alt test db : check-new with an alternate db
   tname=alt-checknew
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
@@ -970,11 +970,93 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1
 fi
 
+if [[ $TESTON == T ]]; then
+  # clean all of the tags from the music files
+  cleanallaudiofiletags $musicdir
+  cleanallaudiofiletags $ALTMUSICDIR
+
+  # while there are no tags, create an empty database for future use.
+
+  # test db : rebuild with no tags
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --rebuild \
+      --dbupmusicdir "${musicdir}" \
+      --cli --wait --verbose)
+
+  # add the alternate music dir
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --checknew \
+      --dbupmusicdir "${ALTMUSICDIR}" \
+      --cli --wait --verbose)
+
+  cp -f $DATADB $TDBALTEMPTY
+
+  # restore the full alt database for use in the write-tags test
+  cp -f $KDBALT $DATADB
+
+  # main + alt db : write tags
+  tname=alt-write-tags
+  setwritetagson
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --writetags \
+      --cli --wait --verbose)
+  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMALTTOT}"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $crc)"
+
+  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+    msg+="$(checkaudiotags $tname --ignoremissing)"
+    trc=$?
+    updateCounts $trc
+    if [[ $trc -ne 0 ]]; then
+      rc=$trc
+    fi
+  fi
+  dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  # restore the empty alt database for update-from-tags
+  cp -f $TDBALTEMPTY $DATADB
+
+  # alt empty db : write tags
+  tname=alt-update-from-tags-empty-db
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --updfromtags \
+      --cli --wait --verbose)
+  exp="found ${NUMALTTOT} skip 0 indb ${NUMALTTOT} new 0 updated ${NUMALTTOT} renamed 0 norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBALT)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $crc)"
+  dispres $tname $rc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
 # remove test db, temporary files
 rm -f $INCOMPAT
 rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT $TDBNOFOXTROT
 rm -f $TDBRDAT $TDBRDT $TDBRDTALT $TDBRDTAT
-rm -f $TDBALT $KDBALT $TDBALTNOFT
+rm -f $TDBALT $KDBALT $TDBALTNOFT $TDBALTEMPTY
 rm -f $TMPA $TMPB
 rm -rf $TMPDIRDT $ALTMUSICDIR $TMPDIRA $TMPDIRB
 

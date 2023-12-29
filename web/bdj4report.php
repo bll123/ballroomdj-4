@@ -147,7 +147,6 @@ $html .= <<<_HERE_
       <th align="left">Date</th>
       <th align="left">Country</th>
       <th align="left">OS</th>
-      <th align="left">Python-Vers</th>
       <th align="left">Sys-Locale</th>
       <th align="left">Locale</th>
       <th align="left">New</th>
@@ -166,7 +165,6 @@ foreach (array_reverse ($adata) as $gidx => $tdata) {
   $html .= "      <td align=\"left\">${tdata['-date']}</td>";
   $html .= "      <td align=\"left\">${tdata['-country']}</td>";
   $html .= "      <td align=\"left\">${tdata['-osdisp']}</td>";
-  $html .= "      <td align=\"right\">${tdata['-pythonvers']}</td>";
   $html .= "      <td align=\"right\">${tdata['-systemlocale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-locale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";

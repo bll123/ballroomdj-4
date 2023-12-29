@@ -15,9 +15,11 @@
  *      are loaded and updated in the database.
  *      so the processing is similar to a rebuild, but using the
  *      existing database and updating the records in the database.
+ *      no new database is created.
  *    - compact
  *      create a new db file, bypass any deleted entries.
  *      may be used in conjunction w/check-for-new.
+ *      a new database is created.
  *    - write tags
  *      write db tags to the audio files
  *    - reorganize
@@ -605,9 +607,8 @@ dbupdateProcessing (void *udata)
           /* if doing a checknew, no need for further processing */
           /* if doing a compact, the information must be written to */
           /* the new database. */
-          /* the file exists, don't change the file or the database */
           if (dbupdate->checknew || dbupdate->compact) {
-            if (dbupdate->checknew) {
+            if (dbupdate->checknew && ! dbupdate->compact) {
               dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
             }
             if (dbupdate->compact) {
@@ -1072,18 +1073,31 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
     }
   }
 
-  /* rebuild and compact create entirely new databases */
+  /* rebuild and compact create an entirely new databases */
   /* always use a new rrn when adding a new song */
 
   rrn = MUSICDB_ENTRY_NEW;
 
+  /* set the prefix length. this is used by export to/import from */
+  /* so that secondary folders can preserve the directory structure */
+  /* prefix length should always be set. */
+  /* do this before the existing prefix length is recovered from the song */
+  {
+    char    tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "%d", dbupdate->prefixlen);
+    slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
+  }
+
   /* on a rebuild, the database add date will be reset */
   /* on a compact, the rrn is not wanted, but the add date is wanted */
-  /* for all other modes, both the rrn and the add date are wanted */
+  /* for all other modes, the rrn, the add date and prefix-len are kept */
   if (! dbupdate->rebuild) {
     song = dbGetByName (dbupdate->musicdb, tdi->songfn);
     if (song != NULL) {
       const char  *tmp;
+      char        tbuff [40];
+      int         val;
 
       if (! dbupdate->compact) {
         rrn = songGetNum (song, TAG_RRN);
@@ -1092,16 +1106,12 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
       if (tmp != NULL) {
         slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
       }
+      val = songGetNum (song, TAG_PREFIX_LEN);
+      if (val > 0) {
+        snprintf (tbuff, sizeof (tbuff), "%d", val);
+        slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tbuff);
+      }
     }
-  }
-
-  /* set the prefix length. this is used by export to/import from */
-  /* so that secondary folders can preserve the directory structure */
-  {
-    char    tmp [40];
-
-    snprintf (tmp, sizeof (tmp), "%d", dbupdate->prefixlen);
-    slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
   }
 
   currdb = dbupdateSetCurrentDB (dbupdate);
