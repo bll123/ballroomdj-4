@@ -24,6 +24,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "log.h"
+#include "osdirutil.h"
 #include "pathutil.h"
 #include "check_bdj.h"
 #include "mdebug.h"

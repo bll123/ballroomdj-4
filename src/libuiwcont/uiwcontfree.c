@@ -18,6 +18,7 @@
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
 #include "ui/uiswitch.h"
+#include "ui/uitextbox.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -45,6 +46,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_SWITCH: {
       uiSwitchFree (uiwidget);
+      break;
+    }
+    case WCONT_T_TEXT_BOX: {
+      uiTextBoxFree (uiwidget);
       break;
     }
     default: {

@@ -27,62 +27,62 @@ typedef struct uitextbox {
   int       junk;
 } uitextbox_t;
 
-uitextbox_t *
+uiwcont_t *
 uiTextBoxCreate (int height, const char *hlcolor)
 {
   return NULL;
 }
 
 void
-uiTextBoxFree (uitextbox_t *tb)
+uiTextBoxFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 uiwcont_t *
-uiTextBoxGetScrolledWindow (uitextbox_t *tb)
+uiTextBoxGetScrolledWindow (uiwcont_t *uiwidget)
 {
   return NULL;
 }
 
 void
-uiTextBoxSetReadonly (uitextbox_t *tb)
+uiTextBoxSetReadonly (uiwcont_t *uiwidget)
 {
   return;
 }
 
 char *
-uiTextBoxGetValue (uitextbox_t *tb)
+uiTextBoxGetValue (uiwcont_t *uiwidget)
 {
   return NULL;
 }
 
 void
-uiTextBoxScrollToEnd (uitextbox_t *tb)
+uiTextBoxScrollToEnd (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTextBoxAppendStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendStr (uiwcont_t *uiwidget, const char *str)
 {
   return;
 }
 
 void
-uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendBoldStr (uiwcont_t *uiwidget, const char *str)
 {
   return;
 }
 
 void
-uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
 {
   return;
 }
 
 void
-uiTextBoxSetValue (uitextbox_t *tb, const char *str)
+uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)
 {
   return;
 }
@@ -90,31 +90,31 @@ uiTextBoxSetValue (uitextbox_t *tb, const char *str)
 /* this does not handle any selected text */
 
 void
-uiTextBoxDarken (uitextbox_t *tb)
+uiTextBoxDarken (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTextBoxHorizExpand (uitextbox_t *tb)
+uiTextBoxHorizExpand (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTextBoxVertExpand (uitextbox_t *tb)
+uiTextBoxVertExpand (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTextBoxSetHeight (uitextbox_t *tb, int h)
+uiTextBoxSetHeight (uiwcont_t *uiwidget, int h)
 {
   return;
 }
 
 void
-uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara)
+uiTextBoxSetParagraph (uiwcont_t *uiwidget, int indent, int interpara)
 {
   return;
 }

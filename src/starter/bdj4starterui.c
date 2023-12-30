@@ -127,6 +127,7 @@ enum {
   START_W_SUPPORT_SEND_FILES,
   START_W_SUPPORT_SEND_DB,
   START_W_MENU_DEL_PROFILE,
+  START_W_SUPPORT_TEXTBOX,
   START_W_MAX,
 };
 
@@ -170,7 +171,6 @@ typedef struct {
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
   uiwcont_t       *wcont [START_W_MAX];
-  uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
   /* options */
@@ -288,7 +288,6 @@ main (int argc, char *argv[])
   starter.sendType = SF_CONF_ONLY;
   starter.supportInFname = NULL;
   starter.webclient = NULL;
-  starter.supporttb = NULL;
   starter.lastPluiStart = mstime ();
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
@@ -505,7 +504,6 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   supportFree (starter->support);
   webclientClose (starter->webclient);
-  uiTextBoxFree (starter->supporttb);
   uiSpinboxFree (starter->profilesel);
 
   datafileSave (starter->optiondf, NULL, starter->options, DF_NO_OFFSET, 1);
@@ -831,7 +829,7 @@ starterMainLoop (void *tstarter)
 
       email = uiEntryGetValue (starter->supportemail);
       subj = uiEntryGetValue (starter->supportsubject);
-      msg = uiTextBoxGetValue (starter->supporttb);
+      msg = uiTextBoxGetValue (starter->wcont [START_W_SUPPORT_TEXTBOX]);
 
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
       fh = fileopOpen (tbuff, "w");
@@ -1761,8 +1759,8 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcont_t     *hbox;
   uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
-  uitextbox_t   *tb;
   uiutilsaccent_t accent;
+  uiwcont_t     *tb;
 
   if (starter->supportmsgactive) {
     return UICB_STOP;
@@ -1836,7 +1834,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
   uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (tb));
-  starter->supporttb = tb;
+  starter->wcont [START_W_SUPPORT_TEXTBOX] = tb;
 
   /* line 5 */
   /* CONTEXT: starterui: sending support message: checkbox: option to send data files */
@@ -1880,8 +1878,8 @@ starterSupportMsgDialogClear (startui_t *starter)
   uiwcontFree (starter->wcont [START_W_STATUS_DISP]);
   starter->wcont [START_W_STATUS_DISP] = NULL;
 
-  uiTextBoxFree (starter->supporttb);
-  starter->supporttb = NULL;
+  uiwcontFree (starter->wcont [START_W_SUPPORT_TEXTBOX]);
+  starter->wcont [START_W_SUPPORT_TEXTBOX] = NULL;
 
   uiEntryFree (starter->supportsubject);
   starter->supportsubject = NULL;

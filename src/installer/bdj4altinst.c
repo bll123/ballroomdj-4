@@ -90,6 +90,7 @@ enum {
   ALT_W_WINDOW,
   ALT_W_REINST,
   ALT_W_FEEDBACK_MSG,
+  ALT_W_STATUS_DISP,
   ALT_W_MAX,
 };
 
@@ -109,7 +110,6 @@ typedef struct {
   uiwcont_t       *wcont [ALT_W_MAX];
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
-  uitextbox_t     *disptb;
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -512,11 +512,12 @@ altinstBuildUI (altinst_t *altinst)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
 
-  altinst->disptb = uiTextBoxCreate (200, NULL);
-  uiTextBoxSetReadonly (altinst->disptb);
-  uiTextBoxHorizExpand (altinst->disptb);
-  uiTextBoxVertExpand (altinst->disptb);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (altinst->disptb));
+  uiwidgetp = uiTextBoxCreate (200, NULL);
+  uiTextBoxSetReadonly (uiwidgetp);
+  uiTextBoxHorizExpand (uiwidgetp);
+  uiTextBoxVertExpand (uiwidgetp);
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  altinst->wcont [ALT_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);
   altinst->uiBuilt = true;
@@ -536,7 +537,7 @@ altinstMainLoop (void *udata)
     uiEntryValidate (altinst->targetEntry, false);
 
     if (altinst->scrolltoend) {
-      uiTextBoxScrollToEnd (altinst->disptb);
+      uiTextBoxScrollToEnd (altinst->wcont [ALT_W_STATUS_DISP]);
       altinst->scrolltoend = false;
       uiUIProcessWaitEvents ();
       /* go through the main loop once more */
@@ -1216,7 +1217,6 @@ altinstCleanup (altinst_t *altinst)
       }
       uiEntryFree (altinst->targetEntry);
       uiEntryFree (altinst->nameEntry);
-      uiTextBoxFree (altinst->disptb);
     }
     dataFree (altinst->target);
     dataFree (altinst->name);
@@ -1228,13 +1228,13 @@ altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold)
 {
   if (altinst->guienabled) {
     if (bold) {
-      uiTextBoxAppendBoldStr (altinst->disptb, pfx);
-      uiTextBoxAppendBoldStr (altinst->disptb, txt);
-      uiTextBoxAppendBoldStr (altinst->disptb, "\n");
+      uiTextBoxAppendBoldStr (altinst->wcont [ALT_W_STATUS_DISP], pfx);
+      uiTextBoxAppendBoldStr (altinst->wcont [ALT_W_STATUS_DISP], txt);
+      uiTextBoxAppendBoldStr (altinst->wcont [ALT_W_STATUS_DISP], "\n");
     } else {
-      uiTextBoxAppendStr (altinst->disptb, pfx);
-      uiTextBoxAppendStr (altinst->disptb, txt);
-      uiTextBoxAppendStr (altinst->disptb, "\n");
+      uiTextBoxAppendStr (altinst->wcont [ALT_W_STATUS_DISP], pfx);
+      uiTextBoxAppendStr (altinst->wcont [ALT_W_STATUS_DISP], txt);
+      uiTextBoxAppendStr (altinst->wcont [ALT_W_STATUS_DISP], "\n");
     }
     altinst->scrolltoend = true;
   } else {

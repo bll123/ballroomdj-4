@@ -58,7 +58,7 @@ typedef struct managedb {
   uibutton_t        *dbstart;
   uibutton_t        *dbstop;
   uiwcont_t         *dbhelpdisp;
-  uitextbox_t       *dbstatus;
+  uiwcont_t         *dbstatus;
   nlist_t           *dblist;
   int               dblistWidth;
   nlist_t           *dbhelp;
@@ -176,7 +176,7 @@ manageDbFree (managedb_t *managedb)
     nlistFree (managedb->dbhelp);
 
     uiwcontFree (managedb->dbpbar);
-    uiTextBoxFree (managedb->dbstatus);
+    uiwcontFree (managedb->dbstatus);
     uiEntryFree (managedb->dbupmusicdir);
     uiSpinboxFree (managedb->dbspinbox);
     uiButtonFree (managedb->topdirsel);
@@ -206,7 +206,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *hbox;
   uiwcont_t     *szgrp;
-  uitextbox_t   *tb;
+  uiwcont_t     *tb;
   char          tbuff [MAXPATHLEN];
 
 

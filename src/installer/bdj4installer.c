@@ -114,6 +114,7 @@ enum {
   INST_W_CONVERT,
   INST_W_CONV_FEEDBACK_MSG,
   INST_W_VLC_MSG,
+  INST_W_STATUS_DISP,
   INST_W_MAX,
 };
 
@@ -151,7 +152,6 @@ typedef struct {
   uiwcont_t       *wcont [INST_W_MAX];
   uientry_t       *targetEntry;
   uientry_t       *bdj3locEntry;
-  uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* ati */
   char            ati [40];
@@ -306,7 +306,6 @@ main (int argc, char *argv[])
   installer.convlist = NULL;
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
-  installer.disptb = NULL;
   /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
@@ -811,11 +810,12 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
 
-  installer->disptb = uiTextBoxCreate (250, INST_HL_COLOR);
-  uiTextBoxSetReadonly (installer->disptb);
-  uiTextBoxHorizExpand (installer->disptb);
-  uiTextBoxVertExpand (installer->disptb);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (installer->disptb));
+  uiwidgetp = uiTextBoxCreate (250, INST_HL_COLOR);
+  uiTextBoxSetReadonly (uiwidgetp);
+  uiTextBoxHorizExpand (uiwidgetp);
+  uiTextBoxVertExpand (uiwidgetp);
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  installer->wcont [INST_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);
   installer->uiBuilt = true;
@@ -840,7 +840,7 @@ installerMainLoop (void *udata)
   }
 
   if (installer->guienabled && installer->scrolltoend) {
-    uiTextBoxScrollToEnd (installer->disptb);
+    uiTextBoxScrollToEnd (installer->wcont [INST_W_STATUS_DISP]);
     installer->scrolltoend = false;
     uiUIProcessWaitEvents ();
     /* go through the main loop once more */
@@ -2320,7 +2320,6 @@ installerCleanup (installer_t *installer)
   if (installer->guienabled) {
     uiEntryFree (installer->targetEntry);
     uiEntryFree (installer->bdj3locEntry);
-    uiTextBoxFree (installer->disptb);
     for (int i = 0; i < INST_BUTTON_MAX; ++i) {
       uiButtonFree (installer->buttons [i]);
     }
@@ -2410,13 +2409,13 @@ installerDisplayText (installer_t *installer, const char *pfx,
 {
   if (installer->guienabled) {
     if (bold) {
-      uiTextBoxAppendBoldStr (installer->disptb, pfx);
-      uiTextBoxAppendBoldStr (installer->disptb, txt);
-      uiTextBoxAppendStr (installer->disptb, "\n");
+      uiTextBoxAppendBoldStr (installer->wcont [INST_W_STATUS_DISP], pfx);
+      uiTextBoxAppendBoldStr (installer->wcont [INST_W_STATUS_DISP], txt);
+      uiTextBoxAppendStr (installer->wcont [INST_W_STATUS_DISP], "\n");
     } else {
-      uiTextBoxAppendStr (installer->disptb, pfx);
-      uiTextBoxAppendStr (installer->disptb, txt);
-      uiTextBoxAppendStr (installer->disptb, "\n");
+      uiTextBoxAppendStr (installer->wcont [INST_W_STATUS_DISP], pfx);
+      uiTextBoxAppendStr (installer->wcont [INST_W_STATUS_DISP], txt);
+      uiTextBoxAppendStr (installer->wcont [INST_W_STATUS_DISP], "\n");
     }
     installer->scrolltoend = true;
   } else {

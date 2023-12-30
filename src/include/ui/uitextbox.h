@@ -6,22 +6,20 @@
 
 #include "uiwcont.h"
 
-typedef struct uitextbox uitextbox_t;
-
-uitextbox_t  *uiTextBoxCreate (int height, const char *hlcolor);
-void  uiTextBoxFree (uitextbox_t *tb);
-uiwcont_t * uiTextBoxGetScrolledWindow (uitextbox_t *tb);
-char  *uiTextBoxGetValue (uitextbox_t *tb);
-void  uiTextBoxSetReadonly (uitextbox_t *tb);
-void  uiTextBoxScrollToEnd (uitextbox_t *tb);
-void  uiTextBoxAppendStr (uitextbox_t *tb, const char *str);
-void  uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str);
-void  uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str);
-void  uiTextBoxSetValue (uitextbox_t *tb, const char *str);
-void  uiTextBoxDarken (uitextbox_t *tb);
-void  uiTextBoxHorizExpand (uitextbox_t *tb);
-void  uiTextBoxVertExpand (uitextbox_t *tb);
-void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
-void  uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara);
+uiwcont_t *uiTextBoxCreate (int height, const char *hlcolor);
+void  uiTextBoxFree (uiwcont_t *uiwidget);
+uiwcont_t * uiTextBoxGetScrolledWindow (uiwcont_t *uiwidget);
+char  *uiTextBoxGetValue (uiwcont_t *uiwidget);
+void  uiTextBoxSetReadonly (uiwcont_t *uiwidget);
+void  uiTextBoxScrollToEnd (uiwcont_t *uiwidget);
+void  uiTextBoxAppendStr (uiwcont_t *uiwidget, const char *str);
+void  uiTextBoxAppendBoldStr (uiwcont_t *uiwidget, const char *str);
+void  uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str);
+void  uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str);
+void  uiTextBoxDarken (uiwcont_t *uiwidget);
+void  uiTextBoxHorizExpand (uiwcont_t *uiwidget);
+void  uiTextBoxVertExpand (uiwcont_t *uiwidget);
+void  uiTextBoxSetHeight (uiwcont_t *uiwidget, int h);
+void  uiTextBoxSetParagraph (uiwcont_t *uiwidget, int indent, int interpara);
 
 #endif /* INC_UITEXTBOX_H */

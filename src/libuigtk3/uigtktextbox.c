@@ -31,18 +31,21 @@ typedef struct uitextbox {
   uiwcont_t    *buffer;
 } uitextbox_t;
 
-uitextbox_t *
+uiwcont_t *
 uiTextBoxCreate (int height, const char *hlcolor)
 {
   uitextbox_t   *tb;
+  uiwcont_t     *uiwidget;
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_TEXT_BOX;
+  uiwidget->wtype = WCONT_T_TEXT_BOX;
+  uiwidget->widget = NULL;
 
   tb = mdmalloc (sizeof (uitextbox_t));
-  tb->scw = NULL;
-  tb->textbox = uiwcontAlloc ();
-  tb->textbox->wbasetype = WCONT_T_TEXT_BOX;
-  tb->textbox->wtype = WCONT_T_TEXT_BOX;
+  uiwidget->uiint.uitextbox = tb;
+
   tb->buffer = uiwcontAlloc ();
-  tb->textbox->wbasetype = WCONT_T_TEXT_BUFFER;
   tb->buffer->wtype = WCONT_T_TEXT_BUFFER;
   tb->buffer->buffer = gtk_text_buffer_new (NULL);
 
@@ -54,45 +57,66 @@ uiTextBoxCreate (int height, const char *hlcolor)
   } else {
     gtk_text_buffer_create_tag (tb->buffer->buffer, "highlight", "foreground", hlcolor, NULL);
   }
-  tb->textbox->widget = gtk_text_view_new_with_buffer (tb->buffer->buffer);
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox->widget), GTK_WRAP_WORD);
-  uiWidgetSetAllMargins (tb->textbox, 2);
-  uiWidgetSetSizeRequest (tb->textbox, -1, -1);
-  uiWidgetAlignVertStart (tb->textbox);
-  uiWindowPackInWindow (tb->scw, tb->textbox);
 
-  return tb;
+  uiwidget->widget = gtk_text_view_new_with_buffer (tb->buffer->buffer);
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (uiwidget->widget), GTK_WRAP_WORD);
+  uiWidgetSetAllMargins (uiwidget, 2);
+  uiWidgetSetSizeRequest (uiwidget, -1, -1);
+  uiWidgetAlignVertStart (uiwidget);
+
+  uiWindowPackInWindow (tb->scw, uiwidget);
+
+  return uiwidget;
 }
 
 void
-uiTextBoxFree (uitextbox_t *tb)
+uiTextBoxFree (uiwcont_t *uiwidget)
 {
-  if (tb != NULL) {
-    uiwcontFree (tb->scw);
-    uiwcontFree (tb->textbox);
-    uiwcontFree (tb->buffer);
-    mdfree (tb);
+  uitextbox_t   *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-free")) {
+    return;
   }
+
+  tb = uiwidget->uiint.uitextbox;
+  uiwcontFree (tb->scw);
+  uiwcontFree (tb->buffer);
+  mdfree (tb);
 }
 
 uiwcont_t *
-uiTextBoxGetScrolledWindow (uitextbox_t *tb)
+uiTextBoxGetScrolledWindow (uiwcont_t *uiwidget)
 {
-  return tb->scw;
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-get-scw")) {
+    return NULL;
+  }
+
+  return uiwidget->uiint.uitextbox->scw;
 }
 
 void
-uiTextBoxSetReadonly (uitextbox_t *tb)
+uiTextBoxSetReadonly (uiwcont_t *uiwidget)
 {
-  uiWidgetDisableFocus (tb->textbox);
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-set-ro")) {
+    return;
+  }
+
+  uiWidgetDisableFocus (uiwidget);
 }
 
 char *
-uiTextBoxGetValue (uitextbox_t *tb)
+uiTextBoxGetValue (uiwcont_t *uiwidget)
 {
   GtkTextIter   siter;
   GtkTextIter   eiter;
   char          *val;
+  uitextbox_t   *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-get-value")) {
+    return NULL;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_start_iter (tb->buffer->buffer, &siter);
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &eiter);
@@ -102,30 +126,51 @@ uiTextBoxGetValue (uitextbox_t *tb)
 }
 
 void
-uiTextBoxScrollToEnd (uitextbox_t *tb)
+uiTextBoxScrollToEnd (uiwcont_t *uiwidget)
 {
   GtkTextIter iter;
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-scroll-to-end")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &iter);
-  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (tb->textbox->widget),
+  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (uiwidget->widget),
       &iter, 0, false, 0, 0);
 }
 
 void
-uiTextBoxAppendStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendStr (uiwcont_t *uiwidget, const char *str)
 {
   GtkTextIter eiter;
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-append-str")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &eiter);
   gtk_text_buffer_insert (tb->buffer->buffer, &eiter, str, -1);
 }
 
 void
-uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendBoldStr (uiwcont_t *uiwidget, const char *str)
 {
   GtkTextIter siter;
   GtkTextIter eiter;
   GtkTextMark *mark;
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-append-bold-str")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &eiter);
   mark = gtk_text_buffer_create_mark (tb->buffer->buffer, NULL, &eiter, TRUE);
@@ -137,11 +182,18 @@ uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str)
 }
 
 void
-uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str)
+uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
 {
   GtkTextIter siter;
   GtkTextIter eiter;
   GtkTextMark *mark;
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-append-hl-str")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &eiter);
   mark = gtk_text_buffer_create_mark (tb->buffer->buffer, NULL, &eiter, TRUE);
@@ -153,10 +205,17 @@ uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str)
 }
 
 void
-uiTextBoxSetValue (uitextbox_t *tb, const char *str)
+uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)
 {
   GtkTextIter siter;
   GtkTextIter eiter;
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-set-value")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
 
   gtk_text_buffer_get_start_iter (tb->buffer->buffer, &siter);
   gtk_text_buffer_get_end_iter (tb->buffer->buffer, &eiter);
@@ -168,41 +227,65 @@ uiTextBoxSetValue (uitextbox_t *tb, const char *str)
 /* this does not handle any selected text */
 
 void
-uiTextBoxDarken (uitextbox_t *tb)
+uiTextBoxDarken (uiwcont_t *uiwidget)
 {
-  uiWidgetSetClass (tb->textbox, TEXTBOX_DARK_CLASS);
-}
-
-void
-uiTextBoxHorizExpand (uitextbox_t *tb)
-{
-  uiWidgetExpandHoriz (tb->scw);
-  uiWidgetAlignHorizFill (tb->textbox);
-  uiWidgetExpandHoriz (tb->textbox);
-}
-
-void
-uiTextBoxVertExpand (uitextbox_t *tb)
-{
-  uiWidgetExpandVert (tb->scw);
-  uiWidgetAlignVertFill (tb->textbox);
-  uiWidgetExpandVert (tb->textbox);
-}
-
-void
-uiTextBoxSetHeight (uitextbox_t *tb, int h)
-{
-  uiWidgetSetSizeRequest (tb->textbox, -1, h);
-}
-
-void
-uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara)
-{
-  if (tb == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-darken")) {
     return;
   }
 
-  gtk_text_view_set_indent (GTK_TEXT_VIEW (tb->textbox->widget), indent);
-  gtk_text_view_set_pixels_below_lines (GTK_TEXT_VIEW (tb->textbox->widget),
+  uiWidgetSetClass (uiwidget, TEXTBOX_DARK_CLASS);
+}
+
+void
+uiTextBoxHorizExpand (uiwcont_t *uiwidget)
+{
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-horiz-expand")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
+
+  uiWidgetExpandHoriz (tb->scw);
+  uiWidgetAlignHorizFill (uiwidget);
+  uiWidgetExpandHoriz (uiwidget);
+}
+
+void
+uiTextBoxVertExpand (uiwcont_t *uiwidget)
+{
+  uitextbox_t *tb;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-vert-expand")) {
+    return;
+  }
+
+  tb = uiwidget->uiint.uitextbox;
+
+  uiWidgetExpandVert (tb->scw);
+  uiWidgetAlignVertFill (uiwidget);
+  uiWidgetExpandVert (uiwidget);
+}
+
+void
+uiTextBoxSetHeight (uiwcont_t *uiwidget, int h)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-set-height")) {
+    return;
+  }
+
+  uiWidgetSetSizeRequest (uiwidget, -1, h);
+}
+
+void
+uiTextBoxSetParagraph (uiwcont_t *uiwidget, int indent, int interpara)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-set-para")) {
+    return;
+  }
+
+  gtk_text_view_set_indent (GTK_TEXT_VIEW (uiwidget->widget), indent);
+  gtk_text_view_set_pixels_below_lines (GTK_TEXT_VIEW (uiwidget->widget),
       interpara);
 }

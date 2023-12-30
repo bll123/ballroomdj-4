@@ -43,7 +43,7 @@ typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   uiwcont_t       *window;
-  uitextbox_t     *tb;
+  uiwcont_t       *tb;
   uibutton_t      *buttons [HELPER_BUTTON_MAX];
   callback_t      *closeCallback;
   callback_t      *nextCallback;
@@ -180,7 +180,7 @@ helperClosingCallback (void *udata, programstate_t programState)
   uiCleanup ();
 
   uiwcontFree (helper->window);
-  uiTextBoxFree (helper->tb);
+  uiwcontFree (helper->tb);
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     uiButtonFree (helper->buttons [i]);
   }

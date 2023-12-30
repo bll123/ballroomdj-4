@@ -6,7 +6,6 @@
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
 #include "ui/uispinbox.h"
-#include "ui/uitextbox.h"
 #include "ui/uitreeview.h"
 
 /* partially in use. */
@@ -75,6 +74,7 @@ typedef struct uikey uikey_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uiswitch uiswitch_t;
+typedef struct uitextbox uitextbox_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */
