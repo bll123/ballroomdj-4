@@ -25,7 +25,7 @@
 #include "nlist.h"
 #include "musicdb.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "playlist.h"
 #include "rating.h"
 #include "sequence.h"

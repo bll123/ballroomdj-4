@@ -20,7 +20,7 @@
 #include "mp3exp.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "slist.h"
 #include "song.h"
 #include "tagdef.h"

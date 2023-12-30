@@ -44,6 +44,7 @@
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "pathinfo.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "procutil.h"

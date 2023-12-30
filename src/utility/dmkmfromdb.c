@@ -26,7 +26,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "osdirutil.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "rafile.h"
 #include "slist.h"
 #include "song.h"

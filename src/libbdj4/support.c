@@ -15,7 +15,7 @@
 #include "fileop.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "support.h"
 #include "sysvars.h"
 #include "webclient.h"

@@ -30,6 +30,7 @@ add_executable (check_all
   libcommon/check_osutils.c
   libcommon/check_pathbld.c
   libcommon/check_pathdisp.c
+  libcommon/check_pathinfo.c
   libcommon/check_pathutil.c
   libcommon/check_procutil.c
   libcommon/check_queue.c

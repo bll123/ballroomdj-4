@@ -66,7 +66,7 @@
 #include "orgutil.h"
 #include "ossignal.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "progstate.h"
 #include "procutil.h"
 #include "queue.h"

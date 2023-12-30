@@ -45,7 +45,7 @@
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "playlist.h"
 #include "slist.h"
 #include "song.h"

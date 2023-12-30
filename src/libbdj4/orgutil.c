@@ -28,7 +28,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "orgutil.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "rating.h"
 #include "song.h"
 #include "status.h"

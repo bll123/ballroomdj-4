@@ -25,7 +25,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "slist.h"
 #include "song.h"
 #include "songfav.h"

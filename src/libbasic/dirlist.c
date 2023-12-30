@@ -24,7 +24,7 @@
 #include "slist.h"
 #include "osdir.h"
 #include "osutils.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "queue.h"
 
 slist_t *

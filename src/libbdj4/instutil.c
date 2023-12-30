@@ -29,6 +29,7 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathinfo.h"
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"

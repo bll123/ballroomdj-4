@@ -28,7 +28,7 @@
 #include "nlist.h"
 #include "osprocess.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "song.h"
 #include "songdb.h"
 #include "songutil.h"

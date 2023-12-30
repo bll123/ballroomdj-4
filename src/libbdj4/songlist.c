@@ -17,7 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "songlist.h"
 
 enum {

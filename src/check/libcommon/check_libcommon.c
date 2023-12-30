@@ -50,6 +50,7 @@ check_libcommon (SRunner *sr)
    *  pathbld     complete
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
+   *  pathinfo    complete
    *  log
    *  bdjmsg      complete
    *  sock        partial                 // uses ossignal
@@ -122,6 +123,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = fileshared_suite();
+  srunner_add_suite (sr, s);
+
+  s = pathinfo_suite();
   srunner_add_suite (sr, s);
 
   /* log */

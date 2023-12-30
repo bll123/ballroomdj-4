@@ -23,6 +23,7 @@ add_library (libbdj4common SHARED
   oswinlocale.c
   osrandom.c
   ossignal.c
+  pathinfo.c
   queue.c
   sock.c
   sockh.c

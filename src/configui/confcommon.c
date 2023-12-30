@@ -33,7 +33,7 @@
 #include "orgutil.h"
 #include "pathbld.h"
 #include "pathdisp.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "webclient.h"

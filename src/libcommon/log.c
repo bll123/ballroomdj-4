@@ -27,7 +27,7 @@
 #include "filemanip.h"
 #include "fileshared.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "player.h"
 #include "bdjstring.h"
 

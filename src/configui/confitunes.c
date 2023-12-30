@@ -25,7 +25,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "rating.h"
 #include "slist.h"
 #include "tagdef.h"

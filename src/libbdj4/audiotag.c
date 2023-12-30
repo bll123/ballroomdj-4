@@ -20,7 +20,7 @@
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"

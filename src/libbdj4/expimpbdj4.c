@@ -23,7 +23,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "song.h"

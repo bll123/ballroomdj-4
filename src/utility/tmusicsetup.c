@@ -31,7 +31,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
-#include "pathutil.h"
+#include "pathinfo.h"
 #include "rating.h"
 #include "slist.h"
 #include "song.h"
