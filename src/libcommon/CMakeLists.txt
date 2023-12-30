@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4common SHARED
-  bdj4arg.c
   bdjmsg.c
   bdjregex.c
   bdjvars.c
@@ -14,7 +13,6 @@ add_library (libbdj4common SHARED
   colorutils.c
   conn.c
   dirop.c
-  filedata.c
   filemanip.c
   fileshared.c
   log.c
@@ -23,16 +21,11 @@ add_library (libbdj4common SHARED
   oslocale.c
   osmaclocale.m
   oswinlocale.c
-  osnetutils.c
   osrandom.c
   ossignal.c
-  pathbld.c
-  pathdisp.c
-  pathutil.c
   queue.c
   sock.c
   sockh.c
-  sysvars.c
   vsencdec.c
 )
 target_include_directories (libbdj4common
@@ -44,11 +37,15 @@ if (APPLE)
   )
 endif()
 target_link_libraries (libbdj4common PRIVATE
-  libfileopobj     # fileop.c
-  libosprocessobj  # osprocess.c
-  libosutilsobj    # osutils.c
-  libstringobj     # bdjstring.c strlcat.c strlcpy.c mdebug.c
-  libtmutilobj     # tmutil.c
+  objosutils    # osutils.c os*utils.c
+  objlauncher   # bdj4arg, pathbld, pathdisp, sysvars, pathutil,
+                # osnetutils, filedata (see ../CMakeLists.txt)
+  objosenv      # osenv.c
+  objdirutil    # dirutil.c
+  objfileop     # fileop.c
+  objosprocess  # osprocess.c os*process.c
+  objstring     # bdjstring.c strlcat.c strlcpy.c mdebug.c
+  objtmutil     # tmutil.c
   ${GLIB_LDFLAGS}
 )
 addIOKitFramework (libbdj4common)

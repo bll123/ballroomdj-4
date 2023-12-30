@@ -36,12 +36,12 @@ check_libbasic (SRunner *sr)
    *  slist       partial
    *  datafile    partial
    *  bdjopt      complete 2023-7-18
+   *  dirlist     complete
    *  procutil    partial
    *  lock        complete
-   *  localeutil
    *  rafile      complete
-   *  dirlist     complete
    *  progstate   complete (no log checks)
+   *  localeutil
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbasic");
@@ -66,22 +66,22 @@ check_libbasic (SRunner *sr)
   s = bdjopt_suite();
   srunner_add_suite (sr, s);
 
+  s = dirlist_suite();
+  srunner_add_suite (sr, s);
+
   s = procutil_suite();
   srunner_add_suite (sr, s);
 
   s = lock_suite();
   srunner_add_suite (sr, s);
 
-  /* localeutil */
-
   s = rafile_suite();
-  srunner_add_suite (sr, s);
-
-  s = dirlist_suite();
   srunner_add_suite (sr, s);
 
   s = progstate_suite();
   srunner_add_suite (sr, s);
+
+  /* localeutil */
 }
 
 #pragma clang diagnostic pop

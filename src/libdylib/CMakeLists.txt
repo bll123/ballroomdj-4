@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libdylibobj OBJECT
+add_library (objdylibobj OBJECT
   dyintfc.c
   dylib.c
 )

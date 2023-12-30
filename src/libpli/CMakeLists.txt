@@ -9,7 +9,7 @@ add_library (libbdj4pli SHARED
   pli.c
 )
 target_link_libraries (libbdj4pli PRIVATE
-  libdylibobj
+  objdylibobj
   libbdj4basic libbdj4common
   ${CMAKE_DL_LIBS}
 )
@@ -30,11 +30,11 @@ target_link_libraries (libplivlc PRIVATE
 
 # make this an object in case something else needs it
 # but leave it in libpli/ for now
-add_library (libbdj4dbusi OBJECT dbusi.c)
-target_include_directories (libbdj4dbusi
+add_library (objdbusi OBJECT dbusi.c)
+target_include_directories (objdbusi
   PRIVATE "${GIO_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4dbusi PRIVATE
+target_link_libraries (objdbusi PRIVATE
   ${GIO_LDFLAGS}
 )
 
@@ -44,7 +44,7 @@ target_include_directories (libplimpris
 )
 target_link_libraries (libplimpris PRIVATE
   libbdj4common
-  libbdj4dbusi
+  objdbusi
   ${GIO_LDFLAGS}
 )
 

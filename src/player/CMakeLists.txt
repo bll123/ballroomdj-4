@@ -55,7 +55,7 @@ if (WIN32)
   target_compile_options (bdj4rc PRIVATE -municode)
 endif()
 target_link_libraries (bdj4rc PRIVATE
-  libwebsrv
+  objwebsrv
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -70,7 +70,7 @@ if (WIN32)
   target_compile_options (bdj4mobmq PRIVATE -municode)
 endif()
 target_link_libraries (bdj4mobmq PRIVATE
-  libwebsrv
+  objwebsrv
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}

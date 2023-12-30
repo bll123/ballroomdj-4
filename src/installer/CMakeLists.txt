@@ -24,11 +24,12 @@ if (WIN32)
   target_compile_options (bdj4se PRIVATE -municode)
 endif()
 target_link_libraries (bdj4se PRIVATE
-  libfileopobj
-  libosprocessobj
-  libosutilsobj
-  libstringobj
-  libtmutilobj
+  objdirutil
+  objosprocess
+  objosenv
+  objfileop
+  objstring
+  objtmutil
   m
 )
 if (WIN32)
@@ -42,7 +43,7 @@ if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
 endif()
 target_link_libraries (bdj4installer PRIVATE
-  liblocbdj3obj
+  objlocbdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -55,7 +56,7 @@ if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -municode)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
-  liblocbdj3obj
+  objlocbdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}

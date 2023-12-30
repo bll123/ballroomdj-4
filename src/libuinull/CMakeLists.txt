@@ -38,7 +38,7 @@ add_library (libuinull SHARED
   uinullwindow.c
 )
 target_link_libraries (libuinull PRIVATE
-  libuiwcontobj libbdj4 libbdj4basic libbdj4common
+  objuiwcont libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (libuinull)

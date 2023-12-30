@@ -19,6 +19,9 @@ INCTO=inctest.o
 INCTOUT=inctest.log
 TIN=dep-in.txt
 TSORT=dep-sort.txt
+DEPCOMMON=dep-libcommon.txt
+DEPBASIC=dep-libbasic.txt
+DEPBDJ4=dep-libbdj4.txt
 grc=0
 
 # a) check to make sure the include files can be compiled w/o dependencies
@@ -96,15 +99,15 @@ if [[ $rc -ne 0 ]]; then
 fi
 
 if [[ $keep == T ]]; then
-  grep -E '/(libbdj4common|libbdj4string|libbdj4tmutil|libbdj4fileop|libbdj4osutils|libbdj4osprocess).dir/' $TSORT |
-      sed -e 's,.*/,,' > dep-libcommon.txt
+  grep -E '/(libbdj4common|objosutils|objlauncher|objosenv|objdirutil|objfileop|objosprocess|objstring|objtmutil).dir/' $TSORT |
+      sed -e 's,.*/,,' > $DEPCOMMON
   grep -E '/(libbdj4basic).dir/' $TSORT |
-      sed -e 's,.*/,,' > dep-libbasic.txt
+      sed -e 's,.*/,,' > $DEPBASIC
   grep -E '/(libbdj4).dir/' $TSORT |
-      sed -e 's,.*/,,' > dep-libbdj4.txt
+      sed -e 's,.*/,,' > $DEPBDJ4
 fi
 if [[ $keep == F ]]; then
-  rm -f $TIN $TSORT > /dev/null 2>&1
+  rm -f $TIN $TSORT $DEPCOMMON $DEPBASIC $DEPBDJ4 > /dev/null 2>&1
 fi
 rm -f $INCCT $INCTO $INCTOUT
 

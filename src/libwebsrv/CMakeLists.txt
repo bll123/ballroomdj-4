@@ -5,9 +5,9 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libwebsrv OBJECT
+add_library (objwebsrv OBJECT
   websrv.c ${MONGOOSE_SRC}
 )
-target_include_directories (libwebsrv
+target_include_directories (objwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
 )

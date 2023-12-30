@@ -45,48 +45,56 @@ include (utils/bdj4config.cmake)
 
 include (utils/bdj4macros.cmake)
 
-# reusable objects; there's no need to compile these twice
+# reusable objects; there's no need to compile these multiple times
+# bdj4se and bdj4 need to be linked as static objects
 
-add_library (libstringobj OBJECT
+# the following are needed by both bdj4se and bdj4
+
+add_library (objosprocess OBJECT
+  libcommon/osprocess.c
+  libcommon/oswinprocess.c
+)
+
+add_library (objosenv OBJECT
+  libcommon/osenv.c
+)
+
+add_library (objdirutil OBJECT
+  libcommon/osdirutil.c
+)
+
+add_library (objfileop OBJECT
+  libcommon/fileop.c
+)
+
+add_library (objstring OBJECT
+  libcommon/mdebug.c
   libcommon/bdjstring.c
   libcommon/strlcat.c
   libcommon/strlcpy.c
-  libcommon/mdebug.c
 )
 
-add_library (libosutilsobj OBJECT
-  libcommon/osdirutil.c
-  libcommon/osenv.c
+add_library (objtmutil OBJECT
+  libcommon/tmutil.c
+)
+
+# the bdj4 launcher needs certain modules to link.
+# The bdj4 launcher must be able to link as a static executable
+add_library (objosutils OBJECT
   libcommon/osutils.c
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
   libcommon/oswinutils.c
 )
 
-add_library (libtmutilobj OBJECT
-  libcommon/tmutil.c
-)
-
-add_library (libosprocessobj OBJECT
-  libcommon/osprocess.c
-  libcommon/oswinprocess.c
-)
-
-add_library (libfileopobj OBJECT
-  libcommon/fileop.c
-)
-
-# the bdj4launcher library is a collection of all the other
-# modules that the launcher needs that are not in any of the
-# above libraries.
-add_library (liblauncherobj OBJECT
+add_library (objlauncher OBJECT
   libcommon/bdj4arg.c
-  libcommon/filedata.c
-  libcommon/osnetutils.c
   libcommon/pathbld.c
   libcommon/pathdisp.c
-  libcommon/pathutil.c
   libcommon/sysvars.c
+  libcommon/pathutil.c
+  libcommon/osnetutils.c
+  libcommon/filedata.c
 )
 
 # static libraries for build

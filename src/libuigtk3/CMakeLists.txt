@@ -41,7 +41,7 @@ target_include_directories (libuigtk3
   PRIVATE ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libuigtk3 PRIVATE
-  libuiwcontobj libbdj4 libbdj4basic libbdj4common
+  objuiwcont libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}
 )

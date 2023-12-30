@@ -27,12 +27,14 @@ if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
 target_link_libraries (bdj4 PRIVATE
-  liblauncherobj
-  libfileopobj
-  libosprocessobj
-  libosutilsobj
-  libstringobj
-  libtmutilobj
+  objosutils
+  objlauncher
+  objdirutil
+  objosprocess
+  objosenv
+  objfileop
+  objstring
+  objtmutil
   m
 )
 # for gethostname
@@ -52,12 +54,14 @@ target_include_directories (bdj4g
 )
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g PRIVATE
-  liblauncherobj
-  libfileopobj
-  libosprocessobj
-  libosutilsobj
-  libstringobj
-  libtmutilobj
+  objosutils
+  objlauncher
+  objdirutil
+  objosprocess
+  objosenv
+  objfileop
+  objstring
+  objtmutil
   ${GTK_LDFLAGS}
   m
 )

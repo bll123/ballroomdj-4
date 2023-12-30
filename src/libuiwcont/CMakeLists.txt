@@ -5,10 +5,10 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libuiwcontobj OBJECT
+add_library (objuiwcont OBJECT
   uiwcont.c
   uiwcontfree.c
 )
-target_include_directories (libuiwcontobj
+target_include_directories (objuiwcont
   PRIVATE ${GTK_INCLUDE_DIRS}
 )

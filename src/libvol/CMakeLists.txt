@@ -9,14 +9,14 @@ add_library (libbdj4vol SHARED
   volume.c
 )
 target_link_libraries (libbdj4vol PRIVATE
-  libdylibobj
+  objdylibobj
   libbdj4basic libbdj4common
   ${CMAKE_DL_LIBS}
 )
 
 add_library (libvolnull SHARED volnull.c)
 target_link_libraries (libvolnull PRIVATE
-  libstringobj
+  objstring
 )
 
 if (APPLE)
@@ -54,9 +54,9 @@ if (WIN32)
   add_library (libvolwin SHARED volwin.cpp)
   target_compile_options (libvolwin PRIVATE -static-libstdc++)
   target_link_libraries (libvolwin PRIVATE
-    libfileopobj
-    libosutilsobj
-    libstringobj
+    objfileop
+    objosutils
+    objstring
   )
   endif()
 

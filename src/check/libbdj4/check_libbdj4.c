@@ -28,7 +28,6 @@ check_libbdj4 (SRunner *sr)
   Suite   *s;
 
   /* libbdj4
-   *  aesencdec             --
    *  bdjvarsdf             complete // needed by tests
    *  dnctypes              complete
    *  dance                 complete
@@ -52,15 +51,16 @@ check_libbdj4 (SRunner *sr)
    *  validate              complete
    *  sortopt               complete
    *  audiotag
+   *  orgutil               partial
    *  dispsel               complete
    *  samesong              complete
-   *  orgutil               partial
    *  webclient             complete 2022-12-27
    *  songdb
+   *  msgparse              complete 2022-12-27
    *  audioadjust
    *  templateutil          complete // needed by tests; needs localized tests
+   *  aesencdec             --
    *  bdjvarsdfload         complete // needed by tests; uses templateutil
-   *  msgparse              complete 2022-12-27
    *  musicq                complete
    *  orgopt                complete
    *  volreg                complete 2022-12-27 (missing lock tests)
@@ -75,9 +75,6 @@ check_libbdj4 (SRunner *sr)
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
-
-  s = aesencdec_suite();
-  srunner_add_suite (sr, s);
 
   s = bdjvarsdf_suite();
   srunner_add_suite (sr, s);
@@ -143,10 +140,13 @@ check_libbdj4 (SRunner *sr)
 
   /* audiotag */
 
+  s = orgutil_suite();
+  srunner_add_suite (sr, s);
+
   s = dispsel_suite();
   srunner_add_suite (sr, s);
 
-  s = orgutil_suite();
+  s = samesong_suite();
   srunner_add_suite (sr, s);
 
   s = webclient_suite();
@@ -154,7 +154,7 @@ check_libbdj4 (SRunner *sr)
 
   /* songdb */
 
-  s = samesong_suite();
+  s = msgparse_suite();
   srunner_add_suite (sr, s);
 
   /* audioadjust */
@@ -162,10 +162,10 @@ check_libbdj4 (SRunner *sr)
   s = templateutil_suite();
   srunner_add_suite (sr, s);
 
-  s = bdjvarsdfload_suite();
+  s = aesencdec_suite();
   srunner_add_suite (sr, s);
 
-  s = msgparse_suite();
+  s = bdjvarsdfload_suite();
   srunner_add_suite (sr, s);
 
   s = musicq_suite();

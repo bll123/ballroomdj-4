@@ -34,35 +34,37 @@ check_libcommon (SRunner *sr)
    *  tmutil      complete
    *  fileop      complete
    *  osenv       complete 2022-12-27
-   *  osutils     complete 2022-12-27
    *  bdjstring   complete
-   *  ossignal    complete
    *  osprocess   complete                // uses procutil, pathbld, ossignal
-   *  mdebug      complete
+   *  osdirutil
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
+   *  mdebug      complete
    *  sysvars
    *  osdir       complete 2022-12-27     // test uses dirop
    *  pathdisp    complete
+   *  osutils     complete 2022-12-27
    *  dirop       complete
    *  fileop_dir  complete 2023-7-31
+   *  pathbld     complete
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
-   *  pathbld     complete
    *  log
    *  bdjmsg      complete
    *  sock        partial                 // uses ossignal
    *  bdjvars     complete
    *  sockh
    *  conn
-   *  oslocale
-   *  queue       complete 2022-11-1
    *  callback    complete 2023-3-4
    *  osrandom    complete
    *  bdjregex
    *  colorutils  complete
    *  vsencdec    complete
+   *  oslocale
+   *  ossignal    complete
+   *  bdj4arg
+   *  queue       complete 2022-11-1
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
@@ -76,20 +78,13 @@ check_libcommon (SRunner *sr)
   s = osenv_suite();
   srunner_add_suite (sr, s);
 
-  s = osutils_suite();
-  srunner_add_suite (sr, s);
-
   s = bdjstring_suite();
-  srunner_add_suite (sr, s);
-
-  s = ossignal_suite();
   srunner_add_suite (sr, s);
 
   s = osprocess_suite();
   srunner_add_suite (sr, s);
 
-  s = mdebug_suite();
-  srunner_add_suite (sr, s);
+  /* osdirutil */
 
   s = filedata_suite();
   srunner_add_suite (sr, s);
@@ -100,6 +95,9 @@ check_libcommon (SRunner *sr)
   s = pathutil_suite();
   srunner_add_suite (sr, s);
 
+  s = mdebug_suite();
+  srunner_add_suite (sr, s);
+
   /* sysvars */
 
   s = osdir_suite();
@@ -108,19 +106,22 @@ check_libcommon (SRunner *sr)
   s = pathdisp_suite();
   srunner_add_suite (sr, s);
 
+  s = osutils_suite();
+  srunner_add_suite (sr, s);
+
   s = dirop_suite();
   srunner_add_suite (sr, s);
 
   s = fileop_dir_suite();
   srunner_add_suite (sr, s);
 
+  s = pathbld_suite();
+  srunner_add_suite (sr, s);
+
   s = filemanip_suite();
   srunner_add_suite (sr, s);
 
   s = fileshared_suite();
-  srunner_add_suite (sr, s);
-
-  s = pathbld_suite();
   srunner_add_suite (sr, s);
 
   /* log */
@@ -138,11 +139,6 @@ check_libcommon (SRunner *sr)
 
   /* conn */
 
-  /* oslocale */
-
-  s = queue_suite();
-  srunner_add_suite (sr, s);
-
   s = callback_suite();
   srunner_add_suite (sr, s);
 
@@ -155,6 +151,16 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = vsencdec_suite();
+  srunner_add_suite (sr, s);
+
+  /* oslocale */
+
+  s = ossignal_suite();
+  srunner_add_suite (sr, s);
+
+  /* bdj4arg */
+
+  s = queue_suite();
   srunner_add_suite (sr, s);
 }
 

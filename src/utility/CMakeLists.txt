@@ -99,7 +99,7 @@ target_link_libraries (plisinklist PRIVATE
 
 add_executable (dbustest dbustest.c)
 target_link_libraries (dbustest PRIVATE
-  libbdj4dbusi libbdj4common
+  objdbusi libbdj4common
 )
 
 add_executable (aesed aesed.c)
