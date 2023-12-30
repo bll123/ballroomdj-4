@@ -177,7 +177,6 @@ helperClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (helper->wcont [HELPER_W_WINDOW]);
   uiCleanup ();
 
-  uiwcontFree (helper->wcont [HELPER_W_WINDOW]);
   for (int i = 0; i < HELPER_W_MAX; ++i) {
     uiwcontFree (helper->wcont [i]);
   }
