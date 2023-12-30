@@ -9,7 +9,7 @@ add_library (libbdj4vol SHARED
   volume.c
 )
 target_link_libraries (libbdj4vol PRIVATE
-  objdylibobj
+  objdylib
   libbdj4basic libbdj4common
   ${CMAKE_DL_LIBS}
 )
