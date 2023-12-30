@@ -53,12 +53,6 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
   return 0;
 }
 
-uiwcont_t *
-uiSwitchGetWidgetContainer (uiwcont_t *uiwidget)
-{
-  return NULL;
-}
-
 void
 uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
