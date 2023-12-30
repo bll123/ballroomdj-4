@@ -79,8 +79,8 @@ uiTextBoxFree (uiwcont_t *uiwidget)
   }
 
   tb = uiwidget->uiint.uitextbox;
-  uiwcontFree (tb->scw);
-  uiwcontFree (tb->buffer);
+  uiwcontBaseFree (tb->scw);
+  uiwcontBaseFree (tb->buffer);
   mdfree (tb);
 }
 
