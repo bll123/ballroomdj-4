@@ -838,7 +838,7 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   uilevelSetState (uisf->uilevel, UIWIDGET_DISABLE);
   uistatusSetState (uisf->uistatus, UIWIDGET_DISABLE);
   uifavoriteSetState (uisf->uifavorite, UIWIDGET_DISABLE);
-  uiSwitchSetState (uisf->playstatusswitch, UIWIDGET_DISABLE);
+  uiWidgetSetState (uisf->playstatusswitch, UIWIDGET_DISABLE);
 }
 
 static void
@@ -859,7 +859,7 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   uilevelSetState (uisf->uilevel, UIWIDGET_ENABLE);
   uistatusSetState (uisf->uistatus, UIWIDGET_ENABLE);
   uifavoriteSetState (uisf->uifavorite, UIWIDGET_ENABLE);
-  uiSwitchSetState (uisf->playstatusswitch, UIWIDGET_ENABLE);
+  uiWidgetSetState (uisf->playstatusswitch, UIWIDGET_ENABLE);
 }
 
 static bool

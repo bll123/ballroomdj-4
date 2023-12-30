@@ -46,7 +46,7 @@ typedef struct uidropdown {
   char          *title;
   callback_t    *selectcb;
   uiwcont_t     *parentwin;
-  uibutton_t    *button;
+  uiwcont_t     *button;
   callback_t    *buttoncb;
   uiwcont_t     *window;
   callback_t    *closecb;
@@ -101,7 +101,7 @@ uiDropDownFree (uidropdown_t *dropdown)
     uiwcontFree (dropdown->window);
     callbackFree (dropdown->buttoncb);
     callbackFree (dropdown->closecb);
-    uiButtonFree (dropdown->button);
+    uiwcontFree (dropdown->button);
     dataFree (dropdown->title);
     if (dropdown->strSelection != NULL) {
       mdfree (dropdown->strSelection);        // allocated by gtk
@@ -126,7 +126,7 @@ uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
 
-  return uiButtonGetWidgetContainer (dropdown->button);
+  return dropdown->button;
 }
 
 uiwcont_t *
@@ -313,7 +313,7 @@ uiDropDownSetState (uidropdown_t *dropdown, int state)
   if (dropdown == NULL) {
     return;
   }
-  uiButtonSetState (dropdown->button, state);
+  uiWidgetSetState (dropdown->button, state);
 }
 
 char *
@@ -331,7 +331,6 @@ static bool
 uiDropDownWindowShow (void *udata)
 {
   uidropdown_t  *dropdown = udata;
-  uiwcont_t    *uiwidgetp;
   int           x, y, ws;
   int           bx, by;
 
@@ -343,9 +342,8 @@ uiDropDownWindowShow (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
-  uiwidgetp = uiButtonGetWidgetContainer (dropdown->button);
-  if (uiwidgetp != NULL) {
-    uiWidgetGetPosition (uiwidgetp, &bx, &by);
+  if (dropdown->button != NULL) {
+    uiWidgetGetPosition (dropdown->button, &bx, &by);
   }
   uiWidgetShowAll (dropdown->window);
   uiWindowMove (dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
@@ -371,16 +369,13 @@ uiDropDownClose (void *udata)
 static void
 uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
-  uiwcont_t  *uiwidgetp;
-
   dropdown->buttoncb = callbackInit (uiDropDownWindowShow, dropdown, NULL);
   dropdown->button = uiCreateButton (dropdown->buttoncb, NULL,
       "button_down_small");
   uiButtonAlignLeft (dropdown->button);
   uiButtonSetImagePosRight (dropdown->button);
-  uiwidgetp = uiButtonGetWidgetContainer (dropdown->button);
-  uiWidgetSetMarginTop (uiwidgetp, 1);
-  uiWidgetSetMarginStart (uiwidgetp, 1);
+  uiWidgetSetMarginTop (dropdown->button, 1);
+  uiWidgetSetMarginStart (dropdown->button, 1);
 }
 
 
@@ -398,7 +393,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 
   dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
   dropdown->window = uiCreateDialogWindow (dropdown->parentwin,
-      uiButtonGetWidgetContainer (dropdown->button), dropdown->closecb, "");
+      dropdown->button, dropdown->closecb, "");
 
   mainvbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (mainvbox);

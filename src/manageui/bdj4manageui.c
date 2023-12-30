@@ -190,6 +190,7 @@ enum {
   MANAGE_W_SONGSEL_TAB,           // not owner
   MANAGE_W_STATUS_MSG,
   MANAGE_W_WINDOW,
+  MANAGE_W_SELECT_BUTTON,
   MANAGE_W_MAX,
 };
 
@@ -215,7 +216,6 @@ typedef struct {
   uinbtabid_t       *mainnbtabid;
   uinbtabid_t       *slnbtabid;
   uinbtabid_t       *mmnbtabid;
-  uibutton_t        *selectButton;
   dbidx_t           songlistdbidx;
   dbidx_t           seldbidx;
   dbidx_t           songeditdbidx;
@@ -494,7 +494,6 @@ main (int argc, char *argv[])
   manage.cfpl = NULL;
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
-  manage.selectButton = NULL;
   manage.lastinsertlocation = QUEUE_LOC_LAST;
   manage.cfplactive = false;
   manage.cfplpostprocess = false;
@@ -675,7 +674,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
-  uiButtonFree (manage->selectButton);
   uicopytagsFree (manage->uict);
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
@@ -1007,7 +1005,6 @@ manageInitializeUI (manageui_t *manage)
 static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
-  uibutton_t  *uibutton;
   uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *vbox;
@@ -1058,13 +1055,12 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slsbssongsel, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
-  manage->selectButton = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (vbox, uiwidgetp);
+  manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
   uiwidgetp = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
   uiBoxPackStartExpand (hbox, uiwidgetp);

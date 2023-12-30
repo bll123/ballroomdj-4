@@ -27,7 +27,6 @@
 
 typedef struct uitextbox {
   uiwcont_t    *scw;
-  uiwcont_t    *textbox;
   uiwcont_t    *buffer;
 } uitextbox_t;
 

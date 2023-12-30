@@ -34,17 +34,17 @@
 #include "uiutils.h"
 
 enum {
-  HELPER_BUTTON_CLOSE,
-  HELPER_BUTTON_NEXT,
-  HELPER_BUTTON_MAX,
+  HELPER_W_BUTTON_CLOSE,
+  HELPER_W_BUTTON_NEXT,
+  HELPER_W_TEXTBOX,
+  HELPER_W_WINDOW,
+  HELPER_W_MAX,
 };
 
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
-  uiwcont_t       *window;
-  uiwcont_t       *tb;
-  uibutton_t      *buttons [HELPER_BUTTON_MAX];
+  uiwcont_t       *wcont [HELPER_W_MAX];
   callback_t      *closeCallback;
   callback_t      *nextCallback;
   datafile_t      *helpdf;
@@ -95,15 +95,13 @@ main (int argc, char *argv[])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("help");
 #endif
-  helper.tb = NULL;
   helper.conn = NULL;
   helper.helpdf = NULL;
   helper.helplist = NULL;
   helper.helpiter = 0;
   helper.scrollendflag = false;
-  helper.window = NULL;
-  for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
-    helper.buttons [i] = NULL;
+  for (int i = 0; i < HELPER_W_MAX; ++i) {
+    helper.wcont [i] = NULL;
   }
   helper.closeCallback = NULL;
   helper.nextCallback = NULL;
@@ -176,13 +174,12 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "helperClosingCallback");
 
-  uiCloseWindow (helper->window);
+  uiCloseWindow (helper->wcont [HELPER_W_WINDOW]);
   uiCleanup ();
 
-  uiwcontFree (helper->window);
-  uiwcontFree (helper->tb);
-  for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
-    uiButtonFree (helper->buttons [i]);
+  uiwcontFree (helper->wcont [HELPER_W_WINDOW]);
+  for (int i = 0; i < HELPER_W_MAX; ++i) {
+    uiwcontFree (helper->wcont [i]);
   }
   regexFree (helper->rx_br);
   regexFree (helper->rx_dotnlsp);
@@ -200,7 +197,6 @@ helperClosingCallback (void *udata, programstate_t programState)
 static void
 helperBuildUI (helperui_t  *helper)
 {
-  uibutton_t          *uibutton;
   uiwcont_t           *uiwidgetp;
   uiwcont_t           *vbox;
   uiwcont_t           *hbox;
@@ -212,44 +208,42 @@ helperBuildUI (helperui_t  *helper)
   helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
-  helper->window = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
+  helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
-  uiWindowPackInWindow (helper->window, vbox);
+  uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
 
-  helper->tb = uiTextBoxCreate (400, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiTextBoxSetParagraph (helper->tb, 0, 5);
-  uiTextBoxHorizExpand (helper->tb);
-  uiTextBoxVertExpand (helper->tb);
-  uiTextBoxSetReadonly (helper->tb);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (helper->tb));
+  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiTextBoxSetParagraph (helper->wcont [HELPER_W_TEXTBOX], 0, 5);
+  uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
+  uiTextBoxVertExpand (helper->wcont [HELPER_W_TEXTBOX]);
+  uiTextBoxSetReadonly (helper->wcont [HELPER_W_TEXTBOX]);
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (helper->wcont [HELPER_W_TEXTBOX]));
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
-  uibutton = uiCreateButton (helper->nextCallback,
+  uiwidgetp = uiCreateButton (helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
-  helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 
-  uibutton = uiCreateButton (helper->closeCallback,
+  uiwidgetp = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
-  helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  helper->wcont [HELPER_W_BUTTON_CLOSE] = uiwidgetp;
 
-  uiWindowSetDefaultSize (helper->window, 1100, 550);
+  uiWindowSetDefaultSize (helper->wcont [HELPER_W_WINDOW], 1100, 550);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAll (helper->window);
+  uiWidgetShowAll (helper->wcont [HELPER_W_WINDOW]);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -268,7 +262,7 @@ helperMainLoop (void *thelper)
   }
 
   if (! stop && helper->scrollendflag) {
-    uiTextBoxScrollToEnd (helper->tb);
+    uiTextBoxScrollToEnd (helper->wcont [HELPER_W_TEXTBOX]);
     helper->scrollendflag = false;
     uiUIProcessWaitEvents ();
     return stop;
@@ -404,15 +398,15 @@ helpDisplay (helperui_t *helper)
     mdfree (ttext);
 
     if (helper->helpkey > 0) {
-      uiTextBoxAppendStr (helper->tb, "\n\n");
+      uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
     }
-    uiTextBoxAppendHighlightStr (helper->tb, _(title));
-    uiTextBoxAppendStr (helper->tb, "\n\n");
+    uiTextBoxAppendHighlightStr (helper->wcont [HELPER_W_TEXTBOX], _(title));
+    uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
     ttext = ntext;
     while (*ttext == ' ' || *ttext == '\n') {
       ++ttext;
     }
-    uiTextBoxAppendStr (helper->tb, ttext);
+    uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], ttext);
     helper->scrollendflag = true;
     mdfree (ntext);
   }

@@ -56,7 +56,7 @@ enum {
 typedef struct uiduallist {
   uitree_t          *uitrees [DUALLIST_TREE_MAX];
   callback_t        *callbacks [DUALLIST_CB_MAX];
-  uibutton_t        *buttons [DUALLIST_BUTTON_MAX];
+  uiwcont_t         *buttons [DUALLIST_BUTTON_MAX];
   int               flags;
   const char        *searchstr;
   int               pos;
@@ -84,7 +84,6 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwcont_t     *hbox;
   uiwcont_t     *dvbox;
   uiwcont_t     *scwindow;
-  uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp = NULL;
   uitree_t      *uitree;
   uiwcont_t     *uitreewidgetp = NULL;
@@ -165,20 +164,18 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_SELECT],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
-  duallist->buttons [DUALLIST_BUTTON_SELECT] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
+  duallist->buttons [DUALLIST_BUTTON_SELECT] = uiwidgetp;
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-    uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+    uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_left");
-    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
-    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (dvbox, uiwidgetp);
+    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uiwidgetp;
   }
 
   uiwcontFree (vbox);
@@ -225,27 +222,24 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVEPREV],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
-  duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
+  duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uiwidgetp;
 
-  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVENEXT],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
-  duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
+  duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uiwidgetp;
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) == DUALLIST_FLAGS_PERSISTENT) {
-    uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+    uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_remove");
-    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
-    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (dvbox, uiwidgetp);
+    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uiwidgetp;
   }
 
   uiwcontFree (scwindow);
@@ -267,7 +261,7 @@ uiduallistFree (uiduallist_t *duallist)
       callbackFree (duallist->callbacks [i]);
     }
     for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
-      uiButtonFree (duallist->buttons [i]);
+      uiwcontFree (duallist->buttons [i]);
     }
     mdfree (duallist);
   }

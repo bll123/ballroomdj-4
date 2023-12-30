@@ -39,10 +39,10 @@ typedef struct uict {
   uiwcont_t       *ctDialog;
   uiwcont_t       *statusMsg;
   uientry_t       *source;
-  uibutton_t      *sourcesel;
+  uiwcont_t       *sourcesel;
   uisfcb_t        sourcesfcb;
   uientry_t       *target;
-  uibutton_t      *targetsel;
+  uiwcont_t       *targetsel;
   uisfcb_t        targetsfcb;
   callback_t      *callbacks [UICT_CB_MAX];
   int             state;
@@ -93,8 +93,8 @@ uicopytagsFree (uict_t *uict)
   if (uict != NULL) {
     uiEntryFree (uict->source);
     uiEntryFree (uict->target);
-    uiButtonFree (uict->sourcesel);
-    uiButtonFree (uict->targetsel);
+    uiwcontFree (uict->sourcesel);
+    uiwcontFree (uict->targetsel);
     uiwcontFree (uict->ctDialog);
     uiwcontFree (uict->statusMsg);
     for (int i = 0; i < UICT_CB_MAX; ++i) {
@@ -230,8 +230,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uict->sourcesel = uiCreateButton (
       uict->callbacks [UICT_CB_SOURCE_SEL], "", NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");
-  uiwidgetp = uiButtonGetWidgetContainer (uict->sourcesel);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uict->sourcesel);
 
   uiwcontFree (hbox);
 
@@ -257,8 +256,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uict->targetsel = uiCreateButton (
       uict->callbacks [UICT_CB_TARGET_SEL], "", NULL);
   uiButtonSetImageIcon (uict->targetsel, "folder");
-  uiwidgetp = uiButtonGetWidgetContainer (uict->targetsel);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uict->targetsel);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);

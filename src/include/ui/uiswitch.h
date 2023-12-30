@@ -13,6 +13,5 @@ void uiSwitchSetValue (uiwcont_t *uiwidget, int value);
 int uiSwitchGetValue (uiwcont_t *uiwidget);
 uiwcont_t *uiSwitchGetWidgetContainer (uiwcont_t *uiwidget);
 void uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb);
-void uiSwitchSetState (uiwcont_t *uiwidget, int state);
 
 #endif /* INC_UISWITCH_H */

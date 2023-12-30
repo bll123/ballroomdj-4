@@ -205,7 +205,7 @@ typedef struct {
     uispinbox_t   *spinbox;
     uiwcont_t     *uiswitch;
   };
-  uibutton_t  *uibutton;      // for entry chooser
+  uiwcont_t   *uibutton;      // for entry chooser
   uisfcb_t    sfcb;           // for entry chooser
   int         listidx;        // for combobox, spinbox
   nlist_t     *displist;      // indexed by spinbox/combobox index
@@ -304,7 +304,7 @@ enum {
 typedef struct confuitable {
   uitree_t          *uitree;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
-  uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
+  uiwcont_t         *buttons [CONFUI_BUTTON_TABLE_MAX];
   int               flags;
   bool              changed;
   int               currcount;

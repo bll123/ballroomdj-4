@@ -54,14 +54,6 @@ enum {
 };
 
 enum {
-  UIPL_BUTTON_FADE,
-  UIPL_BUTTON_PLAYPAUSE,
-  UIPL_BUTTON_BEGSONG,
-  UIPL_BUTTON_NEXTSONG,
-  UIPL_BUTTON_MAX,
-};
-
-enum {
   UIPL_IMG_STATUS,
   UIPL_IMG_REPEAT,
   UIPL_PIX_PLAY,
@@ -74,6 +66,10 @@ enum {
 };
 
 enum {
+  UIPL_W_BUTTON_FADE,
+  UIPL_W_BUTTON_PLAYPAUSE,
+  UIPL_W_BUTTON_BEGSONG,
+  UIPL_W_BUTTON_NEXTSONG,
   UIPL_W_MAIN_VBOX,
   UIPL_W_DANCE,
   UIPL_W_ARTIST,
@@ -103,7 +99,6 @@ typedef struct uiplayer {
   uiwcont_t       *wcont [UIPL_W_MAX];
   /* song display */
   uiwcont_t       *images [UIPL_IMG_MAX];
-  uibutton_t      *buttons [UIPL_BUTTON_MAX];
   /* speed controls / display */
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
@@ -172,9 +167,6 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   for (int i = 0; i < UIPL_IMG_MAX; ++i) {
     uiplayer->images [i] = NULL;
   }
-  for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
-    uiplayer->buttons [i] = NULL;
-  }
 
   uiplayer->uibuilt = false;
 
@@ -199,9 +191,6 @@ uiplayerFree (uiplayer_t *uiplayer)
     for (int i = 0; i < UIPL_CB_MAX; ++i) {
       callbackFree (uiplayer->callbacks [i]);
     }
-    for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
-      uiButtonFree (uiplayer->buttons [i]);
-    }
     for (int i = 0; i < UIPL_IMG_MAX; ++i) {
       uiwcontFree (uiplayer->images [i]);
     }
@@ -217,7 +206,6 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uibutton_t      *uibutton;
   uiwcont_t       *uiwidgetp;
   uiwcont_t       *hbox;
   uiwcont_t       *tbox;
@@ -426,23 +414,21 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, "fade");
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
-  uiplayer->buttons [UIPL_BUTTON_FADE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiplayer->wcont [UIPL_W_BUTTON_FADE] = uiwidgetp;
 
   uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, "play-pause");
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
-  uiplayer->buttons [UIPL_BUTTON_PLAYPAUSE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiplayer->wcont [UIPL_W_BUTTON_PLAYPAUSE] = uiwidgetp;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -457,23 +443,21 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, "begin-song");
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
-  uiplayer->buttons [UIPL_BUTTON_BEGSONG] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiplayer->wcont [UIPL_W_BUTTON_BEGSONG] = uiwidgetp;
 
   uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, "next-song");
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
-  uiplayer->buttons [UIPL_BUTTON_NEXTSONG] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiplayer->wcont [UIPL_W_BUTTON_NEXTSONG] = uiwidgetp;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_DIR_IMG);

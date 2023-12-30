@@ -99,14 +99,10 @@ enum {
 };
 
 enum {
-  INST_BUTTON_TARGET_DIR,
-  INST_BUTTON_BDJ3LOC_DIR,
-  INST_BUTTON_EXIT,
-  INST_BUTTON_INSTALL,
-  INST_BUTTON_MAX,
-};
-
-enum {
+  INST_W_BUTTON_TARGET_DIR,
+  INST_W_BUTTON_BDJ3LOC_DIR,
+  INST_W_BUTTON_EXIT,
+  INST_W_BUTTON_INSTALL,
   INST_W_WINDOW,
   INST_W_STATUS_MSG,
   INST_W_RE_INSTALL,
@@ -152,7 +148,6 @@ typedef struct {
   uiwcont_t       *wcont [INST_W_MAX];
   uientry_t       *targetEntry;
   uientry_t       *bdj3locEntry;
-  uibutton_t      *buttons [INST_BUTTON_MAX];
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -342,9 +337,6 @@ main (int argc, char *argv[])
   strcpy (installer.vlcversion, "");
   strcpy (installer.oldversion, "");
   strcpy (installer.bdj3version, "");
-  for (int i = 0; i < INST_BUTTON_MAX; ++i) {
-    installer.buttons [i] = NULL;
-  }
   installer.targetEntry = NULL;
   installer.bdj3locEntry = NULL;
 
@@ -583,7 +575,6 @@ installerBuildUI (installer_t *installer)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *szgrp;
   char          tbuff [100];
@@ -647,14 +638,13 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
       installerTargetDirDialog, installer, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
-  installer->buttons [INST_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  installer->wcont [INST_W_BUTTON_TARGET_DIR] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -730,14 +720,13 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
       installerBDJ3LocDirDialog, installer, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
-  installer->buttons [INST_BUTTON_BDJ3LOC_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  installer->wcont [INST_W_BUTTON_BDJ3LOC_DIR] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -792,23 +781,21 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
-  installer->buttons [INST_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  installer->wcont [INST_W_BUTTON_EXIT] = uiwidgetp;
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
       installerInstallCallback, installer, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
-  installer->buttons [INST_BUTTON_INSTALL] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 
   uiwidgetp = uiTextBoxCreate (250, INST_HL_COLOR);
   uiTextBoxSetReadonly (uiwidgetp);
@@ -2320,9 +2307,6 @@ installerCleanup (installer_t *installer)
   if (installer->guienabled) {
     uiEntryFree (installer->targetEntry);
     uiEntryFree (installer->bdj3locEntry);
-    for (int i = 0; i < INST_BUTTON_MAX; ++i) {
-      uiButtonFree (installer->buttons [i]);
-    }
     for (int i = 0; i < INST_W_MAX; ++i) {
       uiwcontFree (installer->wcont [i]);
     }

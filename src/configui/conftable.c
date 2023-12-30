@@ -38,7 +38,6 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiwcont_t   *mhbox;
   uiwcont_t   *bvbox;
   uiwcont_t   *scwindow;
-  uibutton_t  *uibutton;
   uiwcont_t   *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
@@ -70,44 +69,40 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     gui->tables [id].callbacks [CONFUI_TABLE_CB_UP] = callbackInit (
         confuiTableMoveUp, gui, NULL);
-    uibutton = uiCreateButton (
+    uiwidgetp = uiCreateButton (
         gui->tables [id].callbacks [CONFUI_TABLE_CB_UP],
         /* CONTEXT: configuration: table edit: button: move selection up */
         _("Move Up"), "button_up");
-    gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uibutton;
-    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (bvbox, uiwidgetp);
+    gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uiwidgetp;
 
     gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN] = callbackInit (
         confuiTableMoveDown, gui, NULL);
-    uibutton = uiCreateButton (
+    uiwidgetp = uiCreateButton (
         gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN],
         /* CONTEXT: configuration: table edit: button: move selection down */
         _("Move Down"), "button_down");
-    gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uibutton;
-    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (bvbox, uiwidgetp);
+    gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uiwidgetp;
   }
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_REMOVE] = callbackInit (
       confuiTableRemove, gui, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       gui->tables [id].callbacks [CONFUI_TABLE_CB_REMOVE],
       /* CONTEXT: configuration: table edit: button: delete selection */
       _("Delete"), "button_remove");
-  gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (bvbox, uiwidgetp);
+  gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uiwidgetp;
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD] = callbackInit (
       confuiTableAdd, gui, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD],
       /* CONTEXT: configuration: table edit: button: add new selection */
       _("Add New"), "button_add");
-  gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (bvbox, uiwidgetp);
+  gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
   uiwcontFree (mhbox);
   uiwcontFree (bvbox);
@@ -123,7 +118,7 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
     gui->tables [id].callbacks [i] = NULL;
   }
   for (int i = 0; i < CONFUI_BUTTON_TABLE_MAX; ++i) {
-    uiButtonFree (gui->tables [id].buttons [i]);
+    uiwcontFree (gui->tables [id].buttons [i]);
     gui->tables [id].buttons [i] = NULL;
   }
   uiTreeViewFree (gui->tables [id].uitree);

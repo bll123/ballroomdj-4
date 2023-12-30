@@ -139,16 +139,6 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
-void
-uiSwitchSetState (uiwcont_t *uiwidget, int state)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-set-state")) {
-    return;
-  }
-
-  uiWidgetSetState (uiwidget, state);
-}
-
 /* internal routines */
 
 static void

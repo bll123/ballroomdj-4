@@ -47,22 +47,27 @@ enum {
   MDB_CB_MAX,
 };
 
+enum {
+  MDB_W_TOPDIRSEL,
+  MDB_W_DB_START,
+  MDB_W_DB_STOP,
+  MDB_W_DB_HELP_DISP,
+  MDB_W_DB_STATUS,
+  MDB_W_DB_PROGRESS,
+  MDB_W_MAX,
+};
+
 typedef struct managedb {
   manageinfo_t      *minfo;
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbupmusicdir;
-  uibutton_t        *topdirsel;
+  uiwcont_t         *wcont [MDB_W_MAX];
   callback_t        *callbacks [MDB_CB_MAX];
   uispinbox_t       *dbspinbox;
-  uibutton_t        *dbstart;
-  uibutton_t        *dbstop;
-  uiwcont_t         *dbhelpdisp;
-  uiwcont_t         *dbstatus;
   nlist_t           *dblist;
   int               dblistWidth;
   nlist_t           *dbhelp;
-  uiwcont_t         *dbpbar;
   bool              compact : 1;
   bool              reorganize : 1;
 } managedb_t;
@@ -90,11 +95,9 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   managedb->dblist = NULL;
   managedb->dblistWidth = 0;
   managedb->dbhelp = NULL;
-  managedb->dbpbar = NULL;
-  managedb->topdirsel = NULL;
-  managedb->dbstart = NULL;
-  managedb->dbstop = NULL;
-  managedb->dbhelpdisp = NULL;
+  for (int i = 0; i < MDB_W_MAX; ++i) {
+    managedb->wcont [i] = NULL;
+  }
   managedb->dbupmusicdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->compact = false;
@@ -170,24 +173,23 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
 void
 manageDbFree (managedb_t *managedb)
 {
-  if (managedb != NULL) {
-    procutilStopAllProcess (managedb->processes, managedb->conn, PROCUTIL_NORM_TERM);
-    nlistFree (managedb->dblist);
-    nlistFree (managedb->dbhelp);
-
-    uiwcontFree (managedb->dbpbar);
-    uiwcontFree (managedb->dbstatus);
-    uiEntryFree (managedb->dbupmusicdir);
-    uiSpinboxFree (managedb->dbspinbox);
-    uiButtonFree (managedb->topdirsel);
-    uiButtonFree (managedb->dbstart);
-    uiButtonFree (managedb->dbstop);
-    for (int i = 0; i < MDB_CB_MAX; ++i) {
-      callbackFree (managedb->callbacks [i]);
-    }
-    uiwcontFree (managedb->dbhelpdisp);
-    mdfree (managedb);
+  if (managedb == NULL) {
+    return;
   }
+
+  procutilStopAllProcess (managedb->processes, managedb->conn, PROCUTIL_NORM_TERM);
+  nlistFree (managedb->dblist);
+  nlistFree (managedb->dbhelp);
+
+  for (int i = 0; i < MDB_W_MAX; ++i) {
+    uiwcontFree (managedb->wcont [i]);
+  }
+  uiEntryFree (managedb->dbupmusicdir);
+  uiSpinboxFree (managedb->dbspinbox);
+  for (int i = 0; i < MDB_CB_MAX; ++i) {
+    callbackFree (managedb->callbacks [i]);
+  }
+  mdfree (managedb);
 }
 
 void
@@ -206,7 +208,6 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *hbox;
   uiwcont_t     *szgrp;
-  uiwcont_t     *tb;
   char          tbuff [MAXPATHLEN];
 
 
@@ -251,7 +252,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiLabelWrapOn (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 6);
-  managedb->dbhelpdisp = uiwidgetp;
+  managedb->wcont [MDB_W_DB_HELP_DISP] = uiwidgetp;
 
   /* db top dir  */
   uiwcontFree (hbox);
@@ -279,11 +280,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (
       manageDbSelectDirCallback, managedb, NULL);
-  managedb->topdirsel = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL);
-  uiButtonSetImageIcon (managedb->topdirsel, "folder");
-  uiwidgetp = uiButtonGetWidgetContainer (managedb->topdirsel);
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
+  managedb->wcont [MDB_W_TOPDIRSEL] = uiwidgetp;
 
   /* buttons */
   uiwcontFree (hbox);
@@ -297,33 +298,34 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   managedb->callbacks [MDB_CB_START] = callbackInit (
       manageDbStart, managedb, NULL);
-  managedb->dbstart = uiCreateButton (managedb->callbacks [MDB_CB_START],
+  uiwidgetp = uiCreateButton (managedb->callbacks [MDB_CB_START],
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);
-  uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
   uiBoxPackStart (hbox, uiwidgetp);
+  managedb->wcont [MDB_W_DB_START] = uiwidgetp;
 
   managedb->callbacks [MDB_CB_STOP] = callbackInit (
       manageDbStop, managedb, NULL);
-  managedb->dbstop = uiCreateButton (managedb->callbacks [MDB_CB_STOP],
+  uiwidgetp = uiCreateButton (managedb->callbacks [MDB_CB_STOP],
       /* CONTEXT: update database: button to stop the database update process */
       _("Stop"), NULL);
-  uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstop);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
+  managedb->wcont [MDB_W_DB_STOP] = uiwidgetp;
 
-  managedb->dbpbar = uiCreateProgressBar ();
-  uiWidgetSetClass (managedb->dbpbar, ACCENT_CLASS);
-  uiWidgetSetMarginStart (managedb->dbpbar, 2);
-  uiWidgetSetMarginEnd (managedb->dbpbar, 2);
-  uiBoxPackStart (vboxp, managedb->dbpbar);
+  uiwidgetp = uiCreateProgressBar ();
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiWidgetSetMarginEnd (uiwidgetp, 2);
+  uiBoxPackStart (vboxp, uiwidgetp);
+  managedb->wcont [MDB_W_DB_PROGRESS] = uiwidgetp;
 
-  tb = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiTextBoxSetReadonly (tb);
-  uiTextBoxDarken (tb);
-  uiTextBoxSetHeight (tb, 300);
-  uiBoxPackStartExpand (vboxp, uiTextBoxGetScrolledWindow (tb));
-  managedb->dbstatus = tb;
+  uiwidgetp = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiTextBoxSetReadonly (uiwidgetp);
+  uiTextBoxDarken (uiwidgetp);
+  uiTextBoxSetHeight (uiwidgetp, 300);
+  uiBoxPackStartExpand (vboxp, uiTextBoxGetScrolledWindow (uiwidgetp));
+  managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;
 
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
@@ -346,16 +348,13 @@ manageDbChg (void *udata)
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
-  if (managedb->dbhelpdisp != NULL) {
-    uiwcont_t   *uiwidgetp;
-
-    uiLabelSetText (managedb->dbhelpdisp, sval);
-    uiWidgetRemoveClass (managedb->dbhelpdisp, ACCENT_CLASS);
+  if (managedb->wcont [MDB_W_DB_HELP_DISP] != NULL) {
+    uiLabelSetText (managedb->wcont [MDB_W_DB_HELP_DISP], sval);
+    uiWidgetRemoveClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     if (nval == MANAGE_DB_REBUILD) {
-      uiWidgetSetClass (managedb->dbhelpdisp, ACCENT_CLASS);
+      uiWidgetSetClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     }
-    uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
-    uiWidgetSetState (uiwidgetp, UIWIDGET_ENABLE);
+    uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_ENABLE);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
       if (! itunesConfigured ()) {
         char  tbuff [200];
@@ -363,8 +362,7 @@ manageDbChg (void *udata)
         /* CONTEXT: manage ui: status message: itunes is not configured */
         snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
         uiLabelSetText (managedb->minfo->errorMsg, tbuff);
-        uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
-        uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
+        uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_DISABLE);
       }
     }
   }
@@ -377,10 +375,10 @@ manageDbProgressMsg (managedb_t *managedb, char *args)
   double    progval;
 
   if (strncmp ("END", args, 3) == 0) {
-    uiProgressBarSet (managedb->dbpbar, 100.0);
+    uiProgressBarSet (managedb->wcont [MDB_W_DB_PROGRESS], 100.0);
   } else {
     if (sscanf (args, "PROG %lf", &progval) == 1) {
-      uiProgressBarSet (managedb->dbpbar, progval);
+      uiProgressBarSet (managedb->wcont [MDB_W_DB_PROGRESS], progval);
     }
   }
 }
@@ -388,9 +386,9 @@ manageDbProgressMsg (managedb_t *managedb, char *args)
 void
 manageDbStatusMsg (managedb_t *managedb, char *args)
 {
-  uiTextBoxAppendStr (managedb->dbstatus, args);
-  uiTextBoxAppendStr (managedb->dbstatus, "\n");
-  uiTextBoxScrollToEnd (managedb->dbstatus);
+  uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], args);
+  uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], "\n");
+  uiTextBoxScrollToEnd (managedb->wcont [MDB_W_DB_STATUS]);
 }
 
 void
@@ -424,8 +422,8 @@ manageDbResetButtons (managedb_t *managedb)
   managedb->compact = false;
   managedb->reorganize = false;
 
-  uiButtonSetState (managedb->dbstart, UIWIDGET_ENABLE);
-  uiButtonSetState (managedb->dbstop, UIWIDGET_DISABLE);
+  uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_ENABLE);
+  uiWidgetSetState (managedb->wcont [MDB_W_DB_STOP], UIWIDGET_DISABLE);
   uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_ENABLE);
 }
 
@@ -446,8 +444,8 @@ manageDbStart (void *udata)
   uiLabelSetText (managedb->minfo->statusMsg, "");
   uiLabelSetText (managedb->minfo->errorMsg, "");
 
-  uiButtonSetState (managedb->dbstart, UIWIDGET_DISABLE);
-  uiButtonSetState (managedb->dbstop, UIWIDGET_ENABLE);
+  uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_DISABLE);
+  uiWidgetSetState (managedb->wcont [MDB_W_DB_STOP], UIWIDGET_ENABLE);
   uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_DISABLE);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -456,9 +454,9 @@ manageDbStart (void *udata)
   nval = uiSpinboxTextGetValue (managedb->dbspinbox);
 
   sval = nlistGetStr (managedb->dblist, nval);
-  uiTextBoxAppendStr (managedb->dbstatus, "-- ");
-  uiTextBoxAppendStr (managedb->dbstatus, sval);
-  uiTextBoxAppendStr (managedb->dbstatus, "\n");
+  uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], "-- ");
+  uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], sval);
+  uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], "\n");
 
   uiLabelSetText (managedb->minfo->statusMsg, managedb->minfo->pleasewaitmsg);
 
@@ -503,7 +501,7 @@ manageDbStart (void *udata)
   targv [targc++] = NULL;
   logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbupmusicdir));
 
-  uiProgressBarSet (managedb->dbpbar, 0.0);
+  uiProgressBarSet (managedb->wcont [MDB_W_DB_PROGRESS], 0.0);
   managedb->processes [ROUTE_DBUPDATE] = procutilStartProcess (
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
   return UICB_CONT;

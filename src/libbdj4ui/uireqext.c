@@ -50,7 +50,7 @@ typedef struct uireqext {
   nlist_t         *options;
   uiwcont_t       *extreqDialog;
   uientry_t       *audioFileEntry;
-  uibutton_t      *audioFileDialogButton;
+  uiwcont_t       *audioFileDialogButton;
   uisfcb_t        audiofilesfcb;
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
@@ -121,7 +121,7 @@ uireqextFree (uireqext_t *uireqext)
     uiEntryFree (uireqext->artistEntry);
     uiEntryFree (uireqext->titleEntry);
     uiwcontFree (uireqext->extreqDialog);
-    uiButtonFree (uireqext->audioFileDialogButton);
+    uiwcontFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);
     mdfree (uireqext);
   }
@@ -202,7 +202,6 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  uibutton_t    *uibutton;
   uiwcont_t     *szgrp;  // labels
   uiwcont_t     *szgrpEntry; // title, artist
 
@@ -260,14 +259,13 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uireqext->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
       selectAudioFileCallback, &uireqext->audiofilesfcb, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uireqext->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       "", NULL);
-  uireqext->audioFileDialogButton = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uireqext->audioFileDialogButton = uiwidgetp;
 
   /* artist display */
   uiwcontFree (hbox);

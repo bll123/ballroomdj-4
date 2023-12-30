@@ -174,10 +174,10 @@ confuiMusicQActiveChg (void *udata)
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox, state);
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch, state);
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch, state);
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch, state);
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch, state);
 
   return UICB_CONT;
 }
@@ -293,8 +293,8 @@ confuiMusicQUpdateState (confuigui_t *gui, int idx)
     state = UIWIDGET_DISABLE;
   }
 
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch, state);
-  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch, state);
 }
 
 static void

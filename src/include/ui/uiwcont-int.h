@@ -1,7 +1,6 @@
 #ifndef INC_UIWCONT_INT_H
 #define INC_UIWCONT_INT_H
 
-#include "ui/uibutton.h"
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
@@ -70,6 +69,7 @@ enum {
   WCONT_EMPTY_WIDGET = 0x0001,
 };
 
+typedef struct uibutton uibutton_t;
 typedef struct uikey uikey_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
@@ -79,8 +79,7 @@ typedef struct uitextbox uitextbox_t;
 /* for future use */
 /* the widget pointer will be moved out of the below structure */
 /* and into the uiwcont_t union */
-/* done: 2023-12 scrollbar, chgind */
-/* done: 2023-12-15: switch */
+/* partially done: 2023-12 */
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;

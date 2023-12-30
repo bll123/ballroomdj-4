@@ -14,6 +14,7 @@
 
 #include "ui/uiwcont-int.h"
 
+#include "ui/uibutton.h"
 #include "ui/uikeys.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
@@ -30,6 +31,10 @@ uiwcontFree (uiwcont_t *uiwidget)
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
       fprintf (stderr, "ERR: trying to free a uiwidget twice\n");
+      break;
+    }
+    case WCONT_T_BUTTON: {
+      uiButtonFree (uiwidget);
       break;
     }
     case WCONT_T_KEY: {

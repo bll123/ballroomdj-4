@@ -98,6 +98,7 @@ enum {
   PLUI_W_MENU_EXT_REQ,
   PLUI_W_MENU_RELOAD,
   PLUI_W_KEY_HNDLR,
+  PLUI_W_SET_PB_BUTTON,
   PLUI_W_MAX,
 };
 
@@ -137,7 +138,6 @@ typedef struct {
   int             currpage;
   callback_t      *callbacks [PLUI_CB_MAX];
   uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
-  uibutton_t      *setPlaybackButton;
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
@@ -298,7 +298,6 @@ main (int argc, char *argv[])
   plui.inreload = false;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
-  plui.setPlaybackButton = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -438,7 +437,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
 
-  uiButtonFree (plui->setPlaybackButton);
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
   }
@@ -481,7 +479,6 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *hbox;
   uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
-  uibutton_t  *uibutton;
   const char  *str;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
@@ -666,13 +663,12 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uibutton = uiCreateButton (plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
+  uiwidgetp = uiCreateButton (plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
-  plui->setPlaybackButton = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
+  plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
 
   plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStrInt (
       pluiDragDropCallback, plui);
@@ -1326,15 +1322,13 @@ static void
 pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 {
   int         tabid;
-  uiwcont_t  *uiwidgetp;
 
   tabid = uinbutilIDGet (plui->nbtabid, pagenum);
 
-  uiwidgetp = uiButtonGetWidgetContainer (plui->setPlaybackButton);
-  uiWidgetHide (uiwidgetp);
+  uiWidgetHide (plui->wcont [PLUI_W_SET_PB_BUTTON]);
   if (tabid == UI_TAB_MUSICQ) {
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-      uiWidgetShow (uiwidgetp);
+      uiWidgetShow (plui->wcont [PLUI_W_SET_PB_BUTTON]);
     }
   }
 }

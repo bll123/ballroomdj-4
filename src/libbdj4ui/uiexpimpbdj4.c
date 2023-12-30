@@ -51,7 +51,7 @@ typedef struct {
   uientry_t       *target;
   uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
-  uibutton_t      *targetButton;
+  uiwcont_t       *targetButton;
   callback_t      *responsecb;
 } uieibdj4dialog_t;
 
@@ -245,7 +245,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
-  uibutton_t    *uibutton;
   uiwcont_t     *szgrp;  // labels
   const char    *buttontext;
   char          tbuff [100];
@@ -356,14 +355,13 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, tbuff);
 
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       "", NULL);
-  uieibdj4->dialog [currtype].targetButton = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
   uiEntrySetValidate (uieibdj4->dialog [currtype].target,
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
@@ -510,7 +508,7 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
   uieibdj4->dialog [expimptype].target = NULL;
   uiEntryFree (uieibdj4->dialog [expimptype].newname);
   uieibdj4->dialog [expimptype].newname = NULL;
-  uiButtonFree (uieibdj4->dialog [expimptype].targetButton);
+  uiwcontFree (uieibdj4->dialog [expimptype].targetButton);
   uieibdj4->dialog [expimptype].targetButton = NULL;
   uiplaylistFree (uieibdj4->dialog [expimptype].uiplaylist);
   uieibdj4->dialog [expimptype].uiplaylist = NULL;

@@ -76,17 +76,13 @@ enum {
 };
 
 enum {
-  ALT_BUTTON_TARGET_DIR,
-  ALT_BUTTON_EXIT,
-  ALT_BUTTON_START,
-  ALT_BUTTON_MAX,
-};
-
-enum {
   ALT_TARGET,
 };
 
 enum {
+  ALT_W_BUTTON_TARGET_DIR,
+  ALT_W_BUTTON_EXIT,
+  ALT_W_BUTTON_START,
   ALT_W_WINDOW,
   ALT_W_REINST,
   ALT_W_FEEDBACK_MSG,
@@ -98,7 +94,6 @@ typedef struct {
   altinststate_t  instState;
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
-  uibutton_t      *buttons [ALT_BUTTON_MAX];
   char            oldversion [MAXPATHLEN];
   char            *target;
   char            *macospfx;
@@ -231,9 +226,6 @@ main (int argc, char *argv[])
   altinst.verbose = false;
   for (int i = 0; i < ALT_W_MAX; ++i) {
     altinst.wcont [i] = NULL;
-  }
-  for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
-    altinst.buttons [i] = NULL;
   }
   for (int i = 0; i < ALT_CB_MAX; ++i) {
     altinst.callbacks [i] = NULL;
@@ -392,7 +384,6 @@ altinstBuildUI (altinst_t *altinst)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
@@ -440,14 +431,13 @@ altinstBuildUI (altinst_t *altinst)
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altinstTargetDirDialog, altinst, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
-  altinst->buttons [ALT_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "folder");
+  uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_BUTTON_TARGET_DIR] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -494,23 +484,21 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_EXIT],
       /* CONTEXT: alternate installation: exits the alternate installer */
       _("Exit"), NULL);
-  altinst->buttons [ALT_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_BUTTON_EXIT] = uiwidgetp;
 
   altinst->callbacks [ALT_CB_START] = callbackInit (
       altinstSetupCallback, altinst, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_START],
       /* CONTEXT: alternate installation: install BDJ4 in the alternate location */
       _("Install"), NULL);
-  altinst->buttons [ALT_BUTTON_START] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_BUTTON_START] = uiwidgetp;
 
   uiwidgetp = uiTextBoxCreate (200, NULL);
   uiTextBoxSetReadonly (uiwidgetp);
@@ -1211,9 +1199,6 @@ altinstCleanup (altinst_t *altinst)
     if (altinst->guienabled) {
       for (int i = 0; i < ALT_W_MAX; ++i) {
         uiwcontFree (altinst->wcont [i]);
-      }
-      for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
-        uiButtonFree (altinst->buttons [i]);
       }
       uiEntryFree (altinst->targetEntry);
       uiEntryFree (altinst->nameEntry);

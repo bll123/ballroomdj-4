@@ -52,11 +52,12 @@ enum {
 };
 
 enum {
-  BPMCOUNT_BUTTON_CLOSE,
-  BPMCOUNT_BUTTON_RESET,
-  BPMCOUNT_BUTTON_SAVE,
-  BPMCOUNT_BUTTON_BLUEBOX,
-  BPMCOUNT_BUTTON_MAX,
+  BPM_W_BUTTON_CLOSE,
+  BPM_W_BUTTON_RESET,
+  BPM_W_BUTTON_SAVE,
+  BPM_W_BUTTON_BLUEBOX,
+  BPM_W_WINDOW,
+  BPM_W_MAX,
 };
 
 typedef struct {
@@ -65,10 +66,9 @@ typedef struct {
   const char      *disptxt [BPMCOUNT_DISP_MAX];
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  uiwcont_t       *window;
   uiwcont_t       *dispvalue [BPMCOUNT_DISP_MAX];
   uiwcont_t       *dispwidget [BPMCOUNT_DISP_MAX];
-  uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
+  uiwcont_t       *wcont [BPM_W_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
@@ -147,8 +147,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     bpmcounter.callbacks [i] = NULL;
   }
-  for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
-    bpmcounter.buttons [i] = NULL;
+  for (int i = 0; i < BPM_W_MAX; ++i) {
+    bpmcounter.wcont [i] = NULL;
   }
 
   bpmcounter.stopwaitcount = 0;
@@ -164,8 +164,6 @@ main (int argc, char *argv[])
       bpmcounterStopWaitCallback, &bpmcounter);
   progstateSetCallback (bpmcounter.progstate, STATE_CLOSING,
       bpmcounterClosingCallback, &bpmcounter);
-
-  bpmcounter.window = NULL;
 
   procutilInitProcesses (bpmcounter.processes);
 
@@ -262,10 +260,10 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "bpmcounterStoppingCallback");
 
-  uiWindowGetSize (bpmcounter->window, &x, &y);
+  uiWindowGetSize (bpmcounter->wcont [BPM_W_WINDOW], &x, &y);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_SIZE_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_SIZE_Y, y);
-  uiWindowGetPosition (bpmcounter->window, &x, &y, &ws);
+  uiWindowGetPosition (bpmcounter->wcont [BPM_W_WINDOW], &x, &y, &ws);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y, y);
 
@@ -291,11 +289,11 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   bpmcounter_t   *bpmcounter = udata;
 
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
-  uiCloseWindow (bpmcounter->window);
+  uiCloseWindow (bpmcounter->wcont [BPM_W_WINDOW]);
   uiCleanup ();
-  uiwcontFree (bpmcounter->window);
-  for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
-    uiButtonFree (bpmcounter->buttons [i]);
+  uiwcontFree (bpmcounter->wcont [BPM_W_WINDOW]);
+  for (int i = 0; i < BPM_W_MAX; ++i) {
+    uiwcontFree (bpmcounter->wcont [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     callbackFree (bpmcounter->callbacks [i]);
@@ -323,7 +321,6 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
-  uibutton_t  *uibutton;
   uiwcont_t   *uiwidgetp = NULL;
   uiwcont_t   *vboxmain;
   uiwcont_t   *vbox;
@@ -344,14 +341,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);
-  bpmcounter->window = uiCreateMainWindow (
+  bpmcounter->wcont [BPM_W_WINDOW] = uiCreateMainWindow (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
       _("BPM Counter"), imgbuff);
 
   vboxmain = uiCreateVertBox ();
   uiWidgetSetAllMargins (vboxmain, 2);
-  uiWindowPackInWindow (bpmcounter->window, vboxmain);
+  uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
@@ -423,16 +420,15 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   bpmcounter->callbacks [BPMCOUNT_CB_CLICK] = callbackInit (
       bpmcounterProcessClick, bpmcounter, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
-  bpmcounter->buttons [BPMCOUNT_BUTTON_BLUEBOX] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetReliefNone (uibutton);
-  uiButtonSetFlat (uibutton);
+  uiButtonSetReliefNone (uiwidgetp);
+  uiButtonSetFlat (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
   uiBoxPackEnd (hbox, uiwidgetp);
+  bpmcounter->wcont [BPM_W_BUTTON_BLUEBOX] = uiwidgetp;
 
   /* buttons */
   uiwcontFree (hbox);
@@ -441,44 +437,41 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   bpmcounter->callbacks [BPMCOUNT_CB_SAVE] = callbackInit (
       bpmcounterProcessSave, bpmcounter, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
-  bpmcounter->buttons [BPMCOUNT_BUTTON_SAVE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  bpmcounter->wcont [BPM_W_BUTTON_SAVE] = uiwidgetp;
 
   bpmcounter->callbacks [BPMCOUNT_CB_RESET] = callbackInit (
       bpmcounterProcessReset, bpmcounter, NULL);
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
-  bpmcounter->buttons [BPMCOUNT_BUTTON_RESET] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  bpmcounter->wcont [BPM_W_BUTTON_RESET] = uiwidgetp;
 
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
-  bpmcounter->buttons [BPMCOUNT_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  bpmcounter->wcont [BPM_W_BUTTON_CLOSE] = uiwidgetp;
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
-  uiWindowMove (bpmcounter->window, x, y, -1);
+  uiWindowMove (bpmcounter->wcont [BPM_W_WINDOW], x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAll (bpmcounter->window);
+  uiWidgetShowAll (bpmcounter->wcont [BPM_W_WINDOW]);
 
   uiwcontFree (vboxmain);
   uiwcontFree (vbox);
@@ -558,7 +551,7 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (bpmcounter->window);
+          uiWindowFind (bpmcounter->wcont [BPM_W_WINDOW]);
           break;
         }
         case MSG_BPM_TIMESIG: {

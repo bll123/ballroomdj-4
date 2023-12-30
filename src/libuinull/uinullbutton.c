@@ -21,82 +21,69 @@ typedef struct uibutton {
   int         junk;
 } uibutton_t;
 
-uibutton_t *
+uiwcont_t *
 uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 {
   return NULL;
 }
 
 void
-uiButtonFree (uibutton_t *uibutton)
-{
-  return;
-}
-
-uiwcont_t *
-uiButtonGetWidgetContainer (uibutton_t *uibutton)
-{
-  return NULL;
-}
-
-void
-uiButtonSetImagePosRight (uibutton_t *uibutton)
+uiButtonFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiButtonSetImage (uibutton_t *uibutton, const char *imagenm,
+uiButtonSetImagePosRight (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,
     const char *tooltip)
 {
   return;
 }
 
 void
-uiButtonSetImageIcon (uibutton_t *uibutton, const char *nm)
+uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 {
   return;
 }
 
 void
-uiButtonAlignLeft (uibutton_t *uibutton)
+uiButtonAlignLeft (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiButtonSetReliefNone (uibutton_t *uibutton)
+uiButtonSetReliefNone (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiButtonSetFlat (uibutton_t *uibutton)
+uiButtonSetFlat (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiButtonSetText (uibutton_t *uibutton, const char *txt)
+uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
   return;
 }
 
 void
-uiButtonSetRepeat (uibutton_t *uibutton, int repeatms)
+uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
   return;
 }
 
 bool
-uiButtonCheckRepeat (uibutton_t *uibutton)
+uiButtonCheckRepeat (uiwcont_t *uiwidget)
 {
   return false;
 }
-
-void
-uiButtonSetState (uibutton_t *uibutton, int state)
-{
-  return;
-}
-

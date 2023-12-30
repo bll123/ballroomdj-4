@@ -107,20 +107,16 @@ enum {
 };
 
 enum {
-  UISE_BUTTON_FIRST,
-  UISE_BUTTON_PREV,
-  UISE_BUTTON_NEXT,
-  UISE_BUTTON_PLAY,
-  UISE_BUTTON_SAVE,
-  UISE_BUTTON_COPY_TEXT,
-  UISE_BUTTON_MAX,
-};
-
-enum {
   UISE_MAIN_TIMER = 40,
 };
 
 enum {
+  UISE_W_BUTTON_FIRST,
+  UISE_W_BUTTON_PREV,
+  UISE_W_BUTTON_NEXT,
+  UISE_W_BUTTON_PLAY,
+  UISE_W_BUTTON_SAVE,
+  UISE_W_BUTTON_COPY_TEXT,
   UISE_W_EDIT_ALL,
   UISE_W_PARENT_WIN,
   UISE_W_MAIN_VBOX,
@@ -136,7 +132,6 @@ typedef struct se_internal {
   uiwcont_t           *wcont [UISE_W_MAX];
   uiwcont_t           *szgrp [UISE_SZGRP_MAX];
   callback_t          *callbacks [UISE_CB_MAX];
-  uibutton_t          *buttons [UISE_BUTTON_MAX];
   level_t             *levels;
   song_t              *song;
   dbidx_t             dbidx;
@@ -198,9 +193,6 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->speedidx = UISE_NOT_DISPLAYED;
   seint->dbidx = -1;
   seint->lastspeed = -1;
-  for (int i = 0; i < UISE_BUTTON_MAX; ++i) {
-    seint->buttons [i] = NULL;
-  }
   for (int i = 0; i < UISE_CB_MAX; ++i) {
     seint->callbacks [i] = NULL;
   }
@@ -299,9 +291,6 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       }
       uiwcontFree (seint->wcont [i]);
     }
-    for (int i = 0; i < UISE_BUTTON_MAX; ++i) {
-      uiButtonFree (seint->buttons [i]);
-    }
     for (int i = 0; i < UISE_CB_MAX; ++i) {
       callbackFree (seint->callbacks [i]);
     }
@@ -320,7 +309,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 {
   se_internal_t     *seint;
   uiwcont_t         *hbox;
-  uibutton_t        *uibutton;
   uiwcont_t         *uiwidgetp;
   int               count;
   char              tbuff [MAXPATHLEN];
@@ -349,50 +337,45 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
-  uibutton = uiCreateButton (seint->callbacks [UISE_CB_FIRST],
+  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
-  seint->buttons [UISE_BUTTON_FIRST] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_FIRST] = uiwidgetp;
 
   seint->callbacks [UISE_CB_PREV] = callbackInit (
       uisongeditPreviousSelection, uisongedit, "songedit: previous");
-  uibutton = uiCreateButton (seint->callbacks [UISE_CB_PREV],
+  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_PREV],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
-  seint->buttons [UISE_BUTTON_PREV] = uibutton;
-  uiButtonSetRepeat (uibutton, REPEAT_TIME);
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
+  uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
   uiBoxPackStart (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_PREV] = uiwidgetp;
 
   seint->callbacks [UISE_CB_NEXT] = callbackInit (
       uisongeditNextSelection, uisongedit, "songedit: next");
-  uibutton = uiCreateButton (seint->callbacks [UISE_CB_NEXT],
+  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
-  seint->buttons [UISE_BUTTON_NEXT] = uibutton;
-  uiButtonSetRepeat (uibutton, REPEAT_TIME);
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
+  uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
   uiBoxPackStart (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_NEXT] = uiwidgetp;
 
   seint->callbacks [UISE_CB_PLAY] = callbackInit (
       uisongselPlayCallback, uisongsel, "songedit: play");
-  uibutton = uiCreateButton (seint->callbacks [UISE_CB_PLAY],
+  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
-  seint->buttons [UISE_BUTTON_PLAY] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_PLAY] = uiwidgetp;
 
   seint->callbacks [UISE_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
-  uibutton = uiCreateButton (seint->callbacks [UISE_CB_SAVE],
+  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
-  seint->buttons [UISE_BUTTON_SAVE] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_SAVE] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -430,14 +413,13 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
-  uibutton = uiCreateButton (
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_COPY_TEXT],
       "", NULL);
-  seint->buttons [UISE_BUTTON_COPY_TEXT] = uibutton;
-  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiButtonSetImageIcon (uibutton, "edit-copy");
+  uiButtonSetImageIcon (uiwidgetp, "edit-copy");
   uiWidgetSetMarginStart (uiwidgetp, 1);
   uiBoxPackStart (hbox, uiwidgetp);
+  seint->wcont [UISE_W_BUTTON_COPY_TEXT] = uiwidgetp;
 
   /* CONTEXT: song editor: label for displaying the audio file path */
   uiwidgetp = uiCreateColonLabel (_("File"));
@@ -677,8 +659,8 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
   seint = uisongedit->seInternalData;
 
-  uiButtonCheckRepeat (seint->buttons [UISE_BUTTON_NEXT]);
-  uiButtonCheckRepeat (seint->buttons [UISE_BUTTON_PREV]);
+  uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_NEXT]);
+  uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_PREV]);
   uisongeditCheckChanged (uisongedit);
   return;
 }
@@ -713,9 +695,9 @@ uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
 
   /* if the player is active, disable the button */
   if (active) {
-    uiButtonSetState (seint->buttons [UISE_BUTTON_PLAY], UIWIDGET_DISABLE);
+    uiWidgetSetState (seint->wcont [UISE_W_BUTTON_PLAY], UIWIDGET_DISABLE);
   } else {
-    uiButtonSetState (seint->buttons [UISE_BUTTON_PLAY], UIWIDGET_ENABLE);
+    uiWidgetSetState (seint->wcont [UISE_W_BUTTON_PLAY], UIWIDGET_ENABLE);
   }
   logProcEnd (LOG_PROC, "uisongeditSetPlayButtonState", "");
 }
@@ -742,7 +724,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
     uiLabelSetText (seint->wcont [UISE_W_EDIT_ALL], "");
   }
 
-  uiButtonSetState (seint->buttons [UISE_BUTTON_SAVE], newstate);
+  uiWidgetSetState (seint->wcont [UISE_W_BUTTON_SAVE], newstate);
 
   for (int count = 0; count < seint->itemcount; ++count) {
     int   tagkey;

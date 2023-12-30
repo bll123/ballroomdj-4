@@ -64,10 +64,3 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }
-
-void
-uiSwitchSetState (uiwcont_t *uiwidget, int state)
-{
-  return;
-}
-
