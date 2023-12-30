@@ -1327,7 +1327,7 @@ starterProcessSupport (void *udata)
       RESPONSE_CLOSE,
       NULL
       );
-  uiDialogSetNoMaximize (uidialog);
+  uiWindowSetNoMaximize (uidialog);
 
   szgrp = uiCreateSizeGroupHoriz ();
 

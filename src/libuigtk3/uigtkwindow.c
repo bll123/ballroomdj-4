@@ -410,16 +410,6 @@ uiWindowFind (uiwcont_t *uiwindow)
 }
 
 void
-uiWindowSetNoMaximize (uiwcont_t *uiwindow)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-no-mx")) {
-    return;
-  }
-
-  gtk_window_set_resizable (GTK_WINDOW (uiwindow->widget), false);
-}
-
-void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
@@ -432,6 +422,16 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), uiwidget->widget);
+}
+
+void
+uiWindowSetNoMaximize (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "window-set-no-maximize")) {
+    return;
+  }
+
+  gtk_window_set_resizable (GTK_WINDOW (uiwidget->widget), false);
 }
 
 /* internal routines */

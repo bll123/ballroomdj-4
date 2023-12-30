@@ -79,9 +79,3 @@ uiDialogCreateSelect (uiwcont_t *window, const char *label,
   return NULL;
 }
 
-void
-uiDialogSetNoMaximize (uiwcont_t *uidialog)
-{
-  return;
-}
-

@@ -189,3 +189,9 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiWindowSetNoMaximize (uiwcont_t *uiwidget)
+{
+  return;
+}
+

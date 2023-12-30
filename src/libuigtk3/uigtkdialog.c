@@ -198,6 +198,10 @@ uiCreateDialog (uiwcont_t *window,
 void
 uiDialogShow (uiwcont_t *uiwidgetp)
 {
+  if (! uiwcontValid (uiwidgetp, WCONT_T_DIALOG_WINDOW, "dialog-show")) {
+    return;
+  }
+
   uiWidgetShowAll (uiwidgetp);
   uiWindowPresent (uiwidgetp);
 }
@@ -207,7 +211,7 @@ uiDialogAddButtons (uiwcont_t *uidialog, ...)
 {
   va_list   valist;
 
-  if (uidialog == NULL) {
+  if (! uiwcontValid (uidialog, WCONT_T_DIALOG_WINDOW, "dialog-show")) {
     return;
   }
 
@@ -221,6 +225,10 @@ uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp)
 {
   GtkWidget *content;
 
+  if (! uiwcontValid (uidialog, WCONT_T_DIALOG_WINDOW, "dialog-pack-in-dialog")) {
+    return;
+  }
+
   content = gtk_dialog_get_content_area (GTK_DIALOG (uidialog->widget));
   gtk_container_add (GTK_CONTAINER (content), boxp->widget);
 }
@@ -228,7 +236,7 @@ uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp)
 void
 uiDialogDestroy (uiwcont_t *uidialog)
 {
-  if (uidialog == NULL || uidialog->widget == NULL) {
+  if (! uiwcontValid (uidialog, WCONT_T_DIALOG_WINDOW, "dialog-destroy")) {
     return;
   }
 
@@ -245,6 +253,10 @@ uiDialogCreateSelect (uiwcont_t *window, const char *label,
 {
   uiselect_t  *selectdata;
 
+  if (! uiwcontValid (window, WCONT_T_DIALOG_WINDOW, "dialog-create-sel")) {
+    return NULL;
+  }
+
   selectdata = mdmalloc (sizeof (uiselect_t));
   selectdata->window = window;
   selectdata->label = label;
@@ -253,12 +265,6 @@ uiDialogCreateSelect (uiwcont_t *window, const char *label,
   selectdata->mimefiltername = mimefiltername;
   selectdata->mimetype = mimetype;
   return selectdata;
-}
-
-void
-uiDialogSetNoMaximize (uiwcont_t *uidialog)
-{
-  gtk_window_set_resizable (GTK_WINDOW (uidialog->widget), false);
 }
 
 /* internal routines */
