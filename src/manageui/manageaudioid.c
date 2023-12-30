@@ -57,6 +57,7 @@ manageAudioIdFree (manageaudioid_t *maudioid)
 
   uiaudioidFree (maudioid->uiaudioid);
   audioidFree (maudioid->audioid);
+  uiwcontFree (maudioid->audioidmenu);
   mdfree (maudioid);
 }
 

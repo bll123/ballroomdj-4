@@ -291,7 +291,6 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
   uiCloseWindow (bpmcounter->wcont [BPM_W_WINDOW]);
   uiCleanup ();
-  uiwcontFree (bpmcounter->wcont [BPM_W_WINDOW]);
   for (int i = 0; i < BPM_W_MAX; ++i) {
     uiwcontFree (bpmcounter->wcont [i]);
   }
