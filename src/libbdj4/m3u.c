@@ -70,7 +70,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       fprintf (fh, "#EXTART:%s\n", str);
     }
     str = songGetStr (song, TAG_URI);
-    audiosrcFullPath (str, ffn, sizeof (ffn));
+    audiosrcFullPath (str, ffn, sizeof (ffn), 0, NULL);
     pathDisplayPath (ffn, strlen (ffn));
     fprintf (fh, "%s\n", ffn);
   }

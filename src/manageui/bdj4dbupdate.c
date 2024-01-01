@@ -539,7 +539,7 @@ dbupdateProcessing (void *udata)
         tsongfn = audiosrcRelativePath (fn);
       }
       if (dbupdate->iterfromdb) {
-        audiosrcFullPath (fn, ffn, sizeof (ffn));
+        audiosrcFullPath (fn, ffn, sizeof (ffn), 0, NULL);
       }
       song = dbGetByName (dbupdate->musicdb, tsongfn);
       relfn = ffn + dbupdate->prefixlen;

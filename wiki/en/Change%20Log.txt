@@ -13,8 +13,8 @@
     * Fixes for automatic, standard, queuedance pre-installed playlists.
     * MacOS: Fix build when other versions of libraries are installed.
     * Management: Do not play announcements in the management ui.
-    * Update Database: Fix bugs that set the date-added incorrectly.
-    * PENDING Update Database: Fix compact/update-from-tags/write-tags to correctly handle alternate music folders.
+    * Update Database: Fix bugs that set date-added incorrectly.
+    * Update Database: Fix compact/update-from-tags/write-tags to correctly handle secondary music folders.
     * User Interface: Fix bug when validating entry fields.
     * Version Updater: Fix various bugs.
 * Changes:

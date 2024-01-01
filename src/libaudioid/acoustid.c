@@ -195,7 +195,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     return 0;
   }
 
-  audiosrcFullPath (fn, ffn, sizeof (ffn));
+  audiosrcFullPath (fn, ffn, sizeof (ffn), 0, NULL);
   if (! fileopFileExists (ffn)) {
     return 0;
   }

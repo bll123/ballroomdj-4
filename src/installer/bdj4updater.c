@@ -681,7 +681,7 @@ main (int argc, char *argv [])
       slist_t     *newtaglist;
       slistidx_t  siteridx;
 
-      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
+      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
 
       if (processflags [UPD_FIX_AF_TAGS]) {
         pathinfo_t    *pi;
@@ -743,7 +743,7 @@ main (int argc, char *argv [])
         char      ffn [MAXPATHLEN];
         time_t    ctime;
 
-        audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
+        audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
         ctime = fileopCreateTime (ffn);
         if (audiosrcOriginalExists (ffn)) {
           snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));

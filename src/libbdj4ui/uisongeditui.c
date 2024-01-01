@@ -1794,7 +1794,7 @@ uisongeditCopyPath (void *udata)
   seint = uisongedit->seInternalData;
 
   txt = uiLabelGetText (seint->wcont [UISE_W_FILE_DISP]);
-  audiosrcFullPath (txt, ffn, sizeof (ffn));
+  audiosrcFullPath (txt, ffn, sizeof (ffn), 0, NULL);
   pathDisplayPath (ffn, sizeof (ffn));
   uiClipboardSet (ffn);
 

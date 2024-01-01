@@ -142,7 +142,8 @@ audiosrcPrepClean (const char *sfname, const char *tempnm)
 }
 
 void
-audiosrcFullPath (const char *sfname, char *fullpath, size_t sz)
+audiosrcFullPath (const char *sfname, char *fullpath, size_t sz,
+    int pfxlen, const char *oldfn)
 {
   int     type = AUDIOSRC_TYPE_FILE;
 
@@ -150,7 +151,7 @@ audiosrcFullPath (const char *sfname, char *fullpath, size_t sz)
 
   *fullpath = '\0';
   if (type == AUDIOSRC_TYPE_FILE) {
-    audiosrcfileFullPath (sfname, fullpath, sz);
+    audiosrcfileFullPath (sfname, fullpath, sz, pfxlen, oldfn);
   } else {
     strlcpy (fullpath, sfname, sz);
   }

@@ -44,7 +44,7 @@ audiosrcfileExists (const char *nm)
   bool    exists;
   char    ffn [MAXPATHLEN];
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
   exists = fileopFileExists (ffn);
   return exists;
 }
@@ -56,7 +56,7 @@ audiosrcfileOriginalExists (const char *nm)
   char    ffn [MAXPATHLEN];
   char    origfn [MAXPATHLEN];
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
   snprintf (origfn, sizeof (origfn), "%s%s",
       ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
   exists = fileopFileExists (origfn);
@@ -78,7 +78,7 @@ audiosrcfileRemove (const char *nm)
   char          newnm [MAXPATHLEN];
   pathinfo_t    *pi;
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn));
+  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
   if (! fileopFileExists (ffn)) {
     return false;
   }
@@ -116,7 +116,7 @@ audiosrcfilePrep (const char *sfname, char *tempnm, size_t sz)
   }
 
   mstimestart (&mstm);
-  audiosrcfileFullPath (sfname, ffn, sizeof (ffn));
+  audiosrcfileFullPath (sfname, ffn, sizeof (ffn), 0, NULL);
   audiosrcfileMakeTempName (ffn, tempnm, sz);
 
   /* VLC still cannot handle internationalized names. */
@@ -166,7 +166,8 @@ audiosrcfilePrepClean (const char *tempnm)
 }
 
 void
-audiosrcfileFullPath (const char *sfname, char *buff, size_t sz)
+audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
+    int pfxlen, const char *oldfn)
 {
   *buff = '\0';
 
@@ -177,7 +178,16 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz)
   if (fileopIsAbsolutePath (sfname)) {
     strlcpy (buff, sfname, sz);
   } else {
-    snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
+    /* in most cases, the sfname passed in is either relative to */
+    /* the music-dir, or is a full path, and the prefix-length and old name */
+    /* do not need to be used. but when a new path needs to be generated */
+    /* from a relative filename, */
+    /* the prefix length and old filename must be set */
+    if (pfxlen > 0 && oldfn != NULL) {
+      snprintf (buff, sz, "%.*s/%s", pfxlen, oldfn, sfname);
+    } else {
+      snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
+    }
   }
 }
 

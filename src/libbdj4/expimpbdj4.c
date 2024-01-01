@@ -272,7 +272,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       type = audiosrcGetType (songfn);
 
       strlcpy (nsongfn, songfn, sizeof (nsongfn));
-      audiosrcFullPath (songfn, ffn, sizeof (ffn));
+      audiosrcFullPath (songfn, ffn, sizeof (ffn), 0, NULL);
 
       if (type == AUDIOSRC_TYPE_FILE &&
           fileopIsAbsolutePath (songfn)) {
@@ -416,7 +416,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 
       songfn = songGetStr (song, TAG_URI);
       type = audiosrcGetType (songfn);
-      audiosrcFullPath (songfn, nfn, sizeof (nfn));
+      audiosrcFullPath (songfn, nfn, sizeof (nfn), 0, NULL);
       snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
 
       tsong = dbGetByName (eibdj4->musicdb, songfn);

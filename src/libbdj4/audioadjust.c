@@ -119,7 +119,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     return changed;
   }
 
-  audiosrcFullPath (songfn, fullfn, sizeof (fullfn));
+  audiosrcFullPath (songfn, fullfn, sizeof (fullfn), 0, NULL);
   infn = fullfn;
   snprintf (origfn, sizeof (origfn), "%s%s",
       infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));

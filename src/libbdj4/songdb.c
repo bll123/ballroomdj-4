@@ -131,26 +131,33 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   *newfn = '\0';
 
   if (rename) {
+fprintf (stderr, "sdb: oldfn: %s\n", oldfn);
     if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
-      strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
+fprintf (stderr, "sdb: newfn: %s\n", newfn);
       songSetStr (song, TAG_URI, newfn);
       dorename = true;
     }
   }
 
-  if (songGetNum (song, TAG_DB_LOC_LOCK) == true) {
+  if (rename && songGetNum (song, TAG_DB_LOC_LOCK) == true) {
     /* user requested location lock */
     *flags |= SONGDB_RET_LOC_LOCK;
     dorename = false;
+fprintf (stderr, "     locked\n");
   }
 
   if (dorename) {
-    audiosrcFullPath (oldfn, ffn, sizeof (ffn));
-    audiosrcFullPath (newfn, newffn, sizeof (newffn));
+    audiosrcFullPath (oldfn, ffn, sizeof (ffn),
+        songGetNum (song, TAG_PREFIX_LEN), oldfn);
+    /* the prefix length and old filename must be passed in to generate */
+    /* the new filename properly */
+    audiosrcFullPath (newfn, newffn, sizeof (newffn),
+        songGetNum (song, TAG_PREFIX_LEN), oldfn);
 
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
       dorename = false;
+fprintf (stderr, "     exists\n");
     }
 
     if (dorename) {
@@ -174,6 +181,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
         *flags |= SONGDB_RET_RENAME_FAIL;
       } else {
         *flags |= SONGDB_RET_RENAME_SUCCESS;
+        logMsg (LOG_DBG, LOG_DBUPDATE, "rename %s to %s", oldfn, newffn);
 
         /* try to remove the old dir */
         pi = pathInfo (ffn);
@@ -229,7 +237,8 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
 
   *newuri = '\0';
   songfname = songGetStr (song, TAG_URI);
-  audiosrcFullPath (songfname, ffn, sizeof (ffn));
+  audiosrcFullPath (songfname, ffn, sizeof (ffn),
+      songGetNum (song, TAG_PREFIX_LEN), songfname);
   if (audiosrcGetType (ffn) != AUDIOSRC_TYPE_FILE) {
     return false;
   }
@@ -273,7 +282,8 @@ songdbWriteAudioTags (song_t *song)
     return;
   }
 
-  audiosrcFullPath (fn, ffn, sizeof (ffn));
+  audiosrcFullPath (fn, ffn, sizeof (ffn),
+      songGetNum (song, TAG_PREFIX_LEN), fn);
   tagdata = audiotagParseData (ffn, &rewrite);
   newtaglist = songTagList (song);
   audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
@@ -326,4 +336,5 @@ songdbUpdateAllSonglists (song_t *song, const char *olduri)
     }
     songlistFree (songlist);
   }
+  slistFree (filelist);
 }

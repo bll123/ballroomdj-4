@@ -132,7 +132,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       if (song == NULL) {
         return false;
       }
-      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn));
+      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
       pi = pathInfo (ffn);
 
       snprintf (outfn, sizeof (outfn), "%s/%03d-%.*s.mp3",

@@ -432,7 +432,7 @@ confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
     char        ffn [MAXPATHLEN];
 
     rfn = audiosrcRelativePath (nfn);
-    audiosrcFullPath (nfn, ffn, sizeof (ffn));
+    audiosrcFullPath (nfn, ffn, sizeof (ffn), 0, NULL);
 
     if (fileopFileExists (ffn)) {
       if (strcmp (rfn, nfn) != 0) {

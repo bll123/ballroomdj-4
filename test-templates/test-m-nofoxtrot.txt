@@ -4832,9 +4832,9 @@ DEST
 KEY
 ..132
 SOURCE
-..ann-waltz.flac
+..ann-waltz.mp3
 DURATION
-..1984
+..2616
 NOTES
 ..
 BPM
@@ -4869,9 +4869,9 @@ DB_LOC_LOCK
 KEY
 ..133
 SOURCE
-..ann-tango.flac
+..ann-tango.mp3
 DURATION
-..2048
+..2448
 NOTES
 ..
 BPM
@@ -4906,9 +4906,9 @@ DB_LOC_LOCK
 KEY
 ..134
 SOURCE
-..ann-samba.flac
+..ann-samba.mp3
 DURATION
-..1952
+..2448
 NOTES
 ..
 BPM

@@ -118,6 +118,31 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
+function checkreorg {
+  tmdir=$1
+  omdir=$2
+  ddir=$3
+  fn=$4
+
+  trc=0
+
+  if [[ $trc == 0 && -f "${tmdir}/${fn}" ]]; then
+    echo "  ERR: Not renamed or incorrect: $fn"
+    trc=1
+  fi
+  if [[ $trc == 0 && -f "${omdir}/${ddir}/${fn}" ]]; then
+    echo "  ERR: Incorrect dir: $fn"
+    trc=1
+  fi
+  if [[ $trc == 0 && ! -f "${tmdir}/${ddir}/${fn}" ]]; then
+    echo "  ERR: Missing: $fn"
+    trc=1
+  fi
+
+  return $trc
+}
+
+
 VERBOSE=""
 ATIBDJ4=F
 FIRSTONLY=F
@@ -862,6 +887,9 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1
 fi
 
+echo "## check ann"
+exit 1
+
 if [[ $TESTON == T ]]; then
   # main+second test db : compact with no changes
   # compact must iterate through the database, not just
@@ -1047,6 +1075,71 @@ if [[ $TESTON == T ]]; then
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  # restore the main+second database
+  cp -f $KDBSECOND $DATADB
+
+  # main+second empty db : write tags
+  tname=second-reorg-basic
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDTOT} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  crc=0
+
+### need to check to make sure everything got renamed properly
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  ddir="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      crc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  ddir="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      crc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  ddir="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      crc=1
+    fi
+  done
+
+  dispres $tname $rc $crc
+fi
+
+exit 1
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1

@@ -52,7 +52,6 @@ enum {
 
 typedef struct {
   int       type;
-  int       count;
   char      *name;
   char      *fname;
   int       flag;
@@ -64,21 +63,21 @@ enum {
 };
 
 static chk_as_list_t lvalues [] = {
-  { CHK_DIR,  1, "tmp/abc", NULL, 0 },
-  { CHK_FILE, 0, "tmp/abc/abc.txt", "abc.txt", 0 },
-  { CHK_DIR,  1, "tmp/abc/def", NULL, 0 },
-  { CHK_FILE, 0, "tmp/abc/def/def.txt", "def.txt", 0 },
-  { CHK_DIR,  2, "tmp/abc/ghi", "chk", 0 },
-  { CHK_FILE, 0, "tmp/abc/ghi/ghi.txt", "ghi.txt", 0 },
-  { CHK_FILE, 0, "tmp/abc/ghi/ghi.txt.original", "ghi.txt.original", 0 },
-  { CHK_DIR,  2, "tmp/abc/ÄÑÄÑ", NULL, 0 },
-  { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/abc-def.txt", "abc-def.txt", 0 },
-  { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/ÜÄÑÖ.txt", "ÜÄÑÖ.txt", 0 },
-  { CHK_DIR,  4, "tmp/abc/夕陽伴我歸", NULL, 0 },
-  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/내가제일잘나가.txt", "내가제일잘나가.txt", 0 },
-  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/ははは.txt", "ははは.txt", 0 },
-  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/夕陽伴我歸.txt", "夕陽伴我歸.txt", 0 },
-  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/Ne_Русский_Шторм.txt", "Ne_Русский_Шторм.txt", 0 }
+  { CHK_DIR,  "tmp/abc", NULL, 0 },
+  { CHK_FILE, "tmp/abc/abc.txt", "abc.txt", 0 },
+  { CHK_DIR,  "tmp/abc/def", NULL, 0 },
+  { CHK_FILE, "tmp/abc/def/def.txt", "def.txt", 0 },
+  { CHK_DIR,  "tmp/abc/ghi", "chk", 0 },
+  { CHK_FILE, "tmp/abc/ghi/ghi.txt", "ghi.txt", 0 },
+  { CHK_FILE, "tmp/abc/ghi/ghi.txt.original", "ghi.txt.original", 0 },
+  { CHK_DIR,  "tmp/abc/ÄÑÄÑ", NULL, 0 },
+  { CHK_FILE, "tmp/abc/ÄÑÄÑ/abc-def.txt", "abc-def.txt", 0 },
+  { CHK_FILE, "tmp/abc/ÄÑÄÑ/ÜÄÑÖ.txt", "ÜÄÑÖ.txt", 0 },
+  { CHK_DIR,  "tmp/abc/夕陽伴我歸", NULL, 0 },
+  { CHK_FILE, "tmp/abc/夕陽伴我歸/내가제일잘나가.txt", "내가제일잘나가.txt", 0 },
+  { CHK_FILE, "tmp/abc/夕陽伴我歸/ははは.txt", "ははは.txt", 0 },
+  { CHK_FILE, "tmp/abc/夕陽伴我歸/夕陽伴我歸.txt", "夕陽伴我歸.txt", 0 },
+  { CHK_FILE, "tmp/abc/夕陽伴我歸/Ne_Русский_Шторм.txt", "Ne_Русский_Шторм.txt", 0 }
 };
 enum {
   lvaluesz = sizeof (lvalues) / sizeof (chk_as_list_t),
@@ -125,9 +124,6 @@ setup (void)
     if (lvalues [i].type == CHK_DIR) {
       diropMakeDir (lvalues [i].name);
       ++dcount;
-      if (isWindows () && lvalues [i].fname != NULL) {
-        lvalues [i].count -= 1;
-      }
       ++dcount;
     }
   }
@@ -157,7 +153,7 @@ START_TEST(audiosrc_fullpath)
   mdebugSubTag ("audiosrc_fullpath");
 
   for (int i = 0; i < tvaluesz; ++i) {
-    audiosrcFullPath (tvalues [i].test, tbuff, sizeof (tbuff));
+    audiosrcFullPath (tvalues [i].test, tbuff, sizeof (tbuff), 0, NULL);
     ck_assert_str_eq (tbuff, tvalues [i].result);
   }
 }
