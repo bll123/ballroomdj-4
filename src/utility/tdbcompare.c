@@ -54,18 +54,23 @@ main (int argc, char *argv [])
   dbidx_t     dbidx [DB_MAX];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
+  bool        loclockcheck = true;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
 
   static struct option bdj_options [] = {
-    { "bdj4",         no_argument,        NULL,   'B' },
     { "tdbcompare",   no_argument,        NULL,   0 },
-    { "debug",        required_argument,  NULL,   'd' },
+    { "noloclockchk", no_argument,        NULL,   'l' },
+    /* launcher options */
+    { "bdj4",         no_argument,        NULL,   'B' },
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "origcwd",      required_argument,  NULL,   0 },
-    { "verbose",      no_argument,        NULL,   'V', },
     { "wait",         no_argument,        NULL,   0, },
+    /* standard stuff */
+    { "debug",        required_argument,  NULL,   'd' },
+    /* general args */
+    { "verbose",      no_argument,        NULL,   'V', },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -90,6 +95,10 @@ main (int argc, char *argv [])
           loglevel = atol (optarg);
           loglevelset = true;
         }
+        break;
+      }
+      case 'l': {
+        loclockcheck = false;
         break;
       }
       default: {
@@ -248,12 +257,13 @@ main (int argc, char *argv [])
       if (strcmp (tag [DB_A], tagdefs [TAG_DBIDX].tag) == 0) {
         continue;
       }
-      if (strcmp (tag [DB_A], tagdefs [TAG_DB_LOC_LOCK].tag) == 0) {
+      if (! loclockcheck &&
+          strcmp (tag [DB_A], tagdefs [TAG_DB_LOC_LOCK].tag) == 0) {
         continue;
       }
-//      if (strcmp (tag [DB_A], tagdefs [TAG_PFXLEN].tag) == 0) {
-//        continue;
-//      }
+      if (strcmp (tag [DB_A], tagdefs [TAG_PREFIX_LEN].tag) == 0) {
+        continue;
+      }
 
       val [DB_A] = slistGetStr (taglist [DB_A], tag [DB_A]);
       val [dblocidx] = slistGetStr (taglist [dblocidx], tag [DB_A]);

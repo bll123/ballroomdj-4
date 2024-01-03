@@ -1111,6 +1111,9 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
         snprintf (tbuff, sizeof (tbuff), "%d", val);
         slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tbuff);
       }
+      val = songGetNum (song, TAG_DB_LOC_LOCK);
+      snprintf (tbuff, sizeof (tbuff), "%d", val);
+      slistSetStr (tagdata, tagdefs [TAG_DB_LOC_LOCK].tag, tbuff);
     }
   }
 

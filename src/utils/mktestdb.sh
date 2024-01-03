@@ -9,7 +9,7 @@ done
 cwd=$(pwd)
 
 TESTMUSIC=test-templates/test-music.txt
-TESTDB=test-templates/musicdb.dat
+OUTDB=data/musicdb.dat
 FLAG=data/mktestdb.txt
 
 if [[ ! -d data ]]; then
@@ -100,8 +100,8 @@ done
 
 if [[ ! -f $FLAG ||
     $infile != $TESTMUSIC ||
-    ($outfile != "" && $outfile != $TESTDB) ||
-    $infile -nt $TESTDB ||
+    ($outfile != "" && $outfile != $OUTDB) ||
+    $infile -nt $OUTDB ||
     $infile -nt $FLAG ]]; then
   if [[ ! -d data || ! -d src || ! -d tmp ]]; then
     echo "invalid current dir $(pwd)" >&2

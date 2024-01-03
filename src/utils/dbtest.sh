@@ -183,13 +183,14 @@ NUMNOCC=$(($NUMCC-1))
 # second
 NUMSECOND=13
 NUMSECONDTOT=150
+NUMSECONDRENAME=147   # three announcements
 # deleted foxtrot (only the second dir)
 NUMSECONDNOFT=$(($NUMSECOND-1))
 # deleted foxtrot (total)
 NUMSECONDTOTNOFT=$(($NUMSECONDTOT-6-1))
 
 DATADB=data/musicdb.dat
-TMAINDB=test-templates/musicdb.dat
+KDBMAIN=tmp/main-db.dat
 INMAINDB=test-templates/test-music.txt
 INNOCHACHA=test-templates/test-m-nochacha.txt
 INCHACHA=test-templates/test-m-chacha.txt
@@ -232,6 +233,7 @@ if [[ $ATIBDJ4 == T ]]; then
   ATIFLAG=--atibdj4
 fi
 ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
+cp -pf $DATADB $KDBMAIN
 
 if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
@@ -261,7 +263,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
+  # after a rebuild, the db-loc-lock flags will be lost
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $KDBMAIN)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -277,6 +280,9 @@ if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
+  # restore the main database
+  cp -pf $KDBMAIN $DATADB
+
   # main test db : check-new with no changes
   tname=checknew-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
@@ -288,7 +294,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -310,7 +316,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -332,7 +338,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -346,7 +352,7 @@ fi
 if [[ $TESTON == T ]]; then
   # restore the main test database, needed for write tags check
   # only the main db has songs with song-start/song-end/vol-adjust-perc
-  cp -f $TMAINDB $DATADB
+  cp -f $KDBMAIN $DATADB
 
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
@@ -363,7 +369,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -487,7 +493,7 @@ if [[ $TESTON == T ]]; then
       --debug ${DBG} ${ATIFLAG}
 
   # restore the main database
-  cp -f $TMAINDB $DATADB
+  cp -f $KDBMAIN $DATADB
 
   # main test db : check-new with deleted files
   tname=checknew-delete
@@ -515,7 +521,7 @@ fi
 
 if [[ $TESTON == T ]]; then
   # restore the main database
-  cp -f $TMAINDB $DATADB
+  cp -f $KDBMAIN $DATADB
 
   # main test db : compact with deleted files
   tname=compact-deleted
@@ -580,7 +586,8 @@ if [[ $TESTON == T ]]; then
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
-    msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBNOCHACHA)"
+    # after a rebuild, the db-loc-lock flags will be lost
+    msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBNOCHACHA)"
     crc=$?
     updateCounts $crc
     msg+="$(compcheck $tname $rc)"
@@ -607,7 +614,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBCHACHA)"
+  # the db-loc-lock flags are still lost at this time
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -656,7 +664,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBEMPTY)"
+  # an empty database has no db-loc-lock flags
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBEMPTY)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -756,7 +765,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDAT)"
+  # after a rebuild, there are no db-loc-lock flags
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBRDAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -780,7 +790,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDT)"
+  # after a rebuild, there are no db-loc-lock flags
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBRDT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -829,7 +840,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TDBRDTAT)"
+  # after a rebuild, there are no db-loc-lock flags
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $TDBRDTAT)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -846,12 +858,6 @@ if [[ $TESTON == T ]]; then
   # re-create both the main and second music dir
 
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
-
-  ./bin/bdj4 --bdj4dbupdate \
-      --debug ${DBG} \
-      --rebuild \
-      --dbupmusicdir "${musicdir}" \
-      --cli --wait
 
   ./src/utils/mktestsetup.sh \
       --infile $INSECOND \
@@ -873,7 +879,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $TMAINDB $TDBSECOND)"
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN $TDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
@@ -886,9 +892,6 @@ fi
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1
 fi
-
-echo "## check ann"
-exit 1
 
 if [[ $TESTON == T ]]; then
   # main+second test db : compact with no changes
@@ -1069,7 +1072,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
+  # an empty db has no db-loc-lock flags
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --noloclockchk --debug ${DBG} $DATADB $KDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
@@ -1090,14 +1094,12 @@ if [[ $TESTON == T ]]; then
       --debug ${DBG} \
       --reorganize \
       --cli --wait --verbose)
-  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDTOT} norename 0 notaudio 0 writetag 0"
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
 
   crc=0
-
-### need to check to make sure everything got renamed properly
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
@@ -1139,14 +1141,12 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-exit 1
-
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1
 fi
 
 # remove test db, temporary files
-rm -f $INCOMPAT
+rm -f $INCOMPAT $KDBMAIN
 rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT $TDBNOFOXTROT
 rm -f $TDBRDAT $TDBRDT $TDBRDTSECOND $TDBRDTAT
 rm -f $TDBSECOND $KDBSECOND $TDBSECONDNOFT $TDBSECONDEMPTY

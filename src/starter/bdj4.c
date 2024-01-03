@@ -134,6 +134,8 @@ main (int argc, char * argv[])
     { "infile",         required_argument,  NULL,   0 },
     { "keepmusic",      no_argument,        NULL,   0 },
     { "outfile",        required_argument,  NULL,   0 },
+    /* tdbcompare */
+    { "noloclockchk",   no_argument,        NULL,   0 },
     /* ttagdbchk */
     { "ignoremissing",  no_argument,        NULL,   0 },
     /* general options */

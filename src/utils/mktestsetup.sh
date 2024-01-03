@@ -231,12 +231,11 @@ _HERE_
 args=""
 
 outfile=$(./src/utils/mktestdb.sh "$@")
+# if an outfile was specified,
 # copy the db to the data dir after it is created
 if [[ $DBCOPY == T ]]; then
   if [[ $outfile != "" ]]; then
     cp -f $outfile data/musicdb.dat
-  else
-    cp -f test-templates/musicdb.dat data
   fi
 fi
 

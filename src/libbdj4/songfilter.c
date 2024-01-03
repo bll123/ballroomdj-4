@@ -882,14 +882,14 @@ songfilterMakeSortKey (songfilter_t *sf,
 
       tval = songGetNum (song, TAG_DISCNUMBER);
       if (tval == LIST_VALUE_INVALID) {
-        tval = 0;
+        tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
       strlcat (sortkey, tbuff, sz);
 
       tval = songGetNum (song, TAG_TRACKNUMBER);
       if (tval == LIST_VALUE_INVALID) {
-        tval = 0;
+        tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%04d", tval);
       strlcat (sortkey, tbuff, sz);
@@ -902,7 +902,7 @@ songfilterMakeSortKey (songfilter_t *sf,
 
       tval = songGetNum (song, TAG_DISCNUMBER);
       if (tval == LIST_VALUE_INVALID) {
-        tval = 0;
+        tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
       strlcat (sortkey, tbuff, sz);

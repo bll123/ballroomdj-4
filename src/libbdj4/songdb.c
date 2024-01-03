@@ -131,9 +131,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   *newfn = '\0';
 
   if (rename) {
-fprintf (stderr, "sdb: oldfn: %s\n", oldfn);
     if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
-fprintf (stderr, "sdb: newfn: %s\n", newfn);
       songSetStr (song, TAG_URI, newfn);
       dorename = true;
     }
@@ -143,7 +141,6 @@ fprintf (stderr, "sdb: newfn: %s\n", newfn);
     /* user requested location lock */
     *flags |= SONGDB_RET_LOC_LOCK;
     dorename = false;
-fprintf (stderr, "     locked\n");
   }
 
   if (dorename) {
@@ -157,7 +154,6 @@ fprintf (stderr, "     locked\n");
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
       dorename = false;
-fprintf (stderr, "     exists\n");
     }
 
     if (dorename) {

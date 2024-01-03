@@ -151,7 +151,7 @@ main (int argc, char *argv [])
   mdebugInit ("tset");
 #endif
 
-  strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
+  strlcpy (dbfn, "data/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
   *seconddir = '\0';
 

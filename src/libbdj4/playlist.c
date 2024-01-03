@@ -201,13 +201,11 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
 
         tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_HIGH);
         if (tval > 0) {
-fprintf (stderr, "=== pl high bpm\n");
           tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
           ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, tval);
         }
         tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_LOW);
         if (tval > 0) {
-fprintf (stderr, "=== pl low bpm\n");
           tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
           ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, tval);
         }

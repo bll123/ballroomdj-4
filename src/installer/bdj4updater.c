@@ -760,7 +760,7 @@ main (int argc, char *argv [])
         int   val;
 
         val = songGetNum (song, TAG_DISCNUMBER);
-        if (val < -1 || val > 5000) {
+        if (val != LIST_VALUE_INVALID && (val < -1 || val > 5000)) {
           songSetNum (song, TAG_DISCNUMBER, 1);
           dowrite = true;
           counters [UPD_FIX_DB_DISCNUM] += 1;

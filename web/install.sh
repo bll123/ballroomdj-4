@@ -98,7 +98,7 @@ for fn in bdj4.html.??; do
   sed "s/#VERSION#/${vers}/g" ${fn} > $TMPMAIN
   cp -pf $TMPMAIN $TMP${testpath}/index.html.${lang}
 done
-cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
+cp -pf ../http/ballroomdj4.svg $TMPIMG/ballroomdj4.svg
 cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
 cp -pf ../img/bdj4_icon.png $TMPIMG/bdj4_icon.png
 
