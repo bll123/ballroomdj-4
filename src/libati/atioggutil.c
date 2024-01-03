@@ -135,7 +135,15 @@ atioggSplitVorbisComment (int tagkey, const char *tagname, const char *val)
   /* album-artist, artist, composer, conductor, genre */
 
   vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
-  split = tagdefs [tagkey].vorbisMulti;
+  /* do this rather than using tagdefs, so that libbdj4 will not be */
+  /* linked in */
+  if (tagkey == TAG_ALBUMARTIST ||
+      tagkey == TAG_ARTIST ||
+      tagkey == TAG_COMPOSER ||
+      tagkey == TAG_CONDUCTOR ||
+      tagkey == TAG_GENRE) {
+    split = true;
+  }
 
   if (split && strstr (val, ";") != NULL) {
     char      *tval;

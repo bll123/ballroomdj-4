@@ -140,19 +140,16 @@ main (int argc, char *argv [])
   bool        processflags [UPD_MAX];
   bool        processaf= false;
   bool        processdb = false;
-  bool        forcewritetags = false;
   bool        updlistallocated = false;
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
   long        flags;
-  int         origbpmtype;
   bdj4arg_t   *bdj4arg;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
     { "convert",    no_argument,        NULL,   'c' },
-    { "writetags",  no_argument,        NULL,   'W' },
     { "bdj4updater",no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   'B' },
     /* ignored */
@@ -185,10 +182,6 @@ main (int argc, char *argv [])
       }
       case 'c': {
         converted = true;
-        break;
-      }
-      case 'W': {
-        forcewritetags = true;
         break;
       }
       default: {
@@ -427,8 +420,6 @@ main (int argc, char *argv [])
   }
 
   {
-    origbpmtype = bdjoptGetNum (OPT_G_BPM);
-
     if (statusflags [UPD_SET_MPM] == UPD_NOT_DONE) {
       /* 4.3.2.4 : change BPM to default to MPM */
       bdjoptSetNum (OPT_G_BPM, BPM_MPM);
@@ -666,10 +657,8 @@ main (int argc, char *argv [])
     slistidx_t  dbiteridx;
     song_t      *song;
     dbidx_t     dbidx;
-    dance_t     *dances;
 
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing audio files");
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
 
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {

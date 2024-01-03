@@ -979,7 +979,6 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
   slistidx_t  orgiteridx;
   int         tagkey;
   dbidx_t     rrn;
-  musicdb_t   *currdb = NULL;
   song_t      *song = NULL;
   const char  *val;
   int         rewrite;
@@ -1117,7 +1116,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
     }
   }
 
-  currdb = dbupdateSetCurrentDB (dbupdate);
+  dbupdateSetCurrentDB (dbupdate);
 
   /* this is rather inefficient */
   /* see what can be done about this */
@@ -1176,7 +1175,6 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
   nlistidx_t  iteridx;
   nlist_t     *entry = NULL;
   bool        changed = false;
-  musicdb_t   *currdb = NULL;
 
   if (tdi->ffn == NULL) {
     return;
@@ -1188,7 +1186,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
     return;
   }
 
-  currdb = dbupdateSetCurrentDB (dbupdate);
+  dbupdateSetCurrentDB (dbupdate);
 
   /* for itunes, just update the song data directly, */
   /* write the song to the db, and write the song tags */
@@ -1244,7 +1242,6 @@ dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi,
     slist_t *tagdata, int songdbdefault)
 {
   song_t      *song = NULL;
-  musicdb_t   *currdb = NULL;
   int         songdbflags = songdbdefault;
 
   if (tdi->ffn == NULL) {
@@ -1257,7 +1254,7 @@ dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi,
     return;
   }
 
-  currdb = dbupdateSetCurrentDB (dbupdate);
+  dbupdateSetCurrentDB (dbupdate);
   dbupdateWriteSong (dbupdate, song, &songdbflags, songGetNum (song, TAG_RRN));
   dbupdateIncCount (dbupdate, C_FILE_PROC);
 }

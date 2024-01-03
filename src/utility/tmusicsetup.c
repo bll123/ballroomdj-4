@@ -120,7 +120,6 @@ main (int argc, char *argv [])
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
   bool        keepmusic = false;
-  bool        verbose = false;
   int         supported [AFILE_TYPE_MAX];
   int         tagtype;
   int         filetype;
@@ -137,7 +136,7 @@ main (int argc, char *argv [])
     { "outfile",      required_argument,  NULL,   'O' },
     { "tmusicsetup",  no_argument,        NULL,   0 },
     { "dbupmusicdir", required_argument,  NULL,   'D' },
-    { "verbose",      no_argument,        NULL,   'V', },
+    { "verbose",      no_argument,        NULL,   0, },
     /* launcher options */
     { "debugself",    no_argument,        NULL,   0 },
     { "debug",        required_argument,  NULL,   'd' },
@@ -206,10 +205,6 @@ main (int argc, char *argv [])
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           strlcpy (seconddir, targ, sizeof (seconddir));
         }
-        break;
-      }
-      case 'V': {
-        verbose = true;
         break;
       }
       default: {
