@@ -69,10 +69,18 @@ function checkaudiotags {
 
 function dispres {
   tname=$1
-  rca=$2
-  rcb=$3
+  shift
 
-  if [[ $rca -eq 0 && $rcb -eq 0 ]]; then
+  tgrc=0
+  while test $# -gt 0; do
+    trc=$1
+    shift
+    if [[ $trc -ne 0 ]]; then
+      tgrc=1
+    fi
+  done
+
+  if [[ $tgrc -eq 0 ]]; then
     echo "$tname OK"
   else
     echo "$tname FAIL"
@@ -119,22 +127,51 @@ function setorgregex {
 }
 
 function checkreorg {
-  tmdir=$1
-  omdir=$2
-  ddir=$3
-  fn=$4
+  type=$1
+  tmdir=$2
+  omdir=$3
+  dance=$4
+  fn=$5
 
   trc=0
 
-  if [[ $trc == 0 && -f "${tmdir}/${fn}" ]]; then
+  if [[ $trc == 0 && $type != title && -f "${tmdir}/${fn}" ]]; then
     echo "  ERR: Not renamed or incorrect: $fn"
     trc=1
   fi
-  if [[ $trc == 0 && -f "${omdir}/${ddir}/${fn}" ]]; then
+
+  if [[ $type == dir || $type == ann ]]; then
+    tfn="${omdir}/${dance}/${fn}"
+  fi
+  if [[ $type == title ]]; then
+    tfn="${omdir}/${fn}"
+  fi
+  if [[ $type == dash ]]; then
+    if [[ $dance != "" ]]; then
+      tfn="${omdir}/${dance} - ${fn}"
+    else
+      tfn="${omdir}/${fn}"
+    fi
+  fi
+  if [[ $trc == 0 && -f ${tfn} ]]; then
     echo "  ERR: Incorrect dir: $fn"
     trc=1
   fi
-  if [[ $trc == 0 && ! -f "${tmdir}/${ddir}/${fn}" ]]; then
+
+  if [[ $type == dir || $type == ann ]]; then
+    tfn="${tmdir}/${dance}/${fn}"
+  fi
+  if [[ $type == title ]]; then
+    tfn="${tmdir}/${fn}"
+  fi
+  if [[ $type == dash ]]; then
+    if [[ $dance != "" ]]; then
+      tfn="${tmdir}/${dance} - ${fn}"
+    else
+      tfn="${tmdir}/${fn}"
+    fi
+  fi
+  if [[ $trc == 0 && ! -f ${tfn} ]]; then
     echo "  ERR: Missing: $fn"
     trc=1
   fi
@@ -642,7 +679,7 @@ if [[ $TESTON == T ]]; then
   rc=$?
   updateCounts $rc
   # no db comparison
-  dispres $tname $rc $rc
+  dispres $tname $rc
 fi
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
@@ -960,7 +997,7 @@ if [[ $TESTON == T ]]; then
   rc=$?
   updateCounts $rc
   # no db comparison
-  dispres $tname $rc $rc
+  dispres $tname $rc
 fi
 
 if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
@@ -1089,7 +1126,7 @@ if [[ $TESTON == T ]]; then
   cp -f $KDBSECOND $DATADB
 
   # main+second empty db : write tags
-  tname=second-reorg-basic
+  tname=second-reorg-basic-dir
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --reorganize \
@@ -1099,49 +1136,192 @@ if [[ $TESTON == T ]]; then
   rc=$?
   updateCounts $rc
 
-  crc=0
+  reorgrc=0
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
   tmdir=/home/bll/s/bdj4/test-music
   omdir=/home/bll/s/bdj4/tmp/music-second
-  ddir="Announce"
+  dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
-    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
-      crc=1
+      reorgrc=1
     fi
   done
 
   # music-dir
   tmdir=/home/bll/s/bdj4/test-music
   omdir=/home/bll/s/bdj4/tmp/music-second
-  ddir="Cha Cha"
+  dance="Cha Cha"
   for fn in 006-chacha.mp3; do
-    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
-      crc=1
+      reorgrc=1
     fi
   done
 
   # secondary
   tmdir=/home/bll/s/bdj4/tmp/music-second
   omdir=/home/bll/s/bdj4/test-music
-  ddir="Cha Cha"
+  dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
-    checkreorg "$tmdir" "$omdir" "$ddir" "$fn"
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
-      crc=1
+      reorgrc=1
     fi
   done
 
-  dispres $tname $rc $crc
+  dispres $tname $rc $reorgrc
 fi
 
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  setorgregex '{%DANCE% - }{%TITLE%}'
+
+  # main+second empty db : write tags
+  tname=second-reorg-basic-dash
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg dash "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg dash "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  if [[ -d "${tmdir}/${dance}" ]]; then
+    echo "ERR: ${tmdir}/${dance} not removed"
+    reorgrc=1
+  fi
+  if [[ -d "${omdir}/${dance}" ]]; then
+    echo "ERR: ${tmdir}/${dance} not removed"
+    reorgrc=1
+  fi
+
+  dispres $tname $rc $reorgrc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 ) ]]; then
+  exit 1
+fi
+
+if [[ $TESTON == T ]]; then
+  setorgregex '{%TITLE%}'
+
+  # main+second empty db : write tags
+  tname=second-reorg-basic-title
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  if [[ -d "${tmdir}/${dance}" ]]; then
+    echo "ERR: ${tmdir}/${dance} not removed"
+    reorgrc=1
+  fi
+  if [[ -d "${omdir}/${dance}" ]]; then
+    echo "ERR: ${tmdir}/${dance} not removed"
+    reorgrc=1
+  fi
+
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $crc)"
+
+  dispres $tname $rc $reorgrc $crc
+fi
+
+if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 || $crc -ne 0 ) ]]; then
   exit 1
 fi
 

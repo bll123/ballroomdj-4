@@ -140,6 +140,7 @@ main (int argc, char *argv [])
       char        tdnc [100];
       char        ofn [MAXPATHLEN];
       char        nfn [MAXPATHLEN];
+      char        tdir [MAXPATHLEN];
 
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey < 0) {
@@ -153,7 +154,7 @@ main (int argc, char *argv [])
       fstr = songGetStr (song, TAG_URI);
 
       pi = pathInfo (fstr);
-      snprintf (ext, sizeof (ext), "%.*s", (int) pi->elen, pi->extension);
+      pathInfoGetExt (pi, ext, sizeof (ext));
       snprintf (ofn, sizeof (ofn), "%s/%s%s", tofdir, tdnc, ext);
       if (! fileopFileExists (ofn)) {
         snprintf (ofn, sizeof (ofn), "%s/%s%s", tofdir, "waltz", ext);
@@ -161,7 +162,8 @@ main (int argc, char *argv [])
           continue;
         }
       }
-      snprintf (nfn, sizeof (nfn), "%s/%.*s", tmdir, (int) pi->dlen, pi->dirname);
+      pathInfoGetDir (pi, tdir, sizeof (tdir));
+      snprintf (nfn, sizeof (nfn), "%s/%s", tmdir, tdir);
       diropMakeDir (nfn);
       snprintf (nfn, sizeof (nfn), "%s/%s", tmdir, fstr);
       filemanipCopy (ofn, nfn);

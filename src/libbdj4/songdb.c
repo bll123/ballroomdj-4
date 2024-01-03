@@ -144,12 +144,17 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   }
 
   if (dorename) {
-    audiosrcFullPath (oldfn, ffn, sizeof (ffn),
-        songGetNum (song, TAG_PREFIX_LEN), oldfn);
+    int     pfxlen;
+
+    pfxlen = songGetNum (song, TAG_PREFIX_LEN);
+    audiosrcFullPath (oldfn, ffn, sizeof (ffn), pfxlen, oldfn);
     /* the prefix length and old filename must be passed in to generate */
     /* the new filename properly */
-    audiosrcFullPath (newfn, newffn, sizeof (newffn),
-        songGetNum (song, TAG_PREFIX_LEN), oldfn);
+    audiosrcFullPath (newfn, newffn, sizeof (newffn), pfxlen, oldfn);
+    if (pfxlen > 0) {
+      /* for a secondary directory, the full name must be used for the URI */
+      songSetStr (song, TAG_URI, newffn);
+    }
 
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
@@ -158,7 +163,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 
     if (dorename) {
       pi = pathInfo (newffn);
-      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+      pathInfoGetDir (pi, tbuff, sizeof (tbuff));
       if (! fileopIsDirectory (tbuff)) {
         rc = diropMakeDir (tbuff);
         if (rc != 0) {
@@ -181,7 +186,8 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 
         /* try to remove the old dir */
         pi = pathInfo (ffn);
-        snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+        pathInfoGetDir (pi, tbuff, sizeof (tbuff));
+        diropDeleteDir (tbuff, DIROP_ONLY_IF_EMPTY);
         pathInfoFree (pi);
       }
     }

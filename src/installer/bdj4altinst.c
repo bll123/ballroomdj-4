@@ -706,7 +706,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     /* check the path up to that point and make sure it is valid */
     pi = pathInfo (dir);
     if (pi->dlen > 0) {
-      snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->dlen, pi->dirname);
+      pathInfoGetDir (pi, tmp, sizeof (tmp));
       if (! fileopIsDirectory (tmp)) {
         rc = UIENTRY_ERROR;
       }

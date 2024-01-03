@@ -440,7 +440,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
       pi = pathInfo (fn);
       if (pi->flen == strlen (srchdir) &&
           strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
-        strlcpy (tbuff, pi->dirname, pi->dlen + 1);
+        pathInfoGetDir (pi, tbuff, sizeof (tbuff));
         pathInfoFree (pi);
         pi = pathInfo (tbuff);
         strlcpy (tmp, pi->filename, pi->flen + 1);

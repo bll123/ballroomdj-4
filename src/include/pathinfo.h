@@ -18,5 +18,7 @@ typedef struct {
 pathinfo_t *  pathInfo (const char *path);
 void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
+void          pathInfoGetDir (pathinfo_t *pi, char *buff, size_t sz);
+void          pathInfoGetExt (pathinfo_t *pi, char *buff, size_t sz);
 
 #endif /* INC_PATHINFO_H */

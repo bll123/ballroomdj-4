@@ -370,7 +370,7 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
   }
 
   pi = pathInfo (fn);
-  strlcpy (tbuff, pi->dirname, pi->dlen + 1);
+  pathInfoGetDir (pi, tbuff, sizeof (tbuff));
   if ( ! fileopIsDirectory (tbuff)) {
     diropMakeDir (tbuff);
   }

@@ -333,7 +333,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
 
         if (type == AUDIOSRC_TYPE_FILE) {
           pi = pathInfo (tbuff);
-          snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+          pathInfoGetDir (pi, tdir, sizeof (tdir));
           diropMakeDir (tdir);
           pathInfoFree (pi);
         }
@@ -459,7 +459,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         char        tdir [MAXPATHLEN];
 
         pi = pathInfo (nfn);
-        snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+        pathInfoGetDir (pi, tdir, sizeof (tdir));
         diropMakeDir (tdir);
         filemanipCopy (ifn, nfn);
         pathInfoFree (pi);

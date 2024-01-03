@@ -488,7 +488,7 @@ uireqextValidateAudioFile (uientry_t *entry, void *udata)
 
     fn = uiEntryGetValue (uireqext->audioFileEntry);
     pi = pathInfo (fn);
-    snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->dlen, pi->dirname);
+    pathInfoGetDir (pi, tmp, sizeof (tmp));
     nlistSetStr (uireqext->options, REQ_EXT_DIR, tmp);
     pathInfoFree (pi);
     uireqext->audiofilesfcb.defdir = nlistGetStr (uireqext->options, REQ_EXT_DIR);

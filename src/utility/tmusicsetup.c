@@ -423,7 +423,7 @@ createFile (const char *src, const char *dest, bool keepmusic)
   if (! keepmusic) {
     pathInfoFree (pi);
     pi = pathInfo (to);
-    snprintf (dir, sizeof (dir), "%.*s", (int) pi->dlen, pi->dirname);
+    pathInfoGetDir (pi, dir, sizeof (dir));
     diropMakeDir (dir);
 
     filemanipCopy (from, to);

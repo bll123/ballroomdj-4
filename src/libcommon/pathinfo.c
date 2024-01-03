@@ -129,3 +129,14 @@ pathInfoExtCheck (pathinfo_t *pi, const char *extension)
   return false;
 }
 
+void
+pathInfoGetDir (pathinfo_t *pi, char *buff, size_t sz)
+{
+  snprintf (buff, sz, "%.*s", (int) pi->dlen, pi->dirname);
+}
+
+void
+pathInfoGetExt (pathinfo_t *pi, char *buff, size_t sz)
+{
+  snprintf (buff, sz, "%.*s", (int) pi->elen, pi->extension);
+}

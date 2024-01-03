@@ -63,6 +63,8 @@ enum {
 START_TEST(pathinfo_chk)
 {
   pathinfo_t    *pi;
+  char          tbuff [MAXPATHLEN];
+  char          tmp [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
   mdebugSubTag ("pathinfo_chk");
@@ -101,6 +103,19 @@ START_TEST(pathinfo_chk)
     ck_assert_msg (pi->elen == tests[i].elen,
         "elen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
         "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
+
+    if (pi->dlen > 0) {
+      pathInfoGetDir (pi, tbuff, sizeof (tbuff));
+      strlcpy (tmp, tests [i].path, sizeof (tmp));
+      tmp [pi->dlen] = '\0';
+      ck_assert_str_eq (tbuff, tmp);
+    }
+
+    if (pi->elen > 0) {
+      pathInfoGetExt (pi, tbuff, sizeof (tbuff));
+      /* pi->extension is null terminated, as it is the last */
+      ck_assert_str_eq (tbuff, pi->extension);
+    }
 
     /* the dirname pointer always points to the beginning */
     ck_assert_ptr_eq (pi->dirname, tests [i].path);
