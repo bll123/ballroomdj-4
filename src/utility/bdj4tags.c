@@ -39,7 +39,6 @@ main (int argc, char *argv [])
   int         fidx = -1;
   int         fbidx = -1;
   tagdefkey_t tagkey;
-  bool        clbdj3tags = false;
   slist_t     *tagdata;
   bool        writetags;
   int         rewrite;
@@ -57,7 +56,6 @@ main (int argc, char *argv [])
     { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4tags",     no_argument,      NULL,   0 },
     { "copy",           no_argument,        NULL,   'c' },
-    { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
     { "verbose",      no_argument,      NULL,   0, },
     { "quiet",        no_argument,      NULL,   'Q', },
@@ -79,10 +77,6 @@ main (int argc, char *argv [])
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
-      case '3': {
-        clbdj3tags = true;
-        break;
-      }
       case 'B': {
         isbdj4 = true;
         break;
@@ -124,10 +118,6 @@ main (int argc, char *argv [])
   tagdefInit ();
   audiotagInit ();
   logStartAppend ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
-
-  if (clbdj3tags) {
-    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
-  }
 
   for (int i = optind; i < argc; ++i) {
     if (copy && fidx != -1 && fbidx == -1) {

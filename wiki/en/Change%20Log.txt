@@ -18,6 +18,7 @@
     * User Interface: Fix bug when validating entry fields.
     * Version Updater: Fix various bugs.
 * Changes:
+    * Configuration: Remove BallroomDJ 3 compatibility setting.
     * Installer: Remove music folder selection.
 * New Features:
     * PENDING Re-Organize.

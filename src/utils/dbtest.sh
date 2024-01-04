@@ -115,20 +115,6 @@ function setwritetagson {
   mv -f ${gconf}.n ${gconf}
 }
 
-function setbdj3compaton {
-  gconf=data/bdjconfig.txt
-  sed -e '/^BDJ3COMPATTAGS$/ { n ; s/.*/..yes/ ; }' \
-      ${gconf} > ${gconf}.n
-  mv -f ${gconf}.n ${gconf}
-}
-
-function setbdj3compatoff {
-  gconf=data/bdjconfig.txt
-  sed -e '/^BDJ3COMPATTAGS$/ { n ; s/.*/..no/ ; }' \
-      ${gconf} > ${gconf}.n
-  mv -f ${gconf}.n ${gconf}
-}
-
 function cleanallaudiofiletags {
   mdir=$1
 
@@ -424,66 +410,9 @@ if [[ $TESTON == T ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
-  # restore the main test database, needed for write tags check
-  # only the main db has songs with song-start/song-end/vol-adjust-perc
-  cp -f $KDBMAIN $DATADB
-
-  # test db : write tags
-  # note that if the ati interface can't write tags, no changes are made
-  # to the audio files, and everything will still look ok.
-  # this test may look ok, as the default is to have bdj3 compatibility on
-  tname=writetags-bdj3-compat-on
-  setwritetagson
-  setbdj3compaton
-  got=$(./bin/bdj4 --bdj4dbupdate \
-      --debug ${DBG} \
-      --writetags \
-      --cli --wait --verbose)
-  exp="found ${NUMNORM} skip 0 indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag ${NUMNORM}"
-  msg+=$(checkres $tname "$got" "$exp")
-  rc=$?
-  updateCounts $rc
-  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBMAIN)"
-  crc=$?
-  updateCounts $crc
-  msg+="$(compcheck $tname $crc)"
-
-  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+="$(checkaudiotags $tname)"
-    trc=$?
-    updateCounts $trc
-    if [[ $trc -ne 0 ]]; then
-      rc=$trc
-    fi
-  fi
-
-  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    # check one of the files with all tags
-    val=""
-    val=$(./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND)
-    # this change was made after mutagen was removed.
-    # this returns the BDJ4 value, and what is wanted here is the
-    # raw value so that it can be seen that it is
-    # set to TXXX=SONGEND=0:29.0
-    case ${val} in
-      SONGEND*29000)
-        ;;
-      *)
-        msg+="audio tags not written"
-        rc=1
-        ;;
-    esac
-    updateCounts $rc
-  fi
-  dispres $tname $rc $crc
-  exitonfail $rc $crc
-fi
-
-if [[ $TESTON == T ]]; then
   # create test db w/different song-end
-  # the problem here is that with bdj3 compatibility off, there is no
-  # forced rewrite of the tags, therefore to test, the value must be
-  # different
+  # there is no forced rewrite of the tags,
+  # therefore to test, the value must be different
   cp -f $INMAINDB $INCOMPAT
   tfn=$INCOMPAT
   sed -e '/^SONGEND/ { n ; s/.*/..28000/ ; }' \
@@ -500,9 +429,8 @@ if [[ $TESTON == T ]]; then
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
   # to the audio files, and everything will still look ok.
-  tname=writetags-bdj3-compat-off
+  tname=write-tags
   setwritetagson
-  setbdj3compatoff
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --writetags \
@@ -740,7 +668,7 @@ if [[ $TESTON == T ]]; then
   cp -f $TDBCHACHA $DATADB
 
   # test db : write tags
-  tname=write-tags
+  tname=write-tags-restored
   setwritetagson
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
@@ -1722,7 +1650,7 @@ if [[ $TESTON == T ]]; then
 
   setorgpath '{%TITLE%}'
 
-  # main+second : re-org test with .original
+  # main+second : re-org test, existing files removed, back to title
   tname=second-reorg-exist-clean-title
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \

@@ -104,7 +104,6 @@ main (int argc, char *argv [])
 {
   int         c = 0;
   int         option_index = 0;
-  bool        clbdj3tags = false;
   bool        isbdj4 = false;
   bool        emptydb = false;
   datafile_t  *df = NULL;
@@ -127,7 +126,6 @@ main (int argc, char *argv [])
   const char  *targ;
 
   static struct option bdj_options [] = {
-    { "bdj3tags",     no_argument,        NULL,   '3' },
     { "bdj4",         no_argument,        NULL,   'B' },
     { "seconddir",    required_argument,  NULL,   'A' },
     { "emptydb",      no_argument,        NULL,   'E' },
@@ -159,10 +157,6 @@ main (int argc, char *argv [])
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
     switch (c) {
-      case '3': {
-        clbdj3tags = true;
-        break;
-      }
       case 'B': {
         isbdj4 = true;
         break;
@@ -225,10 +219,6 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
-
-  if (clbdj3tags) {
-    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
-  }
 
   for (int i = 0; i < TM_MAX_DANCE; ++i) {
     gseqnum [i] = 1;

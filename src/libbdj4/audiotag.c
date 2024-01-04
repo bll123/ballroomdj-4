@@ -64,7 +64,6 @@ static audiotag_t *at = NULL;
 
 static void audiotagParseTags (slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
-static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
@@ -130,7 +129,6 @@ int
 audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     int rewrite, int modTimeFlag)
 {
-  char        tmp [50];
   int         tagtype;
   int         filetype;
   int         writetags;
@@ -196,17 +194,6 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     }
 
     newvalue = slistGetStr (newtaglist, tag);
-
-    /* convert to bdj3 form before the update check */
-    /* this works if the prior setting of bdj3-compat was off */
-    /* but does not if the prior setting of bdj3-compat was on */
-    if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, newvalue)) {
-      if (*tmp) {
-        newvalue = tmp;
-      } else {
-        newvalue = NULL;
-      }
-    }
 
     if (tagdefs [tagkey].isBDJTag &&
         (rewrite & AF_FORCE_WRITE_BDJ) == AF_FORCE_WRITE_BDJ) {
@@ -495,50 +482,6 @@ audiotagCreateLookupTable (int tagtype)
       } /* has a desc */
     } /* if there is a tag conversion */
   }
-}
-
-static bool
-audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
-{
-  bool    rc = false;
-
-  if (value == NULL || ! *value) {
-    return rc;
-  }
-
-  if (! bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) {
-    return rc;
-  }
-
-  if (tagkey == TAG_SONGSTART ||
-      tagkey == TAG_SONGEND) {
-    ssize_t   val;
-
-    /* bdj3 song start/song end are stored as mm:ss.d */
-    val = atoll (value);
-    tmutilToMSD (val, tmp, sz, 1);
-    rc = true;
-  }
-  if (tagkey == TAG_VOLUMEADJUSTPERC) {
-    double    val;
-    char      *radix;
-    char      *tptr;
-
-    val = atof (value);
-    val /= DF_DOUBLE_MULT;
-    val *= 10.0;
-    /* bdj3 volume adjust percentage should be stored */
-    /* with a decimal point if possible */
-    snprintf (tmp, sz, "%.2f", val);
-    radix = sysvarsGetStr (SV_LOCALE_RADIX);
-    tptr = strstr (tmp, radix);
-    if (tptr != NULL) {
-      *tptr = '.';
-    }
-    rc = true;
-  }
-
-  return rc;
 }
 
 static int

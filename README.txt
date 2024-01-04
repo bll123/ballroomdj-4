@@ -85,26 +85,18 @@ Copyright:
 
 Licenses:
     BDJ4        : zlib/libpng License
-    qrcode      : MIT License (templates/qrcode/LICENSE)
     ICU         : ICU
     libid3tag   : GPLv2 License
                   Changes made to the library available upon request.
     libmp4tag   : zlib/libpng License
+    mongoose    : GPLv2 License
+    qrcode      : MIT License (templates/qrcode/LICENSE)
     img/musicbrainz-logo.svg : GPLv2
     Windows:
       curl      : MIT License
       ffmpeg    : GPLv3 License
       flac      : GPLv2, GPLv2.1, Xiph/BSD License
       libogg    : Xiph/BSD License
-      libvorbis : Xiph/BSD License
-      msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
-      flac      : GPLv2, GPLv2.1, Xiph/BSD License
-      ffmpeg    : GPLv3 License
-      curl      : MIT License
-      nghttp2   : MIT License
-      libogg    : Xiph/BSD License
-      opus      : Xiph/BSD License
-      opusfile  : Xiph/BSD License
       libvorbis : Xiph/BSD License
                   Changes made to the library available upon request.
       msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )

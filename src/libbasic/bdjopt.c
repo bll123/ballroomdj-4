@@ -51,7 +51,6 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACRCLOUD_API_KEY",   OPT_G_ACRCLOUD_API_KEY,   VALUE_STR, NULL, DF_NORM },
   { "ACRCLOUD_API_SECRET",OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
-  { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
   { "DANCESELMETHOD",     OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },

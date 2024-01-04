@@ -303,7 +303,6 @@ main (int argc, char *argv [])
       const char  *uifont = NULL;
 
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "not converted");
-      bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
       bdjoptchanged = true;
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, statusflags [UPD_FIX_AF_TAGS]);
 
@@ -617,15 +616,13 @@ main (int argc, char *argv [])
       converted &&
       statusflags [UPD_FIX_AF_TAGS] == UPD_NOT_DONE &&
       strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
-      bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
-      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
+      bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE;
   if (processflags [UPD_FIX_AF_TAGS]) {
     logMsg (LOG_INSTALL, LOG_INFO, "-- fix af tags");
     processaf = true;
   } else {
     if (statusflags [UPD_FIX_AF_TAGS] == UPD_NOT_DONE) {
-      if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
-          bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false) {
+      if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0) {
         nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
       }
     }
