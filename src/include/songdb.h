@@ -29,6 +29,5 @@ size_t songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rr
 songdb_t *songdbAlloc (musicdb_t *musicdb);
 void  songdbFree (songdb_t *songdb);
 void  songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb);
-bool  songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz);
 
 #endif /* INC_SONGDB_H */

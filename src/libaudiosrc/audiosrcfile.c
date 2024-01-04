@@ -183,8 +183,9 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
     /* do not need to be used. but when a new path needs to be generated */
     /* from a relative filename, */
     /* the prefix length and old filename must be set */
+    /* the prefix length includes the trailing slash */
     if (pfxlen > 0 && oldfn != NULL) {
-      snprintf (buff, sz, "%.*s/%s", pfxlen, oldfn, sfname);
+      snprintf (buff, sz, "%.*s%s", pfxlen, oldfn, sfname);
     } else {
       snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
     }

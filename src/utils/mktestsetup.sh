@@ -247,7 +247,7 @@ cwd=$(pwd)
 rm -f data/updater.txt
 ./bin/bdj4 --bdj4updater --newinstall
 # run again w/o newinstall to perform the updates
-./bin/bdj4 --bdj4updater --writetags
+./bin/bdj4 --bdj4updater
 
 if [[ $os == macos ]]; then
   # reset the debug level on macos back to 31

@@ -31,6 +31,7 @@
 #include "songlist.h"
 #include "tagdef.h"
 
+static bool songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz);
 static void songdbWriteAudioTags (song_t *song);
 static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
 
@@ -132,7 +133,6 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 
   if (rename) {
     if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
-      songSetStr (song, TAG_URI, newfn);
       dorename = true;
     }
   }
@@ -148,13 +148,9 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 
     pfxlen = songGetNum (song, TAG_PREFIX_LEN);
     audiosrcFullPath (oldfn, ffn, sizeof (ffn), pfxlen, oldfn);
-    /* the prefix length and old filename must be passed in to generate */
-    /* the new filename properly */
+    /* the prefix length and old filename must be supplied */
+    /* in order to generate the new filename properly */
     audiosrcFullPath (newfn, newffn, sizeof (newffn), pfxlen, oldfn);
-    if (pfxlen > 0) {
-      /* for a secondary directory, the full name must be used for the URI */
-      songSetStr (song, TAG_URI, newffn);
-    }
 
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
@@ -180,27 +176,40 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
       if (rc != 0) {
         logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s %s", oldfn, newffn);
         *flags |= SONGDB_RET_RENAME_FAIL;
+        dorename = false;
       } else {
         *flags |= SONGDB_RET_RENAME_SUCCESS;
         logMsg (LOG_DBG, LOG_DBUPDATE, "rename %s to %s", oldfn, newffn);
-
-        /* try to remove the old dir */
-        pi = pathInfo (ffn);
-        pathInfoGetDir (pi, tbuff, sizeof (tbuff));
-        diropDeleteDir (tbuff, DIROP_ONLY_IF_EMPTY);
-        pathInfoFree (pi);
       }
     }
 
     if (dorename && audiosrcOriginalExists (ffn)) {
+      char  neworigffn [MAXPATHLEN];
+
       strlcpy (tbuff, ffn, sizeof (tbuff));
       strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
-      strlcat (newffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
-      rc = filemanipMove (tbuff, newffn);
+      strlcpy (neworigffn, newffn, sizeof (neworigffn));
+      strlcat (neworigffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
+      rc = filemanipMove (tbuff, neworigffn);
       if (rc != 0) {
         logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s %s", oldfn, tbuff);
         *flags |= SONGDB_RET_ORIG_RENAME_FAIL;
       }
+    }
+
+    if (dorename) {
+      /* only reset the URI if the song was actually renamed */
+      songSetStr (song, TAG_URI, newfn);
+      if (pfxlen > 0) {
+        /* for a secondary directory, the full name must be used for the URI */
+        songSetStr (song, TAG_URI, newffn);
+      }
+
+      /* try to remove the old dir */
+      pi = pathInfo (ffn);
+      pathInfoGetDir (pi, tbuff, sizeof (tbuff));
+      diropDeleteDir (tbuff, DIROP_ONLY_IF_EMPTY);
+      pathInfoFree (pi);
     }
   }
 
@@ -221,13 +230,17 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   return len;
 }
 
-bool
+/* internal routines */
+
+static bool
 songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
 {
   char        ffn [MAXPATHLEN];
   const char  *songfname;
   const char  *bypass;
   char        *tnewfn;
+  const char  *relfn;
+  int         pfxlen;
 
   if (song == NULL) {
     return false;
@@ -254,8 +267,13 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
         (tagdefkey_t) ORG_TAG_BYPASS);
   }
 
+  relfn = songfname;
+  pfxlen = songGetNum (song, TAG_PREFIX_LEN);
+  if (pfxlen > 0) {
+    relfn = songfname + pfxlen;
+  }
   tnewfn = orgMakeSongPath (songdb->org, song, bypass);
-  if (strcmp (tnewfn, songfname) == 0) {
+  if (strcmp (relfn, tnewfn) == 0) {
     /* no change */
     dataFree (tnewfn);
     return false;
@@ -266,8 +284,6 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
 
   return true;
 }
-
-/* internal routines */
 
 static void
 songdbWriteAudioTags (song_t *song)

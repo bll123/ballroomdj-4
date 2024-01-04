@@ -89,6 +89,25 @@ function dispres {
   msg=""
 }
 
+function exitonfail {
+  if [[ $EXITONFAIL == F ]]; then
+    return
+  fi
+
+  tgrc=0
+  while test $# -gt 0; do
+    trc=$1
+    shift
+    if [[ $trc -ne 0 ]]; then
+      tgrc=1
+    fi
+  done
+
+  if [[ $tgrc -ne 0 ]]; then
+    exit 1
+  fi
+}
+
 function setwritetagson {
   gconf=data/bdjconfig.txt
   sed -e '/^WRITETAGS/ { n ; s/.*/..ALL/ ; }' \
@@ -117,13 +136,41 @@ function cleanallaudiofiletags {
       xargs -n1 -0 ./bin/bdj4 --bdj4tags --cleantags --quiet
 }
 
-function setorgregex {
+function setorgpath {
   org=$1
 
   gconf=data/bdjconfig.txt
   sed -e "/^ORGPATH/ { n ; s~.*~..${org}~ ; }" \
       ${gconf} > ${gconf}.n
   mv -f ${gconf}.n ${gconf}
+}
+
+function createoriginal {
+  tdir=$1
+  fn=$2
+
+  tfn="${tdir}/${fn}"
+  if [[ -f $tfn ]]; then
+    cp -pf $tfn $tfn.original
+  fi
+  tfn="${tdir}/${dance}/${fn}"
+  if [[ -f $tfn ]]; then
+    cp -pf $tfn $tfn.original
+  fi
+}
+
+function createexisting {
+  tdir=$1
+  dance=$2
+  fn=$3
+
+  tfn="${tdir}/${fn}"
+  ndir="${tdir}/${dance}"
+  nfn="${ndir}/${fn}"
+  if [[ -f $tfn ]]; then
+    test -d "${ndir}" || mkdir "${ndir}"
+    cp -pf $tfn $nfn
+  fi
 }
 
 function checkreorg {
@@ -221,6 +268,8 @@ NUMNOCC=$(($NUMCC-1))
 NUMSECOND=13
 NUMSECONDTOT=150
 NUMSECONDRENAME=147   # three announcements
+NUMSECONDEXIST=2    # two existing
+NUMSECONDRENAMEEXIST=$((${NUMSECONDRENAME}-${NUMSECONDEXIST}))
 # deleted foxtrot (only the second dir)
 NUMSECONDNOFT=$(($NUMSECOND-1))
 # deleted foxtrot (total)
@@ -306,14 +355,11 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
+  exitonfail $rc $crc
 fi
 
 if [[ $FIRSTONLY == T ]]; then
   TESTON=F
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -336,10 +382,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -358,10 +401,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -380,10 +420,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -439,10 +476,7 @@ if [[ $TESTON == T ]]; then
     updateCounts $rc
   fi
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -506,10 +540,7 @@ if [[ $TESTON == T ]]; then
     updateCounts $rc
   fi
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -550,10 +581,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -575,10 +603,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -630,10 +655,7 @@ if [[ $TESTON == T ]]; then
     msg+="$(compcheck $tname $rc)"
     dispres $tname $rc $crc
   fi
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -657,10 +679,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -680,10 +699,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $rc
   # no db comparison
   dispres $tname $rc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -716,10 +732,7 @@ if [[ $TESTON == T ]]; then
     fi
   fi
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -751,10 +764,7 @@ if [[ $TESTON == T ]]; then
     fi
   fi
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -792,7 +802,7 @@ if [[ $TESTON == T ]]; then
 
   # test regex db : get dance/artist/title from file path
   tname=rebuild-file-path-dat
-  setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
+  setorgpath '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
@@ -808,16 +818,13 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
   # test regex db : get dance/title from file path
   tname=rebuild-file-path-dt
-  setorgregex '{%DANCE%/}{%TITLE%}'
+  setorgpath '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
@@ -833,17 +840,14 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
   # test secondary folder: regex db : get dance/title from file path
   tname=rebuild-file-path-dt-second
   tdir="$(dirname ${musicdir})"
-  setorgregex '{%DANCE%/}{%TITLE%}'
+  setorgpath '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
@@ -858,16 +862,13 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
   # test regex db : get date/tracknum-artist-title from file path
   tname=rebuild-file-path-dtat
-  setorgregex '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
+  setorgpath '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
@@ -883,10 +884,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -921,13 +919,10 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+  exitonfail $rc $crc
 
   # keep a copy of the combined main+second database.
   cp -f $DATADB $KDBSECOND
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -948,10 +943,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -998,10 +990,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $rc
   # no db comparison
   dispres $tname $rc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -1025,6 +1014,7 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
+  exitonfail $rc $crc
 
   # restore all foxtrot
   mv -f $TMPDIRA/* $musicdir
@@ -1032,10 +1022,6 @@ if [[ $TESTON == T ]]; then
 
   # restore the full main+second database
   cp -f $KDBSECOND $DATADB
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
 fi
 
 if [[ $TESTON == T ]]; then
@@ -1089,10 +1075,7 @@ if [[ $TESTON == T ]]; then
     fi
   fi
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
@@ -1115,17 +1098,16 @@ if [[ $TESTON == T ]]; then
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $crc
 fi
 
 if [[ $TESTON == T ]]; then
   # restore the main+second database
   cp -f $KDBSECOND $DATADB
 
-  # main+second empty db : write tags
+  setorgpath '{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org with 'dance/title'
   tname=second-reorg-basic-dir
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
@@ -1176,16 +1158,13 @@ if [[ $TESTON == T ]]; then
   done
 
   dispres $tname $rc $reorgrc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $reorgrc
 fi
 
 if [[ $TESTON == T ]]; then
-  setorgregex '{%DANCE% - }{%TITLE%}'
+  setorgpath '{%DANCE% - }{%TITLE%}'
 
-  # main+second empty db : write tags
+  # main+second : re-org with 'dance - title'
   tname=second-reorg-basic-dash
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
@@ -1245,16 +1224,13 @@ if [[ $TESTON == T ]]; then
   fi
 
   dispres $tname $rc $reorgrc
-fi
-
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 ) ]]; then
-  exit 1
+  exitonfail $rc $reorgrc
 fi
 
 if [[ $TESTON == T ]]; then
-  setorgregex '{%TITLE%}'
+  setorgpath '{%TITLE%}'
 
-  # main+second empty db : write tags
+  # main+second : re-org title only
   tname=second-reorg-basic-title
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
@@ -1304,25 +1280,544 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
-  if [[ -d "${tmdir}/${dance}" ]]; then
-    echo "ERR: ${tmdir}/${dance} not removed"
-    reorgrc=1
-  fi
-  if [[ -d "${omdir}/${dance}" ]]; then
-    echo "ERR: ${tmdir}/${dance} not removed"
-    reorgrc=1
-  fi
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  for dance in "Cha Cha" Jive Quickstep; do
+    if [[ -d "${tmdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+    if [[ -d "${omdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+  done
 
+  # the important test for re-organize
+  # must match up against the original database.
   msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
   crc=$?
   updateCounts $crc
   msg+="$(compcheck $tname $crc)"
 
   dispres $tname $rc $reorgrc $crc
+  exitonfail $rc $reorgrc $crc
 fi
 
-if [[ $EXITONFAIL == T && ( $rc -ne 0 || $reorgrc -ne 0 || $crc -ne 0 ) ]]; then
-  exit 1
+if [[ $TESTON == T ]]; then
+  # create some .original files
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  createoriginal "$tmdir" 003-jive.mp3
+  createoriginal "$omdir" 001-alt-jive.mp3
+
+  setorgpath '{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org test with .original
+  tname=second-reorg-original
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3 003-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Jive"
+  for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  dispres $tname $rc $reorgrc
+  exitonfail $rc $reorgrc
+fi
+
+if [[ $TESTON == T ]]; then
+  setorgpath '{%TITLE%}'
+
+  # main+second : re-org test with .original
+  tname=second-reorg-original-title
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3 003-jive.mp3.original; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Jive"
+  for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  for dance in "Cha Cha" Jive Quickstep; do
+    if [[ -d "${tmdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+    if [[ -d "${omdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+  done
+
+  # the important test for re-organize
+  # must match up against the original database.
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $crc)"
+
+  dispres $tname $rc $reorgrc $crc
+  exitonfail $rc $reorgrc $crc
+fi
+
+if [[ $TESTON == T ]]; then
+  # create some existing files
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Quickstep"
+  createexisting "$tmdir" "$dance" 002-quickstep.mp3
+  createexisting "$omdir" "$dance" 001-alt-quickstep.mp3
+
+  setorgpath '{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org test with existing files
+  tname=second-reorg-existing
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAMEEXIST} norename ${NUMSECONDEXIST} notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3 003-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  # the quickstep should still exist w/o being renamed
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Quickstep"
+  for fn in 002-quickstep.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Jive"
+  for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  # the quickstep should still exist w/o being renamed
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Quickstep"
+  for fn in 001-alt-quickstep.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  dispres $tname $rc $reorgrc
+  exitonfail $rc $reorgrc
+fi
+
+if [[ $TESTON == T ]]; then
+  # remove the existing files and run the re-org again.
+  tmdir=/home/bll/s/bdj4/test-music
+  rm -f "${tmdir}/Quickstep/002-quickstep.mp3"
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  rm -f "${tmdir}/Quickstep/001-alt-quickstep.mp3"
+
+  setorgpath '{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org test with existing files removed
+  tname=second-reorg-exist-clean
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDEXIST} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3 003-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Quickstep"
+  for fn in 002-quickstep.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Jive"
+  for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Quickstep"
+  for fn in 001-alt-quickstep.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  dispres $tname $rc $reorgrc
+  exitonfail $rc $reorgrc
+fi
+
+if [[ $TESTON == T ]]; then
+  # and back to the title version again to make sure everything is ok.
+
+  setorgpath '{%TITLE%}'
+
+  # main+second : re-org test with .original
+  tname=second-reorg-exist-clean-title
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUMSECONDTOT} skip 0 indb ${NUMSECONDTOT} new 0 updated 0 renamed ${NUMSECONDRENAME} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Announce"
+  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=/home/bll/s/bdj4/test-music
+  omdir=/home/bll/s/bdj4/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3 003-jive.mp3.original; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  dance="Jive"
+  for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  tmdir=/home/bll/s/bdj4/tmp/music-second
+  omdir=/home/bll/s/bdj4/test-music
+  for dance in "Cha Cha" Jive Quickstep; do
+    if [[ -d "${tmdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+    if [[ -d "${omdir}/${dance}" ]]; then
+      echo "ERR: ${tmdir}/${dance} not removed"
+      reorgrc=1
+    fi
+  done
+
+  # the important test for re-organize
+  # must match up against the original database.
+  msg+="$(./bin/bdj4 --tdbcompare ${VERBOSE} --debug ${DBG} $DATADB $KDBSECOND)"
+  crc=$?
+  updateCounts $crc
+  msg+="$(compcheck $tname $crc)"
+
+  dispres $tname $rc $reorgrc $crc
+  exitonfail $rc $reorgrc $crc
 fi
 
 # remove test db, temporary files
