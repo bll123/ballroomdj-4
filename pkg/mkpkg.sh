@@ -79,10 +79,12 @@ function copyreleasefiles {
       if [[ -d plocal/lib64 ]]; then
         dirlist+=" plocal/lib64"
       fi
+      filelist+=" plocal/bin/acrcloud"
       ;;
     macos)
       dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes"
+      filelist+=" plocal/bin/acrcloud"
       ;;
     win32)
       echo "Platform not supported"
@@ -304,6 +306,11 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
 
       copysrcfiles ${tag} ${stagedir}
 
+      filelist="packages/acrcloud-linux "
+      dir=plocal/bin
+      test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+      rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+
       dirlist="packages/libmp4tag* packages/libid3tag* "
       for d in $dirlist; do
         dir=$(dirname ${d})
@@ -331,12 +338,10 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       mkdir -p ${stagedir}
       nm=$(pkgsrcadditionalnm)
 
-      filelist="packages/acrcloud-macos* "
-      for f in $filelist; do
-        dir=$(dirname ${f})
-        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-        rsync -aS ${f} ${stagedir}/${dir}
-      done
+      filelist="packages/acrcloud-macos${pn_archtag}"
+      dir=plocal/bin
+      test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+      rsync -aS ${f} ${stagedir}/${dir}/acrcloud
 
       dirlist="packages/icu* packages/bundles/Mojave* "
       for d in $dirlist; do
@@ -356,12 +361,15 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       mkdir -p ${stagedir}
       nm=$(pkgsrcadditionalnm)
 
-      filelist="packages/acrcloud-win64* packages/fpcalc*"
-      for f in $filelist; do
-        dir=$(dirname ${f})
-        test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-        rsync -aS ${f} ${stagedir}/${dir}
-      done
+      f="packages/acrcloud-win64*"
+      dir=plocal/bin
+      test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+      rsync -aS ${f} ${stagedir}/${dir}/acrcloud.exe
+
+      f="packages/fpcalc-windows.exe"
+      dir=plocal/bin
+      test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
+      rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
 
       dirlist="packages/check* packages/curl* packages/ffmpeg* "
       dirlist+="packages/flac* packages/icu* "

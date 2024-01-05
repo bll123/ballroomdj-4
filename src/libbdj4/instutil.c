@@ -176,6 +176,9 @@ instutilCopyTemplates (void)
       } else if (pathInfoExtCheck (pi, ".mp")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      } else if (fname [strlen (fname) - 1] == '~') {
+        pathInfoFree (pi);
+        continue;
       } else {
         /* unknown extension */
         fprintf (stderr, "unknown extension for bdjconfig %.*s\n", (int) pi->elen, pi->extension);

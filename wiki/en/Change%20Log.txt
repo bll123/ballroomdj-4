@@ -11,6 +11,7 @@
     * Edit Dances: Fix bug causing entry fields to get copied to other dances.
     * Fixed right-to-left language layout.
     * Fixes for automatic, standard, queuedance pre-installed playlists.
+    * Installer: Fix installation of acrcloud fingerprinter.
     * MacOS: Fix build when other versions of libraries are installed.
     * Management: Do not play announcements in the management ui.
     * Update Database: Fix bugs that set date-added incorrectly.

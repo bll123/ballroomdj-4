@@ -857,7 +857,16 @@ function checkInstallation {
       echo "  no bin directory"
     fi
 
-    res=$(($res+1))  # bdj4 exec
+    # make sure acrcloud gets installed
+    res=$(($res+1))
+    if [[ $fin == T && -f "${target}/plocal/bin/acrcloud" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no plocal/bin/acrcloud file"
+    fi
+
+    # bdj4 exec
+    res=$(($res+1))
     if [[ $fin == T && -f "${target}/bin/bdj4${sfx}" ]]; then
       chk=$(($chk+1))
     else
@@ -865,16 +874,19 @@ function checkInstallation {
     fi
 
     if [[ $datafiles == y ]]; then
-      lvol=$(sed -n -e '/^VOLUME/ { n; s/^\.\.//; p ; }' $mconf)
-      lpli=$(sed -n -e '/^PLAYER/ { n; s/^\.\.//; p ; }' $mconf)
+      lvol=$(sed -n -e '/^VOLUME$/ { n; s/^\.\.//; p ; }' $mconf)
+      lpli=$(sed -n -e '/^PLAYER$/ { n; s/^\.\.//; p ; }' $mconf)
 
-      res=$(($res+1))  # volume lib
+      # volume lib
+      res=$(($res+1))
       if [[ $fin == T && $libvol == $lvol ]]; then
         chk=$(($chk+1))
       else
         echo "  volume library not set correctly"
       fi
-      res=$(($res+1))  # pli lib
+
+      # pli lib
+      res=$(($res+1))
       if [[ $fin == T && $libpli == $lpli ]]; then
         chk=$(($chk+1))
       else
@@ -1017,6 +1029,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
   waitForInstallDirRemoval
+  # make sure acrcloud gets installed on update
+  rm -f $TARGETTOPDIR/plocal/bin/acrcloud
 
   # update w/various update tasks
   # this should get installed as of version 4.1.0
