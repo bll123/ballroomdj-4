@@ -84,9 +84,11 @@ enum {
   UIAUDID_W_MAIN_VBOX,
   UIAUDID_W_AUDIOID_IMG,
   UIAUDID_W_FILE_DISP,
-  UIAUDID_W_MUSICBRAINZ,
   UIAUDID_W_PANED_WINDOW,
   UIAUDID_W_KEY_HNDLR,
+  UIAUDID_W_MB_LOGO,
+  UIAUDID_W_ACOUSTID_LOGO,
+  UIAUDID_W_ACRCLOUD_LOGO,
   UIAUDID_W_MAX,
 };
 
@@ -194,9 +196,11 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   audioidint = uiaudioid->audioidInternalData;
 
   if (audioidint != NULL) {
-    uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_MUSICBRAINZ]);
-
     nlistFree (audioidint->currlist);
+
+    uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);
+    uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO]);
+    uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO]);
 
     for (int count = 0; count < audioidint->itemcount; ++count) {
       callbackFree (audioidint->items [count].callback);
@@ -321,12 +325,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
   uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DIR_IMG);
-  audioidint->wcont [UIAUDID_W_MUSICBRAINZ] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_MUSICBRAINZ]);
-  uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_MUSICBRAINZ]);
 
   audioidint->wcont [UIAUDID_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
@@ -473,6 +471,24 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
     uiPanedWindowSetPosition (pw, audioidint->paneposition);
   }
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DIR_IMG);
+  audioidint->wcont [UIAUDID_W_MB_LOGO] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_MB_LOGO]);
+  uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "acoustid-logo", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DIR_IMG);
+  audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO]);
+  uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO]);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "acrcloud-logo", BDJ4_IMG_PNG_EXT,
+      PATHBLD_MP_DIR_IMG);
+  audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO]);
+  uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO]);
+
   logProcEnd (LOG_PROC, "uiaudioidBuildUI", "");
   return audioidint->wcont [UIAUDID_W_MAIN_VBOX];
 }
@@ -508,7 +524,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   data = songGetStr (song, TAG_RECORDING_ID);
   if (data != NULL && *data) {
-    uiImageSetFromPixbuf (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], audioidint->wcont [UIAUDID_W_MUSICBRAINZ]);
+    uiImageSetFromPixbuf (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], audioidint->wcont [UIAUDID_W_MB_LOGO]);
   }
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
@@ -658,27 +674,38 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
     if (tagidx == TAG_AUDIOID_IDENT) {
       int         val;
       const char  *tstr;
+      uiwcont_t   *img;
+      void        *pixbuf;
 
       val = nlistGetNum (dlist, tagidx);
       tstr = "";
+      img = NULL;
+      pixbuf = NULL;
       switch (val) {
         case AUDIOID_ID_ACOUSTID: {
           tstr = "AcID";
+          img = audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO];
           break;
         }
         case AUDIOID_ID_MB_LOOKUP: {
           tstr = "MBL";
+          img = audioidint->wcont [UIAUDID_W_MB_LOGO];
           break;
         }
         case AUDIOID_ID_ACRCLOUD: {
           tstr = "ACR";
+          img = audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO];
           break;
         }
         default: {
           break;
         }
       }
-      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tstr);
+      if (img != NULL) {
+        pixbuf = uiImageGetPixbuf (img);
+      }
+      uiTreeViewSetValues (audioidint->alistTree, col, pixbuf, TREE_VALUE_END);
+//      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tstr);
     } else if (tagidx == TAG_AUDIOID_SCORE) {
       char    tmp [40];
       double  dval;
@@ -1084,7 +1111,6 @@ uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata)
   aid_internal_t  *audioidint;
 
   audioidint = uiaudioid->audioidInternalData;
-
   uitreedispSetDisplayColumn (audioidint->alistTree, col, num, str);
 }
 
@@ -1139,7 +1165,11 @@ uiaudioidBlankDisplayList (uiaudioid_t *uiaudioid)
     col = UIAUDID_COL_MAX;
     slistStartIterator (audioidint->listsellist, &seliteridx);
     while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
-      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, "");
+      if (tagidx == TAG_AUDIOID_IDENT) {
+        uiTreeViewSetValues (audioidint->alistTree, col, NULL, TREE_VALUE_END);
+      } else {
+        uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, "");
+      }
       ++col;
     }
   }

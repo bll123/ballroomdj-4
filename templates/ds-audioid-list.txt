@@ -1,7 +1,6 @@
 # ds-audioid-disp
 # 2022-9-12
 # version 1
-AUDIOID_IDENT
 SCORE
 ALBUM
 ARTIST

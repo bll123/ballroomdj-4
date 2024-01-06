@@ -32,6 +32,10 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
 
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    if (tagidx == TAG_AUDIOID_IDENT) {
+      col += 1;
+      continue;
+    }
     str = uisongGetDisplay (song, tagidx, &num, &dval);
     if (cb != NULL) {
       cb (col, num, str, udata);
@@ -107,9 +111,14 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
     if (cb != NULL) {
-      /* the type is always a string */
+      int   type = TREE_TYPE_STRING;
+
+      /* the type is almost always a string */
+      if (tagidx == TAG_AUDIOID_IDENT) {
+        type = TREE_TYPE_IMAGE;
+      }
       /* gtk doesn't have a method to display a blank numeric afaik */
-      cb (TREE_TYPE_STRING, udata);
+      cb (type, udata);
     }
   }
 }
