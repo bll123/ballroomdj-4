@@ -673,27 +673,22 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
     if (tagidx == TAG_AUDIOID_IDENT) {
       int         val;
-      const char  *tstr;
       uiwcont_t   *img;
       void        *pixbuf;
 
       val = nlistGetNum (dlist, tagidx);
-      tstr = "";
       img = NULL;
       pixbuf = NULL;
       switch (val) {
         case AUDIOID_ID_ACOUSTID: {
-          tstr = "AcID";
           img = audioidint->wcont [UIAUDID_W_ACOUSTID_LOGO];
           break;
         }
         case AUDIOID_ID_MB_LOOKUP: {
-          tstr = "MBL";
           img = audioidint->wcont [UIAUDID_W_MB_LOGO];
           break;
         }
         case AUDIOID_ID_ACRCLOUD: {
-          tstr = "ACR";
           img = audioidint->wcont [UIAUDID_W_ACRCLOUD_LOGO];
           break;
         }
@@ -705,7 +700,6 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
         pixbuf = uiImageGetPixbuf (img);
       }
       uiTreeViewSetValues (audioidint->alistTree, col, pixbuf, TREE_VALUE_END);
-//      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tstr);
     } else if (tagidx == TAG_AUDIOID_SCORE) {
       char    tmp [40];
       double  dval;
