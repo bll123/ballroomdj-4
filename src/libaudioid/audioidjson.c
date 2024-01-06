@@ -207,6 +207,7 @@ audioidParseArray (json_object *jtop, audioidparse_t *jsonp,
 
   dataFree (resp->joinphrase);
   resp->joinphrase = NULL;
+
   return true;
 }
 

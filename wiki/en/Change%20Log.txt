@@ -7,6 +7,7 @@
 **4.4.8 2023-12---**
 
 * Bug Fixes:
+    * Audio ID: Fixed a bug processing ACRCloud responses.
     * Audio Tags: Fixed incorrect tag processing for flac, ogg, opus.
     * Edit Dances: Fix bug causing entry fields to get copied to other dances.
     * Fixed right-to-left language layout.

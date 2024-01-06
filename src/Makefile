@@ -213,6 +213,7 @@ tclean:
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
 	@-$(RM) -f */w */ww ../asan.* ./asan.* po/*.debug
 	@-$(RM) -f ../mdebug.txt ../out.txt
+	@-$(RM) -f ../out-acoustid.xml ../out-acr.json
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../mpvdebug.txt
 	@-$(RM) -f ../vgcore.* vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
