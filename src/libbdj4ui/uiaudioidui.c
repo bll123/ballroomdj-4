@@ -655,7 +655,31 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   col = UIAUDID_COL_MAX;
   slistStartIterator (audioidint->listsellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
-    if (tagidx == TAG_AUDIOID_SCORE) {
+    if (tagidx == TAG_AUDIOID_IDENT) {
+      int         val;
+      const char  *tstr;
+
+      val = nlistGetNum (dlist, tagidx);
+      tstr = "";
+      switch (val) {
+        case AUDIOID_ID_ACOUSTID: {
+          tstr = "AcID";
+          break;
+        }
+        case AUDIOID_ID_MB_LOOKUP: {
+          tstr = "MBL";
+          break;
+        }
+        case AUDIOID_ID_ACRCLOUD: {
+          tstr = "ACR";
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      uitreedispSetDisplayColumn (audioidint->alistTree, col, 0, tstr);
+    } else if (tagidx == TAG_AUDIOID_SCORE) {
       char    tmp [40];
       double  dval;
 

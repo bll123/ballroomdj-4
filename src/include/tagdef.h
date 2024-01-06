@@ -65,6 +65,7 @@ typedef enum {
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
+  TAG_AUDIOID_IDENT,          //
   TAG_AUDIOID_SCORE,          //
   TAG_BPM,                    //
   TAG_BPM_DISPLAY,            //

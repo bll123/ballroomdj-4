@@ -102,7 +102,7 @@ audioidDumpResult (nlist_t *respdata)
   score = nlistGetDouble (respdata, TAG_AUDIOID_SCORE);
   logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "   SCORE %.1f", score);
 
-  val = nlistGetNum (respdata, AUDIOID_TYPE_IDENT);
+  val = nlistGetNum (respdata, TAG_AUDIOID_IDENT);
   tstr = "Unknown";
   switch (val) {
     case AUDIOID_ID_ACOUSTID: {
@@ -110,7 +110,7 @@ audioidDumpResult (nlist_t *respdata)
       break;
     }
     case AUDIOID_ID_MB_LOOKUP: {
-      tstr = "MusicBrainz";
+      tstr = "MB-Lookup";
       break;
     }
     case AUDIOID_ID_ACRCLOUD: {
@@ -128,7 +128,8 @@ audioidDumpResult (nlist_t *respdata)
     if (tagidx >= TAG_KEY_MAX) {
       continue;
     }
-    if (tagidx == TAG_AUDIOID_SCORE) {
+    if (tagidx == TAG_AUDIOID_IDENT ||
+        tagidx == TAG_AUDIOID_SCORE) {
       continue;
     }
 

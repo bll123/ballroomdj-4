@@ -276,7 +276,7 @@ audioidDumpResult (orespdata);
 
         nlistStartIterator (orespdata, &iteridx);
         while ((key = nlistIterateKey (orespdata, &iteridx)) >= 0) {
-          if (key == AUDIOID_TYPE_IDENT ||
+          if (key == TAG_AUDIOID_IDENT ||
               key == AUDIOID_TYPE_TOP ||
               key == AUDIOID_TYPE_RESPIDX) {
             continue;
@@ -302,7 +302,7 @@ audioidDumpResult (orespdata);
 
       /* increment the response index after the parse is done */
 
-      nlistSetNum (respdata, AUDIOID_TYPE_IDENT, ident);
+      nlistSetNum (respdata, TAG_AUDIOID_IDENT, ident);
       resp->respidx += 1;
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: tree: new respidx: %d", level*2, "", resp->respidx);
 audioidDumpResult (respdata);

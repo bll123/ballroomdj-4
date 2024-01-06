@@ -167,7 +167,7 @@ audioidParseTree (json_object *jtop, audioidparse_t *jsonp,
     nlist_t *respdata;
 
     respdata = audioidGetResponseData (resp, resp->respidx);
-    nlistSetNum (respdata, AUDIOID_TYPE_IDENT, ident);
+    nlistSetNum (respdata, TAG_AUDIOID_IDENT, ident);
     resp->respidx += 1;
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: tree: new respidx: %d", level*2, "", resp->respidx);
   }
@@ -199,7 +199,7 @@ audioidParseArray (json_object *jtop, audioidparse_t *jsonp,
       nlist_t   *respdata;
 
       respdata = audioidGetResponseData (resp, resp->respidx);
-      nlistSetNum (respdata, AUDIOID_TYPE_IDENT, ident);
+      nlistSetNum (respdata, TAG_AUDIOID_IDENT, ident);
       resp->respidx += 1;
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: array: new respidx %d", level*2, "", resp->respidx);
     }

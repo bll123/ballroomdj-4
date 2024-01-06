@@ -134,6 +134,33 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
+  [TAG_AUDIOID_IDENT] =
+  { "AUDIOID_IDENT",              /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL },
+      [TAG_TYPE_WMA] = { NULL, NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },         /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_NA,                        /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    NULL,                         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    true,                         /* audio-id             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
+    false,                        /* vorbis multi         */
+  },
   [TAG_AUDIOID_SCORE] =
   { "SCORE",                      /* tag */
     NULL,                         /* display name         */
@@ -1191,6 +1218,9 @@ tagdefInit (void)
   tagdefs [TAG_ARTIST].displayname = _("Artist");
   /* CONTEXT: audio identification: the score or rating of each match */
   tagdefs [TAG_AUDIOID_SCORE].displayname = _("Score");
+  /* CONTEXT: audio identification: the audio identification source */
+  tagdefs [TAG_AUDIOID_IDENT].displayname = _("Source");
+
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     /* CONTEXT: label: beats per minute */
     tagdefs [TAG_BPM].displayname = _("BPM");

@@ -241,7 +241,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       }
 
       /* musicbrainz matches do not have a duration check */
-      ident = nlistGetNum (respdata, AUDIOID_TYPE_IDENT);
+      ident = nlistGetNum (respdata, TAG_AUDIOID_IDENT);
       if (ident != AUDIOID_ID_MB_LOOKUP) {
         str = nlistGetStr (respdata, TAG_DURATION);
         if (str != NULL) {
