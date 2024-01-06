@@ -14,7 +14,6 @@
 #include "audioid.h"
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -82,7 +81,7 @@ static audioidparse_t mbrecordingxp [] = {
   { AUDIOID_PARSE_DATA,  TAG_DURATION, "/length", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,  TAG_WORK_ID, "/relation-list/relation/target", NULL, NULL, NULL },
   { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_JOINPHRASE, "/artist-credit/name-credit", "joinphrase", mbartistxp, NULL },
-  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_RESPIDX, "/release-list/release", NULL, mbreleasexp, NULL },
+  { AUDIOID_PARSE_TREE,  AUDIOID_TYPE_TOP, "/release-list/release", NULL, mbreleasexp, NULL },
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-recording", NULL, NULL, NULL },
 };
 
@@ -91,7 +90,7 @@ static audioidparse_t mbmainxp [] = {
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL, NULL },
 };
 
-static void mbWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void mbWebResponseCallback (void *userdata, const char *respstr, size_t len);
 static void dumpData (audioidmb_t *mb);
 
 audioidmb_t *
@@ -124,7 +123,7 @@ mbFree (audioidmb_t *mb)
 }
 
 int
-mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
+mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
 {
   char          uri [MAXPATHLEN];
   mstime_t      starttm;
@@ -169,7 +168,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
   if (mb->webresponse != NULL && mb->webresplen > 0) {
     mstimestart (&starttm);
     mb->respcount = audioidParseXMLAll (mb->webresponse, mb->webresplen,
-        mbmainxp, respdata, AUDIOID_ID_MB_LOOKUP);
+        mbmainxp, resp, AUDIOID_ID_MB_LOOKUP);
     logMsg (LOG_DBG, LOG_IMPORTANT, "mb: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }
@@ -180,11 +179,11 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, ilist_t *respdata)
 /* internal routines */
 
 static void
-mbWebResponseCallback (void *userdata, const char *resp, size_t len)
+mbWebResponseCallback (void *userdata, const char *respstr, size_t len)
 {
   audioidmb_t   *mb = userdata;
 
-  mb->webresponse = resp;
+  mb->webresponse = respstr;
   mb->webresplen = len;
   return;
 }

@@ -26,13 +26,13 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "fileop.h"
-#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
 #include "pathbld.h"
 #include "song.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "vsencdec.h"
 #include "webclient.h"
@@ -105,7 +105,7 @@ static audioidparse_t acrmusicjp [] = {
 };
 
 static audioidparse_t acrmetadatajp [] = {
-  { AUDIOID_PARSE_ARRAY,  AUDIOID_TYPE_RESPIDX, "music", NULL, acrmusicjp, NULL },
+  { AUDIOID_PARSE_ARRAY,  AUDIOID_TYPE_TOP, "music", NULL, acrmusicjp, NULL },
   { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL, NULL },
 };
 
@@ -125,7 +125,7 @@ static audioidparse_t acrmainstatusjp [] = {
   { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-response", NULL, NULL, NULL },
 };
 
-static void acrWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void acrWebResponseCallback (void *userdata, const char *respstr, size_t len);
 static void dumpData (audioidacr_t *acr);
 
 audioidacr_t *
@@ -175,7 +175,7 @@ acrFree (audioidacr_t *acr)
 }
 
 int
-acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
+acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
 {
   char            infn [MAXPATHLEN];
   char            uri [MAXPATHLEN];
@@ -200,7 +200,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   int             webrc;
   int             rc;
   const char      *tstr;
-  int             respidx;
+  nlist_t         *respdata;
 
   if (! *acr->key || ! *acr->secret) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: not configured");
@@ -330,9 +330,9 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 
   mstimestart (&starttm);
   audioidParseJSONAll (acr->webresponse, acr->webresplen,
-      acrmainstatusjp, respdata, AUDIOID_ID_ACRCLOUD);
-  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-  tstr = ilistGetStr (respdata, respidx, AUDIOID_TYPE_STATUS_CODE);
+      acrmainstatusjp, resp, AUDIOID_ID_ACRCLOUD);
+  respdata = audioidGetResponseData (resp, resp->respidx);
+  tstr = nlistGetStr (respdata, AUDIOID_TYPE_STATUS_CODE);
   acr->respcount = 0;
   rc = -1;
   if (tstr != NULL) {
@@ -340,7 +340,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
   }
   if (rc == 0) {
     acr->respcount = audioidParseJSONAll (acr->webresponse, acr->webresplen,
-        acrmainjp, respdata, AUDIOID_ID_ACRCLOUD);
+        acrmainjp, resp, AUDIOID_ID_ACRCLOUD);
   } else if (rc != -1) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "acrcloud: code: %d / %s", rc,
         nlistGetStr (respdata, AUDIOID_TYPE_STATUS_MSG));
@@ -354,11 +354,11 @@ acrLookup (audioidacr_t *acr, const song_t *song, ilist_t *respdata)
 }
 
 static void
-acrWebResponseCallback (void *userdata, const char *resp, size_t len)
+acrWebResponseCallback (void *userdata, const char *respstr, size_t len)
 {
   audioidacr_t *acr = userdata;
 
-  acr->webresponse = resp;
+  acr->webresponse = respstr;
   acr->webresplen = len;
   return;
 }

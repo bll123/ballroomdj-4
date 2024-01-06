@@ -677,9 +677,12 @@ void
 listDumpInfo (keytype_t keytype, list_t *list)
 {
   if (! listCheckIfValid (list, keytype)) {
+    if (list == NULL) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: null");
+    }
     return;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_IMPORTANT, "list: %s count: %d key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 

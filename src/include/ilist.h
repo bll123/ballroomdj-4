@@ -39,7 +39,6 @@ const char *ilistGetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 ilistidx_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 double    ilistGetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 slist_t   *ilistGetList (list_t *, ilistidx_t ikey, ilistidx_t lidx);
-nlist_t   *ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag);
 void      ilistDelete (list_t *, ilistidx_t ikey);
 /* iterators */
 void      ilistStartIterator (ilist_t *list, ilistidx_t *idx);

@@ -19,7 +19,6 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "fileop.h"
-#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
@@ -100,7 +99,7 @@ static audioidparse_t acoustidreleasexp [] = {
 /* relative to /response/recordings/recording */
 static audioidparse_t acoustidrecordingxp [] = {
   { AUDIOID_PARSE_DATA, TAG_RECORDING_ID, "/id", NULL, NULL, NULL },
-  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_RESPIDX, "/releases/release", NULL, acoustidreleasexp, NULL },
+  { AUDIOID_PARSE_TREE, AUDIOID_TYPE_TOP, "/releases/release", NULL, acoustidreleasexp, NULL },
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-recording", NULL, NULL, NULL },
 };
 
@@ -123,7 +122,7 @@ static audioidparse_t acoustidmainxp [] = {
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL, NULL },
 };
 
-static void acoustidWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len);
 static void dumpData (audioidacoustid_t *acoustid);
 
 audioidacoustid_t *
@@ -165,7 +164,7 @@ acoustidFree (audioidacoustid_t *acoustid)
 
 int
 acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
-    ilist_t *respdata)
+    audioid_resp_t *resp)
 {
   char          infn [MAXPATHLEN];
   char          uri [MAXPATHLEN];
@@ -262,7 +261,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
     mstimestart (&starttm);
     acoustid->respcount = audioidParseXMLAll (acoustid->webresponse,
-        acoustid->webresplen, acoustidmainxp, respdata, AUDIOID_ID_ACOUSTID);
+        acoustid->webresplen, acoustidmainxp, resp, AUDIOID_ID_ACOUSTID);
     logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: parse: %" PRId64 "ms",
         (int64_t) mstimeend (&starttm));
   }
@@ -273,11 +272,11 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
 }
 
 static void
-acoustidWebResponseCallback (void *userdata, const char *resp, size_t len)
+acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len)
 {
   audioidacoustid_t   *acoustid = userdata;
 
-  acoustid->webresponse = resp;
+  acoustid->webresponse = respstr;
   acoustid->webresplen = len;
   return;
 }

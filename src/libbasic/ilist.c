@@ -17,6 +17,8 @@
 #include "nlist.h"
 #include "slist.h"
 
+static nlist_t *ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag);
+
 /* key/value list, keyed by a ilistidx_t */
 
 ilist_t *
@@ -206,30 +208,6 @@ ilistGetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return ilistGetData (list, ikey, lidx);
 }
 
-nlist_t *
-ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
-{
-  nlist_t         *datalist = NULL;
-  char            tbuff [40];
-  nlistidx_t      idx;
-
-  if (list == NULL) {
-    return NULL;
-  }
-
-  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
-  datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
-
-  if (gsflag == ILIST_SET && datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
-        listGetName (LIST_KEY_IND, list), ikey);
-    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
-
-    listSetNumList (LIST_KEY_IND, list, ikey, datalist);
-  }
-  return datalist;
-}
-
 void
 ilistDelete (list_t *list, ilistidx_t ikey)
 {
@@ -278,6 +256,30 @@ ilistGetOrdering (ilist_t *list)
 }
 
 /* internal routines */
+
+static nlist_t *
+ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
+{
+  nlist_t         *datalist = NULL;
+  char            tbuff [40];
+  nlistidx_t      idx;
+
+  if (list == NULL) {
+    return NULL;
+  }
+
+  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
+  datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
+
+  if (gsflag == ILIST_SET && datalist == NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
+        listGetName (LIST_KEY_IND, list), ikey);
+    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
+
+    listSetNumList (LIST_KEY_IND, list, ikey, datalist);
+  }
+  return datalist;
+}
 
 
 

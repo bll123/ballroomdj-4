@@ -19,20 +19,20 @@
 #include "audioid.h"
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "tagdef.h"
 
-static bool audioidParse (json_object *jtop, audioidparse_t *jsonp, int jidx, ilist_t *respdata, int level, audioid_id_t ident);
-static bool audioidParseTree (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident);
-static bool audioidParseArray (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident);
-static bool audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, audioidparsedata_t *jdata, ilist_t *respdata, int level, audioid_id_t ident);
+static bool audioidParse (json_object *jtop, audioidparse_t *jsonp, int jidx, audioid_resp_t *resp, int level, audioid_id_t ident);
+static bool audioidParseTree (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, audioid_resp_t *resp, int level, audioid_id_t ident);
+static bool audioidParseArray (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, audioid_resp_t *resp, int level, audioid_id_t ident);
+static bool audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp, int parenttagidx, audioidparsedata_t *jdata, audioid_resp_t *resp, int level, audioid_id_t ident);
 static void dumpDataStr (const char *str);
 
 int
 audioidParseJSONAll (const char *data, size_t datalen,
-    audioidparse_t *jsonp, ilist_t *respdata, audioid_id_t ident)
+    audioidparse_t *jsonp, audioid_resp_t *resp, audioid_id_t ident)
 {
   json_object   *jroot;
   json_tokener  *jtok;
@@ -59,11 +59,10 @@ audioidParseJSONAll (const char *data, size_t datalen,
   }
 
   /* beginning response index */
-  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
+  respidx = resp->respidx;
+  audioidParse (jroot, jsonp, 0, resp, 0, ident);
 
-  audioidParse (jroot, jsonp, 0, respdata, 0, ident);
-
-  respcount = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX) - respidx;
+  respcount = respidx - resp->respidx + 1;
   logMsg (LOG_DBG, LOG_AUDIO_ID, "json-parse: respcount: %d", respcount);
 
   json_tokener_free (jtok);
@@ -74,30 +73,29 @@ audioidParseJSONAll (const char *data, size_t datalen,
 
 static bool
 audioidParse (json_object *jtop, audioidparse_t *jsonp,
-    int jidx, ilist_t *respdata, int level, audioid_id_t ident)
+    int jidx, audioid_resp_t *resp, int level, audioid_id_t ident)
 {
-  int                 respidx;
+  nlist_t *respdata;
 
   if (jtop == NULL) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s jidx: %d %s null json object", level*2, "", jidx, jsonp [jidx].name);
     return false;
   }
 
-  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s jidx: %d %s respidx %d", level*2, "", jidx, jsonp [jidx].name, respidx);
+  respdata = audioidGetResponseData (resp, resp->respidx);
+  logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s jidx: %d %s respidx %d", level*2, "", jidx, jsonp [jidx].name, resp->respidx);
 
   while (jsonp [jidx].flag != AUDIOID_PARSE_END) {
     json_object   *jtmp;
     int           ttagidx;
     const char    *val;
     const char    *tval = NULL;
-    const char    *joinphrase = NULL;
-
 
     if (jsonp [jidx].flag == AUDIOID_PARSE_SET) {
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set: jidx: %d %s", level*2, "", jidx, jsonp [jidx].name);
       if (jsonp [jidx].tagidx == AUDIOID_TYPE_JOINPHRASE) {
-        ilistSetStr (respdata, 0, jsonp [jidx].tagidx, jsonp [jidx].name);
+        dataFree (resp->joinphrase);
+        resp->joinphrase = mdstrdup (jsonp [jidx].name);
       }
       ++jidx;
       continue;
@@ -112,7 +110,7 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
     if (jsonp [jidx].flag == AUDIOID_PARSE_TREE) {
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: jidx: %d %s", level*2, "", jidx, jsonp [jidx].name);
-      audioidParseTree (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, respdata, level, ident);
+      audioidParseTree (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, resp, level, ident);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-tree %s", level*2, "", jsonp [jidx].name);
       ++jidx;
       continue;
@@ -120,14 +118,14 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
     if (jsonp [jidx].flag == AUDIOID_PARSE_ARRAY) {
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s array: jidx: %d %s", level*2, "", jidx, jsonp [jidx].name);
-      audioidParseArray (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, respdata, level, ident);
+      audioidParseArray (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, resp, level, ident);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s finish-array %s", level*2, "", jsonp [jidx].name);
       ++jidx;
       continue;
     }
 
     if (jsonp [jidx].flag == AUDIOID_PARSE_DATA_ARRAY) {
-      audioidParseDataArray (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, jsonp [jidx].jdata, respdata, level, ident);
+      audioidParseDataArray (jtmp, jsonp [jidx].tree, jsonp [jidx].tagidx, jsonp [jidx].jdata, resp, level, ident);
       ++jidx;
       continue;
     }
@@ -140,17 +138,14 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
     ttagidx = jsonp [jidx].tagidx;
 
-    joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
-
     tval = (const char *) val;
     if (ttagidx == TAG_AUDIOID_SCORE) {
       /* acrcloud returns a score between 70 and 100 */
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set respidx: %d tagidx: %d %s %s", level*2, "", respidx, ttagidx, tagdefs [ttagidx].tag, tval);
-      ilistSetDouble (respdata, respidx, ttagidx, atof (tval));
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set score(%d): tagidx: %d %s %s", level*2, "", resp->respidx, ttagidx, tagdefs [ttagidx].tag, tval);
+      nlistSetDouble (respdata, ttagidx, atof (tval));
     } else {
-      if (audioidSetResponseData (level, respdata, respidx, ttagidx, tval, joinphrase)) {
-        ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
-      }
+      /* set-response-data will clear the joinphrase if used */
+      audioidSetResponseData (level, resp, ttagidx, tval);
     }
 
     ++jidx;
@@ -161,21 +156,20 @@ audioidParse (json_object *jtop, audioidparse_t *jsonp,
 
 static bool
 audioidParseTree (json_object *jtop, audioidparse_t *jsonp,
-    int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident)
+    int parenttagidx, audioid_resp_t *resp, int level, audioid_id_t ident)
 {
   bool    rc;
 
-  rc = audioidParse (jtop, jsonp, 0, respdata, level + 1, ident);
+  rc = audioidParse (jtop, jsonp, 0, resp, level + 1, ident);
 
   /* increment the response index after the parse is done */
-  if (rc && parenttagidx == AUDIOID_TYPE_RESPIDX) {
-    int     respidx;
+  if (rc && parenttagidx == AUDIOID_TYPE_TOP) {
+    nlist_t *respdata;
 
-    respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-    ilistSetNum (respdata, respidx, AUDIOID_TYPE_IDENT, ident);
-    ++respidx;
-    ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: set respidx: %d", level*2, "", respidx);
+    respdata = audioidGetResponseData (resp, resp->respidx);
+    nlistSetNum (respdata, AUDIOID_TYPE_IDENT, ident);
+    resp->respidx += 1;
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: tree: new respidx: %d", level*2, "", resp->respidx);
   }
 
   return rc;
@@ -183,14 +177,11 @@ audioidParseTree (json_object *jtop, audioidparse_t *jsonp,
 
 static bool
 audioidParseArray (json_object *jtop, audioidparse_t *jsonp,
-    int parenttagidx, ilist_t *respdata, int level, audioid_id_t ident)
+    int parenttagidx, audioid_resp_t *resp, int level, audioid_id_t ident)
 {
   int   jidx = 0;
-  int   respidx;
   int   mcount;
   int   rc = true;
-
-  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
 
   mcount = json_object_array_length (jtop);
   for (int i = 0; i < mcount; ++i)  {
@@ -199,36 +190,32 @@ audioidParseArray (json_object *jtop, audioidparse_t *jsonp,
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s array: idx: %d", level*2, "", i);
 
     jtmp = json_object_array_get_idx (jtop, i);
-    if (! audioidParse (jtmp, jsonp, jidx, respdata, level + 1, ident)) {
+    if (! audioidParse (jtmp, jsonp, jidx, resp, level + 1, ident)) {
       rc = false;
     }
 
     /* increment the response index after the parse is done */
-    if (rc && parenttagidx == AUDIOID_TYPE_RESPIDX) {
-      respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-      ilistSetNum (respdata, respidx, AUDIOID_TYPE_IDENT, ident);
-      ++respidx;
-      ilistSetNum (respdata, 0, AUDIOID_TYPE_RESPIDX, respidx);
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s array: set respidx: %d", level*2, "", respidx);
+    if (rc && parenttagidx == AUDIOID_TYPE_TOP) {
+      nlist_t   *respdata;
+
+      respdata = audioidGetResponseData (resp, resp->respidx);
+      nlistSetNum (respdata, AUDIOID_TYPE_IDENT, ident);
+      resp->respidx += 1;
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: array: new respidx %d", level*2, "", resp->respidx);
     }
   }
 
-  ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
-
+  dataFree (resp->joinphrase);
+  resp->joinphrase = NULL;
   return true;
 }
 
 static bool
 audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp,
     int parenttagidx, audioidparsedata_t *jdata,
-    ilist_t *respdata, int level, audioid_id_t ident)
+    audioid_resp_t *resp, int level, audioid_id_t ident)
 {
-  int         respidx;
   int         mcount;
-  const char  *joinphrase;
-
-  respidx = ilistGetNum (respdata, 0, AUDIOID_TYPE_RESPIDX);
-  joinphrase = ilistGetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE);
 
   mcount = json_object_array_length (jtop);
   for (int i = 0; i < mcount; ++i)  {
@@ -236,6 +223,7 @@ audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp,
     const char    *val;
     int           ttagidx;
     int           jdataidx;
+    nlist_t       *respdata;
 
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s array: idx: %d", level*2, "", i);
 
@@ -248,14 +236,15 @@ audioidParseDataArray (json_object *jtop, audioidparse_t *jsonp,
       continue;
     }
 
+    respdata = audioidGetResponseData (resp, resp->respidx);
+
     jdataidx = 0;
     while (jdata [jdataidx].name != NULL) {
       if (strcmp (val, jdata [jdataidx].name) == 0) {
         ttagidx = jdata [jdataidx].tagidx;
-        val = ilistGetStr (respdata, respidx, parenttagidx);
-        if (audioidSetResponseData (level, respdata, respidx, ttagidx, val, joinphrase)) {
-          ilistSetStr (respdata, 0, AUDIOID_TYPE_JOINPHRASE, NULL);
-        }
+        val = nlistGetStr (respdata, parenttagidx);
+        /* set-response-data will clear the joinphrase if used */
+        audioidSetResponseData (level, resp, ttagidx, val);
         break;
       }
       ++jdataidx;
