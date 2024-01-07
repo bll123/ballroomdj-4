@@ -253,7 +253,7 @@ uiDialogCreateSelect (uiwcont_t *window, const char *label,
 {
   uiselect_t  *selectdata;
 
-  if (! uiwcontValid (window, WCONT_T_DIALOG_WINDOW, "dialog-create-sel")) {
+  if (! uiwcontValid (window, WCONT_T_WINDOW, "dialog-create-sel")) {
     return NULL;
   }
 
