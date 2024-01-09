@@ -45,6 +45,7 @@ uiTextBoxCreate (int height, const char *hlcolor)
   uiwidget->uiint.uitextbox = tb;
 
   tb->buffer = uiwcontAlloc ();
+  tb->buffer->wbasetype = WCONT_T_TEXT_BUFFER;
   tb->buffer->wtype = WCONT_T_TEXT_BUFFER;
   tb->buffer->buffer = gtk_text_buffer_new (NULL);
 
