@@ -34,7 +34,7 @@ void      volumeFreeSinkList (volsinklist_t *sinklist);
 ilist_t   *volumeInterfaceList (void);
 char      *volumeCheckInterface (const char *volintfc);
 
-void  voliDesc (char **ret, int max);
+void  voliDesc (const char **ret, int max);
 int   voliProcess (volaction_t action, const char *sinkname, int *vol, volsinklist_t *sinklist, void **udata);
 void  voliDisconnect (void);
 void  voliCleanup (void **udata);

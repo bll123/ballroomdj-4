@@ -36,6 +36,11 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
       # make distclean does not always work well.
       make clean
       test -f config.cache && rm -f config.cache
+      # remove the copied c-ares library so that curl
+      # will link against the proper c-ares library.
+      # the c-ares library will be re-installed into plocal/bin by
+      # the pre-pkg process
+      rm -f $INSTLOC/bin/libcares-2.dll
     fi
     if [[ $conf == T ]]; then
       ./configure $args \

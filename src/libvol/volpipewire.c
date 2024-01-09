@@ -40,7 +40,7 @@ static const struct pw_registry_events registry_events = {
 static void pipewireSigHandler (void *udata, int signal_number);
 
 void
-voliDesc (char **ret, int max)
+voliDesc (const char **ret, int max)
 {
   int   c = 0;
 

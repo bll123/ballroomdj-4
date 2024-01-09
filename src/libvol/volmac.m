@@ -28,7 +28,7 @@ enum {
 };
 
 void
-voliDesc (char **ret, int max)
+voliDesc (const char **ret, int max)
 {
   int   c = 0;
 
