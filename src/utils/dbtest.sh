@@ -129,6 +129,13 @@ function setwritetagson {
   mv -f ${gconf}.n ${gconf}
 }
 
+function setwritetagsoff {
+  gconf=data/bdjconfig.txt
+  sed -e '/^WRITETAGS/ { n ; s/.*/..OFF/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
 function cleanallaudiofiletags {
   mdir=$1
 
@@ -330,7 +337,7 @@ TDBSECONDEMPTY=tmp/test-m-second-empty.dat
 KDBSECOND=tmp/second-db.dat
 KDBREORGNOFT=tmp/second-noft-db.dat
 # must use full path
-SECONDMUSICDIR=$(pwd)/tmp/music-second
+SECONDMUSICDIR=${cwd}/tmp/music-second
 
 echo "## make test setup"
 ATIFLAG=""
@@ -1087,8 +1094,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1099,8 +1106,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1111,8 +1118,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1144,8 +1151,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1156,8 +1163,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dash "$tmdir" "$omdir" "$dance" "$fn"
@@ -1168,8 +1175,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dash "$tmdir" "$omdir" "$dance" "$fn"
@@ -1210,8 +1217,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1222,8 +1229,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1234,8 +1241,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1245,8 +1252,8 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   for dance in "Cha Cha" Jive Quickstep; do
     if [[ -d "${tmdir}/${dance}" ]]; then
       echo "ERR: ${tmdir}/${dance} not removed"
@@ -1271,8 +1278,8 @@ fi
 
 if [[ $TESTON == T ]]; then
   # create some .original files
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   createoriginal "$tmdir" 003-jive.mp3
   createoriginal "$omdir" 001-alt-jive.mp3
 
@@ -1293,8 +1300,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1305,8 +1312,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1317,8 +1324,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1329,8 +1336,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1341,8 +1348,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1374,8 +1381,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1386,8 +1393,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1398,8 +1405,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1410,8 +1417,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1422,8 +1429,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1433,8 +1440,8 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   for dance in "Cha Cha" Jive Quickstep; do
     if [[ -d "${tmdir}/${dance}" ]]; then
       echo "ERR: ${tmdir}/${dance} not removed"
@@ -1459,8 +1466,8 @@ fi
 
 if [[ $TESTON == T ]]; then
   # create some existing files
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Quickstep"
   createexisting "$tmdir" "$dance" 002-quickstep.mp3
   createexisting "$omdir" "$dance" 001-alt-quickstep.mp3
@@ -1482,8 +1489,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1494,8 +1501,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1506,8 +1513,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1519,8 +1526,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir
   # the quickstep should still exist w/o being renamed
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Quickstep"
   for fn in 002-quickstep.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1531,8 +1538,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1543,8 +1550,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1556,8 +1563,8 @@ if [[ $TESTON == T ]]; then
 
   # secondary
   # the quickstep should still exist w/o being renamed
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Quickstep"
   for fn in 001-alt-quickstep.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1573,9 +1580,9 @@ fi
 
 if [[ $TESTON == T ]]; then
   # remove the existing files and run the re-org again.
-  tmdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/test-music
   rm -f "${tmdir}/Quickstep/002-quickstep.mp3"
-  tmdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/tmp/music-second
   rm -f "${tmdir}/Quickstep/001-alt-quickstep.mp3"
 
   setorgpath '{%DANCE%/}{%TITLE%}'
@@ -1595,8 +1602,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1607,8 +1614,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1619,8 +1626,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1631,8 +1638,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Quickstep"
   for fn in 002-quickstep.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1643,8 +1650,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1655,8 +1662,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1667,8 +1674,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Quickstep"
   for fn in 001-alt-quickstep.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1702,8 +1709,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1714,8 +1721,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1726,8 +1733,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1738,8 +1745,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1750,8 +1757,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3 001-alt-jive.mp3.original; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1761,8 +1768,8 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   for dance in "Cha Cha" Jive Quickstep; do
     if [[ -d "${tmdir}/${dance}" ]]; then
       echo "ERR: ${tmdir}/${dance} not removed"
@@ -1790,8 +1797,8 @@ if [[ $TESTON == T ]]; then
   setorgpath '{%DANCE%/}{%TITLE}'
 
   # clean up the originals.  these will mess up the check-new counts.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   removeoriginal "$tmdir" 003-jive.mp3
   removeoriginal "$omdir" 001-alt-jive.mp3
 
@@ -1857,8 +1864,8 @@ if [[ $TESTON == T ]]; then
 
   # the foxtrots should still be named by title.
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Foxtrot"
   for fn in 005-foxtrot.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1869,8 +1876,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Foxtrot"
   for fn in 001-alt-foxtrot.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -1928,8 +1935,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -1940,8 +1947,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1952,8 +1959,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1965,8 +1972,8 @@ if [[ $TESTON == T ]]; then
 
   # the foxtrots should now be named by dance/title
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Foxtrot"
   for fn in 005-foxtrot.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1977,8 +1984,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Foxtrot"
   for fn in 001-alt-foxtrot.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -1989,8 +1996,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -2001,8 +2008,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
@@ -2041,8 +2048,8 @@ if [[ $TESTON == T ]]; then
 
   # music-dir announcements
   # announcements should be locked and stay where they are.
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Announce"
   for fn in samba.mp3 waltz.mp3 tango.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
@@ -2053,8 +2060,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Cha Cha"
   for fn in 006-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2065,8 +2072,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2077,8 +2084,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=/home/bll/s/bdj4/test-music
-  omdir=/home/bll/s/bdj4/tmp/music-second
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
   dance="Foxtrot"
   for fn in 005-foxtrot.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2089,8 +2096,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Foxtrot"
   for fn in 001-alt-foxtrot.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2101,8 +2108,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Cha Cha"
   for fn in 001-alt-chacha.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2113,8 +2120,8 @@ if [[ $TESTON == T ]]; then
   done
 
   # secondary
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   dance="Jive"
   for fn in 001-alt-jive.mp3; do
     checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
@@ -2124,8 +2131,8 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
-  tmdir=/home/bll/s/bdj4/tmp/music-second
-  omdir=/home/bll/s/bdj4/test-music
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
   for dance in "Cha Cha" Jive Quickstep Foxtrot; do
     if [[ -d "${tmdir}/${dance}" ]]; then
       echo "ERR: ${tmdir}/${dance} not removed"

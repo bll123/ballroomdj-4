@@ -28,6 +28,7 @@ target_link_libraries (bdj4se PRIVATE
   objosprocess
   objosenv
   objfileop
+  objosutils    # needed for windows
   objstring
   objtmutil
   m

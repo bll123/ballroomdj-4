@@ -119,6 +119,7 @@ char *testsongdata [] = {
 typedef struct {
   const char    *orgpath;
   const char    *results [20];
+  char          winresults [20][200];
 } testsong_t;
 
 testsong_t testsongresults [] = {
@@ -137,6 +138,7 @@ testsong_t testsongresults [] = {
       "bypassE/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
       NULL,
     },
+    { "", },
   },
   {
     "{%DANCE%/}{%ARTIST% - }{%TITLE%}",
@@ -151,6 +153,7 @@ testsong_t testsongresults [] = {
       "Rumba/Artist 8 - Ne_Русский_Шторм-ru.mp3",
       NULL,
     },
+    { "", },
   },
   {
     "{%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
@@ -165,11 +168,13 @@ testsong_t testsongresults [] = {
       "Classical/Composer 7/AlbumArtist 7/Album 7/03-007.Title 7.mp3",
       "Rock/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
       NULL,
-    }
+    },
+    { "", },
   },
   {
     NULL,
     { NULL },
+    { "", },
   },
 };
 
@@ -351,29 +356,40 @@ START_TEST(orgutil_makepath)
   mdebugSubTag ("orgutil_makepath");
 
   if (isWindows ()) {
-    /* windows does not allow a colon in the path */
-    testsongresults [0].results [1] =
-        "WRD/The Ultimate Latin Album 4 Latin Eyes/01-002.Asi.mp3",
-    testsongresults [0].results [3] =
-        "Gloria Estefan/The Ultimate Latin Album 9 Footloose/02-004.Me Voy.mp3",
-    testsongresults [2].results [1] =
-        "WRD/The Ultimate Latin Album 4 Latin Eyes/01-002.Asi.mp3",
-    testsongresults [2].results [3] =
-        "Jazz/Gloria Estefan/The Ultimate Latin Album 9 Footloose/02-004.Me Voy.mp3",
+    ri = 0;
+    while ((testsongresults [ri].orgpath) != NULL) {
+      const char  *res;
 
-    /* parentheses not allowed on windows */
-    testsongresults [0].results [2] =
-        "Various Artists/Ballroom Stars 6/01-003.Je Vole! from La Famille Bélier.mp3";
-    testsongresults [1].results [2] =
-        "Waltz/Léa - Je Vole! from La Famille Bélier.mp3";
-    testsongresults [2].results [2] =
-        "Ballroom Dance/Various Artists/Ballroom Stars 6/01-003.Je Vole! from La Famille Bélier.mp3";
+      i = 0;
+      while ((res = testsongresults [ri].results [i]) != NULL) {
+        char    *p;
 
-    /* windows does not allow a period at the end of a directory name */
-    testsongresults [0].results [7] =
-        "AlbumArtist 8/Album 8/03-008.Ne_Русский_Шторм-ru.mp3";
-    testsongresults [2].results [7] =
-        "Rock/AlbumArtist 8/Album 8/03-008.Ne_Русский_Шторм-ru.mp3";
+        strlcpy (testsongresults [ri].winresults [i],
+            res, sizeof (testsongresults [ri].winresults [i]));
+        p = testsongresults [ri].winresults [i];
+        while (*res != '\0') {
+          int   ok = false;
+
+          /* no : ( ) in windows paths */
+          /* no trailing . for windows dirs */
+          if (*res != ':' && *res != '(' && *res != ')') {
+            ok = true;
+            if (*res == '.' && *(res + 1) == '/') {
+              ok = false;
+            }
+          }
+          if (ok) {
+            *p = *res;
+            ++p;
+          }
+          ++res;
+        }
+        *p = '\0';
+        testsongresults [ri].results [i] = testsongresults [ri].winresults [i];
+        ++i;
+      }
+      ++ri;
+    }
   }
 
   orgbp = orgAlloc ("{%BYPASS%/}{%TITLE%}");
