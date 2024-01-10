@@ -175,12 +175,19 @@ PLII=libplivlc
 if [[ $PLIMPV == T ]]; then
   PLII=libplimpv
 fi
+
 tfn=data/${hostname}/bdjconfig.txt
+tmusicdir="${cwd}/test-music"
+titunes="${cwd}/test-files/iTunes-test-music.xml"
+if [[ $platform == windows ]]; then
+  tmusicdir=$(cygpath --mixed "${tmusicdir}")
+  titunes=$(cygpath --mixed "${titunes}")
+fi
 sed \
     -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
     -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
-    -e "/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }" \
-    -e "/^ITUNESXMLFILE/ { n ; s,.*,..${cwd}/test-files/iTunes-test-music.xml, ; }" \
+    -e "/^DIRMUSIC/ { n ; s,.*,..${tmusicdir}, ; }" \
+    -e "/^ITUNESXMLFILE/ { n ; s,.*,..${titunes}, ; }" \
     -e "/^PLAYER/ { n ; s,.*,..${PLII}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
@@ -239,8 +246,6 @@ if [[ $DBCOPY == T ]]; then
   fi
 fi
 
-cwd=$(pwd)
-
 # run with the newinstall flag to make sure various variables are
 # set correctly.
 # remove the updater config to make sure all updates get run
@@ -259,7 +264,12 @@ fi
 
 # bdj4updater will change the itunes media dir
 tfn=data/${hostname}/bdjconfig.txt
-sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${cwd}/test-music, ; }" \
+
+titunes="${cwd}/test-files"
+if [[ $platform == windows ]]; then
+  titunes=$(cygpath --mixed "${titunes}")
+fi
+sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${titunes}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 # bdj4updater will change the orgpath to the itunes orgpath.

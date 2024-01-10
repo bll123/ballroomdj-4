@@ -487,10 +487,12 @@ dbupdateProcessing (void *udata)
 
       dbupdate->asiter = audiosrcStartIterator (dbupdate->processmusicdir);
 
-      dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
-          dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
-      logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+      if (dbupdate->asiter != NULL) {
+        dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
+            dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
+        logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+      }
     }
 
     if (dbupdate->iterfromdb) {
@@ -612,15 +614,12 @@ dbupdateProcessing (void *udata)
               dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
             }
             if (dbupdate->compact) {
-              slist_t   *tagdata;
-
               dbupdateIncCount (dbupdate, C_FILE_PROC);
               dbupdateIncCount (dbupdate, C_UPDATED);
-              /* the audio files are not being modified, using dbWrite() */
+              /* the audio files are not being modified, using dbWriteSong() */
               /* here is ok */
-              tagdata = songTagList (song);
-              dbWrite (dbupdate->newmusicdb, tsongfn, tagdata, MUSICDB_ENTRY_NEW);
-              slistFree (tagdata);
+              songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
+              dbWriteSong (dbupdate->newmusicdb, song);
             }
 
             dbupdateOutputProgress (dbupdate);

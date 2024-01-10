@@ -115,17 +115,21 @@ dbLoad (musicdb_t *musicdb)
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
   slistidx_t  siteridx;
+  rafileidx_t racount;
 
   if (musicdb == NULL) {
     return -1;
   }
 
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
-  slistSetSize (musicdb->songs, raGetCount (musicdb->radb));
+  racount = raGetCount (musicdb->radb);
+  slistSetSize (musicdb->songs, racount);
+  logMsg (LOG_DBG, LOG_DB, "db-load: %s %d\n", musicdb->fn, racount);
 
   raStartBatch (musicdb->radb);
 
-  for (rafileidx_t i = 1L; i <= raGetCount (musicdb->radb); ++i) {
+  /* the random access file is indexed starting at 1 */
+  for (rafileidx_t i = 1; i <= racount; ++i) {
     song = dbReadEntry (musicdb, i);
 
     if (song != NULL) {
@@ -463,8 +467,6 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
   /* make sure a status is set */
   tstatus = songGetNum (song, TAG_STATUS);
   if (tstatus < 0) {
-//    /* CONTEXT: music database: default status */
-//    songSetNum (song, TAG_STATUS, _("New"));
     songSetNum (song, TAG_STATUS, 0);
   }
 

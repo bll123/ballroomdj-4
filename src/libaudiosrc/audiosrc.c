@@ -218,6 +218,10 @@ audiosrcIterCount (asiter_t *asiter)
 {
   int32_t   c = 0;
 
+  if (asiter == NULL) {
+    return c;
+  }
+
   if (asiter->type == AUDIOSRC_TYPE_FILE) {
     c = audiosrcfileIterCount (asiter->asidata);
   }
