@@ -305,6 +305,9 @@ datafileSaveKeyValList (const char *tag,
   slist = slistAlloc (tag, LIST_ORDERED, NULL);
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
+    if (dfkeys [i].writeFlag == DF_NO_WRITE) {
+      continue;
+    }
     datafileLoadConv (&dfkeys [i], list, &conv, 0);
     datafileConvertValue (tbuff, sizeof (tbuff), dfkeys [i].convFunc, &conv);
     slistSetStr (slist, dfkeys [i].name, tbuff);
@@ -324,6 +327,9 @@ datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
   *buff = '\0';
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
+    if (dfkeys [i].writeFlag == DF_NO_WRITE) {
+      continue;
+    }
     datafileLoadConv (&dfkeys [i], list, &conv, offset);
     currsz = datafileSaveItem (buff, sz, currsz, dfkeys [i].name, dfkeys [i].convFunc, &conv, flags);
   }
@@ -732,7 +738,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
             if (strcmp (tvalstr, "") == 0) {
               lval = LIST_VALUE_INVALID;
             } else {
-              lval = atol (tvalstr);
+              lval = atoll (tvalstr);
             }
             logMsg (LOG_DBG, LOG_DATAFILE, "value: %" PRId64, lval);
           }

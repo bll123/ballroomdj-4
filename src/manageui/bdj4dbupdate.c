@@ -981,7 +981,6 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
   song_t      *song = NULL;
   const char  *val;
   int         rewrite;
-  char        tbuff [MUSICDB_MAX_SAVE];
   int         songdbflags;
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", tdi->ffn);
@@ -1117,12 +1116,9 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 
   dbupdateSetCurrentDB (dbupdate);
 
-  /* this is rather inefficient */
-  /* see what can be done about this */
-  /* the problem being that orgutil works based on a song, not a taglist */
   song = songAlloc ();
-  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, tdi->songfn);
-  songParse (song, tbuff, rrn);
+  songFromTagList (song, tagdata);
+  songSetStr (song, TAG_URI, tdi->songfn);
   songdbflags = SONGDB_NONE;
   if (dbupdate->autoorg && (dbupdate->checknew || dbupdate->rebuild)) {
     songdbflags = SONGDB_NONE;

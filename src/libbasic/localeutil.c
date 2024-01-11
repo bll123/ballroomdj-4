@@ -169,7 +169,7 @@ localeSetup (void)
 
   if (isWindows ()) {
     if (atof (sysvarsGetStr (SV_OSVERS)) >= 10.0) {
-      if (atoi (sysvarsGetStr (SV_OSBUILD)) >= 1803) {
+      if (atol (sysvarsGetStr (SV_OSBUILD)) >= 1803) {
         useutf8ext = true;
       }
     }

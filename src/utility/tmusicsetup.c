@@ -44,7 +44,7 @@
 enum {
   TM_SOURCE = TAG_KEY_MAX + 1,
   TM_DEST = TAG_KEY_MAX + 2,
-  TM_MAX_DANCE = 20,        // normally 14 or so in the standard template.
+  TM_MAX_DANCE = 30,        // normally 14 or so in the standard template.
 };
 
 /* 'source' is added */
@@ -124,6 +124,8 @@ main (int argc, char *argv [])
   int         filetype;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  songdb_t    *songdb;
+  song_t      *song;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,        NULL,   'B' },
@@ -242,6 +244,9 @@ main (int argc, char *argv [])
   db = dbOpen (dbfn);
   dbStartBatch (db);
 
+  songdb = songdbAlloc (db);
+  song = songAlloc ();
+
   df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, infn,
       tmdfkeys, tmdfcount, DF_NO_OFFSET, NULL);
   tmusiclist = datafileGetList (df);
@@ -254,6 +259,7 @@ main (int argc, char *argv [])
     char        *fn;
     slist_t     *tagdata = NULL;
     const char  *songfn = NULL;
+    int         songdbflags;
 
     tagdata = updateData (tmusiclist, key);
 
@@ -263,13 +269,14 @@ main (int argc, char *argv [])
     /* need full path to determine tag type */
     snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);
     audiotagDetermineTagType (from, &tagtype, &filetype);
-    if (supported [filetype] != ATI_READ_WRITE) {
+    if (supported [filetype] == ATI_NONE) {
       slistFree (tagdata);
       continue;
     }
 
     fn = createFile (src, dest, keepmusic);
-    if (! keepmusic) {
+    if (! keepmusic &&
+        supported [filetype] == ATI_READ_WRITE) {
       audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
     }
     if (emptydb) {
@@ -287,6 +294,7 @@ main (int argc, char *argv [])
     }
 
     slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, "0");
+
     songfn = fn;
     if (strcmp (tmusicdir, "test-music") == 0) {
       songfn = fn + strlen (tmusicdir) + 1;
@@ -296,17 +304,27 @@ main (int argc, char *argv [])
       snprintf (tmp, sizeof (tmp), "%d", (int) strlen (tmusicdir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
     }
-    dbWrite (db, songfn, tagdata, MUSICDB_ENTRY_NEW);
+    slistSetStr (tagdata, tagdefs [TAG_URI].tag, songfn);
+
+    songFromTagList (song, tagdata);
+    songSetChanged (song);
+    songdbflags = SONGDB_NONE;
+    songdbWriteDBSong (songdb, song, &songdbflags, MUSICDB_ENTRY_NEW);
 
     if (*seconddir) {
       char    tmp [40];
 
       /* if the alternate dir is set, create a duplicate entry */
+      /* this is a simple method used to create the secondary dir */
+      /* it could be removed (dbtest.sh) */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", seconddir, songfn);
       slistSetStr (tagdata, tagdefs [TAG_URI].tag, tbuff);
       snprintf (tmp, sizeof (tmp), "%d", (int) strlen (seconddir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
-      dbWrite (db, tbuff, tagdata, MUSICDB_ENTRY_NEW);
+      songFromTagList (song, tagdata);
+      songSetChanged (song);
+      songdbflags = SONGDB_NONE;
+      songdbWriteDBSong (songdb, song, &songdbflags, MUSICDB_ENTRY_NEW);
     }
     slistFree (tagdata);
     mdfree (fn);
@@ -315,6 +333,8 @@ main (int argc, char *argv [])
   datafileFree (df);
   slistFree (empty);
 
+  songFree (song);
+  songdbFree (songdb);
   dbEndBatch (db);
   dbClose (db);
 

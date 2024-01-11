@@ -1193,7 +1193,16 @@ manageMainLoop (void *tmanage)
 
         tagdata = audiotagParseData (outfn, &rewrite);
         if (slistGetCount (tagdata) > 0) {
-          dbWrite (manage->musicdb, tfn, tagdata, rrn);
+          song_t    *song;
+          int       songdbflags;
+
+          song = songAlloc ();
+          songFromTagList (song, tagdata);
+          songSetStr (song, TAG_URI, tfn);
+          songSetChanged (song);
+          songdbflags = SONGDB_NONE;
+          songdbWriteDBSong (manage->songdb, song, &songdbflags, rrn);
+          songFree (song);
 
           dbLoadEntry (manage->musicdb, dbidx);
           manageRePopulateData (manage);

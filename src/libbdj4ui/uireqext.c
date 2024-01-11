@@ -58,7 +58,6 @@ typedef struct uireqext {
   callback_t      *callbacks [UIEXTREQ_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
-  char            *songEntryText;
   bool            isactive : 1;
 } uireqext_t;
 
@@ -88,7 +87,6 @@ uireqextInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uireqext->statusMsg = NULL;
   uireqext->options = opts;
   uireqext->song = NULL;
-  uireqext->songEntryText = NULL;
   for (int i = 0; i < UIEXTREQ_CB_MAX; ++i) {
     uireqext->callbacks [i] = NULL;
   }
@@ -116,7 +114,6 @@ uireqextFree (uireqext_t *uireqext)
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
     }
-    dataFree (uireqext->songEntryText);
     uiEntryFree (uireqext->audioFileEntry);
     uiEntryFree (uireqext->artistEntry);
     uiEntryFree (uireqext->titleEntry);
@@ -158,6 +155,7 @@ uireqextDialog (uireqext_t *uireqext, const char *fn)
   return UICB_CONT;
 }
 
+/* the caller must free the song */
 song_t *
 uireqextGetSong (uireqext_t *uireqext)
 {
@@ -168,19 +166,8 @@ uireqextGetSong (uireqext_t *uireqext)
   }
 
   song = uireqext->song;
-  /* it is the caller's responsibility to free the song */
   uireqext->song = NULL;
   return song;
-}
-
-char *
-uireqextGetSongEntryText (uireqext_t *uireqext)
-{
-  if (uireqext == NULL) {
-    return NULL;
-  }
-
-  return uireqext->songEntryText;
 }
 
 /* delayed entry validation for the audio file needs to be run */
@@ -417,7 +404,6 @@ static void
 uireqextProcessAudioFile (uireqext_t *uireqext)
 {
   const char  *ffn;
-  char        tbuff [MUSICDB_MAX_SAVE];
 
   if (uireqext == NULL) {
     return;
@@ -453,15 +439,13 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       /* the change */
       slistSetStr (tagdata, tagdefs [TAG_FAVORITE].tag, "imported");
 
-      dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, ffn);
-      slistFree (tagdata);
-      dataFree (uireqext->songEntryText);
-      uireqext->songEntryText = mdstrdup (tbuff);
-
       uireqext->song = songAlloc ();
       /* populate the song from the tag data */
-      songParse (uireqext->song, tbuff, 0);
+      songFromTagList (uireqext->song, tagdata);
+      songSetStr (uireqext->song, TAG_URI, ffn);
       songSetNum (uireqext->song, TAG_DB_FLAGS, MUSICDB_TEMP);
+
+      slistFree (tagdata);
 
       /* update the display */
       uiEntrySetValue (uireqext->artistEntry,

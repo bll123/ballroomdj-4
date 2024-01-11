@@ -41,7 +41,7 @@ typedef struct {
 typedef void (*dfConvFunc_t)(datafileconv_t *);
 
 /*
- * The datafilekey_t table is used to convert string keys to long keys.
+ * The datafilekey_t table is used to parse and process the datafile.
  *
  * list : simple list
  *    key only or key/value.

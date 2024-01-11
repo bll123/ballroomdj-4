@@ -66,7 +66,7 @@ static datafilekey_t songdfkeys [] = {
   /* a special case in uisong.c */
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, DF_NORM },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, DF_NORM },
-  { "FILE",                 TAG_URI,                 VALUE_STR, NULL, DF_NORM },
+  { "FILE",                 TAG_URI,                  VALUE_STR, NULL, DF_NO_WRITE },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, DF_NORM },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, DF_NORM },
   { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, DF_NORM },
@@ -84,6 +84,7 @@ static datafilekey_t songdfkeys [] = {
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, DF_NORM },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, DF_NORM },
   { "TRACK_ID",             TAG_TRACK_ID,             VALUE_STR, NULL, DF_NORM },
+  { "URI",                  TAG_URI,                  VALUE_STR, NULL, DF_NORM },
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, DF_NORM },
   { "WORK_ID",              TAG_WORK_ID,              VALUE_STR, NULL, DF_NORM },
 };
@@ -99,6 +100,8 @@ typedef struct {
 } songinit_t;
 
 static songinit_t gsonginit = { false, 0, NULL, NULL };
+
+static void songSetDefaults (song_t *song);
 
 song_t *
 songAlloc (void)
@@ -132,11 +135,58 @@ songFree (void *tsong)
 }
 
 void
+songFromTagList (song_t *song, slist_t *tagdata)
+{
+  nlistFree (song->songInfo);
+  song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
+
+  for (int i = 0; i < SONG_DFKEY_COUNT; ++i) {
+    const char  *tstr;
+
+    if (songdfkeys [i].writeFlag == DF_NO_WRITE) {
+      continue;
+    }
+
+    tstr = slistGetStr (tagdata, songdfkeys [i].name);
+    if (tstr == NULL || ! *tstr) {
+      continue;
+    }
+
+    if (songdfkeys [i].convFunc != NULL) {
+      datafileconv_t    conv;
+
+      conv.invt = VALUE_STR;
+      conv.outvt = songdfkeys [i].valuetype;
+      conv.str = tstr;
+      songdfkeys [i].convFunc (&conv);
+      if (conv.outvt == VALUE_NUM) {
+        songSetNum (song, songdfkeys [i].itemkey, conv.num);
+      }
+      if (conv.outvt == VALUE_LIST) {
+        nlistSetList (song->songInfo, songdfkeys [i].itemkey, conv.list);
+      }
+      if (conv.outvt == VALUE_DOUBLE) {
+        songSetDouble (song, songdfkeys [i].itemkey, conv.dval);
+      }
+    } else if (songdfkeys [i].valuetype == VALUE_NUM) {
+      songSetNum (song, songdfkeys [i].itemkey, atoll (tstr));
+    } else if (songdfkeys [i].valuetype == VALUE_DOUBLE) {
+      songSetDouble (song, songdfkeys [i].itemkey, atof (tstr) / DF_DOUBLE_MULT);
+    } else {
+      songSetStr (song, songdfkeys [i].itemkey, tstr);
+    }
+  }
+
+  songSetDefaults (song);
+
+  song->changed = false;
+  song->songlistchange = false;
+}
+
+void
 songParse (song_t *song, char *data, ilistidx_t dbidx)
 {
   char        tbuff [40];
-  ilistidx_t  lkey;
-  ssize_t     tval;
 
   if (song == NULL || data == NULL) {
     return;
@@ -148,43 +198,7 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
       songdfkeys, SONG_DFKEY_COUNT, NULL);
   nlistSort (song->songInfo);
 
-  /* check and set some defaults */
-
-  /* always set the db flags; if it needs to be set, */
-  /* the caller will set it */
-  nlistSetNum (song->songInfo, TAG_DB_FLAGS, MUSICDB_NONE);
-
-  tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
-  if (tval < 0 ||
-      (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID))) {
-    nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
-  }
-
-  lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
-  if (lkey < 0) {
-    lkey = levelGetDefaultKey (gsonginit.levels);
-    /* Use default setting */
-    nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
-  }
-
-  lkey = nlistGetNum (song->songInfo, TAG_STATUS);
-  if (lkey < 0) {
-    /* New */
-    nlistSetNum (song->songInfo, TAG_STATUS, 0);
-  }
-
-  lkey = nlistGetNum (song->songInfo, TAG_DANCERATING);
-  if (lkey < 0) {
-    /* Unrated */
-    nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
-  }
-
-  /* 2023-12-19: db location lock */
-  lkey = nlistGetNum (song->songInfo, TAG_DB_LOC_LOCK);
-  if (lkey < 0) {
-    /* false */
-    nlistSetNum (song->songInfo, TAG_DB_LOC_LOCK, 0);
-  }
+  songSetDefaults (song);
 
   song->changed = false;
   song->songlistchange = false;
@@ -548,3 +562,51 @@ songDump (song_t *song)
   }
 }
 #endif
+
+/* internal routines */
+
+static void
+songSetDefaults (song_t *song)
+{
+  ilistidx_t  lkey;
+  ssize_t     tval;
+
+  /* check and set some defaults */
+
+  /* always set the db flags; if it needs to be set, */
+  /* the caller will set it */
+  nlistSetNum (song->songInfo, TAG_DB_FLAGS, MUSICDB_NONE);
+
+  tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
+  if (tval < 0 ||
+      (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID))) {
+    nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
+  }
+
+  lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
+  if (lkey < 0) {
+    lkey = levelGetDefaultKey (gsonginit.levels);
+    /* Use default setting */
+    nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
+  }
+
+  lkey = nlistGetNum (song->songInfo, TAG_STATUS);
+  if (lkey < 0) {
+    /* New */
+    nlistSetNum (song->songInfo, TAG_STATUS, 0);
+  }
+
+  lkey = nlistGetNum (song->songInfo, TAG_DANCERATING);
+  if (lkey < 0) {
+    /* Unrated */
+    nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
+  }
+
+  /* 2023-12-19: db location lock */
+  lkey = nlistGetNum (song->songInfo, TAG_DB_LOC_LOCK);
+  if (lkey < 0) {
+    /* false */
+    nlistSetNum (song->songInfo, TAG_DB_LOC_LOCK, 0);
+  }
+}
+

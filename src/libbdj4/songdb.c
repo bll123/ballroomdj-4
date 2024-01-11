@@ -128,6 +128,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   rename = (bdjoptGetNum (OPT_G_AUTOORGANIZE) == true) ||
       ((*flags & SONGDB_FORCE_RENAME) == SONGDB_FORCE_RENAME);
 
+  if (songGetStr (song, TAG_URI) == NULL) {
+    *flags |= SONGDB_RET_BAD_URI;
+    return 0;
+  }
+
   strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
   *newfn = '\0';
 
@@ -213,10 +218,13 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     }
   }
 
-  *flags |= SONGDB_RET_SUCCESS;
-
   songSetNum (song, TAG_RRN, rrn);
   len = dbWriteSong (songdb->musicdb, song);
+  if (len > 0) {
+    *flags |= SONGDB_RET_SUCCESS;
+  } else {
+    *flags |= SONGDB_RET_WRITE_FAIL;
+  }
 
   if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
     songdbWriteAudioTags (song);

@@ -20,6 +20,8 @@ enum {
   SONGDB_RET_NO_CHANGE        = 0x0040,
   SONGDB_RET_LOC_LOCK         = 0x0080,
   SONGDB_RET_SUCCESS          = 0x0100,
+  SONGDB_RET_WRITE_FAIL       = 0x0200,
+  SONGDB_RET_BAD_URI          = 0x0400,
 };
 
 typedef struct songdb songdb_t;

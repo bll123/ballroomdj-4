@@ -152,7 +152,6 @@ START_TEST(musicdb_write)
   int       count;
   char      *ndata;
   FILE      *fh;
-  slist_t   *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_write");
   mdebugSubTag ("musicdb_write");
@@ -181,10 +180,8 @@ START_TEST(musicdb_write)
       mdextfclose (fh);
       fclose (fh);
 
-      tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_URI), tlist, MUSICDB_ENTRY_NEW);
+      dbWriteSong (db, song);
       songFree (song);
-      slistFree (tlist);
       ++count;
     }
   }
@@ -205,7 +202,6 @@ START_TEST(musicdb_overwrite)
   int       count;
   char      *ndata;
   FILE      *fh;
-  slist_t   *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_overwrite");
   mdebugSubTag ("musicdb_overwrite");
@@ -234,11 +230,8 @@ START_TEST(musicdb_overwrite)
       mdextfclose (fh);
       fclose (fh);
 
-      tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_URI),
-          tlist, songGetNum (song, TAG_RRN));
+      dbWriteSong (db, song);
       songFree (song);
-      slistFree (tlist);
       ++count;
     }
   }
@@ -260,7 +253,6 @@ START_TEST(musicdb_batch_write)
   int       count;
   char      *ndata;
   FILE      *fh;
-  slist_t   *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_batch_write");
   mdebugSubTag ("musicdb_batch_write");
@@ -290,10 +282,8 @@ START_TEST(musicdb_batch_write)
       mdextfclose (fh);
       fclose (fh);
 
-      tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_URI), tlist, MUSICDB_ENTRY_NEW);
+      dbWriteSong (db, song);
       songFree (song);
-      slistFree (tlist);
       ++count;
     }
   }
@@ -314,7 +304,6 @@ START_TEST(musicdb_batch_overwrite)
   int       count;
   char      *ndata;
   FILE      *fh;
-  slist_t   *tlist;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_batch_overwrite");
   mdebugSubTag ("musicdb_batch_overwrite");
@@ -344,11 +333,8 @@ START_TEST(musicdb_batch_overwrite)
       mdextfclose (fh);
       fclose (fh);
 
-      tlist = songTagList (song);
-      dbWrite (db, songGetStr (song, TAG_URI),
-          tlist, songGetNum (song, TAG_RRN));
+      dbWriteSong (db, song);
       songFree (song);
-      slistFree (tlist);
       ++count;
     }
   }

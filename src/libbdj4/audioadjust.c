@@ -101,7 +101,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 {
   song_t      *song;
   pathinfo_t  *pi;
-  const char  *songfn;
+  char        songfn [MAXPATHLEN];
   char        *infn;
   char        origfn [MAXPATHLEN];
   char        fullfn [MAXPATHLEN];
@@ -114,7 +114,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     return changed;
   }
 
-  songfn = songGetStr (song, TAG_URI);
+  strlcpy (songfn, songGetStr (song, TAG_URI), sizeof (songfn));
   if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {
     return changed;
   }
@@ -508,10 +508,11 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
 {
   slist_t     *tagdata;
   int         rewrite;
-  char        tbuff [MUSICDB_MAX_SAVE];
   char        dbadddate [40];
   const char  *tmp;
   dbidx_t     rrn;
+  songdb_t    *songdb;
+  int         songdbflags;
 
   rrn = songGetNum (song, TAG_RRN);
   tmp = songGetStr (song, TAG_DBADDDATE);
@@ -522,19 +523,17 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   tagdata = audiotagParseData (infn, &rewrite);
   slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
 
+  /* the data in the database must be replaced with the original data */
+  songFromTagList (song, tagdata);
+  songSetStr (song, TAG_URI, songfn);
   /* reset the values that are only in the database back to the original */
   songSetStr (song, TAG_DBADDDATE, dbadddate);
   songSetNum (song, TAG_RRN, rrn);
+  songdb = songdbAlloc (musicdb);
+  songdbflags = SONGDB_NONE;
+  songdbWriteDBSong (songdb, song, &songdbflags, rrn);
+  songdbFree (songdb);
 
-  /* the data in the database must be replaced with the original data */
-  dbWrite (musicdb, songfn, tagdata, rrn);
-  /* and the song's data must be replaced with the original data */
-  dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata, songfn);
-  songParse (song, tbuff, dbidx);
-
-  /* make sure the internal entry is correct */
-  songSetStr (song, TAG_DBADDDATE, dbadddate);
-  songSetNum (song, TAG_RRN, rrn);
   slistFree (tagdata);
 }
 

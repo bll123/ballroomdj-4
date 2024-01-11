@@ -225,12 +225,13 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
       slistSetNum (processed, tag, 1);
 
       if (strcmp (tag, "DBADDDATE") == 0 ||
+          strcmp (tag, "DB_LOC_LOCK") == 0 ||
+          strcmp (tag, "DURATION") == 0 ||
           strcmp (tag, "FILE") == 0 ||
           strcmp (tag, "LASTUPDATED") == 0 ||
           strcmp (tag, "PFXLEN") == 0 ||
           strcmp (tag, "RRN") == 0 ||
-          strcmp (tag, "DB_LOC_LOCK") == 0 ||
-          strcmp (tag, "DURATION") == 0) {
+          strcmp (tag, "URI") == 0) {
         continue;
       }
 

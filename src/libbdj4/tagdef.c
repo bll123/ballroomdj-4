@@ -514,7 +514,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   },
   /* leave this as 'FILE' for now, will require a big db upgrade to fix */
   [TAG_URI] =
-  { "FILE",                       /* tag */
+  { "URI",                        /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },

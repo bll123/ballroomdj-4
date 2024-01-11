@@ -1748,33 +1748,32 @@ pluiExtReqCallback (void *udata)
   song_t        *song;
 
   song = uireqextGetSong (plui->uireqext);
+
   if (song != NULL) {
     dbidx_t     dbidx;
-    char        *songentrytext;
+    char        *tbuff;
+    char        *tmp;
 
     /* add to the player's copy of the database */
     dbidx = dbAddTemporarySong (plui->musicdb, song);
 
-    songentrytext = uireqextGetSongEntryText (plui->uireqext);
-    if (songentrytext != NULL) {
-      char        *tbuff;
+    tbuff = mdmalloc (BDJMSG_MAX);
+    tmp = songCreateSaveData (song);
+    snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
+        songGetStr (song, TAG_URI),
+        MSG_ARGS_RS, dbidx,
+        MSG_ARGS_RS, tmp);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
+    dataFree (tbuff);
+    dataFree (tmp);
 
-      tbuff = mdmalloc (BDJMSG_MAX);
-      snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
-          songGetStr (song, TAG_URI), MSG_ARGS_RS,
-          dbidx, MSG_ARGS_RS,
-          songentrytext);
-      connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
-      dataFree (tbuff);
-
-      if (plui->extreqRow >= 0) {
-        uimusicqSetSelectLocation (plui->uimusicq, plui->musicqRequestIdx,
-            plui->extreqRow);
-        plui->extreqRow = -1;
-      }
-
-      pluiQueueProcess (plui, dbidx);
+    if (plui->extreqRow >= 0) {
+      uimusicqSetSelectLocation (plui->uimusicq, plui->musicqRequestIdx,
+          plui->extreqRow);
+      plui->extreqRow = -1;
     }
+
+    pluiQueueProcess (plui, dbidx);
   }
   return UICB_CONT;
 }
@@ -1963,7 +1962,7 @@ pluiReloadSaveCurrent (playerui_t *plui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       RELOAD_CURR_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  reloaddf = datafileAllocParse ("reload-curr", DFTYPE_KEY_VAL, tbuff,
+  reloaddf = datafileAllocParse ("save-curr", DFTYPE_KEY_VAL, tbuff,
       reloaddfkeys, RELOAD_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   reloaddata = nlistAlloc ("reload-curr", LIST_ORDERED, NULL);
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
