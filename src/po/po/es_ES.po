@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2023-12-22\n"
+"PO-Revision-Date: 2024-01-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -43,11 +43,6 @@ msgstr "%s Clave API"
 #, c-format
 msgid "%s API Secret Key"
 msgstr "%s Clave secreta API"
-
-#. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
-#, c-format
-msgid "%s Compatible Audio File Tags"
-msgstr "%s etiquetas de archivo de audio compatibles"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
@@ -1127,7 +1122,6 @@ msgid "Name"
 msgstr "Nombre"
 
 #. CONTEXT: configuration file: status
-#. CONTEXT: music database: default status
 #. CONTEXT: status: default status (new) when status is not set
 msgid "New"
 msgstr "Nuevo"
@@ -1786,6 +1780,7 @@ msgstr "Canciones"
 msgid "Sort by"
 msgstr "Ordenar por"
 
+#. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
 msgstr "Fuente"

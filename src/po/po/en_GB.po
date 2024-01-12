@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.4.8\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2023-12-22\n"
-"PO-Revision-Date: 2023-12-22\n"
+"POT-Creation-Date: 2024-01-12\n"
+"PO-Revision-Date: 2024-01-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -36,11 +36,6 @@ msgstr ""
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr ""
-
-#. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
-#, c-format
-msgid "%s Compatible Audio File Tags"
 msgstr ""
 
 #. CONTEXT: configuration: configuration user interface window title
@@ -1120,7 +1115,6 @@ msgid "Name"
 msgstr ""
 
 #. CONTEXT: configuration file: status
-#. CONTEXT: music database: default status
 #. CONTEXT: status: default status (new) when status is not set
 msgid "New"
 msgstr ""
@@ -1779,6 +1773,7 @@ msgstr ""
 msgid "Sort by"
 msgstr ""
 
+#. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-22 13:26-0800\n"
+"POT-Creation-Date: 2024-01-12 08:48-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,11 +40,6 @@ msgstr ""
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr ""
-
-#. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
-#, c-format
-msgid "%s Compatible Audio File Tags"
 msgstr ""
 
 #. CONTEXT: configuration: configuration user interface window title
@@ -1124,7 +1119,6 @@ msgid "Name"
 msgstr ""
 
 #. CONTEXT: configuration file: status
-#. CONTEXT: music database: default status
 #. CONTEXT: status: default status (new) when status is not set
 msgid "New"
 msgstr ""
@@ -1783,6 +1777,7 @@ msgstr ""
 msgid "Sort by"
 msgstr ""
 
+#. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
 msgstr ""
