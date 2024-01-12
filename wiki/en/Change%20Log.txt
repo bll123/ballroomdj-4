@@ -15,6 +15,7 @@
     * Installer: Fix installation of acrcloud fingerprinter.
     * MacOS: Fix build when other versions of libraries are installed.
     * Management: Do not play announcements in the management ui.
+    * Player: Announcements: Fixed a bug that caused announcements to play.
     * Player: Requests: Fixed an issue where the request would not be inserted into the music queue.
     * Update Database: Fix bugs that set date-added incorrectly.
     * Update Database: Fix compact/update-from-tags/write-tags to correctly handle secondary music folders.

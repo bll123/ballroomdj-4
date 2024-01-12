@@ -3069,14 +3069,21 @@ mainSetMusicQueuesChanged (maindata_t *mainData)
 static bool
 mainGetAnnounceFlag (maindata_t *mainData, int mqidx, int playlistIdx)
 {
-  bool  announceflag = false;
+  bool    announceflag = false;
+  int     tval;
 
-  announceflag = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
+  tval = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
+  if (tval >= 0) {
+    announceflag = tval;
+  }
   if (announceflag != 1) {
     playlist_t  *playlist;
 
     playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-    announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+    tval = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+    if (tval >= 0) {
+      announceflag = tval;
+    }
   }
   /* announcements should not be played for the song list editor */
   /* or the music manager */
@@ -3084,7 +3091,7 @@ mainGetAnnounceFlag (maindata_t *mainData, int mqidx, int playlistIdx)
     announceflag = false;
   }
 
-  return announceflag;
+  return (bool) announceflag;
 }
 
 /* routines for testing */
