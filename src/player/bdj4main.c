@@ -2554,7 +2554,7 @@ mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmod
 }
 
 /* sets musicqManageIdx */
-static inline int
+static int
 mainMusicqIndexParse (maindata_t *mainData, const char *p)
 {
   int   mi = -1;

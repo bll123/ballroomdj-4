@@ -1992,28 +1992,28 @@ starterStopAllProcessCallback (void *udata)
   return UICB_CONT;
 }
 
-static inline bool
+static bool
 starterDownloadLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_DOWNLOAD);
   return UICB_STOP;
 }
 
-static inline bool
+static bool
 starterWikiLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_WIKI);
   return UICB_STOP;
 }
 
-static inline bool
+static bool
 starterForumLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_FORUM);
   return UICB_STOP;
 }
 
-static inline bool
+static bool
 starterTicketLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_TICKETS);
