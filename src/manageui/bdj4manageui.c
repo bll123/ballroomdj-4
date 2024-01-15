@@ -1179,7 +1179,9 @@ manageMainLoop (void *tmanage)
 
 
       outfn = uicopytagsGetFilename (manage->uict);
-      tfn = audiosrcRelativePath (outfn);
+      tfn = audiosrcRelativePath (outfn, 0);
+      /* if there is a prefix length, want the full path, */
+      /* and tfn will be correct */
       song = dbGetByName (manage->musicdb, tfn);
       if (song != NULL) {
         dbidx_t     rrn;

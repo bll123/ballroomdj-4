@@ -10,6 +10,9 @@
 
 enum {
   ORG_TAG_BYPASS = TAG_KEY_MAX,
+  ORG_WIN_CHARS = 0x0001,
+  ORG_UNIX_CHARS = 0x0002,
+  ORG_ALL_CHARS = ORG_WIN_CHARS | ORG_UNIX_CHARS,
 };
 
 typedef enum {
@@ -45,5 +48,6 @@ int     orgIterateTagKey (org_t *org, slistidx_t *iteridx);
 int     orgIterateOrgKey (org_t *org, slistidx_t *iteridx);
 int     orgGetTagKey (int orgkey);
 const char *orgGetText (org_t *org, slistidx_t idx);
+void   orgutilClean (char *target, const char *from, size_t sz, int which);
 
 #endif /* INC_ORGUTIL_H */

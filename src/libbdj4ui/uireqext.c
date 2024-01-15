@@ -418,7 +418,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       int             rewrite;
       song_t          *dbsong;
 
-      tfn = audiosrcRelativePath (ffn);
+      tfn = audiosrcRelativePath (ffn, 0);
       dbsong = dbGetByName (uireqext->musicdb, tfn);
       if (dbsong != NULL) {
         tagdata = songTagList (dbsong);

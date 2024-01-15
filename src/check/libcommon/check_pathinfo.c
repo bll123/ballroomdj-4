@@ -55,6 +55,9 @@ static ftest_t tests [] = {
 //   123456789012345678901234567 1234567890123456789012
   { "/home/bll/s/bdj4/test-music/001-argentinetango.mp3", 27, 22, 18, 4 },
   { "/", 1, 1, 1, 0 },
+  /* relative paths */
+  { "Tango/stuff.mp3", 5, 9, 5, 4 },
+  { "xyzzy/Tango/stuff.mp3", 11, 9, 5, 4 },
 };
 enum {
   TCOUNT = (sizeof(tests)/sizeof (ftest_t))
@@ -69,40 +72,24 @@ START_TEST(pathinfo_chk)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
   mdebugSubTag ("pathinfo_chk");
 
-  for (int64_t i = 0; i < TCOUNT; ++i) {
+  for (int i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
-    if (pi->dlen > 0) {
-      ck_assert_msg (pi->dirname != NULL,
-          "dirname: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-          "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
-    }
-    if (pi->flen > 0) {
-      ck_assert_msg (pi->filename != NULL,
-          "filename: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-          "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
-    }
-    if (pi->blen > 0) {
-      ck_assert_msg (pi->basename != NULL,
-          "basename: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-          "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
-    }
-    if (pi->elen > 0) {
-      ck_assert_msg (pi->extension != NULL,
-          "extension: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-          "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
-    }
+    // fprintf (stderr, "%d d: %d %.*s\n", i, (int) pi->dlen, (int) pi->dlen, pi->dirname);
+    // fprintf (stderr, "%d f: %d %.*s\n", i, (int) pi->flen, (int) pi->flen, pi->filename);
+    // fprintf (stderr, "%d f: %d %.*s\n", i, (int) pi->blen, (int) pi->blen, pi->basename);
+    // fprintf (stderr, "%d e: %d %.*s\n", i, (int) pi->elen, (int) pi->elen, pi->extension);
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "dlen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-        "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
+        "dlen: %s: i:%d have: %d want: %d",
+        "dlen", i, (int) pi->dlen, (int) tests[i].dlen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "flen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-        "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
+        "flen: %s: i:%d have: %d want: %d",
+        "flen", i, (int) pi->flen, (int) tests[i].flen);
     ck_assert_msg (pi->blen == tests[i].blen,
-        "blen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-        "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
+        "blen: %s: i:%d have: %d want: %d",
+        "blen", i, (int) pi->blen, (int) tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "elen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
-        "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
+        "elen: %s: i:%d have: %d want: %d",
+        "elen", i, (int) pi->elen, (int) tests[i].elen);
 
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tbuff, sizeof (tbuff));

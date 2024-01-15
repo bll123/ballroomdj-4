@@ -68,6 +68,7 @@ typedef struct org {
   char          cachepath [MAXPATHLEN];
   char          **rxdata;
   int           rxlen;
+  int           chartype;
   bool          havealbumartist : 1;
   bool          haveartist : 1;
   bool          havedance : 1;
@@ -87,7 +88,12 @@ enum {
 };
 
 static void   orgutilInfoFree (void *data);
-static void   orgutilClean (char *target, const char *from, size_t sz);
+
+/*     windows: * : ( ) &     ^ | < > ? ' " */
+/* linux/macos: *       & [ ]   | < > ? ' " */
+static const char *commonChars = { "*&|<>?'\"" };
+static const char *winChars = { ":()^" };
+static const char *unixChars = { "[]" };
 
 org_t *
 orgAlloc (const char *orgpath)
@@ -119,6 +125,11 @@ orgAlloc (const char *orgpath)
   strlcpy (org->regexstr, "", sizeof (org->regexstr));
   *org->cachepath = '\0';
   org->rxdata = NULL;
+  if (isWindows ()) {
+    org->chartype = ORG_WIN_CHARS;
+  } else {
+    org->chartype = ORG_UNIX_CHARS;
+  }
 
   tvalue = mdstrdup (orgpath);
   grpcount = ORG_FIRST_GRP;
@@ -477,7 +488,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
 
       strlcpy (sbuff, datap, sizeof (sbuff));
       if (doclean) {
-        orgutilClean (sbuff, datap, sizeof (sbuff));
+        orgutilClean (sbuff, datap, sizeof (sbuff), org->chartype);
       }
       strlcat (gbuff, sbuff, sizeof (gbuff));
     }
@@ -560,22 +571,11 @@ orgGetText (org_t *org, slistidx_t idx)
 }
 
 
-/* internal routines */
-
-static void
-orgutilInfoFree (void *data)
-{
-  orginfo_t   *orginfo = data;
-
-  if (orginfo != NULL) {
-    mdfree (orginfo);
-  }
-}
-
 /* this must be locale aware, otherwise the characters that are */
 /* being cleaned might appear within a multi-byte sequence */
-static void
-orgutilClean (char *target, const char *from, size_t sz)
+/* note that directories are not handled.  Only a filename is assumed. */
+void
+orgutilClean (char *target, const char *from, size_t sz, int chartype)
 {
   size_t      bytelen;
   size_t      slen;
@@ -625,27 +625,32 @@ orgutilClean (char *target, const char *from, size_t sz)
       /*     windows: * : ( ) &     ^ | < > ? ' " */
       /* linux/macos: *       & [ ]   | < > ? ' " */
 
-      /* these characters just cause issues with filename handling */
+      /* these characters cause issues with filename handling */
       /* using scripts */
-      if (! skip &&
-          (*tstr == '|' || *tstr == '<' || *tstr == '>' || *tstr == '?')) {
-        skip = true;
-      }
-      /* more issues with filename handling */
-      if (! skip &&
-          (*tstr == '*' || *tstr == '\'' || *tstr == '"' || *tstr == '&')) {
-        skip = true;
+      if (! skip) {
+        for (size_t i = 0; i < strlen (commonChars); ++i) {
+          if (*tstr == commonChars [i]) {
+            skip = true;
+            break;
+          }
+        }
       }
       /* windows special characters */
-      if (! skip && isWindows ()) {
-        if (*tstr == ':' || *tstr == '(' || *tstr == ')' || *tstr == '^') {
-          skip = true;
+      if (! skip && (chartype & ORG_WIN_CHARS) == ORG_WIN_CHARS) {
+        for (size_t i = 0; i < strlen (winChars); ++i) {
+          if (*tstr == winChars [i]) {
+            skip = true;
+            break;
+          }
         }
       }
       /* linux/macos special characters */
-      if (! skip && ! isWindows ()) {
-        if (*tstr == '[' || *tstr == ']') {
-          skip = true;
+      if (! skip && (chartype & ORG_UNIX_CHARS) == ORG_UNIX_CHARS) {
+        for (size_t i = 0; i < strlen (unixChars); ++i) {
+          if (*tstr == unixChars [i]) {
+            skip = true;
+            break;
+          }
         }
       }
 
@@ -675,3 +680,16 @@ orgutilClean (char *target, const char *from, size_t sz)
 
   *tgtp = '\0';
 }
+
+/* internal routines */
+
+static void
+orgutilInfoFree (void *data)
+{
+  orginfo_t   *orginfo = data;
+
+  if (orginfo != NULL) {
+    mdfree (orginfo);
+  }
+}
+

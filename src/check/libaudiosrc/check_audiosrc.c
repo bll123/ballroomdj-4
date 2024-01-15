@@ -167,7 +167,7 @@ START_TEST(audiosrc_relpath)
   mdebugSubTag ("audiosrc_relpath");
 
   for (int i = 0; i < tvaluesz; ++i) {
-    res = audiosrcRelativePath (tvalues [i].result);
+    res = audiosrcRelativePath (tvalues [i].result, 0);
     ck_assert_str_eq (res, tvalues [i].test);
   }
 }

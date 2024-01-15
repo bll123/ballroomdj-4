@@ -119,7 +119,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       continue;
     }
 
-    p = audiosrcRelativePath (tbuff);
+    p = audiosrcRelativePath (tbuff, 0);
 
     song = dbGetByName (musicdb, p);
     if (song != NULL) {

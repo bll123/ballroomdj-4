@@ -372,7 +372,7 @@ START_TEST(orgutil_makepath)
 
           /* no : ( ) in windows paths */
           /* no trailing . for windows dirs */
-          if (*res != ':' && *res != '(' && *res != ')') {
+          if (*res != ':' && *res != '(' && *res != ')' && *res != '^') {
             ok = true;
             if (*res == '.' && *(res + 1) == '/') {
               ok = false;

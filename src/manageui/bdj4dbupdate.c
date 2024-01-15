@@ -538,7 +538,7 @@ dbupdateProcessing (void *udata)
       tsongfn = fn;
       strlcpy (ffn, fn, sizeof (ffn));
       if (dbupdate->iterfromaudiosrc) {
-        tsongfn = audiosrcRelativePath (fn);
+        tsongfn = audiosrcRelativePath (fn, 0);
       }
       if (dbupdate->iterfromdb) {
         audiosrcFullPath (fn, ffn, sizeof (ffn), 0, NULL);

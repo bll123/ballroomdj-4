@@ -570,7 +570,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           nstr = g_uri_unescape_string (val, NULL);
           mdextalloc (nstr);
 
-          val = audiosrcRelativePath (nstr);
+          val = audiosrcRelativePath (nstr, 0);
           nlistSetStr (entry, tagidx, val);
           logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, val);
           mdfree (nstr);    // allocated by glib

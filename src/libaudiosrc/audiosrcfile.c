@@ -193,16 +193,25 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
 }
 
 const char *
-audiosrcfileRelativePath (const char *nm)
+audiosrcfileRelativePath (const char *sfname, int pfxlen)
 {
   const char  *musicdir;
   size_t      musicdirlen;
-  const char  *p = nm;
+  const char  *p = sfname;
 
-  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  musicdirlen = strlen (musicdir);
-  if (strncmp (nm, musicdir, musicdirlen) == 0) {
-    p += musicdirlen + 1;
+  if (fileopIsAbsolutePath (sfname)) {
+    if (pfxlen < 0) {
+      pfxlen = 0;
+    }
+    if (pfxlen > 0) {
+      p += pfxlen;
+    } else {
+      musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+      musicdirlen = strlen (musicdir);
+      if (strncmp (sfname, musicdir, musicdirlen) == 0) {
+        p += musicdirlen + 1;
+      }
+    }
   }
 
   return p;

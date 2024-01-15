@@ -158,15 +158,15 @@ audiosrcFullPath (const char *sfname, char *fullpath, size_t sz,
 }
 
 const char *
-audiosrcRelativePath (const char *nm)
+audiosrcRelativePath (const char *sfname, int pfxlen)
 {
   int         type = AUDIOSRC_TYPE_FILE;
-  const char  *p = nm;
+  const char  *p = sfname;
 
-  type = audiosrcGetType (nm);
+  type = audiosrcGetType (sfname);
 
   if (type == AUDIOSRC_TYPE_FILE) {
-    p = audiosrcfileRelativePath (nm);
+    p = audiosrcfileRelativePath (sfname, pfxlen);
   }
 
   return p;
