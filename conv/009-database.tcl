@@ -114,7 +114,7 @@ puts $fh "#RACOUNT=$c"
 set newrrn 1
 dict for {fn data} $musicdbList {
   seek $fh [expr {($newrrn - 1) * $rsize + $hsize}]
-  puts $fh "FILE\n..$fn"
+  puts $fh "URI\n..$fn"
 
   set haveoldvoladj false
   set oldvoladj 0

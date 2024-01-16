@@ -49,6 +49,9 @@ foreach {fn} $flist {
   foreach {key data} $sllist {
     puts $fh "KEY\n..$key"
     foreach {k v} $data {
+      if { $k eq "FILE" } {
+        set k URI
+      }
       if { $k eq "DANCE" } {
         regsub {\s\([^)]*\)$} $v {} v
       }
