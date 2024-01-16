@@ -14,7 +14,9 @@ INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 
 count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
 # 2023-12-4 fedora testing failed due to weird volume issue
-if [[ $count -ne 7 ]]; then
+# 2024-1-15 fedora dropped
+# 2024-1-15 manjaro linux (arch) dropped (icu updated)
+if [[ $count -ne 6 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi

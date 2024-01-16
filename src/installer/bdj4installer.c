@@ -529,12 +529,12 @@ main (int argc, char *argv[])
     uiSetUICSS (uifont, INST_HL_COLOR, NULL);
   }
 
-  installerCheckPackages (&installer);
-
   if (installer.guienabled) {
     installerBuildUI (&installer);
     osuiFinalize ();
   }
+
+  installerCheckPackages (&installer);
 
   uiEntrySetValue (installer.targetEntry, installer.target);
   installerSetBDJ3LocEntry (&installer, installer.bdj3loc);
@@ -1194,6 +1194,8 @@ installerSetConversionFlags (installer_t *installer)
     installerSetConvertStatus (installer, UI_TOGGLE_BUTTON_OFF);
     installer->convprocess = false;
   }
+
+  installerConversionFeedbackMsg (installer);
 }
 
 static int

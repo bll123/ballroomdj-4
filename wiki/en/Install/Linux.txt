@@ -69,9 +69,10 @@ Download the Linux installer from sourceforge.
 Choose the appropriate installer.
 <br>The Debian 11 installer is built on MX Linux 21.
 <br>The Debian 12 installer is built on MX Linux 23.
-<br>The Fedora installer is built on Fedora 38.
-<br>The Arch installer is built on Manjaro 23.
 <br>The OpenSUSE installer is built on OpenSUSE 15.5.
+
+For Arch-based distributions, BDJ4 will need to be built manually.  I
+cannot create software packages for moving targets.
 
 If you have a Linux system where BDJ4 fails to work, or want supported
 please [let me know](Getting%20Help).

@@ -33,10 +33,14 @@ typedef struct songlist {
 } songlist_t;
 
 /* must be sorted in ascii order */
-static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
+static datafilekey_t songlistdfkeys [] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, DF_NORM },
-  { "FILE",     SONGLIST_URI,      VALUE_STR, NULL, DF_NORM },
+  { "FILE",     SONGLIST_URI,       VALUE_STR, NULL, DF_NO_WRITE },
   { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, DF_NORM },
+  { "URI",      SONGLIST_URI,       VALUE_STR, NULL, DF_NORM },
+};
+enum {
+  SONGLIST_KEY_COUNT = (sizeof (songlistdfkeys) / sizeof (datafilekey_t))
 };
 
 static songlist_t * songlistAlloc (const char *fname);
@@ -50,7 +54,7 @@ songlistCreate (const char *fname)
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   sl->df = datafileAlloc ("songlist", DFTYPE_INDIRECT, sl->path,
-      songlistdfkeys, SONGLIST_KEY_MAX);
+      songlistdfkeys, SONGLIST_KEY_COUNT);
   return sl;
 }
 
@@ -67,7 +71,7 @@ songlistLoad (const char *fname)
     return NULL;
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, sl->path,
-      songlistdfkeys, SONGLIST_KEY_MAX, DF_NO_OFFSET, NULL);
+      songlistdfkeys, SONGLIST_KEY_COUNT, DF_NO_OFFSET, NULL);
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
   return sl;

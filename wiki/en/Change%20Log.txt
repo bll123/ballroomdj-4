@@ -4,32 +4,37 @@
 
 <!--
 
-**4.4.8 2023-12---**
+**4.4.8 2024-1---**
+
+-->
+
+**4.4.8 2024-1---**
 
 * Bug Fixes:
     * Audio ID: Fixed a bug processing ACRCloud responses.
     * Audio Tags: Fixed incorrect tag processing for flac, ogg, opus.
+    * BDJ3 Conversion: Fixed (broken in 4.4.3).
     * Edit Dances: Fix bug causing entry fields to get copied to other dances.
     * Fixed right-to-left language layout.
     * Fixes for automatic, standard, queuedance pre-installed playlists.
-    * Installer: Fix installation of acrcloud fingerprinter.
+    * Installer: Fix incorrect display of status messages.
+    * Installer: Fix installation of ACRCloud fingerprinter.
     * MacOS: Fix build when other versions of libraries are installed.
     * Management: Do not play announcements in the management ui.
     * Player: Announcements: Fixed a bug that caused announcements to play.
-    * Player: Requests: Fixed an issue where the request would not be inserted into the music queue.
+    * Player: Requests: Fixed requests not being inserted into the music queue.
     * Update Database: Fix bugs that set date-added incorrectly.
-    * Update Database: Fix compact/update-from-tags/write-tags to correctly handle secondary music folders.
+    * Update Database: Fix to correctly handle secondary music folders.
     * User Interface: Fix bug when validating entry fields.
     * Version Updater: Fix various bugs.
 * Changes:
     * Configuration: Remove BallroomDJ 3 compatibility setting.
     * Installer: Remove music folder selection.
 * New Features:
-    * PENDING Re-Organize.
+    * Update Database: Re-Organize.
+    * Auto-Organization.
 * Internal:
     * Code cleanup.
-
--->
 
 **4.4.7 2023-12-13**
 

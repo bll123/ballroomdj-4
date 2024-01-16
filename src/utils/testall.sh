@@ -77,6 +77,22 @@ if [[ $TBUILD == T ]]; then
 fi
 
 if [[ $TCHECK == T ]]; then
+  case $pn_tag in
+    linux|macos)
+      cdir=${XDG_CACHE_HOME:-$HOME/.cache}
+      cachedir="${cdir}/BDJ4"
+      ;;
+    win64)
+      cachedir="${TEMP}/BDJ4"
+      ;;
+  esac
+  tfn="$cachedir/volreg.txt"
+  if [[ -f $tfn ]]; then
+    rm -f $tfn
+  fi
+fi
+
+if [[ $TCHECK == T ]]; then
   echo "-- check" >> $LOG
   echo "-- $(date +%T) make test setup"
   ./src/utils/mktestsetup.sh --force >> $LOG 2>&1

@@ -214,7 +214,8 @@ plocal/lib/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib/libmp4tag\.so\.1\.2\.1[01]$
 
 # 2023-11-13 bdj4winmksc is only used by windows
-bin/bdj4winmksc
+bin/bdj4winmksc$
+bin/libplimpv\.so$
 
 ####
 # windows

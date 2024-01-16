@@ -48,6 +48,7 @@ target_link_libraries (libbdj4common PRIVATE
   objstring     # bdjstring.c strlcat.c strlcpy.c mdebug.c
   objtmutil     # tmutil.c
   ${GLIB_LDFLAGS}
+  m             # needed for Fedora gcc 13
 )
 addIOKitFramework (libbdj4common)
 addIntlLibrary (libbdj4common)
