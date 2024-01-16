@@ -7,7 +7,7 @@ count
 ..4
 KEY
 ..0
-FILE
+URI
 ..006-tango.mp3
 TITLE
 ..006-tango
@@ -15,7 +15,7 @@ DANCE
 ..Tango
 KEY
 ..1
-FILE
+URI
 ..006-viennesewaltz.mp3
 TITLE
 ..006-viennesewaltz
@@ -23,7 +23,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..2
-FILE
+URI
 ..006-waltz.mp3
 TITLE
 ..006-waltz
@@ -31,7 +31,7 @@ DANCE
 ..Waltz
 KEY
 ..3
-FILE
+URI
 ..006-westcoastswing.mp3
 TITLE
 ..006-westcoastswing

@@ -7,7 +7,7 @@ count
 ..4
 KEY
 ..0
-FILE
+URI
 ..004-salsa.mp3
 TITLE
 ..004-salsa
@@ -15,7 +15,7 @@ DANCE
 ..Salsa
 KEY
 ..1
-FILE
+URI
 ..004-samba.mp3
 TITLE
 ..004-samba
@@ -23,7 +23,7 @@ DANCE
 ..Samba
 KEY
 ..2
-FILE
+URI
 ..004-tango.mp3
 TITLE
 ..004-tango
@@ -31,7 +31,7 @@ DANCE
 ..Tango
 KEY
 ..3
-FILE
+URI
 ..004-viennesewaltz.mp3
 TITLE
 ..004-viennesewaltz

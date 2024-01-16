@@ -7,7 +7,7 @@ count
 ..4
 KEY
 ..0
-FILE
+URI
 ..005-foxtrot.mp3
 TITLE
 ..005-foxtrot
@@ -15,7 +15,7 @@ DANCE
 ..Foxtrot
 KEY
 ..1
-FILE
+URI
 ..005-jive.mp3
 TITLE
 ..005-jive
@@ -23,7 +23,7 @@ DANCE
 ..Jive
 KEY
 ..2
-FILE
+URI
 ..005-quickstep.mp3
 TITLE
 ..005-quickstep
@@ -31,7 +31,7 @@ DANCE
 ..Quickstep
 KEY
 ..3
-FILE
+URI
 ..005-rumba.mp3
 TITLE
 ..005-rumba

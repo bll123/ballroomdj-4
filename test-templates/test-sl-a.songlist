@@ -7,7 +7,7 @@ count
 ..72
 KEY
 ..0
-FILE
+URI
 ..001-argentinetango.mp3
 TITLE
 ..001-argentinetango
@@ -15,7 +15,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..1
-FILE
+URI
 ..001-chacha.mp3
 TITLE
 ..001-chacha
@@ -23,7 +23,7 @@ DANCE
 ..Cha Cha
 KEY
 ..2
-FILE
+URI
 ..001-foxtrot.mp3
 TITLE
 ..001-foxtrot
@@ -31,7 +31,7 @@ DANCE
 ..Foxtrot
 KEY
 ..3
-FILE
+URI
 ..001-jive.mp3
 TITLE
 ..001-jive
@@ -39,7 +39,7 @@ DANCE
 ..Jive
 KEY
 ..4
-FILE
+URI
 ..001-quickstep.mp3
 TITLE
 ..001-quickstep
@@ -47,7 +47,7 @@ DANCE
 ..Quickstep
 KEY
 ..5
-FILE
+URI
 ..001-rumba.mp3
 TITLE
 ..001-rumba
@@ -55,7 +55,7 @@ DANCE
 ..Rumba
 KEY
 ..6
-FILE
+URI
 ..001-salsa.mp3
 TITLE
 ..001-salsa
@@ -63,7 +63,7 @@ DANCE
 ..Salsa
 KEY
 ..7
-FILE
+URI
 ..001-samba.mp3
 TITLE
 ..001-samba
@@ -71,7 +71,7 @@ DANCE
 ..Samba
 KEY
 ..8
-FILE
+URI
 ..001-tango.mp3
 TITLE
 ..001-tango
@@ -79,7 +79,7 @@ DANCE
 ..Tango
 KEY
 ..9
-FILE
+URI
 ..001-viennesewaltz.mp3
 TITLE
 ..001-viennesewaltz
@@ -87,7 +87,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..10
-FILE
+URI
 ..001-waltz.mp3
 TITLE
 ..001-waltz
@@ -95,7 +95,7 @@ DANCE
 ..Waltz
 KEY
 ..11
-FILE
+URI
 ..001-westcoastswing.mp3
 TITLE
 ..001-westcoastswing
@@ -103,7 +103,7 @@ DANCE
 ..West Coast Swing
 KEY
 ..12
-FILE
+URI
 ..002-argentinetango.mp3
 TITLE
 ..002-argentinetango
@@ -111,7 +111,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..13
-FILE
+URI
 ..002-chacha.mp3
 TITLE
 ..002-chacha
@@ -119,7 +119,7 @@ DANCE
 ..Cha Cha
 KEY
 ..14
-FILE
+URI
 ..002-foxtrot.mp3
 TITLE
 ..002-foxtrot
@@ -127,7 +127,7 @@ DANCE
 ..Foxtrot
 KEY
 ..15
-FILE
+URI
 ..002-jive.mp3
 TITLE
 ..002-jive
@@ -135,7 +135,7 @@ DANCE
 ..Jive
 KEY
 ..16
-FILE
+URI
 ..002-quickstep.mp3
 TITLE
 ..002-quickstep
@@ -143,7 +143,7 @@ DANCE
 ..Quickstep
 KEY
 ..17
-FILE
+URI
 ..002-rumba.mp3
 TITLE
 ..002-rumba
@@ -151,7 +151,7 @@ DANCE
 ..Rumba
 KEY
 ..18
-FILE
+URI
 ..002-salsa.mp3
 TITLE
 ..002-salsa
@@ -159,7 +159,7 @@ DANCE
 ..Salsa
 KEY
 ..19
-FILE
+URI
 ..002-samba.mp3
 TITLE
 ..002-samba
@@ -167,7 +167,7 @@ DANCE
 ..Samba
 KEY
 ..20
-FILE
+URI
 ..002-tango.mp3
 TITLE
 ..002-tango
@@ -175,7 +175,7 @@ DANCE
 ..Tango
 KEY
 ..21
-FILE
+URI
 ..002-viennesewaltz.mp3
 TITLE
 ..002-viennesewaltz
@@ -183,7 +183,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..22
-FILE
+URI
 ..002-waltz.mp3
 TITLE
 ..002-waltz
@@ -191,7 +191,7 @@ DANCE
 ..Waltz
 KEY
 ..23
-FILE
+URI
 ..002-westcoastswing.mp3
 TITLE
 ..002-westcoastswing
@@ -199,7 +199,7 @@ DANCE
 ..West Coast Swing
 KEY
 ..24
-FILE
+URI
 ..003-argentinetango.mp3
 TITLE
 ..003-argentinetango
@@ -207,7 +207,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..25
-FILE
+URI
 ..003-chacha.mp3
 TITLE
 ..003-chacha
@@ -215,7 +215,7 @@ DANCE
 ..Cha Cha
 KEY
 ..26
-FILE
+URI
 ..003-foxtrot.mp3
 TITLE
 ..003-foxtrot
@@ -223,7 +223,7 @@ DANCE
 ..Foxtrot
 KEY
 ..27
-FILE
+URI
 ..003-jive.mp3
 TITLE
 ..003-jive
@@ -231,7 +231,7 @@ DANCE
 ..Jive
 KEY
 ..28
-FILE
+URI
 ..003-quickstep.mp3
 TITLE
 ..003-quickstep
@@ -239,7 +239,7 @@ DANCE
 ..Quickstep
 KEY
 ..29
-FILE
+URI
 ..003-rumba.mp3
 TITLE
 ..003-rumba
@@ -247,7 +247,7 @@ DANCE
 ..Rumba
 KEY
 ..30
-FILE
+URI
 ..003-salsa.mp3
 TITLE
 ..003-salsa
@@ -255,7 +255,7 @@ DANCE
 ..Salsa
 KEY
 ..31
-FILE
+URI
 ..003-samba.mp3
 TITLE
 ..003-samba
@@ -263,7 +263,7 @@ DANCE
 ..Samba
 KEY
 ..32
-FILE
+URI
 ..003-tango.mp3
 TITLE
 ..003-tango
@@ -271,7 +271,7 @@ DANCE
 ..Tango
 KEY
 ..33
-FILE
+URI
 ..003-viennesewaltz.mp3
 TITLE
 ..003-viennesewaltz
@@ -279,7 +279,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..34
-FILE
+URI
 ..003-waltz.mp3
 TITLE
 ..003-waltz
@@ -287,7 +287,7 @@ DANCE
 ..Waltz
 KEY
 ..35
-FILE
+URI
 ..003-westcoastswing.mp3
 TITLE
 ..003-westcoastswing
@@ -295,7 +295,7 @@ DANCE
 ..West Coast Swing
 KEY
 ..36
-FILE
+URI
 ..004-argentinetango.mp3
 TITLE
 ..004-argentinetango
@@ -303,7 +303,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..37
-FILE
+URI
 ..004-chacha.mp3
 TITLE
 ..004-chacha
@@ -311,7 +311,7 @@ DANCE
 ..Cha Cha
 KEY
 ..38
-FILE
+URI
 ..004-foxtrot.mp3
 TITLE
 ..004-foxtrot
@@ -319,7 +319,7 @@ DANCE
 ..Foxtrot
 KEY
 ..39
-FILE
+URI
 ..004-jive.mp3
 TITLE
 ..004-jive
@@ -327,7 +327,7 @@ DANCE
 ..Jive
 KEY
 ..40
-FILE
+URI
 ..004-quickstep.mp3
 TITLE
 ..004-quickstep
@@ -335,7 +335,7 @@ DANCE
 ..Quickstep
 KEY
 ..41
-FILE
+URI
 ..004-rumba.mp3
 TITLE
 ..004-rumba
@@ -343,7 +343,7 @@ DANCE
 ..Rumba
 KEY
 ..42
-FILE
+URI
 ..004-salsa.mp3
 TITLE
 ..004-salsa
@@ -351,7 +351,7 @@ DANCE
 ..Salsa
 KEY
 ..43
-FILE
+URI
 ..004-samba.mp3
 TITLE
 ..004-samba
@@ -359,7 +359,7 @@ DANCE
 ..Samba
 KEY
 ..44
-FILE
+URI
 ..004-tango.mp3
 TITLE
 ..004-tango
@@ -367,7 +367,7 @@ DANCE
 ..Tango
 KEY
 ..45
-FILE
+URI
 ..004-viennesewaltz.mp3
 TITLE
 ..004-viennesewaltz
@@ -375,7 +375,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..46
-FILE
+URI
 ..004-waltz.mp3
 TITLE
 ..004-waltz
@@ -383,7 +383,7 @@ DANCE
 ..Waltz
 KEY
 ..47
-FILE
+URI
 ..004-westcoastswing.mp3
 TITLE
 ..004-westcoastswing
@@ -391,7 +391,7 @@ DANCE
 ..West Coast Swing
 KEY
 ..48
-FILE
+URI
 ..005-argentinetango.mp3
 TITLE
 ..005-argentinetango
@@ -399,7 +399,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..49
-FILE
+URI
 ..005-chacha.mp3
 TITLE
 ..005-chacha
@@ -407,7 +407,7 @@ DANCE
 ..Cha Cha
 KEY
 ..50
-FILE
+URI
 ..005-foxtrot.mp3
 TITLE
 ..005-foxtrot
@@ -415,7 +415,7 @@ DANCE
 ..Foxtrot
 KEY
 ..51
-FILE
+URI
 ..005-jive.mp3
 TITLE
 ..005-jive
@@ -423,7 +423,7 @@ DANCE
 ..Jive
 KEY
 ..52
-FILE
+URI
 ..005-quickstep.mp3
 TITLE
 ..005-quickstep
@@ -431,7 +431,7 @@ DANCE
 ..Quickstep
 KEY
 ..53
-FILE
+URI
 ..005-rumba.mp3
 TITLE
 ..005-rumba
@@ -439,7 +439,7 @@ DANCE
 ..Rumba
 KEY
 ..54
-FILE
+URI
 ..005-salsa.mp3
 TITLE
 ..005-salsa
@@ -447,7 +447,7 @@ DANCE
 ..Salsa
 KEY
 ..55
-FILE
+URI
 ..005-samba.mp3
 TITLE
 ..005-samba
@@ -455,7 +455,7 @@ DANCE
 ..Samba
 KEY
 ..56
-FILE
+URI
 ..005-tango.mp3
 TITLE
 ..005-tango
@@ -463,7 +463,7 @@ DANCE
 ..Tango
 KEY
 ..57
-FILE
+URI
 ..005-viennesewaltz.mp3
 TITLE
 ..005-viennesewaltz
@@ -471,7 +471,7 @@ DANCE
 ..Viennese Waltz
 KEY
 ..58
-FILE
+URI
 ..005-waltz.mp3
 TITLE
 ..005-waltz
@@ -479,7 +479,7 @@ DANCE
 ..Waltz
 KEY
 ..59
-FILE
+URI
 ..005-westcoastswing.mp3
 TITLE
 ..005-westcoastswing
@@ -487,7 +487,7 @@ DANCE
 ..West Coast Swing
 KEY
 ..60
-FILE
+URI
 ..006-argentinetango.mp3
 TITLE
 ..006-argentinetango
@@ -495,7 +495,7 @@ DANCE
 ..Argentine Tango
 KEY
 ..61
-FILE
+URI
 ..006-chacha.mp3
 TITLE
 ..006-chacha
@@ -503,7 +503,7 @@ DANCE
 ..Cha Cha
 KEY
 ..62
-FILE
+URI
 ..006-foxtrot.mp3
 TITLE
 ..006-foxtrot
@@ -511,7 +511,7 @@ DANCE
 ..Foxtrot
 KEY
 ..63
-FILE
+URI
 ..006-jive.mp3
 TITLE
 ..006-jive
@@ -519,7 +519,7 @@ DANCE
 ..Jive
 KEY
 ..64
-FILE
+URI
 ..006-quickstep.mp3
 TITLE
 ..006-quickstep
@@ -527,7 +527,7 @@ DANCE
 ..Quickstep
 KEY
 ..65
-FILE
+URI
 ..006-rumba.mp3
 TITLE
 ..006-rumba
@@ -535,7 +535,7 @@ DANCE
 ..Rumba
 KEY
 ..66
-FILE
+URI
 ..006-salsa.mp3
 TITLE
 ..006-salsa
@@ -543,7 +543,7 @@ DANCE
 ..Salsa
 KEY
 ..67
-FILE
+URI
 ..006-samba.mp3
 TITLE
 ..006-samba
@@ -551,7 +551,7 @@ DANCE
 ..Samba
 KEY
 ..68
-FILE
+URI
 ..006-tango.mp3
 TITLE
 ..006-tango
@@ -559,7 +559,7 @@ DANCE
 ..Tango
 KEY
 ..69
-FILE
+URI
 ..016-こんにちは-ja.mp3
 TITLE
 ..016-こんにちは-ja
@@ -567,7 +567,7 @@ DANCE
 ..Waltz
 KEY
 ..70
-FILE
+URI
 ..019-こんにちは-ja.flac
 TITLE
 ..019-こんにちは-ja
@@ -575,7 +575,7 @@ DANCE
 ..Waltz
 KEY
 ..71
-FILE
+URI
 ..017-こんにちは-ja.ogg
 TITLE
 ..017-こんにちは-ja
