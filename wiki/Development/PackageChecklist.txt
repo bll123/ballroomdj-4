@@ -41,11 +41,11 @@ source package and copy it to the primary development machine.
     * if there were any library changes build the
 source package and copy it to the primary development machine.
 * on linux
-    * hg: check in
-    * hg: create a tag for the release
     * ../web/push.sh
     * update the wiki: ../web/wikiput.sh putall
     * update the website (version info): ../web/install.sh
+    * hg: check in
+    * hg: create a tag for the release
     * ./utils/postrel.sh
 * final
     * update sourceforge, mark the packages
@@ -58,4 +58,4 @@ source package and copy it to the primary development machine.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-12-13 14:16:58; BDJ4 version 4.4.7)_
+<br>_(Updated 2024-01-16 10:12:16; BDJ4 version 4.4.8)_
