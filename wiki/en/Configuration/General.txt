@@ -36,18 +36,14 @@ specific tags will be updated in the audio file when a song is edited.
 When set to __All Tags__, all audio file tags including BDJ specific
 tags will be updated in the audio file when a song is edited.
 
-__BallroomDJ 3 Compatible Audio File Tags__: If enabled, (and write
-audio file tags is on), the audio file tags will be kept compatible
-with BallroomDJ 3.
-
 The __ACRCloud API__ information is optional and is only used for the
 audio identification process within BDJ4.  If you use the audio
 identification process and have registered an ACRCloud account, copy and
 paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-G.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-H.png)
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_

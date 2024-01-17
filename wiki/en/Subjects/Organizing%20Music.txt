@@ -1,0 +1,55 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_The audio files on your computer may be
+renamed either manually or automatically to suit your needs._</span>
+
+[TOC]
+
+### Organizing Music
+
+The audio files on your computer may be renamed to match the
+organization that you want.
+
+###### Configuration the Organization Path
+
+In [Configure&nbsp;/&nbsp;Organization](en-Configuration-Organization),
+the organization path may be set to match your setup.
+
+Note that there is only a small set of organization paths that ship
+with BallroomDJ&nbsp;4 by default, but many more can be configured.
+
+If the organization path you want is not listed in the drop-down
+selection, the data/orgopt.txt file can be modified to include the
+organization path that you want.  This must be done manually using a
+text editor. [Contact the BDJ4 development team](Getting%20Help) for
+help.
+
+###### Manually Renaming the Audio Files
+
+Once the organization path has been set to your satisfaction, open the
+management screen and select __Update Database__.  Select
+_Reorganize_ in the __Action__ selection.  Select the __Start__
+button.
+
+After the reorganization is complete, exit BDJ4 and restart BDJ4 to
+ensure the database is reloaded.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![org-music-reorg](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/org-music-reorg-A.png)
+<br><span style="color:#4559bf;">__Manage / Update Database / Reorganize__</span> </div>
+
+###### Automatic Organization
+
+In [Configuration&nbsp;/&nbsp;Organization](en-Configuration-Organization),
+If the _Auto Organize_ switch is on, your audio files will
+automatically be renamed when using
+_Update&nbsp;Database&nbsp;/&nbsp;Check&nbsp;for&nbsp;New_ and when
+changing the song data in the
+[Song&nbsp;Editor](en-Management-Song%20Editor).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-E.png)
+<br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_

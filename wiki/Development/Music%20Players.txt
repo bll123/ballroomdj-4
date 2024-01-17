@@ -7,12 +7,22 @@
 * Not likely to go away.
 * VLC will use the volume sink set by the application.
 
+###### MPRIS
+
+* Linux only
+* This interface has been started, but is unfinished.
+* This interface required that the dynamic library description
+be changed to return multiple items (done).
+* The chosen player interface will not always be available.  Starting
+the player after starting BDJ4 may be problematic.
+* Also should fallback to VLC if the chosen player is not available.
+
 ###### MPV
 
 * Support for speed changes.
 * The library interfaces requires that LC_NUMERIC be set to "C".
 <br>Incompetent programmers.  This required saving the current
-LC_NUMERIC and restoring it afterwards within the MPV interface.
+LC_NUMERIC setting and restoring it afterwards within the MPV interface.
 * The MPV library is linked with graphics libraries.
 <br>More incompetent programmers.
 * MPV will NOT use the volume sink set by the application.  The volume
@@ -21,4 +31,4 @@ sink must be set via the MPV API, and the MPV internal name must be used.
 right.  MPV is low priority.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-14 12:29:19; BDJ4 version 4.4.7)_
+<br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_

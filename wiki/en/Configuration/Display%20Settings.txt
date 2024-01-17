@@ -14,7 +14,8 @@ The following displays can be configured: Music&nbsp;Queue, History,
 Requests, Song&nbsp;List, Song&nbsp;Selection,
 Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List,
 Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection, Music&nbsp;Manager,
-Song&nbsp;Editor (three columns).
+Song&nbsp;Editor (three columns), Audio&nbsp;ID&nbsp;Match&nbsp;List,
+Audio&nbsp;ID.
 
 Use the spinbox at the top of the screen to select which display to
 configure.  Select a column and use the left and right arrows
@@ -30,4 +31,4 @@ to change the order in which the columns are displayed.
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_
