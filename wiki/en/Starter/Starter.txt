@@ -1,0 +1,98 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Starter
+
+The starter program is used to start the player, management and
+configuration.  It also has support information, can send support
+messages and can start the alternate installer.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-A.png)
+<br><span style="color:#4559bf;">__Starter__</span> </div>
+
+__Profile__: Select the profile to use.  Once a button is selected,
+the profile can no longer be changed.  Select _Create&nbsp;Profile_ then
+_Configure_ to create a new profile.
+<br>See: [Subjects&nbsp;/&nbsp;Profiles](en-Subjects-Profiles)
+
+__Player__: Starts the BDJ4 Player.
+
+__Manage__: Starts BDJ4 management.  Use to update the database,
+manage song lists, playlists, music, and access the song editor and
+audio identification.
+
+__Configure__: Starts BDJ4 configuration.
+
+__Support__: Opens the support display window (see below).
+
+__Exit__: Closes all BDJ4 windows and exits the application.
+
+##### Starter Actions Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![starter-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-menu-A.png)
+<br><span style="color:#4559bf;">__Starter / Actions Menu__</span> </div>
+
+The _Actions_ menu has the following selections:
+
+__Stop All BDJ4 Processes__: This selection is used in case there is a
+problem with BDJ4 (a lock-up, a program that won't exit), and you need
+to stop BDJ4 completely.  __Stop&nbsp;All&nbsp;BDJ4&nbsp;Processes__,
+is complete after the menu is no longer displayed on the screen.
+
+__Delete Profile__: Select a profile to delete, then select
+__Delete&nbsp;Profile__ to delete it.  The first profile cannot be
+deleted.
+<br>See: [Subjects&nbsp;/&nbsp;Profiles](en-Subjects-Profiles)
+
+__Create Shortcut for Profile__: Select a profile, then choose this
+menu selection to create a shortcut for the profile (Linux and Windows
+only).
+
+__Set Up Alternate Folder__: Starts the alternate installer.
+Alternate installations are used to create another installation with
+a separate database.  (Linux and Windows only).
+
+##### Support
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-B.png)
+<br><span style="color:#4559bf;">__Starter__ / Support</span> </div>
+
+The support window lists the current installed version of BDJ4 and the
+latest version that is available.
+
+The links to download BDJ4, the wiki, the forums and support tickets
+can be selected and will open in your browser.
+
+The __Send&nbsp;Support&nbsp;Message__ button will open a new window
+where a support message can be sent (see below).
+
+##### Support Messages
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![starter-support-msg](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-msg-A.png)
+<br><span style="color:#4559bf;">__Starter / Support / Support Message__</span> </div>
+
+__E-Mail Address__: Enter your e-mail address so that you can receive
+a reply to your support message.
+
+__Subject__: Enter the subject of the message.
+
+__Message__: Enter a message describing your issue.
+
+__Attach Data Files__: When selected, your data files will be uploaded
+along with the support request.  The data files are very useful for
+finding problems.  If you have a problem with BDJ4, start BDJ4,
+re-create the problem, then send the support message with this
+checkbox selected.
+
+__Attach Database__: When selected, a copy of your music database (not
+the audio files) is uploaded along with the support request.  The
+database is very useful when finding problems associated with the
+audio files.
+
+[Wiki Home](Home)
+<br>_(Updated 2024-01-18 07:55:41; BDJ4 version 4.4.8)_
