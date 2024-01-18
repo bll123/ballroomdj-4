@@ -39,8 +39,8 @@ The _Actions_ menu has the following selections:
 
 __Stop All BDJ4 Processes__: This selection is used in case there is a
 problem with BDJ4 (a lock-up, a program that won't exit), and you need
-to stop BDJ4 completely.  __Stop&nbsp;All&nbsp;BDJ4&nbsp;Processes__,
-is complete after the menu is no longer displayed on the screen.
+to stop BDJ4 completely.  After selecting this item, wait until the
+menu is no longer displayed on the screen.
 
 __Delete Profile__: Select a profile to delete, then select
 __Delete&nbsp;Profile__ to delete it.  The first profile cannot be
@@ -95,4 +95,4 @@ database is very useful when finding problems associated with the
 audio files.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 08:12:51; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-01-18 08:23:04; BDJ4 version 4.4.8)_
