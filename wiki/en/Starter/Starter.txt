@@ -6,7 +6,7 @@
 
 The starter program is used to start the player, management and
 configuration.  It also has support information, can send support
-messages and can start the alternate installer.
+messages and can set up alternate folders.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-A.png)
@@ -51,9 +51,9 @@ __Create Shortcut for Profile__: Select a profile, then choose this
 menu selection to create a shortcut for the profile (Linux and Windows
 only).
 
-__Set Up Alternate Folder__: Starts the alternate installer.
-Alternate installations are used to create another installation with
-a separate database.  (Linux and Windows only).
+__Set Up Alternate Folder__: Starts the alternate installer. Alternate
+folders are used to create another BDJ4 installation with a separate
+database.  (Linux and Windows only).
 
 ##### Support
 
@@ -95,4 +95,4 @@ database is very useful when finding problems associated with the
 audio files.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 07:55:41; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-01-18 08:12:51; BDJ4 version 4.4.8)_

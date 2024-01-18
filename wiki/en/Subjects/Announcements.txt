@@ -7,10 +7,10 @@ upcoming dance._</span>
 
 ### Announcements
 
-Announcements are audio files that are associated with a dance and are
-turned on for a music queue or for a playlist.  The announcement
-corresponding to the song's assigned dance is played before each song
-starts.
+Announcements are audio files that are associated with a dance.
+Announcements may be turned on for a music queue or for a playlist.
+The announcement associated with the song's assigned dance is played
+before each song starts.
 
 Announcements are useful when a marquee cannot be displayed in the
 venue, and are also helpful if the marquee is not visible by all of
@@ -21,6 +21,7 @@ the dancers.
 First, the announcements must be added to the BallroomDJ&nbsp;4
 database.  You can record your own announcements or find pre-recorded
 announcements on the internet.
+<br> (See: https://sourceforge.net/projects/ballroomdj4/files/announcements/ )
 
 Add the announcement audio file(s) to your music folder.  For the
 purposes of this example, it will be assumed that the announcements
@@ -81,4 +82,4 @@ configured, and turn on the _Play&nbsp;Announcements_ switch.
 <br><span style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-01-18 08:11:25; BDJ4 version 4.4.8)_
