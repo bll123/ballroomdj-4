@@ -62,9 +62,10 @@ configuration is changed.
 By default, _Queue&nbsp;B_ is set with the __Active__ switch off, so it
 will have the same configuration as the main music queue.
 
-The __Display__ switch should be turned on if you want the music
-queue to display in the player.  By default, _Queue&nbsp;B_ is
-displayed, and _Queue&nbsp;C_ and _Queue&nbsp;D_ are not displayed.
+The __Display__ switch should be turned on if you want the music queue
+to display in the player.  By default, _Queue&nbsp;B_ is displayed,
+and _Queue&nbsp;C_, _Queue&nbsp;D_ and _Queue&nbsp;E_ are not
+displayed.
 
 The __Queue&nbsp;Name__ can be changed to indicate what you use the
 music queue for.
@@ -100,8 +101,8 @@ See also:
 
 One possible setup for a music queue used for teaching could have the
 fade-out time set to one second, the gap set to 0.5 seconds and the
-maximum play time in this example is set high so that the entire song
-will play.  The name of the music queue is set to "Teach".
+maximum play time set high so that the entire song will play.  The
+name of the music queue is set to "Teach".
 
 The __Play&nbsp;When&nbsp;Queued__ and
 __Show&nbsp;Extra&nbsp;QueueDance&nbsp;Buttons__ switches are turned on.
@@ -171,4 +172,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-01-18 08:40:25; BDJ4 version 4.4.8)_
