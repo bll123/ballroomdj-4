@@ -71,6 +71,9 @@ audiosrcExists (const char *nm)
   if (type == AUDIOSRC_TYPE_FILE) {
     exists = audiosrcfileExists (nm);
   }
+  if (type == AUDIOSRC_TYPE_YOUTUBE) {
+    exists = audiosrcyoutubeExists (nm);
+  }
 
   return exists;
 }
@@ -190,6 +193,9 @@ audiosrcStartIterator (const char *uri)
   if (type == AUDIOSRC_TYPE_FILE) {
     asiter->asidata = audiosrcfileStartIterator (uri);
   }
+  if (type == AUDIOSRC_TYPE_YOUTUBE) {
+    asiter->asidata = audiosrcyoutubeStartIterator (uri);
+  }
 
   if (asiter->asidata == NULL) {
     mdfree (asiter);
@@ -210,6 +216,10 @@ audiosrcCleanIterator (asiter_t *asiter)
     audiosrcfileCleanIterator (asiter->asidata);
     asiter->asidata = NULL;
   }
+  if (asiter->type == AUDIOSRC_TYPE_YOUTUBE) {
+    audiosrcyoutubeCleanIterator (asiter->asidata);
+    asiter->asidata = NULL;
+  }
   mdfree (asiter);
 }
 
@@ -225,6 +235,9 @@ audiosrcIterCount (asiter_t *asiter)
   if (asiter->type == AUDIOSRC_TYPE_FILE) {
     c = audiosrcfileIterCount (asiter->asidata);
   }
+  if (asiter->type == AUDIOSRC_TYPE_YOUTUBE) {
+    c = audiosrcyoutubeIterCount (asiter->asidata);
+  }
   return c;
 }
 
@@ -239,6 +252,9 @@ audiosrcIterate (asiter_t *asiter)
 
   if (asiter->type == AUDIOSRC_TYPE_FILE) {
     rval = audiosrcfileIterate (asiter->asidata);
+  }
+  if (asiter->type == AUDIOSRC_TYPE_YOUTUBE) {
+    rval = audiosrcyoutubeIterate (asiter->asidata);
   }
 
   return rval;

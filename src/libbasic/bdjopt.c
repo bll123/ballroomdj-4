@@ -61,6 +61,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, DF_NORM },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, DF_NORM },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, DF_NORM },
+  { "YOUTUBEAPIKEY",      OPT_G_YOUTUBEAPIKEY,      VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptprofiledfkeys [] = {

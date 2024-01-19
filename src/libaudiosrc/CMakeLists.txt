@@ -8,6 +8,7 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4audiosrc SHARED
   audiosrc.c
   audiosrcfile.c
+  audiosrcyoutube.c
 )
 target_link_libraries (libbdj4audiosrc PRIVATE
   libbdj4basic libbdj4common

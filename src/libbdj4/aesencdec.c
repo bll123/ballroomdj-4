@@ -28,7 +28,7 @@ enum {
   AES_KEY_SZ = 32,
   AES_MAX_STR_SZ = 400,
   AES_SALT_SZ = 16,
-  AES_RAND_SZ = 5,
+  AES_RAND_SZ = 7,
 };
 
 #define AES_E_PFX "A256"
@@ -60,7 +60,7 @@ aesencrypt (const char *str, char *buff, size_t sz)
   *buff = '\0';
   len = strlen (str);
   for (int i = 0; i < AES_SALT_SZ; ++i) {
-    salt [i] = (uint8_t) (dRandom () * 128.0) & 0xff;
+    salt [i] = (uint8_t) (dRandom () * 256.0) & 0xff;
   }
 
   rc = gcry_cipher_open (&gch, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_ECB, 0);
@@ -199,20 +199,19 @@ aesMakeKey (uint8_t *key, uint8_t *rbytes, int mode)
   size_t      klen;
   size_t      rbidx;
 
-  /* can't use random bytes, as the data has to be decrypted. */
   for (size_t i = 0; i < AES_KEY_SZ; ++i) {
     key [i] = '\0';
   }
   klen = 0;
   if (mode == AES_ENCRYPT) {
     for (size_t i = 0; i < AES_RAND_SZ; ++i) {
-      rbytes [i] = (char) (dRandom () * 128.0);
+      rbytes [i] = (uint8_t) (dRandom () * 256.0) & 0xff;
     }
   }
 
   rbidx = 0;
   for (size_t i = klen; i < AES_KEY_SZ; ++i) {
-    key [i] = i + rbytes [rbidx];
+    key [i] = i + rbytes [0] + rbytes [rbidx];
     ++rbidx;
     if (rbidx >= AES_RAND_SZ) {
       rbidx = 0;

@@ -8,7 +8,7 @@
 
 #include "aesencdec.h"
 #include "bdjopt.h"
-#include "log.h"
+// #include "log.h"
 #include "osrandom.h"
 #include "sysvars.h"
 
@@ -17,7 +17,7 @@ main (int argc, char *argv [])
 {
   int     c = 0;
   int     option_index = 0;
-  char    buff [100];
+  char    buff [2048];
 
   static struct option bdj_options [] = {
     { "aesed",        no_argument,        NULL,   0 },
@@ -43,7 +43,7 @@ main (int argc, char *argv [])
 
   sRandom ();
   sysvarsInit (argv [0]);
-  logStartAppend ("aesed", "taes", LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
+  // logStartAppend ("aesed", "taes", LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
   bdjoptInit ();
 
   *buff = '\0';
@@ -56,7 +56,7 @@ main (int argc, char *argv [])
   fprintf (stderr, "%s\n", buff);
 
   bdjoptCleanup ();
-  logEnd ();
+  // logEnd ();
 
   return 0;
 }
