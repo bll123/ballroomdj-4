@@ -1,7 +1,7 @@
 /*
  * Copyright 2018 Brad Lanam Walnut Creek CA US
  * Copyright 2020 Brad Lanam Pleasant Hill CA
- * Copyright 2023 Brad Lanam Pleasant Hill CA
+ * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 

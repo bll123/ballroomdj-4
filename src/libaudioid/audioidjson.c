@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Brad Lanam Pleasant Hill CA
+ * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  *
  * Parses JSON responses
  *

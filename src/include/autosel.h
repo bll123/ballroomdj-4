@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
 #ifndef INC_AUTOSEL_H
 #define INC_AUTOSEL_H
