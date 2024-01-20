@@ -6,7 +6,6 @@
 /* supported types */
 enum {
   AUDIOSRC_TYPE_FILE,
-  AUDIOSRC_TYPE_YOUTUBE,
 };
 
 /* audiosrc.c */
@@ -40,13 +39,5 @@ asiterdata_t *audiosrcfileStartIterator (const char *dir);
 void audiosrcfileCleanIterator (asiterdata_t *asidata);
 int32_t audiosrcfileIterCount (asiterdata_t *asidata);
 const char *audiosrcfileIterate (asiterdata_t *asidata);
-
-/* audiosrcyoutube.c */
-
-bool audiosrcyoutubeExists (const char *nm);
-asiterdata_t *audiosrcyoutubeStartIterator (const char *dir);
-void audiosrcyoutubeCleanIterator (asiterdata_t *asidata);
-int32_t audiosrcyoutubeIterCount (asiterdata_t *asidata);
-const char *audiosrcyoutubeIterate (asiterdata_t *asidata);
 
 #endif /* INC_AUDIOSRC_H */

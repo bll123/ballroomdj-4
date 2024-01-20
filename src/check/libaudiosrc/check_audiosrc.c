@@ -40,9 +40,6 @@ static chk_audsrc_t tvalues [] = {
   { "C:/there", "C:/there", AUDIOSRC_TYPE_FILE },
   { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
   { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
-  { "https://youtu.be/something", "https://youtu.be/something", AUDIOSRC_TYPE_YOUTUBE },
-  { "https://www.youtube.com/something", "https://www.youtube.com/something", AUDIOSRC_TYPE_YOUTUBE },
-  { "https://m.youtube.com/something", "https://m.youtube.com/something", AUDIOSRC_TYPE_YOUTUBE },
 };
 enum {
   tvaluesz = sizeof (tvalues) / sizeof (chk_audsrc_t),
