@@ -48,12 +48,13 @@ uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
   uidance->count = count;
   uidance->flags = flags;
-  uidance->dropdown = uiDropDownInit ();
+  uidance->dropdown = NULL;
   uidance->selectedidx = 0;
   uidance->parentwin = parentwin;
   uidance->cb = NULL;
   uidance->selectcb = NULL;
 
+  uidance->dropdown = uiDropDownInit ();
   uidance->cb = callbackInitLong (uidanceSelectHandler, uidance);
   uidance->label = label;  /* this is a temporary value */
   if (flags == UIDANCE_NONE) {

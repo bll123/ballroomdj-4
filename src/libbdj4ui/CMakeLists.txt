@@ -30,7 +30,7 @@ add_library (libbdj4ui SHARED
   uiplaylist.c
   uiquickedit.c
   uirating.c
-  uireqext.c
+  uiextreq.c
   uiselectfile.c
   uisong.c
   uisongedit.c

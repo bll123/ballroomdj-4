@@ -130,7 +130,11 @@ typedef struct uiwcont {
 static inline bool
 uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
 {
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL) {
+    return false;
+  }
+  if ((int) uiwidget->wbasetype != WCONT_T_DROPDOWN &&
+      uiwidget->widget == NULL) {
     return false;
   }
   if ((int) uiwidget->wbasetype != exptype &&

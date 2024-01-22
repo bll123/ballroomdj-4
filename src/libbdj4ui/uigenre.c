@@ -44,12 +44,13 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenre = mdmalloc (sizeof (uigenre_t));
   uigenre->genres = bdjvarsdfGet (BDJVDF_GENRES);
   uigenre->allflag = allflag;
-  uigenre->dropdown = uiDropDownInit ();
+  uigenre->dropdown = NULL;
   uigenre->selectedidx = 0;
   uigenre->parentwin = parentwin;
   uigenre->cb = NULL;
   uigenre->selectcb = NULL;
 
+  uigenre->dropdown = uiDropDownInit ();
   uigenre->cb = callbackInitLong (uigenreSelectHandler, uigenre);
   uigenre->buttonp = uiComboboxCreate (uigenre->dropdown,
       parentwin, "", uigenre->cb, uigenre);

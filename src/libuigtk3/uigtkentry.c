@@ -89,7 +89,6 @@ uiEntryFree (uiwcont_t *uiwidget)
   }
 
   uientry = uiwidget->uiint.uientry;
-
   mdfree (uientry);
   /* the container is freed by uiwcontFree() */
 }
@@ -199,7 +198,7 @@ uiEntrySetValidate (uiwcont_t *uiwidget, uientryval_t valfunc, void *udata,
       uientry->valdelay = true;
     }
     g_signal_connect (uiwidget->widget, "changed",
-        G_CALLBACK (uiEntryValidateHandler), uientry);
+        G_CALLBACK (uiEntryValidateHandler), uiwidget);
   }
 }
 

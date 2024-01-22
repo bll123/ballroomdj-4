@@ -42,12 +42,13 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
   uiwcont_t       *uiwidgetp;
 
   uiplaylist = mdmalloc (sizeof (uiplaylist_t));
-  uiplaylist->dropdown = uiDropDownInit ();
+  uiplaylist->dropdown = NULL;
   for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
     uiplaylist->callbacks [i] = NULL;
   }
   uiplaylist->selectcb = NULL;
 
+  uiplaylist->dropdown = uiDropDownInit ();
   uiplaylist->callbacks [UIPLAYLIST_CB_SEL] =
       callbackInitLong (uiplaylistSelectHandler, uiplaylist);
   uiwidgetp = uiComboboxCreate (uiplaylist->dropdown,

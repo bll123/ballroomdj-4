@@ -96,6 +96,7 @@ uiDropDownInit (void)
   uiwidget->wbasetype = WCONT_T_DROPDOWN;
   uiwidget->wtype = WCONT_T_DROPDOWN;
   uiwidget->uiint.uidropdown = dropdown;
+  uiwidget->widget = NULL;
 
   return uiwidget;
 }
@@ -136,7 +137,7 @@ uiDropDownCreate (uiwcont_t *uiwidget, uiwcont_t *parentwin,
   if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-create")) {
     return NULL;
   }
-  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "dropdown-create-win")) {
+  if (! uiwcontValid (parentwin, WCONT_T_WINDOW, "dropdown-create-win")) {
     return NULL;
   }
 

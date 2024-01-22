@@ -142,6 +142,7 @@ confuiLoadVolIntfcList (confuigui_t *gui)
 
   interfaces = volumeInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC, CONFUI_SPINBOX_VOL_INTFC);
+  ilistFree (interfaces);
 }
 
 static void
@@ -151,5 +152,6 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   interfaces = pliInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC, CONFUI_SPINBOX_PLI);
+  ilistFree (interfaces);
 }
 

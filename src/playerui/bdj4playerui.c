@@ -51,7 +51,7 @@
 #include "uinbutil.h"
 #include "uiplayer.h"
 #include "uiquickedit.h"
-#include "uireqext.h"
+#include "uiextreq.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
@@ -132,7 +132,7 @@ typedef struct {
   int             resetvolume;
   /* external request */
   int             extreqRow;
-  uireqext_t      *uireqext;
+  uiextreq_t      *uiextreq;
   /* notebook */
   uinbtabid_t     *nbtabid;
   int             currpage;
@@ -285,7 +285,7 @@ main (int argc, char *argv[])
   plui.uisongfilter = NULL;
   plui.uiqe = NULL;
   plui.extreqRow = -1;
-  plui.uireqext = NULL;
+  plui.uiextreq = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
@@ -456,7 +456,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
   uiqeFree (plui->uiqe);
-  uireqextFree (plui->uireqext);
+  uiextreqFree (plui->uiextreq);
   if (plui->optionsalloc) {
     nlistFree (plui->options);
   }
@@ -770,12 +770,12 @@ pluiInitializeUI (playerui_t *plui)
       plui, "musicq: quick edit response");
   uiqeSetResponseCallback (plui->uiqe, plui->callbacks [PLUI_CB_QUICK_EDIT]);
 
-  plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW],
+  plui->uiextreq = uiextreqInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
       pluiExtReqCallback,
       plui, "musicq: external request response");
-  uireqextSetResponseCallback (plui->uireqext, plui->callbacks [PLUI_CB_REQ_EXT]);
+  uiextreqSetResponseCallback (plui->uiextreq, plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, DISP_SEL_MUSICQ);
@@ -867,7 +867,7 @@ pluiMainLoop (void *tplui)
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
-  uireqextProcess (plui->uireqext);
+  uiextreqProcess (plui->uiextreq);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -1737,7 +1737,7 @@ pluiRequestExternalDialog (void *udata)
   playerui_t    *plui = udata;
   bool          rc;
 
-  rc = uireqextDialog (plui->uireqext, NULL);
+  rc = uiextreqDialog (plui->uiextreq, NULL);
   return rc;
 }
 
@@ -1747,7 +1747,7 @@ pluiExtReqCallback (void *udata)
   playerui_t    *plui = udata;
   song_t        *song;
 
-  song = uireqextGetSong (plui->uireqext);
+  song = uiextreqGetSong (plui->uiextreq);
 
   if (song != NULL) {
     dbidx_t     dbidx;
@@ -2033,6 +2033,6 @@ pluiDragDropCallback (void *udata, const char *uri, int row)
   plui->musicqRequestIdx = plui->musicqManageIdx;
   plui->extreqRow = row;
 
-  uireqextDialog (plui->uireqext, uri + filepfxlen);
+  uiextreqDialog (plui->uiextreq, uri + filepfxlen);
   return UICB_CONT;
 }

@@ -466,7 +466,6 @@ main (int argc, char *argv[])
   manage.wcont [MANAGE_W_MENU_MM] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SL] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SONGEDIT] = uiMenuAlloc ();
-  manage.wcont [MANAGE_W_ITUNES_SEL] = uiDropDownInit ();
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
   manage.mmnbtabid = uinbutilIDInit ();
@@ -2006,6 +2005,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiwcontFree (uiwidgetp);
 
   /* returns the button */
+  manage->wcont [MANAGE_W_ITUNES_SEL] = uiDropDownInit ();
   uiwidgetp = uiComboboxCreate (manage->wcont [MANAGE_W_ITUNES_SEL],
       manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], "",
       manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);

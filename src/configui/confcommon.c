@@ -348,7 +348,6 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
   }
   nlistSort (tlist);
   nlistSort (llist);
-  slistFree (interfaces);
 
   gui->uiitem [spinboxidx].displist = tlist;
   gui->uiitem [spinboxidx].sbkeylist = llist;

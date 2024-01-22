@@ -140,7 +140,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->filterDialog = NULL;
   uisf->dfltpbflag = pbflag;
   uisf->uiplaylist = NULL;
-  uisf->sortbyfilter = uiDropDownInit ();
+  uisf->sortbyfilter = NULL;
   uisf->uidance = NULL;
   uisf->playlistdisp = NULL;
   uisf->searchentry = NULL;
@@ -506,6 +506,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_SORTBY] = uiwidgetp;
 
+  uisf->sortbyfilter = uiDropDownInit ();
   uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitLong (
       uisfSortBySelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (uisf->sortbyfilter,

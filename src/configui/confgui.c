@@ -102,6 +102,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   gui->uiitem [widx].sfcb.entry = gui->uiitem [widx].uiwidgetp;
   gui->uiitem [widx].sfcb.window = gui->window;
   gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
+
   uiwidgetp = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
@@ -129,6 +130,8 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
   gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
+fprintf (stderr, "conf-dd create %d\n", widx);
+  gui->uiitem [widx].uiwidgetp = uiDropDownInit ();
   uiwidgetp = uiComboboxCreate (gui->uiitem [widx].uiwidgetp,
       gui->window, txt, gui->uiitem [widx].callback, gui);
 
@@ -536,6 +539,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].basetype = CONFUI_ENTRY;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   confuiMakeItemLabel (boxp, szgrp, txt, indent);
+fprintf (stderr, "conf-entry create %d\n", widx);
   uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiWidgetSetMarginStart (uiwidgetp, 4);
