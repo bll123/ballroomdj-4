@@ -87,6 +87,8 @@ enum {
   ALT_W_REINST,
   ALT_W_FEEDBACK_MSG,
   ALT_W_STATUS_DISP,
+  ALT_W_TARGET,
+  ALT_W_NAME,
   ALT_W_MAX,
 };
 
@@ -103,8 +105,6 @@ typedef struct {
   char            *name;
   /* conversion */
   uiwcont_t       *wcont [ALT_W_MAX];
-  uientry_t       *targetEntry;
-  uientry_t       *nameEntry;
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -130,7 +130,7 @@ static int  altinstMainLoop (void *udata);
 static bool altinstExitCallback (void *udata);
 static bool altinstReinstallCBHandler (void *udata);
 static bool altinstTargetDirDialog (void *udata);
-static int  altinstValidateTarget (uientry_t *entry, void *udata);
+static int  altinstValidateTarget (uiwcont_t *entry, void *udata);
 static int  altinstValidateProcessTarget (altinst_t *altinst, const char *dir);
 static void altinstTargetFeedbackMsg (altinst_t *altinst);
 static bool altinstSetupCallback (void *udata);
@@ -230,8 +230,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < ALT_CB_MAX; ++i) {
     altinst.callbacks [i] = NULL;
   }
-  altinst.targetEntry = NULL;
-  altinst.nameEntry = NULL;
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
@@ -317,11 +315,6 @@ main (int argc, char *argv[])
         break;
       }
     }
-  }
-
-  if (altinst.guienabled) {
-    altinst.targetEntry = uiEntryInit (80, MAXPATHLEN);
-    altinst.nameEntry = uiEntryInit (30, 30);
   }
 
   altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
@@ -420,13 +413,13 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiEntryCreate (altinst->targetEntry);
-  uiEntrySetValue (altinst->targetEntry, altinst->target);
-  uiwidgetp = uiEntryGetWidgetContainer (altinst->targetEntry);
+  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, altinst->target);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (altinst->targetEntry,
+  altinst->wcont [ALT_W_TARGET] = uiwidgetp;
+  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET],
       altinstValidateTarget, altinst, UIENTRY_DELAYED);
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
@@ -471,10 +464,10 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (altinst->nameEntry);
-  uiEntrySetValue (altinst->nameEntry, altinst->name);
-  uiwidgetp = uiEntryGetWidgetContainer (altinst->nameEntry);
+  uiwidgetp = uiEntryInit (30, 30);
+  uiEntrySetValue (uiwidgetp, altinst->name);
   uiBoxPackStart (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_NAME] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -522,7 +515,7 @@ altinstMainLoop (void *udata)
   if (altinst->guienabled) {
     uiUIProcessEvents ();
 
-    uiEntryValidate (altinst->targetEntry, false);
+    uiEntryValidate (altinst->wcont [ALT_W_TARGET], false);
 
     if (altinst->scrolltoend) {
       uiTextBoxScrollToEnd (altinst->wcont [ALT_W_STATUS_DISP]);
@@ -636,9 +629,9 @@ altinstReinstallCBHandler (void *udata)
 }
 
 static int
-altinstValidateTarget (uientry_t *entry, void *udata)
+altinstValidateTarget (uiwcont_t *entry, void *udata)
 {
-  altinst_t   *altinst = udata;
+  altinst_t     *altinst = udata;
   const char    *dir;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
@@ -651,7 +644,7 @@ altinstValidateTarget (uientry_t *entry, void *udata)
     return UIENTRY_RESET;
   }
 
-  dir = uiEntryGetValue (altinst->targetEntry);
+  dir = uiEntryGetValue (altinst->wcont [ALT_W_TARGET]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));
   if (strcmp (tbuff, altinst->target) != 0) {
@@ -787,7 +780,7 @@ altinstTargetDirDialog (void *udata)
   selectdata = uiDialogCreateSelect (altinst->wcont [ALT_W_WINDOW],
       /* CONTEXT: alternate installation: dialog title for selecting location */
       _("Install Location"),
-      uiEntryGetValue (altinst->targetEntry), NULL, NULL, NULL);
+      uiEntryGetValue (altinst->wcont [ALT_W_TARGET]), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     char        tbuff [MAXPATHLEN];
@@ -795,7 +788,7 @@ altinstTargetDirDialog (void *udata)
     strlcpy (tbuff, fn, sizeof (tbuff));
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), false);
     /* validation gets called again upon set */
-    uiEntrySetValue (altinst->targetEntry, tbuff);
+    uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altinst->target);
     mdfree (fn);
   }
@@ -854,7 +847,7 @@ altinstSaveTargetDir (altinst_t *altinst)
   /* CONTEXT: alternate installer: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Saving install location."), false);
 
-  uiEntrySetValue (altinst->targetEntry, altinst->target);
+  uiEntrySetValue (altinst->wcont [ALT_W_TARGET], altinst->target);
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "w");
@@ -1072,7 +1065,7 @@ altinstCreateShortcut (altinst_t *altinst)
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Creating shortcut."), false);
   name = altinst->name;
   if (altinst->guienabled) {
-    name = uiEntryGetValue (altinst->nameEntry);
+    name = uiEntryGetValue (altinst->wcont [ALT_W_NAME]);
   }
   instutilCreateShortcut (name, altinst->maindir, altinst->target, 0);
 
@@ -1200,8 +1193,6 @@ altinstCleanup (altinst_t *altinst)
       for (int i = 0; i < ALT_W_MAX; ++i) {
         uiwcontFree (altinst->wcont [i]);
       }
-      uiEntryFree (altinst->targetEntry);
-      uiEntryFree (altinst->nameEntry);
     }
     dataFree (altinst->target);
     dataFree (altinst->name);

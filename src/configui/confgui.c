@@ -57,6 +57,13 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
 }
 
 void
+confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz)
+{
+  gui->uiitem [widx].entrysz = sz;
+  gui->uiitem [widx].entrymaxsz = maxsz;
+}
+
+void
 confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
@@ -92,7 +99,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
-  gui->uiitem [widx].sfcb.entry = gui->uiitem [widx].entry;
+  gui->uiitem [widx].sfcb.entry = gui->uiitem [widx].uiwidgetp;
   gui->uiitem [widx].sfcb.window = gui->window;
   gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
   uiwidgetp = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
@@ -529,8 +536,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].basetype = CONFUI_ENTRY;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   confuiMakeItemLabel (boxp, szgrp, txt, indent);
-  uiEntryCreate (gui->uiitem [widx].entry);
-  uiwidgetp = uiEntryGetWidgetContainer (gui->uiitem [widx].entry);
+  uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (expand == CONFUI_EXPAND) {
@@ -542,9 +548,9 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uiBoxPackStart (boxp, uiwidgetp);
   }
   if (disp != NULL) {
-    uiEntrySetValue (gui->uiitem [widx].entry, disp);
+    uiEntrySetValue (gui->uiitem [widx].uiwidgetp, disp);
   } else {
-    uiEntrySetValue (gui->uiitem [widx].entry, "");
+    uiEntrySetValue (gui->uiitem [widx].uiwidgetp, "");
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 }

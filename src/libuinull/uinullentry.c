@@ -21,88 +21,81 @@ typedef struct uientry {
   int         junk;
 } uientry_t;
 
-uientry_t *
+uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
 {
   return NULL;
 }
 
-
 void
-uiEntryFree (uientry_t *uientry)
+uiEntryFree (uiwcont_t *uientry)
 {
   return;
 }
 
 void
-uiEntryCreate (uientry_t *uientry)
+uiEntryCreate (uiwcont_t *uientry)
 {
   return;
 }
 
 void
-uiEntrySetIcon (uientry_t *uientry, const char *name)
+uiEntrySetIcon (uiwcont_t *uientry, const char *name)
 {
   return;
 }
 
 void
-uiEntryClearIcon (uientry_t *uientry)
+uiEntryClearIcon (uiwcont_t *uientry)
 {
   return;
 }
 
-uiwcont_t *
-uiEntryGetWidgetContainer (uientry_t *uientry)
-{
-  return NULL;
-}
-
 void
-uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry)
+uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry)
 {
   return;
 }
 
 const char *
-uiEntryGetValue (uientry_t *uientry)
+uiEntryGetValue (uiwcont_t *uientry)
 {
   return NULL;
 }
 
 void
-uiEntrySetValue (uientry_t *uientry, const char *value)
+uiEntrySetValue (uiwcont_t *uientry, const char *value)
 {
   return;
 }
 
 void
-uiEntrySetValidate (uientry_t *uientry, uientryval_t valfunc, void *udata,
+uiEntrySetValidate (uiwcont_t *uientry, uientryval_t valfunc, void *udata,
     int valdelay)
 {
   return;
 }
 
 int
-uiEntryValidate (uientry_t *uientry, bool forceflag)
+uiEntryValidate (uiwcont_t *uientry, bool forceflag)
 {
   return 0;
 }
 
 int
-uiEntryValidateDir (uientry_t *uientry, void *udata)
+uiEntryValidateDir (uiwcont_t *uientry, void *udata)
 {
   return 0;
 }
 
 int
-uiEntryValidateFile (uientry_t *uientry, void *udata)
+uiEntryValidateFile (uiwcont_t *uientry, void *udata)
 {
   return 0;
 }
 
 void
-uiEntrySetState (uientry_t *uientry, int state)
+uiEntrySetState (uiwcont_t *uientry, int state)
 {
   return;
 }

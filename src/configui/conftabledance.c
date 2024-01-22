@@ -66,13 +66,13 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
 
   sval = danceGetStr (dances, danceIdx, DANCE_DANCE);
   widx = CONFUI_ENTRY_DANCE_DANCE;
-  uiEntrySetValue (gui->uiitem [widx].entry, sval);
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
   /* because the same entry field is used when switching dances, */
   /* and there is a validation timer running, */
   /* the validation timer must be cleared */
   /* the entry field does not need to be validated when being loaded */
   /* this applies to the dance, tags and announcement */
-  uiEntryValidateClear (gui->uiitem [widx].entry);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   slist = danceGetList (dances, danceIdx, DANCE_TAGS);
   conv.list = slist;
@@ -80,16 +80,16 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
   convTextList (&conv);
   sval = conv.strval;
   widx = CONFUI_ENTRY_DANCE_TAGS;
-  uiEntrySetValue (gui->uiitem [widx].entry, sval);
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
   dataFree (conv.strval);
-  uiEntryValidateClear (gui->uiitem [widx].entry);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   timesig = danceGetTimeSignature (danceIdx);
 
   sval = danceGetStr (dances, danceIdx, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
-  uiEntrySetValue (gui->uiitem [widx].entry, sval);
-  uiEntryValidateClear (gui->uiitem [widx].entry);
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   num = danceGetNum (dances, danceIdx, DANCE_MPM_HIGH);
   widx = CONFUI_WIDGET_DANCE_MPM_HIGH;

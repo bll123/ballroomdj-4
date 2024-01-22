@@ -77,7 +77,7 @@ typedef struct {
   uiwcont_t       *chgind;
   uiwcont_t       *label;
   union {
-    uientry_t     *entry;
+    uiwcont_t     *entry;
     uispinbox_t   *spinbox;
     uiwcont_t     *uiwidgetp;
     uidance_t     *uidance;
@@ -169,7 +169,7 @@ static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
 static bool uisongeditKeyEvent (void *udata);
-static int uisongeditEntryChangedCallback (uientry_t *entry, void *udata);
+static int uisongeditEntryChangedCallback (uiwcont_t *entry, void *udata);
 static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
 static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
@@ -231,7 +231,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
       switch (tagdefs [tagkey].editType) {
         case ET_ENTRY: {
-          uiEntryFree (seint->items [count].entry);
+          uiwcontFree (seint->items [count].entry);
           break;
         }
         case ET_COMBOBOX: {
@@ -1218,23 +1218,20 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
 static void
 uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 {
-  uientry_t       *entryp;
-  uiwcont_t      *uiwidgetp;
+  uiwcont_t     *entryp;
   se_internal_t *seint;
 
   logProcBegin (LOG_PROC, "uisongeditAddEntry");
   seint = uisongedit->seInternalData;
   entryp = uiEntryInit (20, 250);
   seint->items [seint->itemcount].entry = entryp;
-  uiEntryCreate (entryp);
   /* set the validate callback to set the changed flag */
   uiEntrySetValidate (entryp,
       uisongeditEntryChangedCallback, seint, UIENTRY_IMMEDIATE);
 
-  uiwidgetp = uiEntryGetWidgetContainer (entryp);
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAlignHorizFill (entryp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
+  uiBoxPackStartExpand (hbox, entryp);
   logProcEnd (LOG_PROC, "uisongeditAddEntry", "");
 }
 
@@ -1835,7 +1832,7 @@ uisongeditKeyEvent (void *udata)
 }
 
 static int
-uisongeditEntryChangedCallback (uientry_t *entry, void *udata)
+uisongeditEntryChangedCallback (uiwcont_t *entry, void *udata)
 {
   se_internal_t *seint =  udata;
 

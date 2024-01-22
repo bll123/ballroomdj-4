@@ -60,7 +60,7 @@ typedef struct {
   /* music queue tab */
   uiwcont_t     *mainbox;
   uiwcont_t     *playlistsel;
-  uientry_t     *slname;
+  uiwcont_t     *slname;
   /* widget data */
   mq_internal_t *mqInternalData;
   /* flags */

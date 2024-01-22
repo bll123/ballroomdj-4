@@ -159,6 +159,8 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].sfcb.window = NULL;
     confui.gui.uiitem [i].uri = NULL;
     confui.gui.uiitem [i].changed = false;
+    confui.gui.uiitem [i].entrysz = 20;
+    confui.gui.uiitem [i].entrymaxsz = 100;
 
     if (i > CONFUI_COMBOBOX_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       confui.gui.uiitem [i].uiwidgetp = uiDropDownInit ();
@@ -173,24 +175,24 @@ main (int argc, char *argv[])
     }
   }
 
-  confui.gui.uiitem [CONFUI_ENTRY_DANCE_TAGS].entry = uiEntryInit (30, 100);
-  confui.gui.uiitem [CONFUI_ENTRY_DANCE_DANCE].entry = uiEntryInit (30, 50);
-  confui.gui.uiitem [CONFUI_ENTRY_MMQ_TITLE].entry = uiEntryInit (20, 100);
-  confui.gui.uiitem [CONFUI_ENTRY_PROFILE_NAME].entry = uiEntryInit (20, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_COMPLETE_MSG].entry = uiEntryInit (20, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_QUEUE_NM].entry = uiEntryInit (20, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_RC_PASS].entry = uiEntryInit (10, 20);
-  confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_KEY].entry = uiEntryInit (40, 40);
-  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_SECRET].entry = uiEntryInit (45, 45);
-  confui.gui.uiitem [CONFUI_ENTRY_ACRCLOUD_API_HOST].entry = uiEntryInit (45, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_TAGS, 30, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_DANCE, 30, 50);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_MMQ_TITLE, 20, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PROFILE_NAME, 20, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_COMPLETE_MSG, 20, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_QUEUE_NM, 20, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_RC_PASS, 10, 20);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_RC_USER_ID, 10, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 40, 40);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_SECRET, 45, 45);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_HOST, 45, 100);
 
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].entry = uiEntryInit (50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, 30, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_DIR, 50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_XML, 50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_MUSIC_DIR, 50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN, 50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_STARTUP, 50, 300);
 
   osSetStandardSignals (confuiSigHandler);
 
@@ -348,10 +350,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
 
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
-    uiEntryFree (confui->gui.uiitem [i].entry);
+    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
-    uiEntryFree (confui->gui.uiitem [i].entry);
+    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
     uiButtonFree (confui->gui.uiitem [i].uibutton);
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
@@ -506,10 +508,10 @@ confuiMainLoop (void *tconfui)
   connProcessUnconnected (confui->conn);
 
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
-    uiEntryValidate (confui->gui.uiitem [i].entry, false);
+    uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
-    uiEntryValidate (confui->gui.uiitem [i].entry, false);
+    uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
 
   if (gKillReceived) {

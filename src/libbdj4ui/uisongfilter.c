@@ -87,7 +87,7 @@ typedef struct uisongfilter {
   uiwcont_t         *sortbyfilter;
   uidance_t         *uidance;
   uigenre_t         *uigenre;
-  uientry_t         *searchentry;
+  uiwcont_t         *searchentry;
   uirating_t        *uirating;
   uilevel_t         *uilevel;
   uistatus_t        *uistatus;
@@ -143,7 +143,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
   uisf->playlistdisp = NULL;
-  uisf->searchentry = uiEntryInit (20, 100);
+  uisf->searchentry = NULL;
   uisf->uigenre = NULL;
   uisf->uirating = NULL;
   uisf->uilevel = NULL;
@@ -175,7 +175,7 @@ uisfFree (uisongfilter_t *uisf)
   uiwcontFree (uisf->filterDialog);
   uiplaylistFree (uisf->uiplaylist);
   uiwcontFree (uisf->sortbyfilter);
-  uiEntryFree (uisf->searchentry);
+  uiwcontFree (uisf->searchentry);
   uidanceFree (uisf->uidance);
   uigenreFree (uisf->uigenre);
   uiratingFree (uisf->uirating);
@@ -527,11 +527,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_SEARCH] = uiwidgetp;
 
-  uiEntryCreate (uisf->searchentry);
-  uiwidgetp = uiEntryGetWidgetContainer (uisf->searchentry);
+  uiwidgetp = uiEntryInit (20, 100);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrpEntry, uiwidgetp);
+  uisf->searchentry = uiwidgetp;
 
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {

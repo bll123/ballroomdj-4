@@ -128,6 +128,8 @@ enum {
   START_W_SUPPORT_SEND_DB,
   START_W_MENU_DEL_PROFILE,
   START_W_SUPPORT_TEXTBOX,
+  START_W_SUPPORT_SUBJECT,
+  START_W_SUPPORT_EMAIL,
   START_W_MAX,
 };
 
@@ -171,8 +173,6 @@ typedef struct {
   uispinbox_t     *profilesel;
   uiwcont_t       *buttons [START_BUTTON_MAX];
   uiwcont_t       *wcont [START_W_MAX];
-  uientry_t       *supportsubject;
-  uientry_t       *supportemail;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -318,8 +318,6 @@ main (int argc, char *argv[])
   starter.optiondf = NULL;
   starter.options = NULL;
   starter.optionsalloc = false;
-  starter.supportsubject = NULL;
-  starter.supportemail = NULL;
   starter.supportactive = false;
   starter.supportmsgactive = false;
 
@@ -821,8 +819,8 @@ starterMainLoop (void *tstarter)
       char        *msg;
       FILE        *fh;
 
-      email = uiEntryGetValue (starter->supportemail);
-      subj = uiEntryGetValue (starter->supportsubject);
+      email = uiEntryGetValue (starter->wcont [START_W_SUPPORT_EMAIL]);
+      subj = uiEntryGetValue (starter->wcont [START_W_SUPPORT_SUBJECT]);
       msg = uiTextBoxGetValue (starter->wcont [START_W_SUPPORT_TEXTBOX]);
 
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
@@ -1796,9 +1794,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  starter->supportemail = uiEntryInit (50, 100);
-  uiEntryCreate (starter->supportemail);
-  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (starter->supportemail));
+  uiwidgetp = uiEntryInit (50, 100);
+  uiBoxPackStart (hbox, uiwidgetp);
+  starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
 
   /* line 2 */
   uiwcontFree (hbox);
@@ -1811,9 +1809,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  starter->supportsubject = uiEntryInit (50, 100);
-  uiEntryCreate (starter->supportsubject);
-  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (starter->supportsubject));
+  uiwidgetp = uiEntryInit (50, 100);
+  uiBoxPackStart (hbox, uiwidgetp);
+  starter->wcont [START_W_SUPPORT_SUBJECT] = uiwidgetp;
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
@@ -1873,11 +1871,11 @@ starterSupportMsgDialogClear (startui_t *starter)
   uiwcontFree (starter->wcont [START_W_SUPPORT_TEXTBOX]);
   starter->wcont [START_W_SUPPORT_TEXTBOX] = NULL;
 
-  uiEntryFree (starter->supportsubject);
-  starter->supportsubject = NULL;
+  uiwcontFree (starter->wcont [START_W_SUPPORT_SUBJECT]);
+  starter->wcont [START_W_SUPPORT_SUBJECT] = NULL;
 
-  uiEntryFree (starter->supportemail);
-  starter->supportemail = NULL;
+  uiwcontFree (starter->wcont [START_W_SUPPORT_EMAIL]);
+  starter->wcont [START_W_SUPPORT_EMAIL] = NULL;
 
   starter->supportmsgactive = false;
 }

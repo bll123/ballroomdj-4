@@ -47,7 +47,7 @@ typedef struct manageseq {
   callback_t      *seqloadcb;
   callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
-  uientry_t       *seqname;
+  uiwcont_t       *seqname;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
@@ -72,7 +72,7 @@ manageSequenceAlloc (manageinfo_t *minfo)
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
   manageseq->seqmenu = uiMenuAlloc ();
-  manageseq->seqname = uiEntryInit (30, 100);
+  manageseq->seqname = NULL;
   manageseq->changed = false;
   manageseq->inload = false;
   manageseq->seqloadcb = NULL;
@@ -94,7 +94,7 @@ manageSequenceFree (manageseq_t *manageseq)
     uiwcontFree (manageseq->seqmenu);
     uiduallistFree (manageseq->seqduallist);
     dataFree (manageseq->seqoldname);
-    uiEntryFree (manageseq->seqname);
+    uiwcontFree (manageseq->seqname);
     for (int i = 0; i < MSEQ_CB_MAX; ++i) {
       callbackFree (manageseq->callbacks [i]);
     }
@@ -141,13 +141,14 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (manageseq->seqname);
-  uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
-      manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
-  uiWidgetSetClass (uiEntryGetWidgetContainer (manageseq->seqname), ACCENT_CLASS);
+  uiwidgetp = uiEntryInit (30, 100);
+  manageseq->seqname = uiwidgetp;
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
-  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (manageseq->seqname));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
+      manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,

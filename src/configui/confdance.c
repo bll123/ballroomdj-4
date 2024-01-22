@@ -35,17 +35,17 @@
 
 /* dance table */
 static void confuiCreateDanceTable (confuigui_t *gui);
-static int  confuiDanceEntryDanceChg (uientry_t *entry, void *udata);
-static int  confuiDanceEntryTagsChg (uientry_t *entry, void *udata);
-static int  confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata);
-static int  confuiDanceEntryChg (uientry_t *e, void *udata, int widx);
+static int  confuiDanceEntryDanceChg (uiwcont_t *entry, void *udata);
+static int  confuiDanceEntryTagsChg (uiwcont_t *entry, void *udata);
+static int  confuiDanceEntryAnnouncementChg (uiwcont_t *entry, void *udata);
+static int  confuiDanceEntryChg (uiwcont_t *e, void *udata, int widx);
 static bool confuiDanceSpinboxTypeChg (void *udata);
 static bool confuiDanceSpinboxSpeedChg (void *udata);
 static bool confuiDanceSpinboxLowMPMChg (void *udata);
 static bool confuiDanceSpinboxHighMPMChg (void *udata);
 static bool confuiDanceSpinboxTimeSigChg (void *udata);
 static void confuiDanceSpinboxChg (void *udata, int widx);
-static int  confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui);
+static int  confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui);
 static void confuiDanceSave (confuigui_t *gui);
 static void confuiLoadDanceTypeList (confuigui_t *gui);
 
@@ -116,7 +116,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].uiwidgetp,
       confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
 
@@ -135,7 +135,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   /* CONTEXT: configuration: dances: tags associated with the dance */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].uiwidgetp,
       confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
 
@@ -143,7 +143,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiMakeItemEntryChooser (gui, dvbox, szgrp, _("Announcement"),
       CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
       selectAudioFileCallback);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].uiwidgetp,
       confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
   gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
 
@@ -236,25 +236,25 @@ confuiCreateDanceTable (confuigui_t *gui)
 }
 
 static int
-confuiDanceEntryDanceChg (uientry_t *entry, void *udata)
+confuiDanceEntryDanceChg (uiwcont_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
 }
 
 static int
-confuiDanceEntryTagsChg (uientry_t *entry, void *udata)
+confuiDanceEntryTagsChg (uiwcont_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
 }
 
 static int
-confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata)
+confuiDanceEntryAnnouncementChg (uiwcont_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT);
 }
 
 static int
-confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
+confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   const char      *str;
@@ -402,7 +402,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
 }
 
 static int
-confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
+confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 {
   int         rc = UIENTRY_ERROR;
   const char  *fn;

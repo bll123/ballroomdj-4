@@ -38,10 +38,10 @@ typedef struct uict {
   nlist_t         *options;
   uiwcont_t       *ctDialog;
   uiwcont_t       *statusMsg;
-  uientry_t       *source;
+  uiwcont_t       *source;
   uiwcont_t       *sourcesel;
   uisfcb_t        sourcesfcb;
-  uientry_t       *target;
+  uiwcont_t       *target;
   uiwcont_t       *targetsel;
   uisfcb_t        targetsfcb;
   callback_t      *callbacks [UICT_CB_MAX];
@@ -62,9 +62,9 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
   uict->parentwin = windowp;
   uict->options = opts;
   uict->statusMsg = NULL;
-  uict->source = uiEntryInit (50, 200);
+  uict->source = NULL;
   uict->sourcesel = NULL;
-  uict->target = uiEntryInit (50, 200);
+  uict->target = NULL;
   uict->targetsel = NULL;
   for (int i = 0; i < UICT_CB_MAX; ++i) {
     uict->callbacks [i] = NULL;
@@ -91,8 +91,8 @@ void
 uicopytagsFree (uict_t *uict)
 {
   if (uict != NULL) {
-    uiEntryFree (uict->source);
-    uiEntryFree (uict->target);
+    uiwcontFree (uict->source);
+    uiwcontFree (uict->target);
     uiwcontFree (uict->sourcesel);
     uiwcontFree (uict->targetsel);
     uiwcontFree (uict->ctDialog);
@@ -217,13 +217,12 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uict->source);
-  uiwidgetp = uiEntryGetWidgetContainer (uict->source);
+  uiwidgetp = uiEntryInit (50, 200);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (uict->source,
-      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uict->source = uiwidgetp;
+  uiEntrySetValidate (uict->source, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
       selectAllFileCallback, &uict->sourcesfcb, NULL);
@@ -243,13 +242,12 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uict->target);
-  uiwidgetp = uiEntryGetWidgetContainer (uict->target);
+  uiwidgetp = uiEntryInit (50, 200);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (uict->target,
-      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uict->target = uiwidgetp;
+  uiEntrySetValidate (uiwidgetp, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_TARGET_SEL] = callbackInit (
       selectAudioFileCallback, &uict->targetsfcb, NULL);

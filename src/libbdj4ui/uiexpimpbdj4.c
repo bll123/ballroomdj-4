@@ -43,13 +43,13 @@ enum {
   UIEIBDJ4_W_STATUS_MSG,
   UIEIBDJ4_W_ERROR_MSG,
   UIEIBDJ4_W_DIALOG,
+  UIEIBDJ4_W_TARGET,
+  UIEIBDJ4_W_NEWNAME,
   UIEIBDJ4_W_MAX,
 };
 
 typedef struct {
   uiwcont_t       *wcont [UIEIBDJ4_W_MAX];
-  uientry_t       *target;
-  uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
   uiwcont_t       *targetButton;
   callback_t      *responsecb;
@@ -70,9 +70,9 @@ static bool   uieibdj4TargetDialog (void *udata);
 static void   uieibdj4InitDisplay (uieibdj4_t *uieibdj4);
 static bool   uieibdj4ResponseHandler (void *udata, long responseid);
 static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
-static int    uieibdj4ValidateTarget (uientry_t *entry, void *udata);
+static int    uieibdj4ValidateTarget (uiwcont_t *entry, void *udata);
 static bool   uieibdj4SelectHandler (void *udata, long idx);
-static int    uieibdj4ValidateNewName (uientry_t *entry, void *udata);
+static int    uieibdj4ValidateNewName (uiwcont_t *entry, void *udata);
 
 uieibdj4_t *
 uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
@@ -84,8 +84,6 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
     for (int j = 0; j < UIEIBDJ4_W_MAX; ++j) {
       uieibdj4->dialog [i].wcont [j] = NULL;
     }
-    uieibdj4->dialog [i].target = uiEntryInit (50, MAXPATHLEN);
-    uieibdj4->dialog [i].newname = uiEntryInit (30, MAXPATHLEN);
     uieibdj4->dialog [i].targetButton = NULL;
     uieibdj4->dialog [i].uiplaylist = NULL;
     uieibdj4->dialog [i].responsecb = NULL;
@@ -110,15 +108,17 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 void
 uieibdj4Free (uieibdj4_t *uieibdj4)
 {
-  if (uieibdj4 != NULL) {
-    for (int i = 0; i < UIEIBDJ4_CB_MAX; ++i) {
-      callbackFree (uieibdj4->callbacks [i]);
-    }
-    for (int i = 0; i < UIEIBDJ4_MAX; ++i) {
-      uieibdj4FreeDialog (uieibdj4, i);
-    }
-    mdfree (uieibdj4);
+  if (uieibdj4 == NULL) {
+    return;
   }
+
+  for (int i = 0; i < UIEIBDJ4_CB_MAX; ++i) {
+    callbackFree (uieibdj4->callbacks [i]);
+  }
+  for (int i = 0; i < UIEIBDJ4_MAX; ++i) {
+    uieibdj4FreeDialog (uieibdj4, i);
+  }
+  mdfree (uieibdj4);
 }
 
 void
@@ -181,7 +181,8 @@ uieibdj4Process (uieibdj4_t *uieibdj4)
     return;
   }
 
-  uiEntryValidate (uieibdj4->dialog [uieibdj4->currtype].target, false);
+  uiEntryValidate (
+    uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], false);
 }
 
 char *
@@ -194,7 +195,7 @@ uieibdj4GetDir (uieibdj4_t *uieibdj4)
     return NULL;
   }
 
-  tdir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
+  tdir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET]);
   dir = mdstrdup (tdir);
   return dir;
 }
@@ -221,7 +222,7 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
     return NULL;
   }
 
-  newname = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].newname);
+  newname = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_NEWNAME]);
   return newname;
 }
 
@@ -335,12 +336,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uieibdj4->dialog [currtype].target);
-  uiEntrySetValue (uieibdj4->dialog [currtype].target, "");
-  uiwidgetp = uiEntryGetWidgetContainer (uieibdj4->dialog [currtype].target);
+  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, "");
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_TARGET] = uiwidgetp;
 
   if (uieibdj4->currtype == UIEIBDJ4_EXPORT) {
     odir = nlistGetStr (uieibdj4->options, MANAGE_EXP_BDJ4_DIR);
@@ -353,7 +354,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   }
   strlcpy (tbuff, odir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, tbuff);
+  uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], tbuff);
 
   uiwidgetp = uiCreateButton (
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
@@ -363,7 +364,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiBoxPackStart (hbox, uiwidgetp);
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
-  uiEntrySetValidate (uieibdj4->dialog [currtype].target,
+  uiEntrySetValidate (uiwidgetp,
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
   if (currtype == UIEIBDJ4_IMPORT) {
@@ -398,12 +399,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
-    uiEntryCreate (uieibdj4->dialog [currtype].newname);
-    uiEntrySetValue (uieibdj4->dialog [currtype].newname, "");
-    uiwidgetp = uiEntryGetWidgetContainer (uieibdj4->dialog [currtype].newname);
+    uiwidgetp = uiEntryInit (30, MAXPATHLEN);
+    uiEntrySetValue (uiwidgetp, "");
     uiBoxPackStart (hbox, uiwidgetp);
+    uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME] = uiwidgetp;
 
-    uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
+    uiEntrySetValidate (uiwidgetp,
         uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
   }
 
@@ -426,7 +427,7 @@ uieibdj4TargetDialog (void *udata)
     return UICB_STOP;
   }
 
-  odir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
+  odir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET]);
   selectdata = uiDialogCreateSelect (uieibdj4->parentwin,
       /* CONTEXT: export/import bdj4 folder selection dialog: window title */
       _("Select Folder"), odir, NULL, NULL, NULL);
@@ -434,7 +435,7 @@ uieibdj4TargetDialog (void *udata)
   dir = uiSelectDirDialog (selectdata);
   if (dir != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, dir);
+    uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], dir);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
     mdfree (dir);   // allocated by gtk
   }
@@ -469,8 +470,6 @@ uieibdj4ResponseHandler (void *udata, long responseid)
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: del window");
       uieibdj4FreeDialog (uieibdj4, currtype);
-      uieibdj4->dialog [currtype].target = uiEntryInit (50, MAXPATHLEN);
-      uieibdj4->dialog [currtype].newname = uiEntryInit (30, MAXPATHLEN);
       break;
     }
     case RESPONSE_CLOSE: {
@@ -504,10 +503,6 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
     uiwcontFree (uieibdj4->dialog [expimptype].wcont [j]);
     uieibdj4->dialog [expimptype].wcont [j] = NULL;
   }
-  uiEntryFree (uieibdj4->dialog [expimptype].target);
-  uieibdj4->dialog [expimptype].target = NULL;
-  uiEntryFree (uieibdj4->dialog [expimptype].newname);
-  uieibdj4->dialog [expimptype].newname = NULL;
   uiwcontFree (uieibdj4->dialog [expimptype].targetButton);
   uieibdj4->dialog [expimptype].targetButton = NULL;
   uiplaylistFree (uieibdj4->dialog [expimptype].uiplaylist);
@@ -515,7 +510,7 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
 }
 
 static int
-uieibdj4ValidateTarget (uientry_t *entry, void *udata)
+uieibdj4ValidateTarget (uiwcont_t *entry, void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
   const char  *str;
@@ -565,12 +560,12 @@ uieibdj4SelectHandler (void *udata, long idx)
 
   currtype = uieibdj4->currtype;
   str = uiplaylistGetValue (uieibdj4->dialog [currtype].uiplaylist);
-  uiEntrySetValue (uieibdj4->dialog [currtype].newname, str);
+  uiEntrySetValue (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME], str);
   return UICB_CONT;
 }
 
 static int
-uieibdj4ValidateNewName (uientry_t *entry, void *udata)
+uieibdj4ValidateNewName (uiwcont_t *entry, void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
   uiwcont_t   *statusMsg = NULL;

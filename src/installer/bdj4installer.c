@@ -111,6 +111,8 @@ enum {
   INST_W_CONV_FEEDBACK_MSG,
   INST_W_VLC_MSG,
   INST_W_STATUS_DISP,
+  INST_W_TARGET,
+  INST_W_BDJ3_LOC,
   INST_W_MAX,
 };
 
@@ -146,8 +148,6 @@ typedef struct {
   slist_t         *convlist;
   slistidx_t      convidx;
   uiwcont_t       *wcont [INST_W_MAX];
-  uientry_t       *targetEntry;
-  uientry_t       *bdj3locEntry;
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -190,11 +190,11 @@ static bool installerConversionCBHandler (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
 static bool installerBDJ3LocDirDialog (void *udata);
-static int  installerValidateTarget (uientry_t *entry, void *udata);
+static int  installerValidateTarget (uiwcont_t *entry, void *udata);
 static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
 static void installerTargetFeedbackMsg (installer_t *installer);
 static void installerSetConversionFlags (installer_t *installer);
-static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
+static int  installerValidateBDJ3Loc (uiwcont_t *entry, void *udata);
 static int  installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 static void installerSetConvertStatus (installer_t *installer, int val);
@@ -337,8 +337,6 @@ main (int argc, char *argv[])
   strcpy (installer.vlcversion, "");
   strcpy (installer.oldversion, "");
   strcpy (installer.bdj3version, "");
-  installer.targetEntry = NULL;
-  installer.bdj3locEntry = NULL;
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
@@ -462,11 +460,6 @@ main (int argc, char *argv[])
     }
   }
 
-  if (installer.guienabled) {
-    installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
-    installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
-  }
-
   if (*installer.unpackdir == '\0') {
     if (! installer.quiet) {
       fprintf (stdout, "Error: unpackdir argument is required\n");
@@ -536,7 +529,9 @@ main (int argc, char *argv[])
 
   installerCheckPackages (&installer);
 
-  uiEntrySetValue (installer.targetEntry, installer.target);
+  if (installer.guienabled) {
+    uiEntrySetValue (installer.wcont [INST_W_TARGET], installer.target);
+  }
   installerSetBDJ3LocEntry (&installer, installer.bdj3loc);
   installerConversionFeedbackMsg (&installer);
 
@@ -628,12 +623,12 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiEntryCreate (installer->targetEntry);
-  uiwidgetp = uiEntryGetWidgetContainer (installer->targetEntry);
+  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (installer->targetEntry,
+  installer->wcont [INST_W_TARGET] = uiwidgetp;
+  uiEntrySetValidate (installer->wcont [INST_W_TARGET],
       installerValidateTarget, installer, UIENTRY_DELAYED);
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
@@ -710,12 +705,12 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (installer->bdj3locEntry);
-  uiwidgetp = uiEntryGetWidgetContainer (installer->bdj3locEntry);
+  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (installer->bdj3locEntry,
+  installer->wcont [INST_W_BDJ3_LOC] = uiwidgetp;
+  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC],
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
@@ -822,8 +817,8 @@ installerMainLoop (void *udata)
   }
 
   if (installer->guienabled) {
-    uiEntryValidate (installer->targetEntry, false);
-    uiEntryValidate (installer->bdj3locEntry, false);
+    uiEntryValidate (installer->wcont [INST_W_TARGET], false);
+    uiEntryValidate (installer->wcont [INST_W_BDJ3_LOC], false);
   }
 
   if (installer->guienabled && installer->scrolltoend) {
@@ -1027,7 +1022,7 @@ installerConversionCBHandler (void *udata)
 }
 
 static int
-installerValidateTarget (uientry_t *entry, void *udata)
+installerValidateTarget (uiwcont_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -1042,7 +1037,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
     return UIENTRY_RESET;
   }
 
-  dir = uiEntryGetValue (installer->targetEntry);
+  dir = uiEntryGetValue (installer->wcont [INST_W_TARGET]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
   /* only call the validation process if the directory has changed */
@@ -1199,7 +1194,7 @@ installerSetConversionFlags (installer_t *installer)
 }
 
 static int
-installerValidateBDJ3Loc (uientry_t *entry, void *udata)
+installerValidateBDJ3Loc (uiwcont_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -1216,7 +1211,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   /* bdj3 location validation */
 
-  dir = uiEntryGetValue (installer->bdj3locEntry);
+  dir = uiEntryGetValue (installer->wcont [INST_W_BDJ3_LOC]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
 
@@ -1290,7 +1285,7 @@ installerTargetDirDialog (void *udata)
   selectdata = uiDialogCreateSelect (installer->wcont [INST_W_WINDOW],
       /* CONTEXT: installer: dialog title for selecting install location */
       _("Install Location"),
-      uiEntryGetValue (installer->targetEntry),
+      uiEntryGetValue (installer->wcont [INST_W_TARGET]),
       NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -1302,7 +1297,7 @@ installerTargetDirDialog (void *udata)
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), false);
     /* the validation routine gets called upon set, */
     /* which will call the set-target routine */
-    uiEntrySetValue (installer->targetEntry, tbuff);
+    uiEntrySetValue (installer->wcont [INST_W_TARGET], tbuff);
     mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
   }
@@ -1317,7 +1312,9 @@ installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
 
   strlcpy (tbuff, bdj3loc, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (installer->bdj3locEntry, tbuff);
+  if (installer->guienabled) {
+    uiEntrySetValue (installer->wcont [INST_W_BDJ3_LOC], tbuff);
+  }
 }
 
 static bool
@@ -1331,7 +1328,7 @@ installerBDJ3LocDirDialog (void *udata)
   /* CONTEXT: installer: dialog title for selecting BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata = uiDialogCreateSelect (installer->wcont [INST_W_WINDOW],
-      tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL, NULL);
+      tbuff, uiEntryGetValue (installer->wcont [INST_W_BDJ3_LOC]), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     installerSetBDJ3LocEntry (installer, fn);
@@ -2307,8 +2304,6 @@ installerCleanup (installer_t *installer)
   }
 
   if (installer->guienabled) {
-    uiEntryFree (installer->targetEntry);
-    uiEntryFree (installer->bdj3locEntry);
     for (int i = 0; i < INST_W_MAX; ++i) {
       uiwcontFree (installer->wcont [i]);
     }

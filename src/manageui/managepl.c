@@ -44,7 +44,7 @@ enum {
 };
 
 enum {
-  MPL_W_ALLOWED_KEYWORDS,
+  MPL_W_ALL_KW_BOX,
   MPL_W_HIGH_LEVEL_ITEM,
   MPL_W_LOW_LEVEL_ITEM,
   MPL_W_MENUITEM_DELETE,
@@ -53,6 +53,8 @@ enum {
   MPL_W_PLAY_ANN,
   MPL_W_PL_TYPE,
   MPL_W_RATING_ITEM,
+  MPL_W_PL_NAME,
+  MPL_W_ALLOWED_KEYWORDS,
   MPL_W_MAX,
 };
 
@@ -67,7 +69,6 @@ typedef struct managepl {
   callback_t      *plloadcb;
   char            *ploldname;
   bool            plbackupcreated;
-  uientry_t       *plname;
   pltype_t        pltype;
   uispinbox_t     *uimaxplaytime;
   uispinbox_t     *uistopat;
@@ -77,7 +78,6 @@ typedef struct managepl {
   uiwcont_t       *wcont [MPL_W_MAX];
   uilevel_t       *uilowlevel;
   uilevel_t       *uihighlevel;
-  uientry_t       *allowedkeywords;
   uinbtabid_t     *tabids;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
@@ -96,7 +96,7 @@ static long managePlaylistValMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
-static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
+static int  managePlaylistAllowedKeywordsChg (uiwcont_t *e, void *udata);
 
 managepl_t *
 managePlaylistAlloc (manageinfo_t *minfo)
@@ -112,7 +112,6 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   managepl->wcont [MPL_W_MENU_PL] = uiMenuAlloc ();
-  managepl->plname = uiEntryInit (30, 100);
   managepl->pltype = PLTYPE_AUTO;
   managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
@@ -123,7 +122,6 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
-  managepl->allowedkeywords = uiEntryInit (15, 50);
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
@@ -148,8 +146,6 @@ managePlaylistFree (managepl_t *managepl)
     if (managepl->managepltree != NULL) {
       managePlaylistTreeFree (managepl->managepltree);
     }
-    uiEntryFree (managepl->plname);
-    uiEntryFree (managepl->allowedkeywords);
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
     uilevelFree (managepl->uihighlevel);
@@ -209,11 +205,12 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (managepl->plname);
-  uiEntrySetValidate (managepl->plname, uiutilsValidatePlaylistName,
+  uiwidgetp = uiEntryInit (30, 100);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackStart (hbox, uiwidgetp);
+  managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
+  uiEntrySetValidate (uiwidgetp, uiutilsValidatePlaylistName,
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
-  uiWidgetSetClass (uiEntryGetWidgetContainer (managepl->plname), ACCENT_CLASS);
-  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->plname));
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -381,7 +378,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = hbox;
+  managepl->wcont [MPL_W_ALL_KW_BOX] = hbox;
 
   /* CONTEXT: playlist management: allowed keywords */
   uiwidgetp = uiCreateColonLabel (_("Allowed Keywords"));
@@ -389,10 +386,11 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (managepl->allowedkeywords);
-  uiEntrySetValidate (managepl->allowedkeywords,
+  uiwidgetp = uiEntryInit (15, 50);
+  uiBoxPackStart (hbox, uiwidgetp);
+  managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
+  uiEntrySetValidate (uiwidgetp,
       managePlaylistAllowedKeywordsChg, managepl, UIENTRY_IMMEDIATE);
-  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->allowedkeywords));
 
   uiwcontFree (vbox);
 
@@ -492,7 +490,7 @@ managePlaylistSave (managepl_t *managepl)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (managepl->plname));
+  name = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
 
   managepl->changed = managePlaylistCheckChanged (managepl);
 
@@ -532,7 +530,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (managepl->plname));
+  name = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
 
   if (! playlistExists (name)) {
     managePlaylistNew (managepl, MANAGE_STD);
@@ -689,14 +687,14 @@ managePlaylistUpdateData (managepl_t *managepl)
     uiWidgetHide (managepl->wcont [MPL_W_RATING_ITEM]);
     uiWidgetHide (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
     uiWidgetHide (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
-    uiWidgetHide (managepl->wcont [MPL_W_ALLOWED_KEYWORDS]);
+    uiWidgetHide (managepl->wcont [MPL_W_ALL_KW_BOX]);
     /* CONTEXT: playlist management: type of playlist */
     uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Song List"));
   } else {
     uiWidgetShow (managepl->wcont [MPL_W_RATING_ITEM]);
     uiWidgetShow (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
     uiWidgetShow (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
-    uiWidgetShow (managepl->wcont [MPL_W_ALLOWED_KEYWORDS]);
+    uiWidgetShow (managepl->wcont [MPL_W_ALL_KW_BOX]);
     if (pltype == PLTYPE_SEQUENCE) {
       /* CONTEXT: playlist management: type of playlist */
       uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Sequence"));
@@ -740,7 +738,7 @@ managePlaylistCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
-  oname = manageTrimName (uiEntryGetValue (managepl->plname));
+  oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
@@ -768,7 +766,7 @@ managePlaylistDelete (void *udata)
 
   logProcBegin (LOG_PROC, "managePlaylistDelete");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
-  oname = manageTrimName (uiEntryGetValue (managepl->plname));
+  oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
   manageDeletePlaylist (managepl->minfo->errorMsg, oname);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
@@ -788,7 +786,7 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
   logProcBegin (LOG_PROC, "manageSetPlaylistName");
   dataFree (managepl->ploldname);
   managepl->ploldname = mdstrdup (name);
-  uiEntrySetValue (managepl->plname, name);
+  uiEntrySetValue (managepl->wcont [MPL_W_PL_NAME], name);
   logProcEnd (LOG_PROC, "manageSetPlaylistName", "");
 }
 
@@ -877,7 +875,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval = uilevelGetValue (managepl->uihighlevel);
   playlistSetConfigNum (pl, PLAYLIST_LEVEL_HIGH, tval);
 
-  tstr = uiEntryGetValue (managepl->allowedkeywords);
+  tstr = uiEntryGetValue (managepl->wcont [MPL_W_ALLOWED_KEYWORDS]);
   playlistSetConfigList (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
 
   logProcEnd (LOG_PROC, "managePlaylistUpdatePlaylist", "");
@@ -944,7 +942,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
 }
 
 static int
-managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata)
+managePlaylistAllowedKeywordsChg (uiwcont_t *e, void *udata)
 {
   managepl_t *managepl = udata;
 

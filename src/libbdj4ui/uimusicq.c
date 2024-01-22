@@ -93,10 +93,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].prevSelection = -1;
     uimusicq->ui [i].currSelection = -1;
     uimusicq->ui [i].selchgbypass = false;
-    uimusicq->ui [i].playlistsel = uiDropDownInit ();
-    /* with the 4.4.1 re-arrangement, there is more room */
-    sz = 20;
-    uimusicq->ui [i].slname = uiEntryInit (sz, 100);
+    uimusicq->ui [i].playlistsel = NULL;
+    uimusicq->ui [i].slname = NULL;
   }
 
   uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =

@@ -39,7 +39,7 @@ typedef struct confitunes {
 
 static bool confuiSelectiTunesDir (void *udata);
 static bool confuiSelectiTunesFile (void *udata);
-static int  confuiValidateMediaDir (uientry_t *entry, void *udata);
+static int  confuiValidateMediaDir (uiwcont_t *entry, void *udata);
 
 void
 confuiInitiTunes (confuigui_t *gui)
@@ -157,7 +157,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   confuiMakeItemEntryChooser (gui, mvbox, szgrp, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].uiwidgetp,
       confuiValidateMediaDir, gui, UIENTRY_DELAYED);
 
   *tbuff = '\0';
@@ -171,7 +171,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   confuiMakeItemEntryChooser (gui, mvbox, szgrp, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   mhbox = uiCreateHorizBox ();
@@ -322,7 +322,7 @@ confuiSelectiTunesFile (void *udata)
 }
 
 static int
-confuiValidateMediaDir (uientry_t *entry, void *udata)
+confuiValidateMediaDir (uiwcont_t *entry, void *udata)
 {
   confuigui_t *gui = udata;
   const char  *sval;
@@ -339,9 +339,9 @@ confuiValidateMediaDir (uientry_t *entry, void *udata)
   snprintf (tbuff, sizeof (tbuff), "%.*s/%s",
       (int) pi->dlen, pi->dirname, ITUNES_XML_NAME);
   if (fileopFileExists (tbuff)) {
-    sval = uiEntryGetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry);
+    sval = uiEntryGetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp);
     if (sval == NULL || ! *sval) {
-      uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, tbuff);
+      uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp, tbuff);
     }
   }
   pathInfoFree (pi);

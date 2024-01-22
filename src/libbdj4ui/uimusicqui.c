@@ -181,8 +181,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-    uientry_t   *entryp;
-
     hbox = uiCreateHorizBox ();
     uiWidgetSetMarginTop (hbox, 1);
     uiWidgetExpandHoriz (hbox);
@@ -195,19 +193,19 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiBoxPackStart (hbox, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
-    entryp = uimusicq->ui [ci].slname;
-    uiEntryCreate (entryp);
-    if (validateFunc != NULL) {
-      uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
-    }
-    uiWidgetSetClass (uiEntryGetWidgetContainer (entryp), ACCENT_CLASS);
+    uiwidgetp = uiEntryInit (20, 100);
+    uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-      uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
-      uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
-      uiBoxPackStartExpand (hbox, uiEntryGetWidgetContainer (entryp));
+      uiWidgetExpandHoriz (uiwidgetp);
+      uiWidgetAlignHorizFill (uiwidgetp);
+      uiBoxPackStartExpand (hbox, uiwidgetp);
     }
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
-      uiBoxPackStart (hbox, uiEntryGetWidgetContainer (entryp));
+      uiBoxPackStart (hbox, uiwidgetp);
+    }
+    uimusicq->ui [ci].slname = uiwidgetp;
+    if (validateFunc != NULL) {
+      uiEntrySetValidate (uiwidgetp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
     }
 
     uiwcontFree (hbox);
@@ -329,6 +327,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] = callbackInitLong (
           uimusicqQueuePlaylistCallback, uimusicq);
     }
+    uiwidgetp = uiDropDownInit ();
+    uimusicq->ui [ci].playlistsel = uiwidgetp;
+
     uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
         _("Queue Playlist"), uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST], uimusicq);

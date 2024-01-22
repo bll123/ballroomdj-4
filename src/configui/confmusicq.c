@@ -242,7 +242,7 @@ confuiMusicQChg (void *udata)
   gui->uiitem [widx].listidx = nselidx;
 
   /* set all of the display values for the queue specific items */
-  uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].entry,
+  uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].uiwidgetp,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, nselidx));

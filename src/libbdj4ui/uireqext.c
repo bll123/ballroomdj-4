@@ -49,11 +49,11 @@ typedef struct uireqext {
   uiwcont_t       *statusMsg;
   nlist_t         *options;
   uiwcont_t       *extreqDialog;
-  uientry_t       *audioFileEntry;
+  uiwcont_t       *audioFileEntry;
   uiwcont_t       *audioFileDialogButton;
   uisfcb_t        audiofilesfcb;
-  uientry_t       *artistEntry;
-  uientry_t       *titleEntry;
+  uiwcont_t       *artistEntry;
+  uiwcont_t       *titleEntry;
   uidance_t       *uidance;
   callback_t      *callbacks [UIEXTREQ_CB_MAX];
   callback_t      *responsecb;
@@ -68,9 +68,9 @@ static void   uireqextInitDisplay (uireqext_t *uireqext, const char *fn);
 static void   uireqextClearSong (uireqext_t *uireqext);
 static bool   uireqextResponseHandler (void *udata, long responseid);
 static void   uireqextProcessAudioFile (uireqext_t *uireqext);
-static int    uireqextValidateAudioFile (uientry_t *entry, void *udata);
-static int    uireqextValidateArtist (uientry_t *entry, void *udata);
-static int    uireqextValidateTitle (uientry_t *entry, void *udata);
+static int    uireqextValidateAudioFile (uiwcont_t *entry, void *udata);
+static int    uireqextValidateArtist (uiwcont_t *entry, void *udata);
+static int    uireqextValidateTitle (uiwcont_t *entry, void *udata);
 
 uireqext_t *
 uireqextInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
@@ -79,9 +79,9 @@ uireqextInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
 
   uireqext = mdmalloc (sizeof (uireqext_t));
   uireqext->extreqDialog = NULL;
-  uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
-  uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
-  uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
+  uireqext->audioFileEntry = NULL;
+  uireqext->artistEntry = NULL;
+  uireqext->titleEntry = NULL;
   uireqext->uidance = NULL;
   uireqext->parentwin = windowp;
   uireqext->statusMsg = NULL;
@@ -114,9 +114,9 @@ uireqextFree (uireqext_t *uireqext)
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
     }
-    uiEntryFree (uireqext->audioFileEntry);
-    uiEntryFree (uireqext->artistEntry);
-    uiEntryFree (uireqext->titleEntry);
+    uiwcontFree (uireqext->audioFileEntry);
+    uiwcontFree (uireqext->artistEntry);
+    uiwcontFree (uireqext->titleEntry);
     uiwcontFree (uireqext->extreqDialog);
     uiwcontFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);
@@ -237,12 +237,12 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uireqext->audioFileEntry);
-  uiEntrySetValue (uireqext->audioFileEntry, "");
-  uiwidgetp = uiEntryGetWidgetContainer (uireqext->audioFileEntry);
+  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, "");
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uireqext->audioFileEntry = uiwidgetp;
 
   uireqext->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
       selectAudioFileCallback, &uireqext->audiofilesfcb, NULL);
@@ -264,11 +264,11 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uireqext->artistEntry);
-  uiEntrySetValue (uireqext->artistEntry, "");
-  uiwidgetp = uiEntryGetWidgetContainer (uireqext->artistEntry);
+  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, "");
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uireqext->artistEntry = uiwidgetp;
 
   /* title display */
   uiwcontFree (hbox);
@@ -280,11 +280,11 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiEntryCreate (uireqext->titleEntry);
-  uiEntrySetValue (uireqext->titleEntry, "");
-  uiwidgetp = uiEntryGetWidgetContainer (uireqext->titleEntry);
+  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, "");
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uireqext->titleEntry = uiwidgetp;
 
   /* dance : always available */
   uiwcontFree (hbox);
@@ -459,7 +459,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
 }
 
 static int
-uireqextValidateAudioFile (uientry_t *entry, void *udata)
+uireqextValidateAudioFile (uiwcont_t *entry, void *udata)
 {
   uireqext_t  *uireqext = udata;
   int         rc;
@@ -483,7 +483,7 @@ uireqextValidateAudioFile (uientry_t *entry, void *udata)
 }
 
 static int
-uireqextValidateArtist (uientry_t *entry, void *udata)
+uireqextValidateArtist (uiwcont_t *entry, void *udata)
 {
   uireqext_t  *uireqext = udata;
   const char  *str;
@@ -497,7 +497,7 @@ uireqextValidateArtist (uientry_t *entry, void *udata)
 }
 
 static int
-uireqextValidateTitle (uientry_t *entry, void *udata)
+uireqextValidateTitle (uiwcont_t *entry, void *udata)
 {
   uireqext_t  *uireqext = udata;
   const char  *str;

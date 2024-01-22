@@ -199,7 +199,6 @@ typedef struct {
   long              debuglvl;
   int               bdjoptIdx;
   union {
-    uientry_t     *entry;
     uispinbox_t   *spinbox;
   };
   uiwcont_t   *uibutton;      // for entry chooser
@@ -210,6 +209,8 @@ typedef struct {
   nlist_t     *sbkeylist;     // indexed by spinbox index
                               //    value: key
   int         danceidx;       // for dance edit
+  int         entrysz;
+  int         entrymaxsz;
   uiwcont_t   *uiwidgetp;
   callback_t  *callback;
   char        *uri;
@@ -442,6 +443,7 @@ void confuiBuildUIEditGenres (confuigui_t *gui);
 void confuiCreateGenreTable (confuigui_t *gui);
 
 /* confgui.c */
+void confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz);
 void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);

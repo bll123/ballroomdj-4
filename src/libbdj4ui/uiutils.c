@@ -72,7 +72,7 @@ uiutilsGetCurrentFont (void)
 }
 
 int
-uiutilsValidatePlaylistName (uientry_t *entry, void *udata)
+uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata)
 {
   uiwcont_t   *statusMsg = udata;
   int         rc;

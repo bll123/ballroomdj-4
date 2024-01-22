@@ -5,7 +5,6 @@
 #define INC_UIUTILS_H
 
 #include "ui.h"
-#include "uiwcont.h"
 
 typedef struct {
   uiwcont_t   *hbox;
@@ -15,7 +14,7 @@ typedef struct {
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetProfileColor (uiwcont_t *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
-int uiutilsValidatePlaylistName (uientry_t *entry, void *udata);
+int uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 
 #endif /* INC_UIUTILS_H */

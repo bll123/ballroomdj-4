@@ -58,7 +58,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_ENTRY_ENCRYPT:
       case CONFUI_ENTRY: {
-        sval = uiEntryGetValue (gui->uiitem [i].entry);
+        sval = uiEntryGetValue (gui->uiitem [i].uiwidgetp);
         if (basetype == CONFUI_ENTRY_ENCRYPT) {
           vsencdec (sval, tbuff, sizeof (tbuff));
           sval = tbuff;
