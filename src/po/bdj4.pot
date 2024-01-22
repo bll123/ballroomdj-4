@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-12 08:48-0800\n"
+"POT-Creation-Date: 2024-01-22 10:15-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -431,8 +431,8 @@ msgstr ""
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
-#. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -1387,8 +1387,8 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) external request dialog: queue the selected file
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr ""
