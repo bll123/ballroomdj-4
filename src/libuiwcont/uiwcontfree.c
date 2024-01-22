@@ -15,6 +15,7 @@
 #include "ui/uiwcont-int.h"
 
 #include "ui/uibutton.h"
+#include "ui/uidropdown.h"
 #include "ui/uikeys.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
@@ -35,6 +36,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_BUTTON: {
       uiButtonFree (uiwidget);
+      break;
+    }
+    case WCONT_T_DROPDOWN: {
+      uiDropDownFree (uiwidget);
       break;
     }
     case WCONT_T_KEY: {

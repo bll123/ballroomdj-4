@@ -34,66 +34,66 @@ typedef struct uidropdown {
   int         junk;
 } uidropdown_t;
 
-uidropdown_t *
+uiwcont_t *
 uiDropDownInit (void)
 {
   return NULL;
 }
 
 void
-uiDropDownFree (uidropdown_t *dropdown)
+uiDropDownFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 uiwcont_t *
-uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+uiDropDownCreate (uiwcont_t *uiwidget, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
   return NULL;
 }
 
 uiwcont_t *
-uiComboboxCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+uiComboboxCreate (uiwcont_t *uiwidget, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
   return NULL;
 }
 
 void
-uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
+uiDropDownSetList (uiwcont_t *uiwidget, slist_t *list,
     const char *selectLabel)
 {
   return;
 }
 
 void
-uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
+uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,
     const char *selectLabel)
 {
   return;
 }
 
 void
-uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
+uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)
 {
   return;
 }
 
 void
-uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
+uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
 {
   return;
 }
 
 void
-uiDropDownSetState (uidropdown_t *dropdown, int state)
+uiDropDownSetState (uiwcont_t *uiwidget, int state)
 {
   return;
 }
 
 char *
-uiDropDownGetString (uidropdown_t *dropdown)
+uiDropDownGetString (uiwcont_t *uiwidget)
 {
   return NULL;
 }

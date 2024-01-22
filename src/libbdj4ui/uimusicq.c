@@ -126,23 +126,25 @@ void
 uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
-  if (uimusicq != NULL) {
-    for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
-      callbackFree (uimusicq->callbacks [i]);
-    }
-    for (int i = 0; i < MUSICQ_MAX; ++i) {
-      uiwcontFree (uimusicq->ui [i].mainbox);
-      uiDropDownFree (uimusicq->ui [i].playlistsel);
-      uiEntryFree (uimusicq->ui [i].slname);
-    }
-    uimusicqUIFree (uimusicq);
-
-    uiWidgetClearPersistent (uimusicq->pausePixbuf);
-    uiwcontFree (uimusicq->pausePixbuf);
-    nlistFree (uimusicq->savelist);
-
-    mdfree (uimusicq);
+  if (uimusicq == NULL) {
+    return;
   }
+
+  for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
+    callbackFree (uimusicq->callbacks [i]);
+  }
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    uiwcontFree (uimusicq->ui [i].mainbox);
+    uiwcontFree (uimusicq->ui [i].playlistsel);
+    uiEntryFree (uimusicq->ui [i].slname);
+  }
+  uimusicqUIFree (uimusicq);
+
+  uiWidgetClearPersistent (uimusicq->pausePixbuf);
+  uiwcontFree (uimusicq->pausePixbuf);
+  nlistFree (uimusicq->savelist);
+
+  mdfree (uimusicq);
   logProcEnd (LOG_PROC, "uimusicqFree", "");
 }
 

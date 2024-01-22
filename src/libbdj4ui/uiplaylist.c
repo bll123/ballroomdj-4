@@ -27,7 +27,7 @@ enum {
 };
 
 typedef struct uiplaylist {
-  uidropdown_t      *dropdown;
+  uiwcont_t         *dropdown;
   uiwcont_t         *uiwidgetp;
   callback_t        *callbacks [UIPLAYLIST_CB_MAX];
   callback_t        *selectcb;
@@ -63,13 +63,15 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
 void
 uiplaylistFree (uiplaylist_t *uiplaylist)
 {
-  if (uiplaylist != NULL) {
-    for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
-      callbackFree (uiplaylist->callbacks [i]);
-    }
-    uiDropDownFree (uiplaylist->dropdown);
-    mdfree (uiplaylist);
+  if (uiplaylist == NULL) {
+    return;
   }
+
+  for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
+    callbackFree (uiplaylist->callbacks [i]);
+  }
+  uiwcontFree (uiplaylist->dropdown);
+  mdfree (uiplaylist);
 }
 
 void

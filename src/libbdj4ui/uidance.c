@@ -23,9 +23,9 @@
 
 typedef struct uidance {
   dance_t       *dances;
-  uidropdown_t  *dropdown;
-  uiwcont_t    *parentwin;
-  uiwcont_t    *buttonp;
+  uiwcont_t     *dropdown;
+  uiwcont_t     *parentwin;
+  uiwcont_t     *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   const char    *label;
@@ -88,11 +88,13 @@ uidanceGetButton (uidance_t *uidance)
 void
 uidanceFree (uidance_t *uidance)
 {
-  if (uidance != NULL) {
-    callbackFree (uidance->cb);
-    uiDropDownFree (uidance->dropdown);
-    mdfree (uidance);
+  if (uidance == NULL) {
+    return;
   }
+
+  callbackFree (uidance->cb);
+  uiwcontFree (uidance->dropdown);
+  mdfree (uidance);
 }
 
 int

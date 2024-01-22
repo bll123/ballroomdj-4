@@ -2,7 +2,6 @@
 #define INC_UIWCONT_INT_H
 
 #include "ui/uidialog.h"
-#include "ui/uidropdown.h"
 #include "ui/uientry.h"
 #include "ui/uispinbox.h"
 #include "ui/uitreeview.h"
@@ -75,6 +74,7 @@ typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
+typedef struct uidropdown uidropdown_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */

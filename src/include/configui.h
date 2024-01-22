@@ -199,10 +199,8 @@ typedef struct {
   long              debuglvl;
   int               bdjoptIdx;
   union {
-    uidropdown_t  *dropdown;
     uientry_t     *entry;
     uispinbox_t   *spinbox;
-    uiwcont_t     *uiswitch;
   };
   uiwcont_t   *uibutton;      // for entry chooser
   uisfcb_t    sfcb;           // for entry chooser

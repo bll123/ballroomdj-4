@@ -122,12 +122,12 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
   gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
-  uiwidgetp = uiComboboxCreate (gui->uiitem [widx].dropdown,
+  uiwidgetp = uiComboboxCreate (gui->uiitem [widx].uiwidgetp,
       gui->window, txt, gui->uiitem [widx].callback, gui);
 
-  uiDropDownSetList (gui->uiitem [widx].dropdown,
+  uiDropDownSetList (gui->uiitem [widx].uiwidgetp,
       gui->uiitem [widx].displist, NULL);
-  uiDropDownSelectionSetStr (gui->uiitem [widx].dropdown, value);
+  uiDropDownSelectionSetStr (gui->uiitem [widx].uiwidgetp, value);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
@@ -400,11 +400,11 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  gui->uiitem [widx].uiswitch = uiwidgetp;
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
 
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
-    uiSwitchSetCallback (gui->uiitem [widx].uiswitch,
+    uiSwitchSetCallback (gui->uiitem [widx].uiwidgetp,
         gui->uiitem [widx].callback);
   }
 

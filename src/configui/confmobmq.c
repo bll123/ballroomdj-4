@@ -84,7 +84,7 @@ confuiMobmqTypeChg (void *udata)
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
-  value = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_MOBILE_MQ].uiswitch);
+  value = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_MOBILE_MQ].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
   confuiUpdateMobmqQrcode (gui);

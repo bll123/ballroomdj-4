@@ -84,7 +84,7 @@ typedef struct uisongfilter {
   uiwcont_t         *filterDialog;
   uiplaylist_t      *uiplaylist;
   uiwcont_t         *playlistdisp;
-  uidropdown_t      *sortbyfilter;
+  uiwcont_t         *sortbyfilter;
   uidance_t         *uidance;
   uigenre_t         *uigenre;
   uientry_t         *searchentry;
@@ -166,31 +166,33 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
 void
 uisfFree (uisongfilter_t *uisf)
 {
-  if (uisf != NULL) {
-    dataFree (uisf->playlistname);
-    uiwcontFree (uisf->playlistdisp);
-    uiwcontFree (uisf->filterDialog);
-    uiplaylistFree (uisf->uiplaylist);
-    uiDropDownFree (uisf->sortbyfilter);
-    uiEntryFree (uisf->searchentry);
-    uidanceFree (uisf->uidance);
-    uigenreFree (uisf->uigenre);
-    uiratingFree (uisf->uirating);
-    uilevelFree (uisf->uilevel);
-    uistatusFree (uisf->uistatus);
-    uifavoriteFree (uisf->uifavorite);
-    uiwcontFree (uisf->playstatusswitch);
-    sortoptFree (uisf->sortopt);
-    songfilterFree (uisf->songfilter);
-    playlistFree (uisf->playlist);
-    for (int i = 0; i < UISF_LABEL_MAX; ++i) {
-      uiwcontFree (uisf->labels [i]);
-    }
-    for (int i = 0; i < UISF_CB_MAX; ++i) {
-      callbackFree (uisf->callbacks [i]);
-    }
-    mdfree (uisf);
+  if (uisf == NULL) {
+    return;
   }
+
+  dataFree (uisf->playlistname);
+  uiwcontFree (uisf->playlistdisp);
+  uiwcontFree (uisf->filterDialog);
+  uiplaylistFree (uisf->uiplaylist);
+  uiwcontFree (uisf->sortbyfilter);
+  uiEntryFree (uisf->searchentry);
+  uidanceFree (uisf->uidance);
+  uigenreFree (uisf->uigenre);
+  uiratingFree (uisf->uirating);
+  uilevelFree (uisf->uilevel);
+  uistatusFree (uisf->uistatus);
+  uifavoriteFree (uisf->uifavorite);
+  uiwcontFree (uisf->playstatusswitch);
+  sortoptFree (uisf->sortopt);
+  songfilterFree (uisf->songfilter);
+  playlistFree (uisf->playlist);
+  for (int i = 0; i < UISF_LABEL_MAX; ++i) {
+    uiwcontFree (uisf->labels [i]);
+  }
+  for (int i = 0; i < UISF_CB_MAX; ++i) {
+    callbackFree (uisf->callbacks [i]);
+  }
+  mdfree (uisf);
 }
 
 void

@@ -275,24 +275,17 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
 
       strlcpy (nsongfn, songfn, sizeof (nsongfn));
       audiosrcFullPath (songfn, ffn, sizeof (ffn), 0, NULL);
-fprintf (stderr, "a:n: %s\n", nsongfn);
-fprintf (stderr, "a:ffn: %s\n", ffn);
       strlcpy (nsongfn,
           audiosrcRelativePath (ffn, songGetNum (song, TAG_PREFIX_LEN)), sizeof (nsongfn));
       /* all possible special characters must be stripped from the filename, */
       /* as the export/import must work across different systems */
       pi = pathInfo (nsongfn);
-fprintf (stderr, "b:fn: %.*s\n", (int) pi->flen, pi->filename);
-fprintf (stderr, "b:dir: %.*s\n", (int) pi->dlen, pi->dirname);
-fprintf (stderr, "-- %s %d\n", nsongfn + pi->dlen + 1, (int) pi->flen);
       orgutilClean (nsongfn + pi->dlen + 1, pi->filename,
           sizeof (nsongfn) - pi->dlen - 1, ORG_ALL_CHARS);
       pathInfoFree (pi);
-fprintf (stderr, "b:n: %s\n", nsongfn);
 
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
-fprintf (stderr, "c:tbuff: %s\n", tbuff);
       if (isabsolute) {
         songSetStr (song, TAG_URI, nsongfn);
       }
@@ -338,7 +331,6 @@ fprintf (stderr, "c:tbuff: %s\n", tbuff);
         if (type == AUDIOSRC_TYPE_FILE) {
           pi = pathInfo (tbuff);
           pathInfoGetDir (pi, tdir, sizeof (tdir));
-fprintf (stderr, "tdir: %s\n", tdir);
           diropMakeDir (tdir);
           pathInfoFree (pi);
         }

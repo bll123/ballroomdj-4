@@ -9,22 +9,20 @@
 #include "slist.h"
 #include "uiwcont.h"
 
-typedef struct uidropdown uidropdown_t;
-
-uidropdown_t *uiDropDownInit (void);
-void uiDropDownFree (uidropdown_t *dropdown);
-uiwcont_t *uiDropDownCreate (uidropdown_t *dropdown,
+uiwcont_t *uiDropDownInit (void);
+void uiDropDownFree (uiwcont_t *dropdown);
+uiwcont_t *uiDropDownCreate (uiwcont_t *dropdown,
     uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
-uiwcont_t *uiComboboxCreate (uidropdown_t *dropdown,
+uiwcont_t *uiComboboxCreate (uiwcont_t *dropdown,
     uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
 /* be sure to call slistCalcMaxWidth() on the lists passed to these routines */
-void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
+void uiDropDownSetList (uiwcont_t *dropdown, slist_t *list,
     const char *selectLabel);
-void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
+void uiDropDownSetNumList (uiwcont_t *dropdown, slist_t *list,
     const char *selectLabel);
-void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
-void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
-void uiDropDownSetState (uidropdown_t *dropdown, int state);
-char *uiDropDownGetString (uidropdown_t *dropdown);
+void uiDropDownSelectionSetNum (uiwcont_t *dropdown, nlistidx_t idx);
+void uiDropDownSelectionSetStr (uiwcont_t *dropdown, const char *stridx);
+void uiDropDownSetState (uiwcont_t *dropdown, int state);
+char *uiDropDownGetString (uiwcont_t *dropdown);
 
 #endif /* INC_UIDROPDOWN_H */

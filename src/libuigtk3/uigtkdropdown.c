@@ -63,15 +63,16 @@ typedef struct uidropdown {
 /* drop-down/combobox handling */
 static bool uiDropDownWindowShow (void *udata);
 static bool uiDropDownClose (void *udata);
-static void uiDropDownButtonCreate (uidropdown_t *dropdown);
-static void uiDropDownWindowCreate (uidropdown_t *dropdown, callback_t *uicb, void *udata);
-static void uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx);
+static void uiDropDownButtonCreate (uiwcont_t *uiwidget);
+static void uiDropDownWindowCreate (uiwcont_t *uiwidget, callback_t *uicb, void *udata);
+static void uiDropDownSelectionSet (uiwcont_t *uiwidget, nlistidx_t internalidx);
 static void uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
-static nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
+static nlistidx_t uiDropDownSelectionGet (uiwcont_t *uiwidget, GtkTreePath *path);
 
-uidropdown_t *
+uiwcont_t *
 uiDropDownInit (void)
 {
+  uiwcont_t     *uiwidget;
   uidropdown_t  *dropdown;
 
   dropdown = mdmalloc (sizeof (uidropdown_t));
@@ -91,60 +92,86 @@ uiDropDownInit (void)
   dropdown->buttoncb = NULL;
   dropdown->closecb = NULL;
 
-  return dropdown;
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_DROPDOWN;
+  uiwidget->wtype = WCONT_T_DROPDOWN;
+  uiwidget->uiint.uidropdown = dropdown;
+
+  return uiwidget;
 }
 
 void
-uiDropDownFree (uidropdown_t *dropdown)
+uiDropDownFree (uiwcont_t *uiwidget)
 {
-  if (dropdown != NULL) {
-    uiwcontFree (dropdown->window);
-    callbackFree (dropdown->buttoncb);
-    callbackFree (dropdown->closecb);
-    uiwcontFree (dropdown->button);
-    dataFree (dropdown->title);
-    if (dropdown->strSelection != NULL) {
-      mdfree (dropdown->strSelection);        // allocated by gtk
-    }
-    slistFree (dropdown->strIndexMap);
-    nlistFree (dropdown->keylist);
-    uiTreeViewFree (dropdown->uitree);
-    mdfree (dropdown);
+  uidropdown_t    *dropdown;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-free")) {
+    return;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
+
+  uiwcontFree (dropdown->window);
+  uiwcontFree (dropdown->button);
+  callbackFree (dropdown->buttoncb);
+  callbackFree (dropdown->closecb);
+  dataFree (dropdown->title);
+  if (dropdown->strSelection != NULL) {
+    mdextfree (dropdown->strSelection);        // allocated by gtk
+  }
+  slistFree (dropdown->strIndexMap);
+  nlistFree (dropdown->keylist);
+  uiTreeViewFree (dropdown->uitree);
+  mdfree (dropdown);
+  /* the container is freed by uiwcontFree() */
 }
 
+/* returns the button */
 uiwcont_t *
-uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+uiDropDownCreate (uiwcont_t *uiwidget, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
-  if (dropdown == NULL) {
+  uidropdown_t  *dropdown;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-create")) {
+    return NULL;
+  }
+  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "dropdown-create-win")) {
     return NULL;
   }
 
+  dropdown = uiwidget->uiint.uidropdown;
   dropdown->parentwin = parentwin;
-  dropdown->title = mdstrdup (title);
-  uiDropDownButtonCreate (dropdown);
-  uiDropDownWindowCreate (dropdown, uicb, udata);
+  if (title != NULL) {
+    dropdown->title = mdstrdup (title);
+  }
+  uiDropDownButtonCreate (uiwidget);
+  uiDropDownWindowCreate (uiwidget, uicb, udata);
 
   return dropdown->button;
 }
 
+/* returns the button */
 uiwcont_t *
-uiComboboxCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+uiComboboxCreate (uiwcont_t *uiwidget, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
-  if (dropdown == NULL) {
+  uidropdown_t    *dropdown;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "combobox-create")) {
     return NULL;
   }
 
+  dropdown = uiwidget->uiint.uidropdown;
   dropdown->iscombobox = true;
-  return uiDropDownCreate (dropdown, parentwin, title, uicb, udata);
+  return uiDropDownCreate (uiwidget, parentwin, title, uicb, udata);
 }
 
 void
-uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
+uiDropDownSetList (uiwcont_t *uiwidget, slist_t *list,
     const char *selectLabel)
 {
+  uidropdown_t  *dropdown;
   const char    *strval;
   const char    *dispval;
   GtkTreeIter   iter;
@@ -154,9 +181,14 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   uiwcont_t     *uitreewidgetp;
   char          tbuff [200];
 
-  if (dropdown == NULL || list == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-set-list")) {
     return;
   }
+  if (list == NULL) {
+    return;
+  }
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -207,9 +239,10 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
 }
 
 void
-uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
+uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,
     const char *selectLabel)
 {
+  uidropdown_t      *dropdown;
   const char        *dispval;
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
@@ -218,6 +251,15 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   nlistidx_t        internalidx;
   nlistidx_t        idx;
   uiwcont_t         *uitreewidgetp;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-set-num-list")) {
+    return;
+  }
+  if (list == NULL) {
+    return;
+  }
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -270,31 +312,36 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
 }
 
 void
-uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
+uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)
 {
+  uidropdown_t  *dropdown;
   nlistidx_t    internalidx;
 
-  if (dropdown == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-sel-set-num")) {
     return;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   if (dropdown->keylist == NULL) {
     internalidx = 0;
   } else {
     internalidx = nlistGetNum (dropdown->keylist, idx);
   }
-  uiDropDownSelectionSet (dropdown, internalidx);
+  uiDropDownSelectionSet (uiwidget, internalidx);
 }
 
 void
-uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
+uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
 {
+  uidropdown_t  *dropdown;
   nlistidx_t    internalidx;
 
-
-  if (dropdown == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-sel-set-str")) {
     return;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   if (dropdown->strIndexMap == NULL) {
     internalidx = 0;
@@ -304,24 +351,32 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
       internalidx = 0;
     }
   }
-  uiDropDownSelectionSet (dropdown, internalidx);
+  uiDropDownSelectionSet (uiwidget, internalidx);
 }
 
 void
-uiDropDownSetState (uidropdown_t *dropdown, int state)
+uiDropDownSetState (uiwcont_t *uiwidget, int state)
 {
-  if (dropdown == NULL) {
+  uidropdown_t    *dropdown;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-set-state")) {
     return;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
   uiWidgetSetState (dropdown->button, state);
 }
 
 char *
-uiDropDownGetString (uidropdown_t *dropdown)
+uiDropDownGetString (uiwcont_t *uiwidget)
 {
-  if (dropdown == NULL) {
+  uidropdown_t    *dropdown;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-get-str")) {
     return NULL;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
   return dropdown->strSelection;
 }
 
@@ -355,7 +410,14 @@ uiDropDownWindowShow (void *udata)
 static bool
 uiDropDownClose (void *udata)
 {
-  uidropdown_t *dropdown = udata;
+  uiwcont_t     *uiwidget = udata;
+  uidropdown_t  *dropdown;
+
+  if (uiwidget == NULL) {
+    return UICB_CONT;
+  }
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   if (dropdown->open) {
     uiWidgetHide (dropdown->window);
@@ -367,8 +429,12 @@ uiDropDownClose (void *udata)
 }
 
 static void
-uiDropDownButtonCreate (uidropdown_t *dropdown)
+uiDropDownButtonCreate (uiwcont_t *uiwidget)
 {
+  uidropdown_t    *dropdown;
+
+  dropdown = uiwidget->uiint.uidropdown;
+
   dropdown->buttoncb = callbackInit (uiDropDownWindowShow, dropdown, NULL);
   dropdown->button = uiCreateButton (dropdown->buttoncb, NULL,
       "button_down_small");
@@ -380,9 +446,10 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
 
 
 static void
-uiDropDownWindowCreate (uidropdown_t *dropdown,
+uiDropDownWindowCreate (uiwcont_t *uiwidget,
     callback_t *uicb, void *udata)
 {
+  uidropdown_t      *dropdown;
   uiwcont_t         *uiwidgetp;
   uiwcont_t         *vbox = NULL;
   uiwcont_t         *mainvbox = NULL;
@@ -390,8 +457,9 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
 
+  dropdown = uiwidget->uiint.uidropdown;
 
-  dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
+  dropdown->closecb = callbackInit (uiDropDownClose, uiwidget, NULL);
   dropdown->window = uiCreateDialogWindow (dropdown->parentwin,
       dropdown->button, dropdown->closecb, "");
 
@@ -433,7 +501,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   if (uicb != NULL) {
     dropdown->selectcb = uicb;
     g_signal_connect (uiwidgetp->widget, "row-activated",
-        G_CALLBACK (uiDropDownSelectHandler), dropdown);
+        G_CALLBACK (uiDropDownSelectHandler), uiwidget);
   }
 
   uiwcontFree (mainvbox);
@@ -442,8 +510,9 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 }
 
 static void
-uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
+uiDropDownSelectionSet (uiwcont_t *uiwidget, nlistidx_t internalidx)
 {
+  uidropdown_t  *dropdown;
   GtkTreePath   *path = NULL;
   GtkTreeModel  *model = NULL;
   GtkTreeIter   iter;
@@ -451,10 +520,16 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   char          *p;
   uiwcont_t     *uitreewidgetp;
 
-
-  if (dropdown == NULL || dropdown->uitree == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
+
+  dropdown = uiwidget->uiint.uidropdown;
+
+  if (dropdown->uitree == NULL) {
+    return;
+  }
+
   uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
   if (uitreewidgetp->widget == NULL) {
     return;
@@ -489,22 +564,27 @@ static void
 uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
-  uidropdown_t  *dropdown = udata;
+  uiwcont_t     *uiwidget = udata;
+  uidropdown_t  *dropdown;
   long          idx;
 
-  idx = uiDropDownSelectionGet (dropdown, path);
+  idx = uiDropDownSelectionGet (uiwidget, path);
+  dropdown = uiwidget->uiint.uidropdown;
   callbackHandlerLong (dropdown->selectcb, idx);
 }
 
 static nlistidx_t
-uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
+uiDropDownSelectionGet (uiwcont_t *uiwidget, GtkTreePath *path)
 {
+  uidropdown_t  *dropdown;
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
   glong         idx = 0;
   nlistidx_t    retval;
   char          tbuff [200];
   uiwcont_t     *uitreewidgetp;
+
+  dropdown = uiwidget->uiint.uidropdown;
 
   uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
 
@@ -513,7 +593,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
     retval = idx;
     if (dropdown->strSelection != NULL) {
-      mdfree (dropdown->strSelection);        // allocated by gtk
+      mdextfree (dropdown->strSelection);        // allocated by gtk
     }
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
         &dropdown->strSelection, -1);

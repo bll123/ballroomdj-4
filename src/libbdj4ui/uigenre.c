@@ -23,9 +23,9 @@
 
 typedef struct uigenre {
   genre_t       *genres;
-  uidropdown_t  *dropdown;
-  uiwcont_t    *parentwin;
-  uiwcont_t    *buttonp;
+  uiwcont_t     *dropdown;
+  uiwcont_t     *parentwin;
+  uiwcont_t     *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   long          selectedidx;
@@ -72,11 +72,13 @@ uigenreGetButton (uigenre_t *uigenre)
 void
 uigenreFree (uigenre_t *uigenre)
 {
-  if (uigenre != NULL) {
-    callbackFree (uigenre->cb);
-    uiDropDownFree (uigenre->dropdown);
-    mdfree (uigenre);
+  if (uigenre == NULL) {
+    return;
   }
+
+  callbackFree (uigenre->cb);
+  uiwcontFree (uigenre->dropdown);
+  mdfree (uigenre);
 }
 
 int
