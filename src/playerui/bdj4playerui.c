@@ -166,6 +166,7 @@ typedef struct {
 
 static datafilekey_t playeruidfkeys [] = {
   { "EXP_MP3_DIR",              EXP_MP3_DIR,                VALUE_STR, NULL, DF_NORM },
+  { "EXT_REQ_DIR",              EXT_REQ_DIR,                VALUE_STR, NULL, DF_NORM },
   { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
   { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
   { "PLUI_POS_X",               PLUI_POSITION_X,            VALUE_NUM, NULL, DF_NORM },
@@ -173,7 +174,6 @@ static datafilekey_t playeruidfkeys [] = {
   { "PLUI_RESTART_POS",         PLUI_RESTART_POSITION,      VALUE_NUM, NULL, DF_NORM },
   { "PLUI_SIZE_X",              PLUI_SIZE_X,                VALUE_NUM, NULL, DF_NORM },
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, DF_NORM },
-  { "REQ_EXT_DIR",              REQ_EXT_DIR,                VALUE_STR, NULL, DF_NORM },
   { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, DF_NORM },
   { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, DF_NORM },
   { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, DF_NORM },
@@ -348,7 +348,7 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_RESTART_POSITION, -1);
     nlistSetNum (plui.options, REQ_EXT_POSITION_X, -1);
     nlistSetNum (plui.options, REQ_EXT_POSITION_Y, -1);
-    nlistSetStr (plui.options, REQ_EXT_DIR, "");
+    nlistSetStr (plui.options, EXT_REQ_DIR, "");
     nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_X, -1);
     nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetStr (plui.options, EXP_MP3_DIR, "");

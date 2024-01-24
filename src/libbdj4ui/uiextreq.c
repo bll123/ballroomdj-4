@@ -98,10 +98,6 @@ uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiextreq->musicdb = musicdb;
 
   selectInitCallback (&uiextreq->audiofilesfcb);
-  uiextreq->audiofilesfcb.title = NULL;
-  uiextreq->audiofilesfcb.defdir = nlistGetStr (uiextreq->options, REQ_EXT_DIR);
-  uiextreq->audiofilesfcb.entry = uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE];
-  uiextreq->audiofilesfcb.window = uiextreq->wcont [UIEXTREQ_W_WINDOW];
 
   return uiextreq;
 }
@@ -195,6 +191,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *szgrp;  // labels
   uiwcont_t     *szgrpEntry; // title, artist
+  const char    *tstr;
 
   logProcBegin (LOG_PROC, "uiextreqCreateDialog");
 
@@ -247,6 +244,12 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE] = uiwidgetp;
+
+  uiextreq->audiofilesfcb.title = NULL;
+  tstr = nlistGetStr (uiextreq->options, EXT_REQ_DIR);
+  uiextreq->audiofilesfcb.defdir = tstr;
+  uiextreq->audiofilesfcb.entry = uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE];
+  uiextreq->audiofilesfcb.window = uiextreq->wcont [UIEXTREQ_W_WINDOW];
 
   uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
       selectAudioFileCallback, &uiextreq->audiofilesfcb, NULL);
@@ -475,11 +478,13 @@ uiextreqValidateAudioFile (uiwcont_t *entry, void *udata)
     char          tmp [MAXPATHLEN];
 
     fn = uiEntryGetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE]);
-    pi = pathInfo (fn);
-    pathInfoGetDir (pi, tmp, sizeof (tmp));
-    nlistSetStr (uiextreq->options, REQ_EXT_DIR, tmp);
-    pathInfoFree (pi);
-    uiextreq->audiofilesfcb.defdir = nlistGetStr (uiextreq->options, REQ_EXT_DIR);
+    if (*fn) {
+      pi = pathInfo (fn);
+      pathInfoGetDir (pi, tmp, sizeof (tmp));
+      nlistSetStr (uiextreq->options, EXT_REQ_DIR, tmp);
+      pathInfoFree (pi);
+    }
+    uiextreq->audiofilesfcb.defdir = nlistGetStr (uiextreq->options, EXT_REQ_DIR);
     uiextreqProcessAudioFile (uiextreq);
   }
 
