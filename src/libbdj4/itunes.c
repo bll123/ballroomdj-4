@@ -155,11 +155,11 @@ itunesAlloc (void)
   {
     nlistidx_t    iteridx;
     nlistidx_t    nkey;
-    char          *skey;
+    const char    *skey;
 
-    bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
+    //bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
     //bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes Library.xml");
-    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes-test-music.xml");
+    //bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes-test-music.xml");
     itunesParse (itunes);
     nlistStartIterator (itunes->songbyidx, &iteridx);
     while ((nkey = nlistIterateKey (itunes->songbyidx, &iteridx)) >= 0) {

@@ -43,6 +43,7 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
+#include "validate.h"
 
 enum {
   UISE_CHK_NONE,
@@ -142,6 +143,7 @@ typedef struct se_internal {
   int                 songstartidx;
   int                 songendidx;
   int                 speedidx;
+  int                 keywordidx;
   int                 lastspeed;
   int                 currdanceidx;
   bool                checkchanged : 1;
@@ -191,6 +193,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->songstartidx = UISE_NOT_DISPLAYED;
   seint->songendidx = UISE_NOT_DISPLAYED;
   seint->speedidx = UISE_NOT_DISPLAYED;
+  seint->keywordidx = UISE_NOT_DISPLAYED;
   seint->dbidx = -1;
   seint->lastspeed = -1;
   for (int i = 0; i < UISE_CB_MAX; ++i) {
@@ -1124,6 +1127,9 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
   switch (tagdefs [tagkey].editType) {
     case ET_ENTRY: {
       uisongeditAddEntry (uisongedit, hbox, tagkey);
+      if (tagkey == TAG_KEYWORD) {
+        seint->keywordidx = seint->itemcount;
+      }
       break;
     }
     case ET_COMBOBOX: {
@@ -1429,16 +1435,26 @@ uisongeditSave (void *udata, nlist_t *chglist)
   /* this is not necessary with an edit-all-apply */
   /* as the validation checks currently are only for non-edit-all fields */
   if (chglist == NULL) {
-    long      songstart;
-    long      songend;
-    long      dur;
-    int       speed;
-    double    ndval;
+    long        songstart;
+    long        songend;
+    long        dur;
+    int         speed;
+    double      ndval;
+    const char  *tval;
 
-    ndval = uiScaleGetValue (seint->items [seint->speedidx].uiwidgetp);
-    speed = round (ndval);
-    songstart = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].spinbox);
-    songend = uiSpinboxTimeGetValue (seint->items [seint->songendidx].spinbox);
+    speed = songGetDouble (seint->song, TAG_SPEEDADJUSTMENT);
+    if (seint->speedidx != UISE_NOT_DISPLAYED) {
+      ndval = uiScaleGetValue (seint->items [seint->speedidx].uiwidgetp);
+      speed = round (ndval);
+    }
+    songstart = songGetNum (seint->song, TAG_SONGSTART);
+    if (seint->songstartidx != UISE_NOT_DISPLAYED) {
+      songstart = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].spinbox);
+    }
+    songend = songGetNum (seint->song, TAG_SONGEND);
+    if (seint->songendidx != UISE_NOT_DISPLAYED) {
+      songend = uiSpinboxTimeGetValue (seint->items [seint->songendidx].spinbox);
+    }
     /* for the validation checks, the song-start and song-end must be */
     /* normalized. */
     if (speed > 0 && speed != 100) {
@@ -1479,6 +1495,20 @@ uisongeditSave (void *udata, nlist_t *chglist)
             tagdefs [TAG_SONGSTART].displayname);
         uiLabelSetText (uisongedit->statusMsg, tbuff);
         logMsg (LOG_DBG, LOG_IMPORTANT, "song-end-<-song-start");
+        valid = false;
+      }
+    }
+
+    if (seint->keywordidx != UISE_NOT_DISPLAYED) {
+      const char    *tstr;
+
+      tval = uiEntryGetValue (seint->items [seint->keywordidx].uiwidgetp);
+      tstr = validate (tval, VAL_NO_SPACES);
+      if (tstr != NULL) {
+        snprintf (tbuff, sizeof (tbuff), tstr,
+            tagdefs [TAG_KEYWORD].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "keyword-has-spaces");
         valid = false;
       }
     }
