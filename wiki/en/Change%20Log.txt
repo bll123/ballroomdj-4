@@ -6,6 +6,10 @@
 
 **4.4.8.1 2024-1---**
 
+* Bug Fixes:
+    * Player: External Request: Fix assignment of artist/title.
+    * PENDING: Export for BDJ4: Fix.
+    * Support Message: Validate e-mail address.
 * Internal:
     * Code cleanup.
 

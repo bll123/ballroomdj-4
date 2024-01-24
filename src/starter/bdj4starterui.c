@@ -13,11 +13,12 @@
 #include <math.h>
 
 #include "bdj4.h"
-#include "bdjstring.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
+#include "bdjstring.h"
 #include "bdjvars.h"
 #include "colorutils.h"
 #include "conn.h"
@@ -143,10 +144,12 @@ typedef struct {
   progstate_t     *progstate;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
+  bdjregex_t      *emailrx;
   int             currprofile;
   int             newprofile;
   loglevel_t      loglevel;
   int             maxProfileWidth;
+  int             stopallState;
   startstate_t    startState;
   startstate_t    nextState;
   startstate_t    delayState;
@@ -200,6 +203,39 @@ enum {
   LOOP_DELAY = 5,
 };
 
+static const char *emailpat = {
+"(?x)^"
+"("  // local-part
+"  (?:"
+"    (?:"
+       // one or more non-special characters (not dot)
+"      (?:[^\"().,:;\\[\\]\\s\\\\@]+)"
+"      |"
+"      (?:"
+"        \""  // begin quoted string
+"        (?:"
+"         [^\\\\\"]"  // any character other than backslash or double quote
+"         |"
+"         (?:\\\\.)" // or a backslash followed by another character
+"        )+"   // repeated one or more times
+"        \""  // end quote
+"      )"
+"    )"
+"    \\."   // followed by a dot
+"  )*"    // local portion with trailing dot repeated zero or more times.
+   // as above, the final portion may not contain a trailing dot
+"  (?:[^\"().,:;\\[\\]\\s\\\\@]+)|(?:\"(?:[^\\\\\"]|(?:\\\\.))+\")"
+")"
+"@"
+"(" // domain-name, underscores are not allowed
+   // one or more domain specifiers followed by a dot
+"  (?:(?:[A-Za-z0-9][A-Za-z0-9-]*)?[A-Za-z0-9]\\.)+"
+"  (?:[A-Za-z0-9][A-Za-z0-9-]*)?[A-Za-z0-9]"     // top-level domain
+"  \\.?"           // may be fully-qualified
+")"
+"$"
+};
+
 static bool     starterInitDataCallback (void *udata, programstate_t programState);
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterStopWaitCallback (void *udata, programstate_t programState);
@@ -250,6 +286,7 @@ static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
 static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
+static int      starterValidateEmail (uiwcont_t *entry, void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -278,7 +315,9 @@ main (int argc, char *argv[])
   progstateSetCallback (starter.progstate, STATE_CLOSING,
       starterClosingCallback, &starter);
   starter.conn = NULL;
+  starter.emailrx = NULL;
   starter.maxProfileWidth = 0;
+  starter.stopallState = BDJ4_STATE_OFF;
   starter.startState = START_STATE_NONE;
   starter.nextState = START_STATE_NONE;
   starter.delayState = START_STATE_NONE;
@@ -494,6 +533,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < START_CB_MAX; ++i) {
     callbackFree (starter->callbacks [i]);
   }
+  regexFree (starter->emailrx);
 
   procutilStopAllProcess (starter->processes, starter->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (starter->processes);
@@ -783,6 +823,29 @@ starterMainLoop (void *tstarter)
     mstimeset (&starter->pluiCheckTime, 500);
   }
 
+  switch (starter->stopallState) {
+    case BDJ4_STATE_OFF: {
+      break;
+    }
+    case BDJ4_STATE_START: {
+      uiLabelSetText (starter->wcont [START_W_STATUS_MSG],
+          /* CONTEXT: starter ui: please wait... status message */
+          _("Please wait\xe2\x80\xa6"));
+      starter->stopallState = BDJ4_STATE_PROCESS;
+      break;
+    }
+    case BDJ4_STATE_PROCESS: {
+      starterStopAllProcesses (starter->conn);
+      starter->stopallState = BDJ4_STATE_FINISH;
+      break;
+    }
+    case BDJ4_STATE_FINISH: {
+      uiLabelSetText (starter->wcont [START_W_STATUS_MSG], "");
+      starter->stopallState = BDJ4_STATE_OFF;
+      break;
+    }
+  }
+
   switch (starter->startState) {
     case START_STATE_NONE: {
       break;
@@ -1010,6 +1073,8 @@ starterMainLoop (void *tstarter)
       break;
     }
   }
+
+  uiEntryValidate (starter->wcont [START_W_SUPPORT_EMAIL], false);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -1797,6 +1862,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiEntryInit (50, 100);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
+  uiEntrySetValidate (uiwidgetp, starterValidateEmail, starter, UIENTRY_DELAYED);
 
   /* line 2 */
   uiwcontFree (hbox);
@@ -1986,7 +2052,7 @@ starterStopAllProcessCallback (void *udata)
 {
   startui_t   *starter = udata;
 
-  starterStopAllProcesses (starter->conn);
+  starter->stopallState = BDJ4_STATE_START;
   return UICB_CONT;
 }
 
@@ -2114,3 +2180,24 @@ starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int route
   connSendMessage (starter->conn, routefrom, MSG_PROCESS_ACTIVE, tmp);
 }
 
+static int
+starterValidateEmail (uiwcont_t *entry, void *udata)
+{
+  startui_t   *starter = udata;
+  const char  *email;
+
+  if (starter == NULL) {
+    return UIENTRY_OK;
+  }
+
+  if (starter->emailrx == NULL) {
+    starter->emailrx = regexInit (emailpat);
+  }
+
+  email = uiEntryGetValue (starter->wcont [START_W_SUPPORT_EMAIL]);
+  if (email != NULL && ! regexMatch (starter->emailrx, email)) {
+    return UIENTRY_ERROR;
+  }
+
+  return UIENTRY_OK;
+}

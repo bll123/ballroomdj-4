@@ -343,17 +343,14 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (confui->gui.window);
 
   for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
-fprintf (stderr, "conf-dd free  %d\n", i);
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
-fprintf (stderr, "conf-entry free  %d\n", i);
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
-fprintf (stderr, "conf-entry free  %d\n", i);
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
-    uiButtonFree (confui->gui.uiitem [i].uibutton);
+    uiwcontFree (confui->gui.uiitem [i].uibutton);
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiSpinboxFree (confui->gui.uiitem [i].spinbox);

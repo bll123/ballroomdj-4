@@ -183,6 +183,8 @@ uieibdj4Process (uieibdj4_t *uieibdj4)
 
   uiEntryValidate (
     uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], false);
+  uiEntryValidate (
+    uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_NEWNAME], false);
 }
 
 char *
@@ -355,6 +357,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   strlcpy (tbuff, odir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], tbuff);
+  uiEntrySetValidate (uiwidgetp,
+      uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
   uiwidgetp = uiCreateButton (
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
@@ -363,9 +367,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
-
-  uiEntrySetValidate (uiwidgetp,
-      uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
   if (currtype == UIEIBDJ4_IMPORT) {
     uiwcontFree (hbox);

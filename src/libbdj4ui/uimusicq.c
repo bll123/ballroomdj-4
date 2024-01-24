@@ -77,8 +77,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicqUIInit (uimusicq);
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    int     sz;
-
     uimusicq->ui [i].newflag = true;
     uimusicq->ui [i].mainbox = NULL;
     uimusicq->ui [i].dispselType = dispselType;

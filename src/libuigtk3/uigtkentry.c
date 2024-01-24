@@ -266,7 +266,7 @@ uiEntryValidateDir (uiwcont_t *uiwidget, void *udata)
 
   uientry = uiwidget->uiint.uientry;
 
-  if (uientry->buffer != NULL) {
+  if (uientry->buffer == NULL) {
     return UIENTRY_OK;
   }
 
@@ -297,7 +297,7 @@ uiEntryValidateFile (uiwcont_t *uiwidget, void *udata)
 
   uientry = uiwidget->uiint.uientry;
 
-  if (uientry->buffer != NULL) {
+  if (uientry->buffer == NULL) {
     return UIENTRY_OK;
   }
 
