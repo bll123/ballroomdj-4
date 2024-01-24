@@ -78,7 +78,7 @@ char *testsongdata [] = {
   /* unknown genre */
   "FILE\n..bypass2/none1.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
       "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
-      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
+      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth [128]\n"
       "GENRE\n..Jazz\nCOMPOSER\n..Composer 1\n",
   /* no genre */
   "FILE\n..bypass1/none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
@@ -119,14 +119,14 @@ char *testsongdata [] = {
 typedef struct {
   const char    *orgpath;
   const char    *results [20];
-  char          winresults [20][200];
+  char          cleanresults [20][200];
 } testsong_t;
 
 testsong_t testsongresults [] = {
   {
     "{%BYPASS%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
     {
-      "bypass2/Santana/Smooth/01-001.Smooth.mp3",
+      "bypass2/Santana/Smooth/01-001.Smooth [128].mp3",
       "bypass1/WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
       "bypass0/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
       /* empty album artist is replaced with the artist */
@@ -143,7 +143,7 @@ testsong_t testsongresults [] = {
   {
     "{%DANCE%/}{%ARTIST% - }{%TITLE%}",
     {
-      "Cha Cha/Santana - Smooth.mp3",
+      "Cha Cha/Santana - Smooth [128].mp3",
       "Rumba/Gizelle DCole - Asi.mp3",
       "Waltz/Léa - Je Vole! (from La Famille Bélier).mp3",
       "Rumba/Gloria Estefan - Me Voy.mp3",
@@ -158,7 +158,7 @@ testsong_t testsongresults [] = {
   {
     "{%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
     {
-      "Jazz/Santana/Smooth/01-001.Smooth.mp3",
+      "Jazz/Santana/Smooth/01-001.Smooth [128].mp3",
       /* no genre */
       "WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
       "Ballroom Dance/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
@@ -351,45 +351,49 @@ START_TEST(orgutil_makepath)
   org_t     *org;
   int       ri;
   int       i;
+  int       type;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_makepath");
   mdebugSubTag ("orgutil_makepath");
 
+  type = ORG_UNIX_CHARS;
   if (isWindows ()) {
-    ri = 0;
-    while ((testsongresults [ri].orgpath) != NULL) {
-      const char  *res;
+    type = ORG_WIN_CHARS;
+  }
 
-      i = 0;
-      while ((res = testsongresults [ri].results [i]) != NULL) {
-        char    *p;
+  ri = 0;
+  while (testsongresults [ri].orgpath != NULL) {
+    const char  *res;
+    i = 0;
+    while ((res = testsongresults [ri].results [i]) != NULL) {
+      const char  *p;
+      char        *o;
 
-        strlcpy (testsongresults [ri].winresults [i],
-            res, sizeof (testsongresults [ri].winresults [i]));
-        p = testsongresults [ri].winresults [i];
-        while (*res != '\0') {
-          int   ok = false;
-
-          /* no : ( ) in windows paths */
-          /* no trailing . for windows dirs */
-          if (*res != ':' && *res != '(' && *res != ')' && *res != '^') {
-            ok = true;
-            if (*res == '.' && *(res + 1) == '/') {
-              ok = false;
-            }
-          }
-          if (ok) {
-            *p = *res;
-            ++p;
-          }
-          ++res;
+      /* this is not correct, as it does not handle multi-byte sequences */
+      /* properly */
+      p = res;
+      o = testsongresults [ri].cleanresults [i];
+      while (*p) {
+        if (*p == '*' || *p == '&' || *p == '|' || *p == '<' || *p == '>' || *p == '?' || *p == '\'' || *p == '"') {
+          ++p;
+          continue;
         }
-        *p = '\0';
-        testsongresults [ri].results [i] = testsongresults [ri].winresults [i];
-        ++i;
+        if (isWindows () && (*p == '(' || *p == ')' || *p == ':' || *p == '^')) {
+          ++p;
+          continue;
+        }
+        if (! (isWindows ()) && (*p == '[' || *p == ']')) {
+          ++p;
+          continue;
+        }
+        *o = *p;
+        ++o;
+        ++p;
       }
-      ++ri;
+      *o = '\0';
+      ++i;
     }
+    ++ri;
   }
 
   orgbp = orgAlloc ("{%BYPASS%/}{%TITLE%}");
@@ -408,7 +412,7 @@ START_TEST(orgutil_makepath)
       song_t      *song;
       const char  *bypass;
 
-      // fprintf (stderr, "i: %d %s\n", i, testsongresults [ri].results [i]);
+      // fprintf (stderr, "i: %d %s\n", i, testsongresults [ri].cleanresults [i]);
       tdata = mdstrdup (testsongdata [i]);
       song = songAlloc ();
       songParse (song, tdata, 0);
@@ -419,7 +423,7 @@ START_TEST(orgutil_makepath)
         // fprintf (stderr, "ri: %d i: %d bypass: %s\n", ri, i, bypass);
       }
       disp = orgMakeSongPath (org, song, bypass);
-      ck_assert_str_eq (testsongresults [ri].results [i], disp);
+      ck_assert_str_eq (testsongresults [ri].cleanresults [i], disp);
       songFree (song);
       mdfree (tdata);
       mdfree (disp);

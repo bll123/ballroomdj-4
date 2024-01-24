@@ -87,13 +87,15 @@ enum {
   ORG_FIRST_GRP = 1,
 };
 
-static void   orgutilInfoFree (void *data);
 
 /*     windows: * : ( ) &     ^ | < > ? ' " */
 /* linux/macos: *       & [ ]   | < > ? ' " */
-static const char *commonChars = { "*&|<>?'\"" };
+static const char *commonChars = { "/\\*&|<>?'\"" };
 static const char *winChars = { ":()^" };
 static const char *unixChars = { "[]" };
+
+static void orgutilClean (const char *from, char *target, size_t sz, int which);
+static void orgutilInfoFree (void *data);
 
 org_t *
 orgAlloc (const char *orgpath)
@@ -262,6 +264,16 @@ orgFree (org_t *org)
     slistFree (org->orgparsed);
     mdfree (org);
   }
+}
+
+void
+orgSetCleanType (org_t *org, int type)
+{
+  if (org == NULL) {
+    return;
+  }
+
+  org->chartype = type;
 }
 
 slist_t *
@@ -488,7 +500,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
 
       strlcpy (sbuff, datap, sizeof (sbuff));
       if (doclean) {
-        orgutilClean (sbuff, datap, sizeof (sbuff), org->chartype);
+        orgutilClean (datap, sbuff, sizeof (sbuff), org->chartype);
       }
       strlcat (gbuff, sbuff, sizeof (gbuff));
     }
@@ -570,12 +582,13 @@ orgGetText (org_t *org, slistidx_t idx)
   return slistGetKeyByIdx (org->orgparsed, idx);
 }
 
+/* internal routines */
 
 /* this must be locale aware, otherwise the characters that are */
 /* being cleaned might appear within a multi-byte sequence */
 /* note that directories are not handled.  Only a filename is assumed. */
-void
-orgutilClean (char *target, const char *from, size_t sz, int chartype)
+static void
+orgutilClean (const char *from, char *target, size_t sz, int chartype)
 {
   size_t      bytelen;
   size_t      slen;
@@ -615,11 +628,7 @@ orgutilClean (char *target, const char *from, size_t sz, int chartype)
         dotcount = 0;
       }
 
-      /* always skip / and \ characters */
-      if (! skip && (*tstr == '/' || *tstr == '\\')) {
-        skip = true;
-      }
-
+      /*         all: / \                         */
       /*     windows: dot at end of directory name */
       /*      mp3tag: * :             | < >     " */
       /*     windows: * : ( ) &     ^ | < > ? ' " */
@@ -680,8 +689,6 @@ orgutilClean (char *target, const char *from, size_t sz, int chartype)
 
   *tgtp = '\0';
 }
-
-/* internal routines */
 
 static void
 orgutilInfoFree (void *data)

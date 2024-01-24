@@ -39,6 +39,7 @@ typedef struct org org_t;
 
 org_t   * orgAlloc (const char *orgpath);
 void    orgFree (org_t *org);
+void    orgSetCleanType (org_t *org, int type);
 slist_t *orgGetList (org_t *org);
 const char * orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey);
 char    * orgMakeSongPath (org_t *org, song_t *song, const char *bypass);
@@ -48,6 +49,5 @@ int     orgIterateTagKey (org_t *org, slistidx_t *iteridx);
 int     orgIterateOrgKey (org_t *org, slistidx_t *iteridx);
 int     orgGetTagKey (int orgkey);
 const char *orgGetText (org_t *org, slistidx_t idx);
-void   orgutilClean (char *target, const char *from, size_t sz, int which);
 
 #endif /* INC_ORGUTIL_H */

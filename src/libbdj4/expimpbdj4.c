@@ -36,6 +36,8 @@ typedef struct eibdj4 {
   musicdb_t   *musicdb;
   songdb_t    *songdb;
   musicdb_t   *eimusicdb;
+  org_t       *org;
+  org_t       *orgexp;
   const char  *dirname;
   char        datadir [MAXPATHLEN];
   char        dbfname [MAXPATHLEN];
@@ -55,8 +57,10 @@ typedef struct eibdj4 {
   int         totcount;
   int         state;
   bool        dbchanged : 1;
+  bool        hasbypass : 1;
 } eibdj4_t;
 
+static const char *exporgpath = "{%DANCE%/}{%TITLE%}";
 static bool eibdj4ProcessExport (eibdj4_t *eibdj4);
 static bool eibdj4ProcessImport (eibdj4_t *eibdj4);
 
@@ -68,6 +72,13 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4 = mdmalloc (sizeof (eibdj4_t));
   eibdj4->musicdb = musicdb;
   eibdj4->songdb = songdbAlloc (musicdb);
+  eibdj4->org = orgAlloc (bdjoptGetStr (OPT_G_ORGPATH));
+  eibdj4->orgexp = orgAlloc (exporgpath);
+  orgSetCleanType (eibdj4->org, ORG_ALL_CHARS);
+  eibdj4->hasbypass = false;
+  if (strstr (bdjoptGetStr (OPT_G_ORGPATH), "BYPASS") != NULL) {
+    eibdj4->hasbypass = true;
+  }
   eibdj4->dirname = dirname;
   eibdj4->dbidxlist = NULL;
   eibdj4->plName = NULL;
@@ -94,13 +105,16 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
 void
 eibdj4Free (eibdj4_t *eibdj4)
 {
-  if (eibdj4 != NULL) {
-    songdbFree (eibdj4->songdb);
-    dataFree (eibdj4->plName);
-    dataFree (eibdj4->newName);
-    songlistFree (eibdj4->sl);
-    mdfree (eibdj4);
+  if (eibdj4 == NULL) {
+    return;
   }
+
+  songdbFree (eibdj4->songdb);
+  dataFree (eibdj4->plName);
+  dataFree (eibdj4->newName);
+  songlistFree (eibdj4->sl);
+  orgFree (eibdj4->org);
+  mdfree (eibdj4);
 }
 
 void
@@ -262,6 +276,8 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     char        nsongfn [MAXPATHLEN];
     bool        isabsolute = false;
     int         type;
+    char        *tstr;
+    const char  *bypass;
 
     if ((dbidx = nlistIterateKey (eibdj4->dbidxlist, &eibdj4->dbidxiter)) >= 0) {
       song = dbGetByIdx (eibdj4->musicdb, dbidx);
@@ -271,18 +287,34 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       }
 
       songfn = songGetStr (song, TAG_URI);
+fprintf (stderr, "songfn: %s\n", songfn);
       type = audiosrcGetType (songfn);
-
+      bypass = "";
+      if (eibdj4->hasbypass) {
+        bypass = orgGetFromPath (eibdj4->org, songGetStr (song, TAG_URI),
+            (tagdefkey_t) ORG_TAG_BYPASS);
+      }
+      tstr = orgMakeSongPath (eibdj4->org, song, bypass);
+      strlcpy (nsongfn, tstr, sizeof (nsongfn));
+      mdfree (tstr);
+fprintf (stderr, "nsongfn: %s\n", nsongfn);
+#if 0
       strlcpy (nsongfn, songfn, sizeof (nsongfn));
       audiosrcFullPath (songfn, ffn, sizeof (ffn), 0, NULL);
       strlcpy (nsongfn,
           audiosrcRelativePath (ffn, songGetNum (song, TAG_PREFIX_LEN)), sizeof (nsongfn));
+fprintf (stderr, "nsongfn: %s\n", nsongfn);
       /* all possible special characters must be stripped from the filename, */
       /* as the export/import must work across different systems */
       pi = pathInfo (nsongfn);
-      orgutilClean (nsongfn + pi->dlen + 1, pi->filename,
+fprintf (stderr, "pi->filename: %.*s\n", (int) pi->flen, pi->filename);
+fprintf (stderr, "nsongfn+dlen: %s (%d/%d/%d/%d)\n", nsongfn + pi->dlen + 1, (int) pi->dlen, (int) strlen (nsongfn + pi->dlen + 1), (int) sizeof (nsongfn), (int) (sizeof (nsongfn) - pi->dlen - 1));
+fprintf (stderr, "nsongfn+dlen: %s\n", nsongfn + pi->dlen);
+      orgutilClean (pi->filename, nsongfn + pi->dlen + 1,
           sizeof (nsongfn) - pi->dlen - 1, ORG_ALL_CHARS);
       pathInfoFree (pi);
+fprintf (stderr, "nsongfn-clean: %s\n", nsongfn);
+#endif
 
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
