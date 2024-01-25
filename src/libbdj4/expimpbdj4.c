@@ -287,7 +287,6 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       }
 
       songfn = songGetStr (song, TAG_URI);
-fprintf (stderr, "songfn: %s\n", songfn);
       type = audiosrcGetType (songfn);
       bypass = "";
       if (eibdj4->hasbypass) {
@@ -297,24 +296,6 @@ fprintf (stderr, "songfn: %s\n", songfn);
       tstr = orgMakeSongPath (eibdj4->org, song, bypass);
       strlcpy (nsongfn, tstr, sizeof (nsongfn));
       mdfree (tstr);
-fprintf (stderr, "nsongfn: %s\n", nsongfn);
-#if 0
-      strlcpy (nsongfn, songfn, sizeof (nsongfn));
-      audiosrcFullPath (songfn, ffn, sizeof (ffn), 0, NULL);
-      strlcpy (nsongfn,
-          audiosrcRelativePath (ffn, songGetNum (song, TAG_PREFIX_LEN)), sizeof (nsongfn));
-fprintf (stderr, "nsongfn: %s\n", nsongfn);
-      /* all possible special characters must be stripped from the filename, */
-      /* as the export/import must work across different systems */
-      pi = pathInfo (nsongfn);
-fprintf (stderr, "pi->filename: %.*s\n", (int) pi->flen, pi->filename);
-fprintf (stderr, "nsongfn+dlen: %s (%d/%d/%d/%d)\n", nsongfn + pi->dlen + 1, (int) pi->dlen, (int) strlen (nsongfn + pi->dlen + 1), (int) sizeof (nsongfn), (int) (sizeof (nsongfn) - pi->dlen - 1));
-fprintf (stderr, "nsongfn+dlen: %s\n", nsongfn + pi->dlen);
-      orgutilClean (pi->filename, nsongfn + pi->dlen + 1,
-          sizeof (nsongfn) - pi->dlen - 1, ORG_ALL_CHARS);
-      pathInfoFree (pi);
-fprintf (stderr, "nsongfn-clean: %s\n", nsongfn);
-#endif
 
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
