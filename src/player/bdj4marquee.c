@@ -65,9 +65,7 @@ enum {
   MQ_W_INFOBOX,
   MQ_W_SEP,
   MQ_W_COUNTDOWN_TIMER,
-  MQ_W_INFO_ARTIST,
-  MQ_W_INFO_SEP,
-  MQ_W_INFO_TITLE,
+  MQ_W_INFO_DISPLAY,
   MQ_W_INFO_DANCE,
   MQ_W_MAX,
 };
@@ -416,22 +414,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetDisableFocus (uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  marquee->wcont [MQ_W_INFO_ARTIST] = uiwidgetp;
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetAlignHorizStart (uiwidgetp);
-  uiWidgetDisableFocus (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiWidgetSetMarginEnd (uiwidgetp, 2);
-  marquee->wcont [MQ_W_INFO_SEP] = uiwidgetp;
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetAlignHorizStart (uiwidgetp);
-  uiWidgetDisableFocus (uiwidgetp);
-  uiLabelEllipsizeOn (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
-  marquee->wcont [MQ_W_INFO_TITLE] = uiwidgetp;
+  marquee->wcont [MQ_W_INFO_DISPLAY] = uiwidgetp;
 
   marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
   uiWidgetSetClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
@@ -846,7 +829,6 @@ marqueePopulate (marquee_t *marquee, char *args)
 {
   char      *p;
   char      *tokptr;
-  int       showsep = 0;
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
@@ -855,33 +837,11 @@ marqueePopulate (marquee_t *marquee, char *args)
   }
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_ARTIST])) {
+  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISPLAY])) {
     if (p != NULL && *p == MSG_ARGS_EMPTY) {
       p = "";
     }
-    if (p != NULL && *p != '\0') {
-      ++showsep;
-    }
-    uiLabelSetText (marquee->wcont [MQ_W_INFO_ARTIST], p);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_TITLE])) {
-    if (p != NULL && *p == MSG_ARGS_EMPTY) {
-      p = "";
-    }
-    if (p != NULL && *p != '\0') {
-      ++showsep;
-    }
-    uiLabelSetText (marquee->wcont [MQ_W_INFO_TITLE], p);
-  }
-
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_SEP])) {
-    if (showsep == 2) {
-      uiLabelSetText (marquee->wcont [MQ_W_INFO_SEP], "/");
-    } else {
-      uiLabelSetText (marquee->wcont [MQ_W_INFO_SEP], "");
-    }
+    uiLabelSetText (marquee->wcont [MQ_W_INFO_DISPLAY], p);
   }
 
   /* first entry is the main dance */
@@ -981,13 +941,9 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_ARTIST])) {
-    marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_ARTIST], tbuff);
-    uiWidgetSetClass (marquee->wcont [MQ_W_INFO_ARTIST], MQ_INFO_CLASS);
-    marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_SEP], tbuff);
-    uiWidgetSetClass (marquee->wcont [MQ_W_INFO_SEP], MQ_INFO_CLASS);
-    marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_TITLE], tbuff);
-    uiWidgetSetClass (marquee->wcont [MQ_W_INFO_TITLE], MQ_INFO_CLASS);
+  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISPLAY])) {
+    marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_DISPLAY], tbuff);
+    uiWidgetSetClass (marquee->wcont [MQ_W_INFO_DISPLAY], MQ_INFO_CLASS);
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");
@@ -1023,11 +979,8 @@ marqueeDisplayCompletion (marquee_t *marquee)
   const char  *disp;
 
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DANCE], "");
-  uiLabelSetText (marquee->wcont [MQ_W_INFO_ARTIST], "");
-  uiLabelSetText (marquee->wcont [MQ_W_INFO_SEP], "");
-
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  uiLabelSetText (marquee->wcont [MQ_W_INFO_TITLE], disp);
+  uiLabelSetText (marquee->wcont [MQ_W_INFO_DISPLAY], disp);
 
   if (! marquee->mqShowInfo) {
     uiWidgetShowAll (marquee->wcont [MQ_W_INFOBOX]);

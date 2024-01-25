@@ -10,6 +10,7 @@
 enum {
   DISP_SEL_LOAD_PLAYER,
   DISP_SEL_LOAD_MANAGE,
+  DISP_SEL_LOAD_MARQUEE,
   DISP_SEL_LOAD_ALL,
 };
 
@@ -18,7 +19,6 @@ typedef enum {
   DISP_SEL_HISTORY,
   DISP_SEL_MUSICQ,
   DISP_SEL_REQUEST,
-  DISP_SEL_MAX_PLAYER,
   /* the following are used by the management ui */
   DISP_SEL_SBS_SONGLIST,
   DISP_SEL_SBS_SONGSEL,
@@ -31,6 +31,8 @@ typedef enum {
   DISP_SEL_SONGSEL,
   DISP_SEL_AUDIOID_LIST,
   DISP_SEL_AUDIOID,
+  /* marquee */
+  DISP_SEL_MARQUEE,
   DISP_SEL_MAX,
 } dispselsel_t;
 

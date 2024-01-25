@@ -23,20 +23,26 @@ typedef struct dispsel {
   slist_t       *dispsel [DISP_SEL_MAX];
 } dispsel_t;
 
-static char *dispselmap [DISP_SEL_MAX] = {
-  [DISP_SEL_SBS_SONGLIST] = "ds-sbssonglist",
-  [DISP_SEL_SBS_SONGSEL] = "ds-sbssongsel",
-  [DISP_SEL_MM] = "ds-mm",
-  [DISP_SEL_MUSICQ] = "ds-musicq",
-  [DISP_SEL_HISTORY] = "ds-history",
-  [DISP_SEL_REQUEST] = "ds-request",
-  [DISP_SEL_SONGEDIT_A] = "ds-songedit-a",
-  [DISP_SEL_SONGEDIT_B] = "ds-songedit-b",
-  [DISP_SEL_SONGEDIT_C] = "ds-songedit-c",
-  [DISP_SEL_SONGLIST] = "ds-songlist",
-  [DISP_SEL_SONGSEL] = "ds-songsel",
-  [DISP_SEL_AUDIOID_LIST] = "ds-audioid-list",
-  [DISP_SEL_AUDIOID] = "ds-audioid",
+typedef struct dispselinfo {
+  const char    *fname;
+  int           type;
+} dispselinfo_t;
+
+static dispselinfo_t dispselmap [DISP_SEL_MAX] = {
+  [DISP_SEL_AUDIOID]        = { "ds-audioid", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_AUDIOID_LIST]   = { "ds-audioid-list", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_HISTORY]        = { "ds-history", DISP_SEL_LOAD_PLAYER },
+  [DISP_SEL_MARQUEE]        = { "ds-marquee", DISP_SEL_LOAD_MARQUEE },
+  [DISP_SEL_MM]             = { "ds-mm", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_MUSICQ]         = { "ds-musicq", DISP_SEL_LOAD_PLAYER },
+  [DISP_SEL_REQUEST]        = { "ds-request", DISP_SEL_LOAD_PLAYER },
+  [DISP_SEL_SBS_SONGLIST]   = { "ds-sbssonglist", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SBS_SONGSEL]    = { "ds-sbssongsel", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SONGEDIT_A]     = { "ds-songedit-a", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SONGEDIT_B]     = { "ds-songedit-b", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SONGEDIT_C]     = { "ds-songedit-c", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SONGLIST]       = { "ds-songlist", DISP_SEL_LOAD_MANAGE },
+  [DISP_SEL_SONGSEL]        = { "ds-songsel", DISP_SEL_LOAD_MANAGE },
 };
 
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
@@ -56,25 +62,20 @@ dispselAlloc (int loadtype)
     dispsel->df [i] = NULL;
     dispsel->name [i] = NULL;
 
-    if (loadtype == DISP_SEL_LOAD_PLAYER && i >= DISP_SEL_MAX_PLAYER) {
-      continue;
-    }
-    if (loadtype == DISP_SEL_LOAD_MANAGE && i <= DISP_SEL_MAX_PLAYER) {
-      continue;
-    }
-    if (i == DISP_SEL_MAX_PLAYER) {
+    if (loadtype != DISP_SEL_LOAD_ALL &&
+        dispselmap [i].type != loadtype) {
       continue;
     }
 
     pathbldMakePath (fn, sizeof (fn),
-        dispselmap [i], BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+        dispselmap [i].fname, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
     if (! fileopFileExists (fn)) {
       fprintf (stderr, "%s does not exist\n", fn);
       continue;
     }
     dispsel->name [i] = mdstrdup (fn);
 
-    dispsel->df [i] = datafileAllocParse (dispselmap [i],
+    dispsel->df [i] = datafileAllocParse (dispselmap [i].fname,
         DFTYPE_LIST, fn, NULL, 0, DF_NO_OFFSET, NULL);
     tlist = datafileGetList (dispsel->df [i]);
 
@@ -106,9 +107,6 @@ dispselGetList (dispsel_t *dispsel, dispselsel_t idx)
   if (idx >= DISP_SEL_MAX) {
     return NULL;
   }
-  if (idx == DISP_SEL_MAX_PLAYER) {
-    return NULL;
-  }
 
   return dispsel->dispsel [idx];
 }
@@ -120,9 +118,6 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
   if (idx >= DISP_SEL_MAX) {
-    return;
-  }
-  if (idx == DISP_SEL_MAX_PLAYER) {
     return;
   }
 

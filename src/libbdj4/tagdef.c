@@ -49,6 +49,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -76,6 +77,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
@@ -103,6 +105,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -130,6 +133,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -157,6 +161,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -184,6 +189,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -211,6 +217,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -238,6 +245,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -265,6 +273,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    true,                         /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -292,6 +301,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    true,                         /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -319,6 +329,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    true,                         /* marquee-disp         */
     false,                        /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
@@ -346,6 +357,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -373,6 +385,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -400,6 +413,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -427,6 +441,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -454,6 +469,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
@@ -481,6 +497,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -508,6 +525,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -536,6 +554,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -563,6 +582,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -590,6 +610,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     true,                         /* is org tag           */
     true,                         /* vorbis multi         */
@@ -617,6 +638,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -644,6 +666,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -671,6 +694,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -698,6 +722,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -725,6 +750,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -752,6 +778,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -779,6 +806,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -806,6 +834,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -833,6 +862,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -860,6 +890,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -887,6 +918,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -914,6 +946,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     true,                         /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -941,6 +974,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
     true,                         /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
@@ -968,6 +1002,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
@@ -995,6 +1030,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1022,6 +1058,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1049,6 +1086,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1076,6 +1114,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1103,6 +1142,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1130,6 +1170,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1157,6 +1198,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
@@ -1184,6 +1226,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */

@@ -589,6 +589,11 @@ main (int argc, char *argv [])
     updaterCopyProfileIfNotPresent ("bdjconfig.q4", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
+  {
+    /* 4.4.9 2024-1-25.  Install new ds-marquee.txt */
+    updaterCopyProfileIfNotPresent ("ds-marquee", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+  }
+
   /* now re-load the data files */
 
   bdjvarsdfloadCleanup ();

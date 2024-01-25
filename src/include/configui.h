@@ -392,6 +392,7 @@ typedef struct confuigui {
   slist_t           *edittaglist;
   slist_t           *audioidtaglist;
   slist_t           *listingtaglist;
+  slist_t           *marqueetaglist;
   /* filter */
   nlist_t           *filterDisplaySel;
   nlist_t           *filterLookup;

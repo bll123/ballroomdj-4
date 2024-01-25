@@ -55,6 +55,7 @@ typedef struct {
   bool                allEdit : 1;
   bool                isEditable : 1;
   bool                isAudioID : 1;
+  bool                marqueeDisp : 1;
   bool                textSearchable : 1;
   bool                isOrgTag : 1;
   bool                vorbisMulti : 1;

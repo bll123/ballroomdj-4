@@ -32,6 +32,7 @@
 #include "conn.h"
 #include "dance.h"
 #include "dancesel.h"
+#include "dispsel.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "lock.h"
@@ -95,6 +96,7 @@ typedef struct {
   nlist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
+  dispsel_t         *dispsel;
   int               musicqPlayIdx;
   int               musicqManageIdx;
   int               musicqDeferredPlayIdx;
@@ -220,6 +222,7 @@ main (int argc, char *argv[])
 
   mainData.playlistCache = NULL;
   mainData.musicQueue = NULL;
+  mainData.dispsel = NULL;
   mainData.musicqPlayIdx = MUSICQ_PB_A;
   mainData.musicqManageIdx = MUSICQ_PB_A;
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
@@ -251,6 +254,8 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &mainData.musicdb,
       "main", ROUTE_MAIN, &mainData.startflags);
   logProcBegin (LOG_PROC, "main");
+
+  mainData.dispsel = dispselAlloc (DISP_SEL_LOAD_MARQUEE);
 
   /* calculate the stop time once only per queue */
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
@@ -328,6 +333,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   slistFree (mainData->announceList);
   dataFree (mainData->mobmqUserkey);
   dataFree (mainData->pbfinishArgs);
+  dispselFree (mainData->dispsel);
 
   procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (mainData->processes);
@@ -1010,10 +1016,9 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 static void
 mainSendMarqueeData (maindata_t *mainData)
 {
-  char        tbuff [200];
+  char        tbuff [300];
   char        *sbuff = NULL;
   const char  *dstr = NULL;
-  const char  *tstr = NULL;
   int         mqLen;
   int         mqidx;
   int         musicqLen;
@@ -1069,16 +1074,35 @@ mainSendMarqueeData (maindata_t *mainData)
     strlcat (jbuff, tbuff, BDJMSG_MAX);
   }
 
-  /* artist/title, dance(s) */
 
   if (marqueeactive) {
+    const char  *tstr;
+    slist_t     *sellist;
+    slistidx_t  seliteridx;
+    int         tagidx;
+    bool        havedata = false;
+
     sbuff = mdmalloc (BDJMSG_MAX);
     sbuff [0] = '\0';
-    dstr = musicqGetData (mainData->musicQueue, mqidx, 0, TAG_ARTIST);
-    if (dstr == NULL || *dstr == '\0') { dstr = MSG_ARGS_EMPTY_STR; }
-    tstr = musicqGetData (mainData->musicQueue, mqidx, 0, TAG_TITLE);
-    if (tstr == NULL || *tstr == '\0') { tstr = MSG_ARGS_EMPTY_STR; }
-    snprintf (tbuff, sizeof (tbuff), "%s%c%s%c", dstr, MSG_ARGS_RS, tstr, MSG_ARGS_RS);
+    tbuff [0] = '\0';
+
+    sellist = dispselGetList (mainData->dispsel, DISP_SEL_MARQUEE);
+    slistStartIterator (sellist, &seliteridx);
+    while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+      tstr = musicqGetData (mainData->musicQueue, mqidx, 0, tagidx);
+      if (tstr != NULL && *tstr) {
+        if (havedata) {
+          strlcat (tbuff, " / ", sizeof (tbuff));
+        }
+        strlcat (tbuff, tstr, sizeof (tbuff));
+        havedata = true;
+      } else {
+        havedata = false;
+      }
+    }
+
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    snprintf (tbuff, sizeof (tbuff), "%c", MSG_ARGS_RS);
     strlcat (sbuff, tbuff, BDJMSG_MAX);
   }
 
@@ -1145,6 +1169,7 @@ mainSendMarqueeData (maindata_t *mainData)
     }
 
     if (marqueeactive) {
+      /* dance display */
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
     }

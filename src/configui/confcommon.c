@@ -281,6 +281,9 @@ confuiCreateTagListingDisp (confuigui_t *gui)
       selidx == DISP_SEL_AUDIOID) {
     uiduallistSet (gui->dispselduallist, gui->audioidtaglist,
         DUALLIST_TREE_SOURCE);
+  } else if (selidx == DISP_SEL_MARQUEE) {
+    uiduallistSet (gui->dispselduallist, gui->marqueetaglist,
+        DUALLIST_TREE_SOURCE);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
         DUALLIST_TREE_SOURCE);
