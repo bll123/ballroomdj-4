@@ -305,7 +305,7 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
   if (defdir == NULL || ! *defdir) {
     defdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   }
-  selectdata = uiDialogCreateSelect (uisfcb->window,
+  selectdata = uiSelectInit (uisfcb->window,
       tbuff,
       defdir,
       uiEntryGetValue (uisfcb->entry),
@@ -315,7 +315,7 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
     uiEntrySetValue (uisfcb->entry, fn);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return UICB_CONT;
 }
 

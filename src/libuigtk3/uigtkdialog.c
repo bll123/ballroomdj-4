@@ -39,6 +39,37 @@ static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer uda
 static gboolean uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata);
 static void uiDialogAddButtonsInternal (uiwcont_t *uiwidget, va_list valist);
 
+uiselect_t *
+uiSelectInit (uiwcont_t *window, const char *label,
+    const char *startpath, const char *dfltname,
+    const char *mimefiltername, const char *mimetype)
+{
+  uiselect_t  *selectdata;
+
+  if (! uiwcontValid (window, WCONT_T_WINDOW, "dialog-create-sel")) {
+    return NULL;
+  }
+
+  selectdata = mdmalloc (sizeof (uiselect_t));
+  selectdata->window = window;
+  selectdata->label = label;
+  selectdata->startpath = startpath;
+  selectdata->dfltname = dfltname;
+  selectdata->mimefiltername = mimefiltername;
+  selectdata->mimetype = mimetype;
+  return selectdata;
+}
+
+void
+uiSelectFree (uiselect_t *selectdata)
+{
+  if (selectdata == NULL) {
+    return;
+  }
+
+  mdfree (selectdata);
+}
+
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
 {
@@ -246,27 +277,6 @@ uiDialogDestroy (uiwcont_t *uidialog)
   uidialog->widget = NULL;
 }
 
-uiselect_t *
-uiDialogCreateSelect (uiwcont_t *window, const char *label,
-    const char *startpath, const char *dfltname,
-    const char *mimefiltername, const char *mimetype)
-{
-  uiselect_t  *selectdata;
-
-  if (! uiwcontValid (window, WCONT_T_WINDOW, "dialog-create-sel")) {
-    return NULL;
-  }
-
-  selectdata = mdmalloc (sizeof (uiselect_t));
-  selectdata->window = window;
-  selectdata->label = label;
-  selectdata->startpath = startpath;
-  selectdata->dfltname = dfltname;
-  selectdata->mimefiltername = mimefiltername;
-  selectdata->mimetype = mimetype;
-  return selectdata;
-}
-
 /* internal routines */
 
 static void
@@ -297,10 +307,6 @@ uiDialogAddButtonsInternal (uiwcont_t *uiwidget, va_list valist)
   GtkWidget *dialog;
   char      *label;
   int       resp;
-
-  if (uiwidget == NULL) {
-    return;
-  }
 
   dialog = uiwidget->widget;
   while ((label = va_arg (valist, char *)) != NULL) {

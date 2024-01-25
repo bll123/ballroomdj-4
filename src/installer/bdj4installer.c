@@ -1282,7 +1282,7 @@ installerTargetDirDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  selectdata = uiDialogCreateSelect (installer->wcont [INST_W_WINDOW],
+  selectdata = uiSelectInit (installer->wcont [INST_W_WINDOW],
       /* CONTEXT: installer: dialog title for selecting install location */
       _("Install Location"),
       uiEntryGetValue (installer->wcont [INST_W_TARGET]),
@@ -1301,7 +1301,7 @@ installerTargetDirDialog (void *udata)
     mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return UICB_CONT;
 }
 
@@ -1327,7 +1327,7 @@ installerBDJ3LocDirDialog (void *udata)
 
   /* CONTEXT: installer: dialog title for selecting BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
-  selectdata = uiDialogCreateSelect (installer->wcont [INST_W_WINDOW],
+  selectdata = uiSelectInit (installer->wcont [INST_W_WINDOW],
       tbuff, uiEntryGetValue (installer->wcont [INST_W_BDJ3_LOC]), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -1335,7 +1335,7 @@ installerBDJ3LocDirDialog (void *udata)
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return UICB_CONT;
 }
 

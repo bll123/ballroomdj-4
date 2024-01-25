@@ -777,7 +777,7 @@ altinstTargetDirDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  selectdata = uiDialogCreateSelect (altinst->wcont [ALT_W_WINDOW],
+  selectdata = uiSelectInit (altinst->wcont [ALT_W_WINDOW],
       /* CONTEXT: alternate installation: dialog title for selecting location */
       _("Install Location"),
       uiEntryGetValue (altinst->wcont [ALT_W_TARGET]), NULL, NULL, NULL);
@@ -792,7 +792,7 @@ altinstTargetDirDialog (void *udata)
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altinst->target);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return UICB_CONT;
 }
 

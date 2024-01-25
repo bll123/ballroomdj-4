@@ -306,7 +306,7 @@ confuiSelectiTunesFile (void *udata)
   dirbuff [pi->dlen] = '\0';
   pathInfoFree (pi);
 
-  selectdata = uiDialogCreateSelect (sfcb->window, tbuff,
+  selectdata = uiSelectInit (sfcb->window, tbuff,
       dirbuff, NULL,
       /* CONTEXT: configuration: dialog: XML file types */
       _("XML Files"), "application/xml");
@@ -316,7 +316,7 @@ confuiSelectiTunesFile (void *udata)
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectiTunesFile", "");
   return UICB_CONT;
 }

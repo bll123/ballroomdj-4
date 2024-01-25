@@ -1268,11 +1268,11 @@ pluiExportMP3Dialog (playerui_t *plui)
 
   /* CONTEXT: export as mp3: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
-  selectdata = uiDialogCreateSelect (windowp,
+  selectdata = uiSelectInit (windowp,
       tbuff, defdir, NULL, NULL, NULL);
   dir = uiSelectDirDialog (selectdata);
   nlistSetStr (plui->options, EXP_MP3_DIR, dir);
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return dir;
 }
 

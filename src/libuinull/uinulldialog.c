@@ -22,6 +22,20 @@ typedef struct uiselect {
     int         junk;
 } uiselect_t;
 
+uiselect_t *
+uiSelectInit (uiwcont_t *window, const char *label,
+    const char *startpath, const char *dfltname,
+    const char *mimefiltername, const char *mimetype)
+{
+  return NULL;
+}
+
+void
+uiSelectFree (uiselect_t *selectdata)
+{
+  return;
+}
+
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
 {
@@ -69,13 +83,5 @@ void
 uiDialogDestroy (uiwcont_t *uidialog)
 {
   return;
-}
-
-uiselect_t *
-uiDialogCreateSelect (uiwcont_t *window, const char *label,
-    const char *startpath, const char *dfltname,
-    const char *mimefiltername, const char *mimetype)
-{
-  return NULL;
 }
 

@@ -18,14 +18,16 @@ enum {
 
 #include "callback.h"
 
+uiselect_t *uiSelectInit (uiwcont_t *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
+void  uiSelectFree (uiselect_t *selectdata);
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
+
 uiwcont_t *uiCreateDialog (uiwcont_t *window, callback_t *uicb, const char *title, ...);
 void  uiDialogShow (uiwcont_t *uiwidgetp);
 void  uiDialogAddButtons (uiwcont_t *uidialog, ...);
 void  uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp);
 void  uiDialogDestroy (uiwcont_t *uidialog);
-uiselect_t *uiDialogCreateSelect (uiwcont_t *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
 
 #endif /* INC_UIDIALOG_H */

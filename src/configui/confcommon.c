@@ -231,14 +231,14 @@ confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath,
   uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectDirDialog");
-  selectdata = uiDialogCreateSelect (sfcb->window, title, startpath, NULL, NULL, NULL);
+  selectdata = uiSelectInit (sfcb->window, title, startpath, NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (sfcb->entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectDirDialog", "");
 }
 
@@ -250,7 +250,7 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
   uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
-  selectdata = uiDialogCreateSelect (sfcb->window,
+  selectdata = uiSelectInit (sfcb->window,
       /* CONTEXT: configuration: file selection dialog: window title */
       _("Select File"), startpath, NULL, mimefiltername, mimetype);
   fn = uiSelectFileDialog (selectdata);
@@ -259,7 +259,7 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
 

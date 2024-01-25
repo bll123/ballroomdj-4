@@ -429,7 +429,7 @@ uieibdj4TargetDialog (void *udata)
   }
 
   odir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET]);
-  selectdata = uiDialogCreateSelect (uieibdj4->parentwin,
+  selectdata = uiSelectInit (uieibdj4->parentwin,
       /* CONTEXT: export/import bdj4 folder selection dialog: window title */
       _("Select Folder"), odir, NULL, NULL, NULL);
 
@@ -440,7 +440,7 @@ uieibdj4TargetDialog (void *udata)
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
     mdfree (dir);   // allocated by gtk
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
 
   return UICB_CONT;
 }

@@ -40,7 +40,6 @@ typedef enum {
   WCONT_T_SCALE,
   WCONT_T_SCROLLBAR,
   WCONT_T_SCROLL_WINDOW,
-  WCONT_T_SELECT,
   WCONT_T_SEPARATOR,
   WCONT_T_SIZE_GROUP,       // gtk widget
   /* base type for all spinbox types */
@@ -88,7 +87,6 @@ typedef union {
     uikey_t       *uikey;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
-    uiselect_t    *uiselect;
     uispinbox_t   *uispinbox;
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;

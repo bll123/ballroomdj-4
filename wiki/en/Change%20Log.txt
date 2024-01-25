@@ -7,7 +7,7 @@
 **4.4.8.1 2024-1---**
 
 * Bug Fixes:
-    * PENDING: Export for BDJ4: Fix.
+    * Export for BDJ4: Fix.
     * Player: External Request: Fix assignment of artist/title.
     * Song Editor: Fix keyword validation.
     * Song Editor: Fix possible crashes.

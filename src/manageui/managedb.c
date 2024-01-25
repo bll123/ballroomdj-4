@@ -530,14 +530,14 @@ manageDbSelectDirCallback (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db select top dir");
   /* CONTEXT: update database: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
-  selectdata = uiDialogCreateSelect (managedb->minfo->window,
+  selectdata = uiSelectInit (managedb->minfo->window,
       tbuff, uiEntryGetValue (managedb->wcont [MDB_W_DB_MUSIC_DIR]), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (managedb->wcont [MDB_W_DB_MUSIC_DIR], fn);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   return UICB_CONT;
 }
 

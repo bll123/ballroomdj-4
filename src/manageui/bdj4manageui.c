@@ -3101,7 +3101,7 @@ manageSonglistExportM3U (void *udata)
   /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", slname);
-  selectdata = uiDialogCreateSelect (manage->minfo.window,
+  selectdata = uiSelectInit (manage->minfo.window,
       tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
       /* CONTEXT: managementui: song list export: name of file save type */
       _("M3U Files"), "audio/x-mpegurl");
@@ -3110,7 +3110,7 @@ manageSonglistExportM3U (void *udata)
     uimusicqExportM3U (manage->slmusicq, fn, slname);
     mdfree (fn);
   }
-  mdfree (selectdata);
+  uiSelectFree (selectdata);
   mdfree (slname);
   manage->exportm3uactive = false;
   logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
@@ -3141,7 +3141,7 @@ manageSonglistImportM3U (void *udata)
   manageSetSonglistName (manage, _("New Song List"));
   strlcpy (nplname, manage->sloldname, sizeof (nplname));
 
-  selectdata = uiDialogCreateSelect (manage->minfo.window,
+  selectdata = uiSelectInit (manage->minfo.window,
       /* CONTEXT: managementui: song list import: title of dialog */
       _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
       /* CONTEXT: managementui: song list import: name of file type */
