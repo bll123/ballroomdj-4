@@ -65,7 +65,11 @@ enum {
   MQ_W_INFOBOX,
   MQ_W_SEP,
   MQ_W_COUNTDOWN_TIMER,
-  MQ_W_INFO_DISPLAY,
+  MQ_W_INFO_DISP_A,
+  MQ_W_INFO_DISP_B,
+  MQ_W_INFO_DISP_C,
+  MQ_W_INFO_DISP_D,
+  MQ_W_INFO_DISP_E,
   MQ_W_INFO_DANCE,
   MQ_W_MAX,
 };
@@ -142,6 +146,7 @@ static void marqueeSetFont (marquee_t *marquee, int sz);
 static void marqueeRecover (marquee_t *marquee);
 static void marqueeDisplayCompletion (marquee_t *marquee);
 static void marqueeSendFontSizes (marquee_t *marquee);
+static void marqueeClearInfoDisplay (marquee_t *marquee);
 
 static int gKillReceived = 0;
 
@@ -409,12 +414,17 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (vbox, hbox);
   marquee->wcont [MQ_W_INFOBOX] = hbox;
 
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetAlignHorizStart (uiwidgetp);
-  uiWidgetDisableFocus (uiwidgetp);
-  uiLabelEllipsizeOn (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
-  marquee->wcont [MQ_W_INFO_DISPLAY] = uiwidgetp;
+  for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
+    uiwidgetp = uiCreateLabel ("");
+    uiWidgetAlignHorizStart (uiwidgetp);
+    uiWidgetDisableFocus (uiwidgetp);
+    if ((i - MQ_W_INFO_DISP_A) % 2 == 0) {
+      uiLabelEllipsizeOn (uiwidgetp);
+    }
+    uiBoxPackStart (hbox, uiwidgetp);
+    marquee->wcont [i] = uiwidgetp;
+    uiWidgetSetClass (marquee->wcont [i], MQ_INFO_CLASS);
+  }
 
   marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
   uiWidgetSetClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
@@ -827,8 +837,10 @@ marqueeSetFontSize (marquee_t *marquee, uiwcont_t *uilab, const char *font)
 static void
 marqueePopulate (marquee_t *marquee, char *args)
 {
-  char      *p;
-  char      *tokptr;
+  char        *p;
+  char        *tokptr;
+  int         idx;
+  const char  *sep = "";
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
@@ -836,12 +848,30 @@ marqueePopulate (marquee_t *marquee, char *args)
     uiWidgetHide (marquee->wcont [MQ_W_INFOBOX]);
   }
 
+  marqueeClearInfoDisplay (marquee);
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISPLAY])) {
-    if (p != NULL && *p == MSG_ARGS_EMPTY) {
-      p = "";
+  if (p != NULL) {
+    int   count;
+
+    count = atoi (p);
+    idx = MQ_W_INFO_DISP_A;
+
+    for (int i = 0; i < count; ++i) {
+      p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+      if (p != NULL && *p != MSG_ARGS_EMPTY) {
+        if (*sep &&
+            uiWidgetIsValid (marquee->wcont [idx])) {
+          uiLabelSetText (marquee->wcont [idx], sep);
+          ++idx;
+        }
+        if (uiWidgetIsValid (marquee->wcont [idx])) {
+          uiLabelSetText (marquee->wcont [idx], p);
+          sep = " / ";
+        }
+        ++idx;
+      }
     }
-    uiLabelSetText (marquee->wcont [MQ_W_INFO_DISPLAY], p);
   }
 
   /* first entry is the main dance */
@@ -941,9 +971,11 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISPLAY])) {
-    marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_DISPLAY], tbuff);
-    uiWidgetSetClass (marquee->wcont [MQ_W_INFO_DISPLAY], MQ_INFO_CLASS);
+  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISP_A])) {
+    marqueeClearInfoDisplay (marquee);
+    for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
+      marqueeSetFontSize (marquee, marquee->wcont [i], tbuff);
+    }
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");
@@ -979,8 +1011,9 @@ marqueeDisplayCompletion (marquee_t *marquee)
   const char  *disp;
 
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DANCE], "");
+  marqueeClearInfoDisplay (marquee);
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  uiLabelSetText (marquee->wcont [MQ_W_INFO_DISPLAY], disp);
+  uiLabelSetText (marquee->wcont [MQ_W_INFO_DISP_A], disp);
 
   if (! marquee->mqShowInfo) {
     uiWidgetShowAll (marquee->wcont [MQ_W_INFOBOX]);
@@ -998,4 +1031,12 @@ marqueeSendFontSizes (marquee_t *marquee)
       nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
   connSendMessage (marquee->conn, ROUTE_PLAYERUI,
       MSG_MARQUEE_FONT_SIZES, tbuff);
+}
+
+static void
+marqueeClearInfoDisplay (marquee_t *marquee)
+{
+  for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
+    uiLabelSetText (marquee->wcont [i], "");
+  }
 }

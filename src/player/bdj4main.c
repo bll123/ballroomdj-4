@@ -1080,30 +1080,25 @@ mainSendMarqueeData (maindata_t *mainData)
     slist_t     *sellist;
     slistidx_t  seliteridx;
     int         tagidx;
-    bool        havedata = false;
 
     sbuff = mdmalloc (BDJMSG_MAX);
     sbuff [0] = '\0';
-    tbuff [0] = '\0';
 
     sellist = dispselGetList (mainData->dispsel, DISP_SEL_MARQUEE);
+
+    snprintf (tbuff, sizeof (tbuff), "%d%c",
+        (int) slistGetCount (sellist), MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+
     slistStartIterator (sellist, &seliteridx);
     while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
       tstr = musicqGetData (mainData->musicQueue, mqidx, 0, tagidx);
-      if (tstr != NULL && *tstr) {
-        if (havedata) {
-          strlcat (tbuff, " / ", sizeof (tbuff));
-        }
-        strlcat (tbuff, tstr, sizeof (tbuff));
-        havedata = true;
-      } else {
-        havedata = false;
+      if (tstr == NULL || ! *tstr) {
+        tstr = MSG_ARGS_EMPTY_STR;
       }
+      snprintf (tbuff, sizeof (tbuff), "%s%c", tstr, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
     }
-
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
-    snprintf (tbuff, sizeof (tbuff), "%c", MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
   }
 
   currTime = mstime ();
