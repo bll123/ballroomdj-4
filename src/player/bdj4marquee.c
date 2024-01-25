@@ -865,11 +865,17 @@ marqueePopulate (marquee_t *marquee, char *args)
           uiLabelSetText (marquee->wcont [idx], sep);
           ++idx;
         }
+        if (idx > MQ_W_INFO_DISP_E) {
+          break;
+        }
         if (uiWidgetIsValid (marquee->wcont [idx])) {
           uiLabelSetText (marquee->wcont [idx], p);
           sep = " / ";
         }
         ++idx;
+        if (idx > MQ_W_INFO_DISP_E) {
+          break;
+        }
       }
     }
   }
