@@ -6,7 +6,7 @@ LONG
 SHORT
 ..en
 DISPLAY
-..
+..English (GB)
 AUTO
 ..automatic
 STDROUNDS
@@ -20,7 +20,7 @@ LONG
 SHORT
 ..en
 DISPLAY
-..
+..English (US)
 AUTO
 ..automatic
 STDROUNDS
@@ -34,7 +34,7 @@ LONG
 SHORT
 ..de
 DISPLAY
-..
+..Deutsch
 AUTO
 ..automatisch
 STDROUNDS
@@ -48,7 +48,7 @@ LONG
 SHORT
 ..es
 DISPLAY
-..
+..Español
 AUTO
 ..automático
 STDROUNDS
@@ -62,7 +62,7 @@ LONG
 SHORT
 ..fi
 DISPLAY
-..
+..Suomi
 AUTO
 ..automaattinen
 STDROUNDS
@@ -76,7 +76,7 @@ LONG
 SHORT
 ..fr
 DISPLAY
-..
+..Français
 AUTO
 ..automatique
 STDROUNDS
@@ -90,7 +90,7 @@ LONG
 SHORT
 ..it
 DISPLAY
-..
+..Italiano
 AUTO
 ..automatico
 STDROUNDS
@@ -104,7 +104,7 @@ LONG
 SHORT
 ..ja
 DISPLAY
-..
+..日本語
 AUTO
 ..自動
 STDROUNDS
@@ -118,7 +118,7 @@ LONG
 SHORT
 ..nl
 DISPLAY
-..
+..Nederlands
 AUTO
 ..Automatisch
 STDROUNDS
@@ -132,7 +132,7 @@ LONG
 SHORT
 ..pl
 DISPLAY
-..
+..Polski
 AUTO
 ..automatyczny
 STDROUNDS
@@ -146,7 +146,7 @@ LONG
 SHORT
 ..ru
 DISPLAY
-..
+..Русский‬
 AUTO
 ..автоматически
 STDROUNDS

@@ -49,7 +49,7 @@ function appendlocaledata {
   pofile=$1
   locale=$2
   slocale=$3
-  langdesc=$5
+  langdesc=$4
 
   for txt in automatic standardrounds queuedance; do
     ttxt=$txt

@@ -7,6 +7,7 @@
 **4.4.9 2024-1---**
 
 * Bug Fixes:
+    * Configuration: Fix locale selection display.
     * Export for BDJ4: Fix.
     * Player: External Request: Fix assignment of artist/title.
     * Song Editor: Fix keyword validation.
