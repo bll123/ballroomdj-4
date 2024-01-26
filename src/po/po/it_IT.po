@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-01-22\n"
+"PO-Revision-Date: 2024-01-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -1021,6 +1021,7 @@ msgstr "Gestire"
 msgid "Mark as Same Song"
 msgstr "Contrassegnare come stessa canzone"
 
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
 #. CONTEXT: configuration: options associated with the marquee (suggested: song display)
 #. CONTEXT: marquee: marquee window title (suggested: song display)
 #. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
@@ -1329,6 +1330,7 @@ msgstr "Tipo di playlist"
 #. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
 msgid "Please wait…"
 msgstr "Attendere prego…"
 

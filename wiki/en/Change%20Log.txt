@@ -4,7 +4,7 @@
 
 <!--
 
-**4.4.8.1 2024-1---**
+**4.4.9 2024-1---**
 
 * Bug Fixes:
     * Export for BDJ4: Fix.
@@ -13,7 +13,7 @@
     * Song Editor: Fix possible crashes.
     * Support Message: Validate e-mail address.
 * Changes:
-    * Configure / Display Setttings: The marquee song information display can now be configured.
+    * Configure / Display Settings: The marquee song information display can now be configured.
 * Internal:
     * Code cleanup.
 

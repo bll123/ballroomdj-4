@@ -351,15 +351,9 @@ START_TEST(orgutil_makepath)
   org_t     *org;
   int       ri;
   int       i;
-  int       type;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_makepath");
   mdebugSubTag ("orgutil_makepath");
-
-  type = ORG_UNIX_CHARS;
-  if (isWindows ()) {
-    type = ORG_WIN_CHARS;
-  }
 
   ri = 0;
   while (testsongresults [ri].orgpath != NULL) {

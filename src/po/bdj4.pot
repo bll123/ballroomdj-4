@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-22 10:15-0800\n"
+"POT-Creation-Date: 2024-01-26 07:16-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1019,6 +1019,7 @@ msgstr ""
 msgid "Mark as Same Song"
 msgstr ""
 
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
 #. CONTEXT: configuration: options associated with the marquee (suggested: song display)
 #. CONTEXT: marquee: marquee window title (suggested: song display)
 #. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
@@ -1327,6 +1328,7 @@ msgstr ""
 #. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
 msgid "Please wait…"
 msgstr ""
 
