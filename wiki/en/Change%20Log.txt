@@ -4,10 +4,18 @@
 
 <!--
 
-**4.4.9 2024-1---**
+**4.4.9.1 2024-1---**
 
 * Bug Fixes:
-    * Configuration: Fix locale selection display.
+    * PENDING Song Editor: Fix when writing audio tags (broken in 4.4.8)
+    * PENDING Installation: second install, incorrect copy of files.
+
+-->
+
+**4.4.9 2024-1-26**
+
+* Bug Fixes:
+    * Configure / General: Fix locale selection display (broken in 4.4.8).
     * Export for BDJ4: Fix.
     * Player: External Request: Fix assignment of artist/title.
     * Song Editor: Fix keyword validation.
@@ -17,8 +25,6 @@
     * Configure / Display Settings: The marquee song information display can now be configured.
 * Internal:
     * Code cleanup.
-
--->
 
 **4.4.8 2024-1-16**
 
@@ -693,4 +699,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-16 10:12:16; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-01-26 12:11:21; BDJ4 version 4.4.9)_

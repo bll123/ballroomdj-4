@@ -368,6 +368,10 @@ START_TEST(orgutil_makepath)
       p = res;
       o = testsongresults [ri].cleanresults [i];
       while (*p) {
+        if (isWindows () && *p == '.' && *(p + 1) == '/') {
+          ++p;
+          continue;
+        }
         if (*p == '*' || *p == '&' || *p == '|' || *p == '<' || *p == '>' || *p == '?' || *p == '\'' || *p == '"') {
           ++p;
           continue;
