@@ -21,8 +21,11 @@ best for the marquee.
 __Queue Length__: The number of upcoming songs to display on the
 marquee.
 
-__Show Song Information__: If enabled, the song artist and title will
-be displayed on the marquee.
+__Show Song Information__: If enabled, the song information configured
+in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configure-Display%20Settings)
+will be displayed on the marquee.  Only three items can be displayed
+in the marquee song information display.
 
 __Accent Color__: The color to use for the current dance and countdown
 timer.
@@ -32,4 +35,4 @@ timer.
 <br><span style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-01-26 13:17:29; BDJ4 version 4.4.9)_
