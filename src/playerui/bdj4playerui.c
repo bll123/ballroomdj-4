@@ -26,6 +26,7 @@
 #include "conn.h"
 #include "datafile.h"
 #include "dispsel.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -127,6 +128,8 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   uiwcont_t       *wcont [PLUI_W_MAX];
   int             pliSupported;
+  int             reloadexpected;
+  int             reloadrcvd;
   /* quick edit */
   uiqe_t          *uiqe;
   int             resetvolume;
@@ -158,6 +161,7 @@ typedef struct {
   bool            optionsalloc : 1;
   bool            reloadinit : 1;
   bool            inreload : 1;
+  bool            reloadchk : 1;
   bool            startmainsent : 1;
   bool            stopping : 1;
   bool            uibuilt : 1;
@@ -296,6 +300,9 @@ main (int argc, char *argv[])
   plui.marqueeoff = false;
   plui.reloadinit = false;
   plui.inreload = false;
+  plui.reloadchk = false;
+  plui.reloadexpected = 0;
+  plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
@@ -1845,17 +1852,26 @@ pluiReload (void *udata)
   playerui_t    *plui = udata;
 
   plui->inreload = true;
+  plui->reloadchk = true;
+  plui->reloadexpected = 0;
+  plui->reloadrcvd = 0;
 
   for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
     char    tmp [100];
-    char    tbuff [200];
+    char    msg [200];
+    char    tbuff [MAXPATHLEN];
 
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
-    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
+    snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
-    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), mqidx, tmp, EDIT_FALSE);
-    connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        tmp, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+    if (fileopFileExists (tbuff)) {
+      msgbuildQueuePlaylist (msg, sizeof (msg), mqidx, tmp, EDIT_FALSE);
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, msg);
+      plui->reloadexpected += 1;
+    }
   }
 
   pluiReloadCurrent (plui);
@@ -1906,6 +1922,15 @@ pluiReloadSave (playerui_t *plui, int mqidx)
     return;
   }
 
+  if (plui->reloadchk) {
+    plui->reloadrcvd += 1;
+    if (plui->reloadrcvd < plui->reloadexpected) {
+      return;
+    }
+  }
+
+  plui->reloadchk = false;
+
   /* any time any music queue data is received, disable the */
   /* reload menu item */
   if (! plui->reloadinit) {
@@ -1945,6 +1970,9 @@ pluiReloadSaveCurrent (playerui_t *plui)
   song_t          *song;
 
   if (plui->inreload) {
+    return;
+  }
+  if (plui->reloadchk && plui->reloadrcvd < plui->reloadexpected) {
     return;
   }
 

@@ -32,5 +32,10 @@ Wait until after several songs in the music queue have been played, then
 queue the automatic or sequenced playlist again.  Scroll to the end of
 the music queue and adjust the songs in the queue if needed.
 
+##### Reload and Playlist Controls
+
+When __Actions&nbsp;/&nbsp;Reload__ is used, any playlist controls
+from the original playlist will no longer be active.
+
 [Wiki Home](Home)
 <br>_(Updated 2023-12-18 09:08:38; BDJ4 version 4.4.7)_

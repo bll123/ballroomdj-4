@@ -10,14 +10,14 @@
     * PENDING Song Editor: Fix when writing audio tags (broken in 4.4.8)
     * PENDING Installation: second install, incorrect copy of files.
 
-**4.4.9.1 2024-1---**
+-->
+
+**4.4.9.1 2024-1-28**
 
 * Bug Fixes:
     * Player: Fix announcements.
     * Player: Fix internal music queue handling issues.
-    * PENDING Player: reload
-
--->
+    * Player: Fix reload.
 
 **4.4.9 2024-1-26**
 
