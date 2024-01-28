@@ -47,7 +47,6 @@ typedef enum {
   MSG_MUSICQ_MOVE_UP,       // args: music-q-idx, idx
   MSG_MUSICQ_REMOVE,        // args: music-q-idx, idx
   MSG_MUSICQ_SWAP,          // args: music-q-idx, idx-a, idx-b
-  MSG_MUSICQ_SET_MANAGE,    // args: music queue for management
   MSG_MUSICQ_SET_PLAYBACK,  // args: music queue for playback
   MSG_MUSICQ_SET_LEN,       // args: length
                             //    used to override the playerqlen in options
@@ -130,7 +129,6 @@ typedef enum {
   MSG_MAIN_START_REATTACH,  // the main process was started before and
                             //  stayed active. re-attach to it.
   MSG_MAIN_REQ_STATUS,      // request current status from main
-  MSG_MAIN_CURR_MANAGE,     // status response: current manage idx
   MSG_MAIN_CURR_PLAY,       // status response: current play idx
   MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, song-entry-text
   MSG_MAIN_REQ_QUEUE_INFO,  // args: queue number

@@ -10,18 +10,18 @@ get main CHK_MAIN_MUSICQ
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mq0len 1 mq0idx0 0 mq1idx1 -1
+chk mq0len 1 mq0idx0 0 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
+chk mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
 msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
-chk mqmanage 0 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
+chk mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
 msg main MUSICQ_INSERT 1~999~3
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
+chk mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
 # dual music queues
@@ -37,25 +37,22 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
+chk mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~3
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
-msg main MUSICQ_SET_MANAGE 0
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
-chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg player PLAY_FADE
@@ -64,7 +61,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 2000
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
+chk mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
 end
 
 # dual music queues
@@ -73,23 +70,22 @@ test 70-40 Select-Playback-Queue-After
 msg main MUSICQ_INSERT 0~999~7
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 7 mq1idx1 -1
-msg main MUSICQ_SET_MANAGE 1
+chk mqplay 0 mq0len 1 mq0idx0 7 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~8
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
 msg main MUSICQ_SET_PLAYBACK 1
 get main CHK_MAIN_MUSICQ
 # queue 0 now has the empty head
 # queue 1 no longer has the empty head
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 1 mq0idx1 7 mq1idx0 8
+chk mqplay 1 mq0len 2 mq1len 1 mq0idx1 7 mq1idx0 8
 msg main MUSICQ_SET_PLAYBACK 0
 get main CHK_MAIN_MUSICQ
 # queue 1 now has the empty head
 # queue 0 no longer has the empty head
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 7 mq1idx1 8
 end
 
 # dual music queues
@@ -98,19 +94,18 @@ test 70-50 Select-Playback-Queue-Before
 msg main MUSICQ_INSERT 0~999~9
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 9 mq1idx1 -1
+chk mqplay 0 mq0len 1 mq0idx0 9 mq1idx1 -1
 msg main MUSICQ_SET_PLAYBACK 1
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~10
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 1 mq0idx1 9 mq1idx0 10
+chk mqplay 1 mq0len 2 mq1len 1 mq0idx1 9 mq1idx0 10
 msg main MUSICQ_SET_PLAYBACK 0
 get main CHK_MAIN_MUSICQ
 # queue 1 now has the empty head
 # queue 0 no longer has the empty head
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 9 mq1idx1 10
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 9 mq1idx1 10
 end
 
 # dual music queues
@@ -126,25 +121,22 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
+chk mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~3
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
-msg main MUSICQ_SET_MANAGE 0
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
-chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_PLAYBACK 1
@@ -156,7 +148,7 @@ mssleep 2000
 get main CHK_MAIN_MUSICQ
 # queue 0 now has the empty head
 # queue 1 no longer has the empty head
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+chk mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_PLAYBACK 0
@@ -168,7 +160,7 @@ mssleep 2000
 get main CHK_MAIN_MUSICQ
 # queue 1 now has the empty head
 # queue 0 no longer has the empty head
-chk mqmanage 0 mqplay 0 mq0len 1 mq1len 2 mq0idx0 4 mq1idx0 -1 mq1idx1 5 dbidx 4
+chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 4 mq1idx0 -1 mq1idx1 5 dbidx 4
 end
 
 # dual music queues
@@ -186,34 +178,33 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
+chk mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 # stop the first song before switching queues (not deferred)
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5
+chk mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5
 # switch playback queues
 msg main MUSICQ_SET_PLAYBACK 1
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5
+chk mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+chk mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
 end
 
 # dual music queues
@@ -231,21 +222,20 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
+chk mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 # switch playback queues
 msg main MUSICQ_SET_PLAYBACK 1
 get main CHK_MAIN_MUSICQ
 # still playing...
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
@@ -255,7 +245,7 @@ wait playstate playing
 mssleep 1500
 get main CHK_MAIN_MUSICQ
 # queue 0 has an empty head
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+chk mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
 end
 
 # dual music queues
@@ -272,14 +262,13 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
-chk mqmanage 0 mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
-msg main MUSICQ_SET_MANAGE 1
+chk mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 # pause playback
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
@@ -288,12 +277,12 @@ chk playstate paused
 msg main MUSICQ_SET_PLAYBACK 1
 get main CHK_MAIN_MUSICQ
 # playback is paused...
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
@@ -303,6 +292,6 @@ wait playstate playing
 mssleep 1500
 get main CHK_MAIN_MUSICQ
 # queue 0 has an empty head
-chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+chk mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
 end
 

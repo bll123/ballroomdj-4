@@ -39,7 +39,7 @@
 #
 # main:
 #   musicq:
-#     mqmanage mqplay mq0len mq1len m-songfn title dance
+#     mqplay mq0len mq1len m-songfn title dance
 #     dbidx
 #       only if playing, from the musicq-play-idx
 #     qdbidx

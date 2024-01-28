@@ -1158,14 +1158,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           plui->mainreattach = true;
           break;
         }
-        case MSG_MAIN_CURR_MANAGE: {
-          int     mqidx;
-
-          mqidx = atoi (targs);
-          plui->musicqManageIdx = mqidx;
-          uimusicqSetManageIdx (plui->uimusicq, mqidx);
-          break;
-        }
         case MSG_MAIN_CURR_PLAY: {
           int     mqidx;
 
@@ -1379,8 +1371,6 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
 static void
 pluiSetManageQueue (playerui_t *plui, int mqidx)
 {
-  char  tbuff [40];
-
   if (mqidx < MUSICQ_PB_MAX) {
     int   val;
 
@@ -1399,8 +1389,6 @@ pluiSetManageQueue (playerui_t *plui, int mqidx)
 
   plui->musicqManageIdx = mqidx;
   uimusicqSetManageIdx (plui->uimusicq, mqidx);
-  snprintf (tbuff, sizeof (tbuff), "%d", mqidx);
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, tbuff);
 }
 
 static bool

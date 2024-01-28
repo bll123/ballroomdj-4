@@ -16,7 +16,6 @@ msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main QUEUE_PLAYLIST 1~test-sl-a
 #
-msg main MUSICQ_SET_MANAGE 0
 get main CHK_MAIN_MUSICQ
 chk-gt mq0len 5
 chk-gt mq1len 5
@@ -51,7 +50,6 @@ chk currvolume defaultvol actualvolume defaultvol
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 #
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 0
 msg player PLAY_FADE
 resptimeout 7500
@@ -88,7 +86,6 @@ msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
-msg main MUSICQ_SET_MANAGE 0
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
 
@@ -170,7 +167,6 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 #
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 0
 msg player PLAY_FADE
 resptimeout 7500
@@ -236,7 +232,6 @@ chk currvolume defaultvol actualvolume defaultvol
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
-msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -245,7 +240,6 @@ end
 # queues, and history does not need to be prepped.
 test 150-21 Gap-Switch-Queue
 msg main QUEUE_SWITCH_EMPTY 1
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_MAXPLAYTIME 10000
@@ -253,7 +247,6 @@ msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_INSERT 1~999~6
 msg main MUSICQ_INSERT 1~999~5
 msg main MUSICQ_INSERT 1~999~4
-msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
@@ -422,7 +415,6 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume 30
 #
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE
@@ -436,7 +428,6 @@ chk actualvolume 30
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEIN 400
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
-msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -475,7 +466,6 @@ wait-not playstate in-fadeout
 wait playstate playing
 mssleep 1500
 #
-msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE
@@ -497,7 +487,6 @@ mssleep 1500
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
-msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -521,6 +510,9 @@ resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+# mq 1 has an empty head pushed
+chk mqplay 0 mq0len 4 mq1len 2
 #
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
@@ -530,6 +522,9 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 wait playstate playing
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+# mq 0 has an empty head pushed
+chk mqplay 1 mq0len 4 mq1len 1
 #
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -538,8 +533,8 @@ wait-not playstate in-fadeout
 wait playstate playing
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqplay 0 mq0len 3 mq1len 1
+# mq 1 is empty
+chk mqplay 0 mq0len 3 mq1len 0
 #
 resptimeout 7500
 msg player PLAY_FADE
@@ -549,13 +544,12 @@ wait playstate in-fadeout
 wait playstate playing
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqplay 0 mq0len 2 mq1len 1
+# mq 1 is empty
+chk mqplay 0 mq0len 2 mq1len 0
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
-msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_SWITCH_EMPTY 0
 end

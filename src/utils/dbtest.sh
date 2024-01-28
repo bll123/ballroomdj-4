@@ -275,9 +275,9 @@ done
 # audiotag+dbupdate+info+basic+important + db
 DBG=4457483
 # norm
-NUMNORM=137
+NUMNORM=139
 # cha cha
-NUMCC=16
+NUMCC=18
 # regex
 NUMREGEX=13
 # deleted foxtrot
@@ -288,8 +288,8 @@ NUMNOCC=$(($NUMCC-1))
 
 # second
 NUM2=13
-NUM2TOT=150
-NUM2TOT_RN=147   # three announcements
+NUM2TOT=152
+NUM2TOT_RN=147   # five announcements
 NUM2_EXIST=2    # two existing
 NUM2TOT_RN_EXIST=$((${NUM2TOT_RN}-${NUM2_EXIST}))
 # deleted foxtrot (only the second dir)
@@ -1097,7 +1097,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1154,7 +1154,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1220,7 +1220,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1303,7 +1303,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1384,7 +1384,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1492,7 +1492,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1605,7 +1605,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1712,7 +1712,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -1938,7 +1938,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -2051,7 +2051,7 @@ if [[ $TESTON == T ]]; then
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
   dance="Announce"
-  for fn in samba.mp3 waltz.mp3 tango.mp3; do
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
     checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then

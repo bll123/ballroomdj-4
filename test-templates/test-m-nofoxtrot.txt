@@ -14,7 +14,7 @@
 version
 ..1
 count
-..131
+..133
 
 # standard dances
 
@@ -4860,9 +4860,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..waltz
+..ann-waltz
 DEST
-..Announce/waltz
+..Announce/ann-waltz
 DB_LOC_LOCK
 ..yes
 
@@ -4897,9 +4897,9 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..tango
+..ann-tango
 DEST
-..Announce/tango
+..Announce/ann-tango
 DB_LOC_LOCK
 ..yes
 
@@ -4934,16 +4934,90 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..samba
+..ann-samba
 DEST
-..Announce/samba
+..Announce/ann-samba
+DB_LOC_LOCK
+..yes
+
+KEY
+..135
+SOURCE
+..ann-foxtrot.mp3
+DURATION
+..2448
+NOTES
+..
+BPM
+..
+TAGS
+..announcement
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..
+ALBUMARTIST
+..
+ARTIST
+..
+ALBUM
+..
+TRACKNUMBER
+..%d
+DANCE
+..
+DANCERATING
+..Great
+TITLE
+..ann-foxtrot
+DEST
+..Announce/ann-foxtrot
+DB_LOC_LOCK
+..yes
+
+KEY
+..136
+SOURCE
+..ann-quickstep.mp3
+DURATION
+..2304
+NOTES
+..
+BPM
+..
+TAGS
+..announcement
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..
+ALBUMARTIST
+..
+ARTIST
+..
+ALBUM
+..
+TRACKNUMBER
+..%d
+DANCE
+..
+DANCERATING
+..Great
+TITLE
+..ann-quickstep
+DEST
+..Announce/ann-quickstep
 DB_LOC_LOCK
 ..yes
 
 # ogg/opus as .ogx
 
 KEY
-..135
+..137
 SOURCE
 ..waltz-opus.ogx
 DURATION
@@ -4978,7 +5052,7 @@ DEST
 ..%03d-waltz-opus-ogx
 
 KEY
-..136
+..138
 SOURCE
 ..waltz-ogg.ogx
 DURATION
