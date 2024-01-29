@@ -4,13 +4,18 @@
 
 <!--
 
-**4.4.9.2 2024-1---**
+**4.4.9.3 2024-1---**
 
 * Bug Fixes:
-    * PENDING Song Editor: Fix when writing audio tags (broken in 4.4.8)
+    * PENDING Song Editor: Fix when writing audio tags (broken in 4.4.8) ???
     * PENDING Installation: second install, incorrect copy of files.
 
 -->
+
+**4.4.9.2 2024-1-29**
+
+* Bug Fixes:
+    * Database Update: Fixed a crash parsing ID3 (MP3) tags.
 
 **4.4.9.1 2024-1-28**
 
@@ -706,4 +711,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-28 17:29:10; BDJ4 version 4.4.9.1)_
+<br>_(Updated 2024-01-29 12:42:11; BDJ4 version 4.4.9.2)_

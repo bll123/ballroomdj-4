@@ -115,8 +115,10 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_utf8_t        *str = NULL;
 
           ustr = id3_field_getstring (field);
-          str = id3_ucs4_utf8duplicate (ustr);
-          mdextalloc (str);
+          if (ustr != NULL) {
+            str = id3_ucs4_utf8duplicate (ustr);
+            mdextalloc (str);
+          }
           if (i != 1 || strcmp (id3frame->id, "TXXX") != 0) {
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (3): %s %s=%s", tagname, id3frame->id, str);
             if (tagname != NULL) {
@@ -130,9 +132,11 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_ucs4_t const  *ustr = NULL;
           id3_utf8_t        *str = NULL;
 
-          ustr = id3_field_getstring (field);
-          str = id3_ucs4_utf8duplicate (ustr);
-          mdextalloc (str);
+          ustr = id3_field_getfullstring (field);
+          if (ustr != NULL) {
+            str = id3_ucs4_utf8duplicate (ustr);
+            mdextalloc (str);
+          }
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (4): %s %s=%s", tagname, id3frame->id, str);
           if (tagname != NULL) {
             slistSetStr (tagdata, tagname, (const char *) str);
@@ -150,8 +154,10 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             const char        *p = NULL;
 
             ustr = id3_field_getstrings (field, j);
-            str = id3_ucs4_utf8duplicate (ustr);
-            mdextalloc (str);
+            if (ustr != NULL) {
+              str = id3_ucs4_utf8duplicate (ustr);
+              mdextalloc (str);
+            }
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
             p = (const char *) str;
             if (tagname != NULL &&
@@ -555,12 +561,14 @@ atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtyp
     tagname = atidata->tagLookup (tagtype, (const char *) str);
   } else if (strcmp (id3frame->id, "TXXX") == 0 && id3frame->nfields >= 2) {
     const id3_ucs4_t  *ustr;
-    id3_utf8_t        *str;
+    id3_utf8_t        *str = NULL;
 
     field = &id3frame->fields [1];
     ustr = id3_field_getstring (field);
-    str = id3_ucs4_utf8duplicate (ustr);
-    mdextalloc (str);
+    if (ustr != NULL) {
+      str = id3_ucs4_utf8duplicate (ustr);
+      mdextalloc (str);
+    }
     tagname = atidata->tagLookup (tagtype, (const char *) str);
     dataFree (str);
   } else {
