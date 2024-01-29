@@ -153,14 +153,16 @@ if [[ $platform == windows ]]; then
   PBIN=plocal/bin
   # gspawn helpers are required for the link button to work.
   # librsvg is the SVG library; it is not a direct dependent.
+  # libcares is required by the libcurl build.
   # gdbus
-  exelist="
+  chkdlllist="
       /${libtag}/bin/gspawn-win64-helper.exe
       /${libtag}/bin/gspawn-win64-helper-console.exe
       /${libtag}/bin/librsvg-2-2.dll
+      /${libtag}/bin/libcares-2.dll
       /${libtag}/bin/gdbus.exe
       "
-  for fn in $exelist; do
+  for fn in $chkdlllist; do
     bfn=$(basename $fn)
     if [[ ! -f $fn ]]; then
       echo "** $fn does not exist **"
@@ -175,7 +177,7 @@ if [[ $platform == windows ]]; then
   dlllistfn=tmp/dll-list.txt
   > $dlllistfn
 
-  for fn in plocal/bin/*.dll bin/*.exe $exelist ; do
+  for fn in plocal/bin/*.dll bin/*.exe $chkdlllist ; do
     ldd $fn |
       grep ${libtag} |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn

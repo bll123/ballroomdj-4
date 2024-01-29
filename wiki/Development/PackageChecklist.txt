@@ -5,11 +5,12 @@
     * debian-12 (MX Linux 23)
     * debian-11 (MX Linux 21)
     * opensuse (OpenSUSE 15.5)
-    * fedora (Fedora 38)
-    * arch (Manjaro 23)
     * windows (Windows 10)
     * macos intel (bll-mac MacOS Ventura)
     * macos applesilicon (bll-mac-m1 MacOS Ventura)
+* Platforms for testing only:
+    * fedora (Fedora 38)
+    * arch (Manjaro 23)
 
 * on Linux:
     * update VERSION.txt (check version)
@@ -58,4 +59,4 @@ source package and copy it to the primary development machine.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-01-16 10:12:16; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-01-28 17:29:10; BDJ4 version 4.4.9.1)_
