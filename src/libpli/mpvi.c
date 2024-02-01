@@ -523,9 +523,6 @@ mpvMedia (mpvData_t *mpvData, const char *fn)
   }
 # endif
 
-  mpv_observe_property (mpvData->inst, 0, "duration", MPV_FORMAT_DOUBLE);
-  mpv_observe_property (mpvData->inst, 0, "time-pos", MPV_FORMAT_DOUBLE);
-
   return 0;
 }
 
