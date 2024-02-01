@@ -30,7 +30,7 @@ sink must be set via the MPV API, and the MPV internal name must be used.
 * Status: an interface has been written, but it is not working
 right.  MPV is low priority.
 * 2024-2-1: The MPV interface is much improved, but MPV is buggy.  The
-'time-pos' property stop getting reported correctly after certain
+'time-pos' property stops getting reported correctly after certain
 operations.  Due to this bug, development on MPV is stopped.
 
 [Wiki Home](Home)
