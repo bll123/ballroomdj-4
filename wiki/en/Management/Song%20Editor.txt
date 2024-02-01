@@ -149,14 +149,15 @@ song editor is:
  Dance Level|BDJ4|
  Dance Rating|BDJ4|
  Date|Audio|
- Date Added||Display Only
+ Date Added|-|Display Only
  Disc|Audio|
- Duration||Display Only
+ Duration|-|Display Only
  Favorite|BDJ4|
  Genre|Audio|
  Keyword|BDJ4|
  Marquee Display|BDJ4|
  Notes|BDJ4|
+ Prevent Rename|-|
  Song End|BDJ4|
  Song Start|BDJ4|
  Speed Adjustment|BDJ4|

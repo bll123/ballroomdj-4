@@ -64,7 +64,8 @@ typedef struct {
   char          *songfullpath;
   char          *songname;
   char          *tempname;
-  listnum_t     dur;
+  int32_t       dur;
+  int32_t       plidur;
   listnum_t     songstart;
   double        voladjperc;
   long          uniqueidx;
@@ -690,7 +691,7 @@ playerProcessing (void *udata)
     } else if (plistate == PLI_STATE_PLAYING) {
       if (pq->dur <= 1) {
         pq->dur = pliGetDuration (playerData->pli);
-        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %" PRId64, pq->dur);
+        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %d", pq->dur);
       }
 
       /* save for later use */
@@ -742,9 +743,14 @@ playerProcessing (void *udata)
 
     if (playerData->stopPlaying ||
         mstimeCheck (&playerData->playTimeCheck)) {
-      plistate_t plistate = pliState (playerData->pli);
-      ssize_t plidur = pliGetDuration (playerData->pli);
-      ssize_t plitm = pliGetTime (playerData->pli);
+      int32_t     plitm;
+      plistate_t  plistate;
+
+      plistate = pliState (playerData->pli);
+      if (pq->plidur < 1) {
+        pq->plidur = pliGetDuration (playerData->pli);
+      }
+      plitm = pliGetTime (playerData->pli);
 
       /* for a song with a speed adjustment, vlc returns the current */
       /* timestamp and the real duration, not adjusted values. */
@@ -754,7 +760,7 @@ playerProcessing (void *udata)
           plistate == PLI_STATE_ENDED ||
           plistate == PLI_STATE_ERROR ||
           playerData->stopPlaying ||
-          plitm >= plidur ||
+          plitm >= pq->plidur ||
           mstimeCheck (&playerData->playEndCheck)) {
         char  nsflag [20];
 
@@ -967,6 +973,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
+  npq->plidur = 0;
   logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId64, (int64_t) npq->dur);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);

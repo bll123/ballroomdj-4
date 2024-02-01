@@ -29,6 +29,9 @@ LC_NUMERIC setting and restoring it afterwards within the MPV interface.
 sink must be set via the MPV API, and the MPV internal name must be used.
 * Status: an interface has been written, but it is not working
 right.  MPV is low priority.
+* 2024-2-1: The MPV interface is much improved, but MPV is buggy.  The
+'time-pos' property stop getting reported correctly after certain
+operations.  Due to this bug, development on MPV is stopped.
 
 [Wiki Home](Home)
 <br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_

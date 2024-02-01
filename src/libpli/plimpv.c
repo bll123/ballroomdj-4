@@ -84,8 +84,6 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 void
 pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
-  /* Do the busy loop so that the seek can be done immediately as */
-  /* mpv starts playing.  This should help avoid startup glitches */
   if (pliData != NULL && pliData->plData != NULL) {
     mpvPlay (pliData->plData);
     if (dpos > 0) {
@@ -251,7 +249,6 @@ pliiWaitUntilPlaying (plidata_t *pliData)
     }
   }
 }
-
 
 #endif /* _lib_mpv_create */
 

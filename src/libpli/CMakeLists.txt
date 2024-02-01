@@ -48,21 +48,23 @@ target_link_libraries (libplimpris PRIVATE
   ${GIO_LDFLAGS}
 )
 
-add_library (libplimpv SHARED plimpv.c mpvi.c)
-target_include_directories (libplimpv
-  PRIVATE "${LIBMPV_INCLUDE_DIRS}"
-)
-target_link_libraries (libplimpv PRIVATE
-  libbdj4common
-  ${LIBMPV_LDFLAGS}
-)
+# add_library (libplimpv SHARED plimpv.c mpvi.c)
+# target_include_directories (libplimpv
+#   PRIVATE "${LIBMPV_INCLUDE_DIRS}"
+# )
+# target_link_libraries (libplimpv PRIVATE
+#   libbdj4common
+#   ${LIBMPV_LDFLAGS}
+# )
+# target_compile_options (libplimpv PRIVATE -pthread)
+# target_link_options (libplimpv PRIVATE -pthread)
 
 install (TARGETS
   libbdj4pli
   libplinull
   libplivlc
   libplimpris
-  libplimpv
+#   libplimpv
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -70,4 +72,4 @@ updateRPath (libbdj4pli)
 updateRPath (libplinull)
 updateRPath (libplivlc)
 updateRPath (libplimpris)
-updateRPath (libplimpv)
+# updateRPath (libplimpv)
