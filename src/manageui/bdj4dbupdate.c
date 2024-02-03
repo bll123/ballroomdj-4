@@ -241,9 +241,8 @@ main (int argc, char *argv[])
   dbupdate.usingmusicdir = true;
   dbupdate.verbose = false;
   mstimeset (&dbupdate.outputTimer, 0);
-
-  dbupdate.autoorg = bdjoptGetNum (OPT_G_AUTOORGANIZE);
-  dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
+  dbupdate.autoorg = false;
+  dbupdate.dancefromgenre = false;
 
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_CONNECTING,
@@ -265,6 +264,9 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &dbupdate.musicdb,
       "dbup", ROUTE_DBUPDATE, &dbupdate.startflags);
   logProcBegin (LOG_PROC, "dbupdate");
+
+  dbupdate.autoorg = bdjoptGetNum (OPT_G_AUTOORGANIZE);
+  dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
   dbupdate.songdb = songdbAlloc (dbupdate.musicdb);
 
