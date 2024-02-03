@@ -973,7 +973,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
 
         rcdisc = (tagkey == TAG_DISCNUMBER && val == 0.0 && nval == 1.0);
         rctrk = (tagkey == TAG_TRACKNUMBER && val == 0.0 && nval == 1.0);
-        if (tagkey == TAG_FAVORITE) {
+        if (tagkey == TAG_FAVORITE || tagkey == TAG_GENRE) {
           if (val < 0) { val = 0; }
         }
         if (! rcdisc && ! rctrk && nval != val) {
