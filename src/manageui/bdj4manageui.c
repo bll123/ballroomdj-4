@@ -388,7 +388,7 @@ static bool     managePlayProcessEasySonglist (void *udata, long dbidx, int mqid
 static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessSonglist (void *udata, long dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
-static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action);
+static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 /* m3u */
 static bool     manageSonglistExportM3U (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
@@ -3021,7 +3021,7 @@ manageQueueProcessEasySonglist (void *udata, long dbidx)
 }
 
 static void
-manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
+manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action)
 {
   manageui_t  *manage = udata;
   char        tbuff [100];
@@ -3061,13 +3061,13 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
     /* the music queue index */
     manage->musicqueueprocessflag = false;
     manage->lastinsertlocation = loc;
-    snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%d", mqidx,
         MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   }
 
   if (action == MANAGE_PLAY) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", mqidx,
         MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
   }
@@ -3611,6 +3611,8 @@ manageProcessDatabaseUpdate (manageui_t *manage)
   uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
   uimusicqSetDatabase (manage->slsbsmusicq, manage->musicdb);
   uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
+  uisongeditSetDatabase (manage->mmsongedit, manage->musicdb);
+  songdbSetMusicDB (manage->songdb, manage->musicdb);
 
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 

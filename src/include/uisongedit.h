@@ -39,6 +39,7 @@ enum {
 uisongedit_t * uisongeditInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts);
 void  uisongeditFree (uisongedit_t *uisongedit);
+void  uisongeditSetDatabase (uisongedit_t *uisongedit, musicdb_t *musicdb);
 void  uisongeditMainLoop (uisongedit_t *uisongedit);
 int   uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);

@@ -7,15 +7,15 @@
 **4.4.9.4 2024-1---**
 
 * Bug Fixes:
-    * PENDING Song Editor: Fix when writing audio tags (broken in 4.4.8) ???
     * PENDING Installation: second install, incorrect copy of files.
 
-**4.4.9.3 2024-1---**
+-->
+
+**4.4.9.3 2024-2-4**
 
 * Bug Fixes:
-    * Database Update: Fixed incorrect initialization for 'dance from genre'.
-
--->
+    * Database Update: Fixed incorrect handling of 'dance from genre'.
+    * Song Editor: Fix crash after database reload.
 
 **4.4.9.2 2024-1-29**
 

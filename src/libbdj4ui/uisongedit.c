@@ -59,6 +59,16 @@ uisongeditFree (uisongedit_t *uisongedit)
 }
 
 void
+uisongeditSetDatabase (uisongedit_t *uisongedit, musicdb_t *musicdb)
+{
+  if (uisongedit == NULL || musicdb == NULL) {
+    return;
+  }
+
+  uisongedit->musicdb = musicdb;
+}
+
+void
 uisongeditMainLoop (uisongedit_t *uisongedit)
 {
   uisongeditUIMainLoop (uisongedit);

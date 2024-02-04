@@ -30,7 +30,12 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
+enum {
+  MUSICDB_IDENT = 0x6d757369646200cc,
+};
+
 typedef struct musicdb {
+  int64_t       ident;
   dbidx_t       count;
   nlist_t       *songs;
   nlist_t       *danceCounts;  // used by main for automatic playlists
@@ -58,11 +63,12 @@ dbOpen (const char *fn)
 
   musicdb = mdmalloc (sizeof (musicdb_t));
 
+  musicdb->ident = MUSICDB_IDENT;
   musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
   musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
   nlistSetSize (musicdb->danceCounts, dcount);
   musicdb->danceCount = dcount;
-  musicdb->count = 0L;
+  musicdb->count = 0;
   musicdb->radb = NULL;
   musicdb->inbatch = false;
   musicdb->updatelast = true;
@@ -77,13 +83,14 @@ dbOpen (const char *fn)
 void
 dbClose (musicdb_t *musicdb)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
   if (musicdb->inbatch) {
     dbEndBatch (musicdb);
   }
+  musicdb->ident = 0;
   raClose (musicdb->radb);
   musicdb->radb = NULL;
 
@@ -97,11 +104,13 @@ dbClose (musicdb_t *musicdb)
 dbidx_t
 dbCount (musicdb_t *musicdb)
 {
-  dbidx_t tcount = 0L;
+  dbidx_t tcount = 0;
 
-  if (musicdb != NULL) {
-    tcount = musicdb->count;
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return 0;
   }
+
+  tcount = musicdb->count;
   return tcount;
 }
 
@@ -116,7 +125,7 @@ dbLoad (musicdb_t *musicdb)
   slistidx_t  siteridx;
   rafileidx_t racount;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return -1;
   }
 
@@ -176,7 +185,7 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   rafileidx_t rrn;
   const char  *fstr;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -200,7 +209,7 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -222,7 +231,7 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
     return;
   }
 
-  if (musicdb->radb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
   song = slistGetDataByIdx (musicdb->songs, dbidx);
@@ -233,7 +242,7 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
 void
 dbStartBatch (musicdb_t *musicdb)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -247,7 +256,7 @@ dbStartBatch (musicdb_t *musicdb)
 void
 dbEndBatch (musicdb_t *musicdb)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -258,7 +267,7 @@ dbEndBatch (musicdb_t *musicdb)
 void
 dbDisableLastUpdateTime (musicdb_t *musicdb)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -269,7 +278,7 @@ dbDisableLastUpdateTime (musicdb_t *musicdb)
 void
 dbEnableLastUpdateTime (musicdb_t *musicdb)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
 
@@ -282,7 +291,7 @@ dbGetByName (musicdb_t *musicdb, const char *songname)
 {
   song_t  *song;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return NULL;
   }
 
@@ -299,7 +308,7 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 {
   song_t  *song;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return NULL;
   }
 
@@ -325,7 +334,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   time_t    currtime;
   size_t    len;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return 0;
   }
 
@@ -386,7 +395,7 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
 void
 dbStartIterator (musicdb_t *musicdb, slistidx_t *iteridx)
 {
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
   if (musicdb->songs == NULL) {
@@ -401,7 +410,7 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
 {
   song_t    *song;
 
-  if (musicdb == NULL) {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return NULL;
   }
 
@@ -417,6 +426,10 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
 nlist_t *
 dbGetDanceCounts (musicdb_t *musicdb)
 {
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return NULL;
+  }
+
   return musicdb->danceCounts;
 }
 
@@ -435,6 +448,9 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
 {
   dbidx_t     dbidx;
 
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return LIST_VALUE_INVALID;
+  }
   if (song == NULL) {
     return LIST_VALUE_INVALID;
   }

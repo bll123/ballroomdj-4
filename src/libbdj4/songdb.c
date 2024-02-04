@@ -31,15 +31,20 @@
 #include "songlist.h"
 #include "tagdef.h"
 
-static bool songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz);
-static void songdbWriteAudioTags (song_t *song);
-static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
+enum {
+  SONGDB_IDENT = 0x736f6e67646200aa,
+};
 
 typedef struct songdb {
+  int64_t   ident;
   musicdb_t *musicdb;
   org_t     *org;
   org_t     *orgold;
 } songdb_t;
+
+static bool songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz);
+static void songdbWriteAudioTags (song_t *song);
+static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
 
 songdb_t *
 songdbAlloc (musicdb_t *musicdb)
@@ -48,6 +53,7 @@ songdbAlloc (musicdb_t *musicdb)
   const char  *torgpath;
 
   songdb = mdmalloc (sizeof (songdb_t));
+  songdb->ident = SONGDB_IDENT;
   songdb->musicdb = musicdb;
 
   torgpath = bdjoptGetStr (OPT_G_ORGPATH);
@@ -63,10 +69,11 @@ songdbAlloc (musicdb_t *musicdb)
 void
 songdbFree (songdb_t *songdb)
 {
-  if (songdb == NULL) {
+  if (songdb == NULL || songdb->ident != SONGDB_IDENT) {
     return;
   }
 
+  songdb->ident = 0;
   orgFree (songdb->org);
   songdb->org = NULL;
   orgFree (songdb->orgold);
@@ -76,7 +83,7 @@ songdbFree (songdb_t *songdb)
 void
 songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb)
 {
-  if (songdb == NULL) {
+  if (songdb == NULL || songdb->ident != SONGDB_IDENT) {
     return;
   }
 
@@ -89,7 +96,8 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
   song_t    *song;
   int       songdbflags;
 
-  if (songdb == NULL || songdb->musicdb == NULL) {
+  if (songdb == NULL || songdb->ident != SONGDB_IDENT ||
+      songdb->musicdb == NULL) {
     return;
   }
   song = dbGetByIdx (songdb->musicdb, dbidx);
@@ -112,7 +120,8 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   int         rc;
   size_t      len;
 
-  if (songdb == NULL || songdb->musicdb == NULL) {
+  if (songdb == NULL || songdb->ident != SONGDB_IDENT ||
+      songdb->musicdb == NULL) {
     *flags |= SONGDB_RET_NULL;
     return 0;
   }

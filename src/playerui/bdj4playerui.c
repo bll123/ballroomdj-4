@@ -1145,6 +1145,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);
           uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
+          songdbSetMusicDB (plui->songdb, plui->musicdb);
           uisongselApplySongFilter (plui->uisongsel);
           break;
         }
