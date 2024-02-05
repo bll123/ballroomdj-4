@@ -14,6 +14,7 @@
 # CXX       - c++ compiler
 # cmg       - cmake -G type
 # cmpbld    - cmake parallel build
+# esuffix   - executable suffix
 
 procs=$(getconf _NPROCESSORS_ONLN)
 echo "= procs: $procs"
@@ -74,5 +75,5 @@ case $systype in
     ;;
 esac
 
-export systype procs tag platform arch archtag cmg cmpbld
+export systype procs tag platform arch archtag cmg cmpbld esuffix
 export CC CXX

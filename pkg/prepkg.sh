@@ -149,8 +149,9 @@ if [[ $platform == windows ]]; then
     exit 1
   fi
 
-  echo "-- $(date +%T) copying .dll files"
+  echo "-- $(date +%T) copying windows files"
   PBIN=plocal/bin
+
   # gspawn helpers are required for the link button to work.
   # librsvg is the SVG library; it is not a direct dependent.
   # libcares is required by the libcurl build.
@@ -184,6 +185,15 @@ if [[ $platform == windows ]]; then
   done
   for fn in $(sort -u $dlllistfn); do
     bfn=$(basename $fn)
+    # libcurl and libnghttp2 are built, do not overwrite
+    case ${bfn} in
+      libcurl*)
+        continue
+        ;;
+      libnghttp2*)
+        continue
+        ;;
+    esac
     if [[ $fn -nt $PBIN/$bfn ]]; then
       count=$((count+1))
       echo "copying $bfn"
@@ -202,6 +212,8 @@ if [[ $platform == windows ]]; then
   rsync -aS --delete /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
   rsync -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
+  mkdir -p plocal/etc/fonts
+  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
   mkdir -p plocal/etc/gtk-3.0
   cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
