@@ -53,6 +53,7 @@
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dance.h"
 #include "dirlist.h"
 #include "dirop.h"
 #include "fileop.h"
@@ -229,9 +230,7 @@ main (int argc, char *argv[])
   dbupdate.updfromtags = false;
   dbupdate.writetags = false;
   dbupdate.cleandatabase = false;
-  dbupdate.autoorg = false;
   dbupdate.cli = false;
-  dbupdate.dancefromgenre = false;
   dbupdate.haveolddirlist = false;
   dbupdate.iterfromaudiosrc = false;
   dbupdate.iterfromdb = false;
@@ -1022,10 +1021,23 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 
   if (dbupdate->dancefromgenre) {
     val = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
+
+    /* only try the genre->dance if the dance is not already set */
     if (val == NULL || ! *val) {
       val = slistGetStr (tagdata, tagdefs [TAG_GENRE].tag);
+
+      /* if a genre is present */
       if (val != NULL && *val) {
-        slistSetStr (tagdata, tagdefs [TAG_DANCE].tag, val);
+        datafileconv_t  conv;
+
+        /* only set the dance from the genre if the genre->dance */
+        /* conversion is valid */
+        conv.invt = VALUE_STR;
+        conv.str = val;
+        danceConvDance (&conv);
+        if (conv.num >= 0) {
+          slistSetStr (tagdata, tagdefs [TAG_DANCE].tag, val);
+        }
       }
     }
   }

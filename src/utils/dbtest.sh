@@ -122,6 +122,20 @@ function setautoorgoff {
   mv -f ${gconf}.n ${gconf}
 }
 
+function setdfgon {
+  gconf=data/bdjconfig.txt
+  sed -e '/^LOADDANCEFROMGENRE$/ { n ; s/.*/..yes/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
+function setdfgoff {
+  gconf=data/bdjconfig.txt
+  sed -e '/^LOADDANCEFROMGENRE$/ { n ; s/.*/..no/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
 function setwritetagson {
   gconf=data/bdjconfig.txt
   sed -e '/^WRITETAGS/ { n ; s/.*/..ALL/ ; }' \
@@ -279,7 +293,7 @@ NUMNORM=139
 # cha cha
 NUMCC=18
 # regex
-NUMREGEX=13
+NUMREGEX=16
 # deleted foxtrot
 NUMFT=6
 NUMNOFT=$(($NUMNORM-${NUMFT}))
@@ -768,6 +782,8 @@ if [[ $TESTON == T ]]; then
   test -d $TMPDIRDT && rm -rf $TMPDIRDT
   cp -r $musicdir $TMPDIRDT
 
+  setdfgon
+
   # test regex db : get dance/artist/title from file path
   tname=rebuild-file-path-dat
   setorgpath '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
@@ -790,6 +806,8 @@ if [[ $TESTON == T ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
+  setdfgon
+
   # test regex db : get dance/title from file path
   tname=rebuild-file-path-dt
   setorgpath '{%DANCE%/}{%TITLE%}'
@@ -812,6 +830,8 @@ if [[ $TESTON == T ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
+  setdfgon
+
   # test secondary folder: regex db : get dance/title from file path
   tname=rebuild-file-path-dt-second
   tdir="$(dirname ${musicdir})"
@@ -834,6 +854,8 @@ if [[ $TESTON == T ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
+  setdfgon
+
   # test regex db : get date/tracknum-artist-title from file path
   tname=rebuild-file-path-dtat
   setorgpath '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
@@ -854,6 +876,8 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
   exitonfail $rc $crc
 fi
+
+setdfgoff
 
 if [[ $TESTON == T ]]; then
   test -d "$SECONDMUSICDIR" || mkdir -p "$SECONDMUSICDIR"

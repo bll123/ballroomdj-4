@@ -1,6 +1,6 @@
 # test-m-regex-tag.txt
-# 2022-11-4
-# version 1
+# 2024-2-5
+# version 2
 #
 # 'dance/artist - title' as filename
 # dance, artist, title tags are set so that a comparison can be made.
@@ -8,7 +8,7 @@
 version
 ..1
 count
-..13
+..16
 
 # Cha Cha
 
@@ -248,4 +248,63 @@ ARTIST
 ..artist
 DEST
 ..Waltz/%03d-artist - waltz-ogg
+
+# dance from genre tests
+
+KEY
+..13
+SOURCE
+..samba.mp3
+DURATION
+..30460
+TITLE
+..waltz dfg
+ARTIST
+..artist
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+GENRE
+..Waltz
+DEST
+..Samba/%03d-artist - waltz dfg
+
+KEY
+..14
+SOURCE
+..waltz.mp3
+DURATION
+..30630
+TITLE
+..samba dfg
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DANCE
+..Samba
+GENRE
+..Samba
+DEST
+..Waltz/%03d-artist - samba dfg
+
+KEY
+..15
+SOURCE
+..waltz.mp3
+DURATION
+..30630
+TITLE
+..waltz dfg regex
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DANCE
+..Waltz
+GENRE
+..Rock
+DEST
+..Waltz/%03d-artist - waltz dfg regex
 

@@ -4,24 +4,28 @@
 
 <!--
 
-**4.4.9.4 2024-1---**
+**4.4.10.2 2024-2---**
+    * PENDING Installation: second install, incorrect copy of files.
+
+**4.4.10.1 2024-2---**
 
 * Bug Fixes:
-    * PENDING Installation: second install, incorrect copy of files.
+    * Update Database: Fix dance-from-genre processing.
+    * PENDING Update Database: Fix ID3 (MP3) genre processing.
 
 -->
 
 **4.4.10 2024-2-4**
 
 * Bug Fixes:
-    * Database Update: Fixed incorrect handling of 'dance from genre'.
+    * Update Database: Fixed incorrect handling of 'dance from genre'.
     * Song Editor: Fix crash after database reload.
     * Windows: Fix packaging.
 
 **4.4.9.2 2024-1-29**
 
 * Bug Fixes:
-    * Database Update: Fixed a crash parsing ID3 (MP3) tags.
+    * Update Database: Fixed a crash parsing ID3 (MP3) tags.
 
 **4.4.9.1 2024-1-28**
 
