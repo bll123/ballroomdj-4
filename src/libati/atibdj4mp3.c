@@ -67,9 +67,10 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
     /* null tagnames are checked in each field type */
     /* so that the raw data can be logged */
 
+    /* note that the ordering is not enforced by the id3tag library */
+    /* t---: field 0 is the text encoding, field 1 is the data */
     /* ufid: field 0 is the name, field 1 is the data */
     /* txxx: field 0 is the text encoding, field 1 is the name, field 2 is the data */
-    /* t---: field 0 is the text encoding, field 1 is the data */
     for (size_t i = 0; i < id3frame->nfields; ++i) {
       const union id3_field *field;
 
@@ -147,6 +148,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
         case ID3_FIELD_TYPE_STRINGLIST: {
           size_t    nstr;
 
+          /* the processing here is limited, only the first string */
+          /* of the stringlist is handled */
+
           nstr = id3_field_getnstrings (field);
           for (size_t j = 0; j < nstr; ++j) {
             id3_ucs4_t const  *ustr = NULL;
@@ -154,11 +158,21 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             const char        *p = NULL;
 
             ustr = id3_field_getstrings (field, j);
+
+            /* genre tags may need to be converted from the id3 */
+            /* numeric value */
+            if (tagname != NULL &&
+                strcmp (tagname, atidata->tagName (TAG_GENRE)) == 0) {
+              ustr = id3_genre_name (ustr);
+            }
+
             if (ustr != NULL) {
               str = id3_ucs4_utf8duplicate (ustr);
               mdextalloc (str);
             }
+
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
+
             p = (const char *) str;
             if (tagname != NULL &&
                 strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
