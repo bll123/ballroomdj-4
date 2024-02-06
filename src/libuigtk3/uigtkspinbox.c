@@ -342,11 +342,7 @@ uiSpinboxDoubleDefaultCreate (void)
   GtkWidget   *widget;
   uiwcont_t   *uiwidget;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SPINBOX;
-  uiwidget->wtype = WCONT_T_SPINBOX;
-  uiwidget->uiint.uispinbox = NULL;
-  uiwidget->widget = NULL;
+  uiwidget = uiSpinboxInit ();
 
   widget = gtk_spin_button_new (NULL, -0.1, 1);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (widget), FALSE);
@@ -472,6 +468,10 @@ uiSpinboxIsChanged (uiwcont_t *uiwidget)
   }
 
   uispinbox = uiwidget->uiint.uispinbox;
+  if (uispinbox == NULL) {
+    return false;
+  }
+
   return uispinbox->changed;
 }
 
@@ -485,7 +485,9 @@ uiSpinboxResetChanged (uiwcont_t *uiwidget)
   }
 
   uispinbox = uiwidget->uiint.uispinbox;
-  uispinbox->changed = false;
+  if (uispinbox != NULL) {
+    uispinbox->changed = false;
+  }
 }
 
 void
@@ -538,8 +540,7 @@ uiSpinboxInit (void)
   uispinbox->idxlist = NULL;
   uispinbox->sbtype = SB_TEXT;
   uispinbox->uikey = uiKeyAlloc ();
-  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback,
-      uispinbox, NULL);
+  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback, uiwidget, NULL);
 
   uiwidget->uiint.uispinbox = uispinbox;
 
