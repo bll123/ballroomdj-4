@@ -29,7 +29,7 @@ typedef struct uispinbox {
   int         junk;
 } uispinbox_t;
 
-uispinbox_t *
+uiwcont_t *
 uiSpinboxInit (void)
 {
   return NULL;
@@ -37,20 +37,20 @@ uiSpinboxInit (void)
 
 
 void
-uiSpinboxFree (uispinbox_t *uispinbox)
+uiSpinboxFree (uiwcont_t *uiwidget)
 {
   return;
 }
 
 
 void
-uiSpinboxTextCreate (uispinbox_t *uispinbox, void *udata)
+uiSpinboxTextCreate (uiwcont_t *uiwidget, void *udata)
 {
   return;
 }
 
 void
-uiSpinboxTextSet (uispinbox_t *uispinbox, int min, int count,
+uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist,
     uispinboxdisp_t textGetProc)
 {
@@ -58,61 +58,61 @@ uiSpinboxTextSet (uispinbox_t *uispinbox, int min, int count,
 }
 
 int
-uiSpinboxTextGetIdx (uispinbox_t *uispinbox)
+uiSpinboxTextGetIdx (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 int
-uiSpinboxTextGetValue (uispinbox_t *uispinbox)
+uiSpinboxTextGetValue (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 void
-uiSpinboxTextSetValue (uispinbox_t *uispinbox, int value)
+uiSpinboxTextSetValue (uiwcont_t *uiwidget, int value)
 {
   return;
 }
 
 void
-uiSpinboxSetState (uispinbox_t *uispinbox, int state)
+uiSpinboxSetState (uiwcont_t *uiwidget, int state)
 {
   return;
 }
 
-uispinbox_t *
+uiwcont_t *
 uiSpinboxTimeInit (int sbtype)
 {
   return NULL;
 }
 
 void
-uiSpinboxTimeCreate (uispinbox_t *uispinbox, void *udata, callback_t *convcb)
+uiSpinboxTimeCreate (uiwcont_t *uiwidget, void *udata, callback_t *convcb)
 {
   return;
 }
 
 ssize_t
-uiSpinboxTimeGetValue (uispinbox_t *uispinbox)
+uiSpinboxTimeGetValue (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 void
-uiSpinboxTimeSetValue (uispinbox_t *uispinbox, ssize_t value)
+uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value)
 {
   return;
 }
 
 void
-uiSpinboxTextSetValueChangedCallback (uispinbox_t *uispinbox, callback_t *uicb)
+uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }
 
 void
-uiSpinboxTimeSetValueChangedCallback (uispinbox_t *uispinbox, callback_t *uicb)
+uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }
@@ -136,13 +136,13 @@ uiSpinboxDoubleCreate (void)
 }
 
 void
-uiSpinboxDoubleDefaultCreate (uispinbox_t *uispinbox)
+uiSpinboxDoubleDefaultCreate (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiSpinboxSetRange (uispinbox_t *uispinbox, double min, double max)
+uiSpinboxSetRange (uiwcont_t *uiwidget, double min, double max)
 {
   return;
 }
@@ -154,7 +154,7 @@ uiSpinboxSetIncrement (uiwcont_t *spinbox, double incr, double pageincr)
 }
 
 void
-uiSpinboxWrap (uispinbox_t *uispinbox)
+uiSpinboxWrap (uiwcont_t *uiwidget)
 {
   return;
 }
@@ -178,19 +178,19 @@ uiSpinboxSetValue (uiwcont_t *uispinbox, double value)
 }
 
 bool
-uiSpinboxIsChanged (uispinbox_t *uispinbox)
+uiSpinboxIsChanged (uiwcont_t *uiwidget)
 {
   return false;
 }
 
 void
-uiSpinboxResetChanged (uispinbox_t *uispinbox)
+uiSpinboxResetChanged (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiSpinboxAlignRight (uispinbox_t *uispinbox)
+uiSpinboxAlignRight (uiwcont_t *uiwidget)
 {
   return;
 }
@@ -199,10 +199,4 @@ void
 uiSpinboxAddClass (const char *classnm, const char *color)
 {
   return;
-}
-
-uiwcont_t *
-uiSpinboxGetWidgetContainer (uispinbox_t *uispinbox)
-{
-  return NULL;
 }

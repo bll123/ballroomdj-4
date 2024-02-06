@@ -238,7 +238,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].outtype = outtype;
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
-  uiSpinboxTextCreate (gui->uiitem [widx].spinbox, gui);
+  uiwidgetp = gui->uiitem [widx].uiwidgetp;
+  uiSpinboxTextCreate (uiwidgetp, gui);
   list = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
   if (outtype == CONFUI_OUT_STR) {
@@ -260,10 +261,9 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     }
   }
 
-  uiSpinboxTextSet (gui->uiitem [widx].spinbox, 0,
+  uiSpinboxTextSet (uiwidgetp, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
-  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, value);
-  uiwidgetp = uiSpinboxGetWidgetContainer (gui->uiitem [widx].spinbox);
+  uiSpinboxTextSetValue (uiwidgetp, value);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);
@@ -276,7 +276,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
-    uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].spinbox,
+    uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].uiwidgetp,
         gui->uiitem [widx].callback);
   }
   uiwcontFree (hbox);
@@ -307,14 +307,13 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     gui->uiitem [widx].callback = callbackInitStr (
         confuiValMSCallback, gui);
   }
-  uiSpinboxTimeCreate (gui->uiitem [widx].spinbox, gui,
+  uiwidgetp = gui->uiitem [widx].uiwidgetp;
+  uiSpinboxTimeCreate (uiwidgetp, gui,
       gui->uiitem [widx].callback);
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    uiSpinboxSetRange (gui->uiitem [widx].spinbox, 0.0, 1440000.0);
+    uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
   }
-  uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);
-  uiwidgetp = uiSpinboxGetWidgetContainer (gui->uiitem [widx].spinbox);
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  uiSpinboxTimeSetValue (uiwidgetp, value);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);

@@ -158,7 +158,7 @@ confuiMusicQActiveChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
-  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].spinbox);
+  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].uiwidgetp);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, 1);
     return UICB_CONT;
@@ -172,8 +172,8 @@ confuiMusicQActiveChg (void *udata)
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, state);
-  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox, state);
-  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox, state);
+  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp, state);
+  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiwidgetp, state);
@@ -199,7 +199,7 @@ confuiMusicQDisplayChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
-  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].spinbox);
+  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].uiwidgetp);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, 1);
     return UICB_CONT;
@@ -231,13 +231,13 @@ confuiMusicQChg (void *udata)
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
   oselidx = gui->uiitem [widx].listidx;
-  nselidx = uiSpinboxTextGetValue (gui->uiitem [widx].spinbox);
+  nselidx = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
   if (oselidx != nselidx) {
     /* make sure the current selection gets saved to the options data */
     confuiPopulateOptions (gui);
     confuiSetMusicQList (gui);
     confuiUpdateMusicQList (gui);
-    uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, nselidx);
+    uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, nselidx);
   }
   gui->uiitem [widx].listidx = nselidx;
 
@@ -254,10 +254,10 @@ confuiMusicQChg (void *udata)
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
-  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox,
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
   /* divide by to convert from hh:mm to mm:ss for the spinbox */
-  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox,
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx) / 60);
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
@@ -325,7 +325,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
   size_t      maxWidth = 10;
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
-  if (gui->uiitem [widx].spinbox == NULL) {
+  if (gui->uiitem [widx].uiwidgetp == NULL) {
     return;
   }
 
@@ -340,7 +340,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
     maxWidth = len > maxWidth ? len : maxWidth;
   }
 
-  uiSpinboxTextSet (gui->uiitem [widx].spinbox, 0,
+  uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
       nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);
 }
 

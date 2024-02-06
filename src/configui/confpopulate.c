@@ -66,7 +66,7 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_SPINBOX_TEXT: {
-        nval = uiSpinboxTextGetValue (gui->uiitem [i].spinbox);
+        nval = uiSpinboxTextGetValue (gui->uiitem [i].uiwidgetp);
         if (outtype == CONFUI_OUT_STR) {
           if (gui->uiitem [i].sbkeylist != NULL) {
             sval = nlistGetStr (gui->uiitem [i].sbkeylist, nval);
@@ -87,7 +87,7 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_SPINBOX_TIME: {
-        nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [i].spinbox);
+        nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [i].uiwidgetp);
         if (i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
@@ -121,9 +121,9 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (i == CONFUI_SPINBOX_AUDIO_OUTPUT) {
-      uispinbox_t  *spinbox;
+      uiwcont_t  *spinbox;
 
-      spinbox = gui->uiitem [i].spinbox;
+      spinbox = gui->uiitem [i].uiwidgetp;
       if (! uiSpinboxIsChanged (spinbox)) {
         continue;
       }
@@ -139,11 +139,11 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_OUT_STR: {
-        uispinbox_t  *spinbox;
+        uiwcont_t  *spinbox;
 
         if (i == CONFUI_SPINBOX_LOCALE ||
             i == CONFUI_SPINBOX_UI_THEME) {
-          spinbox = gui->uiitem [i].spinbox;
+          spinbox = gui->uiitem [i].uiwidgetp;
           if (uiSpinboxIsChanged (spinbox)) {
             gui->uiitem [i].changed = true;
           }
@@ -265,11 +265,11 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      uispinbox_t  *spinbox;
+      uiwcont_t  *spinbox;
 
       /* only copy if the spinbox changed */
 
-      spinbox = gui->uiitem [i].spinbox;
+      spinbox = gui->uiitem [i].uiwidgetp;
       if (uiSpinboxIsChanged (spinbox)) {
         sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
         templateHttpCopy (sval, "bdj4remote.html");
@@ -278,7 +278,7 @@ confuiPopulateOptions (confuigui_t *gui)
   } /* for each item */
 
   selidx = uiSpinboxTextGetValue (
-      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
+      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
   confuiDispSaveTable (gui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);

@@ -22,9 +22,9 @@
 #include "uirating.h"
 
 typedef struct uirating {
-  rating_t      *ratings;
-  uispinbox_t   *spinbox;
-  bool          allflag;
+  rating_t    *ratings;
+  uiwcont_t   *spinbox;
+  bool        allflag;
 } uirating_t;
 
 static const char *uiratingRatingGet (void *udata, int idx);
@@ -59,7 +59,7 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
       ratingGetCount (uirating->ratings),
       maxw, NULL, NULL, uiratingRatingGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetWidgetContainer (uirating->spinbox));
+  uiBoxPackStart (boxp, uirating->spinbox);
 
   return uirating;
 }
@@ -68,10 +68,12 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
 void
 uiratingFree (uirating_t *uirating)
 {
-  if (uirating != NULL) {
-    uiSpinboxFree (uirating->spinbox);
-    mdfree (uirating);
+  if (uirating == NULL) {
+    return;
   }
+
+  uiwcontFree (uirating->spinbox);
+  mdfree (uirating);
 }
 
 int
@@ -109,7 +111,7 @@ uiratingSetState (uirating_t *uirating, int state)
 void
 uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetWidgetContainer (uirating->spinbox));
+  uiSizeGroupAdd (sg, uirating->spinbox);
 }
 
 void

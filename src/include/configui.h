@@ -198,23 +198,20 @@ typedef struct {
   confuiouttype_t   outtype;
   long              debuglvl;
   int               bdjoptIdx;
-  union {
-    uispinbox_t   *spinbox;
-  };
-  uiwcont_t   *uibutton;      // for entry chooser
-  uisfcb_t    sfcb;           // for entry chooser
-  int         listidx;        // for combobox, spinbox
-  nlist_t     *displist;      // indexed by spinbox/combobox index
-                              //    value: display
-  nlist_t     *sbkeylist;     // indexed by spinbox index
-                              //    value: key
-  int         danceidx;       // for dance edit
-  int         entrysz;
-  int         entrymaxsz;
-  uiwcont_t   *uiwidgetp;
-  callback_t  *callback;
-  char        *uri;
-  bool        changed;
+  uiwcont_t         *uibutton;      // for entry chooser
+  uisfcb_t          sfcb;           // for entry chooser
+  int               listidx;        // for combobox, spinbox
+  nlist_t           *displist;      // indexed by spinbox/combobox index
+                                    //    value: display
+  nlist_t           *sbkeylist;     // indexed by spinbox index
+                                    //    value: key
+  int               danceidx;       // for dance edit
+  int               entrysz;
+  int               entrymaxsz;
+  uiwcont_t         *uiwidgetp;
+  callback_t        *callback;
+  char              *uri;
+  bool              changed;
 } confuiitem_t;
 
 typedef enum {

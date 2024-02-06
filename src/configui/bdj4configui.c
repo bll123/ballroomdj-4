@@ -166,9 +166,9 @@ main (int argc, char *argv[])
     if (i > CONFUI_SPINBOX_BEGIN && i < CONFUI_SPINBOX_MAX) {
       if (i == CONFUI_SPINBOX_Q_MAX_PLAY_TIME ||
           i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
-        confui.gui.uiitem [i].spinbox = uiSpinboxTimeInit (SB_TIME_BASIC);
+        confui.gui.uiitem [i].uiwidgetp = uiSpinboxTimeInit (SB_TIME_BASIC);
       } else {
-        confui.gui.uiitem [i].spinbox = uiSpinboxInit ();
+        confui.gui.uiitem [i].uiwidgetp = uiSpinboxInit ();
       }
     }
   }
@@ -354,7 +354,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uibutton);
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
-    uiSpinboxFree (confui->gui.uiitem [i].spinbox);
+    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
     /* the mq and ui-theme share the list */
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;

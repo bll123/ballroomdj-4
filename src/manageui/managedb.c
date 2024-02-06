@@ -64,7 +64,7 @@ typedef struct managedb {
   conn_t            *conn;
   uiwcont_t         *wcont [MDB_W_MAX];
   callback_t        *callbacks [MDB_CB_MAX];
-  uispinbox_t       *dbspinbox;
+  uiwcont_t         *dbspinbox;
   nlist_t           *dblist;
   int               dblistWidth;
   nlist_t           *dbhelp;
@@ -183,7 +183,7 @@ manageDbFree (managedb_t *managedb)
   for (int i = 0; i < MDB_W_MAX; ++i) {
     uiwcontFree (managedb->wcont [i]);
   }
-  uiSpinboxFree (managedb->dbspinbox);
+  uiwcontFree (managedb->dbspinbox);
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     callbackFree (managedb->callbacks [i]);
   }
@@ -227,12 +227,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
       nlistGetCount (managedb->dblist), managedb->dblistWidth,
       managedb->dblist, NULL, NULL);
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
-  uiwidgetp = uiSpinboxGetWidgetContainer (managedb->dbspinbox);
   managedb->callbacks [MDB_CB_DB_CHG] = callbackInit (
       manageDbChg, managedb, NULL);
   uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox,
       managedb->callbacks [MDB_CB_DB_CHG]);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, managedb->dbspinbox);
 
   /* help display */
   uiwcontFree (hbox);

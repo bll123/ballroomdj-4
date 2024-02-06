@@ -78,8 +78,6 @@ typedef struct {
   uiwcont_t       *chgind;
   uiwcont_t       *label;
   union {
-    uiwcont_t     *entry;
-    uispinbox_t   *spinbox;
     uiwcont_t     *uiwidgetp;
     uidance_t     *uidance;
     uifavorite_t  *uifavorite;
@@ -234,7 +232,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
       switch (tagdefs [tagkey].editType) {
         case ET_ENTRY: {
-          uiwcontFree (seint->items [count].entry);
+          uiwcontFree (seint->items [count].uiwidgetp);
           break;
         }
         case ET_COMBOBOX: {
@@ -264,14 +262,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
         case ET_SWITCH:
         case ET_SCALE:
         case ET_LABEL:
-        case ET_SPINBOX: {
-          uiwcontFree (seint->items [count].uiwidgetp);
-          break;
-        }
+        case ET_SPINBOX:
         case ET_SPINBOX_TIME: {
-          if (seint->items [count].spinbox != NULL) {
-            uiSpinboxFree (seint->items [count].spinbox);
-          }
+          uiwcontFree (seint->items [count].uiwidgetp);
           break;
         }
         case ET_NA: {
@@ -555,9 +548,9 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        uiEntrySetValue (seint->items [count].entry, "");
+        uiEntrySetValue (seint->items [count].uiwidgetp, "");
         if (tval != NULL) {
-          uiEntrySetValue (seint->items [count].entry, tval);
+          uiEntrySetValue (seint->items [count].uiwidgetp, tval);
         }
         break;
       }
@@ -602,7 +595,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       }
       case ET_SPINBOX_TIME: {
         if (val < 0) { val = 0; }
-        uiSpinboxTimeSetValue (seint->items [count].spinbox, val);
+        uiSpinboxTimeSetValue (seint->items [count].uiwidgetp, val);
         break;
       }
       case ET_SCALE: {
@@ -751,7 +744,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        uiEntrySetState (seint->items [count].entry, newstate);
+        uiEntrySetState (seint->items [count].uiwidgetp, newstate);
         break;
       }
       case ET_COMBOBOX: {
@@ -764,7 +757,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
         break;
       }
       case ET_SPINBOX_TIME: {
-        uiSpinboxSetState (seint->items [count].spinbox, newstate);
+        uiSpinboxSetState (seint->items [count].uiwidgetp, newstate);
         break;
       }
       case ET_SPINBOX_TEXT: {
@@ -888,7 +881,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
 
       switch (tagdefs [tagkey].editType) {
         case ET_ENTRY: {
-          ndata = uiEntryGetValue (seint->items [count].entry);
+          ndata = uiEntryGetValue (seint->items [count].uiwidgetp);
           break;
         }
         case ET_COMBOBOX: {
@@ -930,7 +923,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         }
         case ET_SPINBOX_TIME: {
           if (val < 0) { val = 0; }
-          nval = uiSpinboxTimeGetValue (seint->items [count].spinbox);
+          nval = uiSpinboxTimeGetValue (seint->items [count].uiwidgetp);
           break;
         }
         case ET_SCALE: {
@@ -1024,19 +1017,19 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
 
     if (spdchanged) {
       if (seint->songstartidx != UISE_NOT_DISPLAYED) {
-        nval = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].spinbox);
+        nval = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].uiwidgetp);
         if (nval > 0) {
           nval = songutilNormalizePosition (nval, seint->lastspeed);
           nval = songutilAdjustPosReal (nval, speed);
-          uiSpinboxTimeSetValue (seint->items [seint->songstartidx].spinbox, nval);
+          uiSpinboxTimeSetValue (seint->items [seint->songstartidx].uiwidgetp, nval);
         }
       }
       if (seint->songendidx != UISE_NOT_DISPLAYED) {
-        nval = uiSpinboxTimeGetValue (seint->items [seint->songendidx].spinbox);
+        nval = uiSpinboxTimeGetValue (seint->items [seint->songendidx].uiwidgetp);
         if (nval > 0) {
           nval = songutilNormalizePosition (nval, seint->lastspeed);
           nval = songutilAdjustPosReal (nval, speed);
-          uiSpinboxTimeSetValue (seint->items [seint->songendidx].spinbox, nval);
+          uiSpinboxTimeSetValue (seint->items [seint->songendidx].uiwidgetp, nval);
         }
       }
       if (seint->bpmidx != UISE_NOT_DISPLAYED) {
@@ -1230,7 +1223,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin (LOG_PROC, "uisongeditAddEntry");
   seint = uisongedit->seInternalData;
   entryp = uiEntryInit (20, 250);
-  seint->items [seint->itemcount].entry = entryp;
+  seint->items [seint->itemcount].uiwidgetp = entryp;
   /* set the validate callback to set the changed flag */
   uiEntrySetValidate (entryp,
       uisongeditEntryChangedCallback, seint, UIENTRY_IMMEDIATE);
@@ -1296,23 +1289,21 @@ uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagk
 static void
 uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 {
-  uispinbox_t     *sbp;
-  se_internal_t *seint;
-  uiwcont_t      *uiwidgetp;
+  uiwcont_t       *sbp;
+  se_internal_t   *seint;
 
   logProcBegin (LOG_PROC, "uisongeditAddSpinboxTime");
   seint = uisongedit->seInternalData;
   sbp = uiSpinboxTimeInit (SB_TIME_PRECISE);
-  seint->items [seint->itemcount].spinbox = sbp;
+  seint->items [seint->itemcount].uiwidgetp = sbp;
   uiSpinboxTimeCreate (sbp, uisongedit, NULL);
   uiSpinboxSetRange (sbp, 0.0, 1200000.0);
   uiSpinboxTimeSetValue (sbp, 0);
   uiSpinboxTimeSetValueChangedCallback (sbp,
       seint->callbacks [UISE_CB_CHANGED]);
 
-  uiwidgetp = uiSpinboxGetWidgetContainer (sbp);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_TIME], uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_TIME], sbp);
+  uiBoxPackStart (hbox, sbp);
   logProcEnd (LOG_PROC, "uisongeditAddSpinboxTime", "");
 }
 
@@ -1449,11 +1440,11 @@ uisongeditSave (void *udata, nlist_t *chglist)
     }
     songstart = songGetNum (seint->song, TAG_SONGSTART);
     if (seint->songstartidx != UISE_NOT_DISPLAYED) {
-      songstart = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].spinbox);
+      songstart = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].uiwidgetp);
     }
     songend = songGetNum (seint->song, TAG_SONGEND);
     if (seint->songendidx != UISE_NOT_DISPLAYED) {
-      songend = uiSpinboxTimeGetValue (seint->items [seint->songendidx].spinbox);
+      songend = uiSpinboxTimeGetValue (seint->items [seint->songendidx].uiwidgetp);
     }
     /* for the validation checks, the song-start and song-end must be */
     /* normalized. */
@@ -1698,7 +1689,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        ndata = uiEntryGetValue (seint->items [count].entry);
+        ndata = uiEntryGetValue (seint->items [count].uiwidgetp);
         break;
       }
       case ET_COMBOBOX: {
@@ -1730,7 +1721,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         break;
       }
       case ET_SPINBOX_TIME: {
-        nval = uiSpinboxTimeGetValue (seint->items [count].spinbox);
+        nval = uiSpinboxTimeGetValue (seint->items [count].uiwidgetp);
         break;
       }
       case ET_SCALE: {

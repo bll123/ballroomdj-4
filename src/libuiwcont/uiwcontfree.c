@@ -20,6 +20,7 @@
 #include "ui/uikeys.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
+#include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 
@@ -57,6 +58,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_SCROLLBAR: {
       uiScrollbarFree (uiwidget);
+      break;
+    }
+    case WCONT_T_SPINBOX: {
+      uiSpinboxFree (uiwidget);
       break;
     }
     case WCONT_T_SWITCH: {

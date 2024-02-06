@@ -23,8 +23,8 @@
 #include "uifavorite.h"
 
 typedef struct uifavorite {
-  uispinbox_t   *spinbox;
-  songfav_t     *songfav;
+  uiwcont_t   *spinbox;
+  songfav_t   *songfav;
 } uifavorite_t;
 
 static bool initialized = false;
@@ -35,13 +35,11 @@ uifavorite_t *
 uifavoriteSpinboxCreate (uiwcont_t *boxp)
 {
   uifavorite_t  *uifavorite;
-  uiwcont_t     *uispinboxp;
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxInit ();
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
-  uispinboxp = uiSpinboxGetWidgetContainer (uifavorite->spinbox);
 
   if (! initialized) {
     int         count;
@@ -65,7 +63,7 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
       songFavoriteGetCount (uifavorite->songfav),
       2, NULL, NULL, uifavoriteFavoriteGet);
 
-  uiBoxPackStart (boxp, uispinboxp);
+  uiBoxPackStart (boxp, uifavorite->spinbox);
 
   return uifavorite;
 }
@@ -74,10 +72,12 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
 void
 uifavoriteFree (uifavorite_t *uifavorite)
 {
-  if (uifavorite != NULL) {
-    uiSpinboxFree (uifavorite->spinbox);
-    mdfree (uifavorite);
+  if (uifavorite == NULL) {
+    return;
   }
+
+  uiwcontFree (uifavorite->spinbox);
+  mdfree (uifavorite);
 }
 
 int
@@ -131,9 +131,9 @@ uifavoriteFavoriteGet (void *udata, int idx)
   for (int i = 0; i < count; ++i) {
     name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
     if (i == idx) {
-      uiWidgetSetClass (uiSpinboxGetWidgetContainer (uifavorite->spinbox), name);
+      uiWidgetSetClass (uifavorite->spinbox, name);
     } else {
-      uiWidgetRemoveClass (uiSpinboxGetWidgetContainer (uifavorite->spinbox), name);
+      uiWidgetRemoveClass (uifavorite->spinbox, name);
     }
   }
   return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);

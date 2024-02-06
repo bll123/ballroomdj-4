@@ -23,7 +23,7 @@
 
 typedef struct uilevel {
   level_t       *levels;
-  uispinbox_t   *spinbox;
+  uiwcont_t     *spinbox;
   bool          allflag;
 } uilevel_t;
 
@@ -59,7 +59,7 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
       levelGetCount (uilevel->levels),
       maxw, NULL, NULL, uilevelLevelGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetWidgetContainer (uilevel->spinbox));
+  uiBoxPackStart (boxp, uilevel->spinbox);
 
   return uilevel;
 }
@@ -68,10 +68,12 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
 void
 uilevelFree (uilevel_t *uilevel)
 {
-  if (uilevel != NULL) {
-    uiSpinboxFree (uilevel->spinbox);
-    mdfree (uilevel);
+  if (uilevel == NULL) {
+    return;
   }
+
+  uiwcontFree (uilevel->spinbox);
+  mdfree (uilevel);
 }
 
 int
@@ -109,7 +111,7 @@ uilevelSetState (uilevel_t *uilevel, int state)
 void
 uilevelSizeGroupAdd (uilevel_t *uilevel, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetWidgetContainer (uilevel->spinbox));
+  uiSizeGroupAdd (sg, uilevel->spinbox);
 }
 
 void

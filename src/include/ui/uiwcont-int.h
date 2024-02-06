@@ -2,7 +2,6 @@
 #define INC_UIWCONT_INT_H
 
 #include "ui/uidialog.h"
-#include "ui/uispinbox.h"
 #include "ui/uitreeview.h"
 
 /* partially in use. */
@@ -72,6 +71,7 @@ typedef struct uientry uientry_t;
 typedef struct uikey uikey_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
+typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 

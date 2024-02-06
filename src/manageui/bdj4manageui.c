@@ -192,6 +192,7 @@ enum {
   MANAGE_W_WINDOW,
   MANAGE_W_SELECT_BUTTON,
   MANAGE_W_ITUNES_SEL,
+  MANAGE_W_CFPL_TM_LIMIT,
   MANAGE_W_MAX,
 };
 
@@ -232,7 +233,6 @@ typedef struct {
   /* prior name is used by create-from-playlist */
   uisongfilter_t    *uisongfilter;
   uiplaylist_t      *cfpl;
-  uispinbox_t       *cfpltmlimit;
   char              *slpriorname;
   char              *cfplfn;
   /* music manager ui */
@@ -466,6 +466,7 @@ main (int argc, char *argv[])
   manage.wcont [MANAGE_W_MENU_MM] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SL] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SONGEDIT] = uiMenuAlloc ();
+  manage.wcont [MANAGE_W_CFPL_TM_LIMIT] = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
   manage.mmnbtabid = uinbutilIDInit ();
@@ -491,7 +492,6 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currtimesig = DANCE_TIMESIG_44;
   manage.cfpl = NULL;
-  manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.lastinsertlocation = QUEUE_LOC_LAST;
   manage.cfplactive = false;
@@ -713,7 +713,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongeditFree (manage->mmsongedit);
 
   uiplaylistFree (manage->cfpl);
-  uiSpinboxFree (manage->cfpltmlimit);
   dispselFree (manage->minfo.dispsel);
 
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
@@ -2596,10 +2595,10 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
-  uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
-  uiSpinboxSetRange (manage->cfpltmlimit, 0.0, 600000.0);
-  uiwidgetp = uiSpinboxGetWidgetContainer (manage->cfpltmlimit);
+  uiwidgetp = manage->wcont [MANAGE_W_CFPL_TM_LIMIT];
+  uiSpinboxTimeCreate (uiwidgetp, manage, NULL);
+  uiSpinboxTimeSetValue (uiwidgetp, 3 * 60 * 1000);
+  uiSpinboxSetRange (uiwidgetp, 0.0, 600000.0);
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -2664,7 +2663,7 @@ manageCFPLCreate (manageui_t *manage)
 
   dataFree (manage->cfplfn);
   manage->cfplfn = mdstrdup (fn);
-  stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
+  stoptime = uiSpinboxTimeGetValue (manage->wcont [MANAGE_W_CFPL_TM_LIMIT]);
   /* convert from mm:ss to hh:mm */
   stoptime *= 60;
   /* adjust : add in the current hh:mm */

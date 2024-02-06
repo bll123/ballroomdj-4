@@ -70,10 +70,10 @@ typedef struct managepl {
   char            *ploldname;
   bool            plbackupcreated;
   pltype_t        pltype;
-  uispinbox_t     *uimaxplaytime;
-  uispinbox_t     *uistopat;
+  uiwcont_t       *uimaxplaytime;
+  uiwcont_t       *uistopat;
   uiwcont_t       *uistopafter;
-  uispinbox_t     *uigap;
+  uiwcont_t       *uigap;
   uirating_t      *uirating;
   uiwcont_t       *wcont [MPL_W_MAX];
   uilevel_t       *uilowlevel;
@@ -149,9 +149,9 @@ managePlaylistFree (managepl_t *managepl)
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
     uilevelFree (managepl->uihighlevel);
-    uiSpinboxFree (managepl->uimaxplaytime);
-    uiSpinboxFree (managepl->uistopat);
-    uiSpinboxFree (managepl->uigap);
+    uiwcontFree (managepl->uimaxplaytime);
+    uiwcontFree (managepl->uistopat);
+    uiwcontFree (managepl->uigap);
     for (int i = 0; i < MPL_W_MAX; ++i) {
       uiwcontFree (managepl->wcont [i]);
     }
@@ -255,9 +255,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistValMSCallback, managepl);
   uiSpinboxTimeCreate (managepl->uimaxplaytime, managepl,
       managepl->callbacks [MPL_CB_MAXPLAYTIME]);
-  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uimaxplaytime);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
+  uiBoxPackStart (hbox, managepl->uimaxplaytime);
+  uiSizeGroupAdd (szgrpSpinText, managepl->uimaxplaytime);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -275,9 +274,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managepl->callbacks [MPL_CB_STOPAT]);
   uiSpinboxSetRange (managepl->uistopat, 0.0, 1440000.0);
   uiSpinboxWrap (managepl->uistopat);
-  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uistopat);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
+  uiBoxPackStart (hbox, managepl->uistopat);
+  uiSizeGroupAdd (szgrpSpinText, managepl->uistopat);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -307,9 +305,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiSpinboxDoubleDefaultCreate (managepl->uigap);
   uiSpinboxSetRange (managepl->uigap, -1.0, 60.0);
-  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uigap);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpText, uiwidgetp);
+  uiBoxPackStart (hbox, managepl->uigap);
+  uiSizeGroupAdd (szgrpText, managepl->uigap);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -712,7 +709,7 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
   uiSpinboxSetValue (managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
-  uiSpinboxSetValue (uiSpinboxGetWidgetContainer (managepl->uigap),
+  uiSpinboxSetValue (managepl->uigap,
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
   uiSwitchSetValue (managepl->wcont [MPL_W_PLAY_ANN],
       playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
@@ -849,10 +846,10 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   managePlaylistTreeUpdatePlaylist (managepl->managepltree);
 
-  tval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uimaxplaytime));
+  tval = uiSpinboxGetValue (managepl->uimaxplaytime);
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
 
-  tval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uistopat));
+  tval = uiSpinboxGetValue (managepl->uistopat);
   /* convert the mm:ss value to hh:mm for stop-time */
   tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
@@ -860,7 +857,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval = uiSpinboxGetValue (managepl->uistopafter);
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
 
-  dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
+  dval = uiSpinboxGetValue (managepl->uigap);
   playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
   tval = uiSwitchGetValue (managepl->wcont [MPL_W_PLAY_ANN]);
@@ -912,7 +909,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
+  dval = uiSpinboxGetValue (managepl->uigap);
   if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
     managepl->changed = true;
   }

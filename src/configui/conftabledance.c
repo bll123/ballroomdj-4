@@ -103,12 +103,12 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
 
   num = danceGetNum (dances, danceIdx, DANCE_SPEED);
   widx = CONFUI_SPINBOX_DANCE_SPEED;
-  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, timesig);
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, timesig);
 
   num = danceGetNum (dances, danceIdx, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
-  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
 }

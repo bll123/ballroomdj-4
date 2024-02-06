@@ -131,6 +131,7 @@ enum {
   START_W_SUPPORT_TEXTBOX,
   START_W_SUPPORT_SUBJECT,
   START_W_SUPPORT_EMAIL,
+  START_W_PROFILE_SEL,
   START_W_MAX,
 };
 
@@ -173,7 +174,6 @@ typedef struct {
   nlist_t         *profidxlist;
   callback_t      *callbacks [START_CB_MAX];
   startlinkinfo_t linkinfo [START_LINK_CB_MAX];
-  uispinbox_t     *profilesel;
   uiwcont_t       *buttons [START_BUTTON_MAX];
   uiwcont_t       *wcont [START_W_MAX];
   /* options */
@@ -379,8 +379,6 @@ main (int argc, char *argv[])
       ROUTE_STARTERUI, &flags);
   logProcBegin (LOG_PROC, "starterui");
 
-  starter.profilesel = uiSpinboxInit ();
-
   starterLoadOptions (&starter);
 
   snprintf (uri, sizeof (uri), "%s%s",
@@ -542,7 +540,6 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   supportFree (starter->support);
   webclientClose (starter->webclient);
-  uiSpinboxFree (starter->profilesel);
 
   datafileSave (starter->optiondf, NULL, starter->options, DF_NO_OFFSET, 1);
 
@@ -663,15 +660,16 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
-  uiSpinboxTextCreate (starter->profilesel, starter);
-  uiSpinboxTextSet (starter->profilesel, 0,
+  uiwidgetp = uiSpinboxInit ();
+  uiSpinboxTextCreate (uiwidgetp, starter);
+  uiSpinboxTextSet (uiwidgetp, 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-  uiSpinboxTextSetValue (starter->profilesel, dispidx);
-  uiwidgetp = uiSpinboxGetWidgetContainer (starter->profilesel);
+  uiSpinboxTextSetValue (uiwidgetp, dispidx);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  starter->wcont [START_W_PROFILE_SEL] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -1699,7 +1697,7 @@ starterSetProfile (void *udata, int idx)
   int         profidx;
   int         chg;
 
-  dispidx = uiSpinboxTextGetValue (starter->profilesel);
+  dispidx = uiSpinboxTextGetValue (starter->wcont [START_W_PROFILE_SEL]);
   disp = nlistGetStr (starter->proflist, dispidx);
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
@@ -1753,7 +1751,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starterui: profile is already in use */
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], _("Profile in use"));
   } else {
-    uiSpinboxSetState (starter->profilesel, UIWIDGET_DISABLE);
+    uiSpinboxSetState (starter->wcont [START_W_PROFILE_SEL], UIWIDGET_DISABLE);
   }
 
   return rc;
@@ -1786,10 +1784,10 @@ starterRebuildProfileList (startui_t *starter)
   int       dispidx;
 
   dispidx = starterGetProfiles (starter);
-  uiSpinboxTextSet (starter->profilesel, 0,
+  uiSpinboxTextSet (starter->wcont [START_W_PROFILE_SEL], 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-  uiSpinboxTextSetValue (starter->profilesel, dispidx);
+  uiSpinboxTextSetValue (starter->wcont [START_W_PROFILE_SEL], dispidx);
 }
 
 static bool
