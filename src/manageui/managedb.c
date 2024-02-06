@@ -98,7 +98,7 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   for (int i = 0; i < MDB_W_MAX; ++i) {
     managedb->wcont [i] = NULL;
   }
-  managedb->dbspinbox = uiSpinboxInit ();
+  managedb->dbspinbox = NULL;
   managedb->compact = false;
   managedb->reorganize = false;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
@@ -222,7 +222,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
-  uiSpinboxTextCreate (managedb->dbspinbox, managedb);
+  managedb->dbspinbox = uiSpinboxTextCreate (managedb);
   uiSpinboxTextSet (managedb->dbspinbox, 0,
       nlistGetCount (managedb->dblist), managedb->dblistWidth,
       managedb->dblist, NULL, NULL);

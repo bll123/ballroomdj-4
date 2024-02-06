@@ -660,8 +660,7 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
-  uiwidgetp = uiSpinboxInit ();
-  uiSpinboxTextCreate (uiwidgetp, starter);
+  uiwidgetp = uiSpinboxTextCreate (starter);
   uiSpinboxTextSet (uiwidgetp, 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);

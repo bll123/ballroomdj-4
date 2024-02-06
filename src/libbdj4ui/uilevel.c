@@ -41,9 +41,8 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uilevel = mdmalloc (sizeof (uilevel_t));
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
-  uilevel->spinbox = uiSpinboxInit ();
 
-  uiSpinboxTextCreate (uilevel->spinbox, uilevel);
+  uilevel->spinbox = uiSpinboxTextCreate (uilevel);
 
   start = 0;
   maxw = levelGetMaxWidth (uilevel->levels);

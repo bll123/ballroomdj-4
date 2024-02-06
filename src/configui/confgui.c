@@ -238,8 +238,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].outtype = outtype;
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
-  uiwidgetp = gui->uiitem [widx].uiwidgetp;
-  uiSpinboxTextCreate (uiwidgetp, gui);
+  uiwidgetp = uiSpinboxTextCreate (gui);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   list = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
   if (outtype == CONFUI_OUT_STR) {
@@ -307,9 +307,9 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     gui->uiitem [widx].callback = callbackInitStr (
         confuiValMSCallback, gui);
   }
-  uiwidgetp = gui->uiitem [widx].uiwidgetp;
-  uiSpinboxTimeCreate (uiwidgetp, gui,
+  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
       gui->uiitem [widx].callback);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
   }

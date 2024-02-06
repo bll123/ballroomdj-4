@@ -17,10 +17,9 @@ enum {
 
 typedef const char * (*uispinboxdisp_t)(void *, int);
 
-uiwcont_t *uiSpinboxInit (void);
 void  uiSpinboxFree (uiwcont_t *uiwidget);
 
-void  uiSpinboxTextCreate (uiwcont_t *uiwidget, void *udata);
+uiwcont_t *uiSpinboxTextCreate (void *udata);
 void  uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
 int   uiSpinboxTextGetIdx (uiwcont_t *uiwidget);
@@ -31,10 +30,9 @@ void uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb
 uiwcont_t *uiSpinboxIntCreate (void);
 uiwcont_t *uiSpinboxDoubleCreate (void);
 
-void  uiSpinboxDoubleDefaultCreate (uiwcont_t *uispinbox);
+uiwcont_t *uiSpinboxDoubleDefaultCreate (void);
 
-uiwcont_t *uiSpinboxTimeInit (int sbtype);
-void  uiSpinboxTimeCreate (uiwcont_t *uiwidget, void *udata, callback_t *convcb);
+uiwcont_t *uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb);
 ssize_t uiSpinboxTimeGetValue (uiwcont_t *uiwidget);
 void  uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value);
 void uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);

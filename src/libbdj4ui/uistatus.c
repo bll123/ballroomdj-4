@@ -41,9 +41,7 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uistatus = mdmalloc (sizeof (uistatus_t));
   uistatus->status = bdjvarsdfGet (BDJVDF_STATUS);
   uistatus->allflag = allflag;
-  uistatus->spinbox = uiSpinboxInit ();
-
-  uiSpinboxTextCreate (uistatus->spinbox, uistatus);
+  uistatus->spinbox = uiSpinboxTextCreate (uistatus);
 
   start = 0;
   maxw = statusGetMaxWidth (uistatus->status);

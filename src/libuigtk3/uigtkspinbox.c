@@ -45,6 +45,7 @@ typedef struct uispinbox {
   bool            changed : 1;
 } uispinbox_t;
 
+static uiwcont_t * uiSpinboxInit (void);
 static gint uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxNumInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
@@ -56,39 +57,6 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
-
-uiwcont_t *
-uiSpinboxInit (void)
-{
-  uiwcont_t   *uiwidget;
-  uispinbox_t *uispinbox;
-
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SPINBOX;
-  uiwidget->wtype = WCONT_T_SPINBOX;
-  uiwidget->widget = NULL;
-
-  uispinbox = mdmalloc (sizeof (uispinbox_t));
-  uispinbox->convcb = NULL;
-  uispinbox->curridx = 0;
-  uispinbox->textGetProc = NULL;
-  uispinbox->udata = NULL;
-  uispinbox->processing = false;
-  uispinbox->changed = false;
-  uispinbox->maxWidth = 0;
-  uispinbox->list = NULL;
-  uispinbox->keylist = NULL;
-  uispinbox->idxlist = NULL;
-  uispinbox->sbtype = SB_TEXT;
-  uispinbox->uikey = uiKeyAlloc ();
-  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback,
-      uispinbox, NULL);
-
-  uiwidget->uiint.uispinbox = uispinbox;
-
-  return uiwidget;
-}
-
 
 /* only frees the internals */
 void
@@ -109,16 +77,14 @@ uiSpinboxFree (uiwcont_t *uiwidget)
 }
 
 
-void
-uiSpinboxTextCreate (uiwcont_t *uiwidget, void *udata)
+uiwcont_t *
+uiSpinboxTextCreate (void *udata)
 {
   GtkWidget   *widget;
+  uiwcont_t   *uiwidget;
   uispinbox_t *uispinbox;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX, "spinbox-text-create")) {
-    return;
-  }
-
+  uiwidget = uiSpinboxInit ();
   uispinbox = uiwidget->uiint.uispinbox;
 
   widget = gtk_spin_button_new (NULL, 0.0, 0);
@@ -138,6 +104,8 @@ uiSpinboxTextCreate (uiwcont_t *uiwidget, void *udata)
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
   g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTextInput), uiwidget);
+
+  return uiwidget;
 }
 
 void
@@ -236,30 +204,18 @@ uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 uiwcont_t *
-uiSpinboxTimeInit (int sbtype)
-{
-  uiwcont_t   *uiwidget;
-  uispinbox_t *uispinbox;
-
-  uiwidget = uiSpinboxInit ();
-  uispinbox = uiwidget->uiint.uispinbox;
-  uispinbox->sbtype = sbtype;
-  return uiwidget;
-}
-
-void
-uiSpinboxTimeCreate (uiwcont_t *uiwidget, void *udata, callback_t *convcb)
+uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
 {
   double      inca = 5000.0;
   double      incb = 60000.0;
   GtkWidget   *widget;
   uispinbox_t *uispinbox;
+  uiwcont_t   *uiwidget;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX, "spinbox-time-create")) {
-    return;
-  }
-
+  uiwidget = uiSpinboxInit ();
   uispinbox = uiwidget->uiint.uispinbox;
+
+  uispinbox->sbtype = sbtype;
 
   uispinbox->convcb = convcb;
   widget = gtk_spin_button_new (NULL, 0.0, 0);
@@ -288,7 +244,7 @@ uiSpinboxTimeCreate (uiwcont_t *uiwidget, void *udata, callback_t *convcb)
   g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTimeInput), uiwidget);
 
-  return;
+  return uiwidget;
 }
 
 ssize_t
@@ -380,14 +336,17 @@ uiSpinboxDoubleCreate (void)
   return uiwidget;
 }
 
-void
-uiSpinboxDoubleDefaultCreate (uiwcont_t *uiwidget)
+uiwcont_t *
+uiSpinboxDoubleDefaultCreate (void)
 {
   GtkWidget   *widget;
+  uiwcont_t   *uiwidget;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX, "spinbox-d-dflt-create")) {
-    return;
-  }
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_SPINBOX;
+  uiwidget->wtype = WCONT_T_SPINBOX;
+  uiwidget->uiint.uispinbox = NULL;
+  uiwidget->widget = NULL;
 
   widget = gtk_spin_button_new (NULL, -0.1, 1);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (widget), FALSE);
@@ -404,6 +363,8 @@ uiSpinboxDoubleDefaultCreate (uiwcont_t *uiwidget)
       G_CALLBACK (uiSpinboxDoubleDefaultDisplay), uiwidget);
   g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
+
+  return uiwidget;
 }
 
 void
@@ -551,6 +512,40 @@ uiSpinboxAddClass (const char *classnm, const char *color)
 }
 
 /* internal routines */
+
+static uiwcont_t *
+uiSpinboxInit (void)
+{
+  uiwcont_t   *uiwidget;
+  uispinbox_t *uispinbox;
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_SPINBOX;
+  uiwidget->wtype = WCONT_T_SPINBOX;
+  uiwidget->uiint.uispinbox = NULL;
+  uiwidget->widget = NULL;
+
+  uispinbox = mdmalloc (sizeof (uispinbox_t));
+  uispinbox->convcb = NULL;
+  uispinbox->curridx = 0;
+  uispinbox->textGetProc = NULL;
+  uispinbox->udata = NULL;
+  uispinbox->processing = false;
+  uispinbox->changed = false;
+  uispinbox->maxWidth = 0;
+  uispinbox->list = NULL;
+  uispinbox->keylist = NULL;
+  uispinbox->idxlist = NULL;
+  uispinbox->sbtype = SB_TEXT;
+  uispinbox->uikey = uiKeyAlloc ();
+  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback,
+      uispinbox, NULL);
+
+  uiwidget->uiint.uispinbox = uispinbox;
+
+  return uiwidget;
+}
+
 
 /* gtk spinboxes are a bit bizarre */
 static gint

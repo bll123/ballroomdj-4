@@ -466,7 +466,6 @@ main (int argc, char *argv[])
   manage.wcont [MANAGE_W_MENU_MM] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SL] = uiMenuAlloc ();
   manage.wcont [MANAGE_W_MENU_SONGEDIT] = uiMenuAlloc ();
-  manage.wcont [MANAGE_W_CFPL_TM_LIMIT] = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
   manage.mmnbtabid = uinbutilIDInit ();
@@ -2595,11 +2594,11 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = manage->wcont [MANAGE_W_CFPL_TM_LIMIT];
-  uiSpinboxTimeCreate (uiwidgetp, manage, NULL);
+  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, manage, NULL);
   uiSpinboxTimeSetValue (uiwidgetp, 3 * 60 * 1000);
   uiSpinboxSetRange (uiwidgetp, 0.0, 600000.0);
   uiBoxPackStart (hbox, uiwidgetp);
+  manage->wcont [MANAGE_W_CFPL_TM_LIMIT] = uiwidgetp;
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);

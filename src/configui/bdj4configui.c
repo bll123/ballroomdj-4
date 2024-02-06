@@ -162,15 +162,6 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].changed = false;
     confui.gui.uiitem [i].entrysz = 20;
     confui.gui.uiitem [i].entrymaxsz = 100;
-
-    if (i > CONFUI_SPINBOX_BEGIN && i < CONFUI_SPINBOX_MAX) {
-      if (i == CONFUI_SPINBOX_Q_MAX_PLAY_TIME ||
-          i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
-        confui.gui.uiitem [i].uiwidgetp = uiSpinboxTimeInit (SB_TIME_BASIC);
-      } else {
-        confui.gui.uiitem [i].uiwidgetp = uiSpinboxInit ();
-      }
-    }
   }
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_TAGS, 30, 100);

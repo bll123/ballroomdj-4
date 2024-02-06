@@ -29,12 +29,6 @@ typedef struct uispinbox {
   int         junk;
 } uispinbox_t;
 
-uiwcont_t *
-uiSpinboxInit (void)
-{
-  return NULL;
-}
-
 
 void
 uiSpinboxFree (uiwcont_t *uiwidget)
@@ -43,10 +37,10 @@ uiSpinboxFree (uiwcont_t *uiwidget)
 }
 
 
-void
-uiSpinboxTextCreate (uiwcont_t *uiwidget, void *udata)
+uiwcont_t *
+uiSpinboxTextCreate (void *udata)
 {
-  return;
+  return NULL;
 }
 
 void
@@ -82,15 +76,9 @@ uiSpinboxSetState (uiwcont_t *uiwidget, int state)
 }
 
 uiwcont_t *
-uiSpinboxTimeInit (int sbtype)
+uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
 {
   return NULL;
-}
-
-void
-uiSpinboxTimeCreate (uiwcont_t *uiwidget, void *udata, callback_t *convcb)
-{
-  return;
 }
 
 ssize_t
@@ -135,10 +123,10 @@ uiSpinboxDoubleCreate (void)
   return NULL;
 }
 
-void
-uiSpinboxDoubleDefaultCreate (uiwcont_t *uiwidget)
+uiwcont_t *
+uiSpinboxDoubleDefaultCreate (void)
 {
-  return;
+  return NULL;
 }
 
 void
