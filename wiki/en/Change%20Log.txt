@@ -7,13 +7,13 @@
 **4.4.10.2 2024-2---**
     * PENDING Installation: second install, incorrect copy of files.
 
-**4.4.10.1 2024-2---**
+-->
+
+**4.4.10.1 2024-2-5**
 
 * Bug Fixes:
     * Update Database: Fix dance-from-genre processing.
-    * PENDING Update Database: Fix ID3 (MP3) genre processing.
-
--->
+    * Update Database / Audio Tags: Fix ID3 (MP3) genre processing.
 
 **4.4.10 2024-2-4**
 
@@ -721,4 +721,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-04 18:29:36; BDJ4 version 4.4.10)_
+<br>_(Updated 2024-02-05 19:36:43; BDJ4 version 4.4.10.1)_
