@@ -125,20 +125,6 @@ START_TEST(webclient_post)
 }
 END_TEST
 
-START_TEST(webclient_localip)
-{
-  char          *ip = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_localip");
-  mdebugSubTag ("webclient_localip");
-
-  ip = webclientGetLocalIP ();
-  ck_assert_ptr_nonnull (ip);
-  ck_assert_int_ge (strlen (ip), 9);
-  dataFree (ip);
-}
-END_TEST
-
 START_TEST(webclient_upload_plain)
 {
   webclient_t   *wc;
@@ -267,7 +253,6 @@ webclient_suite (void)
   tcase_add_test (tc, webclient_get);
   tcase_add_test (tc, webclient_dl);
   tcase_add_test (tc, webclient_post);
-  tcase_add_test (tc, webclient_localip);
   tcase_add_test (tc, webclient_upload_plain);
   tcase_add_test (tc, webclient_upload_gzip);
   suite_add_tcase (s, tc);

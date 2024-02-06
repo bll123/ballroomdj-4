@@ -310,20 +310,6 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   logProcEnd (LOG_PROC, "confuiCreateTagSelectedDisp", "");
 }
 
-char *
-confuiGetLocalIP (confuigui_t *gui)
-{
-  char    *ip;
-
-  if (gui->localip == NULL) {
-    ip = webclientGetLocalIP ();
-    gui->localip = mdstrdup (ip);
-    mdfree (ip);
-  }
-
-  return gui->localip;
-}
-
 void
 confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
     int svidx, int spinboxidx)

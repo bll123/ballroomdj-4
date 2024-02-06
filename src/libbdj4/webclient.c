@@ -51,7 +51,6 @@ typedef struct webclient {
 static void   webclientInit (webclient_t *webclient);
 static void   webclientInitResp (webclient_t *webclient);
 static size_t webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
-static size_t webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
 static size_t webclientDownloadCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
 static int webclientDebugCallback (CURL *curl, curl_infotype type, char *data, size_t size, void *userptr);
 static void webclientSetUserAgent (CURL *curl);
@@ -287,33 +286,6 @@ webclientClose (webclient_t *webclient)
   }
 }
 
-char *
-webclientGetLocalIP (void)
-{
-  webclient_t   *webclient;
-  char  *tip;
-  char  *ip;
-  char  tbuff [MAXPATHLEN];
-
-  webclient = webclientAlloc (NULL, NULL);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
-  curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
-  curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
-  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
-  curl_easy_setopt (webclient->curl, CURLOPT_TIMEOUT, 5);
-  curl_easy_perform (webclient->curl);
-  curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
-  ip = mdstrdup (tip);
-  curl_easy_cleanup (webclient->curl);
-  if (initialized == INIT_NONE) {
-    curl_global_cleanup ();
-  }
-  mdfree (webclient);
-
-  return ip;
-}
-
 void
 webclientSetTimeout (webclient_t *webclient, long timeout)
 {
@@ -427,12 +399,6 @@ webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
   webclient->respSize += nsz;
   webclient->resp [webclient->respSize] = '\0';
   return nsz;
-}
-
-static size_t
-webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
-{
-  return size * nmemb;
 }
 
 static size_t

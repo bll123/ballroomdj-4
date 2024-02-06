@@ -24,7 +24,6 @@ int   webclientPostCompressed (webclient_t *webclient, const char *uri, const ch
 int   webclientDownload (webclient_t *webclient, const char *uri, const char *outfile);
 int   webclientUploadFile (webclient_t *webclient, const char *uri, const char *query [], const char *fn, const char *fnname);
 void  webclientClose (webclient_t *webclient);
-char  * webclientGetLocalIP (void);
 void  webclientSetTimeout (webclient_t *webclient, long timeout);
 void  webclientSpoofUserAgent (webclient_t *webclient);
 void  webclientCompressFile (const char *infn, const char *outfn);

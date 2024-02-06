@@ -415,7 +415,6 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
-char *confuiGetLocalIP (confuigui_t *gui);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int svidx, int spinboxidx);
 
 /* confdance.c */
