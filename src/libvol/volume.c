@@ -163,6 +163,7 @@ volumeCheckInterface (const char *volintfc)
   ilistidx_t  iteridx;
   const char  *intfc;
   const char  *gintfc = NULL;
+  const char  *dfltintfc = NULL;
   bool        found = false;
   char        *voli = NULL;
   ilistidx_t  key;
@@ -171,19 +172,35 @@ volumeCheckInterface (const char *volintfc)
   ilistStartIterator (interfaces, &iteridx);
   while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
     intfc = ilistGetStr (interfaces, key, DYI_LIB);
+    if (intfc == NULL) {
+      continue;
+    }
     if (gintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
       gintfc = intfc;
     }
-    if (strcmp (volintfc, intfc) == 0) {
+    if (dfltintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
+      if (isLinux ()) {
+        if (strcmp (intfc, "libvolpa") == 0 ||
+            strcmp (intfc, "libvolpipewire") == 0) {
+          dfltintfc = intfc;
+        }
+      } else {
+        dfltintfc = intfc;
+      }
+    }
+    if (volintfc != NULL && strcmp (volintfc, intfc) == 0) {
       found = true;
       break;
     }
   }
 
-  if (! found) {
+  if (! found && gintfc != NULL) {
     voli = mdstrdup (gintfc);
   } else {
-    voli = mdstrdup (volintfc);
+    /* no matching volume interface was found or the vol interface is null */
+    if (dfltintfc != NULL) {
+      voli = mdstrdup (dfltintfc);
+    }
   }
   ilistFree (interfaces);
 

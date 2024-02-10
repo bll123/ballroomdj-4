@@ -44,7 +44,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx, NULL);
 
   tstr = bdjoptGetStr (OPT_MP_UIFONT);
-  if (! *tstr) {
+  if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the user interface */
@@ -52,7 +52,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT, tstr);
 
   tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
-  if (! *tstr) {
+  if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the queues and song lists */

@@ -41,35 +41,41 @@ dyInterfaceList (const char *pfx, const char *funcnm)
 
   interfaces = ilistAlloc ("intfc-list", LIST_ORDERED);
 
+  descarr [0] = NULL;
+
   files = dirlistBasicDirList (sysvarsGetStr (SV_BDJ4_DIR_EXEC), sysvarsGetStr (SV_SHLIB_EXT));
   slistStartIterator (files, &iteridx);
   while ((fn = slistIterateKey (files, &iteridx)) != NULL) {
-    if (strncmp (fn, pfx, pfxlen) == 0) {
-      pathbldMakePath (dlpath, sizeof (dlpath), fn, "", PATHBLD_MP_DIR_EXEC);
-      dlHandle = dylibLoad (dlpath);
-      if (dlHandle != NULL) {
-        descProc = dylibLookup (dlHandle, funcnm);
-        if (descProc != NULL) {
-          const char  *desc;
-          int         c = 0;
+    if (strncmp (fn, pfx, pfxlen) != 0) {
+      continue;
+    }
 
-          descProc (descarr, MAX_DESC);
-          while ((desc = descarr [c]) != NULL) {
-            strlcpy (tmp, fn, sizeof (tmp));
-            tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
-            ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
-            ilistSetStr (interfaces, ikey, DYI_DESC, desc);
-            ++c;
-            ++ikey;
-          }
-        }
-        /* using the address sanitizer comes up with spurious leaks */
-        /* if the dynamic library is closed */
-#if ! defined (BDJ4_USING_SANITIZER)
-        dylibClose (dlHandle);
-#endif
+    pathbldMakePath (dlpath, sizeof (dlpath), fn, "", PATHBLD_MP_DIR_EXEC);
+    dlHandle = dylibLoad (dlpath);
+    if (dlHandle == NULL) {
+      continue;
+    }
+
+    descProc = dylibLookup (dlHandle, funcnm);
+    if (descProc != NULL) {
+      const char  *desc;
+      int         c = 0;
+
+      descProc (descarr, MAX_DESC);
+      while ((desc = descarr [c]) != NULL) {
+        strlcpy (tmp, fn, sizeof (tmp));
+        tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
+        ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
+        ilistSetStr (interfaces, ikey, DYI_DESC, desc);
+        ++c;
+        ++ikey;
       }
     }
+    /* using the address sanitizer comes up with spurious leaks */
+    /* if the dynamic library is closed */
+#if ! defined (BDJ4_USING_SANITIZER)
+    dylibClose (dlHandle);
+#endif
   }
   slistFree (files);
 

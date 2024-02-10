@@ -22,6 +22,7 @@
 #include "localeutil.h"
 #include "log.h"
 #include "ilist.h"
+#include "instutil.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -80,6 +81,13 @@ confuiBuildUIGeneral (confuigui_t *gui)
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: general options that apply to everything */
       _("General"), CONFUI_ID_NONE);
+
+
+  tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  if (tmp == NULL) {
+    instutilGetMusicDir (tbuff, sizeof (tbuff));
+    bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+  }
 
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));

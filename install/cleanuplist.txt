@@ -152,6 +152,10 @@ install/winshortcut\.vbs$
 bin/libvolnull\.(dylib|so|dll)$
 bin/libplinull\.(dylib|so|dll)$
 
+# 2024-2-10
+# libatimutagen was never removed
+bin/libatimutagen\.(dylib|so|dll)$
+
 ####
 # mac-os
 
@@ -269,6 +273,7 @@ data/\.pl$
 data/\.pldances$
 data/\.songlist$
 data/\.sequence$
+data/\.profile-65534$
 
 # in case an alpha version converted the special raffle songs songlist
 # this can be removed at a later date. (early alpha)

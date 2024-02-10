@@ -55,6 +55,8 @@ confuiLoadThemeList (confuigui_t *gui)
   int         count;
   bool        usesys = false;
   const char  *p;
+  const char  *mqtheme;
+  const char  *uitheme;
 
   p = bdjoptGetStr (OPT_MP_UI_THEME);
   /* use the system default if the ui theme is empty */
@@ -62,15 +64,21 @@ confuiLoadThemeList (confuigui_t *gui)
     usesys = true;
   }
 
+  mqtheme = bdjoptGetStr (OPT_MP_MQ_THEME);
+  uitheme = bdjoptGetStr (OPT_MP_UI_THEME);
+
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
   count = 0;
+
+  /* need some sort of default */
+  gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = 0;
+
   while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (strcmp (p, bdjoptGetStr (OPT_MP_MQ_THEME)) == 0) {
+    if (mqtheme != NULL && strcmp (p, mqtheme) == 0) {
       gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
     }
-    if (! usesys &&
-        strcmp (p, bdjoptGetStr (OPT_MP_UI_THEME)) == 0) {
+    if (! usesys && strcmp (p, uitheme) == 0) {
       gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
     }
     if (usesys &&
@@ -320,15 +328,21 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
   int         count;
   nlist_t     *tlist;
   nlist_t     *llist;
+  const char  *currintfc;
 
   tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
   llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
 
+  currintfc = bdjoptGetStr (svidx);
   ilistStartIterator (interfaces, &iteridx);
   count = 0;
+  gui->uiitem [spinboxidx].listidx = -1;
   while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
     intfc = ilistGetStr (interfaces, key, DYI_LIB);
-    if (intfc != NULL && strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
+    if (intfc == NULL) {
+      continue;
+    }
+    if (currintfc != NULL && strcmp (intfc, currintfc) == 0) {
       gui->uiitem [spinboxidx].listidx = count;
     }
     nlistSetStr (tlist, count, ilistGetStr (interfaces, key, DYI_DESC));
