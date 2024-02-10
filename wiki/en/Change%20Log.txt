@@ -11,6 +11,7 @@
 
 * Bug Fixes:
     * Configuration: Fix various possible crashes.
+    * User Interface: Fix switch background color.
 
 -->
 

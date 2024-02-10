@@ -1,4 +1,4 @@
-/* version 3 2023-9-28 */
+/* version 4 2024-2-19 */
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
@@ -76,12 +76,13 @@ button.bdj-switch {
   border-top-right-radius: 15px;
   background-color: shade(@theme_base_color,0.8);
   border-color: shade(@theme_base_color,0.8);
+  background-image: none;
 }
 button.bdj-switch:checked {
   background-color: shade(@theme_base_color,0.8);
 }
 button.bdj-switch:hover {
-  background-color: shade(@theme_base_color,0.8);
+  background-color: shade(@theme_base_color,0.7);
 }
 
 button.bdj-flatbutton {
