@@ -5,11 +5,14 @@
 
 typedef struct mpris mpris_t;
 
-int mprisGetPlayerList (char **ret, int max);
+int mprisGetPlayerList (mpris_t *mpris, char **ret, int max);
 void mprisCleanup (void);
 mpris_t *mprisInit (const char *plinm);
 void mprisFree (mpris_t *mpris);
+bool mprisCanSeek (mpris_t *mpris);
+bool mprisHasSpeed (mpris_t *mpris);
 void mprisMedia (mpris_t *mpris, const char *uri);
+int64_t mprisGetDuration (mpris_t *mpris);
 int64_t mprisGetPosition (mpris_t *mpris);
 const char *mprisPlaybackStatus (mpris_t *mpris);
 void mprisPause (mpris_t *mpris);

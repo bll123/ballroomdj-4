@@ -13,8 +13,11 @@
 
 #include <gio/gio.h>
 
+#include "bdjstring.h"
 #include "dbusi.h"
 #include "mdebug.h"
+
+#define DBUS_DEBUG 1
 
 enum {
   DBUS_STATE_CLOSED,
@@ -33,7 +36,9 @@ typedef struct dbus {
   int             state;
 } dbus_t;
 
+# if DBUS_DEBUG
 static void dumpResult (const char *tag, GVariant *data);
+# endif
 
 dbus_t *
 dbusConnInit (void)
@@ -80,7 +85,9 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
 
   va_start (args, sdata);
   dbus->data = g_variant_new_va (sdata, NULL, &args);
+# if DBUS_DEBUG
   dumpResult ("data-va", dbus->data);
+# endif
   va_end (args);
 }
 
@@ -92,7 +99,9 @@ dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
 
   va_start (args, sdata);
   dbus->data = g_variant_new_parsed_va (sdata, &args);
+# if DBUS_DEBUG
   dumpResult ("data-parsed", dbus->data);
+# endif
   va_end (args);
 }
 
@@ -108,11 +117,15 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   dbus->result = NULL;
 
   fprintf (stderr, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
+# if DBUS_DEBUG
   dumpResult ("data-msg", dbus->data);
+# endif
   dbus->result = g_dbus_connection_call_sync (dbus->dconn,
       bus, objpath, intfc, method,
       dbus->data, NULL, G_DBUS_CALL_FLAGS_NONE, DBUS_TIMEOUT, NULL, NULL);
+# if DBUS_DEBUG
   dumpResult ("result", dbus->result);
+# endif
 
   rc = dbus->result == NULL ? false : true;
   return rc;
@@ -133,7 +146,9 @@ dbusResultGet (dbus_t *dbus, ...)
   va_start (args, dbus);
 
   type = g_variant_get_type_string (val);
-fprintf (stderr, "-- result: %s\n", type);
+# if DBUS_DEBUG
+  fprintf (stderr, "-- result: %s\n", type);
+# endif
   if (strcmp (type, "(v)") == 0) {
     g_variant_get (val, type, &val);
     type = g_variant_get_type_string (val);
@@ -155,6 +170,40 @@ fprintf (stderr, "-- result: %s\n", type);
     va_end (args);
     return true;
   }
+  if (strcmp (type, "a{sv}") == 0) {
+    GVariantIter  gvi;
+    GVariant      *tv;
+    char          *trackid = NULL;
+    int64_t       *dur = NULL;
+
+    g_variant_iter_init (&gvi, val);
+    /* want mpris:trackid, mpris:length */
+    while ((val = g_variant_iter_next_value (&gvi)) != NULL) {
+      const char    *idstr;
+
+      type = g_variant_get_type_string (val);
+fprintf (stderr, "a{sv} type: %s\n", type);
+      g_variant_get (val, type, &idstr, &tv);
+fprintf (stderr, "  idstr: %s\n", idstr);
+      type = g_variant_get_type_string (tv);
+fprintf (stderr, "  v-type: %s\n", type);
+      trackid = va_arg (args, char *);
+      if (strcmp (idstr, "mpris:trackid") == 0) {
+        const char    *tstr;
+
+        g_variant_get (tv, type, &tstr);
+        strlcpy (trackid, tstr, DBUS_MAX_TRACKID);
+fprintf (stderr, "  trackid: %s\n", trackid);
+      }
+      dur = va_arg (args, int64_t *);
+      if (dur != NULL && strcmp (idstr, "mpris:length") == 0) {
+        g_variant_get (tv, type, dur);
+fprintf (stderr, "  dur: %ld\n", (long) *dur);
+      }
+    }
+    va_end (args);
+    return true;
+  }
 
   g_variant_get_va (val, type, NULL, &args);
   va_end (args);
@@ -163,6 +212,8 @@ fprintf (stderr, "-- result: %s\n", type);
 }
 
 /* internal routines */
+
+# if DBUS_DEBUG
 
 static void
 dumpResult (const char *tag, GVariant *data)
@@ -208,5 +259,7 @@ dumpResult (const char *tag, GVariant *data)
     fprintf (stderr, "  data: %s\n", g_variant_print (data, true));
   }
 }
+
+# endif
 
 #endif  /* __linux__ and _hdr_gio_gio */

@@ -31,7 +31,7 @@ pliiDesc (char **ret, int max)
 {
   int         c = 0;
 
-  c = mprisGetPlayerList (ret, max);
+  c = mprisGetPlayerList (NULL, ret, max);
 }
 
 plidata_t *
@@ -43,6 +43,12 @@ pliiInit (const char *plinm)
   pliData->mpris = mprisInit (plinm);
   pliData->state = PLI_STATE_STOPPED;
   pliData->supported = PLI_SUPPORT_NONE;
+  if (mprisCanSeek (pliData->mpris)) {
+    pliData->supported |= PLI_SUPPORT_SEEK;
+  }
+  if (mprisHasSpeed (pliData->mpris)) {
+    pliData->supported |= PLI_SUPPORT_SPEED;
+  }
 
   return pliData;
 }
@@ -50,65 +56,69 @@ pliiInit (const char *plinm)
 void
 pliiFree (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    mprisFree (pliData->mpris);
-    pliiClose (pliData);
-    mdfree (pliData);
+  if (pliData == NULL) {
+    return;
   }
+
+  mprisFree (pliData->mpris);
+  pliiClose (pliData);
+  mdfree (pliData);
 }
 
 void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
-  char        tbuff [MAXPATHLEN];
-  const char  *tmp;
-
-  if (pliData != NULL && mediaPath != NULL) {
-    tmp = mediaPath;
-    if (strncmp (mediaPath, "file://", 7) != 0) {
-      snprintf (tbuff, sizeof (tbuff), "file://%s", mediaPath);
-      tmp = tbuff;
-    }
-    mprisMedia (pliData->mpris, tmp);
-    pliData->state = PLI_STATE_STOPPED;
+  if (pliData == NULL || mediaPath == NULL) {
+    return;
   }
+
+  mprisMedia (pliData->mpris, mediaPath);
+  pliData->state = PLI_STATE_STOPPED;
 }
 
 void
 pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
-  if (pliData != NULL) {
-    pliData->state = PLI_STATE_PLAYING;
-    pliiSeek (pliData, dpos);
-    pliiRate (pliData, speed);
+  if (pliData == NULL) {
+    return;
   }
+
+  pliData->state = PLI_STATE_PLAYING;
+  pliiSeek (pliData, dpos);
+  pliiRate (pliData, speed);
 }
 
 void
 pliiPause (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    mprisPause (pliData->mpris);
-    pliData->state = PLI_STATE_PAUSED;
+  if (pliData == NULL) {
+    return;
   }
+
+  mprisPause (pliData->mpris);
+  pliData->state = PLI_STATE_PAUSED;
 }
 
 void
 pliiPlay (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    mprisPlay (pliData->mpris);
-    pliData->state = PLI_STATE_PLAYING;
+  if (pliData == NULL) {
+    return;
   }
+
+  mprisPlay (pliData->mpris);
+  pliData->state = PLI_STATE_PLAYING;
 }
 
 void
 pliiStop (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    mprisStop (pliData->mpris);
-    pliData->state = PLI_STATE_STOPPED;
+  if (pliData == NULL) {
+    return;
   }
+
+  mprisStop (pliData->mpris);
+  pliData->state = PLI_STATE_STOPPED;
 }
 
 ssize_t
@@ -116,9 +126,11 @@ pliiSeek (plidata_t *pliData, ssize_t pos)
 {
   ssize_t   ret = pos;
 
-  if (pliData != NULL) {
-    mprisSetPosition (pliData->mpris, pos);
+  if (pliData == NULL) {
+    return pos;
   }
+
+  mprisSetPosition (pliData->mpris, pos);
   return ret;
 }
 
@@ -127,20 +139,24 @@ pliiRate (plidata_t *pliData, ssize_t rate)
 {
   double    drate;
 
-  if (pliData != NULL) {
-    drate = (double) rate / 100.0;
-    mprisSetRate (pliData->mpris, drate);
+  if (pliData == NULL) {
+    return 100;
   }
+
+  drate = (double) rate / 100.0;
+  mprisSetRate (pliData->mpris, drate);
   return rate;
 }
 
 void
 pliiClose (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    mprisStop (pliData->mpris);
-    pliData->state = PLI_STATE_STOPPED;
+  if (pliData == NULL) {
+    return;
   }
+
+  mprisStop (pliData->mpris);
+  pliData->state = PLI_STATE_STOPPED;
 }
 
 ssize_t
@@ -148,9 +164,12 @@ pliiGetDuration (plidata_t *pliData)
 {
   ssize_t     duration = 0;
 
-  if (pliData != NULL) {
-    /* mpris:length from the metadata */
+  if (pliData == NULL) {
+    return 0;
   }
+
+  /* mpris:length from the metadata */
+  duration = mprisGetDuration (pliData->mpris);
   return duration;
 }
 
@@ -160,35 +179,37 @@ pliiGetTime (plidata_t *pliData)
   ssize_t     playTime = 0;
   double      dpos;
 
-  if (pliData != NULL) {
-    /* mpris:length from the metadata */
-    dpos = mprisGetPosition (pliData->mpris);
+  if (pliData == NULL) {
+    return playTime;
   }
 
+  dpos = mprisGetPosition (pliData->mpris);
+  playTime = (ssize_t) (dpos * 1000.0);
   return playTime;
 }
 
 plistate_t
 pliiState (plidata_t *pliData)
 {
-  plistate_t          plistate = PLI_STATE_NONE; /* unknown */
+  plistate_t  plistate = PLI_STATE_NONE; /* unknown */
+  const char  *tstate;
 
-  if (pliData != NULL) {
-    const char  *tstate;
-
-    tstate = mprisPlaybackStatus (pliData->mpris);
-
-    if (strcmp (tstate, "Paused") == 0) {
-      plistate = PLI_STATE_PAUSED;
-    }
-    if (strcmp (tstate, "Stopped") == 0) {
-      plistate = PLI_STATE_STOPPED;
-    }
-    if (strcmp (tstate, "Playing") == 0) {
-      plistate = PLI_STATE_STOPPED;
-    }
-    pliData->state = plistate;
+  if (pliData == NULL) {
+    return plistate;
   }
+
+  tstate = mprisPlaybackStatus (pliData->mpris);
+
+  if (strcmp (tstate, "Paused") == 0) {
+    plistate = PLI_STATE_PAUSED;
+  }
+  if (strcmp (tstate, "Stopped") == 0) {
+    plistate = PLI_STATE_STOPPED;
+  }
+  if (strcmp (tstate, "Playing") == 0) {
+    plistate = PLI_STATE_STOPPED;
+  }
+  pliData->state = plistate;
   return plistate;
 }
 

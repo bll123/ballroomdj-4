@@ -73,14 +73,17 @@
     org.mpris.MediaPlayer2.Player
     Metadata
     # (v) ; a{sv}
-    #   (<{'mpris:trackid': <objectpath
-    #   '/org/videolan/vlc/playlist/4'>, 'xesam:url':
-    #   <'file:///home/bll/Music/m/Alejandro_Sanz/Si_t%C3%BA_me_miras/14.Te_echo_de_menos.mp3'>,
-    #   'xesam:title': <'Te echo de menos'>, 'xesam:artist': <['Alejandro
-    #   Sanz']>, 'xesam:album': <'Si tú me miras'>, 'xesam:tracknumber':
-    #   <'14'>, 'vlc:time': <uint32 241>, 'mpris:length': <int64 241093946>,
+    #   (<{'mpris:trackid': <objectpath '/org/videolan/vlc/playlist/4'>,
+    #   'xesam:url': <'file:///home/bll/Music/m/Alejandro_Sanz/Si_t%C3%BA_me_miras/14.Te_echo_de_menos.mp3'>,
+    #   'xesam:title': <'Te echo de menos'>,
+    #   'xesam:artist': <['Alejandro Sanz']>,
+    #   'xesam:album': <'Si tú me miras'>,
+    #   'xesam:tracknumber': <'14'>,
+    #   'vlc:time': <uint32 241>,
+    #   'mpris:length': <int64 241093946>,
     #   'mb:trackId': <'cd8515f8-2d79-4ff7-9363-f73be68ed397'>,
-    #   'xesam:comment': <['ddj T129 T129']>, 'vlc:length': <int64 241093>,
+    #   'xesam:comment': <['ddj T129 T129']>,
+    #   'vlc:length': <int64 241093>,
     #   'vlc:publisher': <5>}>,)
 
   # Position

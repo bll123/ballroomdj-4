@@ -5,6 +5,10 @@
 
 typedef struct dbus dbus_t;
 
+enum {
+  DBUS_MAX_TRACKID = 200,
+};
+
 dbus_t * dbusConnInit (void);
 void dbusConnClose (dbus_t *dbus);
 void dbusMessageInit (dbus_t *dbus);
