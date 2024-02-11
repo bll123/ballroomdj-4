@@ -7,13 +7,15 @@
 **4.4.10.2 2024-2---**
     * PENDING Installation: second install, incorrect copy of files.
 
-**4.5.0 2024-2---**
+-->
+
+**4.5.0 2024-2-10**
 
 * Bug Fixes:
     * Configuration: Fix various possible crashes.
     * User Interface: Fix switch background color.
-
--->
+* Internal:
+    * Code cleanup.
 
 **4.4.10.1 2024-2-5**
 

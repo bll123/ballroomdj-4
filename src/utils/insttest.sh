@@ -146,10 +146,10 @@ function checkUpdaterClean {
   sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
-  # gtk-static version number should be updated to version 3.
+  # gtk-static version number should be updated to version 4.
   fn="$DATADIR/gtk-static.css"
   if [[ -f $fn ]]; then
-    sed -e 's/version 3/version 1/' "${fn}" > "${fn}.n"
+    sed -e 's/version 4/version 1/' "${fn}" > "${fn}.n"
     mv -f "${fn}.n" "${fn}"
   fi
 
@@ -649,7 +649,7 @@ function checkInstallation {
     res=$(($res+1))  # itunes-fields.txt file
     fn="${DATADIR}/gtk-static.css"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 3' "${fn}" > /dev/null 2>&1
+      grep 'version 4' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
