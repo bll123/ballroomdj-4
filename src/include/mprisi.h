@@ -5,6 +5,8 @@
 
 typedef struct mpris mpris_t;
 
+int mprisGetPlayerList (char **ret, int max);
+void mprisCleanup (void);
 mpris_t *mprisInit (const char *plinm);
 void mprisFree (mpris_t *mpris);
 void mprisMedia (mpris_t *mpris, const char *uri);

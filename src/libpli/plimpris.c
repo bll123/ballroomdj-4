@@ -30,13 +30,8 @@ void
 pliiDesc (char **ret, int max)
 {
   int         c = 0;
-  mpris_t     *mpris;
 
-//  mpris = mprisInit (NULL);
-//  mprisFree (mpris);
-
-  ret [c++] = "MPRIS VLC";
-  ret [c++] = NULL;
+  c = mprisGetPlayerList (ret, max);
 }
 
 plidata_t *

@@ -18,10 +18,26 @@
 #include "mdebug.h"
 #include "mprisi.h"
 
+enum {
+  MPRIS_MAX_PLAYERS = 10,
+};
+
+typedef struct {
+  char      *bus;
+  char      *name;
+} mpris_player_t;
+
 typedef struct mpris {
-  dbus_t      *dbus;
-  char        *mpbus;
+  dbus_t          *dbus;
+  const char      *mpbus;
+  bool            canseek : 1;
+  bool            hasspeed : 1;
 } mpris_t;
+
+typedef struct {
+  mpris_player_t  playerInfo [MPRIS_MAX_PLAYERS];
+  int             playerCount;
+} mpris_info_t;
 
 enum {
   MPRIS_BUS_DBUS,
@@ -99,6 +115,10 @@ static const char *property [MPRIS_PROP_MAX] = {
 enum {
   MPRIS_PROPNM_SUPP_URI,
   MPRIS_PROPNM_CAN_CONTROL,
+  MPRIS_PROPNM_CAN_SEEK,
+  MPRIS_PROPNM_CAN_PLAY,
+  MPRIS_PROPNM_CAN_PAUSE,
+  MPRIS_PROPNM_IDENTITY,
   MPRIS_PROPNM_PB_STATUS,
   MPRIS_PROPNM_METADATA,
   MPRIS_PROPNM_POS,
@@ -112,6 +132,10 @@ enum {
 static const char *propname [MPRIS_PROPNM_MAX] = {
   [MPRIS_PROPNM_SUPP_URI] = "SupportedUriSchemes",
   [MPRIS_PROPNM_CAN_CONTROL] = "CanControl",
+  [MPRIS_PROPNM_CAN_SEEK] = "CanSeek",
+  [MPRIS_PROPNM_CAN_PLAY] = "CanPlay",
+  [MPRIS_PROPNM_CAN_PAUSE] = "CanPause",
+  [MPRIS_PROPNM_IDENTITY] = "Identity",
   [MPRIS_PROPNM_PB_STATUS] = "PlaybackStatus",
   [MPRIS_PROPNM_METADATA] = "Metadata",
   [MPRIS_PROPNM_POS] = "Position",
@@ -121,6 +145,7 @@ static const char *propname [MPRIS_PROPNM_MAX] = {
   [MPRIS_PROPNM_RATE] = "Rate",
 };
 
+static bool mprisCheckForPlayer (mpris_t *mpris, const char *plinm);
 static bool mprisGetProperty (mpris_t *mpris, const char *prop, const char *propnm);
 static bool mprisGetPropBool (mpris_t *mpris, const char *prop, const char *propnm);
 static const char *mprisGetPropString (mpris_t *mpris, const char *prop, const char *propnm);
@@ -128,25 +153,139 @@ static int64_t mprisGetPropInt64 (mpris_t *mpris, const char *prop, const char *
 static double mprisGetPropDouble (mpris_t *mpris, const char *prop, const char *propnm);
 static bool mprisSetPropDouble (mpris_t *mpris, const char *prop, const char *propnm, double val);
 
+static mpris_info_t mprisInfo;
+static bool         initialized = false;
+
+int
+mprisGetPlayerList (char **ret, int max)
+{
+  mpris_t     *mpris;
+  int         c;
+  const char  **out = NULL;
+  long        len;
+
+  if (initialized) {
+    mprisCleanup ();
+  }
+
+  c = 0;
+  for (int i = 0; i < MPRIS_MAX_PLAYERS; ++i) {
+    mprisInfo.playerInfo [i].bus = NULL;
+    mprisInfo.playerInfo [i].name = NULL;
+  }
+  mprisInfo.playerCount = 0;
+
+  mpris = mprisInit (NULL);
+
+  dbusMessageInit (mpris->dbus);
+  dbusMessageSetData (mpris->dbus, "()", NULL);
+  dbusMessage (mpris->dbus, bus [MPRIS_BUS_DBUS], objpath [MPRIS_OBJP_DBUS],
+      interface [MPRIS_INTFC_DBUS], method [MPRIS_METHOD_LIST_NAMES]);
+  dbusResultGet (mpris->dbus, &out, &len, NULL);
+
+  while (*out != NULL) {
+    /* only interested in mediaplayer2 */
+    if (strncmp (*out, property [MPRIS_PROP_MP2], strlen (property [MPRIS_PROP_MP2])) == 0) {
+      int         rval;
+      const char  *ident;
+      char        tbuff [200];
+
+      mpris->mpbus = *out;
+
+      rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
+          propname [MPRIS_PROPNM_CAN_CONTROL]);
+      if (! rval) {
+        fprintf (stderr, "list-names: %s cannot control\n", *out);
+        continue;
+      }
+
+      rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
+          propname [MPRIS_PROPNM_CAN_PLAY]);
+      if (! rval) {
+        fprintf (stderr, "list-names: %s cannot play\n", *out);
+        continue;
+      }
+
+      rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
+          propname [MPRIS_PROPNM_CAN_PAUSE]);
+      if (! rval) {
+        fprintf (stderr, "list-names: %s cannot pause\n", *out);
+        continue;
+      }
+
+      ident = mprisGetPropString (mpris, property [MPRIS_PROP_MP2],
+          propname [MPRIS_PROPNM_IDENTITY]);
+      mprisInfo.playerInfo [c].bus = mdstrdup (*out);
+      snprintf (tbuff, sizeof (tbuff), "MPRIS %s", ident);
+      mprisInfo.playerInfo [c].name = mdstrdup (tbuff);
+      if (ret != NULL) {
+        ret [c] = mprisInfo.playerInfo [c].name;
+      }
+      ++c;
+      if (c >= max - 1 || c >= MPRIS_MAX_PLAYERS - 1) {
+        break;
+      }
+    }
+    ++out;
+  }
+
+  mprisInfo.playerCount = c;
+  if (ret != NULL) {
+    ret [c] = NULL;
+  }
+
+  mprisFree (mpris);
+  initialized = true;
+
+  return c;
+}
+
+void
+mprisCleanup (void)
+{
+  if (! initialized) {
+    return;
+  }
+
+  for (int i = 0; i < mprisInfo.playerCount; ++i) {
+    dataFree (mprisInfo.playerInfo [i].bus);
+    dataFree (mprisInfo.playerInfo [i].name);
+  }
+  initialized = true;
+}
+
+
 mpris_t *
 mprisInit (const char *plinm)
 {
   mpris_t   *mpris;
-  int       cc;
   double    minrate, maxrate;
+
+  if (! initialized) {
+    mprisGetPlayerList (NULL, MPRIS_MAX_PLAYERS);
+  }
 
   mpris = mdmalloc (sizeof (mpris_t));
   mpris->dbus = dbusConnInit ();
+  mpris->canseek = false;
+  mpris->hasspeed = false;
 
-  // temporary
-  mpris->mpbus = "org.mpris.MediaPlayer2.vlc";
-
-  if (plinm != NULL) {
-    ;
+  if (plinm == NULL) {
+    return mpris;
   }
 
-  cc = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
-      propname [MPRIS_PROPNM_CAN_CONTROL]);
+  if (! mprisCheckForPlayer (mpris, plinm)) {
+    /* the player may have been started since the first initialization */
+    /* clean up and reload */
+    mprisCleanup ();
+    mprisGetPlayerList (NULL, MPRIS_MAX_PLAYERS);
+    mprisCheckForPlayer (mpris, plinm);
+  }
+
+  // ### need to check and see if mpbus is set */
+
+  mpris->canseek = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_CAN_SEEK]);
   minrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_MIN_RATE]);
   maxrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
@@ -260,6 +399,22 @@ mprisSetRate (mpris_t *mpris, double rate)
 }
 
 /* internal routines */
+
+bool
+mprisCheckForPlayer (mpris_t *mpris, const char *plinm)
+{
+  bool  rc = false;
+
+  for (int i = 0; i < mprisInfo.playerCount; ++i) {
+    if (strcmp (mprisInfo.playerInfo [i].name, plinm) == 0) {
+      mpris->mpbus = mprisInfo.playerInfo [i].bus;
+      rc = true;
+      break;
+    }
+  }
+
+  return rc;
+}
 
 static bool
 mprisGetProperty (mpris_t *mpris, const char *prop, const char *propnm)

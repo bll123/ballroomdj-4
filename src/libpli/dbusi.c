@@ -107,7 +107,7 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   }
   dbus->result = NULL;
 
-  fprintf (stdout, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
+  fprintf (stderr, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
   dumpResult ("data-msg", dbus->data);
   dbus->result = g_dbus_connection_call_sync (dbus->dconn,
       bus, objpath, intfc, method,
@@ -130,13 +130,32 @@ dbusResultGet (dbus_t *dbus, ...)
     return false;
   }
 
+  va_start (args, dbus);
+
   type = g_variant_get_type_string (val);
+fprintf (stderr, "-- result: %s\n", type);
   if (strcmp (type, "(v)") == 0) {
     g_variant_get (val, type, &val);
     type = g_variant_get_type_string (val);
   }
+  if (strcmp (type, "(as)") == 0) {
+    GVariantIter  gvi;
+    gsize         len;
+    const char    ***out;
+    long          *alen;
 
-  va_start (args, dbus);
+    g_variant_iter_init (&gvi, val);
+    val = g_variant_iter_next_value (&gvi);
+    type = g_variant_get_type_string (val);
+    out = va_arg (args, const char ***);
+    alen = va_arg (args, long *);
+    *out = g_variant_get_strv (val, &len);
+    fprintf (stderr, "  g-as-count: %ld\n", len);
+    *alen = len;
+    va_end (args);
+    return true;
+  }
+
   g_variant_get_va (val, type, NULL, &args);
   va_end (args);
 
@@ -148,24 +167,45 @@ dbusResultGet (dbus_t *dbus, ...)
 static void
 dumpResult (const char *tag, GVariant *data)
 {
-  const char *type;
+  const char  *type;
+  GVariant    *v;
 
-  fprintf (stdout, "-- %s\n", tag);
+
+  fprintf (stderr, "-- %s\n", tag);
   if (data == NULL) {
-    fprintf (stdout, "null\n");
+    fprintf (stderr, "null\n");
     return;
   }
 
   type = g_variant_get_type_string (data);
-  fprintf (stdout, "  type: %s\n", type);
+  fprintf (stderr, "  type: %s\n", type);
 
   if (strcmp (type, "(v)") == 0) {
-    GVariant  *v;
-
     g_variant_get (data, type, &v);
     dumpResult ("value", v);
+  } else if (strcmp (type, "(as)") == 0) {
+    GVariantIter  gvi;
+
+    g_variant_iter_init (&gvi, data);
+    fprintf (stderr, "  as-count: %lu\n", g_variant_iter_n_children (&gvi));
+
+    while ((v = g_variant_iter_next_value (&gvi)) != NULL) {
+      dumpResult ("value-as", v);
+      g_variant_unref (v);
+    }
+  } else if (strcmp (type, "as") == 0) {
+    const char  **out;
+    gsize       len;
+
+    out = g_variant_get_strv (data, &len);
+    for (gsize i = 0; i < len; ++i) {
+      const char    *tstr;
+
+      tstr = out [i];
+      fprintf (stderr, "  array: %s\n", tstr);
+    }
   } else {
-    fprintf (stdout, "  data: %s\n", g_variant_print (data, true));
+    fprintf (stderr, "  data: %s\n", g_variant_print (data, true));
   }
 }
 
