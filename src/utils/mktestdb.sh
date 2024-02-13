@@ -76,7 +76,7 @@ while test $# -gt 0; do
     --atibdj4)
       # ignored
       ;;
-    --plimpv)
+    --plimprisvlc)
       # ignored
       ;;
     --nodbcopy)

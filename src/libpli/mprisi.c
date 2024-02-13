@@ -123,6 +123,7 @@ static const char *property [MPRIS_PROP_MAX] = {
 
 enum {
   MPRIS_PROPNM_SUPP_URI,
+  MPRIS_PROPNM_SUPP_MIME,
   MPRIS_PROPNM_CAN_CONTROL,
   MPRIS_PROPNM_CAN_SEEK,
   MPRIS_PROPNM_CAN_PLAY,
@@ -140,6 +141,7 @@ enum {
 
 static const char *propname [MPRIS_PROPNM_MAX] = {
   [MPRIS_PROPNM_SUPP_URI] = "SupportedUriSchemes",
+  [MPRIS_PROPNM_SUPP_MIME] = "SupportedMimeTypes",
   [MPRIS_PROPNM_CAN_CONTROL] = "CanControl",
   [MPRIS_PROPNM_CAN_SEEK] = "CanSeek",
   [MPRIS_PROPNM_CAN_PLAY] = "CanPlay",
@@ -201,7 +203,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       int         rval;
       const char  *ident;
       char        tbuff [200];
-      const char  **suppuri = NULL;
+      const char  **svout = NULL;
       int         ok;
 
       mpris->mpbus = *out;
@@ -234,20 +236,37 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
           property [MPRIS_PROP_MP2], propname [MPRIS_PROPNM_SUPP_URI]);
       dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
           interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
-      dbusResultGet (mpris->dbus, &suppuri, &len, NULL);
+      dbusResultGet (mpris->dbus, &svout, &len, NULL);
 
       ok = 0;
-      while (*suppuri != NULL) {
-        if (strcmp (*suppuri, "file") == 0) {
+      while (*svout != NULL) {
+        if (strcmp (*svout, "file") == 0) {
           ++ok;
+          break;
         }
-        if (strcmp (*suppuri, "https") == 0) {
-          ++ok;
-        }
-        ++suppuri;
+        ++svout;
       }
 
-      if (ok < 1) {
+      dbusMessageInit (mpris->dbus);
+      dbusMessageSetData (mpris->dbus, "(ss)",
+          property [MPRIS_PROP_MP2], propname [MPRIS_PROPNM_SUPP_MIME]);
+      dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
+          interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
+      dbusResultGet (mpris->dbus, &svout, &len, NULL);
+
+      ok = 0;
+      while (*svout != NULL) {
+        /* an exhaustive check for all the different audio types */
+        /* is not done.  */
+        if (strcmp (*svout, "audio/mpeg") == 0) {
+          ++ok;
+          break;
+        }
+        ++svout;
+      }
+
+      /* must support at least 'file' uri and 'audio' mime types */
+      if (ok < 2) {
         ++out;
         continue;
       }
@@ -539,17 +558,24 @@ bool
 mprisSetPosition (mpris_t *mpris, int64_t pos)
 {
   bool    rc = false;
+  void    *to;
 
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return false;
   }
 
+  if (! mpris->canseek) {
+    return rc;
+  }
+
   // type (ox)
   // mpris:trackid nanoseconds
   dbusMessageInit (mpris->dbus);
-  dbusMessageSetData (mpris->dbus, "(ox)", mpris->trackid, pos * 1000, NULL);
+  // ### this needs to be tested, unknown if correct.
+  to = dbusMessageBuildObj (mpris->trackid);
+  dbusMessageSetData (mpris->dbus, "(ox)", to, pos * 1000, NULL);
   rc = dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
-      interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_SET]);
+      interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_SET_POS]);
   return rc;
 }
 
@@ -557,7 +583,6 @@ bool
 mprisSetRate (mpris_t *mpris, double rate)
 {
   bool    rc;
-double trate;
 
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return false;
@@ -565,8 +590,6 @@ double trate;
 
   rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_RATE], rate);
-  trate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
-      propname [MPRIS_PROPNM_RATE]);
   return rc;
 }
 

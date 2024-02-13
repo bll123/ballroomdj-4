@@ -51,7 +51,7 @@ function copytestf {
 }
 
 ATIBDJ4=F
-PLIMPV=F
+PLIMPRIS=F
 DBCOPY=T
 KEEPDB=F
 for arg in "$@"; do
@@ -59,8 +59,8 @@ for arg in "$@"; do
     --atibdj4)
       ATIBDJ4=T
       ;;
-    --plimpv)
-      PLIMPV=T
+    --plimprisvlc)
+      PLIMPRIS=VLC
       ;;
     --nodbcopy)
       DBCOPY=F
@@ -173,8 +173,10 @@ if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
 fi
 PLII=libplivlc
-if [[ $PLIMPV == T ]]; then
-  PLII=libplimpv
+PLIINM=libplivlc
+if [[ $PLIMPRIS == VLC ]]; then
+  PLII=libplimpris
+  PLIINM="MPRIS VLC Media Player"
 fi
 
 tfn=data/${hostname}/bdjconfig.txt
@@ -189,7 +191,8 @@ sed \
     -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     -e "/^DIRMUSIC/ { n ; s,.*,..${tmusicdir}, ; }" \
     -e "/^ITUNESXMLFILE/ { n ; s,.*,..${titunes}, ; }" \
-    -e "/^PLAYER/ { n ; s,.*,..${PLII}, ; }" \
+    -e "/^PLAYER$/ { n ; s,.*,..${PLII}, ; }" \
+    -e "/^PLAYER_I_NM/ { n ; s,.*,..${PLIINM}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
@@ -202,19 +205,19 @@ mv -f ${tfn}.n ${tfn}
 
 if [[ $os == macos ]]; then
   tfn=data/${hostname}/profile00/bdjconfig.txt
-  sed -e '/UI_THEME/ { n ; s/.*/..Mojave-dark/ ; }' \
-      -e '/MQFONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
-      -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
-      -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+  sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark/ ; }' \
+      -e '/^MQFONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
+      -e '/^UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
+      -e '/^LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi
 
 if [[ $platform == windows ]]; then
   tfn=data/${hostname}/profile00/bdjconfig.txt
-  sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
-      -e '/UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
-      -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
+  sed -e '/^UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
+      -e '/^UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
+      -e '/^LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi
@@ -275,7 +278,7 @@ sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${titunes}, ; }" \
 mv -f ${tfn}.n ${tfn}
 # bdj4updater will change the orgpath to the itunes orgpath.
 tfn=data/bdjconfig.txt
-sed -e '/^ORGPATH/ { n ; s,.*,..{%DANCE%/}{%TITLE%}, ; }' \
+sed -e '/^ORGPATH$/ { n ; s,.*,..{%DANCE%/}{%TITLE%}, ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

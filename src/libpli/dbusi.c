@@ -92,6 +92,16 @@ dbusMessageBuild (const char *sdata, ...)
   return tv;
 }
 
+/* used in the cases where a value is wrapped as a variant (e.g. Rate) */
+void *
+dbusMessageBuildObj (const char *path)
+{
+  GVariant  *tv;
+
+  tv = g_variant_new_object_path (path);
+  return tv;
+}
+
 void
 dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
 {
@@ -186,7 +196,6 @@ dbusResultGet (dbus_t *dbus, ...)
     out = va_arg (args, const char ***);
     alen = va_arg (args, long *);
     *out = g_variant_get_strv (val, &len);
-    fprintf (stderr, "  g-as-count: %ld\n", len);
     *alen = len;
     va_end (args);
     return true;
@@ -195,13 +204,13 @@ dbusResultGet (dbus_t *dbus, ...)
   if (strcmp (type, "a{sv}") == 0) {
     GVariantIter  gvi;
     GVariant      *tv;
-    char          *trackid = NULL;
+    void          *trackid = NULL;
     int64_t       *dur = NULL;
     int           rc = 0;
 
     g_variant_iter_init (&gvi, val);
 
-    trackid = va_arg (args, char *);
+    trackid = va_arg (args, void *);
     dur = va_arg (args, int64_t *);
 
     /* want mpris:trackid, mpris:length */
@@ -223,7 +232,7 @@ dbusResultGet (dbus_t *dbus, ...)
         ++rc;
       }
 
-      if (rc >= 2) {
+      if (rc >= 2 || (rc >= 1 && dur == NULL)) {
         /* only interested in trackid and duration */
         break;
       }

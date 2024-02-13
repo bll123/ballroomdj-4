@@ -160,10 +160,15 @@ testsuite:
 	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --testsuite)
 
-.PHONY: testsuitempv
-testsuitempv:
-	./utils/mktestsetup.sh --force --plimpv
-	(cd ..;./bin/bdj4 --testsuite)
+.PHONY: testsuitemprisvlc
+testsuitemprisvlc:
+	./utils/mktestsetup.sh --force --plimprisvlc
+	# & is a shell command terminator, no semicolon
+	vlc --intf=dummy --no-video & \
+        pid=$$$$; \
+	(cd ..;./bin/bdj4 --testsuite); \
+	kill $${pid}; \
+	true
 
 .PHONY: testsection
 testsection:
