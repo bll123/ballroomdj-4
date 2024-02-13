@@ -19,6 +19,7 @@
 #include "mdebug.h"
 #include "mprisi.h"
 #include "osdirutil.h"
+#include "pli.h"
 
 #define MPRIS_PFX "MPRIS "
 
@@ -39,6 +40,7 @@ typedef struct mpris {
   char            cwd [MAXPATHLEN];
   char            trackid [DBUS_MAX_TRACKID];
   int64_t         dur;
+  plistate_t      state;
   bool            canseek : 1;
   bool            hasspeed : 1;
 } mpris_t;
@@ -301,6 +303,7 @@ mprisInit (const char *plinm)
   double    minrate, maxrate;
 
   mpris = mdmalloc (sizeof (mpris_t));
+  mpris->state = PLI_STATE_NONE;
   mpris->ident = MPRIS_IDENT;
   mpris->dbus = dbusConnInit ();
   mpris->canseek = false;
@@ -399,20 +402,21 @@ mprisMedia (mpris_t *mpris, const char *uri)
       interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
   *mpris->trackid = '\0';
   dbusResultGet (mpris->dbus, mpris->trackid, NULL, NULL);
+
+  mpris->state = PLI_STATE_PLAYING;
 }
 
-const char *
-mprisPlaybackStatus (mpris_t *mpris)
+plistate_t
+mprisState (mpris_t *mpris)
 {
-  const char  *rval;
-
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
-    return NULL;
+    return PLI_STATE_NONE;
   }
 
-  rval = mprisGetPropString (mpris, property [MPRIS_PROP_MP2_PLAYER],
-      propname [MPRIS_PROPNM_PB_STATUS]);
-  return rval;
+//  rval = mprisGetPropString (mpris, property [MPRIS_PROP_MP2_PLAYER],
+//      propname [MPRIS_PROPNM_PB_STATUS]);
+
+  return mpris->state;
 }
 
 int64_t
@@ -458,6 +462,7 @@ mprisPause (mpris_t *mpris)
   dbusMessageInit (mpris->dbus);
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_PAUSE]);
+  mpris->state = PLI_STATE_PAUSED;
 }
 
 void
@@ -470,6 +475,7 @@ mprisPlay (mpris_t *mpris)
   dbusMessageInit (mpris->dbus);
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_PLAY]);
+  mpris->state = PLI_STATE_PLAYING;
 }
 
 void
@@ -482,8 +488,10 @@ mprisStop (mpris_t *mpris)
   dbusMessageInit (mpris->dbus);
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_STOP]);
+  mpris->state = PLI_STATE_STOPPED;
 }
 
+// ### is this needed?
 void
 mprisNext (mpris_t *mpris)
 {

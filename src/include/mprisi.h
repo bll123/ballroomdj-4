@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "pli.h"
+
 typedef struct mpris mpris_t;
 
 int mprisGetPlayerList (mpris_t *mpris, char **ret, int max);
@@ -14,7 +16,7 @@ bool mprisHasSpeed (mpris_t *mpris);
 void mprisMedia (mpris_t *mpris, const char *uri);
 int64_t mprisGetDuration (mpris_t *mpris);
 int64_t mprisGetPosition (mpris_t *mpris);
-const char *mprisPlaybackStatus (mpris_t *mpris);
+plistate_t mprisState (mpris_t *mpris);
 void mprisPause (mpris_t *mpris);
 void mprisPlay (mpris_t *mpris);
 void mprisStop (mpris_t *mpris);

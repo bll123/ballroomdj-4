@@ -85,63 +85,80 @@ pliiInit (const char *plinm)
 void
 pliiFree (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    pliiClose (pliData);
-    mdfree (pliData);
+  if (pliData == NULL) {
+    return;
   }
+
+  pliiClose (pliData);
+  mdfree (pliData);
 }
 
 void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
-  if (pliData != NULL && pliData->plData != NULL && mediaPath != NULL) {
-    vlcMedia (pliData->plData, mediaPath);
+  if (pliData == NULL || pliData->plData == NULL || mediaPath == NULL) {
+    return;
   }
+
+fprintf (stderr, "pli-vlc: media %s\n", mediaPath);
+  vlcMedia (pliData->plData, mediaPath);
 }
 
 void
 pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
+  if (pliData == NULL || pliData->plData == NULL) {
+    return;
+  }
+
+fprintf (stderr, "pli-vlc: start\n");
   /* Do the busy loop so that the seek can be done immediately as */
   /* vlc starts playing.  This should help avoid startup glitches */
-  if (pliData != NULL && pliData->plData != NULL) {
-    vlcPlay (pliData->plData);
-    if (dpos > 0) {
-      pliiWaitUntilPlaying (pliData);
-      vlcSeek (pliData->plData, dpos);
-    }
-    if (speed != 100) {
-      double    drate;
+  vlcPlay (pliData->plData);
+  if (dpos > 0) {
+    pliiWaitUntilPlaying (pliData);
+    vlcSeek (pliData->plData, dpos);
+  }
+  if (speed != 100) {
+    double    drate;
 
-      pliiWaitUntilPlaying (pliData);
-      drate = (double) speed / 100.0;
-      vlcRate (pliData->plData, drate);
-    }
+    pliiWaitUntilPlaying (pliData);
+    drate = (double) speed / 100.0;
+    vlcRate (pliData->plData, drate);
   }
 }
 
 void
 pliiPause (plidata_t *pliData)
 {
-  if (pliData != NULL && pliData->plData != NULL) {
-    vlcPause (pliData->plData);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return;
   }
+
+fprintf (stderr, "pli-vlc: pause\n");
+  vlcPause (pliData->plData);
 }
 
 void
 pliiPlay (plidata_t *pliData)
 {
-  if (pliData != NULL && pliData->plData != NULL) {
-    vlcPlay (pliData->plData);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return;
   }
+
+fprintf (stderr, "pli-vlc: play\n");
+  vlcPlay (pliData->plData);
 }
 
 void
 pliiStop (plidata_t *pliData)
 {
-  if (pliData != NULL && pliData->plData != NULL) {
-    vlcStop (pliData->plData);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return;
   }
+
+fprintf (stderr, "pli-vlc: stop\n");
+  vlcStop (pliData->plData);
 }
 
 ssize_t
@@ -149,9 +166,12 @@ pliiSeek (plidata_t *pliData, ssize_t dpos)
 {
   ssize_t     dret = -1;
 
-  if (pliData != NULL && pliData->plData != NULL) {
-    dret = vlcSeek (pliData->plData, dpos);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return dret;
   }
+
+fprintf (stderr, "pli-vlc: seek\n");
+  dret = vlcSeek (pliData->plData, dpos);
   return dret;
 }
 
@@ -162,23 +182,27 @@ pliiRate (plidata_t *pliData, ssize_t rate)
   double      dret = -1.0;
   double      drate;
 
-  if (pliData != NULL && pliData->plData != NULL) {
-    drate = (double) rate / 100.0;
-    dret = vlcRate (pliData->plData, drate);
-    ret = (ssize_t) round (dret * 100.0);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return ret;
   }
+
+fprintf (stderr, "pli-vlc: rate\n");
+  drate = (double) rate / 100.0;
+  dret = vlcRate (pliData->plData, drate);
+  ret = (ssize_t) round (dret * 100.0);
   return ret;
 }
 
 void
 pliiClose (plidata_t *pliData)
 {
-  if (pliData != NULL) {
-    if (pliData->plData != NULL) {
-      vlcClose (pliData->plData);
-    }
-    pliData->plData = NULL;
+  if (pliData == NULL || pliData->plData == NULL) {
+    return;
   }
+
+fprintf (stderr, "pli-vlc: close\n");
+  vlcClose (pliData->plData);
+  pliData->plData = NULL;
 }
 
 ssize_t
@@ -186,11 +210,12 @@ pliiGetDuration (plidata_t *pliData)
 {
   ssize_t     duration = 0;
 
-  if (pliData != NULL) {
-    if (pliData->plData != NULL) {
-      duration = vlcGetDuration (pliData->plData);
-    }
+  if (pliData == NULL || pliData->plData == NULL) {
+    return duration;
   }
+
+fprintf (stderr, "pli-vlc: get-dur\n");
+  duration = vlcGetDuration (pliData->plData);
   return duration;
 }
 
@@ -199,11 +224,12 @@ pliiGetTime (plidata_t *pliData)
 {
   ssize_t     playTime = 0;
 
-  if (pliData != NULL) {
-    if (pliData->plData != NULL) {
-      playTime = vlcGetTime (pliData->plData);
-    }
+  if (pliData == NULL || pliData->plData == NULL) {
+    return playTime;
   }
+
+fprintf (stderr, "pli-vlc: get-time\n");
+  playTime = vlcGetTime (pliData->plData);
   return playTime;
 }
 
@@ -212,9 +238,12 @@ pliiState (plidata_t *pliData)
 {
   plistate_t    plistate = PLI_STATE_NONE; /* unknown */
 
-  if (pliData != NULL && pliData->plData != NULL) {
-    plistate = vlcState (pliData->plData);
+  if (pliData == NULL || pliData->plData == NULL) {
+    return plistate;
   }
+
+  plistate = vlcState (pliData->plData);
+fprintf (stderr, "pli-vlc: get-state %d\n", plistate);
   return plistate;
 }
 
@@ -222,6 +251,10 @@ int
 pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
   int   rc;
+
+  if (pliData == NULL || pliData->plData == NULL) {
+    return -1;
+  }
 
   rc = vlcAudioDevSet (pliData->plData, dev);
   return rc;
@@ -235,12 +268,6 @@ pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
   /* VLC will use the default sink set by the application. */
   /* No need to make things more complicated. */
   /* test 2023-12-4 on Linux, MacOS, Windows */
-# if 0
-  if (vlcHaveAudioDevList ()) {
-    rc = vlcAudioDevList (pliData->plData, sinklist);
-  }
-#endif
-
   return rc;
 }
 

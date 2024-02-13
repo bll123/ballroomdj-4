@@ -183,8 +183,13 @@ dbusResultGet (dbus_t *dbus, ...)
     GVariant      *tv;
     char          *trackid = NULL;
     int64_t       *dur = NULL;
+    int           rc = 0;
 
     g_variant_iter_init (&gvi, val);
+
+    trackid = va_arg (args, char *);
+    dur = va_arg (args, int64_t *);
+
     /* want mpris:trackid, mpris:length */
     while ((val = g_variant_iter_next_value (&gvi)) != NULL) {
       const char    *idstr;
@@ -195,18 +200,23 @@ fprintf (stderr, "a{sv} type: %s\n", type);
 fprintf (stderr, "  idstr: %s\n", idstr);
       type = g_variant_get_type_string (tv);
 fprintf (stderr, "  v-type: %s\n", type);
-      trackid = va_arg (args, char *);
       if (strcmp (idstr, "mpris:trackid") == 0) {
         const char    *tstr;
 
         g_variant_get (tv, type, &tstr);
         strlcpy (trackid, tstr, DBUS_MAX_TRACKID);
 fprintf (stderr, "  trackid: %s\n", trackid);
+        ++rc;
       }
-      dur = va_arg (args, int64_t *);
       if (dur != NULL && strcmp (idstr, "mpris:length") == 0) {
         g_variant_get (tv, type, dur);
-fprintf (stderr, "  dur: %ld\n", (long) *dur);
+fprintf (stderr, "  dur: %ld\n", (long) dur);
+        ++rc;
+      }
+
+      if (rc >= 2) {
+        /* only interested in trackid and duration */
+        break;
       }
     }
     va_end (args);
