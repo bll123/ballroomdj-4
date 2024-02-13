@@ -152,16 +152,23 @@ dbusResultGet (dbus_t *dbus, ...)
   if (strcmp (type, "(v)") == 0) {
     g_variant_get (val, type, &val);
     type = g_variant_get_type_string (val);
+    /* supported-uri-schemes returns a (v);as */
   }
+
   if (strcmp (type, "(as)") == 0) {
     GVariantIter  gvi;
-    gsize         len;
-    const char    ***out;
-    long          *alen;
 
     g_variant_iter_init (&gvi, val);
     val = g_variant_iter_next_value (&gvi);
     type = g_variant_get_type_string (val);
+    /* list-names returns a (as);as */
+  }
+
+  if (strcmp (type, "as") == 0) {
+    const char    ***out;
+    long          *alen;
+    gsize         len;
+
     out = va_arg (args, const char ***);
     alen = va_arg (args, long *);
     *out = g_variant_get_strv (val, &len);
@@ -170,6 +177,7 @@ dbusResultGet (dbus_t *dbus, ...)
     va_end (args);
     return true;
   }
+
   if (strcmp (type, "a{sv}") == 0) {
     GVariantIter  gvi;
     GVariant      *tv;

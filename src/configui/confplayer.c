@@ -146,7 +146,8 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   /* the volumeInterfaceList() call will choose a proper default */
   /* if there is no configuration file */
   interfaces = volumeInterfaceList ();
-  confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC, CONFUI_SPINBOX_VOL_INTFC);
+  confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC,
+      CONFUI_OPT_NONE, CONFUI_SPINBOX_VOL_INTFC);
   ilistFree (interfaces);
 }
 
@@ -156,7 +157,8 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   ilist_t     *interfaces;
 
   interfaces = pliInterfaceList ();
-  confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC, CONFUI_SPINBOX_PLI);
+  confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC,
+      OPT_M_PLAYER_INTFC_NM, CONFUI_SPINBOX_PLI);
   ilistFree (interfaces);
 }
 

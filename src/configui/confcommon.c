@@ -320,7 +320,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
 
 void
 confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
-    int svidx, int spinboxidx)
+    int optidx, int optnmidx, int spinboxidx)
 {
   ilistidx_t  iteridx;
   ilistidx_t  key;
@@ -329,11 +329,15 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
   nlist_t     *tlist;
   nlist_t     *llist;
   const char  *currintfc;
+  const char  *currintfcnm = NULL;
 
   tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
   llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
 
-  currintfc = bdjoptGetStr (svidx);
+  currintfc = bdjoptGetStr (optidx);
+  if (optnmidx != CONFUI_OPT_NONE) {
+    currintfcnm = bdjoptGetStr (optnmidx);
+  }
   ilistStartIterator (interfaces, &iteridx);
   count = 0;
   gui->uiitem [spinboxidx].listidx = -1;
@@ -343,7 +347,16 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
       continue;
     }
     if (currintfc != NULL && strcmp (intfc, currintfc) == 0) {
-      gui->uiitem [spinboxidx].listidx = count;
+      if (currintfcnm != NULL) {
+        const char  *desc;
+
+        desc = ilistGetStr (interfaces, key, DYI_DESC);
+        if (strcmp (desc, currintfcnm) == 0) {
+          gui->uiitem [spinboxidx].listidx = count;
+        }
+      } else {
+        gui->uiitem [spinboxidx].listidx = count;
+      }
     }
     nlistSetStr (tlist, count, ilistGetStr (interfaces, key, DYI_DESC));
     nlistSetStr (llist, count, intfc);

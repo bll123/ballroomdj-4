@@ -286,6 +286,7 @@ confuiLoadAudioTagIntfcList (confuigui_t *gui)
   ilist_t     *interfaces;
 
   interfaces = atiInterfaceList ();
-  confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC, CONFUI_SPINBOX_ATI);
+  confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC,
+      CONFUI_OPT_NONE, CONFUI_SPINBOX_ATI);
   ilistFree (interfaces);
 }

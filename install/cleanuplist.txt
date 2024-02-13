@@ -273,7 +273,6 @@ data/\.pl$
 data/\.pldances$
 data/\.songlist$
 data/\.sequence$
-data/\.profile-65534$
 
 # in case an alpha version converted the special raffle songs songlist
 # this can be removed at a later date. (early alpha)
@@ -347,3 +346,8 @@ data/pyvers\.txt$
 # 2023-12-20
 # not needed here
 data/localization\.txt$
+
+# 2024-2-12
+# buggy profile stuff.
+data/profile-65534$
+data/[^/]*/profile-65534$

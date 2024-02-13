@@ -20,6 +20,8 @@
 #include "mprisi.h"
 #include "osdirutil.h"
 
+#define MPRIS_PFX "MPRIS "
+
 enum {
   MPRIS_MAX_PLAYERS = 10,
   MPRIS_IDENT = 0x6d7072697300aabb,
@@ -197,6 +199,8 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       int         rval;
       const char  *ident;
       char        tbuff [200];
+      const char  **suppuri = NULL;
+      int         ok;
 
       mpris->mpbus = *out;
 
@@ -204,6 +208,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_CONTROL]);
       if (! rval) {
+        ++out;
         continue;
       }
 
@@ -211,19 +216,44 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_PLAY]);
       if (! rval) {
+        ++out;
         continue;
       }
 
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_PAUSE]);
       if (! rval) {
+        ++out;
+        continue;
+      }
+
+      dbusMessageInit (mpris->dbus);
+      dbusMessageSetData (mpris->dbus, "(ss)",
+          property [MPRIS_PROP_MP2], propname [MPRIS_PROPNM_SUPP_URI]);
+      dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
+          interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
+      dbusResultGet (mpris->dbus, &suppuri, &len, NULL);
+
+      ok = 0;
+      while (*suppuri != NULL) {
+        if (strcmp (*suppuri, "file") == 0) {
+          ++ok;
+        }
+        if (strcmp (*suppuri, "https") == 0) {
+          ++ok;
+        }
+        ++suppuri;
+      }
+
+      if (ok < 1) {
+        ++out;
         continue;
       }
 
       ident = mprisGetPropString (mpris, property [MPRIS_PROP_MP2],
           propname [MPRIS_PROPNM_IDENTITY]);
       mprisInfo.playerInfo [c].bus = mdstrdup (*out);
-      snprintf (tbuff, sizeof (tbuff), "MPRIS %s", ident);
+      snprintf (tbuff, sizeof (tbuff), "%s%s", MPRIS_PFX, ident);
       mprisInfo.playerInfo [c].name = mdstrdup (tbuff);
       if (ret != NULL) {
         ret [c] = mprisInfo.playerInfo [c].name;

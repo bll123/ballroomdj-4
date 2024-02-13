@@ -366,6 +366,10 @@ enum {
   CONFUI_KEY_MAX,
 };
 
+enum {
+  CONFUI_OPT_NONE = -1,
+};
+
 typedef struct conforg conforg_t;
 typedef struct confitunes confitunes_t;
 
@@ -415,7 +419,7 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
-void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int svidx, int spinboxidx);
+void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
