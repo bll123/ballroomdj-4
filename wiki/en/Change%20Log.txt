@@ -4,8 +4,12 @@
 
 <!--
 
-**4.4.10.2 2024-2---**
+**4.5.1 2024-2---**
+
+* Bug Fixes:
     * PENDING Installation: second install, incorrect copy of files.
+    * PENDING Linux: MPRIS player support.
+    * Fixed spurious profile folder.
 
 -->
 

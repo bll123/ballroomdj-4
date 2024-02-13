@@ -1697,6 +1697,11 @@ starterSetProfile (void *udata, int idx)
   int         chg;
 
   dispidx = uiSpinboxTextGetValue (starter->wcont [START_W_PROFILE_SEL]);
+
+  if (dispidx < 0) {
+    return "";
+  }
+
   disp = nlistGetStr (starter->proflist, dispidx);
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
