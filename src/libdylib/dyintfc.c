@@ -34,6 +34,7 @@ dyInterfaceList (const char *pfx, const char *funcnm)
   char        dlpath [MAXPATHLEN];
   char        tmp [100];
   void        (*descProc) (char **, int);
+  void        (*cleanupProc) (dlhandle_t *);
   char        *descarr [MAX_DESC];
   size_t      pfxlen;
 
@@ -71,6 +72,13 @@ dyInterfaceList (const char *pfx, const char *funcnm)
         ++ikey;
       }
     }
+
+    /* special case for pli */
+    cleanupProc = dylibLookup (dlHandle, "pliCleanup");
+    if (cleanupProc != NULL) {
+      cleanupProc (dlHandle);
+    }
+
     /* using the address sanitizer comes up with spurious leaks */
     /* if the dynamic library is closed */
 #if ! defined (BDJ4_USING_SANITIZER)

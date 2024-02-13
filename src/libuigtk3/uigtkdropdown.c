@@ -101,6 +101,7 @@ uiDropDownInit (void)
   return uiwidget;
 }
 
+/* only frees the internals */
 void
 uiDropDownFree (uiwcont_t *uiwidget)
 {
@@ -112,8 +113,9 @@ uiDropDownFree (uiwcont_t *uiwidget)
 
   dropdown = uiwidget->uiint.uidropdown;
 
-  uiwcontFree (dropdown->window);
-  uiwcontFree (dropdown->button);
+  uiwcontBaseFree (dropdown->window);
+  uiButtonFree (dropdown->button);
+  uiwcontBaseFree (dropdown->button);
   callbackFree (dropdown->buttoncb);
   callbackFree (dropdown->closecb);
   dataFree (dropdown->title);
@@ -505,9 +507,9 @@ uiDropDownWindowCreate (uiwcont_t *uiwidget,
         G_CALLBACK (uiDropDownSelectHandler), uiwidget);
   }
 
-  uiwcontFree (mainvbox);
-  uiwcontFree (vbox);
-  uiwcontFree (uiscwin);
+  uiwcontBaseFree (mainvbox);
+  uiwcontBaseFree (vbox);
+  uiwcontBaseFree (uiscwin);
 }
 
 static void

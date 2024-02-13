@@ -9,7 +9,9 @@
 * Bug Fixes:
     * PENDING Installation: second install, incorrect copy of files.
     * PENDING Linux: MPRIS player support.
-    * Fixed spurious profile folder.
+    * Fixed incorrect profile folder creation.
+* Internal:
+    * Code cleanup.
 
 -->
 

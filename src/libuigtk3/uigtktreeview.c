@@ -142,10 +142,9 @@ uiTreeViewFree (uitree_t *uitree)
     return;
   }
 
-  uiwcontFree (uitree->tree);
+  uiwcontBaseFree (uitree->tree);
   mdfree (uitree);
 }
-
 
 void
 uiTreeViewEnableHeaders (uitree_t *uitree)

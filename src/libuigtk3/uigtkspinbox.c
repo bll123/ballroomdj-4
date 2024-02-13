@@ -72,7 +72,10 @@ uiSpinboxFree (uiwcont_t *uiwidget)
 
   callbackFree (uispinbox->presscb);
   nlistFree (uispinbox->idxlist);
-  uiwcontFree (uispinbox->uikey);
+
+  uiKeyFree (uispinbox->uikey);
+  uiwcontBaseFree (uispinbox->uikey);
+
   mdfree (uispinbox);
 }
 
