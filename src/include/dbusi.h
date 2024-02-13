@@ -12,6 +12,7 @@ enum {
 dbus_t * dbusConnInit (void);
 void dbusConnClose (dbus_t *dbus);
 void dbusMessageInit (dbus_t *dbus);
+void *dbusMessageBuild (const char *sdata, ...);
 void dbusMessageSetData (dbus_t *dbus, const char *sdata, ...);
 void dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...);
 bool dbusMessage (dbus_t *dbus, const char *bus, const char *objpath, const char *intfc, const char *method);

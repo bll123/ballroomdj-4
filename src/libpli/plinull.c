@@ -63,6 +63,12 @@ pliiFree (plidata_t *pliData)
 }
 
 void
+pliiCleanup (void)
+{
+  return;
+}
+
+void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
   if (pliData != NULL && mediaPath != NULL) {

@@ -63,6 +63,7 @@ pliiFree (plidata_t *pliData)
   mprisFree (pliData->mpris);
   pliiClose (pliData);
   mdfree (pliData);
+  mprisCleanup ();
 }
 
 void
@@ -72,9 +73,15 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
     return;
   }
 
-fprintf (stderr, "pli-mpris: media: %s\n", mediaPath);
   mprisMedia (pliData->mpris, mediaPath);
   pliData->state = PLI_STATE_STOPPED;
+}
+
+void
+pliiCleanup (void)
+{
+  mprisCleanup ();
+  return;
 }
 
 void
@@ -84,7 +91,6 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
     return;
   }
 
-fprintf (stderr, "pli-mpris: start\n");
   pliData->state = PLI_STATE_PLAYING;
   pliiSeek (pliData, dpos);
   pliiRate (pliData, speed);
@@ -97,7 +103,6 @@ pliiPause (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-mpris: pause\n");
   mprisPause (pliData->mpris);
   pliData->state = PLI_STATE_PAUSED;
 }
@@ -109,7 +114,6 @@ pliiPlay (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-mpris: play\n");
   mprisPlay (pliData->mpris);
   pliData->state = PLI_STATE_PLAYING;
 }
@@ -121,7 +125,6 @@ pliiStop (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-mpris: stop\n");
   mprisStop (pliData->mpris);
   pliData->state = PLI_STATE_STOPPED;
 }
@@ -173,7 +176,6 @@ pliiGetDuration (plidata_t *pliData)
     return 0;
   }
 
-fprintf (stderr, "pli-mpris: get-dur\n");
   /* mpris:length from the metadata */
   duration = mprisGetDuration (pliData->mpris);
   return duration;
@@ -189,7 +191,6 @@ pliiGetTime (plidata_t *pliData)
     return playTime;
   }
 
-fprintf (stderr, "pli-mpris: get-time\n");
   dpos = mprisGetPosition (pliData->mpris);
   playTime = (ssize_t) (dpos * 1000.0);
   return playTime;
@@ -199,14 +200,12 @@ plistate_t
 pliiState (plidata_t *pliData)
 {
   plistate_t  plistate = PLI_STATE_NONE; /* unknown */
-  const char  *tstate;
 
   if (pliData == NULL) {
     return plistate;
   }
 
   plistate = mprisState (pliData->mpris);
-fprintf (stderr, "pli-mpris: get-state %d\n", plistate);
   pliData->state = plistate;
   return plistate;
 }

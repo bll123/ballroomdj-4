@@ -17,7 +17,7 @@
 #include "dbusi.h"
 #include "mdebug.h"
 
-#define DBUS_DEBUG 1
+#define DBUS_DEBUG 0
 
 enum {
   DBUS_STATE_CLOSED,
@@ -31,6 +31,7 @@ enum {
 
 typedef struct dbus {
   GDBusConnection *dconn;
+  GVariant        *tvariant;
   GVariant        *data;
   GVariant        *result;
   int             state;
@@ -78,6 +79,19 @@ dbusMessageInit (dbus_t *dbus)
   dbus->data = g_variant_new_parsed ("()");
 }
 
+/* used in the cases where a value is wrapped as a variant (e.g. Rate) */
+void *
+dbusMessageBuild (const char *sdata, ...)
+{
+  va_list   args;
+  GVariant  *tv;
+
+  va_start (args, sdata);
+  tv = g_variant_new_va (sdata, NULL, &args);
+  va_end (args);
+  return tv;
+}
+
 void
 dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
 {
@@ -116,8 +130,8 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   }
   dbus->result = NULL;
 
-  fprintf (stderr, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
 # if DBUS_DEBUG
+  fprintf (stderr, "== %s\n   %s\n   %s\n   %s\n", bus, objpath, intfc, method);
   dumpResult ("data-msg", dbus->data);
 # endif
   dbus->result = g_dbus_connection_call_sync (dbus->dconn,
@@ -195,22 +209,17 @@ dbusResultGet (dbus_t *dbus, ...)
       const char    *idstr;
 
       type = g_variant_get_type_string (val);
-fprintf (stderr, "a{sv} type: %s\n", type);
       g_variant_get (val, type, &idstr, &tv);
-fprintf (stderr, "  idstr: %s\n", idstr);
       type = g_variant_get_type_string (tv);
-fprintf (stderr, "  v-type: %s\n", type);
       if (strcmp (idstr, "mpris:trackid") == 0) {
         const char    *tstr;
 
         g_variant_get (tv, type, &tstr);
         strlcpy (trackid, tstr, DBUS_MAX_TRACKID);
-fprintf (stderr, "  trackid: %s\n", trackid);
         ++rc;
       }
       if (dur != NULL && strcmp (idstr, "mpris:length") == 0) {
         g_variant_get (tv, type, dur);
-fprintf (stderr, "  dur: %ld\n", (long) dur);
         ++rc;
       }
 

@@ -9,6 +9,7 @@
     # check for any org.mpris.MediaPlayer2.*
 
 # check what the player can do
+# this will not be needed
 
   # Introspect
     org.mpris.MediaPlayer2.vlc
@@ -50,6 +51,39 @@
     (ss)
     org.mpris.MediaPlayer2.Player
     CanControl
+    # (v) ; b
+    #   (<true>,)
+
+  # CanPlay
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    CanPlay
+    # (v) ; b
+    #   (<true>,)
+
+  # CanPause
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    CanPause
+    # (v) ; b
+    #   (<true>,)
+
+  # CanSeek
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    Get
+    (ss)
+    org.mpris.MediaPlayer2.Player
+    CanSeek
     # (v) ; b
     #   (<true>,)
 

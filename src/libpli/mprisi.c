@@ -291,8 +291,11 @@ mprisCleanup (void)
   for (int i = 0; i < mprisInfo.playerCount; ++i) {
     dataFree (mprisInfo.playerInfo [i].bus);
     dataFree (mprisInfo.playerInfo [i].name);
+    mprisInfo.playerInfo [i].bus = NULL;
+    mprisInfo.playerInfo [i].name = NULL;
   }
-  initialized = true;
+  mprisInfo.playerCount = 0;
+  initialized = false;
 }
 
 
@@ -326,7 +329,9 @@ mprisInit (const char *plinm)
     mprisCheckForPlayer (mpris, plinm);
   }
 
-  // ### need to check and see if mpbus is set */
+  if (mpris->mpbus == NULL || ! *mpris->mpbus) {
+    return mpris;
+  }
 
   mpris->canseek = mprisGetPropBool (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_CAN_SEEK]);
@@ -334,7 +339,7 @@ mprisInit (const char *plinm)
       propname [MPRIS_PROPNM_MIN_RATE]);
   maxrate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_MAX_RATE]);
-  if (minrate < 1.0 && maxrate > 1.0) {
+  if (minrate <= 0.7 && maxrate >= 1.3) {
     mpris->hasspeed = true;
   }
 
@@ -409,12 +414,21 @@ mprisMedia (mpris_t *mpris, const char *uri)
 plistate_t
 mprisState (mpris_t *mpris)
 {
+  const char  *rval;
+
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return PLI_STATE_NONE;
   }
 
-//  rval = mprisGetPropString (mpris, property [MPRIS_PROP_MP2_PLAYER],
-//      propname [MPRIS_PROPNM_PB_STATUS]);
+  rval = mprisGetPropString (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_PB_STATUS]);
+  if (strcmp (rval, "Stopped") == 0) {
+    mpris->state = PLI_STATE_STOPPED;
+  } else if (strcmp (rval, "Playing") == 0) {
+    mpris->state = PLI_STATE_PLAYING;
+  } else if (strcmp (rval, "Paused") == 0) {
+    mpris->state = PLI_STATE_PAUSED;
+  }
 
   return mpris->state;
 }
@@ -448,6 +462,9 @@ mprisGetDuration (mpris_t *mpris)
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
   dbusResultGet (mpris->dbus, mpris->trackid, &dur, NULL);
+  /* duration is in nanoseconds */
+  dur /= 1000;
+  dur /= 1000;
 
   return dur;
 }
@@ -540,6 +557,7 @@ bool
 mprisSetRate (mpris_t *mpris, double rate)
 {
   bool    rc;
+double trate;
 
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return false;
@@ -547,6 +565,8 @@ mprisSetRate (mpris_t *mpris, double rate)
 
   rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
       propname [MPRIS_PROPNM_RATE], rate);
+  trate = mprisGetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
+      propname [MPRIS_PROPNM_RATE]);
   return rc;
 }
 
@@ -629,11 +649,14 @@ mprisSetPropDouble (mpris_t *mpris,
     const char *prop, const char *propnm, double val)
 {
   bool      rc;
+  void      *tv;
 
   dbusMessageInit (mpris->dbus);
-  dbusMessageSetData (mpris->dbus, "(ssd)", prop, propnm, &val, NULL);
+  /* for whatever reason, dbus wraps the double values as a variant */
+  tv = dbusMessageBuild ("d", val, NULL);
+  dbusMessageSetData (mpris->dbus, "(ssv)", prop, propnm, tv, NULL);
   rc = dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
-      interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
+      interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_SET]);
   return rc;
 }
 

@@ -94,13 +94,18 @@ pliiFree (plidata_t *pliData)
 }
 
 void
+pliiCleanup (void)
+{
+  return;
+}
+
+void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
   if (pliData == NULL || pliData->plData == NULL || mediaPath == NULL) {
     return;
   }
 
-fprintf (stderr, "pli-vlc: media %s\n", mediaPath);
   vlcMedia (pliData->plData, mediaPath);
 }
 
@@ -111,7 +116,6 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
     return;
   }
 
-fprintf (stderr, "pli-vlc: start\n");
   /* Do the busy loop so that the seek can be done immediately as */
   /* vlc starts playing.  This should help avoid startup glitches */
   vlcPlay (pliData->plData);
@@ -135,7 +139,6 @@ pliiPause (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-vlc: pause\n");
   vlcPause (pliData->plData);
 }
 
@@ -146,7 +149,6 @@ pliiPlay (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-vlc: play\n");
   vlcPlay (pliData->plData);
 }
 
@@ -157,7 +159,6 @@ pliiStop (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-vlc: stop\n");
   vlcStop (pliData->plData);
 }
 
@@ -170,7 +171,6 @@ pliiSeek (plidata_t *pliData, ssize_t dpos)
     return dret;
   }
 
-fprintf (stderr, "pli-vlc: seek\n");
   dret = vlcSeek (pliData->plData, dpos);
   return dret;
 }
@@ -186,7 +186,6 @@ pliiRate (plidata_t *pliData, ssize_t rate)
     return ret;
   }
 
-fprintf (stderr, "pli-vlc: rate\n");
   drate = (double) rate / 100.0;
   dret = vlcRate (pliData->plData, drate);
   ret = (ssize_t) round (dret * 100.0);
@@ -200,7 +199,6 @@ pliiClose (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-vlc: close\n");
   vlcClose (pliData->plData);
   pliData->plData = NULL;
 }
@@ -214,7 +212,6 @@ pliiGetDuration (plidata_t *pliData)
     return duration;
   }
 
-fprintf (stderr, "pli-vlc: get-dur\n");
   duration = vlcGetDuration (pliData->plData);
   return duration;
 }
@@ -228,7 +225,6 @@ pliiGetTime (plidata_t *pliData)
     return playTime;
   }
 
-fprintf (stderr, "pli-vlc: get-time\n");
   playTime = vlcGetTime (pliData->plData);
   return playTime;
 }
@@ -243,7 +239,6 @@ pliiState (plidata_t *pliData)
   }
 
   plistate = vlcState (pliData->plData);
-fprintf (stderr, "pli-vlc: get-state %d\n", plistate);
   return plistate;
 }
 
