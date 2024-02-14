@@ -18,7 +18,6 @@
 #include "dbusi.h"
 #include "mdebug.h"
 #include "mprisi.h"
-#include "osdirutil.h"
 #include "pli.h"
 
 #define MPRIS_PFX "MPRIS "
@@ -37,7 +36,6 @@ typedef struct mpris {
   int64_t         ident;
   dbus_t          *dbus;
   const char      *mpbus;
-  char            cwd [MAXPATHLEN];
   char            trackid [DBUS_MAX_TRACKID];
   int64_t         dur;
   plistate_t      state;
@@ -207,12 +205,14 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       int         ok;
 
       mpris->mpbus = *out;
+fprintf (stderr, "mpris: check: %s\n", *out);
 
       /* bypass players that cannot be controlled */
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_CONTROL]);
       if (! rval) {
         ++out;
+fprintf (stderr, "  no can-control\n");
         continue;
       }
 
@@ -221,6 +221,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
           propname [MPRIS_PROPNM_CAN_PLAY]);
       if (! rval) {
         ++out;
+fprintf (stderr, "  no can-play\n");
         continue;
       }
 
@@ -228,6 +229,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
           propname [MPRIS_PROPNM_CAN_PAUSE]);
       if (! rval) {
         ++out;
+fprintf (stderr, "  no can-pause\n");
         continue;
       }
 
@@ -241,6 +243,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       ok = 0;
       while (*svout != NULL) {
         if (strcmp (*svout, "file") == 0) {
+fprintf (stderr, "  has-file\n");
           ++ok;
           break;
         }
@@ -254,11 +257,11 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
           interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
       dbusResultGet (mpris->dbus, &svout, &len, NULL);
 
-      ok = 0;
       while (*svout != NULL) {
         /* an exhaustive check for all the different audio types */
         /* is not done.  */
         if (strcmp (*svout, "audio/mpeg") == 0) {
+fprintf (stderr, "  has-audio\n");
           ++ok;
           break;
         }
@@ -273,6 +276,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
 
       ident = mprisGetPropString (mpris, property [MPRIS_PROP_MP2],
           propname [MPRIS_PROPNM_IDENTITY]);
+fprintf (stderr, "  ident: %s\n", ident);
       mprisInfo.playerInfo [c].bus = mdstrdup (*out);
       snprintf (tbuff, sizeof (tbuff), "%s%s", MPRIS_PFX, ident);
       mprisInfo.playerInfo [c].name = mdstrdup (tbuff);
@@ -330,7 +334,6 @@ mprisInit (const char *plinm)
   mpris->dbus = dbusConnInit ();
   mpris->canseek = false;
   mpris->hasspeed = false;
-  osGetCurrentDir (mpris->cwd, sizeof (mpris->cwd));
 
   if (! initialized) {
     mprisGetPlayerList (mpris, NULL, MPRIS_MAX_PLAYERS);
@@ -399,7 +402,7 @@ mprisHasSpeed (mpris_t *mpris)
 }
 
 void
-mprisMedia (mpris_t *mpris, const char *uri)
+mprisMedia (mpris_t *mpris, const char *fulluri)
 {
   char  tbuff [MAXPATHLEN];
 
@@ -407,10 +410,7 @@ mprisMedia (mpris_t *mpris, const char *uri)
     return;
   }
 
-// ### need to check if this is an absolute path
-// ### should this processing be moved up to a higher level?
-// ### there may be other players that need a full path
-  snprintf (tbuff, sizeof (tbuff), "file://%s/%s", mpris->cwd, uri);
+  snprintf (tbuff, sizeof (tbuff), "file://%s", fulluri);
 
   dbusMessageInit (mpris->dbus);
   dbusMessageSetData (mpris->dbus, "(s)", tbuff, NULL);
@@ -525,19 +525,6 @@ mprisStop (mpris_t *mpris)
   dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
       interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_STOP]);
   mpris->state = PLI_STATE_STOPPED;
-}
-
-// ### is this needed?
-void
-mprisNext (mpris_t *mpris)
-{
-  if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
-    return;
-  }
-
-  dbusMessageInit (mpris->dbus);
-  dbusMessage (mpris->dbus, mpris->mpbus, objpath [MPRIS_OBJP_MP2],
-      interface [MPRIS_INTFC_MP2_PLAYER], method [MPRIS_METHOD_NEXT]);
 }
 
 bool

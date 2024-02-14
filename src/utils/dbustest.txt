@@ -1,3 +1,5 @@
+# DBUS_DEBUG must be turned on for this to be useful
+
 init
 call
 org.freedesktop.DBus

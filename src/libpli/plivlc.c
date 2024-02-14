@@ -100,7 +100,8 @@ pliiCleanup (void)
 }
 
 void
-pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
+pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
+    const char *fullMediaPath)
 {
   if (pliData == NULL || pliData->plData == NULL || mediaPath == NULL) {
     return;

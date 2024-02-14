@@ -67,13 +67,14 @@ pliiFree (plidata_t *pliData)
 }
 
 void
-pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
+pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
+    const char *fullMediaPath)
 {
   if (pliData == NULL || mediaPath == NULL) {
     return;
   }
 
-  mprisMedia (pliData->mpris, mediaPath);
+  mprisMedia (pliData->mpris, fullMediaPath);
   pliData->state = PLI_STATE_STOPPED;
 }
 
