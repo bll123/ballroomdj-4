@@ -841,6 +841,7 @@ marqueePopulate (marquee_t *marquee, char *args)
   char        *tokptr;
   int         idx;
   const char  *sep = "";
+  char        sepstr [20] = { "" };
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
@@ -862,7 +863,7 @@ marqueePopulate (marquee_t *marquee, char *args)
       if (p != NULL && *p != MSG_ARGS_EMPTY) {
         if (*sep &&
             uiWidgetIsValid (marquee->wcont [idx])) {
-          uiLabelSetText (marquee->wcont [idx], sep);
+          uiLabelSetText (marquee->wcont [idx], sepstr);
           ++idx;
         }
         if (idx > MQ_W_INFO_DISP_E) {
@@ -870,7 +871,10 @@ marqueePopulate (marquee_t *marquee, char *args)
         }
         if (uiWidgetIsValid (marquee->wcont [idx])) {
           uiLabelSetText (marquee->wcont [idx], p);
-          sep = " / ";
+          if (! *sep) {
+            sep = bdjoptGetStr (OPT_P_MQ_INFO_CHAR);
+            snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+          }
         }
         ++idx;
         if (idx > MQ_W_INFO_DISP_E) {
