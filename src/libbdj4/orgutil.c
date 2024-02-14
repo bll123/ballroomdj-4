@@ -88,11 +88,11 @@ enum {
 };
 
 
-/*     windows: * : ( ) &     ^ | < > ? ' " */
-/* linux/macos: *       & [ ]   | < > ? ' " */
-static const char *commonChars = { "/\\*&|<>?'\"" };
-static const char *winChars = { ":()^" };
-static const char *unixChars = { "[]" };
+/*     windows: * :  &  ^ | < > ' " */
+/* linux/macos: *    &    | < > ' " */
+static const char *commonChars = { "/\\&|<>'\"" };
+static const char *winChars = { ":^" };
+static const char *unixChars = { "" };
 
 static void orgutilClean (const char *from, char *target, size_t sz, int which);
 static void orgutilInfoFree (void *data);

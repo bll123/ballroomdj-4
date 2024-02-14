@@ -4,12 +4,15 @@
 
 <!--
 
+**4.5.2 2024-2---**
+    * PENDING Installation: second install, incorrect copy of files.
+
 **4.5.1 2024-2---**
 
 * Bug Fixes:
-    * PENDING Installation: second install, incorrect copy of files.
     * Linux: MPRIS player support.
     * Fixed incorrect profile folder creation.
+    * Auto Organize: Be less restrictive in what characters are allowed in audio filenames.
 * Internal:
     * Code cleanup.
 
