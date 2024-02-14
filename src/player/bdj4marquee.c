@@ -872,7 +872,7 @@ marqueePopulate (marquee_t *marquee, char *args)
         if (uiWidgetIsValid (marquee->wcont [idx])) {
           uiLabelSetText (marquee->wcont [idx], p);
           if (! *sep) {
-            sep = bdjoptGetStr (OPT_P_MQ_INFO_CHAR);
+            sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
             snprintf (sepstr, sizeof (sepstr), " %s ", sep);
           }
         }

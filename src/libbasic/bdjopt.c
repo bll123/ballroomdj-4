@@ -74,7 +74,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, DF_NORM },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, DF_NORM },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
-  { "MQ_INFO_CHAR",         OPT_P_MQ_INFO_CHAR,         VALUE_STR, NULL, DF_NORM },
+  { "MQ_INFO_CHAR",         OPT_P_MQ_INFO_SEP,         VALUE_STR, NULL, DF_NORM },
   { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,          VALUE_STR, NULL, DF_NORM },
   { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,          VALUE_STR, NULL, DF_NORM },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, DF_NORM },
@@ -262,8 +262,8 @@ bdjoptInit (void)
   }
 
   /* added 4.5.1, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_CHAR) == NULL) {
-    nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_CHAR, "/");
+  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP) == NULL) {
+    nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP, "/");
   }
 }
 

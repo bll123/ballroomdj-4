@@ -25,8 +25,8 @@ These items are not configurable via the user interface.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
 <br><span style="color:#4559bf;">__Fade Types__</span> </div>
-  * MQ_INFO_CHAR
-    Separator character for the marquee information display.
+  * MQ_INFO_SEP
+    Separator character(s) for the marquee information display.
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
   * MQ_TEXT_COL

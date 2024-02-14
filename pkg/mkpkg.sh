@@ -120,7 +120,6 @@ function copyreleasefiles {
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   dbustest, plisinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
-  # 2023-12-19 for now, do not ship the pli-mpris interface, not implemented.
   # 2023-1-16 do not ship the pli-mpv interface either.
   rm -f \
       ${stage}/bin/bdj4se* \
@@ -132,7 +131,6 @@ function copyreleasefiles {
       ${stage}/bin/libplinull* \
       ${stage}/bin/dbustest* \
       ${stage}/bin/plisinklist* \
-      ${stage}/bin/libplimpris* \
       ${stage}/bin/libplimpv* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
@@ -161,13 +159,16 @@ function copyreleasefiles {
       ${stage}/plocal/lib64/pkgconfig
 
   # the graphics-linked launcher is not used on linux or windows
+  # mpris is not avialable on windows or macos
   case ${tag} in
     linux)
       rm -f ${stage}/bin/bdj4g
       ;;
     macos)
+      rm -f ${stage}/bin/libplimpris*
       ;;
     win64)
+      rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/bdj4g
       ;;
   esac
