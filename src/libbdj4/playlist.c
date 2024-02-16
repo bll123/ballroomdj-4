@@ -67,6 +67,8 @@ static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
+  /* allowed-keywords, dance-level, dance-rating and tags are */
+  /* for song selection in automatic and sequenced playlists */
   { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS,  VALUE_LIST, convTextList, DF_NORM },
   { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, DF_NORM },
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, DF_NORM },
@@ -76,6 +78,8 @@ static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
   { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE,          VALUE_NUM, convBoolean, DF_NORM },
   { "STOPAFTER",      PLAYLIST_STOP_AFTER,        VALUE_NUM, NULL, DF_NORM },
   { "STOPTIME",       PLAYLIST_STOP_TIME,         VALUE_NUM, NULL, DF_NORM },
+  { "TAGS",           PLAYLIST_TAGS,              VALUE_LIST, convTextList, DF_NORM },
+  { "TAG_WEIGHT",     PLAYLIST_TAG_WEIGHT,        VALUE_NUM, NULL, DF_NORM },
   { "TYPE",           PLAYLIST_TYPE,              VALUE_NUM, plConvType, DF_NORM },
 };
 
@@ -284,6 +288,8 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   nlistSetNum (pl->plinfo, PLAYLIST_TYPE, type);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_AFTER, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
+  nlistSetStr (pl->plinfo, PLAYLIST_TAGS, NULL);
+  nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, 5);
   nlistSort (pl->plinfo);
 
   if (type == PLTYPE_SONGLIST) {
@@ -355,6 +361,27 @@ playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
 
   val = nlistGetNum (pl->plinfo, key);
   return val;
+}
+
+void
+playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t sz)
+{
+  slist_t         *list;
+  datafileconv_t  conv;
+
+  *buff = '\0';
+
+  if (pl == NULL || pl->plinfo == NULL) {
+    return;
+  }
+
+  list = nlistGetList (pl->plinfo, key);
+
+  conv.list = list;
+  conv.invt = VALUE_LIST;
+  convTextList (&conv);
+
+  strlcpy (buff, conv.str, sz);
 }
 
 void
@@ -466,6 +493,11 @@ playlistGetNextSong (playlist_t *pl,
   if (type == PLTYPE_AUTO || type == PLTYPE_SEQUENCE) {
     ilistidx_t     danceIdx = LIST_VALUE_INVALID;
 
+    if (pl->songfilter == NULL) {
+      pl->songfilter = songfilterAlloc ();
+      playlistSetSongFilter (pl, pl->songfilter);
+    }
+
     if (type == PLTYPE_AUTO) {
       if (pl->countList == NULL) {
         playlistCountList (pl);
@@ -477,22 +509,27 @@ playlistGetNextSong (playlist_t *pl,
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
       if (pl->songsel == NULL) {
-        pl->songfilter = songfilterAlloc ();
-        playlistSetSongFilter (pl, pl->songfilter);
         pl->songsel = songselAlloc (pl->musicdb,
             pl->countList, NULL, pl->songfilter);
       }
     }
     if (type == PLTYPE_SEQUENCE) {
       if (pl->songsel == NULL) {
-        pl->songfilter = songfilterAlloc ();
-        playlistSetSongFilter (pl, pl->songfilter);
         pl->songsel = songselAlloc (pl->musicdb,
             sequenceGetDanceList (pl->sequence), NULL, pl->songfilter);
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
+    }
+    if (pl->songsel != NULL) {
+      slist_t   *tagList;
+      int       tagWeight;
+
+      tagList = nlistGetList (pl->plinfo, PLAYLIST_TAGS);
+      tagWeight = nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT);
+
+      songselSetTags (pl->songsel, tagList, tagWeight);
     }
 
     song = songselSelect (pl->songsel, danceIdx);

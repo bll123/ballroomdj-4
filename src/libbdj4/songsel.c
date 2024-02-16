@@ -69,6 +69,8 @@ typedef struct songsel {
   double              autoselWeight [SONGSEL_ATTR_MAX];
   songselsongdata_t   *lastSelection;
   musicdb_t           *musicdb;
+  slist_t             *tagList;
+  int                 tagWeight;
 } songsel_t;
 
 static void   songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song, songfilter_t *songfilter);
@@ -127,6 +129,9 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
 
   logProcBegin (LOG_PROC, "songselAlloc");
   songsel = mdmalloc (sizeof (songsel_t));
+  songsel->tagList = NULL;
+  songsel->tagWeight = 5;
+
   songsel->dances = bdjvarsdfGet (BDJVDF_DANCES);
   songsel->danceSelList = nlistAlloc ("songsel-sel", LIST_ORDERED, songselDanceFree);
   nlistSetSize (songsel->danceSelList, nlistGetCount (dancelist));
@@ -326,12 +331,25 @@ void
 songselFree (songsel_t *songsel)
 {
   logProcBegin (LOG_PROC, "songselFree");
-  if (songsel != NULL) {
-    nlistFree (songsel->danceSelList);
-    mdfree (songsel);
+  if (songsel == NULL) {
+    return;
   }
+
+  nlistFree (songsel->danceSelList);
+  mdfree (songsel);
   logProcEnd (LOG_PROC, "songselFree", "");
   return;
+}
+
+void
+songselSetTags (songsel_t *songsel, slist_t *taglist, int tagweight)
+{
+  if (songsel == NULL) {
+    return;
+  }
+
+  songsel->tagList = taglist;
+  songsel->tagWeight = tagweight;
 }
 
 song_t *

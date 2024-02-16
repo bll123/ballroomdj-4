@@ -1,6 +1,6 @@
 # playlist
-# 2022-12-22
-# version 2
+# 2024-2-16
+# version 3
 version
 ..1
 ALLOWEDKEYWORDS
@@ -21,5 +21,9 @@ DANCELEVELLOW
 ..Easy
 DANCELEVELHIGH
 ..Advanced
+TAGS
+..
+TAG_WEIGHT
+..
 TYPE
 ..sequence

@@ -28,6 +28,8 @@ typedef enum {
   PLAYLIST_RATING,                //
   PLAYLIST_STOP_AFTER,            //
   PLAYLIST_STOP_TIME,             //
+  PLAYLIST_TAGS,
+  PLAYLIST_TAG_WEIGHT,
   PLAYLIST_TYPE,                  //
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
@@ -74,6 +76,7 @@ void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);
 const char *playlistGetName (playlist_t *pl);
 ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
+void      playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t sz);
 void      playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
 void      playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *value);
 ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t key);

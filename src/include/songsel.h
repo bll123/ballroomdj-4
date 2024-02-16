@@ -7,7 +7,7 @@
 #include "ilist.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "queue.h"
+#include "slist.h"
 #include "song.h"
 #include "songfilter.h"
 
@@ -15,6 +15,7 @@ typedef struct songsel songsel_t;
 
 songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, nlist_t *songlist, songfilter_t *songfilter);
 void      songselFree (songsel_t *songsel);
+void      songselSetTags (songsel_t *songsel, slist_t *taglist, int tagweight);
 song_t    * songselSelect (songsel_t *songsel, ilistidx_t danceIdx);
 void      songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx);
 
