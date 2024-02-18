@@ -459,7 +459,9 @@ main (int argc, char *argv [])
     /* 4.3.3.2 2023-7-29 */
     /* added windowed values (version 4) */
     /* added fastprior (version 5) */
-    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 5);
+    /* 4.6.0 2024-2-18 */
+    /* added tagweight (version 6) */
+    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 6);
   }
 
   {

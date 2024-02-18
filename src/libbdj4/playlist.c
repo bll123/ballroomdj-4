@@ -156,6 +156,12 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_KEY_MAX, DF_NO_OFFSET, NULL);
   pl->plinfo = datafileGetList (pl->plinfodf);
+
+  /* 4.6.0 tags, tag-weight added */
+  if (nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT) < 0) {
+    nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, 5);
+  }
+
   nlistDumpInfo (pl->plinfo);
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
@@ -471,6 +477,7 @@ playlistGetNextSong (playlist_t *pl,
   int         count;
   const char  *sfname;
   int         stopAfter;
+  bool        songselalloc = false;
 
 
   if (pl == NULL) {
@@ -509,20 +516,20 @@ playlistGetNextSong (playlist_t *pl,
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
       if (pl->songsel == NULL) {
-        pl->songsel = songselAlloc (pl->musicdb,
-            pl->countList, NULL, pl->songfilter);
+        pl->songsel = songselAlloc (pl->musicdb, pl->countList);
+        songselalloc = true;
       }
     }
     if (type == PLTYPE_SEQUENCE) {
       if (pl->songsel == NULL) {
-        pl->songsel = songselAlloc (pl->musicdb,
-            sequenceGetDanceList (pl->sequence), NULL, pl->songfilter);
+        pl->songsel = songselAlloc (pl->musicdb, sequenceGetDanceList (pl->sequence));
+        songselalloc = true;
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
     }
-    if (pl->songsel != NULL) {
+    if (pl->songsel != NULL && songselalloc) {
       slist_t   *tagList;
       int       tagWeight;
 
@@ -530,6 +537,7 @@ playlistGetNextSong (playlist_t *pl,
       tagWeight = nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT);
 
       songselSetTags (pl->songsel, tagList, tagWeight);
+      songselInitialize (pl->songsel, NULL, pl->songfilter);
     }
 
     song = songselSelect (pl->songsel, danceIdx);

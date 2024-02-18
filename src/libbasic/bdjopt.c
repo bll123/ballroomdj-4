@@ -261,7 +261,7 @@ bdjoptInit (void)
     nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
   }
 
-  /* added 4.5.1, make sure it is set */
+  /* added 4.6.0, make sure it is set */
   if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP) == NULL) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP, "/");
   }

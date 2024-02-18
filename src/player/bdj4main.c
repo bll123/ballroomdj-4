@@ -2758,7 +2758,8 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   mainData->musicqLookupIdx = mqidx;
   dancesel = danceselAlloc (danceCounts, mainMusicQueueLookup, mainData);
-  songsel = songselAlloc (mainData->musicdb, danceCounts, songList, NULL);
+  songsel = songselAlloc (mainData->musicdb, danceCounts);
+  songselInitialize (songsel, songList, NULL);
 
   currlen = 0;
   while (currlen < totcount && failcount < 100) {

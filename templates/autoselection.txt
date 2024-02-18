@@ -1,11 +1,12 @@
 # autoselection
-# 2023-7-29
-# version 5
+# 2024-2-18
+# version 6
+#    v6 2024-2-18 add tagweight for song selection
 #    v5 2023-7-29 rename bothfast to fastboth, added fastprior
 #    v4 2023-5-25 added windowed method settings
 #    v3 2023-3-5 updated tagmatch, typematch values
 version
-..5
+..6
 #
 # dance selection
 #
@@ -76,8 +77,10 @@ WINDIFFC
 #
 # the weight of a rating and level.  These should add together to 1000 (1.0)
 # the percentages here adjust which song (for the dance) is selected
-# (rating: 0.90, level: 0.10)
+# (rating: 0.80, level: 0.10, tags: 0.10)
 RATINGWEIGHT
-..900
+..800
 LEVELWEIGHT
+..100
+TAGWEIGHT
 ..100

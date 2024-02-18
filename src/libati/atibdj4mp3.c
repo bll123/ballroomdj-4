@@ -58,8 +58,8 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
-    const char                  *ufid;
-    const char                  *tagname;
+    const char                  *ufid = NULL;
+    const char                  *tagname = NULL;
 
     ufid = NULL;
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
@@ -171,7 +171,11 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
               mdextalloc (str);
             }
 
+/* gcc is incorrectly complaining 2024-2-16 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-overflow"
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
+#pragma GCC diagnostic pop
 
             p = (const char *) str;
             if (tagname != NULL &&
