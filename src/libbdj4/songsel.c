@@ -446,10 +446,19 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song)
       slistidx_t  siter;
       const char  *tag;
       const char  *songtag;
+      const char  *kw;
 
       slistStartIterator (songsel->tagList, &titer);
       slistStartIterator (songTags, &siter);
+      kw = songGetStr (song, TAG_KEYWORD);
       while (tagidx == 0 && (tag = slistIterateKey (songsel->tagList, &titer)) != NULL) {
+        /* check the keyword first */
+        if (kw != NULL && *kw) {
+          if (strcmp (tag, kw) == 0) {
+            logMsg (LOG_DBG, LOG_SONGSEL, "  tags: kw: %s", tag);
+            tagidx = 1;
+          }
+        }
         while (tagidx == 0 && (songtag = slistIterateKey (songTags, &siter)) != NULL) {
           if (strcmp (tag, songtag) == 0) {
             logMsg (LOG_DBG, LOG_SONGSEL, "  tags: %s", tag);
