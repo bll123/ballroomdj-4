@@ -129,7 +129,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist)
   logProcBegin (LOG_PROC, "songselAlloc");
   songsel = mdmalloc (sizeof (songsel_t));
   songsel->tagList = NULL;
-  songsel->tagWeight = 5;
+  songsel->tagWeight = BDJ4_DFLT_TAG_WEIGHT;
   songsel->processed = false;
 
   songsel->dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -434,7 +434,9 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song)
   ++perc->count;
 
   tagidx = 0;
-  weight = 0;
+  /* need a non-zero weight here, otherwise the percentage calculations */
+  /* will not add up properly. */
+  weight = 1;
   if (songsel->tagList != NULL && slistGetCount (songsel->tagList) > 0) {
     slist_t     *songTags;
 
@@ -449,8 +451,8 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song)
       slistStartIterator (songTags, &siter);
       while (tagidx == 0 && (tag = slistIterateKey (songsel->tagList, &titer)) != NULL) {
         while (tagidx == 0 && (songtag = slistIterateKey (songTags, &siter)) != NULL) {
-          logMsg (LOG_DBG, LOG_SONGSEL, "  tags: %s %s", tag, songtag);
           if (strcmp (tag, songtag) == 0) {
+            logMsg (LOG_DBG, LOG_SONGSEL, "  tags: %s", tag);
             tagidx = 1;
           }
         }

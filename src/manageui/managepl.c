@@ -995,6 +995,11 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
+  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT)) {
+    managepl->changed = true;
+  }
+
   logProcEnd (LOG_PROC, "managePlaylistCheckChanged", "");
   return managepl->changed;
 }

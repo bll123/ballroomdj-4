@@ -35,6 +35,7 @@ enum {
   QUEUE_LOC_LAST = 999,
   SONG_LIST_LIMIT = 900,
   REPEAT_TIME = 200,
+  BDJ4_DFLT_TAG_WEIGHT = 90,
 };
 
 #define BDJ4_LONG_NAME    "BallroomDJ 4"

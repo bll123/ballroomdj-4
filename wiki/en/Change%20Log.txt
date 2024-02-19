@@ -17,9 +17,10 @@
     * Song Selection: Fix incorrect weighting for dance rating and dance level.
     * PENDING: Audio Identification: Fix.
 * New Features:
-    * Song Selection: Tag selection and weighting.
+    * Song Selection: Tag selection with weight.
 * Internal:
     * Code cleanup.
+    * Fix various memory leaks and memory issues.
 
 -->
 

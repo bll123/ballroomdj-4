@@ -159,7 +159,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
 
   /* 4.6.0 tags, tag-weight added */
   if (nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT) < 0) {
-    nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, 5);
+    nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, BDJ4_DFLT_TAG_WEIGHT);
   }
 
   nlistDumpInfo (pl->plinfo);
