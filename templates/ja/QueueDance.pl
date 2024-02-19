@@ -1,6 +1,6 @@
 # playlist
-# 2023-10-10
-# version 2
+# 2024-2-16
+# version 3
 version
 ..2
 ALLOWEDKEYWORDS
@@ -21,5 +21,9 @@ DANCELEVELLOW
 ..簡単
 DANCELEVELHIGH
 ..上級
+TAGS
+..
+TAG_WEIGHT
+..
 TYPE
 ..automatic

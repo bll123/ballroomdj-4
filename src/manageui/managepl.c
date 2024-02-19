@@ -425,6 +425,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiEntrySetValidate (uiwidgetp,
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
 
+  /* CONTEXT: playlist management: tag weight */
   uiwidgetp = uiCreateColonLabel (_("Weight"));
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiBoxPackStart (hbox, uiwidgetp);

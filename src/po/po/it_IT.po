@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-01-26\n"
+"PO-Revision-Date: 2024-02-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -1874,6 +1874,7 @@ msgstr "Commutare la coda quando è vuota"
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
 msgid "Tags"
 msgstr "Tag"
 
@@ -2062,6 +2063,7 @@ msgstr "Valzer"
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
 msgid "Weight"
 msgstr "Peso"
 

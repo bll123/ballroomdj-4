@@ -1,6 +1,6 @@
 # playlist
-# 2022-10-19
-# version 1
+# 2024-2-16
+# version 2
 version
 ..1
 ALLOWEDKEYWORDS
@@ -21,5 +21,9 @@ DANCELEVELLOW
 ..Helppo
 DANCELEVELHIGH
 ..Lisäasetukset
+TAGS
+..
+TAG_WEIGHT
+..
 TYPE
 ..automatic

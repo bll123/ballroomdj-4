@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-01-26\n"
+"PO-Revision-Date: 2024-02-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -1874,6 +1874,7 @@ msgstr "空キュー切り替え"
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
 msgid "Tags"
 msgstr "タグ"
 
@@ -2062,6 +2063,7 @@ msgstr "ワルツ"
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
 msgid "Weight"
 msgstr "重量"
 

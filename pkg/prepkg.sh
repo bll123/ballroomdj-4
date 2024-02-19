@@ -73,7 +73,7 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
-grep '^#define ACRCLOUD_REUSE 0' src/audioid/acrcloud.d > /dev/null 2>&1
+grep '^#define ACRCLOUD_REUSE 0' src/libaudioid/acrcloud.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "acrcloud debugging is on"

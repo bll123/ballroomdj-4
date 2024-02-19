@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.4.9\n"
+"Project-Id-Version: ballroomdj-4 4.6.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-01-26\n"
-"PO-Revision-Date: 2024-01-26\n"
+"POT-Creation-Date: 2024-02-19\n"
+"PO-Revision-Date: 2024-02-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1868,6 +1868,7 @@ msgstr ""
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
 msgid "Tags"
 msgstr ""
 
@@ -2056,6 +2057,7 @@ msgstr ""
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
 msgid "Weight"
 msgstr ""
 

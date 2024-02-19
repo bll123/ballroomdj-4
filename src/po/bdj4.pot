@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 07:16-0800\n"
+"POT-Creation-Date: 2024-02-19 14:09-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1872,6 +1872,7 @@ msgstr ""
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
 msgid "Tags"
 msgstr ""
 
@@ -2060,6 +2061,7 @@ msgstr ""
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
 msgid "Weight"
 msgstr ""
 
