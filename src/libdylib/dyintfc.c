@@ -74,16 +74,12 @@ dyInterfaceList (const char *pfx, const char *funcnm)
     }
 
     /* special case for pli */
-    cleanupProc = dylibLookup (dlHandle, "pliCleanup");
+    cleanupProc = dylibLookup (dlHandle, "pliiCleanup");
     if (cleanupProc != NULL) {
       cleanupProc (dlHandle);
     }
 
-    /* using the address sanitizer comes up with spurious leaks */
-    /* if the dynamic library is closed */
-#if ! defined (BDJ4_USING_SANITIZER)
     dylibClose (dlHandle);
-#endif
   }
   slistFree (files);
 

@@ -335,6 +335,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (confui->gui.window);
 
   for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
+    /* the button is freed by dropdown-free */
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {

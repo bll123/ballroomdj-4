@@ -141,7 +141,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
 
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].uibutton = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");

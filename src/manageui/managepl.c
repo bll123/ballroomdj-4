@@ -140,7 +140,6 @@ managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
     uinbutilIDFree (managepl->tabids);
-    uiwcontFree (managepl->wcont [MPL_W_STOP_AFTER]);
     dataFree (managepl->ploldname);
     if (managepl->managepltree != NULL) {
       managePlaylistTreeFree (managepl->managepltree);

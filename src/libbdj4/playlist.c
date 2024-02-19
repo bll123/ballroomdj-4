@@ -387,7 +387,10 @@ playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t 
   conv.invt = VALUE_LIST;
   convTextList (&conv);
 
-  strlcpy (buff, conv.str, sz);
+  if (conv.strval != NULL) {
+    strlcpy (buff, conv.strval, sz);
+    mdfree (conv.strval);
+  }
 }
 
 void

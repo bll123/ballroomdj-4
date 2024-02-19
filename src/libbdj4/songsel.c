@@ -451,7 +451,6 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song)
         while (tagidx == 0 && (songtag = slistIterateKey (songTags, &siter)) != NULL) {
           logMsg (LOG_DBG, LOG_SONGSEL, "  tags: %s %s", tag, songtag);
           if (strcmp (tag, songtag) == 0) {
-fprintf (stderr, "%s found %s\n", songGetStr (song, TAG_URI), tag);
             tagidx = 1;
           }
         }

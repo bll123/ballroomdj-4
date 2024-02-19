@@ -527,8 +527,6 @@ uiSpinboxInit (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SPINBOX;
   uiwidget->wtype = WCONT_T_SPINBOX;
-  uiwidget->uiint.uispinbox = NULL;
-  uiwidget->widget = NULL;
 
   uispinbox = mdmalloc (sizeof (uispinbox_t));
   uispinbox->convcb = NULL;

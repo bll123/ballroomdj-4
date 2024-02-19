@@ -60,7 +60,9 @@ uiwcontFree (uiwcont_t *uiwidget)
       uiScrollbarFree (uiwidget);
       break;
     }
-    case WCONT_T_SPINBOX: {
+    case WCONT_T_SPINBOX_DOUBLE_DFLT:
+    case WCONT_T_SPINBOX_TIME:
+    case WCONT_T_SPINBOX_TEXT: {
       uiSpinboxFree (uiwidget);
       break;
     }
@@ -77,6 +79,8 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
   }
 
-  uiwcontBaseFree (uiwidget);
+  if (uiwidget->wtype != WCONT_T_UNKNOWN) {
+    uiwcontBaseFree (uiwidget);
+  }
 }
 

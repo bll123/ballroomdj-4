@@ -154,10 +154,10 @@ uiMenuFree (uiwcont_t *uiwidget)
   }
 
   menu = uiwidget->uiint.uimenu;
-  for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
-    /* a menuitem has no other data attached to it */
+  for (int i = 0; i < menu->menucount; ++i) {
     uiwcontBaseFree (menu->menuitem [i]);
   }
+
   mdfree (menu);
   /* the container will be freed in uiwcontFree() */
 }

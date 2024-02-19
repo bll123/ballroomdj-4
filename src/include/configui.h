@@ -199,7 +199,7 @@ typedef struct {
   long              debuglvl;
   int               bdjoptIdx;
   uiwcont_t         *uibutton;      // for entry chooser
-  uisfcb_t          sfcb;           // for entry chooser
+  uisfcb_t          sfcb;           // for entry chooser, combobox
   int               listidx;        // for combobox, spinbox
   nlist_t           *displist;      // indexed by spinbox/combobox index
                                     //    value: display

@@ -183,6 +183,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
     mprisInfo.playerInfo [i].name = NULL;
   }
   mprisInfo.playerCount = 0;
+  initialized = true;
 
   mpris = origmpris;
   if (origmpris == NULL) {
@@ -205,14 +206,12 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       int         ok;
 
       mpris->mpbus = *out;
-fprintf (stderr, "mpris: check: %s\n", *out);
 
       /* bypass players that cannot be controlled */
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_CONTROL]);
       if (! rval) {
         ++out;
-fprintf (stderr, "  no can-control\n");
         continue;
       }
 
@@ -221,7 +220,6 @@ fprintf (stderr, "  no can-control\n");
           propname [MPRIS_PROPNM_CAN_PLAY]);
       if (! rval) {
         ++out;
-fprintf (stderr, "  no can-play\n");
         continue;
       }
 
@@ -229,7 +227,6 @@ fprintf (stderr, "  no can-play\n");
           propname [MPRIS_PROPNM_CAN_PAUSE]);
       if (! rval) {
         ++out;
-fprintf (stderr, "  no can-pause\n");
         continue;
       }
 
@@ -243,7 +240,6 @@ fprintf (stderr, "  no can-pause\n");
       ok = 0;
       while (*svout != NULL) {
         if (strcmp (*svout, "file") == 0) {
-fprintf (stderr, "  has-file\n");
           ++ok;
           break;
         }
@@ -261,7 +257,6 @@ fprintf (stderr, "  has-file\n");
         /* an exhaustive check for all the different audio types */
         /* is not done.  */
         if (strcmp (*svout, "audio/mpeg") == 0) {
-fprintf (stderr, "  has-audio\n");
           ++ok;
           break;
         }
@@ -276,7 +271,6 @@ fprintf (stderr, "  has-audio\n");
 
       ident = mprisGetPropString (mpris, property [MPRIS_PROP_MP2],
           propname [MPRIS_PROPNM_IDENTITY]);
-fprintf (stderr, "  ident: %s\n", ident);
       mprisInfo.playerInfo [c].bus = mdstrdup (*out);
       snprintf (tbuff, sizeof (tbuff), "%s%s", MPRIS_PFX, ident);
       mprisInfo.playerInfo [c].name = mdstrdup (tbuff);
@@ -299,7 +293,6 @@ fprintf (stderr, "  ident: %s\n", ident);
   if (origmpris == NULL) {
     mprisFree (mpris);
   }
-  initialized = true;
 
   return c;
 }
@@ -378,6 +371,7 @@ mprisFree (mpris_t *mpris)
   mpris->ident = 0;
   mpris->mpbus = NULL;
   dbusConnClose (mpris->dbus);
+  mpris->dbus = NULL;
   mdfree (mpris);
 }
 
