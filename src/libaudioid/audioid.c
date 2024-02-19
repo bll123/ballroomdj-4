@@ -32,7 +32,7 @@ enum {
 enum {
   /* used for debugging */
   /* must be set to audioid_id_acoustid for production */
-  /* if changed, update prepkg.sh */
+  /* if the initial identification service is changed, update prepkg.sh */
   AUDIOID_START = AUDIOID_ID_ACOUSTID,
 };
 
@@ -135,6 +135,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_START) {
     audioidResponseReset (audioid->resp);
+    nlistFree (audioid->respidx);
     audioid->respidx = nlistAlloc ("audioid-resp-idx", LIST_UNORDERED, NULL);
     audioid->state = BDJ4_STATE_WAIT;
     logMsg (LOG_DBG, LOG_AUDIO_ID, "process: %s", songGetStr (song, TAG_URI));

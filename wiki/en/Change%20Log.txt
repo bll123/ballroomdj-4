@@ -7,22 +7,22 @@
 **4.5.2 2024-2---**
     * PENDING Installation: second install, incorrect copy of files.
 
+-->
+
 **4.6.0 2024-2---**
 
 * Bug Fixes:
-    * Auto Organize: Be less restrictive in what characters are allowed in audio filenames.
+    * Audio Identification: Fix missing match display.
+    * Auto Organize: Be less restrictive for allowed characters in audio filenames.
     * Fixed incorrect profile folder creation.
     * Linux: MPRIS player support.
     * Playlist Management: Fix save / reset / allowed keywords.
     * Song Selection: Fix incorrect weighting for dance rating and dance level.
-    * PENDING: Audio Identification: Fix.
 * New Features:
     * Song Selection: Tag selection with weight.
 * Internal:
     * Code cleanup.
     * Fix various memory leaks and memory issues.
-
--->
 
 **4.5.0 2024-2-10**
 

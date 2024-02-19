@@ -73,6 +73,13 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
+grep '^#define ACRCLOUD_REUSE 0' src/audioid/acrcloud.d > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "acrcloud debugging is on"
+  exit 1
+fi
+
 for f in automatic.pldances standardrounds.pldances QueueDance.pldances dances.txt; do
   a=$(grep '^# version' templates/$f)
   b=$(grep '^# version' templates/en_US/$f)

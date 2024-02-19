@@ -77,6 +77,11 @@ __Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
 has a keyword set and the keyword is not in the
 __Allowed&nbsp;Keywords__ list, the song will not be played.
 
+__Tag__ and __Tag Weight__: Enter a list of tags to match.  If the
+song has a matching tag, the tag weight is applied to the song
+selection process.  The list of tags entered will also match the
+song's keyword setting.
+
 In addition, the playable status is always used for song selection. If
 the song's status does not have the __Play?__ flag set, the song will
 not be played.

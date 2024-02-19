@@ -677,6 +677,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
       void        *pixbuf;
 
       val = nlistGetNum (dlist, tagidx);
+      nlistSetNum (ndlist, tagidx, val);
       img = NULL;
       pixbuf = NULL;
       switch (val) {
@@ -748,10 +749,10 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  if (audioidint->fillrow > 0) {
-    uiTreeViewValueClear (audioidint->alistTree, audioidint->fillrow);
-  }
   audioidint->rowcount = audioidint->fillrow + 1;
+  if (audioidint->rowcount > 1) {
+    uiTreeViewValueClear (audioidint->alistTree, audioidint->rowcount);
+  }
   nlistSort (audioidint->displaylist);
 
   audioidint->selectedrow = -1;

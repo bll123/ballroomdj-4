@@ -37,6 +37,10 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
+/* this is useful, as the free ACRCloud only allows 100 queries/month */
+/* note that a valid out-acr.json file must be downloaded first */
+#define ACRCLOUD_REUSE 0
+
 typedef struct audioidacr {
   char          key [50];
   char          secret [50];
@@ -312,6 +316,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   query [qc++] = ts;
   query [qc++] = NULL;
 
+#if ! ACRCLOUD_REUSE
   mstimestart (&starttm);
   webrc = webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
   logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %d %" PRId64 "ms",
@@ -319,6 +324,23 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   if (webrc != WEB_OK) {
     return 0;
   }
+#else
+  {
+    FILE    *ifh;
+    size_t  tsize;
+    char    *tstr;
+
+    tsize = fileopSize ("out-acr.json");
+    ifh = fopen ("out-acr.json", "r");
+    acr->webresplen = tsize;
+    /* this will leak */
+    tstr = malloc (tsize + 1);
+    (void) ! fread (tstr, tsize, 1, ifh);
+    tstr [tsize] = '\0';
+    acr->webresponse = tstr;
+    fclose (ifh);
+  }
+#endif
 
   gcry_mac_close (gch);
   mdextfree (b64sig);
