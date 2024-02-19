@@ -440,7 +440,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
   tidx = mdebugcounts [MDEBUG_COUNT];
   mdebug [tidx].addr = (ssize_t) data;
   mdebug [tidx].type = type;
-  mdebug [tidx].fn = fn;
+  mdebug [tidx].fn = (fn == NULL ? "null" : fn);
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
   strncpy (mdebug [tidx].subtag, mdebugsubtag, MAXSUBTAG);

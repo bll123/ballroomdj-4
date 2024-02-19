@@ -157,7 +157,7 @@ static const char *propname [MPRIS_PROPNM_MAX] = {
 static bool mprisCheckForPlayer (mpris_t *mpris, const char *plinm);
 static bool mprisGetProperty (mpris_t *mpris, const char *prop, const char *propnm);
 static bool mprisGetPropBool (mpris_t *mpris, const char *prop, const char *propnm);
-static const char *mprisGetPropString (mpris_t *mpris, const char *prop, const char *propnm);
+static char *mprisGetPropString (mpris_t *mpris, const char *prop, const char *propnm);
 static int64_t mprisGetPropInt64 (mpris_t *mpris, const char *prop, const char *propnm);
 static double mprisGetPropDouble (mpris_t *mpris, const char *prop, const char *propnm);
 static bool mprisSetPropDouble (mpris_t *mpris, const char *prop, const char *propnm, double val);
@@ -171,6 +171,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
   mpris_t     *mpris;
   int         c;
   const char  **out = NULL;
+  const char  **tout;
   long        len;
 
   if (initialized) {
@@ -196,22 +197,24 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       interface [MPRIS_INTFC_DBUS], method [MPRIS_METHOD_LIST_NAMES]);
   dbusResultGet (mpris->dbus, &out, &len, NULL);
 
-  while (*out != NULL) {
+  tout = out;
+  while (*tout != NULL) {
     /* only interested in mediaplayer2 */
-    if (strncmp (*out, property [MPRIS_PROP_MP2], strlen (property [MPRIS_PROP_MP2])) == 0) {
+    if (strncmp (*tout, property [MPRIS_PROP_MP2], strlen (property [MPRIS_PROP_MP2])) == 0) {
       int         rval;
-      const char  *ident;
+      char        *ident;
       char        tbuff [200];
       const char  **svout = NULL;
+      const char  **tsvout;
       int         ok;
 
-      mpris->mpbus = *out;
+      mpris->mpbus = *tout;
 
       /* bypass players that cannot be controlled */
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_CONTROL]);
       if (! rval) {
-        ++out;
+        ++tout;
         continue;
       }
 
@@ -219,14 +222,14 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_PLAY]);
       if (! rval) {
-        ++out;
+        ++tout;
         continue;
       }
 
       rval = mprisGetProperty (mpris, property [MPRIS_PROP_MP2_PLAYER],
           propname [MPRIS_PROPNM_CAN_PAUSE]);
       if (! rval) {
-        ++out;
+        ++tout;
         continue;
       }
 
@@ -238,13 +241,15 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       dbusResultGet (mpris->dbus, &svout, &len, NULL);
 
       ok = 0;
-      while (*svout != NULL) {
-        if (strcmp (*svout, "file") == 0) {
+      tsvout = svout;
+      while (*tsvout != NULL) {
+        if (strcmp (*tsvout, "file") == 0) {
           ++ok;
           break;
         }
-        ++svout;
+        ++tsvout;
       }
+      mdfree (svout);
 
       dbusMessageInit (mpris->dbus);
       dbusMessageSetData (mpris->dbus, "(ss)",
@@ -253,26 +258,30 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
           interface [MPRIS_INTFC_DBUS_PROP], method [MPRIS_METHOD_GET]);
       dbusResultGet (mpris->dbus, &svout, &len, NULL);
 
-      while (*svout != NULL) {
+      tsvout = svout;
+      while (*tsvout != NULL) {
         /* an exhaustive check for all the different audio types */
         /* is not done.  */
-        if (strcmp (*svout, "audio/mpeg") == 0) {
+        if (strcmp (*tsvout, "audio/mpeg") == 0) {
           ++ok;
           break;
         }
-        ++svout;
+        ++tsvout;
       }
+      mdfree (svout);
 
       /* must support at least 'file' uri and 'audio' mime types */
       if (ok < 2) {
-        ++out;
+        ++tout;
         continue;
       }
 
       ident = mprisGetPropString (mpris, property [MPRIS_PROP_MP2],
           propname [MPRIS_PROPNM_IDENTITY]);
-      mprisInfo.playerInfo [c].bus = mdstrdup (*out);
+      mdextalloc (ident);
+      mprisInfo.playerInfo [c].bus = mdstrdup (*tout);
       snprintf (tbuff, sizeof (tbuff), "%s%s", MPRIS_PFX, ident);
+      mdfree (ident);
       mprisInfo.playerInfo [c].name = mdstrdup (tbuff);
       if (ret != NULL) {
         ret [c] = mprisInfo.playerInfo [c].name;
@@ -282,8 +291,9 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
         break;
       }
     }
-    ++out;
+    ++tout;
   }
+  mdfree (out);
 
   mprisInfo.playerCount = c;
   if (ret != NULL) {
@@ -427,7 +437,7 @@ mprisMedia (mpris_t *mpris, const char *fulluri)
 plistate_t
 mprisState (mpris_t *mpris)
 {
-  const char  *rval;
+  char  *rval;
 
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return PLI_STATE_NONE;
@@ -442,6 +452,7 @@ mprisState (mpris_t *mpris)
   } else if (strcmp (rval, "Paused") == 0) {
     mpris->state = PLI_STATE_PAUSED;
   }
+  mdfree (rval);
 
   return mpris->state;
 }
@@ -615,10 +626,10 @@ mprisGetPropBool (mpris_t *mpris, const char *prop, const char *propnm)
   return rval;
 }
 
-static const char *
+static char *
 mprisGetPropString (mpris_t *mpris, const char *prop, const char *propnm)
 {
-  const char  *rval = NULL;
+  char  *rval = NULL;
 
   if (mprisGetProperty (mpris, prop, propnm)) {
     dbusResultGet (mpris->dbus, &rval, NULL);

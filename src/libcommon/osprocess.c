@@ -124,7 +124,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   pid_t   pid;
   int     rc = 0;
   pid_t   tpid;
-  int     pipefd [2];
+  int     pipefd [2] = { -1, -1 };
 
   flags |= OS_PROC_WAIT;      // required
 
@@ -237,11 +237,12 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 #endif /* if _lib_fork */
 
 /* valgrind complains about using an uninitialized variable, */
-/* but it appears to be an incorrect error */
+/* but I cannot find any issue */
 char *
 osRunProgram (const char *prog, ...)
 {
-  char        data [OSPROCESS_RUN_DATA_SZ];
+  char        data [OSPROCESS_RUN_DATA_SZ] = { "" };
+  char        *ret;
   char        *arg = NULL;
   const char  *targv [OSPROCESS_RUN_ARGV_SZ];
   int         targc = 0;
@@ -262,7 +263,8 @@ osRunProgram (const char *prog, ...)
 
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH,
       data, OSPROCESS_RUN_DATA_SZ, NULL);
-  return mdstrdup (data);
+  ret = mdstrdup (data);
+  return ret;
 }
 
 #if _define_WIFEXITED

@@ -43,7 +43,12 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   if (imagenm != NULL) {
-    gtk_window_set_icon_from_file (GTK_WINDOW (window), imagenm, NULL);
+    GdkPixbuf *pixbuf;
+
+    /* still have a memory leak here */
+    pixbuf = gdk_pixbuf_new_from_file (imagenm, NULL);
+    gtk_window_set_icon (GTK_WINDOW (window), pixbuf);
+    g_object_unref (pixbuf);
   }
   if (title != NULL) {
     gtk_window_set_title (GTK_WINDOW (window), title);

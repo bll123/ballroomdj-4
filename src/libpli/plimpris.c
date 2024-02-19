@@ -164,7 +164,6 @@ pliiClose (plidata_t *pliData)
     return;
   }
 
-  mprisStop (pliData->mpris);
   pliData->state = PLI_STATE_STOPPED;
 }
 

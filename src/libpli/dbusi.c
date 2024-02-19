@@ -53,6 +53,7 @@ dbusConnInit (void)
   dbus->state = DBUS_STATE_WAIT;
 
   dbus->dconn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+  mdextalloc (dbus->dconn);
   if (dbus->dconn != NULL) {
     dbus->state = DBUS_STATE_OPEN;
   }
@@ -62,21 +63,25 @@ dbusConnInit (void)
 void
 dbusConnClose (dbus_t *dbus)
 {
+  mdextfree (dbus->dconn);
   g_object_unref (dbus->dconn);
   /* apparently, the data variant does not need to be unref'd */
   if (dbus->result != NULL) {
+    mdextfree (dbus->result);
     g_variant_unref (dbus->result);
   }
   dbus->dconn = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->state = DBUS_STATE_CLOSED;
+  mdfree (dbus);
 }
 
 void
 dbusMessageInit (dbus_t *dbus)
 {
   dbus->data = g_variant_new_parsed ("()");
+  mdextalloc (dbus->data);
 }
 
 /* used in the cases where a value is wrapped as a variant (e.g. Rate) */
@@ -88,6 +93,7 @@ dbusMessageBuild (const char *sdata, ...)
 
   va_start (args, sdata);
   tv = g_variant_new_va (sdata, NULL, &args);
+  mdextalloc (tv);
   va_end (args);
   return tv;
 }
@@ -99,6 +105,7 @@ dbusMessageBuildObj (const char *path)
   GVariant  *tv;
 
   tv = g_variant_new_object_path (path);
+  mdextalloc (tv);
   return tv;
 }
 
@@ -108,7 +115,13 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_list   args;
 
   va_start (args, sdata);
+  if (dbus->data != NULL) {
+    /* dbusMessageInit() should have been called */
+    mdextfree (dbus->data);
+    g_variant_unref (dbus->data);
+  }
   dbus->data = g_variant_new_va (sdata, NULL, &args);
+  mdextalloc (dbus->data);
 # if DBUS_DEBUG
   dumpResult ("data-va", dbus->data);
 # endif
@@ -122,7 +135,13 @@ dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
   va_list   args;
 
   va_start (args, sdata);
+  if (dbus->data != NULL) {
+    /* dbusMessageInit() should have been called */
+    mdextfree (dbus->data);
+    g_variant_unref (dbus->data);
+  }
   dbus->data = g_variant_new_parsed_va (sdata, &args);
+  mdextalloc (dbus->data);
 # if DBUS_DEBUG
   dumpResult ("data-parsed", dbus->data);
 # endif
@@ -136,6 +155,7 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   bool    rc;
 
   if (dbus->result != NULL) {
+    mdextfree (dbus->result);
     g_variant_unref (dbus->result);
   }
   dbus->result = NULL;
@@ -147,6 +167,7 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
   dbus->result = g_dbus_connection_call_sync (dbus->dconn,
       bus, objpath, intfc, method,
       dbus->data, NULL, G_DBUS_CALL_FLAGS_NONE, DBUS_TIMEOUT, NULL, NULL);
+  mdextalloc (dbus->result);
 # if DBUS_DEBUG
   dumpResult ("result", dbus->result);
 # endif
@@ -189,13 +210,14 @@ dbusResultGet (dbus_t *dbus, ...)
   }
 
   if (strcmp (type, "as") == 0) {
-    const char    ***out;
-    long          *alen;
-    gsize         len;
+    const char  ***out;
+    long        *alen;
+    gsize       len;
 
     out = va_arg (args, const char ***);
     alen = va_arg (args, long *);
     *out = g_variant_get_strv (val, &len);
+    mdextalloc (*out);
     *alen = len;
     va_end (args);
     return true;
@@ -203,6 +225,7 @@ dbusResultGet (dbus_t *dbus, ...)
 
   if (strcmp (type, "a{sv}") == 0) {
     GVariantIter  gvi;
+    GVariant      *ival;
     GVariant      *tv;
     void          *trackid = NULL;
     int64_t       *dur = NULL;
@@ -214,17 +237,20 @@ dbusResultGet (dbus_t *dbus, ...)
     dur = va_arg (args, int64_t *);
 
     /* want mpris:trackid, mpris:length */
-    while ((val = g_variant_iter_next_value (&gvi)) != NULL) {
+    while ((ival = g_variant_iter_next_value (&gvi)) != NULL) {
       const char    *idstr;
 
-      type = g_variant_get_type_string (val);
-      g_variant_get (val, type, &idstr, &tv);
+      mdextalloc (ival);
+      type = g_variant_get_type_string (ival);
+      g_variant_get (ival, type, &idstr, &tv);
       type = g_variant_get_type_string (tv);
       if (strcmp (idstr, "mpris:trackid") == 0) {
-        const char    *tstr;
+        char    *tstr;
 
         g_variant_get (tv, type, &tstr);
+        mdextalloc (tstr);
         strlcpy (trackid, tstr, DBUS_MAX_TRACKID);
+        mdfree (tstr);
         ++rc;
       }
       if (dur != NULL && strcmp (idstr, "mpris:length") == 0) {
@@ -236,6 +262,8 @@ dbusResultGet (dbus_t *dbus, ...)
         /* only interested in trackid and duration */
         break;
       }
+      mdextfree (ival);
+      g_variant_unref (ival);
     }
     va_end (args);
     return true;
@@ -277,7 +305,9 @@ dumpResult (const char *tag, GVariant *data)
     fprintf (stderr, "  as-count: %lu\n", g_variant_iter_n_children (&gvi));
 
     while ((v = g_variant_iter_next_value (&gvi)) != NULL) {
+      mdextalloc (v);
       dumpResult ("value-as", v);
+      mdextfree (v);
       g_variant_unref (v);
     }
   } else if (strcmp (type, "as") == 0) {
