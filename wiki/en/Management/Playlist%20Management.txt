@@ -77,10 +77,9 @@ __Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
 has a keyword set and the keyword is not in the
 __Allowed&nbsp;Keywords__ list, the song will not be played.
 
-__Tag__ and __Tag Weight__: Enter a list of tags to match.  If the
-song has a matching tag, the tag weight is applied to the song
-selection process.  The list of tags entered will also match the
-song's keyword setting.
+__Tag__ and __Tag Weight__: Enter a list of tags to match.  If one of
+the tags matches the song's keyword, or any of the song tags, then the
+tag weight is applied to the song selection process.
 
 In addition, the playable status is always used for song selection. If
 the song's status does not have the __Play?__ flag set, the song will
@@ -155,4 +154,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-02-20 07:02:04; BDJ4 version 4.6.0)_

@@ -9,17 +9,17 @@
 
 -->
 
-**4.6.0 2024-2---**
+**4.6.0 2024-2-20**
 
 * Bug Fixes:
-    * Audio Identification: Fix missing match display.
+    * Audio Identification: Fix match listing display.
     * Auto Organize: Be less restrictive for allowed characters in audio filenames.
-    * Fixed incorrect profile folder creation.
-    * Linux: MPRIS player support.
-    * Playlist Management: Fix save / reset / allowed keywords.
+    * Playlist Management: Fix save; reset; allowed keywords.
     * Song Selection: Fix incorrect weighting for dance rating and dance level.
+    * Starter: Fixed incorrect profile folder creation.
 * New Features:
-    * Song Selection: Tag selection with weight.
+    * Linux: MPRIS player support.
+    * Song Selection / Playlist Management: Tag selection with weight.
 * Internal:
     * Code cleanup.
     * Fix various memory leaks and memory issues.
@@ -744,4 +744,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-10 16:06:37; BDJ4 version 4.5.0)_
+<br>_(Updated 2024-02-20 07:02:04; BDJ4 version 4.6.0)_

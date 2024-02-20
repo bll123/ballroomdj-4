@@ -376,11 +376,7 @@ START_TEST(orgutil_makepath)
           ++p;
           continue;
         }
-        if (isWindows () && (*p == '(' || *p == ')' || *p == ':' || *p == '^')) {
-          ++p;
-          continue;
-        }
-        if (! (isWindows ()) && (*p == '[' || *p == ']')) {
+        if (isWindows () && (*p == ':' || *p == '^')) {
           ++p;
           continue;
         }

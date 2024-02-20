@@ -124,7 +124,7 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e 's/version [2345]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
+  sed -e 's/version [23456]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
@@ -565,10 +565,10 @@ function checkInstallation {
     res=$(($res+1))  # autoselection.txt file
     fn="${DATADIR}/autoselection.txt"
     if [[ $fin == T && -f "${fn}" ]]; then
-      grep 'version 5' "${fn}" > /dev/null 2>&1
+      grep 'version 6' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.5' "${fn}" > /dev/null 2>&1
+        grep '^\.\.6$' "${fn}" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))

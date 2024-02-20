@@ -31,7 +31,7 @@
 <br>Recall that any time the packaging scripts are run on the primary
 development platform, the source must be re-synced to the other platforms
 and packaging must be run again on the other platforms.
-    * sync source with other platforms
+    * sync source with other platforms (the re-sync is important)
 * for each platform
     * pull source if necessary
     * ./utils/pkg.sh
@@ -59,4 +59,4 @@ source package and copy it to the primary development machine.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-01-28 17:29:10; BDJ4 version 4.4.9.1)_
+<br>_(Updated 2024-02-20 07:02:04; BDJ4 version 4.6.0)_

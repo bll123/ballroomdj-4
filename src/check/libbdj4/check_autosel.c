@@ -83,10 +83,14 @@ START_TEST(autosel_get)
   ck_assert_float_eq (dval, 30000.0);
 
   dval = autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT);
-  ck_assert_float_eq (dval, 0.9);
+  ck_assert_float_eq (dval, 0.8);
   dval = autoselGetDouble (autosel, AUTOSEL_LEVEL_WEIGHT);
   ck_assert_float_eq (dval, 0.1);
-  dval += autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT);
+  dval = autoselGetDouble (autosel, AUTOSEL_TAG_WEIGHT);
+  ck_assert_float_eq (dval, 0.1);
+  dval = autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT) +
+      autoselGetDouble (autosel, AUTOSEL_LEVEL_WEIGHT) +
+      autoselGetDouble (autosel, AUTOSEL_TAG_WEIGHT);
   ck_assert_float_eq (dval, 1.0);
 
   dval = autoselGetDouble (autosel, AUTOSEL_WINDOWED_DIFF_A);
