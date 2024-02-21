@@ -12,8 +12,7 @@
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "uiselectfile.h"
-
-#include "ui.h"
+#include "uiwcont.h"
 
 /* base type */
 typedef enum {

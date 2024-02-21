@@ -2,6 +2,7 @@
 #define INC_UITREEDDISP_H
 
 #include "callback.h"
+#include "slist.h"
 #include "uiwcont.h"
 
 void uitreedispAddDisplayColumns (uiwcont_t *uiwidget, slist_t *sellist, int col, int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol);
