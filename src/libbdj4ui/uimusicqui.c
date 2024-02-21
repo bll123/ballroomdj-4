@@ -74,7 +74,7 @@ enum {
 typedef struct mq_internal {
   uidance_t         *uidance;
   uidance_t         *uidance5;
-  uitree_t          *musicqTree;
+  uiwcont_t         *musicqTree;
   callback_t        *callbacks [MQINT_CB_MAX];
   uiwcont_t         *wcont [UIMUSICQ_W_MAX];
   int               *typelist;
@@ -157,7 +157,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   int               saveci;
   uiwcont_t         *hbox;
   uiwcont_t         *scwin;
-  uiwcont_t         *uitreewidgetp;
   uiwcont_t         *uiwidgetp;
   slist_t           *sellist;
   mq_internal_t     *mqint;
@@ -360,13 +359,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uiBoxPackStartExpand (uimusicq->ui [ci].mainbox, scwin);
 
   mqint->musicqTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidgetContainer (mqint->musicqTree);
 
   uiTreeViewEnableHeaders (mqint->musicqTree);
-  uiWidgetAlignHorizFill (uitreewidgetp);
-  uiWidgetExpandHoriz (uitreewidgetp);
-  uiWidgetExpandVert (uitreewidgetp);
-  uiWindowPackInWindow (scwin, uitreewidgetp);
+  uiWidgetAlignHorizFill (mqint->musicqTree);
+  uiWidgetExpandHoriz (mqint->musicqTree);
+  uiWidgetExpandVert (mqint->musicqTree);
+  uiWindowPackInWindow (scwin, mqint->musicqTree);
   uiwcontFree (scwin);
 
   mqint->callbacks [MQINT_CB_CHK_FAV_CHG] = callbackInitLong (
@@ -408,7 +406,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_KEY_HNDLR] = uiKeyAlloc ();
     mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
         uimusicqKeyEvent, uimusicq, NULL);
-    uiKeySetKeyCallback (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], uitreewidgetp,
+    uiKeySetKeyCallback (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], mqint->musicqTree,
         mqint->callbacks [MQINT_CB_KEYB]);
   }
 
@@ -454,7 +452,7 @@ uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
   }
 
   mqint = uimusicq->ui [ci].mqInternalData;
-  uiDragDropSetDestURICallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
+  uiDragDropSetDestURICallback (mqint->musicqTree, cb);
 }
 
 void

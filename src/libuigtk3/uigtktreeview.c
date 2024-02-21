@@ -35,19 +35,7 @@ enum {
   SELECT_PROCESS_GET_SELECT_ITER,
 };
 
-static void uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
-static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
-static void uiTreeViewRadioHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
-static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
-static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
-static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
-static GType uiTreeViewConvertTreeType (int type);
-static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
-static void uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation, gpointer udata);
-static gboolean uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
-
 typedef struct uitree {
-  uiwcont_t         *tree;
   GtkTreeSelection  *sel;
   GtkTreeIter       selectiter;
   GtkTreeIter       valueiter;
@@ -81,14 +69,28 @@ typedef struct uitree {
 
 static double   upperLimit = 0.0;
 
-uitree_t *
+static void uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
+static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
+static void uiTreeViewRadioHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
+static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
+static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
+static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
+static GType uiTreeViewConvertTreeType (int type);
+static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
+static void uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation, gpointer udata);
+static gboolean uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
+
+uiwcont_t *
 uiCreateTreeView (void)
 {
+  uiwcont_t         *uiwidget;
   uitree_t          *uitree;
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
 
-  uitree = mdmalloc (sizeof (uitree_t));
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_TREE;
+  uiwidget->wtype = WCONT_T_TREE;
 
   tree = gtk_tree_view_new ();
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
@@ -97,16 +99,14 @@ uiCreateTreeView (void)
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
 
   gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  uitree->selmode = SELECT_SINGLE;
 
   gtk_widget_set_halign (tree, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
-  uitree->tree = uiwcontAlloc ();
-  uitree->tree->wbasetype = WCONT_T_TREE;
-  uitree->tree->wtype = WCONT_T_TREE;
-  uitree->tree->widget = tree;
+
+  uitree = mdmalloc (sizeof (uitree_t));
   uitree->sel = sel;
+  uitree->selmode = SELECT_SINGLE;
   uitree->selectset = false;
   uitree->savedrow = TREE_NO_ROW;
   uitree->savedselectset = false;
@@ -131,69 +131,79 @@ uiCreateTreeView (void)
   uitree->lastTreeSize = -1;
   uitree->lastRowHeight = 0.0;
   uitree->valueRowCount = 0;
-  uiWidgetSetAllMargins (uitree->tree, 2);
-  return uitree;
+
+  uiwidget->widget = tree;
+  uiwidget->uiint.uitree = uitree;
+
+  uiWidgetSetAllMargins (uiwidget, 2);
+
+  return uiwidget;
 }
 
 void
-uiTreeViewFree (uitree_t *uitree)
+uiTreeViewFree (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  uitree_t    *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  uiwcontBaseFree (uitree->tree);
+  uitree = uiwidget->uiint.uitree;
   mdfree (uitree);
 }
 
 void
-uiTreeViewEnableHeaders (uitree_t *uitree)
+uiTreeViewEnableHeaders (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->tree->widget), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->widget), TRUE);
 }
 
 void
-uiTreeViewDisableHeaders (uitree_t *uitree)
+uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->tree->widget), FALSE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->widget), FALSE);
 }
 
 void
-uiTreeViewDarkBackground (uitree_t *uitree)
+uiTreeViewDarkBackground (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  uiWidgetSetClass (uitree->tree, TREEVIEW_DARK_CLASS);
+  uiWidgetSetClass (uiwidget, TREEVIEW_DARK_CLASS);
 }
 
 void
-uiTreeViewDisableSingleClick (uitree_t *uitree)
+uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->tree->widget), FALSE);
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uiwidget->widget), FALSE);
 }
 
 void
-uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
+uiTreeViewSelectSetMode (uiwcont_t *uiwidget, int mode)
 {
-  int     gtkmode = GTK_SELECTION_SINGLE;
+  int       gtkmode = GTK_SELECTION_SINGLE;
+  uitree_t  *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
 
   if (mode == SELECT_SINGLE) {
     gtkmode = GTK_SELECTION_SINGLE;
@@ -207,110 +217,143 @@ uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
 }
 
 void
-uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetSelectChangedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->selchgcb = cb;
   g_signal_connect (uitree->sel, "changed",
-      G_CALLBACK (uiTreeViewSelectChangedHandler), uitree);
+      G_CALLBACK (uiTreeViewSelectChangedHandler), uiwidget);
 }
 
 void
-uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetSizeChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->szchgcb = cb;
-  g_signal_connect (uitree->tree->widget, "size-allocate",
-      G_CALLBACK (uiTreeViewSizeChangeHandler), uitree);
+  g_signal_connect (uiwidget->widget, "size-allocate",
+      G_CALLBACK (uiTreeViewSizeChangeHandler), uiwidget);
 }
 
 void
-uiTreeViewSetScrollEventCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetScrollEventCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->scrolleventcb = cb;
-  g_signal_connect (uitree->tree->widget, "scroll-event",
-      G_CALLBACK (uiTreeViewScrollEventHandler), uitree);
+  g_signal_connect (uiwidget->widget, "scroll-event",
+      G_CALLBACK (uiTreeViewScrollEventHandler), uiwidget);
 }
 
 void
-uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetRowActivatedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->rowactivecb = cb;
-  g_signal_connect (uitree->tree->widget, "row-activated",
-      G_CALLBACK (uiTreeViewRowActiveHandler), uitree);
+  g_signal_connect (uiwidget->widget, "row-activated",
+      G_CALLBACK (uiTreeViewRowActiveHandler), uiwidget);
 }
 
 void
-uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->editedcb = cb;
 }
 
 void
-uiTreeViewRadioSetRow (uitree_t *uitree, int row)
+uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->radiorow = row;
 }
 
-uiwcont_t *
-uiTreeViewGetWidgetContainer (uitree_t *uitree)
-{
-  if (uitree == NULL) {
-    return NULL;
-  }
-
-  return uitree->tree;
-}
 
 void
-uiTreeViewPreColumnSetMinWidth (uitree_t *uitree, int minwidth)
+uiTreeViewPreColumnSetMinWidth (uiwcont_t *uiwidget, int minwidth)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
 
   uitree->minwidth = minwidth;
 }
 
 void
-uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
+uiTreeViewPreColumnSetEllipsizeColumn (uiwcont_t *uiwidget, int ellipsizeColumn)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
 
   uitree->ellipsizeColumn = ellipsizeColumn;
 }
 
 void
-uiTreeViewPreColumnSetColorColumn (uitree_t *uitree, int colorcol, int colorsetcol)
+uiTreeViewPreColumnSetColorColumn (uiwcont_t *uiwidget, int colorcol, int colorsetcol)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
 
   uitree->colorcol = colorcol;
   uitree->colorsetcol = colorsetcol;
 }
 
 void
-uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
+uiTreeViewAppendColumn (uiwcont_t *uiwidget, int activecol, int widgettype,
     int alignment, int coldisp, const char *title, ...)
 {
   GtkCellRenderer   *renderer = NULL;
@@ -320,13 +363,13 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
   int               col;
   const char        *gtkcoltype = "text";
   int               gtkcoldisp;
+  uitree_t          *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
 
   column = gtk_tree_view_column_new ();
   switch (widgettype) {
@@ -391,7 +434,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
       }
       case TREE_COL_TYPE_EDITABLE: {
         g_signal_connect (renderer, "edited",
-            G_CALLBACK (uiTreeViewEditedHandler), uitree);
+            G_CALLBACK (uiTreeViewEditedHandler), uiwidget);
         gtkcoltype = "editable";
         break;
       }
@@ -417,11 +460,11 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
         g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
         if (widgettype == TREE_WIDGET_CHECKBOX) {
           g_signal_connect (G_OBJECT(renderer), "toggled",
-              G_CALLBACK (uiTreeViewCheckboxHandler), uitree);
+              G_CALLBACK (uiTreeViewCheckboxHandler), uiwidget);
         }
         if (widgettype == TREE_WIDGET_RADIO) {
           g_signal_connect (G_OBJECT(renderer), "toggled",
-              G_CALLBACK (uiTreeViewRadioHandler), uitree);
+              G_CALLBACK (uiTreeViewRadioHandler), uiwidget);
         }
         gtkcoltype = "active";
         break;
@@ -479,7 +522,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
   if (title != NULL) {
     gtk_tree_view_column_set_title (column, title);
   }
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->tree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidget->widget), column);
 
   if (activecol != TREE_NO_COLUMN) {
     uitree->activeColumn = column;
@@ -488,15 +531,18 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
 }
 
 void
-uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag)
+uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
 {
   GtkTreeViewColumn   *column = NULL;
+  uitree_t            *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
 
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uitree->tree->widget), col);
+  uitree = uiwidget->uiint.uitree;
+
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uiwidget->widget), col);
   if (column != NULL) {
     int     val = TRUE;
 
@@ -511,19 +557,20 @@ uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag)
 }
 
 void
-uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
+uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
 {
   GtkListStore  *store = NULL;
   GType         *types;
   va_list       args;
   int           tval;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (colmax <= 0 || colmax > 90) {
     return;
   }
@@ -547,28 +594,29 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
     va_end (args);
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->tree->widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->widget));
   }
 
   uitree->valueRowCount = 0;
 }
 
 void
-uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
+uiTreeViewCreateValueStoreFromList (uiwcont_t *uiwidget, int colmax, int *typelist)
 {
   GtkListStore  *store = NULL;
   GType         *types;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (colmax <= 0 || colmax > 90) {
     return;
   }
@@ -581,28 +629,29 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
     }
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->tree->widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->widget));
   }
 
   uitree->valueRowCount = 0;
 }
 
 void
-uiTreeViewValueAppend (uitree_t *uitree)
+uiTreeViewValueAppend (uiwcont_t *uiwidget)
 {
   GtkListStore  *store = NULL;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
-    return;
-  }
-  if (uitree->tree == NULL) {
     return;
   }
 
@@ -613,19 +662,20 @@ uiTreeViewValueAppend (uitree_t *uitree)
 }
 
 void
-uiTreeViewValueInsertBefore (uitree_t *uitree)
+uiTreeViewValueInsertBefore (uiwcont_t *uiwidget)
 {
   GtkListStore  *store = NULL;
   GtkTreeIter   titer;
   GtkTreeIter   *titerp;
   int           count;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -645,19 +695,20 @@ uiTreeViewValueInsertBefore (uitree_t *uitree)
 }
 
 void
-uiTreeViewValueInsertAfter (uitree_t *uitree)
+uiTreeViewValueInsertAfter (uiwcont_t *uiwidget)
 {
   GtkListStore  *store = NULL;
   GtkTreeIter   titer;
   GtkTreeIter   *titerp;
   int           count;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -677,19 +728,19 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
 }
 
 void
-uiTreeViewValueRemove (uitree_t *uitree)
+uiTreeViewValueRemove (uiwcont_t *uiwidget)
 {
   int     count = 0;
   int     idx;
   bool    valid = false;
+  uitree_t      *uitree;
 
-
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -697,7 +748,7 @@ uiTreeViewValueRemove (uitree_t *uitree)
     return;
   }
 
-  idx = uiTreeViewSelectGetIndex (uitree);
+  idx = uiTreeViewSelectGetIndex (uiwidget);
   valid = gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
   --uitree->valueRowCount;
   uitree->selectset = false;
@@ -713,16 +764,21 @@ uiTreeViewValueRemove (uitree_t *uitree)
   if (! valid && idx > 0) {
     --idx;
     if (idx <= 0) { idx = 0; }
-    uiTreeViewSelectSet (uitree, idx);
+    uiTreeViewSelectSet (uiwidget, idx);
   }
 }
 
 void
-uiTreeViewValueClear (uitree_t *uitree, int startrow)
+uiTreeViewValueClear (uiwcont_t *uiwidget, int startrow)
 {
-  if (uitree == NULL) {
+  uitree_t      *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -746,17 +802,18 @@ uiTreeViewValueClear (uitree_t *uitree, int startrow)
 
 /* must be called before set-values if the value iter is being used */
 void
-uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)
+uiTreeViewSetValueEllipsize (uiwcont_t *uiwidget, int col)
 {
   GtkListStore  *store = NULL;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
-    return;
-  }
-  if (uitree->tree == NULL) {
     return;
   }
 
@@ -773,23 +830,24 @@ uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)
 }
 
 void
-uiTreeViewSetValues (uitree_t *uitree, ...)
+uiTreeViewSetValues (uiwcont_t *uiwidget, ...)
 {
   GtkListStore  *store = NULL;
   va_list       args;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
-    return;
-  }
-  if (uitree->tree == NULL) {
     return;
   }
 
   store = GTK_LIST_STORE (uitree->model);
-  va_start (args, uitree);
+  va_start (args, uiwidget);
   if (uitree->valueiterset) {
     gtk_list_store_set_valist (store, &uitree->valueiter, args);
   } else if (uitree->selectset) {
@@ -799,18 +857,19 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
 }
 
 int
-uiTreeViewSelectGetCount (uitree_t *uitree)
+uiTreeViewSelectGetCount (uiwcont_t *uiwidget)
 {
-  int     count;
-  bool    valid;
+  int       count;
+  bool      valid;
+  uitree_t  *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return 0;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
-    return 0;
-  }
-  if (uitree->tree == NULL) {
     return 0;
   }
 
@@ -831,19 +890,20 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
 }
 
 int
-uiTreeViewSelectGetIndex (uitree_t *uitree)
+uiTreeViewSelectGetIndex (uiwcont_t *uiwidget)
 {
-  GtkTreePath       *path;
-  char              *pathstr;
-  int               idx;
+  GtkTreePath   *path;
+  char          *pathstr;
+  int           idx;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return TREE_NO_ROW;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
-    return TREE_NO_ROW;
-  }
-  if (uitree->tree == NULL) {
     return TREE_NO_ROW;
   }
   if (! uitree->selectset) {
@@ -869,23 +929,28 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
 /* coded for both select-mode single and multiple */
 /* makes sure the iterator is actually selected and selectiter is set */
 void
-uiTreeViewSelectCurrent (uitree_t *uitree)
+uiTreeViewSelectCurrent (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  uitree_t      *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
   /* select-get-count will handle the select-single case */
   if (uitree->selmode == SELECT_SINGLE) {
-    uiTreeViewSelectGetCount (uitree);
+    uiTreeViewSelectGetCount (uiwidget);
   }
   if (uitree->selmode == SELECT_MULTIPLE) {
     uitree->selectset = false;
     uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
-    uiTreeViewSelectForeach (uitree, NULL);
+    uiTreeViewSelectForeach (uiwidget, NULL);
     uitree->selectprocessmode = SELECT_PROCESS_NONE;
     if (uitree->selectset) {
       gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
@@ -894,13 +959,17 @@ uiTreeViewSelectCurrent (uitree_t *uitree)
 }
 
 bool
-uiTreeViewSelectFirst (uitree_t *uitree)
+uiTreeViewSelectFirst (uiwcont_t *uiwidget)
 {
-  int   valid = false;
+  int         valid = false;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return valid;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return valid;
   }
@@ -918,13 +987,17 @@ uiTreeViewSelectFirst (uitree_t *uitree)
 }
 
 bool
-uiTreeViewSelectNext (uitree_t *uitree)
+uiTreeViewSelectNext (uiwcont_t *uiwidget)
 {
-  int   valid = false;
+  int         valid = false;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return valid;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return valid;
   }
@@ -942,13 +1015,17 @@ uiTreeViewSelectNext (uitree_t *uitree)
 }
 
 bool
-uiTreeViewSelectPrevious (uitree_t *uitree)
+uiTreeViewSelectPrevious (uiwcont_t *uiwidget)
 {
-  int   valid = false;
+  int         valid = false;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return valid;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return valid;
   }
@@ -966,29 +1043,38 @@ uiTreeViewSelectPrevious (uitree_t *uitree)
 }
 
 void
-uiTreeViewSelectDefault (uitree_t *uitree)
+uiTreeViewSelectDefault (uiwcont_t *uiwidget)
 {
-  int   count = 0;
+  int       count = 0;
+  uitree_t  *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
-  count = uiTreeViewSelectGetCount (uitree);
+  count = uiTreeViewSelectGetCount (uiwidget);
   if (count != 1) {
-    uiTreeViewSelectSet (uitree, 0);
+    uiTreeViewSelectSet (uiwidget, 0);
   }
 }
 
 void
-uiTreeViewSelectSave (uitree_t *uitree)
+uiTreeViewSelectSave (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -997,34 +1083,43 @@ uiTreeViewSelectSave (uitree_t *uitree)
   }
 
   if (uitree->selmode == SELECT_SINGLE) {
-    uiTreeViewSelectCurrent (uitree);
-    uitree->savedrow = uiTreeViewSelectGetIndex (uitree);
+    uiTreeViewSelectCurrent (uiwidget);
+    uitree->savedrow = uiTreeViewSelectGetIndex (uiwidget);
     uitree->savedselectset = uitree->selectset;
   }
 }
 
 void
-uiTreeViewSelectRestore (uitree_t *uitree)
+uiTreeViewSelectRestore (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
 
   if (uitree->selmode == SELECT_SINGLE) {
     uitree->selectset = uitree->savedselectset;
     if (uitree->selectset && uitree->savedrow != TREE_NO_ROW) {
-      uiTreeViewSelectSet (uitree, uitree->savedrow);
+      uiTreeViewSelectSet (uiwidget, uitree->savedrow);
     }
     uitree->savedrow = TREE_NO_ROW;
   }
 }
 
 void
-uiTreeViewSelectClear (uitree_t *uitree)
+uiTreeViewSelectClear (uiwcont_t *uiwidget)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1038,37 +1133,54 @@ uiTreeViewSelectClear (uitree_t *uitree)
 
 /* use when the select mode is select-multiple */
 void
-uiTreeViewSelectClearAll (uitree_t *uitree)
+uiTreeViewSelectClearAll (uiwcont_t *uiwidget)
 {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->selectprocessmode = SELECT_PROCESS_CLEAR_ALL;
-  uiTreeViewSelectForeach (uitree, NULL);
+  uiTreeViewSelectForeach (uiwidget, NULL);
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
 }
 
 void
-uiTreeViewSelectForeach (uitree_t *uitree, callback_t *cb)
+uiTreeViewSelectForeach (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
   uitree->foreachcb = cb;
   gtk_tree_selection_selected_foreach (uitree->sel,
-      uiTreeViewSelectForeachHandler, uitree);
+      uiTreeViewSelectForeachHandler, uiwidget);
 }
 
 void
-uiTreeViewMoveBefore (uitree_t *uitree)
+uiTreeViewMoveBefore (uiwcont_t *uiwidget)
 {
   GtkTreeIter   citer;
   bool          valid = false;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1083,14 +1195,18 @@ uiTreeViewMoveBefore (uitree_t *uitree)
 }
 
 void
-uiTreeViewMoveAfter (uitree_t *uitree)
+uiTreeViewMoveAfter (uiwcont_t *uiwidget)
 {
   GtkTreeIter   citer;
   bool          valid = false;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1106,13 +1222,17 @@ uiTreeViewMoveAfter (uitree_t *uitree)
 
 /* gets the value for the selected row */
 long
-uiTreeViewGetValue (uitree_t *uitree, int col)
+uiTreeViewGetValue (uiwcont_t *uiwidget, int col)
 {
-  glong     val;
+  glong       val;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return -1;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return -1;
   }
@@ -1120,7 +1240,7 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
   if (uitree->selmode == SELECT_MULTIPLE) {
     uitree->selectset = false;
     uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
-    uiTreeViewSelectForeach (uitree, NULL);
+    uiTreeViewSelectForeach (uiwidget, NULL);
     uitree->selectprocessmode = SELECT_PROCESS_NONE;
   }
 
@@ -1134,13 +1254,17 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
 
 /* gets the string value for the selected row */
 char *
-uiTreeViewGetValueStr (uitree_t *uitree, int col)
+uiTreeViewGetValueStr (uiwcont_t *uiwidget, int col)
 {
-  char    *str;
+  char      *str;
+  uitree_t  *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return NULL;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return NULL;
   }
@@ -1155,13 +1279,17 @@ uiTreeViewGetValueStr (uitree_t *uitree, int col)
 
 /* gets the value for the row just processed by select-foreach */
 long
-uiTreeViewSelectForeachGetValue (uitree_t *uitree, int col)
+uiTreeViewSelectForeachGetValue (uiwcont_t *uiwidget, int col)
 {
   glong     val;
+  uitree_t  *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return -1;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return -1;
   }
@@ -1171,33 +1299,43 @@ uiTreeViewSelectForeachGetValue (uitree_t *uitree, int col)
 }
 
 void
-uiTreeViewForeach (uitree_t *uitree, callback_t *cb)
+uiTreeViewForeach (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uitree == NULL) {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
   /* save the selection iter */
   /* the foreach handler sets it so that data can be retrieved */
-  uiTreeViewSelectSave (uitree);
+  uiTreeViewSelectSave (uiwidget);
   uitree->foreachcb = cb;
-  gtk_tree_model_foreach (uitree->model, uiTreeViewForeachHandler, uitree);
-  uiTreeViewSelectRestore (uitree);
+  gtk_tree_model_foreach (uitree->model, uiTreeViewForeachHandler, uiwidget);
+  uiTreeViewSelectRestore (uiwidget);
 }
 
 void
-uiTreeViewSelectSet (uitree_t *uitree, int row)
+uiTreeViewSelectSet (uiwcont_t *uiwidget, int row)
 {
   char        tbuff [40];
   GtkTreePath *path = NULL;
+  uitree_t    *uitree;
 
-  uitree->selectset = false;
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
+  uitree->selectset = false;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1227,16 +1365,20 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
 }
 
 void
-uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
+uiTreeViewValueIteratorSet (uiwcont_t *uiwidget, int row)
 {
-  char    tbuff [40];
-  bool    valid = false;
+  char      tbuff [40];
+  bool      valid = false;
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
 
   uitree->valueiterset = false;
 
-  if (uitree == NULL) {
-    return;
-  }
   if (uitree->model == NULL) {
     return;
   }
@@ -1252,31 +1394,43 @@ uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
 }
 
 void
-uiTreeViewValueIteratorClear (uitree_t *uitree)
+uiTreeViewValueIteratorClear (uiwcont_t *uiwidget)
 {
+  uitree_t  *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
+
   uitree->valueiterset = false;
 }
 
 void
-uiTreeViewScrollToCell (uitree_t *uitree)
+uiTreeViewScrollToCell (uiwcont_t *uiwidget)
 {
   GtkTreePath *path = NULL;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
-  if (! GTK_IS_TREE_VIEW (uitree->tree->widget)) {
+  if (! GTK_IS_TREE_VIEW (uiwidget->widget)) {
     return;
   }
 
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uitree->tree->widget),
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidget->widget),
         path, NULL, FALSE, 0.0, 0.0);
     mdextfree (path);
     gtk_tree_path_free (path);
@@ -1284,36 +1438,40 @@ uiTreeViewScrollToCell (uitree_t *uitree)
 }
 
 void
-uiTreeViewAttachScrollController (uitree_t *uitree, double upper)
+uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
 {
-  GtkAdjustment       *adjustment;
+  GtkAdjustment   *adjustment;
+  uitree_t        *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-  if (uitree->tree == NULL) {
-    return;
-  }
+
+  uitree = uiwidget->uiint.uitree;
 
   adjustment = gtk_scrollable_get_vadjustment (
-      GTK_SCROLLABLE (uitree->tree->widget));
+      GTK_SCROLLABLE (uiwidget->widget));
   gtk_adjustment_set_upper (adjustment, upper);
   uitree->scrollController =
-      gtk_event_controller_scroll_new (uitree->tree->widget,
+      gtk_event_controller_scroll_new (uiwidget->widget,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
-  gtk_widget_add_events (uitree->tree->widget, GDK_SCROLL_MASK);
+  gtk_widget_add_events (uiwidget->widget, GDK_SCROLL_MASK);
 }
 
 int
-uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y)
+uiTreeViewGetDragDropRow (uiwcont_t *uiwidget, int x, int y)
 {
   int                     row;
   GtkTreePath             *path;
   GtkTreeViewDropPosition pos;
 
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return -1;
+  }
+
   row = -1;
-  if (gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (uiwcont->widget),
+  if (gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (uiwidget->widget),
       x, y, &path, &pos)) {
     char      *pathstr;
 
@@ -1339,15 +1497,19 @@ static void
 uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
     const gchar* ntext, gpointer udata)
 {
-  uitree_t      *uitree = udata;
+  uiwcont_t     *uiwidget = udata;
   GtkTreeIter   iter;
   GType         coltype;
   int           col;
   char          *oldstr = NULL;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1384,21 +1546,25 @@ static void
 uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
     gchar *pathstr, gpointer udata)
 {
-  uitree_t      *uitree = udata;
+  uiwcont_t     *uiwidget = udata;
   GtkWidget     *tree;
   GtkTreeModel  *model;
   GtkTreeIter   iter;
   int           col;
   gint          val;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
-  tree = uitree->tree->widget;
+  tree = uiwidget->widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */
@@ -1418,20 +1584,24 @@ static void
 uiTreeViewRadioHandler (GtkCellRendererToggle *r,
     gchar *pathstr, gpointer udata)
 {
-  uitree_t      *uitree = udata;
+  uiwcont_t     *uiwidget = udata;
   GtkWidget     *tree;
   GtkTreeModel  *model;
   GtkTreeIter   iter;
   int           col;
+  uitree_t      *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
 
-  tree = uitree->tree->widget;
+  tree = uiwidget->widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */
@@ -1460,13 +1630,17 @@ static void
 uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata)
 {
-  uitree_t    *uitree = udata;
+  uiwcont_t   *uiwidget = udata;
   int         count;
   int         col = TREE_NO_COLUMN;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return;
   }
@@ -1477,7 +1651,7 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
     }
   }
 
-  count = uiTreeViewSelectGetCount (uitree);
+  count = uiTreeViewSelectGetCount (uiwidget);
   uitree->selectset = false;
   if (count == 1 && uitree->selmode == SELECT_SINGLE) {
     bool  valid;
@@ -1496,12 +1670,16 @@ static gboolean
 uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
     GtkTreeIter* iter, gpointer udata)
 {
-  uitree_t  *uitree = udata;
-  bool      rc = UICB_CONT;
+  uiwcont_t   *uiwidget = udata;
+  bool        rc = UICB_CONT;
+  uitree_t    *uitree;
 
-  if (uitree == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return rc;
   }
+
+  uitree = uiwidget->uiint.uitree;
+
   if (uitree->model == NULL) {
     return rc;
   }
@@ -1563,7 +1741,14 @@ static void
 uiTreeViewSelectForeachHandler (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
 {
-  uitree_t  *uitree = udata;
+  uiwcont_t   *uiwidget = udata;
+  uitree_t    *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
 
   if (uitree->selectprocessmode == SELECT_PROCESS_CLEAR_ALL) {
     gtk_tree_selection_unselect_iter (uitree->sel, iter);
@@ -1593,7 +1778,14 @@ uiTreeViewSelectForeachHandler (GtkTreeModel *model,
 static void
 uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata)
 {
-  uitree_t  *uitree = udata;
+  uiwcont_t   *uiwidget = udata;
+  uitree_t    *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
 
   if (uitree->selchgcb != NULL) {
     callbackHandler (uitree->selchgcb);
@@ -1604,12 +1796,19 @@ static void
 uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
     gpointer udata)
 {
-  uitree_t        *uitree = udata;
-  GtkWidget       *tree;
-  GtkAdjustment   *adjustment;
-  int             ps;
-  int             rows;
-  double          tmax;
+  uiwcont_t     *uiwidget = udata;
+  GtkWidget     *tree;
+  GtkAdjustment *adjustment;
+  int           ps;
+  int           rows;
+  double        tmax;
+  uitree_t      *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return;
+  }
+
+  uitree = uiwidget->uiint.uitree;
 
   if (allocation->height == uitree->lastTreeSize) {
     return;
@@ -1622,7 +1821,7 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
   /* the step increment is useless */
   /* the page-size and upper can be used to determine */
   /* how many rows can be displayed */
-  tree = uitree->tree->widget;
+  tree = uiwidget->widget;
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (tree));
   ps = gtk_adjustment_get_page_size (adjustment);
 
@@ -1659,9 +1858,16 @@ static gboolean
 uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata)
 {
-  uitree_t  *uitree = udata;
-  int       dir = TREE_SCROLL_NEXT;
-  int       rc = UICB_CONT;
+  uiwcont_t   *uiwidget = udata;
+  int         dir = TREE_SCROLL_NEXT;
+  int         rc = UICB_CONT;
+  uitree_t    *uitree;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
+    return rc;
+  }
+
+  uitree = uiwidget->uiint.uitree;
 
   /* i'd like to have a way to turn off smooth scrolling for the application */
   if (event->direction == GDK_SCROLL_SMOOTH) {

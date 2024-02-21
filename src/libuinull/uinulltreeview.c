@@ -25,7 +25,7 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-typedef struct uitree {
+typedef struct {
   int         junk;
 } uitree_t;
 
@@ -36,7 +36,7 @@ uiCreateTreeView (void)
 }
 
 void
-uiTreeViewFree (uitree_t *uitree)
+uiTreeViewFree (uiwcont_t *uiwidget)
 {
   return;
 }
@@ -48,171 +48,165 @@ uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y)
 }
 
 void
-uiTreeViewEnableHeaders (uitree_t *uitree)
+uiTreeViewEnableHeaders (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewDisableHeaders (uitree_t *uitree)
+uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewDarkBackground (uitree_t *uitree)
+uiTreeViewDarkBackground (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewDisableSingleClick (uitree_t *uitree)
+uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
+uiTreeViewSelectSetMode (uiwcont_t *uiwidget, int mode)
 {
   return;
 }
 
 void
-uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetSelectChangedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetSizeChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewSetScrollEventCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetScrollEventCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetRowActivatedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewRadioSetRow (uitree_t *uitree, int row)
-{
-  return;
-}
-
-uiwcont_t *
-uiTreeViewGetWidgetContainer (uitree_t *uitree)
-{
-  return NULL;
-}
-
-void
-uiTreeViewPreColumnSetMinWidth (uitree_t *uitree, int minwidth)
+uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row)
 {
   return;
 }
 
 void
-uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
+uiTreeViewPreColumnSetMinWidth (uiwcont_t *uiwidget, int minwidth)
 {
   return;
 }
 
 void
-uiTreeViewPreColumnSetColorColumn (uitree_t *uitree, int colcol, int colsetcol)
+uiTreeViewPreColumnSetEllipsizeColumn (uiwcont_t *uiwidget, int ellipsizeColumn)
 {
   return;
 }
 
 void
-uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
+uiTreeViewPreColumnSetColorColumn (uiwcont_t *uiwidget, int colcol, int colsetcol)
+{
+  return;
+}
+
+void
+uiTreeViewAppendColumn (uiwcont_t *uiwidget, int activecol, int widgettype,
     int alignment, int coldisp, const char *title, ...)
 {
   return;
 }
 
 void
-uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag)
+uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
 {
   return;
 }
 
 void
-uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
+uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
 {
   return;
 }
 
 void
-uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
+uiTreeViewCreateValueStoreFromList (uiwcont_t *uiwidget, int colmax, int *typelist)
 {
   return;
 }
 
 void
-uiTreeViewValueAppend (uitree_t *uitree)
+uiTreeViewValueAppend (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewValueInsertBefore (uitree_t *uitree)
+uiTreeViewValueInsertBefore (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewValueInsertAfter (uitree_t *uitree)
+uiTreeViewValueInsertAfter (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewValueRemove (uitree_t *uitree)
+uiTreeViewValueRemove (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewValueClear (uitree_t *uitree, int startrow)
+uiTreeViewValueClear (uiwcont_t *uiwidget, int startrow)
 {
   return;
 }
 
 /* must be called before set-values if the value iter is being used */
 void
-uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)
+uiTreeViewSetValueEllipsize (uiwcont_t *uiwidget, int col)
 {
   return;
 }
 
 void
-uiTreeViewSetValues (uitree_t *uitree, ...)
+uiTreeViewSetValues (uiwcont_t *uiwidget, ...)
 {
   return;
 }
 
 int
-uiTreeViewSelectGetCount (uitree_t *uitree)
+uiTreeViewSelectGetCount (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 int
-uiTreeViewSelectGetIndex (uitree_t *uitree)
+uiTreeViewSelectGetIndex (uiwcont_t *uiwidget)
 {
   return 0;
 }
@@ -221,131 +215,131 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
 /* coded for both select-mode single and multiple */
 /* makes sure the iterator is actually selected and selectiter is set */
 void
-uiTreeViewSelectCurrent (uitree_t *uitree)
+uiTreeViewSelectCurrent (uiwcont_t *uiwidget)
 {
   return;
 }
 
 bool
-uiTreeViewSelectFirst (uitree_t *uitree)
+uiTreeViewSelectFirst (uiwcont_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiTreeViewSelectNext (uitree_t *uitree)
+uiTreeViewSelectNext (uiwcont_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiTreeViewSelectPrevious (uitree_t *uitree)
+uiTreeViewSelectPrevious (uiwcont_t *uiwidget)
 {
   return false;
 }
 
 void
-uiTreeViewSelectDefault (uitree_t *uitree)
+uiTreeViewSelectDefault (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewSelectSave (uitree_t *uitree)
+uiTreeViewSelectSave (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewSelectRestore (uitree_t *uitree)
+uiTreeViewSelectRestore (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewSelectClear (uitree_t *uitree)
+uiTreeViewSelectClear (uiwcont_t *uiwidget)
 {
   return;
 }
 
 /* use when the select mode is select-multiple */
 void
-uiTreeViewSelectClearAll (uitree_t *uitree)
+uiTreeViewSelectClearAll (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewSelectForeach (uitree_t *uitree, callback_t *cb)
+uiTreeViewSelectForeach (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewMoveBefore (uitree_t *uitree)
+uiTreeViewMoveBefore (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewMoveAfter (uitree_t *uitree)
+uiTreeViewMoveAfter (uiwcont_t *uiwidget)
 {
   return;
 }
 
 /* gets the value for the selected row */
 long
-uiTreeViewGetValue (uitree_t *uitree, int col)
+uiTreeViewGetValue (uiwcont_t *uiwidget, int col)
 {
   return 0;
 }
 
 /* gets the string value for the selected row */
 char *
-uiTreeViewGetValueStr (uitree_t *uitree, int col)
+uiTreeViewGetValueStr (uiwcont_t *uiwidget, int col)
 {
   return NULL;
 }
 
 /* gets the value for the row just processed by select-foreach */
 long
-uiTreeViewSelectForeachGetValue (uitree_t *uitree, int col)
+uiTreeViewSelectForeachGetValue (uiwcont_t *uiwidget, int col)
 {
   return 0;
 }
 
 void
-uiTreeViewForeach (uitree_t *uitree, callback_t *cb)
+uiTreeViewForeach (uiwcont_t *uiwidget, callback_t *cb)
 {
   return;
 }
 
 void
-uiTreeViewSelectSet (uitree_t *uitree, int row)
+uiTreeViewSelectSet (uiwcont_t *uiwidget, int row)
 {
   return;
 }
 
 void
-uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
+uiTreeViewValueIteratorSet (uiwcont_t *uiwidget, int row)
 {
   return;
 }
 
 void
-uiTreeViewValueIteratorClear (uitree_t *uitree)
+uiTreeViewValueIteratorClear (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewScrollToCell (uitree_t *uitree)
+uiTreeViewScrollToCell (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiTreeViewAttachScrollController (uitree_t *uitree, double upper)
+uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
 {
   return;
 }

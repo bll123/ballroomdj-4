@@ -54,7 +54,7 @@ enum {
 };
 
 typedef struct uiduallist {
-  uitree_t          *uitrees [DUALLIST_TREE_MAX];
+  uiwcont_t         *uitrees [DUALLIST_TREE_MAX];
   callback_t        *callbacks [DUALLIST_CB_MAX];
   uiwcont_t         *buttons [DUALLIST_BUTTON_MAX];
   int               flags;
@@ -85,8 +85,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwcont_t     *dvbox;
   uiwcont_t     *scwindow;
   uiwcont_t     *uiwidgetp = NULL;
-  uitree_t      *uitree;
-  uiwcont_t     *uitreewidgetp = NULL;
+  uiwcont_t     *uitree;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
@@ -140,10 +139,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_SOURCE] = uitree;
-  uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
-  uiWidgetExpandVert (uitreewidgetp);
-  uiWindowPackInWindow (scwindow, uitreewidgetp);
+  uiWidgetExpandVert (uitree);
+  uiWindowPackInWindow (scwindow, uitree);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -197,10 +195,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_TARGET] = uitree;
-  uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
-  uiWidgetExpandVert (uitreewidgetp);
-  uiWindowPackInWindow (scwindow, uitreewidgetp);
+  uiWidgetExpandVert (uitree);
+  uiWindowPackInWindow (scwindow, uitree);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -273,8 +270,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
   const char    *keystr;
   slistidx_t    siteridx;
-  uitree_t      *uitree = NULL;
-  uitree_t      *uistree = NULL;
+  uiwcont_t     *uitree = NULL;
+  uiwcont_t     *uistree = NULL;
 
   if (duallist == NULL) {
     return;
@@ -354,7 +351,7 @@ uiduallistClearChanged (uiduallist_t *duallist)
 slist_t *
 uiduallistGetList (uiduallist_t *duallist)
 {
-  uitree_t      *uittree;
+  uiwcont_t     *uittree;
   slist_t       *slist;
 
 
@@ -386,7 +383,7 @@ uiduallistMoveNext (void *tduallist)
 static void
 uiduallistMove (uiduallist_t *duallist, int which, int dir)
 {
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   int               count;
 
   if (duallist == NULL) {
@@ -420,9 +417,9 @@ static bool
 uiduallistDispSelect (void *udata)
 {
   uiduallist_t      *duallist = udata;
-  uitree_t          *uistree;
+  uiwcont_t         *uistree;
   int               count;
-  uitree_t          *uittree;
+  uiwcont_t         *uittree;
   char              *str;
   int               tval;
   int               idx;
@@ -464,8 +461,8 @@ static bool
 uiduallistDispRemove (void *udata)
 {
   uiduallist_t  *duallist = udata;
-  uitree_t      *uittree;
-  uitree_t      *uistree;
+  uiwcont_t     *uittree;
+  uiwcont_t     *uistree;
   int           count;
   int           idx;
 
@@ -544,7 +541,7 @@ static bool
 uiduallistGetData (void *udata)
 {
   uiduallist_t  *duallist = udata;
-  uitree_t      *uittree;
+  uiwcont_t     *uittree;
   char          *str;
   long          tval;
 
@@ -560,7 +557,7 @@ uiduallistGetData (void *udata)
 static void
 uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
 {
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
 
   if (duallist == NULL) {
     return;

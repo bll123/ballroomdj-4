@@ -74,6 +74,7 @@ typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
+typedef struct uitree uitree_t;
 
 /* for future use */
 /* the widget pointer will be moved out of the below structure */

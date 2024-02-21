@@ -14,6 +14,7 @@
 
 #include "ui/uiwcont-int.h"
 
+/* the includes are needed to get the declaration of ...Free() */
 #include "ui/uibutton.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
@@ -23,6 +24,7 @@
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
+#include "ui/uitreeview.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -72,6 +74,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_TEXT_BOX: {
       uiTextBoxFree (uiwidget);
+      break;
+    }
+    case WCONT_T_TREE: {
+      uiTreeViewFree (uiwidget);
       break;
     }
     default: {

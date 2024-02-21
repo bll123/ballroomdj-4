@@ -2,10 +2,9 @@
 #define INC_UITREEDDISP_H
 
 #include "callback.h"
+#include "uiwcont.h"
 
-#include "ui/uitreeview.h"
-
-void uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col, int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol);
-void uitreedispSetDisplayColumn (uitree_t *uitree, int col, long num, const char *str);
+void uitreedispAddDisplayColumns (uiwcont_t *uiwidget, slist_t *sellist, int col, int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol);
+void uitreedispSetDisplayColumn (uiwcont_t *uiwidget, int col, long num, const char *str);
 
 #endif /* INC_UITREEDDISP_H */

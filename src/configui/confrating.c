@@ -70,7 +70,7 @@ confuiCreateRatingTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   rating_t          *ratings;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateRatingTable");

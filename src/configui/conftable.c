@@ -51,12 +51,11 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStartExpand (mhbox, scwindow);
 
   gui->tables [id].uitree = uiCreateTreeView ();
-  uiwidgetp = uiTreeViewGetWidgetContainer (gui->tables [id].uitree);
   gui->tables [id].flags = flags;
 
-  uiWidgetSetMarginStart (uiwidgetp, 8);
+  uiWidgetSetMarginStart (gui->tables [id].uitree, 8);
   uiTreeViewEnableHeaders (gui->tables [id].uitree);
-  uiWindowPackInWindow (scwindow, uiwidgetp);
+  uiWindowPackInWindow (scwindow, gui->tables [id].uitree);
 
   uiwcontFree (scwindow);
 
@@ -170,7 +169,7 @@ bool
 confuiSwitchTable (void *udata, long pagenum)
 {
   confuigui_t       *gui = udata;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   confuiident_t     newid;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
@@ -246,7 +245,7 @@ confuiTableMoveDown (void *udata)
 static void
 confuiTableMove (confuigui_t *gui, int dir)
 {
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   int               count;
   int               idx;
   int               flags;
@@ -301,7 +300,7 @@ static bool
 confuiTableRemove (void *udata)
 {
   confuigui_t       *gui = udata;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   int               idx;
   int               count;
   int               flags;

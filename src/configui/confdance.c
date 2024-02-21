@@ -197,7 +197,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   slistidx_t        iteridx;
   ilistidx_t        key;
   dance_t           *dances;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   slist_t           *dancelist;
 
 
@@ -258,7 +258,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   const char      *str;
-  uitree_t        *uitree;
+  uiwcont_t       *uitree;
   int             count;
   ilistidx_t      key;
   dance_t         *dances;
@@ -359,7 +359,7 @@ static void
 confuiDanceSpinboxChg (void *udata, int widx)
 {
   confuigui_t     *gui = udata;
-  uitree_t        *uitree;
+  uiwcont_t       *uitree;
   int             count;
   double          value;
   long            nval = 0;

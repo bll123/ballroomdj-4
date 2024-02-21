@@ -102,7 +102,7 @@ enum {
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *wcont [SONGSEL_W_MAX];
-  uitree_t            *songselTree;
+  uiwcont_t           *songselTree;
   uiwcont_t           *reqQueueLabel;
   /* other data */
   int                 maxRows;
@@ -213,7 +213,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 {
   ss_internal_t     *ssint;
   uiwcont_t         *uiwidgetp;
-  uiwcont_t         *uitreewidgetp;
   uiwcont_t         *hbox;
   uiwcont_t         *vbox;
   slist_t           *sellist;
@@ -336,10 +335,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiBoxPackStartExpand (vbox, ssint->wcont [SONGSEL_W_SCROLL_WIN]);
 
   ssint->songselTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
-  uiWidgetAlignHorizFill (uitreewidgetp);
-  uiWidgetExpandHoriz (uitreewidgetp);
-  uiWidgetExpandVert (uitreewidgetp);
+  uiWidgetAlignHorizFill (ssint->songselTree);
+  uiWidgetExpandHoriz (ssint->songselTree);
+  uiWidgetExpandVert (ssint->songselTree);
   uiTreeViewEnableHeaders (ssint->songselTree);
   /* for song list editing, multiple selections are valid */
   /* for the music manager, multiple selections are valid to allow */
@@ -350,11 +348,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewSelectSetMode (ssint->songselTree, SELECT_MULTIPLE);
   }
-  uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uitreewidgetp,
+  uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], ssint->songselTree,
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (ssint->songselTree, uisongsel->dfilterCount);
-  uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uitreewidgetp);
+  uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], ssint->songselTree);
 
   ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
         uisongselCheckFavChgCallback, uisongsel);

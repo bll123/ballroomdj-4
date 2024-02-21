@@ -48,7 +48,7 @@ enum {
 };
 
 typedef struct managepltree {
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   uiwcont_t         *errorMsg;
   uiwcont_t         *uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
@@ -128,15 +128,14 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
   uiBoxPackStartExpand (vboxp, scwindow);
 
   managepltree->uitree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidgetContainer (managepltree->uitree);
 
   managepltree->callbacks [MPLTREE_CB_CHANGED] = callbackInitLong (
       managePlaylistTreeChanged, managepltree);
   uiTreeViewSetEditedCallback (managepltree->uitree,
       managepltree->callbacks [MPLTREE_CB_CHANGED]);
 
-  uiWidgetExpandVert (uitreewidgetp);
-  uiWindowPackInWindow (scwindow, uitreewidgetp);
+  uiWidgetExpandVert (managepltree->uitree);
+  uiWindowPackInWindow (scwindow, managepltree->uitree);
 
   /* done with the scrolled window */
   uiwcontFree (scwindow);
@@ -440,7 +439,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   slist_t       *dancelist;
   slistidx_t    iteridx;
   ilistidx_t    key;
-  uitree_t      *uitree;
+  uiwcont_t     *uitree;
   uiwcont_t     *adjustment;
 
   uitree = managepltree->uitree;

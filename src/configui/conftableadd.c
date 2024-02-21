@@ -27,7 +27,7 @@ bool
 confuiTableAdd (void *udata)
 {
   confuigui_t       *gui = udata;
-  uitree_t          *uitree = NULL;
+  uiwcont_t         *uitree = NULL;
   int               count;
   int               flags;
   bool              found = false;

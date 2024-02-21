@@ -71,7 +71,7 @@ confuiCreateLevelTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   level_t           *levels;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
 
   logProcBegin (LOG_PROC, "confuiCreateLevelTable");
 

@@ -31,7 +31,7 @@ enum {
 typedef struct uiselectfile {
   uiwcont_t        *parentwinp;
   uiwcont_t         *selfileDialog;
-  uitree_t          *selfiletree;
+  uiwcont_t         *selfiletree;
   callback_t        *rowactivecb;
   callback_t        *respcb;
   callback_t        *selfilecb;
@@ -154,7 +154,6 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *uitreewidgetp;
   uiwcont_t     *scwindow;
   char          tbuff [200];
   slistidx_t    fliteridx;
@@ -184,11 +183,10 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackStartExpand (vbox, scwindow);
 
   selectfile->selfiletree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidgetContainer (selectfile->selfiletree);
   uiTreeViewDisableSingleClick (selectfile->selfiletree);
-  uiWidgetAlignHorizFill (uitreewidgetp);
-  uiWidgetAlignVertFill (uitreewidgetp);
-  uiWindowPackInWindow (scwindow, uitreewidgetp);
+  uiWidgetAlignHorizFill (selectfile->selfiletree);
+  uiWidgetAlignVertFill (selectfile->selfiletree);
+  uiWindowPackInWindow (scwindow, selectfile->selfiletree);
 
   uiwcontFree (scwindow);
 

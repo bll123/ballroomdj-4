@@ -103,7 +103,7 @@ typedef struct aid_internal {
   uiwcont_t           *wcont [UIAUDID_W_MAX];
   uiwcont_t           *szgrp [UIAUDID_SZGRP_MAX];
   callback_t          *callbacks [UIAUDID_CB_MAX];
-  uitree_t            *alistTree;
+  uiwcont_t           *alistTree;
   song_t              *song;
   uiaudioiditem_t     *items;
   nlist_t             *currlist;
@@ -254,7 +254,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcont_t         *pw;
   uiwcont_t         *hbox;
   uiwcont_t         *uiwidgetp;
-  uiwcont_t         *uitreewidgetp;
   int               count;
   uiwcont_t         *col;
   uiwcont_t         *hhbox;
@@ -361,13 +360,12 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiPanedWindowPackStart (pw, uiwidgetp);
 
   audioidint->alistTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidgetContainer (audioidint->alistTree);
 
   uiTreeViewEnableHeaders (audioidint->alistTree);
-  uiWidgetAlignHorizFill (uitreewidgetp);
-  uiWidgetExpandHoriz (uitreewidgetp);
-  uiWidgetExpandVert (uitreewidgetp);
-  uiWindowPackInWindow (uiwidgetp, uitreewidgetp);
+  uiWidgetAlignHorizFill (audioidint->alistTree);
+  uiWidgetExpandHoriz (audioidint->alistTree);
+  uiWidgetExpandVert (audioidint->alistTree);
+  uiWindowPackInWindow (uiwidgetp, audioidint->alistTree);
   uiwcontFree (uiwidgetp);  // scrolled window
 
   audioidint->callbacks [UIAUDID_CB_ROW_SELECT] = callbackInit (

@@ -31,7 +31,7 @@ bool
 confuiDanceSelect (void *udata, long col)
 {
   confuigui_t   *gui = udata;
-  uitree_t      *uitree = NULL;
+  uiwcont_t     *uitree = NULL;
   ilistidx_t    key;
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");

@@ -65,7 +65,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   genre_t           *genres;
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
 
   logProcBegin (LOG_PROC, "confuiCreateGenreTable");
 

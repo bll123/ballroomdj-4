@@ -28,14 +28,14 @@
 /* to create the display listings */
 
 void
-uitreedispAddDisplayColumns (uitree_t *uitree,
+uitreedispAddDisplayColumns (uiwcont_t *uiwidget,
     slist_t *sellist, int col, int fontcol, int ellipsizeColumn,
     int colorcol, int colorsetcol)
 {
   slistidx_t  seliteridx;
   int         tagidx;
 
-  if (uitree == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
 
@@ -56,24 +56,24 @@ uitreedispAddDisplayColumns (uitree_t *uitree,
     }
 
     if (tagidx != TAG_AUDIOID_IDENT && colorcol != TREE_NO_COLUMN) {
-      uiTreeViewPreColumnSetColorColumn (uitree, colorcol, colorsetcol);
+      uiTreeViewPreColumnSetColorColumn (uiwidget, colorcol, colorsetcol);
     }
 
     if (tagidx == TAG_TITLE) {
-      uiTreeViewPreColumnSetMinWidth (uitree, 200);
-      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+      uiTreeViewPreColumnSetMinWidth (uiwidget, 200);
+      uiTreeViewPreColumnSetEllipsizeColumn (uiwidget, ellipsizeColumn);
     }
     if (tagidx == TAG_ARTIST) {
-      uiTreeViewPreColumnSetMinWidth (uitree, 100);
-      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+      uiTreeViewPreColumnSetMinWidth (uiwidget, 100);
+      uiTreeViewPreColumnSetEllipsizeColumn (uiwidget, ellipsizeColumn);
     }
     if (tagidx == TAG_ALBUM) {
-      uiTreeViewPreColumnSetMinWidth (uitree, 40);
-      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+      uiTreeViewPreColumnSetMinWidth (uiwidget, 40);
+      uiTreeViewPreColumnSetEllipsizeColumn (uiwidget, ellipsizeColumn);
     }
     if (tagidx == TAG_ALBUMARTIST) {
-      uiTreeViewPreColumnSetMinWidth (uitree, 100);
-      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
+      uiTreeViewPreColumnSetMinWidth (uiwidget, 100);
+      uiTreeViewPreColumnSetEllipsizeColumn (uiwidget, ellipsizeColumn);
     }
 
     if (tagidx == TAG_FAVORITE) {
@@ -81,20 +81,20 @@ uitreedispAddDisplayColumns (uitree_t *uitree,
 
       /* use the normal sized UI font here */
       songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-      uiTreeViewAppendColumn (uitree, col,
+      uiTreeViewAppendColumn (uiwidget, col,
           TREE_WIDGET_TEXT, TREE_ALIGN_CENTER,
           TREE_COL_DISP_GROW,
             songFavoriteGetStr (songfav, SONG_FAVORITE_NONE, SONGFAV_DISPLAY),
           TREE_COL_TYPE_MARKUP, col,
           TREE_COL_TYPE_END);
     } else if (tagidx == TAG_AUDIOID_IDENT) {
-      uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
+      uiTreeViewAppendColumn (uiwidget, TREE_NO_COLUMN,
           TREE_WIDGET_IMAGE, TREE_ALIGN_CENTER,
           TREE_COL_DISP_GROW, title,
           TREE_COL_TYPE_IMAGE, col,
           TREE_COL_TYPE_END);
     } else {
-      uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
+      uiTreeViewAppendColumn (uiwidget, TREE_NO_COLUMN,
           TREE_WIDGET_TEXT, alignment,
           TREE_COL_DISP_GROW, title,
           TREE_COL_TYPE_TEXT, col,
@@ -109,11 +109,11 @@ uitreedispAddDisplayColumns (uitree_t *uitree,
 }
 
 void
-uitreedispSetDisplayColumn (uitree_t *uitree, int col, long num,
+uitreedispSetDisplayColumn (uiwcont_t *uiwidget, int col, long num,
     const char *str)
 {
   if (str != NULL) {
-    uiTreeViewSetValues (uitree, col, str, TREE_VALUE_END);
+    uiTreeViewSetValues (uiwidget, col, str, TREE_VALUE_END);
   } else {
     char    tstr [40];
 
@@ -121,6 +121,6 @@ uitreedispSetDisplayColumn (uitree_t *uitree, int col, long num,
     if (num >= 0) {
       snprintf (tstr, sizeof (tstr), "%ld", num);
     }
-    uiTreeViewSetValues (uitree, col, tstr, TREE_VALUE_END);
+    uiTreeViewSetValues (uiwidget, col, tstr, TREE_VALUE_END);
   }
 }

@@ -297,7 +297,7 @@ enum {
 };
 
 typedef struct confuitable {
-  uitree_t          *uitree;
+  uiwcont_t         *uitree;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uiwcont_t         *buttons [CONFUI_BUTTON_TABLE_MAX];
   int               flags;
@@ -525,11 +525,11 @@ bool confuiDanceSelect (void *udata, long col);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */
-void confuiDanceSet (uitree_t *uitree, const char *dancedisp, ilistidx_t key);
-void confuiGenreSet (uitree_t *uitree, int editable, const char *genredisp, int clflag);
-void confuiLevelSet (uitree_t *uitree, int editable, const char *leveldisp, long weight, int def);
-void confuiRatingSet (uitree_t *uitree, int editable, const char *ratingdisp, long weight);
-void confuiStatusSet (uitree_t *uitree, int editable, const char *statusdisp, int playflag);
+void confuiDanceSet (uiwcont_t *uiwidget, const char *dancedisp, ilistidx_t key);
+void confuiGenreSet (uiwcont_t *uiwidget, int editable, const char *genredisp, int clflag);
+void confuiLevelSet (uiwcont_t *uiwidget, int editable, const char *leveldisp, long weight, int def);
+void confuiRatingSet (uiwcont_t *uiwidget, int editable, const char *ratingdisp, long weight);
+void confuiStatusSet (uiwcont_t *uiwidget, int editable, const char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);
