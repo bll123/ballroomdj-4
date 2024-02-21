@@ -48,5 +48,11 @@ be changed.  All of the display characters may be changed.
 The orgopt.txt file has internal documentation.
 [Contact](en-Getting%20Help) the developers for more information.
 
+###### data/sortopt.txt
+
+The sortopt.txt file has the list of selections for sorting the
+display. [Contact](en-Getting%20Help) the developers for more
+information.
+
 [Wiki Home](Home)
 <br>_(Updated 2024-02-20 07:02:04; BDJ4 version 4.6.0)_

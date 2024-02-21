@@ -46,11 +46,11 @@ for each song for this playlist.
 
 Song selection filters are in the __Settings__ tab.
 
-The song selection filters are used for automatic and sequenced
+The song selection filters are only displayed for automatic and sequenced
 playlists.  The filters limit which songs can be played.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-ss](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-ss-A.png)
+![plmgmt-ss](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-ss-B.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Song Selection__</span> </div>
 
 __Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
@@ -154,4 +154,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-20 07:02:04; BDJ4 version 4.6.0)_
+<br>_(Updated 2024-02-21 03:12:49; BDJ4 version 4.6.0)_
