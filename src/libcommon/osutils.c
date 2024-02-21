@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <locale.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"

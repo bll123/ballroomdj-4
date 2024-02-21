@@ -105,7 +105,6 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
 {
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
-  uiwcont_t   *uitreewidgetp;
   uiwcont_t   *scwindow;
   const char  *bpmstr;
   char        tbuff [100];

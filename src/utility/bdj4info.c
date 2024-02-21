@@ -121,6 +121,8 @@ main (int argc, char *argv [])
   fprintf (stdout, " i: time_t %d\n", (int) sizeof (time_t));
   fprintf (stdout, " i: uint32_t %d %ld\n", (int) sizeof (uint32_t), (long) INT32_MAX);
   fprintf (stdout, " i: uint64_t %d\n", (int) sizeof (uint64_t));
+  fprintf (stdout, " c: _POSIX_C_SOURCE %ld\n", _POSIX_C_SOURCE);
+  fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 #if BDJ4_USE_GTK3
   fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
