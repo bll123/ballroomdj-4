@@ -534,13 +534,10 @@ void
 uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
 {
   GtkTreeViewColumn   *column = NULL;
-  uitree_t            *uitree;
 
   if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
   }
-
-  uitree = uiwidget->uiint.uitree;
 
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (uiwidget->widget), col);
   if (column != NULL) {
