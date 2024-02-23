@@ -137,6 +137,7 @@ function copyreleasefiles {
       ${stage}/bin/testsuite* \
       ${stage}/bin/tmusicsetup* \
       ${stage}/bin/ttagdbchk* \
+      ${stage}/bin/uitest* \
       ${stage}/bin/voltest* \
       ${stage}/bin/vsed* \
       ${stage}/http/*.bak.1 \

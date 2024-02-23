@@ -4,13 +4,18 @@
 
 <!--
 
-**4.6.1 2024-2---**
-* Bug Fixes:
+**4.7.0 2024-2---**
+
     * PENDING Installation: second install, incorrect copy of files.
-* Internal:
-    * Code cleanup.
 
 -->
+
+**4.6.1 2024-2-23**
+
+* Bug Fixes:
+    * Audio Identification: Fix crash when multiple selections.
+* Internal:
+    * Code cleanup.
 
 **4.6.0 2024-2-20**
 

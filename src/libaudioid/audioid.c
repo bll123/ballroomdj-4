@@ -76,8 +76,9 @@ audioidInit (void)
 
   audioid->dupchklist = nlistAlloc ("auid-chk-list", LIST_UNORDERED, NULL);
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
-    if (i == TAG_AUDIOID_SCORE) {
-      /* score is not added to the duplicate check */
+    if (i == TAG_AUDIOID_IDENT ||
+        i == TAG_AUDIOID_SCORE) {
+      /* do not add score or ident to the duplicate check list */
       continue;
     }
     if (tagdefs [i].isAudioID) {

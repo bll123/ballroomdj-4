@@ -114,6 +114,21 @@ target_link_libraries (vsed PRIVATE
   libbdj4common
 )
 
+add_executable (uitest
+  uitest.c
+)
+if (WIN32)
+  target_compile_options (uitest PRIVATE -municode)
+  target_compile_options (uitest PRIVATE -mwindows)
+endif()
+target_link_libraries (uitest PRIVATE
+  libbdj4ui ${BDJ4_UI_LIB}
+  libbdj4 libbdj4basic libbdj4common
+  ${ICUI18N_LDFLAGS}
+  ${GTK_LDFLAGS}
+)
+addIntlLibrary (uitest)
+
 install (TARGETS
   bdj4info
   bdj4tags
@@ -128,6 +143,7 @@ install (TARGETS
   dbustest
   aesed
   vsed
+  uitest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -144,3 +160,4 @@ updateRPath (dbustest)
 updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)
+updateRPath (uitest)

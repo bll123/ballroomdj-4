@@ -330,6 +330,8 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
     size_t  tsize;
     char    *tstr;
 
+    /* debugging :  re-use out-acr.json file as input rather */
+    /*              than making another query */
     tsize = fileopSize ("out-acr.json");
     ifh = fopen ("out-acr.json", "r");
     acr->webresplen = tsize;
