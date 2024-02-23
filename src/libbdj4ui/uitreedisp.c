@@ -55,7 +55,7 @@ uitreedispAddDisplayColumns (uiwcont_t *uiwidget,
       title = tagdefs [tagidx].displayname;
     }
 
-    if (tagidx != TAG_AUDIOID_IDENT && colorcol != TREE_NO_COLUMN) {
+    if (colorcol != TREE_NO_COLUMN) {
       uiTreeViewPreColumnSetColorColumn (uiwidget, colorcol, colorsetcol);
     }
 
@@ -86,12 +86,6 @@ uitreedispAddDisplayColumns (uiwcont_t *uiwidget,
           TREE_COL_DISP_GROW,
             songFavoriteGetStr (songfav, SONG_FAVORITE_NONE, SONGFAV_DISPLAY),
           TREE_COL_TYPE_MARKUP, col,
-          TREE_COL_TYPE_END);
-    } else if (tagidx == TAG_AUDIOID_IDENT) {
-      uiTreeViewAppendColumn (uiwidget, TREE_NO_COLUMN,
-          TREE_WIDGET_IMAGE, TREE_ALIGN_CENTER,
-          TREE_COL_DISP_GROW, title,
-          TREE_COL_TYPE_IMAGE, col,
           TREE_COL_TYPE_END);
     } else {
       uiTreeViewAppendColumn (uiwidget, TREE_NO_COLUMN,

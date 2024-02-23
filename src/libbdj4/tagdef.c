@@ -155,7 +155,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */

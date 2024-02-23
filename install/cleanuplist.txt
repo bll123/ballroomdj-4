@@ -156,6 +156,11 @@ bin/libplinull\.(dylib|so|dll)$
 # libatimutagen was never removed
 bin/libatimutagen\.(dylib|so|dll)$
 
+# 2024-2-23
+# removed
+img/acoustid-logo\.svg$
+img/acrcloud-logo\.png$
+
 ####
 # mac-os
 

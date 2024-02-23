@@ -113,10 +113,6 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
     if (cb != NULL) {
       int   type = TREE_TYPE_STRING;
 
-      /* the type is almost always a string */
-      if (tagidx == TAG_AUDIOID_IDENT) {
-        type = TREE_TYPE_IMAGE;
-      }
       /* gtk doesn't have a method to display a blank numeric afaik */
       cb (type, udata);
     }
