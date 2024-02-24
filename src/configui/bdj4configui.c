@@ -427,7 +427,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.statusMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
-  uiWidgetSetClass (confui->gui.notebook, "leftnotebook");
+  uiWidgetSetClass (confui->gui.notebook, LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 

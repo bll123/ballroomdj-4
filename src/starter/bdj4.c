@@ -84,6 +84,7 @@ main (int argc, char * argv[])
     { "testsuite",      no_argument,        NULL,   22 },
     { "tmusicsetup",    no_argument,        NULL,   21 },
     { "ttagdbchk",      no_argument,        NULL,   27 },
+    { "uitest",         no_argument,        NULL,   31 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
@@ -347,6 +348,13 @@ main (int argc, char * argv[])
       }
       case 30: {
         prog = "aesed";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 31: {
+        prog = "uitest";
         nodetach = true;
         wait = true;
         ++validargs;

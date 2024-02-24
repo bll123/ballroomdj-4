@@ -16,5 +16,6 @@
 #define TEXTBOX_DARK_CLASS "bdj-tb-dark"
 #define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
 #define MQ_ACCENT_CLASS "bdj-mqaccent"
+#define LEFT_NB_CLASS "bdj-leftnotebook"
 
 #endif /* INC_UICLASS_H */

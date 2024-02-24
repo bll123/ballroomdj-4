@@ -165,24 +165,25 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
     ++sz;
-    snprintf (wbuff, sizeof (wbuff), " .leftnotebook tab label { font-size: %dpt; } ", sz);
+    snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; } ",
+        LEFT_NB_CLASS, sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
   if (accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label." ACCENT_CLASS " { color: %s; } ", accentColor);
+        "label.%s { color: %s; } ", ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
     snprintf (wbuff, sizeof (wbuff),
-        "label." DARKACCENT_CLASS " { color: shade(%s,0.7); } ", accentColor);
+        "label.%s { color: shade(%s,0.7); } ", DARKACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
     snprintf (wbuff, sizeof (wbuff),
-        "entry." ACCENT_CLASS " { color: %s; } ", accentColor);
+        "entry.%s { color: %s; } ", ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
-        "progressbar." ACCENT_CLASS " > trough > progress { background-color: %s; }",
-        accentColor);
+        "progressbar.%s > trough > progress { background-color: %s; }",
+        ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
@@ -191,12 +192,13 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
-        "paned." ACCENT_CLASS " > separator { background-color: %s; padding-bottom: 0px; } ", accentColor);
+        "paned.%s > separator { background-color: %s; padding-bottom: 0px; } ",
+        ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label." ERROR_CLASS " { color: %s; } ", errorColor);
+        "label.%s { color: %s; } ", ERROR_CLASS, errorColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 

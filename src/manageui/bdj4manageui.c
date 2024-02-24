@@ -779,7 +779,7 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
   manage->wcont [MANAGE_W_MAIN_NB] = uiCreateNotebook ();
-  uiWidgetSetClass (manage->wcont [MANAGE_W_MAIN_NB], "leftnotebook");
+  uiWidgetSetClass (manage->wcont [MANAGE_W_MAIN_NB], LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (manage->wcont [MANAGE_W_MAIN_NB]);
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MAIN_NB]);
 
