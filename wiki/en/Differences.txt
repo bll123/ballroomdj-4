@@ -43,7 +43,6 @@ __Features that have changed in BallroomDJ&nbsp;4:__
 <br>__BDJ4 has a pause each song switch in the music queue configuration.__
 * Fade Out: If a fade out time is set, the fade out is always applied.
 * Auto Organization
-<br>_Subject to change_.
 <br>BDJ4 has no auto organization path editor.   To add a new path, the
 configuration file (data/orgopt.txt) must be manually edited. (If the
 organization path you currently use is not already in the
@@ -106,13 +105,13 @@ locales (e.g. English to Nederlands).
 __Q:__ Will installing BDJ4 affect my BallroomDJ 3 installation? (1)
 
 __A:__ No.  BallroomDJ 4 is installed in a separate folder and the
-conversion process creates new files specifically for BDJ4.
-The only configuration options that could affect the audio files are
-"Auto Organization" (not implemented yet) and "Write BallroomDJ Tags"
-(the conversion process turns this off, and also the 'write BDJ3
-compatible audio file tags' is turned on).
+conversion process creates new files specifically for BDJ4. The only
+configuration options that could affect the audio files are "Auto
+Organization" and "Write BallroomDJ Tags" (the conversion process
+turns this off, and also the 'write BDJ3 compatible audio file tags'
+is turned on).
 
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-03-01 07:04:17; BDJ4 version 4.6.1)_

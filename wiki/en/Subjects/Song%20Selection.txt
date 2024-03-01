@@ -38,6 +38,10 @@ Status is optional.  If the status is in use, only those songs that
 have a playable status are chosen.  The default status settings allow
 all songs.
 <br>(See [Configure / Edit Status](en-Configuration-Edit%20Status))
+* Same Song Marks
+If a song is are marked as the same song as another song, only one of
+the songs with the same mark can be chosen.
+<br>(See [Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks))
 
 ##### Song Weights
 
@@ -68,4 +72,4 @@ _data/autoselection.txt_ file.  If changes to these parameters are
 desired, they must be changed manually.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 06:45:21; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-03-01 07:15:26; BDJ4 version 4.6.1)_
