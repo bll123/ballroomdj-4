@@ -1,0 +1,43 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Dance selection is performed by
+automatic playlists._</span>
+
+### Dance Selection
+
+Dance selection is a complicated algorithm designed to choose the next
+dance to be played in an automatic playlist. The dance selection
+algorithm is not perfect, but works pretty well.
+
+Dance selection uses the following tests to determine which dance to
+choose next.
+
+* Dance.
+<br>The dance is checked to see if it has been chosen recently.  The dance
+selection algorithm attempts to spread each dance out evenly
+throughout the playlist.
+* Fast dances at the beginning of the playlist.
+<br>Fast dances will not be chosen at the beginning of the playlist.
+* Fast dances adjacent to each other.
+<br>Fast dances played adjacent to each other are avoided.
+* Type of dance.
+<br>Dances adjacent to each other of the same type (standard/latin/club)
+are avoided.
+* Dance tags.
+<br>Dances that are adjacent to each other or recently played and have
+matching tags are avoided.  The tags for each dance can be changed to
+help the dance selection algorithm avoid placing certain dances near
+each other.
+
+If all dances are rejected, the algorithm will make adjustments and
+try to choose a dance again until a dance is chosen.
+
+The type of dance and the dance tags can be set in
+[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
+
+The parameters that control dance selection are documented in the
+_data/autoselection.txt_ file.  If changes to these parameters are
+desired, they must be changed manually.
+
+[Wiki Home](Home)
+<br>_(Updated 2024-03-01 06:50:56; BDJ4 version 4.6.1)_

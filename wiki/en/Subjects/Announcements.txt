@@ -35,12 +35,12 @@ __Manage&nbsp;/&nbsp;Update&nbsp;Database&nbsp;/&nbsp;Check&nbsp;for&nbsp;New__.
 
 ##### Associate the Announcement with a Dance
 
-Now, using _Configure_ / _Edit&nbsp;Dances_, select the dance to edit,
-select the _Announcement_ file chooser button with the folder icon and
-select the announcement audio file for that dance.  If a dance does
-not have an announcement assigned, no announcement will be played.
-<br>(See
-[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
+Now, using __Configure&nbsp;/&nbsp;Edit&nbsp;Dances__, select the
+dance to edit, select the __Announcement__ file chooser button with
+the folder icon and select the announcement audio file for that dance.
+If a dance does not have an announcement assigned, no announcement
+will be played.
+<br>(See [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ann-edit-dance-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-B.png)
@@ -65,7 +65,7 @@ associated with the song added to the queue).
 
 ##### Configuring a Music Queue to Play Announcements
 
-In _Configure_ / _Music&nbsp;Queues_, turn on the
+In __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, turn on the
 __Play&nbsp;Announcements__ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -74,12 +74,12 @@ __Play&nbsp;Announcements__ switch.
 
 ##### Configuring a Playlist to Play Announcements
 
-In _Manage_ / _Playlist&nbsp;Management_, load the playlist to be
-configured, and turn on the _Play&nbsp;Announcements_ switch.
+In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, load the playlist to be
+configured, and turn on the __Play&nbsp;Announcements__ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ann-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-playlist-B.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 08:11:25; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-03-01 06:45:21; BDJ4 version 4.6.1)_

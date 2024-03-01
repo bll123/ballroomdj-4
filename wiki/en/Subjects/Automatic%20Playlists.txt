@@ -55,7 +55,7 @@ different dance to finalize the change.
 BDJ4 chooses the next dance to be played using an algorithm based on
 the dance, the type of dance, the speed of the dance and the tags set
 for the dance.
-<br>(See [Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+<br>(See [Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances))
 
 BDJ4 chooses the song from the songs filtered by any playlist song
 selection filters.
@@ -89,4 +89,4 @@ In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
 particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_

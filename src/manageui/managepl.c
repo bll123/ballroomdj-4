@@ -433,6 +433,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiSpinboxIntCreate ();
   uiSpinboxSetRange (uiwidgetp, 5.0, 100.0);
+  uiSpinboxSetValue (uiwidgetp, BDJ4_DFLT_TAG_WEIGHT);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_TAG_WEIGHT] = uiwidgetp;
 

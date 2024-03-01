@@ -34,7 +34,7 @@ Select __Start&nbsp;New&nbsp;Sequence__ from the __Edit__ menu.
 Change the name of the sequence at the top of the window.
 
 Select each dance to be played and use the right arrow button
-![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
+(![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
 to add the dance to the sequence.
 
 Use the up and down arrows to adjust the order of the dances in the
@@ -68,7 +68,7 @@ in the song list editor, switching to the
 will automatically load the associated playlist.
 
 The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
-_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+_Maximum&nbsp;Play&nbsp;Time_, _Stop&nbsp;At_, _Stop&nbsp;After_,
 _Gap_ and _Play&nbsp;Announcements_.
 
 The song filter associated with the playlist can also be changed in
@@ -81,4 +81,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-03-01 06:45:21; BDJ4 version 4.6.1)_

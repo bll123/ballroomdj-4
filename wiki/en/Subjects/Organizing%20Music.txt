@@ -23,7 +23,7 @@ Note that there is only a small set of organization paths that ship
 with BallroomDJ&nbsp;4 by default, but many more can be configured.
 
 If the organization path you want is not listed in the drop-down
-selection, the data/orgopt.txt file can be modified to include the
+selection, the _data/orgopt.txt_ file can be modified to include the
 organization path that you want.  This must be done manually using a
 text editor. [Contact the BDJ4 development team](Getting%20Help) for
 help.
@@ -60,4 +60,4 @@ run once, as auto-organization will not rename existing audio files.
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 08:30:17; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-03-01 06:57:42; BDJ4 version 4.6.1)_

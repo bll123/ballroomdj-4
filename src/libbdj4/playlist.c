@@ -295,7 +295,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_AFTER, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
   nlistSetStr (pl->plinfo, PLAYLIST_TAGS, NULL);
-  nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, 5);
+  nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, BDJ4_DFLT_TAG_WEIGHT);
   nlistSort (pl->plinfo);
 
   if (type == PLTYPE_SONGLIST) {

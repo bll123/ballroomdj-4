@@ -27,7 +27,11 @@ Close the configuration window to save the configuration changes.
 ![mixer-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-D.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
-##### Creating an Automatic Playlist for a Mixer
+##### Creating an Automatic Playlist for the Mixer
+
+If you always use the same dance for your mixer, setting up an
+automatic playlist for the mixer can save some work.  Otherwise, skip
+to the [Turn on the Extra Queues](#turn-on-the-extra-queues) step.
 
 In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, select
 __Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ from the menu.
@@ -37,7 +41,7 @@ In the _Dances_ tab, select _Waltz_, click on the
 __Count__ for _Waltz_, and set the count to 1.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-playlist-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-settings-A.png)
+![mixer-conf-playlist-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-settings-B.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Settings__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -46,13 +50,11 @@ __Count__ for _Waltz_, and set the count to 1.
 
 Be aware that to use an automatic playlist, the dance rating for each
 song must be set.
+<br>(See: [Automatic Playlists](en-Subjects-Automatic-Playlists))
 
-Note that the __Maximum&nbsp;Play&nbsp;Time__ and __Gap__ could be set
-in the playlist instead of the music queue.
+##### Turn on the Extra Queues
 
-##### Playing the Mixer
-
-In the __Player__, open the __Options__ menu, and turn on both
+In the __Player__, open the __Options__ menu, and turn on
 __Show&nbsp;Extra&nbsp;Queues__ and
 __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 
@@ -60,18 +62,65 @@ __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 ![mixer-player-options](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
 <br><span style="color:#4559bf;">__Player / Options__</span> </div>
 
-Select the main music queue and use the __Queue&nbsp;Playlist__ button
-to queue the regular playlist for the dance.  Select the ___Mixer___
-music queue and use the __Queue&nbsp;Playlist__ button to queue the
-_Waltz&nbsp;Mixer_ playlist that was created.
+##### Start the Dance
 
-Use the __Play&nbsp;/&nbsp;Pause__
+In the __Player__, select the main music queue and use the
+__Queue&nbsp;Playlist__ button to queue the regular playlist for the
+dance. Use the __Play&nbsp;/&nbsp;Pause__
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
 button to start the dance.
 
+##### Adding Songs for the Mixer
+
+If you always use the same dance for your mixer, see [Creating an
+Automatic Playlist for the
+Mixer](#creating-an-automatic-playlist-for-the-mixer) for an
+alternative.
+
+A) If you are using an automatic playlist as outlined above:
+
+In the __Player__, select the ___Mixer___
+music queue and use the __Queue&nbsp;Playlist__ button to queue the
+_Waltz&nbsp;Mixer_ playlist that was created for this example.
+
+B) If you are not using an automatic playlist:
+
+In the __Player__, first select the ___Mixer___ music queue.
+
+Next, select the __Request__ tab.  Note that the label next to the
+___Queue___ button now displays ___Mixer___.  This is the queue to
+which the songs will be added.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mixer-req](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-req-A.png)
+<br><span style="color:#4559bf;">__Player / Request__</span> </div>
+
+Use the filter button
+(![b-filter](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
+and select the dance and rating you want to play.  Select the
+__Apply__ button.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mixer-req-filter](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-req-filter-A.png)
+<br><span style="color:#4559bf;">__Player / Request / Filter__</span> </div>
+
+For each song you want to play for the mixer, select the song, then select the
+__Queue__ button.
+
+##### Playing the Mixer
+
 When you are ready to play the mixer, select the
-__Pause&nbsp;at&nbsp;End__ button, select the ___Mixer___ music queue, and
-select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.  When the
+__Pause&nbsp;at&nbsp;End__ button.
+
+Select the ___Mixer___ music queue, and
+select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.  The
+selection light for the ___Mixer___ queue will be lit.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mixer-set-music-q](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-set-music-q-A.png)
+<br><span style="color:#4559bf;">__Player__</span> </div>
+
+When the
 music stops playing, make the mixer announcement, then select the
 __Play&nbsp;/&nbsp;Pause__
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
@@ -80,4 +129,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_

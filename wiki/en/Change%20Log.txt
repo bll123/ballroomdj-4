@@ -4,8 +4,10 @@
 
 <!--
 
-**4.7.0 2024-2---**
+**4.6.2 2024-2---**
 
+* Bug Fixes:
+    * Playlist Management: Fix default value for tag weight.
     * PENDING Installation: second install, incorrect copy of files.
 
 -->
@@ -752,4 +754,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-23 14:32:56; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_

@@ -100,6 +100,8 @@ __Playlists__
 <br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
 <br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
 <br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>&nbsp;&nbsp;&nbsp;[Dance Selection](en-Subjects-Dance%20Selection)
+<br>&nbsp;&nbsp;&nbsp;[Song Selection](en-Subjects-Song%20Selection)
 <br>[Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Announcements](en-Subjects-Announcements)
 <br>[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
@@ -109,10 +111,11 @@ __Playlists__
 <br>[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
-<br>[Organizing Music](en-Subjects-Organizing%20Music)
 <br>[Quick Edit](en-Subjects-Quick%20Edit)
-<br>[Removing Songs](en-Subjects-Removing%20Songs)
 <br>[Same Song Marks](en-Subjects-Same%20Song%20Marks)
+<br>__Audio File Management__
+<br>&nbsp;&nbsp;&nbsp;[Organizing Music](en-Subjects-Organizing%20Music)
+<br>&nbsp;&nbsp;&nbsp;[Removing Songs](en-Subjects-Removing%20Songs)
 <br>__Advanced Setup__
 <br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
 <br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
@@ -128,4 +131,4 @@ __Playlists__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-01-26 12:11:21; BDJ4 version 4.4.9)_
+<br>_(Updated 2024-03-01 06:57:03; BDJ4 version 4.6.1)_

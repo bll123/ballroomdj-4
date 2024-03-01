@@ -97,8 +97,8 @@ in the song list editor, switching to the
 [Playlist&nbsp;Management](en-Management-Playlist%20Management) tab
 will automatically load the associated playlist.
 
-The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
-_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+The ___Settings___ tab in _Playlist&nbsp;Management_ has the controls for
+_Maximum&nbsp;Play&nbsp;Time_, _Stop&nbsp;At_, _Stop&nbsp;After_,
 _Gap_ and _Play&nbsp;Announcements_.
 
 In the _Dances_ tab in _Playlist&nbsp;Management_, the
@@ -138,4 +138,4 @@ new song list.
 [Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-02-27 07:25:20; BDJ4 version 4.6.1)_

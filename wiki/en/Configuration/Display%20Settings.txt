@@ -10,12 +10,20 @@ for the music queues, song selection and song editor.
 
 Each type of listing may be configured individually.
 
-The following displays can be configured: Music&nbsp;Queue, History,
-Requests, Song&nbsp;List, Song&nbsp;Selection,
-Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List,
-Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection, Music&nbsp;Manager,
-Song&nbsp;Editor (three columns), Audio&nbsp;ID&nbsp;Match&nbsp;List,
-Audio&nbsp;ID, Marquee.
+The following displays can be configured:
+
+* Music&nbsp;Queue
+* History
+* Requests
+* Song&nbsp;List
+* Song&nbsp;Selection
+* Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List
+* Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection
+* Music&nbsp;Manager
+* Song&nbsp;Editor (three columns)
+* Audio&nbsp;ID&nbsp;Match&nbsp;List
+* Audio&nbsp;ID
+* Marquee (song information)
 
 The marquee will only display at most three items in the song
 information display.
@@ -34,4 +42,4 @@ to change the order in which the columns are displayed.
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-26 13:15:53; BDJ4 version 4.4.9)_
+<br>_(Updated 2024-02-27 07:26:53; BDJ4 version 4.6.1)_
