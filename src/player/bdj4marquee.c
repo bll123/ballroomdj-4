@@ -110,6 +110,7 @@ typedef struct {
   bool            mqShowInfo : 1;
   bool            hideonstart : 1;
   bool            optionsalloc : 1;
+  bool            uibuilt : 1;
 } marquee_t;
 
 enum {
@@ -187,6 +188,7 @@ main (int argc, char *argv[])
   marquee.userDoubleClicked = false;
   marquee.mqIconifyAction = false;
   marquee.setPrior = false;
+  marquee.uibuilt = false;
   marquee.marginTotal = 0;
   marquee.fontAdjustment = 0.0;
   marquee.hideonstart = false;
@@ -468,6 +470,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiwcontFree (mainvbox);
   uiwcontFree (vbox);
 
+  marquee->uibuilt = true;
+
   logProcEnd (LOG_PROC, "marqueeBuildUI", "");
 }
 
@@ -675,6 +679,10 @@ marqueeSetMaximized (marquee_t *marquee)
     return;
   }
 
+  if (! marquee->uibuilt) {
+    return;
+  }
+
   marquee->isMaximized = true;
   if (! isWindows()) {
     /* decorations are not recovered after disabling on windows */
@@ -704,6 +712,10 @@ marqueeSetNotMaximized (marquee_t *marquee)
 static void
 marqueeSetNotMaximizeFinish (marquee_t *marquee)
 {
+  if (! marquee->uibuilt) {
+    return;
+  }
+
   marquee->setPrior = true;
   uiWindowUnMaximize (marquee->wcont [MQ_W_WINDOW]);
   if (! isWindows()) {
@@ -825,10 +837,6 @@ marqueeSetFontSize (marquee_t *marquee, uiwcont_t *uilab, const char *font)
     logProcEnd (LOG_PROC, "marqueeSetFontSize", "no-lab");
     return;
   }
-  if (! uiWidgetIsValid (uilab)) {
-    logProcEnd (LOG_PROC, "marqueeSetFontSize", "no-lab-widget");
-    return;
-  }
 
   uiLabelSetFont (uilab, font);
   logProcEnd (LOG_PROC, "marqueeSetFontSize", "");
@@ -845,6 +853,11 @@ marqueePopulate (marquee_t *marquee, char *args)
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
+  if (! marquee->uibuilt) {
+    logProcEnd (LOG_PROC, "marqueePopulate", "no-ui");
+    return;
+  }
+
   if (! marquee->mqShowInfo) {
     uiWidgetHide (marquee->wcont [MQ_W_INFOBOX]);
   }
@@ -854,38 +867,47 @@ marqueePopulate (marquee_t *marquee, char *args)
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   if (p != NULL) {
     int   count;
+    int   i;
 
     count = atoi (p);
     idx = MQ_W_INFO_DISP_A;
 
-    for (int i = 0; i < count; ++i) {
-      p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-      if (p != NULL && *p != MSG_ARGS_EMPTY) {
-        if (*sep &&
-            uiWidgetIsValid (marquee->wcont [idx])) {
-          uiLabelSetText (marquee->wcont [idx], sepstr);
-          ++idx;
-        }
-        if (idx > MQ_W_INFO_DISP_E) {
-          break;
-        }
-        if (uiWidgetIsValid (marquee->wcont [idx])) {
-          uiLabelSetText (marquee->wcont [idx], p);
-          if (! *sep) {
-            sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
-            snprintf (sepstr, sizeof (sepstr), " %s ", sep);
-          }
-        }
-        ++idx;
-        if (idx > MQ_W_INFO_DISP_E) {
-          break;
-        }
+    i = 0;
+    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+    while (p != NULL && i < count && idx <= MQ_W_INFO_DISP_E) {
+      if (*p == MSG_ARGS_EMPTY) {
+        /* no data */
+        p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+        ++i;
+        continue;
       }
+
+      if (*sep) {
+        uiLabelSetText (marquee->wcont [idx], sepstr);
+        ++idx;
+      }
+
+      if (idx > MQ_W_INFO_DISP_E) {
+        break;
+      }
+
+      uiLabelSetText (marquee->wcont [idx], p);
+      if (! *sep) {
+        sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
+        snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+      }
+
+      ++idx;
+      if (idx > MQ_W_INFO_DISP_E) {
+        break;
+      }
+
+      p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+      ++i;
     }
   }
 
   /* first entry is the main dance */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   if (p != NULL && *p == MSG_ARGS_EMPTY) {
     p = "";
   }
@@ -981,11 +1003,9 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
-  if (uiWidgetIsValid (marquee->wcont [MQ_W_INFO_DISP_A])) {
-    marqueeClearInfoDisplay (marquee);
-    for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
-      marqueeSetFontSize (marquee, marquee->wcont [i], tbuff);
-    }
+  marqueeClearInfoDisplay (marquee);
+  for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
+    marqueeSetFontSize (marquee, marquee->wcont [i], tbuff);
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");
@@ -1019,6 +1039,10 @@ static void
 marqueeDisplayCompletion (marquee_t *marquee)
 {
   const char  *disp;
+
+  if (! marquee->uibuilt) {
+    return;
+  }
 
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DANCE], "");
   marqueeClearInfoDisplay (marquee);
