@@ -1834,6 +1834,7 @@ pluiQuickEditCallback (void *udata)
   songSetDouble (song, TAG_VOLUMEADJUSTPERC, qeresp->voladj);
   songSetNum (song, TAG_DANCERATING, qeresp->rating);
   songSetNum (song, TAG_DANCELEVEL, qeresp->level);
+  songSetNum (song, TAG_FAVORITE, qeresp->favorite);
 
   pluiSongSaveCallback (plui, qeresp->dbidx);
 

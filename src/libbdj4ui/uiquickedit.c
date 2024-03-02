@@ -26,6 +26,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uifavorite.h"
 #include "uilevel.h"
 #include "uiquickedit.h"
 #include "uirating.h"
@@ -70,6 +71,7 @@ typedef struct uiqe {
   uiwcont_t         *wcont [UIQE_W_MAX];
   uilevel_t         *uilevel;
   uirating_t        *uirating;
+  uifavorite_t      *uifavorite;
   callback_t        *responsecb;
   callback_t        *callbacks [UIQE_CB_MAX];
   uiqescale_t       scaledata [UIQE_SCALE_MAX];
@@ -112,6 +114,7 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiqe->isactive = false;
   uiqe->uilevel = NULL;
   uiqe->uirating = NULL;
+  uiqe->uifavorite = NULL;
   uiqe->savedata.dbidx = -1;
   uiqe->savedata.speed = 100.0;
   uiqe->savedata.voladj = 0.0;
@@ -150,8 +153,10 @@ uiqeFree (uiqe_t *uiqe)
   }
   uilevelFree (uiqe->uilevel);
   uiratingFree (uiqe->uirating);
+  uifavoriteFree (uiqe->uifavorite);
   uiqe->uilevel = NULL;
   uiqe->uirating = NULL;
+  uiqe->uifavorite = NULL;
   mdfree (uiqe);
 }
 
@@ -172,6 +177,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   const char  *title;
   int         levelidx;
   int         ratingidx;
+  int         fav;
   double      voladj;
   double      svoladj;
   int         dfltvol;
@@ -211,6 +217,9 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 
   levelidx = songGetNum (uiqe->song, TAG_DANCELEVEL);
   uilevelSetValue (uiqe->uilevel, levelidx);
+
+  fav = songGetNum (uiqe->song, TAG_FAVORITE);
+  uifavoriteSetValue (uiqe->uifavorite, fav);
 
   if (speed == LIST_DOUBLE_INVALID) {
     speed = (double) songGetNum (uiqe->song, TAG_SPEEDADJUSTMENT);
@@ -359,6 +368,18 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
   uiwcontFree (hbox);
 
+  /* begin line: favorite */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
+  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
+
+  uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
+  uiwcontFree (hbox);
+
   uiwcontFree (vbox);
 
   logProcEnd (LOG_PROC, "uiqeCreateDialog", "");
@@ -403,6 +424,7 @@ uiqeResponseHandler (void *udata, long responseid)
           uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale);
       uiqe->savedata.rating = uiratingGetValue (uiqe->uirating);
       uiqe->savedata.level = uilevelGetValue (uiqe->uilevel);
+      uiqe->savedata.favorite = uifavoriteGetValue (uiqe->uifavorite);
 
       if (uiqe->responsecb != NULL) {
         callbackHandler (uiqe->responsecb);

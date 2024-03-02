@@ -16,6 +16,7 @@ typedef struct {
   double            speed;
   int               level;
   int               rating;
+  int               favorite;
 } uiqesave_t;
 
 uiqe_t  *uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts);
