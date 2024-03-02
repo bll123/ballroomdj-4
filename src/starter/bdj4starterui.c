@@ -151,6 +151,7 @@ typedef struct {
   loglevel_t      loglevel;
   int             maxProfileWidth;
   int             stopallState;
+  int             stopallCount;
   startstate_t    startState;
   startstate_t    nextState;
   startstate_t    delayState;
@@ -318,6 +319,7 @@ main (int argc, char *argv[])
   starter.emailrx = NULL;
   starter.maxProfileWidth = 0;
   starter.stopallState = BDJ4_STATE_OFF;
+  starter.stopallCount = 5;
   starter.startState = START_STATE_NONE;
   starter.nextState = START_STATE_NONE;
   starter.delayState = START_STATE_NONE;
@@ -828,7 +830,15 @@ starterMainLoop (void *tstarter)
       uiLabelSetText (starter->wcont [START_W_STATUS_MSG],
           /* CONTEXT: starter ui: please wait... status message */
           _("Please wait\xe2\x80\xa6"));
-      starter->stopallState = BDJ4_STATE_PROCESS;
+      starter->stopallState = BDJ4_STATE_WAIT;
+      starter->stopallCount = 5;
+      break;
+    }
+    case BDJ4_STATE_WAIT: {
+      starter->stopallCount -= 1;
+      if (starter->stopallCount < 0) {
+        starter->stopallState = BDJ4_STATE_PROCESS;
+      }
       break;
     }
     case BDJ4_STATE_PROCESS: {

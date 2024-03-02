@@ -329,7 +329,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
-    true,                         /* marquee-disp         */
+    false,                        /* marquee-disp         */
     false,                        /* text search          */
     true,                         /* is org tag           */
     false,                        /* vorbis multi         */
