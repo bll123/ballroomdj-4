@@ -4,11 +4,15 @@
 
 <!--
 
+**4.7.0 2024-2---**
+    * PENDING Installation: second install, incorrect copy of files.
+
 **4.6.2 2024-2---**
 
 * Bug Fixes:
+    * Conversion: Minor cleanup.
     * Playlist Management: Fix default value for tag weight.
-    * PENDING Installation: second install, incorrect copy of files.
+    * PENDING Song Selection: Fix how same-song marks are handled.
 
 -->
 

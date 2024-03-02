@@ -1363,9 +1363,11 @@ START_TEST(queue_remove_iter_node)
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
+
   data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
+
   count = queueGetCount (q);
   ck_assert_int_eq (count, 5);
   data = queueIterateData (q, &qiteridx);
@@ -1385,9 +1387,11 @@ START_TEST(queue_remove_iter_node)
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
+
   data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
+
   count = queueGetCount (q);
   ck_assert_int_eq (count, 4);
   data = queueIterateData (q, &qiteridx);
