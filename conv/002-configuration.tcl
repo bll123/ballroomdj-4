@@ -432,6 +432,8 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#030e80"
         puts $ofh MQ_INFO_COL
         puts $ofh "..#444444"
+        puts $ofh MQ_INFO_SEP
+        puts $ofh "../"
         puts $ofh MQ_TEXT_COL
         puts $ofh "..#000000"
         puts $ofh UI_ACCENT_COL
