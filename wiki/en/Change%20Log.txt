@@ -10,9 +10,11 @@
 **4.6.2 2024-3---**
 
 * Bug Fixes:
+    * Configure: Display Settings: Dance not allowed for marquee info (crash).
     * Conversion: Minor cleanup.
     * Playlist Management: Fix default value for tag weight.
-    * PENDING Song Selection: Fix how same-song marks are handled.
+    * Song Selection: Fix how same-song marks are handled.
+    * Song Selection: Re-work, fix all issues.
 * Changes:
     * Quick Edit: Add 'Favorite' to the dialog.
 
