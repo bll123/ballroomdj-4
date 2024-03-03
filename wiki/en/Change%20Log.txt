@@ -13,7 +13,7 @@
     * Configure: Display Settings: Dance not allowed for marquee info (crash).
     * Conversion: Minor cleanup.
     * Playlist Management: Fix default value for tag weight.
-    * Song Selection: Fix how same-song marks are handled.
+    * Song Selection: Better same-song marks handling.
     * Song Selection: Re-work, fix all issues.
 * Changes:
     * Quick Edit: Add 'Favorite' to the dialog.
