@@ -118,9 +118,10 @@ function copyreleasefiles {
   # testing:
   #   check_all, chkprocess, chkfileshared, dmkmfromdb
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
-  #   dbustest, plisinklist, voltest, vsencdec
+  #   dbustest, plisinklist, voltest, vsencdec, uitest
   # img/profile[1-9] may be left over from testing
-  # 2023-1-16 do not ship the pli-mpv interface either.
+  # 2024-1-16 do not ship the pli-mpv interface either.
+  # 2024-3-3 do not ship the pli-gst interface at this time.
   rm -f \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
@@ -132,6 +133,7 @@ function copyreleasefiles {
       ${stage}/bin/dbustest* \
       ${stage}/bin/plisinklist* \
       ${stage}/bin/libplimpv* \
+      ${stage}/bin/libpligst* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \

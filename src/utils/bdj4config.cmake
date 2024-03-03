@@ -105,6 +105,10 @@ else()
   pkg_check_modules (LIBAVUTIL libavutil)
 endif()
 
+# gstreamer
+
+pkg_check_modules (GST gstreamer-1.0)
+
 # libid3tag
 pkg_check_modules (LIBID3TAG id3tag)
 
@@ -339,6 +343,10 @@ check_include_file (unistd.h _hdr_unistd)
 check_include_file (windows.h _hdr_windows)
 check_include_file (winsock2.h _hdr_winsock2)
 check_include_file (ws2tcpip.h _hdr_ws2tcpip)
+
+set (CMAKE_REQUIRED_INCLUDES ${GST_INCLUDE_DIRS})
+check_include_file (gst/gst.h _hdr_gst_gst)
+set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${GIO_INCLUDE_DIRS})
 check_include_file (gio/gio.h _hdr_gio_gio)

@@ -48,11 +48,23 @@ target_link_libraries (libplimpris PRIVATE
   ${GIO_LDFLAGS}
 )
 
+add_library (libpligst SHARED pligst.c gsti.c)
+target_include_directories (libpligst
+  PRIVATE "${GST_INCLUDE_DIRS}"
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+)
+target_link_libraries (libpligst PRIVATE
+  libbdj4common
+  ${GST_LDFLAGS}
+  ${GLIB_LDFLAGS}
+)
+
 install (TARGETS
   libbdj4pli
   libplinull
   libplivlc
   libplimpris
+  libpligst
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -60,3 +72,4 @@ updateRPath (libbdj4pli)
 updateRPath (libplinull)
 updateRPath (libplivlc)
 updateRPath (libplimpris)
+updateRPath (libpligst)

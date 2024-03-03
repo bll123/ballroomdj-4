@@ -17,6 +17,7 @@
 #cmakedefine01 _hdr_fcntl
 #cmakedefine01 _hdr_gdk_gdkx
 #cmakedefine01 _hdr_gio_gio
+#cmakedefine01 _hdr_gst_gst
 #cmakedefine01 _hdr_gtk_gtk
 #cmakedefine01 _hdr_intrin
 #cmakedefine01 _hdr_io
