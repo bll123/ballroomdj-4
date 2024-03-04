@@ -124,7 +124,8 @@ uiDropDownFree (uiwcont_t *uiwidget)
   }
   slistFree (dropdown->strIndexMap);
   nlistFree (dropdown->keylist);
-  uiwcontFree (dropdown->uitree);
+  uiTreeViewFree (dropdown->uitree);
+  uiwcontBaseFree (dropdown->uitree);
   mdfree (dropdown);
   /* the container is freed by uiwcontFree() */
 }
