@@ -463,7 +463,7 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh PLAYER
         puts $ofh "..$value"
 
-        set value ""
+        set value "Integrated VLC"
         puts $ofh PLAYER_I_NM
         puts $ofh "..$value"
 

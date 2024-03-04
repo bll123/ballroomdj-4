@@ -63,7 +63,7 @@ for arg in "$@"; do
       PLI=MPRISVLC
       ;;
     --pligst)
-      PLI=GSI
+      PLI=GST
       ;;
     --nodbcopy)
       DBCOPY=F

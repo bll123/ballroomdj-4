@@ -13,6 +13,7 @@
 
 * Bug Fixes:
     * Configure: Display Settings: Dance not allowed for marquee info (crash).
+    * Conversion: Minor fixes.
     * Playlist Management: Fix default value for tag weight.
     * Song Selection: Better same-song marks handling.
     * Song Selection: Re-work, fix all issues.
@@ -762,4 +763,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-03-04 15:29:23; BDJ4 version 4.6.2)_

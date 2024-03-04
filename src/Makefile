@@ -170,6 +170,11 @@ testsuitemprisvlc:
 	kill $${pid}; \
 	true
 
+.PHONY: testsuitegst
+testsuitegst:
+	./utils/mktestsetup.sh --force --pligst
+	(cd ..;./bin/bdj4 --testsuite)
+
 .PHONY: testsection
 testsection:
 	./utils/mktestsetup.sh
