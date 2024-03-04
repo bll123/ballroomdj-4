@@ -252,7 +252,7 @@ uiduallistFree (uiduallist_t *duallist)
 {
   if (duallist != NULL) {
     for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
-      uiTreeViewFree (duallist->uitrees [i]);
+      uiwcontFree (duallist->uitrees [i]);
     }
     for (int i = 0; i < DUALLIST_CB_MAX; ++i) {
       callbackFree (duallist->callbacks [i]);

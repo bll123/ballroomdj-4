@@ -120,7 +120,7 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
     uiwcontFree (gui->tables [id].buttons [i]);
     gui->tables [id].buttons [i] = NULL;
   }
-  uiTreeViewFree (gui->tables [id].uitree);
+  uiwcontFree (gui->tables [id].uitree);
   gui->tables [id].uitree = NULL;
 }
 

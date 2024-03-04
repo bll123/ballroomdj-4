@@ -92,7 +92,7 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 {
   if (managepltree != NULL) {
     uiwcontFree (managepltree->uihideunsel);
-    uiTreeViewFree (managepltree->uitree);
+    uiwcontFree (managepltree->uitree);
     for (int i = 0; i < MPLTREE_CB_MAX; ++i) {
       callbackFree (managepltree->callbacks [i]);
     }

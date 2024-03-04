@@ -118,7 +118,7 @@ selectFileFree (uiselectfile_t *selectfile)
     uiwcontFree (selectfile->selfileDialog);
     callbackFree (selectfile->respcb);
     callbackFree (selectfile->rowactivecb);
-    uiTreeViewFree (selectfile->selfiletree);
+    uiwcontFree (selectfile->selfiletree);
     mdfree (selectfile);
   }
 }

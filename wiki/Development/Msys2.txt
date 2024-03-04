@@ -33,6 +33,8 @@ Remove and remove dependencies:
 <br>pacman -S mingw-w64-ucrt-x86_64-gcc-objc
 <br># needed for building bdj4/cmake
 <br>pacman -S mingw-w64-ucrt-x86_64-pkgconf
+<br># gstreamer playback interface
+<br>pacman -S mingw-w64-ucrt-x86_64-gstreamer
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
