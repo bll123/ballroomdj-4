@@ -14,7 +14,9 @@
 
 #include <glib.h>
 
+#include "audiosrc.h"     // for audio-source type
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "dbusi.h"
 #include "mdebug.h"
 #include "mprisi.h"
@@ -406,7 +408,7 @@ mprisHasSpeed (mpris_t *mpris)
 }
 
 void
-mprisMedia (mpris_t *mpris, const char *fulluri)
+mprisMedia (mpris_t *mpris, const char *fulluri, int sourceType)
 {
   char  tbuff [MAXPATHLEN];
 
@@ -414,7 +416,11 @@ mprisMedia (mpris_t *mpris, const char *fulluri)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "file://%s", fulluri);
+  if (sourceType == AUDIOSRC_TYPE_FILE) {
+    snprintf (tbuff, sizeof (tbuff), "file://%s", fulluri);
+  } else {
+    strlcpy (tbuff, fulluri, sizeof (tbuff));
+  }
 
   dbusMessageInit (mpris->dbus);
   dbusMessageSetData (mpris->dbus, "(s)", tbuff, NULL);

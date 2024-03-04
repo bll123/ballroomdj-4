@@ -615,6 +615,7 @@ playerProcessing (void *udata)
     playrequest_t *preq = NULL;
     bool          temprepeat = false;
     char          tempffn [MAXPATHLEN];
+    int           sourceType;
 
     temprepeat = playerData->repeat;
 
@@ -678,8 +679,9 @@ playerProcessing (void *udata)
     /* some pli need the full path */
     pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
         PATHBLD_MP_DIR_DATATOP);
+    sourceType = audiosrcGetType (tempffn);
 
-    pliMediaSetup (playerData->pli, pq->tempname, tempffn);
+    pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
     /* pq->songstart is normalized */
     pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
     playerData->currentSpeed = pq->speed;
@@ -696,7 +698,13 @@ playerProcessing (void *udata)
       ;
     } else if (plistate == PLI_STATE_PLAYING) {
       if (pq->dur <= 1) {
-        pq->dur = pliGetDuration (playerData->pli);
+        int32_t   tdur;
+
+        tdur = pliGetDuration (playerData->pli);
+        /* some players may not have duration support */
+        if (tdur >= 0) {
+          pq->dur = tdur;
+        }
         logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %d", pq->dur);
       }
 
@@ -754,7 +762,11 @@ playerProcessing (void *udata)
 
       plistate = pliState (playerData->pli);
       if (pq->plidur < 1) {
-        pq->plidur = pliGetDuration (playerData->pli);
+        int32_t   tdur;
+        tdur = pliGetDuration (playerData->pli);
+        if (tdur >= 0) {
+          pq->plidur = tdur;
+        }
       }
       plitm = pliGetTime (playerData->pli);
 

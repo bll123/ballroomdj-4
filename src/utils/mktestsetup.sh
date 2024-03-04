@@ -51,7 +51,7 @@ function copytestf {
 }
 
 ATIBDJ4=F
-PLIMPRIS=F
+PLI=VLC
 DBCOPY=T
 KEEPDB=F
 for arg in "$@"; do
@@ -60,7 +60,10 @@ for arg in "$@"; do
       ATIBDJ4=T
       ;;
     --plimprisvlc)
-      PLIMPRIS=VLC
+      PLI=MPRISVLC
+      ;;
+    --pligst)
+      PLI=GSI
       ;;
     --nodbcopy)
       DBCOPY=F
@@ -173,10 +176,14 @@ if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
 fi
 PLII=libplivlc
-PLIINM=libplivlc
-if [[ $PLIMPRIS == VLC ]]; then
+PLIINM="Integrated VLC"
+if [[ $PLI == MPRISVLC ]]; then
   PLII=libplimpris
   PLIINM="MPRIS VLC Media Player"
+fi
+if [[ $PLI == GST ]]; then
+  PLII=libpligst
+  PLIINM="GStreamer"
 fi
 
 tfn=data/${hostname}/bdjconfig.txt

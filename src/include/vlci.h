@@ -18,8 +18,6 @@ typedef struct vlcData vlcData_t;
 
 ssize_t           vlcGetDuration (vlcData_t *vlcData);
 ssize_t           vlcGetTime (vlcData_t *vlcData);
-int               vlcIsPlaying (vlcData_t *vlcData);
-int               vlcIsPaused (vlcData_t *vlcData);
 int               vlcStop (vlcData_t *vlcData);
 int               vlcPause (vlcData_t *vlcData);
 int               vlcPlay (vlcData_t *vlcData);

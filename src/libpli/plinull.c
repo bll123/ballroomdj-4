@@ -70,7 +70,7 @@ pliiCleanup (void)
 
 void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
-    const char *fullMediaPath)
+    const char *fullMediaPath, int sourceType)
 {
   if (pliData != NULL && mediaPath != NULL) {
     pliData->state = PLI_STATE_STOPPED;

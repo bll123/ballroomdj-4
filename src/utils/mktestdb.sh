@@ -79,6 +79,9 @@ while test $# -gt 0; do
     --plimprisvlc)
       # ignored
       ;;
+    --pligst)
+      # ignored
+      ;;
     --nodbcopy)
       # ignored
       ;;

@@ -35,7 +35,7 @@ typedef struct pli {
   dlhandle_t        *dlHandle;
   plidata_t         *(*pliiInit) (const char *plinm);
   void              (*pliiFree) (plidata_t *pliData);
-  void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath);
+  void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath, int sourceType);
   void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
   void              (*pliiClose) (plidata_t *pliData);
   void              (*pliiPause) (plidata_t *pliData);
@@ -139,10 +139,11 @@ pliCleanup (dlhandle_t *dlHandle)
 }
 
 void
-pliMediaSetup (pli_t *pli, const char *mediaPath, const char *fullMediaPath)
+pliMediaSetup (pli_t *pli, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
 {
   if (pli != NULL && pli->pliiMediaSetup != NULL && mediaPath != NULL) {
-    pli->pliiMediaSetup (pli->pliData, mediaPath, fullMediaPath);
+    pli->pliiMediaSetup (pli->pliData, mediaPath, fullMediaPath, sourceType);
   }
 }
 

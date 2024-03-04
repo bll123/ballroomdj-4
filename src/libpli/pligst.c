@@ -26,6 +26,8 @@ typedef struct plidata {
   int               supported;
 } plidata_t;
 
+static void pliiWaitUntilPlaying (plidata_t *pliData);
+
 void
 pliiDesc (char **ret, int max)
 {
@@ -45,9 +47,7 @@ pliiInit (const char *plinm)
   pliData->state = PLI_STATE_STOPPED;
   pliData->supported = PLI_SUPPORT_NONE;
   pliData->supported |= PLI_SUPPORT_SEEK;
-  if (gstiHasSpeed (pliData->gsti)) {
-    pliData->supported |= PLI_SUPPORT_SPEED;
-  }
+  pliData->supported |= PLI_SUPPORT_SPEED;
 
   return pliData;
 }
@@ -67,13 +67,13 @@ pliiFree (plidata_t *pliData)
 
 void
 pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
-    const char *fullMediaPath)
+    const char *fullMediaPath, int sourceType)
 {
   if (pliData == NULL || mediaPath == NULL) {
     return;
   }
 
-  gstiMedia (pliData->gsti, fullMediaPath);
+  gstiMedia (pliData->gsti, fullMediaPath, sourceType);
   pliData->state = PLI_STATE_STOPPED;
 }
 
@@ -91,9 +91,14 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
     return;
   }
 
-  pliData->state = PLI_STATE_PLAYING;
-  pliiSeek (pliData, dpos);
+  pliiPlay (pliData);
+  if (dpos > 0 || speed != 100) {
+    /* GStreamer must be in a paused or playing state to seek/set rate */
+    pliiWaitUntilPlaying (pliData);
+  }
+  /* set the rate first */
   pliiRate (pliData, speed);
+  pliiSeek (pliData, dpos);
 }
 
 void
@@ -175,7 +180,6 @@ pliiGetDuration (plidata_t *pliData)
     return 0;
   }
 
-  /* gsti:length from the metadata */
   duration = gstiGetDuration (pliData->gsti);
   return duration;
 }
@@ -184,14 +188,12 @@ ssize_t
 pliiGetTime (plidata_t *pliData)
 {
   ssize_t     playTime = 0;
-  double      dpos;
 
   if (pliData == NULL) {
     return playTime;
   }
 
-  dpos = gstiGetPosition (pliData->gsti);
-  playTime = (ssize_t) (dpos * 1000.0);
+  playTime = gstiGetPosition (pliData->gsti);
   return playTime;
 }
 
@@ -225,6 +227,29 @@ int
 pliiSupported (plidata_t *pliData)
 {
   return pliData->supported;
+}
+
+/* internal routines */
+
+static void
+pliiWaitUntilPlaying (plidata_t *pliData)
+{
+  plistate_t  state;
+  long        count;
+
+  state = gstiState (pliData->gsti);
+  count = 0;
+  while (state == PLI_STATE_IDLE ||
+         state == PLI_STATE_OPENING ||
+         state == PLI_STATE_BUFFERING ||
+         state == PLI_STATE_STOPPED) {
+    mssleep (1);
+    state = gstiState (pliData->gsti);
+    ++count;
+    if (count > 10000) {
+      break;
+    }
+  }
 }
 
 #endif /* _hdr_gst */
