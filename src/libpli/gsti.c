@@ -194,7 +194,6 @@ gstiGetPosition (gsti_t *gsti)
   }
 
   tm = ctm / 1000 / 1000;
-fprintf (stderr, "pos: %ld\n", (long) tm);
   return tm;
 }
 
@@ -273,11 +272,8 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
     return false;
   }
 
-fprintf (stderr, "try set-pos: %ld\n", pos);
-
   if (gsti->state == PLI_STATE_PAUSED ||
       gsti->state == PLI_STATE_PLAYING) {
-fprintf (stderr, "set-pos: %ld\n", pos);
     gpos = pos;
     gpos *= 1000;
     gpos *= 1000;
@@ -289,10 +285,7 @@ fprintf (stderr, "set-pos: %ld\n", pos);
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
         GST_SEEK_TYPE_SET, gpos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
-fprintf (stderr, "  seek-ok\n");
       rc = true;
-    } else {
-fprintf (stderr, "  seek-ng\n");
     }
   }
 
@@ -322,17 +315,18 @@ gstiSetRate (gsti_t *gsti, double rate)
 
   if (gsti->state == PLI_STATE_PAUSED ||
       gsti->state == PLI_STATE_PLAYING) {
+    gint64    pos;
+
     gsti->rate = rate;
-fprintf (stderr, "set-rate %.2f\n", rate);
+
+    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &pos);
 
     if (gst_element_seek (gsti->pipeline, gsti->rate,
-        GST_FORMAT_TIME, 0,
-        GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE,
+        GST_FORMAT_TIME,
+        GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE,
+        GST_SEEK_TYPE_SET, pos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
-fprintf (stderr, "  rate-ok\n");
       rc = true;
-    } else {
-fprintf (stderr, "  rate-ng\n");
     }
   }
 
@@ -389,7 +383,6 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
       GstState old_state, new_state, pending_state;
 
       gst_message_parse_state_changed (message, &old_state, &new_state, &pending_state);
-fprintf (stderr, "state: %d\n", new_state);
       gstiProcessState (gsti, new_state);
       break;
     }
@@ -420,7 +413,6 @@ gstiProcessState (gsti_t *gsti, GstState state)
     case GST_STATE_NULL: {
       if (gsti->state != PLI_STATE_OPENING) {
         gsti->state = PLI_STATE_IDLE;
-fprintf (stderr, "null / idle\n");
       }
       break;
     }
@@ -428,12 +420,10 @@ fprintf (stderr, "null / idle\n");
       if (gsti->state != PLI_STATE_IDLE &&
           gsti->state != PLI_STATE_OPENING) {
         gsti->state = PLI_STATE_STOPPED;
-fprintf (stderr, "ready / stopped\n");
       }
       break;
     }
     case GST_STATE_PLAYING: {
-fprintf (stderr, "playing\n");
       gsti->state = PLI_STATE_PLAYING;
       break;
     }
@@ -442,12 +432,10 @@ fprintf (stderr, "playing\n");
           gsti->state == PLI_STATE_STOPPED ||
           gsti->state == PLI_STATE_OPENING) {
         if (! gsti->isstopping) {
-fprintf (stderr, "%d idle,stop,open / opening\n", gsti->state);
           gsti->state = PLI_STATE_OPENING;
         }
       }
       if (gsti->state == PLI_STATE_PLAYING) {
-fprintf (stderr, "playing / paused\n");
         gsti->state = PLI_STATE_PAUSED;
       }
       break;

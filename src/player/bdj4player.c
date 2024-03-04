@@ -364,6 +364,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   bdj4shutdown (ROUTE_PLAYER, NULL);
 
   if (playerData->pli != NULL) {
+    volumeSet (playerData->volume, playerData->currentSink, 0);
     pliStop (playerData->pli);
     pliClose (playerData->pli);
     pliFree (playerData->pli);
