@@ -140,6 +140,12 @@ fi
 
 if [[ $platform == windows ]]; then
 
+  # first remove any libraries that are not shipped so that
+  # any dependencies are not traversed
+  # 2024-3-3 pli-gst is not shipped at this time
+
+  rm -f bin/libpligst.dll
+
   count=0
 
   # bll@win10-64 MINGW64 ~/bdj4/bin
@@ -171,11 +177,11 @@ if [[ $platform == windows ]]; then
   # libcares is required by the libcurl build.
   # gdbus
   chkdlllist="
-      /${libtag}/bin/gspawn-win64-helper.exe
-      /${libtag}/bin/gspawn-win64-helper-console.exe
-      /${libtag}/bin/librsvg-2-2.dll
-      /${libtag}/bin/libcares-2.dll
       /${libtag}/bin/gdbus.exe
+      /${libtag}/bin/gspawn-win64-helper-console.exe
+      /${libtag}/bin/gspawn-win64-helper.exe
+      /${libtag}/bin/libcares-2.dll
+      /${libtag}/bin/librsvg-2-2.dll
       "
   for fn in $chkdlllist; do
     bfn=$(basename $fn)
