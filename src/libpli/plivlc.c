@@ -79,6 +79,9 @@ pliiInit (const char *plinm)
   pliData->vlcdata = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   pliData->name = "Integrated VLC";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
+  /* VLC uses the default sink set by the application */
+  /* there is no need to process the audio device list */
+
   return pliData;
 }
 
@@ -246,12 +249,13 @@ pliiState (plidata_t *pliData)
 int
 pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
-  int   rc;
+  int   rc = -1;
 
   if (pliData == NULL || pliData->vlcdata == NULL) {
     return -1;
   }
 
+  /* this is required for windows, not for linux or macos */
   rc = vlcAudioDevSet (pliData->vlcdata, dev);
   return rc;
 }
@@ -263,7 +267,7 @@ pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
 
   /* VLC will use the default sink set by the application. */
   /* No need to make things more complicated. */
-  /* test 2023-12-4 on Linux, MacOS, Windows */
+  /* tested 2023-12-4 on Linux, MacOS, Windows */
   return rc;
 }
 

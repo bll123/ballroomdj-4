@@ -31,6 +31,7 @@ enum {
   PLI_SUPPORT_NONE    = 0x0000,
   PLI_SUPPORT_SEEK    = 0x0001,
   PLI_SUPPORT_SPEED   = 0x0002,
+  PLI_SUPPORT_DEVLIST = 0x0004,
 };
 
 static inline bool

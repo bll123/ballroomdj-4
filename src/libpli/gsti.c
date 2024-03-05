@@ -48,13 +48,13 @@ typedef enum {
 } GstPlayFlags;
 
 typedef struct gsti {
-  int64_t       ident;
-  GMainContext  *mainctx;
-  GstElement    *pipeline;
-  guint         busId;
-  plistate_t    state;
-  double        rate;
-  bool          isstopping : 1;
+  int64_t           ident;
+  GMainContext      *mainctx;
+  GstElement        *pipeline;
+  guint             busId;
+  plistate_t        state;
+  double            rate;
+  bool              isstopping : 1;
 } gsti_t;
 
 static void gstiRunOnce (gsti_t *gsti);
@@ -65,10 +65,9 @@ static void gstiWaitState (gsti_t *gsti, GstState want);
 gsti_t *
 gstiInit (const char *plinm)
 {
-  gsti_t        *gsti;
-  GstBus        *bus;
-  GstPlayFlags  flags;
-  double        vol = 1.0;
+  gsti_t            *gsti;
+  GstBus            *bus;
+  GstPlayFlags      flags;
 
   gst_init (NULL, 0);
 
@@ -87,9 +86,7 @@ gstiInit (const char *plinm)
   flags &= ~GST_PLAY_FLAG_TEXT;
   flags &= ~GST_PLAY_FLAG_VIS;
   g_object_set (G_OBJECT (gsti->pipeline), "flags", flags, NULL);
-  g_object_set (G_OBJECT (gsti->pipeline), "volume", vol, NULL);
-  // audio-sink
-  // audio-filter, probably not needed
+  g_object_set (G_OBJECT (gsti->pipeline), "volume", 1.0, NULL);
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (gsti->pipeline));
   gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
@@ -123,6 +120,7 @@ gstiFree (gsti_t *gsti)
     gstiWaitState (gsti, GST_STATE_NULL);
     gst_object_unref (gsti->pipeline);
   }
+
   gstiRunOnce (gsti);
 
   mdfree (gsti);
@@ -334,6 +332,7 @@ gstiSetRate (gsti_t *gsti, double rate)
   return rc;
 }
 
+
 /* internal routines */
 
 static void
@@ -399,7 +398,7 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
     }
   }
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 /* while stopping states get messed up */

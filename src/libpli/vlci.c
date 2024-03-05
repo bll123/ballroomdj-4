@@ -25,7 +25,6 @@
 #include "mdebug.h"
 #include "pli.h"
 #include "vlci.h"
-#include "volsink.h"
 
 #define VLCDEBUG 0
 
@@ -70,6 +69,7 @@ static const char *stateToStr (libvlc_state_t state); /* for debugging */
 
 # endif /* VLCDEBUG */
 
+static bool vlcHaveAudioDevList (void);
 static void  vlcEventHandler (const struct libvlc_event_t *event, void *);
 
 #if STATE_TO_VALUE
@@ -195,19 +195,6 @@ vlcRate (vlcData_t *vlcData, double drate)
 
 /* other commands */
 
-bool
-vlcHaveAudioDevList (void)
-{
-  bool    rc;
-
-  rc = false;
-#if _lib_libvlc_audio_output_device_enum && \
-    LIBVLC_VERSION_INT >= LIBVLC_VERSION(2,2,0,0)
-  rc = true;
-#endif
-  return rc;
-}
-
 int
 vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
 {
@@ -223,48 +210,6 @@ vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
 
   return 0;
 }
-
-#if _lib_libvlc_audio_output_device_enum
-
-int
-vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist)
-{
-  libvlc_audio_output_device_t  *adevlist;
-  libvlc_audio_output_device_t  *adevlistptr;
-  int                           count = 0;
-
-  sinklist->defname = NULL;
-  sinklist->sinklist = NULL;
-  sinklist->count = 0;
-
-  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL ||
-      strcmp (vlcData->version, "2.2.0") < 0) {
-    return 0;
-  }
-
-  adevlist = libvlc_audio_output_device_enum (vlcData->mp);
-  adevlistptr = adevlist;
-  while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    ++sinklist->count;
-    sinklist->sinklist = mdrealloc (sinklist->sinklist,
-        sinklist->count * sizeof (volsinkitem_t));
-    sinklist->sinklist [count].defaultFlag = 0;
-    sinklist->sinklist [count].idxNumber = count;
-    sinklist->sinklist [count].name = mdstrdup (adevlistptr->psz_device);
-    sinklist->sinklist [count].nmlen = strlen (sinklist->sinklist [count].name);
-    sinklist->sinklist [count].description = mdstrdup (adevlistptr->psz_description);
-    if (count == 0) {
-      sinklist->defname = mdstrdup (adevlistptr->psz_device);
-    }
-    ++count;
-    adevlistptr = adevlistptr->p_next;
-  }
-
-  libvlc_audio_output_device_list_release (adevlist);
-  return 0;
-}
-
-#endif /* have libvlc_audio_output_device_enum */
 
 const char *
 vlcVersion (vlcData_t *vlcData)
@@ -459,6 +404,19 @@ vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
 }
 
 /* internal routines */
+
+static bool
+vlcHaveAudioDevList (void)
+{
+  bool    rc;
+
+  rc = false;
+#if _lib_libvlc_audio_output_device_enum && \
+    LIBVLC_VERSION_INT >= LIBVLC_VERSION(2,2,0,0)
+  rc = true;
+#endif
+  return rc;
+}
 
 /* for debugging */
 # if VLCDEBUG

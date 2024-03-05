@@ -313,6 +313,7 @@ main (int argc, char *argv[])
       bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   playerData.pliSupported = pliSupported (playerData.pli);
 
+  /* some audio interfaces need this */
   pliSetAudioDevice (playerData.pli, playerData.actualSink);
 
   playerSetDefaultVolume (&playerData);
