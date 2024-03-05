@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=18
+ver=19
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -64,8 +64,8 @@ fi
 # When macports transitions to a new version of python, the builds and
 # dependencies can be unstable.  Be conservative about changing this.
 # The versions of python listed in oldpyverlist will be uninstalled.
-oldpyverlist="39 310"
-pyver=311
+oldpyverlist="39 310 311"
+pyver=312
 
 skipmpinst=F
 #  when adding a new version, be sure to update the 'too-new' regex.    ###
