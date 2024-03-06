@@ -278,7 +278,7 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
 
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
-    if (gst_element_seek (gsti->pipeline, 1.0,
+    if (gst_element_seek (gsti->pipeline, gsti->rate,
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
         GST_SEEK_TYPE_SET, gpos,

@@ -25,6 +25,7 @@
 #include "musicdb.h"
 #include "pathbld.h"
 #include "player.h"
+#include "pli.h"
 #include "progstate.h"
 #include "song.h"
 #include "tagdef.h"
@@ -90,6 +91,7 @@ enum {
 
 
 typedef struct uiplayer {
+  const char      *tag;
   progstate_t     *progstate;
   conn_t          *conn;
   playerstate_t   playerState;
@@ -97,6 +99,7 @@ typedef struct uiplayer {
   callback_t      *callbacks [UIPL_CB_MAX];
   dbidx_t         curr_dbidx;
   uiwcont_t       *wcont [UIPL_W_MAX];
+  int             pliSupported;
   /* song display */
   uiwcont_t       *images [UIPL_IMG_MAX];
   /* speed controls / display */
@@ -148,12 +151,14 @@ static bool     uiplayerVolumeCallback (void *udata, double value);
 static void     uiplayerClearDisplay (uiplayer_t *uiplayer);
 
 uiplayer_t *
-uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
+uiplayerInit (const char *tag, progstate_t *progstate,
+    conn_t *conn, musicdb_t *musicdb)
 {
   uiplayer_t    *uiplayer;
 
   logProcBegin (LOG_PROC, "uiplayerInit");
   uiplayer = mdmalloc (sizeof (uiplayer_t));
+  uiplayer->tag = tag;
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
@@ -631,6 +636,16 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerProcessMusicqStatusData (uiplayer, targs);
           break;
         }
+        case MSG_PLAYER_SUPPORT: {
+          uiplayer->pliSupported = atoi (args);
+          if (! pliCheckSupport (uiplayer->pliSupported, PLI_SUPPORT_SPEED)) {
+            uiplayerDisableSpeed (uiplayer);
+          }
+          if (! pliCheckSupport (uiplayer->pliSupported, PLI_SUPPORT_SEEK)) {
+            uiplayerDisableSeek (uiplayer);
+          }
+          break;
+        }
         case MSG_FINISHED: {
           break;
         }
@@ -725,6 +740,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   uiplayer->volumeLock = false;
   uiplayer->speeddisabled = false;
   uiplayer->seekdisabled = false;
+  uiplayer->pliSupported = PLI_SUPPORT_NONE;
 
   logProcEnd (LOG_PROC, "uiplayerInitCallback", "");
   return STATE_FINISHED;
@@ -1046,7 +1062,7 @@ uiplayerSpeedCallback (void *udata, double value)
   char          tbuff [40];
 
   logProcBegin (LOG_PROC, "uiplayerSpeedCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: speed chg");
+  logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: speed chg", uiplayer->tag);
 
   if (! uiplayer->speedLock) {
     mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
@@ -1069,7 +1085,7 @@ uiplayerSeekCallback (void *udata, double value)
   ssize_t       timeleft;
 
   logProcBegin (LOG_PROC, "uiplayerSeekCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: position chg");
+  logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: position chg", uiplayer->tag);
 
   if (! uiplayer->seekLock) {
     mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
@@ -1097,7 +1113,7 @@ uiplayerVolumeCallback (void *udata, double value)
   char          tbuff [40];
 
   logProcBegin (LOG_PROC, "uiplayerVolumeCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: volume chg");
+  logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: volume chg", uiplayer->tag);
 
   if (! uiplayer->volumeLock) {
     mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_TIME_SEND);

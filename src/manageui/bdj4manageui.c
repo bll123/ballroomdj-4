@@ -909,7 +909,7 @@ manageInitializeUI (manageui_t *manage)
   manage->uisongfilter = uisfInit (manage->minfo.window, manage->minfo.options,
       SONG_FILTER_FOR_SELECTION);
 
-  manage->slplayer = uiplayerInit (manage->progstate, manage->conn,
+  manage->slplayer = uiplayerInit ("sl-player", manage->progstate, manage->conn,
       manage->musicdb);
   manage->slmusicq = uimusicqInit ("m-songlist", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
@@ -944,7 +944,7 @@ manageInitializeUI (manageui_t *manage)
   uisongselSetQueueCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL_SBS]);
 
-  manage->mmplayer = uiplayerInit (manage->progstate, manage->conn,
+  manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb);
   manage->mmmusicq = uimusicqInit ("m-mm-songlist", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
@@ -1365,6 +1365,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     manageSetEasySonglist (manage);
     /* CONTEXT: managementui: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
+    connSendMessage (manage->conn, ROUTE_PLAYER, MSG_PLAYER_SUPPORT, NULL);
     rc = STATE_FINISHED;
   }
 
@@ -1479,7 +1480,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PROCESS_ACTIVE: {
           int   val;
           char  tmp [40];
-
 
           val = atoi (targs);
           manage->pluiActive = val;

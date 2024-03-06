@@ -17,6 +17,11 @@ be changed to return multiple items (done).
 the player after starting BDJ4 may be problematic.
 * Also should fallback to VLC if the chosen player is not available.
 
+###### GStreamer
+
+* Not sure how to get working on MacOS and Windows
+* GStreamer has a rate change, but does not adjust the pitch.
+
 ###### MPV
 
 * Support for speed changes.
