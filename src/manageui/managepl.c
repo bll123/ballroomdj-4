@@ -100,6 +100,7 @@ static long managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistTextEntryChg (uiwcont_t *e, void *udata);
+static void manageResetChanged (managepl_t *managepl);
 
 managepl_t *
 managePlaylistAlloc (manageinfo_t *minfo)
@@ -451,11 +452,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->minfo->errorMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, vbox);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
   managePlaylistNew (managepl, MANAGE_STD);
-  managepl->changed = false;
+  manageResetChanged (managepl);
 
   uiwcontFree (vbox);
   uiwcontFree (tophbox);
@@ -639,10 +637,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     }
   }
 
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
-  managepl->changed = false;
+  manageResetChanged (managepl);
   managepl->inload = false;
   logProcEnd (LOG_PROC, "managePlaylistLoadFile", "");
 }
@@ -667,10 +662,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL);
   playlistFree (managepl->playlist);
   managepl->playlist = pl;
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
-  managepl->changed = false;
+  manageResetChanged (managepl);
   managePlaylistUpdateData (managepl);
 
   logProcEnd (LOG_PROC, "managePlaylistNew", "");
@@ -798,10 +790,7 @@ managePlaylistCopy (void *udata)
   if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
-    uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-    uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-    uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
-    managepl->changed = false;
+    manageResetChanged (managepl);
     if (managepl->plloadcb != NULL) {
       callbackHandlerStr (managepl->plloadcb, newname);
     }
@@ -822,10 +811,7 @@ managePlaylistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
   manageDeletePlaylist (managepl->minfo->errorMsg, oname);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
-  managepl->changed = false;
+  manageResetChanged (managepl);
 
   managePlaylistNew (managepl, MANAGE_STD);
 
@@ -1015,3 +1001,11 @@ managePlaylistTextEntryChg (uiwcont_t *e, void *udata)
   return UIENTRY_OK;
 }
 
+static void
+manageResetChanged (managepl_t *managepl)
+{
+  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
+  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
+  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
+  managepl->changed = false;
+}
