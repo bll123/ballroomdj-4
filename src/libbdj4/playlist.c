@@ -137,6 +137,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   ilistidx_t    iteridx;
   nlist_t       *tlist;
   bool          fixbpm;
+  dance_t       *dances;
 
   if (fname == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: null");
@@ -220,6 +221,24 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
           ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, tval);
         }
       }
+    }
+  }
+
+  /* 4.7.0 any dances that are not set (due to dances being added) */
+  /* must be initialized */
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  danceStartIterator (dances, &iteridx);
+  while ((didx = danceIterate (dances, &iteridx)) >= 0) {
+    int   tval;
+
+    tval = ilistGetNum (pl->pldances, didx, PLDANCE_DANCE);
+    if (tval < 0) {
+      ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, LIST_VALUE_INVALID);
+      ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, LIST_VALUE_INVALID);
+      ilistSetNum (pl->pldances, didx, PLDANCE_COUNT, 0);
+      ilistSetNum (pl->pldances, didx, PLDANCE_DANCE, didx);
+      ilistSetNum (pl->pldances, didx, PLDANCE_MAXPLAYTIME, 0);
+      ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 0);
     }
   }
 
