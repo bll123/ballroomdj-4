@@ -31,18 +31,32 @@ enum {
   UITEST_W_MAIN_NB,
   UITEST_W_MENUBAR,
   UITEST_W_STATUS_MSG,
+  UITEST_W_B,
+  UITEST_W_B_IMG_A,
+  UITEST_W_B_IMG_B,
+  UITEST_W_B_MSG,
+  UITEST_W_B_IMG_A_MSG,
+  UITEST_W_B_IMG_B_MSG,
   UITEST_W_MAX,
 };
 
 enum {
   UITEST_CB_CLOSE,
-  UITEST_CB_MSG,
+  UITEST_CB_B,
+  UITEST_CB_B_IMG_A,
+  UITEST_CB_B_IMG_B,
   UITEST_CB_MAX,
+};
+
+enum {
+  UITEST_I_LED_OFF,
+  UITEST_I_MAX,
 };
 
 typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
   callback_t    *callbacks [UITEST_CB_MAX];
+  uiwcont_t     *images [UITEST_I_MAX];
   long          counter;
   bool          stop : 1;
 } uitest_t;
@@ -50,7 +64,10 @@ typedef struct {
 static void uitestMainLoop (uitest_t *uitest);
 static void uitestBuildUI (uitest_t *uitest);
 static bool uitestCloseWin (void *udata);
-static bool uitestMessage (void *udata);
+static void uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp);
+static bool uitestCBButton (void *udata);
+static bool uitestCBButtonImgA (void *udata);
+static bool uitestCBButtonImgB (void *udata);
 static void uitestCleanup (uitest_t *uitest);
 
 int
@@ -65,6 +82,9 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < UITEST_CB_MAX; ++i) {
     uitest.callbacks [i] = NULL;
+  }
+  for (int i = 0; i < UITEST_I_MAX; ++i) {
+    uitest.images [i] = NULL;
   }
   uitest.stop = false;
   uitest.counter = 1;
@@ -109,13 +129,19 @@ uitestBuildUI (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
+  uiwcont_t   *twidgetp;
   char        imgbuff [MAXPATHLEN];
   uiutilsaccent_t accent;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
       uitestCloseWin, uitest, NULL);
-  uitest->callbacks [UITEST_CB_MSG] = callbackInit (
-      uitestMessage, uitest, NULL);
+
+  uitest->callbacks [UITEST_CB_B] = callbackInit (
+      uitestCBButton, uitest, NULL);
+  uitest->callbacks [UITEST_CB_B_IMG_A] = callbackInit (
+      uitestCBButtonImgA, uitest, NULL);
+  uitest->callbacks [UITEST_CB_B_IMG_B] = callbackInit (
+      uitestCBButtonImgB, uitest, NULL);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -147,12 +173,12 @@ uitestBuildUI (uitest_t *uitest)
 
   uiwcontFree (vbox);
 
-  /* buttons */
+  /* buttons, switch */
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiwidgetp = uiCreateLabel ("Button");
+  uiwidgetp = uiCreateLabel ("Button/Switch");
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -163,16 +189,55 @@ uitestBuildUI (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_MSG],
+  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B],
       "button", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_B] = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
   /* button: image */
 
-  /* button: image, tooltip */
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B_IMG_A],
+      NULL, "button_pause");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_A_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* button: image, text */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B_IMG_B],
+      "img-tooltip", "button_play");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_B_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
 
   /* toggle button: normal */
 
@@ -181,7 +246,8 @@ uitestBuildUI (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateToggleButton ("toggle button", NULL, NULL, NULL, 0);
+  uiwidgetp = uiCreateToggleButton ("toggle button",
+      NULL, NULL, NULL, 0);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -201,6 +267,23 @@ uitestBuildUI (uitest_t *uitest)
   uiwcontFree (hbox);
 
   /* toggle button: with image */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
+      PATHBLD_MP_DIR_IMG);
+  uitest->images [UITEST_I_LED_OFF] = uiImageFromFile (imgbuff);
+  uiWidgetMakePersistent (uitest->images [UITEST_I_LED_OFF]);
+
+  uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
+      uitest->images [UITEST_I_LED_OFF], 0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
 
   /* font button */
 
@@ -227,6 +310,46 @@ uitestBuildUI (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
+
+  /* radio button */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
+  uiBoxPackStart (hbox, uiwidgetp);
+  twidgetp = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+  uiwcontFree (twidgetp);
+
+  uiwcontFree (hbox);
+
+  /* check button */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* switch */
 
   uiwcontFree (vbox);
 
@@ -594,17 +717,6 @@ uitestBuildUI (uitest_t *uitest)
 
   uiwcontFree (vbox);
 
-  /* switches */
-
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
-
-  uiwidgetp = uiCreateLabel ("Switch");
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (vbox);
-
   /* text box */
 
   vbox = uiCreateVertBox ();
@@ -639,16 +751,40 @@ uitestCloseWin (void *udata)
   return UICB_STOP;
 }
 
-static bool
-uitestMessage (void *udata)
+static void
+uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp)
 {
-  uitest_t  *uitest = udata;
   char      tmp [40];
 
   snprintf (tmp, sizeof (tmp), "%ld", uitest->counter);
-fprintf (stderr, "message: %s\n", tmp);
-  uiLabelSetText (uitest->wcont [UITEST_W_STATUS_MSG], tmp);
+  uiLabelSetText (uiwidgetp, tmp);
   uitest->counter += 1;
+}
+
+static bool
+uitestCBButton (void *udata)
+{
+  uitest_t  *uitest = udata;
+
+  uitestCounterDisp (uitest, uitest->wcont [UITEST_W_B_MSG]);
+  return UICB_CONT;
+}
+
+static bool
+uitestCBButtonImgA (void *udata)
+{
+  uitest_t  *uitest = udata;
+
+  uitestCounterDisp (uitest, uitest->wcont [UITEST_W_B_IMG_A_MSG]);
+  return UICB_CONT;
+}
+
+static bool
+uitestCBButtonImgB (void *udata)
+{
+  uitest_t  *uitest = udata;
+
+  uitestCounterDisp (uitest, uitest->wcont [UITEST_W_B_IMG_B_MSG]);
   return UICB_CONT;
 }
 
@@ -664,6 +800,10 @@ uitestCleanup (uitest_t *uitest)
 
   for (int i = 0; i < UITEST_CB_MAX; ++i) {
     callbackFree (uitest->callbacks [i]);
+  }
+
+  for (int i = 0; i < UITEST_I_MAX; ++i) {
+    uiwcontFree (uitest->images [i]);
   }
 
   bdjoptCleanup ();
