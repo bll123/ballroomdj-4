@@ -1,0 +1,86 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### How To : Line Dances (Marquee Display)
+
+Line dances present a unique problem.  During a dance event, you might
+want to play a few line dances.  But for the next dance event, a
+different selection of line dances is wanted.
+
+If a song list is created manually
+([Subjects&nbsp;/&nbsp;Song&nbsp;List](en-Subjects-Song%20List), this
+is not so much of a problem.  The DJ can pick and choose the line
+dance to be played for the ballroom dance.
+
+For an automatic playlist, it is more difficult. If each different
+line dance was added as a separate dance in
+[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances),
+and the automatic playlist had every line dance selected, BDJ4 would
+try to choose one of each line dance, not just a few.
+
+A sequenced playlist could select particular line dances, but again,
+it is hard to change out which line dances are played.
+
+##### Add Line Dance to the Available Dances
+
+Instead of adding each line dance as a separate dance, a single line
+dance entry is added to the list of dances in
+[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
+
+For the purposes of this example, the line dance will just be named
+_LD_ to keep it short.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-A.png)
+<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+
+##### Setting up the Line Dances (Marquee Display)
+
+For each line dance, select the dance in the
+[Music&nbsp;Manager](en-Manage-Music%20Manager), and select the
+__Song&nbsp;Editor__ tab.  Use the
+[Song&nbsp;Editor](en-Manage-Song%20Editor) to set the dance to line
+dance (_LD_ in this example), and set the _Marquee&nbsp;Display_ to
+the name of the line dance.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ld-dance-one](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-one-A.png)
+<br><span style="color:#4559bf;">__Manage / Song Editor__</span> </div>
+
+##### Listing the Line Dances
+
+In the [Music&nbsp;Manager](en-Manage-Music%20Manager), select line
+dances in the dance drop-down (_LD_ in this example).  All of the line
+dances will be listed.  The _Marquee&nbsp;Display_ will be listed next
+to the dance (available in version 4.7.0).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-A.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
+
+##### Adding Line Dances to an Automatic Playlist
+
+Now the line dances can be added to the automatic or sequenced
+playlist easily, and each time the playlist is used, there will be
+a different selection of line dances.
+
+In [Playlist&nbsp;Management](en-Management-Playlist&nbsp;Management),
+load the automatic playlist to change.  Turn on the line dance (_LD_
+in this example) and set the count to the number of dances you want.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ld-auto-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-auto-pl-A.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
+
+##### Marquee
+
+The _Marquee&nbsp;Display_ set for each line dance will be displayed
+on the marquee instead of the dance.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ld-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-marquee-A.png)
+<br><span style="color:#4559bf;">__Marquee__</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2024-03-08 14:30:53; BDJ4 version 4.6.2)_

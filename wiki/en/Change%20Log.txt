@@ -4,8 +4,18 @@
 
 <!--
 
-**4.7.0 2024-2---**
+**4.8.0 2024-3---**
     * PENDING Installation: second install, incorrect copy of files.
+
+**4.7.0 2024-3---**
+
+* Bug Fixes:
+    * Management: Disable speed/position sliders when not supported by the player.
+    * Playlist: New dances that were not in the playlist must be initialized.
+* Changes:
+    * Marquee Display: Now displayed in all queues and song lists as an addition to the dance.
+* New Features:
+    * Player: GStreamer interface support (no speed control).
 
 -->
 
@@ -764,4 +774,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-04 15:29:23; BDJ4 version 4.6.2)_
+<br>_(Updated 2024-03-08 14:30:53; BDJ4 version 4.6.2)_

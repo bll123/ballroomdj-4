@@ -89,16 +89,15 @@ __Actions&nbsp;/&nbsp;Copy&nbsp;Audio&nbsp;Tags__ starts a dialog to
 copy the audio tags from one audio file to another.
 
 __Actions&nbsp;/&nbsp;Edit&nbsp;All__ starts the batch edit
-process.  ___This function is not yet implemented___.
+process.
 
 __Actions&nbsp;/&nbsp;Apply&nbsp;Edit&nbsp;All__ finalizes the
 batch edit process. The changes made to the current song will be made
-to the rest of the selected songs.  ___This function is not yet
-implemented___.
+to the rest of the selected songs.
 
 __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
-reverted. ___This function is not yet implemented___.
+reverted.
 
 __Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ starts a dialog to
 modify the audio file.  The audio file may have its silence trimmed,
@@ -137,35 +136,35 @@ the __Reset__ button.
 The complete list of fields that can be edited or displayed in the
 song editor is:
 
- Field|Tag Type|Display
- -----|--------|-------
- Album|Audio|
- Album Artist|Audio|
- Artist|Audio|
- BPM/MPM|Audio|
- Composer|Audio|
- Conductor|Audio|
- Dance|BDJ4|
- Dance Level|BDJ4|
- Dance Rating|BDJ4|
- Date|Audio|
- Date Added|-|Display Only
- Disc|Audio|
- Duration|-|Display Only
- Favorite|BDJ4|
- Genre|Audio|
- Keyword|BDJ4|
- Marquee Display|BDJ4|
- Notes|BDJ4|
- Prevent Rename|-|
- Song End|BDJ4|
- Song Start|BDJ4|
- Speed Adjustment|BDJ4|
- Status|BDJ4|
- Tags|BDJ4|
- Title|Audio|
- Track|Audio|
- Volume Adjustment|BDJ4|
+ Field|Tag Type|Display|Notes
+ -----|--------|-------|-----
+ Album|Audio||
+ Album Artist|Audio||
+ Artist|Audio||
+ BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM-MPM](en-Subjects-BPM-MPM)
+ Composer|Audio||
+ Conductor|Audio||
+ Dance|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+ Dance Level|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
+ Dance Rating|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings)
+ Date|Audio||
+ Date Added|-|Display Only|
+ Disc|Audio||
+ Duration|-|Display Only|
+ Favorite|BDJ4||[Subjects&nbsp;/&nbsp;Favorites](en-Subjects-Favorites)
+ Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
+ Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
+ Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
+ Notes|BDJ4||
+ Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
+ Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
+ Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
+ Speed Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
+ Status|BDJ4||
+ Tags|BDJ4||
+ Title|Audio||
+ Track|Audio||
+ Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-04 18:29:36; BDJ4 version 4.4.10)_
+<br>_(Updated 2024-03-08 08:58:27; BDJ4 version 4.6.2)_
