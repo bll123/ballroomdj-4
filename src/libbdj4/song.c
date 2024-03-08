@@ -440,6 +440,19 @@ songDisplayString (song_t *song, int tagidx, int flag)
       str = mdstrdup (conv.strval);
       dataFree (conv.strval);
     }
+
+    /* if the marquee display is set, it should be listed */
+    /* as an addition to the dance */
+    if (tagidx == TAG_DANCE) {
+      char  tbuff [200];
+
+      tstr = songGetStr (song, TAG_MQDISPLAY);
+      if (tstr != NULL && *tstr) {
+        snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, tstr);
+        dataFree (str);
+        str = mdstrdup (tbuff);
+      }
+    }
   } else {
     tstr = songGetStr (song, tagidx);
     if (tstr == NULL) { tstr = ""; }
