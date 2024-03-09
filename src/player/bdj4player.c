@@ -418,6 +418,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (playerData->conn, routefrom);
+          /* force a player-status-data message */
+          playerData->lastPlayerState = PL_STATE_UNKNOWN;
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -1841,16 +1843,17 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
       (uint64_t) tm, MSG_ARGS_RS,
       (int64_t) dur);
 
-  /* main will parse the message and pass on the timer information to */
-  /* the marquee.  main also reformats the message into json for */
-  /* the remote control. */
-  connSendMessage (playerData->conn, ROUTE_MAIN,
-      MSG_PLAYER_STATUS_DATA, rbuff);
   /* 4.4.4 send the playerui and manageui the messages from here, */
   /* avoid some latency by routing through main */
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAYER_STATUS_DATA, rbuff);
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
+      MSG_PLAYER_STATUS_DATA, rbuff);
+
+  /* main will parse the message and pass on the timer information to */
+  /* the marquee.  main also reformats the message into json for */
+  /* the remote control. */
+  connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
 
   dataFree (rbuff);

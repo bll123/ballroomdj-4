@@ -11,6 +11,7 @@
 
 * Bug Fixes:
     * Management: Disable speed/position sliders when not supported by the player.
+    * Management: Fix volume display upon startup.
     * Marquee: Clean up display during announcements.
     * Player: Fix crash if exited during an announcement.
     * Playlist: New dances that were not in the playlist must be initialized.
