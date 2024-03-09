@@ -370,8 +370,10 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
 
   if (playerData->currentSong != NULL) {
-    playerPrepQueueFree (playerData->currentSong);
-    playerData->currentSong = NULL;
+    if (playerData->currentSong->announce != PREP_ANNOUNCE) {
+      playerPrepQueueFree (playerData->currentSong);
+      playerData->currentSong = NULL;
+    }
   }
 
   origvol = volregClear (playerData->actualSink);
