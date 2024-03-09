@@ -370,6 +370,9 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mainData->conn, routefrom);
+          if (routefrom == ROUTE_MARQUEE) {
+            mainData->marqueeChanged = true;
+          }
           break;
         }
         case MSG_SOCKET_CLOSE: {

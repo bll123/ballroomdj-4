@@ -23,7 +23,7 @@ __Quick&nbsp;Edit:&nbsp;Selected__ will edit the currently selected
 song in the music queue or the history.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/quick-edit-A.png)
+![quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/quick-edit-B.png)
 <br><span style="color:#4559bf;">__Player / Quick Edit__</span> </div>
 
 ##### Quick Edit: Current
