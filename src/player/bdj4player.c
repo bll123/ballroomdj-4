@@ -362,8 +362,9 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 
   bdj4shutdown (ROUTE_PLAYER, NULL);
 
+  volumeSet (playerData->volume, playerData->currentSink, 0);
+
   if (playerData->pli != NULL) {
-    volumeSet (playerData->volume, playerData->currentSink, 0);
     pliStop (playerData->pli);
     pliClose (playerData->pli);
     pliFree (playerData->pli);
@@ -376,6 +377,13 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     }
   }
 
+  queueFree (playerData->prepQueue);
+  queueFree (playerData->prepRequestQueue);
+  queueFree (playerData->playRequest);
+
+  /* do the volume reset last, give time for the player to stop */
+
+  mssleep (100);
   origvol = volregClear (playerData->actualSink);
   bdj3flag = volregCheckBDJ3Flag ();
   if (origvol > 0) {
@@ -390,10 +398,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
-
-  queueFree (playerData->prepQueue);
-  queueFree (playerData->prepRequestQueue);
-  queueFree (playerData->playRequest);
 
   logProcEnd (LOG_PROC, "playerClosingCallback", "");
   return STATE_FINISHED;

@@ -14,6 +14,7 @@
     * Management: Fix volume display upon startup.
     * Marquee: Clean up display during announcements.
     * Player: Fix crash if exited during an announcement.
+    * Player: On exit, wait a bit before restoring the system volume.
     * Playlist: New dances that were not in the playlist must be initialized.
 * Changes:
     * Marquee Display: Now displayed in all queues and song lists as an addition to the dance.
