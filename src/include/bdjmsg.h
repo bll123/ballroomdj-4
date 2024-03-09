@@ -116,6 +116,7 @@ typedef enum {
                             //    args: song fname
   MSG_PLAYER_STATE,         // args: player state
   MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
+  MSG_PLAYER_ANN_FINISHED,  // announcement is finished
 
   /* to/from manageui/playerui */
   MSG_MUSIC_QUEUE_DATA,

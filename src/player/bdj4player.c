@@ -58,10 +58,13 @@ enum {
   STOP_NORMAL = 1,
   STATUS_NO_FORCE = 0,
   STATUS_FORCE = 1,
+  FADEIN_TIMESLICE = 50,
+  FADEOUT_TIMESLICE = 100,
+  PREP_QUEUE_IDENT = 0x707265707100aabb,
 };
 
 typedef struct {
-  char          *songfullpath;
+  int64_t       ident;
   char          *songname;
   char          *tempname;
   int32_t       dur;
@@ -142,11 +145,6 @@ typedef struct {
   bool            repeat : 1;
   bool            stopPlaying : 1;
 } playerdata_t;
-
-enum {
-  FADEIN_TIMESLICE = 50,
-  FADEOUT_TIMESLICE = 100,
-};
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
 static int      playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -621,6 +619,12 @@ playerProcessing (void *udata)
 
     temprepeat = playerData->repeat;
 
+    pq = playerData->currentSong;
+    if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
+      connSendMessage (playerData->conn, ROUTE_MAIN,
+          MSG_PLAYER_ANN_FINISHED, NULL);
+    }
+
     /* announcements are not repeated */
     if (playerData->repeat) {
       pq = playerData->currentSong;
@@ -984,7 +988,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   }
 
   npq = mdmalloc (sizeof (prepqueue_t));
-  npq->songfullpath = NULL;
+  npq->ident = PREP_QUEUE_IDENT;
   npq->tempname = NULL;
   npq->songname = NULL;
 
@@ -1241,7 +1245,9 @@ playerPlay (playerdata_t *playerData)
       /* cancel the gap */
       mstimestart (&playerData->gapFinishTime);
     }
+
     pliPlay (playerData->pli);
+
     if (playerData->playerState == PL_STATE_PAUSED) {
       prepqueue_t       *pq = playerData->currentSong;
 
@@ -1515,16 +1521,23 @@ playerPrepQueueFree (void *data)
 
   logProcBegin (LOG_PROC, "playerPrepQueueFree");
 
-  if (pq != NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
-    audiosrcPrepClean (pq->songname, pq->tempname);
-    dataFree (pq->songfullpath);
-    dataFree (pq->songname);
-    if (pq->tempname != NULL) {
-      mdfree (pq->tempname);
-    }
-    mdfree (pq);
+  if (pq == NULL) {
+    return;
   }
+
+  logMsg (LOG_DBG, LOG_INFO, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
+
+  if (pq->ident != PREP_QUEUE_IDENT) {
+    logMsg (LOG_DBG, LOG_ERR, "ERR: double free of prep queue");
+    fprintf (stderr, "ERR: double free of prep queue\n");
+    return;
+  }
+
+  audiosrcPrepClean (pq->songname, pq->tempname);
+  dataFree (pq->songname);
+  dataFree (pq->tempname);
+  mdfree (pq);
+
   logProcEnd (LOG_PROC, "playerPrepQueueFree", "");
 }
 

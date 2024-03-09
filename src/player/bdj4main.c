@@ -120,6 +120,7 @@ typedef struct {
   bool              marqueestarted : 1;
   bool              waitforpbfinish : 1;
   bool              marqueeChanged : 1;
+  bool              inannounce : 1;
 } maindata_t;
 
 static int  mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
@@ -237,6 +238,7 @@ main (int argc, char *argv[])
   mainData.ploverridestoptime = 0;
   mainData.songplaysentcount = 0;
   mainData.marqueeChanged = false;
+  mainData.inannounce = false;
   mainData.lastGapSent = -1;
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
@@ -535,11 +537,16 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainMusicqSetSuspend (mainData, targs, false);
           break;
         }
+        case MSG_PLAYER_ANN_FINISHED: {
+          mainData->inannounce = false;
+          break;
+        }
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
               mainData->playerState, logPlstateDebugText (mainData->playerState));
           mainData->marqueeChanged = true;
+
           if (mainData->playerState == PL_STATE_STOPPED) {
             ++mainData->pbfinishrcv;
           }
@@ -956,7 +963,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   int         flags;
   int         pauseind;
   int         dispidx;
-  long        uniqueidx;
+  dbidx_t     uniqueidx;
   ssize_t     qDuration;
 
   logProcBegin (LOG_PROC, "mainSendMusicQueueData");
@@ -979,7 +986,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       snprintf (tbuff, sizeof (tbuff), "%d%c", dispidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
-      snprintf (tbuff, sizeof (tbuff), "%ld%c", uniqueidx, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%d%c", uniqueidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
       snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
@@ -1112,8 +1119,12 @@ mainSendMarqueeData (maindata_t *mainData)
       if (lastmqidx != mainData->musicqPlayIdx) {
         docheck = true;
       }
-    } else if ((marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+    } else if ((marqueeidx > 0 && mainData->inannounce) ||
+        (marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
         (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
+      /* inannounce and marqueeidx > 0 or */
+      /* in-gap and marqueeidx > 0 or */
+      /* in-fadeout and marqueeidx > 1 */
       dstr = MSG_ARGS_EMPTY_STR;
     } else if (qoffset >= musicqLen) {
       dstr = MSG_ARGS_EMPTY_STR;
@@ -1506,7 +1517,7 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
-      long uniqueidx;
+      dbidx_t uniqueidx;
 
       musicqSetFlag (mainData->musicQueue, mqidx, i, MUSICQ_FLAG_PREP);
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, i);
@@ -1547,7 +1558,7 @@ mainMusicqClearPrep (maindata_t *mainData, int mqidx, int idx)
   dbidx_t       dbidx;
   song_t        *song;
   musicqflag_t  flags;
-  long          uniqueidx;
+  dbidx_t       uniqueidx;
 
 
   flags = musicqGetFlags (mainData->musicQueue, mqidx, idx);
@@ -1565,7 +1576,7 @@ mainMusicqClearPrep (maindata_t *mainData, int mqidx, int idx)
     if (song != NULL) {
       char  tmp [200];
 
-      snprintf (tmp, sizeof (tmp), "%ld%c%s",
+      snprintf (tmp, sizeof (tmp), "%d%c%s",
           uniqueidx, MSG_ARGS_RS, songGetStr (song, TAG_URI));
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_CLEAR_PREP, tmp);
     }
@@ -2046,7 +2057,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   musicqflag_t  flags;
   const char    *sfname;
   dbidx_t       dbidx;
-  long          uniqueidx;
+  dbidx_t       uniqueidx;
   song_t        *song;
   int           currlen;
   time_t        currTime;
@@ -2088,12 +2099,13 @@ mainMusicQueuePlay (maindata_t *mainData)
 
         annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
         if (annfname != NULL) {
+          mainData->inannounce = true;
           snprintf (tmp, sizeof (tmp), "%d%c%s", PL_UNIQUE_ANN, MSG_ARGS_RS, annfname);
           connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
         }
       }
       sfname = songGetStr (song, TAG_URI);
-      snprintf (tmp, sizeof (tmp), "%ld%c%s", uniqueidx, MSG_ARGS_RS, sfname);
+      snprintf (tmp, sizeof (tmp), "%d%c%s", uniqueidx, MSG_ARGS_RS, sfname);
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
 
       /* set the gap for the upcoming song */
