@@ -199,14 +199,13 @@ plistate_t
 gstiState (gsti_t *gsti)
 {
   GstState    state, pending;
-  int         rc;
 
   if (gsti == NULL || gsti->ident != GSTI_IDENT || gsti->mainctx == NULL) {
     return PLI_STATE_NONE;
   }
 
   gstiRunOnce (gsti);
-  rc = gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, &pending, 1);
+  gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, &pending, 1);
   gstiProcessState (gsti, state);
 
   return gsti->state;

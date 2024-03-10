@@ -121,7 +121,6 @@ function copyreleasefiles {
   #   dbustest, plisinklist, voltest, vsencdec, uitest
   # img/profile[1-9] may be left over from testing
   # 2024-1-16 do not ship the pli-mpv interface either.
-  # 2024-3-3 do not ship the pli-gst interface at this time.
   rm -f \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
@@ -133,7 +132,6 @@ function copyreleasefiles {
       ${stage}/bin/dbustest* \
       ${stage}/bin/plisinklist* \
       ${stage}/bin/libplimpv* \
-      ${stage}/bin/libpligst* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \
@@ -162,17 +160,21 @@ function copyreleasefiles {
       ${stage}/plocal/lib64/pkgconfig
 
   # the graphics-linked launcher is not used on linux or windows
-  # mpris is not avialable on windows or macos
+  # mpris is not available on windows or macos
+  # 2024-3-9 the pli-gstreamer interface is not shipped for macos or windows.
+  #   It is possible to make it work, but it has not speed+pitch control.
   case ${tag} in
     linux)
       rm -f ${stage}/bin/bdj4g
       ;;
     macos)
       rm -f ${stage}/bin/libplimpris*
+      rm -f ${stage}/bin/libpligst*
       ;;
     win64)
-      rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/bdj4g
+      rm -f ${stage}/bin/libplimpris*
+      rm -f ${stage}/bin/libpligst*
       ;;
   esac
 }

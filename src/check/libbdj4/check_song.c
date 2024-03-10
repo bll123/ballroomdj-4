@@ -92,7 +92,7 @@ static char *songparsedata [] = {
       "FAVORITE\n..bluestar\n"
       "GENRE\n..Classical\n"
       "KEYWORD\n..keyword\n"
-      "MQDISPLAY\n..Waltz\n"
+      "MQDISPLAY\n..w\n"
       "NOTES\n..notes\n"
       "RECORDING_ID\n..\n"
       "SAMESONG\n..3\n"
@@ -128,7 +128,7 @@ static char *songparsedata [] = {
       "FAVORITE\r\n..bluestar\r\n"
       "GENRE\r\n..Classical\r\n"
       "KEYWORD\r\n..keyword\r\n"
-      "MQDISPLAY\r\n..Waltz\r\n"
+      "MQDISPLAY\r\n..w\r\n"
       "NOTES\r\n..notes\r\n"
       "RECORDING_ID\r\n..\r\n"
       "SAMESONG\r\n..4\r\n"
@@ -164,7 +164,7 @@ static char *songparsedata [] = {
       "FAVORITE\n..bluestar\n"
       "GENRE\n..Classical\n"
       "KEYWORD\n..keyword\n"
-      "MQDISPLAY\n..Waltz\n"
+      "MQDISPLAY\n..w\n"
       "NOTES\n..notes\n"
       "RECORDING_ID\n..\n"
       "SAMESONG\n..5\n"
@@ -446,7 +446,7 @@ START_TEST(song_display)
 
     data = songDisplayString (song, TAG_DANCE, SONG_NORM);
     if (i < 3) {
-      ck_assert_str_eq (data, "Waltz");
+      ck_assert_str_eq (data, "Waltz (w)");
     } else {
       ck_assert_str_eq (data, "Cha Cha");
     }
