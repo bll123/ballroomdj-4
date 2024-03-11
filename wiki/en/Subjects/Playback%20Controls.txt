@@ -1,8 +1,52 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_The playback of a song can be
+adjusted with the Song Start, Song End, Speed Adjustment
+and Volume Adjustment._</span>
+
+[TOC]
+
 ### Playback Controls
 
-To be written ...
+In the [Song&nbsp;Editor](en-Management-Song%20Editor), the
+Song&nbsp;Start, Song&nbsp;End, Speed&nbsp;Adjustment and
+Volume&nbsp;Adjustment can be set for a song.
+
+_Note that the fields displayed in the
+[Song&nbsp;Editor](en-Management-Song%20Editor) can be changed in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings)._
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![pb-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/pb-song-editor-B.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+
+__Song&nbsp;Start__ is used to skip non-danceable or long introductory
+music. _Song&nbsp;Start_ specifies the position to seek to before the
+song starts playing.
+
+__Song&nbsp;End__ is used to stop playback early when there is
+non-danceable music near the end of the song or if there is a break in
+the song that is not danceable.
+
+_Song&nbsp;End_ specifies the ending position of the song.  The song
+will end at the position specified. If the song's duration is longer
+than the maximum play time, there is no need to set the
+_Song&nbsp;End_.
+
+If a fade-out is set, the fade will start before the song end
+position.
+
+__Speed&nbsp;Adjustment__ adjusts the playback speed.  When used with
+the Integrated VLC player, the pitch is also automatically adjusted so
+that the song's pitch sounds normal.
+
+It is easier to set the _Song&nbsp;Start_ and _Song&nbsp;End_ before
+making any speed adjustments.
+
+__Volume&nbsp;Adjustment__ adjusts the volume during playback.  The
+playback volume is adjusted by the set percentage during playback.
+
+See also: [Subjects&nbsp;/&nbsp;Quick&nbsp;Edit](en-Subjects-Quick%20Edit)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-08 08:51:54; BDJ4 version 4.6.2)_
+<br>_(Updated 2024-03-11 08:44:18; BDJ4 version 4.7.0)_

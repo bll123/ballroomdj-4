@@ -115,16 +115,20 @@ Before using the BPM Counter, the BPM setting should be added to the
 song editor using
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-After selecting the song to edit in the song editor, use the __Play__
-button to play the song.  Then select the _MPM_ menu selection in the
+After selecting the song to edit in the song editor, use the play
+button
+(![play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
+to play the song.  Then select the _MPM_ menu selection in the
 __Actions__ menu.  The BPM Counter will start.
+
+<!-- this image is re-used: see subjects/bpm-mpm -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
-stabilized, select the __Save__ button.  To restart the count, select
+stabilized, select the __Save__ button.  To reset the count, select
 the __Reset__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -141,7 +145,7 @@ song editor is:
  Album|Audio||
  Album Artist|Audio||
  Artist|Audio||
- BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM-MPM](en-Subjects-BPM-MPM)
+ BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
  Composer|Audio||
  Conductor|Audio||
  Dance|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
@@ -160,11 +164,11 @@ song editor is:
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Speed Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
- Status|BDJ4||
+ Status|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Status](en-Configuration-Edit%20Status)
  Tags|BDJ4||
  Title|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-08 08:58:27; BDJ4 version 4.6.2)_
+<br>_(Updated 2024-03-11 11:55:22; BDJ4 version 4.7.0)_

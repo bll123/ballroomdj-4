@@ -1,0 +1,49 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Some configuration options may need to
+be copied when moving to a new computer.  This procedure also applies
+if the computer name is changed._</span>
+
+[TOC]
+
+### Moving BDJ4 to a New Computer
+
+Some configuration options are stored on a per-computer basis, as
+different computers may have different hardware installed or
+connected, or different fonts or themes installed.
+
+When copying BDJ4 to a new computer, the configuration options from
+the old computer will not be located, as they are stored in a folder
+named after the old computer.
+
+##### Determine the Computer Names
+
+On your old computer, check the name of your computer.
+<br>Windows: Select __Settings__ / __System__ / __About__ (Device&nbsp;Name).
+<br>Linux: Use the __hostname__ command in a terminal.
+<br>MacOS: In __Applications__, select __System&nbsp;Settings__ / General / About (Name).
+<br>MacOS: Select the __Apple__ menu, / __About&nbspthis&nbsp;Mac__ / __More&nbsp;Info__ (Name).
+<br>MacOS: Use the __hostname__ command in a terminal.
+
+Likewise, on your new computer, check the name of your computer.
+
+##### Copy BDJ4 to the New Computer
+
+Copy the entire BDJ4 folder to the new computer.
+
+##### Copy the Configuration Folder
+
+In the _BDJ4/data_ folder, there is a folder named after the old
+computer. e.g. If your old computer was named _desktop-n02iqro_, there
+will be a _BDJ4/data/desktop-n02iqro_ folder.
+
+On the new computer, copy the folder named after the old computer
+(e.g. in this example _BDJ4/data/desktop-n02iqro_) to the _BDJ4/data_
+folder.
+
+Many file managers will create a folder called
+_Copy&nbsp;of&nbsp;desktop-n02iqro__. In this case, rename the folder
+to the name of the new computer after it is copied.
+
+[Wiki Home](Home)
+<br>_(Updated 2024-03-11 07:55:44; BDJ4 version 4.7.0)_

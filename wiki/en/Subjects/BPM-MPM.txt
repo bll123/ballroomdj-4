@@ -1,8 +1,124 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_BPM/MPM can be set for each song and is
+used by the DJ to help select appropriate songs for a dance._</span>
+
+[TOC]
+
 ### BPM & MPM
 
-To be written ...
+The BPM/MPM of a song can be set and used by the DJ to help determine
+which songs to choose for a dance.
+
+BPM is the beats per minute of a song.  MPM is measures per minute.
+
+In many cases, the BPM acronym is used as bars per minutes. The
+musical terms _measure_ and _bar_ are interchangeable, and BDJ4 always
+uses MPM as measures per minute and BPM as beats per minutes to avoid
+confusion.
+
+In most cases ballroom music speed ranges are listed as measures per
+minute.  This can also be confusing, as dances can be in 2/4&nbsp;time
+(e.g. Samba, Paso Doble), 3/4&nbsp;time (e.g. Waltz) or 4/4&nbsp;time.
+
+Some people prefer to use beats per minute, and others measures per
+minute.
+
+##### BPM/MPM Configuration
+
+In [Configure&nbsp;/&nbsp;General](en-Configuration-General), the
+__BPM__ setting can be set to _BPM_ or _MPM_. This affects the display
+of the BPM/MPM of the song and which label (BPM/MPM) is displayed.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![bpm-conf-general](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-conf-general-A.png)
+<br><span style="color:#4559bf;">__Configure / General__</span> </div>
+
+For the examples below, MPM will be used.
+
+##### Dance Configuration
+
+In
+[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances),
+each dance has a _Time&nbsp;Signature_, a _Low&nbsp;BPM/MPM_ setting,
+and a _High&nbsp;BPM/MPM_ setting.
+
+The time signature setting is used by the
+[BPM&nbsp;counter](#using-the-bpm-counter) to determine the correct
+MPM for the song and for the BPM range display in the
+[Song&nbsp;Editor](#song-editor) (see below).
+
+The low and high BPM/MPM settings are only used to display the BPM/MPM
+range for a dance (see [Song&nbsp;Editor](#song-editor) below).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![bpm-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-edit-dance-A.png)
+<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+
+##### Display Configuration
+
+In
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
+BPM/MPM should be added to the _Song&nbsp;Editor_.  Choose one of the
+_Song&nbsp;Editor_ columns and add BPM/MPM.
+
+Also add BPM/MPM to the various song listings and music queues as you prefer.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![bpm-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-disp-settings-A.png)
+<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+
+##### Song Editor
+
+In the [Song&nbsp;Editor](en-Management-Song%20Editor), the BPM/MPM
+can be set for the song.  Select or type in the BPM/MPM and then
+select the __Save__ button to save the changes.
+
+The images below show how the BPM/MPM entry field looks in the song
+editor (for a Waltz) when the
+[Configure&nbsp;/&nbsp;General](en-Configuration-General) setting is
+set to MPM and when set to BPM.
+
+The BPM/MPM range display is determined as explained in
+[Dance&nbsp;Configuration](#dance-configuration) above.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![bpm-se-mpm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-se-mpm-B.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![bpm-se-bpm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-se-bpm-A.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+
+##### Using the BPM Counter
+
+The BPM Counter can be accessed from BPM/MPM menu selection in the
+__Actions__ menu of the [Song&nbsp;Editor](en-Management-Song%20Editor).
+
+Select the song to edit in the
+[Song&nbsp;Editor](en-Management-Song%20Editor), and select the play
+button
+(![play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
+to play the song.
+
+Click in the blue box in time with the beat.  The BPM&nbsp;Counter
+will calculate the correct BPM and MPM based on the dance's time
+signature and the number of beats.  Select the __Save__ button to
+transfer the calculated BPM/MPM to the song editor and close the
+BPM&nbsp;Counter. To reset the counter, select the __Reset__ button.
+
+The BPM/MPM field in the song editor will be populated, but the changes
+to the song must still be saved.  Select the __Save__ button in the
+song editor to save the changes.
+
+<!-- this image is re-used: see management/song-editor -->
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-B.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
+
+See also: [Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
+
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-08 08:51:54; BDJ4 version 4.6.2)_
+<br>_(Updated 2024-03-11 11:55:22; BDJ4 version 4.7.0)_

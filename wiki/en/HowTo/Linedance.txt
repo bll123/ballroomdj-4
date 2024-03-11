@@ -9,7 +9,7 @@ want to play a few line dances.  But for the next dance event, a
 different selection of line dances is wanted.
 
 If a song list is created manually
-([Subjects&nbsp;/&nbsp;Song&nbsp;List](en-Subjects-Song%20List), this
+([Subjects&nbsp;/&nbsp;Song&nbsp;List](en-Subjects-Song%20List)), this
 is not so much of a problem.  The DJ can pick and choose the line
 dance to be played for the ballroom dance.
 
@@ -83,4 +83,4 @@ on the marquee instead of the dance.
 <br><span style="color:#4559bf;">__Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-09 12:14:53; BDJ4 version 4.6.2)_
+<br>_(Updated 2024-03-11 07:55:15; BDJ4 version 4.8.0-dev)_

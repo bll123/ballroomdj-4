@@ -4,8 +4,13 @@
 
 <!--
 
-**4.8.0 2024-3---**
+**4.9.0 2024-3---**
     * PENDING Installation: second install, incorrect copy of files.
+
+**4.8.0 2024-3---**
+
+* Changes:
+    * Filter: Sort By: Added BPM as a sort option.
 
 -->
 
@@ -779,4 +784,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-09 19:00:38; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-11 07:55:19; BDJ4 version 4.7.0)_
