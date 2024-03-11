@@ -74,6 +74,7 @@ updateRPath (bdj4g)
 add_executable (bdj4starterui
   bdj4starterui.c
   startutil.c
+  support.c
 )
 if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -municode)
