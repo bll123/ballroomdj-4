@@ -99,7 +99,6 @@ add_library (objlauncher OBJECT
 
 # static libraries for build
 add_subdirectory (libdylib)
-add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
 
 # shared libraries that ship

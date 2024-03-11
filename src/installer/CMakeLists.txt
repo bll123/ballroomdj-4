@@ -39,6 +39,10 @@ endif()
 addIOKitFramework (bdj4se)
 addIntlLibrary (bdj4se)
 
+add_library (objlocbdj3 OBJECT
+  locatebdj3.c
+)
+
 add_executable (bdj4installer bdj4installer.c)
 if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
