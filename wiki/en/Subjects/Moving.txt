@@ -22,7 +22,7 @@ On your old computer, check the name of your computer.
 <br>Windows: Select __Settings__ / __System__ / __About__ (Device&nbsp;Name).
 <br>Linux: Use the __hostname__ command in a terminal.
 <br>MacOS: In __Applications__, select __System&nbsp;Settings__ / General / About (Name).
-<br>MacOS: Select the __Apple__ menu, / __About&nbspthis&nbsp;Mac__ / __More&nbsp;Info__ (Name).
+<br>MacOS: Select the __Apple__ menu / __About&nbsp;this&nbsp;Mac__ / __More&nbsp;Info__ (Name).
 <br>MacOS: Use the __hostname__ command in a terminal.
 
 Likewise, on your new computer, check the name of your computer.
@@ -39,11 +39,11 @@ will be a _BDJ4/data/desktop-n02iqro_ folder.
 
 On the new computer, copy the folder named after the old computer
 (e.g. in this example _BDJ4/data/desktop-n02iqro_) to the _BDJ4/data_
-folder.
+folder using the new computer name.
 
 Many file managers will create a folder called
-_Copy&nbsp;of&nbsp;desktop-n02iqro__. In this case, rename the folder
+_Copy&nbsp;of&nbsp;desktop-n02iqro_. In this case, rename the folder
 to the name of the new computer after it is copied.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-11 07:55:44; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-11 12:09:04; BDJ4 version 4.7.0)_
