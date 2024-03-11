@@ -508,6 +508,11 @@ main (int argc, char *argv [])
     updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 3);
   }
 
+  {
+    /* 4.8.0 sortopt.txt updated */
+    updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 2);
+  }
+
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {

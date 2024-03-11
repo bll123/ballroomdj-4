@@ -873,9 +873,10 @@ songfilterMakeSortKey (songfilter_t *sf,
       strlcat (sortkey, tbuff, sz);
     } else if (tagkey == TAG_TITLE ||
         tagkey == TAG_ARTIST ||
+        tagkey == TAG_COMPOSER ||
+        tagkey == TAG_CONDUCTOR ||
         tagkey == TAG_ALBUMARTIST) {
-      snprintf (tbuff, sizeof (tbuff), "/%s",
-            songGetStr (song, tagkey));
+      snprintf (tbuff, sizeof (tbuff), "/%s", songGetStr (song, tagkey));
       strlcat (sortkey, tbuff, sz);
     } else if (tagkey == TAG_TRACKNUMBER) {
       dbidx_t   tval;
@@ -896,11 +897,19 @@ songfilterMakeSortKey (songfilter_t *sf,
     } else if (tagkey == TAG_ALBUM) {
       dbidx_t     tval;
 
-      snprintf (tbuff, sizeof (tbuff), "/%s",
-          songGetStr (song, tagkey));
+      snprintf (tbuff, sizeof (tbuff), "/%s", songGetStr (song, tagkey));
       strlcat (sortkey, tbuff, sz);
 
       tval = songGetNum (song, TAG_DISCNUMBER);
+      if (tval == LIST_VALUE_INVALID) {
+        tval = 1;
+      }
+      snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
+      strlcat (sortkey, tbuff, sz);
+    } else if (tagkey == TAG_BPM) {
+      int     tval;
+
+      tval = songGetNum (song, tagkey);
       if (tval == LIST_VALUE_INVALID) {
         tval = 1;
       }

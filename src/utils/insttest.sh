@@ -146,6 +146,11 @@ function checkUpdaterClean {
   sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
+  # 4.8.0 2024-3-11 sortopt version number should be updated to version 2.
+  fn="$DATADIR/sortopt.txt"
+  sed -e 's/version [23456]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
+
   # gtk-static version number should be updated to version 4.
   fn="$DATADIR/gtk-static.css"
   if [[ -f $fn ]]; then
@@ -646,7 +651,21 @@ function checkInstallation {
       echo "  no itunes-fields.txt file"
     fi
 
-    res=$(($res+1))  # itunes-fields.txt file
+    res=$(($res+1))  # sortopt.txt file
+    fn="${DATADIR}/sortopt.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep 'version 2' "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  sortopt.txt file has wrong version"
+      fi
+    else
+      echo "  no sortopt.txt file"
+    fi
+
+    res=$(($res+1))  # gtk-static.css file
     fn="${DATADIR}/gtk-static.css"
     if [[ $fin == T && -f ${fn} ]]; then
       grep 'version 4' "${fn}" > /dev/null 2>&1

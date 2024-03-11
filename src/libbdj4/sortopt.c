@@ -41,7 +41,7 @@ sortoptAlloc (void)
 
   tagdefInit ();
 
-  pathbldMakePath (fname, sizeof (fname), "sortopt",
+  pathbldMakePath (fname, sizeof (fname), SORTOPT_FN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sortopt: missing %s", fname);
