@@ -54,6 +54,8 @@
 static char radixchar [2] = { "." };
 static bool initialized = false;
 
+static void tmutilInit (void);
+
 void
 mssleep (time_t mt)
 {
@@ -356,13 +358,7 @@ tmutilToMSD (time_t ms, char *buff, size_t sz, int decimals)
 {
   time_t    m, s, d;
 
-  if (! initialized) {
-    struct lconv *lconv;
-
-    lconv = localeconv ();
-    strlcpy (radixchar, lconv->decimal_point, sizeof (radixchar));
-    initialized = true;
-  }
+  tmutilInit ();
 
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
@@ -420,12 +416,14 @@ tmutilToDateHM (time_t ms, char *buff, size_t sz)
 
 /* handles H:M:S.00d, M:S.00d, H:M:S,00d, M:S,00d (3 decimals) */
 /* also handles 2 or 1 decimal */
+/* 4.8.0: fix: hours were not handled. */
 long
 tmutilStrToMS (const char *str)
 {
   char    *tstr;
   char    *tokstr;
   char    *p;
+  char    *np;
   double  dval = 0.0;
   double  tval = 0.0;
   long    value;
@@ -433,13 +431,20 @@ tmutilStrToMS (const char *str)
   int     len;
   double  mult = 1.0;
   double  multb = 1000.0;
+  bool    havedecimal = false;
+
+  tmutilInit ();
 
   tstr = mdstrdup (str);
+  if (strstr (tstr, radixchar) != NULL) {
+    havedecimal = true;
+  }
   p = strtok_r (tstr, ":.,", &tokstr);
+  np = strtok_r (NULL, ":.,", &tokstr);
   count = 0;
   while (p != NULL) {
     tval = atof (p);
-    if (count == 2) {
+    if (havedecimal && np == NULL) {
       len = strlen (p);
       if (len < 3) {
         /* have to handle conversions of .1, .01, .001 */
@@ -451,7 +456,8 @@ tmutilStrToMS (const char *str)
     }
     dval += tval * multb;
     mult = 60.0;
-    p = strtok_r (NULL, ":.,", &tokstr);
+    p = np;
+    np = strtok_r (NULL, ":.,", &tokstr);
     ++count;
   }
   value = (long) dval;
@@ -511,3 +517,14 @@ tmutilStrToHM (const char *str)
   return value;
 }
 
+static void
+tmutilInit (void)
+{
+  if (! initialized) {
+    struct lconv *lconv;
+
+    lconv = localeconv ();
+    strlcpy (radixchar, lconv->decimal_point, sizeof (radixchar));
+    initialized = true;
+  }
+}

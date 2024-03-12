@@ -37,6 +37,7 @@ static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont
 static bool confuiLinkCallback (void *udata);
 static long confuiValMSCallback (void *udata, const char *txt);
 static long confuiValHMCallback (void *udata, const char *txt);
+static long confuiValHMSCallback (void *udata, const char *txt);
 
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
@@ -303,6 +304,9 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
         confuiValHMCallback, gui);
     /* convert value to mm:ss */
     value /= 60;
+  } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
+    gui->uiitem [widx].callback = callbackInitStr (
+        confuiValHMSCallback, gui);
   } else {
     gui->uiitem [widx].callback = callbackInitStr (
         confuiValMSCallback, gui);
@@ -627,6 +631,29 @@ confuiValHMCallback (void *udata, const char *txt)
 
   val = tmutilStrToHM (txt);
   logProcEnd (LOG_PROC, "confuiValHMCallback", "");
+  return val;
+}
+
+static long
+confuiValHMSCallback (void *udata, const char *txt)
+{
+  confuigui_t *gui = udata;
+  const char  *valstr;
+  char        tbuff [200];
+  long        val;
+
+  logProcBegin (LOG_PROC, "confuiValHMSCallback");
+
+  uiLabelSetText (gui->statusMsg, "");
+  valstr = validate (txt, VAL_HOUR_MIN_SEC);
+  if (valstr != NULL) {
+    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+    uiLabelSetText (gui->statusMsg, tbuff);
+    return -1;
+  }
+
+  val = tmutilStrToMS (txt);
+  logProcEnd (LOG_PROC, "confuiValHMSCallback", "");
   return val;
 }
 

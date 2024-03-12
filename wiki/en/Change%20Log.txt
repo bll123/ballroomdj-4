@@ -9,6 +9,8 @@
 
 **4.8.0 2024-3---**
 
+* Bug Fixes:
+    * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
 * Changes:
     * Filter: Sort By: Added BPM as a sort option.
 

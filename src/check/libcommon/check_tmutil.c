@@ -372,6 +372,13 @@ START_TEST(tmutil_strtoms)
   ck_assert_int_eq (value, 63100);
   value = tmutilStrToMS ("1:04,02");
   ck_assert_int_eq (value, 64020);
+
+  value = tmutilStrToMS ("1:00:00");
+  ck_assert_int_eq (value, 3600000);
+  value = tmutilStrToMS ("2:00:00");
+  ck_assert_int_eq (value, 7200000);
+  value = tmutilStrToMS ("2:01:04.02");
+  ck_assert_int_eq (value, 7264020);
 }
 END_TEST
 

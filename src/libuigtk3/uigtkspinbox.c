@@ -233,7 +233,8 @@ uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
   }
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), inca, incb);
   /* this range is for maximum play time */
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (widget), 0.0, 1200000.0);
+  /* 7200000 = 120 minutes */
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (widget), 0.0, 7200000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), FALSE);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
