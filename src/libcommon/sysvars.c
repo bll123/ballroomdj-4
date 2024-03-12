@@ -377,29 +377,66 @@ sysvarsInit (const char *argv0)
 
     /* check for a data directory in the original run-path */
     if (alternatepath) {
-      size_t    tlen;
+      if (isMacOS ()) {
+        /* altpath is something like: */
+        /* /Users/bll/Applications/BDJ4-alt.app/Contents/MacOS/bin/bdj4g */
+fprintf (stderr, "alt-mac: %s\n", altpath);
+        p = strstr (altpath, "/Contents");
+fprintf (stderr, "  a: p: %s\n", p);
+        if (p != NULL) {
+          *p = '\0';
 
-      /* strip filename */
-      p = strrchr (altpath, '/');
-      if (p != NULL) {
-        *p = '\0';
-      }
-      /* strip /bin */
-      p = strrchr (altpath, '/');
-      if (p != NULL) {
-        *p = '\0';
-      }
+          p = strrchr (altpath, '/');
+fprintf (stderr, "  b: p: %s\n", p);
+          if (p != NULL) {
+            const char *tp;
 
-      snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
-          altpath, READONLY_FN, BDJ4_CONFIG_EXT);
-      tlen = strlen (altpath);
-      strlcat (altpath, "/data", sizeof (altpath));
-      if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
-        /* remove the /data suffix */
-        altpath [tlen] = '\0';
-        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
-        found = true;
-        lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
+            *p = '\0';
+            ++p;
+            tp = p;
+fprintf (stderr, "  c: tp: %s\n", tp);
+
+            p = strstr (tp, ".app");
+fprintf (stderr, "  d: p: %s\n", p);
+            if (p != NULL) {
+              *p = '\0';
+            }
+fprintf (stderr, "alt-mac: name: %s\n", tp);
+
+            strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
+            strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
+            strlcat (buff, tp, SV_MAX_SZ);
+            if (fileopIsDirectory (buff)) {
+              strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+              found = true;
+            }
+          }
+        }
+      } else {
+        size_t    tlen;
+
+        /* strip filename */
+        p = strrchr (altpath, '/');
+        if (p != NULL) {
+          *p = '\0';
+        }
+        /* strip /bin */
+        p = strrchr (altpath, '/');
+        if (p != NULL) {
+          *p = '\0';
+        }
+
+        snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
+            altpath, READONLY_FN, BDJ4_CONFIG_EXT);
+        tlen = strlen (altpath);
+        strlcat (altpath, "/data", sizeof (altpath));
+        if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
+          /* remove the /data suffix */
+          altpath [tlen] = '\0';
+          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
+          found = true;
+          lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
+        }
       }
     }
 
@@ -415,7 +452,8 @@ sysvarsInit (const char *argv0)
       } else {
         if (isMacOS ()) {
           strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
-          strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
+          strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
+          strlcat (buff, BDJ4_NAME, SV_MAX_SZ);
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
