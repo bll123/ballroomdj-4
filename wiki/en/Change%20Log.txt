@@ -13,6 +13,7 @@
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
 * Changes:
     * Filter: Sort By: Added BPM as a sort option.
+    * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
 
 -->
 

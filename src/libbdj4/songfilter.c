@@ -62,7 +62,9 @@ typedef struct songfilter {
 
 /* these are the user configurable filter displays */
 datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
+  { "DANCE",          FILTER_DISP_DANCE,           VALUE_NUM, convBoolean, DF_NORM },
   { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, DF_NORM },
+  { "DANCERATING",    FILTER_DISP_DANCERATING,     VALUE_NUM, convBoolean, DF_NORM },
   { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, DF_NORM },
   { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, DF_NORM },
   { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, DF_NORM },
@@ -961,9 +963,17 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
   logProcBegin (LOG_PROC, "songfilterLoadFilterDisplay");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      DS_FILTER_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   sf->filterDisplayDf = datafileAllocParse ("sf-songfilter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DF_NO_OFFSET, NULL);
   sf->filterDisplaySel = datafileGetList (sf->filterDisplayDf);
+
+  /* 4.8.0 made dance and dance rating optional also */
+  if (nlistGetNum (sf->filterDisplaySel, FILTER_DISP_DANCE) < 0) {
+    nlistSetNum (sf->filterDisplaySel, FILTER_DISP_DANCE, true);
+  }
+  if (nlistGetNum (sf->filterDisplaySel, FILTER_DISP_DANCERATING) < 0) {
+    nlistSetNum (sf->filterDisplaySel, FILTER_DISP_DANCERATING, true);
+  }
   logProcEnd (LOG_PROC, "songfilterLoadFilterDisplay", "");
 }

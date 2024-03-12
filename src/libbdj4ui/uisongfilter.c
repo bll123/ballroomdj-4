@@ -307,13 +307,15 @@ uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx)
     return;
   }
 
-  uisf->danceIdx = danceIdx;
-  uidanceSetValue (uisf->uidance, danceIdx);
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
+    uisf->danceIdx = danceIdx;
+    uidanceSetValue (uisf->uidance, danceIdx);
 
-  if (danceIdx >= 0) {
-    songfilterSetNum (uisf->songfilter, SONG_FILTER_DANCE_IDX, danceIdx);
-  } else {
-    songfilterClear (uisf->songfilter, SONG_FILTER_DANCE_IDX);
+    if (danceIdx >= 0) {
+      songfilterSetNum (uisf->songfilter, SONG_FILTER_DANCE_IDX, danceIdx);
+    } else {
+      songfilterClear (uisf->songfilter, SONG_FILTER_DANCE_IDX);
+    }
   }
 }
 
@@ -552,36 +554,40 @@ uisfCreateDialog (uisongfilter_t *uisf)
     /* looks bad if added to the size group */
   }
 
-  /* dance : always available */
-  uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  /* dance */
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uisf->labels [UISF_LABEL_DANCE] = uiwidgetp;
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uisf->labels [UISF_LABEL_DANCE] = uiwidgetp;
 
-  uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
-      uisfDanceSelectHandler, uisf);
-  uisf->uidance = uidanceDropDownCreate (hbox, uisf->filterDialog,
-      /* CONTEXT: song selection filter: a filter: all dances are selected */
-      UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
-  uidanceSetCallback (uisf->uidance, uisf->callbacks [UISF_CB_DANCE_SEL]);
-  /* adding to the size group makes it look weird */
+    uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
+        uisfDanceSelectHandler, uisf);
+    uisf->uidance = uidanceDropDownCreate (hbox, uisf->filterDialog,
+        /* CONTEXT: song selection filter: a filter: all dances are selected */
+        UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
+    uidanceSetCallback (uisf->uidance, uisf->callbacks [UISF_CB_DANCE_SEL]);
+    /* adding to the size group makes it look weird */
+  }
 
-  /* rating : always available */
-  uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  /* rating */
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCERATING)) {
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
 
-  uisf->uirating = uiratingSpinboxCreate (hbox, UIRATING_ALL);
-  uiratingSizeGroupAdd (uisf->uirating, szgrpSpinText);
+    uisf->uirating = uiratingSpinboxCreate (hbox, UIRATING_ALL);
+    uiratingSizeGroupAdd (uisf->uirating, szgrpSpinText);
+  }
 
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
@@ -762,12 +768,14 @@ uisfUpdate (uisongfilter_t *uisf)
     songfilterClear (uisf->songfilter, SONG_FILTER_SEARCH);
   }
 
-  /* dance rating : always active */
-  idx = uiratingGetValue (uisf->uirating);
-  if (idx >= 0) {
-    songfilterSetNum (uisf->songfilter, SONG_FILTER_RATING, idx);
-  } else {
-    songfilterClear (uisf->songfilter, SONG_FILTER_RATING);
+  /* dance rating */
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCERATING)) {
+    idx = uiratingGetValue (uisf->uirating);
+    if (idx >= 0) {
+      songfilterSetNum (uisf->songfilter, SONG_FILTER_RATING, idx);
+    } else {
+      songfilterClear (uisf->songfilter, SONG_FILTER_RATING);
+    }
   }
 
   /* dance level */

@@ -78,6 +78,8 @@ enum {
 #define RELOAD_FN           "reload"
 #define RELOAD_CURR_FN      "reload-curr"
 #define SORTOPT_FN          "sortopt"
+/* display settings files */
+#define DS_FILTER_FN        "ds-songfilter"
 /* option data files */
 #define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"

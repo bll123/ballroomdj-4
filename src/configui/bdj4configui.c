@@ -207,7 +207,7 @@ main (int argc, char *argv[])
   confuiInitMobileMarquee (&confui.gui);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      DS_FILTER_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX,
       DF_NO_OFFSET, NULL);
@@ -215,7 +215,9 @@ main (int argc, char *argv[])
   llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, NULL);
   nlistStartIterator (confui.gui.filterDisplaySel, &iteridx);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_GENRE, FILTER_DISP_GENRE);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCE, FILTER_DISP_DANCE);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCERATING, FILTER_DISP_DANCERATING);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUS_PLAYABLE);

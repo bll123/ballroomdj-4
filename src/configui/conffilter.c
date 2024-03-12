@@ -44,6 +44,16 @@ confuiBuildUIFilterDisplay (confuigui_t *gui)
       CONFUI_WIDGET_FILTER_GENRE, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
 
+  val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_DANCE);
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_DANCE].displayname,
+      CONFUI_WIDGET_FILTER_DANCE, -1, val);
+  gui->uiitem [CONFUI_WIDGET_FILTER_DANCE].outtype = CONFUI_OUT_CB;
+
+  val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_DANCERATING);
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_DANCERATING].displayname,
+      CONFUI_WIDGET_FILTER_DANCERATING, -1, val);
+  gui->uiitem [CONFUI_WIDGET_FILTER_DANCERATING].outtype = CONFUI_OUT_CB;
+
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
   confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_DANCELEVEL].displayname,
       CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);

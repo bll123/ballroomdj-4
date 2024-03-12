@@ -1,12 +1,16 @@
 # ds-songfilter
-# 2022-8-4
-# version 1
+# 2024-3-12
+# version 2
 version
 ..1
 GENRE
 ..no
+DANCE
+..yes
 DANCELEVEL
 ..no
+DANCERATING
+..yes
 STATUS
 ..no
 FAVORITE
