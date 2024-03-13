@@ -5,8 +5,8 @@
 #define INC_DIROP_H
 
 enum {
-  DIROP_ALL             = 0x0000,
-  DIROP_ONLY_IF_EMPTY   = 0x0001,
+  DIROP_ALL             = 0,
+  DIROP_ONLY_IF_EMPTY   = (1 << 0),
 };
 
 int   diropMakeDir (const char *dirname);

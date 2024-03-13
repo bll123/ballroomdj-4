@@ -120,7 +120,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  long              startflags;
+  uint32_t          startflags;
   int               state;
   musicdb_t         *musicdb;
   musicdb_t         *newmusicdb;
@@ -288,52 +288,52 @@ main (int argc, char *argv[])
   }
   dbupdate.badfnregex = regexInit (p);
 
-  if ((dbupdate.startflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_CHECK_NEW) == BDJ4_ARG_DB_CHECK_NEW) {
     dbupdate.checknew = true;
     dbupdate.iterfromaudiosrc = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== check-new");
   }
-  if ((dbupdate.startflags & BDJ4_DB_COMPACT) == BDJ4_DB_COMPACT) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_COMPACT) == BDJ4_ARG_DB_COMPACT) {
     dbupdate.compact = true;
     dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== compact");
   }
-  if ((dbupdate.startflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_REBUILD) == BDJ4_ARG_DB_REBUILD) {
     dbupdate.rebuild = true;
     dbupdate.iterfromaudiosrc = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== rebuild");
   }
-  if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_UPD_FROM_TAGS) == BDJ4_ARG_DB_UPD_FROM_TAGS) {
     dbupdate.updfromtags = true;
     dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-tags");
   }
-  if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_ITUNES) == BDJ4_DB_UPD_FROM_ITUNES) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_UPD_FROM_ITUNES) == BDJ4_ARG_DB_UPD_FROM_ITUNES) {
     dbupdate.updfromitunes = true;
     dbupdate.itunes = itunesAlloc ();
     dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== upd-from-itunes");
   }
-  if ((dbupdate.startflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_WRITE_TAGS) == BDJ4_ARG_DB_WRITE_TAGS) {
     dbupdate.writetags = true;
     dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== write-tags");
   }
-  if ((dbupdate.startflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
+  if ((dbupdate.startflags & BDJ4_ARG_DB_REORG) == BDJ4_ARG_DB_REORG) {
     dbupdate.reorganize = true;
     dbupdate.iterfromdb = true;
     logMsg (LOG_DBG, LOG_IMPORTANT, "== reorganize");
   }
-  if ((dbupdate.startflags & BDJ4_PROGRESS) == BDJ4_PROGRESS) {
+  if ((dbupdate.startflags & BDJ4_ARG_PROGRESS) == BDJ4_ARG_PROGRESS) {
     dbupdate.progress = true;
   }
-  if ((dbupdate.startflags & BDJ4_CLI) == BDJ4_CLI) {
+  if ((dbupdate.startflags & BDJ4_ARG_CLI) == BDJ4_ARG_CLI) {
     dbupdate.cli = true;
 #if _define_SIGCHLD
     osDefaultSignal (SIGCHLD);
 #endif
   }
-  if ((dbupdate.startflags & BDJ4_VERBOSE) == BDJ4_VERBOSE) {
+  if ((dbupdate.startflags & BDJ4_ARG_VERBOSE) == BDJ4_ARG_VERBOSE) {
     dbupdate.verbose = true;
   }
 
@@ -475,7 +475,7 @@ dbupdateProcessing (void *udata)
     /* the default */
     dbupdate->processmusicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     /* check if a different music-dir was specified */
-    tstr = bdjvarsGetStr (BDJV_UPDB_MUSIC_DIR);
+    tstr = bdjvarsGetStr (BDJV_MUSIC_DIR);
     if (tstr != NULL && strcmp (tstr, dbupdate->musicdir) != 0) {
       dbupdate->usingmusicdir = false;
       dbupdate->processmusicdir = tstr;

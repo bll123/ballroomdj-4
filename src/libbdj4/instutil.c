@@ -48,7 +48,7 @@ static void instutilCopyHttpSVGFile (const char *fn);
 static void instutilWebResponseCallback (void *userdata, const char *resp, size_t len);
 
 void
-instutilCreateShortcut (const char *name, const char *maindir,
+instutilCreateLauncher (const char *name, const char *maindir,
     const char *target, int profilenum)
 {
   char        path [MAXPATHLEN];
@@ -92,7 +92,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
 
   if (isLinux ()) {
     snprintf (buff, sizeof (buff),
-        "./install/linuxshortcut.sh '%s' '%s' '%s' %d",
+        "./install/linux-mk-desktop-launcher.sh '%s' '%s' '%s' %d",
         name, maindir, target, profilenum);
     (void) ! system (buff);
   }
@@ -340,10 +340,12 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
 }
 
 void
-instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
+instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macosonly)
 {
   pathinfo_t  *pi;
   const char  *nm;
+  const char  *suffix;
+  char        fname [100];
   int         rc;
 
   if (macosonly && ! isMacOS ()) {
@@ -351,17 +353,22 @@ instutilAppendNameToTarget (char *buff, size_t sz, int macosonly)
   }
 
   pi = pathInfo (buff);
-  nm = BDJ4_NAME;
+  nm = name;
+  if (name == NULL || ! *name) {
+    nm = BDJ4_NAME;
+  }
+  suffix = "";
   if (isMacOS ()) {
-    nm = BDJ4_MACOS_DIR;
+    suffix = MACOS_APP_EXT;
   }
 
-  rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
-      pi->flen == strlen (nm);
+  snprintf (fname, sizeof (fname), "%s%s", nm, suffix);
+  rc = strncmp (pi->filename, fname, pi->flen) == 0 &&
+      pi->flen == strlen (fname);
   if (! rc) {
     stringTrimChar (buff, '/');
     strlcat (buff, "/", sz);
-    strlcat (buff, nm, sz);
+    strlcat (buff, fname, sz);
   }
   pathInfoFree (pi);
 }

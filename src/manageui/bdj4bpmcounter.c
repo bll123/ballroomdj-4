@@ -121,7 +121,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   bpmcounter_t    bpmcounter;
   char            tbuff [MAXPATHLEN];
-  long            flags;
+  uint32_t        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("bpmc");

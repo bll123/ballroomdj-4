@@ -45,7 +45,7 @@ typedef struct configui {
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
-  long              dbgflags;
+  uint32_t          dbgflags;
   int               stopwaitcount;
   datafile_t        *filterDisplayDf;
   confuigui_t       gui;

@@ -13,11 +13,11 @@ extern "C" {
 #include <sys/types.h>
 
 enum {
-  OS_PROC_NONE      = 0x0000,
-  OS_PROC_DETACH    = 0x0001,
-  OS_PROC_WAIT      = 0x0002,
-  OS_PROC_NOSTDERR  = 0x0004,
-  OS_PROC_WINDOW_OK = 0x0008,   // windows, default is no window
+  OS_PROC_NONE      = 0,
+  OS_PROC_DETACH    = (1 << 0),
+  OS_PROC_WAIT      = (1 << 1),
+  OS_PROC_NOSTDERR  = (1 << 2),
+  OS_PROC_WINDOW_OK = (1 << 3), // windows, default is no window
 };
 
 pid_t osProcessStart (const char *targv[], int flags, void **handle, char *outfname);

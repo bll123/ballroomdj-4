@@ -18,8 +18,8 @@ typedef enum {
 } datafiletype_t;
 
 enum {
-  DF_NONE         = 0x0000,
-  DF_SKIP_EMPTY   = 0x0001,
+  DF_NONE         = 0,
+  DF_SKIP_EMPTY   = (1 << 0),
 };
 
 typedef struct parseinfo parseinfo_t;

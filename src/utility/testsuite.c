@@ -159,7 +159,7 @@ int
 main (int argc, char *argv [])
 {
   testsuite_t testsuite;
-  long        flags;
+  uint32_t    flags;
   int         listenPort;
   char        *state;
   int         rc;
@@ -227,20 +227,20 @@ main (int argc, char *argv [])
   resetChkResponse (&testsuite);
   testsuite.defaultVol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
 
-  if ((flags & BDJ4_TS_RUNSECTION) == BDJ4_TS_RUNSECTION) {
+  if ((flags & BDJ4_ARG_TS_RUNSECTION) == BDJ4_ARG_TS_RUNSECTION) {
     testsuite.runsection = true;
   }
 
-  if ((flags & BDJ4_TS_RUNTEST) == BDJ4_TS_RUNTEST) {
+  if ((flags & BDJ4_ARG_TS_RUNTEST) == BDJ4_ARG_TS_RUNTEST) {
     testsuite.runtest = true;
   }
 
-  if ((flags & BDJ4_TS_STARTTEST) == BDJ4_TS_STARTTEST) {
+  if ((flags & BDJ4_ARG_TS_STARTTEST) == BDJ4_ARG_TS_STARTTEST) {
     testsuite.starttest = true;
     testsuite.runtest = true;
   }
 
-  if ((flags & BDJ4_VERBOSE) == BDJ4_VERBOSE) {
+  if ((flags & BDJ4_ARG_VERBOSE) == BDJ4_ARG_VERBOSE) {
     testsuite.verbose = true;
   }
 

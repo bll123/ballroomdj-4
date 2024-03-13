@@ -72,7 +72,7 @@ typedef enum {
   INST_CONVERT_START,
   INST_CONVERT,
   INST_CONVERT_FINISH,
-  INST_CREATE_SHORTCUT,
+  INST_CREATE_DESKTOP_LAUNCHER,
   INST_WIN_STARTUP,
   INST_INST_CLEAN_TMP,
   INST_SAVE_LOCALE,
@@ -216,7 +216,7 @@ static void installerCopyTemplates (installer_t *installer);
 static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
-static void installerCreateShortcut (installer_t *installer);
+static void installerCreateDesktopLauncher (installer_t *installer);
 static void installerWinStartup (installer_t *installer);
 static void installerInstCleanTmp (installer_t *installer);
 static void installerSaveLocale (installer_t *installer);
@@ -345,7 +345,7 @@ main (int argc, char *argv[])
   localeInit ();
 
   if (isMacOS ()) {
-    installer.macospfx = MACOS_PREFIX;
+    installer.macospfx = MACOS_APP_PREFIX;
   }
 
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
@@ -355,7 +355,7 @@ main (int argc, char *argv[])
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
   }
-  instutilAppendNameToTarget (buff, sizeof (buff), false);
+  instutilAppendNameToTarget (buff, sizeof (buff), NULL, false);
 
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "r");
   if (fh != NULL) {
@@ -916,8 +916,8 @@ installerMainLoop (void *udata)
       installerConvertFinish (installer);
       break;
     }
-    case INST_CREATE_SHORTCUT: {
-      installerCreateShortcut (installer);
+    case INST_CREATE_DESKTOP_LAUNCHER: {
+      installerCreateDesktopLauncher (installer);
       break;
     }
     case INST_WIN_STARTUP: {
@@ -1063,7 +1063,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     found = instutilCheckForExistingInstall (dir, installer->macospfx);
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
-      instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
+      instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, true);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
         found = instutilCheckForExistingInstall (tbuff, installer->macospfx);
@@ -1264,11 +1264,10 @@ installerSetPaths (installer_t *installer)
 {
   installerSetRundir (installer, installer->target);
 
-  strlcpy (installer->datatopdir, installer->rundir, sizeof (installer->rundir));
+  strlcpy (installer->datatopdir, installer->rundir, sizeof (installer->datatopdir));
   if (isMacOS ()) {
     snprintf (installer->datatopdir, sizeof (installer->datatopdir),
-        "%s/Library/Application Support/BDJ4",
-        installer->home);
+        "%s%s/%s", installer->home, MACOS_DIR_LIBDATA, BDJ4_NAME);
   }
   if (installer->targetexists) {
     installerLoadBdjOpt (installer);
@@ -1294,7 +1293,7 @@ installerTargetDirDialog (void *udata)
     strlcpy (tbuff, fn, sizeof (tbuff));
     /* after the user selected a folder via a button, */
     /* want the /BDJ4 appended */
-    instutilAppendNameToTarget (tbuff, sizeof (tbuff), false);
+    instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
     /* the validation routine gets called upon set, */
     /* which will call the set-target routine */
     uiEntrySetValue (installer->wcont [INST_W_TARGET], tbuff);
@@ -1717,12 +1716,12 @@ installerConvertStart (installer_t *installer)
 
 
   if (! installer->convprocess) {
-    installer->instState = INST_CREATE_SHORTCUT;
+    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
     return;
   }
 
   if (*installer->bdj3loc == '\0') {
-    installer->instState = INST_CREATE_SHORTCUT;
+    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
     return;
   }
 
@@ -1775,7 +1774,7 @@ installerConvertStart (installer_t *installer)
   }
 
   if (! ok) {
-    installer->instState = INST_CREATE_SHORTCUT;
+    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
     return;
   }
 
@@ -1785,7 +1784,7 @@ installerConvertStart (installer_t *installer)
   if (isMacOS () && ! fileopFileExists (tbuff)) {
     snprintf (tbuff, sizeof (tbuff),
         "%s/Applications/BallroomDJ.app%s/VERSION.txt",
-        installer->home, MACOS_PREFIX);
+        installer->home, MACOS_APP_PREFIX);
   }
   if (fileopFileExists (tbuff)) {
     data = filedataReadAll (tbuff, NULL);
@@ -1854,7 +1853,7 @@ installerConvertStart (installer_t *installer)
     installerDisplayText (installer, INST_DISP_STATUS, tbuff, false);
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_STATUS, _("Skipping conversion."), false);
-    installer->instState = INST_CREATE_SHORTCUT;
+    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
     return;
   }
 
@@ -1900,14 +1899,14 @@ installerConvertFinish (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
-  installer->instState = INST_CREATE_SHORTCUT;
+  installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
 }
 
 static void
-installerCreateShortcut (installer_t *installer)
+installerCreateDesktopLauncher (installer_t *installer)
 {
   if (osChangeDir (installer->rundir)) {
-    installerFailWorkingDir (installer, installer->rundir, "createshortcut");
+    installerFailWorkingDir (installer, installer->rundir, "CreateDesktopLauncher");
     return;
   }
 
@@ -1915,7 +1914,7 @@ installerCreateShortcut (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
 
   /* handles linux and windows desktop shortcut */
-  instutilCreateShortcut (BDJ4_NAME, installer->rundir, installer->rundir, 0);
+  instutilCreateLauncher (BDJ4_NAME, installer->rundir, installer->rundir, 0);
 
   if (isMacOS ()) {
 #if _lib_symlink
@@ -1925,8 +1924,10 @@ installerCreateShortcut (installer_t *installer)
     /* the dock icon is not correct */
     /* this must exist and match the name of the app */
     (void) ! symlink ("bin/bdj4g", "BDJ4");
+
     /* desktop shortcut */
-    snprintf (buff, sizeof (buff), "%s/Desktop/BDJ4.app", installer->home);
+    snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
+        installer->home, BDJ4_NAME, MACOS_APP_EXT);
     (void) ! symlink (installer->target, buff);
 #endif
   }
@@ -2167,6 +2168,7 @@ installerFinalize (installer_t *installer)
     fprintf (stdout, "update %d\n", installer->updateinstall);
     fprintf (stdout, "converted %d\n", installer->convprocess);
     fprintf (stdout, "readonly %d\n", installer->readonly);
+    fprintf (stdout, "alternate 0\n");
   }
 
   if (installer->readonly) {

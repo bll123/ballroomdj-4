@@ -436,7 +436,7 @@ tmutilStrToMS (const char *str)
   tmutilInit ();
 
   tstr = mdstrdup (str);
-  if (strstr (tstr, radixchar) != NULL) {
+  if (strstr (tstr, ".") != NULL || strstr (tstr, ",") != NULL) {
     havedecimal = true;
   }
   p = strtok_r (tstr, ":.,", &tokstr);

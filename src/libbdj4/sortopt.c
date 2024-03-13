@@ -68,7 +68,7 @@ sortoptAlloc (void)
       }
 
       tagidx = tagdefLookup (p);
-      if (tagidx >= 0) {
+      if (tagidx >= 0 && tagidx < TAG_KEY_MAX) {
         strlcat (dispstr, tagdefs [tagidx].displayname, sizeof (dispstr));
       }
 

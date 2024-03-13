@@ -135,7 +135,7 @@ main (int argc, char *argv [])
     { "keepmusic",    no_argument,        NULL,   'K' },
     { "outfile",      required_argument,  NULL,   'O' },
     { "tmusicsetup",  no_argument,        NULL,   0 },
-    { "dbupmusicdir", required_argument,  NULL,   'D' },
+    { "musicdir",     required_argument,  NULL,   'D' },
     { "verbose",      no_argument,        NULL,   0, },
     /* launcher options */
     { "debugself",    no_argument,        NULL,   0 },

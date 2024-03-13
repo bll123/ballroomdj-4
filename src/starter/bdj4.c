@@ -99,9 +99,8 @@ main (int argc, char * argv[])
     { "unattended",     no_argument,        NULL,   0 },
     /* altinst */
     { "name",           required_argument,  NULL,   0 },
-    /* updater, installer */
-    { "convert",        no_argument,        NULL,   0 },
     /* updater */
+    { "convert",        no_argument,        NULL,   0 },
     { "newinstall",     no_argument,        NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },
@@ -116,7 +115,7 @@ main (int argc, char * argv[])
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
     { "compact",        no_argument,        NULL,   0 },
-    { "dbupmusicdir",   required_argument,  NULL,   0 },
+    { "musicdir",       required_argument,  NULL,   0 },
     { "rebuild",        no_argument,        NULL,   0 },
     { "reorganize",     no_argument,        NULL,   0 },
     { "updfromtags",    no_argument,        NULL,   0 },

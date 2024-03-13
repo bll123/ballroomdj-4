@@ -118,7 +118,7 @@ typedef struct {
   int             musicqRequestIdx;
   int             musicqManageIdx;
   dispsel_t       *dispsel;
-  long            dbgflags;
+  uint32_t        dbgflags;
   int             marqueeIsMaximized;
   int             marqueeFontSize;
   int             marqueeFontSizeFS;

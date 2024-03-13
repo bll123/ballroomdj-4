@@ -89,7 +89,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  long              startflags;
+  uint32_t          startflags;
   musicdb_t         *musicdb;
   /* playlistCache contains all of the playlists that are used */
   /* so that playlist lookups can be processed */

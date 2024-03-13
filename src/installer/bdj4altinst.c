@@ -16,7 +16,7 @@
 #include <signal.h>
 
 #include "bdj4.h"
-#include "bdj4arg.h"
+#include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -44,6 +44,8 @@
 #include "templateutil.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiclass.h"
+#include "validate.h"
 
 /* setup states */
 typedef enum {
@@ -57,12 +59,10 @@ typedef enum {
   ALT_CREATE_DIRS,
   ALT_COPY_TEMPLATES,
   ALT_SETUP,
-  ALT_CREATE_SHORTCUT,
+  ALT_CREATE_DESKTOP_LAUNCHER,
   ALT_FINALIZE,
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
-  ALT_REGISTER_INIT,
-  ALT_REGISTER,
   ALT_FINISH,
   ALT_EXIT,
 } altinststate_t;
@@ -84,6 +84,7 @@ enum {
   ALT_W_BUTTON_EXIT,
   ALT_W_BUTTON_START,
   ALT_W_WINDOW,
+  ALT_W_ERROR_MSG,
   ALT_W_REINST,
   ALT_W_FEEDBACK_MSG,
   ALT_W_STATUS_DISP,
@@ -98,7 +99,10 @@ typedef struct {
   callback_t      *callbacks [ALT_CB_MAX];
   char            oldversion [MAXPATHLEN];
   char            *target;
-  char            *macospfx;
+  char            datatopdir [MAXPATHLEN];
+  char            rundir [MAXPATHLEN];      // installation dir with macospfx
+  const char      *launchname;
+  const char      *macospfx;
   char            *maindir;
   char            *hostname;
   char            *home;
@@ -132,6 +136,7 @@ static bool altinstReinstallCBHandler (void *udata);
 static bool altinstTargetDirDialog (void *udata);
 static int  altinstValidateTarget (uiwcont_t *entry, void *udata);
 static int  altinstValidateProcessTarget (altinst_t *altinst, const char *dir);
+static int  altinstValidateName (uiwcont_t *entry, void *udata);
 static void altinstTargetFeedbackMsg (altinst_t *altinst);
 static bool altinstSetupCallback (void *udata);
 static void altinstSetPaths (altinst_t *altinst);
@@ -144,16 +149,14 @@ static void altinstChangeDir (altinst_t *altinst);
 static void altinstCreateDirs (altinst_t *altinst);
 static void altinstCopyTemplates (altinst_t *altinst);
 static void altinstSetup (altinst_t *altinst);
-static void altinstCreateShortcut (altinst_t *altinst);
+static void altinstCreateDesktopLauncher (altinst_t *altinst);
 static void altinstUpdateProcessInit (altinst_t *altinst);
 static void altinstUpdateProcess (altinst_t *altinst);
 static void altinstFinalize (altinst_t *altinst);
-static void altinstRegisterInit (altinst_t *altinst);
-static void altinstRegister (altinst_t *altinst);
 
 static void altinstCleanup (altinst_t *altinst);
 static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold);
-static void altinstFailWorkingDir (altinst_t *altinst, const char *dir);
+static void altinstFailWorkingDir (altinst_t *altinst, const char *dir, const char *tag);
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
 
@@ -163,52 +166,25 @@ main (int argc, char *argv[])
   altinst_t     altinst;
   char          buff [MAXPATHLEN];
   char          *uifont;
-  int           c = 0;
-  int           option_index = 0;
   FILE          *fh;
-  bdj4arg_t   *bdj4arg;
-  const char  *targ;
-
-  static struct option bdj_options [] = {
-    { "bdj4altinst",no_argument,       NULL,   0 },
-    { "datatopdir", required_argument,  NULL,   'D' },
-    { "locale",     required_argument,  NULL,   'L' },
-    { "name",       required_argument,  NULL,   'n' },
-    { "reinstall",  no_argument,        NULL,   'r' },
-    { "targetdir",  required_argument,  NULL,   't' },
-    { "testregistration", no_argument,  NULL,   'T' },
-    { "unattended", no_argument,        NULL,   'U' },
-    /* generic args */
-    { "quiet"  ,    no_argument,        NULL,   'Q' },
-    { "verbose",    no_argument,        NULL,   'V' },
-    /* bdj4 launcher args */
-    { "bdj4",       no_argument,        NULL,   0 },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "debugself",  no_argument,        NULL,   0 },
-    { "nodetach",   no_argument,        NULL,   0 },
-    { "scale",      required_argument,  NULL,   0 },
-    { "theme",      required_argument,  NULL,   0 },
-    { "wait",       no_argument,        NULL,   0 },
-    { "origcwd",    required_argument,  NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
-  };
+  uint32_t      flags;
+  const char    *tmp;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("alt");
 #endif
-
-  bdj4arg = bdj4argInit (argc, argv);
 
   buff [0] = '\0';
 
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
   altinst.target = mdstrdup ("");
+  altinst.launchname = "bdj4";
   altinst.macospfx = "";
   strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
   altinst.home = NULL;
-  altinst.name = mdstrdup ("BDJ4 B");
+  altinst.name = mdstrdup ("BDJ4-B");
   altinst.hostname = NULL;
   altinst.bdjoptloaded = false;
   altinst.firstinstall = false;
@@ -231,17 +207,42 @@ main (int argc, char *argv[])
     altinst.callbacks [i] = NULL;
   }
 
-  targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
-  bdjvarsInit ();
-  localeInit ();
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
+      BDJ4_INIT_NO_LOCK;
+  bdj4startup (argc, argv, NULL, "alt", ROUTE_NONE, &flags);
+  if ((flags & BDJ4_ARG_INST_REINSTALL) == BDJ4_ARG_INST_REINSTALL) {
+fprintf (stderr, "inst-reinstall\n");
+    altinst.reinstall = true;
+  }
+  if ((flags & BDJ4_ARG_INST_UNATTENDED) == BDJ4_ARG_INST_UNATTENDED) {
+fprintf (stderr, "inst-unattended\n");
+    altinst.unattended = true;
+    altinst.guienabled = false;
+#if _define_SIGCHLD
+    osDefaultSignal (SIGCHLD);
+#endif
+  }
+  if ((flags & BDJ4_ARG_VERBOSE) == BDJ4_ARG_VERBOSE) {
+fprintf (stderr, "inst-verbose\n");
+    altinst.verbose = true;
+  }
+  if ((flags & BDJ4_ARG_QUIET) == BDJ4_ARG_QUIET) {
+fprintf (stderr, "inst-quiet\n");
+    altinst.quiet = true;
+  }
+  tmp = bdjvarsGetStr (BDJV_INST_TARGET);
+  if (tmp != NULL) {
+fprintf (stderr, "alt: target: %s\n", tmp);
+    altinstSetTargetDir (&altinst, tmp);
+  }
 
   strlcpy (buff, sysvarsGetStr (SV_HOME), sizeof (buff));
   if (isMacOS ()) {
-    altinst.macospfx = MACOS_PREFIX;
+    altinst.launchname = "bdj4g";
+    altinst.macospfx = MACOS_APP_PREFIX;
     snprintf (buff, sizeof (buff), "%s/Applications", sysvarsGetStr (SV_HOME));
   }
-  instutilAppendNameToTarget (buff, sizeof (buff), false);
+  instutilAppendNameToTarget (buff, sizeof (buff), NULL, false);
 
   fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
   if (fh != NULL) {
@@ -261,60 +262,6 @@ main (int argc, char *argv[])
   if (altinst.firstinstall) {
     dataFree (altinst.name);
     altinst.name = mdstrdup (BDJ4_NAME);
-  }
-
-  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
-      "CUrVQt:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'U': {
-        altinst.unattended = true;
-        altinst.guienabled = false;
-#if _define_SIGCHLD
-        osDefaultSignal (SIGCHLD);
-#endif
-        break;
-      }
-      case 'r': {
-        altinst.reinstall = true;
-        break;
-      }
-      case 'L': {
-        if (optarg != NULL) {
-          sysvarsSetStr (SV_LOCALE, optarg);
-          snprintf (buff, sizeof (buff), "%.2s", optarg);
-          sysvarsSetStr (SV_LOCALE_SHORT, buff);
-          sysvarsSetNum (SVL_LOCALE_SET, 1);
-          altinst.localespecified = true;
-          localeSetup ();
-        }
-        break;
-      }
-      case 'V': {
-        altinst.verbose = true;
-        break;
-      }
-      case 'Q': {
-        altinst.quiet = true;
-        break;
-      }
-      case 't': {
-        if (optarg != NULL) {
-          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          altinstSetTargetDir (&altinst, optarg);
-        }
-        break;
-      }
-      case 'D': {
-        break;
-      }
-      case 'T': {
-        altinst.testregistration = true;
-        break;
-      }
-      default: {
-        break;
-      }
-    }
   }
 
   altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
@@ -361,10 +308,7 @@ main (int argc, char *argv[])
   }
 
   altinstCleanup (&altinst);
-  bdjvarsCleanup ();
-  localeCleanup ();
-  logEnd ();
-  bdj4argCleanup (bdj4arg);
+  bdj4shutdown (ROUTE_NONE, NULL);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
@@ -380,9 +324,6 @@ altinstBuildUI (altinst_t *altinst)
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
-
-  uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
-  uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);
@@ -402,6 +343,17 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandVert (vbox);
   uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
 
+  /* begin line : status message */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  altinst->wcont [ALT_W_ERROR_MSG] = uiCreateLabel ("");
+  uiWidgetAlignHorizEnd (altinst->wcont [ALT_W_ERROR_MSG]);
+  uiBoxPackEndExpand (hbox, altinst->wcont [ALT_W_ERROR_MSG]);
+  uiWidgetSetClass (altinst->wcont [ALT_W_ERROR_MSG], ERROR_CLASS);
+
+  /* begin line : instructions */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: alternate installation: ask for installation folder */
       _("Enter the destination folder where BDJ4 will be installed."));
@@ -448,7 +400,7 @@ altinstBuildUI (altinst_t *altinst)
   uiToggleButtonSetCallback (altinst->wcont [ALT_W_REINST], altinst->callbacks [ALT_CB_REINST]);
 
   altinst->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -468,6 +420,8 @@ altinstBuildUI (altinst_t *altinst)
   uiEntrySetValue (uiwidgetp, altinst->name);
   uiBoxPackStart (hbox, uiwidgetp);
   altinst->wcont [ALT_W_NAME] = uiwidgetp;
+  uiEntrySetValidate (altinst->wcont [ALT_W_NAME],
+      altinstValidateName, altinst, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);
 
@@ -575,8 +529,8 @@ altinstMainLoop (void *udata)
       altinstSetup (altinst);
       break;
     }
-    case ALT_CREATE_SHORTCUT: {
-      altinstCreateShortcut (altinst);
+    case ALT_CREATE_DESKTOP_LAUNCHER: {
+      altinstCreateDesktopLauncher (altinst);
       break;
     }
     case ALT_FINALIZE: {
@@ -589,14 +543,6 @@ altinstMainLoop (void *udata)
     }
     case ALT_UPDATE_PROCESS: {
       altinstUpdateProcess (altinst);
-      break;
-    }
-    case ALT_REGISTER_INIT: {
-      altinstRegisterInit (altinst);
-      break;
-    }
-    case ALT_REGISTER: {
-      altinstRegister (altinst);
       break;
     }
     case ALT_FINISH: {
@@ -670,7 +616,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       if (altinst->firstinstall) {
-        instutilAppendNameToTarget (tbuff, sizeof (tbuff), true);
+        instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, true);
       }
       exists = fileopIsDirectory (tbuff);
       if (exists) {
@@ -733,6 +679,38 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
   return rc;
 }
 
+static int
+altinstValidateName (uiwcont_t *entry, void *udata)
+{
+  altinst_t     *altinst = udata;
+  const char    *name;
+  const char    *msg;
+  char          tbuff [200];
+  int           rc = UIENTRY_ERROR;
+
+  if (! altinst->guienabled) {
+    return UIENTRY_ERROR;
+  }
+
+  if (! altinst->uiBuilt) {
+    return UIENTRY_RESET;
+  }
+
+  name = uiEntryGetValue (altinst->wcont [ALT_W_NAME]);
+  msg = validate (name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  if (msg == NULL) {
+    uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], "");
+    rc = UIENTRY_OK;
+  } else {
+    /* CONTEXT: alternate installer: name (for shortcut) */
+    snprintf (tbuff, sizeof (tbuff), msg, _("Name"));
+    uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], tbuff);
+  }
+
+  return rc;
+}
+
+
 static void
 altinstTargetFeedbackMsg (altinst_t *altinst)
 {
@@ -786,7 +764,7 @@ altinstTargetDirDialog (void *udata)
     char        tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, fn, sizeof (tbuff));
-    instutilAppendNameToTarget (tbuff, sizeof (tbuff), false);
+    instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
     /* validation gets called again upon set */
     uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altinst->target);
@@ -821,6 +799,13 @@ altinstSetPaths (altinst_t *altinst)
 {
   if (altinst->targetexists) {
     altinstLoadBdjOpt (altinst);
+    strlcpy (altinst->datatopdir, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), sizeof (altinst->datatopdir));
+  } else {
+    strlcpy (altinst->datatopdir, altinst->target, sizeof (altinst->datatopdir));
+    if (isMacOS ()) {
+      snprintf (altinst->datatopdir, sizeof (altinst->datatopdir),
+          "%s%s/%s", altinst->home, MACOS_DIR_LIBDATA, altinst->name);
+    }
   }
 }
 
@@ -866,14 +851,34 @@ altinstMakeTarget (altinst_t *altinst)
   char            tbuff [MAXPATHLEN];
   sysversinfo_t   *versinfo;
 
-  diropMakeDir (altinst->target);
+  snprintf (altinst->rundir, sizeof (altinst->rundir), "%s%s",
+      altinst->target, altinst->macospfx);
+  diropMakeDir (altinst->rundir);
+
+  diropMakeDir (altinst->datatopdir);
 
   *altinst->oldversion = '\0';
-  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->target);
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->rundir);
   if (fileopFileExists (tbuff)) {
     versinfo = sysvarsParseVersionFile (tbuff);
     instutilOldVersionString (versinfo, altinst->oldversion, sizeof (altinst->oldversion));
     sysvarsParseVersionFileFree (versinfo);
+  }
+
+  if (isMacOS ()) {
+    char    buff [MAXPATHLEN];
+
+    snprintf (buff, sizeof (buff), "%s/../Info.plist", altinst->maindir);
+    snprintf (tbuff, sizeof (tbuff), "%s/../Info.plist", altinst->rundir);
+    filemanipCopy (buff, tbuff);
+    snprintf (buff, sizeof (buff), "%s/../Pkginfo", altinst->maindir);
+    snprintf (tbuff, sizeof (tbuff), "%s/../Pkginfo", altinst->rundir);
+    filemanipCopy (buff, tbuff);
+    snprintf (buff, sizeof (buff), "%s/../Resources", altinst->rundir);
+    diropMakeDir (buff);
+    snprintf (buff, sizeof (buff), "%s/../Resources/%s.icns", altinst->maindir, BDJ4_NAME);
+    snprintf (tbuff, sizeof (tbuff), "%s/../Resources/%s.icns", altinst->rundir, BDJ4_NAME);
+    filemanipCopy (buff, tbuff);
   }
 
   altinst->instState = ALT_CHDIR;
@@ -882,8 +887,8 @@ altinstMakeTarget (altinst_t *altinst)
 static void
 altinstChangeDir (altinst_t *altinst)
 {
-  if (osChangeDir (altinst->target)) {
-    altinstFailWorkingDir (altinst, altinst->target);
+  if (osChangeDir (altinst->datatopdir)) {
+    altinstFailWorkingDir (altinst, altinst->datatopdir, "cd");
     return;
   }
 
@@ -922,8 +927,8 @@ altinstCopyTemplates (altinst_t *altinst)
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Copying template files."), false);
 
-  if (osChangeDir (altinst->target)) {
-    altinstFailWorkingDir (altinst, altinst->target);
+  if (osChangeDir (altinst->datatopdir)) {
+    altinstFailWorkingDir (altinst, altinst->datatopdir, "ct");
     return;
   }
 
@@ -962,7 +967,6 @@ altinstSetup (altinst_t *altinst)
     /* create the new install flag file when the first installation */
     if (altinst->newinstall) {
       FILE  *fh;
-      char  tbuff [MAXPATHLEN];
 
       pathbldMakePath (tbuff, sizeof (tbuff),
           NEWINST_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -1024,20 +1028,38 @@ altinstSetup (altinst_t *altinst)
 
   /* copy the VERSION.txt file so that the old version can be tracked */
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", altinst->maindir);
-  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->target);
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", altinst->rundir);
   filemanipCopy (buff, tbuff);
 
-// ### FIX : check is dir-exec even set?
+  /* now switch back to the run-dir */
+
+  if (osChangeDir (altinst->rundir)) {
+    altinstFailWorkingDir (altinst, altinst->rundir, "setup");
+    return;
+  }
+
+  diropMakeDir ("bin");
+
   /* create the symlink for the bdj4 executable */
+  /* this is unique to an alternate installation */
   if (isWindows ()) {
     /* handled by the desktop shortcut */
   } else {
 #if _lib_symlink
-    diropMakeDir ("bin");
-
     pathbldMakePath (buff, sizeof (buff),
-        "bdj4", "", PATHBLD_MP_DIR_EXEC);
-    (void) ! symlink (buff, "bin/bdj4");
+        altinst->launchname, "", PATHBLD_MP_DIR_EXEC);
+    snprintf (tbuff, sizeof (tbuff), "bin/%s", altinst->launchname);
+    (void) ! symlink (buff, tbuff);
+#endif
+  }
+
+  if (isMacOS ()) {
+#if _lib_symlink
+    /* on macos, the startup program must be a gui program, otherwise */
+    /* the dock icon is not correct */
+    /* this must exist and match the name of the app */
+    snprintf (tbuff, sizeof (tbuff), "bin/%s", altinst->launchname);
+    (void) ! symlink (tbuff, "BDJ4");
 #endif
   }
 
@@ -1048,16 +1070,39 @@ altinstSetup (altinst_t *altinst)
       VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (buff);
 
-  altinst->instState = ALT_CREATE_SHORTCUT;
+  altinst->instState = ALT_CREATE_DESKTOP_LAUNCHER;
 }
 
 static void
-altinstCreateShortcut (altinst_t *altinst)
+altinstCreateDesktopLauncher (altinst_t *altinst)
 {
   const char  *name;
 
+  /* for linux and windows, the desktop launcher can have arguments */
+  /* the main bdj4 executable can be started directly */
+  /* and the data-top-dir and profile number can be */
+  /* supplied as arguments */
+
+  /* macos has no desktop launcher capabilities */
+  /* create a symlink to the app on the desktop */
+  if (isMacOS ()) {
+    char buff [MAXPATHLEN];
+
+    if (osChangeDir (altinst->rundir)) {
+      altinstFailWorkingDir (altinst, altinst->rundir, "cdl");
+      return;
+    }
+
+    snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
+        altinst->home, altinst->name, MACOS_APP_EXT);
+    (void) ! symlink (altinst->target, buff);
+
+    altinst->instState = ALT_FINALIZE;
+    return;
+  }
+
   if (osChangeDir (altinst->maindir)) {
-    altinstFailWorkingDir (altinst, altinst->maindir);
+    altinstFailWorkingDir (altinst, altinst->maindir, "cdl");
     return;
   }
 
@@ -1067,7 +1112,8 @@ altinstCreateShortcut (altinst_t *altinst)
   if (altinst->guienabled) {
     name = uiEntryGetValue (altinst->wcont [ALT_W_NAME]);
   }
-  instutilCreateShortcut (name, altinst->maindir, altinst->target, 0);
+
+  instutilCreateLauncher (name, altinst->maindir, altinst->target, 0);
 
   altinst->instState = ALT_FINALIZE;
 }
@@ -1089,13 +1135,10 @@ altinstFinalize (altinst_t *altinst)
     fprintf (stdout, "update %d\n", altinst->updateinstall);
     fprintf (stdout, "converted 0\n");
     fprintf (stdout, "readonly 0\n");
+    fprintf (stdout, "alternate 1\n");
   }
 
-  if (altinst->firstinstall) {
-    altinst->instState = ALT_UPDATE_PROCESS_INIT;
-  } else {
-    altinst->instState = ALT_FINISH;
-  }
+  altinst->instState = ALT_UPDATE_PROCESS_INIT;
 }
 
 static void
@@ -1103,8 +1146,8 @@ altinstUpdateProcessInit (altinst_t *altinst)
 {
   char  buff [MAXPATHLEN];
 
-  if (osChangeDir (altinst->target)) {
-    altinstFailWorkingDir (altinst, altinst->target);
+  if (osChangeDir (altinst->rundir)) {
+    altinstFailWorkingDir (altinst, altinst->rundir, "upi");
     return;
   }
 
@@ -1134,45 +1177,6 @@ altinstUpdateProcess (altinst_t *altinst)
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
 
-  altinst->instState = ALT_REGISTER_INIT;
-}
-
-static void
-altinstRegisterInit (altinst_t *altinst)
-{
-  char    tbuff [200];
-
-  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
-      ! altinst->testregistration) {
-    /* no need to register */
-    snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
-    altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
-    altinst->instState = ALT_FINISH;
-  } else {
-    /* CONTEXT: alternate installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
-    altinstDisplayText (altinst, INST_DISP_ACTION, tbuff, false);
-    altinst->instState = ALT_REGISTER;
-  }
-}
-
-static void
-altinstRegister (altinst_t *altinst)
-{
-  char          tbuff [500];
-
-  snprintf (tbuff, sizeof (tbuff),
-      "&bdj3version=%s&oldversion=%s"
-      "&new=%d&reinstall=%d&update=%d&convert=%d&readonly=%d",
-      "",
-      altinst->oldversion,
-      altinst->newinstall,
-      altinst->reinstall,
-      altinst->updateinstall,
-      false,
-      false
-      );
-  instutilRegister (tbuff);
   altinst->instState = ALT_FINISH;
 }
 
@@ -1222,9 +1226,9 @@ altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool bold)
 }
 
 static void
-altinstFailWorkingDir (altinst_t *altinst, const char *dir)
+altinstFailWorkingDir (altinst_t *altinst, const char *dir, const char *tag)
 {
-  fprintf (stderr, "Unable to set working dir: %s\n", dir);
+  fprintf (stderr, "Unable to set working dir: %s %s\n", tag, dir);
   /* CONTEXT: alternate installation: failure message */
   altinstDisplayText (altinst, "", _("Error: Unable to set working folder."), false);
   /* CONTEXT: alternate installation: status message */

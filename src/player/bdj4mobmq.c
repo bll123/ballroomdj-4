@@ -66,7 +66,7 @@ main (int argc, char *argv[])
   mobmqdata_t     mobmqData;
   uint16_t        listenPort;
   const char      *tval;
-  long            flags;
+  uint32_t        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mm");

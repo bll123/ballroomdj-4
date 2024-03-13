@@ -491,7 +491,7 @@ manageDbStart (void *udata)
   }
 
   targv [targc++] = "--progress";
-  targv [targc++] = "--dbupmusicdir";
+  targv [targc++] = "--musicdir";
   strlcpy (tbuff, uiEntryGetValue (managedb->wcont [MDB_W_DB_MUSIC_DIR]),
       sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));

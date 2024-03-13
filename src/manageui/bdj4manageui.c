@@ -428,7 +428,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   manageui_t      manage;
   char            tbuff [MAXPATHLEN];
-  long            flags;
+  uint32_t        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mui");

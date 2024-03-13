@@ -5,15 +5,15 @@
 #define INC_VALIDATION_H
 
 enum {
-  VAL_NONE          = 0x0000,
-  VAL_NOT_EMPTY     = 0x0001,
-  VAL_NO_SPACES     = 0x0002,
-  VAL_NO_SLASHES    = 0x0004,
-  VAL_NUMERIC       = 0x0008,
-  VAL_FLOAT         = 0x0010,
-  VAL_HOUR_MIN      = 0x0020,
-  VAL_MIN_SEC       = 0x0040,
-  VAL_HOUR_MIN_SEC  = 0x0080,
+  VAL_NONE          = 0,
+  VAL_NOT_EMPTY     = (1 << 0),
+  VAL_NO_SPACES     = (1 << 1),
+  VAL_NO_SLASHES    = (1 << 2),
+  VAL_NUMERIC       = (1 << 3),
+  VAL_FLOAT         = (1 << 4),
+  VAL_HOUR_MIN      = (1 << 5),
+  VAL_MIN_SEC       = (1 << 6),
+  VAL_HOUR_MIN_SEC  = (1 << 7),
 };
 
 const char * validate (const char *str, int flags);

@@ -32,12 +32,12 @@ enum {
 };
 
 typedef enum {
-  MUSICQ_FLAG_NONE      = 0x0000,
-  MUSICQ_FLAG_PREP      = 0x0001,
-  MUSICQ_FLAG_ANNOUNCE  = 0x0002,
-  MUSICQ_FLAG_PAUSE     = 0x0004,
-  MUSICQ_FLAG_REQUEST   = 0x0008,
-  MUSICQ_FLAG_EMPTY     = 0x0010,
+  MUSICQ_FLAG_NONE      = 0,
+  MUSICQ_FLAG_PREP      = (1 << 0),
+  MUSICQ_FLAG_ANNOUNCE  = (1 << 1),
+  MUSICQ_FLAG_PAUSE     = (1 << 2),
+  MUSICQ_FLAG_REQUEST   = (1 << 3),
+  MUSICQ_FLAG_EMPTY     = (1 << 4),
 } musicqflag_t;
 
 enum {

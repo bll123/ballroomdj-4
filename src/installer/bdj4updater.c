@@ -21,7 +21,6 @@
 #include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
-#include "bdj4arg.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -127,12 +126,9 @@ main (int argc, char *argv [])
 {
   bool        newinstall = false;
   bool        converted = false;
-  int         c = 0;
-  int         option_index = 0;
   char        homemusicdir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   const char  *tval = NULL;
-  bool        isbdj4 = false;
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
   int         statusflags [UPD_MAX];
@@ -144,56 +140,11 @@ main (int argc, char *argv [])
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
-  long        flags;
-  bdj4arg_t   *bdj4arg;
-
-  static struct option bdj_options [] = {
-    { "newinstall", no_argument,        NULL,   'n' },
-    { "convert",    no_argument,        NULL,   'c' },
-    { "bdj4updater",no_argument,        NULL,   0 },
-    { "bdj4",       no_argument,        NULL,   'B' },
-    /* ignored */
-    { "nodetach",   no_argument,        NULL,   0 },
-    { "wait",       no_argument,        NULL,   0 },
-    { "debugself",  no_argument,        NULL,   0 },
-    { "scale",      required_argument,  NULL,   0 },
-    { "theme",      required_argument,  NULL,   0 },
-    { "origcwd",      required_argument,  NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
-  };
+  uint32_t    flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("updt");
 #endif
-
-  bdj4arg = bdj4argInit (argc, argv);
-
-  optind = 0;
-  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
-      "Bncm", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'n': {
-        newinstall = true;
-        break;
-      }
-      case 'c': {
-        converted = true;
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "updater: not started with launcher\n");
-    exit (1);
-  }
 
   for (int i = 0; i < UPD_MAX; ++i) {
     processflags [i] = false;
@@ -202,6 +153,13 @@ main (int argc, char *argv [])
 
   flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE, &flags);
+  if ((flags & BDJ4_ARG_UPD_NEW) == BDJ4_ARG_UPD_NEW) {
+    newinstall = true;
+  }
+  if ((flags & BDJ4_ARG_UPD_CONVERT) == BDJ4_ARG_UPD_CONVERT) {
+    converted = true;
+  }
+
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_INFO, "updt");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST, "updt");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
@@ -802,7 +760,6 @@ main (int argc, char *argv [])
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);
   logEnd ();
-  bdj4argCleanup (bdj4arg);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
@@ -1049,7 +1006,7 @@ updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn)
     snprintf (from, sizeof (from), "%s%s", fn, ext);
     snprintf (to, sizeof (to), "%s%s", tfn, ext);
     templateFileCopy (from, to);
-    logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", newfn, ext);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", tfn, ext);
   }
 }
 

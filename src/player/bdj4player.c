@@ -196,7 +196,7 @@ main (int argc, char *argv[])
 {
   playerdata_t    playerData;
   uint16_t        listenPort;
-  long            flags;
+  uint32_t        flags;
   const char      *audiosink;
   char            *volintfc;
 

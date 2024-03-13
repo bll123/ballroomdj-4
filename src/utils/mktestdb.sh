@@ -85,7 +85,7 @@ while test $# -gt 0; do
     --nodbcopy)
       # ignored
       ;;
-    --dbupmusicdir)
+    --musicdir)
       args+=$1
       args+=" "
       shift

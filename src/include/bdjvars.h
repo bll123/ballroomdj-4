@@ -10,9 +10,12 @@
 typedef enum {
   BDJV_ORIGINAL_EXT,
   BDJV_DELETE_PFX,
-  BDJV_UPDB_MUSIC_DIR,    // temporary
-  BDJV_TS_SECTION,    // temporary
-  BDJV_TS_TEST,       // temporary
+  BDJV_MUSIC_DIR,         // dbupdate/updater, argument
+  BDJV_TS_SECTION,        // testsuite, argument
+  BDJV_TS_TEST,           // testsutie, argument
+  BDJV_INST_DATATOP,      // installers, argument
+  BDJV_INST_TARGET,       // installers, argument
+  BDJV_INST_NAME,         // installers, argument
   BDJV_MAX,
 } bdjvarkey_t;
 

@@ -36,9 +36,9 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
-int
+loglevel_t
 bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
-    char *tag, bdjmsgroute_t route, long *flags)
+    char *tag, bdjmsgroute_t route, uint32_t *flags)
 {
   mstime_t    mt;
   mstime_t    dbmt;
@@ -54,6 +54,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bool        isbdj4 = false;
 
   static struct option bdj_options [] = {
+    { "bdj4altinst",    no_argument,        NULL,   0 },
     { "bdj4bpmcounter", no_argument,        NULL,   0 },
     { "bdj4configui",   no_argument,        NULL,   0 },
     { "bdj4dbupdate",   no_argument,        NULL,   0 },
@@ -83,19 +84,24 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "wait",           no_argument,        NULL,   'w' },
     /* starter */
     { "datatopdir",     required_argument,  NULL,   't' },
+    /* installers */
+    { "unattended",     no_argument,        NULL,   1 },
+    { "reinstall",      no_argument,        NULL,   2 },
+    { "datatopdir",     required_argument,  NULL,   3 },
+    { "targetdir",      required_argument,  NULL,   4 },
+    { "name",           required_argument,  NULL,   5 },
     /* bdj4updater */
-    { "newinstall",     no_argument,        NULL,   0 },
-    { "converted",      no_argument,        NULL,   0 },
-    { "musicdir",       required_argument,  NULL,   0 },
+    { "newinstall",     no_argument,        NULL,   6 },
+    { "convert",        no_argument,        NULL,   7 },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   'R' },
     { "checknew",       no_argument,        NULL,   'C' },
     { "compact",        no_argument,        NULL,   127 },
+    { "musicdir",       required_argument,  NULL,   'D' },
     { "reorganize",     no_argument,        NULL,   'O' },
     { "updfromtags",    no_argument,        NULL,   'u' },
     { "updfromitunes",  no_argument,        NULL,   'I' },
     { "writetags",      no_argument,        NULL,   'W' },
-    { "dbupmusicdir",   required_argument,  NULL,   'D' },
     /* generic options, some used by dbupdate, test suite */
     { "progress",       no_argument,        NULL,   'P' },
     { "cli",            no_argument,        NULL,   'c' },
@@ -137,38 +143,78 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'C': {
-        *flags |= BDJ4_DB_CHECK_NEW;
+        *flags |= BDJ4_ARG_DB_CHECK_NEW;
+        break;
+      }
+      case 1: {
+        *flags |= BDJ4_ARG_INST_UNATTENDED;
+        break;
+      }
+      case 2: {
+        *flags |= BDJ4_ARG_INST_REINSTALL;
+        break;
+      }
+      case 3: {
+        if (optarg != NULL) {
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
+          logMsg (LOG_DBG, LOG_BASIC, "set datatop %s", targ);
+          bdjvarsSetStr (BDJV_INST_DATATOP, targ);
+        }
+        break;
+      }
+      case 4: {
+        if (optarg != NULL) {
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
+          logMsg (LOG_DBG, LOG_BASIC, "set target %s", targ);
+          bdjvarsSetStr (BDJV_INST_TARGET, targ);
+        }
+        break;
+      }
+      case 5: {
+        if (optarg != NULL) {
+          targ = bdj4argGet (bdj4arg, optind - 1, optarg);
+          logMsg (LOG_DBG, LOG_BASIC, "set name %s", targ);
+          bdjvarsSetStr (BDJV_INST_NAME, targ);
+        }
+        break;
+      }
+      case 6: {
+        *flags |= BDJ4_ARG_UPD_NEW;
+        break;
+      }
+      case 7: {
+        *flags |= BDJ4_ARG_UPD_CONVERT;
         break;
       }
       case 127: {
-        *flags |= BDJ4_DB_COMPACT;
+        *flags |= BDJ4_ARG_DB_COMPACT;
         break;
       }
       case 'P': {
-        *flags |= BDJ4_PROGRESS;
+        *flags |= BDJ4_ARG_PROGRESS;
         break;
       }
       case 'O': {
-        *flags |= BDJ4_DB_REORG;
+        *flags |= BDJ4_ARG_DB_REORG;
         break;
       }
       case 'u': {
-        *flags |= BDJ4_DB_UPD_FROM_TAGS;
+        *flags |= BDJ4_ARG_DB_UPD_FROM_TAGS;
         break;
       }
       case 'I': {
-        *flags |= BDJ4_DB_UPD_FROM_ITUNES;
+        *flags |= BDJ4_ARG_DB_UPD_FROM_ITUNES;
         break;
       }
       case 'W': {
-        *flags |= BDJ4_DB_WRITE_TAGS;
+        *flags |= BDJ4_ARG_DB_WRITE_TAGS;
         break;
       }
       case 'D': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          logMsg (LOG_DBG, LOG_BASIC, "set dbupmusicdir %s", targ);
-          bdjvarsSetStr (BDJV_UPDB_MUSIC_DIR, targ);
+          logMsg (LOG_DBG, LOG_BASIC, "set musicdir %s", targ);
+          bdjvarsSetStr (BDJV_MUSIC_DIR, targ);
         }
         break;
       }
@@ -212,7 +258,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'R': {
-        *flags |= BDJ4_DB_REBUILD;
+        *flags |= BDJ4_ARG_DB_REBUILD;
         break;
       }
       case 'h': {
@@ -223,7 +269,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           bdjvarsSetStr (BDJV_TS_SECTION, targ);
-          *flags |= BDJ4_TS_RUNSECTION;
+          *flags |= BDJ4_ARG_TS_RUNSECTION;
         }
         break;
       }
@@ -231,7 +277,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           bdjvarsSetStr (BDJV_TS_TEST, targ);
-          *flags |= BDJ4_TS_RUNTEST;
+          *flags |= BDJ4_ARG_TS_RUNTEST;
         }
         break;
       }
@@ -239,20 +285,20 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           bdjvarsSetStr (BDJV_TS_TEST, targ);
-          *flags |= BDJ4_TS_STARTTEST;
+          *flags |= BDJ4_ARG_TS_STARTTEST;
         }
         break;
       }
       case 'V': {
-        *flags |= BDJ4_VERBOSE;
+        *flags |= BDJ4_ARG_VERBOSE;
         break;
       }
       case 'Q': {
-        *flags &= ~BDJ4_VERBOSE;
+        *flags |= BDJ4_ARG_QUIET;
         break;
       }
       case 'c': {
-        *flags |= BDJ4_CLI;
+        *flags |= BDJ4_ARG_CLI;
         break;
       }
       default: {

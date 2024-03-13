@@ -9,19 +9,19 @@
 
 /* the return flags are used by the database update process */
 enum {
-  SONGDB_NONE             = 0x0000,
-  SONGDB_FORCE_RENAME     = 0x0001,
+  SONGDB_NONE                 = 0,
+  SONGDB_FORCE_RENAME         = (1 << 0),
   /* output flags */
-  SONGDB_RET_REN_FILE_EXISTS  = 0x0002,
-  SONGDB_RET_RENAME_SUCCESS   = 0x0004,
-  SONGDB_RET_RENAME_FAIL      = 0x0008,
-  SONGDB_RET_ORIG_RENAME_FAIL = 0x0010,
-  SONGDB_RET_NULL             = 0x0020,
-  SONGDB_RET_NO_CHANGE        = 0x0040,
-  SONGDB_RET_LOC_LOCK         = 0x0080,
-  SONGDB_RET_SUCCESS          = 0x0100,
-  SONGDB_RET_WRITE_FAIL       = 0x0200,
-  SONGDB_RET_BAD_URI          = 0x0400,
+  SONGDB_RET_REN_FILE_EXISTS  = (1 << 1),
+  SONGDB_RET_RENAME_SUCCESS   = (1 << 2),
+  SONGDB_RET_RENAME_FAIL      = (1 << 3),
+  SONGDB_RET_ORIG_RENAME_FAIL = (1 << 4),
+  SONGDB_RET_NULL             = (1 << 5),
+  SONGDB_RET_NO_CHANGE        = (1 << 6),
+  SONGDB_RET_LOC_LOCK         = (1 << 7),
+  SONGDB_RET_SUCCESS          = (1 << 8),
+  SONGDB_RET_WRITE_FAIL       = (1 << 9),
+  SONGDB_RET_BAD_URI          = (1 << 10),
 };
 
 typedef struct songdb songdb_t;

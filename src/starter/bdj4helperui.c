@@ -85,11 +85,11 @@ static datafilekey_t helptextdfkeys [HELP_TEXT_MAX] = {
 int
 main (int argc, char *argv[])
 {
-  int             status = 0;
-  uint16_t        listenPort;
-  helperui_t      helper;
-  long            flags;
-  char            tbuff [MAXPATHLEN];
+  int         status = 0;
+  uint16_t    listenPort;
+  helperui_t  helper;
+  uint32_t    flags;
+  char        tbuff [MAXPATHLEN];
 
 
 #if BDJ4_MEM_DEBUG

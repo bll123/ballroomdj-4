@@ -7,19 +7,19 @@
 #include "datafile.h"
 
 enum {
-  SONG_ADJUST_NONE    = 0x0000,
+  SONG_ADJUST_NONE    = 0,
   /* normalize didn't work, not currently in use, but keep it here */
-  SONG_ADJUST_NORM    = 0x0001,
-  SONG_ADJUST_TRIM    = 0x0002,
+  SONG_ADJUST_NORM    = (1 << 0),
+  SONG_ADJUST_TRIM    = (1 << 1),
   /* song-adjust-adjust adjusts the speed, song-start and song-end */
-  SONG_ADJUST_ADJUST  = 0x0004,
+  SONG_ADJUST_ADJUST  = (1 << 2),
   /* for testing */
-  SONG_ADJUST_TEST    = 0x0008,
+  SONG_ADJUST_TEST    = (1 << 3),
   /* repair reads in the audio file and re-writes it */
   /* not in use */
-  SONG_ADJUST_REPAIR  = 0x0010,
+  SONG_ADJUST_REPAIR  = (1 << 4),
   /* special setting used for response from uiapplyadj */
-  SONG_ADJUST_RESTORE = 0x0020,
+  SONG_ADJUST_RESTORE = (1 << 5),
   /* song-adjust-invalid checks for anything other than the normal settings */
   SONG_ADJUST_INVALID =
       ~ (SONG_ADJUST_NORM | SONG_ADJUST_TRIM | SONG_ADJUST_ADJUST | SONG_ADJUST_TEST),

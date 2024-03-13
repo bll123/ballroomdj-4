@@ -3,11 +3,11 @@
 
 enum {
   /* some of the AF_ flags are only internal to audiotag.c */
-  AF_REWRITE_NONE     = 0x0000,
-  AF_REWRITE_MB       = 0x0001,
-  AF_REWRITE_DURATION = 0x0002,
-  AF_REWRITE_VARIOUS  = 0x0004,
-  AF_FORCE_WRITE_BDJ  = 0x0008,
+  AF_REWRITE_NONE     = 0,
+  AF_REWRITE_MB       = (1 << 0),
+  AF_REWRITE_DURATION = (1 << 1),
+  AF_REWRITE_VARIOUS  = (1 << 2),
+  AF_FORCE_WRITE_BDJ  = (1 << 3),
 };
 
 /* these are file types that have audio tag support */

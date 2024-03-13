@@ -299,7 +299,7 @@ main (int argc, char *argv[])
   int         status = 0;
   startui_t   starter;
   uint16_t    listenPort;
-  long        flags;
+  uint32_t    flags;
   char        uri [MAXPATHLEN];
 
 #if BDJ4_MEM_DEBUG
@@ -644,10 +644,6 @@ starterBuildUI (startui_t  *starter)
       starterSetUpAlternate, starter, NULL);
   menuitem = uiMenuCreateItem (menu, tbuff,
       starter->callbacks [START_CB_MENU_ALT_SETUP]);
-
-  if (isMacOS ()) {
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-  }
   uiwcontFree (menuitem);
 
   /* main display */
@@ -1811,7 +1807,7 @@ starterCreateProfileShortcut (void *udata)
   char        *pname;
 
   pname = bdjoptGetProfileName ();
-  instutilCreateShortcut (pname, sysvarsGetStr (SV_BDJ4_DIR_MAIN),
+  instutilCreateLauncher (pname, sysvarsGetStr (SV_BDJ4_DIR_MAIN),
       sysvarsGetStr (SV_BDJ4_DIR_MAIN), starter->currprofile);
   mdfree (pname);
   return UICB_CONT;

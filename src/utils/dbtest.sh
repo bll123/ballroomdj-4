@@ -383,7 +383,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip 0 indb 0 new ${NUMNORM} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -411,7 +411,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMNORM} skip ${NUMNORM} indb ${NUMNORM} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -550,7 +550,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   # note that the music database still has the entries for the
   # deleted files in it.
@@ -624,7 +624,7 @@ if [[ $TESTON == T ]]; then
     got=$(./bin/bdj4 --bdj4dbupdate \
         --debug ${DBG} \
         --rebuild \
-        --dbupmusicdir "${musicdir}" \
+        --musicdir "${musicdir}" \
         --cli --wait --verbose)
     exp="found ${NUMNOCC} skip 0 indb 0 new ${NUMNOCC} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
     msg+=$(checkres $tname "$got" "$exp")
@@ -649,7 +649,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMCC} skip ${NUMNOCC} indb ${NUMNOCC} new 1 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -673,7 +673,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMCC} skip 0 indb 0 new ${NUMCC} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -790,7 +790,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -814,7 +814,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -839,8 +839,8 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${tdir}/${TMPDIRDT}" \
-      --cli --wait --verbose)
+      --musicdir "${tdir}/${TMPDIRDT}" \
+      --cli --wait --verbose 2>&1)
   exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
@@ -862,7 +862,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   exp="found ${NUMREGEX} skip 0 indb 0 new ${NUMREGEX} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -890,7 +890,7 @@ if [[ $TESTON == T ]]; then
       --infile $INSECOND \
       --outfile $TDBSECOND \
       --debug ${DBG} ${ATIFLAG} \
-      --dbupmusicdir "$SECONDMUSICDIR" \
+      --musicdir "$SECONDMUSICDIR" \
       --nodbcopy \
       --keepdb
 
@@ -899,7 +899,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${SECONDMUSICDIR}" \
+      --musicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
 
   exp="found ${NUM2} skip 0 indb 0 new ${NUM2} updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
@@ -950,7 +950,7 @@ if [[ $TESTON == T ]]; then
   ./src/utils/mktestsetup.sh \
       --infile $INSECONDNOFT \
       --outfile $TDBSECONDNOFT \
-      --dbupmusicdir "$SECONDMUSICDIR" \
+      --musicdir "$SECONDMUSICDIR" \
       --keepmusic \
       --debug ${DBG} ${ATIFLAG}
 
@@ -962,7 +962,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
   # note that the music database still has the entries for the
   # deleted files in it.
@@ -975,7 +975,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${SECONDMUSICDIR}" \
+      --musicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
   exp="found ${NUM2_NOFT} skip ${NUM2_NOFT} indb ${NUM2_NOFT} new 0 updated 0 renamed 0 norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
@@ -1031,14 +1031,14 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --rebuild \
-      --dbupmusicdir "${musicdir}" \
+      --musicdir "${musicdir}" \
       --cli --wait --verbose)
 
   # add the secondary music dir
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${SECONDMUSICDIR}" \
+      --musicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
 
   cp -f $DATADB $TDBSECONDEMPTY
@@ -1934,7 +1934,7 @@ if [[ $TESTON == T ]]; then
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --checknew \
-      --dbupmusicdir "${SECONDMUSICDIR}" \
+      --musicdir "${SECONDMUSICDIR}" \
       --cli --wait --verbose)
   exp="found ${NUM2} skip ${NUM2_NOFT} indb ${NUM2_NOFT} new ${NUM2_FT} updated 0 renamed ${NUM2_FT} norename 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")

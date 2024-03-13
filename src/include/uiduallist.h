@@ -14,10 +14,10 @@ enum {
 };
 
 enum {
-  DUALLIST_FLAGS_NONE       = 0x0000,
-  DUALLIST_FLAGS_MULTIPLE   = 0x0001,
+  DUALLIST_FLAGS_NONE       = 0,
+  DUALLIST_FLAGS_MULTIPLE   = (1 << 0),
   /* if persistent, the selections are not removed from the source tree */
-  DUALLIST_FLAGS_PERSISTENT = 0x0002,
+  DUALLIST_FLAGS_PERSISTENT = (1 << 1),
 };
 
 typedef struct uiduallist uiduallist_t;

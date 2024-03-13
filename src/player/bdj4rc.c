@@ -74,7 +74,7 @@ main (int argc, char *argv[])
 {
   remctrldata_t   remctrlData;
   uint16_t        listenPort;
-  long            flags;
+  uint32_t        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("rc");

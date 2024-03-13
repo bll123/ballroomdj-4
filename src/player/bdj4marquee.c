@@ -158,7 +158,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   marquee_t       marquee;
   char            tbuff [MAXPATHLEN];
-  long            flags;
+  uint32_t        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mq");

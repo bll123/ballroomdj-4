@@ -11,8 +11,9 @@ enum {
   INST_ATI_MAX,
 };
 
-#define BDJ4_MACOS_DIR    "BDJ4.app"
-#define MACOS_PREFIX      "/Contents/MacOS"
+#define MACOS_APP_EXT       ".app"
+#define MACOS_APP_PREFIX    "/Contents/MacOS"
+#define MACOS_DIR_LIBDATA   "/Library/Application Support"
 
 #define WINUSERNAME       "%USERNAME%"
 
@@ -42,13 +43,13 @@ typedef struct {
 
 extern instati_t instati [INST_ATI_MAX];
 
-void  instutilCreateShortcut (const char *name, const char *maindir,
+void  instutilCreateLauncher (const char *name, const char *maindir,
           const char *target, int profilenum);
 void  instutilCopyTemplates (void);
 void  instutilCopyHttpFiles (void);
 void  instutilGetMusicDir (char *homemusicdir, size_t sz);
 void  instutilScanMusicDir (const char *musicdir, const char *rundir, char *ati, size_t atisz);
-void  instutilAppendNameToTarget (char *buff, size_t sz, int macosonly);
+void  instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macosonly);
 bool  instutilCheckForExistingInstall (const char *dir, const char *macospfx);
 bool  instutilIsStandardInstall (const char *dir, const char *macospfx);
 void  instutilRegister (const char *data);
