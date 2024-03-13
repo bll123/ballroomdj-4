@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#ifdef _hdr_stdatomic
+# include <stdatomic.h>
+#endif
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
@@ -125,6 +128,11 @@ main (int argc, char *argv [])
 #if _POSIX_C_SOURCE
   fprintf (stdout, " c: _POSIX_C_SOURCE %ld\n", _POSIX_C_SOURCE);
 #endif
+  c = 1;
+#if defined(__STDC_NO_ATOMICS__)
+  c = 0;
+#endif
+  fprintf (stdout, " c: atomics %d\n", c);
   fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 #if BDJ4_USE_GTK3
   fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));

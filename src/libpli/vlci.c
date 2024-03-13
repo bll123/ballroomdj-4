@@ -8,6 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#if _hdr_stdatomic
+# include <stdatomic.h>
+#endif
+#if defined(__STDC_NO_ATOMICS__)
+# define _Atomic(type) type
+#endif
 #include <string.h>
 #include <inttypes.h>
 #include <memory.h>
@@ -29,14 +35,14 @@
 #define VLCDEBUG 0
 
 typedef struct vlcData {
-  libvlc_instance_t     *inst;
-  char                  version [40];
-  libvlc_media_t        *m;
-  libvlc_media_player_t *mp;
-  libvlc_state_t        state;
-  int                   argc;
-  char                  **argv;
-  char                  *device;
+  libvlc_instance_t       *inst;
+  char                    version [40];
+  libvlc_media_t          *m;
+  libvlc_media_player_t   *mp;
+  _Atomic(libvlc_state_t) state;
+  int                     argc;
+  char                    **argv;
+  char                    *device;
 } vlcData_t;
 
 enum {
@@ -226,7 +232,7 @@ vlcState (vlcData_t *vlcData)
     return state;
   }
 
-  switch (vlcData->state) {
+  switch ((int) vlcData->state) {
     case libvlc_NothingSpecial: { state = PLI_STATE_IDLE; break; }
     case libvlc_Opening: { state = PLI_STATE_OPENING; break; }
     case libvlc_Buffering: { state = PLI_STATE_BUFFERING; break; }

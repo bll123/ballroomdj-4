@@ -19,6 +19,12 @@
 #include <string.h>
 #include <math.h>
 #include <pulse/pulseaudio.h>
+#if _hdr_stdatomic
+# include <stdatomic.h>
+#endif
+#if defined(__STDC_NO_ATOMICS__)
+# define _Atomic(type) type
+#endif
 
 #include "bdjstring.h"
 #include "tmutil.h"
@@ -52,7 +58,7 @@ typedef struct {
   pa_threaded_mainloop  *pamainloop;
   pa_context            *pacontext;
   pa_context_state_t    pastate;
-  int                   state;
+  _Atomic(int)          state;
 } state_t;
 
 static state_t      gstate;
