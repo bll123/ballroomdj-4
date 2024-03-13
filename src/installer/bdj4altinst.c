@@ -211,11 +211,9 @@ main (int argc, char *argv[])
       BDJ4_INIT_NO_LOCK;
   bdj4startup (argc, argv, NULL, "alt", ROUTE_NONE, &flags);
   if ((flags & BDJ4_ARG_INST_REINSTALL) == BDJ4_ARG_INST_REINSTALL) {
-fprintf (stderr, "inst-reinstall\n");
     altinst.reinstall = true;
   }
   if ((flags & BDJ4_ARG_INST_UNATTENDED) == BDJ4_ARG_INST_UNATTENDED) {
-fprintf (stderr, "inst-unattended\n");
     altinst.unattended = true;
     altinst.guienabled = false;
 #if _define_SIGCHLD
@@ -223,16 +221,13 @@ fprintf (stderr, "inst-unattended\n");
 #endif
   }
   if ((flags & BDJ4_ARG_VERBOSE) == BDJ4_ARG_VERBOSE) {
-fprintf (stderr, "inst-verbose\n");
     altinst.verbose = true;
   }
   if ((flags & BDJ4_ARG_QUIET) == BDJ4_ARG_QUIET) {
-fprintf (stderr, "inst-quiet\n");
     altinst.quiet = true;
   }
   tmp = bdjvarsGetStr (BDJV_INST_TARGET);
   if (tmp != NULL) {
-fprintf (stderr, "alt: target: %s\n", tmp);
     altinstSetTargetDir (&altinst, tmp);
   }
 
@@ -797,11 +792,11 @@ altinstSetupCallback (void *udata)
 static void
 altinstSetPaths (altinst_t *altinst)
 {
+  strlcpy (altinst->datatopdir, altinst->target, sizeof (altinst->datatopdir));
+
   if (altinst->targetexists) {
     altinstLoadBdjOpt (altinst);
-    strlcpy (altinst->datatopdir, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), sizeof (altinst->datatopdir));
   } else {
-    strlcpy (altinst->datatopdir, altinst->target, sizeof (altinst->datatopdir));
     if (isMacOS ()) {
       snprintf (altinst->datatopdir, sizeof (altinst->datatopdir),
           "%s%s/%s", altinst->home, MACOS_DIR_LIBDATA, altinst->name);

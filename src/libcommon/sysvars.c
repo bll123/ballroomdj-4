@@ -371,6 +371,7 @@ sysvarsInit (const char *argv0)
     /* a change of directories is contra-indicated. */
 
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
+fprintf (stderr, "datatop: found rel: %s\n", tcwd);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
     bool found = false;
@@ -380,7 +381,7 @@ sysvarsInit (const char *argv0)
       if (isMacOS ()) {
         /* altpath is something like: */
         /* /Users/bll/Applications/BDJ4-alt.app/Contents/MacOS/bin/bdj4g */
-fprintf (stderr, "alt-mac: %s\n", altpath);
+fprintf (stderr, "datatop: alt-mac: %s\n", altpath);
         p = strstr (altpath, "/Contents");
 fprintf (stderr, "  a: p: %s\n", p);
         if (p != NULL) {
@@ -401,7 +402,7 @@ fprintf (stderr, "  d: p: %s\n", p);
             if (p != NULL) {
               *p = '\0';
             }
-fprintf (stderr, "alt-mac: name: %s\n", tp);
+fprintf (stderr, "datatop: alt-mac: name: %s\n", tp);
 
             strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
             strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
@@ -430,10 +431,12 @@ fprintf (stderr, "alt-mac: name: %s\n", tp);
             altpath, READONLY_FN, BDJ4_CONFIG_EXT);
         tlen = strlen (altpath);
         strlcat (altpath, "/data", sizeof (altpath));
+fprintf (stderr, "datatop: chk-alt: %s\n", altpath);
         if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
           /* remove the /data suffix */
           altpath [tlen] = '\0';
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
+fprintf (stderr, "  ok-alt: %s\n", altpath);
           found = true;
           lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
         }
@@ -458,6 +461,7 @@ fprintf (stderr, "alt-mac: name: %s\n", tp);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
         }
+fprintf (stderr, "datatop: !found: %s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
       }
     }
   }
