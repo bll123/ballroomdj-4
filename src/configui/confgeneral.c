@@ -13,7 +13,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include "ati.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
@@ -36,13 +35,11 @@ static bool confuiSelectMusicDir (void *udata);
 static bool confuiSelectStartup (void *udata);
 static bool confuiSelectShutdown (void *udata);
 static void confuiLoadLocaleList (confuigui_t *gui);
-static void confuiLoadAudioTagIntfcList (confuigui_t *gui);
 
 void
 confuiInitGeneral (confuigui_t *gui)
 {
   confuiLoadLocaleList (gui);
-  confuiLoadAudioTagIntfcList (gui);
 
   confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
@@ -135,11 +132,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   /* audio tag stuff */
-
-  /* CONTEXT: configuration: which audio tag interface to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Tags"),
-      CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
 
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Write Audio File Tags"),
@@ -278,15 +270,4 @@ confuiLoadLocaleList (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_LOCALE].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
   logProcEnd (LOG_PROC, "confuiLoadLocaleList", "");
-}
-
-static void
-confuiLoadAudioTagIntfcList (confuigui_t *gui)
-{
-  ilist_t     *interfaces;
-
-  interfaces = atiInterfaceList ();
-  confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC,
-      CONFUI_OPT_NONE, CONFUI_SPINBOX_ATI);
-  ilistFree (interfaces);
 }

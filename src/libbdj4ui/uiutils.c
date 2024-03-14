@@ -21,6 +21,10 @@
 #include "uiutils.h"
 #include "validate.h"
 
+#define RHB "\xE2\x96\x90"  /* right half block 0xE2 0x96 0x90 */
+#define FB  "\xE2\x96\x88"  /* full block 0xE2 0x96 0x88 */
+#define LHB "\xE2\x96\x8c"  /* left half block 0xE2 0x96 0x8c */
+
 /* as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
@@ -28,18 +32,17 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
   uiwcont_t       *label;
+  const char      *txt;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  /* right half block 0xE2 0x96 0x90 */
-  /* full block 0xE2 0x96 0x88 */
-  /* left half block 0xE2 0x96 0x8c */
   if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
-    label = uiCreateLabel ("\xE2\x96\x8c\xE2\x96\x88");
+    txt = LHB FB;
   } else {
-    label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
+    txt = RHB FB;
   }
+  label = uiCreateLabel (txt);
   uiWidgetSetMarginStart (label, 3);
   uiutilsSetProfileColor (label);
   uiBoxPackEnd (hbox, label);

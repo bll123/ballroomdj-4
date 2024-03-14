@@ -160,6 +160,8 @@ static void altinstFailWorkingDir (altinst_t *altinst, const char *dir, const ch
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
 
+static void altinstDebug (const char *tag);
+
 int
 main (int argc, char *argv[])
 {
@@ -207,8 +209,8 @@ main (int argc, char *argv[])
     altinst.callbacks [i] = NULL;
   }
 
-  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
-      BDJ4_INIT_NO_LOCK;
+altinstDebug ("b4 startup");
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_LOG;
   bdj4startup (argc, argv, NULL, "alt", ROUTE_NONE, &flags);
   if ((flags & BDJ4_ARG_INST_REINSTALL) == BDJ4_ARG_INST_REINSTALL) {
     altinst.reinstall = true;
@@ -230,6 +232,7 @@ main (int argc, char *argv[])
   if (tmp != NULL) {
     altinstSetTargetDir (&altinst, tmp);
   }
+altinstDebug ("after startup");
 
   strlcpy (buff, sysvarsGetStr (SV_HOME), sizeof (buff));
   if (isMacOS ()) {
@@ -266,6 +269,7 @@ main (int argc, char *argv[])
   if (osChangeDir (altinst.maindir)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst.maindir);
   }
+altinstDebug ("init-cd");
 
   if (altinst.guienabled) {
     uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
@@ -510,6 +514,8 @@ altinstMainLoop (void *udata)
     case ALT_CREATE_DIRS: {
       altinstCreateDirs (altinst);
 
+      /* after change-dir and create-dir, the current-dir is still set */
+      /* to the data-top-dir */
       logStart ("bdj4altinst", "alt",
           LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
@@ -542,6 +548,7 @@ altinstMainLoop (void *udata)
     }
     case ALT_FINISH: {
       /* CONTEXT: alternate installation: status message */
+altinstDebug ("finish-a");
       altinstDisplayText (altinst, INST_DISP_FIN, _("Setup complete."), true);
       altinst->instState = ALT_PREPARE;
       if (altinst->unattended) {
@@ -695,6 +702,8 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   msg = validate (name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
   if (msg == NULL) {
     uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], "");
+    dataFree (altinst->name);
+    altinst->name = mdstrdup (name);
     rc = UIENTRY_OK;
   } else {
     /* CONTEXT: alternate installer: name (for shortcut) */
@@ -792,24 +801,31 @@ altinstSetupCallback (void *udata)
 static void
 altinstSetPaths (altinst_t *altinst)
 {
+altinstDebug ("set-paths-a");
   strlcpy (altinst->datatopdir, altinst->target, sizeof (altinst->datatopdir));
+  if (isMacOS ()) {
+    snprintf (altinst->datatopdir, sizeof (altinst->datatopdir),
+        "%s%s/%s", altinst->home, MACOS_DIR_LIBDATA, altinst->name);
+  }
 
   if (altinst->targetexists) {
-    altinstLoadBdjOpt (altinst);
-  } else {
-    if (isMacOS ()) {
-      snprintf (altinst->datatopdir, sizeof (altinst->datatopdir),
-          "%s%s/%s", altinst->home, MACOS_DIR_LIBDATA, altinst->name);
+    if (osChangeDir (altinst->datatopdir)) {
+      altinstFailWorkingDir (altinst, altinst->datatopdir, "cd");
+      return;
     }
+    altinstLoadBdjOpt (altinst);
   }
+altinstDebug ("set-paths");
 }
 
 static void
 altinstPrepare (altinst_t *altinst)
 {
+altinstDebug ("prep-a");
   altinstValidateProcessTarget (altinst, altinst->target);
   altinstSetPaths (altinst);
   altinst->instState = ALT_WAIT_USER;
+altinstDebug ("prep");
 }
 
 static void
@@ -817,6 +833,7 @@ altinstInit (altinst_t *altinst)
 {
   altinstSetPaths (altinst);
   altinst->instState = ALT_SAVE_TARGET;
+altinstDebug ("init");
 }
 
 static void
@@ -837,6 +854,7 @@ altinstSaveTargetDir (altinst_t *altinst)
     fclose (fh);
   }
 
+altinstDebug ("save-target");
   altinst->instState = ALT_MAKE_TARGET;
 }
 
@@ -877,6 +895,7 @@ altinstMakeTarget (altinst_t *altinst)
   }
 
   altinst->instState = ALT_CHDIR;
+altinstDebug ("mk-target");
 }
 
 static void
@@ -892,6 +911,7 @@ altinstChangeDir (altinst_t *altinst)
   } else {
     altinst->instState = ALT_FINALIZE;
   }
+altinstDebug ("cd");
 }
 
 static void
@@ -914,6 +934,7 @@ altinstCreateDirs (altinst_t *altinst)
   diropMakeDir ("img/profile00");
 
   altinst->instState = ALT_COPY_TEMPLATES;
+altinstDebug ("create-dirs");
 }
 
 static void
@@ -931,6 +952,7 @@ altinstCopyTemplates (altinst_t *altinst)
   instutilCopyHttpFiles ();
   templateImageCopy (NULL);
 
+altinstDebug ("copy-templates");
   altinst->instState = ALT_SETUP;
 }
 
@@ -1049,10 +1071,10 @@ altinstSetup (altinst_t *altinst)
   }
 
   if (isMacOS ()) {
-#if _lib_symlink
     /* on macos, the startup program must be a gui program, otherwise */
     /* the dock icon is not correct */
     /* this must exist and match the name of the app */
+#if _lib_symlink
     snprintf (tbuff, sizeof (tbuff), "bin/%s", altinst->launchname);
     (void) ! symlink (tbuff, "BDJ4");
 #endif
@@ -1065,6 +1087,7 @@ altinstSetup (altinst_t *altinst)
       VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (buff);
 
+altinstDebug ("setup");
   altinst->instState = ALT_CREATE_DESKTOP_LAUNCHER;
 }
 
@@ -1083,6 +1106,7 @@ altinstCreateDesktopLauncher (altinst_t *altinst)
   if (isMacOS ()) {
     char buff [MAXPATHLEN];
 
+#if _lib_symlink
     if (osChangeDir (altinst->rundir)) {
       altinstFailWorkingDir (altinst, altinst->rundir, "cdl");
       return;
@@ -1091,6 +1115,7 @@ altinstCreateDesktopLauncher (altinst_t *altinst)
     snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
         altinst->home, altinst->name, MACOS_APP_EXT);
     (void) ! symlink (altinst->target, buff);
+#endif
 
     altinst->instState = ALT_FINALIZE;
     return;
@@ -1110,6 +1135,7 @@ altinstCreateDesktopLauncher (altinst_t *altinst)
 
   instutilCreateLauncher (name, altinst->maindir, altinst->target, 0);
 
+altinstDebug ("cdl");
   altinst->instState = ALT_FINALIZE;
 }
 
@@ -1133,6 +1159,7 @@ altinstFinalize (altinst_t *altinst)
     fprintf (stdout, "alternate 1\n");
   }
 
+altinstDebug ("finalize");
   altinst->instState = ALT_UPDATE_PROCESS_INIT;
 }
 
@@ -1150,6 +1177,7 @@ altinstUpdateProcessInit (altinst_t *altinst)
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
   altinstDisplayText (altinst, INST_DISP_ACTION, buff, false);
   altinst->instState = ALT_UPDATE_PROCESS;
+altinstDebug ("upd-init");
 }
 
 static void
@@ -1172,6 +1200,7 @@ altinstUpdateProcess (altinst_t *altinst)
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
 
+altinstDebug ("upd");
   altinst->instState = ALT_FINISH;
 }
 
@@ -1180,10 +1209,6 @@ altinstUpdateProcess (altinst_t *altinst)
 static void
 altinstCleanup (altinst_t *altinst)
 {
-  if (altinst->bdjoptloaded) {
-    bdjoptCleanup ();
-  }
-
   if (altinst != NULL) {
     for (int i = 0; i < ALT_CB_MAX; ++i) {
       callbackFree (altinst->callbacks [i]);
@@ -1257,7 +1282,7 @@ altinstLoadBdjOpt (altinst_t *altinst)
   }
 
   osGetCurrentDir (cwd, sizeof (cwd));
-  if (osChangeDir (altinst->target)) {
+  if (osChangeDir (altinst->datatopdir)) {
     return;
   }
 
@@ -1269,3 +1294,14 @@ altinstLoadBdjOpt (altinst_t *altinst)
   }
 }
 
+static void
+altinstDebug (const char *tag)
+{
+  char        cwd [MAXPATHLEN];
+
+  osGetCurrentDir (cwd, sizeof (cwd));
+  fprintf (stderr, "alt: %s cwd: %s\n", tag, cwd);
+  if (fileopIsDirectory ("/Volumes/Users/bll/Applications/BDJ4alt.app/data")) {
+    fprintf (stderr, "  'data' exists in bdj4alt.app\n");
+  }
+}

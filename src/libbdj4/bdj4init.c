@@ -347,11 +347,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
   }
 
-  /* re-use the lock name as the program name */
-  if (route == ROUTE_STARTERUI) {
-    logStart (lockName (route), tag, loglevel);
-  } else {
-    logStartAppend (lockName (route), tag, loglevel);
+  if ((*flags & BDJ4_INIT_NO_LOG) != BDJ4_INIT_NO_LOG) {
+    /* re-use the lock name as the program name */
+    if (route == ROUTE_STARTERUI) {
+      logStart (lockName (route), tag, loglevel);
+    } else {
+      logStartAppend (lockName (route), tag, loglevel);
+    }
   }
   logProcBegin (LOG_PROC, "bdj4startup");
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
