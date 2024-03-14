@@ -26,6 +26,9 @@
 
 enum {
   MPRIS_MAX_PLAYERS = 10,
+};
+
+enum {
   MPRIS_IDENT = 0x6d7072697300aabb,
 };
 

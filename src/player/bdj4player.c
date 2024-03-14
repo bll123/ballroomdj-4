@@ -60,6 +60,9 @@ enum {
   STATUS_FORCE = 1,
   FADEIN_TIMESLICE = 50,
   FADEOUT_TIMESLICE = 100,
+};
+
+enum {
   PREP_QUEUE_IDENT = 0x707265707100aabb,
 };
 
