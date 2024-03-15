@@ -645,6 +645,9 @@ starterBuildUI (startui_t  *starter)
   uiwcontFree (menuitem);
 
   /* main display */
+
+  /* line 1 */
+
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 4);
   uiBoxPackStart (vbox, hbox);
@@ -667,6 +670,8 @@ starterBuildUI (startui_t  *starter)
   starter->wcont [START_W_PROFILE_SEL] = uiwidgetp;
 
   uiwcontFree (hbox);
+
+  /* buttons and image display */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -1851,11 +1856,10 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* profile color line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
-  hbox = accent.hbox;
   uiwcontFree (accent.label);
+  uiwcontFree (accent.hbox);
 
   /* line 1 */
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -1870,8 +1874,9 @@ starterCreateSupportMsgDialog (void *udata)
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
   uiEntrySetValidate (uiwidgetp, starterValidateEmail, starter, UIENTRY_DELAYED);
 
-  /* line 2 */
   uiwcontFree (hbox);
+
+  /* line 2 */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 

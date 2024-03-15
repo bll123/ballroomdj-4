@@ -1070,7 +1070,7 @@ altinstCreateLauncher (altinst_t *altinst)
     name = uiEntryGetValue (altinst->wcont [ALT_W_NAME]);
   }
 
-  instutilCreateLauncher (name, altinst->maindir, altinst->target, 0);
+  instutilCreateLauncher (name, altinst->maindir, altinst->datatopdir, 0);
 
   altinst->instState = ALT_FINALIZE;
 }

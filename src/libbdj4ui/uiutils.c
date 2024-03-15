@@ -42,9 +42,9 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   } else {
     txt = RHB FB;
   }
-  if (isMacOS ()) {
-    txt = FB;
-  }
+  /* there is some weird bug on macos where the color profile box */
+  /* does not display properly */
+
   label = uiCreateLabel (txt);
   uiWidgetSetMarginStart (label, 3);
   uiutilsSetProfileColor (label);
