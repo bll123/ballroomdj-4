@@ -56,6 +56,7 @@ main (int argc, char * argv[])
   int       rc;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+FILE *logfh;
 
   static struct option bdj_options [] = {
     { "aesed",          no_argument,        NULL,   30 },
@@ -149,6 +150,16 @@ main (int argc, char * argv[])
   mdebugInit ("lnch");
 #endif
 
+#ifdef __APPLE__
+logfh = fopen ("/Volumes/Users/bll/bdj4/src/out.txt", "w");
+#endif
+#if __linux__
+logfh = fopen ("/home/bll/s/bdj4/src/out.txt", "w");
+#endif
+#ifdef __WINNT__
+logfh = fopen ("/msys2/home/bll/bdj4/src/out.txt", "w");
+#endif
+fprintf (logfh, "argv-0: %s\n", argv [0]);
   bdj4arg = bdj4argInit (argc, argv);
 
 #if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
@@ -160,6 +171,7 @@ main (int argc, char * argv[])
   prog = "bdj4starterui";  // default
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
+fprintf (logfh, "targ: %s\n", targ);
   sysvarsInit (targ);
 #if BDJ4_USE_GTK3
   if (getenv ("GTK_THEME") != NULL) {
@@ -411,6 +423,7 @@ main (int argc, char * argv[])
 
   osGetCurrentDir (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));
+fprintf (logfh, "origcwd: %s\n", origcwd);
 
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
     prog = "bdj4altinst";
@@ -424,6 +437,7 @@ main (int argc, char * argv[])
   }
 
   if (isinstaller == false) {
+fprintf (logfh, "datatop: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
     if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
       exit (1);
@@ -452,6 +466,7 @@ main (int argc, char * argv[])
     snprintf (pbuff, sizeof (pbuff), "%s/../plocal/bin",
         sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (tbuff, pbuff, sizeof (tbuff));
+fprintf (logfh, "plocal-bin: realpath: %s\n", tbuff);
     strlcat (npath, ":", sz);
     strlcat (npath, tbuff, sz);
     osSetEnv ("PATH", npath);
@@ -575,6 +590,7 @@ main (int argc, char * argv[])
       exit (1);
     }
     targ = bdj4argGet (bdj4arg, i, argv [i]);
+fprintf (logfh, "targv:%d: %s\n", i, argv [i]);
     targv [targc++] = targ;
   }
   if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_ALT) {
@@ -592,10 +608,12 @@ main (int argc, char * argv[])
 
   pathbldMakePath (buff, sizeof (buff),
       prog, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
+fprintf (logfh, "prog: %s\n", buff);
   /* this is necessary on mac os, as otherwise it will use the path     */
   /* from the start of this launcher, and the executable path can not   */
   /* be determined, as we've done a chdir().                            */
   targv [0] = buff;
+fprintf (logfh, "set targv:0: %s\n", buff);
   if (debugself) {
     fprintf (stderr, "cmd: %s\n", buff);
     for (int i = 1; i < targc; ++i) {
@@ -611,6 +629,7 @@ main (int argc, char * argv[])
     flags |= OS_PROC_WAIT;
     flags &= ~OS_PROC_DETACH;
   }
+fclose (logfh);
   rc = osProcessStart (targv, flags, NULL, NULL);
 
 #if BDJ4_MEM_DEBUG

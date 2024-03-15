@@ -59,7 +59,7 @@ typedef enum {
   ALT_CREATE_DIRS,
   ALT_COPY_TEMPLATES,
   ALT_SETUP,
-  ALT_CREATE_DESKTOP_LAUNCHER,
+  ALT_CREATE_LAUNCHER,
   ALT_FINALIZE,
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
@@ -149,7 +149,7 @@ static void altinstChangeDir (altinst_t *altinst);
 static void altinstCreateDirs (altinst_t *altinst);
 static void altinstCopyTemplates (altinst_t *altinst);
 static void altinstSetup (altinst_t *altinst);
-static void altinstCreateDesktopLauncher (altinst_t *altinst);
+static void altinstCreateLauncher (altinst_t *altinst);
 static void altinstUpdateProcessInit (altinst_t *altinst);
 static void altinstUpdateProcess (altinst_t *altinst);
 static void altinstFinalize (altinst_t *altinst);
@@ -525,8 +525,8 @@ altinstMainLoop (void *udata)
       altinstSetup (altinst);
       break;
     }
-    case ALT_CREATE_DESKTOP_LAUNCHER: {
-      altinstCreateDesktopLauncher (altinst);
+    case ALT_CREATE_LAUNCHER: {
+      altinstCreateLauncher (altinst);
       break;
     }
     case ALT_FINALIZE: {
@@ -866,22 +866,6 @@ altinstMakeTarget (altinst_t *altinst)
     sysvarsParseVersionFileFree (versinfo);
   }
 
-  if (isMacOS ()) {
-    char    buff [MAXPATHLEN];
-
-    snprintf (buff, sizeof (buff), "%s/../Info.plist", altinst->maindir);
-    snprintf (tbuff, sizeof (tbuff), "%s/../Info.plist", altinst->rundir);
-    filemanipCopy (buff, tbuff);
-    snprintf (buff, sizeof (buff), "%s/../Pkginfo", altinst->maindir);
-    snprintf (tbuff, sizeof (tbuff), "%s/../Pkginfo", altinst->rundir);
-    filemanipCopy (buff, tbuff);
-    snprintf (buff, sizeof (buff), "%s/../Resources", altinst->rundir);
-    diropMakeDir (buff);
-    snprintf (buff, sizeof (buff), "%s/../Resources/%s.icns", altinst->maindir, BDJ4_NAME);
-    snprintf (tbuff, sizeof (tbuff), "%s/../Resources/%s.icns", altinst->rundir, BDJ4_NAME);
-    filemanipCopy (buff, tbuff);
-  }
-
   altinst->instState = ALT_CHDIR;
 }
 
@@ -1043,24 +1027,13 @@ altinstSetup (altinst_t *altinst)
 
   /* create the symlink for the bdj4 executable */
   /* this is unique to an alternate installation */
-  if (isWindows ()) {
-    /* handled by the desktop shortcut */
-  } else {
+  /* Window and MacOS are handled by the create-launcher script */
+  if (isLinux ()) {
 #if _lib_symlink
     pathbldMakePath (buff, sizeof (buff),
         altinst->launchname, "", PATHBLD_MP_DIR_EXEC);
     snprintf (tbuff, sizeof (tbuff), "bin/%s", altinst->launchname);
     (void) ! symlink (buff, tbuff);
-#endif
-  }
-
-  if (isMacOS ()) {
-    /* on macos, the startup program must be a gui program, otherwise */
-    /* the dock icon is not correct */
-    /* this must exist and match the name of the app */
-#if _lib_symlink
-    snprintf (tbuff, sizeof (tbuff), "bin/%s", altinst->launchname);
-    (void) ! symlink (tbuff, "BDJ4");
 #endif
   }
 
@@ -1071,11 +1044,11 @@ altinstSetup (altinst_t *altinst)
       VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (buff);
 
-  altinst->instState = ALT_CREATE_DESKTOP_LAUNCHER;
+  altinst->instState = ALT_CREATE_LAUNCHER;
 }
 
 static void
-altinstCreateDesktopLauncher (altinst_t *altinst)
+altinstCreateLauncher (altinst_t *altinst)
 {
   const char  *name;
 
@@ -1083,26 +1056,7 @@ altinstCreateDesktopLauncher (altinst_t *altinst)
   /* the main bdj4 executable can be started directly */
   /* and the data-top-dir and profile number can be */
   /* supplied as arguments */
-
-  /* macos has no desktop launcher capabilities */
-  /* create a symlink to the app on the desktop */
-  if (isMacOS ()) {
-    char buff [MAXPATHLEN];
-
-#if _lib_symlink
-    if (osChangeDir (altinst->rundir)) {
-      altinstFailWorkingDir (altinst, altinst->rundir, "cdl");
-      return;
-    }
-
-    snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
-        altinst->home, altinst->name, MACOS_APP_EXT);
-    (void) ! symlink (altinst->target, buff);
-#endif
-
-    altinst->instState = ALT_FINALIZE;
-    return;
-  }
+  /* on macos, a .app is created */
 
   if (osChangeDir (altinst->maindir)) {
     altinstFailWorkingDir (altinst, altinst->maindir, "cdl");

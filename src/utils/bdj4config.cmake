@@ -91,8 +91,8 @@ if (WIN32 AND NOT LIBVLC_FOUND)
 endif()
 
 #### MPV
-
-pkg_check_modules (LIBMPV mpv)
+# 2024-2 The MPV interface has issues, and will not be supported at this time.
+# pkg_check_modules (LIBMPV mpv)
 
 #### tag parsing modules
 

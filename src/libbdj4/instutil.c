@@ -90,11 +90,22 @@ instutilCreateLauncher (const char *name, const char *maindir,
     osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "./install/linux-mk-desktop-launcher.sh '%s' '%s' '%s' %d",
-        name, maindir, target, profilenum);
-    (void) ! system (buff);
+  if (isLinux () || isMacOS ()) {
+    if (isLinux ()) {
+      targv [targc++] = "./install/linux-mk-desktop-launcher.sh";
+    }
+    if (isMacOS ()) {
+      pathbldMakePath (buff, sizeof (buff),
+          "install/macos-mk-app.sh", "", PATHBLD_MP_DIR_MAIN);
+      targv [targc++] = buff;
+    }
+    targv [targc++] = name;
+    targv [targc++] = maindir;
+    targv [targc++] = target;
+    snprintf (tbuff, sizeof (tbuff), "%d", profilenum);
+    targv [targc++] = tbuff;
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 }
 

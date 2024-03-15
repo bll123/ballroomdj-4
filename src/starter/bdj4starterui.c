@@ -631,12 +631,10 @@ starterBuildUI (startui_t  *starter)
   /* when the starter is first started, disable delete-profile */
   uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
 
-  if (! isMacOS ()) {
-    /* CONTEXT: starterui: menu item: create shortcut for profile */
-    menuitem = uiMenuCreateItem (menu, _("Create Shortcut for Profile"),
-        starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
-    uiwcontFree (menuitem);
-  }
+  /* CONTEXT: starterui: menu item: create shortcut for profile */
+  menuitem = uiMenuCreateItem (menu, _("Create Shortcut for Profile"),
+      starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
+  uiwcontFree (menuitem);
 
   /* CONTEXT: starterui: menu item: install in alternate folder */
   snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
@@ -1808,7 +1806,7 @@ starterCreateProfileShortcut (void *udata)
 
   pname = bdjoptGetProfileName ();
   instutilCreateLauncher (pname, sysvarsGetStr (SV_BDJ4_DIR_MAIN),
-      sysvarsGetStr (SV_BDJ4_DIR_MAIN), starter->currprofile);
+      sysvarsGetStr (SV_BDJ4_DIR_DATATOP), starter->currprofile);
   mdfree (pname);
   return UICB_CONT;
 }

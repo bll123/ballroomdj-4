@@ -11,10 +11,6 @@ enum {
   INST_ATI_MAX,
 };
 
-#define MACOS_APP_EXT       ".app"
-#define MACOS_APP_PREFIX    "/Contents/MacOS"
-#define MACOS_DIR_LIBDATA   "/Library/Application Support"
-
 #define WINUSERNAME       "%USERNAME%"
 
 #define INST_HL_COLOR "#b16400"

@@ -101,4 +101,9 @@ enum {
 /* installation */
 #define BDJ4_INST_DIR  "bdj4-install"
 
+/* macos stuff */
+#define MACOS_APP_EXT       ".app"
+#define MACOS_APP_PREFIX    "/Contents/MacOS"
+#define MACOS_DIR_LIBDATA   "/Library/Application Support"
+
 #endif /* INC_BDJ4_H */

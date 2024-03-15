@@ -427,7 +427,6 @@ tmutilStrToMS (const char *str)
   double  dval = 0.0;
   double  tval = 0.0;
   long    value;
-  int     count;
   int     len;
   double  mult = 1.0;
   double  multb = 1000.0;
@@ -441,7 +440,6 @@ tmutilStrToMS (const char *str)
   }
   p = strtok_r (tstr, ":.,", &tokstr);
   np = strtok_r (NULL, ":.,", &tokstr);
-  count = 0;
   while (p != NULL) {
     tval = atof (p);
     if (havedecimal && np == NULL) {
@@ -458,7 +456,6 @@ tmutilStrToMS (const char *str)
     mult = 60.0;
     p = np;
     np = strtok_r (NULL, ":.,", &tokstr);
-    ++count;
   }
   value = (long) dval;
 

@@ -72,7 +72,7 @@ typedef enum {
   INST_CONVERT_START,
   INST_CONVERT,
   INST_CONVERT_FINISH,
-  INST_CREATE_DESKTOP_LAUNCHER,
+  INST_CREATE_LAUNCHER,
   INST_WIN_STARTUP,
   INST_INST_CLEAN_TMP,
   INST_SAVE_LOCALE,
@@ -216,7 +216,7 @@ static void installerCopyTemplates (installer_t *installer);
 static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
-static void installerCreateDesktopLauncher (installer_t *installer);
+static void installerCreateLauncher (installer_t *installer);
 static void installerWinStartup (installer_t *installer);
 static void installerInstCleanTmp (installer_t *installer);
 static void installerSaveLocale (installer_t *installer);
@@ -916,8 +916,8 @@ installerMainLoop (void *udata)
       installerConvertFinish (installer);
       break;
     }
-    case INST_CREATE_DESKTOP_LAUNCHER: {
-      installerCreateDesktopLauncher (installer);
+    case INST_CREATE_LAUNCHER: {
+      installerCreateLauncher (installer);
       break;
     }
     case INST_WIN_STARTUP: {
@@ -1716,12 +1716,12 @@ installerConvertStart (installer_t *installer)
 
 
   if (! installer->convprocess) {
-    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
+    installer->instState = INST_CREATE_LAUNCHER;
     return;
   }
 
   if (*installer->bdj3loc == '\0') {
-    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
+    installer->instState = INST_CREATE_LAUNCHER;
     return;
   }
 
@@ -1774,7 +1774,7 @@ installerConvertStart (installer_t *installer)
   }
 
   if (! ok) {
-    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
+    installer->instState = INST_CREATE_LAUNCHER;
     return;
   }
 
@@ -1853,7 +1853,7 @@ installerConvertStart (installer_t *installer)
     installerDisplayText (installer, INST_DISP_STATUS, tbuff, false);
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_STATUS, _("Skipping conversion."), false);
-    installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
+    installer->instState = INST_CREATE_LAUNCHER;
     return;
   }
 
@@ -1899,14 +1899,14 @@ installerConvertFinish (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
-  installer->instState = INST_CREATE_DESKTOP_LAUNCHER;
+  installer->instState = INST_CREATE_LAUNCHER;
 }
 
 static void
-installerCreateDesktopLauncher (installer_t *installer)
+installerCreateLauncher (installer_t *installer)
 {
   if (osChangeDir (installer->rundir)) {
-    installerFailWorkingDir (installer, installer->rundir, "CreateDesktopLauncher");
+    installerFailWorkingDir (installer, installer->rundir, "CreateLauncher");
     return;
   }
 
@@ -1914,7 +1914,11 @@ installerCreateDesktopLauncher (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
 
   /* handles linux and windows desktop shortcut */
-  instutilCreateLauncher (BDJ4_NAME, installer->rundir, installer->rundir, 0);
+  /* for macos, the app is already there, */
+  /* so avoid running the creation script */
+  if (! isMacOS ()) {
+    instutilCreateLauncher (BDJ4_NAME, installer->rundir, installer->rundir, 0);
+  }
 
   if (isMacOS ()) {
 #if _lib_symlink
@@ -1925,9 +1929,16 @@ installerCreateDesktopLauncher (installer_t *installer)
     /* this must exist and match the name of the app */
     (void) ! symlink ("bin/bdj4g", "BDJ4");
 
-    /* desktop shortcut */
+    /* remove any old name.app on macos */
     snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
         installer->home, BDJ4_NAME, MACOS_APP_EXT);
+    if (osIsLink (buff)) {
+      fileopDelete (buff);
+    }
+
+    /* desktop shortcut pointing to .app */
+    snprintf (buff, sizeof (buff), "%s/Desktop/%s",
+        installer->home, BDJ4_NAME);
     (void) ! symlink (installer->target, buff);
 #endif
   }

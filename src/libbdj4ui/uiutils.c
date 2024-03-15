@@ -42,6 +42,9 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   } else {
     txt = RHB FB;
   }
+  if (isMacOS ()) {
+    txt = FB;
+  }
   label = uiCreateLabel (txt);
   uiWidgetSetMarginStart (label, 3);
   uiutilsSetProfileColor (label);
