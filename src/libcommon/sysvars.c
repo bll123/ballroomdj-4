@@ -187,22 +187,11 @@ sysvarsInit (const char *argv0)
 #if _lib_GetNativeSystemInfo
   SYSTEM_INFO winsysinfo;
 #endif
-FILE *logfh;
 
   enable_core_dump ();
 
-#ifdef __APPLE__
-logfh = fopen ("/Volumes/Users/bll/bdj4/src/outsv.txt", "w");
-#endif
-#if __linux__
-logfh = fopen ("/home/bll/s/bdj4/src/outsv.txt", "w");
-#endif
-#ifdef __WINNT__
-logfh = fopen ("/msys2/home/bll/bdj4/src/outsv.txt", "w");
-#endif
   osGetCurrentDir (tcwd, sizeof (tcwd));
   pathNormalizePath (tcwd, SV_MAX_SZ);
-fprintf (logfh, "sv: cwd: %s\n", tcwd);
 
   strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
@@ -335,7 +324,6 @@ fprintf (logfh, "sv: cwd: %s\n", tcwd);
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
-fprintf (logfh, "sv: argv0: %s\n", argv0);
 
   pathNormalizePath (buff, SV_MAX_SZ);
   /* handle relative pathnames */
@@ -350,12 +338,10 @@ fprintf (logfh, "sv: argv0: %s\n", argv0);
   strlcpy (altpath, tbuff, sizeof (altpath));
   pathStripPath (altpath, sizeof (altpath));
   pathNormalizePath (altpath, sizeof (altpath));
-fprintf (logfh, "sv: altpath: %s\n", altpath);
 
   /* this gives us the real path to the executable */
   pathRealPath (buff, tbuff, sizeof (buff));
   pathNormalizePath (buff, sizeof (buff));
-fprintf (logfh, "sv: exec-realpath: %s\n", buff);
 
   if (strcmp (altpath, buff) != 0) {
     alternatepath = true;
@@ -386,7 +372,6 @@ fprintf (logfh, "sv: exec-realpath: %s\n", buff);
 
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
-fprintf (logfh, "sv: rel: %s\n", tcwd);
   } else {
     bool found = false;
 
@@ -411,12 +396,10 @@ fprintf (logfh, "sv: rel: %s\n", tcwd);
             if (p != NULL) {
               *p = '\0';
             }
-fprintf (logfh, "sv: macos: tp:%s\n", tp);
 
             strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
             strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
             strlcat (buff, tp, SV_MAX_SZ);
-fprintf (logfh, "sv: macos: chk:%s\n", buff);
             if (fileopIsDirectory (buff)) {
               strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
               found = true;
@@ -441,7 +424,6 @@ fprintf (logfh, "sv: macos: chk:%s\n", buff);
             altpath, READONLY_FN, BDJ4_CONFIG_EXT);
         tlen = strlen (altpath);
         strlcat (altpath, "/data", sizeof (altpath));
-fprintf (logfh, "sv: !macos: chk:%s\n", altpath);
         if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
           /* remove the /data suffix */
           altpath [tlen] = '\0';
@@ -467,15 +449,12 @@ fprintf (logfh, "sv: !macos: chk:%s\n", altpath);
           strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
           strlcat (buff, BDJ4_NAME, SV_MAX_SZ);
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
-fprintf (logfh, "sv: !found: macos: chk:%s\n", buff);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-fprintf (logfh, "sv: !found: !macos: chk:%s\n", sysvars [SV_BDJ4_DIR_DATATOP]);
         }
       }
     }
   }
-fclose (logfh);
 
   /* on mac os, the data directory is separated */
   /* full path is also needed so that symlinked bdj4 directories will work */
