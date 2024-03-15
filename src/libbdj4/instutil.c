@@ -49,7 +49,7 @@ static void instutilWebResponseCallback (void *userdata, const char *resp, size_
 
 void
 instutilCreateLauncher (const char *name, const char *maindir,
-    const char *target, int profilenum)
+    const char *workdir, int profilenum)
 {
   char        path [MAXPATHLEN];
   char        buff [MAXPATHLEN];
@@ -71,13 +71,13 @@ instutilCreateLauncher (const char *name, const char *maindir,
     pathDisplayPath (path, sizeof (path));
     targv [targc++] = path;
 
-    /* target executable */
-    snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", target);
+    /* executable */
+    snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", maindir);
     pathDisplayPath (buff, sizeof (buff));
     targv [targc++] = buff;
 
     /* working dir */
-    strlcpy (tbuff, target, sizeof (tbuff));
+    strlcpy (tbuff, workdir, sizeof (tbuff));
     pathDisplayPath (tbuff, sizeof (tbuff));
     targv [targc++] = tbuff;
 
@@ -101,7 +101,7 @@ instutilCreateLauncher (const char *name, const char *maindir,
     }
     targv [targc++] = name;
     targv [targc++] = maindir;
-    targv [targc++] = target;
+    targv [targc++] = workdir;
     snprintf (tbuff, sizeof (tbuff), "%d", profilenum);
     targv [targc++] = tbuff;
     targv [targc++] = NULL;

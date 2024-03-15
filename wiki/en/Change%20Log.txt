@@ -11,13 +11,14 @@
 
 * Bug Fixes:
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
+    * Set Up Alternate Folder: Bugs fixed.
 * Changes:
     * Filter: Sort By: Added BPM as a sort option.
     * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
     * Configuration: General: Remove audio tag interface selection (not needed).
 * New Features:
     * MacOS: 'Create Shortcut for Profile' is now working.
-    * PENDING MacOS: 'Set Up Alternate Folder' is now working.
+    * MacOS: 'Set Up Alternate Folder' is now working.
 
 -->
 

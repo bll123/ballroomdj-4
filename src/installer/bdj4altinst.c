@@ -45,6 +45,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiclass.h"
+#include "uiutils.h"
 #include "validate.h"
 
 /* setup states */
@@ -165,7 +166,6 @@ main (int argc, char *argv[])
 {
   altinst_t     altinst;
   char          buff [MAXPATHLEN];
-  char          *uifont;
   FILE          *fh;
   uint32_t      flags;
   const char    *tmp;
@@ -269,14 +269,9 @@ main (int argc, char *argv[])
   if (altinst.guienabled) {
     uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
 
-    uifont = sysvarsGetStr (SV_FONT_DEFAULT);
-    if (uifont == NULL || ! *uifont) {
-      uifont = "Arial Regular 11";
-      if (isMacOS ()) {
-        uifont = "Arial Regular 17";
-      }
-    }
-    uiSetUICSS (uifont, INST_HL_COLOR, NULL);
+    uiSetUICSS (uiutilsGetCurrentFont (),
+        bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+        bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
     altinstBuildUI (&altinst);
     osuiFinalize ();
@@ -318,6 +313,7 @@ altinstBuildUI (altinst_t *altinst)
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
+  uiutilsaccent_t accent;
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);
@@ -337,17 +333,19 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandVert (vbox);
   uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
 
-  /* begin line : status message */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiutilsAddProfileColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
-  altinst->wcont [ALT_W_ERROR_MSG] = uiCreateLabel ("");
-  uiWidgetAlignHorizEnd (altinst->wcont [ALT_W_ERROR_MSG]);
-  uiBoxPackEndExpand (hbox, altinst->wcont [ALT_W_ERROR_MSG]);
-  uiWidgetSetClass (altinst->wcont [ALT_W_ERROR_MSG], ERROR_CLASS);
+  /* begin line : status message */
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_ERROR_MSG] = uiwidgetp;
 
   /* begin line : instructions */
+
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: alternate installation: ask for installation folder */
       _("Enter the destination folder where BDJ4 will be installed."));
@@ -1026,7 +1024,7 @@ altinstSetup (altinst_t *altinst)
   diropMakeDir ("bin");
 
   /* create the symlink for the bdj4 executable */
-  /* this is unique to an alternate installation */
+  /* this is unique to an Linux alternate installation */
   /* Window and MacOS are handled by the create-launcher script */
   if (isLinux ()) {
 #if _lib_symlink
