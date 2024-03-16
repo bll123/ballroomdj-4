@@ -19,6 +19,8 @@
 #include "mdebug.h"
 #include "pathinfo.h"
 
+#define PATHINFO_DEBUG 0
+
 pathinfo_t *
 pathInfo (const char *path)
 {
@@ -48,10 +50,13 @@ pathInfo (const char *path)
   for (ssize_t i = last; i >= 0; --i) {
     if (path [i] == '/' || path [i] == '\\') {
       pos = i + 1;
-      if (pos >= last) {
+      if (pos > last) {
         /* no extension, continue back to find the basename */
         chkforext = false;
         trailingslash = true;
+#if PATHINFO_DEBUG
+        fprintf (stderr, "no extension, trailing slash\n");
+#endif
         continue;
       }
       break;
@@ -83,7 +88,7 @@ pathInfo (const char *path)
   if (pos <= 1) {
     ++pi->dlen;
   }
-#if 0  // debugging
+#if PATHINFO_DEBUG
  fprintf (stderr, "%s : last:%" PRId64 " pos:%" PRId64 "\n", path, (int64_t) last, (int64_t) pos);
  fprintf (stderr, "  dlen:%" PRId64 "\n", (int64_t) pi->dlen);
  fprintf (stderr, "  dir:%.*s\n", (int) pi->dlen, pi->dirname);

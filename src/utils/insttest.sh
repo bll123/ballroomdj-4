@@ -84,11 +84,13 @@ case $systype in
 esac
 
 TARGETTOPDIR=${cwd}/tmp/BDJ4
-TARGETALTDIR=${cwd}/tmp/BDJ4-alt
+TARGETALTDIR=${cwd}/tmp/BDJ4alt
 TARGETDIR=${TARGETTOPDIR}${macdir}
 DATATOPDIR=${TARGETDIR}
+DATATOPALTDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
   DATATOPDIR="$HOME/Library/Application Support/BDJ4"
+  DATATOPALTDIR="$HOME/Library/Application Support/BDJ4alt"
 fi
 IMGDIR="${DATATOPDIR}/img"
 DATADIR="${DATATOPDIR}/data"
@@ -240,6 +242,8 @@ function checkInstallation {
   datafiles=$6
   # target is an optional parameter, defaults to TARGETDIR
   target=${7:-${TARGETDIR}}
+  # datatop is an optional parameter, defaults to DATATOPDIR
+  datatop=${8:-${DATATOPDIR}}
 
   chk=0
   res=0
@@ -477,28 +481,28 @@ function checkInstallation {
     fi
 
     res=$(($res+1))  # tmp dir
-    if [[ $fin == T && -d "${DATATOPDIR}/tmp" ]]; then
+    if [[ $fin == T && -d "${datatop}/tmp" ]]; then
       chk=$(($chk+1))
     else
       echo "  no tmp directory"
     fi
 
     res=$(($res+1))  # img dir
-    if [[ $fin == T && -d "${DATATOPDIR}/img" ]]; then
+    if [[ $fin == T && -d "${datatop}/img" ]]; then
       chk=$(($chk+1))
     else
       echo "  no img directory"
     fi
 
     res=$(($res+1))  # img/profile00 dir
-    if [[ $fin == T && -d "${DATATOPDIR}/img/profile00" ]]; then
+    if [[ $fin == T && -d "${datatop}/img/profile00" ]]; then
       chk=$(($chk+1))
     else
       echo "  no img/profile00 directory"
     fi
 
     res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/img/profile00/button_add.svg" ]]; then
+    if [[ $fin == T && -f "${datatop}/img/profile00/button_add.svg" ]]; then
       chk=$(($chk+1))
     else
       echo "  no button_add.svg file"
@@ -914,8 +918,8 @@ function checkInstallation {
     fi
   fi
 
-  if [[ -d "${DATATOPDIR}" ]]; then
-    c=$(ls -1 "${DATATOPDIR}/asan*" 2>/dev/null | wc -l)
+  if [[ -d "${datatop}" ]]; then
+    c=$(ls -1 "${datatop}/asan*" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "ASAN files found"
       exit 1
@@ -924,20 +928,32 @@ function checkInstallation {
 
   c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
   if [[ $c -ne 0 ]]; then
-    echo "core file found"
+    echo "core file found (tgt)"
+    exit 1
+  fi
+  c=$(ls -1 "${datatop}/core" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "core file found (data)"
     exit 1
   fi
   if [[ $TARGETALTDIR != $target ]]; then
     c=$(ls -1 "${TARGETALTDIR}/core" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
-      echo "core file found (b)"
+      echo "core file found (tgt-alt)"
+      exit 1
+    fi
+  fi
+  if [[ $DATATOPALTDIR != $datatop ]]; then
+    c=$(ls -1 "${DATATOPALTDIR}/core" 2>/dev/null | wc -l)
+    if [[ $c -ne 0 ]]; then
+      echo "core file found (data-alt)"
       exit 1
     fi
   fi
   if [[ $TARGETTOPDIR != $target ]]; then
     c=$(ls -1 "${TARGETTOPDIR}/core" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
-      echo "core file found (c)"
+      echo "core file found (tgt-top)"
       exit 1
     fi
   fi
@@ -966,6 +982,7 @@ function cleanInstTest {
   test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
   test -d "$TARGETALTDIR" && rm -rf "$TARGETALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
+  test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
 }
 
 function waitForInstallDirRemoval {
@@ -1069,38 +1086,38 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
 fi
 
 if [[ $readonly == F ]]; then
-  if [[ $tag == linux || $platform == windows ]]; then
-    # alternate installation (linux, windows)
-    tname=alt-install
-    echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
-        --verbose --unattended ${quiet} \
-        --targetdir "$TARGETALTDIR" \
-        )
-    rc=$?
-    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
+  # alternate installation
+  tname=alt-install
+  echo "== $section $tname"
+  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+      --verbose --unattended ${quiet} \
+      --targetdir "$TARGETALTDIR" \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}" "${DATATOPALTDIR}"
 
-    # alternate installation (linux, windows)
-    tname=alt-install-reinstall
-    echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
-        --verbose --unattended ${quiet} \
-        --targetdir "$TARGETALTDIR" \
-        --reinstall \
-        )
-    rc=$?
-    checkInstallation $section $tname "$out" $rc r o "${TARGETALTDIR}"
+exit 1
 
-    # alternate installation (linux, windows)
-    tname=alt-install-update
-    echo "== $section $tname"
-    out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
-        --verbose --unattended ${quiet} \
-        --targetdir "$TARGETALTDIR" \
-        )
-    rc=$?
-    checkInstallation $section $tname "$out" $rc u o "${TARGETALTDIR}"
-  fi
+  # alternate installation
+  tname=alt-install-reinstall
+  echo "== $section $tname"
+  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+      --verbose --unattended ${quiet} \
+      --targetdir "$TARGETALTDIR" \
+      --reinstall \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc r o "${TARGETALTDIR}" "${DATATOPALTDIR}"
+
+  # alternate installation (linux, windows)
+  tname=alt-install-update
+  echo "== $section $tname"
+  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+      --verbose --unattended ${quiet} \
+      --targetdir "$TARGETALTDIR" \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc u o "${TARGETALTDIR}" "${DATATOPALTDIR}"
 fi
 
 if [[ T == T ]]; then

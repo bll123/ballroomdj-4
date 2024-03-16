@@ -10,15 +10,17 @@
 **4.8.0 2024-3---**
 
 * Bug Fixes:
+    * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
-    * Set Up Alternate Folder: Bugs fixed.
+    * Alternate Installer: Fixed.
 * Changes:
+    * Alternate Installer: Re-arranged user interface.
     * Filter: Sort By: Added BPM as a sort option.
     * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
     * Configuration: General: Remove audio tag interface selection (not needed).
 * New Features:
-    * MacOS: 'Create Shortcut for Profile' is now working.
-    * MacOS: 'Set Up Alternate Folder' is now working.
+    * MacOS: Create Shortcut for Profile: Implemented.
+    * MacOS: Alternate Installer: Implemented.
 
 -->
 

@@ -58,6 +58,9 @@ static ftest_t tests [] = {
   /* relative paths */
   { "Tango/stuff.mp3", 5, 9, 5, 4 },
   { "xyzzy/Tango/stuff.mp3", 11, 9, 5, 4 },
+//   1234567890123456789012345678901234567890
+  { "/home/bll/s/bdj4/tmp/E", 20, 1, 1, 0 },  /* bug 2024-3-16 */
+  { "/home/bll/s/bdj4/tmp/EE", 20, 2, 2, 0 },
 };
 enum {
   TCOUNT = (sizeof(tests)/sizeof (ftest_t))
@@ -79,17 +82,17 @@ START_TEST(pathinfo_chk)
     // fprintf (stderr, "%d f: %d %.*s\n", i, (int) pi->blen, (int) pi->blen, pi->basename);
     // fprintf (stderr, "%d e: %d %.*s\n", i, (int) pi->elen, (int) pi->elen, pi->extension);
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "dlen: %s: i:%d have: %d want: %d",
-        "dlen", i, (int) pi->dlen, (int) tests[i].dlen);
+        "i:%d %s dlen: %s: have: %d want: %d",
+        i, tests [i].path, "dlen", (int) pi->dlen, (int) tests[i].dlen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "flen: %s: i:%d have: %d want: %d",
-        "flen", i, (int) pi->flen, (int) tests[i].flen);
+        "i:%d %s flen: %s: have: %d want: %d",
+        i, tests [i].path, "flen", (int) pi->flen, (int) tests[i].flen);
     ck_assert_msg (pi->blen == tests[i].blen,
-        "blen: %s: i:%d have: %d want: %d",
-        "blen", i, (int) pi->blen, (int) tests[i].blen);
+        "i:%d %s blen: %s: have: %d want: %d",
+        i, tests [i].path, "blen", (int) pi->blen, (int) tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "elen: %s: i:%d have: %d want: %d",
-        "elen", i, (int) pi->elen, (int) tests[i].elen);
+        "i:%d %s elen: %s: have: %d want: %d",
+        i, tests [i].path, "elen", (int) pi->elen, (int) tests[i].elen);
 
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tbuff, sizeof (tbuff));

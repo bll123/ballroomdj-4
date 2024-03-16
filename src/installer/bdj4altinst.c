@@ -99,6 +99,7 @@ typedef struct {
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
   char            oldversion [MAXPATHLEN];
+  char            *basedir;
   char            *target;
   char            datatopdir [MAXPATHLEN];
   char            rundir [MAXPATHLEN];      // installation dir with macospfx
@@ -160,7 +161,7 @@ static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool b
 static void altinstFailWorkingDir (altinst_t *altinst, const char *dir, const char *tag);
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
-static void altinstBuildTarget (char *buff, size_t sz, const char *nm);
+static void altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm);
 
 int
 main (int argc, char *argv[])
@@ -179,6 +180,7 @@ main (int argc, char *argv[])
 
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
+  altinst.basedir = mdstrdup ("");
   altinst.target = mdstrdup ("");
   altinst.launchname = "bdj4";
   altinst.macospfx = "";
@@ -237,7 +239,7 @@ main (int argc, char *argv[])
     /* from the command line */
     altinstSetTargetDir (&altinst, tmp);
   } else {
-    altinstBuildTarget (buff, sizeof (buff), BDJ4_NAME "alt");
+    altinstBuildTarget (&altinst, buff, sizeof (buff), BDJ4_NAME "alt");
 
     /* if the altinstdir.txt file exists, use it */
     fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
@@ -733,17 +735,12 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   altinst->name = mdstrdup (name);
   rc = UIENTRY_OK;
 fprintf (stderr, "val-name: ok %s\n", name);
-  altinstBuildTarget (tbuff, sizeof (tbuff), altinst->name);
+  altinstBuildTarget (altinst, tbuff, sizeof (tbuff), altinst->name);
 fprintf (stderr, "val-name: set-target %s\n", tbuff);
   uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
   if (isMacOS ()) {
     /* on macos, the field is disabled, so the validation must be forced */
     rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], altinst);
-  }
-
-  if (rc == UIENTRY_OK) {
-fprintf (stderr, "val-name: target ok\n");
-    altinstSetTargetDir (altinst, tbuff);
   }
 
   if (rc == UIENTRY_ERROR) {
@@ -1238,12 +1235,22 @@ altinstFailWorkingDir (altinst_t *altinst, const char *dir, const char *tag)
 static void
 altinstSetTargetDir (altinst_t *altinst, const char *fn)
 {
-  char      *tmp;
+  char        *tmp;
+  pathinfo_t  *pi;
 
   tmp = mdstrdup (fn);
   dataFree (altinst->target);
   altinst->target = tmp;
   pathNormalizePath (altinst->target, strlen (altinst->target));
+
+  pi = pathInfo (altinst->target);
+fprintf (stderr, "d: %d %.*s\n", (int) pi->dlen, (int) pi->dlen, pi->dirname);
+  dataFree (altinst->basedir);
+  altinst->basedir = mdmalloc (pi->dlen + 1);
+  strlcpy (altinst->basedir, pi->dirname, pi->dlen + 1);
+  altinst->basedir [pi->dlen] = '\0';
+fprintf (stderr, "basedir: %d %s\n", (int) pi->dlen, altinst->basedir);
+  pathInfoFree (pi);
 }
 
 static void
@@ -1274,11 +1281,11 @@ altinstLoadBdjOpt (altinst_t *altinst)
 }
 
 static void
-altinstBuildTarget (char *buff, size_t sz, const char *nm)
+altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm)
 {
-  strlcpy (buff, sysvarsGetStr (SV_HOME), sz);
+  strlcpy (buff, altinst->basedir, sz);
   if (isMacOS ()) {
-    snprintf (buff, sz, "%s/Applications", sysvarsGetStr (SV_HOME));
+    snprintf (buff, sz, "%s/Applications", altinst->basedir);
   }
   instutilAppendNameToTarget (buff, sz, nm, false);
 }
