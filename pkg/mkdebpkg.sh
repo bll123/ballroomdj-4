@@ -39,7 +39,6 @@ echo "-- $(date +%T) installing"
       --ati libatibdj4 \
       --targetdir "$BDJ4DIR" \
       --unpackdir "$UNPACKDIR" \
-      --musicdir "/home/bll/Music" \
       --readonly
 )
 

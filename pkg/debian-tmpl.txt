@@ -4,11 +4,12 @@ Architecture: amd64
 Priority: optional
 Section: contrib/multimedia
 Package-Type: deb
-Depends: libglib2.0-0, libgtk-3-0, librsvg2-2, libvlc5,
-  libpulse0, libxml2, libcurl4,
-  libogg0, libopus0, libopusfile0, libflac8,
-  python3-setuptools, python3-pip, python3-wheel
-Recommends: ffmpeg
+Depends: libvlc5,
+  libglib2.0-0, libgtk-3-0, librsvg2-2,
+  libcurl4,
+  libogg0, libopus0, libopusfile0, libvorbis0a, libvorbisfile3, libflac12,
+  libxml2, libjson-c5,
+  libchromaprint-tools, ffmpeg
 Homepage: https://ballroomdj4.sourceforge.io/
 Maintainer: Brad Lanam <brad.lanam.comp@gmail.com>
 Description: BallroomDJ 4 is a player designed for

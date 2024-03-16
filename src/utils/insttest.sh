@@ -84,8 +84,9 @@ case $systype in
 esac
 
 TARGETTOPDIR=${cwd}/tmp/BDJ4
-TARGETALTDIR=${cwd}/tmp/BDJ4alt
+TARGETTOPALTDIR=${cwd}/tmp/BDJ4alt
 TARGETDIR=${TARGETTOPDIR}${macdir}
+TARGETALTDIR=${TARGETTOPALTDIR}${macdir}
 DATATOPDIR=${TARGETDIR}
 DATATOPALTDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
@@ -936,8 +937,8 @@ function checkInstallation {
     echo "core file found (data)"
     exit 1
   fi
-  if [[ $TARGETALTDIR != $target ]]; then
-    c=$(ls -1 "${TARGETALTDIR}/core" 2>/dev/null | wc -l)
+  if [[ $TARGETTOPALTDIR != $target ]]; then
+    c=$(ls -1 "${TARGETTOPALTDIR}/core" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "core file found (tgt-alt)"
       exit 1
@@ -980,7 +981,7 @@ function checkInstallation {
 function cleanInstTest {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
   test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
-  test -d "$TARGETALTDIR" && rm -rf "$TARGETALTDIR"
+  test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
 }
@@ -1089,32 +1090,30 @@ if [[ $readonly == F ]]; then
   # alternate installation
   tname=alt-install
   echo "== $section $tname"
-  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+  out=$(cd "$TARGETDIR";./bin/bdj4 --bdj4altinst \
       --verbose --unattended ${quiet} \
-      --targetdir "$TARGETALTDIR" \
+      --targetdir "$TARGETTOPALTDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}" "${DATATOPALTDIR}"
 
-exit 1
-
   # alternate installation
   tname=alt-install-reinstall
   echo "== $section $tname"
-  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+  out=$(cd "$TARGETDIR";./bin/bdj4 --bdj4altinst \
       --verbose --unattended ${quiet} \
-      --targetdir "$TARGETALTDIR" \
+      --targetdir "$TARGETTOPALTDIR" \
       --reinstall \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc r o "${TARGETALTDIR}" "${DATATOPALTDIR}"
 
-  # alternate installation (linux, windows)
+  # alternate installation
   tname=alt-install-update
   echo "== $section $tname"
-  out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
+  out=$(cd "$TARGETDIR";./bin/bdj4 --bdj4altinst \
       --verbose --unattended ${quiet} \
-      --targetdir "$TARGETALTDIR" \
+      --targetdir "$TARGETTOPALTDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u o "${TARGETALTDIR}" "${DATATOPALTDIR}"
@@ -1179,18 +1178,16 @@ for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   fi
 
   if [[ T == T ]]; then
-    if [[ $tag == linux || $platform == windows ]]; then
-      # alternate installation (linux, windows)
-      tname=alt-install
-      echo "== $section $tname"
-      out=$(cd "$TARGETTOPDIR";./bin/bdj4 --bdj4altinst \
-          --verbose --unattended ${quiet} \
-          --targetdir "$TARGETALTDIR" \
-          --locale ${locale} \
-          )
-      rc=$?
-      checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}"
-    fi
+    # alternate installation
+    tname=alt-install
+    echo "== $section $tname"
+    out=$(cd "$TARGETDIR";./bin/bdj4 --bdj4altinst \
+        --verbose --unattended ${quiet} \
+        --targetdir "$TARGETTOPALTDIR" \
+        --locale ${locale} \
+        )
+    rc=$?
+    checkInstallation $section $tname "$out" $rc n o "${TARGETALTDIR}" "${DATATOPALTDIR}"
   fi
 done
 

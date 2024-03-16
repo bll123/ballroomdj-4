@@ -244,10 +244,19 @@ main (int argc, char *argv[])
     /* if the altinstdir.txt file exists, use it */
     fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
     if (fh != NULL) {
+      pathinfo_t    *pi;
+
       (void) ! fgets (buff, sizeof (buff), fh);
       stringTrim (buff);
       mdextfclose (fh);
       fclose (fh);
+
+      pi = pathInfo (buff);
+      dataFree (altinst.name);
+      altinst.name = mdmalloc (pi->flen + 1);
+      strlcpy (altinst.name, pi->filename, pi->flen + 1);
+      altinst.name [pi->flen] = '\0';
+      pathInfoFree (pi);
     }
     altinstSetTargetDir (&altinst, buff);
   }
@@ -590,24 +599,19 @@ altinstValidateTarget (uiwcont_t *entry, void *udata)
   int           rc = UIENTRY_ERROR;
 
   if (! altinst->guienabled) {
-fprintf (stderr, "vt: no-gui\n");
     return UIENTRY_ERROR;
   }
 
   if (! altinst->uiBuilt) {
-fprintf (stderr, "vt: no-ui\n");
     return UIENTRY_RESET;
   }
 
   dir = uiEntryGetValue (altinst->wcont [ALT_W_TARGET]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));
-fprintf (stderr, "vt: dir: %s\n", tbuff);
   if (strcmp (tbuff, altinst->target) != 0) {
-fprintf (stderr, "  call vpt\n");
     rc = altinstValidateProcessTarget (altinst, tbuff);
   } else {
-fprintf (stderr, "  ok - same\n");
     rc = UIENTRY_OK;
   }
 
@@ -622,7 +626,6 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
   bool        found = false;
   char        tbuff [MAXPATHLEN];
 
-fprintf (stderr, "vpt: %s\n", dir);
   if (fileopIsDirectory (dir)) {
     exists = true;
     found = instutilCheckForExistingInstall (dir, altinst->macospfx);
@@ -644,7 +647,6 @@ fprintf (stderr, "vpt: %s\n", dir);
     if (exists && found &&
         ! instutilIsStandardInstall (dir, altinst->macospfx)) {
       /* this will be a re-install or an update */
-fprintf (stderr, "  ok exists,found,!std\n");
       rc = UIENTRY_OK;
     }
   } else {
@@ -661,7 +663,6 @@ fprintf (stderr, "  ok exists,found,!std\n");
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tmp, sizeof (tmp));
       if (! fileopIsDirectory (tmp)) {
-fprintf (stderr, "  ng !exists,bad-dir\n");
         rc = UIENTRY_ERROR;
       }
     }
@@ -676,7 +677,6 @@ fprintf (stderr, "  ng !exists,bad-dir\n");
   }
 
   if (rc == UIENTRY_OK) {
-fprintf (stderr, "  ok\n");
     /* set the target directory information */
     altinstSetTargetDir (altinst, dir);
     if (exists) {
@@ -734,9 +734,7 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   dataFree (altinst->name);
   altinst->name = mdstrdup (name);
   rc = UIENTRY_OK;
-fprintf (stderr, "val-name: ok %s\n", name);
   altinstBuildTarget (altinst, tbuff, sizeof (tbuff), altinst->name);
-fprintf (stderr, "val-name: set-target %s\n", tbuff);
   uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
   if (isMacOS ()) {
     /* on macos, the field is disabled, so the validation must be forced */
@@ -1244,12 +1242,10 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
   pathNormalizePath (altinst->target, strlen (altinst->target));
 
   pi = pathInfo (altinst->target);
-fprintf (stderr, "d: %d %.*s\n", (int) pi->dlen, (int) pi->dlen, pi->dirname);
   dataFree (altinst->basedir);
   altinst->basedir = mdmalloc (pi->dlen + 1);
   strlcpy (altinst->basedir, pi->dirname, pi->dlen + 1);
   altinst->basedir [pi->dlen] = '\0';
-fprintf (stderr, "basedir: %d %s\n", (int) pi->dlen, altinst->basedir);
   pathInfoFree (pi);
 }
 
