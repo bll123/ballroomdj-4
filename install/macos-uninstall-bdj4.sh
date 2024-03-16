@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=4
+ver=5
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -29,9 +29,8 @@ if [[ $(uname -s) != Darwin ]]; then
 fi
 
 echo ""
-echo "This script uses the 'sudo' command to run various commands"
-echo "in a privileged state.  You will be required to enter your"
-echo "password."
+echo "This script uses the 'sudo' command to uninstall MacPorts"
+echo "You will be required to enter your password."
 echo ""
 echo "For security reasons, this script should be reviewed to"
 echo "determine that your password is not mis-used and no malware"
@@ -45,27 +44,46 @@ fi
 
 TMP=/tmp/bdj4-ct.txt
 
-sudo -v
-
 # remove any old mutagen installed for the user
 pip3 uninstall -y mutagen > /dev/null 2>&1
 
-echo "Uninstall the BallroomDJ 4 Application? "
+# config dir
+cdir=${XDG_CONFIG_HOME:-$HOME/.config}
+confdir="${cdir}/BDJ4"
+
+echo "Uninstall the BallroomDJ 4 Application and Data? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
-  # application
-  dir="$HOME/Applications/BDJ4.app"
-  test -d "$dir" && rm -rf "$dir"
   # cache dir
   cdir=${XDG_CACHE_HOME:-$HOME/.cache}
   cachedir="${cdir}/BDJ4"
   test -d "$cachedir" && rm -rf "$cachedir"
   # config dir
-  cdir=${XDG_CONFIG_HOME:-$HOME/.config}
-  confdir="${cdir}/BDJ4"
-  test -d "$confdir" && rm -rf "$confdir"
-
-  sudo -v
+  instloc="${confdirb}/instdir.txt"
+  altinstloc="${confdirb}/altinstdir.txt"
+  for fn in "$instloc" "$altinstloc"; do
+    dir=""
+    if [[ -f ${fn} ]]; then
+      dir=$(cat "$fn")
+      if [[ $dir != "" ]]; then
+        test -d "$dir" && rm -rf "$dir"
+        nm=$(basename "$dir" | sed 's,\.app,,')
+        ddir="$HOME/Library/Application Support/${nm}"
+        if [[ $nm != "" ]]; then
+          test -d "$ddir" && rm -rf "$ddir"
+        fi
+        # shortcuts on desktop
+        sfn="$HOME/Desktop/${nm}"
+        test -h "$sfn" && rm -f "$sfn"
+        sfn="$HOME/Desktop/${nm}.app"
+        test -h "$sfn" && rm -f "$sfn"
+      fi
+    fi
+    dir="$HOME/Applications/BDJ4.app"
+    test -d "${dir}" && rm -rf "${dir}"
+    ddir="$HOME/Library/Application Support/BDJ4"
+    test -d "$ddir" && rm -rf "$ddir"
+  done
 
   # installed themes
   for fn in "$HOME/.themes/macOS-Mojave-dark" \
@@ -80,36 +98,22 @@ if [[ $gr == Y ]]; then
   dir="$HOME/.themes"
   test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
 
-  sudo -v
-
-  # shortcut
-  fn="$HOME/Desktop/BDJ4.app"
-  test -h "$fn" && rm -f "$fn"
-
   # crontab
   crontab -l | sed -e '/BDJ4/ d' > $TMP
   crontab $TMP
   rm -f $TMP
 
+  test -d "$confdir" && rm -rf "$confdir"
+
   echo "-- BDJ4 application removed."
 fi
-
-sudo -v
-
-echo "Uninstall BallroomDJ 4 Data? "
-gr=$(getresponse)
-if [[ $gr == Y ]]; then
-  dir="$HOME/Library/Application Support/BDJ4"
-  test -d "$dir" && rm -rf "$dir"
-  echo "-- BDJ4 data removed."
-fi
-
-sudo -v
 
 echo "Uninstall MacPorts? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
   TMP=tmp-umacports.txt
+
+  sudo -v
 
   echo "-- getting ports list"
   sudo port list installed > $TMP

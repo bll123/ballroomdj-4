@@ -31,6 +31,11 @@ binfn=bdj4.sh
 app="${happl}/${scname}.app"
 appmain="${app}${apppfx}"
 
+# never allow the main application profile 0 to be overwritten
+if [[ ${scname} == BDJ4 && ${profile} -eq 0 ]]; then
+  exit 0
+fi
+
 test -d "${appmain}" || mkdir -p "${appmain}"
 
 cd "${app}/Contents"

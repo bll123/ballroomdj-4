@@ -6,6 +6,10 @@
 
 Supported Platforms as of 2023-3-15: Mojave, Catalina, Big&nbsp;Sur,
 Monterey, Ventura.
+<br>Supported Platforms as of 2024-3-16: Big&nbsp;Sur,
+Monterey, Ventura, Sonoma.
+<br>If you want an earlier version supported, please
+[let&nbsp;me&nbsp;know](en-Getting%20Help)
 
 ##### Updating BallroomDJ 4 : Make a Backup
 

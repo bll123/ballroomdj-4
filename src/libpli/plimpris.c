@@ -29,9 +29,7 @@ typedef struct plidata {
 void
 pliiDesc (char **ret, int max)
 {
-  int         c = 0;
-
-  c = mprisGetPlayerList (NULL, ret, max);
+  mprisGetPlayerList (NULL, ret, max);
 }
 
 plidata_t *

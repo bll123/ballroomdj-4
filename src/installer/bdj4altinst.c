@@ -160,6 +160,7 @@ static void altinstDisplayText (altinst_t *altinst, char *pfx, char *txt, bool b
 static void altinstFailWorkingDir (altinst_t *altinst, const char *dir, const char *tag);
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
+static void altinstBuildTarget (char *buff, size_t sz, const char *nm);
 
 int
 main (int argc, char *argv[])
@@ -184,7 +185,7 @@ main (int argc, char *argv[])
   strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
   altinst.home = NULL;
-  altinst.name = mdstrdup ("BDJ4-B");
+  altinst.name = mdstrdup (BDJ4_NAME "alt");
   altinst.hostname = NULL;
   altinst.bdjoptloaded = false;
   altinst.firstinstall = false;
@@ -225,28 +226,29 @@ main (int argc, char *argv[])
   if ((flags & BDJ4_ARG_QUIET) == BDJ4_ARG_QUIET) {
     altinst.quiet = true;
   }
-  tmp = bdjvarsGetStr (BDJV_INST_TARGET);
-  if (tmp != NULL) {
-    altinstSetTargetDir (&altinst, tmp);
-  }
 
-  strlcpy (buff, sysvarsGetStr (SV_HOME), sizeof (buff));
   if (isMacOS ()) {
     altinst.launchname = "bdj4g";
     altinst.macospfx = MACOS_APP_PREFIX;
-    snprintf (buff, sizeof (buff), "%s/Applications", sysvarsGetStr (SV_HOME));
-  }
-  instutilAppendNameToTarget (buff, sizeof (buff), NULL, false);
-
-  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
-  if (fh != NULL) {
-    (void) ! fgets (buff, sizeof (buff), fh);
-    stringTrim (buff);
-    mdextfclose (fh);
-    fclose (fh);
   }
 
-  altinstSetTargetDir (&altinst, buff);
+  tmp = bdjvarsGetStr (BDJV_INST_TARGET);
+  if (tmp != NULL) {
+    /* from the command line */
+    altinstSetTargetDir (&altinst, tmp);
+  } else {
+    altinstBuildTarget (buff, sizeof (buff), BDJ4_NAME "alt");
+
+    /* if the altinstdir.txt file exists, use it */
+    fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
+    if (fh != NULL) {
+      (void) ! fgets (buff, sizeof (buff), fh);
+      stringTrim (buff);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    altinstSetTargetDir (&altinst, buff);
+  }
 
   /* the altcount.txt lives in the configuration dir */
   if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
@@ -347,12 +349,31 @@ altinstBuildUI (altinst_t *altinst)
   /* begin line : instructions */
 
   uiwidgetp = uiCreateLabel (
-      /* CONTEXT: alternate installation: ask for installation folder */
-      _("Enter the destination folder where BDJ4 will be installed."));
+      /* CONTEXT: alternate installation: installation instructions */
+      _("Enter the name of the new installation."));
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  /* begin line : name */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: alternate installation: name (for shortcut) */
+  uiwidgetp = uiCreateColonLabel (_("Name"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (30, 30);
+  uiEntrySetValue (uiwidgetp, altinst->name);
+  uiBoxPackStart (hbox, uiwidgetp);
+  altinst->wcont [ALT_W_NAME] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
   /* begin line : target entry */
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -363,8 +384,9 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   altinst->wcont [ALT_W_TARGET] = uiwidgetp;
-  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET],
-      altinstValidateTarget, altinst, UIENTRY_DELAYED);
+  if (isMacOS ()) {
+    uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
+  }
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altinstTargetDirDialog, altinst, NULL);
@@ -375,10 +397,14 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
   altinst->wcont [ALT_W_BUTTON_TARGET_DIR] = uiwidgetp;
+  if (isMacOS ()) {
+    uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
+  }
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : re-install checkbox */
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -397,28 +423,8 @@ altinstBuildUI (altinst_t *altinst)
 
   uiwcontFree (hbox);
 
-  /* begin line : alternate name */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  /* begin line : button box */
 
-  uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: alternate installation: name (for shortcut) */
-      _("Name"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiEntryInit (30, 30);
-  uiEntrySetValue (uiwidgetp, altinst->name);
-  uiBoxPackStart (hbox, uiwidgetp);
-  altinst->wcont [ALT_W_NAME] = uiwidgetp;
-  uiEntrySetValidate (altinst->wcont [ALT_W_NAME],
-      altinstValidateName, altinst, UIENTRY_IMMEDIATE);
-
-  uiwcontFree (hbox);
-
-  /* begin line */
-  /* button box */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -448,6 +454,11 @@ altinstBuildUI (altinst_t *altinst)
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);
   altinst->uiBuilt = true;
+
+  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET],
+      altinstValidateTarget, altinst, UIENTRY_DELAYED);
+  uiEntrySetValidate (altinst->wcont [ALT_W_NAME],
+      altinstValidateName, altinst, UIENTRY_IMMEDIATE);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -577,19 +588,24 @@ altinstValidateTarget (uiwcont_t *entry, void *udata)
   int           rc = UIENTRY_ERROR;
 
   if (! altinst->guienabled) {
+fprintf (stderr, "vt: no-gui\n");
     return UIENTRY_ERROR;
   }
 
   if (! altinst->uiBuilt) {
+fprintf (stderr, "vt: no-ui\n");
     return UIENTRY_RESET;
   }
 
   dir = uiEntryGetValue (altinst->wcont [ALT_W_TARGET]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, sizeof (tbuff));
+fprintf (stderr, "vt: dir: %s\n", tbuff);
   if (strcmp (tbuff, altinst->target) != 0) {
+fprintf (stderr, "  call vpt\n");
     rc = altinstValidateProcessTarget (altinst, tbuff);
   } else {
+fprintf (stderr, "  ok - same\n");
     rc = UIENTRY_OK;
   }
 
@@ -604,6 +620,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
   bool        found = false;
   char        tbuff [MAXPATHLEN];
 
+fprintf (stderr, "vpt: %s\n", dir);
   if (fileopIsDirectory (dir)) {
     exists = true;
     found = instutilCheckForExistingInstall (dir, altinst->macospfx);
@@ -625,6 +642,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     if (exists && found &&
         ! instutilIsStandardInstall (dir, altinst->macospfx)) {
       /* this will be a re-install or an update */
+fprintf (stderr, "  ok exists,found,!std\n");
       rc = UIENTRY_OK;
     }
   } else {
@@ -641,6 +659,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tmp, sizeof (tmp));
       if (! fileopIsDirectory (tmp)) {
+fprintf (stderr, "  ng !exists,bad-dir\n");
         rc = UIENTRY_ERROR;
       }
     }
@@ -655,6 +674,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
   }
 
   if (rc == UIENTRY_OK) {
+fprintf (stderr, "  ok\n");
     /* set the target directory information */
     altinstSetTargetDir (altinst, dir);
     if (exists) {
@@ -679,7 +699,7 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   altinst_t     *altinst = udata;
   const char    *name;
   const char    *msg;
-  char          tbuff [200];
+  char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
 
   if (! altinst->guienabled) {
@@ -691,16 +711,44 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   }
 
   name = uiEntryGetValue (altinst->wcont [ALT_W_NAME]);
+
+  /* BDJ4 is not a valid name for macos */
+  /* for Linux, want to be able to type in BDJ4, for dpkg installation */
+  if (isMacOS () && strcmp (name, BDJ4_NAME) == 0) {
+    /* CONTEXT: alternate installer: invalid name status message */
+    uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], _("Invalid Name"));
+    return rc;
+  }
+
   msg = validate (name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (msg == NULL) {
-    uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], "");
-    dataFree (altinst->name);
-    altinst->name = mdstrdup (name);
-    rc = UIENTRY_OK;
-  } else {
+  if (msg != NULL) {
     /* CONTEXT: alternate installer: name (for shortcut) */
     snprintf (tbuff, sizeof (tbuff), msg, _("Name"));
     uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], tbuff);
+    return rc;
+  }
+
+  uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], "");
+  dataFree (altinst->name);
+  altinst->name = mdstrdup (name);
+  rc = UIENTRY_OK;
+fprintf (stderr, "val-name: ok %s\n", name);
+  altinstBuildTarget (tbuff, sizeof (tbuff), altinst->name);
+fprintf (stderr, "val-name: set-target %s\n", tbuff);
+  uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
+  if (isMacOS ()) {
+    /* on macos, the field is disabled, so the validation must be forced */
+    rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], altinst);
+  }
+
+  if (rc == UIENTRY_OK) {
+fprintf (stderr, "val-name: target ok\n");
+    altinstSetTargetDir (altinst, tbuff);
+  }
+
+  if (rc == UIENTRY_ERROR) {
+    /* duplicate msg as above */
+    uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], _("Invalid Name"));
   }
 
   return rc;
@@ -1223,4 +1271,14 @@ altinstLoadBdjOpt (altinst_t *altinst)
   if (osChangeDir (cwd)) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", cwd);
   }
+}
+
+static void
+altinstBuildTarget (char *buff, size_t sz, const char *nm)
+{
+  strlcpy (buff, sysvarsGetStr (SV_HOME), sz);
+  if (isMacOS ()) {
+    snprintf (buff, sz, "%s/Applications", sysvarsGetStr (SV_HOME));
+  }
+  instutilAppendNameToTarget (buff, sz, nm, false);
 }

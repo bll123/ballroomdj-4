@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=2
+ver=3
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -34,8 +34,8 @@ cachedir="${cdir}/BDJ4"
 cdir=${XDG_CONFIG_HOME:-$HOME/.config}
 confdira="${HOME}/.config/BDJ4"
 confdirb="${cdir}/BDJ4"
-instdir="${cdir}/BDJ4/installdir.txt"
-altinstdir="${cdir}/BDJ4/altinstdir.txt"
+instloc="${confdirb}/installdir.txt"
+altinstloc="${confdirb}/altinstdir.txt"
 appdir=$HOME/.local/share/applications
 desktop=$(xdg-user-dir DESKTOP)
 
@@ -43,20 +43,22 @@ echo "Uninstall the BallroomDJ 4 Application? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
   dir="$HOME/BDJ4"
-  for fn in $instdir $altinstdir; do
+  for fn in "$instloc" "$altinstloc"; do
     dir=""
-    if [[ -f $instdir ]]; then
-      dir=$(cat $instdir)
+    if [[ -f $fn ]]; then
+      dir=$(cat "$fn")
+      if [[ $dir != "" ]]; then
+        test -d "${dir}" && rm -rf "${dir}"
+      fi
     fi
-    if [[ $dir != "" ]]; then
-      test -d ${dir} && rm -rf ${dir}
-    fi
+    dir="$HOME/BDJ4"
+    test -d "${dir}" && rm -rf "${dir}"
   fi
-  test -d ${confdir} && rm -rf ${confdir}
-  test -d ${cachedir} && rm -rf ${cachedir}
-  test -f ${desktop}/BDJ4.desktop && rm -f ${desktop}/BDJ4.desktop
-  test -f ${desktop}/bdj4.desktop && rm -f ${desktop}/bdj4.desktop
-  test -f ${appdir}/BDJ4.desktop && rm -f ${appdir}/BDJ4.desktop
+  test -d "${confdir}" && rm -rf "${confdir}"
+  test -d "${cachedir}" && rm -rf "${cachedir}"
+  test -f "${desktop}/BDJ4.desktop" && rm -f "${desktop}/BDJ4.desktop"
+  test -f "${desktop}/bdj4.desktop" && rm -f "${desktop}/bdj4.desktop"
+  test -f "${appdir}/BDJ4.desktop" && rm -f "${appdir}/BDJ4.desktop"
   # remove any old mutagen installed for the user
   pipp=/usr/bin/pip
   if [[ -f /usr/bin/pip3 ]]; then

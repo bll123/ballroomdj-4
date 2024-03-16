@@ -2,10 +2,10 @@
 
 ## BallroomDJ 4 Features
 
-* Supported Platforms as of 2023-1-24
+* Supported Platforms as of 2023-3-16
     * Windows 10, Windows 11
-    * MacOS Catalina, Big Sur, Monterey, Ventura, Sonoma
-    * Linux
+    * MacOS Big Sur, Monterey, Ventura, Sonoma
+    * Linux (Only OpenSUSE and Debian are packaged)
 * Free and open source software.
 * Full unicode support, supports all languages.
 * No limitation on the number of audio files.

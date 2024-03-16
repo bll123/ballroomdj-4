@@ -31,7 +31,7 @@
   <key>CFBundleVersion</key>
   <string>#BDJVERSION#</string>
   <key>LSMinimumSystemVersion</key>
-  <string>10.13.0</string>
+  <string>11</string>
   <key>LSRequiresCarbon</key>
   <true/>
 </dict>

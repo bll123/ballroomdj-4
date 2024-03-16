@@ -6,8 +6,8 @@
     * debian-11 (MX Linux 21)
     * opensuse (OpenSUSE 15.5)
     * windows (Windows 10)
-    * macos intel (bll-mac MacOS Ventura)
-    * macos applesilicon (bll-mac-m1 MacOS Ventura)
+    * macos intel (bll-mac MacOS Sonoma)
+    * macos applesilicon (bll-mac-m1 MacOS Sonoma)
 * Platforms for testing only:
     * fedora (Fedora 38)
     * arch (Manjaro 23)

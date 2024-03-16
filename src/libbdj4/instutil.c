@@ -91,6 +91,12 @@ instutilCreateLauncher (const char *name, const char *maindir,
   }
 
   if (isLinux () || isMacOS ()) {
+    if (isMacOS () &&
+        strcmp (name, BDJ4_NAME) == 0 &&
+        profilenum == 0) {
+      /* can never allow the macos script to be run for the main profile-0 */
+      return;
+    }
     if (isLinux ()) {
       targv [targc++] = "./install/linux-mk-desktop-launcher.sh";
     }
