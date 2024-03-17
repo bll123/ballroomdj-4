@@ -14,6 +14,7 @@
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
+#include "bdj4.h"
 #include "mdebug.h"
 #include "osutils.h"
 
@@ -23,8 +24,8 @@ osRegistryGet (char *key, char *name)
   char    *rval = NULL;
   HKEY    hkey;
   LSTATUS rc;
-  unsigned char buff [512];
-  DWORD   len = 512;
+  unsigned char buff [MAXPATHLEN * 2];
+  DWORD   len = MAXPATHLEN * 2;
   wchar_t *wkey;
   wchar_t *wname;
 
@@ -53,7 +54,7 @@ osRegistryGet (char *key, char *name)
         &len
         );
     if (rc == ERROR_SUCCESS) {
-      rval = mdstrdup ((char *) buff);
+      rval = osFromWideChar ((wchar_t *) buff);
     }
     RegCloseKey (hkey);
     mdfree (wname);

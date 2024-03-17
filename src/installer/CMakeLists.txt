@@ -39,17 +39,12 @@ endif()
 addIOKitFramework (bdj4se)
 addIntlLibrary (bdj4se)
 
-add_library (objlocbdj3 OBJECT
-  locatebdj3.c
-)
-
-add_executable (bdj4installer bdj4installer.c)
+add_executable (bdj4installer bdj4installer.c locatebdj3.c)
 if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
   target_compile_options (bdj4installer PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4installer PRIVATE
-  objlocbdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -63,7 +58,6 @@ if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
-  objlocbdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}

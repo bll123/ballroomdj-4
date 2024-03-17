@@ -10,9 +10,10 @@
 **4.8.0 2024-3---**
 
 * Bug Fixes:
+    * Alternate Installer: Fixed.
     * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
-    * Alternate Installer: Fixed.
+    * Windows: Fix error when retrieving windows music folder path.
 * Changes:
     * Alternate Installer: Re-arranged user interface.
     * Filter: Sort By: Added BPM as a sort option.
