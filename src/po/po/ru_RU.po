@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-02-19\n"
+"PO-Revision-Date: 2024-03-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -161,12 +161,9 @@ msgstr "%s должно быть числом."
 msgid "%s must be set."
 msgstr "Необходимо установить %s."
 
-#. CONTEXT: validation: invalid time (minutes/seconds)
-#, c-format
-msgid "%s: Invalid duration."
-msgstr "%s: Недопустимая длительность."
-
 #. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
 #, c-format
 msgid "%s: Invalid time."
 msgstr "%s: Недопустимое время."
@@ -337,10 +334,6 @@ msgstr "Подобный список Аудио ID"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Выxод звука"
-
-#. CONTEXT: configuration: which audio tag interface to use
-msgid "Audio Tags"
-msgstr "Аудио теги"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -709,7 +702,6 @@ msgstr "Включить мобильный экран с дисплеем пе�
 msgid "Enable Remote Control"
 msgstr "Включить удаленное управление"
 
-#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Введите папку для сохранения BDJ4."
@@ -718,6 +710,10 @@ msgstr "Введите папку для сохранения BDJ4."
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Введите папку, где будет установлен %s."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -943,6 +939,10 @@ msgstr "Установка %s."
 msgid "Invalid Folder"
 msgstr "Недействительная папка"
 
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr ""
+
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Недействительные выборы"
@@ -1120,6 +1120,7 @@ msgid "Mute"
 msgstr "Выкл. звук"
 
 #. CONTEXT: alternate installation: name (for shortcut)
+#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Название"
 
@@ -1492,7 +1493,6 @@ msgstr "Восстановить экран с дисплеем песен"
 msgid "Recovered from crash."
 msgstr "Восстановлено после сбоя."
 
-#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-02-19\n"
+"PO-Revision-Date: 2024-03-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -161,12 +161,9 @@ msgstr "%s doit être numérique."
 msgid "%s must be set."
 msgstr "%s doit être défini."
 
-#. CONTEXT: validation: invalid time (minutes/seconds)
-#, c-format
-msgid "%s: Invalid duration."
-msgstr "%sDurée non valide."
-
 #. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
 #, c-format
 msgid "%s: Invalid time."
 msgstr "%s: Heure non valide."
@@ -337,10 +334,6 @@ msgstr "Liste de correspondance des identifiants audio"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Sortie audio "
-
-#. CONTEXT: configuration: which audio tag interface to use
-msgid "Audio Tags"
-msgstr "Tags audio"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -709,7 +702,6 @@ msgstr "Activer la marquise mobile"
 msgid "Enable Remote Control"
 msgstr "Activer la télécommande"
 
-#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Entrez le dossier de destination où BDJ4 sera installé."
@@ -718,6 +710,10 @@ msgstr "Entrez le dossier de destination où BDJ4 sera installé."
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Saisissez le dossier dans lequel %s est installé."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -943,6 +939,10 @@ msgstr "Installation de %s."
 msgid "Invalid Folder"
 msgstr "Dossier non valide"
 
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr ""
+
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Sélections non valides"
@@ -1118,6 +1118,7 @@ msgid "Mute"
 msgstr "Muet"
 
 #. CONTEXT: alternate installation: name (for shortcut)
+#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Nom"
 
@@ -1490,7 +1491,6 @@ msgstr "Récupérer le chapiteau"
 msgid "Recovered from crash."
 msgstr "Récupéré après l'accident."
 
-#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."

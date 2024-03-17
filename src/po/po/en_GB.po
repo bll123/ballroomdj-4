@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.6.0\n"
+"Project-Id-Version: ballroomdj-4 4.8.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-02-19\n"
-"PO-Revision-Date: 2024-02-19\n"
+"POT-Creation-Date: 2024-03-17\n"
+"PO-Revision-Date: 2024-03-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -155,12 +155,9 @@ msgstr ""
 msgid "%s must be set."
 msgstr ""
 
-#. CONTEXT: validation: invalid time (minutes/seconds)
-#, c-format
-msgid "%s: Invalid duration."
-msgstr ""
-
 #. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
 #, c-format
 msgid "%s: Invalid time."
 msgstr ""
@@ -330,10 +327,6 @@ msgstr ""
 
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
-msgstr ""
-
-#. CONTEXT: configuration: which audio tag interface to use
-msgid "Audio Tags"
 msgstr ""
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
@@ -703,7 +696,6 @@ msgstr ""
 msgid "Enable Remote Control"
 msgstr ""
 
-#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
@@ -711,6 +703,10 @@ msgstr ""
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
+msgstr ""
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
 msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
@@ -937,6 +933,10 @@ msgstr ""
 msgid "Invalid Folder"
 msgstr ""
 
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr ""
+
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr ""
@@ -1112,6 +1112,7 @@ msgid "Mute"
 msgstr ""
 
 #. CONTEXT: alternate installation: name (for shortcut)
+#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr ""
 
@@ -1484,7 +1485,6 @@ msgstr ""
 msgid "Recovered from crash."
 msgstr ""
 
-#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-02-19\n"
+"PO-Revision-Date: 2024-03-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -161,12 +161,9 @@ msgstr "%s muss numerisch sein."
 msgid "%s must be set."
 msgstr "%s eingestellt werden."
 
-#. CONTEXT: validation: invalid time (minutes/seconds)
-#, c-format
-msgid "%s: Invalid duration."
-msgstr "%s: Ungültige Dauer."
-
 #. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
 #, c-format
 msgid "%s: Invalid time."
 msgstr "%s: Ungültige Zeit."
@@ -337,10 +334,6 @@ msgstr "Audio-ID-Übereinstimmungsliste"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Audio-Ausgang"
-
-#. CONTEXT: configuration: which audio tag interface to use
-msgid "Audio Tags"
-msgstr "Audio-Tags"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -709,7 +702,6 @@ msgstr "Mobile Marquee aktivieren"
 msgid "Enable Remote Control"
 msgstr "Fernsteuerung einschalten"
 
-#. CONTEXT: alternate installation: ask for installation folder
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geben Sie den Zielordner an, in dem BDJ4 installiert werden soll."
@@ -718,6 +710,10 @@ msgstr "Geben Sie den Zielordner an, in dem BDJ4 installiert werden soll."
 #, c-format
 msgid "Enter the folder where %s is installed."
 msgstr "Geben Sie den Ordner an, in dem %s installiert ist."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -943,6 +939,10 @@ msgstr "Installieren von %s."
 msgid "Invalid Folder"
 msgstr "Ungültiger Ordner"
 
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr ""
+
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Ungültige Selektionen"
@@ -1119,6 +1119,7 @@ msgid "Mute"
 msgstr "Stummschalten"
 
 #. CONTEXT: alternate installation: name (for shortcut)
+#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Name"
 
@@ -1491,7 +1492,6 @@ msgstr "Marquee wiederherstellen"
 msgid "Recovered from crash."
 msgstr "Nach dem Absturz wiederhergestellt."
 
-#. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
