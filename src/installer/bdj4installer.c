@@ -1624,7 +1624,7 @@ installerMakeDataTop (installer_t *installer)
 {
   diropMakeDir (installer->datatopdir);
 
-  if (osChangeDir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "makedatatop");
     return;
   }
@@ -1673,7 +1673,7 @@ installerCopyTemplates (installer_t *installer)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  if (osChangeDir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
     return;
   }
@@ -1725,7 +1725,7 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  if (osChangeDir (installer->rundir)) {
+  if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "convertstart");
     return;
   }
@@ -1905,7 +1905,7 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateLauncher (installer_t *installer)
 {
-  if (osChangeDir (installer->rundir)) {
+  if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "CreateLauncher");
     return;
   }
@@ -1949,7 +1949,7 @@ installerCreateLauncher (installer_t *installer)
 static void
 installerWinStartup (installer_t *installer)
 {
-  if (osChangeDir (installer->rundir)) {
+  if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "winstartup");
     return;
   }
@@ -1968,7 +1968,7 @@ installerWinStartup (installer_t *installer)
 static void
 installerInstCleanTmp (installer_t *installer)
 {
-  if (osChangeDir (installer->rundir)) {
+  if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "instcleantmp");
     return;
   }
@@ -1984,7 +1984,7 @@ installerSaveLocale (installer_t *installer)
   char        tbuff [MAXPATHLEN];
   FILE        *fh;
 
-  if (osChangeDir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "savelocale");
     return;
   }
@@ -2201,7 +2201,7 @@ installerUpdateProcessInit (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
 
-  if (osChangeDir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "updprocessinit");
     return;
   }
@@ -2302,11 +2302,11 @@ installerCleanup (installer_t *installer)
   /* the clean-inst process is run. */
   /* if installing read-only, there is no data-top-dir */
   /* if the installer was exited without installing, there is no rundir */
-  if (osChangeDir (installer->rundir)) {
+  if (osChangeDir (installer->rundir) < 0) {
     char  tbuff [MAXPATHLEN];
 
     snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
-    if (osChangeDir (tbuff)) {
+    if (osChangeDir (tbuff) < 0) {
       installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
       return;
     }
@@ -2568,7 +2568,7 @@ installerLoadBdjOpt (installer_t *installer)
   }
 
   osGetCurrentDir (cwd, sizeof (cwd));
-  if (osChangeDir (installer->datatopdir)) {
+  if (osChangeDir (installer->datatopdir) < 0) {
     /* no datatopdir as yet */
     return;
   }
@@ -2576,7 +2576,7 @@ installerLoadBdjOpt (installer_t *installer)
   bdjoptInit ();
   installer->bdjoptloaded = true;
 
-  if (osChangeDir (cwd)) {
+  if (osChangeDir (cwd) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "getexistdata");
   }
 }

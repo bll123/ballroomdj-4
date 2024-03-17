@@ -379,7 +379,8 @@ instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macoson
     suffix = MACOS_APP_EXT;
   }
 
-  snprintf (fname, sizeof (fname), "%s%s", nm, suffix);
+  snprintf (fname, sizeof (fname), "%s%s%s",
+      nm, sysvarsGetStr (SV_BDJ4_DEVELOPMENT), suffix);
   rc = strncmp (pi->filename, fname, pi->flen) == 0 &&
       pi->flen == strlen (fname);
   if (! rc) {

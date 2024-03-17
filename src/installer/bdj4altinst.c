@@ -106,8 +106,8 @@ typedef struct {
   const char      *launchname;
   const char      *macospfx;
   char            *maindir;
-  char            *hostname;
-  char            *home;
+  const char      *hostname;
+  const char      *home;
   char            *name;
   /* conversion */
   uiwcont_t       *wcont [ALT_W_MAX];
@@ -237,6 +237,12 @@ main (int argc, char *argv[])
     altinst.macospfx = MACOS_APP_PREFIX;
   }
 
+  altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
+  altinst.home = sysvarsGetStr (SV_HOME);
+  altinst.hostname = sysvarsGetStr (SV_HOSTNAME);
+  dataFree (altinst.basedir);
+  altinst.basedir = mdstrdup (altinst.home);
+
   tmp = bdjvarsGetStr (BDJV_INST_TARGET);
   if (tmp != NULL) {
     /* from the command line */
@@ -261,6 +267,7 @@ main (int argc, char *argv[])
       altinst.name [pi->flen] = '\0';
       pathInfoFree (pi);
     }
+
     altinstSetTargetDir (&altinst, buff);
   }
 
@@ -274,11 +281,7 @@ main (int argc, char *argv[])
     altinst.name = mdstrdup (BDJ4_NAME);
   }
 
-  altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
-  altinst.home = sysvarsGetStr (SV_HOME);
-  altinst.hostname = sysvarsGetStr (SV_HOSTNAME);
-
-  if (osChangeDir (altinst.maindir)) {
+  if (osChangeDir (altinst.maindir) < 0) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst.maindir);
   }
 
@@ -850,10 +853,6 @@ altinstSetPaths (altinst_t *altinst)
   }
 
   if (altinst->targetexists) {
-    if (osChangeDir (altinst->datatopdir)) {
-      altinstFailWorkingDir (altinst, altinst->datatopdir, "cd");
-      return;
-    }
     altinstLoadBdjOpt (altinst);
   }
 }
@@ -920,7 +919,7 @@ altinstMakeTarget (altinst_t *altinst)
 static void
 altinstChangeDir (altinst_t *altinst)
 {
-  if (osChangeDir (altinst->datatopdir)) {
+  if (osChangeDir (altinst->datatopdir) < 0) {
     altinstFailWorkingDir (altinst, altinst->datatopdir, "cd");
     return;
   }
@@ -960,7 +959,7 @@ altinstCopyTemplates (altinst_t *altinst)
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Copying template files."), false);
 
-  if (osChangeDir (altinst->datatopdir)) {
+  if (osChangeDir (altinst->datatopdir) < 0) {
     altinstFailWorkingDir (altinst, altinst->datatopdir, "ct");
     return;
   }
@@ -1066,7 +1065,7 @@ altinstSetup (altinst_t *altinst)
 
   /* now switch back to the run-dir */
 
-  if (osChangeDir (altinst->rundir)) {
+  if (osChangeDir (altinst->rundir) < 0) {
     altinstFailWorkingDir (altinst, altinst->rundir, "setup");
     return;
   }
@@ -1106,7 +1105,7 @@ altinstCreateLauncher (altinst_t *altinst)
   /* supplied as arguments */
   /* on macos, a .app is created */
 
-  if (osChangeDir (altinst->maindir)) {
+  if (osChangeDir (altinst->maindir) < 0) {
     altinstFailWorkingDir (altinst, altinst->maindir, "cdl");
     return;
   }
@@ -1126,6 +1125,24 @@ altinstCreateLauncher (altinst_t *altinst)
 static void
 altinstFinalize (altinst_t *altinst)
 {
+  if (osChangeDir (altinst->datatopdir) < 0) {
+    altinstFailWorkingDir (altinst, altinst->datatopdir, "fin");
+    return;
+  }
+
+  if (altinst->newinstall) {
+    if (! altinst->bdjoptloaded) {
+      altinstLoadBdjOpt (altinst);
+    }
+    if (altinst->bdjoptloaded) {
+      char  tbuff [MAXPATHLEN];
+
+      instutilGetMusicDir (tbuff, sizeof (tbuff));
+      bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+      bdjoptSave ();
+    }
+  }
+
   if (altinst->verbose) {
     fprintf (stdout, "finish OK\n");
     fprintf (stdout, "bdj3-version x\n");
@@ -1151,8 +1168,8 @@ altinstUpdateProcessInit (altinst_t *altinst)
 {
   char  buff [MAXPATHLEN];
 
-  if (osChangeDir (altinst->rundir)) {
-    altinstFailWorkingDir (altinst, altinst->rundir, "upi");
+  if (osChangeDir (altinst->datatopdir) < 0) {
+    altinstFailWorkingDir (altinst, altinst->datatopdir, "upi");
     return;
   }
 
@@ -1266,19 +1283,15 @@ altinstLoadBdjOpt (altinst_t *altinst)
     altinst->bdjoptloaded = false;
   }
 
-  if (altinst->newinstall) {
-    return;
-  }
-
   osGetCurrentDir (cwd, sizeof (cwd));
-  if (osChangeDir (altinst->datatopdir)) {
+  if (osChangeDir (altinst->datatopdir) < 0) {
     return;
   }
 
   bdjoptInit ();
   altinst->bdjoptloaded = true;
 
-  if (osChangeDir (cwd)) {
+  if (osChangeDir (cwd) < 0) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", cwd);
   }
 }
