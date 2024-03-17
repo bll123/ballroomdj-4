@@ -36,8 +36,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   char                tbuff [MAXPATHLEN];
   char                buff [MAXPATHLEN];
   int                 idx;
-  int                 val;
-  int                 inherit = FALSE;
+  DWORD               val;
+  BOOL                inherit = FALSE;
   wchar_t             *wbuff = NULL;
   wchar_t             *woutfname = NULL;
   HANDLE              outhandle = INVALID_HANDLE_VALUE;
@@ -152,7 +152,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   char                tbuff [MAXPATHLEN];
   char                buff [MAXPATHLEN];
   int                 idx;
-  int                 val;
+  DWORD               val;
   wchar_t             *wbuff;
   HANDLE              handleStdoutRead = INVALID_HANDLE_VALUE;
   HANDLE              handleStdoutWrite = INVALID_HANDLE_VALUE;

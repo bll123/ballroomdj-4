@@ -285,7 +285,7 @@ static void     starterLinkHandler (void *udata, int cbidx);
 static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
-static bool     starterSetUpAlternate (void *udata);
+static bool     starterStartAltInst (void *udata);
 static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
 static int      starterValidateEmail (uiwcont_t *entry, void *udata);
 
@@ -639,7 +639,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: starterui: menu item: install in alternate folder */
   snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
   starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (
-      starterSetUpAlternate, starter, NULL);
+      starterStartAltInst, starter, NULL);
   menuitem = uiMenuCreateItem (menu, tbuff,
       starter->callbacks [START_CB_MENU_ALT_SETUP]);
   uiwcontFree (menuitem);
@@ -2162,23 +2162,20 @@ starterLoadOptions (startui_t *starter)
 }
 
 static bool
-starterSetUpAlternate (void *udata)
+starterStartAltInst (void *udata)
 {
-  char        prog [MAXPATHLEN];
-  const char  *targv [7];
+  startui_t   *starter = udata;
+  const char  *targv [2];
   int         targc = 0;
 
 
-  logProcBegin (LOG_PROC, "starterSetUpAlternate");
+  logProcBegin (LOG_PROC, "starterStartAltInst");
 
-  pathbldMakePath (prog, sizeof (prog),
-      "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
-  targv [targc++] = prog;
-  targv [targc++] = "--bdj4altinst";
   targv [targc++] = NULL;
-  osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  starter->processes [ROUTE_ALTINST] = procutilStartProcess (
+      ROUTE_ALTINST, "bdj4altinst", PROCUTIL_DETACH, targv);
 
-  logProcEnd (LOG_PROC, "starterSetUpAlternate", "");
+  logProcEnd (LOG_PROC, "starterStartAltInst", "");
   return UICB_CONT;
 }
 

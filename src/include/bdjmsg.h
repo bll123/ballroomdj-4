@@ -11,8 +11,11 @@
 /* lock.c: lock name */
 typedef enum {
   ROUTE_NONE,       // anonymous
+  ROUTE_ALTINST,    // not used
+  ROUTE_BPM_COUNTER,
   ROUTE_CONFIGUI,
   ROUTE_DBUPDATE,   // the main db update process
+  ROUTE_HELPERUI,
   ROUTE_MAIN,
   ROUTE_MANAGEUI,
   ROUTE_MARQUEE,
@@ -21,8 +24,6 @@ typedef enum {
   ROUTE_PLAYERUI,
   ROUTE_REMCTRL,
   ROUTE_STARTERUI,
-  ROUTE_HELPERUI,
-  ROUTE_BPM_COUNTER,
   ROUTE_TEST_SUITE,
   ROUTE_MAX,
 } bdjmsgroute_t;

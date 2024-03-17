@@ -162,6 +162,7 @@ static void altinstFailWorkingDir (altinst_t *altinst, const char *dir, const ch
 static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
 static void altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm);
+static void altinstSigHandler (int sig);
 
 int
 main (int argc, char *argv[])
@@ -210,8 +211,10 @@ main (int argc, char *argv[])
     altinst.callbacks [i] = NULL;
   }
 
+  osSetStandardSignals (altinstSigHandler);
+
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_LOG;
-  bdj4startup (argc, argv, NULL, "alt", ROUTE_NONE, &flags);
+  bdj4startup (argc, argv, NULL, "alt", ROUTE_ALTINST, &flags);
   if ((flags & BDJ4_ARG_INST_REINSTALL) == BDJ4_ARG_INST_REINSTALL) {
     altinst.reinstall = true;
   }
@@ -310,7 +313,7 @@ main (int argc, char *argv[])
   }
 
   altinstCleanup (&altinst);
-  bdj4shutdown (ROUTE_NONE, NULL);
+  bdj4shutdown (ROUTE_ALTINST, NULL);
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
@@ -754,6 +757,10 @@ static void
 altinstTargetFeedbackMsg (altinst_t *altinst)
 {
   char          tbuff [MAXPATHLEN];
+
+  if (! altinst->guienabled) {
+    return;
+  }
 
   /* one of newinstall or updateinstall must be set */
   /* reinstall matches the re-install checkbox */
@@ -1284,4 +1291,10 @@ altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm)
     snprintf (buff, sz, "%s/Applications", altinst->basedir);
   }
   instutilAppendNameToTarget (buff, sz, nm, false);
+}
+
+static void
+altinstSigHandler (int sig)
+{
+  return;
 }

@@ -46,6 +46,7 @@ add_library (objlocbdj3 OBJECT
 add_executable (bdj4installer bdj4installer.c)
 if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
+  target_compile_options (bdj4installer PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4installer PRIVATE
   objlocbdj3
@@ -59,6 +60,7 @@ addIntlLibrary (bdj4installer)
 add_executable (bdj4altinst bdj4altinst.c)
 if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -municode)
+  target_compile_options (bdj4altinst PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
   objlocbdj3

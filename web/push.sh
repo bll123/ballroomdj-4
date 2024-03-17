@@ -108,8 +108,9 @@ sshpass -e rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=linux-uninstall-bdj4
+ver=$(install/${fn}.sh --version)
 sshpass -e rsync -v -e ssh install/${fn}.sh \
-    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 # macos scripts
 

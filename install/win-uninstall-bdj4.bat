@@ -16,6 +16,9 @@ setlocal enabledelayedexpansion
 @rem may or may not exist as a process
 taskkill /f /im gdbus.exe 2> NUL
 
+@rem this variable must be set for the if block to process properly
+set bdj4dir="%USERPROFILE%\BDJ4"
+
 if exist %bdj4instloc% (
   set /p x=<%bdj4instloc%
   set bdj4dir="!x!"
