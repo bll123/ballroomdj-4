@@ -7,13 +7,16 @@
 **4.9.0 2024-3---**
     * PENDING Installation: second install, incorrect copy of files.
 
+**4.8.1 2024-3---**
+    * PENDING Internal: Re-write temporary file cleanup.
+
 **4.8.0 2024-3---**
 
 * Bug Fixes:
     * Alternate Installer: Fixed.
     * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
-    * Windows: Fix error when retrieving windows music folder path.
+    * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
 * Changes:
     * Alternate Installer: Re-arranged user interface.
     * Filter: Sort By: Added BPM as a sort option.

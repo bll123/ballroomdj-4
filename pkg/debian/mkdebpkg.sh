@@ -9,7 +9,7 @@ echo "-- $(date +%T) start"
 . ./VERSION.txt
 
 debname=ballroomdj4
-rev=$(grep '^Comment: Revision:' pkg/debian-tmpl.txt | sed 's,.*: ,,')
+rev=$(grep '^Comment: Revision:' pkg/debian/debian-control.txt | sed 's,.*: ,,')
 arch=amd64
 debfullnm=ballroomdj4_${VERSION}-${rev}_${arch}
 DEBTOP=tmp/deb
@@ -28,7 +28,7 @@ mkdir -p $SHAREDIR
 mkdir -p $DEBCONTROLDIR
 sed -e "s/#VERSION#/${VERSION}/" \
     -e "s/#DEBNAME#/${debname}/" \
-    pkg/debian-tmpl.txt \
+    pkg/debian/debian-control.txt \
     > $CONTROL
 
 echo "-- $(date +%T) creating install package"
@@ -55,7 +55,7 @@ cd ${cwd}
 cd ${DEBTOP}
 echo "-- $(date +%T) creating .deb package"
 dpkg-deb --root-owner-group --build ${debfullnm}
-mv ${debfullnm} ..
+mv -f ${debfullnm}.deb ..
 
 # lintian ${debfullnm}.deb
 

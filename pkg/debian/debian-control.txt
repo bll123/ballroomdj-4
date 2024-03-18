@@ -1,5 +1,5 @@
 Comment: Revision: 001
-  libintl, libiconv ?
+  libintl, libiconv, libgio, math-lib?
 Package: #DEBNAME#
 Version: #VERSION#
 Architecture: amd64
@@ -10,7 +10,7 @@ Depends: libc6, libvlc5,
   libglib2.0-0, libgtk-3-0, librsvg2-2,
   libcurl4, libicu72,
   libogg0, libopus0, libopusfile0, libvorbis0a, libvorbisfile3, libflac12,
-  libxml2, libjson-c5, libgcrypt, libz, libm, libgio, libdl,
+  libxml2, libjson-c5, libgcrypt20, zlib1g,
   libchromaprint-tools, ffmpeg
 Homepage: https://ballroomdj4.sourceforge.io/
 Maintainer: Brad Lanam <brad.lanam.comp@gmail.com>
