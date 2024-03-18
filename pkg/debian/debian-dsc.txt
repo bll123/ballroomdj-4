@@ -1,0 +1,26 @@
+Comment: Revision: 001
+  libintl, libiconv ?
+Format: 3.0
+Source: ballroomdj4
+Binary: ballroomdj4
+Architecture: amd64
+Version: #VERSION#
+Package: #DEBNAME#
+Maintainer: Brad Lanam <brad.lanam.comp@gmail.com>
+Homepage: https://ballroomdj4.sourceforge.io/
+Build-Depends: cmake make gcc g++ gobjc gettext patchelf
+  libcurl4 libcurl4-openssl-dev
+  libchromaprint-tools
+  libogg-dev libopus-dev libopusfile-dev libvorbis-dev libflac-dev
+  libavformat-dev libavutil-dev
+  libgcrypt-dev
+  libgtk-3-dev librsvg2-bin
+  libvlc-dev libvlccore-dev
+  libpulse-dev libpipewire-0.3-dev
+  libxml2-dev libjson-c-dev
+Checksums-Sha1:
+  #CHKSUM-SHA1#
+Checksums-Sha256:
+  #CHKSUM-SHA256#
+Files:
+  #CHKSUM-MD5#

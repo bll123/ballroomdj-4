@@ -9,13 +9,16 @@ echo "-- $(date +%T) start"
 . ./VERSION.txt
 
 debname=ballroomdj4
+rev=$(grep '^Comment: Revision:' pkg/debian-tmpl.txt | sed 's,.*: ,,')
+arch=amd64
+debfullnm=ballroomdj4_${VERSION}-${rev}_${arch}
 DEBTOP=tmp/deb
-DEBDIR=${DEBTOP}/${debname}
+DEBDIR=${DEBTOP}/${debfullnm}
 DEBCONTROLDIR=${DEBDIR}/DEBIAN
 CONTROL=${DEBCONTROLDIR}/control
 BINDIR=${DEBDIR}/usr/bin
 SHAREDIR=${DEBDIR}/usr/share
-BDJ4DIR=${cwd}/${DEBDIR}/usr/share/${debname}
+BDJ4DIR=${cwd}/${DEBDIR}/usr/share/${debfullnm}
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 
 test -d ${DEBTOP} && rm -rf ${DEBTOP}
@@ -36,7 +39,6 @@ echo "-- $(date +%T) installing"
   cd "$UNPACKDIR"
   ./bin/bdj4 --bdj4installer \
       --unattended \
-      --ati libatibdj4 \
       --targetdir "$BDJ4DIR" \
       --unpackdir "$UNPACKDIR" \
       --readonly
@@ -52,7 +54,12 @@ echo "-- $(date +%T) finalizing"
 cd ${cwd}
 cd ${DEBTOP}
 echo "-- $(date +%T) creating .deb package"
-dpkg-deb --root-owner-group --build ${debname}
-# lintian ${debname}.deb
+dpkg-deb --root-owner-group --build ${debfullnm}
+mv ${debfullnm} ..
+
+# lintian ${debfullnm}.deb
+
+cd ${cwd}
+rm -rf ${DEBTOP}
 
 exit 0

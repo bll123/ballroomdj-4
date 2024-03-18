@@ -1,10 +1,11 @@
+Comment: Revision: 001
+  libintl, libiconv ?
 Package: #DEBNAME#
 Version: #VERSION#
 Architecture: amd64
 Priority: optional
 Section: contrib/multimedia
 Package-Type: deb
-# libintl, libiconv
 Depends: libc6, libvlc5,
   libglib2.0-0, libgtk-3-0, librsvg2-2,
   libcurl4, libicu72,
