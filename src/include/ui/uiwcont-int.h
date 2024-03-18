@@ -1,6 +1,10 @@
 #ifndef INC_UIWCONT_INT_H
 #define INC_UIWCONT_INT_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "ui/uidialog.h"
 #include "ui/uitreeview.h"
 
@@ -148,5 +152,9 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
 
   return true;
 }
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIWCONT_INT_H */

@@ -4,6 +4,10 @@
 #ifndef INC_UISCALE_H
 #define INC_UISCALE_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -16,5 +20,9 @@ int     uiScaleGetDigits (uiwcont_t *uiscale);
 void    uiScaleSetValue (uiwcont_t *uiscale, double value);
 void    uiScaleSetRange (uiwcont_t *uiscale, double start, double end);
 void    uiScaleSetState (uiwcont_t *uiscale, int state);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISCALE_H */

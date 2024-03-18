@@ -4,6 +4,10 @@
 #ifndef INC_UITOGGLE_H
 #define INC_UITOGGLE_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -17,5 +21,9 @@ void uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt);
 bool uiToggleButtonIsActive (uiwcont_t *uiwidget);
 void uiToggleButtonSetState (uiwcont_t *uiwidget, int state);
 void uiToggleButtonEllipsize (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UITOGGLE_H */

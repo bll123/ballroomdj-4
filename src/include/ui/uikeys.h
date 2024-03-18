@@ -4,6 +4,10 @@
 #ifndef INC_UIKEYS_H
 #define INC_UIKEYS_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -26,5 +30,9 @@ bool    uiKeyIsNavKey (uiwcont_t *uiwidget);
 bool    uiKeyIsMaskedKey (uiwcont_t *uiwidget);
 bool    uiKeyIsControlPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsShiftPressed (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIKEYS_H */

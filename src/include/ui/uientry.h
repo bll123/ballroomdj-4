@@ -4,6 +4,10 @@
 #ifndef INC_UIENTRY_H
 #define INC_UIENTRY_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 typedef int (*uientryval_t)(uiwcont_t *uiwidget, void *udata);
@@ -34,5 +38,9 @@ void uiEntryValidateClear (uiwcont_t *entry);
 int uiEntryValidateDir (uiwcont_t *edata, void *udata);
 int uiEntryValidateFile (uiwcont_t *edata, void *udata);
 void uiEntrySetState (uiwcont_t *entry, int state);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIENTRY_H */

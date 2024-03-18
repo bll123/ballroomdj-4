@@ -4,6 +4,10 @@
 #ifndef INC_UIDIALOG_H
 #define INC_UIDIALOG_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 typedef struct uiselect uiselect_t;
@@ -29,5 +33,9 @@ void  uiDialogShow (uiwcont_t *uiwidgetp);
 void  uiDialogAddButtons (uiwcont_t *uidialog, ...);
 void  uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp);
 void  uiDialogDestroy (uiwcont_t *uidialog);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIDIALOG_H */

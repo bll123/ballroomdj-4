@@ -4,6 +4,10 @@
 #ifndef INC_UITREEVIEW_H
 #define INC_UITREEVIEW_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "slist.h"
 #include "uiwcont.h"
@@ -109,5 +113,9 @@ void  uiTreeViewValueIteratorClear (uiwcont_t *uiwidget);
 void  uiTreeViewScrollToCell (uiwcont_t *uiwidget);
 void  uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper);
 int   uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UITREEVIEW_H */

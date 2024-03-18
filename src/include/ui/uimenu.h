@@ -4,6 +4,10 @@
 #ifndef INC_UIMENU_H
 #define INC_UIMENU_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -28,5 +32,9 @@ void uiMenuAddSeparator (uiwcont_t *uimenu);
 void uiMenuSetMainCallback (uiwcont_t *uimenuitem, callback_t *uicb);
 void uiMenuDisplay (uiwcont_t *uiwidget);
 void uiMenuClear (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIMENU_H */

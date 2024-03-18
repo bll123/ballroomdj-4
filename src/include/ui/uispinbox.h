@@ -4,6 +4,10 @@
 #ifndef INC_UISPINBOX_H
 #define INC_UISPINBOX_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "nlist.h"
 #include "slist.h"
@@ -49,5 +53,9 @@ bool  uiSpinboxIsChanged (uiwcont_t *uiwidget);
 void  uiSpinboxResetChanged (uiwcont_t *uiwidget);
 void  uiSpinboxAlignRight (uiwcont_t *uiwidget);
 void  uiSpinboxAddClass (const char *classnm, const char *color);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISPINBOX_H */

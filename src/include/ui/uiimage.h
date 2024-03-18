@@ -4,6 +4,10 @@
 #ifndef INC_UIIMAGE_H
 #define INC_UIIMAGE_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 uiwcont_t *uiImageNew (void);
@@ -13,5 +17,9 @@ void  uiImageClear (uiwcont_t *uiwidget);
 void  uiImageConvertToPixbuf (uiwcont_t *uiwidget);
 void  uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
 void  *uiImageGetPixbuf (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIIMAGE_H */

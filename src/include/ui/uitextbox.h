@@ -4,6 +4,10 @@
 #ifndef INC_UITEXTBOX_H
 #define INC_UITEXTBOX_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 uiwcont_t *uiTextBoxCreate (int height, const char *hlcolor);
@@ -21,5 +25,9 @@ void  uiTextBoxHorizExpand (uiwcont_t *uiwidget);
 void  uiTextBoxVertExpand (uiwcont_t *uiwidget);
 void  uiTextBoxSetHeight (uiwcont_t *uiwidget, int h);
 void  uiTextBoxSetParagraph (uiwcont_t *uiwidget, int indent, int interpara);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UITEXTBOX_H */

@@ -4,6 +4,10 @@
 #ifndef INC_UINOTEBOOK_H
 #define INC_UINOTEBOOK_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -14,5 +18,9 @@ void  uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget);
 void  uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum);
 void  uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb);
 void  uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UINOTEBOOK_H */

@@ -4,6 +4,10 @@
 #ifndef INC_UIWINDOW_H
 #define INC_UIWINDOW_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -35,5 +39,9 @@ void uiWindowRaise (uiwcont_t *uiwidget);
 void uiWindowFind (uiwcont_t *window);
 void uiWindowSetNoMaximize (uiwcont_t *uiwindow);
 void uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIWINDOW_H */

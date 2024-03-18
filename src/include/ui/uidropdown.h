@@ -4,6 +4,10 @@
 #ifndef INC_UIDROPDOWN_H
 #define INC_UIDROPDOWN_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "nlist.h"
 #include "slist.h"
@@ -24,5 +28,9 @@ void uiDropDownSelectionSetNum (uiwcont_t *dropdown, nlistidx_t idx);
 void uiDropDownSelectionSetStr (uiwcont_t *dropdown, const char *stridx);
 void uiDropDownSetState (uiwcont_t *dropdown, int state);
 char *uiDropDownGetString (uiwcont_t *dropdown);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIDROPDOWN_H */

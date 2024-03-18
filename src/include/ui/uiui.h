@@ -4,6 +4,10 @@
 #ifndef INC_UIUI_H
 #define INC_UIUI_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 enum {
@@ -23,5 +27,9 @@ void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiAddProgressbarClass (const char *classnm, const char *color);
 void  uiInitUILog (void);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIUI_H */

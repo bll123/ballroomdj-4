@@ -4,6 +4,10 @@
 #ifndef INC_UILABEL_H
 #define INC_UILABEL_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 uiwcont_t *uiCreateLabel (const char *label);
@@ -17,5 +21,9 @@ void  uiLabelWrapOn (uiwcont_t *uiwidget);
 void  uiLabelSetSelectable (uiwcont_t *uiwidget);
 void  uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width);
 void  uiLabelAlignEnd (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UILABEL_H */

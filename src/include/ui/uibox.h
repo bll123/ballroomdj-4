@@ -4,6 +4,10 @@
 #ifndef INC_UIBOX_H
 #define INC_UIBOX_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 uiwcont_t *uiCreateVertBox (void);
@@ -12,5 +16,9 @@ void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIBOX_H */

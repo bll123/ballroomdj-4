@@ -4,6 +4,10 @@
 #ifndef INC_UIWIDGET_H
 #define INC_UIWIDGET_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "uiwcont.h"
 
 /* widget interface */
@@ -35,5 +39,9 @@ void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
 void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIWIDGET_H */
