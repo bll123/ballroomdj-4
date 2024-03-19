@@ -95,7 +95,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
   [SV_OS_PLATFORM] = { "OS_PLATFORM" },
-  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
+  [SV_OS_TAG] = { "OS_ARCH_TAG" },
   [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
   [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
@@ -200,7 +200,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_ARCH_TAG], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_TAG], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
   lsysvars [SVL_IS_MSYS] = false;
@@ -293,10 +293,10 @@ sysvarsInit (const char *argv0)
     /* arch will be arm64 or x86_64 */
     /* be sure to include the leading - */
     if (strcmp (sysvars [SV_OSARCH], "x86_64") == 0) {
-      strlcpy (sysvars [SV_OS_ARCH_TAG], "-intel", SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_TAG], "-intel", SV_MAX_SZ);
     }
     if (strcmp (sysvars [SV_OSARCH], "arm64") == 0) {
-      strlcpy (sysvars [SV_OS_ARCH_TAG], "-applesilicon", SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_TAG], "-applesilicon", SV_MAX_SZ);
     }
   }
   if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {

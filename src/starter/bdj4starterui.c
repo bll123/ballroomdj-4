@@ -1470,7 +1470,7 @@ starterProcessSupport (void *udata)
       snprintf (uri, sizeof (uri), "%s%s/v%s/bdj4-installer-%s%s-%s%s",
           sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD),
           starter->latestversion, sysvarsGetStr (SV_OS_PLATFORM),
-          sysvarsGetStr (SV_OS_ARCH_TAG), starter->latestversion,
+          sysvarsGetStr (SV_OS_TAG), starter->latestversion,
           sysvarsGetStr (SV_OS_EXEC_EXT));
       starter->linkinfo [START_LINK_CB_DL_LATEST].uri = mdstrdup (uri);
       if (isMacOS ()) {
