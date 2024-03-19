@@ -57,10 +57,15 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 void
 uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
 {
-  char      classnm [100];
+  char        classnm [100];
+  const char  *tcolor = NULL;
 
-  snprintf (classnm, sizeof (classnm), "profcol%s",
-      bdjoptGetStr (OPT_P_UI_PROFILE_COL) + 1);
+  tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
+  if (tcolor == NULL || ! *tcolor) {
+    tcolor = "#ffa600";
+  }
+
+  snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
   uiLabelAddClass (classnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiWidgetSetClass (uiwidgetp, classnm);
 }

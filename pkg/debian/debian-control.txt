@@ -1,5 +1,5 @@
 Comment: Revision: 001
-  libintl, libiconv, libgio, math-lib?
+  libintl, libiconv, libgio, math-lib?, rm (binutils?)
 Package: #DEBNAME#
 Version: #VERSION#
 Architecture: amd64
@@ -11,7 +11,7 @@ Depends: libc6, libvlc5,
   libcurl4, libicu72,
   libogg0, libopus0, libopusfile0, libvorbis0a, libvorbisfile3, libflac12,
   libxml2, libjson-c5, libgcrypt20, zlib1g,
-  libchromaprint-tools, ffmpeg
+  libchromaprint-tools, ffmpeg, rsync
 Homepage: https://ballroomdj4.sourceforge.io/
 Maintainer: Brad Lanam <brad.lanam.comp@gmail.com>
 Description: BallroomDJ 4 is a player designed for

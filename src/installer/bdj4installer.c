@@ -1650,7 +1650,7 @@ installerCreateDirs (installer_t *installer)
 
   /* this will create the directories necessary for the configs */
   /* namely: profile00, <hostname>, <hostname>/profile00 */
-  bdjoptCreateDirectories ();
+  instutilCreateDataDirectories ();
   /* create the directories that are not included in the distribution */
   diropMakeDir ("tmp");
   diropMakeDir ("http");
@@ -2389,8 +2389,7 @@ installerCleanup (installer_t *installer)
     }
     if (! isWindows ()) {
       /* cleaning up on not-windows is easy */
-      snprintf (buff, sizeof(buff), "rm -rf '%s'", installer->unpackdir);
-      (void) ! system (buff);
+      diropDeleteDir (installer->unpackdir, DIROP_ALL);
     }
   } else {
     fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);

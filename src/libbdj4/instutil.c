@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "datafile.h"
 #include "dirlist.h"
+#include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -281,6 +282,8 @@ instutilCopyHttpFiles (void)
       "mrc", "", PATHBLD_MP_DREL_HTTP);
   *tbuff = '\0';
   if (isWindows ()) {
+    /* the directory must exist for robocopy to work */
+    diropMakeDir (to);
     pathDisplayPath (from, sizeof (from));
     pathDisplayPath (to, sizeof (to));
     snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
@@ -379,8 +382,7 @@ instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macoson
     suffix = MACOS_APP_EXT;
   }
 
-  snprintf (fname, sizeof (fname), "%s%s%s",
-      nm, sysvarsGetStr (SV_BDJ4_DEVELOPMENT), suffix);
+  snprintf (fname, sizeof (fname), "%s%s", nm, suffix);
   rc = strncmp (pi->filename, fname, pi->flen) == 0 &&
       pi->flen == strlen (fname);
   if (! rc) {
@@ -593,5 +595,21 @@ instutilWebResponseCallback (void *userdata, const char *resp, size_t len)
   instweb->webresponse = resp;
   instweb->webresplen = len;
   return;
+}
+
+void
+instutilCreateDataDirectories (void)
+{
+  char      path [MAXPATHLEN];
+
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA);
+  diropMakeDir (path);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  diropMakeDir (path);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
+  diropMakeDir (path);
+  pathbldMakePath (path, sizeof (path), "", "",
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  diropMakeDir (path);
 }
 

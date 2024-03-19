@@ -328,9 +328,11 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     }
   }
 
-  if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
-    exit (1);
+  if (fileopIsDirectory (sysvarsGetStr (SV_BDJ4_DIR_DATATOP))) {
+    if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+      fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
+      exit (1);
+    }
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -363,12 +365,14 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-system: %s", sysvarsGetStr (SV_LOCALE_SYSTEM));
   }
 
-  if ((*flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
-    rc = bdjvarsdfloadInit ();
-    if (rc < 0) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
-      fprintf (stderr, "Unable to load all data files\n");
-      exit (1);
+  if (fileopIsDirectory (sysvarsGetStr (SV_BDJ4_DIR_DATATOP))) {
+    if ((*flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
+      rc = bdjvarsdfloadInit ();
+      if (rc < 0) {
+        logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
+        fprintf (stderr, "Unable to load all data files\n");
+        exit (1);
+      }
     }
   }
 

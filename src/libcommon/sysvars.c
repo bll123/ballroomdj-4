@@ -127,6 +127,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_IS_LINUX] = { "IS_LINUX" },
   [SVL_IS_MACOS] = { "IS_MACOS" },
   [SVL_IS_MSYS] = { "IS_MSYS" },
+  [SVL_IS_READONLY] = { "IS_READONLY" },
   [SVL_IS_VM] = { "IS_VM" },
   [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
   [SVL_LOCALE_DIR] = { "LOCALE_DIR" },
@@ -172,7 +173,6 @@ sysvarsInit (const char *argv0)
   char          tbuff [SV_MAX_SZ+1];
   char          altpath [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
-  char          rochkbuff [MAXPATHLEN];
   char          *p;
   size_t        dlen;
   bool          alternatepath = false;
@@ -199,11 +199,11 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
-  lsysvars [SVL_IS_MACOS] = false;
   lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
   lsysvars [SVL_IS_VM] = false;
+  lsysvars [SVL_IS_READONLY] = false;
 
 #if _lib_uname
   uname (&ubuf);
@@ -363,9 +363,13 @@ sysvarsInit (const char *argv0)
     strlcpy (sysvars [SV_BDJ4_DIR_MAIN], buff, SV_MAX_SZ);
   }
 
-  snprintf (rochkbuff, sizeof (rochkbuff), "%s%s",
-       READONLY_FN, BDJ4_CONFIG_EXT);
-  if (fileopIsDirectory ("data") && ! fileopFileExists (rochkbuff)) {
+  /* the readonly file lives in the top level of the main dir */
+  snprintf (tbuff, sizeof (tbuff), "%s%s", READONLY_FN, BDJ4_CONFIG_EXT);
+  if (fileopFileExists (tbuff)) {
+    lsysvars [SVL_IS_READONLY] = true;
+  }
+
+  if (fileopIsDirectory ("data") && lsysvars [SVL_IS_READONLY] == false) {
     /* if there is a data directory in the current working directory */
     /* and there is no 'readonly.txt' file */
     /* a change of directories is contra-indicated. */
@@ -420,11 +424,15 @@ sysvarsInit (const char *argv0)
           *p = '\0';
         }
 
-        snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
+        snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
             altpath, READONLY_FN, BDJ4_CONFIG_EXT);
         tlen = strlen (altpath);
         strlcat (altpath, "/data", sizeof (altpath));
-        if (fileopIsDirectory (altpath) && ! fileopFileExists (rochkbuff)) {
+        if (fileopFileExists (tbuff)) {
+          lsysvars [SVL_IS_READONLY] = true;
+        }
+
+        if (fileopIsDirectory (altpath) && lsysvars [SVL_IS_READONLY] == false) {
           /* remove the /data suffix */
           altpath [tlen] = '\0';
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
@@ -437,10 +445,13 @@ sysvarsInit (const char *argv0)
     if (! found) {
       lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_NORM;
 
-      snprintf (rochkbuff, sizeof (rochkbuff), "%s/%s%s",
-         sysvars [SV_BDJ4_DIR_MAIN], READONLY_FN, BDJ4_CONFIG_EXT);
+      snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
+          sysvars [SV_BDJ4_DIR_MAIN], READONLY_FN, BDJ4_CONFIG_EXT);
+      if (fileopFileExists (tbuff)) {
+        lsysvars [SVL_IS_READONLY] = true;
+      }
 
-      if (fileopFileExists (rochkbuff)) {
+      if (lsysvars [SVL_IS_READONLY] == true) {
         lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_UNKNOWN;
         *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
@@ -732,6 +743,7 @@ sysvarsInit (const char *argv0)
   lsysvars [SVL_PROFILE_IDX] = 0;
   lsysvars [SVL_INITIAL_PORT] = 32548;
   lsysvars [SVL_BASEPORT] = 32548;
+
   snprintf (buff, sizeof (buff), "data/%s%s", BASE_PORT_FN, BDJ4_CONFIG_EXT);
   if (fileopFileExists (buff)) {
     FILE    *fh;

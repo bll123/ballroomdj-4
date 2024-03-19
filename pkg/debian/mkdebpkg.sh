@@ -18,7 +18,7 @@ DEBCONTROLDIR=${DEBDIR}/DEBIAN
 CONTROL=${DEBCONTROLDIR}/control
 BINDIR=${DEBDIR}/usr/bin
 SHAREDIR=${DEBDIR}/usr/share
-BDJ4DIR=${cwd}/${DEBDIR}/usr/share/${debfullnm}
+BDJ4DIR=${cwd}/${DEBDIR}/usr/share/${debname}
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 
 test -d ${DEBTOP} && rm -rf ${DEBTOP}
@@ -48,7 +48,7 @@ echo "-- $(date +%T) finalizing"
 (
   cd $BINDIR
   test -f bdj4 && rm -f bdj4
-  ln -s ../usr/share/ballroomdj4/bin/bdj4 .
+  ln -s ../share/${debname}/bin/bdj4 .
 )
 
 cd ${cwd}

@@ -238,6 +238,9 @@ bdjoptInit (void)
   }
 
   bdjopt->bdjoptList = datafileGetList (bdjopt->df [OPTTYPE_GLOBAL]);
+  if (bdjopt->bdjoptList == NULL) {
+    bdjopt->bdjoptList = nlistAlloc ("bdjopt-list", LIST_ORDERED, NULL);
+  }
 
   /* 4.0.10 OPT_M_SCALE added */
   if (bdjoptGetNum (OPT_M_SCALE) <= 0) {
@@ -407,22 +410,6 @@ bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq)
   }
   nidx = idx + musicq * bdjopt->dfcount [OPTTYPE_QUEUE];
   nlistSetNum (bdjopt->bdjoptList, nidx, value);
-}
-
-void
-bdjoptCreateDirectories (void)
-{
-  char      path [MAXPATHLEN];
-
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA);
-  diropMakeDir (path);
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  diropMakeDir (path);
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
-  diropMakeDir (path);
-  pathbldMakePath (path, sizeof (path), "", "",
-      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  diropMakeDir (path);
 }
 
 void
@@ -764,10 +751,6 @@ bdjoptCreateNewConfigs (void)
 
   if (bdjopt->fname [OPTTYPE_PROFILE] == NULL) {
     return;
-  }
-
-  if (! fileopFileExists (bdjopt->fname [OPTTYPE_PROFILE])) {
-    bdjoptCreateDirectories ();
   }
 
   /* global */

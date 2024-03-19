@@ -168,7 +168,7 @@ int
 main (int argc, char *argv[])
 {
   altinst_t     altinst;
-  char          buff [MAXPATHLEN];
+  char          tbuff [MAXPATHLEN];
   FILE          *fh;
   uint32_t      flags;
   const char    *tmp;
@@ -176,8 +176,6 @@ main (int argc, char *argv[])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("alt");
 #endif
-
-  buff [0] = '\0';
 
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
@@ -188,7 +186,7 @@ main (int argc, char *argv[])
   strcpy (altinst.oldversion, "");
   altinst.maindir = NULL;
   altinst.home = NULL;
-  altinst.name = mdstrdup (BDJ4_NAME "alt");
+  altinst.name = NULL;
   altinst.hostname = NULL;
   altinst.bdjoptloaded = false;
   altinst.firstinstall = false;
@@ -210,10 +208,12 @@ main (int argc, char *argv[])
   for (int i = 0; i < ALT_CB_MAX; ++i) {
     altinst.callbacks [i] = NULL;
   }
+  tbuff [0] = '\0';
 
   osSetStandardSignals (altinstSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_LOG;
+  /* if the data-top-dir exists, the data files will be loaded */
   bdj4startup (argc, argv, NULL, "alt", ROUTE_ALTINST, &flags);
   if ((flags & BDJ4_ARG_INST_REINSTALL) == BDJ4_ARG_INST_REINSTALL) {
     altinst.reinstall = true;
@@ -237,6 +237,10 @@ main (int argc, char *argv[])
     altinst.macospfx = MACOS_APP_PREFIX;
   }
 
+  /* the first time the name is set, append the dev status */
+  snprintf (tbuff, sizeof (tbuff), "%s%s%s",
+      BDJ4_NAME, "alt", sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
+  altinst.name = mdstrdup (tbuff);
   altinst.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   altinst.home = sysvarsGetStr (SV_HOME);
   altinst.hostname = sysvarsGetStr (SV_HOSTNAME);
@@ -248,19 +252,19 @@ main (int argc, char *argv[])
     /* from the command line */
     altinstSetTargetDir (&altinst, tmp);
   } else {
-    altinstBuildTarget (&altinst, buff, sizeof (buff), BDJ4_NAME "alt");
+    altinstBuildTarget (&altinst, tbuff, sizeof (tbuff), altinst.name);
 
     /* if the altinstdir.txt file exists, use it */
     fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
     if (fh != NULL) {
       pathinfo_t    *pi;
 
-      (void) ! fgets (buff, sizeof (buff), fh);
-      stringTrim (buff);
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      stringTrim (tbuff);
       mdextfclose (fh);
       fclose (fh);
 
-      pi = pathInfo (buff);
+      pi = pathInfo (tbuff);
       dataFree (altinst.name);
       altinst.name = mdmalloc (pi->flen + 1);
       strlcpy (altinst.name, pi->filename, pi->flen + 1);
@@ -268,7 +272,7 @@ main (int argc, char *argv[])
       pathInfoFree (pi);
     }
 
-    altinstSetTargetDir (&altinst, buff);
+    altinstSetTargetDir (&altinst, tbuff);
   }
 
   /* the altcount.txt lives in the configuration dir */
@@ -276,13 +280,20 @@ main (int argc, char *argv[])
     altinst.firstinstall = true;
   }
 
-  if (altinst.firstinstall) {
+  if (altinst.firstinstall && sysvarsGetNum (SVL_IS_READONLY)) {
     dataFree (altinst.name);
     altinst.name = mdstrdup (BDJ4_NAME);
   }
 
   if (osChangeDir (altinst.maindir) < 0) {
     fprintf (stderr, "ERR: Unable to chdir to %s\n", altinst.maindir);
+  }
+
+  if (bdjoptGetStr (OPT_P_UI_ACCENT_COL) == NULL) {
+    bdjoptSetStr (OPT_P_UI_ACCENT_COL, INST_HL_COLOR);
+  }
+  if (bdjoptGetStr (OPT_P_UI_ERROR_COL) == NULL) {
+    bdjoptSetStr (OPT_P_UI_ERROR_COL, "#ff2222");
   }
 
   if (altinst.guienabled) {
@@ -944,7 +955,7 @@ altinstCreateDirs (altinst_t *altinst)
   /* create the directories that are not included in the distribution */
   diropMakeDir ("data");
   /* this will create the directories necessary for the configs */
-  bdjoptCreateDirectories ();
+  instutilCreateDataDirectories ();
   diropMakeDir ("tmp");
   diropMakeDir ("http");
   /* there are profile specific image files */

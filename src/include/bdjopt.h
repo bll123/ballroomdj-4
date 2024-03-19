@@ -142,7 +142,6 @@ const char *bdjoptGetStrPerQueue (nlistidx_t idx, int musicq);
 int64_t bdjoptGetNumPerQueue (nlistidx_t idx, int musicq);
 void    bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq);
 void    bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq);
-void    bdjoptCreateDirectories (void);
 void    bdjoptDeleteProfile (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);

@@ -1736,6 +1736,7 @@ starterCheckProfile (startui_t *starter)
     char  tbuff [100];
     int   profidx;
 
+    instutilCreateDataDirectories ();
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_PROFILE_IDX);
 

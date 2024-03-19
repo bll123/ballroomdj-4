@@ -16,6 +16,7 @@
 #include "bdj4.h"
 #include "dyintfc.h"
 #include "dylib.h"
+#include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -45,10 +46,12 @@ atiCheck (const char *atipkg)
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
-  dlHandle = dylibLoad (dlpath);
-  if (dlHandle != NULL) {
-    dylibClose (dlHandle);
-    rc = true;
+  if (fileopFileExists (dlpath)) {
+    dlHandle = dylibLoad (dlpath);
+    if (dlHandle != NULL) {
+      dylibClose (dlHandle);
+      rc = true;
+    }
   }
 
   return rc;
@@ -74,6 +77,10 @@ atiInit (const char *atipkg, int writetags,
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
+  if (! fileopFileExists (dlpath)) {
+    return NULL;
+  }
+
   ati->dlHandle = dylibLoad (dlpath);
   if (ati->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);
