@@ -94,6 +94,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
+  [SV_OS_PLATFORM] = { "OS_PLATFORM" },
+  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
   [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
   [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
@@ -194,9 +196,11 @@ sysvarsInit (const char *argv0)
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_PLATFORM], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_ARCH_TAG], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
   lsysvars [SVL_IS_MSYS] = false;
@@ -211,7 +215,6 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSARCH], ubuf.machine, SV_MAX_SZ);
-
 #endif
 #if _lib_RtlGetVersion
   memset (&osvi, 0, sizeof (RTL_OSVERSIONINFOEXW));
@@ -239,7 +242,7 @@ sysvarsInit (const char *argv0)
     lsysvars [SVL_OSBITS] = 64;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-    strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OSARCH], "amd64", SV_MAX_SZ);
     lsysvars [SVL_OSBITS] = 64;
   }
 #endif
@@ -286,12 +289,23 @@ sysvarsInit (const char *argv0)
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
     lsysvars [SVL_IS_MACOS] = true;
+    strlcpy (sysvars [SV_OS_PLATFORM], "macos", SV_MAX_SZ);
+    /* arch will be arm64 or x86_64 */
+    /* be sure to include the leading - */
+    if (strcmp (sysvars [SV_OSARCH], "x86_64") == 0) {
+      strlcpy (sysvars [SV_OS_ARCH_TAG], "-intel", SV_MAX_SZ);
+    }
+    if (strcmp (sysvars [SV_OSARCH], "arm64") == 0) {
+      strlcpy (sysvars [SV_OS_ARCH_TAG], "-applesilicon", SV_MAX_SZ);
+    }
   }
   if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
     lsysvars [SVL_IS_LINUX] = true;
+    strlcpy (sysvars [SV_OS_PLATFORM], "linux", SV_MAX_SZ);
   }
   if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
     lsysvars [SVL_IS_WINDOWS] = true;
+    strlcpy (sysvars [SV_OS_PLATFORM], "win64", SV_MAX_SZ);
   }
 
   osGetEnv ("MSYSTEM", tbuff, SV_MAX_SZ);

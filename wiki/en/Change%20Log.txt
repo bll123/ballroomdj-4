@@ -21,6 +21,7 @@
 * Changes:
     * Alternate Installer: Re-arranged user interface.
     * Song Filter: Sort By: Added BPM as a sort option.
+    * Starter: Support: Added a 'download latest version' link.
     * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
     * Configuration: General: Remove audio tag interface selection (not needed).
 * New Features:

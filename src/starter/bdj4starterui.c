@@ -104,6 +104,7 @@ enum {
   START_LINK_CB_FORUM,
   START_LINK_CB_TICKETS,
   START_LINK_CB_DOWNLOAD,
+  START_LINK_CB_DL_LATEST,
   START_LINK_CB_MAX,
 };
 
@@ -164,6 +165,7 @@ typedef struct {
   char            *supportInFname;
   webclient_t     *webclient;
   char            ident [80];
+  char            latestversiondisp [60];
   char            latestversion [60];
   support_t       *support;
   int             startreq [ROUTE_MAX];
@@ -276,11 +278,12 @@ static void     starterSendFiles (startui_t *starter);
 
 static bool     starterStopAllProcessCallback (void *udata);
 
+static bool     starterDLLatestLinkHandler (void *udata);
 static bool     starterDownloadLinkHandler (void *udata);
 static bool     starterWikiLinkHandler (void *udata);
 static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
-static void     starterLinkHandler (void *udata, int cbidx);
+static void     starterLinkHandler (startui_t *starter, int cbidx);
 
 static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
@@ -332,6 +335,7 @@ main (int argc, char *argv[])
   starter.lastPluiStart = mstime ();
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
+  strcpy (starter.latestversiondisp, "");
   for (int i = 0; i < ROUTE_MAX; ++i) {
     starter.startreq [i] = 0;
     starter.mainstart [i] = 0;
@@ -1444,18 +1448,61 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (hbox, uiwidgetp);
 
-  if (*starter->latestversion == '\0') {
+  if (*starter->latestversiondisp == '\0') {
     starterSupportInit (starter);
-    supportGetLatestVersion (starter->support, starter->latestversion, sizeof (starter->latestversion));
-    if (*starter->latestversion == '\0') {
+    supportGetLatestVersion (starter->support, starter->latestversiondisp, sizeof (starter->latestversiondisp));
+    if (*starter->latestversiondisp == '\0') {
       /* CONTEXT: starterui: no internet connection */
       uiLabelSetText (starter->wcont [START_W_STATUS_DISP_MSG], _("No internet connection"));
+      for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+        uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_DISABLE);
+      }
+    } else {
+      char  *p;
+      char  uri [MAXPATHLEN];
+
+      strlcpy (starter->latestversion, starter->latestversiondisp, sizeof (starter->latestversion));
+      p = strchr (starter->latestversion, ' ');
+      if (p != NULL) {
+        *p = '\0';
+      }
+
+      snprintf (uri, sizeof (uri), "%s%s/v%s/bdj4-installer-%s%s-%s%s",
+          sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD),
+          starter->latestversion, sysvarsGetStr (SV_OS_PLATFORM),
+          sysvarsGetStr (SV_OS_ARCH_TAG), starter->latestversion,
+          sysvarsGetStr (SV_OS_EXEC_EXT));
+      starter->linkinfo [START_LINK_CB_DL_LATEST].uri = mdstrdup (uri);
+      if (isMacOS ()) {
+        starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb = callbackInit (
+            starterDLLatestLinkHandler, starter, NULL);
+      }
+
+      for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+        uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_ENABLE);
+      }
+      if (isLinux ()) {
+        uiWidgetSetState (starter->linkinfo [START_LINK_CB_DL_LATEST].uiwidgetp, UIWIDGET_DISABLE);
+      }
     }
   }
-  uiLabelSetText (uiwidgetp, starter->latestversion);
+  uiLabelSetText (uiwidgetp, starter->latestversiondisp);
   uiwcontFree (uiwidgetp);
 
   /* begin line */
+
+  /* CONTEXT: starterui: basic support dialog: support option (download latest version) */
+  uiwidgetp = uiCreateLink (_("Download Latest Version"),
+      starter->linkinfo [START_LINK_CB_DL_LATEST].uri);
+  if (isMacOS ()) {
+    uiLinkSetActivateCallback (uiwidgetp,
+        starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb);
+  }
+  uiBoxPackStart (vbox, uiwidgetp);
+  starter->linkinfo [START_LINK_CB_DL_LATEST].uiwidgetp = uiwidgetp;
+
+  /* begin line */
+
   /* CONTEXT: starterui: basic support dialog, list of support options */
   uiwidgetp = uiCreateColonLabel (_("Support options"));
   uiBoxPackStart (vbox, uiwidgetp);
@@ -1463,6 +1510,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (uiwidgetp);
 
   /* begin line */
+
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 download) */
   snprintf (tbuff, sizeof (tbuff), _("%s Download"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1475,6 +1523,7 @@ starterProcessSupport (void *udata)
   starter->linkinfo [START_LINK_CB_DOWNLOAD].uiwidgetp = uiwidgetp;
 
   /* begin line */
+
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 wiki) */
   snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1487,6 +1536,7 @@ starterProcessSupport (void *udata)
   starter->linkinfo [START_LINK_CB_WIKI].uiwidgetp = uiwidgetp;
 
   /* begin line */
+
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 forums) */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1499,6 +1549,7 @@ starterProcessSupport (void *udata)
   starter->linkinfo [START_LINK_CB_FORUM].uiwidgetp = uiwidgetp;
 
   /* begin line */
+
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets) */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1513,6 +1564,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (hbox);
 
   /* begin line */
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -2069,37 +2121,53 @@ starterStopAllProcessCallback (void *udata)
 }
 
 static bool
+starterDLLatestLinkHandler (void *udata)
+{
+  startui_t   *starter = udata;
+
+  starterLinkHandler (starter, START_LINK_CB_DOWNLOAD);
+  return UICB_STOP;
+}
+
+static bool
 starterDownloadLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_DOWNLOAD);
+  startui_t   *starter = udata;
+
+  starterLinkHandler (starter, START_LINK_CB_DOWNLOAD);
   return UICB_STOP;
 }
 
 static bool
 starterWikiLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_WIKI);
+  startui_t   *starter = udata;
+
+  starterLinkHandler (starter, START_LINK_CB_WIKI);
   return UICB_STOP;
 }
 
 static bool
 starterForumLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_FORUM);
+  startui_t   *starter = udata;
+
+  starterLinkHandler (starter, START_LINK_CB_FORUM);
   return UICB_STOP;
 }
 
 static bool
 starterTicketLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_TICKETS);
+  startui_t   *starter = udata;
+
+  starterLinkHandler (starter, START_LINK_CB_TICKETS);
   return UICB_STOP;
 }
 
 static void
-starterLinkHandler (void *udata, int cbidx)
+starterLinkHandler (startui_t *starter, int cbidx)
 {
-  startui_t *starter = udata;
   char        *uri;
   char        tmp [200];
 
