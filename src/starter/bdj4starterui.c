@@ -1481,9 +1481,6 @@ starterProcessSupport (void *udata)
       for (int i = 0; i < START_LINK_CB_MAX; ++i) {
         uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_ENABLE);
       }
-      if (isLinux ()) {
-        uiWidgetSetState (starter->linkinfo [START_LINK_CB_DL_LATEST].uiwidgetp, UIWIDGET_DISABLE);
-      }
     }
   }
   uiLabelSetText (uiwidgetp, starter->latestversiondisp);
