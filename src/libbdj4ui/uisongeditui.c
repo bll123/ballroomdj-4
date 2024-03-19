@@ -468,16 +468,24 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
     uiwcont_t   *col;
+    slist_t     *sellist;
 
-    col = uiCreateVertBox ();
-    uiWidgetSetAllMargins (col, 4);
-    uiWidgetExpandHoriz (col);
-    uiWidgetExpandVert (col);
-    uiBoxPackStartExpand (hbox, col);
+    sellist = dispselGetList (uisongedit->dispsel, i);
+    count = slistGetCount (sellist);
 
-    uisongeditAddDisplay (uisongedit, col,
-        seint->szgrp [UISE_SZGRP_LABEL_A + i - DISP_SEL_SONGEDIT_A], i);
-    uiwcontFree (col);
+    /* don't bother building the vertical box if the column has no items */
+    /* otherwise it takes up space in the song editor display */
+    if (count > 0) {
+      col = uiCreateVertBox ();
+      uiWidgetSetAllMargins (col, 4);
+      uiWidgetExpandHoriz (col);
+      uiWidgetExpandVert (col);
+      uiBoxPackStartExpand (hbox, col);
+
+      uisongeditAddDisplay (uisongedit, col,
+          seint->szgrp [UISE_SZGRP_LABEL_A + i - DISP_SEL_SONGEDIT_A], i);
+      uiwcontFree (col);
+    }
   }
 
   uiwcontFree (hbox);

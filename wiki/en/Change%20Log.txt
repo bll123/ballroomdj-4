@@ -16,10 +16,11 @@
     * Alternate Installer: Fixed.
     * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
+    * Song Editor: User Interface: Improve use of available space.
     * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
 * Changes:
     * Alternate Installer: Re-arranged user interface.
-    * Filter: Sort By: Added BPM as a sort option.
+    * Song Filter: Sort By: Added BPM as a sort option.
     * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
     * Configuration: General: Remove audio tag interface selection (not needed).
 * New Features:
