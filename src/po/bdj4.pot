@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-17 06:32-0700\n"
+"POT-Creation-Date: 2024-03-20 06:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -627,6 +627,10 @@ msgstr ""
 #. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
 #. CONTEXT: configuration: status: information on how to edit a status entry
 msgid "Double click on a field to edit."
+msgstr ""
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
 msgstr ""
 
 #. CONTEXT: installer: status message

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-11-02\n"
-"PO-Revision-Date: 2024-03-17\n"
+"PO-Revision-Date: 2024-03-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
@@ -630,6 +630,10 @@ msgstr "Nie pisz"
 #. CONTEXT: configuration: status: information on how to edit a status entry
 msgid "Double click on a field to edit."
 msgstr "Kliknij dwukrotnie pole, aby je edytować."
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
