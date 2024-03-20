@@ -168,8 +168,8 @@ localeSetup (void)
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
 
   if (isWindows ()) {
-    if (atof (sysvarsGetStr (SV_OSVERS)) >= 10.0) {
-      if (atol (sysvarsGetStr (SV_OSBUILD)) >= 1803) {
+    if (atof (sysvarsGetStr (SV_OS_VERS)) >= 10.0) {
+      if (atol (sysvarsGetStr (SV_OS_BUILD)) >= 1803) {
         useutf8ext = true;
       }
     }

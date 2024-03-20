@@ -52,9 +52,11 @@ void
 instutilCreateLauncher (const char *name, const char *maindir,
     const char *workdir, int profilenum)
 {
+  char        cwd [MAXPATHLEN];
   char        path [MAXPATHLEN];
   char        buff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
+  char        ibuff [MAXPATHLEN];
   const char  *targv [10];
   int         targc = 0;
 
@@ -62,11 +64,17 @@ instutilCreateLauncher (const char *name, const char *maindir,
     profilenum = 0;
   }
 
+  osGetCurrentDir (cwd, sizeof (cwd));
+  osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_MAIN));
+
   if (isWindows ()) {
     char    abuff [MAXPATHLEN];
 
     /* shortcut location and name */
-    targv [targc++] = "./bin/bdj4winmksc.exe";
+    pathbldMakePath (ibuff, sizeof (ibuff),
+        "bin/bdj4winmksc", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_MAIN);
+    targv [targc++] = ibuff;
+
     snprintf (path, sizeof (path), "%s/Desktop/%s.lnk",
         sysvarsGetStr (SV_HOME), name);
     pathDisplayPath (path, sizeof (path));
@@ -99,7 +107,9 @@ instutilCreateLauncher (const char *name, const char *maindir,
       return;
     }
     if (isLinux ()) {
-      targv [targc++] = "./install/linux-mk-desktop-launcher.sh";
+      pathbldMakePath (ibuff, sizeof (ibuff),
+          "install/linux-mk-desktop-launcher.sh", "", PATHBLD_MP_DIR_MAIN);
+      targv [targc++] = ibuff;
     }
     if (isMacOS ()) {
       pathbldMakePath (buff, sizeof (buff),
@@ -114,6 +124,8 @@ instutilCreateLauncher (const char *name, const char *maindir,
     targv [targc++] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
+
+  osChangeDir (cwd);
 }
 
 void
@@ -451,10 +463,10 @@ instutilRegister (const char *data)
       sysvarsGetStr (SV_BDJ4_BUILD),
       sysvarsGetStr (SV_BDJ4_BUILDDATE),
       sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
-      sysvarsGetStr (SV_OSNAME),
-      sysvarsGetStr (SV_OSDISP),
-      sysvarsGetStr (SV_OSVERS),
-      sysvarsGetStr (SV_OSBUILD),
+      sysvarsGetStr (SV_OS_NAME),
+      sysvarsGetStr (SV_OS_DISP),
+      sysvarsGetStr (SV_OS_VERS),
+      sysvarsGetStr (SV_OS_BUILD),
       sysvarsGetStr (SV_USER),
       sysvarsGetStr (SV_HOSTNAME),
       sysvarsGetStr (SV_LOCALE_SYSTEM),

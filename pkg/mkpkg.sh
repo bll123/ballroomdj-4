@@ -65,7 +65,7 @@ function copyreleasefiles {
   tag=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt"
+  filelist="LICENSE.txt README.txt VERSION.txt DIST.txt "
   dirlist="bin conv http img install licenses scripts locale templates"
 
   if [[ ! -d plocal/bin ]];then
@@ -196,6 +196,7 @@ done
 cwd=$(pwd)
 
 . src/utils/pkgnm.sh
+pkgnmgetdata
 
 clean=T
 preskip=F
@@ -292,6 +293,10 @@ DEVELOPMENT=$DEVELOPMENT
 _HERE_
     fi
   fi
+  # always create the DIST.txt file
+  cat > DIST.txt << _HERE_
+DIST_TAG=${pn_dist}
+_HERE_
 fi
 
 # staging / create source packages

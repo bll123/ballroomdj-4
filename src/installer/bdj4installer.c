@@ -1812,10 +1812,10 @@ installerConvertStart (installer_t *installer)
 
   locidx = 0;
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/Applications/BallroomDJ.app/Contents/%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->home, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+      installer->home, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/local/bin/tclsh", installer->home);
   locs [locidx++] = mdstrdup (tbuff);
@@ -1823,7 +1823,7 @@ installerConvertStart (installer_t *installer)
   locs [locidx++] = mdstrdup (tbuff);
   /* for testing; low priority */
   snprintf (tbuff, sizeof (tbuff), "%s/../%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = mdstrdup (tbuff);
   locs [locidx++] = mdstrdup ("/opt/local/bin/tclsh");
   locs [locidx++] = mdstrdup ("/usr/bin/tclsh");
@@ -2048,7 +2048,7 @@ installerVLCDownload (installer_t *installer)
 
     /* the os architecture on m1 is 'arm64' and includes the bits */
     /* the os architecture on intel is 'x86_64' */
-    arch = sysvarsGetStr (SV_OSARCH);
+    arch = sysvarsGetStr (SV_OS_ARCH);
     if (strcmp (arch, "x86_64") == 0) {
       arch = "intel64";
     }

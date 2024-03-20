@@ -42,6 +42,11 @@
 #include "pathutil.h"
 
 typedef struct {
+  char    *data;
+  char    *dist;
+} sysdistinfo_t;
+
+typedef struct {
   const char  *desc;
 } sysvarsdesc_t;
 
@@ -88,14 +93,15 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
-  [SV_OSARCH] = { "OSARCH" },
-  [SV_OSBUILD] = { "OSBUILD" },
-  [SV_OSDISP] = { "OSDISP" },
+  [SV_OS_ARCH] = { "OS_ARCH" },
+  [SV_OS_BUILD] = { "OS_BUILD" },
+  [SV_OS_DISP] = { "OS_DISP" },
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
-  [SV_OSNAME] = { "OSNAME" },
-  [SV_OSVERS] = { "OSVERS" },
+  [SV_OS_NAME] = { "OS_NAME" },
+  [SV_OS_VERS] = { "OS_VERS" },
   [SV_OS_PLATFORM] = { "OS_PLATFORM" },
-  [SV_OS_TAG] = { "OS_ARCH_TAG" },
+  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
+  [SV_OS_DIST_TAG] = { "OS_DIST_TAG" },
   [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
   [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
@@ -167,6 +173,8 @@ static void checkForFile (char *path, int idx, ...);
 static bool svGetLinuxOSInfo (char *fn);
 static void svGetLinuxDefaultTheme (void);
 static void svGetSystemFont (void);
+static sysdistinfo_t *sysvarsParseDistFile (const char *path);
+static void sysvarsParseDistFileFree (sysdistinfo_t *distinfo);
 
 void
 sysvarsInit (const char *argv0)
@@ -179,6 +187,7 @@ sysvarsInit (const char *argv0)
   size_t        dlen;
   bool          alternatepath = false;
   sysversinfo_t *versinfo;
+  sysdistinfo_t *distinfo;
 #if _lib_uname
   struct utsname  ubuf;
 #endif
@@ -195,13 +204,14 @@ sysvarsInit (const char *argv0)
   osGetCurrentDir (tcwd, sizeof (tcwd));
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_NAME], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_PLATFORM], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSVERS], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_TAG], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_DISP], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_VERS], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_ARCH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_ARCH_TAG], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_DIST_TAG], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_BUILD], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
   lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
@@ -211,38 +221,38 @@ sysvarsInit (const char *argv0)
 
 #if _lib_uname
   uname (&ubuf);
-  strlcpy (sysvars [SV_OSNAME], ubuf.sysname, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSARCH], ubuf.machine, SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_NAME], ubuf.sysname, SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_DISP], ubuf.sysname, SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_VERS], ubuf.version, SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_ARCH], ubuf.machine, SV_MAX_SZ);
 #endif
 #if _lib_RtlGetVersion
   memset (&osvi, 0, sizeof (RTL_OSVERSIONINFOEXW));
   osvi.dwOSVersionInfoSize = sizeof (RTL_OSVERSIONINFOEXW);
   RtlGetVersion (&osvi);
 
-  snprintf (sysvars [SV_OSVERS], SV_MAX_SZ, "%ld.%ld",
+  snprintf (sysvars [SV_OS_VERS], SV_MAX_SZ, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
-  snprintf (sysvars [SV_OSBUILD], SV_MAX_SZ, "%ld",
+  snprintf (sysvars [SV_OS_BUILD], SV_MAX_SZ, "%ld",
       osvi.dwBuildNumber);
 #endif
 #if _lib_GetNativeSystemInfo
   GetNativeSystemInfo (&winsysinfo);
   /* dwNumberOfProcessors may not reflect the number of system processors */
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
-    strlcpy (sysvars [SV_OSARCH], "intel", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_ARCH], "intel", SV_MAX_SZ);
     lsysvars [SVL_OSBITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM) {
-    strlcpy (sysvars [SV_OSARCH], "arm", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
     lsysvars [SVL_OSBITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM64) {
-    strlcpy (sysvars [SV_OSARCH], "arm", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
     lsysvars [SVL_OSBITS] = 64;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-    strlcpy (sysvars [SV_OSARCH], "amd64", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_ARCH], "amd64", SV_MAX_SZ);
     lsysvars [SVL_OSBITS] = 64;
   }
 #endif
@@ -250,60 +260,60 @@ sysvarsInit (const char *argv0)
 /* is a windows machine */
 #if _lib_GetNativeSystemInfo || _lib_RtlGetVersion
   strlcpy (sysvars [SV_OS_EXEC_EXT], ".exe", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSDISP], "Windows ", SV_MAX_SZ);
-  if (strcmp (sysvars [SV_OSVERS], "5.0") == 0) {
-    strlcat (sysvars [SV_OSDISP], "2000", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_NAME], "windows", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_DISP], "Windows ", SV_MAX_SZ);
+  if (strcmp (sysvars [SV_OS_VERS], "5.0") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "2000", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "5.1") == 0) {
-    strlcat (sysvars [SV_OSDISP], "XP", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "5.1") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "XP", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "5.2") == 0) {
-    strlcat (sysvars [SV_OSDISP], "XP Pro", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "5.2") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "XP Pro", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "6.0") == 0) {
-    strlcat (sysvars [SV_OSDISP], "Vista", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "6.0") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "Vista", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "6.1") == 0) {
-    strlcat (sysvars [SV_OSDISP], "7", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "6.1") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "7", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "6.2") == 0) {
-    strlcat (sysvars [SV_OSDISP], "8.0", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "6.2") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "8.0", SV_MAX_SZ);
   }
-  else if (strcmp (sysvars [SV_OSVERS], "6.3") == 0) {
-    strlcat (sysvars [SV_OSDISP], "8.1", SV_MAX_SZ);
+  else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
+    strlcat (sysvars [SV_OS_DISP], "8.1", SV_MAX_SZ);
   }
   else {
-    strlcat (sysvars [SV_OSDISP], sysvars [SV_OSVERS], SV_MAX_SZ);
+    strlcat (sysvars [SV_OS_DISP], sysvars [SV_OS_VERS], SV_MAX_SZ);
   }
-  strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
-  strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], SV_MAX_SZ);
+  strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
+  strlcat (sysvars [SV_OS_DISP], sysvars [SV_OS_BUILD], SV_MAX_SZ);
 #endif
 
-  stringAsciiToLower (sysvars [SV_OSNAME]);
+  stringAsciiToLower (sysvars [SV_OS_NAME]);
   if (sizeof (void *) == 8) {
     lsysvars [SVL_OSBITS] = 64;
   } else {
     lsysvars [SVL_OSBITS] = 32;
   }
 
-  if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
     lsysvars [SVL_IS_MACOS] = true;
     strlcpy (sysvars [SV_OS_PLATFORM], "macos", SV_MAX_SZ);
     /* arch will be arm64 or x86_64 */
     /* be sure to include the leading - */
-    if (strcmp (sysvars [SV_OSARCH], "x86_64") == 0) {
-      strlcpy (sysvars [SV_OS_TAG], "-intel", SV_MAX_SZ);
+    if (strcmp (sysvars [SV_OS_ARCH], "x86_64") == 0) {
+      strlcpy (sysvars [SV_OS_ARCH_TAG], "-intel", SV_MAX_SZ);
     }
-    if (strcmp (sysvars [SV_OSARCH], "arm64") == 0) {
-      strlcpy (sysvars [SV_OS_TAG], "-applesilicon", SV_MAX_SZ);
+    if (strcmp (sysvars [SV_OS_ARCH], "arm64") == 0) {
+      strlcpy (sysvars [SV_OS_ARCH_TAG], "-applesilicon", SV_MAX_SZ);
     }
   }
-  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     lsysvars [SVL_IS_LINUX] = true;
     strlcpy (sysvars [SV_OS_PLATFORM], "linux", SV_MAX_SZ);
   }
-  if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "windows") == 0) {
     lsysvars [SVL_IS_WINDOWS] = true;
     strlcpy (sysvars [SV_OS_PLATFORM], "win64", SV_MAX_SZ);
   }
@@ -603,6 +613,11 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], versinfo->dev, SV_MAX_SZ);
   sysvarsParseVersionFileFree (versinfo);
 
+  snprintf (buff, sizeof (buff), "%s/DIST.txt", sysvars [SV_BDJ4_DIR_MAIN]);
+  distinfo = sysvarsParseDistFile (buff);
+  strlcpy (sysvars [SV_OS_DIST_TAG], distinfo->dist, SV_MAX_SZ);
+  sysvarsParseDistFileFree (distinfo);
+
   if (isWindows ()) {
     snprintf (sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ,
         "%s/AppData/Roaming", sysvars [SV_HOME]);
@@ -648,14 +663,14 @@ sysvarsInit (const char *argv0)
 
   sysvarsCheckPaths (NULL);
 
-  if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
     char  *data;
     char  *tdata;
 
-    strlcpy (sysvars [SV_OSDISP], "macOS", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_DISP], "macOS", SV_MAX_SZ);
     data = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersion", NULL);
     stringTrim (data);
-    strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_VERS], data, SV_MAX_SZ);
     dataFree (data);
 
     tdata = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersionExtra", NULL);
@@ -665,45 +680,45 @@ sysvarsInit (const char *argv0)
       stringTrim (tdata);
       len = strlen (tdata);
       *(tdata + len - 1) = '\0';
-      strlcat (sysvars [SV_OSVERS], "-", SV_MAX_SZ);
-      strlcat (sysvars [SV_OSVERS], tdata + 1, SV_MAX_SZ);
+      strlcat (sysvars [SV_OS_VERS], "-", SV_MAX_SZ);
+      strlcat (sysvars [SV_OS_VERS], tdata + 1, SV_MAX_SZ);
     }
     dataFree (tdata);
 
-    strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_BUILD], "", SV_MAX_SZ);
     data = osRunProgram (sysvars [SV_TEMP_A], "-BuildVersion", NULL);
     stringTrim (data);
-    strlcpy (sysvars [SV_OSBUILD], data, SV_MAX_SZ);
+    strlcpy (sysvars [SV_OS_BUILD], data, SV_MAX_SZ);
     dataFree (data);
 
-    data = sysvars [SV_OSVERS];
+    data = sysvars [SV_OS_VERS];
     if (data != NULL) {
       if (strcmp (data, "15") > 0) {
-        strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
       } else if (strcmp (data, "14") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Sonoma", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Sonoma", SV_MAX_SZ);
       } else if (strcmp (data, "13") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Ventura", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Ventura", SV_MAX_SZ);
       } else if (strcmp (data, "12") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Monterey", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Monterey", SV_MAX_SZ);
       } else if (strcmp (data, "11") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Big Sur", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Big Sur", SV_MAX_SZ);
       } else if (strcmp (data, "10.15") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Catalina", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Catalina", SV_MAX_SZ);
       } else if (strcmp (data, "10.14") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Mojave", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Mojave", SV_MAX_SZ);
       } else if (strcmp (data, "10.13") > 0) {
-        strlcat (sysvars [SV_OSDISP], " High Sierra", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " High Sierra", SV_MAX_SZ);
       } else if (strcmp (data, "10.12") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Sierra", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " Sierra", SV_MAX_SZ);
       } else {
-        strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
+        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
       }
     }
   }
-  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     static char *fna = "/etc/lsb-release";
     static char *fnb = "/etc/os-release";
 
@@ -720,7 +735,7 @@ sysvarsInit (const char *argv0)
 
   /* the SVL_IS_VM flag is only used for the test suite */
   /* this is not set for mac-os (how to do is unknown) */
-  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     FILE        *fh;
     char        tbuff [2048];
     static char *flagtag = "flags";
@@ -740,7 +755,7 @@ sysvarsInit (const char *argv0)
       fclose (fh);
     }
   }
-  if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
+  if (strcmp (sysvars [SV_OS_NAME], "windows") == 0) {
 #if _lib___cpuid
     int     cpuinfo [4];
 
@@ -1038,10 +1053,12 @@ sysvarsParseVersionFile (const char *path)
 void
 sysvarsParseVersionFileFree (sysversinfo_t *versinfo)
 {
-  if (versinfo != NULL) {
-    dataFree (versinfo->data);
-    mdfree (versinfo);
+  if (versinfo == NULL) {
+    return;
   }
+
+  dataFree (versinfo->data);
+  mdfree (versinfo);
 }
 
 /* internal routines */
@@ -1106,7 +1123,7 @@ svGetLinuxOSInfo (char *fn)
       strlcpy (buff, tbuff + strlen (prettytag) + 1, sizeof (buff));
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_DISP], buff, SV_MAX_SZ);
       haveprettyname = true;
       rc = true;
     }
@@ -1115,7 +1132,7 @@ svGetLinuxOSInfo (char *fn)
       strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_DISP], buff, SV_MAX_SZ);
       haveprettyname = true;
       rc = true;
     }
@@ -1123,7 +1140,7 @@ svGetLinuxOSInfo (char *fn)
         strncmp (tbuff, reltag, strlen (reltag)) == 0) {
       strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
       stringTrim (buff);
-      strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_VERS], buff, SV_MAX_SZ);
       rc = true;
     }
     if (! havevers &&
@@ -1131,7 +1148,7 @@ svGetLinuxOSInfo (char *fn)
       strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+      strlcpy (sysvars [SV_OS_VERS], buff, SV_MAX_SZ);
       rc = true;
     }
   }
@@ -1170,3 +1187,46 @@ svGetSystemFont (void)
     mdfree (tptr);
   }
 }
+
+sysdistinfo_t *
+sysvarsParseDistFile (const char *path)
+{
+  sysdistinfo_t *distinfo;
+
+  distinfo = mdmalloc (sizeof (sysdistinfo_t));
+  distinfo->data = NULL;
+  distinfo->dist = "";
+
+  if (fileopFileExists (path)) {
+    char    *tokptr;
+    char    *tokptrb;
+    char    *tp;
+    char    *vnm;
+    char    *p;
+
+    distinfo->data = filedataReadAll (path, NULL);
+    tp = strtok_r (distinfo->data, "\r\n", &tokptr);
+    while (tp != NULL) {
+      vnm = strtok_r (tp, "=", &tokptrb);
+      p = strtok_r (NULL, "=", &tokptrb);
+      if (vnm != NULL && p != NULL && strcmp (vnm, "DIST_TAG") == 0) {
+        distinfo->dist = p;
+      }
+      tp = strtok_r (NULL, "\r\n", &tokptr);
+    }
+  }
+
+  return distinfo;
+}
+
+static void
+sysvarsParseDistFileFree (sysdistinfo_t *distinfo)
+{
+  if (distinfo == NULL) {
+    return;
+  }
+
+  dataFree (distinfo->data);
+  mdfree (distinfo);
+}
+

@@ -8,8 +8,7 @@ syntax: regexp
 ^dev/
 # the primary.txt file must not be transfered to other systems
 ^devel/primary\.txt$
-# for the time being, ignore this (doxygen output)
-^doxygen/
+^DIST\.txt$
 ^http/.*\.bak.\d$
 ^http/.*\.html$
 ^http/.*\.crt$
