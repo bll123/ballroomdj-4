@@ -36,7 +36,7 @@ for idir in "$desktop" "$HOME/.local/share/applications"; do
   fpath="$idir/${scname}.desktop"
   if [[ -d $idir ]]; then
     if [[ ! -f $fpath ]]; then
-      cp -f install/bdj4.desktop "${fpath}"
+      cp -f "${tgtpath}/install/bdj4.desktop" "${fpath}"
       sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
           -e "s,#APPNAME#,${scname},g" \
           -e "s,#WORKDIR#,${workdir},g" \

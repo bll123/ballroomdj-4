@@ -38,6 +38,9 @@ if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
 
+. src/utils/pkgnm.sh
+pkgnmgetdata
+
 maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
   sed -e 's,.* ,,')
 min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |
@@ -253,5 +256,10 @@ _HERE_
   rsync -aS --delete /${libtag}/etc/fonts plocal/etc
 
 fi # is windows
+
+# create the DIST.txt file
+cat > DIST.txt << _HERE_
+DIST_TAG=${pn_dist}
+_HERE_
 
 exit 0

@@ -52,7 +52,6 @@ void
 instutilCreateLauncher (const char *name, const char *maindir,
     const char *workdir, int profilenum)
 {
-  char        cwd [MAXPATHLEN];
   char        path [MAXPATHLEN];
   char        buff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
@@ -63,9 +62,6 @@ instutilCreateLauncher (const char *name, const char *maindir,
   if (profilenum < 0) {
     profilenum = 0;
   }
-
-  osGetCurrentDir (cwd, sizeof (cwd));
-  osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_MAIN));
 
   if (isWindows ()) {
     char    abuff [MAXPATHLEN];
@@ -124,8 +120,6 @@ instutilCreateLauncher (const char *name, const char *maindir,
     targv [targc++] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
-
-  osChangeDir (cwd);
 }
 
 void

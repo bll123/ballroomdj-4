@@ -163,6 +163,7 @@ static void altinstSetTargetDir (altinst_t *altinst, const char *fn);
 static void altinstLoadBdjOpt (altinst_t *altinst);
 static void altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm);
 static void altinstSigHandler (int sig);
+static void altinstSetTargetEntry (altinst_t *altinst, const char *fn);
 
 int
 main (int argc, char *argv[])
@@ -407,7 +408,6 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiEntryInit (80, MAXPATHLEN);
-  uiEntrySetValue (uiwidgetp, altinst->target);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
@@ -415,6 +415,7 @@ altinstBuildUI (altinst_t *altinst)
   if (isMacOS ()) {
     uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   }
+  altinstSetTargetEntry (altinst, altinst->target);
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altinstTargetDirDialog, altinst, NULL);
@@ -752,7 +753,7 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   altinst->name = mdstrdup (name);
   rc = UIENTRY_OK;
   altinstBuildTarget (altinst, tbuff, sizeof (tbuff), altinst->name);
-  uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
+  altinstSetTargetEntry (altinst, tbuff);
   if (isMacOS ()) {
     /* on macos, the field is disabled, so the validation must be forced */
     rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], altinst);
@@ -826,7 +827,7 @@ altinstTargetDirDialog (void *udata)
     strlcpy (tbuff, fn, sizeof (tbuff));
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
     /* validation gets called again upon set */
-    uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
+    altinstSetTargetEntry (altinst, tbuff);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altinst->target);
     mdfree (fn);
   }
@@ -891,7 +892,7 @@ altinstSaveTargetDir (altinst_t *altinst)
   /* CONTEXT: alternate installer: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Saving install location."), false);
 
-  uiEntrySetValue (altinst->wcont [ALT_W_TARGET], altinst->target);
+  altinstSetTargetEntry (altinst, altinst->target);
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "w");
@@ -1321,4 +1322,14 @@ static void
 altinstSigHandler (int sig)
 {
   return;
+}
+
+static void
+altinstSetTargetEntry (altinst_t *altinst, const char *fn)
+{
+  char    tbuff [MAXPATHLEN];
+
+  strlcpy (tbuff, fn, sizeof (tbuff));
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
 }
