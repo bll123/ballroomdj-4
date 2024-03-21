@@ -109,6 +109,7 @@ typedef struct {
   const char      *hostname;
   const char      *home;
   char            *name;
+  int             altidx;
   /* conversion */
   uiwcont_t       *wcont [ALT_W_MAX];
   /* ati */
@@ -203,6 +204,7 @@ main (int argc, char *argv[])
   altinst.unattended = false;
   altinst.updateinstall = false;
   altinst.verbose = false;
+  altinst.altidx = 1;
   for (int i = 0; i < ALT_W_MAX; ++i) {
     altinst.wcont [i] = NULL;
   }
@@ -253,10 +255,15 @@ main (int argc, char *argv[])
     /* from the command line */
     altinstSetTargetDir (&altinst, tmp);
   } else {
+    char    tfn [MAXPATHLEN];
+
     altinstBuildTarget (&altinst, tbuff, sizeof (tbuff), altinst.name);
 
-    /* if the altinstdir.txt file exists, use it */
-    fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "r");
+    /* if the altinstdirNN.txt file exists, use it */
+    snprintf (tfn, sizeof (tfn), "%s/%s%s%02d%s",
+        sysvarsGetStr (SV_DIR_CONFIG), ALT_INST_PATH_FN,
+        sysvarsGetStr (SV_BDJ4_DEVELOPMENT), 1, BDJ4_CONFIG_EXT);
+    fh = fileopOpen (tfn, "r");
     if (fh != NULL) {
       pathinfo_t    *pi;
 
@@ -888,20 +895,10 @@ altinstInit (altinst_t *altinst)
 static void
 altinstSaveTargetDir (altinst_t *altinst)
 {
-  FILE        *fh;
-
   /* CONTEXT: alternate installer: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Saving install location."), false);
 
   altinstSetTargetEntry (altinst, altinst->target);
-
-  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
-  fh = fileopOpen (sysvarsGetStr (SV_FILE_ALT_INST_PATH), "w");
-  if (fh != NULL) {
-    fprintf (fh, "%s\n", altinst->target);
-    mdextfclose (fh);
-    fclose (fh);
-  }
 
   altinst->instState = ALT_MAKE_TARGET;
 }
@@ -989,10 +986,10 @@ altinstSetup (altinst_t *altinst)
 {
   char    buff [MAXPATHLEN];
   char    tbuff [MAXPATHLEN];
+  char    tfn [MAXPATHLEN];
   FILE    *fh;
   char    str [40];
-  int     altcount = 0;
-  int     baseport;
+  int     altcount = 1;
 
   /* CONTEXT: alternate installation: status message */
   altinstDisplayText (altinst, INST_DISP_ACTION, _("Initial Setup."), false);
@@ -1004,7 +1001,7 @@ altinstSetup (altinst_t *altinst)
     diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
     fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
     if (fh != NULL) {
-      fputs ("0\n", fh);
+      fprintf (fh, "%d\n", altcount);
       mdextfclose (fh);
       fclose (fh);
     }
@@ -1033,40 +1030,37 @@ altinstSetup (altinst_t *altinst)
       altcount = atoi (str);
       /* update alternate count */
       ++altcount;
+      altinst->altidx = altcount;
     }
 
     /* write the new altcount */
     fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
     if (fh != NULL) {
-      snprintf (str, sizeof (str), "%d\n", altcount);
-      fputs (str, fh);
+      fprintf (fh, "%d\n", altinst->altidx);
       mdextfclose (fh);
       fclose (fh);
     }
   }
 
-  /* calculate the new base port */
-  baseport = sysvarsGetNum (SVL_INITIAL_PORT);
-  baseport += altcount * BDJOPT_MAX_PROFILES * (int) bdjvarsGetNum (BDJVL_NUM_PORTS);
-
-  /* write the new base port out */
-  snprintf (str, sizeof (str), "%d\n", baseport);
-  pathbldMakePath (buff, sizeof (buff),
-      BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  fh = fileopOpen (buff, "w");
-  if (fh != NULL) {
-    fputs (str, fh);
-    mdextfclose (fh);
-    fclose (fh);
-  }
-
-  /* write the alt-idx file out */
-  snprintf (str, sizeof (str), "%d\n", altcount);
+  /* write the altidx file out */
   pathbldMakePath (buff, sizeof (buff),
       ALT_IDX_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fileopOpen (buff, "w");
   if (fh != NULL) {
-    fputs (str, fh);
+    fprintf (fh, "%d\n", altinst->altidx);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  /* write out the installation dir to the config file */
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+  snprintf (tfn, sizeof (tfn), "%s/%s%s%02d%s",
+      sysvarsGetStr (SV_DIR_CONFIG), ALT_INST_PATH_FN,
+      sysvarsGetStr (SV_BDJ4_DEVELOPMENT), altinst->altidx, BDJ4_CONFIG_EXT);
+
+  fh = fileopOpen (tfn, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", altinst->target);
     mdextfclose (fh);
     fclose (fh);
   }
@@ -1138,9 +1132,30 @@ altinstCreateLauncher (altinst_t *altinst)
 static void
 altinstFinalize (altinst_t *altinst)
 {
+  int32_t baseport;
+  char    tbuff [MAXPATHLEN];
+  FILE    *fh;
+
   if (osChangeDir (altinst->datatopdir) < 0) {
     altinstFailWorkingDir (altinst, altinst->datatopdir, "fin");
     return;
+  }
+
+  /* the base port must always be updated in case the number of ports */
+  /* used in BDJ4 has been changed. */
+  /* calculate the new base port */
+  baseport = sysvarsGetNum (SVL_INITIAL_PORT);
+  baseport += altinst->altidx * BDJOPT_MAX_PROFILES *
+      (int) bdjvarsGetNum (BDJVL_NUM_PORTS);
+
+  /* write the new base port out */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+  fh = fileopOpen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%d\n", baseport);
+    mdextfclose (fh);
+    fclose (fh);
   }
 
   if (altinst->newinstall) {

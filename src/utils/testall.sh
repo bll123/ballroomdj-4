@@ -54,10 +54,10 @@ if [[ $TBUILD == T ]]; then
     cd src
     case ${pn_dist} in
       -opensuse)
-        make CC=gcc-12 CXX=g++-12
+        time make CC=gcc-12 CXX=g++-12
         ;;
       *)
-        make
+        time make
         ;;
     esac
   ) >> $LOG 2>&1

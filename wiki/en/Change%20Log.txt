@@ -13,7 +13,7 @@
 **4.8.0 2024-3---**
 
 * Bug Fixes:
-    * Alternate Installer: Fixed.
+    * Alternate Installer: Re-worked, fixed.
     * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
     * Song Editor: User Interface: Improve use of available space.

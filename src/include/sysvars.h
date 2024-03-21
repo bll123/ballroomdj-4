@@ -34,7 +34,6 @@ typedef enum {
   SV_DIR_CONFIG_BASE,   // from XDG_CONFIG_HOME or $HOME/.config
                         // windows: %USERPROFILE%/AppData/Roaming
   SV_FILE_ALTCOUNT,
-  SV_FILE_ALT_INST_PATH,
   SV_FILE_INST_PATH,
   SV_FONT_DEFAULT,
   SV_HOME,

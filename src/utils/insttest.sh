@@ -993,6 +993,14 @@ function cleanInstTest {
   test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
+  fn="$HOME/.local/share/applications/BDJ4dev.desktop"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/.local/share/applications/BDJ4altdev.desktop"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/.config/BDJ4/altinstdirdev.txt"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/.config/BDJ4/altcountdev.txt"
+  test -f "$fn" && rm -f "$fn"
 }
 
 function waitForInstallDirRemoval {

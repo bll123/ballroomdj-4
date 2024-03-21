@@ -77,7 +77,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_DIR_CONFIG] = { "DIR_CONFIG" },
   [SV_DIR_CONFIG_BASE] = { "DIR_CONFIG_BASE" },
   [SV_FILE_ALTCOUNT] = { "FILE_ALTCOUNT" },
-  [SV_FILE_ALT_INST_PATH] = { "FILE_ALT_INST_PATH" },
   [SV_FILE_INST_PATH] = { "FILE_INST_PATH" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
@@ -639,9 +638,6 @@ sysvarsInit (const char *argv0)
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
   strlcpy (sysvars [SV_FILE_INST_PATH], tbuff, SV_MAX_SZ);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
-      ALT_INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
-  strlcpy (sysvars [SV_FILE_ALT_INST_PATH], tbuff, SV_MAX_SZ);
 
   if (isWindows ()) {
     snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
