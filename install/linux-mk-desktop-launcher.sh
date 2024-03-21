@@ -13,6 +13,17 @@ tgtpath=$2
 workdir=$3
 profile=$4
 
+# make sure the created .desktop file has a prefix of BDJ4
+# this make them easy to remove.
+fullscname="{$scname}"
+case "${scname}" in
+  BDJ4*)
+    ;;
+  *)
+    fullscname="BDJ4${scname}"
+    ;;
+esac
+
 if [[ ! -d "$tgtpath" ]]; then
   echo "Could not locate $tgtpath"
   exit 1
@@ -33,7 +44,7 @@ for idir in "$desktop" "$HOME/.local/share/applications"; do
       rm -f "${fpath}"
     fi
   fi
-  fpath="$idir/${scname}.desktop"
+  fpath="$idir/${fullscname}.desktop"
   if [[ -d $idir ]]; then
     if [[ ! -f $fpath ]]; then
       cp -f "${tgtpath}/install/bdj4.desktop" "${fpath}"
