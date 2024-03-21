@@ -696,6 +696,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 
   if (rc == UIENTRY_OK) {
     /* set the target directory information */
+    /* note that 'dir' may be invalid after this call */
     altinstSetTargetDir (altinst, dir);
     if (exists) {
       if (found) {

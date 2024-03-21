@@ -83,15 +83,15 @@ case $systype in
     ;;
 esac
 
-TARGETTOPDIR=${cwd}/tmp/BDJ4
-TARGETTOPALTDIR=${cwd}/tmp/BDJ4alt
+TARGETTOPDIR=${cwd}/tmp/BDJ4dev
+TARGETTOPALTDIR=${cwd}/tmp/BDJ4altdev
 TARGETDIR=${TARGETTOPDIR}${macdir}
 TARGETALTDIR=${TARGETTOPALTDIR}${macdir}
 DATATOPDIR=${TARGETDIR}
 DATATOPALTDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
-  DATATOPDIR="$HOME/Library/Application Support/BDJ4"
-  DATATOPALTDIR="$HOME/Library/Application Support/BDJ4alt"
+  DATATOPDIR="$HOME/Library/Application Support/BDJ4dev"
+  DATATOPALTDIR="$HOME/Library/Application Support/BDJ4altdev"
 fi
 IMGDIR="${DATATOPDIR}/img"
 DATADIR="${DATATOPDIR}/data"

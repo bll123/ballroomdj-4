@@ -130,6 +130,7 @@ typedef struct {
   char            *hostname;
   char            *macospfx;
   char            rundir [MAXPATHLEN];      // installation dir with macospfx
+  char            name [100];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];   // where the installer is unpacked
@@ -245,13 +246,13 @@ int
 main (int argc, char *argv[])
 {
   installer_t   installer;
-  char          tbuff [512];
+  char          tbuff [MAXPATHLEN];
   char          buff [MAXPATHLEN];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
-  bdj4arg_t   *bdj4arg;
-  const char  *targ;
+  bdj4arg_t     *bdj4arg;
+  const char    *targ;
 
   static struct option bdj_options [] = {
     { "bdj3dir",    required_argument,  NULL,   '3' },
@@ -355,7 +356,9 @@ main (int argc, char *argv[])
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
   }
-  instutilAppendNameToTarget (buff, sizeof (buff), NULL, false);
+  snprintf (installer.name, sizeof (installer.name), "%s%s",
+      BDJ4_NAME, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
+  instutilAppendNameToTarget (buff, sizeof (buff), installer.name, false);
 
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "r");
   if (fh != NULL) {
@@ -1267,7 +1270,7 @@ installerSetPaths (installer_t *installer)
   strlcpy (installer->datatopdir, installer->rundir, sizeof (installer->datatopdir));
   if (isMacOS ()) {
     snprintf (installer->datatopdir, sizeof (installer->datatopdir),
-        "%s%s/%s", installer->home, MACOS_DIR_LIBDATA, BDJ4_NAME);
+        "%s%s/%s", installer->home, MACOS_DIR_LIBDATA, installer->name);
   }
   if (installer->targetexists) {
     installerLoadBdjOpt (installer);
@@ -1917,7 +1920,7 @@ installerCreateLauncher (installer_t *installer)
   /* for macos, the app is already there, */
   /* so avoid running the creation script */
   if (! isMacOS ()) {
-    instutilCreateLauncher (BDJ4_NAME, installer->rundir, installer->rundir, 0);
+    instutilCreateLauncher (installer->name, installer->rundir, installer->rundir, 0);
   }
 
   if (isMacOS ()) {
@@ -1931,14 +1934,14 @@ installerCreateLauncher (installer_t *installer)
 
     /* remove any old name.app on macos */
     snprintf (buff, sizeof (buff), "%s/Desktop/%s%s",
-        installer->home, BDJ4_NAME, MACOS_APP_EXT);
+        installer->home, installer->name, MACOS_APP_EXT);
     if (osIsLink (buff)) {
       fileopDelete (buff);
     }
 
     /* desktop shortcut pointing to .app */
     snprintf (buff, sizeof (buff), "%s/Desktop/%s",
-        installer->home, BDJ4_NAME);
+        installer->home, installer->name);
     (void) ! symlink (installer->target, buff);
 #endif
   }
