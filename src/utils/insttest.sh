@@ -898,10 +898,8 @@ function checkInstallation {
     fi
 
     if [[ $datafiles == y ]]; then
-      lvol=$(sed -n -e '/^VOLUME$/ { n; s/^\.\.//; p ; }' $mconf)
-      lpli=$(sed -n -e '/^PLAYER$/ { n; s/^\.\.//; p ; }' $mconf)
-
       # volume lib
+      lvol=$(sed -n -e '/^VOLUME$/ { n; s/^\.\.//; p ; }' $mconf)
       res=$(($res+1))
       if [[ $fin == T && $libvol == $lvol ]]; then
         chk=$(($chk+1))
@@ -910,11 +908,21 @@ function checkInstallation {
       fi
 
       # pli lib
+      lpli=$(sed -n -e '/^PLAYER$/ { n; s/^\.\.//; p ; }' $mconf)
       res=$(($res+1))
       if [[ $fin == T && $libpli == $lpli ]]; then
         chk=$(($chk+1))
       else
         echo "  pli library not set correctly"
+      fi
+
+      # music dir not empty
+      mdir=$(sed -n -e '/^DIRMUSIC$/ { n; s/^\.\.//; p ; }' $mconf)
+      res=$(($res+1))
+      if [[ $fin == T && $mdir != "" ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  music dir not set correctly"
       fi
     fi
   fi
@@ -937,6 +945,7 @@ function checkInstallation {
     echo "core file found (data)"
     exit 1
   fi
+
   if [[ $TARGETTOPALTDIR != $target ]]; then
     c=$(ls -1 "${TARGETTOPALTDIR}/core" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
