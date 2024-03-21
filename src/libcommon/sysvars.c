@@ -782,7 +782,7 @@ sysvarsInit (const char *argv0)
     }
     stringTrim (tbuff);
     if (*tbuff) {
-      lsysvars [SVL_BASEPORT] = atoi (tbuff);
+      lsysvars [SVL_BASEPORT] = strtoul (tbuff, NULL, 10);
     }
   }
 

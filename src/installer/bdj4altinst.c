@@ -1132,9 +1132,9 @@ altinstCreateLauncher (altinst_t *altinst)
 static void
 altinstFinalize (altinst_t *altinst)
 {
-  int32_t baseport;
-  char    tbuff [MAXPATHLEN];
-  FILE    *fh;
+  uint32_t  baseport;
+  char      tbuff [MAXPATHLEN];
+  FILE      *fh;
 
   if (osChangeDir (altinst->datatopdir) < 0) {
     altinstFailWorkingDir (altinst, altinst->datatopdir, "fin");
@@ -1144,7 +1144,7 @@ altinstFinalize (altinst_t *altinst)
   /* the base port must always be updated in case the number of ports */
   /* used in BDJ4 has been changed. */
   /* calculate the new base port */
-  baseport = sysvarsGetNum (SVL_INITIAL_PORT);
+  baseport = (uint32_t) sysvarsGetNum (SVL_INITIAL_PORT);
   baseport += altinst->altidx * BDJOPT_MAX_PROFILES *
       (int) bdjvarsGetNum (BDJVL_NUM_PORTS);
 
@@ -1153,7 +1153,7 @@ altinstFinalize (altinst_t *altinst)
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
-    fprintf (fh, "%d\n", baseport);
+    fprintf (fh, "%u\n", baseport);
     mdextfclose (fh);
     fclose (fh);
   }

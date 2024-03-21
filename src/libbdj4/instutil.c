@@ -559,7 +559,7 @@ instutilInstallCleanTmp (const char *rundir)
     }
     snprintf (tstr, sizeof (tstr),
         "@reboot %s/bin/bdj4 --bdj4cleantmp\n", rundir);
-    if (strstr (cttext, tstr) == NULL) {
+    if (strstr (cttext, "bdj4cleantmp") == NULL) {
       fh = fopen (tfn, "a");
       mdextfopen (fh);
       if (fh != NULL) {
