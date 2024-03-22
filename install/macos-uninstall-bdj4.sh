@@ -9,7 +9,7 @@ if [[ $1 == --version ]]; then
   exit 0
 fi
 
-getresponse () {
+function getresponse () {
   echo -n "[Y/n]: " > /dev/tty
   read answer
   case $answer in
@@ -21,6 +21,28 @@ getresponse () {
       ;;
   esac
   echo $answer
+}
+
+function doremove () {
+  loc=$1
+
+  dir=""
+  if [[ -f ${loc} ]]; then
+    dir=$(cat "$loc")
+    if [[ $dir != "" && -d $dir ]]; then
+      rm -rf "$dir"
+      nm=$(basename "$dir" | sed 's,\.app,,')
+      ddir="$HOME/Library/Application Support/${nm}"
+      if [[ $nm != "" && -d $ddir ]]; then
+        rm -rf "$ddir"
+      fi
+      # shortcuts on desktop
+      sfn="$HOME/Desktop/${nm}"
+      test -h "$sfn" && rm -f "$sfn"
+      sfn="$HOME/Desktop/${nm}.app"
+      test -h "$sfn" && rm -f "$sfn"
+    fi
+  fi
 }
 
 if [[ $(uname -s) != Darwin ]]; then
@@ -50,40 +72,26 @@ pip3 uninstall -y mutagen > /dev/null 2>&1
 # config dir
 cdir=${XDG_CONFIG_HOME:-$HOME/.config}
 confdir="${cdir}/BDJ4"
+cdir=${XDG_CACHE_HOME:-$HOME/.cache}
+cachedir="${cdir}/BDJ4"
 
 echo "Uninstall the BallroomDJ 4 Application and Data? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
-  # cache dir
-  cdir=${XDG_CACHE_HOME:-$HOME/.cache}
-  cachedir="${cdir}/BDJ4"
-  test -d "$cachedir" && rm -rf "$cachedir"
   # config dir
-  instloc="${confdirb}/instdir.txt"
-  altinstloc="${confdirb}/altinstdir.txt"
-  for fn in "$instloc" "$altinstloc"; do
-    dir=""
-    if [[ -f ${fn} ]]; then
-      dir=$(cat "$fn")
-      if [[ $dir != "" ]]; then
-        test -d "$dir" && rm -rf "$dir"
-        nm=$(basename "$dir" | sed 's,\.app,,')
-        ddir="$HOME/Library/Application Support/${nm}"
-        if [[ $nm != "" ]]; then
-          test -d "$ddir" && rm -rf "$ddir"
-        fi
-        # shortcuts on desktop
-        sfn="$HOME/Desktop/${nm}"
-        test -h "$sfn" && rm -f "$sfn"
-        sfn="$HOME/Desktop/${nm}.app"
-        test -h "$sfn" && rm -f "$sfn"
-      fi
-    fi
-    dir="$HOME/Applications/BDJ4.app"
-    test -d "${dir}" && rm -rf "${dir}"
-    ddir="$HOME/Library/Application Support/BDJ4"
-    test -d "$ddir" && rm -rf "$ddir"
+  instloc="${confdir}/instdir.txt"
+
+  doremove "$instloc"
+
+  for altidx in 01 02 03 04 05 06 07 08 09; do
+    fn="${confdirb}/altinstdir${altidx}.txt"
+    doremove "$fn"
   done
+
+  dir="$HOME/Applications/BDJ4.app"
+  test -d "${dir}" && rm -rf "${dir}"
+  ddir="$HOME/Library/Application Support/BDJ4"
+  test -d "$ddir" && rm -rf "$ddir"
 
   # installed themes
   for fn in "$HOME/.themes/macOS-Mojave-dark" \
@@ -103,6 +111,8 @@ if [[ $gr == Y ]]; then
   crontab $TMP
   rm -f $TMP
 
+  # cache dir
+  test -d "$cachedir" && rm -rf "$cachedir"
   test -d "$confdir" && rm -rf "$confdir"
 
   echo "-- BDJ4 application removed."

@@ -32,6 +32,11 @@ function doremove () {
     if [[ ${dir} != "" && -d ${dir} ]]; then
       rm -rf "${dir}"
     fi
+    nm=$(basename "$dir")
+    sfn="$HOME/Desktop/${nm}.desktop"
+    test -h "$sfn" && rm -f "$sfn"
+    sfn="$HOME/.local/share/applications/${nm}.desktop"
+    test -h "$sfn" && rm -f "$sfn"
   fi
 }
 
@@ -61,6 +66,10 @@ if [[ $gr == Y ]]; then
     fn="${confdirb}/altinstdir${altidx}.txt"
     doremove "$fn"
   done
+
+  if [[ -d $HOME/BDJ4 && -d $HOME/BDJ4/data && -d $HOME/BDJ4/bin/bdj4 ]]; then
+    rm -rf $HOME/BDJ4
+  fi
 
   rm -f "${desktop}/BDJ4*.desktop"
   rm -f "${desktop}/bdj4.desktop"  # old
