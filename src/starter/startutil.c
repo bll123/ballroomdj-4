@@ -159,12 +159,15 @@ starterPlayerStartup (void)
 
   osSuspendSleep ();
 
-  script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
+  script = bdjoptGetStr (OPT_M_STARTUP_SCRIPT);
   if (script != NULL &&
       *script &&
       fileopFileExists (script)) {
     const char  *targv [2];
 
+    /* the startup script can be an absolute path or a relative path */
+    /* if it is a relative path, it is assumed to be from the main dir */
+    /* which is the current location, so no special processing is needed */
     targv [0] = script;
     targv [1] = NULL;
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
@@ -178,12 +181,15 @@ starterPlayerShutdown (void)
 
   osResumeSleep ();
 
-  script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
+  script = bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT);
   if (script != NULL &&
       *script &&
       fileopFileExists (script)) {
     const char  *targv [2];
 
+    /* the shutdown script can be an absolute path or a relative path */
+    /* if it is a relative path, it is assumed to be from the main dir */
+    /* which is the current location, so no special processing is needed */
     targv [0] = script;
     targv [1] = NULL;
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);

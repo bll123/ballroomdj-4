@@ -63,6 +63,18 @@ confuiPopulateOptions (confuigui_t *gui)
           vsencdec (sval, tbuff, sizeof (tbuff));
           sval = tbuff;
         }
+        if (i == CONFUI_ENTRY_CHOOSE_STARTUP ||
+            i == CONFUI_ENTRY_CHOOSE_SHUTDOWN) {
+          const char  *tmain;
+          size_t      len;
+
+          tmain = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
+          len = strlen (tmain);
+
+          if (strncmp (tmain, sval, len) == 0) {
+            sval = sval + len + 1;
+          }
+        }
         break;
       }
       case CONFUI_SPINBOX_TEXT: {

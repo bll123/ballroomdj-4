@@ -119,15 +119,15 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Startup Script"),
-      CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUPSCRIPT,
-      bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
+      CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUP_SCRIPT,
+      bdjoptGetStr (OPT_M_STARTUP_SCRIPT), confuiSelectStartup);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].uiwidgetp,
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Shutdown Script"),
-      CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
-      bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
+      CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWN_SCRIPT,
+      bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].uiwidgetp,
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 

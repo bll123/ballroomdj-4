@@ -55,6 +55,8 @@
 #include "volreg.h"
 
 #define UPDATER_TMP_FILE "tmpupdater"
+#define LINUX_STARTUP_SCRIPT "scripts/linux/bdjstartup.sh"
+#define LINUX_SHUTDOWN_SCRIPT "scripts/linux/bdjshutdown.sh"
 
 enum {
   UPD_NOT_DONE,
@@ -240,14 +242,10 @@ main (int argc, char *argv [])
       bdjoptchanged = true;
     }
 
-    tval = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
+    tval = bdjoptGetStr (OPT_M_STARTUP_SCRIPT);
     if (isLinux () && (tval == NULL || ! *tval)) {
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_DIR_MAIN);
-      bdjoptSetStr (OPT_M_STARTUPSCRIPT, tbuff);
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_DIR_MAIN);
-      bdjoptSetStr (OPT_M_SHUTDOWNSCRIPT, tbuff);
+      bdjoptSetStr (OPT_M_STARTUP_SCRIPT, LINUX_STARTUP_SCRIPT);
+      bdjoptSetStr (OPT_M_SHUTDOWN_SCRIPT, LINUX_SHUTDOWN_SCRIPT);
       bdjoptchanged = true;
     }
 
@@ -386,6 +384,26 @@ main (int argc, char *argv [])
     /* 4.3.2.4 : change dancesel method to windowed */
     bdjoptSetNum (OPT_G_DANCESEL_METHOD, DANCESEL_METHOD_WINDOWED);
     bdjoptchanged = true;
+  }
+
+  {
+    /* 4.8.0 : change linux scripts to use a relative path */
+    if (isLinux ()) {
+      tval = bdjoptGetStr (OPT_M_STARTUP_SCRIPT);
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          LINUX_STARTUP_SCRIPT, "", PATHBLD_MP_DIR_MAIN);
+      if (strcmp (tbuff, tval) == 0) {
+        bdjoptSetStr (OPT_M_STARTUP_SCRIPT, LINUX_STARTUP_SCRIPT);
+        bdjoptchanged = true;
+      }
+      tval = bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT);
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          LINUX_SHUTDOWN_SCRIPT, "", PATHBLD_MP_DIR_MAIN);
+      if (strcmp (tbuff, tval) == 0) {
+        bdjoptSetStr (OPT_M_SHUTDOWN_SCRIPT, LINUX_SHUTDOWN_SCRIPT);
+        bdjoptchanged = true;
+      }
+    }
   }
 
   if (bdjoptchanged) {
