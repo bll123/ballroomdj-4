@@ -627,6 +627,8 @@ playerProcessing (void *udata)
     bool          temprepeat = false;
     char          tempffn [MAXPATHLEN];
     int           sourceType;
+    int           tspeed;
+
 
     temprepeat = playerData->repeat;
 
@@ -700,8 +702,14 @@ playerProcessing (void *udata)
 
     pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
     /* pq->songstart is normalized */
-    pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
-    playerData->currentSpeed = pq->speed;
+
+    tspeed = pq->speed;
+    if (playerData->repeat) {
+      /* if repeating, use the current speed */
+      tspeed = playerData->currentSpeed;
+    }
+    pliStartPlayback (playerData->pli, pq->songstart, tspeed);
+    playerData->currentSpeed = tspeed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
   }
 
@@ -814,7 +822,11 @@ playerProcessing (void *udata)
           playerData->stopNextsongFlag = STOP_NORMAL;
           playerData->stopPlaying = false;
         }
-        playerData->currentSpeed = 100;
+
+        /* on repeat, preserve the current speed */
+        if (! playerData->repeat) {
+          playerData->currentSpeed = 100;
+        }
 
         logMsg (LOG_DBG, LOG_BASIC, "actual play time: %" PRId64,
             (int64_t) mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
@@ -1411,6 +1423,7 @@ playerSpeed (playerdata_t *playerData, char *trate)
     rate = atof (trate);
     pliRate (playerData->pli, (ssize_t) rate);
     playerData->currentSpeed = (ssize_t) rate;
+fprintf (stderr, "e: set currspeed: %d\n", (int) rate);
   }
   logProcEnd (LOG_PROC, "playerSpeed", "");
 }

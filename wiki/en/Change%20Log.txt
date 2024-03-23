@@ -4,11 +4,8 @@
 
 <!--
 
-**4.9.0 2024-3---**
+**4.9.0 2024-4---**
     * PENDING Installation: second install, incorrect copy of files.
-
-**4.8.1 2024-3---**
-    * PENDING Internal: Re-write temporary file cleanup.
 
 **4.8.0 2024-3---**
 
@@ -16,8 +13,10 @@
     * Alternate Installer: Re-worked, fixed.
     * Internal: Fix error parsing paths with single character filenames.
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
+    * Player: Preserve the current speed setting when repeating a song.
     * Song Editor: User Interface: Improve use of available space.
     * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
+    * Un-Installers: Updated.
 * Changes:
     * Alternate Installer: Re-arranged user interface.
     * Song Filter: Sort By: Added BPM as a sort option.
