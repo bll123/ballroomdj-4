@@ -7,7 +7,9 @@
 **4.9.0 2024-4---**
     * PENDING Installation: second install, incorrect copy of files.
 
-**4.8.0 2024-3---**
+-->
+
+**4.8.0 2024-3-24**
 
 * Bug Fixes:
     * Alternate Installer: Re-worked, fixed.
@@ -15,19 +17,17 @@
     * Maximum Play Time: Increase maximum allowed, fix validation and conversion.
     * Player: Preserve the current speed setting when repeating a song.
     * Song Editor: User Interface: Improve use of available space.
-    * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
     * Un-Installers: Updated.
+    * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
 * Changes:
     * Alternate Installer: Re-arranged user interface.
-    * Song Filter: Sort By: Added BPM as a sort option.
-    * Starter: Support: Added a 'download latest version' link.
     * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
     * Configuration: General: Remove audio tag interface selection (not needed).
+    * Song Filter: Sort By: Added BPM as a sort option.
+    * Starter: Support: Added a 'download latest version' link.
 * New Features:
-    * MacOS: Create Shortcut for Profile: Implemented.
     * MacOS: Alternate Installer: Implemented.
-
--->
+    * MacOS: Create Shortcut for Profile: Implemented.
 
 **4.7.0 2024-3-9**
 
@@ -799,4 +799,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-11 07:55:19; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-24 12:11:39; BDJ4 version 4.8.0)_
