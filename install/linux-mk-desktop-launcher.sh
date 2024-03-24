@@ -15,7 +15,7 @@ profile=$4
 
 # make sure the created .desktop file has a prefix of BDJ4
 # this make them easy to remove.
-fullscname="{$scname}"
+fullscname="${scname}"
 case "${scname}" in
   BDJ4*)
     ;;
