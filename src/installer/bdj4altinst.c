@@ -792,7 +792,7 @@ altinstTargetFeedbackMsg (altinst_t *altinst)
 
   if (altinst->updateinstall && altinst->reinstall) {
     /* CONTEXT: alternate installation: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
+    snprintf (tbuff, sizeof (tbuff), _("Re-install %s.  Overwrites existing configuration."), BDJ4_NAME);
     uiLabelSetText (altinst->wcont [ALT_W_FEEDBACK_MSG], tbuff);
   }
   if (altinst->updateinstall && ! altinst->reinstall) {

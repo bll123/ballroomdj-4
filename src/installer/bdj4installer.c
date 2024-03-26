@@ -1141,7 +1141,7 @@ installerTargetFeedbackMsg (installer_t *installer)
 
   if (installer->updateinstall && installer->reinstall) {
     /* CONTEXT: installer: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
+    snprintf (tbuff, sizeof (tbuff), _("Re-install %s.  Overwrites existing configuration."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
   }
   if (installer->updateinstall && ! installer->reinstall) {
