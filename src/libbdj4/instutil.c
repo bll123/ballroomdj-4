@@ -93,6 +93,34 @@ instutilCreateLauncher (const char *name, const char *maindir,
     }
     targv [targc++] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+
+    /* 4.8.1 create a shortcut within the BDJ4 folder so that BDJ4 can be */
+    /* started when the BDJ4 folder is open */
+    /* unfortunately, it cannot be made using relative paths */
+
+    /* targv[0] is valid */
+    targc = 1;
+
+    snprintf (path, sizeof (path), "%s/%s.lnk", workdir, name);
+    pathDisplayPath (path, sizeof (path));
+    targv [targc++] = path;
+
+    /* executable */
+    snprintf (buff, sizeof (buff), "%s/bin/bdj4.exe", maindir);
+    pathDisplayPath (buff, sizeof (buff));
+    targv [targc++] = buff;
+
+    /* working dir */
+    snprintf (tbuff, sizeof (tbuff), "%s", workdir);
+    pathDisplayPath (tbuff, sizeof (tbuff));
+    targv [targc++] = tbuff;
+
+    if (profilenum > 0) {
+      /* abuff is already populated */
+      targv [targc++] = abuff;
+    }
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 
   if (isLinux () || isMacOS ()) {
