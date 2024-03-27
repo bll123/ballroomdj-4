@@ -115,6 +115,7 @@ __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Dance Selection](en-Subjects-Dance%20Selection)
 <br>&nbsp;&nbsp;&nbsp;[Song Selection](en-Subjects-Song%20Selection)
 <br>[Announcements](en-Subjects-Announcements)
+<br>[Batch Editing](en-Subjects-Batch%20Editing)
 <br>[BPM &amp; MPM](en-Subjects-BPM-MPM)
 <br>[Favorites](en-Subjects-Favorites)
 <br>[Filter Dialog](en-Subjects-Filter%20Dialog)
@@ -136,4 +137,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-03-11 07:55:19; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-27 08:26:43; BDJ4 version 4.8.0)_

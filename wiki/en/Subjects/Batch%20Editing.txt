@@ -1,0 +1,148 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_Batch editing uses the song editor to
+make changes to multiple songs._</span>
+
+[TOC]
+
+### Batch Editing
+
+In some situations such as renaming a dance, updating an album or
+artist name, or setting some tags, you may need to change the
+information for multiple songs.
+
+Batch editing allows changes to song information for the entire
+database, the songs in a playlist, a set of songs selected using the
+song filter, or a selection of songs chosen manually.
+
+##### Selecting the Songs to Edit
+
+Select __Manage__ and __Music&nbsp;Manager__.
+
+Select the filter button
+(![filter&nbsp;songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png)).
+<br>
+(See: [Subjects&nbsp;/&nbsp;Filter&nbsp;Dialog](en-Subjects-Filter%20Dialog)).
+
+To edit the entire database, select the __Reset__ button.
+
+To edit a particular playlist, select a playlist in the _Playlist_
+drop-down selection.  Note that for automatic and sequenced playlists,
+all possible songs for the selected playlist will be listed.
+
+To edit a filtered set of songs, select __Reset__, set your search
+criteria, then select __Apply__.
+
+In the three cases listed above, the songs to be edited are the songs
+listed in the music manager.
+
+To manually select the songs to edit, first apply any search criteria
+you want. Then control-click on each song you want to edit.  When
+multiple songs are selected via control-click (or shift-click), only
+the selected songs will be edited, not the entire list that is
+displayed.
+
+Review the list of songs displayed or selected and make sure that
+these are the songs you want to change.
+
+##### Starting a Batch Edit
+
+Switch to the [Song&nbsp;Editor](en-Management-Song%20Editor) tab.  In
+the __Actions__ menu, select __Edit&nbsp;All__.  Certain fields (e.g.
+_Title_) that may not be edited in a batch edit will be disabled.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![be-se-disabled](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-disabled-A.png)
+<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+Disabled Fields__</span> </div>
+
+The _Save_ button will be disabled, and an _Edit&nbsp;All_ label will
+be displayed next to the _Save_ button to indicate that the song
+editor is in edit all mode.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![be-se-editall-mode](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-editall-mode-A.png)
+<br><span style="color:#4559bf;">__Music Manager / Song Editor / Edit
+All Mode__</span> </div>
+
+##### Setting the Song Information
+
+In the [Song&nbsp;Editor](en-Management-Song%20Editor), change the
+song information that you want changed for the selected songs.  The
+changes to the fields made here will be applied to all selected songs.
+
+Be aware for fields such as _Tags_, the entire field will be replaced,
+and any existing tags will be lost.
+
+##### Cancelling a Batch Edit
+
+In the __Actions__ menu, select __Cancel&nbsp;Edit&nbsp;All__.
+
+The changes made to the song will be cleared, and the song editor will
+leave edit all mode.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![be-se-cancel-editall](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-cancel-editall-A.png)
+<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+Actions Menu__</span> </div>
+
+##### Applying a Batch Edit
+
+In the __Actions__ menu, select __Apply&nbsp;Edit&nbsp;All__.
+
+The changes made to the song will be applied to the entire selection
+of songs, and the song editor will leave edit all mode.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![be-se-apply-editall](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-apply-editall-A.png)
+<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+Actions Menu__</span> </div>
+
+##### Example 1: Setting the Rating for All Songs (Entire Database)
+
+In order to use [automatic](en-Subjects-Automatic%20Playlists) or
+[sequenced](en-Subjects-Sequenced%20Playlists) playlists, the dance
+rating should be set for your songs.
+
+For the initial setup, a batch edit can be done to set your songs to
+have a dance rating.
+
+Select __Manage__, __Music&nbsp;Manager__. In this example, none of
+the songs have ratings, and the batch edit will be processed for all songs.
+
+Select the __Song&nbsp;Editor__ tab.  Select
+__Actions&nbsp;/&nbsp;Edit&nbsp;All__ from the menu.
+
+Set the _Dance&nbsp;Rating_ to _Good_.   The green change indicator for
+_Dance&nbsp;Rating_ will be turned on.
+
+Now select __Actions&nbsp;/&nbsp;Apply&nbsp;Edit&nbsp;All__ from the menu.
+
+The change to the dance rating will be applied to all songs in the
+database.
+
+##### Example 2: Fixing an Artist Name (Selection of Songs)
+
+For this example, suppose that some songs have the artist set to
+_Michael&nbsp;Buble_, and you want to change the artist to the proper
+spelling, _Michael&nbsp;Bublé_.
+
+Select __Manage__, __Music&nbsp;Manager__. Open the filter songs
+dialog using the filter button
+(![filter&nbsp;songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png)).
+Enter _michael&nbsp;b_ in the search field, and select __Apply__.
+
+The music manager will display all songs that have _michael&nbsp;b_ in
+the song information.  Now using control-click, select each song that
+has the incorrect spelling for _Michael&nbsp;Buble_.  Scroll through
+the list and make sure all of songs to be changed are selected and the
+songs that are not be changed are not selected.
+
+Select the __Song&nbsp;Editor__ tab.  Change the _Artist_ to
+_Michael&nbsp;Bublé_.  Select __Apply&nbsp;Edit&nbsp;All__ from the
+__Actions__ menu.
+
+Only the songs selected with control-click will be updated.
+
+[Wiki Home](Home)
+<br>_(Updated 2024-03-27 08:46:24; BDJ4 version 4.8.0)_

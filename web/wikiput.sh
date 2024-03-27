@@ -287,6 +287,7 @@ case $1 in
         ;;
     esac
     for f in "$@"; do
+      f=$(echo $f | sed -e 's,^\.\./,,' -e 's,^wiki/,,')
       if [[ -f "wiki/$f" ]]; then
         put "wiki/$f"
       fi
