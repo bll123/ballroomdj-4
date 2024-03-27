@@ -95,7 +95,7 @@ static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
-static long managePlaylistValMSCallback (void *udata, const char *txt);
+static long managePlaylistValHMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
@@ -250,7 +250,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitStr (
-      managePlaylistValMSCallback, managepl);
+      managePlaylistValHMSCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
       managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -831,25 +831,25 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
 }
 
 static long
-managePlaylistValMSCallback (void *udata, const char *txt)
+managePlaylistValHMSCallback (void *udata, const char *txt)
 {
   managepl_t  *managepl = udata;
   const char  *valstr;
   char        tbuff [200];
   long        value;
 
-  logProcBegin (LOG_PROC, "managePlaylistValMSCallback");
+  logProcBegin (LOG_PROC, "managePlaylistValHMSCallback");
   uiLabelSetText (managepl->minfo->errorMsg, "");
-  valstr = validate (txt, VAL_MIN_SEC);
+  valstr = validate (txt, VAL_HOUR_MIN_SEC);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
-    logProcEnd (LOG_PROC, "managePlaylistValMSCallback", "not-valid");
+    logProcEnd (LOG_PROC, "managePlaylistValHMSCallback", "not-valid");
     return -1;
   }
 
   value = tmutilStrToMS (txt);
-  logProcEnd (LOG_PROC, "managePlaylistValMSCallback", "");
+  logProcEnd (LOG_PROC, "managePlaylistValHMSCallback", "");
   return value;
 }
 

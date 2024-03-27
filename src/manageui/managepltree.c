@@ -409,7 +409,7 @@ managePlaylistTreeChanged (void *udata, long col)
     char        *str;
 
     str = uiTreeViewGetValueStr (managepltree->uitree, MPLTREE_COL_MAXPLAYTIME);
-    valstr = validate (str, VAL_MIN_SEC);
+    valstr = validate (str, VAL_HOUR_MIN_SEC);
     if (valstr != NULL) {
       snprintf (tbuff, sizeof (tbuff), valstr, str);
       uiLabelSetText (managepltree->errorMsg, tbuff);
