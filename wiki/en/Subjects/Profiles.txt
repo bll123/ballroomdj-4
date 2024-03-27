@@ -8,9 +8,14 @@ configuration using the same music database._</span>
 ### Profiles
 
 A profile is used when a different BDJ4 configuration is desired.
+Different profiles have their own configuration and use the same
+music database.
 
 A profile can be set up for teaching, for use with headphones, for
 ballroom dance parties, for different locations, or other uses.
+
+To set up an alternate folder with a separate database, use an
+[Altnernate Folder](en-Subjects-Alternate%20Folders).
 
 ##### Creating a New Profile
 
@@ -91,4 +96,4 @@ on their USB headphones.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 07:51:49; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-03-27 06:07:23; BDJ4 version 4.8.0)_

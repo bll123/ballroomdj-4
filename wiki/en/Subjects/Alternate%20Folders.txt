@@ -1,15 +1,66 @@
 [Wiki Home](Home)
 
 <span style="color:#4559bf;">_Alternate folders are used to create an
-additional BDJ4 instance with a completely new database._</span>
+additional BDJ4 instance with a separate database._</span>
 
 [TOC]
 
 ### Alternate Folders
 
-At this time, alternate folders only work on Linux and Windows.
+Alternate folders are an additional folder for BDJ4 that has a
+separate music database from the main installation.  Alternate folders
+are useful when there is a another set of music that you want to play,
+but do not want mixed in with the ballroom (or other) music.  For
+example, if you have ballroom music and classical music collections,
+you may want to have separate databases.
 
-To be written...
+To set up a different configuration with the same music database, use
+a [Profile](en-Subjects-Profiles).
+
+If multiple BDJ4 instances were installed, there would be duplication
+of the executables and the different installations would not be able
+to be run at the same time as they would conflict with each other.
+
+Using alternate folders avoids this problem.  The alternate folder
+installation does not duplicate the executable programs, and both the
+main installation and the alternate installation can be run at the
+same time if desired.
+
+##### Setting up an Alternate Folder
+
+In the BDJ4 starter, select __Set&nbsp;Up&nbsp;Alternate&nbsp;Folder__
+from the _Actions_ menu.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![alt-starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/alt-starter-A.png)
+<br><span style="color:#4559bf;">__Starter__</span> </div>
+
+The alternate folder installer will start.  Enter the name of the
+alternate folder.  This name will also be used for the desktop shortcut.
+The path to the alternate folder will be automatically updated to
+match the name.
+
+On Windows and Linux, the path to the new installation can be modified
+if desired.  On MacOS, the path cannot be changed.
+
+When ready, select the __Install__ button.  The alternate folder will
+be installed, and the desktop shortcut created.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![alt-installer](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/alt-installer-A.png)
+<br><span style="color:#4559bf;">__Alternate Folder Installer__</span> </div>
+
+##### Updating up an Alternate Folder
+
+Any time BDJ4 is updated, all alternate folders also need to be updated.
+At this time, this is a manual process.  (This will be changed in a
+future update).
+
+Start the main BDJ4 and select __Set&nbsp;Up&nbsp;Alternate&nbsp;Folder__
+from the _Actions_ menu.
+
+Make sure the name and path match the alternate folder installation,
+then select the __Install__ button.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-03-27 06:07:23; BDJ4 version 4.8.0)_

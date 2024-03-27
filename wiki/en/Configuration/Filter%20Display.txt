@@ -8,14 +8,17 @@ are displayed in the song selection filter._</span>
 The song selection filter has several filters that are not normally
 displayed.  These filters can be turned on here.
 
-The standard filters that are always displayed are _Sort&nbsp;By_,
-_Search_, _Dance_, and _Dance&nbsp;Rating_.
+The standard filters that are always displayed are _Sort&nbsp;By_ and
+_Search_.
 
-The additional filters that can be selected are _Genre_,
+The _Dance_, and _Dance&nbsp;Rating_ filter selections are enabled by
+default.
+
+Additional filters that may be selected are _Genre_,
 _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![filter-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-D.png)
+![filter-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-E.png)
 <br><span style="color:#4559bf;">__Configure / Filter Display__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -27,4 +30,4 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 <br><span style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-03-27 06:18:37; BDJ4 version 4.8.0)_

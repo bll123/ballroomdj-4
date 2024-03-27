@@ -7,6 +7,13 @@
 **4.9.0 2024-4---**
     * PENDING Installation: second install, incorrect copy of files.
 
+**4.8.1 2024-4---**
+
+* Bug Fixes:
+    * Installer: Update re-install feedback message.
+    * Playlist Management: Max. Play Time: Increase maximum allowed.
+* Changes:
+
 -->
 
 **4.8.0 2024-3-24**
@@ -799,4 +806,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-24 12:11:39; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-03-27 06:07:23; BDJ4 version 4.8.0)_
