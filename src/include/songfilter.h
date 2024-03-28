@@ -47,11 +47,12 @@ typedef enum {
 } songfilterpb_t;
 
 typedef struct songfilter songfilter_t;
-extern datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX];
 
 songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
+nlist_t       * songfilterGetList (songfilter_t *sf);
+void          songfilterSave (songfilter_t *sf, nlist_t *dispsel);
 bool          songfilterCheckSelection (songfilter_t *sf, int type);
 void          songfilterSetSort (songfilter_t *sf, const char *sortselection);
 void          songfilterClear (songfilter_t *sf, int filterType);

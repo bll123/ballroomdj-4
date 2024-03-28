@@ -207,8 +207,14 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_OUT_CB: {
-        nlistSetNum (gui->filterDisplaySel,
-            nlistGetNum (gui->filterLookup, i), nval);
+        if (i > CONFUI_WIDGET_FILTER_START && i < CONFUI_WIDGET_FILTER_MAX) {
+          nlistSetNum (gui->filterDisplaySel,
+              nlistGetNum (gui->filterLookup, i), nval);
+        }
+        if (i > CONFUI_WIDGET_QUICKEDIT_START && i < CONFUI_WIDGET_QUICKEDIT_MAX) {
+          nlistSetNum (gui->quickeditDisplaySel,
+              nlistGetNum (gui->quickeditLookup, i), nval);
+        }
         break;
       }
       case CONFUI_OUT_DEBUG: {

@@ -145,13 +145,24 @@ enum {
   CONFUI_WIDGET_DEBUG_MAX,
   CONFUI_WIDGET_DEBUG_LABEL,
   CONFUI_WIDGET_DEFAULT_VOL,
+  /* should be in the same order as in songfilter.h */
+  CONFUI_WIDGET_FILTER_START,
+  CONFUI_WIDGET_FILTER_GENRE,
   CONFUI_WIDGET_FILTER_DANCE,
   CONFUI_WIDGET_FILTER_DANCELEVEL,
   CONFUI_WIDGET_FILTER_DANCERATING,
-  CONFUI_WIDGET_FILTER_FAVORITE,
-  CONFUI_WIDGET_FILTER_GENRE,
   CONFUI_WIDGET_FILTER_STATUS,
+  CONFUI_WIDGET_FILTER_FAVORITE,
   CONFUI_WIDGET_FILTER_STATUS_PLAYABLE,
+  CONFUI_WIDGET_FILTER_MAX,
+  /* should be in the same order as quickedit.h */
+  CONFUI_WIDGET_QUICKEDIT_START,
+  CONFUI_WIDGET_QUICKEDIT_SPEED,
+  CONFUI_WIDGET_QUICKEDIT_VOLUME,
+  CONFUI_WIDGET_QUICKEDIT_DANCELEVEL,
+  CONFUI_WIDGET_QUICKEDIT_DANCERATING,
+  CONFUI_WIDGET_QUICKEDIT_FAVORITE,
+  CONFUI_WIDGET_QUICKEDIT_MAX,
   CONFUI_WIDGET_ITUNES_FIELD_1,
   CONFUI_WIDGET_ITUNES_FIELD_2,
   CONFUI_WIDGET_ITUNES_FIELD_3,
@@ -223,7 +234,6 @@ typedef enum {
   CONFUI_ID_DISP_SEL_LIST,
   CONFUI_ID_DISP_SEL_TABLE,
   CONFUI_ID_TABLE_MAX,
-  CONFUI_ID_FILTER,
   CONFUI_ID_NONE,
   CONFUI_ID_MOBILE_MQ,
   CONFUI_ID_REM_CONTROL,
@@ -397,6 +407,8 @@ typedef struct confuigui {
   /* filter */
   nlist_t           *filterDisplaySel;
   nlist_t           *filterLookup;
+  nlist_t           *quickeditDisplaySel;
+  nlist_t           *quickeditLookup;
   /* tables */
   confuiident_t     tablecurr;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
@@ -433,7 +445,7 @@ void confuiInitDispSettings (confuigui_t *gui);
 void confuiBuildUIDispSettings (confuigui_t *gui);
 
 /* conffilter.c */
-void confuiBuildUIFilterDisplay (confuigui_t *gui);
+void confuiBuildUIDialogDisplay (confuigui_t *gui);
 
 /* confgeneral.c */
 void confuiInitGeneral (confuigui_t *gui);

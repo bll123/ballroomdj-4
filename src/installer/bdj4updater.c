@@ -524,7 +524,6 @@ main (int argc, char *argv [])
     sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
   }
 
-
   {
     /* 4.4.0 2023-9-12 audio-id data selection */
     updaterCopyProfileIfNotPresent ("ds-audioid-list", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
@@ -576,6 +575,11 @@ main (int argc, char *argv [])
   {
     /* 4.4.9 2024-1-25.  Install new ds-marquee.txt */
     updaterCopyProfileIfNotPresent ("ds-marquee", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+  }
+
+  {
+    /* 4.8.1 2024-3-24 ds-quickedit.txt */
+    updaterCopyProfileIfNotPresent (DS_QUICKEDIT_FN, BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
   /* now re-load the data files */

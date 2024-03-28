@@ -1,0 +1,15 @@
+# ds-quickedit
+# 2024-3-28
+# version 1
+version
+..1
+DANCELEVEL
+..yes
+DANCERATING
+..yes
+FAVORITE
+..yes
+SPEED
+..yes
+VOLUME
+..yes

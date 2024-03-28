@@ -22,6 +22,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "quickedit.h"
 #include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -76,6 +77,8 @@ typedef struct uiqe {
   callback_t        *callbacks [UIQE_CB_MAX];
   uiqescale_t       scaledata [UIQE_SCALE_MAX];
   song_t            *song;
+  quickedit_t       *qe;
+  nlist_t           *qedispsel;
   dbidx_t           dbidx;
   uiqesave_t        savedata;
   bool              isactive : 1;
@@ -120,6 +123,9 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiqe->savedata.voladj = 0.0;
   uiqe->savedata.rating = 0;
   uiqe->savedata.level = 0;
+  uiqe->savedata.favorite = 0;
+  uiqe->qe = quickeditAlloc ();
+  uiqe->qedispsel = quickeditGetList (uiqe->qe);
 
   uiqe->callbacks [UIQE_CB_DIALOG] = callbackInitLong (
       uiqeResponseHandler, uiqe);
@@ -214,12 +220,15 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 
   ratingidx = songGetNum (uiqe->song, TAG_DANCERATING);
   uiratingSetValue (uiqe->uirating, ratingidx);
+  uiqe->savedata.rating = ratingidx;
 
   levelidx = songGetNum (uiqe->song, TAG_DANCELEVEL);
   uilevelSetValue (uiqe->uilevel, levelidx);
+  uiqe->savedata.level = levelidx;
 
   fav = songGetNum (uiqe->song, TAG_FAVORITE);
   uifavoriteSetValue (uiqe->uifavorite, fav);
+  uiqe->savedata.favorite = fav;
 
   if (speed == LIST_DOUBLE_INVALID) {
     speed = (double) songGetNum (uiqe->song, TAG_SPEEDADJUSTMENT);
@@ -229,6 +238,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   }
   uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale, speed);
   uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_SPD], speed);
+  uiqe->savedata.speed = speed;
 
   if (vol == LIST_DOUBLE_INVALID) {
     voladj = songGetDouble (uiqe->song, TAG_VOLUMEADJUSTPERC);
@@ -251,6 +261,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   }
   uiScaleSetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale, voladj);
   uiqeScaleDisplayCallback (&uiqe->scaledata [UIQE_SCALE_VOLADJ], voladj);
+  uiqe->savedata.voladj = voladj;
 
   x = nlistGetNum (uiqe->options, QE_POSITION_X);
   y = nlistGetNum (uiqe->options, QE_POSITION_Y);
@@ -331,54 +342,64 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
 
   /* begin line: speed scale */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-  uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
-  uiwcontFree (hbox);
+  if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_SPEED) == 1) {
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
+    uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
+    uiwcontFree (hbox);
+  }
 
   /* begin line: vol-adj scale */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-  uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
-  uiwcontFree (hbox);
+  if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_VOLUME) == 1) {
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
+    uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
+    uiwcontFree (hbox);
+  }
 
   /* begin line: rating */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCERATING) == 1) {
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
-  uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
-  uiwcontFree (hbox);
+    uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
+    uiwcontFree (hbox);
+  }
 
   /* begin line: level */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCELEVEL) == 1) {
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
+    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
-  uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
-  uiwcontFree (hbox);
+    uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
+    uiwcontFree (hbox);
+  }
 
   /* begin line: favorite */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_FAVORITE) == 1) {
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
+    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
-  uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
-  uiwcontFree (hbox);
+    uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
+    uiwcontFree (hbox);
+  }
 
   uiwcontFree (vbox);
 
@@ -418,13 +439,23 @@ uiqeResponseHandler (void *udata, long responseid)
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: quick edit: save");
       uiqe->savedata.dbidx = uiqe->dbidx;
-      uiqe->savedata.speed =
-          uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale);
-      uiqe->savedata.voladj =
-          uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale);
-      uiqe->savedata.rating = uiratingGetValue (uiqe->uirating);
-      uiqe->savedata.level = uilevelGetValue (uiqe->uilevel);
-      uiqe->savedata.favorite = uifavoriteGetValue (uiqe->uifavorite);
+      if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_SPEED) == 1) {
+        uiqe->savedata.speed =
+            uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_SPD].scale);
+      }
+      if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_VOLUME) == 1) {
+        uiqe->savedata.voladj =
+            uiScaleGetValue (uiqe->scaledata [UIQE_SCALE_VOLADJ].scale);
+      }
+      if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCERATING) == 1) {
+        uiqe->savedata.rating = uiratingGetValue (uiqe->uirating);
+      }
+      if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCELEVEL) == 1) {
+        uiqe->savedata.level = uilevelGetValue (uiqe->uilevel);
+      }
+      if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_FAVORITE) == 1) {
+        uiqe->savedata.favorite = uifavoriteGetValue (uiqe->uifavorite);
+      }
 
       if (uiqe->responsecb != NULL) {
         callbackHandler (uiqe->responsecb);

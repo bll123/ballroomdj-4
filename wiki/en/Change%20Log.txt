@@ -13,6 +13,9 @@
     * Installer: Update re-install feedback message.
     * Playlist Management: Max. Play Time: Increase maximum allowed.
 * Changes:
+    * Configure: Filter Display renamed to Dialogs.
+* New Features:
+    * Configure: Quick Edit Dialog display may now be configured.
 
 -->
 

@@ -33,6 +33,7 @@
 #include "pathbld.h"
 #include "pathutil.h"
 #include "progstate.h"
+#include "quickedit.h"
 #include "sockh.h"
 #include "songfilter.h"
 #include "sysvars.h"
@@ -47,7 +48,8 @@ typedef struct configui {
   conn_t            *conn;
   uint32_t          dbgflags;
   int               stopwaitcount;
-  datafile_t        *filterDisplayDf;
+  songfilter_t      *sf;
+  quickedit_t       *qe;
   confuigui_t       gui;
   /* options */
   datafile_t        *optiondf;
@@ -99,7 +101,8 @@ main (int argc, char *argv[])
   confui.conn = NULL;
   confui.dbgflags = 0;
   confui.stopwaitcount = 0;
-  confui.filterDisplayDf = NULL;
+  confui.sf = NULL;
+  confui.qe = NULL;
 
   confui.gui.localip = NULL;
   confui.gui.window = NULL;
@@ -113,6 +116,7 @@ main (int argc, char *argv[])
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
   confui.gui.filterDisplaySel = NULL;
+  confui.gui.quickeditDisplaySel = NULL;
   confui.gui.edittaglist = NULL;
   confui.gui.audioidtaglist = NULL;
   confui.gui.listingtaglist = NULL;
@@ -206,22 +210,29 @@ main (int argc, char *argv[])
 
   confuiInitMobileMarquee (&confui.gui);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      DS_FILTER_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  confui.filterDisplayDf = datafileAllocParse ("cu-filter",
-      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX,
-      DF_NO_OFFSET, NULL);
-  confui.gui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
+  confui.sf = songfilterAlloc ();
+  confui.gui.filterDisplaySel = songfilterGetList (confui.sf);
   llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, NULL);
   nlistStartIterator (confui.gui.filterDisplaySel, &iteridx);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_GENRE, FILTER_DISP_GENRE);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCE, FILTER_DISP_DANCE);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCERATING, FILTER_DISP_DANCERATING);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUS_PLAYABLE);
+  for (int i = 0; i < FILTER_DISP_MAX; ++i) {
+    int     j;
+
+    j = CONFUI_WIDGET_FILTER_START + 1 + i;
+    nlistSetNum (llist, j, i);
+  }
   confui.gui.filterLookup = llist;
+
+  confui.qe = quickeditAlloc ();
+  confui.gui.quickeditDisplaySel = quickeditGetList (confui.qe);
+  llist = nlistAlloc ("cu-quickedit-out", LIST_ORDERED, NULL);
+  nlistStartIterator (confui.gui.quickeditDisplaySel, &iteridx);
+  for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
+    int     j;
+
+    j = CONFUI_WIDGET_QUICKEDIT_START + 1 + i;
+    nlistSetNum (llist, j, i);
+  }
+  confui.gui.quickeditLookup = llist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
@@ -305,8 +316,8 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   datafileSave (confui->optiondf, NULL, confui->options, DF_NO_OFFSET, 1);
 
-  datafileSave (confui->filterDisplayDf, NULL, confui->gui.filterDisplaySel,
-      DF_NO_OFFSET, 1);
+  songfilterSave (confui->sf, confui->gui.filterDisplaySel);
+  quickeditSave (confui->qe, confui->gui.quickeditDisplaySel);
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 
@@ -370,8 +381,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (confui->gui.vbox);
   uiwcontFree (confui->gui.statusMsg);
   uiduallistFree (confui->gui.dispselduallist);
-  datafileFree (confui->filterDisplayDf);
+  songfilterFree (confui->sf);
+  quickeditFree (confui->qe);
   nlistFree (confui->gui.filterLookup);
+  nlistFree (confui->gui.quickeditLookup);
   dispselFree (confui->gui.dispsel);
   dataFree (confui->gui.localip);
   datafileFree (confui->optiondf);
@@ -439,7 +452,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMarquee (&confui->gui);
   confuiBuildUIUserInterface (&confui->gui);
   confuiBuildUIDispSettings (&confui->gui);
-  confuiBuildUIFilterDisplay (&confui->gui);
+  confuiBuildUIDialogDisplay (&confui->gui);
   confuiBuildUIOrganization (&confui->gui);
   confuiBuildUIEditDances (&confui->gui);
   confuiBuildUIEditRatings (&confui->gui);

@@ -144,7 +144,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   szgrpr = uiCreateSizeGroupHoriz ();
 
   /* filter display */
-  confuiMakeNotebookTab (mvbox, gui, ITUNES_NAME, CONFUI_ID_FILTER);
+  confuiMakeNotebookTab (mvbox, gui, ITUNES_NAME, CONFUI_ID_NONE);
 
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);

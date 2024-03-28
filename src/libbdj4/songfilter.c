@@ -52,8 +52,8 @@ typedef struct songfilter {
   /* indexed by the internal index; points to the database index */
   nlist_t     *indexList;
   /* filter display selection */
-  datafile_t  *filterDisplayDf;
-  nlist_t     *filterDisplaySel;
+  datafile_t  *df;
+  nlist_t     *dispsel;
   /* sort key */
   nlist_t     *parsed;
   /* change test */
@@ -61,7 +61,7 @@ typedef struct songfilter {
 } songfilter_t;
 
 /* these are the user configurable filter displays */
-datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
+datafilekey_t dfkeys [FILTER_DISP_MAX] = {
   { "DANCE",          FILTER_DISP_DANCE,           VALUE_NUM, convBoolean, DF_NORM },
   { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, DF_NORM },
   { "DANCERATING",    FILTER_DISP_DANCERATING,     VALUE_NUM, convBoolean, DF_NORM },
@@ -116,8 +116,8 @@ songfilterAlloc (void)
   }
   sf->sortList = NULL;
   sf->indexList = NULL;
-  sf->filterDisplayDf = NULL;
-  sf->filterDisplaySel = NULL;
+  sf->df = NULL;
+  sf->dispsel = NULL;
   songfilterLoadFilterDisplay (sf);
   songfilterReset (sf);
   sf->dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -132,16 +132,38 @@ songfilterFree (songfilter_t *sf)
 {
   logProcBegin (LOG_PROC, "songfilterFree");
 
-  if (sf != NULL) {
-    songfilterReset (sf);
-    datafileFree (sf->filterDisplayDf);
-    dataFree (sf->sortselection);
-    slistFree (sf->sortList);
-    nlistFree (sf->indexList);
-    nlistFree (sf->parsed);
-    mdfree (sf);
+  if (sf == NULL) {
+    return;
   }
+
+  songfilterReset (sf);
+  datafileFree (sf->df);
+  dataFree (sf->sortselection);
+  slistFree (sf->sortList);
+  nlistFree (sf->indexList);
+  nlistFree (sf->parsed);
+  mdfree (sf);
   logProcEnd (LOG_PROC, "songfilterFree", "");
+}
+
+nlist_t *
+songfilterGetList (songfilter_t *sf)
+{
+  if (sf == NULL) {
+    return NULL;
+  }
+
+  return sf->dispsel;
+}
+
+void
+songfilterSave (songfilter_t *sf, nlist_t *dispsel)
+{
+  if (sf == NULL || sf->df == NULL || dispsel == NULL) {
+    return;
+  }
+
+  datafileSave (sf->df, NULL, dispsel, DF_NO_OFFSET, 2);
 }
 
 void
@@ -174,7 +196,7 @@ songfilterReset (songfilter_t *sf)
 bool
 songfilterCheckSelection (songfilter_t *sf, int type)
 {
-  return nlistGetNum (sf->filterDisplaySel, type);
+  return nlistGetNum (sf->dispsel, type);
 }
 
 void
@@ -964,16 +986,16 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       DS_FILTER_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  sf->filterDisplayDf = datafileAllocParse ("sf-songfilter",
-      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DF_NO_OFFSET, NULL);
-  sf->filterDisplaySel = datafileGetList (sf->filterDisplayDf);
+  sf->df = datafileAllocParse ("sf-songfilter",
+      DFTYPE_KEY_VAL, tbuff, dfkeys, FILTER_DISP_MAX, DF_NO_OFFSET, NULL);
+  sf->dispsel = datafileGetList (sf->df);
 
   /* 4.8.0 made dance and dance rating optional also */
-  if (nlistGetNum (sf->filterDisplaySel, FILTER_DISP_DANCE) < 0) {
-    nlistSetNum (sf->filterDisplaySel, FILTER_DISP_DANCE, true);
+  if (nlistGetNum (sf->dispsel, FILTER_DISP_DANCE) < 0) {
+    nlistSetNum (sf->dispsel, FILTER_DISP_DANCE, true);
   }
-  if (nlistGetNum (sf->filterDisplaySel, FILTER_DISP_DANCERATING) < 0) {
-    nlistSetNum (sf->filterDisplaySel, FILTER_DISP_DANCERATING, true);
+  if (nlistGetNum (sf->dispsel, FILTER_DISP_DANCERATING) < 0) {
+    nlistSetNum (sf->dispsel, FILTER_DISP_DANCERATING, true);
   }
   logProcEnd (LOG_PROC, "songfilterLoadFilterDisplay", "");
 }

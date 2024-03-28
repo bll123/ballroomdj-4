@@ -80,6 +80,7 @@ enum {
 #define SORTOPT_FN          "sortopt"
 /* display settings files */
 #define DS_FILTER_FN        "ds-songfilter"
+#define DS_QUICKEDIT_FN     "ds-quickedit"
 /* option data files */
 #define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
 #define CONFIGUI_OPT_FN     "ui-config"

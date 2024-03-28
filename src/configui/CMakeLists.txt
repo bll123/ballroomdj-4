@@ -11,7 +11,7 @@ add_executable (bdj4configui
   confdance.c
   confdebug.c
   confdispset.c
-  conffilter.c
+  confdialog.c
   confgeneral.c
   confgenre.c
   confgui.c
