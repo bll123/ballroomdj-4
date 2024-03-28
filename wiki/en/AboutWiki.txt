@@ -12,17 +12,17 @@ page that needs to be improved, please use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help) to send a message to the
 development team.
 
-###### Status as of 2022-12
+###### Status as of 2024-3
 
 This wiki was started in 2022-12.
 
-Some wiki pages have not been written yet.  Some wiki pages are not
-very good yet -- it may take several rewrites before the wiki pages
-are fully mature.
+Most wiki pages have been written.  Some wiki pages are not very good
+yet -- it may take several rewrites before the wiki pages are fully
+mature.
 
 The images are currently being created using a test setup and are not
 very realistic as the songs are quite short (30 seconds), and the
 names of the songs are names used for testing.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-03-28 05:14:06; BDJ4 version 4.8.0)_

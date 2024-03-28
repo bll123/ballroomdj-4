@@ -54,18 +54,23 @@ only).
 __Set Up Alternate Folder__: Starts the alternate installer. Alternate
 folders are used to create another BDJ4 installation with a separate
 database.  (Linux and Windows only).
+<br>See: [Subjects&nbsp;/&nbsp;Alternate&nbsp;Folders](en-Subjects-Alternate%20Folders)
 
 ##### Support
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-B.png)
+![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-D.png)
 <br><span style="color:#4559bf;">__Starter__ / Support</span> </div>
 
 The support window lists the current installed version of BDJ4 and the
 latest version that is available.
 
-The links to download BDJ4, the wiki, the forums and support tickets
-can be selected and will open in your browser.
+The _Download&nbsp;Latest&nbsp;Version_ link will download the latest
+version of BDJ4.
+
+The links to the BDJ4 Download page, the BDJ4 wiki, the BDJ4 forums
+and BDJ4 support tickets can be selected and will open a link to the
+corresponding page in your browser.
 
 The __Send&nbsp;Support&nbsp;Message__ button will open a new window
 where a support message can be sent (see below).
@@ -95,4 +100,4 @@ database is very useful when finding problems associated with the
 audio files.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-26 12:11:21; BDJ4 version 4.4.9)_
+<br>_(Updated 2024-03-28 05:21:07; BDJ4 version 4.8.0)_

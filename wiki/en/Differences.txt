@@ -7,7 +7,7 @@ As of 2023-1-23:
 At this time the supported platforms for BallroomDJ 4 will be:
 
 * 64-bit Windows 10, 11
-* MacOS: Catalina, Big Sur, Monterey, Ventura, Sonoma
+* MacOS: Big Sur, Monterey, Ventura, Sonoma
 * 64-bit Linux
 
 __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
@@ -15,7 +15,6 @@ __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
 * Synchronization between computers.
 * Client/Server mode.
 * Image display.
-* Playlist: Required Keywords.
 * Playlist: Marquee message.
 * Player: Marquee message.
 * Player: Changing the gap dynamically.
@@ -35,6 +34,8 @@ Renaming playlists is much simpler.
 
 __Features that have changed in BallroomDJ&nbsp;4:__
 
+* Playlist: Required Keywords
+<br>Playlist Management has _Tags_ and _Tag&nbsp;Weight_ entry.
 * Playlist: Stop In/At &lt;time&gt; pause/continue.
 <br>__BDJ4 only supports: Stop At &lt;time&gt; (playlist and music queue).__
 * Playlist: Stop After &lt;song-count&gt; pause/continue.
@@ -56,7 +57,7 @@ rules are applied to make it work nicely.
 marked as classical.
     * The composer group will be omitted if the composer is the same as
 the album artist or the artist.
-    * If the album artist is empty, it uses the artist data.
+    * If the album artist is empty, the artist will be used.
     * If both the album artist and the artist are in the auto
 organization path and they are the same, the artist group is omitted.
 
@@ -114,4 +115,4 @@ is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 07:04:17; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-03-28 05:25:49; BDJ4 version 4.8.0)_

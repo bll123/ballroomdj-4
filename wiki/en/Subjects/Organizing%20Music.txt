@@ -28,6 +28,15 @@ organization path that you want.  This must be done manually using a
 text editor. [Contact the BDJ4 development team](Getting%20Help) for
 help.
 
+There are some rules that the organization path follows:
+    * Composer and conductor groups will only be added if the genre is
+marked as classical.
+    * The composer group will be omitted if the composer is the same as
+the album artist or the artist.
+    * If the album artist is empty, the artist will be used.
+    * If both the album artist and the artist are in the auto
+organization path and they are the same, the artist group is omitted.
+
 ###### Manually Renaming the Audio Files
 
 Once the organization path has been set to your satisfaction, open the
@@ -60,4 +69,4 @@ run once, as auto-organization will not rename existing audio files.
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 06:57:42; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-03-28 05:25:49; BDJ4 version 4.8.0)_

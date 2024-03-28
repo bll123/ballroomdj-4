@@ -90,6 +90,8 @@ copy the audio tags from one audio file to another.
 
 __Actions&nbsp;/&nbsp;Edit&nbsp;All__ starts the batch edit
 process.
+<br>
+See: [Subjects&nbsp;/&nbsp;Batch&nbsp;Editing](en-Subjects-Batch%20Editing)
 
 __Actions&nbsp;/&nbsp;Apply&nbsp;Edit&nbsp;All__ finalizes the
 batch edit process. The changes made to the current song will be made
@@ -171,4 +173,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-11 11:55:22; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-28 04:52:26; BDJ4 version 4.8.0)_
