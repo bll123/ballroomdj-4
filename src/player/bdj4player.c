@@ -1423,7 +1423,6 @@ playerSpeed (playerdata_t *playerData, char *trate)
     rate = atof (trate);
     pliRate (playerData->pli, (ssize_t) rate);
     playerData->currentSpeed = (ssize_t) rate;
-fprintf (stderr, "e: set currspeed: %d\n", (int) rate);
   }
   logProcEnd (LOG_PROC, "playerSpeed", "");
 }

@@ -430,8 +430,9 @@ bdjoptDeleteProfile (void)
     diropDeleteDir (tbuff, DIROP_ALL);
   }
   /* img/profileNN */
+  /* 4.8.1: fix: this must be a relative path */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
     diropDeleteDir (tbuff, DIROP_ALL);
   }

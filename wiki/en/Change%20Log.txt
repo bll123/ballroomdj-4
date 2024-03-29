@@ -10,9 +10,9 @@
 **4.8.1 2024-4---**
 
 * Bug Fixes:
-    * PENDING crash (missing profileXX)
     * Installer: Update re-install feedback message.
     * Playlist Management: Max. Play Time: Increase maximum allowed.
+    * Updater: Fixed an issue with deleting profiles (alternate folders).
 * Changes:
     * Configure: Filter Display renamed to Dialogs.
     * External Request: Added 'Marquee Display' to dialog.

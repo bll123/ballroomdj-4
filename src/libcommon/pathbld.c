@@ -46,22 +46,22 @@ pathbldMakePath (char *buff, size_t buffsz,
       dirprefix = sysvarsGetStr (SV_BDJ4_DREL_TMP);
     }
   }
+
+  /* relative prefixes */
   if ((flags & PATHBLD_MP_DREL_TMP) == PATHBLD_MP_DREL_TMP) {
-    /* relative */
     dirprefix = sysvarsGetStr (SV_BDJ4_DREL_TMP);
   }
   if ((flags & PATHBLD_MP_DREL_HTTP) == PATHBLD_MP_DREL_HTTP) {
-    /* relative */
     dirprefix = sysvarsGetStr (SV_BDJ4_DREL_HTTP);
   }
   if ((flags & PATHBLD_MP_DREL_IMG) == PATHBLD_MP_DREL_IMG) {
-    /* relative */
     dirprefix = sysvarsGetStr (SV_BDJ4_DREL_IMG);
   }
   if ((flags & PATHBLD_MP_DREL_TEST_TMPL) == PATHBLD_MP_DREL_TEST_TMPL) {
-    /* relative */
     dirprefix = "test-templates";
   }
+
+  /* absolute prefixes */
   if ((flags & PATHBLD_MP_DIR_DATATOP) == PATHBLD_MP_DIR_DATATOP) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
   }
