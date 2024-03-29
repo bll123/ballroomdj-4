@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-03-26\n"
-"PO-Revision-Date: 2024-03-29\n"
+"POT-Creation-Date: 2024-03-29\n"
+"PO-Revision-Date: 2024-03-29 15:42\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -1050,8 +1050,7 @@ msgid "Marquee Theme"
 msgstr "Marquee teema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maksimi\n"
 "peliaika"
@@ -1533,9 +1532,7 @@ msgid "Repeat"
 msgstr "Toista"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Korvaa BallroomDJ-tietokannan kokonaisuudessaan. Kaikki tietokantaan tehdyt muutokset menetetään."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1902,9 +1899,7 @@ msgid "The conversion process will not be run."
 msgstr "Muunnosprosessia ei suoriteta."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Muunnosprosessi suoritetaan vain uusissa asennuksissa ja uudelleenasennuksissa."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2006,13 +2001,11 @@ msgstr "Päivitetty"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot %s -tietokannasta."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot äänitiedoston tunnisteista."
 
 #. CONTEXT: alternate installation: status message
@@ -2091,9 +2084,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Kirjoita tunnisteet äänitiedostoihin"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Kirjoittaa äänitiedoston tunnisteet käyttäen BallroomDJ-tietokannan tietoja."
 
 #. CONTEXT: configuration: dialog: XML file types
