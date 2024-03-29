@@ -126,6 +126,9 @@ uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
   if (uiwidget->widget == NULL) {
     return;
   }
+  if (uipixbuf == NULL) {
+    return;
+  }
   if (uipixbuf->pixbuf == NULL) {
     return;
   }

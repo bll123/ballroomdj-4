@@ -10,6 +10,7 @@
 **4.8.1 2024-4---**
 
 * Bug Fixes:
+    * PENDING crash (missing profileXX)
     * Installer: Update re-install feedback message.
     * Playlist Management: Max. Play Time: Increase maximum allowed.
 * Changes:
