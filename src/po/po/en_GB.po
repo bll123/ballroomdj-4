@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.8.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-03-26\n"
-"PO-Revision-Date: 2024-03-26\n"
+"POT-Creation-Date: 2024-03-29\n"
+"PO-Revision-Date: 2024-03-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -601,6 +601,10 @@ msgstr ""
 msgid "Delete Profile"
 msgstr ""
 
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr ""
+
 #. CONTEXT: label: disc number
 msgid "Disc"
 msgstr ""
@@ -798,10 +802,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#. CONTEXT: configuration: song filter display settings
-msgid "Filter Display"
-msgstr ""
-
+#. CONTEXT: configuration: filter display: song selection filters
 #. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
@@ -1445,6 +1446,7 @@ msgstr ""
 msgid "Queue_noun"
 msgstr "Queue"
 
+#. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
 msgid "Quick Edit"
 msgstr ""
