@@ -82,6 +82,7 @@ typedef enum {
   INST_FINALIZE,
   INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
+  INST_UPDATE_ALT_PROCESS_INIT,
   INST_REGISTER_INIT,
   INST_REGISTER,
   INST_FINISH,
@@ -143,6 +144,7 @@ typedef struct {
   const char      *webresponse;
   size_t          webresplen;
   const char      *pleasewaitmsg;
+  int             altidx;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -227,6 +229,7 @@ static void installerVLCInstall (installer_t *installer);
 static void installerFinalize (installer_t *installer);
 static void installerUpdateProcessInit (installer_t *installer);
 static void installerUpdateProcess (installer_t *installer);
+static void installerUpdateAltProcessInit (installer_t *installer);
 static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
@@ -957,6 +960,10 @@ installerMainLoop (void *udata)
     }
     case INST_UPDATE_PROCESS: {
       installerUpdateProcess (installer);
+      break;
+    }
+    case INST_UPDATE_ALT_PROCESS_INIT: {
+      installerUpdateAltProcessInit (installer);
       break;
     }
     case INST_REGISTER_INIT: {
@@ -2204,6 +2211,8 @@ installerUpdateProcessInit (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
 
+  installer->altidx = 1;
+
   if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "updprocessinit");
     return;
@@ -2212,7 +2221,7 @@ installerUpdateProcessInit (installer_t *installer)
   /* the updater must be run in the same locale as the installer */
   if (installer->localespecified) {
     FILE    *fh;
-    char    tbuff [512];
+    char    tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
     fh = fileopOpen (tbuff, "w");
@@ -2251,15 +2260,84 @@ installerUpdateProcess (installer_t *installer)
   }
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
 
-  installer->instState = INST_REGISTER_INIT;
+  installer->instState = INST_UPDATE_ALT_PROCESS_INIT;
+}
+
+static void
+installerUpdateAltProcessInit (installer_t *installer)
+{
+  char  tfn [MAXPATHLEN];
+  FILE  *fh;
+  char  altdir [MAXPATHLEN];
+
+  if (installer->altidx >= BDJ4_MAX_ALT) {
+    installer->instState = INST_REGISTER_INIT;
+    return;
+  }
+
+  snprintf (tfn, sizeof (tfn), "%s/%s%s%02d%s",
+      sysvarsGetStr (SV_DIR_CONFIG), ALT_INST_PATH_FN,
+      sysvarsGetStr (SV_BDJ4_DEVELOPMENT), installer->altidx, BDJ4_CONFIG_EXT);
+  if (! fileopFileExists (tfn)) {
+    installer->instState = INST_UPDATE_ALT_PROCESS_INIT;
+    installer->altidx += 1;
+    return;
+  }
+
+  fh = fileopOpen (tfn, "r");
+  if (fh == NULL) {
+    installer->instState = INST_UPDATE_ALT_PROCESS_INIT;
+    installer->altidx += 1;
+    return;
+  }
+
+  if (fh != NULL) {
+    (void) ! fgets (altdir, sizeof (altdir), fh);
+    stringTrim (altdir);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  if (! fileopIsDirectory (altdir)) {
+    installer->instState = INST_UPDATE_ALT_PROCESS_INIT;
+    installer->altidx += 1;
+    return;
+  }
+
+  if (osChangeDir (altdir) < 0) {
+    installerFailWorkingDir (installer, altdir, "updprocessaltinit");
+    installer->altidx += 1;
+    return;
+  }
+
+  /* the updater must be run in the same locale as the installer */
+  if (installer->localespecified) {
+    FILE    *fh;
+    char    tbuff [MAXPATHLEN];
+
+    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
+    fh = fileopOpen (tbuff, "w");
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  installer->instState = INST_UPDATE_PROCESS;
+  installer->altidx += 1;
 }
 
 static void
 installerRegisterInit (installer_t *installer)
 {
   char    tbuff [200];
+
+  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
+
+  if (osChangeDir (installer->datatopdir) < 0) {
+    installerFailWorkingDir (installer, installer->datatopdir, "registerinit");
+    return;
+  }
 
   if ((strcmp (sysvarsGetStr (SV_USER), "bll") == 0 ||
       strncmp (sysvarsGetStr (SV_USER), "test ", 5) == 0) &&
@@ -2538,13 +2616,20 @@ installerFailWorkingDir (installer_t *installer, const char *dir, const char *ms
 static void
 installerSetTargetDir (installer_t *installer, const char *fn)
 {
-  char  *tmp;
+  char        *tmp;
+  pathinfo_t  *pi;
 
   /* fn may be pointing to an allocated value, which is installer->target */
   tmp = mdstrdup (fn);
   dataFree (installer->target);
   installer->target = tmp;
   pathNormalizePath (installer->target, strlen (installer->target));
+
+  pi = pathInfo (installer->target);
+  snprintf (installer->name, sizeof (installer->name), "%.*s",
+      (int) pi->blen, pi->basename);
+  pathInfoFree (pi);
+
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "set target: %s", installer->target);
 }
 
