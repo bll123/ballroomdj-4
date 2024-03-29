@@ -45,12 +45,12 @@ enum {
 
 enum {
   UIEXTREQ_W_WINDOW,
-  UIEXTREQ_W_STATUS_MSG,
   UIEXTREQ_W_DIALOG,
   UIEXTREQ_W_AUDIO_FILE,
   UIEXTREQ_W_AUDIO_FILE_CHOOSER,
   UIEXTREQ_W_ARTIST,
   UIEXTREQ_W_TITLE,
+  UIEXTREQ_W_MQ_DISP,
   UIEXTREQ_W_MAX,
 };
 
@@ -76,6 +76,7 @@ static void   uiextreqProcessAudioFile (uiextreq_t *uiextreq);
 static int    uiextreqValidateAudioFile (uiwcont_t *entry, void *udata);
 static int    uiextreqValidateArtist (uiwcont_t *entry, void *udata);
 static int    uiextreqValidateTitle (uiwcont_t *entry, void *udata);
+static int    uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata);
 
 uiextreq_t *
 uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
@@ -112,11 +113,13 @@ uiextreqFree (uiextreq_t *uiextreq)
     if (uiextreq->song != NULL) {
       songFree (uiextreq->song);
     }
-    uiwcontFree (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE]);
-    uiwcontFree (uiextreq->wcont [UIEXTREQ_W_ARTIST]);
-    uiwcontFree (uiextreq->wcont [UIEXTREQ_W_TITLE]);
-    uiwcontFree (uiextreq->wcont [UIEXTREQ_W_DIALOG]);
-    uiwcontFree (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER]);
+    for (int i = 0; i < UIEXTREQ_W_MAX; ++i) {
+      if (i == UIEXTREQ_W_WINDOW) {
+        /* not owner of window */
+        continue;
+      }
+      uiwcontFree (uiextreq->wcont [i]);
+    }
     uidanceFree (uiextreq->uidance);
     mdfree (uiextreq);
   }
@@ -179,6 +182,7 @@ uiextreqProcess (uiextreq_t *uiextreq)
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], false);
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST], false);
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_TITLE], false);
+  uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], false);
 }
 
 /* internal routines */
@@ -190,7 +194,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *szgrp;  // labels
-  uiwcont_t     *szgrpEntry; // title, artist
+  uiwcont_t     *szgrpEntry; // title, artist, mq-display
   const char    *tstr;
 
   logProcBegin (LOG_PROC, "uiextreqCreateDialog");
@@ -261,8 +265,9 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiBoxPackStart (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER] = uiwidgetp;
 
-  /* artist display */
   uiwcontFree (hbox);
+
+  /* artist display */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -277,8 +282,9 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiBoxPackStart (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_ARTIST] = uiwidgetp;
 
-  /* title display */
   uiwcontFree (hbox);
+
+  /* title display */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -293,8 +299,9 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiBoxPackStart (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_TITLE] = uiwidgetp;
 
-  /* dance : always available */
   uiwcontFree (hbox);
+
+  /* dance : always available */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -311,6 +318,24 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uidanceSetCallback (uiextreq->uidance, uiextreq->callbacks [UIEXTREQ_CB_DANCE]);
 
   uiwcontFree (hbox);
+
+  /* marquee display */
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiEntrySetValue (uiwidgetp, "");
+  uiWidgetAlignHorizFill (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiextreq->wcont [UIEXTREQ_W_MQ_DISP] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
@@ -321,6 +346,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       uiextreqValidateArtist, uiextreq, UIENTRY_IMMEDIATE);
   uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_TITLE],
       uiextreqValidateTitle, uiextreq, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
+      uiextreqValidateMQDisplay, uiextreq, UIENTRY_IMMEDIATE);
 
   logProcEnd (LOG_PROC, "uiextreqCreateDialog", "");
 }
@@ -353,6 +380,7 @@ uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn)
   }
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_ARTIST], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_TITLE], "");
+  uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "");
   uidanceSetValue (uiextreq->uidance, -1);
 }
 
@@ -459,6 +487,8 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
           songGetStr (uiextreq->song, TAG_ARTIST));
       uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_TITLE],
           songGetStr (uiextreq->song, TAG_TITLE));
+      uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
+          songGetStr (uiextreq->song, TAG_MQDISPLAY));
       uidanceSetValue (uiextreq->uidance,
           songGetNum (uiextreq->song, TAG_DANCE));
     }
@@ -497,7 +527,6 @@ uiextreqValidateArtist (uiwcont_t *entry, void *udata)
   uiextreq_t  *uiextreq = udata;
   const char  *str;
 
-  uiLabelSetText (uiextreq->wcont [UIEXTREQ_W_STATUS_MSG], "");
   str = uiEntryGetValue (entry);
   if (uiextreq->song != NULL) {
     songSetStr (uiextreq->song, TAG_ARTIST, str);
@@ -511,10 +540,22 @@ uiextreqValidateTitle (uiwcont_t *entry, void *udata)
   uiextreq_t  *uiextreq = udata;
   const char  *str;
 
-  uiLabelSetText (uiextreq->wcont [UIEXTREQ_W_STATUS_MSG], "");
   str = uiEntryGetValue (entry);
   if (uiextreq->song != NULL) {
     songSetStr (uiextreq->song, TAG_TITLE, str);
+  }
+  return UIENTRY_OK;
+}
+
+static int
+uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata)
+{
+  uiextreq_t  *uiextreq = udata;
+  const char  *str;
+
+  str = uiEntryGetValue (entry);
+  if (uiextreq->song != NULL) {
+    songSetStr (uiextreq->song, TAG_MQDISPLAY, str);
   }
   return UIENTRY_OK;
 }
