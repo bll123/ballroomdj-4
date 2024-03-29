@@ -31,7 +31,7 @@ _Playable&nbsp;Status_ filter <br>See
 [Filter&nbsp;Display](en-Configuration-Filter%20Display).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-D.png)
+![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-E.png)
 <br><span style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)

@@ -30,12 +30,12 @@ QR code can be scanned with your mobile phone or tablet. (The link
 will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-F.png)
+![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-G.png)
 <br><span style="color:#4559bf;">__Configure / Mobile Remote Control__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen1-B.jpg)
-![screen-2](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen2-B.jpg)
+![mrc-screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen1-B.jpg)
+![mrc-screen-2](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen2-B.jpg)
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)

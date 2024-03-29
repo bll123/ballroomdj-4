@@ -23,7 +23,7 @@ __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-D.png)
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-E.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)

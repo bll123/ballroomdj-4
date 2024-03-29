@@ -14,6 +14,7 @@
     * Playlist Management: Max. Play Time: Increase maximum allowed.
 * Changes:
     * Configure: Filter Display renamed to Dialogs.
+    * External Request: Added 'Marquee Display' to dialog.
 * New Features:
     * Configure: Quick Edit Dialog display may now be configured.
 

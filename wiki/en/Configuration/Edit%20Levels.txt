@@ -30,7 +30,7 @@ The __Default__ selection determines which dance level is assigned to
 songs that do not have a dance level set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-D.png)
+![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-E.png)
 <br><span style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)

@@ -62,7 +62,7 @@
 <br>[Marquee](en-Configuration-Marquee)
 <br>[User Interface](en-Configuration-User%20Interface)
 <br>[Display Settings](en-Configuration-Display%20Settings)
-<br>[Filter Display](en-Configuration-Filter%20Display)
+<br>[Dialogs](en-Configuration-Dialogs)
 <br>[Organization](en-Configuration-Organization)
 <br>[Edit Dances](en-Configuration-Edit%20Dances)
 <br>[Edit Ratings](en-Configuration-Edit%20Ratings)
@@ -88,6 +88,7 @@
 
 ### Player
 [Player](en-Player-Player)
+<br>[Playing a Song not in the Database](en-Player-External%20Request)
 <br>[Marquee](en-Player-Marquee)
 <br>[Reload](en-Player-Reload)
 

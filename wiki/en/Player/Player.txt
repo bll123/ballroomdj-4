@@ -152,25 +152,24 @@ song in the music queue.
 ![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-F.png)
 <br><span style="color:#4559bf;">__Player / Actions Menu__</span> </div>
 
-__Actions / External Request__: Starts a dialog to select an audio file. After
-selecting the audio file, the artist, title and dance are filled in
-from the audio file tags if possible.  The artist, title and dance may
-be changed. After setting the song information, select the __Queue__
-button to add the song to the music queue.
+__Actions / External Request__: Starts a dialog to select an audio
+file. After selecting the audio file, the artist, title and dance are
+filled in from the audio file tags if possible.  The artist, title,
+dance and marquee display may be changed. After setting the song
+information, select the __Queue__ button to add the song to the music
+queue.
+<br>
+(See also: [Player / External Request](en-Player-External%20Request)
 
 When an audio file is dragged from the file manager and dropped in
 a music queue, the external request dialog is started.
 
-<div markdown style="margin-right: 20px; text-align: center;">
-![player-ext-req-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-ext-req-C.png)
-<br><span style="color:#4559bf;">__Player / External Request__</span> </div>
-
 __Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Current__:
 <br>
 __Actions&nbsp;/&nbsp;Quick&nbsp;Edit:&nbsp;Selected__: The
-_Quick&nbsp;Edit_ dialog enables making changes to the
-speed&nbsp;adjustment, volume&nbsp;adjustment, dance&nbsp;rating and
-dance&nbsp;level of the song from the player.
+_Quick&nbsp;Edit_ dialog enables making changes to the song from the
+player for speed&nbsp;adjustment, volume&nbsp;adjustment,
+dance&nbsp;rating, dance&nbsp;level and favorite selection.
 <br>
 See: [Quick Edit](en-Subjects-Quick%20Edit)
 

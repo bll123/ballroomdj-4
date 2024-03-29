@@ -51,7 +51,7 @@ __Queue&nbsp;5__ buttons.  These buttons are usually used for
 teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-C.png)
+![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-D.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)

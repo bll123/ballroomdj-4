@@ -28,7 +28,7 @@ the organization path.
 <br>See: [Subjects / Organizing Music](en-Subjects-Organizing%20Music).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-E.png)
+![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-F.png)
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)

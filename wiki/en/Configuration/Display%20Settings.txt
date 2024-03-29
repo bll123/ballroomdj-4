@@ -38,7 +38,7 @@ to remove and add columns to display.  Use the up and down arrows
 to change the order in which the columns are displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-D.png)
+![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-E.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)

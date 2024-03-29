@@ -1,0 +1,39 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_External requests allow
+playback of a song that is not in the database._</span>
+
+[TOC]
+
+### External Requests
+
+An external request adds a song that is not in the database to the
+music queue.
+
+##### Playing a song that is not in the database.
+
+In the [Player](en-Player-Player), first select the music queue that
+the song will be added to.  The external request will be added to the
+queue after the currently selected song.  Select the song where
+the external request will be added.
+
+Now select __External&nbsp;Request__ in the __Actions__ menu.  The
+external request dialog will open.
+
+Use the folder icon to open the file selection dialog.  Navigate to
+the desired folder, and select the audio file to add to the queue.
+The audio file's information will be loaded if possible, and the
+artist and title will be displayed.
+
+If desired, edit the artist and title information.  Also select the
+dance as appropriate.  The _Marquee&nbsp;Display_ field may be set, and
+will display instead of the dance.
+
+Select the __Queue__ button to queue the song.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/ext-req-D.png)
+<br><span style="color:#4559bf;">__Player / External Request__</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2024-03-11 08:44:18; BDJ4 version 4.7.0)_

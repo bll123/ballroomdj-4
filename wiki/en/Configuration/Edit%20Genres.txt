@@ -23,7 +23,7 @@ The __Classical?__ selection is used for classical music.  ___Classical
 music support is not yet implemented in BDJ4.___
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-D.png)
+![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-E.png)
 <br><span style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)
