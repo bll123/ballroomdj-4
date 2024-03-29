@@ -24,7 +24,7 @@ the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30 minutes.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-D.png)
+![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-E.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 ##### Creating an Automatic Playlist for the Mixer

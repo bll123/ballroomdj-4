@@ -57,7 +57,7 @@ In the configuration window, select the __Organization__ section from
 the list on the left side of the window.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-B.png)
+![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-C.png)
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 In the _Organization_ section, the default organization is

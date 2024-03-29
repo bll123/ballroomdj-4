@@ -32,7 +32,7 @@ For the purposes of this example, the line dance will just be named
 _LD_ to keep it short.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-A.png)
+![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-B.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 ##### Setting up the Line Dances (Marquee Display)

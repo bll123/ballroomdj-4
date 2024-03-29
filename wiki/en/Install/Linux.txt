@@ -49,9 +49,8 @@ Download the linux-pre-install-v12.sh script from sourceforge.
 
 Open a terminal and run this script using the following command:
 
-~~~
-bash linux-pre-install-v12.sh
-~~~
+    :::bash
+    bash linux-pre-install-v12.sh
 
 This script performs the following actions:
 
@@ -84,11 +83,11 @@ Be sure to exit BDJ4 if it is already started.
 Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
-~~~
-cd Downloads
-chmod a+rx bdj4-installer-linux-debian12-4.8.0
-./bdj4-installer-linux-debian12-4.8.0
-~~~
+
+    :::bash
+    cd Downloads
+    chmod a+rx bdj4-installer-linux-debian12-4.8.0
+    ./bdj4-installer-linux-debian12-4.8.0
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
 folder will be pre-selected for you.

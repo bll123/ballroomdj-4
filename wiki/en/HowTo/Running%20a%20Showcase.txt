@@ -29,7 +29,7 @@ is set to 6:00 minutes to allow the entire song to play.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-A.png)
+![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-B.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 ##### Running the Showcase
@@ -50,8 +50,9 @@ __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
 
 In the __Actions__ menu, select __External&nbsp;Request__.  A dialog
 will open.  Use the file chooser button with the folder icon to select
-the audio file to play.  Select the __Queue__ button to queue the song
-for playback.
+the audio file to play.  Enter a description of the showcase in the
+_Marquee&nbsp;Display_ field if desired. Select the __Queue__ button
+to queue the song for playback.
 
 Use the __Play&nbsp;/&nbsp;Pause__
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
@@ -60,7 +61,7 @@ toggle will be turned on as __Pause&nbsp;Each&nbsp;Song__ is set on for
 the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-ext-req-b](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-B.png)
+![showcase-ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-C.png)
 <br><span style="color:#4559bf;">__Player / Actions / External Request__</span> </div>
 
 ###### Playing a Song in the Database
