@@ -11,6 +11,7 @@
 
 * Bug Fixes:
     * Installer: Update re-install feedback message.
+    * Marquee: Possible fix for blank song information.
     * Playlist Management: Max. Play Time: Increase maximum allowed.
     * Updater: Fixed an issue with deleting profiles (alternate folders).
 * Changes:

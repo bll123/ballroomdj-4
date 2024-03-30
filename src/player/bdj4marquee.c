@@ -36,7 +36,6 @@
 #include "sockh.h"
 #include "sysvars.h"
 #include "tagdef.h"
-#include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -865,62 +864,56 @@ marqueePopulate (marquee_t *marquee, char *args)
   marqueeClearInfoDisplay (marquee);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
-  if (p != NULL) {
-    int   count;
-    int   i;
-
-    count = atoi (p);
-    idx = MQ_W_INFO_DISP_A;
-
-    i = 0;
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-    while (p != NULL && i < count && idx <= MQ_W_INFO_DISP_E) {
-      if (*p == MSG_ARGS_EMPTY) {
-        /* no data */
-        p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-        ++i;
-        continue;
-      }
-
-      if (*sep) {
-        uiLabelSetText (marquee->wcont [idx], sepstr);
-        ++idx;
-      }
-
-      if (idx > MQ_W_INFO_DISP_E) {
-        break;
-      }
-
-      uiLabelSetText (marquee->wcont [idx], p);
-      if (! *sep) {
-        sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
-        snprintf (sepstr, sizeof (sepstr), " %s ", sep);
-      }
-
-      ++idx;
-      if (idx > MQ_W_INFO_DISP_E) {
-        break;
-      }
-
-      p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-      ++i;
-    }
-  }
 
   /* first entry is the main dance */
-  if (p != NULL && *p == MSG_ARGS_EMPTY) {
+  if (p == NULL || *p == MSG_ARGS_EMPTY) {
     p = "";
   }
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DANCE], p);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-    if (p != NULL && *p != MSG_ARGS_EMPTY) {
-      uiLabelSetText (marquee->marqueeLabs [i], p);
-    } else {
-      uiLabelSetText (marquee->marqueeLabs [i], "");
+    if (p == NULL || *p == MSG_ARGS_EMPTY) {
+      p = "";
     }
+    uiLabelSetText (marquee->marqueeLabs [i], p);
   }
+
+  idx = MQ_W_INFO_DISP_A;
+
+  /* the pointer was left pointing at the last dance display */
+  /* grab the next item */
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  while (p != NULL && idx <= MQ_W_INFO_DISP_E) {
+    if (*p == MSG_ARGS_EMPTY) {
+      /* no data */
+      p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+      continue;
+    }
+
+    if (*sep) {
+      uiLabelSetText (marquee->wcont [idx], sepstr);
+      ++idx;
+    }
+
+    if (idx > MQ_W_INFO_DISP_E) {
+      break;
+    }
+
+    uiLabelSetText (marquee->wcont [idx], p);
+    if (! *sep) {
+      sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
+      snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+    }
+
+    ++idx;
+    if (idx > MQ_W_INFO_DISP_E) {
+      break;
+    }
+
+    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  }
+
   logProcEnd (LOG_PROC, "marqueePopulate", "");
 }
 

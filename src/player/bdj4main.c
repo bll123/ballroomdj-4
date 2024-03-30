@@ -370,9 +370,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mainData->conn, routefrom);
-          if (routefrom == ROUTE_MARQUEE) {
-            mainData->marqueeChanged = true;
-          }
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -1079,31 +1076,9 @@ mainSendMarqueeData (maindata_t *mainData)
     strlcat (jbuff, tbuff, BDJMSG_MAX);
   }
 
-
   if (marqueeactive) {
-    const char  *tstr;
-    slist_t     *sellist;
-    slistidx_t  seliteridx;
-    int         tagidx;
-
     sbuff = mdmalloc (BDJMSG_MAX);
     sbuff [0] = '\0';
-
-    sellist = dispselGetList (mainData->dispsel, DISP_SEL_MARQUEE);
-
-    snprintf (tbuff, sizeof (tbuff), "%d%c",
-        (int) slistGetCount (sellist), MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
-
-    slistStartIterator (sellist, &seliteridx);
-    while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-      tstr = musicqGetData (mainData->musicQueue, mqidx, 0, tagidx);
-      if (tstr == NULL || ! *tstr) {
-        tstr = MSG_ARGS_EMPTY_STR;
-      }
-      snprintf (tbuff, sizeof (tbuff), "%s%c", tstr, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-    }
   }
 
   currTime = mstime ();
@@ -1196,9 +1171,29 @@ mainSendMarqueeData (maindata_t *mainData)
   }
 
   if (marqueeactive) {
+    const char  *tstr;
+    slist_t     *sellist;
+    slistidx_t  seliteridx;
+    int         tagidx;
+    int         mqidx;
+
+    mqidx = mainData->musicqPlayIdx;
+    sellist = dispselGetList (mainData->dispsel, DISP_SEL_MARQUEE);
+
+    slistStartIterator (sellist, &seliteridx);
+    while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+      tstr = musicqGetData (mainData->musicQueue, mqidx, 0, tagidx);
+      if (tstr == NULL || ! *tstr) {
+        tstr = MSG_ARGS_EMPTY_STR;
+      }
+      snprintf (tbuff, sizeof (tbuff), "%s%c", tstr, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
+    }
+
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_DATA, sbuff);
     dataFree (sbuff);
   }
+
   if (mobmarqueeactive) {
     if (marqueeidx == 0) {
       strlcat (jbuff, ", ", BDJMSG_MAX);
@@ -1208,6 +1203,7 @@ mainSendMarqueeData (maindata_t *mainData)
     connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
     dataFree (jbuff);
   }
+
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
 

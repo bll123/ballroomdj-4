@@ -52,15 +52,8 @@ be installed, and the desktop shortcut created.
 
 ##### Updating up an Alternate Folder
 
-Any time BDJ4 is updated, all alternate folders also need to be updated.
-At this time, this is a manual process.  (This will be changed in a
-future update).
-
-Start the main BDJ4 and select __Set&nbsp;Up&nbsp;Alternate&nbsp;Folder__
-from the _Actions_ menu.
-
-Make sure the name and path match the alternate folder installation,
-then select the __Install__ button.
+Any time BDJ4 is updated, all alternate folders will also be updated
+(version 4.8.1).
 
 [Wiki Home](Home)
 <br>_(Updated 2024-03-27 06:07:23; BDJ4 version 4.8.0)_
