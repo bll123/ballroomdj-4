@@ -122,4 +122,4 @@ song editor to save the changes.
 See also: [Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-11 11:55:22; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_

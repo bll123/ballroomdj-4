@@ -172,4 +172,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 08:40:25; BDJ4 version 4.4.8)_
+<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_

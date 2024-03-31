@@ -36,4 +36,4 @@ Select the __Queue__ button to queue the song.
 <br><span style="color:#4559bf;">__Player / External Request__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-11 08:44:18; BDJ4 version 4.7.0)_
+<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_

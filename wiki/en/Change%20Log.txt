@@ -6,9 +6,11 @@
 
 **4.9.0 2024-4---**
 
-**4.8.1 2024-4---**
+**4.8.2 2024-4---**
 
-**4.8.1 2024-3---**
+-->
+
+**4.8.1 2024-3-31**
 
 * Bug Fixes:
     * Installer: Update re-install feedback message.
@@ -17,12 +19,9 @@
     * Updater: Fixed an issue with deleting profiles (alternate folders).
 * Changes:
     * Configure: Filter Display renamed to Dialogs.
+    * Configure: Quick Edit Dialog display may now be configured.
     * External Request: Added 'Marquee Display' to dialog.
     * Installer: Alternate folders are updated upon installation.
-* New Features:
-    * Configure: Quick Edit Dialog display may now be configured.
-
--->
 
 **4.8.0 2024-3-24**
 
@@ -814,4 +813,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-28 04:52:26; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
