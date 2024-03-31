@@ -139,8 +139,8 @@ dance drop-down may be used to quickly change which dance is
 displayed.  The filter button
 (![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
 will start a dialog where the filters can be chosen to limit which
-songs are displayed in the listing. <br>See also:
-[Filter&nbsp;Display](en-Configuration-Filter%20Display))
+songs are displayed in the listing.
+<br>See also: [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs))
 
 Select a song and select the __Queue__ button to add a song to the music
 queue.  The selected song will be added after the currently selected

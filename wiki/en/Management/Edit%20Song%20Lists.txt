@@ -87,7 +87,7 @@ to display the filter dialog.  In this dialog, select the filters you
 want activated and select __Apply__.  The song selection listing will
 be updated.  The filter dialog will stay open so it can be used again.
 The filters displayed can be adjusted in
-[Filter&nbsp;Display](en-Configuration-Filter%20Display).
+[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)

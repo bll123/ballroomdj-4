@@ -24,7 +24,7 @@ The following filters are available:
 
 The Genre, Dance Level, Status, Favorite and Playable Status filters
 are not displayed in the default configuration.  These can be turned
-on in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
+on in [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).
 
 After selecting the filters to be applied, select the __Apply__ button
 to update the song listing.

@@ -27,8 +27,8 @@ button to remove a status.
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
 request selection.  This selection corresponds to the
-_Playable&nbsp;Status_ filter <br>See
-[Filter&nbsp;Display](en-Configuration-Filter%20Display).
+_Playable&nbsp;Status_ filter
+<br>See [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-E.png)

@@ -24,16 +24,15 @@ The _Favorite_ column that will be displayed is narrow and does not
 take up much space.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-A.png)
+![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-B.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
-In
-[Configure&nbsp;/&nbsp;Filter&nbsp;Display](en-Configuration-Filter%20Display),
-select the _Favorite_ checkbox.
+In [Configure&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs), select
+the _Favorite_ checkbox in the _Song&nbsp;Filter_ column.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-filter-disp-A.png)
-<br><span style="color:#4559bf;">__Configure / Filter Display__</span> </div>
+![favorite-dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-dialogs-A.png)
+<br><span style="color:#4559bf;">__Configure / Dialogs__</span> </div>
 
 ##### Favorite Display
 

@@ -5,9 +5,10 @@
 <!--
 
 **4.9.0 2024-4---**
-    * PENDING Installation: second install, incorrect copy of files.
 
 **4.8.1 2024-4---**
+
+**4.8.1 2024-3---**
 
 * Bug Fixes:
     * Installer: Update re-install feedback message.

@@ -42,8 +42,10 @@ If a dance does not have an announcement assigned, no announcement
 will be played.
 <br>(See [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
+<!-- this images is also used in Subjects/BPM-MPM -->
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![ann-edit-dance-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-B.png)
+![ann-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-C.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 ##### Playing Announcements
@@ -69,7 +71,7 @@ In __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, turn on the
 __Play&nbsp;Announcements__ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ann-mq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-B.png)
+![ann-mq](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-C.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 ##### Configuring a Playlist to Play Announcements
