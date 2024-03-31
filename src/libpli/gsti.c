@@ -80,6 +80,7 @@ gstiInit (const char *plinm)
   gsti->isstopping = false;
 
   gsti->pipeline = gst_element_factory_make ("playbin", "play");
+  mdextalloc (gsti->pipeline);
   g_object_get (G_OBJECT (gsti->pipeline), "flags", &flags, NULL);
   flags |= GST_PLAY_FLAG_AUDIO;
   flags &= ~GST_PLAY_FLAG_VIDEO;
@@ -118,6 +119,7 @@ gstiFree (gsti_t *gsti)
     gstiWaitState (gsti, GST_STATE_READY);
     gst_element_set_state (gsti->pipeline, GST_STATE_NULL);
     gstiWaitState (gsti, GST_STATE_NULL);
+    mdextfree (gsti->pipeline);
     gst_object_unref (gsti->pipeline);
   }
 
