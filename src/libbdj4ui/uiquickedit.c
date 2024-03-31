@@ -160,6 +160,8 @@ uiqeFree (uiqe_t *uiqe)
   uilevelFree (uiqe->uilevel);
   uiratingFree (uiqe->uirating);
   uifavoriteFree (uiqe->uifavorite);
+  quickeditFree (uiqe->qe);
+  uiqe->qe = NULL;
   uiqe->uilevel = NULL;
   uiqe->uirating = NULL;
   uiqe->uifavorite = NULL;

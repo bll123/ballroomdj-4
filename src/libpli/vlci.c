@@ -33,22 +33,19 @@
 #include "vlci.h"
 
 #define VLCDEBUG 0
+#define SILENCE_LOG 1
+#define STATE_TO_VALUE 0
 
 typedef struct vlcData {
   libvlc_instance_t       *inst;
   char                    version [40];
-  libvlc_media_t          *m;
+  libvlc_media_t          *media;
   libvlc_media_player_t   *mp;
   _Atomic(libvlc_state_t) state;
   int                     argc;
   char                    **argv;
   char                    *device;
 } vlcData_t;
-
-enum {
-  SILENCE_LOG = 0,
-  STATE_TO_VALUE = 0,
-};
 
 # if VLCDEBUG
 
@@ -76,7 +73,8 @@ static const char *stateToStr (libvlc_state_t state); /* for debugging */
 # endif /* VLCDEBUG */
 
 static bool vlcHaveAudioDevList (void);
-static void  vlcEventHandler (const struct libvlc_event_t *event, void *);
+static void vlcEventHandler (const struct libvlc_event_t *event, void *);
+static void vlcReleaseMedia (vlcData_t *vlcData);
 
 #if STATE_TO_VALUE
 static libvlc_state_t stateToValue (char *name);
@@ -260,19 +258,14 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
     return -1;
   }
 
-  if (vlcData->m != NULL) {
-    em = libvlc_media_event_manager (vlcData->m);
-    libvlc_event_detach (em, libvlc_MediaStateChanged,
-        &vlcEventHandler, vlcData);
-    libvlc_media_release (vlcData->m);
-    vlcData->m = NULL;
-  }
+  vlcReleaseMedia (vlcData);
 
-  vlcData->m = libvlc_media_new_path (vlcData->inst, fn);
+  vlcData->media = libvlc_media_new_path (vlcData->inst, fn);
+  mdextalloc (vlcData->media);
   libvlc_media_player_set_rate (vlcData->mp, 1.0);
-  libvlc_media_player_set_media (vlcData->mp, vlcData->m);
+  libvlc_media_player_set_media (vlcData->mp, vlcData->media);
 
-  em = libvlc_media_event_manager (vlcData->m);
+  em = libvlc_media_event_manager (vlcData->media);
   libvlc_event_attach (em, libvlc_MediaStateChanged,
       &vlcEventHandler, vlcData);
 
@@ -301,7 +294,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 
   vlcData = (vlcData_t *) mdmalloc (sizeof (vlcData_t));
   vlcData->inst = NULL;
-  vlcData->m = NULL;
+  vlcData->media = NULL;
   vlcData->mp = NULL;
   vlcData->argv = NULL;
   vlcData->state = libvlc_NothingSpecial;
@@ -336,6 +329,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 
   if (vlcData->inst == NULL) {
     vlcData->inst = libvlc_new (vlcData->argc, (const char * const *) vlcData->argv);
+    mdextalloc (vlcData->inst);
   }
 #if SILENCE_LOG
   libvlc_log_set (vlcData->inst, silence, NULL);
@@ -343,6 +337,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 
   if (vlcData->inst != NULL && vlcData->mp == NULL) {
     vlcData->mp = libvlc_media_player_new (vlcData->inst);
+    mdextalloc (vlcData->mp);
   }
 
   if (vlcData->inst != NULL && vlcData->mp != NULL) {
@@ -359,23 +354,18 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 void
 vlcClose (vlcData_t *vlcData)
 {
-  libvlc_event_manager_t  *em;
   int                     i;
 
   if (vlcData != NULL) {
-    if (vlcData->m != NULL) {
-      em = libvlc_media_event_manager (vlcData->m);
-      libvlc_event_detach (em, libvlc_MediaStateChanged,
-          &vlcEventHandler, vlcData);
-      libvlc_media_release (vlcData->m);
-      vlcData->m = NULL;
-    }
+    vlcReleaseMedia (vlcData);
     if (vlcData->mp != NULL) {
       libvlc_media_player_stop (vlcData->mp);
+      mdextfree (vlcData->mp);
       libvlc_media_player_release (vlcData->mp);
       vlcData->mp = NULL;
     }
     if (vlcData->inst != NULL) {
+      mdextfree (vlcData->inst);
       libvlc_release (vlcData->inst);
       vlcData->inst = NULL;
     }
@@ -425,6 +415,22 @@ vlcHaveAudioDevList (void)
 #endif
   return rc;
 }
+
+static void
+vlcReleaseMedia (vlcData_t *vlcData)
+{
+  libvlc_event_manager_t  *em;
+
+  if (vlcData->media != NULL) {
+    em = libvlc_media_event_manager (vlcData->media);
+    libvlc_event_detach (em, libvlc_MediaStateChanged,
+        &vlcEventHandler, vlcData);
+    mdextfree (vlcData->media);
+    libvlc_media_release (vlcData->media);
+    vlcData->media = NULL;
+  }
+}
+
 
 /* for debugging */
 # if VLCDEBUG
