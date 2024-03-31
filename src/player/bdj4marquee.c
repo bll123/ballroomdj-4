@@ -996,7 +996,6 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
-  marqueeClearInfoDisplay (marquee);
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
     marqueeSetFontSize (marquee, marquee->wcont [i], tbuff);
   }
