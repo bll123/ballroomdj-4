@@ -270,11 +270,20 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
       &vlcEventHandler, vlcData);
 
   /* linux and macos will use the volume device set for the application. */
-  /* but windows seems to need this. */
+  /* windows seems to need this. */
+  /* Does not work on linux. 3.x documentation says pulseaudio does not */
+  /* have a device parameter. */
+  /* guessing it does not work on macos. */
   if (vlcHaveAudioDevList ()) {
     /* on macos, the device has to be set *after* the media is set */
     if (vlcData->device != NULL) {
+      int   rc = 0;
+
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+      rc = libvlc_audio_output_device_set (vlcData->mp, vlcData->device);
+#else
       libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);
+#endif
     }
   }
 

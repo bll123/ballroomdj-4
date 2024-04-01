@@ -1517,6 +1517,7 @@ playerCheckVolumeSink (playerdata_t *playerData)
       playerData->currentSink = "";
       playerInitSinklist (playerData);
       playerSetAudioSink (playerData, playerData->actualSink);
+      pliSetAudioDevice (playerData->pli, playerData->actualSink);
     }
   }
 }
