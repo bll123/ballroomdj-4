@@ -119,7 +119,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
   /* CONTEXT: configuration: the volume used when starting the player */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
-      10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
+      1, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
   /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Queue Length"),

@@ -55,6 +55,10 @@ voliProcess (volaction_t action, const char *sinkname,
     return true;
   }
 
+  if (action == VOL_CHK_SINK) {
+    return false;
+  }
+
   if (action == VOL_GETSINKLIST) {
     sinklist->defname = mdstrdup ("no-volume");
     sinklist->sinklist = NULL;

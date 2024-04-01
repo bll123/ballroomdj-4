@@ -104,6 +104,10 @@ voliProcess (volaction_t action, const char *sinkname,
     return -1;
   }
 
+  if (action == VOL_CHK_SINK) {
+    return false;
+  }
+
   if (action == VOL_GETSINKLIST) {
     OSStatus      error;
     AudioDeviceID *audioDeviceList;

@@ -174,6 +174,7 @@ static void     playerSeek (playerdata_t *playerData, ssize_t pos);
 static void     playerStop (playerdata_t *playerData);
 static void     playerSongBegin (playerdata_t *playerData);
 static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
+static void     playerCheckVolumeSink (playerdata_t *playerData);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
@@ -267,17 +268,6 @@ main (int argc, char *argv[])
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
 
   playerInitSinklist (&playerData);
-
-  if (playerData.sinklist.sinklist != NULL) {
-    logMsg (LOG_DBG, LOG_BASIC, "vol-sinklist");
-    for (int i = 0; i < playerData.sinklist.count; ++i) {
-      logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
-               playerData.sinklist.sinklist [i].defaultFlag,
-               playerData.sinklist.sinklist [i].idxNumber,
-               playerData.sinklist.sinklist [i].name,
-               playerData.sinklist.sinklist [i].description);
-    }
-  }
 
   /* some audio device interfaces may not have the audio device enumeration. */
   /* in this case, retrieve the list of devices from the player if possible. */
@@ -978,6 +968,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
     return;
   }
 
+  playerCheckVolumeSink (playerData);
   tvol = volumeGet (playerData->volume, playerData->currentSink);
   tvol = playerLimitVolume (tvol);
   // logMsg (LOG_DBG, LOG_VOLUME, "get volume: %d", tvol);
@@ -1511,10 +1502,23 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   playerData->realVolume = playerLimitVolume (playerData->realVolume);
   playerData->currentVolume += voldiff;
   playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
+  playerCheckVolumeSink (playerData);
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
   logMsg (LOG_DBG, LOG_VOLUME, "volume-set: %d", playerData->realVolume);
   playerData->actualVolume = playerData->realVolume;
   logProcEnd (LOG_PROC, "playerVolumeSet", "");
+}
+
+static void
+playerCheckVolumeSink (playerdata_t *playerData)
+{
+  if (*playerData->currentSink == '\0') {
+    if (volumeCheckSink (playerData->volume, playerData->currentSink)) {
+      playerData->currentSink = "";
+      playerInitSinklist (playerData);
+      playerSetAudioSink (playerData, playerData->actualSink);
+    }
+  }
 }
 
 static void
@@ -1599,6 +1603,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
     playerData->actualSink = playerData->sinklist.defname;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
+  /* needed for macos */
   volumeSetSystemDefault (playerData->volume, playerData->currentSink);
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
 }
@@ -1615,7 +1620,6 @@ playerInitSinklist (playerdata_t *playerData)
   playerData->sinklist.defname = "";
   playerData->sinklist.count = 0;
   playerData->sinklist.sinklist = NULL;
-  playerData->currentSink = "";
 
   if (volumeHaveSinkList (playerData->volume)) {
     count = 0;
@@ -1630,6 +1634,18 @@ playerInitSinklist (playerdata_t *playerData)
   } else {
     playerData->actualSink = "default";
   }
+
+  if (playerData->sinklist.sinklist != NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "vol-sinklist");
+    for (int i = 0; i < playerData->sinklist.count; ++i) {
+      logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
+               playerData->sinklist.sinklist [i].defaultFlag,
+               playerData->sinklist.sinklist [i].idxNumber,
+               playerData->sinklist.sinklist [i].name,
+               playerData->sinklist.sinklist [i].description);
+    }
+  }
+
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }
 

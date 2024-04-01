@@ -100,6 +100,11 @@ voliProcess (volaction_t action, const char *sinkname,
   hr = defDevice->GetId (&defsinknm);
   ERROR_EXIT (hr)
 
+  if (action == VOL_CHK_SINK) {
+    /* to be implemented */
+    return false;
+  }
+
   if (action == VOL_GETSINKLIST) {
     IMMDeviceCollection   *pCollection = NULL;
     UINT                  count;

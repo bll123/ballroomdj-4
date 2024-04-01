@@ -13,6 +13,7 @@ extern "C" {
 typedef struct volsinklist volsinklist_t;
 
 typedef enum {
+  VOL_CHK_SINK,
   VOL_GET,
   VOL_SET,
   VOL_HAVE_SINK_LIST,
@@ -26,6 +27,7 @@ volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
 bool      volumeHaveSinkList (volume_t *volume);
 void      volumeSinklistInit (volsinklist_t *sinklist);
+int       volumeCheckSink (volume_t *volume, const char *sinkname);
 int       volumeGet (volume_t *volume, const char *sinkname);
 int       volumeSet (volume_t *volume, const char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);

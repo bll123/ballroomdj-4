@@ -94,6 +94,17 @@ volumeSinklistInit (volsinklist_t *sinklist)
 }
 
 int
+volumeCheckSink (volume_t *volume, const char *sinkname)
+{
+  int   vol = 0;
+  int   rc = false;
+
+  rc = volume->voliProcess (VOL_CHK_SINK, sinkname, &vol, NULL, &volume->udata);
+  volume->voliDisconnect ();
+  return rc;
+}
+
+int
 volumeGet (volume_t *volume, const char *sinkname)
 {
   int               vol;

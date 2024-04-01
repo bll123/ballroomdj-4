@@ -5,7 +5,7 @@
  * pulse audio
  *
  * References:
- *   https://github.com/cdemoulins/pamixer/blob/master/pulseaudio.cc
+ *   https://github.com/cdemoulins/pamixer/blob/master/src/pulseaudio.cc
  *   https://freedesktop.org/software/pulseaudio/doxygen/
  */
 
@@ -32,21 +32,11 @@
 #include "volsink.h"
 #include "volume.h"
 
-static void serverInfoCallback (pa_context *context, const pa_server_info *i, void *userdata);
-static void sinkVolCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
-static void connCallback (pa_context *pacontext, void* userdata);
-static void nullCallback (pa_context* context, int success, void* userdata);
-static void waitop (pa_operation *op);
-static void pulse_close (void);
-static void pulse_disconnect (void);
-static void voliProcessFailure (char *name);
-static void init_context (void);
-static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
-
 enum {
   STATE_OK = 0,
   STATE_WAIT = 1,
   STATE_FAIL = -1,
+  DEFNM_MAX_SZ = 300,
 };
 
 typedef struct {
@@ -56,7 +46,7 @@ typedef struct {
 
 typedef struct {
   pa_threaded_mainloop  *pamainloop;
-  pa_context            *pacontext;
+  pa_context            *context;
   pa_context_state_t    pastate;
   _Atomic(int)          state;
 } state_t;
@@ -65,10 +55,22 @@ static state_t      gstate;
 static int          ginit = 0;
 
 typedef union {
-  char            defname [500];
+  char            defname [DEFNM_MAX_SZ];
   pa_cvolume      *vol;
   volsinklist_t   *sinklist;
 } pacallback_t;
+
+static void serverInfoCallback (pa_context *context, const pa_server_info *i, void *userdata);
+static void getDefaultSink (char *defsinkname, size_t sz);
+static void sinkVolCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
+static void connCallback (pa_context *context, void *userdata);
+static void nullCallback (pa_context* context, int success, void* userdata);
+static void waitop (pa_operation *op);
+static void pulse_close (void);
+static void pulse_disconnect (void);
+static void voliProcessFailure (char *name);
+static void init_context (void);
+static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
 
 void
 voliDesc (const char **ret, int max)
@@ -116,7 +118,7 @@ voliProcess (volaction_t action, const char *sinkname,
   pacallback_t    cbdata;
   unsigned int    tvol;
   int             count;
-  char            defsinkname [200];
+  char            defsinkname [DEFNM_MAX_SZ];
   pa_track_data_t *trackdata = NULL;
 
 
@@ -129,14 +131,14 @@ voliProcess (volaction_t action, const char *sinkname,
     int     rc;
 
     if (! ginit) {
-      gstate.pacontext = NULL;
+      gstate.context = NULL;
       gstate.pamainloop = pa_threaded_mainloop_new();
       mdextalloc (gstate.pamainloop);
       pa_threaded_mainloop_start (gstate.pamainloop);
       ginit = 1;
     }
 
-    if (gstate.pacontext == NULL) {
+    if (gstate.context == NULL) {
       init_context ();
     }
 
@@ -150,10 +152,11 @@ voliProcess (volaction_t action, const char *sinkname,
       break;
     }
 
-    rc = pa_context_errno (gstate.pacontext);
+    rc = pa_context_errno (gstate.context);
     voliProcessFailure ("init-context");
 
     if (rc == PA_ERR_CONNECTIONREFUSED) {
+      /* this, of course, does not work in a pipewire situation */
       (void) ! system ("/usr/bin/pulseaudio -D");
       mssleep (600);
     }
@@ -168,19 +171,8 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   /* need the default sink name for all actions */
-  *defsinkname = '\0';
-  pa_threaded_mainloop_lock (gstate.pamainloop);
-  op = pa_context_get_server_info (
-      gstate.pacontext, &serverInfoCallback, &cbdata);
-  mdextalloc (op);
-  if (! op) {
-    pa_threaded_mainloop_unlock (gstate.pamainloop);
-    voliProcessFailure ("serverinfo");
-    return -1;
-  }
-  waitop (op);
-  pa_threaded_mainloop_unlock (gstate.pamainloop);
-  strlcpy (defsinkname, cbdata.defname, sizeof (defsinkname));
+  /* this will also let us know if the default sink has changed */
+  getDefaultSink (defsinkname, sizeof (defsinkname));
 
   if (*udata == NULL) {
     trackdata = mdmalloc (sizeof (pa_track_data_t));
@@ -189,9 +181,17 @@ voliProcess (volaction_t action, const char *sinkname,
     *udata = trackdata;
   } else {
     trackdata = *udata;
+
+    trackdata->changed = false;
     if (strcmp (trackdata->defaultsink, defsinkname) != 0) {
+      dataFree (trackdata->defaultsink);
+      trackdata->defaultsink = mdstrdup (defsinkname);
       trackdata->changed = true;
     }
+  }
+
+  if (action == VOL_CHK_SINK) {
+    return trackdata->changed;
   }
 
   if (action == VOL_GETSINKLIST) {
@@ -201,7 +201,7 @@ voliProcess (volaction_t action, const char *sinkname,
     cbdata.sinklist = sinklist;
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_list (
-        gstate.pacontext, &getSinkCallback, &cbdata);
+        gstate.context, &getSinkCallback, &cbdata);
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -214,7 +214,7 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
-    /* future: like macos, change the system default to match the output sink */
+    /* setting the system default is not necessary on linux */
     return 0;
   }
 
@@ -232,7 +232,7 @@ voliProcess (volaction_t action, const char *sinkname,
     cbdata.vol = &pavol;
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_by_name (
-        gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
+        gstate.context, sinkname, &sinkVolCallback, &cbdata);
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -259,7 +259,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
       pa_threaded_mainloop_lock (gstate.pamainloop);
       op = pa_context_set_sink_volume_by_name (
-          gstate.pacontext, sinkname, nvol, nullCallback, NULL);
+          gstate.context, sinkname, nvol, nullCallback, NULL);
       mdextalloc (op);
       if (! op) {
         pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -272,7 +272,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_by_name (
-        gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
+        gstate.context, sinkname, &sinkVolCallback, &cbdata);
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -289,6 +289,31 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   return 0;
+}
+
+static void
+getDefaultSink (char *defsinkname, size_t sz)
+{
+  pa_operation    *op = NULL;
+  pacallback_t    cbdata;
+
+  if (gstate.pastate != PA_CONTEXT_READY) {
+    return;
+  }
+
+  *defsinkname = '\0';
+  pa_threaded_mainloop_lock (gstate.pamainloop);
+  op = pa_context_get_server_info (
+      gstate.context, &serverInfoCallback, &cbdata);
+  mdextalloc (op);
+  if (! op) {
+    pa_threaded_mainloop_unlock (gstate.pamainloop);
+    voliProcessFailure ("serverinfo");
+    return;
+  }
+  waitop (op);
+  pa_threaded_mainloop_unlock (gstate.pamainloop);
+  strlcpy (defsinkname, cbdata.defname, sz);
 }
 
 static void
@@ -321,35 +346,39 @@ sinkVolCallback (
 }
 
 static void
-connCallback (pa_context *pacontext, void* userdata)
+connCallback (pa_context *context, void* userdata)
 {
   state_t     *stdata = (state_t *) userdata;
 
-  if (pacontext == NULL) {
+  if (context == NULL) {
     stdata->pastate = PA_CONTEXT_FAILED;
     stdata->state = STATE_FAIL;
     pa_threaded_mainloop_signal (stdata->pamainloop, 0);
     return;
   }
 
-  stdata->pastate = pa_context_get_state (pacontext);
+  stdata->pastate = pa_context_get_state (context);
+  pa_threaded_mainloop_signal (stdata->pamainloop, 0);
+
   switch (stdata->pastate)
   {
-    case PA_CONTEXT_READY:
+    case PA_CONTEXT_READY: {
       stdata->state = STATE_OK;
       break;
-    case PA_CONTEXT_FAILED:
+    }
+    case PA_CONTEXT_FAILED: {
       stdata->state = STATE_FAIL;
       break;
+    }
     case PA_CONTEXT_UNCONNECTED:
     case PA_CONTEXT_AUTHORIZING:
     case PA_CONTEXT_SETTING_NAME:
     case PA_CONTEXT_CONNECTING:
-    case PA_CONTEXT_TERMINATED:
+    case PA_CONTEXT_TERMINATED: {
       stdata->state = STATE_WAIT;
       break;
+    }
   }
-  pa_threaded_mainloop_signal (stdata->pamainloop, 0);
 }
 
 static void
@@ -386,12 +415,12 @@ pulse_close (void)
 static void
 pulse_disconnect (void)
 {
-  if (gstate.pacontext != NULL) {
+  if (gstate.context != NULL) {
     pa_threaded_mainloop_lock (gstate.pamainloop);
-    pa_context_disconnect (gstate.pacontext);
-    mdextfree (gstate.pacontext);
-    pa_context_unref (gstate.pacontext);
-    gstate.pacontext = NULL;
+    pa_context_disconnect (gstate.context);
+    mdextfree (gstate.context);
+    pa_context_unref (gstate.context);
+    gstate.context = NULL;
     pa_threaded_mainloop_unlock (gstate.pamainloop);
   }
 }
@@ -401,8 +430,8 @@ voliProcessFailure (char *name)
 {
   int       rc;
 
-  if (gstate.pacontext != NULL) {
-    rc = pa_context_errno (gstate.pacontext);
+  if (gstate.context != NULL) {
+    rc = pa_context_errno (gstate.context);
     fprintf (stderr, "%s: err:%d %s\n", name, rc, pa_strerror(rc));
     pulse_disconnect ();
   }
@@ -420,10 +449,10 @@ init_context (void)
   paprop = pa_proplist_new();
   pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "bdj4");
   pa_proplist_sets (paprop, PA_PROP_MEDIA_ROLE, "music");
-  gstate.pacontext = pa_context_new_with_proplist (paapi, "bdj4", paprop);
-  mdextalloc (gstate.pacontext);
+  gstate.context = pa_context_new_with_proplist (paapi, "bdj4", paprop);
+  mdextalloc (gstate.context);
   pa_proplist_free (paprop);
-  if (gstate.pacontext == NULL) {
+  if (gstate.context == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
     voliProcessFailure ("new context");
     return;
@@ -431,9 +460,9 @@ init_context (void)
 
   gstate.pastate = PA_CONTEXT_UNCONNECTED;
   gstate.state = STATE_WAIT;
-  pa_context_set_state_callback (gstate.pacontext, &connCallback, &gstate);
+  pa_context_set_state_callback (gstate.context, &connCallback, &gstate);
 
-  pa_context_connect (gstate.pacontext, NULL, PA_CONTEXT_NOAUTOSPAWN, NULL);
+  pa_context_connect (gstate.context, NULL, PA_CONTEXT_NOAUTOSPAWN, NULL);
   pa_threaded_mainloop_unlock (gstate.pamainloop);
 }
 
