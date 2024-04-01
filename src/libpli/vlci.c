@@ -277,9 +277,9 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   if (vlcHaveAudioDevList ()) {
     /* on macos, the device has to be set *after* the media is set */
     if (vlcData->device != NULL) {
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
       int   rc = 0;
 
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
       rc = libvlc_audio_output_device_set (vlcData->mp, vlcData->device);
 #else
       libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);

@@ -81,14 +81,20 @@ if [[ $TCHECK == T ]]; then
     linux|macos)
       cdir=${XDG_CACHE_HOME:-$HOME/.cache}
       cachedir="${cdir}/BDJ4"
+      cdir=${XDG_CONFIG_HOME:-$HOME/.config}
+      confdir="${cdir}/BDJ4"
       ;;
     win64)
       cachedir="${TEMP}/BDJ4"
+      confdir="${HOME}/AppData/Roaming/BDJ4"
       ;;
   esac
   tfn="$cachedir/volreg.txt"
-  if [[ -f $tfn ]]; then
+  if [[ -d ${cachedir} && -f $tfn ]]; then
     rm -f $tfn
+  fi
+  if [[ -d ${confdir} ]]; then
+    rm -f ${confdir}/*dev*
   fi
 fi
 

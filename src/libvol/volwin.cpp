@@ -37,6 +37,18 @@
 
 extern "C" {
 
+enum {
+  DEFNM_MAX_SZ = 300,
+};
+
+typedef struct {
+  char                *defsinkname;
+  bool                changed;
+  IMMDeviceEnumerator *pEnumerator;
+} volwin_t;
+
+static bool   ginit = false;
+
 void
 voliDesc (const char **ret, int max)
 {
@@ -51,12 +63,29 @@ voliDesc (const char **ret, int max)
 }
 
 void
-voliDisconnect (void) {
+voliDisconnect (void)
+{
   return;
 }
 
 void
-voliCleanup (void **udata) {
+voliCleanup (void **udata)
+{
+  volwin_t    *volwin;
+
+  if (udata == NULL || *udata == NULL) {
+    return;
+  }
+
+  volwin = (volwin_t *) *udata;
+  if (ginit) {
+    SAFE_RELEASE (volwin->pEnumerator)
+    CoUninitialize ();
+    ginit = false;
+  }
+  mdfree (volwin->defsinkname);
+  mdfree (volwin);
+  *udata = NULL;
   return;
 }
 
@@ -64,15 +93,13 @@ int
 voliProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
-  IAudioEndpointVolume  *g_pEndptVol = NULL;
   HRESULT               hr = S_OK;
-  IMMDevice             *volDevice = NULL;
   OSVERSIONINFO         VersionInfo;
-  float                 currentVal;
-  wchar_t               *wdevnm;
-  IMMDeviceEnumerator   *pEnumerator = NULL;
   IMMDevice             *defDevice = NULL;
   LPWSTR                defsinknm = NULL;
+  volwin_t              *volwin = NULL;
+  char                  *tdefsinknm = NULL;
+
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -85,24 +112,54 @@ voliProcess (volaction_t action, const char *sinkname,
     return -1;
   }
 
-  CoInitialize (NULL);
+  if (udata != NULL && *udata == NULL) {
+    volwin = (volwin_t *) mdmalloc (sizeof (*volwin));
+    volwin->defsinkname = mdstrdup ("");
+    volwin->changed = false;
+    volwin->pEnumerator = NULL;
+    *udata = volwin;
+  } else {
+    volwin = (volwin_t *) *udata;
+    volwin->changed = false;
+  }
 
-  /* Get enumerator for audio endpoint devices. */
-  hr = CoCreateInstance (__uuidof (MMDeviceEnumerator),
-      NULL, CLSCTX_INPROC_SERVER,
-      __uuidof (IMMDeviceEnumerator),
-      (void**)&pEnumerator);
-  ERROR_EXIT (hr)
+  if (! ginit) {
+    CoInitialize (NULL);
+
+    /* Get enumerator for audio endpoint devices. */
+    hr = CoCreateInstance (__uuidof (MMDeviceEnumerator),
+        NULL, CLSCTX_INPROC_SERVER,
+        __uuidof (IMMDeviceEnumerator),
+        (void**) &volwin->pEnumerator);
+    ERROR_EXIT (hr)
+    ginit = true;
+  }
 
   /* Get default audio-rendering device. */
-  hr = pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &defDevice);
+  hr = volwin->pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &defDevice);
   ERROR_EXIT (hr)
   hr = defDevice->GetId (&defsinknm);
+  SAFE_RELEASE (defDevice)
   ERROR_EXIT (hr)
 
+  tdefsinknm = osFromWideChar (defsinknm);
+
+  if (! *volwin->defsinkname) {
+    volwin->defsinkname = mdstrdup (tdefsinknm);
+    volwin->changed = false;
+  } else {
+    volwin->changed = false;
+    if (strcmp (volwin->defsinkname, tdefsinknm) != 0) {
+      dataFree (volwin->defsinkname);
+      volwin->defsinkname = mdstrdup (tdefsinknm);
+      volwin->changed = true;
+    }
+  }
+
   if (action == VOL_CHK_SINK) {
-    /* to be implemented */
-    return false;
+    dataFree (tdefsinknm);
+    CoTaskMemFree (defsinknm);
+    return volwin->changed;
   }
 
   if (action == VOL_GETSINKLIST) {
@@ -114,7 +171,7 @@ voliProcess (volaction_t action, const char *sinkname,
     sinklist->count = 0;
     sinklist->sinklist = NULL;
 
-    hr = pEnumerator->EnumAudioEndpoints(
+    hr = volwin->pEnumerator->EnumAudioEndpoints (
         eRender, DEVICE_STATE_ACTIVE, &pCollection);
     ERROR_EXIT (hr)
 
@@ -168,20 +225,30 @@ voliProcess (volaction_t action, const char *sinkname,
       SAFE_RELEASE (pProps)
       SAFE_RELEASE (pDevice)
     }
+
+    dataFree (tdefsinknm);
+    CoTaskMemFree (defsinknm);
+    return 0;
   }
 
   if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
-    /* future: like macos, change the system default to match the output sink */
-    ;
+    dataFree (tdefsinknm);
+    CoTaskMemFree (defsinknm);
+    return 0;
   }
 
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+    wchar_t               *wdevnm;
+    IMMDevice             *volDevice = NULL;
+    IAudioEndpointVolume  *g_pEndptVol = NULL;
+    float                 currentVal;
+
     if (sinkname == NULL || ! *sinkname) {
       wdevnm = (wchar_t *) defsinknm;
     } else {
       wdevnm = (wchar_t *) osToWideChar (sinkname);
     }
-    hr = pEnumerator->GetDevice (wdevnm, &volDevice);
+    hr = volwin->pEnumerator->GetDevice (wdevnm, &volDevice);
     ERROR_EXIT (hr)
     if (sinkname != NULL && *sinkname) {
       mdfree (wdevnm);
@@ -203,12 +270,10 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
 Exit:
+  dataFree (tdefsinknm);
   CoTaskMemFree (defsinknm);
-  SAFE_RELEASE (defDevice)
-  SAFE_RELEASE (pEnumerator)
-  SAFE_RELEASE (g_pEndptVol)
-  SAFE_RELEASE (volDevice)
-  CoUninitialize ();
+CoUninitialize ();
+
   if (vol != NULL) {
     return *vol;
   } else {

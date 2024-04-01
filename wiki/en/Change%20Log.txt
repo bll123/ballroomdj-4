@@ -8,6 +8,9 @@
 
 **4.8.2 2024-4---**
 
+* Bug Fixes:
+    * Windows: Now recognizes a switch to a different audio device.
+
 -->
 
 **4.8.1 2024-3-31**

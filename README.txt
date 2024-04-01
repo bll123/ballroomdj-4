@@ -30,40 +30,6 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
-  4.4.8:
-    There have been a lot of internal changes.
-    Chances that something is broken is higher than usual.
-
-  4.4.5:
-    Windows account names with international characters are now working!
-
-  4.4.4:
-    Please upgrade to version 4.4.4 (or later) if you are using version 4.4.3.
-
-  4.4.3:
-    The mutagen audio tag interface has been removed.
-    Windows: To clean up the python installations (no longer needed),
-      open a cmd.exe window, and run:
-        %USERPROFILE%\BDJ4\install\win-clean-python.bat
-      This is a manual process, as python may be installed and
-      needed by other applications.
-
-  4.4.2 and later:
-    Please upgrade to version 4.4.2 (or later) if you are using
-      version 4.3.3.2 or later.
-    Linux Installation:
-      Run the linux-pre-install-v12.sh script.
-    MacOS Installation:
-      Run the macos-pre-install-macports-v17.sh script.
-
-  4.3.2.4:
-    The Configuration / General option 'BPM' has been set to MPM.
-    If you want to display beats per minute, reset this configuration
-    item back to BPM.
-
-  Not yet implemented:
-    - Auto-Organization.
-
   This installation will not affect any BallroomDJ 3 installation.
   (The features that rename audio files is not implemented yet).
   (Writing audio file tags is turned off upon conversion, and the
@@ -73,6 +39,8 @@ Known Issues:
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
+  Linux
+    - Switching audio devices does not work.
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :

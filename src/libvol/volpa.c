@@ -51,8 +51,8 @@ typedef struct {
   _Atomic(int)          state;
 } state_t;
 
-static state_t      gstate;
-static int          ginit = 0;
+static state_t    gstate;
+static bool       ginit = false;
 
 typedef union {
   char            defname [DEFNM_MAX_SZ];
@@ -135,7 +135,7 @@ voliProcess (volaction_t action, const char *sinkname,
       gstate.pamainloop = pa_threaded_mainloop_new();
       mdextalloc (gstate.pamainloop);
       pa_threaded_mainloop_start (gstate.pamainloop);
-      ginit = 1;
+      ginit = true;
     }
 
     if (gstate.context == NULL) {
@@ -409,7 +409,7 @@ pulse_close (void)
     mdextfree (gstate.pamainloop);
     pa_threaded_mainloop_free (gstate.pamainloop);
   }
-  ginit = 0;
+  ginit = false;
 }
 
 static void
