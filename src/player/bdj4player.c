@@ -192,6 +192,7 @@ static void     playerSetDefaultVolume (playerdata_t *playerData);
 static void     playerFreePlayRequest (void *tpreq);
 static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
+static void     playerResetVolume (playerdata_t *playerData);
 
 static int  gKillReceived = 0;
 
@@ -348,8 +349,6 @@ static bool
 playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
-  int           origvol;
-  int           bdj3flag;
 
   logProcBegin (LOG_PROC, "playerClosingCallback");
 
@@ -377,18 +376,10 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   /* do the volume reset last, give time for the player to stop */
 
   mssleep (100);
-  origvol = volregClear (playerData->actualSink);
-  bdj3flag = volregCheckBDJ3Flag ();
-  if (origvol > 0) {
-    /* note that if there are BDJ4 instances with different sinks */
-    /* the bdj4 flag will be improperly cleared */
-    volregClearBDJ4Flag ();
-    if (! bdj3flag) {
-      volumeSet (playerData->volume, playerData->actualSink, origvol);
-      playerData->actualVolume = origvol;
-      logMsg (LOG_DBG, LOG_INFO, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
-    }
-  }
+  playerResetVolume (playerData);
+  /* note that if there are BDJ4 instances with different sinks */
+  /* the bdj4 flag will be improperly cleared */
+  volregClearBDJ4Flag ();
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
 
@@ -1515,6 +1506,16 @@ playerCheckVolumeSink (playerdata_t *playerData)
 {
   if (*playerData->currentSink == '\0') {
     if (volumeCheckSink (playerData->volume, playerData->currentSink)) {
+      int   currvol;
+      int   realvol;
+
+      /* preserve the volume */
+      currvol = playerData->currentVolume;
+      realvol = playerData->realVolume;
+
+      /* clean up the prior audio sink */
+      playerResetVolume (playerData);
+
       playerInitSinklist (playerData);
       playerSetAudioSink (playerData, playerData->actualSink);
       if (isLinux () &&
@@ -1524,6 +1525,12 @@ playerCheckVolumeSink (playerdata_t *playerData)
         osSetEnv ("PULSE_SINK", playerData->actualSink);
       }
       pliSetAudioDevice (playerData->pli, playerData->actualSink);
+
+      playerSetDefaultVolume (playerData);
+      playerData->currentVolume = currvol;
+      playerData->realVolume = realvol;
+      /* set the volume on the newly selected audio sink to the same volume */
+      volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
     }
   }
 }
@@ -2038,3 +2045,19 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_SONG, tmp);
 }
 
+static void
+playerResetVolume (playerdata_t *playerData)
+{
+  int   origvol;
+  int   bdj3flag;
+
+  origvol = volregClear (playerData->actualSink);
+  bdj3flag = volregCheckBDJ3Flag ();
+  if (origvol > 0) {
+    if (! bdj3flag) {
+      volumeSet (playerData->volume, playerData->actualSink, origvol);
+      playerData->actualVolume = origvol;
+      logMsg (LOG_DBG, LOG_INFO, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
+    }
+  }
+}
