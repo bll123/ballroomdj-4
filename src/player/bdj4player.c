@@ -289,6 +289,8 @@ main (int argc, char *argv[])
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   playerSetAudioSink (&playerData, audiosink);
+  /* macos requires this; a noop on linux and windows */
+  volumeSetSystemDefault (playerData.volume, playerData.currentSink);
 
   /* this is needed for pulse audio, */
   /* otherwise vlc always chooses the default, */
@@ -1514,10 +1516,17 @@ playerCheckVolumeSink (playerdata_t *playerData)
 {
   if (*playerData->currentSink == '\0') {
     if (volumeCheckSink (playerData->volume, playerData->currentSink)) {
-      playerData->currentSink = "";
       playerInitSinklist (playerData);
       playerSetAudioSink (playerData, playerData->actualSink);
+      if (isLinux () &&
+          strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
+        /* vlc's set-audio-device doesn't work for linux. */
+        /* the pulse_sink environment var must be changed */
+        osSetEnv ("PULSE_SINK", playerData->actualSink);
+      }
       pliSetAudioDevice (playerData->pli, playerData->actualSink);
+      /* macos requires this; a noop on linux and windows */
+      volumeSetSystemDefault (playerData->volume, playerData->actualSink);
     }
   }
 }
@@ -1578,34 +1587,38 @@ playerSigHandler (int sig)
 static void
 playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 {
-  int           found = 0;
-  int           idx = -1;
+  bool        found = false;
+  int         idx = -1;
+  bool        isdefault = false;
+  const char  *confsink;
 
+
+  confsink = bdjoptGetStr (OPT_MP_AUDIOSINK);
+  if (strcmp (confsink, VOL_DEFAULT_NAME) == 0) {
+    isdefault = true;
+  }
 
   logProcBegin (LOG_PROC, "playerSetAudioSink");
   if (sinkname != NULL) {
     /* the sink list is not ordered */
-    found = 0;
     for (int i = 0; i < playerData->sinklist.count; ++i) {
       if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {
-        found = 1;
+        found = true;
         idx = (int) i;
         break;
       }
     }
   }
 
-  if (found && idx >= 0) {
+  if (found && idx >= 0 && ! isdefault) {
     playerData->currentSink = playerData->sinklist.sinklist [idx].name;
     playerData->actualSink = playerData->currentSink;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s", playerData->sinklist.sinklist [idx].description);
   } else {
     playerData->currentSink = "";
     playerData->actualSink = playerData->sinklist.defname;
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default %s", playerData->sinklist.defname);
   }
-  /* needed for macos */
-  volumeSetSystemDefault (playerData->volume, playerData->currentSink);
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
 }
 
@@ -1633,7 +1646,7 @@ playerInitSinklist (playerdata_t *playerData)
   if (*playerData->sinklist.defname) {
     playerData->actualSink = playerData->sinklist.defname;
   } else {
-    playerData->actualSink = "default";
+    playerData->actualSink = VOL_DEFAULT_NAME;
   }
 
   if (playerData->sinklist.sinklist != NULL) {

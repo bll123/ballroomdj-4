@@ -85,8 +85,9 @@ if [[ $TCHECK == T ]]; then
       confdir="${cdir}/BDJ4"
       ;;
     win64)
-      cachedir="${TEMP}/BDJ4"
-      confdir="${HOME}/AppData/Roaming/BDJ4"
+      # run under msys2
+      cachedir="${ORIGINAL_TEMP}/BDJ4"
+      confdir="${ORIGINAL_TEMP}/../../Roaming/BDJ4"
       ;;
   esac
   tfn="$cachedir/volreg.txt"

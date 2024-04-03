@@ -65,7 +65,7 @@ confuiInitPlayer (confuigui_t *gui)
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, NULL);
   /* CONTEXT: configuration: audio: The default audio sink (audio output) */
   nlistSetStr (tlist, 0, _("Default"));
-  nlistSetStr (llist, 0, "default");
+  nlistSetStr (llist, 0, VOL_DEFAULT_NAME);
   gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   for (int i = 0; i < sinklist.count; ++i) {

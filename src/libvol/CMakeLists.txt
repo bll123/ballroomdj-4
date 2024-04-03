@@ -58,7 +58,7 @@ if (WIN32)
     objosutils
     objstring
   )
-  endif()
+endif()
 
 add_executable (voltest voltest.c)
 target_link_libraries (voltest PRIVATE

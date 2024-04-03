@@ -100,7 +100,7 @@ voliDisconnect (void)
 void
 voliCleanup (void **udata)
 {
-  if (*udata != NULL) {
+  if (udata != NULL && *udata != NULL) {
     pa_track_data_t *trackdata = *udata;
 
     dataFree (trackdata->defaultsink);
@@ -121,6 +121,10 @@ voliProcess (volaction_t action, const char *sinkname,
   char            defsinkname [DEFNM_MAX_SZ];
   pa_track_data_t *trackdata = NULL;
 
+
+  if (udata == NULL) {
+    return -1;
+  }
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -175,14 +179,14 @@ voliProcess (volaction_t action, const char *sinkname,
   getDefaultSink (defsinkname, sizeof (defsinkname));
 
   if (*udata == NULL) {
-    trackdata = mdmalloc (sizeof (pa_track_data_t));
+    trackdata = mdmalloc (sizeof (*trackdata));
     trackdata->defaultsink = mdstrdup (defsinkname);
     trackdata->changed = false;
     *udata = trackdata;
   } else {
     trackdata = *udata;
 
-    trackdata->changed = false;
+    /* leave the changed flag set until the user fetches it */
     if (strcmp (trackdata->defaultsink, defsinkname) != 0) {
       dataFree (trackdata->defaultsink);
       trackdata->defaultsink = mdstrdup (defsinkname);
@@ -191,7 +195,12 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_CHK_SINK) {
-    return trackdata->changed;
+    bool    orig;
+
+    /* leave the changed flag set until the user fetches it */
+    orig = trackdata->changed;
+    trackdata->changed = false;
+    return orig;
   }
 
   if (action == VOL_GETSINKLIST) {

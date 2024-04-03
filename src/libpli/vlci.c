@@ -269,21 +269,34 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   libvlc_event_attach (em, libvlc_MediaStateChanged,
       &vlcEventHandler, vlcData);
 
-  /* linux and macos will use the volume device set for the application. */
-  /* windows seems to need this. */
   /* Does not work on linux. 3.x documentation says pulseaudio does not */
-  /* have a device parameter. */
-  /* guessing it does not work on macos. */
+  /* have a device parameter. pulseaudio uses the PULSE_SINK env var. */
+  /* macos: need to call this to switch audio devices on macos. */
+  /*   but macos still doesn't work right, have to set the system */
+  /*   default device. */
+  /* windows: seems to need this for setup and switching. */
   if (vlcHaveAudioDevList ()) {
-    /* on macos, the device has to be set *after* the media is set */
     if (vlcData->device != NULL) {
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-      int   rc = 0;
+      const char  *carg = vlcData->device;
 
-      rc = libvlc_audio_output_device_set (vlcData->mp, vlcData->device);
-#else
-      libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);
+      /* the compiler is doing something weird if a 'void *' argument */
+      /* is passed and using character data (windows). */
+
+#if __APPLE__
+      int   val;
+
+      val = atoi (vlcData->device);
+      carg = (const char *) &val;
 #endif
+
+      {
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+        int   rc = 0;
+        rc = libvlc_audio_output_device_set (vlcData->mp, carg);
+#else
+        libvlc_audio_output_device_set (vlcData->mp, NULL, carg);
+#endif
+      }
     }
   }
 

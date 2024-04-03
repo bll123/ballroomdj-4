@@ -5,6 +5,7 @@
  * This code is in the public domain.
  *
  * much of the original volume code from: https://gist.github.com/rdp/8363580
+ *
  */
 
 #include "config.h"
@@ -100,7 +101,6 @@ voliProcess (volaction_t action, const char *sinkname,
   volwin_t              *volwin = NULL;
   char                  *tdefsinknm = NULL;
 
-
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
   }
@@ -148,7 +148,7 @@ voliProcess (volaction_t action, const char *sinkname,
     volwin->defsinkname = mdstrdup (tdefsinknm);
     volwin->changed = false;
   } else {
-    volwin->changed = false;
+    /* leave the changed flag set until the user fetches it */
     if (strcmp (volwin->defsinkname, tdefsinknm) != 0) {
       dataFree (volwin->defsinkname);
       volwin->defsinkname = mdstrdup (tdefsinknm);
@@ -157,9 +157,16 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_CHK_SINK) {
+    bool    orig;
+
+    /* leave the changed flag set until the user fetches it */
+    orig = volwin->changed;
+    volwin->changed = false;
+
     dataFree (tdefsinknm);
     CoTaskMemFree (defsinknm);
-    return volwin->changed;
+
+    return orig;
   }
 
   if (action == VOL_GETSINKLIST) {
@@ -213,10 +220,6 @@ voliProcess (volaction_t action, const char *sinkname,
         sinklist->sinklist [i].defaultFlag = true;
       }
 
-      if (sinklist->sinklist [i].defaultFlag) {
-        sinklist->defname = mdstrdup (sinklist->sinklist [i].name);
-      }
-
       sinklist->sinklist [i].description = osFromWideChar (dispName.pwszVal);
 
       CoTaskMemFree (devid);
@@ -258,8 +261,8 @@ voliProcess (volaction_t action, const char *sinkname,
         CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
 
     if (action == VOL_SET) {
-      float got = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
-      hr = g_pEndptVol->SetMasterVolumeLevelScalar (got, NULL);
+      float svol = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
+      hr = g_pEndptVol->SetMasterVolumeLevelScalar (svol, NULL);
       ERROR_EXIT (hr)
     }
 
@@ -272,7 +275,6 @@ voliProcess (volaction_t action, const char *sinkname,
 Exit:
   dataFree (tdefsinknm);
   CoTaskMemFree (defsinknm);
-CoUninitialize ();
 
   if (vol != NULL) {
     return *vol;

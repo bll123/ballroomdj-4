@@ -12,6 +12,8 @@ extern "C" {
 
 typedef struct volsinklist volsinklist_t;
 
+#define VOL_DEFAULT_NAME "default"
+
 typedef enum {
   VOL_CHK_SINK,
   VOL_GET,

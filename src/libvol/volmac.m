@@ -27,6 +27,11 @@ enum {
   CHAN_STEREO = 2,
 };
 
+typedef struct {
+  AudioDeviceID   defdev;
+  bool            changed;
+} volmac_t;
+
 void
 voliDesc (const char **ret, int max)
 {
@@ -41,12 +46,23 @@ voliDesc (const char **ret, int max)
 }
 
 void
-voliDisconnect (void) {
+voliDisconnect (void)
+{
   return;
 }
 
 void
-voliCleanup (void **udata) {
+voliCleanup (void **udata)
+{
+  volmac_t  *volmac;
+
+  if (udata == NULL || *udata == NULL) {
+    return;
+  }
+
+  volmac = *udata;
+  mdfree (volmac);
+
   return;
 }
 
@@ -63,6 +79,7 @@ voliProcess (volaction_t action, const char *sinkname,
   int             ivol;
   int             status;
   UInt32          channels [CHAN_STEREO];
+  volmac_t        *volmac = NULL;
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -104,8 +121,27 @@ voliProcess (volaction_t action, const char *sinkname,
     return -1;
   }
 
+  if (*udata == NULL) {
+    volmac = mdmalloc (sizeof (*volmac));
+    volmac->defdev = defaultDeviceID;
+    volmac->changed = false;
+    *udata = volmac;
+  } else {
+    volmac = *udata;
+    /* leave the changed flag set until the user fetches it */
+    if (volmac->defdev != defaultDeviceID) {
+      volmac->defdev = defaultDeviceID;
+      volmac->changed = true;
+    }
+  }
+
   if (action == VOL_CHK_SINK) {
-    return false;
+    bool    orig;
+
+    /* leave the changed flag set until the user fetches it */
+    orig = volmac->changed;
+    volmac->changed = false;
+    return orig;
   }
 
   if (action == VOL_GETSINKLIST) {
@@ -210,6 +246,10 @@ voliProcess (volaction_t action, const char *sinkname,
       &channels );
 
   if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
+    /* if the audio device is selected, but the system's output device */
+    /* is not set, there is no audio output. */
+    /* the system's output device has to be set. */
+    /* 2024-4-3 I do not know of a work-around for this at this time. */
     outputDeviceID = atoi (sinkname);
 
     /* set the default output device */

@@ -39,8 +39,9 @@ Known Issues:
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
-  Linux
-    - Switching audio devices does not work.
+  MacOS
+    - If an audio device is selected in the player configuration, the
+      system's default audio device will be set to the selected device.
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :
