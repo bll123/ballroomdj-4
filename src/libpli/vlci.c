@@ -272,22 +272,10 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   /* Does not work on linux. 3.x documentation says pulseaudio does not */
   /* have a device parameter. pulseaudio uses the PULSE_SINK env var. */
   /* macos: need to call this to switch audio devices on macos. */
-  /*   but macos still doesn't work right, have to set the system */
-  /*   default device. */
   /* windows: seems to need this for setup and switching. */
   if (vlcHaveAudioDevList ()) {
     if (vlcData->device != NULL) {
       const char  *carg = vlcData->device;
-
-      /* the compiler is doing something weird if a 'void *' argument */
-      /* is passed and using character data (windows). */
-
-#if __APPLE__
-      int   val;
-
-      val = atoi (vlcData->device);
-      carg = (const char *) &val;
-#endif
 
       {
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)

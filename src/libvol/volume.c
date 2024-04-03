@@ -123,14 +123,6 @@ volumeSet (volume_t *volume, const char *sinkname, int vol)
   return vol;
 }
 
-void
-volumeSetSystemDefault (volume_t *volume, const char *sinkname)
-{
-  volume->voliProcess (VOL_SET_SYSTEM_DFLT, sinkname, NULL, NULL,
-      &volume->udata);
-  volume->voliDisconnect ();
-}
-
 int
 volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist)
 {

@@ -289,8 +289,6 @@ main (int argc, char *argv[])
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   playerSetAudioSink (&playerData, audiosink);
-  /* macos requires this; a noop on linux and windows */
-  volumeSetSystemDefault (playerData.volume, playerData.currentSink);
 
   /* this is needed for pulse audio, */
   /* otherwise vlc always chooses the default, */
@@ -633,7 +631,7 @@ playerProcessing (void *udata)
     /* announcements are not repeated */
     if (playerData->repeat) {
       pq = playerData->currentSong;
-      if (pq->announce == PREP_ANNOUNCE) {
+      if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
         pq = NULL;
         /* The user pressed the repeat toggle while the announcement */
         /* was playing.  Force the code below to activate as if no */
@@ -642,7 +640,9 @@ playerProcessing (void *udata)
       }
     }
 
-    if (! playerData->repeat) {
+    /* the pq == null condition occurs if repeat is turned on before */
+    /* playing the first song */
+    if (! playerData->repeat || pq == NULL) {
       preq = queueGetFirst (playerData->playRequest);
       pq = playerLocatePreppedSong (playerData, preq->uniqueidx, preq->songname);
       if (pq == NULL) {
@@ -664,7 +664,6 @@ playerProcessing (void *udata)
     }
     playerData->repeat = temprepeat;
 
-    logMsg (LOG_DBG, LOG_BASIC, "play: %s", pq->tempname);
     /* save the prior current volume before playing a song */
     playerData->baseVolume = playerData->currentVolume;
     playerData->realVolume = playerData->currentVolume;
@@ -1156,7 +1155,7 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
   count = 0;
   if (playerData->repeat) {
     pq = playerData->currentSong;
-    if (pq->announce == PREP_SONG &&
+    if (pq != NULL && pq->announce == PREP_SONG &&
         uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
       logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld as repeat", sfname, uniqueidx);
       logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
@@ -1525,8 +1524,6 @@ playerCheckVolumeSink (playerdata_t *playerData)
         osSetEnv ("PULSE_SINK", playerData->actualSink);
       }
       pliSetAudioDevice (playerData->pli, playerData->actualSink);
-      /* macos requires this; a noop on linux and windows */
-      volumeSetSystemDefault (playerData->volume, playerData->actualSink);
     }
   }
 }

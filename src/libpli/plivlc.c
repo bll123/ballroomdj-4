@@ -42,9 +42,12 @@ static char *vlcDefaultOptions [] = {
       "--play-and-stop",
       "--novideo",
       "--no-metadata-network-access",
-#if 0  // VLC logging options
+/* VLC logging options */
+/* turn off SILENCE_LOG in vlci.c also */
+#if 0
       "-vv",
       "--file-logging",
+      "--logfile", "vlc-log.txt",
       "--verbose=3",
 #endif
 };

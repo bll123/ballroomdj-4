@@ -29,7 +29,7 @@ main (int argc, char *argv [])
   bool          doinit = true;
 
   if (argc < 2) {
-    fprintf (stdout, "usage: voltest {getsinklist|setdflt <sink>|get <sink>|set <sink> <vol>}\n");
+    fprintf (stdout, "usage: voltest {getsinklist|get <sink>|set <sink> <vol>}\n");
     exit (1);
   }
 
@@ -76,9 +76,6 @@ main (int argc, char *argv [])
           sinklist.sinklist [i].description);
     }
     volumeFreeSinkList (&sinklist);
-  }
-  if (argc == 3 && strcmp (argv [1], "setdflt") == 0) {
-    volumeSetSystemDefault (volume, argv [2]);
   }
   if (argc == 3 && strcmp (argv [1], "get") == 0) {
     vol = volumeGet (volume, argv [2]);

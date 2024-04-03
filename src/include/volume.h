@@ -33,7 +33,6 @@ int       volumeCheckSink (volume_t *volume, const char *sinkname);
 int       volumeGet (volume_t *volume, const char *sinkname);
 int       volumeSet (volume_t *volume, const char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);
-void      volumeSetSystemDefault (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 ilist_t   *volumeInterfaceList (void);
 char      *volumeCheckInterface (const char *volintfc);

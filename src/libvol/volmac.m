@@ -218,7 +218,8 @@ voliProcess (volaction_t action, const char *sinkname,
 
       if (audioDeviceList [i] == defaultDeviceID) {
         sinklist->sinklist [sinkidx].defaultFlag = true;
-        sinklist->defname = mdstrdup (sinklist->sinklist [sinkidx].name);
+        /* VLC uses '0' as the default device ID */
+        sinklist->defname = mdstrdup ("0");
       }
     }
 
@@ -244,30 +245,6 @@ voliProcess (volaction_t action, const char *sinkname,
       NULL,
       &propSize,
       &channels );
-
-  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
-    /* if the audio device is selected, but the system's output device */
-    /* is not set, there is no audio output. */
-    /* the system's output device has to be set. */
-    /* 2024-4-3 I do not know of a work-around for this at this time. */
-    outputDeviceID = atoi (sinkname);
-
-    /* set the default output device */
-    propertyAOPA.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
-    propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-    propertyAOPA.mElement = channels [0]; // kAudioObjectPropertyElementMaster;
-
-    propSize = sizeof (outputDeviceID);
-
-    status = AudioObjectSetPropertyData (
-        kAudioObjectSystemObject,
-        &propertyAOPA,
-        0,
-        NULL,
-        propSize,
-        &outputDeviceID);
-    return 0;
-  }
 
   /* Neither HasProperty nor IsPropertySettable work to determine */
   /* if the volume can be set. */
