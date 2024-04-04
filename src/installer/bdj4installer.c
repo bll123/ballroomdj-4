@@ -158,9 +158,6 @@ typedef struct {
   /* one of newinstall or updateinstall will be true */
   /* reinstall is simply the state of the checkbox */
   /* and for a reinstall, updateinstall must be true */
-  bool            newinstall : 1;
-  bool            updateinstall : 1;
-  bool            reinstall : 1;          // button state
   bool            aborted : 1;
   bool            bdjoptloaded : 1;
   bool            clean : 1;
@@ -168,15 +165,18 @@ typedef struct {
   bool            convprocess : 1;
   bool            convspecified : 1;
   bool            guienabled : 1;
-  bool            insetconvert : 1;
+  bool            invaltarget : 1;
   bool            localespecified : 1;
+  bool            newinstall : 1;
   bool            quiet : 1;
   bool            readonly : 1;
+  bool            reinstall : 1;          // button state
   bool            scrolltoend : 1;
   bool            targetexists : 1;
   bool            testregistration : 1;
   bool            uiBuilt : 1;
   bool            unattended : 1;
+  bool            updateinstall : 1;
   bool            verbose : 1;
   bool            vlcinstalled : 1;
 } installer_t;
@@ -315,6 +315,7 @@ main (int argc, char *argv[])
   installer.convprocess = false;
   installer.convspecified = false;
   installer.guienabled = true;
+  installer.invaltarget = false;
   installer.localespecified = false;
   installer.newinstall = true;
   installer.quiet = false;
@@ -634,8 +635,6 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   installer->wcont [INST_W_TARGET] = uiwidgetp;
-  uiEntrySetValidate (installer->wcont [INST_W_TARGET],
-      installerValidateTarget, installer, UIENTRY_DELAYED);
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
       installerTargetDirDialog, installer, NULL);
@@ -716,8 +715,6 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   installer->wcont [INST_W_BDJ3_LOC] = uiwidgetp;
-  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC],
-      installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
       installerBDJ3LocDirDialog, installer, NULL);
@@ -811,6 +808,11 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
+
+  uiEntrySetValidate (installer->wcont [INST_W_TARGET],
+      installerValidateTarget, installer, UIENTRY_DELAYED);
+  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC],
+      installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 }
 
 static int
@@ -1047,9 +1049,16 @@ installerValidateTarget (uiwcont_t *entry, void *udata)
     return UIENTRY_RESET;
   }
 
+  if (installer->invaltarget) {
+    return UIENTRY_RESET;
+  }
+
+  installer->invaltarget = true;
+
   dir = uiEntryGetValue (installer->wcont [INST_W_TARGET]);
   strlcpy (tbuff, dir, sizeof (tbuff));
   pathNormalizePath (tbuff, strlen (tbuff));
+
   /* only call the validation process if the directory has changed */
   if (strcmp (tbuff, installer->target) != 0) {
     rc = installerValidateProcessTarget (installer, tbuff);
@@ -1057,6 +1066,7 @@ installerValidateTarget (uiwcont_t *entry, void *udata)
     rc = UIENTRY_OK;
   }
 
+  installer->invaltarget = false;
   return rc;
 }
 
@@ -1067,25 +1077,35 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
   bool        exists = false;
   bool        found = false;
   char        tbuff [MAXPATHLEN];
+  char        tdir [MAXPATHLEN];
 
-  if (fileopIsDirectory (dir)) {
+  strlcpy (tdir, dir, sizeof (tdir));
+
+  if (isMacOS ()) {
+    /* on macos, the .app extension must always exist */
+    if (strstr (tdir, MACOS_APP_EXT) == NULL) {
+      strlcat (tdir, MACOS_APP_EXT, sizeof (tdir));
+    }
+  }
+
+  if (fileopIsDirectory (tdir)) {
     exists = true;
-    found = instutilCheckForExistingInstall (dir, installer->macospfx);
+    found = instutilCheckForExistingInstall (tdir, installer->macospfx);
     if (! found) {
-      strlcpy (tbuff, dir, sizeof (tbuff));
+      strlcpy (tbuff, tdir, sizeof (tbuff));
       instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, true);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
         found = instutilCheckForExistingInstall (tbuff, installer->macospfx);
         if (found) {
-          dir = tbuff;
+          strlcpy (tdir, tbuff, sizeof (tdir));
         }
       }
     }
 
     /* do not try to overwrite an existing alternate installation */
     if (exists && found &&
-        instutilIsStandardInstall (dir, installer->macospfx)) {
+        instutilIsStandardInstall (tdir, installer->macospfx)) {
       /* this will be a re-install or an update */
       rc = UIENTRY_OK;
     }
@@ -1099,7 +1119,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
     /* the path doesn't exist, which is ok for a new installation */
     /* check the path up to that point and make sure it is valid */
-    pi = pathInfo (dir);
+    pi = pathInfo (tdir);
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tmp, sizeof (tmp));
       if (! fileopIsDirectory (tmp)) {
@@ -1118,7 +1138,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 
   if (rc == UIENTRY_OK) {
     /* set the target directory information */
-    installerSetTargetDir (installer, dir);
+    installerSetTargetDir (installer, tdir);
     if (exists) {
       if (found) {
         installer->newinstall = false;
@@ -1306,6 +1326,7 @@ installerTargetDirDialog (void *udata)
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
     /* the validation routine gets called upon set, */
     /* which will call the set-target routine */
+    pathDisplayPath (tbuff, sizeof (tbuff));
     uiEntrySetValue (installer->wcont [INST_W_TARGET], tbuff);
     mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);

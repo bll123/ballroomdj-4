@@ -9,6 +9,7 @@
 **4.8.2 2024-4---**
 
 * Bug Fixes:
+    * Installer: Fix various minor bugs.
     * Player: Fix switching to a different audio device when the default audio device is selected.
     * Player: Fix a crash when repeat was turned on before playing.
 
