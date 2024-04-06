@@ -222,6 +222,9 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "AUDIOSINK" } {
           # audiosink is moved from machine to machine-profile
           set audiosink $value
+          if { $audiosink eq "" } {
+            set audiosink default
+          }
           continue
         }
         if { $key eq "UITHEME" } { continue }

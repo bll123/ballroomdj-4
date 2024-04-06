@@ -144,10 +144,6 @@ voliProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (action == VOL_SET_SYSTEM_DFLT) {
-    return 0;
-  }
-
   if (action == VOL_SET) {
   }
 

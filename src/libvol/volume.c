@@ -86,7 +86,7 @@ volumeHaveSinkList (volume_t *volume)
 }
 
 void
-volumeSinklistInit (volsinklist_t *sinklist)
+volumeInitSinkList (volsinklist_t *sinklist)
 {
   sinklist->defname = NULL;
   sinklist->count = 0;
@@ -144,9 +144,7 @@ volumeFreeSinkList (volsinklist_t *sinklist)
     }
     dataFree (sinklist->defname);
     mdfree (sinklist->sinklist);
-    sinklist->defname = NULL;
-    sinklist->count = 0;
-    sinklist->sinklist = NULL;
+    volumeInitSinkList (sinklist);
   }
 }
 

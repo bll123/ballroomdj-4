@@ -151,7 +151,9 @@ voliProcess (volaction_t action, const char *sinkname,
     NSString      *result;
 
 
-    sinklist->defname = NULL;
+    dataFree (sinklist->defname);
+    /* MacOS uses '0' as the default device ID */
+    sinklist->defname = mdstrdup ("0");
     sinklist->count = 0;
     sinklist->sinklist = NULL;
 
@@ -218,8 +220,6 @@ voliProcess (volaction_t action, const char *sinkname,
 
       if (audioDeviceList [i] == defaultDeviceID) {
         sinklist->sinklist [sinkidx].defaultFlag = true;
-        /* VLC uses '0' as the default device ID */
-        sinklist->defname = mdstrdup ("0");
       }
     }
 

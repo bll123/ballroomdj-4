@@ -50,7 +50,7 @@ confuiInitPlayer (confuigui_t *gui)
   confuiLoadPlayerIntfcList (gui);
 
   volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
-  volumeSinklistInit (&sinklist);
+  volumeInitSinkList (&sinklist);
   volumeGetSinkList (volume, "", &sinklist);
   if (! volumeHaveSinkList (volume)) {
     pli_t     *pli;

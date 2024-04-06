@@ -23,6 +23,7 @@ if (APPLE)
   add_library (libvolmac SHARED volmac.m)
   target_link_libraries (libvolmac PRIVATE
     "-framework Cocoa" "-framework CoreAudio"
+    objstring
   )
 endif()
 
@@ -34,6 +35,7 @@ if (NOT WIN32 AND NOT APPLE)
     )
     target_link_libraries (libvolpa PRIVATE
       ${PA_LDFLAGS}
+      objstring
     )
   endif()
 endif()

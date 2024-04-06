@@ -179,7 +179,7 @@ static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
 static void     playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
-static void     playerInitSinklist (playerdata_t *playerData);
+static void     playerInitSinkList (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData, int fadeType);
 static void     playerStartFadeOut (playerdata_t *playerData);
@@ -193,6 +193,7 @@ static void     playerFreePlayRequest (void *tpreq);
 static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
+static void     playerSetAudioSinkEnv (playerdata_t *playerData);
 
 static int  gKillReceived = 0;
 
@@ -259,7 +260,6 @@ main (int argc, char *argv[])
   playerData.fadeoutTime = bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0);
 
   playerData.currentSink = "";  // default
-  volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
   volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
@@ -268,7 +268,8 @@ main (int argc, char *argv[])
   mdfree (volintfc);
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
 
-  playerInitSinklist (&playerData);
+  volumeInitSinkList (&playerData.sinklist);
+  playerInitSinkList (&playerData);
 
   /* some audio device interfaces may not have the audio device enumeration. */
   /* in this case, retrieve the list of devices from the player if possible. */
@@ -290,14 +291,6 @@ main (int argc, char *argv[])
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   playerSetAudioSink (&playerData, audiosink);
-
-  /* this is needed for pulse audio, */
-  /* otherwise vlc always chooses the default, */
-  /* despite having the audio device set */
-  if (isLinux () &&
-      strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
-    osSetEnv ("PULSE_SINK", playerData.actualSink);
-  }
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
@@ -1516,14 +1509,8 @@ playerCheckVolumeSink (playerdata_t *playerData)
       /* clean up the prior audio sink */
       playerResetVolume (playerData);
 
-      playerInitSinklist (playerData);
+      playerInitSinkList (playerData);
       playerSetAudioSink (playerData, playerData->actualSink);
-      if (isLinux () &&
-          strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
-        /* vlc's set-audio-device doesn't work for linux. */
-        /* the pulse_sink environment var must be changed */
-        osSetEnv ("PULSE_SINK", playerData->actualSink);
-      }
       pliSetAudioDevice (playerData->pli, playerData->actualSink);
 
       playerSetDefaultVolume (playerData);
@@ -1596,7 +1583,6 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
   bool        isdefault = false;
   const char  *confsink;
 
-
   confsink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   if (strcmp (confsink, VOL_DEFAULT_NAME) == 0) {
     isdefault = true;
@@ -1623,21 +1609,21 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
     playerData->actualSink = playerData->sinklist.defname;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default %s", playerData->sinklist.defname);
   }
+
+  playerSetAudioSinkEnv (playerData);
+
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
 }
 
 static void
-playerInitSinklist (playerdata_t *playerData)
+playerInitSinkList (playerdata_t *playerData)
 {
   int count;
 
-  logProcBegin (LOG_PROC, "playerInitSinklist");
+  logProcBegin (LOG_PROC, "playerInitSinkList");
 
   volumeFreeSinkList (&playerData->sinklist);
-
-  playerData->sinklist.defname = "";
-  playerData->sinklist.count = 0;
-  playerData->sinklist.sinklist = NULL;
+  volumeInitSinkList (&playerData->sinklist);
 
   if (volumeHaveSinkList (playerData->volume)) {
     count = 0;
@@ -1664,7 +1650,7 @@ playerInitSinklist (playerdata_t *playerData)
     }
   }
 
-  logProcEnd (LOG_PROC, "playerInitSinklist", "");
+  logProcEnd (LOG_PROC, "playerInitSinkList", "");
 }
 
 static void
@@ -2059,5 +2045,18 @@ playerResetVolume (playerdata_t *playerData)
       playerData->actualVolume = origvol;
       logMsg (LOG_DBG, LOG_INFO, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
     }
+  }
+}
+
+static void
+playerSetAudioSinkEnv (playerdata_t *playerData)
+{
+  /* this is needed for pulse audio, */
+  /* otherwise vlc always chooses the default, */
+  /* despite having the audio device set */
+  if (isLinux () &&
+      strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
+    /* this works for pulse-audio and pipewire */
+    osSetEnv ("PULSE_SINK", playerData->actualSink);
   }
 }

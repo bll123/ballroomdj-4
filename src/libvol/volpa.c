@@ -204,6 +204,9 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_GETSINKLIST) {
+    /* unfortunately, linux pulseaudio/pipewire does not have a */
+    /* concept of use-the-default-output */
+    dataFree (sinklist->defname);
     sinklist->defname = mdstrdup (defsinkname);
     sinklist->sinklist = NULL;
     sinklist->count = 0;
@@ -222,19 +225,13 @@ voliProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
-    /* setting the system default is not necessary on linux */
-    return 0;
-  }
-
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
     /* getvolume or setvolume */
     pa_volume_t     avgvol;
     pa_cvolume      pavol;
 
     /* the volume should be associated with the supplied sink, */
-    /* unless it was changed by the user, in which case, use the default */
-    if (trackdata->changed || sinkname == NULL || ! *sinkname) {
+    if (sinkname == NULL || ! *sinkname) {
       sinkname = defsinkname;
     }
 

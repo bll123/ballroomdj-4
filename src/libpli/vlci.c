@@ -33,7 +33,7 @@
 #include "vlci.h"
 
 #define VLCDEBUG 0
-#define SILENCE_LOG 1
+#define SILENCE_LOG 0
 #define STATE_TO_VALUE 0
 
 typedef struct vlcData {
@@ -75,6 +75,8 @@ static const char *stateToStr (libvlc_state_t state); /* for debugging */
 static bool vlcHaveAudioDevList (void);
 static void vlcEventHandler (const struct libvlc_event_t *event, void *);
 static void vlcReleaseMedia (vlcData_t *vlcData);
+static void vlcSetAudioOutput (vlcData_t *vlcData);
+static void vlcCreateNewMediaPlayer (vlcData_t *vlcData);
 
 #if STATE_TO_VALUE
 static libvlc_state_t stateToValue (char *name);
@@ -200,7 +202,7 @@ vlcRate (vlcData_t *vlcData, double drate)
 /* other commands */
 
 int
-vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
+vlcSetAudioDev (vlcData_t *vlcData, const char *dev)
 {
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
@@ -250,7 +252,7 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
 {
   libvlc_event_manager_t  *em;
 
-  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
+  if (vlcData == NULL || vlcData->inst == NULL) {
     return -1;
   }
 
@@ -262,6 +264,15 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
 
   vlcData->media = libvlc_media_new_path (vlcData->inst, fn);
   mdextalloc (vlcData->media);
+
+  /* the windows audio sink works better if a new media player is */
+  /* created for each new medium. if this is not here, windows will */
+  /* switch audio sinks if the default is changed. even though the */
+  /* vlc-audio-output is set and re-set. */
+  vlcCreateNewMediaPlayer (vlcData);
+  if (vlcData->mp == NULL) {
+    return -1;
+  }
   libvlc_media_player_set_rate (vlcData->mp, 1.0);
   libvlc_media_player_set_media (vlcData->mp, vlcData->media);
 
@@ -269,24 +280,7 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   libvlc_event_attach (em, libvlc_MediaStateChanged,
       &vlcEventHandler, vlcData);
 
-  /* Does not work on linux. 3.x documentation says pulseaudio does not */
-  /* have a device parameter. pulseaudio uses the PULSE_SINK env var. */
-  /* macos: need to call this to switch audio devices on macos. */
-  /* windows: seems to need this for setup and switching. */
-  if (vlcHaveAudioDevList ()) {
-    if (vlcData->device != NULL) {
-      const char  *carg = vlcData->device;
-
-      {
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-        int   rc = 0;
-        rc = libvlc_audio_output_device_set (vlcData->mp, carg);
-#else
-        libvlc_audio_output_device_set (vlcData->mp, NULL, carg);
-#endif
-      }
-    }
-  }
+  vlcSetAudioOutput (vlcData);
 
   return 0;
 }
@@ -345,18 +339,9 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   libvlc_log_set (vlcData->inst, silence, NULL);
 #endif
 
-  if (vlcData->inst != NULL && vlcData->mp == NULL) {
-    vlcData->mp = libvlc_media_player_new (vlcData->inst);
-    mdextalloc (vlcData->mp);
-  }
-
-  if (vlcData->inst != NULL && vlcData->mp != NULL) {
-    libvlc_audio_set_volume (vlcData->mp, 100);
-#if ! defined(VLC_NO_ROLE) && \
-      LIBVLC_VERSION_INT >= LIBVLC_VERSION(3,0,0,0)
-    libvlc_media_player_set_role (vlcData->mp, libvlc_role_Music);
-#endif
-  }
+  /* windows seems to need this, even though the media player is going */
+  /* to be released and re-created. */
+  vlcCreateNewMediaPlayer (vlcData);
 
   return vlcData;
 }
@@ -438,6 +423,52 @@ vlcReleaseMedia (vlcData_t *vlcData)
     mdextfree (vlcData->media);
     libvlc_media_release (vlcData->media);
     vlcData->media = NULL;
+  }
+}
+
+static void
+vlcSetAudioOutput (vlcData_t *vlcData)
+{
+  /* Does not work on linux. 3.x documentation says pulseaudio does not */
+  /* have a device parameter. pulseaudio uses the PULSE_SINK env var. */
+  /* macos: need to call this to switch audio devices on macos. */
+  /* windows: seems to need this for setup and switching. */
+  if (vlcHaveAudioDevList ()) {
+    if (vlcData->device != NULL) {
+      const char  *carg = vlcData->device;
+
+      {
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+        int   rc = 0;
+        rc = libvlc_audio_output_device_set (vlcData->mp, carg);
+#else
+        libvlc_audio_output_device_set (vlcData->mp, NULL, carg);
+#endif
+      }
+    }
+  }
+}
+
+static void
+vlcCreateNewMediaPlayer (vlcData_t *vlcData)
+{
+  if (vlcData->inst == NULL) {
+    return;
+  }
+
+  if (vlcData->mp != NULL) {
+    mdextfree (vlcData->mp);
+    libvlc_media_player_release (vlcData->mp);
+  }
+  vlcData->mp = libvlc_media_player_new (vlcData->inst);
+  mdextalloc (vlcData->mp);
+
+  if (vlcData->inst != NULL && vlcData->mp != NULL) {
+    libvlc_audio_set_volume (vlcData->mp, 100);
+#if ! defined(VLC_NO_ROLE) && \
+      LIBVLC_VERSION_INT >= LIBVLC_VERSION(3,0,0,0)
+    libvlc_media_player_set_role (vlcData->mp, libvlc_role_Music);
+#endif
   }
 }
 

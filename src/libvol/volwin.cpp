@@ -100,8 +100,12 @@ voliProcess (volaction_t action, const char *sinkname,
   LPWSTR                defsinknm = NULL;
   volwin_t              *volwin = NULL;
   char                  *tdefsinknm = NULL;
+FILE *logfh;
+logfh = fopen ("out.txt", "a");
+
 
   if (action == VOL_HAVE_SINK_LIST) {
+fclose (logfh);
     return true;
   }
 
@@ -109,6 +113,7 @@ voliProcess (volaction_t action, const char *sinkname,
   VersionInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
   GetVersionEx (&VersionInfo);
   if (VersionInfo.dwMajorVersion <= 5) {
+fclose (logfh);
     return -1;
   }
 
@@ -156,6 +161,9 @@ voliProcess (volaction_t action, const char *sinkname,
     }
   }
 
+fprintf (logfh, "sink: %s\n", sinkname);
+fprintf (logfh, "def-sink: %s\n", tdefsinknm);
+
   if (action == VOL_CHK_SINK) {
     bool    orig;
 
@@ -174,7 +182,9 @@ voliProcess (volaction_t action, const char *sinkname,
     UINT                  count;
 
 
-    sinklist->defname = osFromWideChar (defsinknm);
+    dataFree (sinklist->defname);
+    /* for windows, the default device name is an empty string */
+    sinklist->defname = mdstrdup ("");
     sinklist->count = 0;
     sinklist->sinklist = NULL;
 
@@ -216,7 +226,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
       sinklist->sinklist [i].name = osFromWideChar (devid);
 
-      if (strcmp (sinklist->defname, sinklist->sinklist [i].name) == 0) {
+      if (strcmp (tdefsinknm, sinklist->sinklist [i].name) == 0) {
         sinklist->sinklist [i].defaultFlag = true;
       }
 
@@ -231,12 +241,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
     dataFree (tdefsinknm);
     CoTaskMemFree (defsinknm);
-    return 0;
-  }
-
-  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
-    dataFree (tdefsinknm);
-    CoTaskMemFree (defsinknm);
+fclose (logfh);
     return 0;
   }
 
@@ -248,9 +253,12 @@ voliProcess (volaction_t action, const char *sinkname,
 
     if (sinkname == NULL || ! *sinkname) {
       wdevnm = (wchar_t *) defsinknm;
+fprintf (stderr, "   get/set sinkname: %s\n", tdefsinknm);
     } else {
+fprintf (stderr, "   get/set sinkname: %s\n", sinkname);
       wdevnm = (wchar_t *) osToWideChar (sinkname);
     }
+
     hr = volwin->pEnumerator->GetDevice (wdevnm, &volDevice);
     ERROR_EXIT (hr)
     if (sinkname != NULL && *sinkname) {
@@ -275,6 +283,7 @@ voliProcess (volaction_t action, const char *sinkname,
 Exit:
   dataFree (tdefsinknm);
   CoTaskMemFree (defsinknm);
+fclose (logfh);
 
   if (vol != NULL) {
     return *vol;

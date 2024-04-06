@@ -37,7 +37,7 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   bdjoptInit ();
 
-  volumeSinklistInit (&sinklist);
+  volumeInitSinkList (&sinklist);
 
   pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));

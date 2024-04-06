@@ -155,13 +155,6 @@ voliProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (action == VOL_SET_SYSTEM_DFLT) {
-    gsinklist.sinklist [volnull->defsink].defaultFlag = 0;
-    volnull->defsink = usersink;
-    gsinklist.sinklist [volnull->defsink].defaultFlag = 1;
-    return 0;
-  }
-
   if (action == VOL_SET) {
     gvol [volnull->currsink] = *vol;
     if (gvol [volnull->currsink] < 0) { gvol [volnull->currsink] = 0; }

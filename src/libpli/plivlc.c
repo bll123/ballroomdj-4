@@ -44,7 +44,7 @@ static char *vlcDefaultOptions [] = {
       "--no-metadata-network-access",
 /* VLC logging options */
 /* turn off SILENCE_LOG in vlci.c also */
-#if 0
+#if 1
       "-vv",
       "--file-logging",
       "--logfile", "vlc-log.txt",
@@ -259,7 +259,7 @@ pliiSetAudioDevice (plidata_t *pliData, const char *dev)
   }
 
   /* this is required for windows, not for linux or macos */
-  rc = vlcAudioDevSet (pliData->vlcdata, dev);
+  rc = vlcSetAudioDev (pliData->vlcdata, dev);
   return rc;
 }
 

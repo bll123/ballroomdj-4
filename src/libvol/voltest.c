@@ -62,7 +62,7 @@ main (int argc, char *argv [])
 
   if (doinit) {
     volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
-    volumeSinklistInit (&sinklist);
+    volumeInitSinkList (&sinklist);
   }
 
   if (argc == 2 && strcmp (argv [1], "getsinklist") == 0) {
