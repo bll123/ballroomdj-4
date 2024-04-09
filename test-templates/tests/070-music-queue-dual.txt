@@ -192,6 +192,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
+mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5
 # switch playback queues
@@ -271,6 +272,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 # pause playback
 msg main CMD_PLAYPAUSE
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 # switch playback queues

@@ -63,7 +63,7 @@ osSetEnv (const char *name, const char *value)
   }
 #elif _lib_setenv
   /* setenv is better */
-  if (*value) {
+  if (value != NULL && *value) {
     rc = setenv (name, value, 1);
   } else {
     rc = unsetenv (name);

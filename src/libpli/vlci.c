@@ -33,7 +33,7 @@
 #include "vlci.h"
 
 #define VLCDEBUG 0
-#define SILENCE_LOG 0
+#define SILENCE_LOG 1
 #define STATE_TO_VALUE 0
 
 typedef struct vlcData {
@@ -45,6 +45,7 @@ typedef struct vlcData {
   int                     argc;
   char                    **argv;
   char                    *device;
+  int                     devtype;
 } vlcData_t;
 
 # if VLCDEBUG
@@ -202,12 +203,13 @@ vlcRate (vlcData_t *vlcData, double drate)
 /* other commands */
 
 int
-vlcSetAudioDev (vlcData_t *vlcData, const char *dev)
+vlcSetAudioDev (vlcData_t *vlcData, const char *dev, int plidevtype)
 {
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
 
+  vlcData->devtype = plidevtype;
   dataFree (vlcData->device);
   vlcData->device = NULL;
   if (dev != NULL && strlen (dev) > 0) {
@@ -265,14 +267,21 @@ vlcMedia (vlcData_t *vlcData, const char *fn)
   vlcData->media = libvlc_media_new_path (vlcData->inst, fn);
   mdextalloc (vlcData->media);
 
-  /* the windows audio sink works better if a new media player is */
-  /* created for each new medium. if this is not here, windows will */
-  /* switch audio sinks if the default is changed. even though the */
+#if _WIN32
+  /* on windows, when using a selected sink, */
+  /* if the default windows audio sink is changed, a new media */
+  /* player needs to be created for each medium. */
+  /* if this is not here, windows will */
+  /* switch audio sinks if the default is changed even though the */
   /* vlc-audio-output is set and re-set. */
-  vlcCreateNewMediaPlayer (vlcData);
-  if (vlcData->mp == NULL) {
-    return -1;
+  /* this call creates extra latency, so only do it if necessary */
+  if (vlcData->devtype == PLI_SELECTED_DEV) {
+    vlcCreateNewMediaPlayer (vlcData);
+    if (vlcData->mp == NULL) {
+      return -1;
+    }
   }
+#endif
   libvlc_media_player_set_rate (vlcData->mp, 1.0);
   libvlc_media_player_set_media (vlcData->mp, vlcData->media);
 
@@ -303,6 +312,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcData->argv = NULL;
   vlcData->state = libvlc_NothingSpecial;
   vlcData->device = NULL;
+  vlcData->devtype = PLI_DEFAULT_DEV;
 
   vlcData->argv = (char **) mdmalloc (sizeof (char *) * (size_t) (vlcargc + 1));
 
@@ -340,7 +350,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 #endif
 
   /* windows seems to need this, even though the media player is going */
-  /* to be released and re-created. */
+  /* to be released and re-created per medium. */
   vlcCreateNewMediaPlayer (vlcData);
 
   return vlcData;

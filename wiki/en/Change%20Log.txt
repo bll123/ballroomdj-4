@@ -6,14 +6,14 @@
 
 **4.9.0 2024-4---**
 
-**4.8.2 2024-4---**
+-->
+
+**4.8.2 2024-4-9**
 
 * Bug Fixes:
     * Installer: Fix various minor bugs.
     * Player: Fix switching to a different audio device when the default audio device is selected.
     * Player: Fix a crash when repeat was turned on before playing.
-
--->
 
 **4.8.1 2024-3-31**
 
@@ -818,4 +818,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-04-09 07:10:11; BDJ4 version 4.8.2)_

@@ -31,14 +31,17 @@ Converting BallroomDJ 3:
 Release Notes:
 
   This installation will not affect any BallroomDJ 3 installation.
-  (The features that rename audio files is not implemented yet).
-  (Writing audio file tags is turned off upon conversion, and the
-   'Write BDJ3 Compatible Audio Tags' is on).
+  (Writing audio file tags is turned off upon conversion).
 
 Known Issues:
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
+  Linux
+    - If an non-default audio sink is configured, and the default audio
+      sink is changed, the audio will switch to the new default.  The
+      audio will revert back to the configured audio sink when a new song
+      starts playing.
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :

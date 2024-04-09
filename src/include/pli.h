@@ -34,6 +34,11 @@ enum {
   PLI_SUPPORT_DEVLIST = (1 << 2),
 };
 
+enum {
+  PLI_DEFAULT_DEV,
+  PLI_SELECTED_DEV,
+};
+
 static inline bool
 pliCheckSupport (int supported, int supportflag)
 {
@@ -61,7 +66,7 @@ void          pliClose (pli_t *pli);
 ssize_t       pliGetDuration (pli_t *pli);
 ssize_t       pliGetTime (pli_t *pli);
 plistate_t    pliState (pli_t *pli);
-int           pliSetAudioDevice (pli_t *pli, const char *dev);
+int           pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
 const char    *pliStateText (pli_t *pli);
@@ -81,7 +86,7 @@ ssize_t       pliiRate (plidata_t *pliData, ssize_t drate);
 ssize_t       pliiGetDuration (plidata_t *pliData);
 ssize_t       pliiGetTime (plidata_t *pliData);
 plistate_t    pliiState (plidata_t *pliData);
-int           pliiSetAudioDevice (plidata_t *pliData, const char *dev);
+int           pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
 void          pliiDesc (char **ret, int max);

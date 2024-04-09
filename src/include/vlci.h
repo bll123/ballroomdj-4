@@ -28,7 +28,7 @@ int               vlcMedia (vlcData_t *vlcdata, const char *fn);
 vlcData_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcData_t *vlcData);
 void              vlcRelease (vlcData_t *vlcData);
-int               vlcSetAudioDev (vlcData_t *vlcData, const char *dev);
+int               vlcSetAudioDev (vlcData_t *vlcData, const char *dev, int plidevtype);
 
 #endif /* _hdr_vlc_vlc */
 

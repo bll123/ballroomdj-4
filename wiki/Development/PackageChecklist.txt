@@ -43,6 +43,7 @@ source package and copy it to the primary development machine.
 source package and copy it to the primary development machine.
 * on linux
     * ../web/push.sh
+    * update the wiki images: ../web/wikiput.sh putimages # if necessary
     * update the wiki: ../web/wikiput.sh putall
     * update the website (version info): ../web/install.sh
     * hg: check in
@@ -59,4 +60,4 @@ source package and copy it to the primary development machine.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-03-24 12:11:39; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-04-09 07:10:11; BDJ4 version 4.8.2)_

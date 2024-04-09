@@ -100,12 +100,9 @@ voliProcess (volaction_t action, const char *sinkname,
   LPWSTR                defsinknm = NULL;
   volwin_t              *volwin = NULL;
   char                  *tdefsinknm = NULL;
-FILE *logfh;
-logfh = fopen ("out.txt", "a");
 
 
   if (action == VOL_HAVE_SINK_LIST) {
-fclose (logfh);
     return true;
   }
 
@@ -113,7 +110,6 @@ fclose (logfh);
   VersionInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
   GetVersionEx (&VersionInfo);
   if (VersionInfo.dwMajorVersion <= 5) {
-fclose (logfh);
     return -1;
   }
 
@@ -160,9 +156,6 @@ fclose (logfh);
       volwin->changed = true;
     }
   }
-
-fprintf (logfh, "sink: %s\n", sinkname);
-fprintf (logfh, "def-sink: %s\n", tdefsinknm);
 
   if (action == VOL_CHK_SINK) {
     bool    orig;
@@ -241,7 +234,6 @@ fprintf (logfh, "def-sink: %s\n", tdefsinknm);
 
     dataFree (tdefsinknm);
     CoTaskMemFree (defsinknm);
-fclose (logfh);
     return 0;
   }
 
@@ -283,7 +275,6 @@ fprintf (stderr, "   get/set sinkname: %s\n", sinkname);
 Exit:
   dataFree (tdefsinknm);
   CoTaskMemFree (defsinknm);
-fclose (logfh);
 
   if (vol != NULL) {
     return *vol;

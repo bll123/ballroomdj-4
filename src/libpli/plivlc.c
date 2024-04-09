@@ -44,7 +44,7 @@ static char *vlcDefaultOptions [] = {
       "--no-metadata-network-access",
 /* VLC logging options */
 /* turn off SILENCE_LOG in vlci.c also */
-#if 1
+#if 0
       "-vv",
       "--file-logging",
       "--logfile", "vlc-log.txt",
@@ -250,7 +250,7 @@ pliiState (plidata_t *pliData)
 }
 
 int
-pliiSetAudioDevice (plidata_t *pliData, const char *dev)
+pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
 {
   int   rc = -1;
 
@@ -259,7 +259,7 @@ pliiSetAudioDevice (plidata_t *pliData, const char *dev)
   }
 
   /* this is required for windows, not for linux or macos */
-  rc = vlcSetAudioDev (pliData->vlcdata, dev);
+  rc = vlcSetAudioDev (pliData->vlcdata, dev, plidevtype);
   return rc;
 }
 
