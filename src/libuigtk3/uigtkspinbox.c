@@ -734,8 +734,15 @@ uiSpinboxTextKeyCallback (void *udata)
   if (rc) {
     return UICB_CONT;
   }
+
   rc = uiKeyIsMaskedKey (uispinbox->uikey);
   if (rc) {
+    /* masked keys are allowed, but not paste or cut */
+    /* this allows the pass-through of keys like control-s */
+    if (uiKeyIsPasteCutKey (uispinbox->uikey)) {
+      return UICB_STOP;
+    }
+
     return UICB_CONT;
   }
 

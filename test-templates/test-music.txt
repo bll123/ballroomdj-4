@@ -27,7 +27,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -46,6 +46,10 @@ DANCE
 ..Argentine Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -83,6 +87,10 @@ DANCE
 ..Argentine Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -245,7 +253,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -264,6 +272,10 @@ DANCE
 ..Cha Cha
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -299,6 +311,10 @@ DANCE
 ..Cha Cha
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-chacha
 DEST
@@ -451,7 +467,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -470,6 +486,10 @@ DANCE
 ..Foxtrot
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 TITLE
 ..%03d-foxtrot
 DEST
@@ -501,6 +521,10 @@ DANCE
 ..Foxtrot
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-foxtrot
 DEST
@@ -653,7 +677,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -672,6 +696,10 @@ DANCE
 ..Jive
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 TITLE
 ..%03d-jive
 DEST
@@ -705,6 +733,10 @@ DANCE
 ..Jive
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -857,7 +889,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -876,6 +908,10 @@ DANCE
 ..Quickstep
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -909,6 +945,10 @@ DANCE
 ..Quickstep
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -1061,7 +1101,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -1080,6 +1120,10 @@ DANCE
 ..Rumba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..bluestar
 TITLE
@@ -1115,6 +1159,10 @@ DANCE
 ..Rumba
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..purplestar
 TITLE
@@ -1267,7 +1315,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -1286,6 +1334,10 @@ DANCE
 ..Salsa
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -1319,6 +1371,10 @@ DANCE
 ..Salsa
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-salsa
 DEST
@@ -1471,7 +1527,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -1490,6 +1546,10 @@ DANCE
 ..Samba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-samba
 DEST
@@ -1523,6 +1583,10 @@ DANCE
 ..Samba
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-samba
 DEST
@@ -1675,7 +1739,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -1694,6 +1758,10 @@ DANCE
 ..Tango
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-tango
 DEST
@@ -1725,6 +1793,10 @@ DANCE
 ..Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -2192,7 +2264,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 disc
 STATUS
 ..New
 DANCELEVEL
@@ -2211,6 +2283,10 @@ DANCE
 ..Viennese Waltz
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-viennesewaltz
 DEST
@@ -2242,6 +2318,10 @@ DANCE
 ..Viennese Waltz
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -2396,7 +2476,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 bpm
+..tag1 tag2 tag3 bpm disc
 STATUS
 ..New
 DANCELEVEL
@@ -2413,14 +2493,14 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -2439,7 +2519,7 @@ NOTES
 BPM
 ..29
 TAGS
-..tag4 TAG5 bpm
+..tag4 TAG5 bpm disc
 STATUS
 ..Complete
 DANCELEVEL
@@ -2464,6 +2544,10 @@ DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -2482,7 +2566,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag6 tag7 bpm
+..tag6 tag7 bpm disc
 STATUS
 ..Complete
 DANCELEVEL
@@ -2523,7 +2607,7 @@ DURATION
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 bpm
+..tag1 tag2 tag3 bpm disc
 STATUS
 ..New
 DANCELEVEL
@@ -2564,7 +2648,7 @@ NOTES
 BPM
 ..29
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 STATUS
 ..Complete
 DANCELEVEL
@@ -2607,7 +2691,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag6 tag7 bpm
+..tag6 tag7 bpm disc
 STATUS
 ..Complete
 DANCELEVEL
@@ -2975,7 +3059,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 ss
+..tag1 tag2 tag3 ss disc
 STATUS
 ..New
 DANCELEVEL
@@ -2994,6 +3078,10 @@ DANCE
 ..West Coast Swing
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 SAMESONG
@@ -3031,6 +3119,10 @@ DANCE
 ..West Coast Swing
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 SAMESONG
@@ -4408,7 +4500,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 TITLE
 ..%03d-all-tags-mp3-a
 TRACKNUMBER
@@ -4477,7 +4569,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 TITLE
 ..%03d-all-tags-mp3-b
 TRACKNUMBER
@@ -4546,7 +4638,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 TITLE
 ..%03d-all-tags-m4a-c
 TRACKNUMBER
@@ -4615,7 +4707,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 TITLE
 ..%03d-all-tags-m4a-d
 TRACKNUMBER
@@ -4684,7 +4776,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss
+..tag4 TAG5 bpm ss disc
 TITLE
 ..%03d-all-tags-flac-e
 TRACKNUMBER

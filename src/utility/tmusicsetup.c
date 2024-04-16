@@ -94,7 +94,8 @@ enum {
 static slist_t *updateData (ilist_t *tmusiclist, ilistidx_t key);
 static char *createFile (const char *src, const char *dest, bool keepmusic);
 
-static int  gtracknum [TM_MAX_DANCE];
+static int  gdiscnum [200];
+static int  gtracknum [200];
 static int  gseqnum [TM_MAX_DANCE];
 static const char *tmusicorig = "test-music-orig";
 static const char *tmusicdir = "test-music";
@@ -224,6 +225,9 @@ main (int argc, char *argv [])
 
   for (int i = 0; i < TM_MAX_DANCE; ++i) {
     gseqnum [i] = 1;
+  }
+  for (size_t i = 0; i < sizeof (gtracknum) / sizeof (int); ++i) {
+    gdiscnum [i] = 1;
     gtracknum [i] = 1;
   }
   empty = slistAlloc ("tm-empty", LIST_ORDERED, NULL);
@@ -382,12 +386,24 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
     tn = 1;
     sn = 1;
     if (danceIdx >= 0 && danceIdx < TM_MAX_DANCE) {
-      tn = gtracknum [danceIdx];
       sn = gseqnum [danceIdx];
     }
 
+    if (dfkey->itemkey == TAG_DISCNUMBER) {
+      int   tval;
+
+      tval = atoi (val);
+      if (tval > 0 && gdiscnum [sn] != tval) {
+        gtracknum [sn] = 1;
+      }
+      gdiscnum [sn] = tval;
+    }
+
+    tn = gtracknum [sn];
+
     if (dfkey->itemkey == TAG_TRACKNUMBER) {
       snprintf (nval, sizeof (nval), val, tn);
+      gtracknum [sn]++;
     } else {
       snprintf (nval, sizeof (nval), val, sn);
     }
@@ -399,7 +415,6 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
   }
 
   if (danceIdx >= 0) {
-    gtracknum [danceIdx]++;
     gseqnum [danceIdx]++;
   }
   return tagdata;

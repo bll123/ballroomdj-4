@@ -27,7 +27,9 @@ bool    uiKeyIsUpKey (uiwcont_t *uiwidget);
 bool    uiKeyIsDownKey (uiwcont_t *uiwidget);
 bool    uiKeyIsPageUpDownKey (uiwcont_t *uiwidget);
 bool    uiKeyIsNavKey (uiwcont_t *uiwidget);
+bool    uiKeyIsPasteCutKey (uiwcont_t *uiwidget);
 bool    uiKeyIsMaskedKey (uiwcont_t *uiwidget);
+bool    uiKeyIsAltPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsControlPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsShiftPressed (uiwcont_t *uiwidget);
 

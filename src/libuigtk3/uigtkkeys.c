@@ -35,6 +35,10 @@ typedef struct uikey {
   int           eventtype;
   bool          controlpressed;
   bool          shiftpressed;
+  bool          altpressed;
+  bool          metapressed;
+  bool          superpressed;
+  bool          hyperpressed;
   bool          ismaskedkey;
   guint         keyval;
 } uikey_t;
@@ -55,6 +59,10 @@ uiKeyAlloc (void)
   uikey->eventtype = KEY_EVENT_NONE;
   uikey->controlpressed = false;
   uikey->shiftpressed = false;
+  uikey->altpressed = false;
+  uikey->metapressed = false;
+  uikey->superpressed = false;
+  uikey->hyperpressed = false;
   uikey->ismaskedkey = false;
 
   uiwidget->wbasetype = WCONT_T_KEY;
@@ -353,6 +361,41 @@ uiKeyIsNavKey (uiwcont_t *uiwidget)
 }
 
 bool
+uiKeyIsPasteCutKey (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-paste-cut")) {
+    return rc;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+
+  if (! uikey->controlpressed) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_V ||
+      uikey->keyval == GDK_KEY_v ||
+      uikey->keyval == GDK_KEY_X ||
+      uikey->keyval == GDK_KEY_x) {
+    rc = true;
+  }
+
+  if (uikey->shiftpressed) {
+    if (uikey->keyval == GDK_KEY_Insert ||
+        uikey->keyval == GDK_KEY_KP_Insert ||
+        uikey->keyval == GDK_KEY_Delete ||
+        uikey->keyval == GDK_KEY_KP_Delete) {
+      rc = true;
+    }
+  }
+
+  return rc;
+}
+
+bool
 uiKeyIsMaskedKey (uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;
@@ -366,6 +409,19 @@ uiKeyIsMaskedKey (uiwcont_t *uiwidget)
 }
 
 bool
+uiKeyIsAltPressed (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-alt")) {
+    return false;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+  return uikey->altpressed;
+}
+
+bool
 uiKeyIsControlPressed (uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;
@@ -373,7 +429,6 @@ uiKeyIsControlPressed (uiwcont_t *uiwidget)
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-control")) {
     return false;
   }
-
 
   uikey = uiwidget->uiint.uikey;
   return uikey->controlpressed;
@@ -401,6 +456,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   uikey_t   *uikey;
   guint     keyval;
   int       rc = UICB_CONT;
+  bool      skip = false;
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
   uikey = uiwidget->uiint.uikey;
@@ -417,6 +473,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (event->type == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = true;
+    skip = true;
   }
   if (event->type == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
@@ -426,17 +483,67 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (event->type == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = true;
+    skip = true;
   }
   if (event->type == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = false;
   }
 
+  if (event->type == GDK_KEY_PRESS &&
+      (keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R)) {
+    uikey->altpressed = true;
+    skip = true;
+  }
+  if (event->type == GDK_KEY_RELEASE &&
+      (keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R)) {
+    uikey->altpressed = false;
+  }
+
+  if (event->type == GDK_KEY_PRESS &&
+      (keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R)) {
+    uikey->metapressed = true;
+    skip = true;
+  }
+  if (event->type == GDK_KEY_RELEASE &&
+      (keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R)) {
+    uikey->metapressed = false;
+  }
+
+  if (event->type == GDK_KEY_PRESS &&
+      (keyval == GDK_KEY_Super_L || keyval == GDK_KEY_Super_R)) {
+    uikey->superpressed = true;
+    skip = true;
+  }
+  if (event->type == GDK_KEY_RELEASE &&
+      (keyval == GDK_KEY_Super_L || keyval == GDK_KEY_Super_R)) {
+    uikey->superpressed = false;
+  }
+
+  if (event->type == GDK_KEY_PRESS &&
+      (keyval == GDK_KEY_Hyper_L || keyval == GDK_KEY_Hyper_R)) {
+    uikey->hyperpressed = true;
+    skip = true;
+  }
+  if (event->type == GDK_KEY_RELEASE &&
+      (keyval == GDK_KEY_Hyper_L || keyval == GDK_KEY_Hyper_R)) {
+    uikey->hyperpressed = false;
+  }
+
   uikey->ismaskedkey = false;
+  /* do not test for shift */
   if (((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) ||
       ((event->state & GDK_META_MASK) == GDK_META_MASK) ||
-      ((event->state & GDK_SUPER_MASK) == GDK_SUPER_MASK)) {
+      ((event->state & GDK_SUPER_MASK) == GDK_SUPER_MASK) ||
+      ((event->state & GDK_HYPER_MASK) == GDK_HYPER_MASK)) {
     uikey->ismaskedkey = true;
+  }
+
+  if (skip) {
+    /* a press of a mask key does not need */
+    /* to be processed.  this key handler gets called twice, and processing */
+    /* a mask key will cause issues with the callbacks */
+    return rc;
   }
 
   if (event->type == GDK_KEY_PRESS &&

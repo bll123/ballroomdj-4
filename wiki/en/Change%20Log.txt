@@ -6,6 +6,11 @@
 
 **4.9.0 2024-4---**
 
+**4.8.2 2024-4---**
+
+* Bug Fixes:
+    * Song Editor: Keyboard bindings (save/next/previous) now work within spinboxes.
+
 -->
 
 **4.8.2 2024-4-9**
