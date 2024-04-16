@@ -41,9 +41,29 @@
 static nlist_t * confuiGetThemeList (void);
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
-static void confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp);
+static void confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, int sidx, int eidx);
+
+static const char *orgexamples [] = {
+  "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
+      "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
+      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
+      "GENRE\n..Ballroom Dance\n",
+  "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
+      "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
+      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
+      "GENRE\n..Ballroom Dance\n",
+  "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+      "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
+      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
+      "GENRE\n..Ballroom Dance",
+  /* empty album artist */
+  "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
+      "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
+      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me voy\n"
+      "GENRE\n..Ballroom Dance",
+};
 
 
 /* the theme list is used by both the ui and the marquee selections */
@@ -178,9 +198,10 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 void
 confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
 {
-  char      *data;
   org_t     *org;
-  uiwcont_t*uiwidgetp;
+  uiwcont_t *uiwidgetp;
+  int       max;
+
 
   if (orgpath == NULL) {
     return;
@@ -192,34 +213,11 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   /* the only genres that are shipped are : */
   /* ballroom dance, jazz, rock, classical */
 
-  data = "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
-      "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
-      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
-      "GENRE\n..Ballroom Dance\n",
-  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
-  confuiUpdateOrgExample (org, data, uiwidgetp);
-
-  data = "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
-      "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
-      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
-      "GENRE\n..Ballroom Dance\n",
-  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].uiwidgetp;
-  confuiUpdateOrgExample (org, data, uiwidgetp);
-
-  data = "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
-      "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
-      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
-      "GENRE\n..Ballroom Dance",
-  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].uiwidgetp;
-  confuiUpdateOrgExample (org, data, uiwidgetp);
-
-  /* empty album artist */
-  data = "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
-      "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
-      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me voy\n"
-      "GENRE\n..Ballroom Dance",
-  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].uiwidgetp;
-  confuiUpdateOrgExample (org, data, uiwidgetp);
+  max = CONFUI_WIDGET_AO_EXAMPLE_MAX - CONFUI_WIDGET_AO_EXAMPLE_1;
+  for (int i = 0; i < max; ++i) {
+    uiwidgetp = gui->uiitem [i + CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
+    confuiUpdateOrgExample (org, orgexamples [i], uiwidgetp);
+  }
 
   orgFree (org);
   logProcEnd (LOG_PROC, "confuiUpdateOrgExamples", "");
@@ -515,7 +513,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
 }
 
 static void
-confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp)
+confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
 {
   song_t    *song;
   char      *tdata;

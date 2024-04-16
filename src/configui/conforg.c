@@ -87,12 +87,9 @@ confuiBuildUIOrganization (confuigui_t *gui)
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
   confuiMakeItemLabelDisp (gui, vbox, szgrp, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, -1);
-  confuiMakeItemLabelDisp (gui, vbox, szgrp, "",
-      CONFUI_WIDGET_AO_EXAMPLE_2, -1);
-  confuiMakeItemLabelDisp (gui, vbox, szgrp, "",
-      CONFUI_WIDGET_AO_EXAMPLE_3, -1);
-  confuiMakeItemLabelDisp (gui, vbox, szgrp, "",
-      CONFUI_WIDGET_AO_EXAMPLE_4, -1);
+  for (int i = CONFUI_WIDGET_AO_EXAMPLE_2; i < CONFUI_WIDGET_AO_EXAMPLE_MAX; ++i) {
+    confuiMakeItemLabelDisp (gui, vbox, szgrp, "", i, -1);
+  }
 
   confuiMakeItemSwitch (gui, vbox, szgrp,
       /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
