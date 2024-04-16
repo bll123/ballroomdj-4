@@ -15,9 +15,11 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
+#include "dispsel.h"
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
@@ -27,6 +29,7 @@
 #include "player.h"
 #include "pli.h"
 #include "progstate.h"
+#include "slist.h"
 #include "song.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -72,9 +75,17 @@ enum {
   UIPL_W_BUTTON_BEGSONG,
   UIPL_W_BUTTON_NEXTSONG,
   UIPL_W_MAIN_VBOX,
-  UIPL_W_DANCE,
-  UIPL_W_ARTIST,
-  UIPL_W_TITLE,
+  /* the info display must have enough labels for both the display */
+  /* and the separators */
+  UIPL_W_INFO_DISP_A,
+  UIPL_W_INFO_DISP_B,   //
+  UIPL_W_INFO_DISP_C,
+  UIPL_W_INFO_DISP_D,   //
+  UIPL_W_INFO_DISP_E,
+  UIPL_W_INFO_DISP_F,   //
+  UIPL_W_INFO_DISP_G,
+  UIPL_W_INFO_DISP_H,   //
+  UIPL_W_INFO_DISP_I,
   UIPL_W_SPEED,
   UIPL_W_SPEED_DISP,
   UIPL_W_COUNTDOWN_TIMER,
@@ -100,6 +111,7 @@ typedef struct uiplayer {
   dbidx_t         curr_dbidx;
   uiwcont_t       *wcont [UIPL_W_MAX];
   int             pliSupported;
+  dispsel_t       *dispsel;
   /* song display */
   uiwcont_t       *images [UIPL_IMG_MAX];
   /* speed controls / display */
@@ -152,7 +164,7 @@ static void     uiplayerClearDisplay (uiplayer_t *uiplayer);
 
 uiplayer_t *
 uiplayerInit (const char *tag, progstate_t *progstate,
-    conn_t *conn, musicdb_t *musicdb)
+    conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel)
 {
   uiplayer_t    *uiplayer;
 
@@ -162,6 +174,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
+  uiplayer->dispsel = dispsel;
   for (int i = 0; i < UIPL_CB_MAX; ++i) {
     uiplayer->callbacks [i] = NULL;
   }
@@ -284,28 +297,15 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_REPEAT]);
   uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
-  uiplayer->wcont [UIPL_W_DANCE] = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_DANCE]);
-
-  uiwidgetp = uiCreateLabel (" : ");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiplayer->wcont [UIPL_W_ARTIST] = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_ARTIST], 0);
-  uiLabelEllipsizeOn (uiplayer->wcont [UIPL_W_ARTIST]);
-  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_ARTIST]);
-
-  uiwidgetp = uiCreateLabel (" : ");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiplayer->wcont [UIPL_W_TITLE] = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_TITLE], 0);
-  uiLabelEllipsizeOn (uiplayer->wcont [UIPL_W_TITLE]);
-  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_TITLE]);
+  for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
+    uiwidgetp = uiCreateLabel ("");
+    uiWidgetAlignHorizStart (uiwidgetp);
+    if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
+      uiLabelEllipsizeOn (uiwidgetp);
+    }
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiplayer->wcont [i] = uiwidgetp;
+  }
 
   /* expanding label to take space */
   uiwidgetp = uiCreateLabel ("");
@@ -934,9 +934,14 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   char          *tokstr;
   dbidx_t       dbidx = -1;
   song_t        *song = NULL;
-  const char    *data = NULL;
   ilistidx_t    danceIdx;
   dance_t       *dances;
+  slist_t       *sellist;
+  const char    *sep = "";
+  char          sepstr [20] = { "" };
+  int           idx;
+  int           tagidx;
+  slistidx_t    seliteridx;
 
   logProcBegin (LOG_PROC, "uiplayerProcessMusicqStatusData");
 
@@ -963,17 +968,44 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     return;
   }
 
-  danceIdx = songGetNum (song, TAG_DANCE);
-  data = danceGetStr (dances, danceIdx, DANCE_DANCE);
-  uiLabelSetText (uiplayer->wcont [UIPL_W_DANCE], data);
+  sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_PLAYER_UI);
 
-  /* artist */
-  data = songGetStr (song, TAG_ARTIST);
-  uiLabelSetText (uiplayer->wcont [UIPL_W_ARTIST], data);
+  idx = UIPL_W_INFO_DISP_A;
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    const char  *tstr = NULL;
 
-  /* title */
-  data = songGetStr (song, TAG_TITLE);
-  uiLabelSetText (uiplayer->wcont [UIPL_W_TITLE], data);
+    if (tagidx == TAG_DANCE) {
+      danceIdx = songGetNum (song, TAG_DANCE);
+      tstr = danceGetStr (dances, danceIdx, DANCE_DANCE);
+    } else {
+      tstr = songGetStr (song, tagidx);
+    }
+    if (tstr == NULL) {
+      break;
+    }
+
+    if (*sep) {
+      uiLabelSetText (uiplayer->wcont [idx], sepstr);
+      ++idx;
+    }
+
+    if (idx > UIPL_W_INFO_DISP_I) {
+      break;
+    }
+
+    uiLabelSetText (uiplayer->wcont [idx], tstr);
+    if (! *sep) {
+      sep = bdjoptGetStr (OPT_P_PLAYER_UI_SEP);
+      snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+    }
+
+    ++idx;
+    if (idx > UIPL_W_INFO_DISP_I) {
+      break;
+    }
+  }
+
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
 }
 
@@ -1131,7 +1163,7 @@ uiplayerVolumeCallback (void *udata, double value)
 static void
 uiplayerClearDisplay (uiplayer_t *uiplayer)
 {
-  uiLabelSetText (uiplayer->wcont [UIPL_W_DANCE], "");
-  uiLabelSetText (uiplayer->wcont [UIPL_W_ARTIST], "");
-  uiLabelSetText (uiplayer->wcont [UIPL_W_TITLE], "");
+  for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
+    uiLabelSetText (uiplayer->wcont [i], "");
+  }
 }

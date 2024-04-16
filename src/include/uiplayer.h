@@ -8,13 +8,14 @@
 
 #include "bdjmsg.h"
 #include "conn.h"
+#include "dispsel.h"
 #include "musicdb.h"
 #include "progstate.h"
 #include "ui.h"
 
 typedef struct uiplayer uiplayer_t;
 
-uiplayer_t  * uiplayerInit (const char *tag, progstate_t *progstate, conn_t *conn, musicdb_t *musicdb);
+uiplayer_t  * uiplayerInit (const char *tag, progstate_t *progstate, conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel);
 void  uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb);
 void  uiplayerFree (uiplayer_t *uiplayer);
 uiwcont_t     *uiplayerBuildUI (uiplayer_t *uiplayer);

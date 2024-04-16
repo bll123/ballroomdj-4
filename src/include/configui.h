@@ -405,6 +405,7 @@ typedef struct confuigui {
   slist_t           *audioidtaglist;
   slist_t           *listingtaglist;
   slist_t           *marqueetaglist;
+  slist_t           *pluitaglist;
   /* filter */
   nlist_t           *filterDisplaySel;
   nlist_t           *filterLookup;

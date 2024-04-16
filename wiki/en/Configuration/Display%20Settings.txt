@@ -24,6 +24,7 @@ The following displays can be configured:
 * Audio&nbsp;ID&nbsp;Match&nbsp;List
 * Audio&nbsp;ID
 * Marquee (song information)
+* Player (currently playing song information)
 
 The marquee will only display at most three items in the song
 information display.

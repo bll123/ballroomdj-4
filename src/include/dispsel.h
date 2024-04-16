@@ -8,10 +8,10 @@
 #include "slist.h"
 
 enum {
-  DISP_SEL_LOAD_PLAYER,
-  DISP_SEL_LOAD_MANAGE,
-  DISP_SEL_LOAD_MARQUEE,
-  DISP_SEL_LOAD_ALL,
+  DISP_SEL_LOAD_PLAYER    = 0x0001,
+  DISP_SEL_LOAD_MANAGE    = 0x0002,
+  DISP_SEL_LOAD_MARQUEE   = 0x0004,
+  DISP_SEL_LOAD_ALL       = 0x0008,
 };
 
 typedef enum {
@@ -19,6 +19,8 @@ typedef enum {
   DISP_SEL_HISTORY,
   DISP_SEL_MUSICQ,
   DISP_SEL_REQUEST,
+  /* the following are used by the player ui and management ui*/
+  DISP_SEL_PLAYER_UI,
   /* the following are used by the management ui */
   DISP_SEL_SBS_SONGLIST,
   DISP_SEL_SBS_SONGSEL,

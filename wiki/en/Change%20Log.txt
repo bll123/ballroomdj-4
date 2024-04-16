@@ -10,6 +10,9 @@
 
 * Bug Fixes:
     * Song Editor: Keyboard bindings (save/next/previous) now work within spinboxes.
+* Changes:
+    * Allow 'Total Discs' and 'Total Tracks' to be displayed in listings.
+    * Song Editor: 'Total Discs' and 'Total Tracks' to be edited.
 
 -->
 

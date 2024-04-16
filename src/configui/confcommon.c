@@ -290,6 +290,9 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   } else if (selidx == DISP_SEL_MARQUEE) {
     uiduallistSet (gui->dispselduallist, gui->marqueetaglist,
         DUALLIST_TREE_SOURCE);
+  } else if (selidx == DISP_SEL_PLAYER_UI) {
+    uiduallistSet (gui->dispselduallist, gui->pluitaglist,
+        DUALLIST_TREE_SOURCE);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
         DUALLIST_TREE_SOURCE);

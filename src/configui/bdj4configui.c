@@ -121,6 +121,7 @@ main (int argc, char *argv[])
   confui.gui.audioidtaglist = NULL;
   confui.gui.listingtaglist = NULL;
   confui.gui.marqueetaglist = NULL;
+  confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
   confui.gui.inchange = false;
   confui.gui.org = NULL;
@@ -396,6 +397,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   slistFree (confui->gui.audioidtaglist);
   slistFree (confui->gui.listingtaglist);
   slistFree (confui->gui.marqueetaglist);
+  slistFree (confui->gui.pluitaglist);
   callbackFree (confui->gui.closecb);
   callbackFree (confui->gui.nbcb);
   uiwcontFree (confui->gui.notebook);
@@ -627,6 +629,7 @@ confuiLoadTagList (configui_t *confui)
   slist_t       *elist = NULL;
   slist_t       *aidlist = NULL;
   slist_t       *mlist = NULL;
+  slist_t       *pluilist = NULL;
 
   logProcBegin (LOG_PROC, "confuiLoadTagList");
 
@@ -634,6 +637,7 @@ confuiLoadTagList (configui_t *confui)
   elist = slistAlloc ("cu-edit-tag-list", LIST_ORDERED, NULL);
   aidlist = slistAlloc ("cu-audio-id-tag-list", LIST_ORDERED, NULL);
   mlist = slistAlloc ("cu-marquee-tag-list", LIST_ORDERED, NULL);
+  pluilist = slistAlloc ("cu-plui-tag-list", LIST_ORDERED, NULL);
 
   for (tagdefkey_t i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].listingDisplay) {
@@ -649,12 +653,16 @@ confuiLoadTagList (configui_t *confui)
     if (tagdefs [i].marqueeDisp) {
       slistSetNum (mlist, tagdefs [i].displayname, i);
     }
+    if (tagdefs [i].pluiDisp) {
+      slistSetNum (pluilist, tagdefs [i].displayname, i);
+    }
   }
 
   confui->gui.listingtaglist = llist;
   confui->gui.edittaglist = elist;
   confui->gui.audioidtaglist = aidlist;
   confui->gui.marqueetaglist = mlist;
+  confui->gui.pluitaglist = pluilist;
   logProcEnd (LOG_PROC, "confuiLoadTagList", "");
 }
 

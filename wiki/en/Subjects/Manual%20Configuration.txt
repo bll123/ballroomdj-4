@@ -31,6 +31,8 @@ These items are not configurable via the user interface.
     Marquee Artist/Title Line Color.
   * MQ_TEXT_COL
     Marquee Text Color.
+  * PLAYER_UI_SEP
+    Separator character(s) for the player currently-playing display.
   * UI_ERROR_COL
     User Interface Error Color.
     The color of error messages.

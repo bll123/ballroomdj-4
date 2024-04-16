@@ -582,6 +582,11 @@ main (int argc, char *argv [])
     updaterCopyProfileIfNotPresent (DS_QUICKEDIT_FN, BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
+  {
+    /* 4.8.3 2024-4-16. Install new ds-player.txt */
+    updaterCopyProfileIfNotPresent ("ds-player", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+  }
+
   /* now re-load the data files */
 
   bdjvarsdfloadCleanup ();

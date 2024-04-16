@@ -47,6 +47,8 @@ typedef struct {
   valuetype_t         valueType;
   dfConvFunc_t        convfunc;
   bool                listingDisplay : 1;
+  /* a secondary display is a special tag to display additional information */
+  /* in the song editor */
   bool                secondaryDisplay : 1;
   bool                ellipsize : 1;
   bool                alignRight : 1;
@@ -56,6 +58,7 @@ typedef struct {
   bool                isEditable : 1;
   bool                isAudioID : 1;
   bool                marqueeDisp : 1;
+  bool                pluiDisp : 1;
   bool                textSearchable : 1;
   bool                isOrgTag : 1;
   bool                vorbisMulti : 1;

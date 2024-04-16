@@ -35,6 +35,7 @@ static dispselinfo_t dispselmap [DISP_SEL_MAX] = {
   [DISP_SEL_MARQUEE]        = { "ds-marquee", DISP_SEL_LOAD_MARQUEE },
   [DISP_SEL_MM]             = { "ds-mm", DISP_SEL_LOAD_MANAGE },
   [DISP_SEL_MUSICQ]         = { "ds-musicq", DISP_SEL_LOAD_PLAYER },
+  [DISP_SEL_PLAYER_UI]      = { "ds-player", DISP_SEL_LOAD_PLAYER | DISP_SEL_LOAD_MANAGE},
   [DISP_SEL_REQUEST]        = { "ds-request", DISP_SEL_LOAD_PLAYER },
   [DISP_SEL_SBS_SONGLIST]   = { "ds-sbssonglist", DISP_SEL_LOAD_MANAGE },
   [DISP_SEL_SBS_SONGSEL]    = { "ds-sbssongsel", DISP_SEL_LOAD_MANAGE },
@@ -63,7 +64,7 @@ dispselAlloc (int loadtype)
     dispsel->name [i] = NULL;
 
     if (loadtype != DISP_SEL_LOAD_ALL &&
-        dispselmap [i].type != loadtype) {
+        (dispselmap [i].type & loadtype) != loadtype) {
       continue;
     }
 

@@ -760,7 +760,7 @@ pluiBuildUI (playerui_t *plui)
 static void
 pluiInitializeUI (playerui_t *plui)
 {
-  plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn, plui->musicdb);
+  plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn, plui->musicdb, plui->dispsel);
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
