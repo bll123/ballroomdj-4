@@ -299,6 +299,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
+    if (i == UIPL_W_INFO_DISP_A) {
+      uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+    }
     uiWidgetAlignHorizStart (uiwidgetp);
     if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
       uiLabelEllipsizeOn (uiwidgetp);
