@@ -941,7 +941,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   dance_t       *dances;
   slist_t       *sellist;
   const char    *sep = "";
-  char          sepstr [20] = { "" };
+  char          sepstr [20] = { " " };
   int           idx;
   int           tagidx;
   slistidx_t    seliteridx;
@@ -1000,7 +1000,9 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     uiLabelSetText (uiplayer->wcont [idx], tstr);
     if (! *sep) {
       sep = bdjoptGetStr (OPT_P_PLAYER_UI_SEP);
-      snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+      if (sep != NULL) {
+        snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+      }
     }
 
     ++idx;

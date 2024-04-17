@@ -848,7 +848,7 @@ marqueePopulate (marquee_t *marquee, char *args)
   char        *tokptr;
   int         idx;
   const char  *sep = "";
-  char        sepstr [20] = { "" };
+  char        sepstr [20] = { " " };
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
@@ -903,7 +903,9 @@ marqueePopulate (marquee_t *marquee, char *args)
     uiLabelSetText (marquee->wcont [idx], p);
     if (! *sep) {
       sep = bdjoptGetStr (OPT_P_MQ_INFO_SEP);
-      snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+      if (sep != NULL) {
+        snprintf (sepstr, sizeof (sepstr), " %s ", sep);
+      }
     }
 
     ++idx;
