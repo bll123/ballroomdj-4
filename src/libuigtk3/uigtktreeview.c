@@ -61,13 +61,10 @@ typedef struct uitree {
   int               activecol;
   int               lastTreeSize;
   int               valueRowCount;
-  double            lastRowHeight;
   bool              selectset : 1;
   bool              savedselectset : 1;
   bool              valueiterset : 1;
 } uitree_t;
-
-static double   upperLimit = 0.0;
 
 static void uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
@@ -129,7 +126,6 @@ uiCreateTreeView (void)
   uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
   uitree->lastTreeSize = -1;
-  uitree->lastRowHeight = 0.0;
   uitree->valueRowCount = 0;
 
   uiwidget->widget = tree;
@@ -1795,11 +1791,11 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
 {
   uiwcont_t     *uiwidget = udata;
   GtkWidget     *tree;
-  GtkAdjustment *adjustment;
-  int           ps;
-  int           rows;
-  double        tmax;
+  int           rows = 0;
   uitree_t      *uitree;
+  bool          rc;
+  GtkTreePath   *tpstart = NULL;
+  GtkTreePath   *tpend = NULL;
 
   if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-free")) {
     return;
@@ -1815,38 +1811,33 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
     return;
   }
 
-  /* the step increment is useless */
-  /* the page-size and upper can be used to determine */
-  /* how many rows can be displayed */
   tree = uiwidget->widget;
-  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (tree));
-  ps = gtk_adjustment_get_page_size (adjustment);
+  rc = gtk_tree_view_get_visible_range (GTK_TREE_VIEW (tree), &tpstart, &tpend);
+  if (rc) {
+    char          *tstr;
+    int           beg, end;
 
-  if (uitree->lastRowHeight == 0.0) {
-    double      u, hpr;
+    mdextalloc (tpstart);
+    mdextalloc (tpend);
 
-    u = gtk_adjustment_get_upper (adjustment);
+    tstr = gtk_tree_path_to_string (tpstart);
+    mdextalloc (tstr);
+    beg = atoi (tstr);
+    mdfree (tstr);
+    tstr = gtk_tree_path_to_string (tpend);
+    mdextalloc (tstr);
+    end = atoi (tstr);
+    mdfree (tstr);
 
-    /* this is a really gross work-around for a windows gtk problem */
-    /* the music manager internal v-scroll adjustment is not set correctly */
-    /* use the value from one of the peers instead */
-    /* note that this only works for a single size-allocate signal */
-    if (upperLimit > u) {
-      u = upperLimit;
-    }
+    mdextfree (tpstart);
+    gtk_tree_path_free (tpstart);
+    mdextfree (tpend);
+    gtk_tree_path_free (tpend);
 
-    hpr = u / uitree->valueRowCount;
-    /* save the original step increment for use in calculations later */
-    /* the current step increment has been adjusted for the current */
-    /* number of rows that are displayed */
-    uitree->lastRowHeight = hpr;
-    upperLimit = u;
+    rows = end - beg + 1;
   }
 
-  tmax = ps / uitree->lastRowHeight;
-  rows = (int) round (tmax);
-
-  if (uitree->szchgcb != NULL) {
+  if (uitree->szchgcb != NULL && rows > 0) {
     callbackHandlerLong (uitree->szchgcb, rows);
   }
 }

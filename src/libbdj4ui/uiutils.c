@@ -11,6 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
+#include <ctype.h>
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -125,3 +126,20 @@ uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot)
   return;
 }
 
+void
+uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz)
+{
+  char        fontname [200];
+  size_t      i;
+
+  strlcpy (fontname, font, sizeof (fontname));
+  i = strlen (fontname) - 1;
+  while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
+    --i;
+  }
+  fontname [i] = '\0';
+  if (style == NULL) {
+    style = "";
+  }
+  snprintf (buff, sz, "%s %s %d", fontname, style, newsz);
+}

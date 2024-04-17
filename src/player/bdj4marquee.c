@@ -12,7 +12,6 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <math.h>
-#include <ctype.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -959,9 +958,7 @@ static void
 marqueeSetFont (marquee_t *marquee, int sz)
 {
   const char  *f;
-  char        fontname [200];
-  char        tbuff [200];
-  int         i;
+  char        newfont [200];
 
   logProcBegin (LOG_PROC, "marqueeSetFont");
 
@@ -972,13 +969,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   if (f == NULL) {
     f = "";
   }
-  strlcpy (fontname, f, sizeof (fontname));
-  i = strlen (fontname) - 1;
-  while (i >= 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
-    fontname [i] = '\0';
-    --i;
-  }
-  snprintf (tbuff, sizeof (tbuff), "%s bold %d", fontname, sz);
+  uiutilsNewFontSize (newfont, sizeof (newfont), f, "bold", sz);
 
   if (marquee->isMaximized) {
     nlistSetNum (marquee->options, MQ_FONT_SZ_FS, sz);
@@ -986,20 +977,20 @@ marqueeSetFont (marquee_t *marquee, int sz)
     nlistSetNum (marquee->options, MQ_FONT_SZ, sz);
   }
 
-  marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_DANCE], tbuff);
-  marqueeSetFontSize (marquee, marquee->wcont [MQ_W_COUNTDOWN_TIMER], tbuff);
+  marqueeSetFontSize (marquee, marquee->wcont [MQ_W_INFO_DANCE], newfont);
+  marqueeSetFontSize (marquee, marquee->wcont [MQ_W_COUNTDOWN_TIMER], newfont);
 
   /* not bold */
-  snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
+  uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
   for (int i = 0; i < marquee->mqLen; ++i) {
-    marqueeSetFontSize (marquee, marquee->marqueeLabs [i], tbuff);
+    marqueeSetFontSize (marquee, marquee->marqueeLabs [i], newfont);
     uiWidgetSetClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
   }
 
   sz = (int) round ((double) sz * 0.7);
-  snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
+  uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
-    marqueeSetFontSize (marquee, marquee->wcont [i], tbuff);
+    marqueeSetFontSize (marquee, marquee->wcont [i], newfont);
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");

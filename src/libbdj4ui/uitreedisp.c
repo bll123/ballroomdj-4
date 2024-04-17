@@ -86,6 +86,7 @@ uitreedispAddDisplayColumns (uiwcont_t *uiwidget,
           TREE_COL_DISP_GROW,
             songFavoriteGetStr (songfav, SONG_FAVORITE_NONE, SONGFAV_DISPLAY),
           TREE_COL_TYPE_MARKUP, col,
+          TREE_COL_TYPE_FONT, fontcol,
           TREE_COL_TYPE_END);
     } else {
       uiTreeViewAppendColumn (uiwidget, TREE_NO_COLUMN,

@@ -10,6 +10,7 @@
 
 * Bug Fixes:
     * Song Editor: Keyboard bindings (save/next/previous) now work within spinboxes.
+    * Song Selection: Fixed number of rows displayed in song listing.
 * Changes:
     * Allow 'Total Discs' and 'Total Tracks' to be displayed in listings.
     * Song Editor: Allow 'Total Discs' and 'Total Tracks' to be edited.

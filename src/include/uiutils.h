@@ -16,5 +16,6 @@ void uiutilsSetProfileColor (uiwcont_t *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
 int uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
+void uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
 
 #endif /* INC_UIUTILS_H */
