@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-03-29\n"
-"PO-Revision-Date: 2024-04-16\n"
+"PO-Revision-Date: 2024-04-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
@@ -553,6 +553,10 @@ msgstr "Tworzenie skrótu."
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
 msgstr "Aktualny"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr ""
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -1310,7 +1314,6 @@ msgstr "Grać?"
 msgid "Playable Status"
 msgstr "Status grywalności"
 
-#. CONTEXT: configuration: display settings for: Player User Interface
 #. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface

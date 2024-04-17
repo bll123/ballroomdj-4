@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-16 09:03-0700\n"
+"POT-Creation-Date: 2024-04-17 08:10-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -550,6 +550,10 @@ msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
+msgstr ""
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
 msgstr ""
 
 #. CONTEXT: label: dance
@@ -1308,7 +1312,6 @@ msgstr ""
 msgid "Playable Status"
 msgstr ""
 
-#. CONTEXT: configuration: display settings for: Player User Interface
 #. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface

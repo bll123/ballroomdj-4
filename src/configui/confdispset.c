@@ -62,7 +62,7 @@ confuiInitDispSettings (confuigui_t *gui)
       /* CONTEXT: configuration: display settings for: Marquee (song display screen) */
       DISP_SEL_MARQUEE, _("Marquee"),
       /* CONTEXT: configuration: display settings for: Player User Interface */
-      DISP_SEL_PLAYER_UI, _("Player"),
+      DISP_SEL_PLAYER_UI, _("Current Song"),
       -1);
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 }
