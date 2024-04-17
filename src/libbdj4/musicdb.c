@@ -360,9 +360,9 @@ size_t
 dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
     const char *fn)
 {
-  const char  *data;
   char        *sbuff;
   int         tstatus;
+  ssize_t     tval;
 
   tbuff [0] = '\0';
 
@@ -371,12 +371,9 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
   }
 
   /* make sure the db-add-date is set */
-  data = songGetStr (song, TAG_DBADDDATE);
-  if (data == NULL || ! *data) {
-    char    tmp [40];
-
-    tmutilDstamp (tmp, sizeof (tmp));
-    songSetStr (song, TAG_DBADDDATE, tmp);
+  tval = songGetNum (song, TAG_DBADDDATE);
+  if (tval <= 0) {
+    songSetNum (song, TAG_DBADDDATE, time (NULL));
   }
 
   /* make sure a status is set */

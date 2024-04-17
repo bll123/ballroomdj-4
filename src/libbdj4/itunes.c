@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
+#include <time.h>
 
 #include <glib.h>
 
@@ -32,6 +33,7 @@
 #include "slist.h"
 #include "songfav.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 static const xmlChar * datamainxpath = (const xmlChar *)
       "/plist/dict/dict/key";
@@ -576,16 +578,12 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           mdfree (nstr);    // allocated by glib
         }
       } else if (tagidx == TAG_DBADDDATE) {
-        char    t [200];
-        char    *p;
+        time_t    tmval;
 
-        strlcpy (t, val, sizeof (t));
-        p = strchr (t, 'T');
-        if (p != NULL) {
-          *p = '\0';
-        }
-        nlistSetStr (entry, tagidx, t);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, t);
+        /* 2023-01-03T18:34:58Z */
+        tmval = tmutilStringToUTC (val, "%FT%TZ");
+        nlistSetNum (entry, tagidx, tmval);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) tmval);
       } else if (tagidx == TAG_DANCERATING) {
         int   ratingidx;
         int   tval;

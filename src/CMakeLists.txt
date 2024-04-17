@@ -76,6 +76,7 @@ add_library (objstring OBJECT
 
 add_library (objtmutil OBJECT
   libcommon/tmutil.c
+  libcommon/strptime.c
 )
 
 # the bdj4 launcher needs certain modules to link.

@@ -444,7 +444,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     },         /* audio tags */
     "Date Added",                 /* itunes name          */
     ET_LABEL,                     /* edit type            */
-    VALUE_STR,                    /* value type           */
+    VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     true,                         /* listing display      */
     false,                        /* secondary display    */

@@ -57,7 +57,7 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
   /* duration is a special case. it needs to be converted to a string. */
   /* but no conversion is defined, as it is never converted from a string. */
   if (tagdefs [tagidx].convfunc != NULL ||
-      tagidx == TAG_DURATION) {
+      tagidx == TAG_DURATION || tagidx == TAG_DBADDDATE) {
     dataFree (str);
     str = songDisplayString (song, tagidx, SONG_NORM);
   }

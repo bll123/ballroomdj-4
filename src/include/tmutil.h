@@ -5,6 +5,7 @@
 #define INC_TMUTIL_H
 
 #include <stdbool.h>
+#include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -43,5 +44,9 @@ char      * tmutilToDate (time_t ms, char *buff, size_t max);
 char      * tmutilToDateHM (time_t ms, char *buff, size_t max);
 long      tmutilStrToMS (const char *str);
 long      tmutilStrToHM (const char *str);
+time_t    tmutilStringToUTC (const char *str, const char *fmt);
+
+/* linux does not define this by default */
+char * strptime (const char *buf, const char *fmt, struct tm *tm);
 
 #endif /* INC_TMUTIL_H */

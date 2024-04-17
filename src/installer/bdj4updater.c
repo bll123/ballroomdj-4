@@ -733,8 +733,7 @@ main (int argc, char *argv [])
           snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
           ctime = fileopCreateTime (tbuff);
         }
-        tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
-        songSetStr (song, TAG_DBADDDATE, tbuff);
+        songSetNum (song, TAG_DBADDDATE, ctime);
         dowrite = true;
         counters [UPD_FIX_DB_DATE_ADDED] += 1;
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);

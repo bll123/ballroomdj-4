@@ -514,6 +514,49 @@ tmutilStrToHM (const char *str)
   return value;
 }
 
+time_t
+tmutilStringToUTC (const char *str, const char *fmt)
+{
+  struct tm   tm;
+  time_t      tmval = 0;
+
+  strptime (str, fmt, &tm);
+
+#if _lib_timegm
+  tmval = timegm (&tm);
+#else
+  {
+#if _lib_localtime_r
+    struct tm   ttm;
+#endif
+    struct tm   *tp;
+    time_t      gtmval = 0;
+    time_t      ltmval = 0;
+    long        diff = 0;
+
+    tmval = time (NULL);
+# if _lib_localtime_r
+    localtime_r (&tmval, &ttm);
+    tp = &ttm;
+# else
+    tp = localtime (&tmval);
+# endif
+    ltmval = mktime (tp);
+    tp = gmtime (&tmval);
+    gtmval = mktime (tp);
+    diff = ltmval;
+    diff -= gtmval;
+
+    tmval = mktime (&tm);
+    tmval += diff;
+  }
+#endif
+
+  return tmval;
+}
+
+/* internal routines */
+
 static void
 tmutilInit (void)
 {

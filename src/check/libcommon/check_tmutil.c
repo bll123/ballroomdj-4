@@ -410,6 +410,15 @@ START_TEST(tmutil_strtohm)
 }
 END_TEST
 
+START_TEST(tmutil_strtoutc)
+{
+  const char  *str = "2023-01-03T18:34:58Z";
+  time_t      val;
+
+  val = tmutilStringToUTC (str, "%FT%TZ");
+  ck_assert_int_eq (val, 1672770898);
+}
+
 Suite *
 tmutil_suite (void)
 {
@@ -445,9 +454,13 @@ tmutil_suite (void)
   tcase_add_test (tc, tmutil_strtoms);
   tcase_add_test (tc, tmutil_strtohm);
   suite_add_tcase (s, tc);
+
+  tc = tcase_create ("tmutil-conv");
+  tcase_set_tags (tc, "libcommon");
+  tcase_add_test (tc, tmutil_strtoutc);
+  suite_add_tcase (s, tc);
   return s;
 }
-
 
 #pragma clang diagnostic pop
 #pragma GCC diagnostic pop

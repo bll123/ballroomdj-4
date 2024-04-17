@@ -42,6 +42,10 @@ typedef struct song {
   bool        songlistchange;
 } song_t;
 
+enum {
+  TEMP_TAG_DBADD = TAG_KEY_MAX,
+};
+
 static void songInit (void);
 static void songCleanup (void);
 
@@ -58,7 +62,10 @@ static datafilekey_t songdfkeys [] = {
   { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_NUM, levelConv, DF_NORM },
   { "DANCERATING",          TAG_DANCERATING,          VALUE_NUM, ratingConv, DF_NORM },
   { "DATE",                 TAG_DATE,                 VALUE_STR, NULL, DF_NORM },
-  { "DBADDDATE",            TAG_DBADDDATE,            VALUE_STR, NULL, DF_NORM },
+  /* the old db-add-date was removed in 4.8.3 */
+  /* as these are different types, the old version must be converted */
+  { "DBADDDATE",            TEMP_TAG_DBADD,           VALUE_STR, NULL, DF_NO_WRITE },
+  { "DB_ADD_DATE",          TAG_DBADDDATE,            VALUE_NUM, NULL, DF_NORM },
   { "DB_LOC_LOCK",          TAG_DB_LOC_LOCK,          VALUE_NUM, convBoolean, DF_NORM },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_NUM, NULL, DF_NORM },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, DF_NORM },
@@ -375,6 +382,17 @@ songDisplayString (song_t *song, int tagidx, int flag)
     return str;
   }
 
+  if (tagidx == TAG_DBADDDATE) {
+    time_t    val;
+    char      buff [100];
+
+    val = songGetNum (song, tagidx);
+    /* pass in as milliseconds */
+    tmutilToDateHM (val * 1000, buff, sizeof (buff));
+    str = mdstrdup (buff);
+    return str;
+  }
+
   if (tagidx == TAG_DURATION) {
     long    dur;
     long    val;
@@ -621,5 +639,33 @@ songSetDefaults (song_t *song)
     /* false */
     nlistSetNum (song->songInfo, TAG_DB_LOC_LOCK, 0);
   }
-}
 
+  /* 2024-4-17: 4.8.3 convert old db-add-date string to timestamp */
+  {
+    const char  *tstr;
+    struct tm   tm;
+    int         yr, mo, day;
+    time_t      tmval;
+    int         rc;
+
+    tstr = nlistGetStr (song->songInfo, TEMP_TAG_DBADD);
+    if (tstr != NULL) {
+      rc = sscanf (tstr, "%d-%d-%d", &yr, &mo, &day);
+      memset (&tm, '\0', sizeof (tm));
+      if (rc == 3) {
+        tm.tm_year = yr - 1900;
+        tm.tm_mon = mo - 1;
+        tm.tm_mday = day;
+        tm.tm_hour = 12;
+        tm.tm_min = 0;
+        tm.tm_sec = 0;
+        tm.tm_isdst = -1;
+        /* not going to worry about the time zone */
+        tmval = mktime (&tm);
+      } else {
+        tmval = time (NULL);
+      }
+      nlistSetNum (song->songInfo, TAG_DBADDDATE, tmval);
+    }
+  }
+}

@@ -508,18 +508,13 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
 {
   slist_t     *tagdata;
   int         rewrite;
-  char        dbadddate [40];
-  const char  *tmp;
+  size_t      tval;
   dbidx_t     rrn;
   songdb_t    *songdb;
   int         songdbflags;
 
   rrn = songGetNum (song, TAG_RRN);
-  tmp = songGetStr (song, TAG_DBADDDATE);
-  *dbadddate = '\0';
-  if (tmp != NULL) {
-    strlcpy (dbadddate, tmp, sizeof (dbadddate));
-  }
+  tval = songGetNum (song, TAG_DBADDDATE);
   tagdata = audiotagParseData (infn, &rewrite);
   slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
 
@@ -527,7 +522,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   songFromTagList (song, tagdata);
   songSetStr (song, TAG_URI, songfn);
   /* reset the values that are only in the database back to the original */
-  songSetStr (song, TAG_DBADDDATE, dbadddate);
+  songSetNum (song, TAG_DBADDDATE, tval);
   songSetNum (song, TAG_RRN, rrn);
   songdb = songdbAlloc (musicdb);
   songdbflags = SONGDB_NONE;
