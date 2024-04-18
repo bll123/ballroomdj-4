@@ -28,6 +28,16 @@ target_link_libraries (libplivlc PRIVATE
   ${LIBVLC_LIBRARY}
 )
 
+add_library (libplivlc4 SHARED plivlc4.c vlc4i.c)
+target_include_directories (libplivlc4
+#  PRIVATE "${LIBVLC_INCLUDE_DIR}"
+  PRIVATE "${PROJECT_SOURCE_DIR}/libpli/vlc-12.0.0"
+)
+target_link_libraries (libplivlc4 PRIVATE
+  libbdj4common
+  ${LIBVLC_LIBRARY}
+)
+
 # make this an object in case something else needs it
 # but leave it in libpli/ for now
 add_library (objdbusi OBJECT dbusi.c)
