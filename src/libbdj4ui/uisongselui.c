@@ -60,6 +60,8 @@ enum {
 };
 
 enum {
+  /* how many rows in the tree storage display */
+  /* this needs to be enough to handle an expansion of the display */
   STORE_ROWS = 60,
   TREE_DOUBLE_CLICK_TIME = 250,
 };
@@ -125,7 +127,7 @@ typedef struct ss_internal {
 } ss_internal_t;
 
 static void uisongselClearSelections (uisongsel_t *uisongsel);
-static bool uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart, int scrollflag, int dir);
+static bool uisongselScrollSelection (uisongsel_t *uisongsel, dbidx_t idxStart, int scrollflag, int dir);
 static bool uisongselQueueCallback (void *udata);
 static void uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
@@ -388,8 +390,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uisongselCreateRows (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: initial", uisongsel->tag);
   uisongselProcessSongFilter (uisongsel);
-  /* pre-populate so that the number of displayable rows can be calculated */
-  uisongselPopulateData (uisongsel);
 
   uidanceSetValue (uisongsel->uidance, -1);
 
@@ -431,18 +431,19 @@ void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
-  long            idx;
+  dbidx_t         idx;
   int             row;
   song_t          * song;
   dbidx_t         dbidx;
   const char      * listingFont;
-  slist_t         * sellist;
+  slist_t         * sellist = NULL;
   const char      * sscolor = ""; // "#000000";
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
 
   ssint = uisongsel->ssInternalData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
 
   /* re-fetch the count, as the songfilter process may not have been */
   /* processed by this instance */
@@ -494,13 +495,10 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           SONGSEL_COL_MARK_MARKUP, colorbuff,
           SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
           TREE_VALUE_END);
-
-      sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-      // ssint->model = model;
-      // ssint->iterp = &iter;
-      uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
-          uisongselPopulateDataCallback, uisongsel);
-    } /* song is not null */
+    }
+    /* song may or may not be null */
+    uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
+         uisongselPopulateDataCallback, uisongsel);
 
     ++idx;
     ++row;
@@ -541,7 +539,7 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
 }
 
 void
-uisongselSetSelection (uisongsel_t *uisongsel, long idx)
+uisongselSetSelection (uisongsel_t *uisongsel, dbidx_t idx)
 {
   ss_internal_t  *ssint;
 
@@ -555,7 +553,7 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
 }
 
 void
-uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
+uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx)
 {
   ss_internal_t  *ssint;
 
@@ -827,10 +825,10 @@ uisongselClearSelections (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
+uisongselScrollSelection (uisongsel_t *uisongsel, dbidx_t idxStart,
     int scrollflag, int direction)
 {
-  ss_internal_t  *ssint;
+  ss_internal_t   *ssint;
   bool            scrolled = false;
   dbidx_t         oidx;
   bool            idxchanged = false;
@@ -841,7 +839,7 @@ uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
 
   if (scrollflag == UISONGSEL_SCROLL_NORMAL &&
       idxStart >= oidx &&
-      idxStart < oidx + ssint->maxRows) {
+      idxStart < oidx + ssint->maxRows + 1) {
     if (direction == UISONGSEL_DIR_NONE) {
       return false;
     }
@@ -1043,6 +1041,7 @@ uisongselProcessTreeSize (void *udata, long rows)
   ssint = uisongsel->ssInternalData;
 
   ssint->maxRows = rows;
+
   logMsg (LOG_DBG, LOG_IMPORTANT, "%s max-rows:%d", uisongsel->tag, ssint->maxRows);
 
   /* the step increment does not work correctly with smooth scrolling */
@@ -1095,11 +1094,15 @@ uisongselScroll (void *udata, double value)
     return UICB_STOP;
   }
 
+  /* if even a tiny portion of the last row is visible, */
+  /* gtk will report the range as including that last row */
+  /* subtract 1 from maxrows to make sure the last row always gets displayed */
+
   start = floor (value);
   if (start < 0.0) {
     start = 0.0;
   }
-  tval = uisongsel->dfilterCount - (double) ssint->maxRows;
+  tval = uisongsel->dfilterCount - (double) (ssint->maxRows - 1);
   if (tval < 0) {
     tval = 0;
   }

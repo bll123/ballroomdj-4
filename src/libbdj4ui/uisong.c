@@ -36,12 +36,19 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
       col += 1;
       continue;
     }
-    str = uisongGetDisplay (song, tagidx, &num, &dval);
+    if (song != NULL) {
+      str = uisongGetDisplay (song, tagidx, &num, &dval);
+    } else {
+      str = "";
+      num = LIST_VALUE_INVALID;
+    }
     if (cb != NULL) {
       cb (col, num, str, udata);
     }
     col += 1;
-    dataFree (str);
+    if (song != NULL) {
+      dataFree (str);
+    }
   } /* for each tagidx in the display selection list */
 }
 
