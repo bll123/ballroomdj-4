@@ -31,7 +31,7 @@ target_link_libraries (libplivlc PRIVATE
 add_library (libplivlc4 SHARED plivlc4.c vlc4i.c)
 target_include_directories (libplivlc4
 #  PRIVATE "${LIBVLC_INCLUDE_DIR}"
-  PRIVATE "${PROJECT_SOURCE_DIR}/libpli/vlc-12.0.0"
+  PRIVATE "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0"
 )
 target_link_libraries (libplivlc4 PRIVATE
   libbdj4common
