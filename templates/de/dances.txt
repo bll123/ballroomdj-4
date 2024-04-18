@@ -228,9 +228,9 @@ ANNOUNCE
 DANCE
 ..West Coast Swing
 LOWMPM
-..28
+..22
 HIGHMPM
-..32
+..30
 SPEED
 ..normal
 TAGS
