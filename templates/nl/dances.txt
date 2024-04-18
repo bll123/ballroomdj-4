@@ -230,7 +230,7 @@ DANCE
 LOWMPM
 ..22
 HIGHMPM
-..30
+..32
 SPEED
 ..normal
 TAGS
