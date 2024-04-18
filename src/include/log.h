@@ -103,7 +103,7 @@ enum {
 #define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
 #define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)
 #define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__)
-#define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, fmt __VA_OPT__(,) __VA_ARGS__)
 
 bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);

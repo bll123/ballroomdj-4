@@ -25,7 +25,7 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 # ifdef snprintf
 #  undef snprintf   // undo mongoose snprintf define
 # endif
-# define snprintf(s,ssz,fmt,...) _sprintf_p (s, ssz, fmt, ##__VA_ARGS__)
+# define snprintf(s,ssz,fmt,...) _sprintf_p (s, ssz, fmt __VA_OPT__(,) __VA_ARGS__)
 #endif
 
 #endif /* INC_BDJSTRING */
