@@ -19,6 +19,7 @@ bool    uiKeyIsPressEvent (uiwcont_t *uiwidget);
 bool    uiKeyIsReleaseEvent (uiwcont_t *uiwidget);
 bool    uiKeyIsMovementKey (uiwcont_t *uiwidget);
 bool    uiKeyIsKey (uiwcont_t *uiwidget, unsigned char keyval);
+bool    uiKeyIsEnterKey (uiwcont_t *uiwidget);
 bool    uiKeyIsAudioPlayKey (uiwcont_t *uiwidget);
 bool    uiKeyIsAudioPauseKey (uiwcont_t *uiwidget);
 bool    uiKeyIsAudioNextKey (uiwcont_t *uiwidget);

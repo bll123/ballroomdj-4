@@ -188,6 +188,27 @@ uiKeyIsKey (uiwcont_t *uiwidget, unsigned char keyval)
 }
 
 bool
+uiKeyIsEnterKey (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-enter")) {
+    return rc;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+
+  if (uikey->keyval == GDK_KEY_ISO_Enter ||
+      uikey->keyval == GDK_KEY_KP_Enter ||
+      uikey->keyval == GDK_KEY_Return) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
 uiKeyIsAudioPlayKey (uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;

@@ -17,6 +17,7 @@
     * Allow 'Total Discs' and 'Total Tracks' to be displayed in listings.
     * Song Editor: Allow 'Total Discs' and 'Total Tracks' to be edited.
     * Configuration: Display Settings: Add player current song display.
+    * Song Filter Dialog: Pressing the enter key in the search field applies the search.
 * Internal:
     * Database Add Date: More precision for new additions.
 
