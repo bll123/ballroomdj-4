@@ -31,6 +31,9 @@
 #   If the composer is the same as the albumartist or the artist, then
 #     the composer group is omitted.
 #
+#   The disc group will only be used if the total discs is greater
+#     than one.
+#
 ## album artist
 {%ALBUMARTIST% - }{%TITLE%}
 # used by itunes

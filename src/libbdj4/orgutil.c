@@ -400,21 +400,28 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           orginfo->orgkey == ORG_DISC ||
           orginfo->convFunc != NULL) {
         int64_t     val;
+        int64_t     tval;
 
         val = songGetNum (song, orginfo->tagkey);
-        if (orginfo->orgkey == ORG_TRACKNUM) {
+        if (orginfo->orgkey == ORG_TRACKNUM && val > 0) {
           snprintf (tmp, sizeof (tmp), "%" PRId64, val);
           datap = tmp;
         }
-        if (orginfo->orgkey == ORG_DISC) {
-          snprintf (tmp, sizeof (tmp), "%02" PRId64, val);
-          datap = tmp;
+        if (orginfo->orgkey == ORG_DISC && val > 0) {
+          tval = songGetNum (song, TAG_DISCTOTAL);
+          /* rule: only use the disc group if the disc-total is > 1 */
+          if (tval > 1) {
+            snprintf (tmp, sizeof (tmp), "%02" PRId64, val);
+            datap = tmp;
+          } else {
+            datap = "";
+          }
         }
-        if (orginfo->orgkey == ORG_TRACKNUM0) {
+        if (orginfo->orgkey == ORG_TRACKNUM0 && val > 0) {
           snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
           datap = tmp;
         }
-        if (orginfo->convFunc != NULL) {
+        if (orginfo->convFunc != NULL && val >= 0) {
           conv.invt = VALUE_NUM;
           conv.num = val;
           orginfo->convFunc (&conv);

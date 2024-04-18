@@ -11,6 +11,8 @@
 * Bug Fixes:
     * Song Editor: Keyboard bindings (save/next/previous) now work within spinboxes.
     * Song Selection: Fixed number of rows displayed in song listing.
+    * Organization: The disc-number group will only be used if the total discs is greater than one.
+    * Organization: Fix some issues when the data is not present.
 * Changes:
     * Allow 'Total Discs' and 'Total Tracks' to be displayed in listings.
     * Song Editor: Allow 'Total Discs' and 'Total Tracks' to be edited.
