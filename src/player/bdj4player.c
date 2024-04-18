@@ -1879,7 +1879,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%"PRIu64"%c%" PRId64,
+  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
@@ -1991,7 +1991,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "realvolume%c%d%c"
       "actualvolume%c%d%c"
       "speed%c%d%c"
-      "playtimeplayed%c%"PRIu64"%c"
+      "playtimeplayed%c%" PRIu64 "%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "prepqueuecount%c%d%c"

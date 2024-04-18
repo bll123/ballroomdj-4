@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -40,6 +42,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "templateutil.h"
+#include "tmutil.h"
 
 enum {
   TM_SOURCE = TAG_KEY_MAX + 1,
@@ -264,6 +267,7 @@ main (int argc, char *argv [])
     slist_t     *tagdata = NULL;
     const char  *songfn = NULL;
     int         songdbflags;
+    const char  *tval;
 
     tagdata = updateData (tmusiclist, key);
 
@@ -309,6 +313,16 @@ main (int argc, char *argv [])
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
     }
     slistSetStr (tagdata, tagdefs [TAG_URI].tag, songfn);
+
+    tval = slistGetStr (tagdata, "DBADDDATE");
+    if (tval != NULL) {
+      time_t  tmval;
+      char    tmp [40];
+
+      tmval = tmutilStringToUTC (tval, "%F");
+      snprintf (tmp, sizeof (tmp), "%" PRIu64, (uint64_t) tmval);
+      slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
+    }
 
     songFromTagList (song, tagdata);
     songSetChanged (song);

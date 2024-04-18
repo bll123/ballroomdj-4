@@ -643,28 +643,11 @@ songSetDefaults (song_t *song)
   /* 2024-4-17: 4.8.3 convert old db-add-date string to timestamp */
   {
     const char  *tstr;
-    struct tm   tm;
-    int         yr, mo, day;
     time_t      tmval;
-    int         rc;
 
     tstr = nlistGetStr (song->songInfo, TEMP_TAG_DBADD);
     if (tstr != NULL) {
-      rc = sscanf (tstr, "%d-%d-%d", &yr, &mo, &day);
-      memset (&tm, '\0', sizeof (tm));
-      if (rc == 3) {
-        tm.tm_year = yr - 1900;
-        tm.tm_mon = mo - 1;
-        tm.tm_mday = day;
-        tm.tm_hour = 12;
-        tm.tm_min = 0;
-        tm.tm_sec = 0;
-        tm.tm_isdst = -1;
-        /* not going to worry about the time zone */
-        tmval = mktime (&tm);
-      } else {
-        tmval = time (NULL);
-      }
+      tmval = tmutilStringToUTC (tstr, "%F");
       nlistSetNum (song->songInfo, TAG_DBADDDATE, tmval);
     }
   }

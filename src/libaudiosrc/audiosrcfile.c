@@ -148,7 +148,7 @@ audiosrcfilePrep (const char *sfname, char *tempnm, size_t sz)
   }
 
   tm = mstimeend (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%"PRIu64") %s", (uint64_t) tm, sfname);
+  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%" PRIu64 ") %s", (uint64_t) tm, sfname);
 
   return true;
 }

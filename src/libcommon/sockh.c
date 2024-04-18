@@ -107,7 +107,7 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   rc = sockWriteBinary (sock, msgbuff, len);
   if (rc == 0) {
-    logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%"PRIu64" rc:%d",
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%" PRIu64 " rc:%d",
         msg, msgDebugText (msg), route, msgRouteDebugText (route), (uint64_t) len, rc);
   }
   return rc;

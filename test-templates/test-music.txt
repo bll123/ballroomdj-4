@@ -27,7 +27,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -253,7 +253,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -467,7 +467,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -677,7 +677,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -889,7 +889,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -1101,7 +1101,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -1315,7 +1315,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -1527,7 +1527,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -1739,7 +1739,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -2264,7 +2264,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag1 tag2 tag3 disc
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -2476,7 +2476,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 bpm disc
+..tag1 tag2 tag3 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2519,7 +2519,7 @@ NOTES
 BPM
 ..29
 TAGS
-..tag4 TAG5 bpm disc
+..tag4 TAG5 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2536,10 +2536,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2566,7 +2562,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag6 tag7 bpm disc
+..tag6 tag7 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2583,10 +2579,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2607,7 +2599,7 @@ DURATION
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 bpm disc
+..tag1 tag2 tag3 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2624,10 +2616,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2648,7 +2636,7 @@ NOTES
 BPM
 ..29
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -2665,10 +2653,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2691,7 +2675,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag6 tag7 bpm disc
+..tag6 tag7 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2708,10 +2692,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -3059,7 +3039,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3 ss disc
+..tag1 tag2 tag3 ss
 STATUS
 ..New
 DANCELEVEL
@@ -4500,7 +4480,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-a
 TRACKNUMBER
@@ -4569,7 +4549,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-b
 TRACKNUMBER
@@ -4638,7 +4618,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-c
 TRACKNUMBER
@@ -4707,7 +4687,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-d
 TRACKNUMBER
@@ -4776,7 +4756,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss disc
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-flac-e
 TRACKNUMBER

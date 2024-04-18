@@ -433,7 +433,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* vorbis multi         */
   },
   [TAG_DBADDDATE] =
-  { "DBADDDATE",                  /* tag */
+  { "DB_ADD_DATE",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },

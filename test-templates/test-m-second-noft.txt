@@ -37,6 +37,10 @@ DANCE
 ..Cha Cha
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -78,6 +82,10 @@ DANCE
 ..Jive
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 TITLE
 ..%03d-alt-jive
 DEST
@@ -113,6 +121,10 @@ DANCE
 ..Quickstep
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -150,6 +162,10 @@ DANCE
 ..Rumba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..bluestar
 TITLE
@@ -187,6 +203,10 @@ DANCE
 ..Salsa
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -224,6 +244,10 @@ DANCE
 ..Samba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-alt-samba
 DEST
@@ -259,6 +283,10 @@ DANCE
 ..Tango
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-alt-tango
 DEST
@@ -294,14 +322,14 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -339,6 +367,10 @@ DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE

@@ -723,7 +723,7 @@ main (int argc, char *argv [])
       /* 2023-12 : the database add date could have been munged */
       /* by bugs in the db-updater, update all add-dates */
       if (processflags [UPD_FIX_DB_DATE_ADDED] ||
-            songGetStr (song, TAG_DBADDDATE) == NULL) {
+            songGetNum (song, TAG_DBADDDATE) < 0) {
         char      ffn [MAXPATHLEN];
         time_t    ctime;
 

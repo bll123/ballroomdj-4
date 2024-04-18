@@ -655,7 +655,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   }
 
   logProcBegin (LOG_PROC, "sockWriteData");
-  logMsg (LOG_DBG, LOG_SOCKET, "want to send: %"PRIu64" bytes", (uint64_t) len);
+  logMsg (LOG_DBG, LOG_SOCKET, "want to send: %" PRIu64 " bytes", (uint64_t) len);
 
 #if 0
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
@@ -694,10 +694,10 @@ sockWriteData (Sock_t sock, char *data, size_t len)
     return -1;
   }
 
-  logMsg (LOG_DBG, LOG_SOCKET, "sent: %"PRIu64" bytes", (uint64_t) rc);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: %" PRIu64 " bytes", (uint64_t) rc);
   if (rc > 0) {
     tot += (size_t) rc;
-    logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
+    logMsg (LOG_DBG, LOG_SOCKET, "tot: %" PRIu64 " bytes", (uint64_t) tot);
   }
 
   while (tot < len) {
@@ -711,10 +711,10 @@ sockWriteData (Sock_t sock, char *data, size_t len)
       logProcEnd (LOG_PROC, "sockWriteData", "send-b-fail");
       return -1;
     }
-    logMsg (LOG_DBG, LOG_SOCKET, "sent: %"PRIu64" bytes", (uint64_t) rc);
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: %" PRIu64 " bytes", (uint64_t) rc);
     if (rc > 0) {
       tot += (size_t) rc;
-      logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
+      logMsg (LOG_DBG, LOG_SOCKET, "tot: %" PRIu64 " bytes", (uint64_t) tot);
     }
   }
 

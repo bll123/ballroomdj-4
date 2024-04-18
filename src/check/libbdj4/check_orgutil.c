@@ -79,40 +79,48 @@ char *testsongdata [] = {
   "FILE\n..bypass2/none1.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
       "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
       "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth [128]\n"
-      "GENRE\n..Jazz\nCOMPOSER\n..Composer 1\n",
-  /* no genre */
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 1\n"
+      "DISCTOTAL\n..2\n",
+  /* no genre, no disc-total */
   "FILE\n..bypass1/none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
       "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
       "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
       "GENRE\n..\nCOMPOSER\n..Composer 2\n",
+  /* disc-total = 1 */
   "FILE\n..bypass0/none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
       "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
       "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
-      "GENRE\n..Ballroom Dance\nCOMPOSER\n..Composer 3\n",
+      "GENRE\n..Ballroom Dance\nCOMPOSER\n..Composer 3\n"
+      "DISCTOTAL\n..1\n",
   /* empty albumartist */
   "FILE\n..bypassA/none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
       "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
       "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me Voy\n"
-      "GENRE\n..Jazz\nCOMPOSER\n..Composer 4\n",
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 4\n"
+      "DISCTOTAL\n..2\n",
   /* no bypass directory */
   "FILE\n..none5.mp3\nDISC\n..3\nTRACKNUMBER\n..5\n"
       "ALBUM\n..Album 5\nALBUMARTIST\n..AlbumArtist 5\n"
       "ARTIST\n..Artist 5\nDANCE\n..Rumba\nTITLE\n..こんにちは-ja\n"
-      "GENRE\n..Jazz\nCOMPOSER\n..Composer 5\n",
+      "GENRE\n..Jazz\nCOMPOSER\n..Composer 5\n"
+      "DISCTOTAL\n..3\n",
   "FILE\n..bypassC/none6.mp3\nDISC\n..3\nTRACKNUMBER\n..6\n"
       "ALBUM\n..Album 6\nALBUMARTIST\n..AlbumArtist 6\n"
       "ARTIST\n..Artist 6\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
-      "GENRE\n..Rock\nCOMPOSER\n..Composer 6\n",
+      "GENRE\n..Rock\nCOMPOSER\n..Composer 6\n"
+      "DISCTOTAL\n..3\n",
   "FILE\n..bypassD/none7.mp3\nDISC\n..3\nTRACKNUMBER\n..7\n"
       "ALBUM\n..Album 7\nALBUMARTIST\n..AlbumArtist 7\n"
       "ARTIST\n..Artist 7\nDANCE\n..Cha Cha\nTITLE\n..Title 7\n"
-      "GENRE\n..Classical\nCOMPOSER\n..Composer 7\n",
+      "GENRE\n..Classical\nCOMPOSER\n..Composer 7\n"
+      "DISCTOTAL\n..3\n",
   /* dot at end of album artist, on windows this must not be present */
   /* if the album artist is a directory name */
   "FILE\n..bypassE/none8.mp3\nDISC\n..3\nTRACKNUMBER\n..8\n"
       "ALBUM\n..Album 8\nALBUMARTIST\n..AlbumArtist 8.\n"
       "ARTIST\n..Artist 8\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
-      "GENRE\n..Rock\nCOMPOSER\n..Composer 8\n",
+      "GENRE\n..Rock\nCOMPOSER\n..Composer 8\n"
+      "DISCTOTAL\n..3\n",
   NULL,
 };
 
@@ -127,8 +135,8 @@ testsong_t testsongresults [] = {
     "{%BYPASS%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}",
     {
       "bypass2/Santana/Smooth/01-001.Smooth [128].mp3",
-      "bypass1/WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
-      "bypass0/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
+      "bypass1/WRD/The Ultimate Latin Album 4: Latin Eyes/002.Asi.mp3",
+      "bypass0/Various Artists/Ballroom Stars 6/003.Je Vole! (from La Famille Bélier).mp3",
       /* empty album artist is replaced with the artist */
       "bypassA/Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
       /* no bypass dir */
@@ -160,8 +168,8 @@ testsong_t testsongresults [] = {
     {
       "Jazz/Santana/Smooth/01-001.Smooth [128].mp3",
       /* no genre */
-      "WRD/The Ultimate Latin Album 4: Latin Eyes/01-002.Asi.mp3",
-      "Ballroom Dance/Various Artists/Ballroom Stars 6/01-003.Je Vole! (from La Famille Bélier).mp3",
+      "WRD/The Ultimate Latin Album 4: Latin Eyes/002.Asi.mp3",
+      "Ballroom Dance/Various Artists/Ballroom Stars 6/003.Je Vole! (from La Famille Bélier).mp3",
       "Jazz/Gloria Estefan/The Ultimate Latin Album 9: Footloose/02-004.Me Voy.mp3",
       "Jazz/AlbumArtist 5/Album 5/03-005.こんにちは-ja.mp3",
       "Rock/AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",

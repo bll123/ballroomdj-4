@@ -182,6 +182,7 @@ main (int argc, char *argv [])
     const char  *tag [DB_MAX];
     const char  *fn;
     const char  *val;
+    ssize_t     nval;
 
     for (int i = 0; i < DB_MAX; ++i) {
       taglist [i] = NULL;
@@ -218,13 +219,13 @@ main (int argc, char *argv [])
     }
 
     /* it's ok for dbadddate to be mismatched, but it must exist in both */
-    val = songGetStr (song [DB_A], TAG_DBADDDATE);
-    if (val == NULL) {
+    nval = songGetNum (song [DB_A], TAG_DBADDDATE);
+    if (nval < 0) {
       fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", DB_A, fn);
       grc = 1;
     }
-    val = songGetStr (song [dblocidx], TAG_DBADDDATE);
-    if (val == NULL) {
+    nval = songGetNum (song [dblocidx], TAG_DBADDDATE);
+    if (nval < 0) {
       fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", dblocidx, fn);
       grc = 1;
     }
@@ -246,6 +247,10 @@ main (int argc, char *argv [])
       const char  *val [DB_MAX];
 
       if (strcmp (tag [DB_A], tagdefs [TAG_DBADDDATE].tag) == 0) {
+        continue;
+      }
+      if (strcmp (tag [DB_A], tagdefs [TAG_TRACKNUMBER].tag) == 0) {
+        /* track number no longer tested */
         continue;
       }
       if (strcmp (tag [DB_A], tagdefs [TAG_LAST_UPDATED].tag) == 0) {

@@ -1434,7 +1434,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       /* add two minutes */
       stoptime += 2 * 60 * 1000;
 
-      snprintf (tmp, sizeof (tmp), "%"PRIu64, (uint64_t) stoptime);
+      snprintf (tmp, sizeof (tmp), "%" PRIu64, (uint64_t) stoptime);
       p = tmp;
     }
 

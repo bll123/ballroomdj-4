@@ -368,7 +368,7 @@ tmutilToMSD (time_t ms, char *buff, size_t sz, int decimals)
   }
   /* reduce the number of digits for display */
   d = d / (int) pow (10, (3 - decimals));
-  snprintf (buff, sz, "%"PRIu64":%02"PRIu64"%s%0*"PRIu64,
+  snprintf (buff, sz, "%" PRIu64 ":%02" PRIu64 "%s%0*" PRIu64,
       (uint64_t) m, (uint64_t) s, radixchar, decimals, (uint64_t) d);
   return buff;
 }

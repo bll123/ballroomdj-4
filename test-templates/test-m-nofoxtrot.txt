@@ -48,6 +48,10 @@ DANCE
 ..Argentine Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -83,6 +87,10 @@ DANCE
 ..Argentine Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -254,6 +262,10 @@ DANCE
 ..Cha Cha
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -289,6 +301,10 @@ DANCE
 ..Cha Cha
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-chacha
 DEST
@@ -430,6 +446,8 @@ TITLE
 DEST
 ..%03d-chacha
 
+# Foxtrot
+
 # Jive
 
 KEY
@@ -460,6 +478,10 @@ DANCE
 ..Jive
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 TITLE
 ..%03d-jive
 DEST
@@ -493,6 +515,10 @@ DANCE
 ..Jive
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -664,6 +690,10 @@ DANCE
 ..Quickstep
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -697,6 +727,10 @@ DANCE
 ..Quickstep
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -868,6 +902,10 @@ DANCE
 ..Rumba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..bluestar
 TITLE
@@ -903,6 +941,10 @@ DANCE
 ..Rumba
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..purplestar
 TITLE
@@ -1074,6 +1116,10 @@ DANCE
 ..Salsa
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..purplestar
 TITLE
@@ -1107,6 +1153,10 @@ DANCE
 ..Salsa
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-salsa
 DEST
@@ -1278,6 +1328,10 @@ DANCE
 ..Samba
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-samba
 DEST
@@ -1311,6 +1365,10 @@ DANCE
 ..Samba
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 TITLE
 ..%03d-samba
 DEST
@@ -1482,6 +1540,10 @@ DANCE
 ..Tango
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-tango
 DEST
@@ -1513,6 +1575,10 @@ DANCE
 ..Tango
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -1999,6 +2065,10 @@ DANCE
 ..Viennese Waltz
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 TITLE
 ..%03d-viennesewaltz
 DEST
@@ -2030,6 +2100,10 @@ DANCE
 ..Viennese Waltz
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..redstar
 TITLE
@@ -2201,14 +2275,14 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 TITLE
@@ -2244,14 +2318,14 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 TITLE
@@ -2287,10 +2361,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..1
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2328,10 +2398,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2369,10 +2435,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2412,10 +2474,6 @@ TRACKNUMBER
 ..%d
 TRACKTOTAL
 ..3
-DISC
-..2
-DISCTOTAL
-..2
 DANCE
 ..Waltz
 DANCERATING
@@ -2782,6 +2840,10 @@ DANCE
 ..West Coast Swing
 DANCERATING
 ..Great
+DISC
+..2
+DISCTOTAL
+..2
 FAVORITE
 ..redstar
 SAMESONG
@@ -2819,6 +2881,10 @@ DANCE
 ..West Coast Swing
 DANCERATING
 ..Great
+DISC
+..1
+DISCTOTAL
+..1
 FAVORITE
 ..bluestar
 SAMESONG

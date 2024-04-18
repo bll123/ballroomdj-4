@@ -801,7 +801,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %u", dbupdate->counts [C_ORIG_SKIP]);
     logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %u", dbupdate->counts [C_DEL_SKIP]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %"PRIu64, (uint64_t) dbupdate->maxWriteLen);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %" PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -1106,24 +1106,24 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
   if (! dbupdate->rebuild) {
     song = dbGetByName (dbupdate->musicdb, tdi->songfn);
     if (song != NULL) {
-      const char  *tmp;
       char        tbuff [40];
-      int         val;
+      ssize_t     val;
 
       if (! dbupdate->compact) {
         rrn = songGetNum (song, TAG_RRN);
       }
-      tmp = songGetStr (song, TAG_DBADDDATE);
-      if (tmp != NULL) {
-        slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
+      val = songGetNum (song, TAG_DBADDDATE);
+      if (val > 0) {
+        snprintf (tbuff, sizeof (tbuff), "%" PRIu64, (uint64_t) val);
+        slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tbuff);
       }
       val = songGetNum (song, TAG_PREFIX_LEN);
       if (val > 0) {
-        snprintf (tbuff, sizeof (tbuff), "%d", val);
+        snprintf (tbuff, sizeof (tbuff), "%" PRId64, (int64_t) val);
         slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tbuff);
       }
       val = songGetNum (song, TAG_DB_LOC_LOCK);
-      snprintf (tbuff, sizeof (tbuff), "%d", val);
+      snprintf (tbuff, sizeof (tbuff), "%" PRId64, (int64_t) val);
       slistSetStr (tagdata, tagdefs [TAG_DB_LOC_LOCK].tag, tbuff);
     }
   }
