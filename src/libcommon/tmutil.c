@@ -541,6 +541,7 @@ tmutilStringToUTC (const char *str, const char *fmt)
 # else
     tp = localtime (&tmval);
 # endif
+    tp->tm_isdst = 0;
     ltmval = mktime (tp);
     tp = gmtime (&tmval);
     gtmval = mktime (tp);

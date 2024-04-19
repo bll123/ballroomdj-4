@@ -6,22 +6,24 @@
 
 **4.9.0 2024-4---**
 
-**4.8.2 2024-4---**
+**4.8.4 2024-4---**
+
+-->
+
+**4.8.3 2024-4-18**
 
 * Bug Fixes:
+    * Organization: Fix some issues when the data is not present.
+    * Organization: The disc-number group will only be used if the total discs is greater than one.
     * Song Editor: Keyboard bindings (save/next/previous) now work within spinboxes.
     * Song Selection: Fixed number of rows displayed in song listing.
-    * Organization: The disc-number group will only be used if the total discs is greater than one.
-    * Organization: Fix some issues when the data is not present.
 * Changes:
     * Allow 'Total Discs' and 'Total Tracks' to be displayed in listings.
+    * Configure: Display Settings: Add player current song display.
     * Song Editor: Allow 'Total Discs' and 'Total Tracks' to be edited.
-    * Configuration: Display Settings: Add player current song display.
     * Song Filter Dialog: Pressing the enter key in the search field applies the search.
 * Internal:
     * Database Add Date: More precision for new additions.
-
--->
 
 **4.8.2 2024-4-9**
 
@@ -55,8 +57,8 @@
     * Windows: Fix error retrieving windows music folder path (accounts with unicode characters).
 * Changes:
     * Alternate Installer: Re-arranged user interface.
-    * Configuration: Filter Display: Dance and Dance Rating can be de-selected.
-    * Configuration: General: Remove audio tag interface selection (not needed).
+    * Configure: Filter Display: Dance and Dance Rating can be de-selected.
+    * Configure: General: Remove audio tag interface selection (not needed).
     * Song Filter: Sort By: Added BPM as a sort option.
     * Starter: Support: Added a 'download latest version' link.
 * New Features:
@@ -833,4 +835,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-09 07:10:11; BDJ4 version 4.8.2)_
+<br>_(Updated 2024-04-18 17:05:25; BDJ4 version 4.8.3)_

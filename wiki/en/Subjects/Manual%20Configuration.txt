@@ -57,4 +57,4 @@ display. [Contact](en-Getting%20Help) the developers for more
 information.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-23 14:32:56; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-04-18 17:05:25; BDJ4 version 4.8.3)_
