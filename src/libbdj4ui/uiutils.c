@@ -133,11 +133,14 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
   size_t      i;
 
   strlcpy (fontname, font, sizeof (fontname));
+
   i = strlen (fontname) - 1;
   while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
     --i;
   }
+  ++i;
   fontname [i] = '\0';
+
   if (style == NULL) {
     style = "";
   }

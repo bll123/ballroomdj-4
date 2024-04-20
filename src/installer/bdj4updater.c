@@ -426,7 +426,8 @@ main (int argc, char *argv [])
     /*   'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
-    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 2);
+    /* 4.8.3.1 2024-4-19 updated to version 3 */
+    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 3);
   }
 
   {
@@ -485,8 +486,9 @@ main (int argc, char *argv [])
   }
 
   {
-    /* 4.8.0 sortopt.txt updated */
-    updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 2);
+    /* 4.8.0 sortopt.txt updated to version 2 */
+    /* 4.8.3.1 sortopt.txt updated to version 3 */
+    updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 3);
   }
 
   /* The datafiles must be loaded for the MPM update process */

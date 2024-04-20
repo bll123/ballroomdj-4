@@ -210,6 +210,13 @@ sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
+if [[ $os == linux ]]; then
+  tfn=data/${hostname}/profile00/bdjconfig.txt
+  sed -e '/^MQFONT/ { n ; s/.*/..Yanone Kaffeesatz 12/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
+
 if [[ $os == macos ]]; then
   tfn=data/${hostname}/profile00/bdjconfig.txt
   sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark/ ; }' \
