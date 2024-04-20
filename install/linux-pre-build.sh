@@ -169,7 +169,7 @@ if [[ -f /usr/bin/zypper ]]; then
   # tested 2023-10-30
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
-  pkglist="cmake make gcc12 gcc12-c++ gcc12-objc ffmpeg-4
+  pkglist="cmake make gcc13 gcc13-c++ gcc13-objc ffmpeg-4
       ffmpeg-4-libavformat-devel
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel

@@ -459,6 +459,10 @@ case $tag in
     setLibVol $stagedir libvolpa
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
+    if [[ ! -f bin/bdj4se ]]; then
+      echo "bin/bdj4se not located"
+      exit 1
+    fi
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
@@ -508,6 +512,10 @@ case $tag in
 
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
+    if [[ ! -f bin/bdj4se ]]; then
+      echo "bin/bdj4se not located"
+      exit 1
+    fi
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
@@ -557,6 +565,10 @@ case $tag in
     )
     if [[ ! -f $tmpcab ]]; then
       echo "ERR: no cabinet."
+      exit 1
+    fi
+    if [[ ! -f bin/bdj4se.exe ]]; then
+      echo "bin/bdj4se not located"
       exit 1
     fi
     cat bin/bdj4se.exe \

@@ -98,7 +98,7 @@ zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest
 OpenSUSE packages for development
 
 ~~~
-zypper install cmake make gcc12 gcc12-c++ gcc12-objc
+zypper install cmake make gcc13 gcc13-c++ gcc13-objc
 zypper install ffmpeg-4 ffmpeg-4-libavformat-devel
 zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 zypper install libpulse-devel libopenssl-devel libgcrypt-devel
@@ -117,4 +117,4 @@ usermod -a -G vboxsf <user>
 ~~~
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-04-20 11:15:25; BDJ4 version 4.8.4)_

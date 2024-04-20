@@ -34,7 +34,8 @@ echo "-- $(date +%T) building"
   cd src
   case ${pn_dist} in
     -opensuse)
-      make CC=gcc-12 CXX=g++-12
+      # change this in utils/testall.sh also
+      make CC=gcc-13 CXX=g++-13
       ;;
     *)
       make

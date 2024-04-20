@@ -152,18 +152,18 @@ function checkUpdaterClean {
 
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
+  sed -e 's/version [2-9]/version 1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # 4.8.0 2024-3-11 sortopt version number should be updated to version 2.
   fn="$DATADIR/sortopt.txt"
-  sed -e 's/version [23456]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
+  sed -e 's/version [2-9]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # gtk-static version number should be updated to version 4.
   fn="$DATADIR/gtk-static.css"
   if [[ -f $fn ]]; then
-    sed -e 's/version 4/version 1/' "${fn}" > "${fn}.n"
+    sed -e 's/version [3-9]/version 1/' "${fn}" > "${fn}.n"
     mv -f "${fn}.n" "${fn}"
   fi
 
@@ -651,7 +651,7 @@ function checkInstallation {
     res=$(($res+1))  # itunes-fields.txt file
     fn="${DATADIR}/itunes-fields.txt"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 2' "${fn}" > /dev/null 2>&1
+      grep 'version 3' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
@@ -665,7 +665,7 @@ function checkInstallation {
     res=$(($res+1))  # sortopt.txt file
     fn="${DATADIR}/sortopt.txt"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 2' "${fn}" > /dev/null 2>&1
+      grep 'version 3' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))

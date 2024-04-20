@@ -20,6 +20,7 @@
 #include "dirop.h"
 #include "mdebug.h"
 #include "osdirutil.h"
+#include "pathbld.h"
 #include "sysvars.h"
 #include "tmutil.h"
 
@@ -30,6 +31,7 @@ main (int argc, char *argv [])
 {
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  char        tbuff [MAXPATHLEN];
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -37,6 +39,11 @@ main (int argc, char *argv [])
   sysvarsInit (targ);
 
   /* bdj4cleantmp is started by bdj4, and will be in the datatopdir */
+
+  /* clean up the volreg.txt file */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
 
   cleantmpClean ();
 
