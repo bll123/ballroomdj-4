@@ -52,7 +52,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_ALBUM] =
@@ -81,7 +80,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_ALBUMARTIST] =
@@ -110,7 +108,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* marquee-disp         */
     true,                         /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_ARTIST] =
@@ -139,7 +136,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* marquee-disp         */
     true,                         /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_AUDIOID_IDENT] =
@@ -168,7 +164,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_AUDIOID_SCORE] =
@@ -197,7 +192,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_BPM] =
@@ -226,7 +220,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_BPM_DISPLAY] =
@@ -255,7 +248,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_COMPOSER] =
@@ -284,7 +276,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* marquee-disp         */
     true,                         /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_CONDUCTOR] =
@@ -313,7 +304,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* marquee-disp         */
     true,                         /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_DANCE] =
@@ -342,7 +332,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     true,                         /* player-ui-disp       */
     false,                        /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DANCELEVEL] =
@@ -371,7 +360,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DANCERATING] =
@@ -400,7 +388,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DATE] =
@@ -429,7 +416,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DBADDDATE] =
@@ -458,7 +444,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DISCNUMBER] =
@@ -487,7 +472,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DISCTOTAL] =
@@ -516,7 +500,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DURATION] =
@@ -545,7 +528,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   /* leave this as 'FILE' for now, will require a big db upgrade to fix */
@@ -575,7 +557,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_FAVORITE] =
@@ -604,7 +585,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_GENRE] =
@@ -633,7 +613,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_KEYWORD] =
@@ -662,7 +641,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_MQDISPLAY] =
@@ -691,7 +669,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_RECORDING_ID] =
@@ -720,7 +697,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_WORK_ID] =
@@ -749,7 +725,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_TRACK_ID] =
@@ -778,7 +753,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_NOTES] =
@@ -807,7 +781,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SAMESONG] =
@@ -836,7 +809,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SONGEND] =
@@ -865,7 +837,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SONGSTART] =
@@ -894,7 +865,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SORT_ALBUM] =
@@ -911,7 +881,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    true,                         /* listing display      */
+    false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
     false,                        /* align right          */
@@ -919,11 +889,10 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    true,                         /* audio-id             */
+    false,                        /* audio-id             */
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SORT_ALBUMARTIST] =
@@ -940,7 +909,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    true,                         /* listing display      */
+    false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
     false,                        /* align right          */
@@ -948,11 +917,10 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    true,                         /* audio-id             */
-    true,                         /* marquee-disp         */
-    true,                         /* player-ui-disp       */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_SORT_ARTIST] =
@@ -969,7 +937,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    true,                         /* listing display      */
+    false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
     false,                        /* align right          */
@@ -977,11 +945,10 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    true,                         /* audio-id             */
-    true,                         /* marquee-disp         */
-    true,                         /* player-ui-disp       */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_SORT_COMPOSER] =
@@ -998,7 +965,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    true,                         /* listing display      */
+    false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
     false,                        /* align right          */
@@ -1007,10 +974,9 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* audio-id             */
-    true,                         /* marquee-disp         */
-    true,                         /* player-ui-disp       */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     true,                         /* vorbis multi         */
   },
   [TAG_SORT_TITLE] =
@@ -1027,7 +993,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
-    true,                         /* listing display      */
+    false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
     false,                        /* align right          */
@@ -1035,11 +1001,10 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
     true,                         /* editable             */
-    true,                         /* audio-id             */
-    true,                         /* marquee-disp         */
-    true,                         /* player-ui-disp       */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_SPEEDADJUSTMENT] =
@@ -1068,7 +1033,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_STATUS] =
@@ -1097,7 +1061,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_TAGS] =
@@ -1126,7 +1089,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_TITLE] =
@@ -1155,7 +1117,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* marquee-disp         */
     true,                         /* player-ui-disp       */
     true,                         /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_TRACKNUMBER] =
@@ -1184,7 +1145,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    true,                         /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_TRACKTOTAL] =
@@ -1213,7 +1173,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_LAST_UPDATED] =
@@ -1242,7 +1201,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_VOLUMEADJUSTPERC] =
@@ -1271,7 +1229,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_RRN] =
@@ -1300,7 +1257,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DBIDX] =
@@ -1329,7 +1285,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DB_LOC_LOCK] =
@@ -1358,7 +1313,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_PREFIX_LEN] =
@@ -1387,7 +1341,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
   [TAG_DB_FLAGS] =
@@ -1416,7 +1369,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     false,                        /* text search          */
-    false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
 };

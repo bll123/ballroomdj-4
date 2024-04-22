@@ -60,7 +60,6 @@ typedef struct {
   bool                marqueeDisp : 1;
   bool                pluiDisp : 1;
   bool                textSearchable : 1;
-  bool                isOrgTag : 1;
   bool                vorbisMulti : 1;
 } tagdef_t;
 
