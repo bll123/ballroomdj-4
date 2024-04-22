@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 08:10-0700\n"
+"POT-Creation-Date: 2024-04-22 11:28-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,6 +238,14 @@ msgstr ""
 msgid "Album Artist"
 msgstr ""
 
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr ""
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
@@ -298,6 +306,10 @@ msgstr ""
 
 #. CONTEXT: label: artist
 msgid "Artist"
+msgstr ""
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
 msgstr ""
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
@@ -461,6 +473,10 @@ msgstr ""
 
 #. CONTEXT: label: composer
 msgid "Composer"
+msgstr ""
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
 msgstr ""
 
 #. CONTEXT: label: conductor
@@ -1923,6 +1939,10 @@ msgstr ""
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
 msgid "Title"
+msgstr ""
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
 msgstr ""
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)

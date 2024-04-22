@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-03-29\n"
-"PO-Revision-Date: 2024-04-17\n"
+"PO-Revision-Date: 2024-04-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -240,6 +240,14 @@ msgstr "Album"
 msgid "Album Artist"
 msgstr "Artiste de l'album"
 
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr ""
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
@@ -301,6 +309,10 @@ msgstr "Tango Argentin"
 #. CONTEXT: label: artist
 msgid "Artist"
 msgstr "Artiste"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr ""
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
@@ -464,6 +476,10 @@ msgstr "Message d'achèvement"
 #. CONTEXT: label: composer
 msgid "Composer"
 msgstr "Compositeur"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr ""
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
@@ -1926,6 +1942,10 @@ msgstr "Signature temporelle"
 #. CONTEXT: label: title
 msgid "Title"
 msgstr "Titre"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr ""
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
