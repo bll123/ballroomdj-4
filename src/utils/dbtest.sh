@@ -510,7 +510,7 @@ if [[ $TESTON == T ]]; then
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
     # check one of the files with all tags
     val=""
-    val=$(./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND)
+    val=$(./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND | grep -v '^--')
     case ${val} in
       SONGEND*28000)
         ;;

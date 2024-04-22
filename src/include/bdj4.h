@@ -76,6 +76,7 @@ enum {
 #define ITUNES_STARS_FN     "itunes-stars"
 #define NEWINSTALL_FN       "newinstall"
 #define LOCALIZATION_FN     "localization"
+#define ORGOPT_FN           "orgopt"
 #define RELOAD_FN           "reload"
 #define RELOAD_CURR_FN      "reload-curr"
 #define SORTOPT_FN          "sortopt"

@@ -224,8 +224,9 @@ main (int argc, char *argv [])
   slistFree (tagdata);
   dataFree (data);
 
+
   if (verbose) {
-    // fprintf (stdout, "-- %s\n", infn);
+    fprintf (stdout, "-- %s\n", infn);
     slistStartIterator (wlist, &iteridx);
     while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
       val = slistGetStr (wlist, key);
