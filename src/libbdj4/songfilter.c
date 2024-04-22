@@ -906,11 +906,48 @@ songfilterMakeSortKey (songfilter_t *sf,
       }
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
       strlcat (sortkey, tbuff, sz);
-    } else {
+    } else if (tagdefs [tagkey].valueType == VALUE_STR) {
+      const char  *tsortstr = NULL;
       const char  *tstr;
+      int         tagsortidx = -1;
 
-      /* title, artist, composer, conductor, album-artist, album */
-      tstr = songGetStr (song, tagkey);
+      /* use the sort-order tag in preference to the regular tag */
+      switch (tagkey) {
+        case TAG_TITLE: {
+          tagsortidx = TAG_SORT_TITLE;
+          break;
+        }
+        case TAG_ALBUM: {
+          tagsortidx = TAG_SORT_ALBUM;
+          break;
+        }
+        case TAG_ALBUMARTIST: {
+          tagsortidx = TAG_SORT_ALBUMARTIST;
+          break;
+        }
+        case TAG_ARTIST: {
+          tagsortidx = TAG_SORT_ARTIST;
+          break;
+        }
+        case TAG_COMPOSER: {
+          tagsortidx = TAG_SORT_COMPOSER;
+          break;
+        }
+        default : {
+          break;
+        }
+      }
+
+      if (tagsortidx >= 0 && tagsortidx < TAG_KEY_MAX) {
+        tsortstr = songGetStr (song, tagsortidx);
+      }
+
+      if (tsortstr != NULL) {
+        tstr = tsortstr;
+      } else {
+        /* title, artist, composer, conductor, album-artist, album */
+        tstr = songGetStr (song, tagkey);
+      }
       if (tstr == NULL) {
         tstr = "";
       }

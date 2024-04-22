@@ -21,10 +21,12 @@
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
+#include "osdirutil.h"
 #include "slist.h"
 #include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
+
 
 int
 main (int argc, char *argv [])
@@ -119,7 +121,7 @@ main (int argc, char *argv [])
   }
 
   if (argcount < 3) {
-    fprintf (stderr, "Usage: dbdump <db-a> <tagname> <value> [<count>](%d)\n", argcount);
+    fprintf (stderr, "Usage: tdbsetval <db-a> <tagname> <value> [<count>](%d)\n", argcount);
     bdj4argCleanup (bdj4arg);
     return 1;
   }
@@ -127,6 +129,14 @@ main (int argc, char *argv [])
     fprintf (stderr, "no file %s\n", dbfn);
     bdj4argCleanup (bdj4arg);
     return 1;
+  }
+
+  {
+    char tcwd [MAXPATHLEN];
+
+    osGetCurrentDir (tcwd, sizeof (tcwd));
+    fprintf (stderr, "cwd: %s\n", tcwd);
+    fprintf (stderr, "dbfn: %s\n", dbfn);
   }
 
   db = dbOpen (dbfn);
@@ -145,8 +155,18 @@ main (int argc, char *argv [])
   dbStartIterator (db, &dbiteridx);
   while ((song = dbIterate (db, &dbkey, &dbiteridx)) != NULL) {
     if (song != NULL) {
-      if (tagdefs [tagidx].valueType == VALUE_NUM) {
-        songSetNum (song, tagidx, atol (valuestr));
+      if (tagdefs [tagidx].valueType == VALUE_DOUBLE) {
+        songSetDouble (song, tagidx, atof (valuestr));
+      } else if (tagdefs [tagidx].valueType == VALUE_NUM) {
+        ssize_t   val;
+
+        val = atol (valuestr);
+        if (tagidx == TAG_SPEEDADJUSTMENT) {
+          if (val == 0) {
+            val = 100;
+          }
+        }
+        songSetNum (song, tagidx, val);
       } else if (tagdefs [tagidx].valueType == VALUE_STR) {
         songSetStr (song, tagidx, valuestr);
       }

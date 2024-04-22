@@ -445,6 +445,16 @@ DANCE
 ..Waltz
 DANCERATING
 ..Great
+ALBUMSORT
+..000-%03d-album
+ALBUMARTISTSORT
+..000-%03d-albartist
+ARTISTSORT
+..000-%03d-artist
+COMPOSERSORT
+..000-%03d-composer
+TITLESORT
+..000-%03d-argentinetango
 TITLE
 ..%03d-waltz
 DEST

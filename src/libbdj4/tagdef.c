@@ -120,7 +120,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { [TAG_TYPE_VORBIS] = { "ARTIST", NULL, NULL },
       [TAG_TYPE_MP4] = { "©ART", NULL, NULL },
       [TAG_TYPE_ID3] = { "TPE1", NULL, NULL },
-      [TAG_TYPE_WMA] = { "WM/Author", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/Author", NULL, NULL },   // or author?
       [TAG_TYPE_WAV] = { "IART", NULL, NULL },
     },       /* audio tags */
     "Artist",                     /* itunes name          */
@@ -897,6 +897,151 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* is org tag           */
     false,                        /* vorbis multi         */
   },
+  [TAG_SORT_ALBUM] =
+  { "ALBUMSORT",                  /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "ALBUMSORT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "soal", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TSOA", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/AlbumSortOrder", NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },       /* audio tags */
+    "Sort Album",                 /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    true,                         /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
+    false,                        /* vorbis multi         */
+  },
+  [TAG_SORT_ALBUMARTIST] =
+  { "ALBUMARTISTSORT",            /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "ALBUMARTISTSORT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "soaa", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TSO2", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/AlbumArtistSortOrder", NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },       /* audio tags */
+    "Sort Album Artist",          /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
+    true,                         /* player-ui-disp       */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
+    true,                         /* vorbis multi         */
+  },
+  [TAG_SORT_ARTIST] =
+  { "ARTISTSORT",                 /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "ARTISTSORT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "soar", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TSOP", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/ArtistSortOrder", NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },       /* audio tags */
+    "Sort Artist",                /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
+    true,                         /* player-ui-disp       */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
+    true,                         /* vorbis multi         */
+  },
+  [TAG_SORT_COMPOSER] =
+  { "COMPOSERSORT",               /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "COMPOSERSORT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "soco", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TSOC", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/ComposerSortOrder", NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },       /* audio tags */
+    "Sort Composer",              /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    true,                         /* marquee-disp         */
+    true,                         /* player-ui-disp       */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
+    true,                         /* vorbis multi         */
+  },
+  [TAG_SORT_TITLE] =
+  { "TITLESORT",                  /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "TITLESORT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "sonm", NULL, NULL },
+      [TAG_TYPE_ID3] = { "TSOT", NULL, NULL },
+      [TAG_TYPE_WMA] = { "WM/TitleSortOrder", NULL, NULL },
+      [TAG_TYPE_WAV] = { NULL, NULL, NULL },
+    },       /* audio tags */
+    "Sort Name",                  /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* edit-all             */
+    true,                         /* editable             */
+    true,                         /* audio-id             */
+    true,                         /* marquee-disp         */
+    true,                         /* player-ui-disp       */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
+    false,                        /* vorbis multi         */
+  },
   [TAG_SPEEDADJUSTMENT] =
   { "SPEEDADJUSTMENT",            /* tag */
     NULL,                         /* display name         */
@@ -1359,6 +1504,18 @@ tagdefInit (void)
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   /* CONTEXT: label: total track count */
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
+
+
+  /* CONTEXT: label: title sort order */
+  tagdefs [TAG_SORT_TITLE].displayname = _("Title Sort Order");
+  /* CONTEXT: label: album sort order */
+  tagdefs [TAG_SORT_ALBUM].displayname = _("Album Sort Order");
+  /* CONTEXT: label: album artist sort order */
+  tagdefs [TAG_SORT_ALBUMARTIST].displayname = _("Album Artist Sort Order");
+  /* CONTEXT: label: artist sort order */
+  tagdefs [TAG_SORT_ARTIST].displayname = _("Artist Sort Order");
+  /* CONTEXT: label: composer sort order */
+  tagdefs [TAG_SORT_COMPOSER].displayname = _("Composer Sort Order");
 
   /* editable */
 

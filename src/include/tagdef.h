@@ -97,6 +97,11 @@ typedef enum {
   TAG_SAMESONG,               //
   TAG_SONGEND,                //
   TAG_SONGSTART,              //
+  TAG_SORT_ALBUM,
+  TAG_SORT_ALBUMARTIST,
+  TAG_SORT_ARTIST,
+  TAG_SORT_COMPOSER,
+  TAG_SORT_TITLE,
   TAG_SPEEDADJUSTMENT,        //
   TAG_STATUS,                 //
   TAG_TAGS,                   //
