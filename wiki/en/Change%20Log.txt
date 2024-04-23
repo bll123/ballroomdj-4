@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Audio Identification: Fix processing of joined artist names.
+    * Re-Organize: Fix removal of old folders on rename.
 * New Features:
     * Audio Tags: Add support for Sort Order: Album, Album Artist, Artist, Composer, and Title.
 

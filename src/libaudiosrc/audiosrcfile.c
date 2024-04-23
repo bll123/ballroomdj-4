@@ -217,6 +217,28 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
   return p;
 }
 
+size_t
+audiosrcfileDir (const char *sfname, char *buff, size_t sz, int pfxlen)
+{
+  size_t    rc = 0;
+
+  *buff = '\0';
+
+  if (sfname == NULL) {
+    return rc;
+  }
+
+  if (pfxlen > 0) {
+    snprintf (buff, sz, "%.*s", pfxlen, sfname);
+    rc = pfxlen;
+  } else {
+    snprintf (buff, sz, "%s", bdjoptGetStr (OPT_M_DIR_MUSIC));
+    rc = strlen (buff);
+  }
+
+  return rc;
+}
+
 asiterdata_t *
 audiosrcfileStartIterator (const char *dir)
 {

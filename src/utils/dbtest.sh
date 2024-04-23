@@ -217,7 +217,10 @@ function checkreorg {
 
   trc=0
 
-  if [[ $trc == 0 && $type != title && -f "${tmdir}/${fn}" ]]; then
+  if [[ $trc == 0 &&
+      $type != title &&
+      $type != exist &&
+      -f "${tmdir}/${fn}" ]]; then
     echo "  ERR: Not renamed or incorrect: $fn"
     trc=1
   fi
@@ -225,7 +228,7 @@ function checkreorg {
   if [[ $type == dir || $type == ann ]]; then
     tfn="${omdir}/${dance}/${fn}"
   fi
-  if [[ $type == title ]]; then
+  if [[ $type == title || $type == exist ]]; then
     tfn="${omdir}/${fn}"
   fi
   if [[ $type == dash ]]; then
@@ -243,7 +246,7 @@ function checkreorg {
   if [[ $type == dir || $type == ann ]]; then
     tfn="${tmdir}/${dance}/${fn}"
   fi
-  if [[ $type == title ]]; then
+  if [[ $type == title || $type == exist ]]; then
     tfn="${tmdir}/${fn}"
   fi
   if [[ $type == dash ]]; then
@@ -255,6 +258,20 @@ function checkreorg {
   fi
   if [[ $trc == 0 && ! -f ${tfn} ]]; then
     echo "  ERR: Missing: $fn"
+    trc=1
+  fi
+
+  tfn=""
+  if [[ $type == title && $dance != "" ]]; then
+    tfn="${tmdir}/${dance}"
+  fi
+  if [[ $type == dash ]]; then
+    if [[ $dance != "" ]]; then
+      tfn="${tmdir}/${dance}"
+    fi
+  fi
+  if [[ ${tfn} != "" && $trc == 0 && -d ${tfn} ]]; then
+    echo "  ERR: Leftover $tfn"
     trc=1
   fi
 
@@ -1554,7 +1571,7 @@ if [[ $TESTON == T ]]; then
   omdir=${cwd}/tmp/music-second
   dance="Quickstep"
   for fn in 002-quickstep.mp3; do
-    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    checkreorg exist "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
       reorgrc=1
@@ -1591,7 +1608,7 @@ if [[ $TESTON == T ]]; then
   omdir=${cwd}/test-music
   dance="Quickstep"
   for fn in 001-alt-quickstep.mp3; do
-    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    checkreorg exist "$tmdir" "$omdir" "$dance" "$fn"
     trc=$?
     if [[ $trc -ne 0 ]]; then
       reorgrc=1

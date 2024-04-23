@@ -156,6 +156,22 @@ audiosrcRelativePath (const char *sfname, int pfxlen)
   return p;
 }
 
+size_t
+audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
+{
+  int     type = AUDIOSRC_TYPE_FILE;
+  size_t  rc = 0;
+
+  type = audiosrcGetType (sfname);
+
+  *dir = '\0';
+  if (type == AUDIOSRC_TYPE_FILE) {
+    rc = audiosrcfileDir (sfname, dir, sz, pfxlen);
+  }
+
+  return rc;
+}
+
 asiter_t *
 audiosrcStartIterator (const char *uri)
 {

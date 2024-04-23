@@ -212,6 +212,9 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     }
 
     if (dorename) {
+      char    tdir [MAXPATHLEN];
+      size_t  tdirlen;
+
       /* only reset the URI if the song was actually renamed */
       songSetStr (song, TAG_URI, newfn);
       if (pfxlen > 0) {
@@ -220,9 +223,24 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
       }
 
       /* try to remove the old dir */
+      tdirlen = audiosrcDir (ffn, tdir, sizeof (tdir), pfxlen);
+      /* dirop-delete-dir works by removing the dir and all empty dirs */
+      /* below it. it does not search the entire directory tree for empty */
+      /* dirs, and will stop upon finding any non-empty dir. */
+      /* work backwards from the old filename's path */
       pi = pathInfo (ffn);
-      pathInfoGetDir (pi, tbuff, sizeof (tbuff));
-      diropDeleteDir (tbuff, DIROP_ONLY_IF_EMPTY);
+      while (pi->dlen > tdirlen) {
+        int     rc;
+
+        snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+        rc = diropDeleteDir (tbuff, DIROP_ONLY_IF_EMPTY);
+        if (rc == false) {
+          /* if any files exist, don't try to go any further */
+          break;
+        }
+        pathInfoFree (pi);
+        pi = pathInfo (tbuff);
+      }
       pathInfoFree (pi);
     }
   }

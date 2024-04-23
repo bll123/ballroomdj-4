@@ -42,6 +42,9 @@ diropMakeDir (const char *dirname)
   return rc;
 }
 
+/* deletes the directory */
+/* if the directory only contains other dirs, the empty dirs will */
+/* be recursively deleted */
 bool
 diropDeleteDir (const char *dirname, int flags)
 {
