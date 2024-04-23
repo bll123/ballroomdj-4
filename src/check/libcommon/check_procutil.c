@@ -154,7 +154,7 @@ procutil_suite (void)
   tcase_set_timeout (tc, 10.0);
   suite_add_tcase (s, tc);
   tc = tcase_create ("procutil-kill");
-  tcase_set_tags (tc, "libbasic slow");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, procutil_kill);
   tcase_set_timeout (tc, 10.0);
   suite_add_tcase (s, tc);

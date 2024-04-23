@@ -895,7 +895,7 @@ sock_suite (void)
   tcase_add_test (tc, sock_check_connect_accept);
   suite_add_tcase (s, tc);
   tc = tcase_create ("sock-write");
-  tcase_set_tags (tc, "libcommon slow");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, sock_write);
   tcase_add_test (tc, sock_write_read);
   tcase_add_test (tc, sock_write_read_buff);
@@ -903,7 +903,7 @@ sock_suite (void)
   tcase_add_test (tc, sock_write_check_read);
   suite_add_tcase (s, tc);
   tc = tcase_create ("sock-close");
-  tcase_set_tags (tc, "libcommon slow");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, sock_close);
   tcase_add_test (tc, sock_write_close);
   tcase_add_test (tc, sock_server_close);

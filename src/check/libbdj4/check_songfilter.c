@@ -36,7 +36,7 @@
 #include "templateutil.h"
 #include "tmutil.h"
 
-/* all the standard sort types from sortopt.txt */
+/* most of the standard sort types from sortopt.txt */
 static char *sorttypes [] = {
   "ALBUMARTIST TITLE",
   "ALBUMARTIST ALBUM TRACKNUMBER",
@@ -47,7 +47,7 @@ static char *sorttypes [] = {
   "DANCE DANCERATING TITLE",
   "DANCELEVEL DANCE TITLE",
   "DANCELEVEL TITLE",
-  "DBADDDATE",
+  "DB_ADD_DATE",
   "GENRE ALBUMARTIST ALBUM TRACKNUMBER",
   "GENRE ALBUMARTIST TITLE",
   "GENRE ALBUM TRACKNUMBER",
@@ -127,10 +127,13 @@ START_TEST(songfilter_process)
   mdebugSubTag ("songfilter_process");
 
   sf = songfilterAlloc ();
-  rv = songfilterProcess (sf, db);
-  ck_assert_int_gt (rv, 0);
-  tv = songfilterGetCount (sf);
-  ck_assert_int_eq (rv, tv);
+  for (int i = 0; i < sorttypesz; ++i) {
+    songfilterSetSort (sf, sorttypes [i]);
+    rv = songfilterProcess (sf, db);
+    ck_assert_int_gt (rv, 0);
+    tv = songfilterGetCount (sf);
+    ck_assert_int_eq (rv, tv);
+  }
   songfilterFree (sf);
 }
 END_TEST
@@ -145,6 +148,7 @@ START_TEST(songfilter_rating)
   mdebugSubTag ("songfilter_rating");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
   temprv = 0;
 
@@ -181,6 +185,7 @@ START_TEST(songfilter_off_on)
   mdebugSubTag ("songfilter_off_on");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_RATING), 0);
@@ -220,6 +225,7 @@ START_TEST(songfilter_clear)
   mdebugSubTag ("songfilter_clear");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_RATING), 0);
@@ -247,6 +253,7 @@ START_TEST(songfilter_reset)
   mdebugSubTag ("songfilter_reset");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_RATING), 0);
@@ -275,6 +282,7 @@ START_TEST(songfilter_get_byidx)
   mdebugSubTag ("songfilter_get_byidx");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_RATING), 0);
@@ -306,6 +314,7 @@ START_TEST(songfilter_genre)
   mdebugSubTag ("songfilter_genre");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
   trv = 0;
 
@@ -339,6 +348,7 @@ START_TEST(songfilter_level)
   mdebugSubTag ("songfilter_level");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
   trv = 0;
 
@@ -392,6 +402,7 @@ START_TEST(songfilter_status)
   mdebugSubTag ("songfilter_status");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
   trv = 0;
 
@@ -423,6 +434,7 @@ START_TEST(songfilter_playable)
   mdebugSubTag ("songfilter_playable");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   songfilterSetNum (sf, SONG_FILTER_STATUS_PLAYABLE, SONG_FILTER_FOR_SELECTION);
@@ -452,6 +464,7 @@ START_TEST(songfilter_keyword)
   mdebugSubTag ("songfilter_keyword");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
 
   /* run the initial selection with the keyword filter active but no */
   /* keywords selected. this will reject any songs w/keywords. */
@@ -519,6 +532,7 @@ START_TEST(songfilter_dance_idx)
   mdebugSubTag ("songfilter_dance_idx");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -550,6 +564,7 @@ START_TEST(songfilter_dance_list)
   mdebugSubTag ("songfilter_dance_list");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -596,6 +611,7 @@ START_TEST(songfilter_favorite)
   mdebugSubTag ("songfilter_favorite");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_FAVORITE), 0);
@@ -619,6 +635,7 @@ START_TEST(songfilter_search)
   mdebugSubTag ("songfilter_search");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_SEARCH), 0);
@@ -711,6 +728,7 @@ START_TEST(songfilter_multi)
   mdebugSubTag ("songfilter_dance_idx");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -761,6 +779,7 @@ START_TEST(songfilter_bpm)
   mdebugSubTag ("songfilter_bpm");
 
   sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
   arv = songfilterProcess (sf, db);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -862,6 +881,22 @@ START_TEST(songfilter_sort)
 }
 END_TEST
 
+START_TEST(songfilter_sort_order)
+{
+  songfilter_t  *sf;
+  dbidx_t       rv, dbidx;
+
+
+  sf = songfilterAlloc ();
+  songfilterSetSort (sf, "TITLE");
+  rv = songfilterProcess (sf, db);
+  dbidx = songfilterGetByIdx (sf, 0);
+  /* the songs set with a sort-order title are not the first in the list */
+  ck_assert_int_ne (dbidx, 0);
+  songfilterFree (sf);
+}
+END_TEST
+
 Suite *
 songfilter_suite (void)
 {
@@ -906,9 +941,10 @@ songfilter_suite (void)
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("songfilter-sort");
-  tcase_set_tags (tc, "libbdj4 slow");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songfilter_sort);
+  tcase_add_test (tc, songfilter_sort_order);
   /* for some reason the mac is really slow */
   tcase_set_timeout (tc, 20.0);
   suite_add_tcase (s, tc);
