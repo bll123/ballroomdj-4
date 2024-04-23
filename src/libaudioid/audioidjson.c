@@ -261,7 +261,7 @@ dumpDataStr (const char *str)
   FILE *ofh;
 
   if (str != NULL) {
-    ofh = fopen ("out-acr.json", "w");
+    ofh = fopen (ACRCLOUD_TEMP_FN, "w");
     if (ofh != NULL) {
       fwrite (str, 1, strlen (str), ofh);
       fprintf (ofh, "\n");

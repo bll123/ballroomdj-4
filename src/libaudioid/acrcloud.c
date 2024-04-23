@@ -37,10 +37,6 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
-/* this is useful, as the free ACRCloud only allows 100 queries/month */
-/* note that a valid out-acr.json file must be downloaded first */
-#define ACRCLOUD_REUSE 0
-
 typedef struct audioidacr {
   char          key [50];
   char          secret [50];
@@ -54,6 +50,10 @@ typedef struct audioidacr {
 } audioidacr_t;
 
 enum {
+  /* for debugging only */
+  /* this is useful, as the free ACRCloud only allows 100 queries/month */
+  /* note that a valid out-acr.json file must be downloaded first */
+  ACRCLOUD_REUSE = 0,
   FREE_LIMIT = 100,
   QPS_LIMIT = 1000 / 2 + 1,
 };
@@ -201,7 +201,6 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   char            ffn [MAXPATHLEN];
   char            fpfn [MAXPATHLEN];
   mstime_t        starttm;
-  int             webrc;
   int             rc;
   const char      *tstr;
   nlist_t         *respdata;
@@ -316,24 +315,16 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   query [qc++] = ts;
   query [qc++] = NULL;
 
-#if ! ACRCLOUD_REUSE
-  mstimestart (&starttm);
-  webrc = webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %d %" PRId64 "ms",
-      webrc, (int64_t) mstimeend (&starttm));
-  if (webrc != WEB_OK) {
-    return 0;
-  }
-#else
-  {
+  if (ACRCLOUD_REUSE == 1 && fileopFileExists (ACRCLOUD_TEMP_FN)) {
     FILE    *ifh;
     size_t  tsize;
     char    *tstr;
 
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: ** re-using web response");
     /* debugging :  re-use out-acr.json file as input rather */
     /*              than making another query */
-    tsize = fileopSize ("out-acr.json");
-    ifh = fopen ("out-acr.json", "r");
+    tsize = fileopSize (ACRCLOUD_TEMP_FN);
+    ifh = fopen (ACRCLOUD_TEMP_FN, "r");
     acr->webresplen = tsize;
     /* this will leak */
     tstr = malloc (tsize + 1);
@@ -341,16 +332,25 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
     tstr [tsize] = '\0';
     acr->webresponse = tstr;
     fclose (ifh);
+  } else {
+    int             webrc;
+
+    mstimestart (&starttm);
+    webrc = webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %d %" PRId64 "ms",
+        webrc, (int64_t) mstimeend (&starttm));
+    if (webrc != WEB_OK) {
+      return 0;
+    }
+
+    if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+      dumpData (acr);
+    }
   }
-#endif
 
   gcry_mac_close (gch);
   mdextfree (b64sig);
   free (b64sig);
-
-  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
-    dumpData (acr);
-  }
 
   mstimestart (&starttm);
   audioidParseJSONAll (acr->webresponse, acr->webresplen,
@@ -393,7 +393,7 @@ dumpData (audioidacr_t *acr)
   FILE *ofh;
 
   if (acr->webresponse != NULL && acr->webresplen > 0) {
-    ofh = fopen ("out-acr.json", "w");
+    ofh = fopen (ACRCLOUD_TEMP_FN, "w");
     if (ofh != NULL) {
       fwrite (acr->webresponse, 1, acr->webresplen, ofh);
       fprintf (ofh, "\n");
@@ -401,4 +401,3 @@ dumpData (audioidacr_t *acr)
     }
   }
 }
-

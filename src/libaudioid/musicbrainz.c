@@ -14,6 +14,7 @@
 #include "audioid.h"
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -31,6 +32,8 @@ typedef struct audioidmb {
 } audioidmb_t;
 
 enum {
+  /* for debugging only */
+  MUSICBRAINZ_REUSE = 0,
   QPS_LIMIT = 1000 / 1 + 1,
 };
 
@@ -46,13 +49,21 @@ enum {
  *      medium/track-list/track : (track-number, title)
  */
 
+/* there is a possibility that the join-phrase processing is incorrect */
+/* musicbrainz and acoustid handle it differently */
+/* acoustid handling was fixed 2024-4-23 by re-arranging the order in */
+/* which artist and join-phrase were processed, but it may be necessary */
+/* to fix the xml processing later */
+
 static audioidparse_t mbartistxp [] = {
   { AUDIOID_PARSE_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_SORT_ARTIST, "/artist/sort-name", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t mbalbartistxp [] = {
   { AUDIOID_PARSE_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA,  TAG_SORT_ALBUMARTIST, "/artist/sort-name", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
@@ -127,7 +138,6 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
 {
   char          uri [MAXPATHLEN];
   mstime_t      starttm;
-  int           webrc;
 
   /* musicbrainz prefers only one call per second */
   mstimestart (&starttm);
@@ -153,16 +163,37 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
-  mstimestart (&starttm);
-  webrc = webclientGet (mb->webclient, uri);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %d %" PRId64 "ms",
-      webrc, (int64_t) mstimeend (&starttm));
-  if (webrc != WEB_OK) {
-    return 0;
-  }
+  if (MUSICBRAINZ_REUSE == 1 && fileopFileExists (MUSICBRAINZ_TEMP_FN)) {
+    FILE    *ifh;
+    size_t  tsize;
+    char    *tstr;
 
-  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
-    dumpData (mb);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "musicbrainz: ** re-using web response");
+    /* debugging :  re-use out-mb.xml file as input rather */
+    /*              than making another query */
+    tsize = fileopSize (MUSICBRAINZ_TEMP_FN);
+    ifh = fopen (MUSICBRAINZ_TEMP_FN, "r");
+    mb->webresplen = tsize;
+    /* this will leak */
+    tstr = malloc (tsize + 1);
+    (void) ! fread (tstr, tsize, 1, ifh);
+    tstr [tsize] = '\0';
+    mb->webresponse = tstr;
+    fclose (ifh);
+  } else {
+    int   webrc;
+
+    mstimestart (&starttm);
+    webrc = webclientGet (mb->webclient, uri);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "mb: web-query: %d %" PRId64 "ms",
+        webrc, (int64_t) mstimeend (&starttm));
+    if (webrc != WEB_OK) {
+      return 0;
+    }
+
+    if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+      dumpData (mb);
+    }
   }
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
@@ -195,7 +226,7 @@ dumpData (audioidmb_t *mb)
   FILE *ofh;
 
   if (mb->webresponse != NULL && mb->webresplen > 0) {
-    ofh = fopen ("out-mb.xml", "w");
+    ofh = fopen (MUSICBRAINZ_TEMP_FN, "w");
     if (ofh != NULL) {
       fwrite (mb->webresponse, 1, mb->webresplen, ofh);
       fprintf (ofh, "\n");

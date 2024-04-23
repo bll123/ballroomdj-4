@@ -31,6 +31,10 @@
 #include "webclient.h"
 
 enum {
+  /* for debugging only */
+  /* this is useful, saves time and queries against the server */
+  /* note that a valid out-acoustid.xml file must be downloaded first */
+  ACOUSTID_REUSE = 0,
   ACOUSTID_BUFF_SZ = 16384,
 };
 
@@ -58,14 +62,14 @@ enum {
  */
 
 static audioidparse_t acoustidalbartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t acoustidartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA, TAG_ARTIST, "/name", NULL, NULL, NULL },
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
@@ -179,7 +183,6 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   const char    *fpcalc;
   int           targc = 0;
   mstime_t      starttm;
-  int           webrc;
 
   fpcalc = sysvarsGetStr (SV_PATH_FPCALC);
   if (fpcalc == NULL || ! *fpcalc) {
@@ -246,16 +249,37 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       (int) retsz, fpdata
       );
 
-  mstimestart (&starttm);
-  webrc = webclientPostCompressed (acoustid->webclient, uri, query);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %d %" PRId64 "ms",
-      webrc, (int64_t) mstimeend (&starttm));
-  if (webrc != WEB_OK) {
-    return 0;
-  }
+  if (ACOUSTID_REUSE == 1 && fileopFileExists (ACOUSTID_TEMP_FN)) {
+    FILE    *ifh;
+    size_t  tsize;
+    char    *tstr;
 
-  if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
-    dumpData (acoustid);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: ** re-using web response");
+    /* debugging :  re-use out-acoustid.xml file as input rather */
+    /*              than making another query */
+    tsize = fileopSize (ACOUSTID_TEMP_FN);
+    ifh = fopen (ACOUSTID_TEMP_FN, "r");
+    acoustid->webresplen = tsize;
+    /* this will leak */
+    tstr = malloc (tsize + 1);
+    (void) ! fread (tstr, tsize, 1, ifh);
+    tstr [tsize] = '\0';
+    acoustid->webresponse = tstr;
+    fclose (ifh);
+  } else {
+    int           webrc;
+
+    mstimestart (&starttm);
+    webrc = webclientPostCompressed (acoustid->webclient, uri, query);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %d %" PRId64 "ms",
+        webrc, (int64_t) mstimeend (&starttm));
+    if (webrc != WEB_OK) {
+      return 0;
+    }
+
+    if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+      dumpData (acoustid);
+    }
   }
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
@@ -287,7 +311,7 @@ dumpData (audioidacoustid_t *acoustid)
   FILE *ofh;
 
   if (acoustid->webresponse != NULL && acoustid->webresplen > 0) {
-    ofh = fopen ("out-acoustid.xml", "w");
+    ofh = fopen (ACOUSTID_TEMP_FN, "w");
     if (ofh != NULL) {
       fwrite (acoustid->webresponse, 1, acoustid->webresplen, ofh);
       fprintf (ofh, "\n");
@@ -295,4 +319,3 @@ dumpData (audioidacoustid_t *acoustid)
     }
   }
 }
-

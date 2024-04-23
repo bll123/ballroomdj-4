@@ -11,6 +11,10 @@ typedef struct audioidacoustid audioidacoustid_t;
 typedef struct audioidacr audioidacr_t;
 typedef struct audioid_resp audioid_resp_t;
 
+#define ACRCLOUD_TEMP_FN    "out-acr.json"
+#define ACOUSTID_TEMP_FN    "out-acoustid.xml"
+#define MUSICBRAINZ_TEMP_FN "out-mb.xml"
+
 /* audioid.c */
 
 audioid_t *audioidInit (void);

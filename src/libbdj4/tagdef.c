@@ -917,7 +917,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    false,                        /* audio-id             */
+    true,                         /* audio-id             */
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
@@ -945,7 +945,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
-    false,                        /* audio-id             */
+    true,                         /* audio-id             */
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */

@@ -129,7 +129,7 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
   ncount = nodes->nodeNr;
 
   respdata = audioidGetResponseData (resp, resp->respidx);
-nlistDumpInfo (respdata);
+
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s parse: respidx: %d", level*2, "", resp->respidx);
 
   if (xpaths [xpathidx].flag == AUDIOID_PARSE_TREE) {
@@ -229,7 +229,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths,
   nlist_t   *respdata;
 
   respdata = audioidGetResponseData (resp, resp->respidx);
-nlistDumpInfo (respdata);
+
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: parse: respidx: %d", level*2, "", resp->respidx);
 
   for (int i = 0; i < nodes->nodeNr; ++i)  {
@@ -262,8 +262,11 @@ nlistDumpInfo (respdata);
         nlistSetDouble (respdata, TAG_AUDIOID_SCORE, 100.0);
       }
 
-logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- resp b4-propagate (%d)", level*2, "", resp->respidx);
-audioidDumpResult (respdata);
+      if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- resp b4-propagate (%d)", level*2, "", resp->respidx);
+        audioidDumpResult (respdata);
+      }
+
       /* propagate values to the next response */
       if (resp->respidx > 0) {
         nlist_t   *orespdata;
@@ -271,8 +274,10 @@ audioidDumpResult (respdata);
         logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s tree: propagate from %d to %d", level*2, "", resp->respidx - 1, resp->respidx);
 
         orespdata = audioidGetResponseData (resp, resp->respidx - 1);
-logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- old-resp (%d)", level*2, "", resp->respidx - 1);
-audioidDumpResult (orespdata);
+        if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+          logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- old-resp (%d)", level*2, "", resp->respidx - 1);
+          audioidDumpResult (orespdata);
+        }
 
         nlistStartIterator (orespdata, &iteridx);
         while ((key = nlistIterateKey (orespdata, &iteridx)) >= 0) {
@@ -304,10 +309,13 @@ audioidDumpResult (orespdata);
 
       nlistSetNum (respdata, TAG_AUDIOID_IDENT, ident);
       resp->respidx += 1;
-      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: tree: new respidx: %d", level*2, "", resp->respidx);
-audioidDumpResult (respdata);
+
+      if (logCheck (LOG_DBG, LOG_AUDIOID_DUMP)) {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s -- parse-done: tree: new respidx: %d", level*2, "", resp->respidx);
+        audioidDumpResult (respdata);
+      }
+
       respdata = audioidGetResponseData (resp, resp->respidx);
-nlistDumpInfo (respdata);
     }
 
     mdextfree (relpathCtx);

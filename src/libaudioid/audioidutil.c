@@ -30,7 +30,6 @@ audioidSetResponseData (int level, audioid_resp_t *resp,
 
   respdata = audioidGetResponseData (resp, resp->respidx);
   logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set-resp-data(%d)", level*2, "", resp->respidx);
-nlistDumpInfo (respdata);
   if (resp->respidx != nlistGetNum (respdata, AUDIOID_TYPE_RESPIDX)) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s ERR: incorrect list %d/%d", level*2, "", resp->respidx, (int) nlistGetNum (respdata, AUDIOID_TYPE_RESPIDX));
     return rc;
