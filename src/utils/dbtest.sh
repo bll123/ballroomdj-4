@@ -214,6 +214,7 @@ function checkreorg {
   omdir=$3
   dance=$4
   fn=$5
+  genre=$6
 
   trc=0
 
@@ -238,6 +239,9 @@ function checkreorg {
       tfn="${omdir}/${fn}"
     fi
   fi
+  if [[ $type == genre ]]; then
+    tfn="${omdir}/${genre}/${dance}/${fn}"
+  fi
   if [[ $trc == 0 && -f ${tfn} ]]; then
     echo "  ERR: Incorrect dir: $fn"
     trc=1
@@ -255,6 +259,9 @@ function checkreorg {
     else
       tfn="${tmdir}/${fn}"
     fi
+  fi
+  if [[ $type == genre ]]; then
+    tfn="${tmdir}/${genre}/${dance}/${fn}"
   fi
   if [[ $trc == 0 && ! -f ${tfn} ]]; then
     echo "  ERR: Missing: $fn"
@@ -1241,10 +1248,124 @@ if [[ $TESTON == T ]]; then
 fi
 
 if [[ $TESTON == T ]]; then
+  setorgpath '{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org with 'dance/title'
+  tname=second-reorg-basic-dance
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUM2TOT} skip 0 indb ${NUM2TOT} new 0 updated 0 renamed ${NUM2TOT_RN} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
+  dance="Announce"
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  dispres $tname $rc $reorgrc
+  exitonfail $rc $reorgrc
+fi
+
+if [[ $TESTON == T ]]; then
+  setorgpath '{%GENRE%/}{%DANCE%/}{%TITLE%}'
+
+  # main+second : re-org genre/dance/title
+  tname=second-reorg-genre-dance
+  got=$(./bin/bdj4 --bdj4dbupdate \
+      --debug ${DBG} \
+      --reorganize \
+      --cli --wait --verbose)
+  exp="found ${NUM2TOT} skip 0 indb ${NUM2TOT} new 0 updated 0 renamed ${NUM2TOT_RN} norename 0 notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+
+  reorgrc=0
+
+  # music-dir announcements
+  # announcements should be locked and stay where they are.
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
+  dance="Announce"
+  for fn in ann-samba.mp3 ann-waltz.mp3 ann-tango.mp3 ann-foxtrot.mp3 ann-quickstep.mp3; do
+    checkreorg ann "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # music-dir
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
+  dance="Cha Cha"
+  for fn in 006-chacha.mp3; do
+    checkreorg genre "$tmdir" "$omdir" "$dance" "$fn" Rock
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  # secondary
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
+  dance="Cha Cha"
+  for fn in 001-alt-chacha.mp3; do
+    checkreorg genre "$tmdir" "$omdir" "$dance" "$fn" Jazz
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
+  dispres $tname $rc $reorgrc $crc
+  exitonfail $rc $reorgrc $crc
+fi
+
+if [[ $TESTON == T ]]; then
   setorgpath '{%TITLE%}'
 
-  # main+second : re-org title only
-  tname=second-reorg-basic-title
+  # main+second : re-org test with title after genre rename
+  tname=second-reorg-title-after-genre
   got=$(./bin/bdj4 --bdj4dbupdate \
       --debug ${DBG} \
       --reorganize \
@@ -1281,6 +1402,18 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
+  # music-dir
+  tmdir=${cwd}/test-music
+  omdir=${cwd}/tmp/music-second
+  dance="Jive"
+  for fn in 003-jive.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      reorgrc=1
+    fi
+  done
+
   # secondary
   tmdir=${cwd}/tmp/music-second
   omdir=${cwd}/test-music
@@ -1293,18 +1426,44 @@ if [[ $TESTON == T ]]; then
     fi
   done
 
+  # secondary
   tmdir=${cwd}/tmp/music-second
   omdir=${cwd}/test-music
-  for dance in "Cha Cha" Jive Quickstep; do
-    if [[ -d "${tmdir}/${dance}" ]]; then
-      echo "ERR: ${tmdir}/${dance} not removed"
-      reorgrc=1
-    fi
-    if [[ -d "${omdir}/${dance}" ]]; then
-      echo "ERR: ${tmdir}/${dance} not removed"
+  dance="Jive"
+  for fn in 001-alt-jive.mp3; do
+    checkreorg title "$tmdir" "$omdir" "$dance" "$fn"
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
       reorgrc=1
     fi
   done
+
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
+  for genre in Rock Jazz; do
+    if [[ -d "${tmdir}/${genre}" ]]; then
+      echo "ERR: ${tmdir}/${genre} not removed"
+      reorgrc=1
+    fi
+    if [[ -d "${omdir}/${genre}" ]]; then
+      echo "ERR: ${tmdir}/${genre} not removed"
+      reorgrc=1
+    fi
+
+    for dance in "Cha Cha" Jive Quickstep; do
+      if [[ -d "${tmdir}/${genre}/${dance}" ]]; then
+        echo "ERR: ${tmdir}/${genre}/${dance} not removed"
+        reorgrc=1
+      fi
+      if [[ -d "${omdir}/${genre}/${dance}" ]]; then
+        echo "ERR: ${tmdir}/${genre}/${dance} not removed"
+        reorgrc=1
+      fi
+    done
+  done
+
+  tmdir=${cwd}/tmp/music-second
+  omdir=${cwd}/test-music
 
   # the important test for re-organize
   # must match up against the original database.
@@ -1321,6 +1480,7 @@ if [[ $TESTON == T ]]; then
   # create some .original files
   tmdir=${cwd}/test-music
   omdir=${cwd}/tmp/music-second
+  dance=Jive
   createoriginal "$tmdir" 003-jive.mp3
   createoriginal "$omdir" 001-alt-jive.mp3
 
@@ -1365,8 +1525,6 @@ if [[ $TESTON == T ]]; then
   done
 
   # music-dir
-  tmdir=${cwd}/test-music
-  omdir=${cwd}/tmp/music-second
   dance="Jive"
   for fn in 003-jive.mp3 003-jive.mp3.original; do
     checkreorg dir "$tmdir" "$omdir" "$dance" "$fn"

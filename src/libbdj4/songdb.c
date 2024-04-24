@@ -114,6 +114,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   char        oldfn [MAXPATHLEN];
   char        ffn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
+  char        dirbuff [MAXPATHLEN];
   bool        dorename = false;
   bool        rename = false;
   pathinfo_t  *pi;
@@ -239,7 +240,8 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
           break;
         }
         pathInfoFree (pi);
-        pi = pathInfo (tbuff);
+        strlcpy (dirbuff, tbuff, sizeof (dirbuff));
+        pi = pathInfo (dirbuff);
       }
       pathInfoFree (pi);
     }
