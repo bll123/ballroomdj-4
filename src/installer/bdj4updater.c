@@ -427,7 +427,8 @@ main (int argc, char *argv [])
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
     /* 4.8.3.1 2024-4-19 updated to version 3 */
-    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 3);
+    /* 4.9.0 2024-4-22 updated to version 4 */
+    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 4);
   }
 
   {

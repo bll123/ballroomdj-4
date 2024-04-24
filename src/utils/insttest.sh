@@ -107,6 +107,23 @@ UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
 LOG="tmp/insttest-log.txt"
 
+fn="templates/itunes-fields.txt"
+ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/sortopt.txt"
+SORTOPTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/gtk-static.css"
+GTKSTATICVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/autoselection.txt"
+AUTOSELVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/audioadjust.txt"
+AUDIOADJVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/mobilemq.html"
+MOBILEMQVER=$(grep "<!-- VERSION [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/standardrounds.pldances"
+STDROUNDVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/QueueDance.pldances"
+QDANCEVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+
 currvers=$(pkglongvers)
 
 hostname=$(hostname)
@@ -133,13 +150,13 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e 's/version [23456]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($AUTOSELVER-1))/;s/^\.\.[2-9]$/..1/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
   # rm -f "${fn}"
-  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/;s/^\.\.[2-9]/..1/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # ds-audioid.txt file should be installed if missing
@@ -150,20 +167,20 @@ function checkUpdaterClean {
   fn="$DATADIR/profile00/bdjconfig.q4.txt"
   rm -f "${fn}"
 
-  # itunes-fields version number should be updated to version 2.
+  # itunes-fields version number should be updated
   fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version [2-9]/version 1/' "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($ITUNESFIELDSVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
-  # 4.8.0 2024-3-11 sortopt version number should be updated to version 2.
+  # sortopt version number should be updated
   fn="$DATADIR/sortopt.txt"
-  sed -e 's/version [2-9]/version 1/;s/^\.\.[23456]$/..1/' "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($SORTOPTVER-1))/;s/^\.\.[2-9]$/..1/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # gtk-static version number should be updated to version 4.
   fn="$DATADIR/gtk-static.css"
   if [[ -f $fn ]]; then
-    sed -e 's/version [3-9]/version 1/' "${fn}" > "${fn}.n"
+    sed -e "s/version [2-9]/version $(($GTKSTATICVER-1))/" "${fn}" > "${fn}.n"
     mv -f "${fn}.n" "${fn}"
   fi
 
@@ -233,9 +250,9 @@ function checkUpdaterClean {
     mkBadPldance "${fn}"
   fi
 
-  # mobilemq.html version number should be updated to version 2.
+  # mobilemq.html version number should be updated
   fn="$HTTPDIR/mobilemq.html"
-  sed -e 's/VERSION 2/VERSION 1/' "${fn}" > "${fn}.n"
+  sed -e "s/VERSION [2-9]/VERSION $(($MOBILEMQVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 }
 
@@ -259,7 +276,6 @@ function checkInstallation {
 
   tcount=$(($tcount+1))
 
-  res=$(($res+1))   # finish
   set BAD
   if [[ $tout != "" ]]; then
     set $tout
@@ -268,6 +284,7 @@ function checkInstallation {
     case $1 in
       finish)
         shift
+        res=$(($res+1))   # finish
         if [[ $1 == "OK" ]]; then
           chk=$(($chk+1))
           fin=T
@@ -561,10 +578,10 @@ function checkInstallation {
     res=$(($res+1))  # audioadjust.txt file
     fn="${DATADIR}/audioadjust.txt"
     if [[ $fin == T && -f "${fn}" ]]; then
-      grep 'version 4' "${fn}" > /dev/null 2>&1
+      grep "version ${AUDIOADJVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.4' "${fn}" > /dev/null 2>&1
+        grep "^\.\.${AUDIOADJVER}" "${fn}" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
@@ -581,10 +598,10 @@ function checkInstallation {
     res=$(($res+1))  # autoselection.txt file
     fn="${DATADIR}/autoselection.txt"
     if [[ $fin == T && -f "${fn}" ]]; then
-      grep 'version 6' "${fn}" > /dev/null 2>&1
+      grep "version ${AUTOSELVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.6$' "${fn}" > /dev/null 2>&1
+        grep "^\.\.${AUTOSELVER}$" "${fn}" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
@@ -637,7 +654,7 @@ function checkInstallation {
       fna="${DATADIR}/автоматически.pl"
       fnb="${DATADIR}/automatic.pl"
     fi
-    res=$(($res+1))
+    res=$(($res+1))   # automatic playlist
     if [[ -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
         echo "  extra $(basename ${fnb})"
@@ -651,7 +668,7 @@ function checkInstallation {
     res=$(($res+1))  # itunes-fields.txt file
     fn="${DATADIR}/itunes-fields.txt"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 3' "${fn}" > /dev/null 2>&1
+      grep "version ${ITUNESFIELDSVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
@@ -665,7 +682,7 @@ function checkInstallation {
     res=$(($res+1))  # sortopt.txt file
     fn="${DATADIR}/sortopt.txt"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 3' "${fn}" > /dev/null 2>&1
+      grep "version ${SORTOPTVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
@@ -679,7 +696,7 @@ function checkInstallation {
     res=$(($res+1))  # gtk-static.css file
     fn="${DATADIR}/gtk-static.css"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep 'version 4' "${fn}" > /dev/null 2>&1
+      grep "version ${GTKSTATICVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
@@ -690,7 +707,6 @@ function checkInstallation {
       echo "  no gtk-static.css file"
     fi
 
-    res=$(($res+1))  # queuedance.pldances file
     fna="${DATADIR}/QueueDance.pldances"
     fnb=""
     if [[ $section == de_DE ]]; then
@@ -729,11 +745,13 @@ function checkInstallation {
       fna="${DATADIR}/Танец в очередь.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
+    res=$(($res+1))  # queuedance.pldances file
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
         echo "  extra $(basename ${fnb}) file"
       else
-        grep '# version 3' "${fna}" > /dev/null 2>&1
+        grep "^# version ${QDANCEVER}" "${fna}" > /dev/null 2>&1
+        rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
         else
@@ -744,7 +762,6 @@ function checkInstallation {
       echo "  no $(basename ${fna}) file"
     fi
 
-    res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb=""
     if [[ $section == de_DE ]]; then
@@ -783,6 +800,7 @@ function checkInstallation {
       fna="${DATADIR}/Танец в очередь.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
+    res=$(($res+1))  # queuedance.pl file
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
         echo "  extra $(basename ${fnb}) file"
@@ -793,7 +811,6 @@ function checkInstallation {
       echo "  no $(basename ${fna}) file"
     fi
 
-    res=$(($res+1))  # standardrounds.pldances file
     fn="${DATADIR}/standardrounds.pldances"
     if [[ $section == de_DE ]]; then
       fn="${DATADIR}/Standardrunden.pldances"
@@ -822,8 +839,10 @@ function checkInstallation {
     if [[ $section == ru_RU ]]; then
       fn="${DATADIR}/стандартные циклы.pldances"
     fi
+    res=$(($res+1))  # standardrounds.pldances file
     if [[ $fin == T && -f ${fn} ]]; then
-      grep '# version 2' "${fn}" > /dev/null 2>&1
+      grep "^# version ${STDROUNDVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
@@ -860,7 +879,8 @@ function checkInstallation {
     res=$(($res+1))  # mobilemq.html file
     fn="${HTTPDIR}/mobilemq.html"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep '<!-- VERSION 2' "${fn}" > /dev/null 2>&1
+      grep "<!-- VERSION ${MOBILEMQVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else

@@ -2,7 +2,7 @@
 #
 # Copyright 2023-2024 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -165,7 +165,7 @@ if [[ -f /usr/bin/dnf ]]; then
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
-  # updated 2023-10-29
+  # updated 2024-4-22 (gcc13)
   # tested 2023-10-30
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
