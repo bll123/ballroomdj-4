@@ -143,7 +143,10 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
       val = xmlGetProp (cur, (xmlChar *) xpaths [xpathidx].attr);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s store joinphrase(a) %s", level*2, "", (const char *) val);
       dataFree (resp->joinphrase);
-      resp->joinphrase = mdstrdup ((const char *) val);
+      resp->joinphrase = NULL;
+      if (val != NULL) {
+        resp->joinphrase = mdstrdup ((const char *) val);
+      }
     }
     audioidParseTree (nodes, xpaths [xpathidx].tree, xpaths [xpathidx].tagidx, resp, level, ident);
 
@@ -198,6 +201,19 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
     }
 
     tval = (const char *) val;
+
+    if (ttagidx == AUDIOID_TYPE_ARTIST_TYPE) {
+      logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s artist-type: %s", level*2, "", tval);
+      if (strstr (tval, "conductor") != NULL) {
+        resp->tagidx_add = TAG_CONDUCTOR;
+      } else if (strstr (tval, "composer") != NULL) {
+        resp->tagidx_add = TAG_COMPOSER;
+      }
+      mdextfree (val);
+      xmlFree (val);
+      continue;
+    }
+
     if (ttagidx == TAG_AUDIOID_SCORE) {
       /* acoustid returns a score between 0 and 1.0 */
       /* this will need to be modified if other xml sources are implemented */
@@ -208,8 +224,16 @@ audioidParse (xmlXPathContextPtr xpathCtx, audioidparse_t *xpaths,
       dataFree (resp->joinphrase);
       resp->joinphrase = mdstrdup (tval);
     } else {
-      /* set-response-data will clear the joinphrase if used */
       audioidSetResponseData (level, resp, ttagidx, tval);
+      if (resp->tagidx_add >= 0) {
+        if (resp->tagidx_add == TAG_COMPOSER &&
+            (ttagidx == TAG_SORT_ARTIST || ttagidx == TAG_SORT_ALBUMARTIST)) {
+          resp->tagidx_add = TAG_SORT_COMPOSER;
+        }
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set addtl %d/%s %s", level*2, "", resp->tagidx_add, tagdefs [resp->tagidx_add].tag, tval);
+        audioidSetResponseData (level, resp, resp->tagidx_add, tval);
+        resp->tagidx_add = -1;
+      }
     }
 
     mdextfree (val);
@@ -259,6 +283,7 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths,
       const char    *tval;
 
       if (ident == AUDIOID_ID_MB_LOOKUP) {
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set score(%d) MB 100", level*2, "", resp->respidx);
         nlistSetDouble (respdata, TAG_AUDIOID_SCORE, 100.0);
       }
 
@@ -287,8 +312,11 @@ audioidParseTree (xmlNodeSetPtr nodes, audioidparse_t *xpaths,
             continue;
           }
           if (key == TAG_AUDIOID_SCORE) {
-            nlistSetDouble (respdata, key, nlistGetDouble (orespdata, key));
-            logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s   p:score %.2f", level*2, "", nlistGetDouble (respdata, key));
+            /* score is not propagated for mb-lookup */
+            if (ident != AUDIOID_ID_MB_LOOKUP) {
+              nlistSetDouble (respdata, key, nlistGetDouble (orespdata, key));
+              logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s   p:score %.2f", level*2, "", nlistGetDouble (respdata, key));
+            }
             continue;
           }
 

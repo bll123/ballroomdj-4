@@ -348,7 +348,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetSetClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
-  /* listing */
+  /* match listing */
 
   uiwidgetp = uiCreateScrolledWindow (160);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -374,10 +374,15 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* current/selected box */
 
+  uiwidgetp = uiCreateScrolledWindow (300);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetExpandVert (uiwidgetp);
+  uiPanedWindowPackEnd (pw, uiwidgetp);
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiPanedWindowPackEnd (pw, hbox);
+  uiWindowPackInWindow (uiwidgetp, hbox);
 
   count = slistGetCount (audioidint->sellist);
 
@@ -437,7 +442,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiaudioidAddDisplay (uiaudioid, col);
 
   uiwcontFree (col);
-  uiwcontFree (hbox);
 
   audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiKeyAlloc ();
   audioidint->callbacks [UIAUDID_CB_KEYB] = callbackInit (
@@ -615,6 +619,8 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   int             col;
   slistidx_t      seliteridx;
   nlist_t         *ndlist;
+  const char      *str;
+
 
   if (uiaudioid == NULL) {
     return;
@@ -646,11 +652,15 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   /* all data use in the display must be cloned */
   slistStartIterator (audioidint->sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->sellist, &seliteridx)) >= 0) {
-    const char  *str;
-
     str = nlistGetStr (dlist, tagidx);
     nlistSetStr (ndlist, tagidx, str);
   }
+
+  /* also save the recording id and work id */
+  str = nlistGetStr (dlist, TAG_RECORDING_ID);
+  nlistSetStr (ndlist, TAG_RECORDING_ID, str);
+  str = nlistGetStr (dlist, TAG_WORK_ID);
+  nlistSetStr (ndlist, TAG_WORK_ID, str);
 
   uiTreeViewSelectSet (audioidint->wcont [UIAUDID_W_TREE],
       audioidint->fillrow);
@@ -877,6 +887,7 @@ uiaudioidSaveCallback (void *udata)
   uiaudioid_t       *uiaudioid = udata;
   aid_internal_t    *audioidint = NULL;
   nlist_t           *dlist;
+  const char        *val;
 
   logProcBegin (LOG_PROC, "uiaudioidSaveCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: save");
@@ -894,7 +905,6 @@ uiaudioidSaveCallback (void *udata)
 
     tagidx = audioidint->items [count].tagidx;
     if (uiToggleButtonIsActive (audioidint->items [count].selrb)) {
-      const char  *val;
       int32_t     nval;
 
       val = nlistGetStr (dlist, tagidx);
@@ -908,6 +918,16 @@ uiaudioidSaveCallback (void *udata)
         }
       }
     }
+  }
+
+  /* on a save, also save the recording id and work id if present */
+  val = nlistGetStr (dlist, TAG_RECORDING_ID);
+  if (val != NULL && *val) {
+    songSetStr (audioidint->song, TAG_RECORDING_ID, val);
+  }
+  val = nlistGetStr (dlist, TAG_WORK_ID);
+  if (val != NULL && *val) {
+    songSetStr (audioidint->song, TAG_WORK_ID, val);
   }
 
   audioidint->insave = true;

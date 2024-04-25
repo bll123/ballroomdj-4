@@ -49,14 +49,13 @@ audioidSetResponseData (int level, audioid_resp_t *resp,
     if (tstr != NULL && *tstr) {
       char        tbuff [400];
 
-      /* the joinphrase may be set before any value has been processed */
-      /* if the data for tagidx already exists, */
+      /* the joinphrase is set before any value has been processed */
       /* use the join phrase and return true */
       snprintf (tbuff, sizeof (tbuff), "%s%s%s", tstr, resp->joinphrase, data);
       nlistSetStr (respdata, tagidx, tbuff);
       logMsg (LOG_DBG, LOG_AUDIO_ID, "%*s set resp(%d):c: tagidx: %d %s %s", level*2, "", resp->respidx, tagidx, tagdefs [tagidx].tag, tbuff);
-      dataFree (resp->joinphrase);
-      resp->joinphrase = NULL;
+      /* do not reset the joinphrase here, it may be needed for */
+      /* the sort-order version of the tag */
       rc = true;
     } else {
       nlistSetStr (respdata, tagidx, data);

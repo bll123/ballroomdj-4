@@ -7,8 +7,12 @@
 **4.9.0 2024-4---**
 
 * Bug Fixes:
-    * Audio Identification: AcoustID: Fix processing of joined names.
+    * Audio Identification: Always use MusicBrainz if a recording id is present.
+    * Audio Identification: Fix processing of joined names (AcoustID, MusicBrainz).
+    * Audio Identification: Fix save of recording id and work id.
     * Re-Organize: Fix removal of old folders on rename.
+* Changes:
+    * Audio Identification: Make song information scrollable.
 * New Features:
     * Audio Tags: Add support for Sort Order: Album, Album Artist, Artist, Composer, and Title.
 

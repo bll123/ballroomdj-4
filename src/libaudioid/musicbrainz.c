@@ -40,9 +40,9 @@ enum {
 /*
  * musicbrainz:
  *  for each result (score=100.0)
- *    for each recording (title, length, artist, work-id)
+ *    for each recording (title, length, artist (composer), work-id)
  *      for each release in the release-list
- *      : (album-title, album-artist, date)
+ *      : (album-title, album-artist (composer), date)
  *      medium-list : (disc-total)
  *      medium : (disc-number)
  *      medium/track-list: (track-total)
@@ -56,12 +56,14 @@ enum {
 /* to fix the xml processing later */
 
 static audioidparse_t mbartistxp [] = {
+  { AUDIOID_PARSE_DATA,  AUDIOID_TYPE_ARTIST_TYPE, "/artist/disambiguation", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,  TAG_ARTIST, "/artist/name", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,  TAG_SORT_ARTIST, "/artist/sort-name", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t mbalbartistxp [] = {
+  { AUDIOID_PARSE_DATA,  AUDIOID_TYPE_ARTIST_TYPE, "/artist/disambiguation", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,  TAG_ALBUMARTIST, "/artist/name", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA,  TAG_SORT_ALBUMARTIST, "/artist/sort-name", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },

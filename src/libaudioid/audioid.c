@@ -144,8 +144,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
   if (audioid->state == BDJ4_STATE_WAIT) {
     /* process acoustid first rather than musicbrainz, as it returns */
-    /* more data.  if there are no matches, then musicbrainz will be */
-    /* used if a musicbrainz recording-id is present */
+    /* more data.  */
+    /* musicbrainz will be used if a musicbrainz recording-id is present */
     /* musicbrainz only returns the first 25 matches */
     switch (audioid->idstate) {
       case AUDIOID_ID_ACOUSTID: {
@@ -166,8 +166,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       case AUDIOID_ID_MB_LOOKUP: {
         mbrecid = songGetStr (song, TAG_RECORDING_ID);
 
-        if (mbrecid != NULL &&
-            audioid->respcount [AUDIOID_ID_ACOUSTID] <= 1) {
+        if (mbrecid != NULL) {
           audioid->respcount [AUDIOID_ID_MB_LOOKUP] =
               mbRecordingIdLookup (audioid->mb, mbrecid, audioid->resp);
           logMsg (LOG_DBG, LOG_AUDIO_ID, "musicbrainz: matches: %d",
@@ -426,6 +425,7 @@ audioidResponseAlloc (void)
   resp->joinphrase = NULL;
   resp->respidx = 0;
   resp->respdatalist = NULL;
+  resp->tagidx_add = -1;
   audioidResponseReset (resp);
   return resp;
 }
@@ -436,6 +436,7 @@ audioidResponseReset (audioid_resp_t *resp)
   resp->respidx = 0;
   dataFree (resp->joinphrase);
   resp->joinphrase = NULL;
+  resp->tagidx_add = -1;
   nlistFree (resp->respdatalist);
   resp->respdatalist = nlistAlloc ("audioid-resp-data-list", LIST_ORDERED, NULL);
 }
@@ -449,6 +450,7 @@ audioidResponseFree (audioid_resp_t *resp)
 
   dataFree (resp->joinphrase);
   resp->joinphrase = NULL;
+  resp->tagidx_add = -1;
   nlistFree (resp->respdatalist);
   resp->respdatalist = NULL;
   mdfree (resp);
