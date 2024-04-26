@@ -417,6 +417,14 @@ START_TEST(tmutil_strtoutc)
 
   val = tmutilStringToUTC (str, "%FT%TZ");
   ck_assert_int_eq (val, 1672770898);
+
+  str = "2016-4-26";
+  val = tmutilStringToUTC (str, "%F");
+  ck_assert_int_eq (val, 1461672000);
+
+  str = "2023-05-27 10:51:58";
+  val = tmutilStringToUTC (str, "%F %T");
+  ck_assert_int_eq (val, 1685184718);
 }
 
 Suite *

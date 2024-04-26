@@ -738,7 +738,7 @@ main (int argc, char *argv [])
 
 
       if (processflags [UPD_FIX_DB_DATE_ADDED_B]) {
-        time_t    addval, luval;
+        time_t      addval, luval;
 
         addval = songGetNum (song, TAG_DBADDDATE);
         luval = songGetNum (song, TAG_LAST_UPDATED);
@@ -753,7 +753,7 @@ main (int argc, char *argv [])
         }
       }
 
-      /* fix-db-date-added is a "forced" fix */
+      /* fix-db-date-added is a "forced" fix only */
       if (processflags [UPD_FIX_DB_DATE_ADDED] ||
             songGetNum (song, TAG_DBADDDATE) < 0) {
         time_t    ctime;

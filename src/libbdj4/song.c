@@ -651,7 +651,9 @@ songSetDefaults (song_t *song)
     time_t      tmval;
 
     tstr = nlistGetStr (song->songInfo, TEMP_TAG_DBADD);
-    if (tstr != NULL) {
+    tmval = nlistGetNum (song->songInfo, TAG_DBADDDATE);
+    /* the song should never have both old and new set, but check */
+    if (tstr != NULL && tmval < 0) {
       tmval = tmutilStringToUTC (tstr, "%F");
       nlistSetNum (song->songInfo, TAG_DBADDDATE, tmval);
     }
