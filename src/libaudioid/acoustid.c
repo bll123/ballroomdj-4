@@ -62,14 +62,16 @@ enum {
  */
 
 static audioidparse_t acoustidalbartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA, TAG_ALBUMARTIST, "/name", NULL, NULL, NULL },
+  /* do the join-phrase after the name so that it does not overwrite itself */
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
 static audioidparse_t acoustidartistxp [] = {
-  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_DATA, TAG_ARTIST, "/name", NULL, NULL, NULL },
+  /* do the join-phrase after the name so that it does not overwrite itself */
+  { AUDIOID_PARSE_DATA, AUDIOID_TYPE_JOINPHRASE, "/joinphrase", NULL, NULL, NULL },
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-artist", NULL, NULL, NULL },
 };
 
