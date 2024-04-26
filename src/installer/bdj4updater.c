@@ -742,7 +742,7 @@ main (int argc, char *argv [])
 
         addval = songGetNum (song, TAG_DBADDDATE);
         luval = songGetNum (song, TAG_LAST_UPDATED);
-        if (addval > luval) {
+        if (addval >= luval) {
           time_t    ctime;
 
           ctime = updaterGetSongCreationTime (song);
