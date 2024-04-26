@@ -521,14 +521,19 @@ tmutilStringToUTC (const char *str, const char *fmt)
   time_t      tmval = 0;
 
   strptime (str, fmt, &tm);
+  /* given only year, month, day, tm_hour is garbage */
+  tm.tm_hour = 12;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = 0;
 
 #if _lib_timegm
   tmval = timegm (&tm);
 #else
   {
-#if _lib_localtime_r
+# if _lib_localtime_r
     struct tm   ttm;
-#endif
+# endif
     struct tm   *tp;
     time_t      gtmval = 0;
     time_t      ltmval = 0;

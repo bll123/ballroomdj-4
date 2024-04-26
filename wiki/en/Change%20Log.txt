@@ -10,6 +10,8 @@
     * Audio Identification: Always use MusicBrainz if a recording id is present.
     * Audio Identification: Fix processing of joined names (AcoustID, MusicBrainz).
     * Audio Identification: Fix save of recording id and work id.
+    * Database: Fix incorrect date added values.
+    * Date Added: Fix incorrect conversion.
     * Re-Organize: Fix removal of old folders on rename.
 * Changes:
     * Audio Identification: Make song information scrollable.

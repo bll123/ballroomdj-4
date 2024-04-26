@@ -93,6 +93,9 @@ enum {
   /* there are bad disc numbers present in some data, and some were */
   /* converted to negative numbers */
   UPD_FIX_DB_DISCNUM,
+  /* 2024-4-26 4.9.0 */
+  /* fix any bad date-added in the new format */
+  UPD_FIX_DB_DATE_ADDED_B,
   UPD_MAX,
 };
 enum {
@@ -105,6 +108,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, DF_NORM },
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
 };
 enum {
@@ -122,6 +126,7 @@ static void updaterCopyVersionCheck (const char *fn, const char *ext, int currve
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
+static time_t updaterGetSongCreationTime (song_t *song);
 
 int
 main (int argc, char *argv [])
@@ -634,6 +639,11 @@ main (int argc, char *argv [])
     processflags [UPD_FIX_DB_DATE_ADDED] = true;
     processdb = true;
   }
+  if (statusflags [UPD_FIX_DB_DATE_ADDED_B] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.9.0 : process db : fix db add date B (new format)");
+    processflags [UPD_FIX_DB_DATE_ADDED_B] = true;
+    processdb = true;
+  }
   if (statusflags [UPD_FIX_DB_DISCNUM] == UPD_NOT_DONE) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.3 : process db : fix db discnum");
     processflags [UPD_FIX_DB_DISCNUM] = true;
@@ -725,21 +735,34 @@ main (int argc, char *argv [])
       /* bugs in restore-original and restore audio file data */
       /* 2023-12 : the database add date could have been munged */
       /* by bugs in the db-updater, update all add-dates */
+
+
+      if (processflags [UPD_FIX_DB_DATE_ADDED_B]) {
+        time_t    addval, luval;
+
+        addval = songGetNum (song, TAG_DBADDDATE);
+        luval = songGetNum (song, TAG_LAST_UPDATED);
+        if (addval > luval) {
+          time_t    ctime;
+
+          ctime = updaterGetSongCreationTime (song);
+          songSetNum (song, TAG_DBADDDATE, ctime);
+          dowrite = true;
+          counters [UPD_FIX_DB_DATE_ADDED_B] += 1;
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate-B: %s", songGetStr (song, TAG_URI));
+        }
+      }
+
+      /* fix-db-date-added is a "forced" fix */
       if (processflags [UPD_FIX_DB_DATE_ADDED] ||
             songGetNum (song, TAG_DBADDDATE) < 0) {
-        char      ffn [MAXPATHLEN];
         time_t    ctime;
 
-        audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
-        ctime = fileopCreateTime (ffn);
-        if (audiosrcOriginalExists (ffn)) {
-          snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-          ctime = fileopCreateTime (tbuff);
-        }
+        ctime = updaterGetSongCreationTime (song);
         songSetNum (song, TAG_DBADDDATE, ctime);
         dowrite = true;
         counters [UPD_FIX_DB_DATE_ADDED] += 1;
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", songGetStr (song, TAG_URI));
       }
 
       if (processflags [UPD_FIX_DB_DISCNUM]) {
@@ -767,6 +790,9 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_DB_DATE_ADDED]) {
       nlistSetNum (updlist, UPD_FIX_DB_DATE_ADDED, UPD_COMPLETE);
     }
+    if (processflags [UPD_FIX_DB_DATE_ADDED_B]) {
+      nlistSetNum (updlist, UPD_FIX_DB_DATE_ADDED_B, UPD_COMPLETE);
+    }
     if (processflags [UPD_FIX_DB_DISCNUM]) {
       nlistSetNum (updlist, UPD_FIX_DB_DISCNUM, UPD_COMPLETE);
     }
@@ -775,6 +801,9 @@ main (int argc, char *argv [])
 
   if (counters [UPD_FIX_DB_DATE_ADDED] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-added: %d", counters [UPD_FIX_DB_DATE_ADDED]);
+  }
+  if (counters [UPD_FIX_DB_DATE_ADDED_B] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-add-B: %d", counters [UPD_FIX_DB_DATE_ADDED]);
   }
   if (counters [UPD_FIX_DB_DISCNUM] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %d", counters [UPD_FIX_DB_DISCNUM]);
@@ -1169,3 +1198,19 @@ updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
   sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
 }
 
+static time_t
+updaterGetSongCreationTime (song_t *song)
+{
+  char      ffn [MAXPATHLEN];
+  char      tbuff [MAXPATHLEN];
+  time_t    ctime;
+
+  audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
+  ctime = fileopCreateTime (ffn);
+  if (audiosrcOriginalExists (ffn)) {
+    snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+    ctime = fileopCreateTime (tbuff);
+  }
+
+  return ctime;
+}
