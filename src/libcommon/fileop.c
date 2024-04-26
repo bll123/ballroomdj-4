@@ -186,33 +186,33 @@ fileopCreateTime (const char *fname)
 #else
   {
     int rc = -1;
-#if _lib_statx && _GNU_SOURCE
+# if _lib_statx && _GNU_SOURCE
     struct statx statbufx;
-#endif
+# endif
     struct stat statbuf;
 
-#if _lib_statx && _GNU_SOURCE
+# if _lib_statx && _GNU_SOURCE
     rc = statx (0, fname, 0, STATX_BTIME, &statbufx);
     if (rc == 0) {
       if ((statbufx.stx_mask & STATX_BTIME) == STATX_BTIME) {
         ctime = statbufx.stx_btime.tv_sec;
       }
     }
-#endif
+# endif
 
     if (ctime == 0) {
       rc = stat (fname, &statbuf);
       if (rc == 0) {
-#if _mem_struct_stat_st_birthtime
+# if _mem_struct_stat_st_birthtime
         ctime = statbuf.st_birthtime;
-#else
+# else
         /* use the smaller of ctime and mtime */
         if (statbuf.st_ctime < statbuf.st_mtime) {
           ctime = statbuf.st_ctime;
         } else {
           ctime = statbuf.st_mtime;
         }
-#endif
+# endif
       }
     }
   }
