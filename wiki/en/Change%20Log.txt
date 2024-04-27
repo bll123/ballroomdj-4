@@ -12,6 +12,7 @@
     * Audio Identification: Fix save of recording id and work id.
     * Database: Fix incorrect date added values.
     * Date Added: Fix incorrect conversion.
+    * Re-Organize: Add the colon (:) character to the list of disallowed characters for Linux and MacOS.
     * Re-Organize: Fix removal of old folders on rename.
 * Changes:
     * Audio Identification: Make song information scrollable.
