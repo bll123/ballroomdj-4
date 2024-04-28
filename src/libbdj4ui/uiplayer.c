@@ -998,6 +998,9 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     }
 
     uiLabelSetText (uiplayer->wcont [idx], tstr);
+    if (tagidx != TAG_DANCE) {
+      uiWidgetSetTooltip (uiplayer->wcont [idx], tstr);
+    }
     if (! *sep) {
       sep = bdjoptGetStr (OPT_P_PLAYER_UI_SEP);
       if (sep != NULL) {
