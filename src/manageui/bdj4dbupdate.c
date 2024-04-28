@@ -518,6 +518,7 @@ dbupdateProcessing (void *udata)
       queueGetCount (dbupdate->tagdataq) <= QUEUE_PROCESS_LIMIT) {
     const char  *fn;
     pathinfo_t  *pi;
+    song_t      *prevsong = NULL;
 
     while ((fn = dbupdateIterate (dbupdate)) != NULL) {
       song_t      *song;
@@ -604,6 +605,20 @@ dbupdateProcessing (void *udata)
           relfn = fn + pfxlen;
           // fprintf (stderr, "relfn-b: %s\n", relfn);
 
+          if (dbupdate->compact && prevsong != NULL) {
+            const char  *puri;
+            const char  *curi;
+
+            curi = songGetStr (song, TAG_URI);
+            puri = songGetStr (prevsong, TAG_URI);
+            if (strcmp (curi, puri) == 0) {
+              /* skip any duplicates */
+              dbupdateOutputProgress (dbupdate);
+              prevsong = song;
+              continue;
+            }
+          }
+
           dbupdateIncCount (dbupdate, C_IN_DB);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
 
@@ -627,6 +642,9 @@ dbupdateProcessing (void *udata)
             if (queueGetCount (dbupdate->tagdataq) >= QUEUE_PROCESS_LIMIT) {
               break;
             }
+
+            /* compact needs the previous song to check for dups */
+            prevsong = song;
             continue;
           }
         }

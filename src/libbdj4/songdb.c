@@ -194,7 +194,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
         dorename = false;
       } else {
         *flags |= SONGDB_RET_RENAME_SUCCESS;
-        logMsg (LOG_DBG, LOG_DBUPDATE, "rename %s to %s", oldfn, newffn);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "rename %s to %s", oldfn, newffn);
       }
     }
 

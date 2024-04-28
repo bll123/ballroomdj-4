@@ -16,6 +16,7 @@
     * Re-Organize: Fix removal of old folders on rename.
 * Changes:
     * Audio Identification: Make song information scrollable.
+    * Database Update: Compact: Will also remove duplicate entries.
 * New Features:
     * Audio Tags: Add support for Sort Order: Album, Album Artist, Artist, Composer, and Title.
 
