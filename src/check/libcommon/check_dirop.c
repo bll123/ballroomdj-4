@@ -115,7 +115,6 @@ START_TEST(dirop_del_not_empty)
     fileopDelete (fn);
     diropDeleteDir (fn, DIROP_ALL);
 
-fprintf (stderr, "%d dir: %s\n", i, fn);
     rc = diropMakeDir (fn);
   }
 
@@ -126,7 +125,6 @@ fprintf (stderr, "%d dir: %s\n", i, fn);
 
     if (i == 0 || i == 5 || i == 6 || i == 8) {
       snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
-fprintf (stderr, "%d fn: %s\n", i, tbuff);
       fh = fileopOpen (tbuff, "w");
       ck_assert_ptr_nonnull (fh);
       mdextfclose (fh);
@@ -141,10 +139,8 @@ fprintf (stderr, "%d fn: %s\n", i, tbuff);
     bool        ret;
     char        tbuff [MAXPATHLEN];
 
-fprintf (stderr, "%d rm-dir: %s\n", i, fn);
     ret = diropDeleteDir (fn, DIROP_ONLY_IF_EMPTY);
     rc = fileopIsDirectory (fn);
-fprintf (stderr, "  ret: %d rc: %d\n", ret, rc);
     if (i == 0 || i == 5 || i == 6 || i == 8) {
       ck_assert_int_eq (ret, false);
       ck_assert_int_eq (rc, true);

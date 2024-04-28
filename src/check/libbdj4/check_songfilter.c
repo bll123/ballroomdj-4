@@ -890,6 +890,7 @@ START_TEST(songfilter_sort_order)
   sf = songfilterAlloc ();
   songfilterSetSort (sf, "TITLE");
   rv = songfilterProcess (sf, db);
+  ck_assert_int_gt (rv, 0);
   dbidx = songfilterGetByIdx (sf, 0);
   /* the songs set with a sort-order title are not the first in the list */
   ck_assert_int_ne (dbidx, 0);
