@@ -24,7 +24,7 @@ The following displays can be configured:
 * Audio&nbsp;ID&nbsp;Match&nbsp;List
 * Audio&nbsp;ID
 * Marquee (song information)
-* Player (currently playing song information)
+* Current Song (currently playing song information)
 
 The marquee will only display at most three items in the song
 information display.
@@ -46,4 +46,4 @@ to change the order in which the columns are displayed.
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-18 17:05:25; BDJ4 version 4.8.3)_
+<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_

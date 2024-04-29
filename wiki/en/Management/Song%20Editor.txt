@@ -145,10 +145,14 @@ song editor is:
  Field|Tag Type|Display|Notes
  -----|--------|-------|-----
  Album|Audio||
+ Album Sort Order|Audio||
  Album Artist|Audio||
+ Album Artist Sort Order|Audio||
  Artist|Audio||
+ Artist Sort Order|Audio||
  BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
  Composer|Audio||
+ Composer Sort Order|Audio||
  Conductor|Audio||
  Dance|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
  Dance Level|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
@@ -169,8 +173,9 @@ song editor is:
  Status|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Status](en-Configuration-Edit%20Status)
  Tags|BDJ4||
  Title|Audio||
+ Title Sort Order|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-28 04:52:26; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_

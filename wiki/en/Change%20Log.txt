@@ -4,7 +4,11 @@
 
 <!--
 
-**4.9.0 2024-4---**
+**4.10.0 2024-4---**
+
+-->
+
+**4.9.0 2024-4-29**
 
 * Bug Fixes:
     * Audio Identification: Always use MusicBrainz if a recording id is present.
@@ -12,16 +16,14 @@
     * Audio Identification: Fix save of recording id and work id.
     * Database: Fix incorrect date added values.
     * Date Added: Fix incorrect conversion.
+    * Organization: Add the colon (:) character to the list of disallowed characters for Linux and MacOS.
+    * Organization: Fix removal of old folders on rename.
     * Player: Fix current song display when missing information.
-    * Re-Organize: Add the colon (:) character to the list of disallowed characters for Linux and MacOS.
-    * Re-Organize: Fix removal of old folders on rename.
 * Changes:
     * Audio Identification: Make song information scrollable.
     * Database Update: Compact: Will also remove duplicate entries.
 * New Features:
     * Audio Tags: Add support for Sort Order: Album, Album Artist, Artist, Composer, and Title.
-
--->
 
 **4.8.4 2024-4-20**
 
@@ -857,4 +859,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-20 11:15:25; BDJ4 version 4.8.4)_
+<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_
