@@ -985,7 +985,8 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
       tstr = songGetStr (song, tagidx);
     }
     if (tstr == NULL) {
-      break;
+      /* it is possible for there to be no data */
+      tstr = "";
     }
 
     if (*sep) {
@@ -998,7 +999,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     }
 
     uiLabelSetText (uiplayer->wcont [idx], tstr);
-    if (tagidx != TAG_DANCE) {
+    if (tagidx != TAG_DANCE && *tstr) {
       uiWidgetSetTooltip (uiplayer->wcont [idx], tstr);
     }
     if (! *sep) {
