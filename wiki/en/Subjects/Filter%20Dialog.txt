@@ -12,7 +12,7 @@ music manager song listings by selecting the filter button
 The following filters are available:
 
 * Playlist (Music Manager only)
-* Sort by
+* Sort By
 * Search
 * Genre
 * Dance
@@ -43,10 +43,12 @@ songs in the song list.  Selecting an automatic or sequenced playlist
 will show all songs that could be played by the selected playlist.
 When a playlist is selected, all other filters are disabled.
 
-__Sort by__: Allows selection of what sort order to apply to the song
-listing.
+__Sort By__: Allows selection of what sort order to apply to the song
+listing.  Note that for album, album&nbsp;artist, artist, composer and
+title, if the song has a matching sort order audio tag set, the sort
+order audio tag will be used for sorting purposes.
 
-__Search__: Searches the title, artist, album artist, notes, keyword,
+__Search__: Searches the title, artist, album&nbsp;artist, notes, keyword,
 tags, album, composer and conductor for the specified text. The search
 is not case sensitive.
 
@@ -81,4 +83,4 @@ turned on (not displayed in default configuration).
 
 [Wiki Home](Home)
 
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-04-30 12:11:29; BDJ4 version 4.9.0)_

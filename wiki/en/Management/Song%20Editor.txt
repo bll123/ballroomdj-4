@@ -174,8 +174,10 @@ song editor is:
  Tags|BDJ4||
  Title|Audio||
  Title Sort Order|Audio||
+ Total Discs|Audio||
+ Total Tracks|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_
+<br>_(Updated 2024-04-29 15:17:08; BDJ4 version 4.9.0)_
