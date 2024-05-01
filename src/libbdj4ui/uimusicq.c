@@ -266,10 +266,16 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
 }
 
 void
-uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
+uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int exptype)
 {
   uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
-  m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+  if (exptype == BDJ4_EI_TYPE_M3U) {
+    m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+  }
+  if (exptype == BDJ4_EI_TYPE_XSPF) {
+  }
+  if (exptype == BDJ4_EI_TYPE_JSPF) {
+  }
 }
 
 void

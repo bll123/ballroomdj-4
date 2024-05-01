@@ -26,6 +26,14 @@ enum {
   BDJ4_STATE_MAX,
 };
 
+/* import/export types */
+enum {
+  BDJ4_EI_TYPE_M3U,
+  BDJ4_EI_TYPE_XSPF,
+  BDJ4_EI_TYPE_JSPF,
+  BDJ4_EI_TYPE_MAX,
+};
+
 enum {
   STOP_WAIT_COUNT_MAX = 60,
   EXIT_WAIT_COUNT = 60,

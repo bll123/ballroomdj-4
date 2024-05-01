@@ -121,12 +121,12 @@ enum {
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
   /* sl export menu */
-  MANAGE_MENU_CB_SL_M3U_EXP,
+  MANAGE_MENU_CB_SL_EXPORT,
   MANAGE_MENU_CB_SL_MP3_EXP,
   MANAGE_MENU_CB_SL_BDJ4_EXP,
   MANAGE_MENU_CB_SL_BDJ4_IMP,
   /* sl import menu */
-  MANAGE_MENU_CB_SL_M3U_IMP,
+  MANAGE_MENU_CB_SL_IMPORT,
   MANAGE_MENU_CB_SL_ITUNES_IMP,
   /* other callbacks */
   MANAGE_CB_SBS_SELECT,
@@ -281,8 +281,8 @@ typedef struct {
   bool              cfplpostprocess : 1;
   bool              musicqupdated : 1;
   bool              importitunesactive : 1;
-  bool              exportm3uactive : 1;
-  bool              importm3uactive : 1;
+  bool              exportactive : 1;
+  bool              importactive : 1;
   bool              exportbdj4active : 1;
   bool              importbdj4active : 1;
   bool              enablerestoreorig : 1;
@@ -390,8 +390,8 @@ static bool     manageQueueProcessSonglist (void *udata, long dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 /* m3u */
-static bool     manageSonglistExportM3U (void *udata);
-static bool     manageSonglistImportM3U (void *udata);
+static bool     manageSonglistExport (void *udata);
+static bool     manageSonglistImport (void *udata);
 /* export/import bdj4 */
 static bool     manageSonglistExportBDJ4 (void *udata);
 static bool     manageSonglistImportBDJ4 (void *udata);
@@ -497,8 +497,8 @@ main (int argc, char *argv[])
   manage.cfplpostprocess = false;
   manage.musicqupdated = false;
   manage.importitunesactive = false;
-  manage.exportm3uactive = false;
-  manage.importm3uactive = false;
+  manage.exportactive = false;
+  manage.importactive = false;
   manage.exportbdj4active = false;
   manage.importbdj4active = false;
   manage.enablerestoreorig = false;
@@ -2331,11 +2331,11 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_M3U_EXP,
-      manageSonglistExportM3U);
-  /* CONTEXT: managementui: menu selection: song list: export: export as m3u */
-  menuitem = uiMenuCreateItem (menu, _("Export as M3U Playlist"),
-      manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EXPORT,
+      manageSonglistExport);
+  /* CONTEXT: managementui: menu selection: song list: export */
+  menuitem = uiMenuCreateItem (menu, _("Export Playlist"),
+      manage->callbacks [MANAGE_MENU_CB_SL_EXPORT]);
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_EXP,
@@ -2354,11 +2354,11 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_M3U_IMP,
-      manageSonglistImportM3U);
-  /* CONTEXT: managementui: menu selection: song list: import: import m3u */
-  menuitem = uiMenuCreateItem (menu, _("Import M3U"),
-      manage->callbacks [MANAGE_MENU_CB_SL_M3U_IMP]);
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_IMPORT,
+      manageSonglistImport);
+  /* CONTEXT: managementui: menu selection: song list: import */
+  menuitem = uiMenuCreateItem (menu, _("Import Playlist"),
+      manage->callbacks [MANAGE_MENU_CB_SL_IMPORT]);
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_IMP,
@@ -3072,10 +3072,10 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
   logProcEnd (LOG_PROC, "manageQueueProcess", "");
 }
 
-/* m3u */
+/* export and import (m3u, xspf, jspf) */
 
 static bool
-manageSonglistExportM3U (void *udata)
+manageSonglistExport (void *udata)
 {
   manageui_t  *manage = udata;
   char        tbuff [200];
@@ -3084,39 +3084,39 @@ manageSonglistExportM3U (void *udata)
   char        *fn;
   char        *slname;
 
-  if (manage->exportm3uactive) {
+  if (manage->exportactive) {
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "manageSonglistExportM3U");
-  manage->exportm3uactive = true;
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
+  logProcBegin (LOG_PROC, "manageSonglistExport");
+  manage->exportactive = true;
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export");
 
   manageSonglistSave (manage);
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
 
   /* CONTEXT: managementui: song list export: title of save dialog */
-  snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
+  snprintf (tbuff, sizeof (tbuff), _("Export Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", slname);
   selectdata = uiSelectInit (manage->minfo.window,
       tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
-      /* CONTEXT: managementui: song list export: name of file save type */
-      _("M3U Files"), "audio/x-mpegurl");
+      /* CONTEXT: managementui: song list export: name of file export type */
+      _("Playlists"), "audio/x-mpegurl;application/xspf+xml");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    uimusicqExportM3U (manage->slmusicq, fn, slname);
+    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
     mdfree (fn);
   }
   uiSelectFree (selectdata);
   mdfree (slname);
-  manage->exportm3uactive = false;
-  logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
+  manage->exportactive = false;
+  logProcEnd (LOG_PROC, "manageSonglistExport", "");
   return UICB_CONT;
 }
 
 static bool
-manageSonglistImportM3U (void *udata)
+manageSonglistImport (void *udata)
 {
   manageui_t  *manage = udata;
   char        nplname [200];
@@ -3124,13 +3124,13 @@ manageSonglistImportM3U (void *udata)
   uiselect_t  *selectdata;
   char        *fn;
 
-  if (manage->importm3uactive) {
+  if (manage->importactive) {
     return UICB_STOP;
   }
 
-  manage->importm3uactive = true;
-  logProcBegin (LOG_PROC, "manageSonglistImportM3U");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
+  manage->importactive = true;
+  logProcBegin (LOG_PROC, "manageSonglistImport");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
   manageSonglistSave (manage);
   manageSonglistNew (manage);
@@ -3141,9 +3141,9 @@ manageSonglistImportM3U (void *udata)
 
   selectdata = uiSelectInit (manage->minfo.window,
       /* CONTEXT: managementui: song list import: title of dialog */
-      _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
-      /* CONTEXT: managementui: song list import: name of file type */
-      _("M3U Files"), "audio/x-mpegurl");
+      _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
+      /* CONTEXT: managementui: song list import: name of file import type */
+      _("Playlists"), "audio/x-mpegurl;application/xspf+xml");
 
   fn = uiSelectFileDialog (selectdata);
 
@@ -3186,7 +3186,7 @@ manageSonglistImportM3U (void *udata)
   mdfree (selectdata);
 
   manageLoadPlaylistCB (manage, nplname);
-  manage->importm3uactive = false;
+  manage->importactive = false;
   logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
   return UICB_CONT;
 }

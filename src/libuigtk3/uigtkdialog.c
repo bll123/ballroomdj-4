@@ -132,9 +132,18 @@ uiSelectFileDialog (uiselect_t *selectdata)
   }
   if (selectdata->mimetype != NULL) {
     GtkFileFilter   *ff;
+    char            *tstr;
+    char            *p;
+    char            *tokstr;
 
     ff = gtk_file_filter_new ();
-    gtk_file_filter_add_mime_type (ff, selectdata->mimetype);
+    tstr = mdstrdup (selectdata->mimetype);
+    p = strtok_r (tstr, ";", &tokstr);
+    while (p != NULL) {
+      gtk_file_filter_add_mime_type (ff, p);
+      p = strtok_r (NULL, ";", &tokstr);
+    }
+    mdfree (tstr);
     if (selectdata->mimefiltername != NULL) {
       gtk_file_filter_set_name (ff, selectdata->mimefiltername);
     }
