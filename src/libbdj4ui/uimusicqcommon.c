@@ -18,7 +18,7 @@
 #include "ui.h"
 
 void
-uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count)
+uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
 {
   int           ci;
   char          tbuff [20];
@@ -33,14 +33,14 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count)
     if (count > 1) {
       msg = MSG_QUEUE_DANCE_5;
     }
-    snprintf (tbuff, sizeof (tbuff), "%d%c%ld", ci, MSG_ARGS_RS, idx);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", ci, MSG_ARGS_RS, idx);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, msg, tbuff);
   }
   logProcEnd (LOG_PROC, "uimusicqQueueDance", "");
 }
 
 void
-uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx)
+uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx)
 {
   int           ci;
   char          tbuff [200];
@@ -58,54 +58,54 @@ uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx)
 }
 
 void
-uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_TOP, tbuff);
 }
 
 void
-uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   logProcEnd (LOG_PROC, "uimusicqMoveUp", "");
 }
 
 void
-uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_DOWN, tbuff);
 }
 
 void
-uimusicqTogglePause (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqTogglePause (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_TOGGLE_PAUSE, tbuff);
 }
 
 void
-uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqRemove (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
 }
@@ -148,11 +148,11 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
 }
 
 void
-uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx)
+uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char          tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
 }
 

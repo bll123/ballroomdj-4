@@ -93,7 +93,7 @@ static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
 static bool   uimusicqSelectionChgCallback (void *udata);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
-static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc);
+static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
@@ -102,7 +102,7 @@ static bool   uimusicqMoveUpCallback (void *udata);
 static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
-static bool   uimusicqCheckFavChgCallback (void *udata, long col);
+static bool   uimusicqRowClickCallback (void *udata, long col);
 static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
 static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
@@ -367,7 +367,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   mqint->wcont [UIMUSICQ_W_TREE] = uiwidgetp;
 
   mqint->callbacks [MQINT_CB_CHK_FAV_CHG] = callbackInitLong (
-        uimusicqCheckFavChgCallback, uimusicq);
+        uimusicqRowClickCallback, uimusicq);
   uiTreeViewSetRowActivatedCallback (uiwidgetp,
         mqint->callbacks [MQINT_CB_CHK_FAV_CHG]);
 
@@ -542,11 +542,11 @@ uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
   return uimusicq->savelist;
 }
 
-long
+nlistidx_t
 uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 {
   mq_internal_t *mqint;
-  long          loc;
+  nlistidx_t    loc;
 
   mqint = uimusicq->ui [mqidx].mqInternalData;
 
@@ -562,7 +562,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 }
 
 void
-uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
+uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, nlistidx_t loc)
 {
   if (loc < 0) {
     return;
@@ -925,7 +925,7 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
 {
   dbidx_t         dbidx;
   int             ci;
-  long            loc;
+  nlistidx_t      loc;
 
   ci = uimusicq->musicqManageIdx;
 
@@ -966,7 +966,7 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
 }
 
 void
-uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc)
+uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc)
 {
   int   ci;
   bool  sameprev = false;
@@ -1188,16 +1188,16 @@ uimusicqRemoveCallback (void *udata)
 }
 
 static bool
-uimusicqCheckFavChgCallback (void *udata, long col)
+uimusicqRowClickCallback (void *udata, long col)
 {
   uimusicq_t    * uimusicq = udata;
   dbidx_t       dbidx;
   song_t        *song;
 
-  logProcBegin (LOG_PROC, "uimusicqCheckFavChgCallback");
+  logProcBegin (LOG_PROC, "uimusicqRowClickCallback");
 
   if (col == TREE_NO_COLUMN) {
-    logProcEnd (LOG_PROC, "uimusicqCheckFavChgCallback", "not-fav-col");
+    logProcEnd (LOG_PROC, "uimusicqRowClickCallback", "not-fav-col");
     return UICB_CONT;
   }
 

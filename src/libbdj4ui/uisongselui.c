@@ -20,6 +20,7 @@
 #include "callback.h"
 #include "colorutils.h"
 #include "conn.h"
+#include "genre.h"
 #include "log.h"
 #include "mdebug.h"
 #include "musicq.h"
@@ -78,7 +79,8 @@ enum {
   SONGSEL_CB_SCROLL_CHG,
   SONGSEL_CB_SEL_CHG,
   SONGSEL_CB_SELECT_PROCESS,
-  SONGSEL_CB_CHK_FAV_CHG,
+  SONGSEL_CB_ROW_CLICK,
+  SONGSEL_CB_RIGHT_CLICK,
   SONGSEL_CB_SZ_CHG,
   SONGSEL_CB_SCROLL_EVENT,
   SONGSEL_CB_MAX,
@@ -105,6 +107,7 @@ enum {
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *wcont [SONGSEL_W_MAX];
+  genre_t             *genres;
   /* other data */
   int                 maxRows;
   nlist_t             *selectedBackup;
@@ -120,22 +123,22 @@ typedef struct ss_internal {
   /* for double-click checks */
   dbidx_t             lastRowDBIdx;
   mstime_t            lastRowCheck;
-  bool                controlPressed : 1;
-  bool                shiftPressed : 1;
   bool                inscroll : 1;
   bool                inselectchgprocess : 1;
+  bool                rightclick : 1;
 } ss_internal_t;
 
 static void uisongselClearSelections (uisongsel_t *uisongsel);
 static bool uisongselScrollSelection (uisongsel_t *uisongsel, dbidx_t idxStart, int scrollflag, int dir);
 static bool uisongselQueueCallback (void *udata);
-static void uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action);
+static void uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
-static bool uisongselCheckFavChgCallback (void *udata, long col);
+static bool uisongselRowClickCallback (void *udata, long col);
+static bool uisongselRightClickCallback (void *udata);
 
 static bool uisongselProcessTreeSize (void *udata, long rows);
 static bool uisongselScroll (void *udata, double value);
@@ -160,12 +163,11 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint = mdmalloc (sizeof (ss_internal_t));
   ssint->wcont [SONGSEL_W_TREE] = NULL;
   ssint->maxRows = 0;
-  ssint->controlPressed = false;
-  ssint->shiftPressed = false;
   ssint->inscroll = false;
   ssint->inselectchgprocess = false;
+  ssint->rightclick = false;
   ssint->selectedBackup = NULL;
-  ssint->selectedList = nlistAlloc ("selected-list-a", LIST_ORDERED, NULL);
+  ssint->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
   nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
   ssint->selectListKey = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
@@ -176,6 +178,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   }
   ssint->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
   ssint->lastRowDBIdx = -1;
+  ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
   mstimeset (&ssint->lastRowCheck, 0);
 
   ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiKeyAlloc ();
@@ -339,25 +342,25 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
   uiTreeViewEnableHeaders (uiwidgetp);
-  /* for song list editing, multiple selections are valid */
-  /* for the music manager, multiple selections are valid to allow */
-  /* set/clear of same song marks.  also creates a new selection */
-  /* mode for the song editor */
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_MM) {
-    uiTreeViewSelectSetMode (uiwidgetp, SELECT_MULTIPLE);
-  }
+
+  /* all types of song selection will allow multiple selections */
+  uiTreeViewSelectSetMode (uiwidgetp, SELECT_MULTIPLE);
+
   uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uiwidgetp,
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (uiwidgetp, uisongsel->dfilterCount);
   uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uiwidgetp);
 
-  ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
-        uisongselCheckFavChgCallback, uisongsel);
+  ssint->callbacks [SONGSEL_CB_ROW_CLICK] = callbackInitLong (
+        uisongselRowClickCallback, uisongsel);
   uiTreeViewSetRowActivatedCallback (uiwidgetp,
-        ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG]);
+        ssint->callbacks [SONGSEL_CB_ROW_CLICK]);
+
+  ssint->callbacks [SONGSEL_CB_RIGHT_CLICK] = callbackInit (
+        uisongselRightClickCallback, uisongsel, NULL);
+  uiTreeViewSetButton3Callback (uiwidgetp,
+        ssint->callbacks [SONGSEL_CB_RIGHT_CLICK]);
 
   ssint->callbacks [SONGSEL_CB_SCROLL_EVENT] = callbackInitLong (
         uisongselScrollEvent, uisongsel);
@@ -516,7 +519,7 @@ uisongselSelectCallback (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
   /* only the song selection and side-by-side song selection have */
   /* a select button to queue to the song list */
-  uisongselQueueHandler (uisongsel, -1, UISONGSEL_QUEUE);
+  uisongselQueueHandler (uisongsel, UISONGSEL_MQ_NOTSET, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
   /* it's confusing for the user */
   return UICB_CONT;
@@ -749,6 +752,8 @@ uisongselPlayCallback (void *udata)
   /* use the hidden manage playback music queue */
   mqidx = MUSICQ_MNG_PB;
   /* the manageui callback clears the queue and plays */
+  /* note that only the first of multiple selections */
+  /* will use 'play', and the rest will be queued */
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_PLAY);
   return UICB_CONT;
 }
@@ -819,7 +824,7 @@ uisongselClearSelections (uisongsel_t *uisongsel)
   ssint = uisongsel->ssInternalData;
 
   nlistFree (ssint->selectedList);
-  ssint->selectedList = nlistAlloc ("selected-list-clr", LIST_ORDERED, NULL);
+  ssint->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
   nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
   ssint->selectListKey = -1;
 }
@@ -878,12 +883,13 @@ uisongselQueueCallback (void *udata)
 {
   uisongsel_t *uisongsel = udata;
 
-  uisongselQueueHandler (uisongsel, -1, UISONGSEL_QUEUE);
+  /* queues from the request listing to a music queue in the player */
+  uisongselQueueHandler (uisongsel, UISONGSEL_MQ_NOTSET, UISONGSEL_QUEUE);
   return UICB_CONT;
 }
 
 static void
-uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
+uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 {
   ss_internal_t   * ssint;
   nlistidx_t      iteridx;
@@ -891,6 +897,8 @@ uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
 
   logProcBegin (LOG_PROC, "uisongselQueueHandler");
   ssint = uisongsel->ssInternalData;
+
+
   nlistStartIterator (ssint->selectedList, &iteridx);
   while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
     if (action == UISONGSEL_QUEUE) {
@@ -901,6 +909,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
     }
     action = UISONGSEL_QUEUE;
   }
+
   logProcEnd (LOG_PROC, "uisongselQueueHandler", "");
   return;
 }
@@ -985,12 +994,12 @@ uisongselProcessSongFilter (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselCheckFavChgCallback (void *udata, long col)
+uisongselRowClickCallback (void *udata, long col)
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
 
-  logProcBegin (LOG_PROC, "uisongselCheckFavChgCallback");
+  logProcBegin (LOG_PROC, "uisongselRowClickCallback");
 
   ssint = uisongsel->ssInternalData;
 
@@ -1016,13 +1025,28 @@ uisongselCheckFavChgCallback (void *udata, long col)
   ssint->lastRowDBIdx = uisongsel->lastdbidx;
 
   if (col == TREE_NO_COLUMN) {
-    logProcEnd (LOG_PROC, "uisongselCheckFavChgCallback", "not-fav-col");
+    logProcEnd (LOG_PROC, "uisongselRowClickCallback", "not-fav-col");
     return UICB_CONT;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
-  logProcEnd (LOG_PROC, "uisongselCheckFavChgCallback", "");
+  logProcEnd (LOG_PROC, "uisongselRowClickCallback", "");
+  return UICB_CONT;
+}
+
+static bool
+uisongselRightClickCallback (void *udata)
+{
+  uisongsel_t   * uisongsel = udata;
+  ss_internal_t * ssint;
+
+  logProcBegin (LOG_PROC, "uisongselRightClickCallback");
+
+  ssint = uisongsel->ssInternalData;
+  ssint->rightclick = true;
+
+  logProcEnd (LOG_PROC, "uisongselRightClickCallback", "");
   return UICB_CONT;
 }
 
@@ -1222,15 +1246,6 @@ uisongselKeyEvent (void *udata)
 
   ssint = uisongsel->ssInternalData;
 
-  ssint->shiftPressed = false;
-  ssint->controlPressed = false;
-  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    ssint->shiftPressed = true;
-  }
-  if (uiKeyIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    ssint->controlPressed = true;
-  }
-
   if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
       uiKeyIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongsel);
@@ -1311,7 +1326,7 @@ uisongselSelectionChgCallback (void *udata)
   /* if the shift key is pressed, get the first and the last item */
   /* in the selection list (both, as it is not yet known where */
   /* the new selection is in relation). */
-  if (ssint->shiftPressed) {
+  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     ssint->shiftfirstidx = -1;
     ssint->shiftlastidx = -1;
     nlistStartIterator (ssint->selectedList, &iteridx);
@@ -1325,7 +1340,7 @@ uisongselSelectionChgCallback (void *udata)
 
   /* if the control-key is pressed, add any current */
   /* selection that is not in view to the new selection list */
-  if (ssint->controlPressed) {
+  if (uiKeyIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     nlistStartIterator (ssint->selectedList, &iteridx);
     while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
@@ -1346,7 +1361,7 @@ uisongselSelectionChgCallback (void *udata)
   nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
   ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
 
-  /* update the current song-selection's selections */
+  /* update the current listing's selections */
   uisongselUpdateSelections (uisongsel);
 
   /* process the peers after the selections have been made */
@@ -1372,6 +1387,7 @@ uisongselSelectionChgCallback (void *udata)
   }
 
   ssint->inselectchgprocess = false;
+  ssint->rightclick = false;
   return UICB_CONT;
 }
 
@@ -1380,7 +1396,7 @@ uisongselProcessSelection (void *udata, long row)
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
-  long              idx;
+  nlistidx_t        idx;
   dbidx_t           dbidx = -1;
 
   ssint = uisongsel->ssInternalData;
@@ -1388,7 +1404,7 @@ uisongselProcessSelection (void *udata, long row)
   idx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
       SONGSEL_COL_IDX);
 
-  if (ssint->shiftPressed) {
+  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     nlistidx_t    beg = 0;
     nlistidx_t    end = -1;
 
@@ -1409,6 +1425,42 @@ uisongselProcessSelection (void *udata, long row)
     dbidx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
         SONGSEL_COL_DBIDX);
     nlistSetNum (ssint->selectedList, idx, dbidx);
+    if (ssint->rightclick) {
+      song_t      *song;
+      nlistidx_t  genreidx;
+      bool        clflag;
+
+      song = dbGetByIdx (uisongsel->musicdb, dbidx);
+      genreidx = songGetNum (song, TAG_GENRE);
+      clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+      if (clflag) {
+        char        work [200];
+        nlistidx_t  end;
+
+        songGetClassicalWork (song, work, sizeof (work));
+        if (*work) {
+          char    twork [200];
+
+          end = (nlistidx_t) uisongsel->dfilterCount;
+          for (nlistidx_t i = idx + 1; i < end; ++i) {
+            dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
+            song = dbGetByIdx (uisongsel->musicdb, dbidx);
+            genreidx = songGetNum (song, TAG_GENRE);
+            clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+            if (! clflag) {
+              break;
+            }
+
+            songGetClassicalWork (song, twork, sizeof (twork));
+            if (*twork && strcmp (work, twork) == 0) {
+              nlistSetNum (ssint->selectedList, i, dbidx);
+            } else {
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
   uisongsel->lastdbidx = dbidx;

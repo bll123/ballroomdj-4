@@ -129,6 +129,7 @@ typedef struct {
   uiwcont_t       *wcont [PLUI_W_MAX];
   int             reloadexpected;
   int             reloadrcvd;
+  nlistidx_t      lastLoc [MUSICQ_MAX];
   /* quick edit */
   uiqe_t          *uiqe;
   int             resetvolume;
@@ -307,6 +308,9 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     plui.wcont [i] = NULL;
+  }
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    plui.lastLoc [i] = -1;
   }
 
   osSetStandardSignals (pluiSigHandler);
@@ -1112,6 +1116,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             playlistCheckAndCreate (name, PLTYPE_SONGLIST);
             uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
           }
+
+          plui->lastLoc [musicqupdate->mqidx] = -1;
+
           msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
@@ -1622,16 +1629,32 @@ static bool
 pluiQueueProcess (void *udata, long dbidx)
 {
   playerui_t  *plui = udata;
-  long        loc;
+  nlistidx_t  loc;
   char        tbuff [100];
   int         mqidx;
 
   mqidx = plui->musicqRequestIdx;
-  loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+
+  /* lastloc is used in order to handle adding multi-selections */
+  /* to the queue. */
+  /* it is assumed that all of the queue processing will complete */
+  /* before the musicq-data response comes back from the main process */
+  /* this could very well be a bad assumption */
+  /* further callbacks may be necessary */
+  loc = plui->lastLoc [mqidx];
+  if (loc < 0) {
+    loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+    plui->lastLoc [mqidx] = QUEUE_LOC_LAST;
+    if (loc >= 0) {
+      plui->lastLoc [mqidx] = loc + 1;
+    }
+  } else {
+    plui->lastLoc [mqidx] = loc + 1;
+  }
 
   /* increment the location by 1 as the tree-view index is one less than */
   /* the music queue index */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
       MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;

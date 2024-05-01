@@ -543,6 +543,23 @@ songClearChanged (song_t *song)
   song->songlistchange = false;
 }
 
+void
+songGetClassicalWork (const song_t *song, char *work, size_t sz)
+{
+  const char    *title;
+  char          *p;
+
+  *work = '\0';
+  title = nlistGetStr (song->songInfo, TAG_TITLE);
+  p = strchr (title, ':');
+  if (p != NULL) {
+    strlcpy (work, title, sz);
+    p = strchr (work, ':');
+    *p = '\0';
+  }
+}
+
+
 /* internal routines */
 
 static void

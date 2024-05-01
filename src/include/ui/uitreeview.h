@@ -73,6 +73,7 @@ void  uiTreeViewSetSizeChangeCallback (uiwcont_t *uiwidget, callback_t *cb);
 void  uiTreeViewSetScrollEventCallback (uiwcont_t *uiwidget, callback_t *cb);
 void  uiTreeViewSetRowActivatedCallback (uiwcont_t *uiwidget, callback_t *cb);
 void  uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb);
+void  uiTreeViewSetButton3Callback (uiwcont_t *uiwidget, callback_t *cb);
 void  uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row);
 uiwcont_t * uiTreeViewGetWidgetContainer (uiwcont_t *uiwidget);
 void  uiTreeViewPreColumnSetMinWidth (uiwcont_t *uiwidget, int minwidth);

@@ -25,6 +25,7 @@ const char *songGetStr (const song_t *, nlistidx_t);
 listnum_t songGetNum (const song_t *, nlistidx_t);
 double    songGetDouble (const song_t *, nlistidx_t);
 slist_t * songGetList (const song_t *song, nlistidx_t idx);
+void      songGetClassicalWork (const song_t *song, char *work, size_t sz);
 void      songSetNum (song_t *, nlistidx_t, listnum_t val);
 void      songSetDouble (song_t *, nlistidx_t, double val);
 void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);

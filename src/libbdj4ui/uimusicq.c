@@ -224,7 +224,7 @@ uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
       sourceq->ui [MUSICQ_SL].slname);
 }
 
-long
+nlistidx_t
 uimusicqGetCount (uimusicq_t *uimusicq)
 {
   int           ci;

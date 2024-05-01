@@ -25,6 +25,7 @@ typedef struct ss_internal ss_internal_t;
 
 enum {
   UISONGSEL_PEER_MAX = 2,
+  UISONGSEL_MQ_NOTSET = -1,
 };
 
 typedef struct uisongsel {
