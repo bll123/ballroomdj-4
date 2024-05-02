@@ -16,7 +16,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
-#include "m3u.h"
+#include "expimp.h"
 #include "mdebug.h"
 #include "mp3exp.h"
 #include "musicq.h"
@@ -273,8 +273,10 @@ uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int
     m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
   }
   if (exptype == BDJ4_EI_TYPE_XSPF) {
+    xspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
   }
   if (exptype == BDJ4_EI_TYPE_JSPF) {
+    jspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
   }
 }
 

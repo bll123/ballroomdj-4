@@ -15,7 +15,7 @@
 #include "bdjopt.h"
 #include "callback.h"
 #include "conn.h"
-#include "m3u.h"
+#include "expimp.h"
 #include "mdebug.h"
 #include "mp3exp.h"
 #include "musicdb.h"

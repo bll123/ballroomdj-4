@@ -29,6 +29,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "dispsel.h"
+#include "expimp.h"
 #include "expimpbdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -36,7 +37,6 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
-#include "m3u.h"
 #include "manageui.h"
 #include "mdebug.h"
 #include "msgparse.h"
@@ -3105,7 +3105,7 @@ manageSonglistExport (void *udata)
       _("Playlists"), "audio/x-mpegurl;application/xspf+xml");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
+    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_XSPF);
     mdfree (fn);
   }
   uiSelectFree (selectdata);

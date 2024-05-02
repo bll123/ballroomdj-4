@@ -21,6 +21,7 @@ add_library (libbdj4 SHARED
   genre.c
   instutil.c
   itunes.c
+  jspf.c
   level.c
   m3u.c
   mp3exp.c
@@ -49,6 +50,7 @@ add_library (libbdj4 SHARED
   validate.c
   volreg.c
   webclient.c
+  xspf.c
 )
 target_include_directories (libbdj4
   PRIVATE "${CURL_INCLUDE_DIRS}"
@@ -63,6 +65,7 @@ target_link_libraries (libbdj4 PRIVATE
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
+  ${JSONC_LDFLAGS}
   z
 )
 if (APPLE)

@@ -12,7 +12,7 @@
 
 #include "audiosrc.h"
 #include "bdj4.h"
-#include "bdjopt.h"
+//#include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "expimp.h"
@@ -20,66 +20,80 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathdisp.h"
-#include "pathutil.h"
+//#include "pathutil.h"
 #include "song.h"
 #include "tagdef.h"
-#include "sysvars.h"
+//#include "sysvars.h"
 
 void
-m3uExport (musicdb_t *musicdb, nlist_t *list,
+xspfExport (musicdb_t *musicdb, nlist_t *list,
     const char *fname, const char *slname)
 {
   FILE        *fh;
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
-  song_t      *song;
-  char        tbuff [MAXPATHLEN];
-  const char  *str;
-  char        ffn [MAXPATHLEN];
 
   fh = fileopOpen (fname, "w");
   if (fh == NULL) {
     return;
   }
 
-  fprintf (fh, "#EXTM3U\n");
-  fprintf (fh, "#EXTENC:UTF-8\n");
-  fprintf (fh, "#PLAYLIST:%s\n", slname);
+  fprintf (fh, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  fprintf (fh, "<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\">\n");
+  fprintf (fh, "  <title>%s</title>\n", slname);
+  fprintf (fh, "  <trackList>\n");
 
   nlistStartIterator (list, &iteridx);
   while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
+    song_t        *song;
+    const char    *str;
+    const char    *pfx;
+    char          ffn [MAXPATHLEN];
+
     song = dbGetByIdx (musicdb, dbidx);
 
     if (song == NULL) {
       continue;
     }
-    if (audiosrcGetType (songGetStr (song, TAG_URI)) != AUDIOSRC_TYPE_FILE) {
-      continue;
+    pfx = "";
+    if (audiosrcGetType (songGetStr (song, TAG_URI)) == AUDIOSRC_TYPE_FILE) {
+      pfx = "file://";
     }
 
-    *tbuff = '\0';
-    str = songGetStr (song, TAG_ARTIST);
-    if (str != NULL && *str) {
-      snprintf (tbuff, sizeof (tbuff), "%s - ", str);
-    }
-    strlcat (tbuff, songGetStr (song, TAG_TITLE), sizeof (tbuff));
-    fprintf (fh, "#EXTINF:%" PRId64 ",%s\n",
-        songGetNum (song, TAG_DURATION) / 1000, tbuff);
-    str = songGetStr (song, TAG_ALBUMARTIST);
-    if (str != NULL && *str) {
-      fprintf (fh, "#EXTART:%s\n", str);
-    }
+    fprintf (fh, "    <track>\n");
+
     str = songGetStr (song, TAG_URI);
     audiosrcFullPath (str, ffn, sizeof (ffn), 0, NULL);
     pathDisplayPath (ffn, strlen (ffn));
-    fprintf (fh, "%s\n", ffn);
+    fprintf (fh, "      <location>%s%s</location>\n", pfx, ffn);
+
+    fprintf (fh, "      <title>%s</title>\n", songGetStr (song, TAG_TITLE));
+
+    str = songGetStr (song, TAG_ARTIST);
+    if (str != NULL && *str) {
+      fprintf (fh, "      <creator>%s</creator>\n", str);
+    }
+
+    str = songGetStr (song, TAG_ALBUM);
+    if (str != NULL && *str) {
+      fprintf (fh, "      <album>%s</album>\n", str);
+    }
+
+    fprintf (fh, "      <duration>%" PRId64 "</duration>\n",
+        songGetNum (song, TAG_DURATION));
+
+    fprintf (fh, "    </track>\n");
   }
+
+  fprintf (fh, "  </trackList>\n");
+  fprintf (fh, "</playlist>\n");
+
   mdextfclose (fh);
   fclose (fh);
 }
 
 nlist_t *
-m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
+xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 {
   FILE        *fh;
   nlist_t     *list;
@@ -93,7 +107,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     return NULL;
   }
 
-  list = nlistAlloc ("m3uimport", LIST_UNORDERED, NULL);
+  list = nlistAlloc ("xspfimport", LIST_UNORDERED, NULL);
 
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     if (strncmp (tbuff, "#PLAYLIST:", 10) == 0) {
