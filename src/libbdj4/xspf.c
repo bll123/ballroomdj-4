@@ -12,7 +12,6 @@
 
 #include "audiosrc.h"
 #include "bdj4.h"
-//#include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "expimp.h"
@@ -20,10 +19,9 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathdisp.h"
-//#include "pathutil.h"
+#include "pathutil.h"
 #include "song.h"
 #include "tagdef.h"
-//#include "sysvars.h"
 
 void
 xspfExport (musicdb_t *musicdb, nlist_t *list,
@@ -57,7 +55,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
     }
     pfx = "";
     if (audiosrcGetType (songGetStr (song, TAG_URI)) == AUDIOSRC_TYPE_FILE) {
-      pfx = "file://";
+      pfx = AS_FILE_PFX;
     }
 
     fprintf (fh, "    <track>\n");

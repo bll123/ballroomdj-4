@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiosrc.h"   // for file prefix
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -2016,16 +2017,14 @@ static bool
 pluiDragDropCallback (void *udata, const char *uri, int row)
 {
   playerui_t        *plui = udata;
-  static const char *filepfx = "file://";
-  int               filepfxlen = strlen (filepfx);
 
-  if (strncmp (uri, filepfx, filepfxlen) != 0) {
+  if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
     return UICB_STOP;
   }
 
   plui->musicqRequestIdx = plui->musicqManageIdx;
   plui->extreqRow = row;
 
-  uiextreqDialog (plui->uiextreq, uri + filepfxlen);
+  uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
   return UICB_CONT;
 }

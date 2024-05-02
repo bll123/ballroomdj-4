@@ -14,6 +14,7 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include "audiosrc.h"   // for file prefix
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -506,9 +507,9 @@ confuiMakeQRCodeFile (char *title, char *uri)
   fwrite (ndata, dlen, 1, fh);
   mdextfclose (fh);
   fclose (fh);
-  /* windows requires an extra slash in front, and it doesn't hurt on linux */
-  snprintf (qruri, MAXPATHLEN, "file:///%s/%s",
-      sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
+
+  snprintf (qruri, MAXPATHLEN, "%s/%s/%s",
+      AS_FILE_PFX, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   mdfree (ndata);
   logProcEnd (LOG_PROC, "confuiMakeQRCodeFile", "");

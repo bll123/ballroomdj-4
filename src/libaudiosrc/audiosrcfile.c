@@ -34,9 +34,6 @@ typedef struct asiterdata {
   slistidx_t      fliter;
 } asiterdata_t;
 
-#define AS_FILE_PFX "file://"
-#define AS_FILE_PFX_LEN (strlen (AS_FILE_PFX))
-
 static void audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
 
 static long globalcount = 0;

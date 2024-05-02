@@ -146,7 +146,7 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
   gstiRunOnce (gsti);
 
   if (sourceType == AUDIOSRC_TYPE_FILE) {
-    snprintf (tbuff, sizeof (tbuff), "file://%s", fulluri);
+    snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, fulluri);
   } else {
     strlcpy (tbuff, fulluri, sizeof (tbuff));
   }

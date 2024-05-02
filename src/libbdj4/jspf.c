@@ -61,7 +61,7 @@ jspfExport (musicdb_t *musicdb, nlist_t *list,
 
     pfx = "";
     if (audiosrcGetType (songGetStr (song, TAG_URI)) == AUDIOSRC_TYPE_FILE) {
-      pfx = "file://";
+      pfx = AS_FILE_PFX;
     }
 
     if (first) {

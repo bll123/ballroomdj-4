@@ -420,7 +420,7 @@ mprisMedia (mpris_t *mpris, const char *fulluri, int sourceType)
   }
 
   if (sourceType == AUDIOSRC_TYPE_FILE) {
-    snprintf (tbuff, sizeof (tbuff), "file://%s", fulluri);
+    snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, fulluri);
   } else {
     strlcpy (tbuff, fulluri, sizeof (tbuff));
   }

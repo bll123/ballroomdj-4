@@ -8,6 +8,9 @@ enum {
   AUDIOSRC_TYPE_FILE,
 };
 
+#define AS_FILE_PFX "file://"
+#define AS_FILE_PFX_LEN (strlen (AS_FILE_PFX))
+
 /* audiosrc.c */
 
 typedef struct asiter asiter_t;
