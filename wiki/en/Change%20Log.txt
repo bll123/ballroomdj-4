@@ -7,11 +7,12 @@
 **4.10.0 2024-5---**
 
 * Bug Fixes:
-    * Song Selection: Fix control-click and shift-click handling (introduced in 4.8.2)
+    * Song Selection: Fix control-click and shift-click handling (introduced in 4.8.2).
 * Changes:
     * Song Selection: Multiple songs may now be selected in the request listing.
 * New Features:
     * Song Selection: Right click may be used to select an entire classical work.
+    * Export Playlist: XSPF and JSPF are now supported.  The dialog has been updated.
 
 -->
 

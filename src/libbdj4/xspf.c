@@ -109,6 +109,7 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 
   list = nlistAlloc ("xspfimport", LIST_UNORDERED, NULL);
 
+#if 0
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     if (strncmp (tbuff, "#PLAYLIST:", 10) == 0) {
       stringTrim (tbuff);
@@ -143,6 +144,7 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       }
     }
   }
+#endif
 
   mdextfclose (fh);
   fclose (fh);

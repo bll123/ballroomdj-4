@@ -38,6 +38,7 @@ typedef struct uiselect {
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static gboolean uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata);
 static void uiDialogAddButtonsInternal (uiwcont_t *uiwidget, va_list valist);
+static void uiSelectCreateFilter (GtkFileChooserNative *widget, uiselect_t *selectdata);
 
 uiselect_t *
 uiSelectInit (uiwcont_t *window, const char *label,
@@ -130,25 +131,7 @@ uiSelectFileDialog (uiselect_t *selectdata)
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
         selectdata->startpath);
   }
-  if (selectdata->mimetype != NULL) {
-    GtkFileFilter   *ff;
-    char            *tstr;
-    char            *p;
-    char            *tokstr;
-
-    ff = gtk_file_filter_new ();
-    tstr = mdstrdup (selectdata->mimetype);
-    p = strtok_r (tstr, ";", &tokstr);
-    while (p != NULL) {
-      gtk_file_filter_add_mime_type (ff, p);
-      p = strtok_r (NULL, ";", &tokstr);
-    }
-    mdfree (tstr);
-    if (selectdata->mimefiltername != NULL) {
-      gtk_file_filter_set_name (ff, selectdata->mimefiltername);
-    }
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
-  }
+  uiSelectCreateFilter (widget, selectdata);
 
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
@@ -184,16 +167,7 @@ uiSaveFileDialog (uiselect_t *selectdata)
     gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (widget),
         selectdata->dfltname);
   }
-  if (selectdata->mimetype != NULL) {
-    GtkFileFilter   *ff;
-
-    ff = gtk_file_filter_new ();
-    gtk_file_filter_add_mime_type (ff, selectdata->mimetype);
-    if (selectdata->mimefiltername != NULL) {
-      gtk_file_filter_set_name (ff, selectdata->mimefiltername);
-    }
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
-  }
+  uiSelectCreateFilter (widget, selectdata);
 
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
@@ -322,4 +296,35 @@ uiDialogAddButtonsInternal (uiwcont_t *uiwidget, va_list valist)
     resp = va_arg (valist, int);
     gtk_dialog_add_button (GTK_DIALOG (dialog), label, resp);
   }
+}
+
+static void
+uiSelectCreateFilter (GtkFileChooserNative *widget, uiselect_t  *selectdata)
+{
+  GtkFileFilter   *ff;
+  char            *tstr;
+  char            *p;
+  char            *tokstr;
+
+  if (selectdata == NULL || selectdata->mimetype == NULL) {
+    return;
+  }
+
+  ff = gtk_file_filter_new ();
+  tstr = mdstrdup (selectdata->mimetype);
+  p = strtok_r (tstr, "|", &tokstr);
+  while (p != NULL) {
+    if (*p == '*') {
+      gtk_file_filter_add_pattern(ff, p);
+    } else {
+      gtk_file_filter_add_mime_type (ff, p);
+    }
+    p = strtok_r (NULL, "|", &tokstr);
+  }
+  mdfree (tstr);
+
+  if (selectdata->mimefiltername != NULL) {
+    gtk_file_filter_set_name (ff, selectdata->mimefiltername);
+  }
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
 }

@@ -3102,7 +3102,7 @@ manageSonglistExport (void *udata)
   selectdata = uiSelectInit (manage->minfo.window,
       tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
       /* CONTEXT: managementui: song list export: name of file export type */
-      _("Playlists"), "audio/x-mpegurl;application/xspf+xml");
+      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
     uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_XSPF);
@@ -3143,12 +3143,18 @@ manageSonglistImport (void *udata)
       /* CONTEXT: managementui: song list import: title of dialog */
       _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
       /* CONTEXT: managementui: song list import: name of file import type */
-      _("Playlists"), "audio/x-mpegurl;application/xspf+xml");
+      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
   fn = uiSelectFileDialog (selectdata);
 
-  if (fn != NULL) {
-    nlist_t     *list;
+  if (fn == NULL) {
+    mdfree (selectdata);
+    manage->importactive = false;
+    return UICB_CONT;
+  }
+
+  {
+    nlist_t     *list = NULL;
     int         mqidx;
     dbidx_t     dbidx;
     nlistidx_t  iteridx;
@@ -3158,16 +3164,26 @@ manageSonglistImport (void *udata)
     pi = pathInfo (fn);
     len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
     strlcpy (nplname, pi->basename, len);
+
+    if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
+      list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
+    }
+    if (pathInfoExtCheck (pi, ".xspf")) {
+      list = xspfImport (manage->musicdb, fn, nplname, sizeof (nplname));
+    }
+    if (pathInfoExtCheck (pi, ".jspf")) {
+      list = jspfImport (manage->musicdb, fn, nplname, sizeof (nplname));
+    }
+
     pathInfoFree (pi);
 
-    list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
     pathbldMakePath (tbuff, sizeof (tbuff),
         nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tbuff)) {
       manageSetSonglistName (manage, nplname);
     }
 
-    if (nlistGetCount (list) > 0) {
+    if (list != NULL && nlistGetCount (list) > 0) {
       mqidx = manage->musicqManageIdx;
 
       /* clear the entire queue */
