@@ -14,20 +14,18 @@
 
 #include "audiosrc.h"
 #include "bdj4.h"
-//#include "bdjopt.h"
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "expimp.h"
 #include "log.h"
 #include "mdebug.h"
-//#include "musicdb.h"
+#include "musicdb.h"
 #include "nlist.h"
 #include "pathdisp.h"
-//#include "pathutil.h"
+#include "pathutil.h"
 #include "song.h"
 #include "tagdef.h"
-//#include "sysvars.h"
 
 void
 jspfExport (musicdb_t *musicdb, nlist_t *list,
@@ -112,15 +110,18 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 {
   json_object   *jroot;
   json_tokener  *jtok;
+  json_object   *jpl;
+  json_object   *jtmp;
+  json_object   *jtrklist;
   int           jerr;
   char          *data;
   size_t        len;
-  nlist_t     *list;
-
-  const char  *p;
-  song_t      *song;
-  dbidx_t     dbidx;
-  char        tbuff [MAXPATHLEN];
+  nlist_t       *list = NULL;
+  int           trkcount;
+  const char    *val;
+  char          tbuff [MAXPATHLEN];
+  song_t        *song;
+  dbidx_t       dbidx;
 
   data = filedataReadAll (fname, &len);
 
@@ -132,46 +133,53 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   if (jerr != json_tokener_success) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: failed: %d / %s\n", jerr,
         json_tokener_error_desc (jerr));
-    return 0;
+    return NULL;
   }
 
-  if (logCheck (LOG_DBG, LOG_INFO)) {
-    const char  *tval;
-
-    tval = json_object_to_json_string_ext (jroot,
-        JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
-        JSON_C_TO_STRING_SPACED);
-//    dumpDataStr (tval);
+  jpl = json_object_object_get (jroot, "playlist");
+  if (jpl == NULL) {
+    return NULL;
   }
 
-#if 0
-  while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-    if (strncmp (tbuff, "#PLAYLIST:", 10) == 0) {
-      stringTrim (tbuff);
-      p = tbuff + 10;
-      while (*p == ' ' && *p != '\0') {
-        ++p;
-      }
-      if (*p) {
-        strlcpy (plname, p, plsz);
-      }
+  jtmp = json_object_object_get (jpl, "title");
+  if (jtmp == NULL) {
+    return NULL;
+  }
+  val = json_object_get_string (jtmp);
+  strlcpy (plname, val, plsz);
+
+  jtrklist = json_object_object_get (jpl, "track");
+  if (jtrklist == NULL) {
+    return NULL;
+  }
+
+  trkcount = json_object_array_length (jtrklist);
+  for (int i = 0; i < trkcount; ++i) {
+    json_object   *jtrk;
+
+    jtrk = json_object_array_get_idx (jtrklist, i);
+    if (jtrk == NULL) {
       continue;
     }
 
-    if (*tbuff == '#') {
+    jtmp = json_object_object_get (jtrk, "location");
+    if (jtmp == NULL) {
+      continue;
+    }
+    jtmp = json_object_array_get_idx (jtmp, 0);
+    if (jtrk == NULL) {
       continue;
     }
 
-    stringTrim (tbuff);
+    val = json_object_get_string (jtmp);
+    if (val == NULL) {
+      continue;
+    }
 
+    strlcpy (tbuff, val, sizeof (tbuff));
     pathNormalizePath (tbuff, strlen (tbuff));
-    if (! fileopFileExists (tbuff)) {
-      continue;
-    }
-
-    p = audiosrcRelativePath (tbuff, 0);
-
-    song = dbGetByName (musicdb, p);
+    val = audiosrcRelativePath (tbuff, 0);
+    song = dbGetByName (musicdb, val);
     if (song != NULL) {
       dbidx = songGetNum (song, TAG_DBIDX);
       if (dbidx >= 0) {
@@ -179,7 +187,6 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       }
     }
   }
-#endif
 
   json_tokener_free (jtok);
   json_object_put (jroot);

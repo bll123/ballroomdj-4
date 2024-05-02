@@ -34,6 +34,9 @@ typedef struct asiterdata {
   slistidx_t      fliter;
 } asiterdata_t;
 
+#define AS_FILE_PFX "file://"
+#define AS_FILE_PFX_LEN (strlen (AS_FILE_PFX))
+
 static void audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
 
 static long globalcount = 0;
@@ -175,6 +178,10 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
     return;
   }
 
+  if (strncmp (sfname, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+    sfname += AS_FILE_PFX_LEN;
+  }
+
   if (fileopIsAbsolutePath (sfname)) {
     strlcpy (buff, sfname, sz);
   } else {
@@ -199,7 +206,11 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
   size_t      musicdirlen;
   const char  *p = sfname;
 
-  if (fileopIsAbsolutePath (sfname)) {
+  if (strncmp (p, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+    p += AS_FILE_PFX_LEN;
+  }
+
+  if (fileopIsAbsolutePath (p)) {
     if (pfxlen < 0) {
       pfxlen = 0;
     }
@@ -208,7 +219,7 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
     } else {
       musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
       musicdirlen = strlen (musicdir);
-      if (strncmp (sfname, musicdir, musicdirlen) == 0) {
+      if (strncmp (p, musicdir, musicdirlen) == 0) {
         p += musicdirlen + 1;
       }
     }
