@@ -27,192 +27,192 @@
 #include "playlist.h"
 #include "sysvars.h"
 #include "ui.h"
-#include "uiexp.h"
+#include "uiexppl.h"
 #include "uiplaylist.h"
 #include "uiutils.h"
 #include "validate.h"
 
 enum {
-  UIEXP_CB_DIALOG,
-  UIEXP_CB_TARGET,
-  UIEXP_CB_SEL,
-  UIEXP_CB_MAX,
+  UIEXPPL_CB_DIALOG,
+  UIEXPPL_CB_TARGET,
+  UIEXPPL_CB_SEL,
+  UIEXPPL_CB_MAX,
 };
 
 enum {
-  UIEXP_W_STATUS_MSG,
-  UIEXP_W_ERROR_MSG,
-  UIEXP_W_DIALOG,
-  UIEXP_W_TARGET,
-  UIEXP_W_NEWNAME,
-  UIEXP_W_TGT_BUTTON,
-  UIEXP_W_MAX,
+  UIEXPPL_W_STATUS_MSG,
+  UIEXPPL_W_ERROR_MSG,
+  UIEXPPL_W_DIALOG,
+  UIEXPPL_W_TARGET,
+  UIEXPPL_W_NEWNAME,
+  UIEXPPL_W_TGT_BUTTON,
+  UIEXPPL_W_MAX,
 };
 
-typedef struct uiexp {
-  uiwcont_t         *wcont [UIEXP_W_MAX];
+typedef struct uiexppl {
+  uiwcont_t         *wcont [UIEXPPL_W_MAX];
   uiplaylist_t      *uiplaylist;
   callback_t        *responsecb;
   uiwcont_t         *parentwin;
   nlist_t           *options;
-  callback_t        *callbacks [UIEXP_CB_MAX];
+  callback_t        *callbacks [UIEXPPL_CB_MAX];
   bool              isactive : 1;
-} uiexp_t;
+} UIEXPPL_t;
 
 /* export playlist */
-static void   uiexpCreateDialog (uiexp_t *uiexp);
-static bool   uiexpTargetDialog (void *udata);
-static void   uiexpInitDisplay (uiexp_t *uiexp);
-static bool   uiexpResponseHandler (void *udata, long responseid);
-static void   uiexpFreeDialog (uiexp_t *uiexp);
-static int    uiexpValidateTarget (uiwcont_t *entry, void *udata);
-static bool   uiexpSelectHandler (void *udata, long idx);
-static int    uiexpValidateNewName (uiwcont_t *entry, void *udata);
+static void   uiexpplCreateDialog (UIEXPPL_t *uiexppl);
+static bool   uiexpplTargetDialog (void *udata);
+static void   uiexpplInitDisplay (UIEXPPL_t *uiexppl);
+static bool   uiexpplResponseHandler (void *udata, long responseid);
+static void   uiexpplFreeDialog (UIEXPPL_t *uiexppl);
+static int    uiexpplValidateTarget (uiwcont_t *entry, void *udata);
+static bool   uiexpplSelectHandler (void *udata, long idx);
+static int    uiexpplValidateNewName (uiwcont_t *entry, void *udata);
 
-uiexp_t *
-uiexpInit (uiwcont_t *windowp, nlist_t *opts)
+UIEXPPL_t *
+uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
 {
-  uiexp_t  *uiexp;
+  UIEXPPL_t  *uiexppl;
 
-  uiexp = mdmalloc (sizeof (uiexp_t));
-  for (int j = 0; j < UIEXP_W_MAX; ++j) {
-    uiexp->wcont [j] = NULL;
+  uiexppl = mdmalloc (sizeof (UIEXPPL_t));
+  for (int j = 0; j < UIEXPPL_W_MAX; ++j) {
+    uiexppl->wcont [j] = NULL;
   }
-  uiexp->uiplaylist = NULL;
-  uiexp->responsecb = NULL;
-  uiexp->parentwin = windowp;
-  uiexp->options = opts;
-  for (int i = 0; i < UIEXP_CB_MAX; ++i) {
-    uiexp->callbacks [i] = NULL;
+  uiexppl->uiplaylist = NULL;
+  uiexppl->responsecb = NULL;
+  uiexppl->parentwin = windowp;
+  uiexppl->options = opts;
+  for (int i = 0; i < UIEXPPL_CB_MAX; ++i) {
+    uiexppl->callbacks [i] = NULL;
   }
-  uiexp->isactive = false;
+  uiexppl->isactive = false;
 
-  uiexp->callbacks [UIEXP_CB_DIALOG] = callbackInitLong (
-      uiexpResponseHandler, uiexp);
-  uiexp->callbacks [UIEXP_CB_TARGET] = callbackInit (
-      uiexpTargetDialog, uiexp, NULL);
-  uiexp->callbacks [UIEXP_CB_SEL] = callbackInitLong (
-      uiexpSelectHandler, uiexp);
+  uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
+      uiexpplResponseHandler, uiexppl);
+  uiexppl->callbacks [UIEXPPL_CB_TARGET] = callbackInit (
+      uiexpplTargetDialog, uiexppl, NULL);
+  uiexppl->callbacks [UIEXPPL_CB_SEL] = callbackInitLong (
+      uiexpplSelectHandler, uiexppl);
 
-  return uiexp;
+  return uiexppl;
 }
 
 void
-uiexpFree (uiexp_t *uiexp)
+uiexpplFree (UIEXPPL_t *uiexppl)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
 
-  for (int i = 0; i < UIEXP_CB_MAX; ++i) {
-    callbackFree (uiexp->callbacks [i]);
+  for (int i = 0; i < UIEXPPL_CB_MAX; ++i) {
+    callbackFree (uiexppl->callbacks [i]);
   }
-  uiexpFreeDialog (uiexp);
-  mdfree (uiexp);
+  uiexpplFreeDialog (uiexppl);
+  mdfree (uiexppl);
 }
 
 void
-uiexpSetResponseCallback (uiexp_t *uiexp, callback_t *uicb)
+uiexpplSetResponseCallback (UIEXPPL_t *uiexppl, callback_t *uicb)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
-  uiexp->responsecb = uicb;
+  uiexppl->responsecb = uicb;
 }
 
 bool
-uiexpDialog (uiexp_t *uiexp)
+uiexpplDialog (UIEXPPL_t *uiexppl)
 {
   int         x, y;
 
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uiexpDialog");
-  uiexpCreateDialog (uiexp);
-  uiexpInitDisplay (uiexp);
-  uiDialogShow (uiexp->wcont [UIEXP_W_DIALOG]);
-  uiexp->isactive = true;
+  logProcBegin (LOG_PROC, "uiexpplDialog");
+  uiexpplCreateDialog (uiexppl);
+  uiexpplInitDisplay (uiexppl);
+  uiDialogShow (uiexppl->wcont [UIEXPPL_W_DIALOG]);
+  uiexppl->isactive = true;
 
-  x = nlistGetNum (uiexp->options, EXP_PL_POSITION_X);
-  y = nlistGetNum (uiexp->options, EXP_PL_POSITION_Y);
-  uiWindowMove (uiexp->wcont [UIEXP_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uiexpDialog", "");
+  x = nlistGetNum (uiexppl->options, EXP_PL_POSITION_X);
+  y = nlistGetNum (uiexppl->options, EXP_PL_POSITION_Y);
+  uiWindowMove (uiexppl->wcont [UIEXPPL_W_DIALOG], x, y, -1);
+  logProcEnd (LOG_PROC, "uiexpplDialog", "");
   return UICB_CONT;
 }
 
 void
-uiexpDialogClear (uiexp_t *uiexp)
+uiexpplDialogClear (UIEXPPL_t *uiexppl)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
 
-  uiWidgetHide (uiexp->wcont [UIEXP_W_DIALOG]);
+  uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
 }
 
 /* delayed entry validation for the audio file needs to be run */
 void
-uiexpProcess (uiexp_t *uiexp)
+uiexpplProcess (UIEXPPL_t *uiexppl)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
-  if (! uiexp->isactive) {
+  if (! uiexppl->isactive) {
     return;
   }
 
   uiEntryValidate (
-    uiexp->wcont [UIEXP_W_TARGET], false);
+    uiexppl->wcont [UIEXPPL_W_TARGET], false);
   uiEntryValidate (
-    uiexp->wcont [UIEXP_W_NEWNAME], false);
+    uiexppl->wcont [UIEXPPL_W_NEWNAME], false);
 }
 
 char *
-uiexpGetDir (uiexp_t *uiexp)
+uiexpplGetDir (UIEXPPL_t *uiexppl)
 {
   const char  *tdir;
   char        *dir;
 
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return NULL;
   }
 
-  tdir = uiEntryGetValue (uiexp->wcont [UIEXP_W_TARGET]);
+  tdir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
   dir = mdstrdup (tdir);
   return dir;
 }
 
 const char *
-uiexpGetNewName (uiexp_t *uiexp)
+uiexpplGetNewName (UIEXPPL_t *uiexppl)
 {
   const char  *newname;
 
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return NULL;
   }
 
-  newname = uiEntryGetValue (uiexp->wcont [UIEXP_W_NEWNAME]);
+  newname = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_NEWNAME]);
   return newname;
 }
 
 void
-uiexpUpdateStatus (uiexp_t *uiexp, int count, int tot)
+uiexpplUpdateStatus (UIEXPPL_t *uiexppl, int count, int tot)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
 
   uiutilsProgressStatus (
-      uiexp->wcont [UIEXP_W_STATUS_MSG],
+      uiexppl->wcont [UIEXPPL_W_STATUS_MSG],
       count, tot);
 }
 
 /* internal routines */
 
 static void
-uiexpCreateDialog (uiexp_t *uiexp)
+uiexpplCreateDialog (UIEXPPL_t *uiexppl)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
@@ -222,13 +222,13 @@ uiexpCreateDialog (uiexp_t *uiexp)
   char          tbuff [100];
   const char    *odir = NULL;
 
-  logProcBegin (LOG_PROC, "uiexpCreateDialog");
+  logProcBegin (LOG_PROC, "uiexpplCreateDialog");
 
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
 
-  if (uiexp->wcont [UIEXP_W_DIALOG] != NULL) {
+  if (uiexppl->wcont [UIEXPPL_W_DIALOG] != NULL) {
     return;
   }
 
@@ -241,9 +241,9 @@ uiexpCreateDialog (uiexp_t *uiexp)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  uiexp->wcont [UIEXP_W_DIALOG] =
-      uiCreateDialog (uiexp->parentwin,
-      uiexp->callbacks [UIEXP_CB_DIALOG],
+  uiexppl->wcont [UIEXPPL_W_DIALOG] =
+      uiCreateDialog (uiexppl->parentwin,
+      uiexppl->callbacks [UIEXPPL_CB_DIALOG],
       tbuff,
       /* CONTEXT: export/import bdj4 dialog: closes the dialog */
       _("Close"),
@@ -258,7 +258,7 @@ uiexpCreateDialog (uiexp_t *uiexp)
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (
-      uiexp->wcont [UIEXP_W_DIALOG], vbox);
+      uiexppl->wcont [UIEXPPL_W_DIALOG], vbox);
 
   /* status msg */
   hbox = uiCreateHorizBox ();
@@ -268,13 +268,13 @@ uiexpCreateDialog (uiexp_t *uiexp)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiexp->wcont [UIEXP_W_STATUS_MSG] = uiwidgetp;
+  uiexppl->wcont [UIEXPPL_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiexp->wcont [UIEXP_W_ERROR_MSG] = uiwidgetp;
+  uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -295,25 +295,25 @@ uiexpCreateDialog (uiexp_t *uiexp)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiexp->wcont [UIEXP_W_TARGET] = uiwidgetp;
+  uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
 
-  odir = nlistGetStr (uiexp->options, MANAGE_EXP_BDJ4_DIR);
+  odir = nlistGetStr (uiexppl->options, MANAGE_EXP_BDJ4_DIR);
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
   strlcpy (tbuff, odir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (uiexp->wcont [UIEXP_W_TARGET], tbuff);
+  uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
   uiEntrySetValidate (uiwidgetp,
-      uiexpValidateTarget, uiexp, UIENTRY_DELAYED);
+      uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
   uiwidgetp = uiCreateButton (
-      uiexp->callbacks [UIEXP_CB_TARGET],
+      uiexppl->callbacks [UIEXPPL_CB_TARGET],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiexp->wcont [UIEXP_W_TGT_BUTTON] = uiwidgetp;
+  uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -327,11 +327,11 @@ uiexpCreateDialog (uiexp_t *uiexp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiexp->uiplaylist = uiplaylistCreate (
-      uiexp->wcont [UIEXP_W_DIALOG],
+  uiexppl->uiplaylist = uiplaylistCreate (
+      uiexppl->wcont [UIEXPPL_W_DIALOG],
       hbox, PL_LIST_NORMAL);
-  uiplaylistSetSelectCallback (uiexp->uiplaylist,
-      uiexp->callbacks [UIEXP_CB_SEL]);
+  uiplaylistSetSelectCallback (uiexppl->uiplaylist,
+      uiexppl->callbacks [UIEXPPL_CB_SEL]);
 
   uiwcontFree (hbox);
 
@@ -349,39 +349,39 @@ uiexpCreateDialog (uiexp_t *uiexp)
   uiwidgetp = uiEntryInit (30, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiexp->wcont [UIEXP_W_NEWNAME] = uiwidgetp;
+  uiexppl->wcont [UIEXPPL_W_NEWNAME] = uiwidgetp;
 
   uiEntrySetValidate (uiwidgetp,
-      uiexpValidateNewName, uiexp, UIENTRY_IMMEDIATE);
+      uiexpplValidateNewName, uiexppl, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "uiexpCreateDialog", "");
+  logProcEnd (LOG_PROC, "uiexpplCreateDialog", "");
 }
 
 static bool
-uiexpTargetDialog (void *udata)
+uiexpplTargetDialog (void *udata)
 {
-  uiexp_t  *uiexp = udata;
+  UIEXPPL_t  *uiexppl = udata;
   uiselect_t  *selectdata;
   const char  *odir = NULL;
   char        *dir = NULL;
 
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return UICB_STOP;
   }
 
-  odir = uiEntryGetValue (uiexp->wcont [UIEXP_W_TARGET]);
-  selectdata = uiSelectInit (uiexp->parentwin,
+  odir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
+  selectdata = uiSelectInit (uiexppl->parentwin,
       /* CONTEXT: export/import bdj4 folder selection dialog: window title */
       _("Select Folder"), odir, NULL, NULL, NULL);
 
   dir = uiSelectDirDialog (selectdata);
   if (dir != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uiexp->wcont [UIEXP_W_TARGET], dir);
+    uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], dir);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
     mdfree (dir);   // allocated by gtk
   }
@@ -392,76 +392,76 @@ uiexpTargetDialog (void *udata)
 
 
 static void
-uiexpInitDisplay (uiexp_t *uiexp)
+uiexpplInitDisplay (UIEXPPL_t *uiexppl)
 {
-  if (uiexp == NULL) {
+  if (uiexppl == NULL) {
     return;
   }
 }
 
 static bool
-uiexpResponseHandler (void *udata, long responseid)
+uiexpplResponseHandler (void *udata, long responseid)
 {
-  uiexp_t  *uiexp = udata;
+  UIEXPPL_t  *uiexppl = udata;
   int             x, y, ws;
 
   uiWindowGetPosition (
-      uiexp->wcont [UIEXP_W_DIALOG], &x, &y, &ws);
-  nlistSetNum (uiexp->options, EXP_PL_POSITION_X, x);
-  nlistSetNum (uiexp->options, EXP_PL_POSITION_Y, y);
+      uiexppl->wcont [UIEXPPL_W_DIALOG], &x, &y, &ws);
+  nlistSetNum (uiexppl->options, EXP_PL_POSITION_X, x);
+  nlistSetNum (uiexppl->options, EXP_PL_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: del window");
-      uiexpFreeDialog (uiexp);
+      uiexpplFreeDialog (uiexppl);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: close window");
-      uiWidgetHide (uiexp->wcont [UIEXP_W_DIALOG]);
+      uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: apply");
       uiLabelSetText (
-          uiexp->wcont [UIEXP_W_STATUS_MSG],
+          uiexppl->wcont [UIEXPPL_W_STATUS_MSG],
           /* CONTEXT: please wait... status message */
           _("Please wait\xe2\x80\xa6"));
       /* do not close or hide the dialog; it will stay active and */
       /* the status message will be updated */
-      if (uiexp->responsecb != NULL) {
-        callbackHandler (uiexp->responsecb);
+      if (uiexppl->responsecb != NULL) {
+        callbackHandler (uiexppl->responsecb);
       }
       break;
     }
   }
 
-  uiexp->isactive = false;
+  uiexppl->isactive = false;
   return UICB_CONT;
 }
 
 static void
-uiexpFreeDialog (uiexp_t *uiexp)
+uiexpplFreeDialog (UIEXPPL_t *uiexppl)
 {
-  for (int j = 0; j < UIEXP_W_MAX; ++j) {
-    uiwcontFree (uiexp->wcont [j]);
-    uiexp->wcont [j] = NULL;
+  for (int j = 0; j < UIEXPPL_W_MAX; ++j) {
+    uiwcontFree (uiexppl->wcont [j]);
+    uiexppl->wcont [j] = NULL;
   }
-  uiwcontFree (uiexp->wcont [UIEXP_W_TGT_BUTTON]);
-  uiexp->wcont [UIEXP_W_TGT_BUTTON] = NULL;
-  uiplaylistFree (uiexp->uiplaylist);
-  uiexp->uiplaylist = NULL;
+  uiwcontFree (uiexppl->wcont [UIEXPPL_W_TGT_BUTTON]);
+  uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = NULL;
+  uiplaylistFree (uiexppl->uiplaylist);
+  uiexppl->uiplaylist = NULL;
 }
 
 static int
-uiexpValidateTarget (uiwcont_t *entry, void *udata)
+uiexpplValidateTarget (uiwcont_t *entry, void *udata)
 {
-  uiexp_t  *uiexp = udata;
+  UIEXPPL_t  *uiexppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
 
   uiLabelSetText (
-      uiexp->wcont [UIEXP_W_ERROR_MSG], "");
+      uiexppl->wcont [UIEXPPL_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
   *tbuff = '\0';
@@ -477,7 +477,7 @@ uiexpValidateTarget (uiwcont_t *entry, void *udata)
    */
   if (! *str || ! fileopIsDirectory (str) || ! fileopIsDirectory (tbuff)) {
     if (*str) {
-      uiLabelSetText (uiexp->wcont [UIEXP_W_ERROR_MSG],
+      uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG],
           /* CONTEXT: export/import bdj4: invalid target folder */
           _("Invalid Folder"));
     }
@@ -489,20 +489,20 @@ uiexpValidateTarget (uiwcont_t *entry, void *udata)
 
 
 static bool
-uiexpSelectHandler (void *udata, long idx)
+uiexpplSelectHandler (void *udata, long idx)
 {
-  uiexp_t  *uiexp = udata;
+  UIEXPPL_t  *uiexppl = udata;
   const char  *str;
 
-  str = uiplaylistGetValue (uiexp->uiplaylist);
-  uiEntrySetValue (uiexp->wcont [UIEXP_W_NEWNAME], str);
+  str = uiplaylistGetValue (uiexppl->uiplaylist);
+  uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_NEWNAME], str);
   return UICB_CONT;
 }
 
 static int
-uiexpValidateNewName (uiwcont_t *entry, void *udata)
+uiexpplValidateNewName (uiwcont_t *entry, void *udata)
 {
-  uiexp_t  *uiexp = udata;
+  UIEXPPL_t  *uiexppl = udata;
   uiwcont_t   *statusMsg = NULL;
   uiwcont_t   *errorMsg = NULL;
   int         rc = UIENTRY_ERROR;
@@ -510,8 +510,8 @@ uiexpValidateNewName (uiwcont_t *entry, void *udata)
   char        fn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
 
-  statusMsg = uiexp->wcont [UIEXP_W_STATUS_MSG];
-  errorMsg = uiexp->wcont [UIEXP_W_ERROR_MSG];
+  statusMsg = uiexppl->wcont [UIEXPPL_W_STATUS_MSG];
+  errorMsg = uiexppl->wcont [UIEXPPL_W_ERROR_MSG];
   uiLabelSetText (statusMsg, "");
   uiLabelSetText (errorMsg, "");
   rc = uiutilsValidatePlaylistName (entry, errorMsg);

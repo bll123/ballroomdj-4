@@ -62,6 +62,7 @@
 #include "ui.h"
 #include "uiapplyadj.h"
 #include "uicopytags.h"
+#include "uiexppl.h"
 #include "uiexpimpbdj4.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
@@ -305,10 +306,10 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXPIMP_POS_X", EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXPIMP_POS_Y", EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, DF_NORM },
+  { "MNG_EXP_BDJ4_DIR", MANAGE_EXP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
+  { "MNG_EXP_PL_DIR",   MANAGE_EXP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
   { "MNG_EXP_PL_POS_X", EXP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
-  { "MNG_EXP_PL_DIR",   MANAGE_EXP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
-  { "MNG_EXP_BDJ4_DIR", MANAGE_EXP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
