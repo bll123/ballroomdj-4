@@ -113,12 +113,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     }
 
     stringTrim (tbuff);
-
     pathNormalizePath (tbuff, strlen (tbuff));
-    if (! fileopFileExists (tbuff)) {
-      continue;
-    }
-
     p = audiosrcRelativePath (tbuff, 0);
 
     song = dbGetByName (musicdb, p);

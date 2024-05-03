@@ -305,6 +305,9 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXPIMP_POS_X", EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXPIMP_POS_Y", EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, DF_NORM },
+  { "MNG_EXP_PL_POS_X", EXP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
+  { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
+  { "MNG_EXP_PL_DIR",   MANAGE_EXP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
   { "MNG_EXP_BDJ4_DIR", MANAGE_EXP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
@@ -562,6 +565,9 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetStr (manage.minfo.options, MANAGE_EXP_BDJ4_DIR, "");
     nlistSetStr (manage.minfo.options, MANAGE_IMP_BDJ4_DIR, "");
+    nlistSetNum (manage.minfo.options, EXP_PL_POSITION_X, -1);
+    nlistSetNum (manage.minfo.options, EXP_PL_POSITION_Y, -1);
+    nlistSetStr (manage.minfo.options, MANAGE_EXP_PL_DIR, "");
     nlistSetNum (manage.minfo.options, MANAGE_AUDIOID_PANE_POSITION, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
@@ -3105,7 +3111,7 @@ manageSonglistExport (void *udata)
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_XSPF);
+    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
     mdfree (fn);
   }
   uiSelectFree (selectdata);
@@ -3166,6 +3172,7 @@ manageSonglistImport (void *udata)
     strlcpy (nplname, pi->basename, len);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
+fprintf (stderr, "running m3uimport\n");
       list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
     }
     if (pathInfoExtCheck (pi, ".xspf")) {
@@ -3183,12 +3190,12 @@ manageSonglistImport (void *udata)
       manageSetSonglistName (manage, nplname);
     }
 
+    mqidx = manage->musicqManageIdx;
+
+    /* clear the entire queue */
+    uimusicqTruncateQueueCallback (manage->slmusicq);
+
     if (list != NULL && nlistGetCount (list) > 0) {
-      mqidx = manage->musicqManageIdx;
-
-      /* clear the entire queue */
-      uimusicqTruncateQueueCallback (manage->slmusicq);
-
       nlistStartIterator (list, &iteridx);
       while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
         manageQueueProcess (manage, dbidx, mqidx,

@@ -355,6 +355,8 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, EXT_REQ_DIR, "");
     nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_X, -1);
     nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_Y, -1);
+    nlistSetNum (plui.options, EXP_PL_POSITION_X, -1);
+    nlistSetNum (plui.options, EXP_PL_POSITION_Y, -1);
     nlistSetStr (plui.options, EXP_MP3_DIR, "");
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }

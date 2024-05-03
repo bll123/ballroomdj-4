@@ -146,7 +146,9 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     return NULL;
   }
   val = json_object_get_string (jtmp);
-  strlcpy (plname, val, plsz);
+  if (val != NULL) {
+    strlcpy (plname, val, plsz);
+  }
 
   jtrklist = json_object_object_get (jpl, "track");
   if (jtrklist == NULL) {

@@ -18,6 +18,7 @@ add_library (libbdj4ui SHARED
   uicopytags.c
   uidance.c
   uiduallist.c
+  uiexp.c
   uiexpimpbdj4.c
   uifavorite.c
   uigenre.c

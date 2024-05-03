@@ -153,12 +153,12 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 
   cur = nodes->nodeTab [0];
   xval = xmlNodeGetContent (cur);
-  if (xval == NULL) {
-    strlcpy (plname, "junk", plsz);  // #### FIX ME
-  } else {
-    strlcpy (plname, (char *) xval, plsz);
-  }
   mdextalloc (xval);
+  if (xval != NULL) {
+    strlcpy (plname, (char *) xval, plsz);
+    mdextfree (xval);
+    xmlFree (xval);
+  }
   mdextfree (xpathObj);
   xmlXPathFreeObject (xpathObj);
 
