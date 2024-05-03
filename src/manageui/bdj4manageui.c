@@ -358,7 +358,7 @@ static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
 static void     manageReloadSongEdit (manageui_t *manage);
 /* itunes */
-static bool     manageSonglistImportiTunes (void *udata);
+static bool     managePlaylistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
 static void     manageiTunesDialogCreateList (manageui_t *manage);
 static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
@@ -396,12 +396,13 @@ static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqid
 static bool     manageQueueProcessSonglist (void *udata, long dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
-/* m3u */
-static bool     manageSonglistExport (void *udata);
-static bool     manageSonglistImport (void *udata);
+/* playlist */
+static bool     managePlaylistExport (void *udata);
+static bool     managePlaylistImport (void *udata);
+static long     managePlaylistExportResponseHandler (void *udata, const char *str);
 /* export/import bdj4 */
-static bool     manageSonglistExportBDJ4 (void *udata);
-static bool     manageSonglistImportBDJ4 (void *udata);
+static bool     managePlaylistExportBDJ4 (void *udata);
+static bool     managePlaylistImportBDJ4 (void *udata);
 static bool     manageExportBDJ4ResponseHandler (void *udata);
 static bool     manageImportBDJ4ResponseHandler (void *udata);
 /* general */
@@ -912,10 +913,6 @@ manageInitializeUI (manageui_t *manage)
       manageiTunesDialogResponseHandler, manage);
   manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
-  manage->callbacks [MANAGE_CB_BDJ4_EXP] = callbackInit (
-      manageExportBDJ4ResponseHandler, manage, NULL);
-  manage->callbacks [MANAGE_CB_BDJ4_IMP] = callbackInit (
-      manageImportBDJ4ResponseHandler, manage, NULL);
 
   manage->samesong = samesongAlloc (manage->musicdb);
   manage->uisongfilter = uisfInit (manage->minfo.window, manage->minfo.options,
@@ -1003,12 +1000,18 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetSongSaveCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_SAVE]);
 
   manage->uieibdj4 = uieibdj4Init (manage->minfo.window, manage->minfo.options);
+  manage->callbacks [MANAGE_CB_BDJ4_EXP] = callbackInit (
+      manageExportBDJ4ResponseHandler, manage, NULL);
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_EXP], UIEIBDJ4_EXPORT);
+  manage->callbacks [MANAGE_CB_BDJ4_IMP] = callbackInit (
+      manageImportBDJ4ResponseHandler, manage, NULL);
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
 
   manage->uiexppl = uiexpplInit (manage->minfo.window, manage->minfo.options);
+  manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitStr (
+      managePlaylistExportResponseHandler, manage);
   uiexpplSetResponseCallback (manage->uiexppl,
       manage->callbacks [MANAGE_CB_EXP_PL]);
 }
@@ -1950,7 +1953,7 @@ manageReloadSongEdit (manageui_t *manage)
 /* itunes */
 
 static bool
-manageSonglistImportiTunes (void *udata)
+managePlaylistImportiTunes (void *udata)
 {
   manageui_t  *manage = udata;
   char        tbuff [MAXPATHLEN];
@@ -1969,11 +1972,11 @@ manageSonglistImportiTunes (void *udata)
     return UICB_CONT;
   }
 
-  logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
+  logProcBegin (LOG_PROC, "managePlaylistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
   manage->impitunesstate = BDJ4_STATE_START;
 
-  logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
+  logProcEnd (LOG_PROC, "managePlaylistImportiTunes", "");
   return UICB_CONT;
 }
 
@@ -2348,14 +2351,14 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EXPORT,
-      manageSonglistExport);
+      managePlaylistExport);
   /* CONTEXT: managementui: menu selection: song list: export */
   menuitem = uiMenuCreateItem (menu, _("Export Playlist"),
       manage->callbacks [MANAGE_MENU_CB_SL_EXPORT]);
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_EXP,
-      manageSonglistExportBDJ4);
+      managePlaylistExportBDJ4);
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
   menuitem = uiMenuCreateItem (menu, tbuff,
@@ -2371,14 +2374,14 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_IMPORT,
-      manageSonglistImport);
+      managePlaylistImport);
   /* CONTEXT: managementui: menu selection: song list: import */
   menuitem = uiMenuCreateItem (menu, _("Import Playlist"),
       manage->callbacks [MANAGE_MENU_CB_SL_IMPORT]);
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_IMP,
-      manageSonglistImportBDJ4);
+      managePlaylistImportBDJ4);
   /* CONTEXT: managementui: menu selection: song list: import: import from ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
   menuitem = uiMenuCreateItem (menu, tbuff,
@@ -2386,7 +2389,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
-      manageSonglistImportiTunes);
+      managePlaylistImportiTunes);
   /* CONTEXT: managementui: menu selection: song list: import: import from itunes */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
   menuitem = uiMenuCreateItem (menu, tbuff,
@@ -3091,7 +3094,7 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
 /* export and import (m3u, xspf, jspf) */
 
 static bool
-manageSonglistExport (void *udata)
+managePlaylistExport (void *udata)
 {
   manageui_t  *manage = udata;
   char        tbuff [200];
@@ -3104,16 +3107,16 @@ manageSonglistExport (void *udata)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "manageSonglistExport");
+  logProcBegin (LOG_PROC, "managePlaylistExport");
   manage->exportactive = true;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export");
 
   manageSonglistSave (manage);
 
-  uiexpplDialog (manage->uiexppl);
+  slname = uimusicqGetSonglistName (manage->slmusicq);
+  uiexpplDialog (manage->uiexppl, slname);
 
 #if 0
-  slname = uimusicqGetSonglistName (manage->slmusicq);
 
   /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export Playlist"));
@@ -3124,7 +3127,7 @@ manageSonglistExport (void *udata)
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    // uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
+    // uimusicqExport (manage->slmusicq, fn, slname, EI_TYPE_M3U);
     mdfree (fn);
   }
   uiSelectFree (selectdata);
@@ -3132,12 +3135,12 @@ manageSonglistExport (void *udata)
 #endif
 
   manage->exportactive = false;
-  logProcEnd (LOG_PROC, "manageSonglistExport", "");
+  logProcEnd (LOG_PROC, "managePlaylistExport", "");
   return UICB_CONT;
 }
 
 static bool
-manageSonglistImport (void *udata)
+managePlaylistImport (void *udata)
 {
   manageui_t  *manage = udata;
   char        nplname [200];
@@ -3150,7 +3153,7 @@ manageSonglistImport (void *udata)
   }
 
   manage->importactive = true;
-  logProcBegin (LOG_PROC, "manageSonglistImport");
+  logProcBegin (LOG_PROC, "managePlaylistImport");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
   manageSonglistSave (manage);
@@ -3225,7 +3228,7 @@ fprintf (stderr, "running m3uimport\n");
 
   manageLoadPlaylistCB (manage, nplname);
   manage->importactive = false;
-  logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
+  logProcEnd (LOG_PROC, "managePlaylistImportM3U", "");
   return UICB_CONT;
 }
 
@@ -3233,7 +3236,7 @@ fprintf (stderr, "running m3uimport\n");
 /* export/import bdj4 */
 
 static bool
-manageSonglistExportBDJ4 (void *udata)
+managePlaylistExportBDJ4 (void *udata)
 {
   manageui_t  *manage = udata;
 
@@ -3242,7 +3245,7 @@ manageSonglistExportBDJ4 (void *udata)
   }
 
   manage->exportbdj4active = true;
-  logProcBegin (LOG_PROC, "manageSonglistExportBDJ4");
+  logProcBegin (LOG_PROC, "managePlaylistExportBDJ4");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export bdj4");
 
   manageSonglistSave (manage);
@@ -3250,12 +3253,12 @@ manageSonglistExportBDJ4 (void *udata)
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_EXPORT);
 
   manage->exportbdj4active = false;
-  logProcEnd (LOG_PROC, "manageSonglistExportBDJ4", "");
+  logProcEnd (LOG_PROC, "managePlaylistExportBDJ4", "");
   return UICB_CONT;
 }
 
 static bool
-manageSonglistImportBDJ4 (void *udata)
+managePlaylistImportBDJ4 (void *udata)
 {
   manageui_t  *manage = udata;
 
@@ -3264,7 +3267,7 @@ manageSonglistImportBDJ4 (void *udata)
   }
 
   manage->importbdj4active = true;
-  logProcBegin (LOG_PROC, "manageSonglistImportBDJ4");
+  logProcBegin (LOG_PROC, "managePlaylistImportBDJ4");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import bdj4");
 
   manageSonglistSave (manage);
@@ -3272,7 +3275,15 @@ manageSonglistImportBDJ4 (void *udata)
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_IMPORT);
 
   manage->importbdj4active = false;
-  logProcEnd (LOG_PROC, "manageSonglistImportBDJ4", "");
+  logProcEnd (LOG_PROC, "managePlaylistImportBDJ4", "");
+  return UICB_CONT;
+}
+
+static long
+managePlaylistExportResponseHandler (void *udata, const char *str)
+{
+  manageui_t  *manage = udata;
+
   return UICB_CONT;
 }
 

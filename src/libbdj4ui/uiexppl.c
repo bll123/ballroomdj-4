@@ -53,10 +53,10 @@ typedef struct {
   const char  *ext;
 } uiexppltype_t;
 
-uiexppltype_t exptypes [BDJ4_EI_TYPE_MAX] = {
-  [BDJ4_EI_TYPE_JSPF] = { BDJ4_EI_TYPE_JSPF,  "JSPF", ".jspf" },
-  [BDJ4_EI_TYPE_M3U] = { BDJ4_EI_TYPE_M3U,   "M3U",  ".m3u" },
-  [BDJ4_EI_TYPE_XSPF] = { BDJ4_EI_TYPE_XSPF,  "XSPF",  ".xspf" },
+uiexppltype_t exptypes [EI_TYPE_MAX] = {
+  [EI_TYPE_JSPF] = { EI_TYPE_JSPF,  "JSPF", ".jspf" },
+  [EI_TYPE_M3U] = { EI_TYPE_M3U,   "M3U",  ".m3u" },
+  [EI_TYPE_XSPF] = { EI_TYPE_XSPF,  "XSPF",  ".xspf" },
 };
 
 typedef struct uiexppl {
@@ -66,6 +66,7 @@ typedef struct uiexppl {
   nlist_t           *options;
   callback_t        *callbacks [UIEXPPL_CB_MAX];
   nlist_t           *typelist;
+  char              *slname;
   int               currexptype;
   bool              isactive : 1;
   bool              in_validation : 1;
@@ -95,9 +96,10 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
   for (int i = 0; i < UIEXPPL_CB_MAX; ++i) {
     uiexppl->callbacks [i] = NULL;
   }
+  uiexppl->slname = NULL;
+  uiexppl->currexptype = EI_TYPE_M3U;
   uiexppl->isactive = false;
   uiexppl->in_validation = false;
-  uiexppl->currexptype = BDJ4_EI_TYPE_M3U;
 
   uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
       uiexpplResponseHandler, uiexppl);
@@ -107,8 +109,8 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
       uiexpplExportTypeCallback, uiexppl, NULL);
 
   tlist = nlistAlloc ("exptype", LIST_ORDERED, NULL);
-  nlistSetSize (tlist, BDJ4_EI_TYPE_MAX);
-  for (int i = 0; i < BDJ4_EI_TYPE_MAX; ++i) {
+  nlistSetSize (tlist, EI_TYPE_MAX);
+  for (int i = 0; i < EI_TYPE_MAX; ++i) {
     nlistSetStr (tlist, exptypes [i].type, exptypes [i].display);
   }
   uiexppl->typelist = tlist;
@@ -127,6 +129,7 @@ uiexpplFree (uiexppl_t *uiexppl)
     callbackFree (uiexppl->callbacks [i]);
   }
   nlistFree (uiexppl->typelist);
+  dataFree (uiexppl->slname);
   /* free-dialog frees all of the widget containers */
   uiexpplFreeDialog (uiexppl);
   mdfree (uiexppl);
@@ -142,7 +145,7 @@ uiexpplSetResponseCallback (uiexppl_t *uiexppl, callback_t *uicb)
 }
 
 bool
-uiexpplDialog (uiexppl_t *uiexppl)
+uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
 {
   int         x, y;
 
@@ -151,6 +154,12 @@ uiexpplDialog (uiexppl_t *uiexppl)
   }
 
   logProcBegin (LOG_PROC, "uiexpplDialog");
+  dataFree (uiexppl->slname);
+  uiexppl->slname = NULL;
+  if (slname != NULL) {
+    uiexppl->slname = mdstrdup (slname);
+  }
+
   uiexpplCreateDialog (uiexppl);
   uiDialogShow (uiexppl->wcont [UIEXPPL_W_DIALOG]);
   uiexppl->isactive = true;
@@ -313,11 +322,12 @@ uiexpplTargetDialog (void *udata)
   }
 
   odir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
-  *tname = '\0';
-//  snprintf (tname, sizeof (tname), "%s.m3u", slname);
+  snprintf (tname, sizeof (tname), "%s/%s%s",
+      odir, uiexppl->slname, exptypes [uiexppl->currexptype].ext);
   selectdata = uiSelectInit (uiexppl->parentwin,
       /* CONTEXT: managementui: export playlist: title of save dialog */
-      _("Export Playlist"), odir, tname,
+      _("Export Playlist"),
+      odir, tname,
       /* CONTEXT: managementui: export playlist: name of file export type */
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
@@ -357,9 +367,12 @@ uiexpplResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      const char  *str;
+
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: apply");
+      str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
       if (uiexppl->responsecb != NULL) {
-        callbackHandler (uiexppl->responsecb);
+        callbackHandlerStr (uiexppl->responsecb, str);
       }
       uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
@@ -382,9 +395,11 @@ uiexpplFreeDialog (uiexppl_t *uiexppl)
 static int
 uiexpplValidateTarget (uiwcont_t *entry, void *udata)
 {
-  uiexppl_t  *uiexppl = udata;
+  uiexppl_t   *uiexppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
+  char        tdir [MAXPATHLEN];
+  pathinfo_t  *pi;
 
   if (uiexppl->in_validation) {
     return UICB_CONT;
@@ -395,6 +410,11 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
   str = uiEntryGetValue (entry);
   *tbuff = '\0';
   pathNormalizePath (tbuff, sizeof (tbuff));
+
+  pi = pathInfo (tbuff);
+  snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
+  pathInfoFree (pi);
 
   /* validation failures: */
   /*   target is not set (no message displayed) */
@@ -439,6 +459,7 @@ uiexpplExportTypeCallback (void *udata)
       ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
 fprintf (stderr, "mismatch curr:%s path:%.*s\n", exptypes [uiexppl->currexptype].ext, (int) pi->elen, pi->extension);
   }
+  pathInfoFree (pi);
 
   uiexppl->in_validation = false;
   return UICB_CONT;
