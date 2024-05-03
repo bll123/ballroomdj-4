@@ -23,62 +23,72 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathinfo.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uiexppl.h"
-#include "uiplaylist.h"
 #include "uiutils.h"
 #include "validate.h"
 
 enum {
   UIEXPPL_CB_DIALOG,
+  UIEXPPL_CB_EXP_TYPE,
   UIEXPPL_CB_TARGET,
-  UIEXPPL_CB_SEL,
   UIEXPPL_CB_MAX,
 };
 
 enum {
-  UIEXPPL_W_STATUS_MSG,
-  UIEXPPL_W_ERROR_MSG,
   UIEXPPL_W_DIALOG,
+  UIEXPPL_W_EXP_TYPE,
   UIEXPPL_W_TARGET,
-  UIEXPPL_W_NEWNAME,
   UIEXPPL_W_TGT_BUTTON,
   UIEXPPL_W_MAX,
 };
 
+typedef struct {
+  int         type;
+  const char  *display;
+  const char  *ext;
+} uiexppltype_t;
+
+uiexppltype_t exptypes [BDJ4_EI_TYPE_MAX] = {
+  [BDJ4_EI_TYPE_JSPF] = { BDJ4_EI_TYPE_JSPF,  "JSPF", ".jspf" },
+  [BDJ4_EI_TYPE_M3U] = { BDJ4_EI_TYPE_M3U,   "M3U",  ".m3u" },
+  [BDJ4_EI_TYPE_XSPF] = { BDJ4_EI_TYPE_XSPF,  "XSPF",  ".xspf" },
+};
+
 typedef struct uiexppl {
   uiwcont_t         *wcont [UIEXPPL_W_MAX];
-  uiplaylist_t      *uiplaylist;
   callback_t        *responsecb;
   uiwcont_t         *parentwin;
   nlist_t           *options;
   callback_t        *callbacks [UIEXPPL_CB_MAX];
+  nlist_t           *typelist;
+  int               currexptype;
   bool              isactive : 1;
-} UIEXPPL_t;
+  bool              in_validation : 1;
+} uiexppl_t;
 
 /* export playlist */
-static void   uiexpplCreateDialog (UIEXPPL_t *uiexppl);
+static void   uiexpplCreateDialog (uiexppl_t *uiexppl);
 static bool   uiexpplTargetDialog (void *udata);
-static void   uiexpplInitDisplay (UIEXPPL_t *uiexppl);
 static bool   uiexpplResponseHandler (void *udata, long responseid);
-static void   uiexpplFreeDialog (UIEXPPL_t *uiexppl);
+static void   uiexpplFreeDialog (uiexppl_t *uiexppl);
 static int    uiexpplValidateTarget (uiwcont_t *entry, void *udata);
-static bool   uiexpplSelectHandler (void *udata, long idx);
-static int    uiexpplValidateNewName (uiwcont_t *entry, void *udata);
+static bool   uiexpplExportTypeCallback (void *udata);
 
-UIEXPPL_t *
+uiexppl_t *
 uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
 {
-  UIEXPPL_t  *uiexppl;
+  uiexppl_t   *uiexppl;
+  nlist_t     *tlist;
 
-  uiexppl = mdmalloc (sizeof (UIEXPPL_t));
+  uiexppl = mdmalloc (sizeof (uiexppl_t));
   for (int j = 0; j < UIEXPPL_W_MAX; ++j) {
     uiexppl->wcont [j] = NULL;
   }
-  uiexppl->uiplaylist = NULL;
   uiexppl->responsecb = NULL;
   uiexppl->parentwin = windowp;
   uiexppl->options = opts;
@@ -86,19 +96,28 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiexppl->callbacks [i] = NULL;
   }
   uiexppl->isactive = false;
+  uiexppl->in_validation = false;
+  uiexppl->currexptype = BDJ4_EI_TYPE_M3U;
 
   uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
       uiexpplResponseHandler, uiexppl);
   uiexppl->callbacks [UIEXPPL_CB_TARGET] = callbackInit (
       uiexpplTargetDialog, uiexppl, NULL);
-  uiexppl->callbacks [UIEXPPL_CB_SEL] = callbackInitLong (
-      uiexpplSelectHandler, uiexppl);
+  uiexppl->callbacks [UIEXPPL_CB_EXP_TYPE] = callbackInit (
+      uiexpplExportTypeCallback, uiexppl, NULL);
+
+  tlist = nlistAlloc ("exptype", LIST_ORDERED, NULL);
+  nlistSetSize (tlist, BDJ4_EI_TYPE_MAX);
+  for (int i = 0; i < BDJ4_EI_TYPE_MAX; ++i) {
+    nlistSetStr (tlist, exptypes [i].type, exptypes [i].display);
+  }
+  uiexppl->typelist = tlist;
 
   return uiexppl;
 }
 
 void
-uiexpplFree (UIEXPPL_t *uiexppl)
+uiexpplFree (uiexppl_t *uiexppl)
 {
   if (uiexppl == NULL) {
     return;
@@ -107,12 +126,14 @@ uiexpplFree (UIEXPPL_t *uiexppl)
   for (int i = 0; i < UIEXPPL_CB_MAX; ++i) {
     callbackFree (uiexppl->callbacks [i]);
   }
+  nlistFree (uiexppl->typelist);
+  /* free-dialog frees all of the widget containers */
   uiexpplFreeDialog (uiexppl);
   mdfree (uiexppl);
 }
 
 void
-uiexpplSetResponseCallback (UIEXPPL_t *uiexppl, callback_t *uicb)
+uiexpplSetResponseCallback (uiexppl_t *uiexppl, callback_t *uicb)
 {
   if (uiexppl == NULL) {
     return;
@@ -121,7 +142,7 @@ uiexpplSetResponseCallback (UIEXPPL_t *uiexppl, callback_t *uicb)
 }
 
 bool
-uiexpplDialog (UIEXPPL_t *uiexppl)
+uiexpplDialog (uiexppl_t *uiexppl)
 {
   int         x, y;
 
@@ -131,7 +152,6 @@ uiexpplDialog (UIEXPPL_t *uiexppl)
 
   logProcBegin (LOG_PROC, "uiexpplDialog");
   uiexpplCreateDialog (uiexppl);
-  uiexpplInitDisplay (uiexppl);
   uiDialogShow (uiexppl->wcont [UIEXPPL_W_DIALOG]);
   uiexppl->isactive = true;
 
@@ -143,7 +163,7 @@ uiexpplDialog (UIEXPPL_t *uiexppl)
 }
 
 void
-uiexpplDialogClear (UIEXPPL_t *uiexppl)
+uiexpplDialogClear (uiexppl_t *uiexppl)
 {
   if (uiexppl == NULL) {
     return;
@@ -154,7 +174,7 @@ uiexpplDialogClear (UIEXPPL_t *uiexppl)
 
 /* delayed entry validation for the audio file needs to be run */
 void
-uiexpplProcess (UIEXPPL_t *uiexppl)
+uiexpplProcess (uiexppl_t *uiexppl)
 {
   if (uiexppl == NULL) {
     return;
@@ -163,64 +183,20 @@ uiexpplProcess (UIEXPPL_t *uiexppl)
     return;
   }
 
-  uiEntryValidate (
-    uiexppl->wcont [UIEXPPL_W_TARGET], false);
-  uiEntryValidate (
-    uiexppl->wcont [UIEXPPL_W_NEWNAME], false);
-}
-
-char *
-uiexpplGetDir (UIEXPPL_t *uiexppl)
-{
-  const char  *tdir;
-  char        *dir;
-
-  if (uiexppl == NULL) {
-    return NULL;
-  }
-
-  tdir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
-  dir = mdstrdup (tdir);
-  return dir;
-}
-
-const char *
-uiexpplGetNewName (UIEXPPL_t *uiexppl)
-{
-  const char  *newname;
-
-  if (uiexppl == NULL) {
-    return NULL;
-  }
-
-  newname = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_NEWNAME]);
-  return newname;
-}
-
-void
-uiexpplUpdateStatus (UIEXPPL_t *uiexppl, int count, int tot)
-{
-  if (uiexppl == NULL) {
-    return;
-  }
-
-  uiutilsProgressStatus (
-      uiexppl->wcont [UIEXPPL_W_STATUS_MSG],
-      count, tot);
+  uiEntryValidate (uiexppl->wcont [UIEXPPL_W_TARGET], false);
 }
 
 /* internal routines */
 
 static void
-uiexpplCreateDialog (UIEXPPL_t *uiexppl)
+uiexpplCreateDialog (uiexppl_t *uiexppl)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
   uiwcont_t     *szgrp;  // labels
-  const char    *buttontext;
-  char          tbuff [100];
   const char    *odir = NULL;
+  char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uiexpplCreateDialog");
 
@@ -232,23 +208,18 @@ uiexpplCreateDialog (UIEXPPL_t *uiexppl)
     return;
   }
 
-  buttontext = "";
-  *tbuff = '\0';
-  /* CONTEXT: export playlist dialog: export button */
-  buttontext = _("Export");
-  /* CONTEXT: export for ballroomdj: title of dialog */
-  snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-
   szgrp = uiCreateSizeGroupHoriz ();
 
   uiexppl->wcont [UIEXPPL_W_DIALOG] =
       uiCreateDialog (uiexppl->parentwin,
       uiexppl->callbacks [UIEXPPL_CB_DIALOG],
-      tbuff,
-      /* CONTEXT: export/import bdj4 dialog: closes the dialog */
+      /* CONTEXT: export playlist: title of dialog */
+      _("Export Playlist"),
+      /* CONTEXT: export playlist: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
-      buttontext,
+      /* CONTEXT: export playlist dialog: export button */
+      _("Export"),
       RESPONSE_APPLY,
       NULL
       );
@@ -260,22 +231,24 @@ uiexpplCreateDialog (UIEXPPL_t *uiexppl)
   uiDialogPackInDialog (
       uiexppl->wcont [UIEXPPL_W_DIALOG], vbox);
 
-  /* status msg */
+  /* spinbox for export type */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiexppl->wcont [UIEXPPL_W_STATUS_MSG] = uiwidgetp;
+  uiwidgetp = uiCreateColonLabel (
+      /* CONTEXT: export playlist: type of export*/
+      _("Export Type"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  /* error msg */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
-
+  uiwidgetp = uiSpinboxTextCreate (uiexppl);
+  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiexppl->typelist), 5,
+      uiexppl->typelist, NULL, NULL);
+  uiSpinboxTextSetValue (uiwidgetp, uiexppl->currexptype);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiexppl->wcont [UIEXPPL_W_EXP_TYPE] = uiwidgetp;
   uiwcontFree (hbox);
 
   /* target folder */
@@ -307,9 +280,9 @@ uiexpplCreateDialog (UIEXPPL_t *uiexppl)
   uiEntrySetValidate (uiwidgetp,
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
+  /* target folder button */
   uiwidgetp = uiCreateButton (
-      uiexppl->callbacks [UIEXPPL_CB_TARGET],
-      "", NULL);
+      uiexppl->callbacks [UIEXPPL_CB_TARGET], "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -317,46 +290,11 @@ uiexpplCreateDialog (UIEXPPL_t *uiexppl)
 
   uiwcontFree (hbox);
 
-  /* playlist selector */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  /* CONTEXT: export/import bdj4: playlist: select the song list */
-  uiwidgetp = uiCreateColonLabel (_("Song List"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiexppl->uiplaylist = uiplaylistCreate (
-      uiexppl->wcont [UIEXPPL_W_DIALOG],
-      hbox, PL_LIST_NORMAL);
-  uiplaylistSetSelectCallback (uiexppl->uiplaylist,
-      uiexppl->callbacks [UIEXPPL_CB_SEL]);
-
-  uiwcontFree (hbox);
-
-  /* new name */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: export/import bdj4: new song list name */
-      _("New Song List Name"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiEntryInit (30, MAXPATHLEN);
-  uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiexppl->wcont [UIEXPPL_W_NEWNAME] = uiwidgetp;
-
-  uiEntrySetValidate (uiwidgetp,
-      uiexpplValidateNewName, uiexppl, UIENTRY_IMMEDIATE);
-
-  uiwcontFree (hbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
+
+  uiSpinboxTextSetValueChangedCallback (uiexppl->wcont [UIEXPPL_W_EXP_TYPE],
+      uiexppl->callbacks [UIEXPPL_CB_EXP_TYPE]);
 
   logProcEnd (LOG_PROC, "uiexpplCreateDialog", "");
 }
@@ -364,26 +302,31 @@ uiexpplCreateDialog (UIEXPPL_t *uiexppl)
 static bool
 uiexpplTargetDialog (void *udata)
 {
-  UIEXPPL_t  *uiexppl = udata;
+  uiexppl_t  *uiexppl = udata;
   uiselect_t  *selectdata;
   const char  *odir = NULL;
-  char        *dir = NULL;
+  char        *fn = NULL;
+  char        tname [200];
 
   if (uiexppl == NULL) {
     return UICB_STOP;
   }
 
   odir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
+  *tname = '\0';
+//  snprintf (tname, sizeof (tname), "%s.m3u", slname);
   selectdata = uiSelectInit (uiexppl->parentwin,
-      /* CONTEXT: export/import bdj4 folder selection dialog: window title */
-      _("Select Folder"), odir, NULL, NULL, NULL);
+      /* CONTEXT: managementui: export playlist: title of save dialog */
+      _("Export Playlist"), odir, tname,
+      /* CONTEXT: managementui: export playlist: name of file export type */
+      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
-  dir = uiSelectDirDialog (selectdata);
-  if (dir != NULL) {
+  fn = uiSelectFileDialog (selectdata);
+  if (fn != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], dir);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
-    mdfree (dir);   // allocated by gtk
+    uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], fn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "selected file: %s", fn);
+    mdfree (fn);   // allocated by gtk
   }
   uiSelectFree (selectdata);
 
@@ -391,18 +334,10 @@ uiexpplTargetDialog (void *udata)
 }
 
 
-static void
-uiexpplInitDisplay (UIEXPPL_t *uiexppl)
-{
-  if (uiexppl == NULL) {
-    return;
-  }
-}
-
 static bool
 uiexpplResponseHandler (void *udata, long responseid)
 {
-  UIEXPPL_t  *uiexppl = udata;
+  uiexppl_t  *uiexppl = udata;
   int             x, y, ws;
 
   uiWindowGetPosition (
@@ -412,26 +347,21 @@ uiexpplResponseHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: del window");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: del window");
       uiexpplFreeDialog (uiexppl);
       break;
     }
     case RESPONSE_CLOSE: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: close window");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: close window");
       uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
     }
     case RESPONSE_APPLY: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: apply");
-      uiLabelSetText (
-          uiexppl->wcont [UIEXPPL_W_STATUS_MSG],
-          /* CONTEXT: please wait... status message */
-          _("Please wait\xe2\x80\xa6"));
-      /* do not close or hide the dialog; it will stay active and */
-      /* the status message will be updated */
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: apply");
       if (uiexppl->responsecb != NULL) {
         callbackHandler (uiexppl->responsecb);
       }
+      uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
     }
   }
@@ -441,93 +371,76 @@ uiexpplResponseHandler (void *udata, long responseid)
 }
 
 static void
-uiexpplFreeDialog (UIEXPPL_t *uiexppl)
+uiexpplFreeDialog (uiexppl_t *uiexppl)
 {
   for (int j = 0; j < UIEXPPL_W_MAX; ++j) {
     uiwcontFree (uiexppl->wcont [j]);
     uiexppl->wcont [j] = NULL;
   }
-  uiwcontFree (uiexppl->wcont [UIEXPPL_W_TGT_BUTTON]);
-  uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = NULL;
-  uiplaylistFree (uiexppl->uiplaylist);
-  uiexppl->uiplaylist = NULL;
 }
 
 static int
 uiexpplValidateTarget (uiwcont_t *entry, void *udata)
 {
-  UIEXPPL_t  *uiexppl = udata;
+  uiexppl_t  *uiexppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
 
-  uiLabelSetText (
-      uiexppl->wcont [UIEXPPL_W_ERROR_MSG], "");
+  if (uiexppl->in_validation) {
+    return UICB_CONT;
+  }
+
+  uiexppl->in_validation = true;
 
   str = uiEntryGetValue (entry);
   *tbuff = '\0';
-  if (str != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s/data", str);
-  }
   pathNormalizePath (tbuff, sizeof (tbuff));
 
-  /* validation failures:
-   *   target is not set (no message displayed)
-   *   target is not a directory
-   *   if importing, target/data is not a directory
-   */
-  if (! *str || ! fileopIsDirectory (str) || ! fileopIsDirectory (tbuff)) {
-    if (*str) {
-      uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG],
-          /* CONTEXT: export/import bdj4: invalid target folder */
-          _("Invalid Folder"));
-    }
+  /* validation failures: */
+  /*   target is not set (no message displayed) */
+  /*   target is a directory */
+  /* file may or may not exist */
+  if (! *str || fileopIsDirectory (str)) {
+    uiexppl->in_validation = false;
     return UIENTRY_ERROR;
   }
 
+// ### if there is a mismatch between the filename extension and
+//     the currexptype, set the currexptype and adjust the spinbox
+//     but only do this if the filename extension is set to one
+//     of the valid values.
+
+  uiexppl->in_validation = false;
   return UIENTRY_OK;
 }
 
 
 static bool
-uiexpplSelectHandler (void *udata, long idx)
+uiexpplExportTypeCallback (void *udata)
 {
-  UIEXPPL_t  *uiexppl = udata;
+  uiexppl_t   *uiexppl = udata;
   const char  *str;
+  char        tbuff [MAXPATHLEN];
+  pathinfo_t  *pi;
 
-  str = uiplaylistGetValue (uiexppl->uiplaylist);
-  uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_NEWNAME], str);
+  if (uiexppl->in_validation) {
+    return UICB_CONT;
+  }
+
+  uiexppl->in_validation = true;
+
+  uiexppl->currexptype = uiSpinboxTextGetValue (
+      uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
+
+  str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
+  strlcpy (tbuff, str, sizeof (tbuff));
+  pi = pathInfo (str);
+  if (pi->dlen > 0 &&
+      ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
+fprintf (stderr, "mismatch curr:%s path:%.*s\n", exptypes [uiexppl->currexptype].ext, (int) pi->elen, pi->extension);
+  }
+
+  uiexppl->in_validation = false;
   return UICB_CONT;
 }
 
-static int
-uiexpplValidateNewName (uiwcont_t *entry, void *udata)
-{
-  UIEXPPL_t  *uiexppl = udata;
-  uiwcont_t   *statusMsg = NULL;
-  uiwcont_t   *errorMsg = NULL;
-  int         rc = UIENTRY_ERROR;
-  const char  *str;
-  char        fn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-
-  statusMsg = uiexppl->wcont [UIEXPPL_W_STATUS_MSG];
-  errorMsg = uiexppl->wcont [UIEXPPL_W_ERROR_MSG];
-  uiLabelSetText (statusMsg, "");
-  uiLabelSetText (errorMsg, "");
-  rc = uiutilsValidatePlaylistName (entry, errorMsg);
-
-  if (rc == UIENTRY_OK) {
-    str = uiEntryGetValue (entry);
-    if (*str) {
-      pathbldMakePath (fn, sizeof (fn),
-          str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-      if (fileopFileExists (fn)) {
-        /* CONTEXT: import from bdj4: error message if the target song list already exists */
-        snprintf (tbuff, sizeof (tbuff), "%s: %s", str, _("Already Exists"));
-        uiLabelSetText (statusMsg, tbuff);
-      }
-    }
-  }
-
-  return rc;
-}

@@ -437,7 +437,7 @@ uieibdj4TargetDialog (void *udata)
   if (dir != NULL) {
     /* the validation process will be called */
     uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], dir);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "selected dir: %s", dir);
     mdfree (dir);   // allocated by gtk
   }
   uiSelectFree (selectdata);

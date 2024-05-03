@@ -154,6 +154,7 @@ enum {
   MANAGE_CB_SL_SEL_FILE,
   MANAGE_CB_BDJ4_EXP,
   MANAGE_CB_BDJ4_IMP,
+  MANAGE_CB_EXP_PL,
   MANAGE_CB_MAX,
 };
 
@@ -262,6 +263,8 @@ typedef struct {
   int               aaflags;
   int               applyadjstate;
   int               impitunesstate;
+  /* export playlist */
+  uiexppl_t         *uiexppl;
   /* export/import bdj4 */
   uieibdj4_t        *uieibdj4;
   eibdj4_t          *eibdj4;
@@ -460,6 +463,7 @@ main (int argc, char *argv[])
   manage.uieibdj4 = NULL;
   manage.eibdj4 = NULL;
   manage.expimpbdj4state = BDJ4_STATE_OFF;
+  manage.uiexppl = NULL;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -683,6 +687,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
+  uiexpplFree (manage->uiexppl);
   nlistFree (manage->removelist);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
@@ -997,12 +1002,15 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetSongSaveCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_SAVE]);
   uimusicqSetSongSaveCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_SAVE]);
 
-  manage->uieibdj4 = uieibdj4Init (manage->minfo.window,
-      manage->minfo.options);
+  manage->uieibdj4 = uieibdj4Init (manage->minfo.window, manage->minfo.options);
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_EXP], UIEIBDJ4_EXPORT);
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
+
+  manage->uiexppl = uiexpplInit (manage->minfo.window, manage->minfo.options);
+  uiexpplSetResponseCallback (manage->uiexppl,
+      manage->callbacks [MANAGE_CB_EXP_PL]);
 }
 
 static void
@@ -1166,6 +1174,7 @@ manageMainLoop (void *tmanage)
   }
 
   uieibdj4Process (manage->uieibdj4);
+  uiexpplProcess (manage->uiexppl);
   manageDbProcess (manage->managedb);
   uicopytagsProcess (manage->uict);
 
@@ -3101,6 +3110,9 @@ manageSonglistExport (void *udata)
 
   manageSonglistSave (manage);
 
+  uiexpplDialog (manage->uiexppl);
+
+#if 0
   slname = uimusicqGetSonglistName (manage->slmusicq);
 
   /* CONTEXT: managementui: song list export: title of save dialog */
@@ -3112,11 +3124,13 @@ manageSonglistExport (void *udata)
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
+    // uimusicqExport (manage->slmusicq, fn, slname, BDJ4_EI_TYPE_M3U);
     mdfree (fn);
   }
   uiSelectFree (selectdata);
   mdfree (slname);
+#endif
+
   manage->exportactive = false;
   logProcEnd (LOG_PROC, "manageSonglistExport", "");
   return UICB_CONT;

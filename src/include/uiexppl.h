@@ -15,8 +15,5 @@ void    uiexpplSetResponseCallback (uiexppl_t *uiexppl, callback_t *uicb);
 bool    uiexpplDialog (uiexppl_t *uiexppl);
 void    uiexpplDialogClear (uiexppl_t *uiexppl);
 void    uiexpplProcess (uiexppl_t *uiexppl);
-char    *uiexpplGetDir (uiexppl_t *uiexppl);
-const char  *uiexpplGetNewName (uiexppl_t *uiexppl);
-void uiexpplUpdateStatus (uiexppl_t *uiexppl, int count, int tot);
 
 #endif /* INC_UIEXPPL_H */
