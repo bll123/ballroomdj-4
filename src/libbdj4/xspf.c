@@ -144,9 +144,13 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     goto xspfImportExit;
   }
 
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "playlist/title", xpathCtx);
+  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/playlist/title", xpathCtx);
   mdextalloc (xpathObj);
   nodes = xpathObj->nodesetval;
+  if (nodes->nodeNr == 0) {
+    goto xspfImportExit;
+  }
+
   cur = nodes->nodeTab [0];
   xval = xmlNodeGetContent (cur);
   if (xval == NULL) {
@@ -158,7 +162,7 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   mdextfree (xpathObj);
   xmlXPathFreeObject (xpathObj);
 
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "playlist/trackList/track/location", xpathCtx);
+  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/playlist/trackList/track/location", xpathCtx);
   mdextalloc (xpathObj);
   if (xpathObj == NULL)  {
     goto xspfImportExit;
@@ -187,9 +191,6 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     strlcpy (tbuff, (char *) xval, sizeof (tbuff));
     pathNormalizePath (tbuff, strlen (tbuff));
     val = audiosrcRelativePath (tbuff, 0);
-    if (! fileopFileExists (val)) {
-      continue;
-    }
 
     song = dbGetByName (musicdb, val);
     if (song != NULL) {
