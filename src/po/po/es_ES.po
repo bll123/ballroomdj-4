@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-03-29\n"
-"PO-Revision-Date: 2024-04-22\n"
+"PO-Revision-Date: 2024-05-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -438,6 +438,7 @@ msgstr "Haz clic con el ratón en el recuadro azul siguiendo el ritmo."
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
@@ -770,22 +771,27 @@ msgid "Exit %s and restart."
 msgstr "Salga de %s y reinicie."
 
 #. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "Exportar"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr ""
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr ""
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
 msgstr "Exportar como %s"
-
-#. CONTEXT: managementui: menu selection: song list: export: export as m3u
-#. CONTEXT: managementui: song list export: title of save dialog
-#, c-format
-msgid "Export as M3U Playlist"
-msgstr "Exportar como lista de reproducción M3U"
 
 #. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
@@ -794,6 +800,7 @@ msgid "Export for %s"
 msgstr "Exportar para %s"
 
 #. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
 msgid "Export to"
 msgstr "Exportar a"
 
@@ -914,10 +921,10 @@ msgstr "Si no hay ninguna instalación de BallroomDJ 3, deje la entrada en blanc
 msgid "Import"
 msgstr "Importar"
 
-#. CONTEXT: managementui: menu selection: song list: import: import m3u
+#. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
-msgid "Import M3U"
-msgstr "Importar M3U"
+msgid "Import Playlist"
+msgstr ""
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
@@ -1027,11 +1034,6 @@ msgstr "Bajo %s"
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
 msgstr "Nivel bajo de baile"
-
-#. CONTEXT: managementui: song list export: name of file save type
-#. CONTEXT: managementui: song list import: name of file type
-msgid "M3U Files"
-msgstr "Archivos M3U"
 
 #. CONTEXT: label: measures per minute
 #. CONTEXT: bpm counter: MPM
@@ -1351,6 +1353,11 @@ msgstr "Gestión de listas de reproducción"
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist Type"
 msgstr "Tipo de lista de reproducción"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: managementui: song list import: name of file import type
+msgid "Playlists"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
