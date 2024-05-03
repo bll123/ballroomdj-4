@@ -51,12 +51,13 @@ typedef struct {
   int         type;
   const char  *display;
   const char  *ext;
+  const char  *extb;
 } uiexppltype_t;
 
 uiexppltype_t exptypes [EI_TYPE_MAX] = {
-  [EI_TYPE_JSPF] = { EI_TYPE_JSPF,  "JSPF", ".jspf" },
-  [EI_TYPE_M3U] = { EI_TYPE_M3U,   "M3U",  ".m3u" },
-  [EI_TYPE_XSPF] = { EI_TYPE_XSPF,  "XSPF",  ".xspf" },
+  [EI_TYPE_JSPF] = { EI_TYPE_JSPF,  "JSPF", ".jspf", NULL },
+  [EI_TYPE_M3U] = { EI_TYPE_M3U,   "M3U",  ".m3u", ".m3u8" },
+  [EI_TYPE_XSPF] = { EI_TYPE_XSPF,  "XSPF",  ".xspf", NULL },
 };
 
 typedef struct uiexppl {
@@ -279,13 +280,14 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
 
-  odir = nlistGetStr (uiexppl->options, MANAGE_EXP_BDJ4_DIR);
+  odir = nlistGetStr (uiexppl->options, MANAGE_EXP_PL_DIR);
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
   strlcpy (tbuff, odir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
+
   uiEntrySetValidate (uiwidgetp,
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
@@ -313,17 +315,22 @@ uiexpplTargetDialog (void *udata)
 {
   uiexppl_t  *uiexppl = udata;
   uiselect_t  *selectdata;
-  const char  *odir = NULL;
+  const char  *str;
+  char        odir [MAXPATHLEN];
   char        *fn = NULL;
   char        tname [200];
+  pathinfo_t  *pi;
 
   if (uiexppl == NULL) {
     return UICB_STOP;
   }
 
-  odir = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
-  snprintf (tname, sizeof (tname), "%s/%s%s",
-      odir, uiexppl->slname, exptypes [uiexppl->currexptype].ext);
+  str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
+  pi = pathInfo (str);
+  snprintf (odir, sizeof (odir), "%.*s", (int) pi->dlen, pi->dirname);
+  pathInfoFree (pi);
+  snprintf (tname, sizeof (tname), "%s%s",
+      uiexppl->slname, exptypes [uiexppl->currexptype].ext);
   selectdata = uiSelectInit (uiexppl->parentwin,
       /* CONTEXT: managementui: export playlist: title of save dialog */
       _("Export Playlist"),
@@ -408,13 +415,6 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
   uiexppl->in_validation = true;
 
   str = uiEntryGetValue (entry);
-  *tbuff = '\0';
-  pathNormalizePath (tbuff, sizeof (tbuff));
-
-  pi = pathInfo (tbuff);
-  snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
-  pathInfoFree (pi);
 
   /* validation failures: */
   /*   target is not set (no message displayed) */
@@ -425,10 +425,25 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
     return UIENTRY_ERROR;
   }
 
-// ### if there is a mismatch between the filename extension and
-//     the currexptype, set the currexptype and adjust the spinbox
-//     but only do this if the filename extension is set to one
-//     of the valid values.
+  strlcpy (tbuff, str, sizeof (tbuff));
+  pathNormalizePath (tbuff, sizeof (tbuff));
+
+  pi = pathInfo (tbuff);
+  snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
+
+  if (pi->dlen > 0 &&
+      ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
+    for (int i = 0; i < EI_TYPE_MAX; ++i) {
+      if (pathInfoExtCheck (pi, exptypes [i].ext) ||
+          (exptypes [i].extb != NULL &&
+          pathInfoExtCheck (pi, exptypes [i].extb))) {
+        uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
+        uiexppl->currexptype = i;
+      }
+    }
+  }
+  pathInfoFree (pi);
 
   uiexppl->in_validation = false;
   return UIENTRY_OK;
@@ -440,7 +455,6 @@ uiexpplExportTypeCallback (void *udata)
 {
   uiexppl_t   *uiexppl = udata;
   const char  *str;
-  char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
 
   if (uiexppl->in_validation) {
@@ -453,11 +467,17 @@ uiexpplExportTypeCallback (void *udata)
       uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
 
   str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
-  strlcpy (tbuff, str, sizeof (tbuff));
   pi = pathInfo (str);
   if (pi->dlen > 0 &&
       ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
-fprintf (stderr, "mismatch curr:%s path:%.*s\n", exptypes [uiexppl->currexptype].ext, (int) pi->elen, pi->extension);
+    char        tbuff [MAXPATHLEN];
+
+    strlcpy (tbuff, str, sizeof (tbuff));
+    snprintf (tbuff, sizeof (tbuff), "%.*s/%.*s%s",
+        (int) pi->dlen, pi->dirname,
+        (int) pi->blen, pi->basename,
+        exptypes [uiexppl->currexptype].ext);
+    uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
   }
   pathInfoFree (pi);
 
