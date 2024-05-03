@@ -399,7 +399,7 @@ static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int d
 /* playlist */
 static bool     managePlaylistExport (void *udata);
 static bool     managePlaylistImport (void *udata);
-static long     managePlaylistExportResponseHandler (void *udata, const char *str);
+static bool     managePlaylistExportRespHandler (void *udata, const char *str, int type);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -1010,8 +1010,8 @@ manageInitializeUI (manageui_t *manage)
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
 
   manage->uiexppl = uiexpplInit (manage->minfo.window, manage->minfo.options);
-  manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitStr (
-      managePlaylistExportResponseHandler, manage);
+  manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitStrInt (
+      managePlaylistExportRespHandler, manage);
   uiexpplSetResponseCallback (manage->uiexppl,
       manage->callbacks [MANAGE_CB_EXP_PL]);
 }
@@ -3097,10 +3097,6 @@ static bool
 managePlaylistExport (void *udata)
 {
   manageui_t  *manage = udata;
-  char        tbuff [200];
-  char        tname [200];
-  uiselect_t  *selectdata;
-  char        *fn;
   char        *slname;
 
   if (manage->exportactive) {
@@ -3115,24 +3111,7 @@ managePlaylistExport (void *udata)
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
   uiexpplDialog (manage->uiexppl, slname);
-
-#if 0
-
-  /* CONTEXT: managementui: song list export: title of save dialog */
-  snprintf (tbuff, sizeof (tbuff), _("Export Playlist"));
-  snprintf (tname, sizeof (tname), "%s.m3u", slname);
-  selectdata = uiSelectInit (manage->minfo.window,
-      tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
-      /* CONTEXT: managementui: song list export: name of file export type */
-      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
-  fn = uiSaveFileDialog (selectdata);
-  if (fn != NULL) {
-    // uimusicqExport (manage->slmusicq, fn, slname, EI_TYPE_M3U);
-    mdfree (fn);
-  }
-  uiSelectFree (selectdata);
   mdfree (slname);
-#endif
 
   manage->exportactive = false;
   logProcEnd (LOG_PROC, "managePlaylistExport", "");
@@ -3279,10 +3258,15 @@ managePlaylistImportBDJ4 (void *udata)
   return UICB_CONT;
 }
 
-static long
-managePlaylistExportResponseHandler (void *udata, const char *str)
+static bool
+managePlaylistExportRespHandler (void *udata, const char *str, int type)
 {
   manageui_t  *manage = udata;
+  char        *slname;
+
+  slname = uimusicqGetSonglistName (manage->slmusicq);
+  uimusicqExport (manage->slmusicq, str, slname, type);
+  mdfree (slname);
 
   return UICB_CONT;
 }

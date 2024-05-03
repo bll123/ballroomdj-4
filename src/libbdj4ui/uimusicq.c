@@ -270,14 +270,19 @@ void
 uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int exptype)
 {
   uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
-  if (exptype == EI_TYPE_M3U) {
-    m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
-  }
-  if (exptype == EI_TYPE_XSPF) {
-    xspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
-  }
-  if (exptype == EI_TYPE_JSPF) {
-    jspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+  switch (exptype) {
+    case EI_TYPE_M3U: {
+      m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      break;
+    }
+    case EI_TYPE_XSPF: {
+      xspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      break;
+    }
+    case EI_TYPE_JSPF: {
+      jspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      break;
+    }
   }
 }
 

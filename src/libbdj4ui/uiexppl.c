@@ -68,7 +68,7 @@ typedef struct uiexppl {
   callback_t        *callbacks [UIEXPPL_CB_MAX];
   nlist_t           *typelist;
   char              *slname;
-  int               currexptype;
+  int               exptype;
   bool              isactive : 1;
   bool              in_validation : 1;
 } uiexppl_t;
@@ -98,7 +98,7 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiexppl->callbacks [i] = NULL;
   }
   uiexppl->slname = NULL;
-  uiexppl->currexptype = EI_TYPE_M3U;
+  uiexppl->exptype = EI_TYPE_M3U;
   uiexppl->isactive = false;
   uiexppl->in_validation = false;
 
@@ -256,7 +256,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwidgetp = uiSpinboxTextCreate (uiexppl);
   uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiexppl->typelist), 5,
       uiexppl->typelist, NULL, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, uiexppl->currexptype);
+  uiSpinboxTextSetValue (uiwidgetp, uiexppl->exptype);
   uiBoxPackStart (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_EXP_TYPE] = uiwidgetp;
   uiwcontFree (hbox);
@@ -284,7 +284,8 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
-  strlcpy (tbuff, odir, sizeof (tbuff));
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
+      odir, uiexppl->slname, exptypes [uiexppl->exptype].ext);
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
 
@@ -330,7 +331,7 @@ uiexpplTargetDialog (void *udata)
   snprintf (odir, sizeof (odir), "%.*s", (int) pi->dlen, pi->dirname);
   pathInfoFree (pi);
   snprintf (tname, sizeof (tname), "%s%s",
-      uiexppl->slname, exptypes [uiexppl->currexptype].ext);
+      uiexppl->slname, exptypes [uiexppl->exptype].ext);
   selectdata = uiSelectInit (uiexppl->parentwin,
       /* CONTEXT: managementui: export playlist: title of save dialog */
       _("Export Playlist"),
@@ -379,7 +380,7 @@ uiexpplResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: apply");
       str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
       if (uiexppl->responsecb != NULL) {
-        callbackHandlerStr (uiexppl->responsecb, str);
+        callbackHandlerStrInt (uiexppl->responsecb, str, uiexppl->exptype);
       }
       uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
@@ -433,13 +434,13 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
   nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
 
   if (pi->dlen > 0 &&
-      ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
+      ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
     for (int i = 0; i < EI_TYPE_MAX; ++i) {
       if (pathInfoExtCheck (pi, exptypes [i].ext) ||
           (exptypes [i].extb != NULL &&
           pathInfoExtCheck (pi, exptypes [i].extb))) {
         uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
-        uiexppl->currexptype = i;
+        uiexppl->exptype = i;
       }
     }
   }
@@ -463,20 +464,20 @@ uiexpplExportTypeCallback (void *udata)
 
   uiexppl->in_validation = true;
 
-  uiexppl->currexptype = uiSpinboxTextGetValue (
+  uiexppl->exptype = uiSpinboxTextGetValue (
       uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
 
   str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
   pi = pathInfo (str);
   if (pi->dlen > 0 &&
-      ! pathInfoExtCheck (pi, exptypes [uiexppl->currexptype].ext)) {
+      ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
     char        tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, str, sizeof (tbuff));
     snprintf (tbuff, sizeof (tbuff), "%.*s/%.*s%s",
         (int) pi->dlen, pi->dirname,
         (int) pi->blen, pi->basename,
-        exptypes [uiexppl->currexptype].ext);
+        exptypes [uiexppl->exptype].ext);
     uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
   }
   pathInfoFree (pi);
