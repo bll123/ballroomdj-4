@@ -62,7 +62,7 @@ if [[ $pofile == "" || $locale == en_GB || $locale == en_US ]]; then
   exit 0
 fi
 
-test -d "${TMPLDIR}/${locale}" || mkdir "${TMPLDIR}/${locale}"
+test -d "${TMPLDIR}/${slocale}" || mkdir "${TMPLDIR}/${slocale}"
 
 for fn in ${TMPLDIR}/*.html; do
   case $fn in
