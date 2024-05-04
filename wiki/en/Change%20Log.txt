@@ -4,7 +4,11 @@
 
 <!--
 
-**4.10.0 2024-5---**
+**4.10.1 2024-5---**
+
+-->
+
+**4.10.0 2024-5-4**
 
 * Bug Fixes:
     * Song Selection: Fix control-click and shift-click handling (introduced in 4.8.2).
@@ -13,8 +17,6 @@
 * New Features:
     * Song Selection: Right click may be used to select an entire classical work.
     * Export Playlist: XSPF and JSPF are now supported.  The dialog has been updated.
-
--->
 
 **4.9.0 2024-4-29**
 
@@ -867,4 +869,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_
+<br>_(Updated 2024-05-04 11:49:26; BDJ4 version 4.10.0)_
