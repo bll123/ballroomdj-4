@@ -50,6 +50,7 @@ enum {
   EXP_PL_POSITION_X,
   EXP_PL_POSITION_Y,
   MANAGE_EXP_PL_DIR,
+  MANAGE_EXP_PL_TYPE,
   /* the reload data is in its own data file, not the options file */
   RELOAD_CURR,
   PLUI_KEY_MAX,

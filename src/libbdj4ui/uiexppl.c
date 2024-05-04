@@ -98,9 +98,10 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiexppl->callbacks [i] = NULL;
   }
   uiexppl->slname = NULL;
-  uiexppl->exptype = EI_TYPE_M3U;
   uiexppl->isactive = false;
   uiexppl->in_validation = false;
+
+  uiexppl->exptype = nlistGetNum (uiexppl->options, MANAGE_EXP_PL_TYPE);
 
   uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
       uiexpplResponseHandler, uiexppl);
@@ -148,7 +149,9 @@ uiexpplSetResponseCallback (uiexppl_t *uiexppl, callback_t *uicb)
 bool
 uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
 {
-  int         x, y;
+  int           x, y;
+  const char    *odir = NULL;
+  char          tbuff [MAXPATHLEN];
 
   if (uiexppl == NULL) {
     return UICB_STOP;
@@ -162,6 +165,16 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   }
 
   uiexpplCreateDialog (uiexppl);
+
+  odir = nlistGetStr (uiexppl->options, MANAGE_EXP_PL_DIR);
+  if (odir == NULL) {
+    odir = sysvarsGetStr (SV_HOME);
+  }
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
+      odir, uiexppl->slname, exptypes [uiexppl->exptype].ext);
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
+
   uiDialogShow (uiexppl->wcont [UIEXPPL_W_DIALOG]);
   uiexppl->isactive = true;
 
@@ -205,8 +218,6 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
   uiwcont_t     *szgrp;  // labels
-  const char    *odir = NULL;
-  char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uiexpplCreateDialog");
 
@@ -279,15 +290,6 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
-
-  odir = nlistGetStr (uiexppl->options, MANAGE_EXP_PL_DIR);
-  if (odir == NULL) {
-    odir = sysvarsGetStr (SV_HOME);
-  }
-  snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
-      odir, uiexppl->slname, exptypes [uiexppl->exptype].ext);
-  pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
 
   uiEntrySetValidate (uiwidgetp,
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
@@ -432,6 +434,7 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
   pi = pathInfo (tbuff);
   snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
   nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
+  nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
 
   if (pi->dlen > 0 &&
       ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {

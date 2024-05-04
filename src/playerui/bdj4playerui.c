@@ -53,6 +53,7 @@
 #include "uinbutil.h"
 #include "uiplayer.h"
 #include "uiquickedit.h"
+#include "uiexppl.h"
 #include "uiextreq.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
@@ -357,6 +358,8 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetNum (plui.options, EXP_PL_POSITION_X, -1);
     nlistSetNum (plui.options, EXP_PL_POSITION_Y, -1);
+    nlistSetStr (plui.options, MANAGE_EXP_PL_DIR, "");
+    nlistSetNum (plui.options, MANAGE_EXP_PL_TYPE, EI_TYPE_M3U);
     nlistSetStr (plui.options, EXP_MP3_DIR, "");
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }

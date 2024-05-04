@@ -313,6 +313,7 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_EXP_PL_DIR",   MANAGE_EXP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
   { "MNG_EXP_PL_POS_X", EXP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
+  { "MNG_EXP_PL_TYPE",  MANAGE_EXP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
@@ -573,6 +574,7 @@ main (int argc, char *argv[])
     nlistSetStr (manage.minfo.options, MANAGE_IMP_BDJ4_DIR, "");
     nlistSetNum (manage.minfo.options, EXP_PL_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, EXP_PL_POSITION_Y, -1);
+    nlistSetNum (manage.minfo.options, MANAGE_EXP_PL_TYPE, EI_TYPE_M3U);
     nlistSetStr (manage.minfo.options, MANAGE_EXP_PL_DIR, "");
     nlistSetNum (manage.minfo.options, MANAGE_AUDIOID_PANE_POSITION, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_X, -1);
@@ -3169,7 +3171,6 @@ managePlaylistImport (void *udata)
     strlcpy (nplname, pi->basename, len);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
-fprintf (stderr, "running m3uimport\n");
       list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
     }
     if (pathInfoExtCheck (pi, ".xspf")) {
