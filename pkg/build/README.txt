@@ -1,3 +1,15 @@
+Packages:
+  Unpack the package to the packages/ dir
+  ffmpeg naming:
+    ffmpeg-VER-win64/
+  ACRCloud naming, make sure these are executable:
+    acrcloud-linux
+    acrcloud-macos-applesilicon
+    acrcloud-macos-intel
+    acrcloud-win64.exe
+  Chromaprint naming:
+    fpcalc-win64.exe
+
 mongoose:     https://github.com/cesanta/mongoose
 curl:         https://curl.se/
 ffmpeg:       https://ffmpeg.org/download.html#build-windows
