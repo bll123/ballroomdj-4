@@ -2,10 +2,11 @@ mongoose:     https://github.com/cesanta/mongoose
 curl:         https://curl.se/
 ffmpeg:       https://ffmpeg.org/download.html#build-windows
               https://github.com/GyanD/codexffmpeg/releases
-libressl:     https://www.libressl.org/
+              -- when updating ffmpeg, be sure to update utils/bdj4config.cmake
 nghttp2:      https://www.nghttp2.org/
               https://github.com/nghttp2/nghttp2/releases
 chromaprint:  https://acoustid.org/chromaprint
+icu:          https://github.com/unicode-org/icu/releases
 check:        https://libcheck.github.io/check/
               https://github.com/libcheck/check/releases
 

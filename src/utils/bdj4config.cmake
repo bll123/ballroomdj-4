@@ -98,8 +98,8 @@ endif()
 
 # ffmpeg : libavformat / libavutil
 if (WIN32)
-  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-60.dll")
-  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-58.dll")
+  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-61.dll")
+  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-59.dll")
 else()
   pkg_check_modules (LIBAVFORMAT libavformat)
   pkg_check_modules (LIBAVUTIL libavutil)

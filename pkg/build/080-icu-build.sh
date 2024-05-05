@@ -13,6 +13,8 @@
 # must ship its own copy of libicu, otherwise the ICU versioning will
 # prevent it from running unless there is an exact match.
 #
+# For Windows, the MSys2 icu libraries are shipped.
+#
 
 case ${systype} in
   Linux)

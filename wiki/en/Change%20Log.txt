@@ -6,6 +6,9 @@
 
 **4.10.1 2024-5---**
 
+* Internal:
+    * Open source dependencies updated to latest.
+
 -->
 
 **4.10.0 2024-5-4**
@@ -16,7 +19,7 @@
     * Song Selection: Multiple songs may now be selected in the request listing.
 * New Features:
     * Song Selection: Right click may be used to select an entire classical work.
-    * Export Playlist: XSPF and JSPF are now supported.  The dialog has been updated.
+    * Export/Import Playlist: XSPF and JSPF are now supported.  The dialog has been updated.
 
 **4.9.0 2024-4-29**
 
@@ -869,4 +872,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-04 11:49:26; BDJ4 version 4.10.0)_
+<br>_(Updated 2024-05-04 11:53:45; BDJ4 version 4.10.0)_

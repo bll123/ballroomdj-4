@@ -110,13 +110,6 @@ templates/altcount\.txt$
 bin/bdj4altsetup$
 bin/bdj4altsetup\.exe$
 
-# 2023-8-1
-# icu library updated (linux, macos)
-plocal/lib/libicu[a-z]*\.so\.72$
-plocal/lib/libicu[a-z]*\.so\.72\.[0-9]$
-plocal/lib/libicu[a-z]*\.72\.dylib$
-plocal/lib/libicu[a-z]*\.72\.[0-9]\.dylib$
-
 # 2023-9-6
 # not needed
 bin/libatinull\.(dylib|so|dll)$
@@ -175,14 +168,18 @@ img/profile\d\d$
 plocal/share/themes/macOS-Mojave-dark$
 plocal/share/themes/macOS-Mojave-light$
 
+# 2023-8-1
+# icu library updated (macos)
+plocal/lib/libicu[a-z0-9]*\.72\.dylib$
+plocal/lib/libicu[a-z0-9]*\.72\.[0-9]\.dylib$
+
 # 2023-8-3
-# possible unneeded library installed
+# unneeded library installed
 plocal/lib/libap4\.dylib$
 
 # 2023-9-20
 # remove unnecessary libraries
 plocal/lib/libvorbis[a-z]*\.(dylib|la)$
-licenses/icu\.LICENCE$
 licenses/libvorbis\.LICENSE$
 licenses/flac\.LICENSE$
 
@@ -196,6 +193,11 @@ plocal/lib/libmp4tag-1\.2\.1[012]\.dylib$
 
 # 2023-11-13 bdj4winmksc is only used by windows
 bin/bdj4winmksc
+
+# 2024-5-5
+# icu library updated (macos)
+plocal/lib/libicu[a-z0-9]*\.73\.dylib$
+plocal/lib/libicu[a-z0-9]*\.73\.[0-9]\.dylib$
 
 ####
 # linux
@@ -259,13 +261,24 @@ plocal/bin/avutil-57\.dll$
 plocal/bin/postproc-56\.dll$
 plocal/bin/swscale-6\.dll$
 # 2023-8 windows msys2 library updates
-plocal/bin/libicudt72\.dll$
-plocal/bin/libicuin72\.dll$
-plocal/bin/libicuuc72\.dll$
-# 2023-11 windows msys2 library updates
-plocal/bin/libicudt73\.dll$
-plocal/bin/libicuin73\.dll$
-plocal/bin/libicuuc73\.dll$
+# 2023-11
+plocal/bin/libicudt7[23]\.dll$
+plocal/bin/libicuin7[23]\.dll$
+plocal/bin/libicuuc7[23]\.dll$
+
+licenses/icu\.LICENSE$
+licenses/icu\.LICENCE$
+
+# 2024-5-5 windows library updates
+plocal/bin/avcodec-60\.dll$
+plocal/bin/avdevice-60\.dll$
+plocal/bin/avfilter-9\.dll$
+plocal/bin/avformat-60\.dll$
+plocal/bin/avutil-58\.dll$
+plocal/bin/postproc-57\.dll$
+plocal/bin/swresample-3\.dll$
+plocal/bin/swresample-4\.dll$
+plocal/bin/swscale-7\.dll$
 
 ####
 # data-dir

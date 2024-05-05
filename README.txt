@@ -54,13 +54,14 @@ Copyright:
 
 Licenses:
     BDJ4        : zlib/libpng License
-    ICU         : ICU
     libid3tag   : GPLv2 License
                   Changes made to the library available upon request.
     libmp4tag   : zlib/libpng License
     mongoose    : GPLv2 License
     qrcode      : MIT License (templates/qrcode/LICENSE)
     img/musicbrainz-logo.svg : GPLv2
+    MacOS:
+      ICU         : ICU
     Windows:
       curl      : MIT License
       ffmpeg    : GPLv3 License
