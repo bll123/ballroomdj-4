@@ -27,6 +27,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
+#define DBSET_CLEAR "xclearx"
 
 int
 main (int argc, char *argv [])
@@ -49,6 +50,7 @@ main (int argc, char *argv [])
   int         tagidx = -1;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  bool        clearflag = false;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -121,7 +123,8 @@ main (int argc, char *argv [])
   }
 
   if (argcount < 3) {
-    fprintf (stderr, "Usage: tdbsetval <db-a> <tagname> <value> [<count>](%d)\n", argcount);
+    fprintf (stderr, "Usage: tdbsetval <db-a> <tagname> {<value>|xclearx} [<count>]\n");
+    fprintf (stderr, "  argcount: %d\n", argcount);
     bdj4argCleanup (bdj4arg);
     return 1;
   }
@@ -140,8 +143,6 @@ main (int argc, char *argv [])
   }
 
   db = dbOpen (dbfn);
-  dbDisableLastUpdateTime (db);
-  dbStartBatch (db);
 
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
@@ -149,26 +150,46 @@ main (int argc, char *argv [])
     return 1;
   }
 
+  dbDisableLastUpdateTime (db);
+  dbStartBatch (db);
+
   logStart ("tdbsetval", "tdbs",
       LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS | LOG_DB);
+
+  clearflag = false;
+  if (strcmp (valuestr, DBSET_CLEAR) == 0) {
+    clearflag = true;
+  }
 
   dbStartIterator (db, &dbiteridx);
   while ((song = dbIterate (db, &dbkey, &dbiteridx)) != NULL) {
     if (song != NULL) {
       if (tagdefs [tagidx].valueType == VALUE_DOUBLE) {
-        songSetDouble (song, tagidx, atof (valuestr));
+        if (clearflag) {
+          songSetDouble (song, tagidx, LIST_DOUBLE_INVALID);
+        } else {
+          songSetDouble (song, tagidx, atof (valuestr));
+        }
       } else if (tagdefs [tagidx].valueType == VALUE_NUM) {
         ssize_t   val;
 
-        val = atol (valuestr);
-        if (tagidx == TAG_SPEEDADJUSTMENT) {
-          if (val == 0) {
-            val = 100;
+        if (clearflag) {
+          songSetNum (song, tagidx, LIST_VALUE_INVALID);
+        } else {
+          val = atol (valuestr);
+          if (tagidx == TAG_SPEEDADJUSTMENT) {
+            if (val == 0) {
+              val = 100;
+            }
           }
+          songSetNum (song, tagidx, val);
         }
-        songSetNum (song, tagidx, val);
       } else if (tagdefs [tagidx].valueType == VALUE_STR) {
-        songSetStr (song, tagidx, valuestr);
+        if (clearflag) {
+          songSetStr (song, tagidx, NULL);
+        } else {
+          songSetStr (song, tagidx, valuestr);
+        }
       }
       dbWriteSong (db, song);
     }
