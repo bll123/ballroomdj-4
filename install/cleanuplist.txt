@@ -154,6 +154,11 @@ bin/libatimutagen\.(dylib|so|dll)$
 img/acoustid-logo\.svg$
 img/acrcloud-logo\.png$
 
+# 2024-5-13
+# should not be there
+bin/aesed$
+bin/aesed\.exe$
+
 ####
 # mac-os
 

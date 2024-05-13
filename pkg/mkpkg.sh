@@ -122,6 +122,7 @@ function copyreleasefiles {
   # img/profile[1-9] may be left over from testing
   # 2024-1-16 do not ship the pli-mpv interface either.
   rm -f \
+      ${stage}/bin/aesed* \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
       ${stage}/bin/chkfileshared* \
