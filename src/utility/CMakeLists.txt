@@ -98,8 +98,12 @@ target_link_libraries (plisinklist PRIVATE
 )
 
 add_executable (dbustest dbustest.c)
+target_include_directories (dbustest
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+)
 target_link_libraries (dbustest PRIVATE
   objdbusi libbdj4common
+  ${GLIB_LDFLAGS}
 )
 
 add_executable (aesed aesed.c)

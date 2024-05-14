@@ -112,6 +112,7 @@ add_subdirectory (libaudioid)
 add_subdirectory (libati)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
+add_subdirectory (libcont)
 
 # executables, no gui
 add_subdirectory (utility)

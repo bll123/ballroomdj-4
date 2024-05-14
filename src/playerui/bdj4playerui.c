@@ -25,6 +25,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
+#include "controller.h"
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
@@ -154,6 +155,8 @@ typedef struct {
   mp3exp_t        *mp3exp;
   mstime_t        expmp3chkTime;
   int             expmp3state;
+  /* controller */
+  controller_t    *controller;
   /* flags */
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
@@ -203,6 +206,7 @@ enum {
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
+static bool     pluiInitDataCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
@@ -269,6 +273,8 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_INITIALIZE_DATA,
+      pluiInitDataCallback, &plui);
 
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
@@ -302,6 +308,7 @@ main (int argc, char *argv[])
   plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
+  plui.controller = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -474,6 +481,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
+
+  controllerFree (plui->controller);
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return STATE_FINISHED;
@@ -1001,6 +1010,24 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "pluiHandshakeCallback", "");
+  return rc;
+}
+
+static bool
+pluiInitDataCallback (void *udata, programstate_t programState)
+{
+  playerui_t    *plui = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  if (plui->controller == NULL) {
+    plui->controller = controllerInit ("libcontmpris");
+  }
+
+  if (controllerCheckReady (plui->controller)) {
+    controllerSetup (plui->controller);
+    rc = STATE_FINISHED;
+  }
+
   return rc;
 }
 

@@ -6,6 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#if _hdr_stdatomic
+# include <stdatomic.h>
+#endif
+#if defined(__STDC_NO_ATOMICS__)
+# define _Atomic(type) type
+#endif
 #include <string.h>
 #include <stdarg.h>
 
@@ -16,8 +22,9 @@
 #include "bdjstring.h"
 #include "dbusi.h"
 #include "mdebug.h"
+#include "tmutil.h"
 
-#define DBUS_DEBUG 0
+#define DBUS_DEBUG 1
 
 enum {
   DBUS_STATE_CLOSED,
@@ -27,19 +34,33 @@ enum {
 
 enum {
   DBUS_TIMEOUT = 500,
+  /* documentation states that the bus id will never be zero */
+  DBUS_INVALID_BUS = 0,
 };
 
 typedef struct dbus {
   GDBusConnection *dconn;
+  GDBusNodeInfo   *idata;
   GVariant        *tvariant;
   GVariant        *data;
   GVariant        *result;
-  int             state;
+  int             busid;
+  _Atomic(int)    state;
+  _Atomic(int)    busstate;
 } dbus_t;
 
+static void dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata);
+static void dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata);
+static void dbusMethodHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
+static GVariant * dbusPropertyGetHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
+static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
 # if DBUS_DEBUG
 static void dumpResult (const char *tag, GVariant *data);
 # endif
+
+static GDBusInterfaceVTable vtable = {
+    dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 },
+};
 
 dbus_t *
 dbusConnInit (void)
@@ -48,9 +69,12 @@ dbusConnInit (void)
 
   dbus = mdmalloc (sizeof (dbus_t));
   dbus->dconn = NULL;
+  dbus->idata = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
+  dbus->busid = DBUS_INVALID_BUS;
   dbus->state = DBUS_STATE_WAIT;
+  dbus->busstate = DBUS_NAME_CLOSED;
 
   dbus->dconn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
   mdextalloc (dbus->dconn);
@@ -61,19 +85,63 @@ dbusConnInit (void)
 }
 
 void
+dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc)
+{
+  char    fullinstname [200];
+
+  if (dbus == NULL || instname == NULL || intfc == NULL) {
+    return;
+  }
+fprintf (stderr, "acquire-name: %s %s\n", instname, intfc);
+
+  snprintf (fullinstname, sizeof (fullinstname), "%s.%s", intfc, instname);
+fprintf (stderr, "full-inst: %s\n", fullinstname);
+
+  dbus->busstate = DBUS_NAME_WAIT;
+
+  dbus->busid = g_bus_own_name_on_connection (dbus->dconn,
+      fullinstname, G_BUS_NAME_OWNER_FLAGS_DO_NOT_QUEUE,
+      dbusNameAcquired, dbusNameLost, dbus, NULL);
+}
+
+int
+dbusCheckAcquireName (dbus_t *dbus)
+{
+  return dbus->busstate;
+}
+
+void
 dbusConnClose (dbus_t *dbus)
 {
-  mdextfree (dbus->dconn);
-  g_object_unref (dbus->dconn);
+  if (dbus == NULL) {
+    return;
+  }
+
+  if (dbus->idata != NULL) {
+    g_dbus_node_info_unref (dbus->idata);
+  }
+
+  if (dbus->busid != DBUS_INVALID_BUS) {
+    g_bus_unown_name (dbus->busid);
+  }
+
+  if (dbus->dconn != NULL) {
+    mdextfree (dbus->dconn);
+    g_object_unref (dbus->dconn);
+  }
+
   /* apparently, the data variant does not need to be unref'd */
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
     g_variant_unref (dbus->result);
   }
+
   dbus->dconn = NULL;
+  dbus->idata = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->state = DBUS_STATE_CLOSED;
+  dbus->busid = DBUS_INVALID_BUS;
   mdfree (dbus);
 }
 
@@ -275,7 +343,114 @@ dbusResultGet (dbus_t *dbus, ...)
   return true;
 }
 
+void
+dbusSetIntrospectionData (dbus_t *dbus, const char *introspection_xml)
+{
+  GError      *error = NULL;
+
+  if (dbus == NULL) {
+    return;
+  }
+
+  dbus->idata = g_dbus_node_info_new_for_xml (introspection_xml, &error);
+  if (error != NULL) {
+    fprintf (stderr, "%s\n", error->message);
+  }
+}
+
+int
+dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc, void *udata)
+{
+  GDBusInterfaceInfo  *info;
+  int                 intfcid;
+  GError              *error = NULL;
+
+  if (dbus == NULL || dbus->idata == NULL) {
+    return 0;
+  }
+
+  info = g_dbus_node_info_lookup_interface (dbus->idata, intfc);
+
+  intfcid = g_dbus_connection_register_object (
+      dbus->dconn, objpath, info, &vtable, dbus, NULL, &error);
+  if (error != NULL) {
+    fprintf (stderr, "%s\n", error->message);
+  }
+
+  return intfcid;
+}
+
+void
+dbusUnregisterObject (dbus_t *dbus, int intfcid)
+{
+  g_dbus_connection_unregister_object (dbus->dconn, intfcid);
+}
+
 /* internal routines */
+
+static void
+dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata)
+{
+  dbus_t  *dbus = udata;
+
+  if (dbus == NULL) {
+    return;
+  }
+
+fprintf (stderr, "  acquired %s\n", name);
+  dbus->busstate = DBUS_NAME_OPEN;
+}
+
+static void
+dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata)
+{
+  dbus_t  *dbus = udata;
+
+  if (dbus == NULL) {
+    return;
+  }
+
+fprintf (stderr, "  lost %s\n", name);
+  dbus->busstate = DBUS_NAME_CLOSED;
+}
+
+static void
+dbusMethodHandler (GDBusConnection *connection,
+    const char *sender,
+    const char *object_path,
+    const char *interface_name,
+    const char *method_name,
+    GVariant *parameters,
+    GDBusMethodInvocation *invocation,
+    gpointer udata)
+{
+  return;
+}
+
+static GVariant *
+dbusPropertyGetHandler (GDBusConnection *connection,
+    const char *sender,
+    const char *object_path,
+    const char *interface_name,
+    const char *property_name,
+    GError **error,
+    gpointer udata)
+{
+  return NULL;
+}
+
+static gboolean
+dbusPropertySetHandler (GDBusConnection *connection,
+    const char *sender,
+    const char *object_path,
+    const char *interface_name,
+    const char *property_name,
+    GVariant *value,
+    GError **error,
+    gpointer udata)
+{
+  return FALSE;
+}
 
 # if DBUS_DEBUG
 
