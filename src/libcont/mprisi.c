@@ -114,25 +114,44 @@ static const char *interface [MPRIS_INTFC_MAX] = {
   [MPRIS_INTFC_MP2_PLAYER] = "org.mpris.MediaPlayer2.Player",
 };
 
+enum {
+  MPRIS_STATUS_PLAY,
+  MPRIS_STATUS_PAUSE,
+  MPRIS_STATUS_STOP,
+  MPRIS_STATUS_MAX,
+};
+
+static const char *statusstr [MPRIS_STATUS_MAX] = {
+  [MPRIS_STATUS_PLAY] = "Playing",
+  [MPRIS_STATUS_PAUSE] = "Paused",
+  [MPRIS_STATUS_STOP] = "Stopped",
+};
+
+enum {
+  MPRIS_REPEAT_NONE,
+  MPRIS_REPEAT_TRACK,
+  MPRIS_REPEAT_PLAYLIST,
+  MPRIS_REPEAT_MAX,
+};
+
+static const char *repeatstr [MPRIS_REPEAT_MAX] = {
+  [MPRIS_REPEAT_NONE] = "None",
+  [MPRIS_REPEAT_TRACK] = "Track",
+  [MPRIS_REPEAT_PLAYLIST] = "Playlist",
+};
+
 typedef struct contdata {
   dbus_t              *dbus;
   int                 root_interface_id;
   int                 player_interface_id;
-  const char          *status;
-  const char          *loop_status;
+  int                 playstatus;
+  int                 repeatstatus;
 //  GHashTable          *changed_properties;
 //  GVariant            *metadata;
   bool                seek_expected;
   bool                idle;
   bool                paused;
 } contdata_t;
-
-static const char *STATUS_PLAYING = "Playing";
-static const char *STATUS_PAUSED = "Paused";
-static const char *STATUS_STOPPED = "Stopped";
-static const char *LOOP_NONE = "None";
-static const char *LOOP_TRACK = "Track";
-static const char *LOOP_PLAYLIST = "Playlist";
 
 static bool mprisiMethodCallback (const char *intfc, const char *method, void *udata);
 static bool mprisiPropertyGetCallback (const char *intfc, const char *method, void *udata);
@@ -189,7 +208,8 @@ contiInit (const char *instname)
 
 fprintf (stderr, "cont-mpris init\n");
   contdata = mdmalloc (sizeof (contdata_t));
-  contdata->status = STATUS_STOPPED;
+  contdata->playstatus = MPRIS_STATUS_STOP;
+  contdata->repeatstatus = MPRIS_REPEAT_NONE;
 //  contdata->changed_properties = g_hash_table_new (g_str_hash, g_str_equal);
   contdata->seek_expected = false;
   contdata->idle = false;
@@ -264,33 +284,42 @@ mprisiPropertyGetCallback (const char *intfc, const char *prop, void *udata)
 {
   contdata_t    *contdata = udata;
   bool          rc = false;
+  void          *tv;
 fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
 
   dbusMessageInit (contdata->dbus);
 
   if (strcmp (intfc, interface [MPRIS_INTFC_MP2]) == 0) {
     if (strcmp (prop, "CanQuit") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", true);
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "Fullscreen") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false);
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "CanSetFullscreen") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false);
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "CanRaise") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false);
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "HasTrackList") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false);
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "Identity") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME);
+      tv = dbusMessageBuild ("s", BDJ4_NAME, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "DesktopEntry") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME);
+      tv = dbusMessageBuild ("s", BDJ4_NAME, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, "SupportedUriSchemes") == 0) {
+      rc = true;
 #if 0
       GVariantBuilder builder;
 
@@ -302,6 +331,7 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
       ret = g_variant_builder_end (&builder);
 #endif
     } else if (strcmp (prop, "SupportedMimeTypes") == 0) {
+      rc = true;
 #if 0
       GVariantBuilder builder;
 
@@ -326,7 +356,80 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
   }
 
   if (strcmp (intfc, interface [MPRIS_INTFC_MP2_PLAYER]) == 0) {
+    if (strcmp (prop, "PlaybackStatus") == 0) {
+      tv = dbusMessageBuild ("s", statusstr [contdata->playstatus], NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "LoopStatus") == 0) {
+      tv = dbusMessageBuild ("s", repeatstr [contdata->repeatstatus], NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "Rate") == 0) {
+      rc = true;
+//      double rate;
+  //      mpv_get_property (contdata->mpv, "speed", MPV_FORMAT_DOUBLE, &rate);
+//      ret = g_variant_new_double (rate);
+    } else if (strcmp (prop, "Shuffle") == 0) {
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "Metadata") == 0) {
+      rc = true;
+#if 0
+      if (!contdata->metadata) {
+        contdata->metadata = create_metadata (contdata);
+      }
+      // Increase reference count to prevent it from being freed after returning
+      g_variant_ref (contdata->metadata);
+      ret = contdata->metadata;
+#endif
+    } else if (strcmp (prop, "Volume") == 0) {
+      rc = true;
+//      double volume;
 
+  //      mpv_get_property (contdata->mpv, "volume", MPV_FORMAT_DOUBLE, &volume);
+//      volume /= 100;
+//      ret = g_variant_new_double (volume);
+    } else if (strcmp (prop, "Position") == 0) {
+      rc = true;
+//      double  position_s;
+//      int64_t position_us;
+  //    mpv_get_property (contdata->mpv, "time-pos", MPV_FORMAT_DOUBLE, &position_s);
+//      position_us = position_s * 1000000.0; // s -> us
+//      ret = g_variant_new_int64 (position_us);
+    } else if (strcmp (prop, "MinimumRate") == 0) {
+      tv = dbusMessageBuild ("d", 0.7, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "MaximumRate") == 0) {
+      tv = dbusMessageBuild ("d", 1.3, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanGoNext") == 0) {
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanGoPrevious") == 0) {
+      tv = dbusMessageBuild ("b", false, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanPlay") == 0) {
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanPause") == 0) {
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanSeek") == 0) {
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    } else if (strcmp (prop, "CanControl") == 0) {
+      tv = dbusMessageBuild ("b", true, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
+      rc = true;
+    }
   }
 
   return rc;
@@ -521,9 +624,9 @@ mprisiPropertyGetPlayer (GDBusConnection *connection,
   GVariant    *ret;
 
   if (strcmp (prop, "PlaybackStatus") == 0) {
-    ret = g_variant_new_string (contdata->status);
+    ret = g_variant_new_string (contdata->playstatus);
   } else if (strcmp (prop, "LoopStatus") == 0) {
-    ret = g_variant_new_string (contdata->loop_status);
+    ret = g_variant_new_string (contdata->repeatstatus);
   } else if (strcmp (prop, "Rate") == 0) {
     double rate;
 
@@ -1009,35 +1112,35 @@ handle_property_change (const char *name, void *data, contdata_t *contdata)
     } else if (strcmp (name, "loop-file") == 0) {
         char *status = * (char **) data;
         if (strcmp (status, "no") != 0) {
-            contdata->loop_status = LOOP_TRACK;
+            contdata->repeat = LOOP_TRACK;
         } else {
             char *playlist_status;
 //            mpv_get_property (contdata, "loop-playlist", MPV_FORMAT_STRING, &playlist_status);
             if (strcmp (playlist_status, "no") != 0) {
-                contdata->loop_status = LOOP_PLAYLIST;
+                contdata->repeat = LOOP_PLAYLIST;
             } else {
-                contdata->loop_status = LOOP_NONE;
+                contdata->repeat = LOOP_NONE;
             }
 //            mpv_free (playlist_status);
         }
         prop_name = "LoopStatus";
-        prop_value = g_variant_new_string (contdata->loop_status);
+        prop_value = g_variant_new_string (contdata->repeat);
     } else if (strcmp (name, "loop-playlist") == 0) {
         char *status = * (char **) data;
         if (strcmp (status, "no") != 0) {
-            contdata->loop_status = LOOP_PLAYLIST;
+            contdata->repeat = LOOP_PLAYLIST;
         } else {
             char *file_status;
 //            mpv_get_property (contdata, "loop-file", MPV_FORMAT_STRING, &file_status);
             if (strcmp (file_status, "no") != 0) {
-                contdata->loop_status = LOOP_TRACK;
+                contdata->repeat = LOOP_TRACK;
             } else {
-                contdata->loop_status = LOOP_NONE;
+                contdata->repeat = LOOP_NONE;
             }
 //            mpv_free (file_status);
         }
         prop_name = "LoopStatus";
-        prop_value = g_variant_new_string (contdata->loop_status);
+        prop_value = g_variant_new_string (contdata->repeat);
 
     } else if (strcmp (name, "fullscreen") == 0) {
         gboolean *status = data;

@@ -11,7 +11,7 @@ init
 data
 ("org.mpris.MediaPlayer2","Identity")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -20,7 +20,7 @@ init
 data
 ("org.mpris.MediaPlayer2","SupportedUriSchemes")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -29,14 +29,14 @@ init
 data
 ("org.mpris.MediaPlayer2","SupportedMimeTypes")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
 
 init
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Introspectable
 Introspect
@@ -45,7 +45,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","CanControl")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -54,7 +54,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","CanPlay")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -63,7 +63,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","CanPause")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -72,7 +72,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","CanSeek")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -81,7 +81,7 @@ Get
 #data
 #("org.mpris.MediaPlayer2.Player","Metadata","<file:///home/bll/s/bdj4/test-music-orig/ann-foxtrot.mp3>")
 #call
-#org.mpris.MediaPlayer2.vlc
+#org.mpris.MediaPlayer2.BDJ4
 #/org/mpris/MediaPlayer2
 #org.mpris.MediaPlayer2.Player
 #OpenUri
@@ -90,7 +90,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","PlaybackStatus")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -99,7 +99,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","Metadata")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -108,7 +108,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","Position")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -117,7 +117,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","MinimumRate")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -126,7 +126,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","MaximumRate")
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Get
@@ -135,7 +135,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","Volume",<1.0>)
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Set
@@ -144,7 +144,7 @@ init
 data
 ("org.mpris.MediaPlayer2.Player","Rate",<1.0>)
 call
-org.mpris.MediaPlayer2.vlc
+org.mpris.MediaPlayer2.BDJ4
 /org/mpris/MediaPlayer2
 org.freedesktop.DBus.Properties
 Set
