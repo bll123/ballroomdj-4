@@ -47,6 +47,9 @@ typedef struct dbus {
   int             busid;
   _Atomic(int)    state;
   _Atomic(int)    busstate;
+  dbusCBmethod_t  cbmethod;
+  dbusCBpropget_t cbpropget;
+  void            *userdata;
 } dbus_t;
 
 static void dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata);
@@ -75,6 +78,8 @@ dbusConnInit (void)
   dbus->busid = DBUS_INVALID_BUS;
   dbus->state = DBUS_STATE_WAIT;
   dbus->busstate = DBUS_NAME_CLOSED;
+  dbus->cbmethod = NULL;
+  dbus->userdata = NULL;
 
   dbus->dconn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
   mdextalloc (dbus->dconn);
@@ -148,6 +153,10 @@ dbusConnClose (dbus_t *dbus)
 void
 dbusMessageInit (dbus_t *dbus)
 {
+  if (dbus == NULL) {
+    return;
+  }
+
   dbus->data = g_variant_new_parsed ("()");
   mdextalloc (dbus->data);
 }
@@ -166,7 +175,6 @@ dbusMessageBuild (const char *sdata, ...)
   return tv;
 }
 
-/* used in the cases where a value is wrapped as a variant (e.g. Rate) */
 void *
 dbusMessageBuildObj (const char *path)
 {
@@ -359,7 +367,7 @@ dbusSetIntrospectionData (dbus_t *dbus, const char *introspection_xml)
 }
 
 int
-dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc, void *udata)
+dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc)
 {
   GDBusInterfaceInfo  *info;
   int                 intfcid;
@@ -383,7 +391,23 @@ dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc, void *
 void
 dbusUnregisterObject (dbus_t *dbus, int intfcid)
 {
+  if (dbus == NULL || dbus->dconn == NULL) {
+    return;
+  }
   g_dbus_connection_unregister_object (dbus->dconn, intfcid);
+}
+
+void
+dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
+    dbusCBpropget_t cbpropget)
+{
+  if (dbus == NULL) {
+    return;
+  }
+
+  dbus->cbmethod = cbmethod;
+  dbus->cbpropget = cbpropget;
+  dbus->userdata = udata;
 }
 
 /* internal routines */
@@ -418,12 +442,19 @@ static void
 dbusMethodHandler (GDBusConnection *connection,
     const char *sender,
     const char *object_path,
-    const char *interface_name,
-    const char *method_name,
+    const char *intfc,
+    const char *method,
     GVariant *parameters,
     GDBusMethodInvocation *invocation,
     gpointer udata)
 {
+  dbus_t  *dbus = udata;
+fprintf (stderr, "dbus-method: %s %s %s\n", object_path, intfc, method);
+dumpResult ("  method-params", parameters);
+
+  if (dbus->cbmethod != NULL) {
+    dbus->cbmethod (intfc, method, dbus->userdata);
+  }
   return;
 }
 
@@ -431,24 +462,37 @@ static GVariant *
 dbusPropertyGetHandler (GDBusConnection *connection,
     const char *sender,
     const char *object_path,
-    const char *interface_name,
-    const char *property_name,
+    const char *intfc,
+    const char *property,
     GError **error,
     gpointer udata)
 {
-  return NULL;
+  dbus_t    *dbus = udata;
+
+fprintf (stderr, "dbus-prop-get: %s %s %s\n", object_path, intfc, property);
+
+  if (dbus->cbpropget != NULL) {
+    if (dbus->cbpropget (intfc, property, dbus->userdata) == false) {
+      g_set_error (error, G_DBUS_ERROR,
+          G_DBUS_ERROR_UNKNOWN_PROPERTY,
+          "Unknown property %s", property);
+    }
+  }
+
+  return dbus->data;
 }
 
 static gboolean
 dbusPropertySetHandler (GDBusConnection *connection,
     const char *sender,
     const char *object_path,
-    const char *interface_name,
-    const char *property_name,
+    const char *intfc,
+    const char *property,
     GVariant *value,
     GError **error,
     gpointer udata)
 {
+fprintf (stderr, "dbus-prop-set: %s %s %s\n", object_path, intfc, property);
   return FALSE;
 }
 

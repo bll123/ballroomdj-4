@@ -213,6 +213,11 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       const char  **tsvout;
       int         ok;
 
+      if (strstr (*tout, BDJ4_NAME) != NULL) {
+        /* do not reference bdj4 players */
+        continue;
+      }
+
       mpris->mpbus = *tout;
 
       /* bypass players that cannot be controlled */
