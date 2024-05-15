@@ -17,6 +17,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "configui.h"
+#include "controller.h"
 #include "log.h"
 #include "ilist.h"
 #include "mdebug.h"
@@ -31,6 +32,7 @@
 
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
+static void confuiLoadControllerIntfcList (confuigui_t *gui);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -48,6 +50,7 @@ confuiInitPlayer (confuigui_t *gui)
 
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
+  confuiLoadControllerIntfcList (gui);
 
   volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   volumeInitSinkList (&sinklist);
@@ -131,6 +134,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
+  /* CONTEXT: configuration: controller selection */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Controller"),
+      CONFUI_SPINBOX_CONTROLLER, OPT_M_CONTROLLER_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_CONTROLLER].listidx, NULL);
+
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
@@ -147,7 +155,7 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   /* if there is no configuration file */
   interfaces = volumeInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC,
-      CONFUI_OPT_NONE, CONFUI_SPINBOX_VOL_INTFC);
+      CONFUI_OPT_NONE, CONFUI_SPINBOX_VOL_INTFC, 0);
   ilistFree (interfaces);
 }
 
@@ -158,7 +166,36 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   interfaces = pliInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC,
-      OPT_M_PLAYER_INTFC_NM, CONFUI_SPINBOX_PLI);
+      OPT_M_PLAYER_INTFC_NM, CONFUI_SPINBOX_PLI, 0);
   ilistFree (interfaces);
+}
+
+static void
+confuiLoadControllerIntfcList (confuigui_t *gui)
+{
+  ilist_t     *interfaces;
+
+  interfaces = controllerInterfaceList ();
+  confuiLoadIntfcList (gui, interfaces, OPT_M_CONTROLLER_INTFC,
+      CONFUI_OPT_NONE, CONFUI_SPINBOX_CONTROLLER, 1);
+  ilistFree (interfaces);
+
+  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
+      /* CONTEXT: configuration: no controller */
+      _("None"));
+  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
+
+{
+nlistidx_t iter;
+nlistidx_t key;
+  nlistStartIterator (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter);
+  while ((key = nlistIterateKey (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter)) != LIST_END_LIST) {
+    fprintf (stderr, "key: %d\n", key);
+    fprintf (stderr, "  disp: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, key));
+    fprintf (stderr, "  sbkey: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, key));
+  }
+}
+
+
 }
 

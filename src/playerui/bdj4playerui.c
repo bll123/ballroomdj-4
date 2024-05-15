@@ -1020,10 +1020,18 @@ pluiInitDataCallback (void *udata, programstate_t programState)
   bool          rc = STATE_NOT_FINISH;
 
   if (plui->controller == NULL) {
-    plui->controller = controllerInit ("libcontmpris");
+    const char  *val;
+
+    val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
+    if (val != NULL && *val) {
+      plui->controller = controllerInit (val);
+    } else {
+      rc = STATE_FINISHED;
+    }
   }
 
-  if (controllerCheckReady (plui->controller)) {
+  if (plui->controller != NULL &&
+      controllerCheckReady (plui->controller)) {
     controllerSetup (plui->controller);
     rc = STATE_FINISHED;
   }

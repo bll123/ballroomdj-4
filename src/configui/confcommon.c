@@ -322,7 +322,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
 
 void
 confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
-    int optidx, int optnmidx, int spinboxidx)
+    int optidx, int optnmidx, int spinboxidx, int offset)
 {
   ilistidx_t  iteridx;
   ilistidx_t  key;
@@ -341,7 +341,7 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
     currintfcnm = bdjoptGetStr (optnmidx);
   }
   ilistStartIterator (interfaces, &iteridx);
-  count = 0;
+  count = offset;
   gui->uiitem [spinboxidx].listidx = -1;
   while ((key = ilistIterateKey (interfaces, &iteridx)) >= 0) {
     intfc = ilistGetStr (interfaces, key, DYI_LIB);

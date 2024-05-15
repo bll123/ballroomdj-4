@@ -163,7 +163,7 @@ function copyreleasefiles {
   # the graphics-linked launcher is not used on linux or windows
   # mpris is not available on windows or macos
   # 2024-3-9 the pli-gstreamer interface is not shipped for macos or windows.
-  #   It is possible to make it work, but it has not speed+pitch control.
+  #   It is possible to make it work, but it has no speed+pitch control.
   case ${tag} in
     linux)
       rm -f ${stage}/bin/bdj4g
@@ -171,11 +171,13 @@ function copyreleasefiles {
     macos)
       rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/libpligst*
+      rm -f ${stage}/bin/libcontmpris*
       ;;
     win64)
       rm -f ${stage}/bin/bdj4g
       rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/libpligst*
+      rm -f ${stage}/bin/libcontmpris*
       ;;
   esac
 }

@@ -76,8 +76,8 @@ locale/tr_TR$
 # removed 2023-2 (4.1.0)
 install/install-startup\.bat$
 install/install-startup\.sh$
-templates/nl/wachtrijendans.pl$
-templates/nl/wachtrijendans.pldances$
+templates/nl/wachtrijendans\.pl$
+templates/nl/wachtrijendans\.pldances$
 
 # files that were not supposed to be installed (4.3.0.4 2023-3)
 bin/testsuite$
@@ -155,7 +155,7 @@ img/acoustid-logo\.svg$
 img/acrcloud-logo\.png$
 
 # 2024-5-13
-# should not be there
+# files that were not supposed to be installed
 bin/aesed$
 bin/aesed\.exe$
 
@@ -173,14 +173,14 @@ img/profile\d\d$
 plocal/share/themes/macOS-Mojave-dark$
 plocal/share/themes/macOS-Mojave-light$
 
+# 2023-8-3
+# unneeded library installed
+plocal/lib/libap4\.dylib$
+
 # 2023-8-1
 # icu library updated (macos)
 plocal/lib/libicu[a-z0-9]*\.72\.dylib$
 plocal/lib/libicu[a-z0-9]*\.72\.[0-9]\.dylib$
-
-# 2023-8-3
-# unneeded library installed
-plocal/lib/libap4\.dylib$
 
 # 2023-9-20
 # remove unnecessary libraries
