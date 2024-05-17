@@ -44,6 +44,9 @@ add_library (objdbusi OBJECT dbusi.c)
 target_include_directories (objdbusi
   PRIVATE "${GIO_INCLUDE_DIRS}"
 )
+target_link_libraries (objdbusi PRIVATE
+  ${GIO_LDFLAGS}
+)
 
 add_library (libplimpris SHARED plimpris.c mprisi.c)
 target_include_directories (libplimpris

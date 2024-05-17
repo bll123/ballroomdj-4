@@ -1,5 +1,9 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ *
+ * This could be re-written to use libdbus.
+ * The glib variants are a pain to use.
+ * Is libdbus any easier?
  */
 #include "config.h"
 
@@ -15,7 +19,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#if __linux__ && _hdr_dbus_dbus
+#if __linux__ && _hdr_gio_gio
 
 #include <gio/gio.h>
 
@@ -480,7 +484,7 @@ dbusMethodHandler (GDBusConnection *connection,
     gpointer udata)
 {
   dbus_t    *dbus = udata;
-  GVariant  *v = NULL;
+
 fprintf (stderr, "dbus-method: %s %s %s\n", objpath, intfc, method);
 dumpResult ("  method-params", parameters);
 
@@ -488,8 +492,7 @@ dumpResult ("  method-params", parameters);
     dbus->cbmethod (intfc, method, dbus->userdata);
   }
 
-  v = g_variant_new_parsed ("()");
-  g_dbus_method_invocation_return_value (invocation, v);
+  g_dbus_method_invocation_return_value (invocation, NULL);
   return;
 }
 
