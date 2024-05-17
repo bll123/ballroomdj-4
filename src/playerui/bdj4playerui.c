@@ -83,6 +83,7 @@ enum {
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
+  PLUI_CB_CONTROLLER,
   PLUI_CB_MAX,
 };
 
@@ -253,6 +254,7 @@ static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
+static int      pluiControllerCallback (void *udata, long val, int cmd);
 
 static int gKillReceived = 0;
 
@@ -1033,6 +1035,9 @@ pluiInitDataCallback (void *udata, programstate_t programState)
   if (plui->controller != NULL &&
       controllerCheckReady (plui->controller)) {
     controllerSetup (plui->controller);
+    plui->callbacks [PLUI_CB_CONTROLLER] =
+        callbackInitLongInt (pluiControllerCallback, plui);
+    controllerSetCallback (plui->controller, plui->callbacks [PLUI_CB_CONTROLLER]);
     rc = STATE_FINISHED;
   }
 
@@ -2067,4 +2072,16 @@ pluiDragDropCallback (void *udata, const char *uri, int row)
 
   uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
   return UICB_CONT;
+}
+
+
+static int
+pluiControllerCallback (void *udata, long val, int cmd)
+{
+  playerui_t    *plui = udata;
+  int           rc = 0;
+
+fprintf (stderr, "plui-cb: cmd: %d val: %ld\n", cmd, val);
+
+  return rc;
 }

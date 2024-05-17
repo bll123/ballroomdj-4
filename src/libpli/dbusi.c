@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#if __linux__ && _hdr_gio_gio
+#if __linux__ && _hdr_dbus_dbus
 
 #include <gio/gio.h>
 
@@ -52,11 +52,12 @@ typedef struct dbus {
   void            *userdata;
 } dbus_t;
 
+static void dbusFreeData (dbus_t *dbus);
 static void dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata);
 static void dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata);
-static void dbusMethodHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
-static GVariant * dbusPropertyGetHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
-static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
+static void dbusMethodHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
+static GVariant * dbusPropertyGetHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *property_name, GError **error, gpointer udata);
+static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
 # if DBUS_DEBUG
 static void dumpResult (const char *tag, GVariant *data);
 # endif
@@ -176,11 +177,11 @@ dbusMessageBuild (const char *sdata, ...)
 }
 
 void *
-dbusMessageBuildObj (const char *path)
+dbusMessageBuildObj (const char *objpath)
 {
   GVariant  *tv;
 
-  tv = g_variant_new_object_path (path);
+  tv = g_variant_new_object_path (objpath);
   mdextalloc (tv);
   return tv;
 }
@@ -191,11 +192,7 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_list   args;
 
   va_start (args, sdata);
-  if (dbus->data != NULL) {
-    /* dbusMessageInit() should have been called */
-    mdextfree (dbus->data);
-    g_variant_unref (dbus->data);
-  }
+  dbusFreeData (dbus);
   dbus->data = g_variant_new_va (sdata, NULL, &args);
   mdextalloc (dbus->data);
 # if DBUS_DEBUG
@@ -204,18 +201,41 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_end (args);
 }
 
+void
+dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...)
+{
+  va_list         args;
+  GVariant        *v;
+  GVariant        *tv;
+  GVariantBuilder b;
+  const char      *str;
+
+  va_start (args, sdata);
+  dbusFreeData (dbus);
+  g_variant_builder_init (&b, G_VARIANT_TYPE ("as"));
+
+  while ((str = va_arg (args, const char *)) != NULL) {
+    g_variant_builder_add (&b, "s", str);
+  }
+  tv = g_variant_builder_end (&b);
+  v = g_variant_new ("(v)", tv);
+  dbus->data = v;
+  mdextalloc (dbus->data);
+# if DBUS_DEBUG
+  dumpResult ("data-va-a", dbus->data);
+# endif
+  va_end (args);
+}
+
 /* use a gvariant string to set the data */
+/* used by dbustest */
 void
 dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
 {
   va_list   args;
 
   va_start (args, sdata);
-  if (dbus->data != NULL) {
-    /* dbusMessageInit() should have been called */
-    mdextfree (dbus->data);
-    g_variant_unref (dbus->data);
-  }
+  dbusFreeData (dbus);
   dbus->data = g_variant_new_parsed_va (sdata, &args);
   mdextalloc (dbus->data);
 # if DBUS_DEBUG
@@ -413,6 +433,17 @@ dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
 /* internal routines */
 
 static void
+dbusFreeData (dbus_t *dbus)
+{
+  if (dbus == NULL || dbus->data == NULL) {
+    return;
+  }
+
+  mdextfree (dbus->data);
+  g_variant_unref (dbus->data);
+}
+
+static void
 dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata)
 {
   dbus_t  *dbus = udata;
@@ -441,27 +472,31 @@ fprintf (stderr, "  lost %s\n", name);
 static void
 dbusMethodHandler (GDBusConnection *connection,
     const char *sender,
-    const char *object_path,
+    const char *objpath,
     const char *intfc,
     const char *method,
     GVariant *parameters,
     GDBusMethodInvocation *invocation,
     gpointer udata)
 {
-  dbus_t  *dbus = udata;
-fprintf (stderr, "dbus-method: %s %s %s\n", object_path, intfc, method);
+  dbus_t    *dbus = udata;
+  GVariant  *v = NULL;
+fprintf (stderr, "dbus-method: %s %s %s\n", objpath, intfc, method);
 dumpResult ("  method-params", parameters);
 
   if (dbus->cbmethod != NULL) {
     dbus->cbmethod (intfc, method, dbus->userdata);
   }
+
+  v = g_variant_new_parsed ("()");
+  g_dbus_method_invocation_return_value (invocation, v);
   return;
 }
 
 static GVariant *
 dbusPropertyGetHandler (GDBusConnection *connection,
     const char *sender,
-    const char *object_path,
+    const char *objpath,
     const char *intfc,
     const char *property,
     GError **error,
@@ -469,7 +504,7 @@ dbusPropertyGetHandler (GDBusConnection *connection,
 {
   dbus_t    *dbus = udata;
 
-fprintf (stderr, "dbus-prop-get: %s %s %s\n", object_path, intfc, property);
+fprintf (stderr, "dbus-prop-get: %s %s %s\n", objpath, intfc, property);
 
   if (dbus->cbpropget != NULL) {
     if (dbus->cbpropget (intfc, property, dbus->userdata) == false) {
@@ -485,14 +520,14 @@ fprintf (stderr, "dbus-prop-get: %s %s %s\n", object_path, intfc, property);
 static gboolean
 dbusPropertySetHandler (GDBusConnection *connection,
     const char *sender,
-    const char *object_path,
+    const char *objpath,
     const char *intfc,
     const char *property,
     GVariant *value,
     GError **error,
     gpointer udata)
 {
-fprintf (stderr, "dbus-prop-set: %s %s %s\n", object_path, intfc, property);
+fprintf (stderr, "dbus-prop-set: %s %s %s\n", objpath, intfc, property);
   return FALSE;
 }
 

@@ -15,9 +15,6 @@ target_link_libraries (libbdj4cont PRIVATE
 )
 
 add_library (libcontmpris SHARED mprisi.c)
-target_include_directories (libcontmpris
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-)
 target_link_libraries (libcontmpris PRIVATE
   libbdj4common
   objdbusi

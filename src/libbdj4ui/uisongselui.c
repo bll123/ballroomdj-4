@@ -152,7 +152,7 @@ static void uisongselPopulateDataCallback (int col, long num, const char *str, v
 
 static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
 
-static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
+static int  uisongselUIDanceSelectCallback (void *udata, long idx, int count);
 static bool uisongselSongEditCallback (void *udata);
 
 void
@@ -915,7 +915,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 }
 
 /* count is not used */
-static bool
+static int
 uisongselUIDanceSelectCallback (void *udata, long idx, int count)
 {
   uisongsel_t *uisongsel = udata;

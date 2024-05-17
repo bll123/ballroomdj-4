@@ -115,7 +115,7 @@ static void uisfUpdate (uisongfilter_t *uisf);
 static bool uisfPlaylistSelectHandler (void *udata, long idx);
 static bool uisfSortBySelectHandler (void *udata, long idx);
 static bool uisfGenreSelectHandler (void *udata, long idx);
-static bool uisfDanceSelectHandler (void *udata, long idx, int count);
+static int  uisfDanceSelectHandler (void *udata, long idx, int count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
@@ -914,7 +914,7 @@ uisfGenreSelectHandler (void *udata, long idx)
 }
 
 /* count is not used */
-static bool
+static int
 uisfDanceSelectHandler (void *udata, long idx, int count)
 {
   uisongfilter_t  *uisf = udata;

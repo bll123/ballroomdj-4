@@ -14,15 +14,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #include <string.h>
 
 #if __linux__
 
 #include "bdj4.h"
+#include "callback.h"
 #include "controller.h"
 #include "dbusi.h"
 #include "mdebug.h"
+#include "player.h"
 #include "tmutil.h"
 
 // #include <libavformat/avformat.h>
@@ -30,12 +33,10 @@
 static const char *introspection_xml =
     "<node>\n"
     "  <interface name=\"org.mpris.MediaPlayer2\">\n"
-    "    <method name=\"Raise\">\n"
-    "    </method>\n"
-    "    <method name=\"Quit\">\n"
-    "    </method>\n"
+    "    <method name=\"Raise\"></method>\n"
+    "    <method name=\"Quit\"></method>\n"
     "    <property name=\"CanQuit\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"Fullscreen\" type=\"b\" access=\"readwrite\"/>\n"
+    "    <property name=\"Fullscreen\" type=\"b\" access=\"read\"/>\n"
     "    <property name=\"CanSetFullscreen\" type=\"b\" access=\"read\"/>\n"
     "    <property name=\"CanRaise\" type=\"b\" access=\"read\"/>\n"
     "    <property name=\"HasTrackList\" type=\"b\" access=\"read\"/>\n"
@@ -45,18 +46,12 @@ static const char *introspection_xml =
     "    <property name=\"SupportedMimeTypes\" type=\"as\" access=\"read\"/>\n"
     "  </interface>\n"
     "  <interface name=\"org.mpris.MediaPlayer2.Player\">\n"
-    "    <method name=\"Next\">\n"
-    "    </method>\n"
-    "    <method name=\"Previous\">\n"
-    "    </method>\n"
-    "    <method name=\"Pause\">\n"
-    "    </method>\n"
-    "    <method name=\"PlayPause\">\n"
-    "    </method>\n"
-    "    <method name=\"Stop\">\n"
-    "    </method>\n"
-    "    <method name=\"Play\">\n"
-    "    </method>\n"
+    "    <method name=\"Next\"></method>\n"
+    "    <method name=\"Previous\"></method>\n"
+    "    <method name=\"Pause\"></method>\n"
+    "    <method name=\"PlayPause\"></method>\n"
+    "    <method name=\"Stop\"></method>\n"
+    "    <method name=\"Play\"></method>\n"
     "    <method name=\"Seek\">\n"
     "      <arg type=\"x\" name=\"Offset\" direction=\"in\"/>\n"
     "    </method>\n"
@@ -73,7 +68,7 @@ static const char *introspection_xml =
     "    <property name=\"PlaybackStatus\" type=\"s\" access=\"read\"/>\n"
     "    <property name=\"LoopStatus\" type=\"s\" access=\"readwrite\"/>\n"
     "    <property name=\"Rate\" type=\"d\" access=\"readwrite\"/>\n"
-    "    <property name=\"Shuffle\" type=\"b\" access=\"readwrite\"/>\n"
+    "    <property name=\"Shuffle\" type=\"b\" access=\"read\"/>\n"
     "    <property name=\"Metadata\" type=\"a{sv}\" access=\"read\"/>\n"
     "    <property name=\"Volume\" type=\"d\" access=\"readwrite\"/>\n"
     "    <property name=\"Position\" type=\"x\" access=\"read\"/>\n"
@@ -142,8 +137,10 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 
 typedef struct contdata {
   dbus_t              *dbus;
+  callback_t          *cb;
   int                 root_interface_id;
   int                 player_interface_id;
+  double              pos;
   int                 playstatus;
   int                 repeatstatus;
 //  GHashTable          *changed_properties;
@@ -160,8 +157,6 @@ static bool mprisiPropertyGetCallback (const char *intfc, const char *method, vo
 
 
 #if 0
-static void mprisiBusAcquired (GDBusConnection *connection, const char *name, gpointer udata);
-static void mprisiBusNameLost (GDBusConnection *connection, const char *_name, gpointer udata);
 static void mprisiMethodRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static void mprisiMethodPlayer (GDBusConnection *connection, const char *sender, const char *_object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static GVariant * mprisiPropertyGetRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
@@ -179,13 +174,6 @@ static void handle_property_change (const char *name, void *data, contdata_t *co
 static gboolean event_handler (int fd, GIOCondition condition, gpointer data);
 static void wakeup_handler (void *fd);
 
-static GDBusInterfaceVTable vtable_root = {
-    mprisiMethodRoot, mprisiPropertyGetRoot, mprisiPropertySetRoot,
-};
-
-static GDBusInterfaceVTable vtable_player = {
-    mprisiMethodPlayer, mprisiPropertyGetPlayer, mprisiPropertySetPlayer,
-};
 #endif
 
 void
@@ -208,6 +196,7 @@ contiInit (const char *instname)
 
 fprintf (stderr, "cont-mpris init\n");
   contdata = mdmalloc (sizeof (contdata_t));
+  contdata->cb = NULL;
   contdata->playstatus = MPRIS_STATUS_STOP;
   contdata->repeatstatus = MPRIS_REPEAT_NONE;
 //  contdata->changed_properties = g_hash_table_new (g_str_hash, g_str_equal);
@@ -268,15 +257,110 @@ fprintf (stderr, "cont-mpris chk: ret: %d\n", ret);
   return rc;
 }
 
+void
+contiSetCallback (contdata_t *contdata, callback_t *cb)
+{
+  if (contdata == NULL || cb == NULL) {
+    return;
+  }
+
+  contdata->cb = cb;
+}
+
+void
+contiSetPlayState (contdata_t *contdata, int state)
+{
+  int   nstate = MPRIS_STATUS_STOP;
+
+  if (contdata == NULL) {
+    return;
+  }
+
+  switch (state) {
+    case PL_STATE_LOADING:
+    case PL_STATE_PLAYING:
+    case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_GAP: {
+      nstate = MPRIS_STATUS_PLAY;
+      break;
+    }
+    case PL_STATE_PAUSED: {
+      nstate = MPRIS_STATUS_PAUSE;
+      break;
+    }
+    default: {
+      nstate = MPRIS_STATUS_STOP;
+      break;
+    }
+  }
+  contdata->playstatus = nstate;
+}
+
+void
+contiSetRepeatState (contdata_t *contdata, bool state)
+{
+  if (contdata == NULL) {
+    return;
+  }
+
+  contdata->repeatstatus = MPRIS_REPEAT_NONE;
+  if (state) {
+    contdata->repeatstatus = MPRIS_REPEAT_TRACK;
+  }
+}
+
+void
+contiSetPosition (contdata_t *contdata, double pos)
+{
+  if (contdata == NULL) {
+    return;
+  }
+
+  contdata->pos = pos;
+}
+
 /* internal routines */
 
 static bool
 mprisiMethodCallback (const char *intfc, const char *method, void *udata)
 {
   contdata_t    *contdata = udata;
+  int           cmd = CONTROLLER_NONE;
+  long          val = 0;
+
 fprintf (stderr, "mprisi-method: %s %s\n", intfc, method);
 
-  return false;
+  if (contdata == NULL || contdata->cb == NULL) {
+    return true;
+  }
+
+  if (strcmp (method, "Play") == 0) {
+    cmd = CONTROLLER_PLAY;
+  } else if (strcmp (method, "PlayPause") == 0) {
+    cmd = CONTROLLER_PLAYPAUSE;
+  } else if (strcmp (method, "Pause") == 0) {
+    cmd = CONTROLLER_PAUSE;
+  } else if (strcmp (method, "Stop") == 0) {
+    cmd = CONTROLLER_STOP;
+  } else if (strcmp (method, "Next") == 0) {
+    cmd = CONTROLLER_NEXT;
+  } else if (strcmp (method, "Previous") == 0) {
+    cmd = CONTROLLER_PREVIOUS;
+  } else if (strcmp (method, "Seek") == 0) {
+    cmd = CONTROLLER_SEEK;
+  } else if (strcmp (method, "SetPosition") == 0) {
+    cmd = CONTROLLER_SET_POS;
+  } else if (strcmp (method, "OpenUri") == 0) {
+    cmd = CONTROLLER_URI;
+  } else if (strcmp (method, "Raise") == 0) {
+    cmd = CONTROLLER_RAISE;
+  } else if (strcmp (method, "Quit") == 0) {
+    cmd = CONTROLLER_QUIT;
+  }
+
+  callbackHandlerLongInt (contdata->cb, val, cmd);
+
+  return true;
 }
 
 static bool
@@ -320,38 +404,26 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
       rc = true;
     } else if (strcmp (prop, "SupportedUriSchemes") == 0) {
       rc = true;
-#if 0
-      GVariantBuilder builder;
-
-      g_variant_builder_init (&builder, G_VARIANT_TYPE ("as") );
-      g_variant_builder_add (&builder, "s", "file");
-      g_variant_builder_add (&builder, "s", "https");
-  //      g_variant_builder_add (&builder, "s", "mms");  // deprecated: rtsp
-  //      g_variant_builder_add (&builder, "s", "rtsp");
-      ret = g_variant_builder_end (&builder);
-#endif
+      dbusMessageSetDataArray (contdata->dbus, "(as)",
+          "file",
+          NULL);
     } else if (strcmp (prop, "SupportedMimeTypes") == 0) {
       rc = true;
-#if 0
-      GVariantBuilder builder;
-
-      g_variant_builder_init (&builder, G_VARIANT_TYPE ("as") );
-      /* this is what VLC outputs, without any video types */
-      g_variant_builder_add (&builder, "s", "audio/mpeg");
-      g_variant_builder_add (&builder, "s", "audio/x-mpeg");
-      g_variant_builder_add (&builder, "s", "audio/mp4");
-      g_variant_builder_add (&builder, "s", "application/ogg");
-      g_variant_builder_add (&builder, "s", "application/x-ogg");
-      /* do not know what this is */
-      g_variant_builder_add (&builder, "s", "application/x-mplayer2");
-      g_variant_builder_add (&builder, "s", "audio/wav");
-      g_variant_builder_add (&builder, "s", "audio/x-wav");
-      g_variant_builder_add (&builder, "s", "audio/3gpp");
-      g_variant_builder_add (&builder, "s", "audio/3gpp2");
-      g_variant_builder_add (&builder, "s", "audio/x-matroska");
-      g_variant_builder_add (&builder, "s", "application/xspf+xml");
-      ret = g_variant_builder_end (&builder);
-#endif
+      dbusMessageSetDataArray (contdata->dbus, "(as)",
+          "audio/mpeg",
+          "audio/x-mpeg",
+          "audio/mp4",
+          "application/ogg",
+          "application/x-ogg",
+          /* do not know what this is */
+          "application/x-mplayer2",
+          "audio/wav",
+          "audio/x-wav",
+          "audio/3gpp",
+          "audio/3gpp2",
+          "audio/x-matroska",
+          "application/xspf+xml",
+          NULL);
     }
   }
 

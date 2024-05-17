@@ -82,7 +82,7 @@ typedef struct mq_internal {
   int               rowcount;         // current size of tree view storage
 } mq_internal_t;
 
-static bool   uimusicqQueueDanceCallback (void *udata, long idx, int count);
+static int    uimusicqQueueDanceCallback (void *udata, long idx, int count);
 static bool   uimusicqQueuePlaylistCallback (void *udata, long idx);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
@@ -685,7 +685,7 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
 
 /* internal routines */
 
-static bool
+static int
 uimusicqQueueDanceCallback (void *udata, long idx, int count)
 {
   uimusicq_t    *uimusicq = udata;

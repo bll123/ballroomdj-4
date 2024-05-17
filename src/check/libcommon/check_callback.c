@@ -83,7 +83,7 @@ cbl (void *udata, long val)
   return false;
 }
 
-static bool
+static int
 cbli (void *udata, long a, int b)
 {
   if (udata != NULL) {

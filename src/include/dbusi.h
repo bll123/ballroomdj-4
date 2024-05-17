@@ -26,6 +26,7 @@ void dbusMessageInit (dbus_t *dbus);
 void *dbusMessageBuild (const char *sdata, ...);
 void *dbusMessageBuildObj (const char *path);
 void dbusMessageSetData (dbus_t *dbus, const char *sdata, ...);
+void dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...);
 void dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...);
 bool dbusMessage (dbus_t *dbus, const char *bus, const char *objpath, const char *intfc, const char *method);
 bool dbusResultGet (dbus_t *dbus, ...);

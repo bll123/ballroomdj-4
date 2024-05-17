@@ -7,7 +7,7 @@ typedef bool  (*callbackFunc)(void *udata);
 typedef bool  (*callbackFuncDouble)(void *udata, double value);
 typedef bool  (*callbackFuncIntInt)(void *udata, int a, int b);
 typedef bool  (*callbackFuncLong)(void *udata, long value);
-typedef bool  (*callbackFuncLongInt)(void *udata, long lval, int ival);
+typedef int   (*callbackFuncLongInt)(void *udata, long lval, int ival);
 typedef long  (*callbackFuncStr)(void *udata, const char *txt);
 typedef bool  (*callbackFuncStrInt)(void *udata, const char *txt, int value);
 
@@ -18,7 +18,7 @@ bool callbackHandler (callback_t *cb);
 bool callbackHandlerDouble (callback_t *cb, double value);
 bool callbackHandlerLong (callback_t *cb, long value);
 bool callbackHandlerIntInt (callback_t *cb, int a, int b);
-bool callbackHandlerLongInt (callback_t *cb, long lval, int ival);
+int  callbackHandlerLongInt (callback_t *cb, long lval, int ival);
 long callbackHandlerStr (callback_t *cb, const char *str);
 bool callbackHandlerStrInt (callback_t *cb, const char *str, int value);
 

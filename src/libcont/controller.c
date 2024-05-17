@@ -12,6 +12,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "controller.h"
 #include "pathbld.h"
 #include "dyintfc.h"
@@ -26,6 +27,10 @@ typedef struct controller {
   void              (*contiSetup) (contdata_t *contdata);
   void              (*contiFree) (contdata_t *contdata);
   bool              (*contiCheckReady) (contdata_t *contdata);
+  void              (*contiSetCallback) (contdata_t *contdata, callback_t *cb);
+  void              (*contiSetPlayState) (contdata_t *contdata, int state);
+  void              (*contiSetRepeatState) (contdata_t *contdata, bool state);
+  void              (*contiSetPosition) (contdata_t *contdata, double pos);
 } controller_t;
 
 controller_t *
@@ -60,6 +65,10 @@ controllerInit (const char *contpkg)
   cont->contiSetup = dylibLookup (cont->dlHandle, "contiSetup");
   cont->contiFree = dylibLookup (cont->dlHandle, "contiFree");
   cont->contiCheckReady = dylibLookup (cont->dlHandle, "contiCheckReady");
+  cont->contiSetCallback = dylibLookup (cont->dlHandle, "contiSetCallback");
+  cont->contiSetPlayState = dylibLookup (cont->dlHandle, "contiSetPlayState");
+  cont->contiSetRepeatState = dylibLookup (cont->dlHandle, "contiSetRepeatState");
+  cont->contiSetPosition = dylibLookup (cont->dlHandle, "contiSetPosition");
 #pragma clang diagnostic pop
 
   strlcpy (instname, BDJ4_NAME, sizeof (instname));
@@ -124,6 +133,53 @@ controllerCheckReady (controller_t *cont)
   return rc;
 }
 
+void
+controllerSetCallback (controller_t *cont, callback_t *cb)
+{
+  if (cont == NULL || cb == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetCallback != NULL) {
+    cont->contiSetCallback (cont->contdata, cb);
+  }
+}
+
+void
+controllerSetPlayState (controller_t *cont, int state)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetPlayState != NULL) {
+    cont->contiSetPlayState (cont->contdata, state);
+  }
+}
+
+void
+controllerSetRepeatState (controller_t *cont, bool state)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetRepeatState != NULL) {
+    cont->contiSetRepeatState (cont->contdata, state);
+  }
+}
+
+void
+controllerSetPosition (controller_t *cont, double pos)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetPosition != NULL) {
+    cont->contiSetPosition (cont->contdata, pos);
+  }
+}
 
 ilist_t *
 controllerInterfaceList (void)
@@ -133,3 +189,4 @@ controllerInterfaceList (void)
   interfaces = dyInterfaceList ("libcont", "contiDesc");
   return interfaces;
 }
+

@@ -149,5 +149,23 @@ org.mpris.MediaPlayer2.BDJ4
 org.freedesktop.DBus.Properties
 Set
 
+init
+data
+("org.mpris.MediaPlayer2.Player","Play")
+call
+org.mpris.MediaPlayer2.BDJ4
+/org/mpris/MediaPlayer2
+org.mpris.MediaPlayer2.Player
+Play
+
+init
+data
+("org.mpris.MediaPlayer2.Player","Pause")
+call
+org.mpris.MediaPlayer2.BDJ4
+/org/mpris/MediaPlayer2
+org.mpris.MediaPlayer2.Player
+Play
+
 exit
 

@@ -391,9 +391,9 @@ static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
-static bool     managePlayProcessSonglist (void *udata, long dbidx, int mqidx);
-static bool     managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx);
-static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
+static int      managePlayProcessSonglist (void *udata, long dbidx, int mqidx);
+static int      managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx);
+static int      managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessSonglist (void *udata, long dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
@@ -2988,7 +2988,7 @@ manageSonglistSave (manageui_t *manage)
   logProcEnd (LOG_PROC, "manageSonglistSave", "");
 }
 
-static bool
+static int
 managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from songlist");
@@ -2996,7 +2996,7 @@ managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
   return UICB_CONT;
 }
 
-static bool
+static int
 managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from side-by-side songlist");
@@ -3004,7 +3004,7 @@ managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
   return UICB_CONT;
 }
 
-static bool
+static int
 managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 {
   manageui_t  *manage = udata;

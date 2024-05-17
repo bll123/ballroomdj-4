@@ -15,10 +15,10 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "log.h"
 #include "mdebug.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiaudioid.h"
 
 uiaudioid_t *

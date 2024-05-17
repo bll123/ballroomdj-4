@@ -201,10 +201,10 @@ callbackHandlerIntInt (callback_t *cb, int a, int b)
   return rc;
 }
 
-bool
+int
 callbackHandlerLongInt (callback_t *cb, long lval, int ival)
 {
-  bool  rc = false;
+  int   rc = false;
 
   if (cb == NULL) {
     return 0;

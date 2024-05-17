@@ -68,7 +68,7 @@ typedef struct uiextreq {
 
 /* external request */
 static void   uiextreqCreateDialog (uiextreq_t *uiextreq);
-static bool   uiextreqDanceSelectHandler (void *udata, long idx, int count);
+static int    uiextreqDanceSelectHandler (void *udata, long idx, int count);
 static void   uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn);
 static void   uiextreqClearSong (uiextreq_t *uiextreq);
 static bool   uiextreqResponseHandler (void *udata, long responseid);
@@ -353,7 +353,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 }
 
 /* count is not used */
-static bool
+static int
 uiextreqDanceSelectHandler (void *udata, long idx, int count)
 {
   uiextreq_t  *uiextreq = udata;
