@@ -26,6 +26,8 @@
 #include "songsel.h"
 #include "tagdef.h"
 
+/* currently the rating/level/tags are split into 80/10/10 percentage */
+/* points, based on settings in autoselection.txt */
 enum {
   SONGSEL_ATTR_RATING,
   SONGSEL_ATTR_LEVEL,
@@ -33,6 +35,7 @@ enum {
   SONGSEL_ATTR_MAX,
 };
 
+/* current-indexes is a queue of songselidx_t */
 typedef struct {
   nlistidx_t     idx;
   nlistidx_t     ssidx;
@@ -83,6 +86,7 @@ static void songselIdxFree (void *titem);
 static void songselSongDataFree (void *titem);
 static void songselCalcPercentages (songsel_t *songsel, songseldance_t *songseldance);
 static void songselProcessDances (songsel_t *songsel);
+static void songselResetCurrentIdxList (songseldance_t *songseldance);
 
 /*
  *  danceSelList:
@@ -431,10 +435,6 @@ songselRemoveSong (songsel_t *songsel,
   ssidx = songdata->ssidx;
 
   if (count > 0) {
-    nlist_t   *nlist = NULL;
-
-    nlist = nlistAlloc ("songsel-curridx", LIST_UNORDERED, NULL);
-    nlistSetSize (nlist, count - 1);
     queueStartIterator (songseldance->currentIndexes, &qiteridx);
 
     while ((songidx =
@@ -447,26 +447,26 @@ songselRemoveSong (songsel_t *songsel,
         for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
           songseldance->weights [i] -= songdata->weights [i];
         }
-        continue;
       }
-
-      // logMsg (LOG_DBG, LOG_SONGSEL, "  remove-keep: idx:%d", songidx->idx);
-      nlistSetNum (nlist, songidx->idx, songidx->idx);
     }
-
-    nlistFree (songseldance->currentIdxList);
-    songseldance->currentIdxList = nlist;
   }
 
   if (ssidx <= 0) {
     count = queueGetCount (songseldance->currentIndexes);
-    logMsg (LOG_DBG, LOG_SONGSEL, "  count: %d(%d) %s",
-        count,
-        nlistGetCount (songseldance->currentIdxList),
-        count == 0 ? "rebuild" : "");
+    logMsg (LOG_DBG, LOG_SONGSEL, "  no-ss: count: %d %s",
+        count, count <= 0 ? "rebuild" : "");
+
     if (count <= 0) {
       songselRebuild (songsel, songseldance);
+    } else {
+      songselResetCurrentIdxList (songseldance);
     }
+
+    logMsg (LOG_DBG, LOG_SONGSEL, "  no-ss: count-after: %d(%d)",
+        queueGetCount (songseldance->currentIndexes),
+        nlistGetCount (songseldance->currentIdxList));
+
+    songselCalcPercentages (songsel, songseldance);
   }
 
   /* the same-song index must be processed for all dances! */
@@ -508,35 +508,23 @@ songselRemoveSong (songsel_t *songsel,
     /* do the checks for rebuilding and re-calculate the percentages */
     if (songseldance->danceIdx == ss_songseldance->danceIdx ||
         origcount != count) {
+
+      logMsg (LOG_DBG, LOG_SONGSEL, "  dnc: %d/%s count: %d %s",
+          ss_songseldance->danceIdx,
+          danceGetStr (songsel->dances, ss_songseldance->danceIdx, DANCE_DANCE),
+          count, count <= 0 ? "rebuild" : "");
+
       if (count <= 0) {
         songselRebuild (songsel, ss_songseldance);
       } else {
-        nlist_t   *nlist = NULL;
-
-        /* need to rebuild the current-idx-list */
-        /* the rebuild is done here for more efficiency */
-        /* it only needs to be re-built on a change */
-
-        nlist = nlistAlloc ("songsel-curridx", LIST_UNORDERED, NULL);
-        nlistSetSize (nlist, count - 1);
-
-        /* re-iterate the queue and record the indexes */
-        queueStartIterator (ss_songseldance->currentIndexes, &qiteridx);
-        while ((songidx =
-            queueIterateData (ss_songseldance->currentIndexes, &qiteridx)) != NULL) {
-          nlistSetNum (nlist, songidx->idx, songidx->idx);
-        }
-
-        nlistFree (songseldance->currentIdxList);
-        songseldance->currentIdxList = nlist;
+        songselResetCurrentIdxList (ss_songseldance);
       }
 
-      logMsg (LOG_DBG, LOG_SONGSEL, "  dnc: %d/%s count: %d(%d) %s",
+      logMsg (LOG_DBG, LOG_SONGSEL, "  dnc: %d/%s count-after: %d(%d)",
           ss_songseldance->danceIdx,
           danceGetStr (songsel->dances, ss_songseldance->danceIdx, DANCE_DANCE),
           count,
-          nlistGetCount (songseldance->currentIdxList),
-          count == 0 ? "rebuild" : "");
+          nlistGetCount (songseldance->currentIdxList));
 
       songselCalcPercentages (songsel, ss_songseldance);
     }
@@ -550,7 +538,6 @@ static void
 songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
 {
   nlistidx_t        count;
-  nlist_t           *nlist;
   songselsongdata_t *songdata;
   nlistidx_t        iteridx;
 
@@ -559,8 +546,6 @@ songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
   queueFree (songseldance->currentIndexes);
   songseldance->currentIndexes = queueAlloc ("songsel-curr-idxs", songselIdxFree);
   count = nlistGetCount (songseldance->songIdxList);
-  nlist = nlistAlloc ("songsel-curridx", LIST_UNORDERED, NULL);
-  nlistSetSize (nlist, count);
 
   nlistStartIterator (songseldance->songIdxList, &iteridx);
   while ((songdata = nlistIterateValueData (songseldance->songIdxList, &iteridx)) != NULL) {
@@ -570,11 +555,9 @@ songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
     songidx->idx = songdata->idx;
     songidx->ssidx = songdata->ssidx;
     queuePush (songseldance->currentIndexes, songidx);
-    nlistSetNum (nlist, songdata->idx, songdata->idx);
   }
 
-  nlistFree (songseldance->currentIdxList);
-  songseldance->currentIdxList = nlist;
+  songselResetCurrentIdxList (songseldance);
 
   for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
     songseldance->weights [i] = songseldance->origWeights [i];
@@ -755,4 +738,29 @@ songselProcessDances (songsel_t *songsel)
   }
 
   songsel->processed = true;
+}
+
+static void
+songselResetCurrentIdxList (songseldance_t *songseldance)
+{
+  nlist_t       *nlist = NULL;
+  qidx_t        qiteridx;
+  songselidx_t  *songidx;
+
+  /* need to rebuild the current-idx-list */
+  /* the rebuild is done here for more efficiency */
+  /* it only needs to be re-built on a change */
+
+  nlist = nlistAlloc ("songsel-curridx", LIST_UNORDERED, NULL);
+  nlistSetSize (nlist, queueGetCount (songseldance->currentIndexes));
+
+  /* re-iterate the queue and record the indexes */
+  queueStartIterator (songseldance->currentIndexes, &qiteridx);
+  while ((songidx =
+      queueIterateData (songseldance->currentIndexes, &qiteridx)) != NULL) {
+    nlistSetNum (nlist, songidx->idx, songidx->idx);
+  }
+
+  nlistFree (songseldance->currentIdxList);
+  songseldance->currentIdxList = nlist;
 }
