@@ -534,6 +534,8 @@ songselRemoveSong (songsel_t *songsel,
   return;
 }
 
+/* on a re-build, any songs with same-song marks will be re-added */
+/* this is not an issue. */
 static void
 songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
 {
