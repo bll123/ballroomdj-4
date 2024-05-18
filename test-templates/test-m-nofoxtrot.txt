@@ -2418,6 +2418,8 @@ DISCTOTAL
 ..1
 FAVORITE
 ..bluestar
+SAMESONG
+..9
 TITLE
 ..%03d-waltz
 DEST
@@ -2502,6 +2504,8 @@ DANCE
 ..Waltz
 DANCERATING
 ..Good
+SAMESONG
+..9
 TITLE
 ..%03d-waltz
 DEST

@@ -6,8 +6,10 @@
 
 **4.10.1 2024-5---**
 
+* Bug Fixes:
+    * Auto Song Selection: Fix same-song processing.
 * Internal:
-    * Open source dependencies updated to latest.
+    * Open source dependencies updated to latest version.
 
 -->
 
@@ -124,8 +126,8 @@
     * Conversion: Minor fixes.
     * Marquee: Possible fix for blank song information display.
     * Playlist Management: Fix default value for tag weight.
-    * Song Selection: Better same-song marks handling.
-    * Song Selection: Re-work, fix all issues.
+    * Auto Song Selection: Better same-song marks handling.
+    * Auto Song Selection: Re-work, fix all issues.
     * Fix some memory leaks.
 * Changes:
     * Quick Edit: Add 'Favorite' to the dialog.
@@ -143,7 +145,7 @@
     * Audio Identification: Fix match listing display.
     * Auto Organize: Be less restrictive for allowed characters in audio filenames.
     * Playlist Management: Fix save; reset; allowed keywords.
-    * Song Selection: Fix incorrect weighting for dance rating and dance level.
+    * Auto Song Selection: Fix incorrect weighting for dance rating and dance level.
     * Starter: Fixed incorrect profile folder creation.
 * New Features:
     * Linux: MPRIS player support.

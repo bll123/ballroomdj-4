@@ -24,7 +24,23 @@ DEPBASIC=dep-libbasic.txt
 DEPBDJ4=dep-libbdj4.txt
 grc=0
 
-# a) check to make sure the include files can be compiled w/o dependencies
+# check to make sure the include files do not have any duplicate exclusions
+echo "## checking include file protections"
+
+lc=$(grep '^#ifndef INC_' include/*.h include/ui/*.h |
+  sort |
+  uniq -d |
+  wc -l)
+rc=0
+if [[ $lc -gt 0 ]]; then
+  rc=1
+fi
+if [[ $rc -ne 0 ]]; then
+  grc=$rc
+  exit $grc
+fi
+
+# check to make sure the include files can be compiled w/o dependencies
 echo "## checking include file compilation"
 test -f $INCTOUT && rm -f $INCTOUT
 for fn in include/*.h include/ui/*.h; do
@@ -67,7 +83,7 @@ if [[ $grc -ne 0 ]]; then
 fi
 rm -f $INCTOUT
 
-# b) check the include file hierarchy for problems.
+# check the include file hierarchy for problems.
 echo "## checking include file hierarchy"
 > $TIN
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h build/config.h; do
@@ -88,7 +104,7 @@ if [[ $rc -ne 0 ]]; then
   exit $grc
 fi
 
-# c) check the object file hierarchy for problems.
+# check the object file hierarchy for problems.
 echo "## checking object file hierarchy"
 #
 ./utils/lorder $(find ./build -name '*.o') > $TIN
