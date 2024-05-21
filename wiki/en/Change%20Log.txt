@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Auto Song Selection: Fix same-song processing.
+    * PENDING MacOS: Fix player ui current song display.
 * Internal:
     * Open source dependencies updated to latest version.
 

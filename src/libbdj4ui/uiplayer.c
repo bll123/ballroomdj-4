@@ -971,7 +971,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     return;
   }
 
-  sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_PLAYER_UI);
+  sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_CURRSONG);
 
   idx = UIPL_W_INFO_DISP_A;
   slistStartIterator (sellist, &seliteridx);

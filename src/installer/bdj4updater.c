@@ -592,7 +592,9 @@ main (int argc, char *argv [])
 
   {
     /* 4.8.3 2024-4-16. Install new ds-player.txt */
-    updaterCopyProfileIfNotPresent ("ds-player", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+    /* 4.10.1 2024-5-20. Rename to ds-currsong.txt */
+    updaterRenameProfileFile ("ds-player", "ds-currsong", BDJ4_CONFIG_EXT);
+    updaterCopyProfileIfNotPresent ("ds-currsong", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
   /* now re-load the data files */
