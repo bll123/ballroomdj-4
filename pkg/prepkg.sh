@@ -41,6 +41,9 @@ fi
 . src/utils/pkgnm.sh
 pkgnmgetdata
 
+# make sure the tmp dir exists
+test -d tmp || mkdir tmp
+
 maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
   sed -e 's,.* ,,')
 min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |

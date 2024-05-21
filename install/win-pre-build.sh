@@ -51,6 +51,9 @@ pacman -S --noconfirm --needed \
     mingw-w64-ucrt-x86_64-pkgconf \
     mingw-w64-ucrt-x86_64-gtk3 \
     mingw-w64-ucrt-x86_64-cmake \
-    mingw-w64-ucrt-x86_64-icu
+    mingw-w64-ucrt-x86_64-icu \
+    mingw-w64-ucrt-x86_64-json-c \
+    mingw-w64-ucrt-x86_64-libgcrypt \
+    mingw-w64-ucrt-x86_64-c-ares
 
 exit 0

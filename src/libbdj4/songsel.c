@@ -539,7 +539,6 @@ songselRemoveSong (songsel_t *songsel,
 static void
 songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
 {
-  nlistidx_t        count;
   songselsongdata_t *songdata;
   nlistidx_t        iteridx;
 
@@ -547,7 +546,6 @@ songselRebuild (songsel_t *songsel, songseldance_t *songseldance)
       danceGetStr (songsel->dances, songseldance->danceIdx, DANCE_DANCE));
   queueFree (songseldance->currentIndexes);
   songseldance->currentIndexes = queueAlloc ("songsel-curr-idxs", songselIdxFree);
-  count = nlistGetCount (songseldance->songIdxList);
 
   nlistStartIterator (songseldance->songIdxList, &iteridx);
   while ((songdata = nlistIterateValueData (songseldance->songIdxList, &iteridx)) != NULL) {

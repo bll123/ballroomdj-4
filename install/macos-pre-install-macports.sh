@@ -61,12 +61,6 @@ fi
 # not sure if there's a way to determine the latest python version
 # this needs to be fixed.
 
-# When macports transitions to a new version of python, the builds and
-# dependencies can be unstable.  Be conservative about changing this.
-# The versions of python listed in oldpyverlist will be uninstalled.
-oldpyverlist="39 310 311"
-pyver=312
-
 skipmpinst=F
 #  when adding a new version, be sure to update the 'too-new' regex.    ###
 case $vers in
@@ -207,19 +201,16 @@ sudo port -N install \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11 -rav1e \
     chromaprint
+
 sudo -v
 
 echo "-- Cleaning up old MacPorts files"
 
 sudo port -N uninstall \
     taglib \
-    py${pyver}-mutagen
-
-sudo -v
-
-for opyver in $oldpyverlist; do
-  sudo port uninstall -N --follow-dependents python${opyver}
-done
+    py310-mutagen \
+    py311-mutagen \
+    py312-mutagen
 
 sudo -v
 

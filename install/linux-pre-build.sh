@@ -138,7 +138,7 @@ fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # updated 2023-10-29
-  # tested 2023-10-29
+  # tested 2024-5-18
   pkglist="cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev

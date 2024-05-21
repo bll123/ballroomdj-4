@@ -63,7 +63,7 @@ case $systype in
     CXX=g++
     cmg="MSYS Makefiles"
     cmpbld=""
-    CFLAGS=-m64
+    CFLAGS="-m64 -O2"
     LDFLAGS=-m64
     PKG_CFLAGS=-m64
     export CFLAGS PKG_CFLAGS LDFLAGS
