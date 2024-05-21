@@ -479,9 +479,20 @@ sysvarsInit (const char *argv0)
         *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
         if (isMacOS ()) {
+          char  tmp [MAXPATHLEN];
+          char  *tp;
+          
+          /* extract the name of the app from the main-dir */
+          strlcpy (tmp, sysvars [SV_BDJ4_DIR_MAIN], sizeof (tmp));
+          tmp [strlen (tmp) - 
+              strlen (MACOS_APP_PREFIX) - 
+              strlen (MACOS_APP_EXT)] = '\0';
+          tp = strrchr (tmp, '/');
+          ++tp;
+
           strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
           strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
-          strlcat (buff, BDJ4_NAME, SV_MAX_SZ);
+          strlcat (buff, tp, SV_MAX_SZ);
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
