@@ -36,7 +36,7 @@ check_libcommon (SRunner *sr)
    *  osenv       complete 2022-12-27
    *  bdjstring   complete
    *  osprocess   complete                // uses procutil, pathbld, ossignal
-   *  osdirutil
+   *  osdirutil   complete 2024-5-21
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
@@ -45,9 +45,9 @@ check_libcommon (SRunner *sr)
    *  osdir       complete 2022-12-27     // test uses dirop
    *  pathdisp    complete
    *  osutils     complete 2022-12-27
+   *  pathbld     complete
    *  dirop       complete
    *  fileop_dir  complete 2023-7-31
-   *  pathbld     complete
    *  filemanip   complete 2022-11-1
    *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
    *  pathinfo    complete
@@ -56,6 +56,7 @@ check_libcommon (SRunner *sr)
    *  sock        partial                 // uses ossignal
    *  bdjvars     complete
    *  sockh
+   *  queue       complete 2022-11-1
    *  conn
    *  callback    complete 2023-3-4
    *  osrandom    complete
@@ -65,7 +66,6 @@ check_libcommon (SRunner *sr)
    *  oslocale
    *  ossignal    complete
    *  bdj4arg
-   *  queue       complete 2022-11-1
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
@@ -85,7 +85,8 @@ check_libcommon (SRunner *sr)
   s = osprocess_suite();
   srunner_add_suite (sr, s);
 
-  /* osdirutil */
+  s = osdirutil_suite();
+  srunner_add_suite (sr, s);
 
   s = filedata_suite();
   srunner_add_suite (sr, s);
@@ -110,13 +111,13 @@ check_libcommon (SRunner *sr)
   s = osutils_suite();
   srunner_add_suite (sr, s);
 
+  s = pathbld_suite();
+  srunner_add_suite (sr, s);
+
   s = dirop_suite();
   srunner_add_suite (sr, s);
 
   s = fileop_dir_suite();
-  srunner_add_suite (sr, s);
-
-  s = pathbld_suite();
   srunner_add_suite (sr, s);
 
   s = filemanip_suite();
@@ -141,6 +142,9 @@ check_libcommon (SRunner *sr)
 
   /* sockh */
 
+  s = queue_suite();
+  srunner_add_suite (sr, s);
+
   /* conn */
 
   s = callback_suite();
@@ -163,9 +167,6 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   /* bdj4arg */
-
-  s = queue_suite();
-  srunner_add_suite (sr, s);
 }
 
 #pragma clang diagnostic pop

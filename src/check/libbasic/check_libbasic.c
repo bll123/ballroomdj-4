@@ -40,8 +40,8 @@ check_libbasic (SRunner *sr)
    *  procutil    partial
    *  lock        complete
    *  rafile      complete
-   *  progstate   complete (no log checks)
    *  localeutil
+   *  progstate   complete (no log checks)
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbasic");
@@ -78,10 +78,10 @@ check_libbasic (SRunner *sr)
   s = rafile_suite();
   srunner_add_suite (sr, s);
 
+  /* localeutil */
+
   s = progstate_suite();
   srunner_add_suite (sr, s);
-
-  /* localeutil */
 }
 
 #pragma clang diagnostic pop
