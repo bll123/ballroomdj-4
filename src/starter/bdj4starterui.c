@@ -597,7 +597,7 @@ starterBuildUI (startui_t  *starter)
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
+  uiWidgetSetAllMargins (vbox, 4);
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);

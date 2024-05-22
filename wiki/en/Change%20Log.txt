@@ -4,15 +4,17 @@
 
 <!--
 
-**4.10.1 2024-5---**
+**4.10.1 2024-5-22**
+
+-->
+
+**4.10.1 2024-5-22**
 
 * Bug Fixes:
     * Auto Song Selection: Fix same-song processing.
     * MacOS: Fix incorrect data path handling.
 * Internal:
     * Open source dependencies updated to latest version.
-
--->
 
 **4.10.0 2024-5-4**
 
@@ -150,7 +152,7 @@
     * Starter: Fixed incorrect profile folder creation.
 * New Features:
     * Linux: MPRIS player support.
-    * Song Selection / Playlist Management: Tag selection with weight.
+    * Auto Song Selection / Playlist Management: Tag selection with weight.
 * Internal:
     * Code cleanup.
     * Fix various memory leaks and memory issues.
@@ -614,7 +616,7 @@
     * Song Selection: Shift-click is now working.
 * Bug Fixes:
     * Song Selection: Fix control-click.
-    * Song Selection: Fix 'Date Added' filter.
+    * Auto Song Selection: Fix 'Date Added' filter.
 * Changes:
     * Song Editor: Changed Control-A to Control-Shift-A.
     * Automatic Playlists: Dance selection values adjusted.
@@ -875,4 +877,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-19 11:40:18; BDJ4 version 4.10.0)_
+<br>_(Updated 2024-05-22 14:33:00; BDJ4 version 4.10.1)_

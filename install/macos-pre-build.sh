@@ -30,9 +30,6 @@ fi
 
 cwd=$(pwd)
 
-LOG=/tmp/bdj4-pre-build.log
-> $LOG
-
 bdir=$(dirname $0)
 ${bdir}/macos-pre-install-macports.sh
 
@@ -44,7 +41,6 @@ sudo port -N install cmake check
 
 sudo -k
 
-echo "** Pre-build log is located at: $LOG"
 echo "Press enter to finish."
 read answer
 exit $rc

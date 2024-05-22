@@ -10,6 +10,7 @@ Contents
   Feedback
   Copyright
   Licenses
+  Building From Source
 
 Installation:
   Windows:
@@ -20,7 +21,7 @@ Installation:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/
 
 Getting Started:
-    https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Getting%20Started/
+  https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Getting%20Started/
 
 Change Log:
   https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log/
@@ -73,3 +74,11 @@ Licenses:
       nghttp2   : MIT License
       opusfile  : Xiph/BSD License
       opus      : Xiph/BSD License
+
+Building From Source:
+
+  Download the source package from:
+    https://sourceforge.net/projects/ballroomdj4/files/source/
+  Unpack the package, and read the 'BUILD.txt' file.
+  For Windows, the bdj4-src-win64-DATE.zip file is also needed.
+  For MacOS, the bdj4-src-macos-DATE.zip file is also needed.

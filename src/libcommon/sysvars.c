@@ -708,29 +708,8 @@ sysvarsInit (const char *argv0)
 
     data = sysvars [SV_OS_VERS];
     if (data != NULL) {
-      if (strcmp (data, "15") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
-      } else if (strcmp (data, "14") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Sonoma", SV_MAX_SZ);
-      } else if (strcmp (data, "13") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Ventura", SV_MAX_SZ);
-      } else if (strcmp (data, "12") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Monterey", SV_MAX_SZ);
-      } else if (strcmp (data, "11") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Big Sur", SV_MAX_SZ);
-      } else if (strcmp (data, "10.15") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Catalina", SV_MAX_SZ);
-      } else if (strcmp (data, "10.14") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Mojave", SV_MAX_SZ);
-      } else if (strcmp (data, "10.13") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " High Sierra", SV_MAX_SZ);
-      } else if (strcmp (data, "10.12") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Sierra", SV_MAX_SZ);
-      } else {
-        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
-      }
+      strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
+      strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {

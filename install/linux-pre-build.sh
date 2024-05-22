@@ -161,7 +161,7 @@ if [[ -f /usr/bin/dnf ]]; then
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
       libvorbis-devel
       flac-devel check-devel json-c-devel
-      chromprint-tools"
+      chromaprint-tools"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse

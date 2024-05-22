@@ -117,12 +117,12 @@ Windows
   # the pre-build script only needs to be run once.
   # thereafter, a "pacman -Syu" can be done to update the packages.
   # if MSys2 closes the terminal, re-open the terminal (step b1), then
-  # start with step b4) again.
+  # start with step b5) again.
   ../install/win-pre-build.sh
 
   # step b7)
   # build-all only needs to be run when the dependent packages are updated
-  # not every time (the bdj4-src-win64-DATE.zip file)
+  # not every time.
   ../pkg/build-all.sh
 
   # step b8)

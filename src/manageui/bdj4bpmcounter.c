@@ -346,7 +346,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       _("BPM Counter"), imgbuff);
 
   vboxmain = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vboxmain, 2);
+  uiWidgetSetAllMargins (vboxmain, 4);
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
