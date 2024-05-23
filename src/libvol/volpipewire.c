@@ -41,7 +41,6 @@
 #include <pipewire/extensions/metadata.h>
 #include <spa/utils/keys.h>
 #include <spa/utils/json.h>
-//#include <spa/param/param-types.h>
 #include <spa/debug/pod.h>
 
 #include "mdebug.h"
@@ -57,6 +56,7 @@ typedef struct {
   struct pw_metadata    *metadata;
   struct spa_hook       metadata_listener;
   struct pw_properties  *props;
+  struct pw_map         pwdevlist;
   struct pw_map         pwsinklist;
   volsinklist_t         *sinklist;
   char                  *defname;
@@ -76,6 +76,7 @@ typedef struct {
 } pwsink_t;
 
 typedef struct {
+  uint32_t              deviceid;
   pwstate_t             *pwstate;
   pwsink_t              *pwsink;
   struct spa_hook       object_listener;
@@ -91,6 +92,7 @@ static pwstate_t *pipewireInit (void);
 static int pipewireMetadataEvent (void *udata, uint32_t id, const char *key, const char *type, const char *value);
 static void pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info);
 static void pipewireParamEvent (void *udata, int seq, uint32_t id, uint32_t index, uint32_t next, const struct spa_pod *param);
+static int pipewireGetRoute (void *item, void *udata);
 
 static const struct pw_registry_events registry_events = {
   PW_VERSION_REGISTRY_EVENTS,
@@ -268,11 +270,13 @@ pipewireRegistryEvent (void *data, uint32_t id,
     proxy = pw_registry_bind (pwstate->registry, id, type,
         version, sizeof (pwproxy_t));
     pd = pw_proxy_get_user_data (proxy);
+    pd->deviceid = id;
     pd->pwstate = pwstate;
     pd->pwsink = NULL;
     pd->proxy = proxy;
 fprintf (stderr, "found device: %d\n", id);
     pw_proxy_add_object_listener (proxy, &pd->object_listener, &device_events, pd);
+    pw_map_insert_new (&pwstate->pwdevlist, pd);
     return;
   }
 
@@ -315,6 +319,7 @@ fprintf (stderr, "node %d device id: %d\n", id, sink->deviceid);
   proxy = pw_registry_bind (pwstate->registry, id, type,
       version, sizeof (pwproxy_t));
   pd = pw_proxy_get_user_data (proxy);
+  pd->deviceid = 0;
   pd->pwstate = pwstate;
   pd->pwsink = sink;
   pd->proxy = proxy;
@@ -414,6 +419,7 @@ pipewireInit (void)
   pwstate->core = pw_context_connect (pwstate->context, pwstate->props, 0);
   mdextalloc (pwstate->core);
 
+  pw_map_init (&pwstate->pwdevlist, 8, 1);
   pw_map_init (&pwstate->pwsinklist, 4, 1);
 
   pwstate->registry = pw_core_get_registry (pwstate->core, PW_VERSION_REGISTRY, 0);
@@ -477,17 +483,7 @@ pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
 // Spa:Pod:Object:Param:Format:Audio:channels
   }
 
-#if 0
-// ### need to get the route-id
-  ti = spa_debug_type_find_short (spa_type_param, "Route");
-  if (ti != NULL) {
-    param_id = ti->type;
-// ### wrong proxy
-    pw_node_enum_params ((struct pw_node *) pd->proxy,
-        0, param_id, 0, 1, NULL);
-// Spa:Pod:Object:Param:Route:index
-  }
-#endif
+  pw_map_for_each (&pd->pwstate->pwdevlist, pipewireGetRoute, pd->pwsink);
 }
 
 static void
@@ -497,11 +493,32 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
     pwproxy_t   *pd = udata;
 fprintf (stderr, "param-event\n");
 
-fprintf (stderr, "sink-node-id %d param %d index %d\n",
-    pd->pwsink->nodeid, id, index);
+fprintf (stderr, "  seq %d param %d index %d\n", seq, id, index);
 spa_debug_pod (2, NULL, param);
 }
 
+static int
+pipewireGetRoute (void *item, void *udata)
+{
+  pwproxy_t     *pd = item;
+  pwsink_t      *pwsink = udata;
+  uint32_t      param_id;
+  const struct spa_type_info *ti;
+
+  if (pd->deviceid != pwsink->deviceid) {
+    return 0;
+  }
+
+  ti = spa_debug_type_find_short (spa_type_param, "Route");
+  if (ti != NULL) {
+    param_id = ti->type;
+    pw_device_enum_params ((struct pw_device *) pd->proxy,
+        0, param_id, 0, 0, NULL);
+// Spa:Pod:Object:Param:Route:index
+  }
+
+  return 1;
+}
 
 
 #endif /* _hdr_pipewire_pipewire - have pipewire header */
