@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <signal.h>
+#include <math.h>
 
 /*
  *
@@ -20,7 +21,7 @@
  *      device.id             done
  *      card.profile.device   done
  *   enum-params <node-id> Format
- *      can check for stereo output here
+ *      can check for stereo output here      done
  *   enum-params <device-id> Route
  *      determine which route is in use/wanted     done
  *
@@ -36,6 +37,8 @@
  *
  */
 
+#define BDJ4_PW_DEBUG 0
+
 #include <pipewire/pipewire.h>
 #include <pipewire/keys.h>
 #include <pipewire/extensions/metadata.h>
@@ -43,14 +46,15 @@
 #include <spa/utils/json.h>
 #include <spa/param/param.h>
 #include <spa/param/format.h>
+#include <spa/param/props.h>
 #include <spa/pod/parser.h>
-#include <spa/debug/pod.h>
+#if BDJ4_PW_DEBUG
+# include <spa/debug/pod.h>
+#endif
 
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
-
-#define BDJ4_PW_DEBUG 1
 
 enum {
   BDJ4_PW_TYPE_DEVICE,
@@ -58,6 +62,10 @@ enum {
   BDJ4_PWSTATE,
   BDJ4_PWSINK,
   BDJ4_PWPROXY,
+};
+
+enum {
+  BDJ4_PW_MAX_CHAN = 5,
 };
 
 typedef struct pwproxy pwproxy_t;
@@ -83,28 +91,29 @@ typedef struct {
 
 typedef struct {
   int                   ident;
-  int                   internalid;
-  uint32_t              nodeid;
-  uint32_t              deviceid;
-  uint32_t              cardprofiledev;
-  int                   routeidx;
-  int                   channels;
-  char                  *description;
-  char                  *name;
   struct pw_node_info   *info;
   pwproxy_t             *pwdevproxy;
   struct pw_proxy       *proxy;
+  char                  *description;
+  char                  *name;
+  double                currvolume;
+  uint32_t              nodeid;
+  uint32_t              deviceid;
+  uint32_t              cardprofiledev;
+  int                   internalid;
+  int                   routeidx;
+  int                   channels;
 } pwsink_t;
 
 typedef struct pwproxy {
   int                   ident;
-  int                   type;
-  uint32_t              deviceid;
   pwstate_t             *pwstate;
   pwsink_t              *pwsink;
   struct spa_hook       object_listener;
-//  struct spa_hook       proxy_listener;
   struct pw_proxy       *proxy;
+  uint32_t              deviceid;
+  int                   type;
+//  struct spa_hook       proxy_listener;
 } pwproxy_t;
 
 static pwstate_t *pipewireInit (void);
@@ -255,6 +264,7 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+
     return *vol;
   }
 
@@ -458,6 +468,8 @@ pipewireGetSink (void *item, void *udata)
   sinklist->sinklist [idx].description = mdstrdup (sink->description);
   if (strcmp (sinklist->sinklist [idx].name, pwstate->defname) == 0) {
     sinklist->sinklist [idx].defaultFlag = true;
+    dataFree (sinklist->defname);
+    sinklist->defname = mdstrdup (pwstate->defname);
   }
 
   ++sinklist->count;
@@ -584,19 +596,44 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
     exit (1);
   }
 
-  // spa_debug_pod (4, NULL, param);
   spa_pod_parser_pod (&p, param);
 
   if (pd->type == BDJ4_PW_TYPE_DEVICE) {
-    int       routeidx = 0;
-    uint32_t  dir = SPA_DIRECTION_INPUT;
+    int                 routeidx = 0;
+    uint32_t            dir = SPA_DIRECTION_INPUT;
+    struct spa_pod_parser pp;
+    struct spa_pod      *props;
+    struct spa_pod      *vols;
+    float               volume [BDJ4_PW_MAX_CHAN];
+    int                 nvol;
+    bool                mute = false;
 
+    for (int i = 0; i < BDJ4_PW_MAX_CHAN; ++i) {
+      volume [i] = 0.0;
+    }
+
+    // spa_debug_pod (4, NULL, param);
     spa_pod_parser_get_object (&p,
         SPA_TYPE_OBJECT_ParamRoute, NULL,
         SPA_PARAM_ROUTE_index, SPA_POD_Int (&routeidx),
-        SPA_PARAM_ROUTE_direction, SPA_POD_Id (&dir));
+        SPA_PARAM_ROUTE_direction, SPA_POD_Id (&dir),
+        SPA_PARAM_ROUTE_props, SPA_POD_PodObject (&props));
     if (dir == SPA_DIRECTION_OUTPUT) {
       pwsink->routeidx = routeidx;
+
+      // spa_debug_pod (6, NULL, props);
+      spa_pod_parser_pod (&pp, props);
+      spa_pod_parser_get_object (&pp,
+          SPA_TYPE_OBJECT_Props, NULL,
+          SPA_PROP_channelVolumes, SPA_POD_Pod (&vols),
+          SPA_PROP_mute, SPA_POD_Bool (&mute));
+
+      // spa_debug_pod (6, NULL, vols);
+      nvol = spa_pod_copy_array (vols, SPA_TYPE_Float, volume, BDJ4_PW_MAX_CHAN);
+
+      /* where is the cubic root documented? */
+      pwsink->currvolume = pow ((double) volume [0], (1.0 / 3.0));
+fprintf (stderr, "== node: %d vol: %.2f\n", pwsink->nodeid, pwsink->currvolume * 100.0);
     }
   }
 
