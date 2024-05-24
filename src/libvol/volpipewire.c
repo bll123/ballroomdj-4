@@ -22,7 +22,7 @@
  *   enum-params <node-id> Format
  *      can check for stereo output here
  *   enum-params <device-id> Route
- *      indicates which route is in use     done
+ *      determine which route is in use/wanted     done
  *
  *  set-volume for the route
  *   pw-cli set-param <device-id> \
@@ -42,7 +42,7 @@
 #include <spa/utils/keys.h>
 #include <spa/utils/json.h>
 #include <spa/param/param.h>
-#include <spa/param/param-types.h>
+#include <spa/param/format.h>
 #include <spa/pod/parser.h>
 #include <spa/debug/pod.h>
 
@@ -50,14 +50,20 @@
 #include "volsink.h"
 #include "volume.h"
 
+#define BDJ4_PW_DEBUG 1
+
 enum {
-  PW_TYPE_DEVICE,
-  PW_TYPE_NODE,
+  BDJ4_PW_TYPE_DEVICE,
+  BDJ4_PW_TYPE_NODE,
+  BDJ4_PWSTATE,
+  BDJ4_PWSINK,
+  BDJ4_PWPROXY,
 };
 
 typedef struct pwproxy pwproxy_t;
 
 typedef struct {
+  int                   ident;
   struct pw_main_loop   *pwmainloop;
   struct pw_context     *context;
   struct pw_core        *core;
@@ -76,18 +82,22 @@ typedef struct {
 } pwstate_t;
 
 typedef struct {
+  int                   ident;
   int                   internalid;
   uint32_t              nodeid;
   uint32_t              deviceid;
   uint32_t              cardprofiledev;
   int                   routeidx;
+  int                   channels;
   char                  *description;
   char                  *name;
   struct pw_node_info   *info;
-  pwproxy_t             *deviceProxy;
+  pwproxy_t             *pwdevproxy;
+  struct pw_proxy       *proxy;
 } pwsink_t;
 
 typedef struct pwproxy {
+  int                   ident;
   int                   type;
   uint32_t              deviceid;
   pwstate_t             *pwstate;
@@ -98,7 +108,7 @@ typedef struct pwproxy {
 } pwproxy_t;
 
 static pwstate_t *pipewireInit (void);
-static void pipewireRegistryEvent (void *data, uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props);
+static void pipewireRegistryEvent (void *udata, uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props);
 static int pipewireGetSink (void *item, void *udata);
 static void pipewireCheckMainLoop (void *udata, uint32_t id, int seq);
 static void pipewireRunOnce (pwstate_t *pwstate);
@@ -107,6 +117,9 @@ static void pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
 static void pipewireParamEvent (void *udata, int seq, uint32_t id, uint32_t index, uint32_t next, const struct spa_pod *param);
 static int pipewireGetRoute (void *item, void *udata);
 static int pipewireMapDevice (void *item, void *udata);
+# if BDJ4_PW_DEBUG
+static int pipewireDumpSink (void *item, void *udata);
+# endif
 
 static const struct pw_registry_events registry_events = {
   PW_VERSION_REGISTRY_EVENTS,
@@ -213,10 +226,12 @@ voliProcess (volaction_t action, const char *sinkname,
   if (pwstate == NULL) {
     pwstate = pipewireInit ();
 
-    /* run once to get the nodes */
+    /* initialize everything */
     pipewireRunOnce (pwstate);
-    /* run again to get the metadata and node-info */
-    pipewireRunOnce (pwstate);
+
+# if BDJ4_PW_DEBUG
+    pw_map_for_each (&pwstate->pwsinklist, pipewireDumpSink, pwstate);
+# endif
   }
 
   /* process any outstanding events */
@@ -256,6 +271,7 @@ pipewireInit (void)
   pw_init (0, NULL);
 
   pwstate = mdmalloc (sizeof (pwstate_t));
+  pwstate->ident = BDJ4_PWSTATE;
   pwstate->pwmainloop = NULL;
   pwstate->props = NULL;
   pwstate->context = NULL;
@@ -264,6 +280,7 @@ pipewireInit (void)
   pwstate->metadata = NULL;
   pwstate->defname = NULL;
   pwstate->pwsinkcount = 0;
+  pwstate->coreseq = 0;
 
   pwstate->pwmainloop = pw_main_loop_new (NULL);
   mdextalloc (pwstate->pamainloop);
@@ -299,15 +316,20 @@ pipewireInit (void)
 }
 
 static void
-pipewireRegistryEvent (void *data, uint32_t id,
+pipewireRegistryEvent (void *udata, uint32_t id,
     uint32_t permissions, const char *type, uint32_t version,
     const struct spa_dict *props)
 {
-  pwstate_t                   *pwstate = data;
+  pwstate_t                   *pwstate = udata;
   const struct spa_dict_item  *item;
   pwsink_t                    *sink;
   struct pw_proxy             *proxy;
   pwproxy_t                   *pd;
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: reg-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
 
   if (props == NULL || props->n_items == 0) {
     return;
@@ -323,10 +345,11 @@ pipewireRegistryEvent (void *data, uint32_t id,
 
     pwstate->metadata_id = id;
     pwstate->metadata = pw_registry_bind (pwstate->registry,
-        id, type, PW_VERSION_METADATA, 0);
+        id, type, version, 0);
     mdextalloc (pwstate->metadata);
     pw_metadata_add_listener (pwstate->metadata,
         &pwstate->metadata_listener, &metadata_events, pwstate);
+    pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 
     return;
   }
@@ -335,13 +358,15 @@ pipewireRegistryEvent (void *data, uint32_t id,
     proxy = pw_registry_bind (pwstate->registry, id, type,
         version, sizeof (pwproxy_t));
     pd = pw_proxy_get_user_data (proxy);
-    pd->type = PW_TYPE_DEVICE;
+    pd->ident = BDJ4_PWPROXY;
+    pd->type = BDJ4_PW_TYPE_DEVICE;
     pd->deviceid = id;
     pd->pwstate = pwstate;
     pd->pwsink = NULL;
     pd->proxy = proxy;
     pw_proxy_add_object_listener (proxy, &pd->object_listener, &device_events, pd);
     pw_map_insert_new (&pwstate->pwdevlist, pd);
+    pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
     return;
   }
 
@@ -361,11 +386,13 @@ pipewireRegistryEvent (void *data, uint32_t id,
   }
 
   sink = mdmalloc (sizeof (*sink));
+  sink->ident = BDJ4_PWSINK;
   sink->internalid = pwstate->pwsinkcount;
   sink->nodeid = id;
   sink->name = NULL;
   sink->description = NULL;
   sink->info = NULL;
+  sink->channels = 0;
 
   item = spa_dict_lookup_item (props, PW_KEY_NODE_NAME);
   if (item != NULL) {
@@ -380,21 +407,24 @@ pipewireRegistryEvent (void *data, uint32_t id,
     sink->deviceid = atoi (item->value);
   }
 
-  proxy = pw_registry_bind (pwstate->registry, id, type,
-      version, sizeof (pwproxy_t));
+  pw_map_insert_new (&pwstate->pwsinklist, sink);
+  ++pwstate->pwsinkcount;
+
+  proxy = pw_registry_bind (pwstate->registry, sink->nodeid,
+      PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, sizeof (pwproxy_t));
   pd = pw_proxy_get_user_data (proxy);
-  pd->type = PW_TYPE_NODE;
+  pd->ident = BDJ4_PWPROXY;
+  pd->type = BDJ4_PW_TYPE_NODE;
   pd->deviceid = 0;
   pd->pwstate = pwstate;
   pd->pwsink = sink;
   pd->proxy = proxy;
+  sink->proxy = proxy;
   pw_proxy_add_object_listener (proxy, &pd->object_listener, &node_events, pd);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 //  pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
 
-  pw_map_for_each (&pd->pwstate->pwdevlist, pipewireMapDevice, sink);
-
-  pw_map_insert_new (&pwstate->pwsinklist, sink);
-  ++pwstate->pwsinkcount;
+  pw_map_for_each (&pwstate->pwdevlist, pipewireMapDevice, sink);
 }
 
 static int
@@ -404,6 +434,20 @@ pipewireGetSink (void *item, void *udata)
   pwstate_t     *pwstate = udata;
   volsinklist_t *sinklist = pwstate->sinklist;
   int           idx;
+
+  if (sink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: get-sink: invalid struct %d(%d)\n", sink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: get-sink-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  if (sink->channels < 2) {
+    return 0;
+  }
 
   idx = sinklist->count;
   sinklist->sinklist [idx].defaultFlag = false;
@@ -426,6 +470,11 @@ pipewireCheckMainLoop (void *udata, uint32_t id, int seq)
 {
   pwstate_t   *pwstate = udata;
 
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: check-main-loop: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
   if (id == PW_ID_CORE && seq == pwstate->coreseq) {
     pw_main_loop_quit (pwstate->pwmainloop);
   }
@@ -441,7 +490,7 @@ pipewireRunOnce (pwstate_t *pwstate)
   struct spa_hook core_listener;
 
   pw_core_add_listener (pwstate->core, &core_listener, &core_events, pwstate);
-  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, 0);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 
   pw_main_loop_run (pwstate->pwmainloop);
 
@@ -453,6 +502,11 @@ pipewireMetadataEvent (void *udata, uint32_t id,
     const char *key, const char *type, const char *value)
 {
   pwstate_t *pwstate = udata;
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: metadata-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
 
   if (strcmp (key, "default.configured.audio.sink") == 0) {
     struct spa_json   iter[3];
@@ -481,29 +535,40 @@ static void
 pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
 {
   pwproxy_t     *pd = udata;
+  pwsink_t      *pwsink = pd->pwsink;
+  pwstate_t     *pwstate = pd->pwstate;
   uint32_t      param_id;
-  const struct spa_type_info *ti;
 
-  pd->pwsink->info = pw_node_info_update (pd->pwsink->info, info);
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: node-info-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: node-info-event-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: node-info-event-state: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  pwsink->info = pw_node_info_update (pwsink->info, info);
   if (info->props != NULL) {
     const struct spa_dict_item  *item;
 
     item = spa_dict_lookup_item (info->props, "card.profile.device");
     /* the card-profile-device is needed to set the volume */
-    pd->pwsink->cardprofiledev = atoi (item->value);
+    pwsink->cardprofiledev = atoi (item->value);
   }
 
-#if 0
-  ti = spa_debug_type_find_short (spa_type_param, "Format");
-  if (ti != NULL) {
-    param_id = ti->type;
-    pw_node_enum_params ((struct pw_node *) pd->proxy,
-        0, param_id, 0, 1, NULL);
-// Spa:Pod:Object:Param:Format:Audio:channels
-  }
-#endif
+  param_id = SPA_PARAM_EnumFormat;
+  pw_node_enum_params ((struct pw_node *) pwsink->proxy,
+      0, param_id, 0, 50, NULL);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 
-  pw_map_for_each (&pd->pwstate->pwdevlist, pipewireGetRoute, pd->pwsink);
+  pw_map_for_each (&pd->pwstate->pwdevlist, pipewireGetRoute, pwsink);
 }
 
 static void
@@ -511,23 +576,42 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
     uint32_t index, uint32_t next, const struct spa_pod *param)
 {
   pwproxy_t   *pd = udata;
+  pwsink_t    *pwsink = pd->pwsink;
   struct spa_pod_parser p;
-  int         routeidx;
-  int         dir;
 
-  if (pd->type == PW_TYPE_DEVICE) {
-    spa_pod_parser_pod (&p, param);
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: param-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  // spa_debug_pod (4, NULL, param);
+  spa_pod_parser_pod (&p, param);
+
+  if (pd->type == BDJ4_PW_TYPE_DEVICE) {
+    int       routeidx = 0;
+    uint32_t  dir = SPA_DIRECTION_INPUT;
+
     spa_pod_parser_get_object (&p,
         SPA_TYPE_OBJECT_ParamRoute, NULL,
         SPA_PARAM_ROUTE_index, SPA_POD_Int (&routeidx),
         SPA_PARAM_ROUTE_direction, SPA_POD_Id (&dir));
     if (dir == SPA_DIRECTION_OUTPUT) {
-      pd->pwsink->routeidx = routeidx;
+      pwsink->routeidx = routeidx;
     }
   }
 
-  if (pd->type == PW_TYPE_NODE) {
-    ;
+  if (pd->type == BDJ4_PW_TYPE_NODE) {
+    int       chan = 0;
+    uint32_t  mediatype = 0;
+
+    spa_pod_parser_get_object (&p,
+        SPA_TYPE_OBJECT_Format, NULL,
+        SPA_FORMAT_AUDIO_channels, SPA_POD_Int (&chan),
+        SPA_FORMAT_mediaType, SPA_POD_Id (&mediatype));
+    if (mediatype == SPA_MEDIA_TYPE_audio &&
+        chan >= 2) {
+      pwsink->channels = chan;
+    }
   }
 }
 
@@ -536,19 +620,32 @@ pipewireGetRoute (void *item, void *udata)
 {
   pwproxy_t     *pd = item;
   pwsink_t      *pwsink = udata;
+  pwstate_t   *pwstate = pd->pwstate;
   uint32_t      param_id;
-  const struct spa_type_info *ti;
+
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: get-route: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: get-route-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: get-route-state: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
 
   if (pd->deviceid != pwsink->deviceid) {
     return 0;
   }
 
-  ti = spa_debug_type_find_short (spa_type_param, "Route");
-  if (ti != NULL) {
-    param_id = ti->type;
-    pw_device_enum_params ((struct pw_device *) pd->proxy,
-        0, param_id, 0, 0, NULL);
-  }
+  param_id = SPA_PARAM_Route;
+  pw_device_enum_params ((struct pw_device *) pd->proxy,
+      0, param_id, 0, 0, NULL);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 
   return 1;
 }
@@ -560,14 +657,52 @@ pipewireMapDevice (void *item, void *udata)
   pwproxy_t     *pd = item;
   pwsink_t      *pwsink = udata;
 
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: map-dev: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: map-dev-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
   if (pd->deviceid != pwsink->deviceid) {
     return 0;
   }
 
   pd->pwsink = pwsink;
-  pwsink->deviceProxy = pd;
+  pwsink->pwdevproxy = pd;
   return 1;
 }
 
+# if BDJ4_PW_DEBUG
+
+static int
+pipewireDumpSink (void *item, void *udata)
+{
+  pwsink_t      *pwsink = item;
+
+  if (pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: dump-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  fprintf (stderr, "--   int-id: %d\n", pwsink->internalid);
+  fprintf (stderr, "    node-id: %d\n", pwsink->nodeid);
+  fprintf (stderr, "     dev-id: %d\n", pwsink->deviceid);
+  fprintf (stderr, "        cpd: %d\n", pwsink->cardprofiledev);
+  fprintf (stderr, "      route: %d\n", pwsink->routeidx);
+  fprintf (stderr, "   channels: %d\n", pwsink->channels);
+  fprintf (stderr, "       desc: %s\n", pwsink->description);
+  fprintf (stderr, "       name: %s\n", pwsink->name);
+  fprintf (stderr, "       info: %s\n", pwsink->info == NULL ? "ng" : "ok");
+  fprintf (stderr, "  dev-proxy: %s\n", pwsink->pwdevproxy == NULL ? "ng" : "ok");
+  fprintf (stderr, "      proxy: %s\n", pwsink->proxy == NULL ? "ng" : "ok");
+
+  return 0;
+}
+
+# endif
 
 #endif /* _hdr_pipewire_pipewire - have pipewire header */
