@@ -87,6 +87,7 @@ typedef struct {
   uint32_t              metadata_id;
   int                   pwsinkcount;
   int                   coreseq;
+  int                   devidcount;
 } pwstate_t;
 
 typedef struct {
@@ -99,7 +100,7 @@ typedef struct {
   double                currvolume;
   uint32_t              nodeid;
   uint32_t              deviceid;
-  uint32_t              cardprofiledev;
+  uint32_t              routedevid;
   int                   internalid;
   int                   routeidx;
   int                   channels;
@@ -110,10 +111,11 @@ typedef struct pwproxy {
   pwstate_t             *pwstate;
   pwsink_t              *pwsink;
   struct spa_hook       object_listener;
+  struct spa_hook       proxy_listener;
   struct pw_proxy       *proxy;
   uint32_t              deviceid;
+  int                   internalid;
   int                   type;
-//  struct spa_hook       proxy_listener;
 } pwproxy_t;
 
 static pwstate_t *pipewireInit (void);
@@ -126,6 +128,9 @@ static void pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
 static void pipewireParamEvent (void *udata, int seq, uint32_t id, uint32_t index, uint32_t next, const struct spa_pod *param);
 static int pipewireGetRoute (void *item, void *udata);
 static int pipewireMapDevice (void *item, void *udata);
+static void pipewireFreeProxy (void *udata);
+static int pipewireFreeDevice (void *item, void *udata);
+static int pipewireFreeNode (void *item, void *udata);
 # if BDJ4_PW_DEBUG
 static int pipewireDumpSink (void *item, void *udata);
 # endif
@@ -134,7 +139,6 @@ static const struct pw_registry_events registry_events = {
   PW_VERSION_REGISTRY_EVENTS,
   .global = pipewireRegistryEvent,
   .global_remove = NULL,
-// ### write global remove ?
 };
 
 static const struct pw_metadata_events metadata_events = {
@@ -151,6 +155,11 @@ static const struct pw_node_events node_events = {
 static const struct pw_device_events device_events = {
     PW_VERSION_DEVICE_EVENTS,
     .param = pipewireParamEvent,
+};
+
+static const struct pw_proxy_events proxy_events = {
+    PW_VERSION_PROXY_EVENTS,
+    .destroy = pipewireFreeProxy,
 };
 
 void
@@ -175,49 +184,61 @@ voliDisconnect (void)
 void
 voliCleanup (void **udata)
 {
-  pwstate_t   *pwstate = *udata;
+  pwstate_t   *pwstate;
 
-  if (pwstate != NULL) {
-    if (pwstate->registry != NULL) {
-      mdextfree (pwstate->registry);
-      pw_proxy_destroy ((struct pw_proxy *) pwstate->registry);
-      pwstate->registry = NULL;
-    }
-
-    if (pwstate->metadata != NULL) {
-      mdextfree (pwstate->metadata);
-      pw_proxy_destroy ((struct pw_proxy *) pwstate->metadata);
-      pwstate->metadata = NULL;
-    }
-
-// pw_map_for_each
-// pw_map_clear
-
-    if (pwstate->core != NULL) {
-      mdextfree (pwstate->core);
-      pw_core_disconnect (pwstate->core);
-      pwstate->core = NULL;
-    }
-
-    if (pwstate->context != NULL) {
-      mdextfree (pwstate->context);
-      pw_context_destroy (pwstate->context);
-      pwstate->context = NULL;
-    }
-
-    if (pwstate->pwmainloop != NULL) {
-      mdextfree (pwstate->pwmainloop);
-      pw_main_loop_destroy (pwstate->pwmainloop);
-      pwstate->pwmainloop = NULL;
-    }
-
-    dataFree (pwstate->defname);
-    pwstate->defname = NULL;
-
-    pw_deinit ();
-    mdfree (pwstate);
-    *udata = NULL;
+  if (udata == NULL || *udata == NULL) {
+    return;
   }
+
+  pwstate = *udata;
+
+  if (pwstate->metadata != NULL) {
+    spa_hook_remove (&pwstate->metadata_listener);
+    mdextfree (pwstate->metadata);
+    pw_proxy_destroy ((struct pw_proxy *) pwstate->metadata);
+    pwstate->metadata = NULL;
+  }
+
+  if (pwstate->registry != NULL) {
+    spa_hook_remove (&pwstate->registry_listener);
+    mdextfree (pwstate->registry);
+    pw_proxy_destroy ((struct pw_proxy *) pwstate->registry);
+    pwstate->registry = NULL;
+  }
+
+  pipewireRunOnce (pwstate);
+
+  if (pwstate->core != NULL) {
+    mdextfree (pwstate->core);
+    pw_core_disconnect (pwstate->core);
+    pwstate->core = NULL;
+  }
+
+  if (pwstate->context != NULL) {
+    mdextfree (pwstate->context);
+    pw_context_destroy (pwstate->context);
+    pwstate->context = NULL;
+  }
+
+  /* the props are freed by the context-destroy */
+
+  if (pwstate->pwmainloop != NULL) {
+    mdextfree (pwstate->pwmainloop);
+    pw_main_loop_destroy (pwstate->pwmainloop);
+    pwstate->pwmainloop = NULL;
+  }
+
+  pw_map_for_each (&pwstate->pwdevlist, pipewireFreeDevice, pwstate);
+  pw_map_clear (&pwstate->pwdevlist);
+  pw_map_for_each (&pwstate->pwsinklist, pipewireFreeNode, pwstate);
+  pw_map_clear (&pwstate->pwsinklist);
+
+  dataFree (pwstate->defname);
+  pwstate->defname = NULL;
+
+  pw_deinit ();
+  mdfree (pwstate);
+  *udata = NULL;
 
   return;
 }
@@ -237,6 +258,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
     /* initialize everything */
     pipewireRunOnce (pwstate);
+    *udata = pwstate;
 
 # if BDJ4_PW_DEBUG
     pw_map_for_each (&pwstate->pwsinklist, pipewireDumpSink, pwstate);
@@ -260,6 +282,7 @@ voliProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
+fprintf (stderr, "vol:action: %d (%d,%d)\n", action, VOL_GET, VOL_SET);
   if (action == VOL_SET) {
   }
 
@@ -278,6 +301,7 @@ pipewireInit (void)
 {
   pwstate_t *pwstate = NULL;
 
+  mdebugSubTag ("volpipewire");
   pw_init (0, NULL);
 
   pwstate = mdmalloc (sizeof (pwstate_t));
@@ -291,26 +315,27 @@ pipewireInit (void)
   pwstate->defname = NULL;
   pwstate->pwsinkcount = 0;
   pwstate->coreseq = 0;
+  pwstate->devidcount = 0;
 
   pwstate->pwmainloop = pw_main_loop_new (NULL);
-  mdextalloc (pwstate->pamainloop);
+  mdextalloc (pwstate->pwmainloop);
 //    pw_loop_add_signal (pw_main_loop_get_loop (pwstate->pwmainloop),
 //        SIGINT, pipewireSigHandler, pwstate);
 //    pw_loop_add_signal (pw_main_loop_get_loop (pwstate->pwmainloop),
 //        SIGTERM, pipewireSigHandler, pwstate);
 
+  /* does this belong with the context or the core? */
   pwstate->props = pw_properties_new (PW_KEY_MEDIA_TYPE, "Audio",
       PW_KEY_MEDIA_CATEGORY, "Playback",
       PW_KEY_MEDIA_ROLE, "Music",
       NULL);
-  mdextalloc (pwstate->props);
 
   pwstate->context = pw_context_new (
       pw_main_loop_get_loop (pwstate->pwmainloop),
       pwstate->props, 0);
   mdextalloc (pwstate->context);
 
-  pwstate->core = pw_context_connect (pwstate->context, pwstate->props, 0);
+  pwstate->core = pw_context_connect (pwstate->context, NULL, 0);
   mdextalloc (pwstate->core);
 
   pw_map_init (&pwstate->pwdevlist, 8, 1);
@@ -367,6 +392,7 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   if (strcmp (type, PW_TYPE_INTERFACE_Device) == 0) {
     proxy = pw_registry_bind (pwstate->registry, id, type,
         version, sizeof (pwproxy_t));
+    mdextalloc (proxy);
     pd = pw_proxy_get_user_data (proxy);
     pd->ident = BDJ4_PWPROXY;
     pd->type = BDJ4_PW_TYPE_DEVICE;
@@ -374,8 +400,11 @@ pipewireRegistryEvent (void *udata, uint32_t id,
     pd->pwstate = pwstate;
     pd->pwsink = NULL;
     pd->proxy = proxy;
+    pd->internalid = pwstate->devidcount;
     pw_proxy_add_object_listener (proxy, &pd->object_listener, &device_events, pd);
+    pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
     pw_map_insert_new (&pwstate->pwdevlist, pd);
+    ++pwstate->devidcount;
     pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
     return;
   }
@@ -406,11 +435,11 @@ pipewireRegistryEvent (void *udata, uint32_t id,
 
   item = spa_dict_lookup_item (props, PW_KEY_NODE_NAME);
   if (item != NULL) {
-    sink->name = strdup (item->value);
+    sink->name = mdstrdup (item->value);
   }
   item = spa_dict_lookup_item (props, PW_KEY_NODE_DESCRIPTION);
   if (item != NULL) {
-    sink->description = strdup (item->value);
+    sink->description = mdstrdup (item->value);
   }
   item = spa_dict_lookup_item (props, PW_KEY_DEVICE_ID);
   if (item != NULL) {
@@ -422,17 +451,19 @@ pipewireRegistryEvent (void *udata, uint32_t id,
 
   proxy = pw_registry_bind (pwstate->registry, sink->nodeid,
       PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, sizeof (pwproxy_t));
+  mdextalloc (proxy);
   pd = pw_proxy_get_user_data (proxy);
   pd->ident = BDJ4_PWPROXY;
   pd->type = BDJ4_PW_TYPE_NODE;
-  pd->deviceid = 0;
+  pd->deviceid = sink->nodeid;
   pd->pwstate = pwstate;
   pd->pwsink = sink;
   pd->proxy = proxy;
+  pd->internalid = 0;
   sink->proxy = proxy;
   pw_proxy_add_object_listener (proxy, &pd->object_listener, &node_events, pd);
+  pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
   pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
-//  pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
 
   pw_map_for_each (&pwstate->pwdevlist, pipewireMapDevice, sink);
 }
@@ -567,12 +598,13 @@ pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
   }
 
   pwsink->info = pw_node_info_update (pwsink->info, info);
+  mdextalloc (pwsink->info);
   if (info->props != NULL) {
     const struct spa_dict_item  *item;
 
     item = spa_dict_lookup_item (info->props, "card.profile.device");
     /* the card-profile-device is needed to set the volume */
-    pwsink->cardprofiledev = atoi (item->value);
+    pwsink->routedevid = atoi (item->value);
   }
 
   param_id = SPA_PARAM_EnumFormat;
@@ -633,7 +665,6 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
 
       /* where is the cubic root documented? */
       pwsink->currvolume = pow ((double) volume [0], (1.0 / 3.0));
-fprintf (stderr, "== node: %d vol: %.2f\n", pwsink->nodeid, pwsink->currvolume * 100.0);
     }
   }
 
@@ -713,6 +744,85 @@ pipewireMapDevice (void *item, void *udata)
   return 1;
 }
 
+static void
+pipewireFreeProxy (void *udata)
+{
+  pwproxy_t     *pd = udata;
+  pwstate_t     *pwstate = pd->pwstate;
+
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: free-proxy: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: free-proxy-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  spa_hook_remove (&pd->object_listener);
+  spa_hook_remove (&pd->proxy_listener);
+  if (pd->type == BDJ4_PW_TYPE_NODE) {
+    pd->pwsink->proxy = NULL;
+  }
+
+  pd->proxy = NULL;
+}
+
+static int
+pipewireFreeDevice (void *item, void *udata)
+{
+  pwproxy_t     *pd = item;
+  pwstate_t     *pwstate = udata;
+
+  if (pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: free-device: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: free-device-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  pw_map_insert_at (&pwstate->pwdevlist, pd->internalid, NULL);
+  mdextfree (pd->proxy);
+  pw_proxy_destroy (pd->proxy);
+
+  return 0;
+}
+
+static int
+pipewireFreeNode (void *item, void *udata)
+{
+  pwsink_t      *pwsink = item;
+  pwstate_t     *pwstate = udata;
+
+  if (pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: free-node: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  if (pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: free-node-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  pw_map_insert_at (&pwstate->pwsinklist, pwsink->internalid, NULL);
+  dataFree (pwsink->description);
+  dataFree (pwsink->name);
+
+  mdextfree (pwsink->info);
+  pw_node_info_free (pwsink->info);
+
+  mdextfree (pwsink->proxy);
+  pw_proxy_destroy (pwsink->proxy);
+
+  dataFree (pwsink);
+
+  return 0;
+}
+
 # if BDJ4_PW_DEBUG
 
 static int
@@ -728,7 +838,7 @@ pipewireDumpSink (void *item, void *udata)
   fprintf (stderr, "--   int-id: %d\n", pwsink->internalid);
   fprintf (stderr, "    node-id: %d\n", pwsink->nodeid);
   fprintf (stderr, "     dev-id: %d\n", pwsink->deviceid);
-  fprintf (stderr, "        cpd: %d\n", pwsink->cardprofiledev);
+  fprintf (stderr, "  route-dev: %d\n", pwsink->routedevid);
   fprintf (stderr, "      route: %d\n", pwsink->routeidx);
   fprintf (stderr, "   channels: %d\n", pwsink->channels);
   fprintf (stderr, "       desc: %s\n", pwsink->description);

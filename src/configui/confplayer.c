@@ -44,7 +44,7 @@ confuiInitPlayer (confuigui_t *gui)
 
   volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   bdjoptSetStr (OPT_M_VOLUME_INTFC, volintfc);
-  mdfree (volintfc);
+  dataFree (volintfc);
 
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
