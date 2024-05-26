@@ -90,7 +90,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
   uiwcont_t    *szgrp;
   uiwcont_t    *szgrpB;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -135,7 +135,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
+  logProcEnd ("");
 }
 
 static void

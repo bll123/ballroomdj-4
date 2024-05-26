@@ -32,7 +32,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 {
   uisongsel_t   *uisongsel;
 
-  logProcBegin (LOG_PROC, "uisongselInit");
+  logProcBegin ();
 
   uisongsel = mdmalloc (sizeof (uisongsel_t));
 
@@ -78,7 +78,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   uisongselUIInit (uisongsel);
 
-  logProcEnd (LOG_PROC, "uisongselInit", "");
+  logProcEnd ("");
   return uisongsel;
 }
 
@@ -107,7 +107,7 @@ uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong)
 void
 uisongselFree (uisongsel_t *uisongsel)
 {
-  logProcBegin (LOG_PROC, "uisongselFree");
+  logProcBegin ();
 
   if (uisongsel != NULL) {
     for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -121,7 +121,7 @@ uisongselFree (uisongsel_t *uisongsel)
     mdfree (uisongsel);
   }
 
-  logProcEnd (LOG_PROC, "uisongselFree", "");
+  logProcEnd ("");
 }
 
 void

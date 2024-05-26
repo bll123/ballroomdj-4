@@ -47,7 +47,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcont_t    *szgrp;
   uiwcont_t    *szgrpB;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIMusicQs");
+  logProcBegin ();
 
   gui->inbuild = true;
 
@@ -137,7 +137,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIMusicQs", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -216,7 +216,7 @@ confuiMusicQChg (void *udata)
   int         nselidx;
   int         widx;
 
-  logProcBegin (LOG_PROC, "confuiMusicQChg");
+  logProcBegin ();
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -273,7 +273,7 @@ confuiMusicQChg (void *udata)
   confuiMusicQActiveChg (gui);
   confuiMusicQUpdateState (gui, nselidx);
 
-  logProcEnd (LOG_PROC, "confuiMusicQChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

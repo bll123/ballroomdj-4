@@ -38,7 +38,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIMobileRemoteControl");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -82,7 +82,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIMobileRemoteControl", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -92,10 +92,10 @@ confuiRemctrlChg (void *udata, int value)
 {
   confuigui_t *gui = udata;
 
-  logProcBegin (LOG_PROC, "confuiRemctrlChg");
+  logProcBegin ();
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
   confuiUpdateRemctrlQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiRemctrlChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -106,12 +106,12 @@ confuiRemctrlPortChg (void *udata)
   double        value;
   long          nval;
 
-  logProcBegin (LOG_PROC, "confuiRemctrlPortChg");
+  logProcBegin ();
   value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_RC_PORT].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -129,7 +129,7 @@ confuiLoadHTMLList (confuigui_t *gui)
   nlist_t       *llist;
   int           count;
 
-  logProcBegin (LOG_PROC, "confuiLoadHTMLList");
+  logProcBegin ();
 
   tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, NULL);
@@ -156,7 +156,7 @@ confuiLoadHTMLList (confuigui_t *gui)
 
   gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadHTMLList", "");
+  logProcEnd ("");
 }
 
 

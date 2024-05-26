@@ -143,7 +143,7 @@ uiextreqDialog (uiextreq_t *uiextreq, const char *fn)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uiextreqDialog");
+  logProcBegin ();
   uiextreqCreateDialog (uiextreq);
   uiextreqInitDisplay (uiextreq, fn);
   uiDialogShow (uiextreq->wcont [UIEXTREQ_W_DIALOG]);
@@ -152,7 +152,7 @@ uiextreqDialog (uiextreq_t *uiextreq, const char *fn)
   x = nlistGetNum (uiextreq->options, REQ_EXT_POSITION_X);
   y = nlistGetNum (uiextreq->options, REQ_EXT_POSITION_Y);
   uiWindowMove (uiextreq->wcont [UIEXTREQ_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uiextreqDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -197,7 +197,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcont_t     *szgrpEntry; // title, artist, mq-display
   const char    *tstr;
 
-  logProcBegin (LOG_PROC, "uiextreqCreateDialog");
+  logProcBegin ();
 
   if (uiextreq == NULL) {
     return;
@@ -349,7 +349,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
       uiextreqValidateMQDisplay, uiextreq, UIENTRY_IMMEDIATE);
 
-  logProcEnd (LOG_PROC, "uiextreqCreateDialog", "");
+  logProcEnd ("");
 }
 
 /* count is not used */

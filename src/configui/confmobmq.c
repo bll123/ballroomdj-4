@@ -36,7 +36,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIMobileMarquee");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -71,7 +71,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIMobileMarquee", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -83,12 +83,12 @@ confuiMobmqTypeChg (void *udata)
   double        value;
   long          nval;
 
-  logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
+  logProcBegin ();
   value = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_MOBILE_MQ].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -99,12 +99,12 @@ confuiMobmqPortChg (void *udata)
   double        value;
   long          nval;
 
-  logProcBegin (LOG_PROC, "confuiMobmqPortChg");
+  logProcBegin ();
   value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -114,11 +114,11 @@ confuiMobmqTitleChg (uiwcont_t *entry, void *udata)
   confuigui_t     *gui = udata;
   const char      *sval;
 
-  logProcBegin (LOG_PROC, "confuiMobmqTitleChg");
+  logProcBegin ();
   sval = uiEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
+  logProcEnd ("");
   return UIENTRY_OK;
 }
 

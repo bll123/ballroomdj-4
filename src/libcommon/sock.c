@@ -654,7 +654,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
     return -1;
   }
 
-  logProcBegin (LOG_PROC, "sockWriteData");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_SOCKET, "want to send: %" PRIu64 " bytes", (uint64_t) len);
 
 #if 0
@@ -664,7 +664,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   sval = sockCanWrite (sock);
   if (sval != sock) {
     logMsg (LOG_DBG, LOG_SOCKET, "socket not writable %" PRId64, (int64_t) sock);
-    logProcEnd (LOG_PROC, "sockWriteData", "not-writable");
+    logProcEnd ("not-writable");
     return -1;
   }
 #endif
@@ -690,7 +690,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 #if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "send-a: wsa last-error: %d", WSAGetLastError());
 #endif
-    logProcEnd (LOG_PROC, "sockWriteData", "send-a-fail");
+    logProcEnd ("send-a-fail");
     return -1;
   }
 
@@ -708,7 +708,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 #if _lib_WSAGetLastError
       logMsg (LOG_DBG, LOG_SOCKET, "send-b: wsa last-error: %d", WSAGetLastError());
 #endif
-      logProcEnd (LOG_PROC, "sockWriteData", "send-b-fail");
+      logProcEnd ("send-b-fail");
       return -1;
     }
     logMsg (LOG_DBG, LOG_SOCKET, "sent: %" PRIu64 " bytes", (uint64_t) rc);
@@ -718,7 +718,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
     }
   }
 
-  logProcEnd (LOG_PROC, "sockWriteData", "");
+  logProcEnd ("");
   return 0;
 }
 

@@ -323,9 +323,9 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t    *playerData = tpdata;
 
-  logProcBegin (LOG_PROC, "playerStoppingCallback");
+  logProcBegin ();
   connDisconnectAll (playerData->conn);
-  logProcEnd (LOG_PROC, "playerStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -344,7 +344,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
 
-  logProcBegin (LOG_PROC, "playerClosingCallback");
+  logProcBegin ();
 
   bdj4shutdown (ROUTE_PLAYER, NULL);
 
@@ -377,7 +377,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
 
-  logProcEnd (LOG_PROC, "playerClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -387,7 +387,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   playerdata_t      *playerData;
 
-  logProcBegin (LOG_PROC, "playerProcessMsg");
+  logProcBegin ();
   playerData = (playerdata_t *) udata;
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
@@ -550,7 +550,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  logProcEnd (LOG_PROC, "playerProcessMsg", "");
+  logProcEnd ("");
   return 0;
 }
 
@@ -905,7 +905,7 @@ playerConnectingCallback (void *tpdata, programstate_t programState)
   playerdata_t  *playerData = tpdata;
   bool          rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "playerConnectingCallback");
+  logProcBegin ();
 
   connProcessUnconnected (playerData->conn);
 
@@ -917,7 +917,7 @@ playerConnectingCallback (void *tpdata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "playerConnectingCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -927,7 +927,7 @@ playerHandshakeCallback (void *tpdata, programstate_t programState)
   playerdata_t  *playerData = tpdata;
   bool          rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "playerHandshakeCallback");
+  logProcBegin ();
 
   connProcessUnconnected (playerData->conn);
 
@@ -935,7 +935,7 @@ playerHandshakeCallback (void *tpdata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "playerHandshakeCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -946,11 +946,11 @@ playerCheckSystemVolume (playerdata_t *playerData)
   int         tvol;
   int         voldiff;
 
-  logProcBegin (LOG_PROC, "playerCheckSystemVolume");
+  logProcBegin ();
   mstimeset (&playerData->volumeTimeCheck, 1000);
 
   if (playerData->inFade || playerData->inGap || playerData->mute) {
-    logProcEnd (LOG_PROC, "playerCheckSystemVolume", "in-fade-gap-mute");
+    logProcEnd ("in-fade-gap-mute");
     return;
   }
 
@@ -965,7 +965,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
     playerData->currentVolume += voldiff;
     playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
   }
-  logProcEnd (LOG_PROC, "playerCheckSystemVolume", "");
+  logProcEnd ("");
 }
 
 static void
@@ -979,11 +979,11 @@ playerSongPrep (playerdata_t *playerData, char *args)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerSongPrep");
+  logProcBegin ();
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   if (p == NULL) {
-    logProcEnd (LOG_PROC, "playerSongPrep", "no-data");
+    logProcEnd ("no-data");
     return;
   }
 
@@ -1022,7 +1022,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   queuePush (playerData->prepRequestQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
-  logProcEnd (LOG_PROC, "playerSongPrep", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1061,23 +1061,23 @@ playerProcessPrepRequest (playerdata_t *playerData)
   char            tempnm [MAXPATHLEN];
   int             rc;
 
-  logProcBegin (LOG_PROC, "playerProcessPrepRequest");
+  logProcBegin ();
 
   npq = queuePop (playerData->prepRequestQueue);
   if (npq == NULL) {
-    logProcEnd (LOG_PROC, "playerProcessPrepRequest", "no-song");
+    logProcEnd ("no-song");
     return;
   }
 
   rc = audiosrcPrep (npq->songname, tempnm, sizeof (tempnm));
   if (! rc) {
-    logProcEnd (LOG_PROC, "playerProcessPrepRequest", "unable-to-prep");
+    logProcEnd ("unable-to-prep");
     return;
   }
   npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
-  logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1093,17 +1093,17 @@ playerSongPlay (playerdata_t *playerData, char *args)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerSongPlay");
+  logProcBegin ();
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
-    logProcEnd (LOG_PROC, "playerSongPlay", "bad-msg-a");
+    logProcEnd ("bad-msg-a");
     return;
   }
   uniqueidx = atol (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
-    logProcEnd (LOG_PROC, "playerSongPlay", "bad-msg-b");
+    logProcEnd ("bad-msg-b");
     return;
   }
 
@@ -1111,12 +1111,12 @@ playerSongPlay (playerdata_t *playerData, char *args)
   pq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (pq == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
-    logProcEnd (LOG_PROC, "playerSongPlay", "not-prepped");
+    logProcEnd ("not-prepped");
     return;
   }
   if (! fileopFileExists (pq->tempname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
-    logProcEnd (LOG_PROC, "playerSongPlay", "no-file");
+    logProcEnd ("no-file");
     return;
   }
 
@@ -1124,7 +1124,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   preq->uniqueidx = uniqueidx;
   preq->songname = mdstrdup (p);
   queuePush (playerData->playRequest, preq);
-  logProcEnd (LOG_PROC, "playerSongPlay", "");
+  logProcEnd ("");
 }
 
 static prepqueue_t *
@@ -1134,7 +1134,7 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
   bool              found = false;
   int               count = 0;
 
-  logProcBegin (LOG_PROC, "playerLocatePreppedSong");
+  logProcBegin ();
 
   found = false;
   count = 0;
@@ -1181,12 +1181,12 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
 
   if (! found) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
-    logProcEnd (LOG_PROC, "playerSongPlay", "not-found");
+    logProcEnd ("not-found");
     return NULL;
   }
 
   logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
-  logProcEnd (LOG_PROC, "playerLocatePreppedSong", "");
+  logProcEnd ("");
   return pq;
 }
 
@@ -1202,11 +1202,11 @@ playerPause (playerdata_t *playerData)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerPause");
+  logProcBegin ();
 
   pq = playerData->currentSong;
   if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
-    logProcEnd (LOG_PROC, "playerPause", "play-announce");
+    logProcEnd ("play-announce");
     return;
   }
 
@@ -1229,7 +1229,7 @@ playerPause (playerdata_t *playerData)
       }
     }
   }
-  logProcEnd (LOG_PROC, "playerPause", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1237,7 +1237,7 @@ playerPlay (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  logProcBegin (LOG_PROC, "playerPlay");
+  logProcBegin ();
 
   if (plistate != PLI_STATE_PLAYING) {
     if (playerData->playerState == PL_STATE_IN_GAP &&
@@ -1259,7 +1259,7 @@ playerPlay (playerdata_t *playerData)
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
     }
   }
-  logProcEnd (LOG_PROC, "playerPlay", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1267,7 +1267,7 @@ playerNextSong (playerdata_t *playerData)
 {
   logMsg (LOG_DBG, LOG_BASIC, "next song");
 
-  logProcBegin (LOG_PROC, "playerNextSong");
+  logProcBegin ();
 
   playerData->repeat = false;
   playerData->priorGap = playerData->gap;
@@ -1307,7 +1307,7 @@ playerNextSong (playerdata_t *playerData)
     /* tell main to go to the next song, no history */
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
   }
-  logProcEnd (LOG_PROC, "playerNextSong", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1317,11 +1317,11 @@ playerPauseAtEnd (playerdata_t *playerData)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerPauseAtEnd");
+  logProcBegin ();
 
   playerData->pauseAtEnd = playerData->pauseAtEnd ? false : true;
   playerSendPauseAtEndState (playerData);
-  logProcEnd (LOG_PROC, "playerPauseAtEnd", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1329,14 +1329,14 @@ playerSendPauseAtEndState (playerdata_t *playerData)
 {
   char    tbuff [20];
 
-  logProcBegin (LOG_PROC, "playerSendPauseAtEndState");
+  logProcBegin ();
 
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
-  logProcEnd (LOG_PROC, "playerSendPauseAtEndState", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1349,16 +1349,16 @@ playerFade (playerdata_t *playerData)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerFade");
+  logProcBegin ();
 
   if (playerData->inFadeOut) {
-    logProcEnd (LOG_PROC, "playerFade", "in-fade-out");
+    logProcEnd ("in-fade-out");
     return;
   }
 
   pq = playerData->currentSong;
   if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
-    logProcEnd (LOG_PROC, "playerFade", "play-announce");
+    logProcEnd ("play-announce");
     return;
   }
 
@@ -1377,7 +1377,7 @@ playerFade (playerdata_t *playerData)
     mstimeset (&playerData->playTimeCheck, playerData->fadeoutTime - 500);
     mstimeset (&playerData->playEndCheck, playerData->fadeoutTime);
   }
-  logProcEnd (LOG_PROC, "playerFade", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1389,10 +1389,10 @@ playerSpeed (playerdata_t *playerData, char *trate)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerSpeed");
+  logProcBegin ();
 
   if (! pliCheckSupport (playerData->pliSupported, PLI_SUPPORT_SPEED)) {
-    logProcEnd (LOG_PROC, "playerSpeed", "not-supported");
+    logProcEnd ("not-supported");
     return;
   }
 
@@ -1401,7 +1401,7 @@ playerSpeed (playerdata_t *playerData, char *trate)
     pliRate (playerData->pli, (ssize_t) rate);
     playerData->currentSpeed = (ssize_t) rate;
   }
-  logProcEnd (LOG_PROC, "playerSpeed", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1414,10 +1414,10 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerSeek");
+  logProcBegin ();
 
   if (! pliCheckSupport (playerData->pliSupported, PLI_SUPPORT_SEEK)) {
-    logProcEnd (LOG_PROC, "playerSeek", "not-supported");
+    logProcEnd ("not-supported");
     return;
   }
 
@@ -1431,7 +1431,7 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   pliSeek (playerData->pli, seekpos);
   playerData->playTimePlayed = reqpos;
   playerSetCheckTimes (playerData, pq);
-  logProcEnd (LOG_PROC, "playerSeek", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1439,13 +1439,13 @@ playerStop (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  logProcBegin (LOG_PROC, "playerStop");
+  logProcBegin ();
 
   if (plistate == PLI_STATE_PLAYING ||
       plistate == PLI_STATE_PAUSED) {
     pliStop (playerData->pli);
   }
-  logProcEnd (LOG_PROC, "playerStop", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1479,7 +1479,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerVolumeSet");
+  logProcBegin ();
 
   newvol = (int) atol (tvol);
   newvol = playerLimitVolume (newvol);
@@ -1492,7 +1492,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
   logMsg (LOG_DBG, LOG_VOLUME, "volume-set: %d", playerData->realVolume);
   playerData->actualVolume = playerData->realVolume;
-  logProcEnd (LOG_PROC, "playerVolumeSet", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1531,7 +1531,7 @@ playerVolumeMute (playerdata_t *playerData)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playerVolumeMute");
+  logProcBegin ();
 
   playerData->mute = playerData->mute ? false : true;
   if (playerData->mute) {
@@ -1541,7 +1541,7 @@ playerVolumeMute (playerdata_t *playerData)
     volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
     playerData->actualVolume = playerData->realVolume;
   }
-  logProcEnd (LOG_PROC, "playerVolumeMute", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1549,7 +1549,7 @@ playerPrepQueueFree (void *data)
 {
   prepqueue_t     *pq = data;
 
-  logProcBegin (LOG_PROC, "playerPrepQueueFree");
+  logProcBegin ();
 
   if (pq == NULL) {
     return;
@@ -1568,7 +1568,7 @@ playerPrepQueueFree (void *data)
   dataFree (pq->tempname);
   mdfree (pq);
 
-  logProcEnd (LOG_PROC, "playerPrepQueueFree", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1591,7 +1591,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
     isdefault = true;
   }
 
-  logProcBegin (LOG_PROC, "playerSetAudioSink");
+  logProcBegin ();
   if (sinkname != NULL) {
     /* the sink list is not ordered */
     for (int i = 0; i < playerData->sinklist.count; ++i) {
@@ -1617,7 +1617,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 
   playerSetAudioSinkEnv (playerData, isdefault);
 
-  logProcEnd (LOG_PROC, "playerSetAudioSink", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -1626,7 +1626,7 @@ playerInitSinkList (playerdata_t *playerData)
 {
   int count;
 
-  logProcBegin (LOG_PROC, "playerInitSinkList");
+  logProcBegin ();
 
   volumeFreeSinkList (&playerData->sinklist);
   volumeInitSinkList (&playerData->sinklist);
@@ -1656,7 +1656,7 @@ playerInitSinkList (playerdata_t *playerData)
     }
   }
 
-  logProcEnd (LOG_PROC, "playerInitSinkList", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1667,7 +1667,7 @@ playerFadeVolSet (playerdata_t *playerData)
   int     ts;
   int     fadeType;
 
-  logProcBegin (LOG_PROC, "playerFadeVolSet");
+  logProcBegin ();
 
   fadeType = playerData->fadeType;
   if (playerData->inFadeIn) {
@@ -1719,7 +1719,7 @@ playerFadeVolSet (playerdata_t *playerData)
     playerData->inFade = false;
     playerData->inFadeIn = false;
   }
-  logProcEnd (LOG_PROC, "playerFadeVolSet", "");
+  logProcEnd ("");
 }
 
 static double
@@ -1729,7 +1729,7 @@ calcFadeIndex (playerdata_t *playerData, int fadeType)
   double index = (double) playerData->fadeCount;
   double range = (double) playerData->fadeSamples;
 
-  logProcBegin (LOG_PROC, "calcFadeIndex");
+  logProcBegin ();
 
   findex = fmax(0.0, fmin (1.0, index / range));
 
@@ -1758,7 +1758,7 @@ calcFadeIndex (playerdata_t *playerData, int fadeType)
       break;
     }
   }
-  logProcEnd (LOG_PROC, "calcFadeIndex", "");
+  logProcEnd ("");
   return findex;
 }
 
@@ -1768,7 +1768,7 @@ playerStartFadeOut (playerdata_t *playerData)
   ssize_t       tm;
   prepqueue_t   *pq = playerData->currentSong;
 
-  logProcBegin (LOG_PROC, "playerStartFadeOut");
+  logProcBegin ();
   playerData->inFade = true;
   playerData->inFadeOut = true;
   tm = pq->dur - playerCalcPlayedTime (playerData);
@@ -1780,7 +1780,7 @@ playerStartFadeOut (playerdata_t *playerData)
   playerData->fadeTimeStart = mstime ();
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
-  logProcEnd (LOG_PROC, "playerStartFadeOut", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1788,7 +1788,7 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 {
   ssize_t newdur;
 
-  logProcBegin (LOG_PROC, "playerSetCheckTimes");
+  logProcBegin ();
 
   /* pq->dur is adjusted for speed.  */
   /* plitm is not; it cannot be combined with pq->dur */
@@ -1808,7 +1808,7 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   logMsg (LOG_DBG, LOG_INFO, "playEndCheck: %" PRId64, (int64_t) mstimeend (&playerData->playEndCheck));
   logMsg (LOG_DBG, LOG_INFO, "playTimeCheck: %" PRId64, (int64_t) mstimeend (&playerData->playTimeCheck));
   logMsg (LOG_DBG, LOG_INFO, "fadeTimeCheck: %" PRId64, (int64_t) mstimeend (&playerData->fadeTimeCheck));
-  logProcEnd (LOG_PROC, "playerSetCheckTimes", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1816,7 +1816,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 {
   char    tbuff [20];
 
-  logProcBegin (LOG_PROC, "playerSetPlayerState");
+  logProcBegin ();
 
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
@@ -1829,7 +1829,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
     /* any time there is a change of player state, send the status */
     playerSendStatus (playerData, STATUS_NO_FORCE);
   }
-  logProcEnd (LOG_PROC, "playerSetPlayerState", "");
+  logProcEnd ("");
 }
 
 
@@ -1841,13 +1841,13 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
   ssize_t     tm;
   ssize_t     dur;
 
-  logProcBegin (LOG_PROC, "playerSendStatus");
+  logProcBegin ();
 
   if (forceFlag == STATUS_NO_FORCE &&
       playerData->playerState == playerData->lastPlayerState &&
       playerData->playerState != PL_STATE_PLAYING &&
       playerData->playerState != PL_STATE_IN_FADEOUT) {
-    logProcEnd (LOG_PROC, "playerSendStatus", "no-state-chg");
+    logProcEnd ("no-state-chg");
     return;
   }
 
@@ -1905,7 +1905,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   /* four times a second... */
   mstimeset (&playerData->statusCheck, 250);
-  logProcEnd (LOG_PROC, "playerSendStatus", "");
+  logProcEnd ("");
 }
 
 static int

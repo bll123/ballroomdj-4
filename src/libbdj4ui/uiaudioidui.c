@@ -143,7 +143,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
 {
   aid_internal_t  *audioidint;
 
-  logProcBegin (LOG_PROC, "uiaudioidUIInit");
+  logProcBegin ();
 
   audioidint = mdmalloc (sizeof (aid_internal_t));
   audioidint->itemcount = 0;
@@ -176,7 +176,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   }
 
   uiaudioid->audioidInternalData = audioidint;
-  logProcEnd (LOG_PROC, "uiaudioidUIInit", "");
+  logProcEnd ("");
 }
 
 void
@@ -185,9 +185,9 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   aid_internal_t *audioidint;
 
 
-  logProcBegin (LOG_PROC, "uiaudioidUIFree");
+  logProcBegin ();
   if (uiaudioid == NULL) {
-    logProcEnd (LOG_PROC, "uiaudioidUIFree", "null");
+    logProcEnd ("null");
     return;
   }
 
@@ -224,7 +224,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
     uiaudioid->audioidInternalData = NULL;
   }
 
-  logProcEnd (LOG_PROC, "uiaudioidUIFree", "");
+  logProcEnd ("");
 }
 
 void
@@ -254,7 +254,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcont_t         *hhbox;
   char              tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "uiaudioidBuildUI");
+  logProcBegin ();
 
   uiaudioid->statusMsg = statusMsg;
   uiaudioid->uisongsel = uisongsel;
@@ -475,7 +475,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_MB_LOGO]);
   uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);
 
-  logProcEnd (LOG_PROC, "uiaudioidBuildUI", "");
+  logProcEnd ("");
   return audioidint->wcont [UIAUDID_W_MAIN_VBOX];
 }
 
@@ -490,7 +490,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   const char      *data;
   int             row;
 
-  logProcBegin (LOG_PROC, "uiaudioidLoadData");
+  logProcBegin ();
 
   if (uiaudioid == NULL) {
     return;
@@ -578,7 +578,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
 
   audioidint->selchgbypass = false;
 
-  logProcEnd (LOG_PROC, "uiaudioidLoadData", "");
+  logProcEnd ("");
 }
 
 void
@@ -734,7 +734,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   nlistSort (ndlist);
   nlistSetList (audioidint->displaylist, audioidint->fillrow, ndlist);
 
-  logProcEnd (LOG_PROC, "uiaudioidSetDisplayList", "");
+  logProcEnd ("");
 }
 
 void
@@ -820,7 +820,7 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
   aid_internal_t  *audioidint;
   int             tagidx;
 
-  logProcBegin (LOG_PROC, "uiaudioidAddDisplay");
+  logProcBegin ();
   audioidint = uiaudioid->audioidInternalData;
 
   slistStartIterator (audioidint->sellist, &dsiteridx);
@@ -845,7 +845,7 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
     uiwcontFree (hbox);
   }
 
-  logProcEnd (LOG_PROC, "uiaudioidAddDisplay", "");
+  logProcEnd ("");
 }
 
 static void
@@ -855,7 +855,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiwcont_t       *rb;
   aid_internal_t  *audioidint;
 
-  logProcBegin (LOG_PROC, "uiaudioidAddItem");
+  logProcBegin ();
   audioidint = uiaudioid->audioidInternalData;
 
   /* line: label, curr-rb, sel-rb */
@@ -878,7 +878,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_B], uiwidgetp);
   audioidint->items [audioidint->itemcount].selrb = uiwidgetp;
 
-  logProcEnd (LOG_PROC, "uiaudioidAddItem", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -889,7 +889,7 @@ uiaudioidSaveCallback (void *udata)
   nlist_t           *dlist;
   const char        *val;
 
-  logProcBegin (LOG_PROC, "uiaudioidSaveCallback");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: save");
 
   audioidint = uiaudioid->audioidInternalData;
@@ -939,7 +939,7 @@ uiaudioidSaveCallback (void *udata)
 
   audioidint->insave = false;
 
-  logProcEnd (LOG_PROC, "uiaudioidSaveCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -948,10 +948,10 @@ uiaudioidFirstSelection (void *udata)
 {
   uiaudioid_t  *uiaudioid = udata;
 
-  logProcBegin (LOG_PROC, "uiaudioidFirstSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: first");
   uisongselFirstSelection (uiaudioid->uisongsel);
-  logProcEnd (LOG_PROC, "uiaudioidFirstSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -961,10 +961,10 @@ uiaudioidPreviousSelection (void *udata)
   uiaudioid_t  *uiaudioid = udata;
 
   uiLabelSetText (uiaudioid->statusMsg, "");
-  logProcBegin (LOG_PROC, "uiaudioidPreviousSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: previous");
   uisongselPreviousSelection (uiaudioid->uisongsel);
-  logProcEnd (LOG_PROC, "uiaudioidPreviousSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -974,10 +974,10 @@ uiaudioidNextSelection (void *udata)
   uiaudioid_t  *uiaudioid = udata;
 
   uiLabelSetText (uiaudioid->statusMsg, "");
-  logProcBegin (LOG_PROC, "uiaudioidNextSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: audioid: next");
   uisongselNextSelection (uiaudioid->uisongsel);
-  logProcEnd (LOG_PROC, "uiaudioidNextSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

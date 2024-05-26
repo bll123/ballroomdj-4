@@ -511,7 +511,7 @@ playlistGetNextSong (playlist_t *pl,
     return NULL;
   }
 
-  logProcBegin (LOG_PROC, "playlistGetNextSong");
+  logProcBegin ();
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
   stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
   if (pl->editmode == EDIT_FALSE && stopAfter > 0 && pl->count >= stopAfter) {
@@ -606,7 +606,7 @@ playlistGetNextSong (playlist_t *pl,
       logMsg (LOG_DBG, LOG_BASIC, "songlist: select: no more songs");
     }
   }
-  logProcEnd (LOG_PROC, "playlistGetNextSong", "");
+  logProcEnd ("");
   return song;
 }
 
@@ -695,12 +695,12 @@ playlistAddCount (playlist_t *pl, song_t *song)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playlistAddCount");
+  logProcBegin ();
   danceIdx = songGetNum (song, TAG_DANCE);
   if (pl->dancesel != NULL) {
     danceselAddCount (pl->dancesel, danceIdx);
   }
-  logProcEnd (LOG_PROC, "playAddCount", "");
+  logProcEnd ("");
 }
 
 void
@@ -717,12 +717,12 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
     return;
   }
 
-  logProcBegin (LOG_PROC, "playlistAddPlayed");
+  logProcBegin ();
   danceIdx = songGetNum (song, TAG_DANCE);
   if (pl->dancesel != NULL) {
     danceselAddPlayed (pl->dancesel, danceIdx);
   }
-  logProcEnd (LOG_PROC, "playAddPlayed", "");
+  logProcEnd ("");
 }
 
 void
@@ -1037,7 +1037,7 @@ playlistCountList (playlist_t *pl)
   ilistidx_t  didx;
   ilistidx_t  iteridx;
 
-  logProcBegin (LOG_PROC, "playlistCountList");
+  logProcBegin ();
   if (pl->countList != NULL) {
     return;
   }
@@ -1051,5 +1051,5 @@ playlistCountList (playlist_t *pl)
       nlistSetNum (pl->countList, didx, count);
     }
   }
-  logProcEnd (LOG_PROC, "playlistCountList", "");
+  logProcEnd ("");
 }

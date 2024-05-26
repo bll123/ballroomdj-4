@@ -126,7 +126,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist)
   nlistidx_t      iteridx;
 
 
-  logProcBegin (LOG_PROC, "songselAlloc");
+  logProcBegin ();
   songsel = mdmalloc (sizeof (songsel_t));
   songsel->tagList = NULL;
   songsel->tagWeight = BDJ4_DFLT_TAG_WEIGHT;
@@ -163,21 +163,21 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist)
 
   songsel->musicdb = musicdb;
 
-  logProcEnd (LOG_PROC, "songselAlloc", "");
+  logProcEnd ("");
   return songsel;
 }
 
 void
 songselFree (songsel_t *songsel)
 {
-  logProcBegin (LOG_PROC, "songselFree");
+  logProcBegin ();
   if (songsel == NULL) {
     return;
   }
 
   nlistFree (songsel->danceSelList);
   mdfree (songsel);
-  logProcEnd (LOG_PROC, "songselFree", "");
+  logProcEnd ("");
   return;
 }
 
@@ -260,7 +260,7 @@ songselSelect (songsel_t *songsel, ilistidx_t danceIdx)
     return NULL;
   }
 
-  logProcBegin (LOG_PROC, "songselSelect");
+  logProcBegin ();
   if (! songsel->processed) {
     /* dance processing is delayed in case the tags get set */
     songselProcessDances (songsel);
@@ -269,7 +269,7 @@ songselSelect (songsel_t *songsel, ilistidx_t danceIdx)
   songseldance = nlistGetData (songsel->danceSelList, danceIdx);
   if (songseldance == NULL) {
     songsel->lastSelection = NULL;
-    logProcEnd (LOG_PROC, "songselSelect", "no dance");
+    logProcEnd ("no dance");
     return NULL;
   }
 
@@ -283,7 +283,7 @@ songselSelect (songsel_t *songsel, ilistidx_t danceIdx)
         danceGetStr (songsel->dances, songseldance->danceIdx, DANCE_DANCE));
     songsel->lastSelection = songdata;
   }
-  logProcEnd (LOG_PROC, "songselSelect", "");
+  logProcEnd ("");
   return song;
 }
 
@@ -297,11 +297,11 @@ songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
     return;
   }
 
-  logProcBegin (LOG_PROC, "songselSelect");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_SONGSEL, "finalize: dance-idx: %d", danceIdx);
   songseldance = nlistGetData (songsel->danceSelList, danceIdx);
   if (songseldance == NULL) {
-    logProcEnd (LOG_PROC, "songselSelect", "no dance");
+    logProcEnd ("no dance");
     return;
   }
 
@@ -313,7 +313,7 @@ songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
     songselRemoveSong (songsel, songseldance, songdata);
     songsel->lastSelection = NULL;
   }
-  logProcEnd (LOG_PROC, "songselSelect", "");
+  logProcEnd ("");
   return;
 }
 
@@ -423,7 +423,7 @@ songselRemoveSong (songsel_t *songsel,
   nlistidx_t      ssidx = -1;
   songseldance_t  *ss_songseldance;
 
-  logProcBegin (LOG_PROC, "songselRemoveSong");
+  logProcBegin ();
   count = queueGetCount (songseldance->currentIndexes);
   logMsg (LOG_DBG, LOG_SONGSEL, "begin-count: %d(%d) %d/%s",
       queueGetCount (songseldance->currentIndexes),
@@ -530,7 +530,7 @@ songselRemoveSong (songsel_t *songsel,
     }
   }
 
-  logProcEnd (LOG_PROC, "songselRemoveSong", "");
+  logProcEnd ("");
   return;
 }
 
@@ -577,7 +577,7 @@ searchForPercentage (songseldance_t *songseldance, double dval)
   nlistidx_t       dataidx = 0;
 
 
-  logProcBegin (LOG_PROC, "searchForPercentage");
+  logProcBegin ();
   r = nlistGetCount (songseldance->currentIdxList) - 1;
 
   while (l <= r) {
@@ -605,7 +605,7 @@ searchForPercentage (songseldance_t *songseldance, double dval)
     }
   }
 
-  logProcEnd (LOG_PROC, "searchForPercentage", "");
+  logProcEnd ("");
   return NULL;
 }
 
@@ -621,7 +621,7 @@ songselCalcPercentages (songsel_t *songsel, songseldance_t *songseldance)
   nlistidx_t          iteridx;
 
 
-  logProcBegin (LOG_PROC, "songselCalcPercentages");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_SONGSEL, "calculate running totals");
   logMsg (LOG_DBG, LOG_SONGSEL, "  dance %d/%s : %d songs",
       songseldance->danceIdx,
@@ -650,7 +650,7 @@ songselCalcPercentages (songsel_t *songsel, songseldance_t *songseldance)
     lastsongdata->percentage = 1.0;
   }
 
-  logProcEnd (LOG_PROC, "songselCalcPercentages", "");
+  logProcEnd ("");
 }
 
 static void
@@ -658,7 +658,7 @@ songselDanceFree (void *titem)
 {
   songseldance_t       *songseldance = titem;
 
-  logProcBegin (LOG_PROC, "songselDanceFree");
+  logProcBegin ();
   if (songseldance != NULL) {
     nlistFree (songseldance->songIdxList);
     if (songseldance->currentIndexes != NULL) {
@@ -667,7 +667,7 @@ songselDanceFree (void *titem)
     nlistFree (songseldance->currentIdxList);
     mdfree (songseldance);
   }
-  logProcEnd (LOG_PROC, "songselDanceFree", "");
+  logProcEnd ("");
 }
 
 static void

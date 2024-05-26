@@ -69,7 +69,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          tbuff [MAXPATHLEN];
   char          ebuff [50];
 
-  logProcBegin (LOG_PROC, "confuiBuildUIGeneral");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -177,7 +177,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIGeneral", "");
+  logProcEnd ("");
 }
 
 
@@ -188,11 +188,11 @@ confuiSelectMusicDir (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin (LOG_PROC, "confuiSelectMusicDir");
+  logProcBegin ();
   confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_MUSIC),
       /* CONTEXT: configuration: folder selection dialog: window title */
       _("Select Music Folder Location"));
-  logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -201,9 +201,9 @@ confuiSelectStartup (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin (LOG_PROC, "confuiSelectStartup");
+  logProcBegin ();
   confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
-  logProcEnd (LOG_PROC, "confuiSelectStartup", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -212,9 +212,9 @@ confuiSelectShutdown (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin (LOG_PROC, "confuiSelectShutdown");
+  logProcBegin ();
   confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
-  logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -233,7 +233,7 @@ confuiLoadLocaleList (confuigui_t *gui)
   int           engbidx = 0;
   int           shortidx = 0;
 
-  logProcBegin (LOG_PROC, "confuiLoadLocaleList");
+  logProcBegin ();
 
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, NULL);
@@ -269,5 +269,5 @@ confuiLoadLocaleList (confuigui_t *gui)
 
   gui->uiitem [CONFUI_SPINBOX_LOCALE].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadLocaleList", "");
+  logProcEnd ("");
 }

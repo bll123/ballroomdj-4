@@ -49,7 +49,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwcont_t     *uiwidgetp;
   nlistidx_t    val;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIDialogDisplay");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   /* filter display */
@@ -130,6 +130,6 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIDialogDisplay", "");
+  logProcEnd ("");
 }
 

@@ -143,12 +143,12 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   int         rc = AUDIOTAG_WRITE_OK; // if no update
 
 
-  logProcBegin (LOG_PROC, "audiotagWriteTags");
+  logProcBegin ();
 
   writetags = bdjoptGetNum (OPT_G_WRITETAGS);
   if (writetags == WRITE_TAGS_NONE) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags-none");
-    logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");
+    logProcEnd ("write-none");
     return AUDIOTAG_WRITE_OFF;
   }
 
@@ -158,7 +158,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_ID3 &&
       tagtype != TAG_TYPE_MP4) {
-    logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-tag");
+    logProcEnd ("not-supported-tag");
     return AUDIOTAG_NOT_SUPPORTED;
   }
 
@@ -167,7 +167,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       filetype != AFILE_TYPE_FLAC &&
       filetype != AFILE_TYPE_MP3 &&
       filetype != AFILE_TYPE_MP4) {
-    logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-file");
+    logProcEnd ("not-supported-file");
     return AUDIOTAG_NOT_SUPPORTED;
   }
 
@@ -279,7 +279,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   slistFree (updatelist);
   slistFree (dellist);
   nlistFree (datalist);
-  logProcEnd (LOG_PROC, "audiotagsWriteTags", "");
+  logProcEnd ("");
   return rc;
 }
 

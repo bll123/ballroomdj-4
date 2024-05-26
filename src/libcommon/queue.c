@@ -69,7 +69,7 @@ queueAlloc (const char *name, queueFree_t freeHook)
 {
   queue_t     *q;
 
-  logProcBegin (LOG_PROC, "queueAlloc");
+  logProcBegin ();
   q = mdmalloc (sizeof (queue_t));
   q->queueident = QUEUE_IDENT;
   q->name = mdstrdup (name);
@@ -82,7 +82,7 @@ queueAlloc (const char *name, queueFree_t freeHook)
   q->head = NULL;
   q->tail = NULL;
   q->freeHook = freeHook;
-  logProcEnd (LOG_PROC, "queueAlloc", "");
+  logProcEnd ("");
   return q;
 }
 
@@ -92,15 +92,15 @@ queueFree (queue_t *q)
   queuenode_t     *node;
   queuenode_t     *tnode;
 
-  logProcBegin (LOG_PROC, "queueFree");
+  logProcBegin ();
 
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueFree", "null");
+    logProcEnd ("null");
     return;
   }
 
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueFree", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
 
@@ -131,7 +131,7 @@ queueFree (queue_t *q)
   }
   mdfree (q);
 
-  logProcEnd (LOG_PROC, "queueFree", "");
+  logProcEnd ("");
 }
 
 void
@@ -139,13 +139,13 @@ queuePush (queue_t *q, void *data)
 {
   queuenode_t     *node;
 
-  logProcBegin (LOG_PROC, "queuePush");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queuePush", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queuePush", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
 
@@ -166,7 +166,7 @@ queuePush (queue_t *q, void *data)
   /* a push does not invalidate the cache */
   /* the cache never contains the head nor the tail */
 
-  logProcEnd (LOG_PROC, "queuePush", "");
+  logProcEnd ("");
 }
 
 void
@@ -174,13 +174,13 @@ queuePushHead (queue_t *q, void *data)
 {
   queuenode_t     *node;
 
-  logProcBegin (LOG_PROC, "queuePushHead");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queuePushHead", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queuePushHead", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
 
@@ -202,7 +202,7 @@ queuePushHead (queue_t *q, void *data)
   q->cacheNode = NULL;
   q->cacheIdx = QUEUE_NO_IDX;
 
-  logProcEnd (LOG_PROC, "queuePushHead", "");
+  logProcEnd ("");
 }
 
 void *
@@ -211,13 +211,13 @@ queueGetFirst (queue_t *q)
   void          *data = NULL;
   queuenode_t   *node;
 
-  logProcBegin (LOG_PROC, "queueGetFirst");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueGetFirst", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return NULL;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueGetFirst", "bad-ident");
+    logProcEnd ("bad-ident");
     return NULL;
   }
 
@@ -228,7 +228,7 @@ queueGetFirst (queue_t *q)
     /* there is no need to modify the cache */
   }
 
-  logProcEnd (LOG_PROC, "queueGetFirst", "");
+  logProcEnd ("");
   return data;
 }
 
@@ -239,17 +239,17 @@ queueGetByIdx (queue_t *q, qidx_t idx)
   void              *data = NULL;
 
 
-  logProcBegin (LOG_PROC, "queueGetByIdx");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return NULL;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-ident");
+    logProcEnd ("bad-ident");
     return NULL;
   }
   if (idx >= q->count) {
-    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-idx");
+    logProcEnd ("bad-idx");
     return NULL;
   }
 
@@ -259,7 +259,7 @@ queueGetByIdx (queue_t *q, qidx_t idx)
     data = node->data;
   }
 
-  logProcEnd (LOG_PROC, "queueGetByIdx", "");
+  logProcEnd ("");
   return data;
 }
 
@@ -270,13 +270,13 @@ queuePop (queue_t *q)
   void          *data = NULL;
   queuenode_t   *node;
 
-  logProcBegin (LOG_PROC, "queuePop");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queuePop", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return NULL;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queuePop", "bad-ident");
+    logProcEnd ("bad-ident");
     return NULL;
   }
   node = q->head;
@@ -286,7 +286,7 @@ queuePop (queue_t *q)
   q->cacheIdx = QUEUE_NO_IDX;
 
   data = queueRemove (q, node);
-  logProcEnd (LOG_PROC, "queuePop", "");
+  logProcEnd ("");
   return data;
 }
 
@@ -296,13 +296,13 @@ queueClear (queue_t *q, qidx_t startIdx)
   queuenode_t   *node;
   queuenode_t   *tnode;
 
-  logProcBegin (LOG_PROC, "queueClear");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueClear", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueClear", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
   node = q->tail;
@@ -320,7 +320,7 @@ queueClear (queue_t *q, qidx_t startIdx)
   q->cacheNode = NULL;
   q->cacheIdx = QUEUE_NO_IDX;
 
-  logProcEnd (LOG_PROC, "queueClear", "");
+  logProcEnd ("");
   return;
 }
 
@@ -331,17 +331,17 @@ queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
   queuenode_t   *tonode = NULL;
   void          *tdata = NULL;
 
-  logProcBegin (LOG_PROC, "queueMove");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueMove", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueMove", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
   if (fromidx < 0 || fromidx >= q->count || toidx < 0 || toidx >= q->count) {
-    logProcEnd (LOG_PROC, "queueMove", "bad-idx");
+    logProcEnd ("bad-idx");
     return;
   }
 
@@ -359,7 +359,7 @@ queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
   /* the cache points at a node, not the data */
   /* note that the cache is now pointing at to-node (if not head/tail) */
 
-  logProcEnd (LOG_PROC, "queueMove", "");
+  logProcEnd ("");
   return;
 }
 
@@ -369,17 +369,17 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
   queuenode_t   *node = NULL;
   queuenode_t   *tnode = NULL;
 
-  logProcBegin (LOG_PROC, "queueInsert");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueInsert", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueInsert", "bad-ident");
+    logProcEnd ("bad-ident");
     return;
   }
   if (idx < 0 || idx >= q->count) {
-    logProcEnd (LOG_PROC, "queueInsert", "bad-idx");
+    logProcEnd ("bad-idx");
     return;
   }
 
@@ -413,7 +413,7 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
   q->cacheNode = node;
   q->cacheIdx = idx;
 
-  logProcEnd (LOG_PROC, "queueInsert", "");
+  logProcEnd ("");
   return;
 }
 
@@ -423,17 +423,17 @@ queueRemoveByIdx (queue_t *q, qidx_t idx)
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
-  logProcBegin (LOG_PROC, "queueRemoveByIdx");
+  logProcBegin ();
   if (q == NULL) {
-    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return NULL;
   }
   if (q->queueident != QUEUE_IDENT) {
-    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-ident");
+    logProcEnd ("bad-ident");
     return NULL;
   }
   if (idx < 0 || idx >= q->count) {
-    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-idx");
+    logProcEnd ("bad-idx");
     return NULL;
   }
 
@@ -444,7 +444,7 @@ queueRemoveByIdx (queue_t *q, qidx_t idx)
     data = queueRemove (q, node);
   }
 
-  logProcEnd (LOG_PROC, "queueRemoveByIdx", "");
+  logProcEnd ("");
   return data;
 }
 

@@ -120,7 +120,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "help", ROUTE_HELPERUI, &flags);
-  logProcBegin (LOG_PROC, "helperui");
+  logProcBegin ();
 
   listenPort = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
   helper.conn = connInit (ROUTE_HELPERUI);
@@ -147,7 +147,7 @@ main (int argc, char *argv[])
   callbackFree (helper.nextCallback);
   connFree (helper.conn);
   progstateFree (helper.progstate);
-  logProcEnd (LOG_PROC, "helperui", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -172,7 +172,7 @@ helperClosingCallback (void *udata, programstate_t programState)
 {
   helperui_t   *helper = udata;
 
-  logProcBegin (LOG_PROC, "helperClosingCallback");
+  logProcBegin ();
 
   uiCloseWindow (helper->wcont [HELPER_W_WINDOW]);
   uiCleanup ();
@@ -189,7 +189,7 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   datafileFree (helper->helpdf);
 
-  logProcEnd (LOG_PROC, "helperClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -296,7 +296,7 @@ helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   helperui_t       *helper = udata;
 
-  logProcBegin (LOG_PROC, "helperProcessMsg");
+  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -331,7 +331,7 @@ helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  logProcEnd (LOG_PROC, "helperProcessMsg", "");
+  logProcEnd ("");
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

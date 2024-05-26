@@ -25,7 +25,7 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
   bdjmsgmsg_t   msg = MSG_QUEUE_DANCE;
 
 
-  logProcBegin (LOG_PROC, "uimusicqQueueDance");
+  logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
@@ -36,7 +36,7 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", ci, MSG_ARGS_RS, idx);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, msg, tbuff);
   }
-  logProcEnd (LOG_PROC, "uimusicqQueueDance", "");
+  logProcEnd ("");
 }
 
 void
@@ -45,7 +45,7 @@ uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx)
   int           ci;
   char          tbuff [200];
 
-  logProcBegin (LOG_PROC, "uimusicqQueuePlaylist");
+  logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
@@ -54,7 +54,7 @@ uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx)
         uiDropDownGetString (uimusicq->ui [ci].playlistsel), EDIT_FALSE);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
-  logProcEnd (LOG_PROC, "uimusicqQueuePlaylist", "");
+  logProcEnd ("");
 }
 
 void
@@ -76,7 +76,7 @@ uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
   uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
-  logProcEnd (LOG_PROC, "uimusicqMoveUp", "");
+  logProcEnd ("");
 }
 
 void
@@ -137,14 +137,14 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
   slist_t           *plList;
 
 
-  logProcBegin (LOG_PROC, "uimusicqCreatePlaylistList");
+  logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
   plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
   uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
   slistFree (plList);
-  logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");
+  logProcEnd ("");
 }
 
 void

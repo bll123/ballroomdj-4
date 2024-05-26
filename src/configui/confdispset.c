@@ -72,7 +72,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
+  logProcBegin ();
 
   vbox = uiCreateVertBox ();
 
@@ -94,7 +94,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
       DUALLIST_FLAGS_NONE, NULL, NULL);
 
   uiwcontFree (vbox);
-  logProcEnd (LOG_PROC, "confuiBuildUIDispSettings", "");
+  logProcEnd ("");
 }
 
 void
@@ -106,10 +106,10 @@ confuiDispSaveTable (confuigui_t *gui, int selidx)
   slistidx_t    iteridx;
   const char    *tstr;
 
-  logProcBegin (LOG_PROC, "confuiDispSaveTable");
+  logProcBegin ();
 
   if (! uiduallistIsChanged (gui->dispselduallist)) {
-    logProcEnd (LOG_PROC, "confuiDispSaveTable", "not-changed");
+    logProcEnd ("not-changed");
     return;
   }
 
@@ -128,7 +128,7 @@ confuiDispSaveTable (confuigui_t *gui, int selidx)
 
   slistFree (tlist);
   slistFree (nlist);
-  logProcEnd (LOG_PROC, "confuiDispSaveTable", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -140,7 +140,7 @@ confuiDispSettingChg (void *udata)
   int         oselidx;
   int         nselidx;
 
-  logProcBegin (LOG_PROC, "confuiDispSettingChg");
+  logProcBegin ();
 
 
   oselidx = gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
@@ -152,6 +152,6 @@ confuiDispSettingChg (void *udata)
   /* be sure to create the listing first */
   confuiCreateTagListingDisp (gui);
   confuiCreateTagSelectedDisp (gui);
-  logProcEnd (LOG_PROC, "confuiDispSettingChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }

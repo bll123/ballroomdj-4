@@ -258,16 +258,16 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   marquee_t     *marquee = udata;
   int           x, y;
 
-  logProcBegin (LOG_PROC, "marqueeStoppingCallback");
+  logProcBegin ();
 
   if (marquee->isMaximized) {
     marqueeSetNotMaximized (marquee);
-    logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-a");
+    logProcEnd ("is-maximized-a");
     return STATE_NOT_FINISH;
   }
 
   if (uiWindowIsMaximized (marquee->wcont [MQ_W_WINDOW])) {
-    logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
+    logProcEnd ("is-maximized-b");
     return STATE_NOT_FINISH;
   }
 
@@ -279,7 +279,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   }
 
   connDisconnectAll (marquee->conn);
-  logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -298,7 +298,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
 
-  logProcBegin (LOG_PROC, "marqueeClosingCallback");
+  logProcBegin ();
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
@@ -322,7 +322,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (marquee->optiondf);
 
-  logProcEnd (LOG_PROC, "marqueeClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -336,7 +336,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiwcont_t   *vbox;
   int         x, y;
 
-  logProcBegin (LOG_PROC, "marqueeBuildUI");
+  logProcBegin ();
 
   uiLabelAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiLabelAddClass (MQ_TEXT_CLASS, bdjoptGetStr (OPT_P_MQ_TEXT_COL));
@@ -470,7 +470,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->uibuilt = true;
 
-  logProcEnd (LOG_PROC, "marqueeBuildUI", "");
+  logProcEnd ("");
 }
 
 static int
@@ -518,7 +518,7 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
   marquee_t   *marquee = udata;
   bool        rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "marqueeConnectingCallback");
+  logProcBegin ();
 
   connProcessUnconnected (marquee->conn);
 
@@ -534,7 +534,7 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "marqueeConnectingCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -544,7 +544,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
   marquee_t   *marquee = udata;
   bool        rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "marqueeHandshakeCallback");
+  logProcBegin ();
 
   connProcessUnconnected (marquee->conn);
 
@@ -554,7 +554,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "marqueeHandshakeCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -565,7 +565,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   marquee_t   *marquee = udata;
   char        *targs = NULL;
 
-  logProcBegin (LOG_PROC, "marqueeProcessMsg");
+  logProcBegin ();
   if (args != NULL) {
     targs = mdstrdup (args);
   }
@@ -622,12 +622,12 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   dataFree (targs);
 
-  logProcEnd (LOG_PROC, "marqueeProcessMsg", "");
+  logProcEnd ("");
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  logProcEnd (LOG_PROC, "marqueeProcessMsg", "");
+  logProcEnd ("");
   return gKillReceived;
 }
 
@@ -637,7 +637,7 @@ marqueeCloseCallback (void *udata)
 {
   marquee_t   *marquee = udata;
 
-  logProcBegin (LOG_PROC, "marqueeCloseCallback");
+  logProcBegin ();
 
   if (progstateCurrState (marquee->progstate) <= STATE_RUNNING) {
     if (! marquee->isMaximized && ! marquee->isIconified) {
@@ -647,11 +647,11 @@ marqueeCloseCallback (void *udata)
     marquee->mqIconifyAction = true;
     uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
     marquee->isIconified = true;
-    logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
+    logProcEnd ("user-close-win");
     return UICB_STOP;
   }
 
-  logProcEnd (LOG_PROC, "marqueeCloseCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -694,17 +694,17 @@ marqueeSetMaximized (marquee_t *marquee)
 static void
 marqueeSetNotMaximized (marquee_t *marquee)
 {
-  logProcBegin (LOG_PROC, "marqueeSetNotMaximized");
+  logProcBegin ();
 
   if (! marquee->isMaximized) {
-    logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "not-max");
+    logProcEnd ("not-max");
     return;
   }
 
   marquee->isMaximized = false;
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
   marquee->unMaximize = MARQUEE_UNMAX_WAIT_COUNT;
-  logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
+  logProcEnd ("");
 }
 
 static void
@@ -721,7 +721,7 @@ marqueeSetNotMaximizeFinish (marquee_t *marquee)
     uiWindowEnableDecorations (marquee->wcont [MQ_W_WINDOW]);
   }
   marqueeSendMaximizeState (marquee);
-  logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
+  logProcEnd ("");
 }
 
 static void
@@ -738,12 +738,12 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
 {
   marquee_t         *marquee = udata;
 
-  logProcBegin (LOG_PROC, "marqueeWinState");
+  logProcBegin ();
 
   if (isIconified >= 0) {
     if (marquee->mqIconifyAction) {
       marquee->mqIconifyAction = false;
-      logProcEnd (LOG_PROC, "marqueeWinState", "close-button");
+      logProcEnd ("close-button");
       return UICB_CONT;
     }
 
@@ -754,7 +754,7 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
       marquee->isIconified = false;
 //      marqueeMoveWindow (marquee);
     }
-    logProcEnd (LOG_PROC, "marqueeWinState", "iconified/deiconified");
+    logProcEnd ("iconified/deiconified");
     return UICB_CONT;
   }
 
@@ -763,7 +763,7 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
     /* no processing needs to be done here */
     if (marquee->userDoubleClicked) {
       marquee->userDoubleClicked = false;
-      logProcEnd (LOG_PROC, "marqueeWinState", "user-double-clicked");
+      logProcEnd ("user-double-clicked");
       return UICB_CONT;
     }
 
@@ -773,7 +773,7 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
     }
   }
 
-  logProcEnd (LOG_PROC, "marqueeWinState", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -782,7 +782,7 @@ marqueeWinMapped (void *udata)
 {
   marquee_t         *marquee = udata;
 
-  logProcBegin (LOG_PROC, "marqueeWinMapped");
+  logProcBegin ();
 
 // is this process needed?
 // need to check on windows and mac os.
@@ -790,7 +790,7 @@ marqueeWinMapped (void *udata)
 //    marqueeMoveWindow (marquee);
   }
 
-  logProcEnd (LOG_PROC, "marqueeWinMapped", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -829,15 +829,15 @@ marqueeSigHandler (int sig)
 static void
 marqueeSetFontSize (marquee_t *marquee, uiwcont_t *uilab, const char *font)
 {
-  logProcBegin (LOG_PROC, "marqueeSetFontSize");
+  logProcBegin ();
 
   if (uilab == NULL) {
-    logProcEnd (LOG_PROC, "marqueeSetFontSize", "no-lab");
+    logProcEnd ("no-lab");
     return;
   }
 
   uiLabelSetFont (uilab, font);
-  logProcEnd (LOG_PROC, "marqueeSetFontSize", "");
+  logProcEnd ("");
 }
 
 static void
@@ -849,10 +849,10 @@ marqueePopulate (marquee_t *marquee, char *args)
   const char  *sep = "";
   char        sepstr [20] = { " " };
 
-  logProcBegin (LOG_PROC, "marqueePopulate");
+  logProcBegin ();
 
   if (! marquee->uibuilt) {
-    logProcEnd (LOG_PROC, "marqueePopulate", "no-ui");
+    logProcEnd ("no-ui");
     return;
   }
 
@@ -915,7 +915,7 @@ marqueePopulate (marquee_t *marquee, char *args)
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   }
 
-  logProcEnd (LOG_PROC, "marqueePopulate", "");
+  logProcEnd ("");
 }
 
 static void
@@ -931,7 +931,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
   char        *tokptr = NULL;
   char        tbuff [40];
 
-  logProcBegin (LOG_PROC, "marqueeSetTimer");
+  logProcBegin ();
 
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
@@ -951,7 +951,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
     dratio = 0.0;
   }
   uiProgressBarSet (marquee->wcont [MQ_W_PBAR], dratio);
-  logProcEnd (LOG_PROC, "marqueeSetTimer", "");
+  logProcEnd ("");
 }
 
 static void
@@ -960,7 +960,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   const char  *f;
   char        newfont [200];
 
-  logProcBegin (LOG_PROC, "marqueeSetFont");
+  logProcBegin ();
 
   f = bdjoptGetStr (OPT_MP_MQFONT);
   if (f == NULL) {
@@ -993,7 +993,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
     marqueeSetFontSize (marquee, marquee->wcont [i], newfont);
   }
 
-  logProcEnd (LOG_PROC, "marqueeSetFont", "");
+  logProcEnd ("");
 }
 
 static void

@@ -194,12 +194,12 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uiqeDialog");
+  logProcBegin ();
 
   uiqe->dbidx = dbidx;
 
   if (dbidx < 0 || dbidx >= dbCount (uiqe->musicdb)) {
-    logProcEnd (LOG_PROC, "uiqeDialog", "bad-dbidx");
+    logProcEnd ("bad-dbidx");
     return UICB_STOP;
   }
 
@@ -210,7 +210,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 
   uiqe->song = dbGetByIdx (uiqe->musicdb, dbidx);
   if (uiqe->song == NULL) {
-    logProcEnd (LOG_PROC, "uiqeDialog", "null-song");
+    logProcEnd ("null-song");
     return UICB_STOP;
   }
 
@@ -268,7 +268,7 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
   x = nlistGetNum (uiqe->options, QE_POSITION_X);
   y = nlistGetNum (uiqe->options, QE_POSITION_Y);
   uiWindowMove (uiqe->wcont [UIQE_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uiqeDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -290,7 +290,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
 
-  logProcBegin (LOG_PROC, "uiqeCreateDialog");
+  logProcBegin ();
 
   if (uiqe == NULL) {
     return;
@@ -405,7 +405,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "uiqeCreateDialog", "");
+  logProcEnd ("");
 }
 
 static void
@@ -480,7 +480,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   int             digits;
   int             tagkey;
 
-  logProcBegin (LOG_PROC, "uiqeAddScale");
+  logProcBegin ();
   if (scidx == UIQE_SCALE_SPD) {
     tagkey = TAG_SPEEDADJUSTMENT;
     lower = SPD_LOWER;
@@ -519,7 +519,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->scaledata [scidx].scaledisp = uiwidgetp;
-  logProcEnd (LOG_PROC, "uiqeAddScale", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -529,12 +529,12 @@ uiqeScaleDisplayCallback (void *udata, double value)
   char        tbuff [40];
   int         digits;
 
-  logProcBegin (LOG_PROC, "uiqeScaleDisplayCallback");
+  logProcBegin ();
   digits = uiScaleGetDigits (scaledata->scale);
   value = uiScaleEnforceMax (scaledata->scale, value);
   snprintf (tbuff, sizeof (tbuff), "%4.*f%%", digits, value);
   uiLabelSetText (scaledata->scaledisp, tbuff);
-  logProcEnd (LOG_PROC, "uiqeScaleDisplayCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

@@ -40,7 +40,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq_t    *uimusicq;
   char          tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "uimusicqInit");
+  logProcBegin ();
 
   uimusicq = mdmalloc (sizeof (uimusicq_t));
 
@@ -99,7 +99,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =
       callbackInitLong (uimusicqSaveListCallback, uimusicq);
 
-  logProcEnd (LOG_PROC, "uimusicqInit", "");
+  logProcEnd ("");
   return uimusicq;
 }
 
@@ -122,7 +122,7 @@ uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb)
 void
 uimusicqFree (uimusicq_t *uimusicq)
 {
-  logProcBegin (LOG_PROC, "uimusicqFree");
+  logProcBegin ();
   if (uimusicq == NULL) {
     return;
   }
@@ -142,7 +142,7 @@ uimusicqFree (uimusicq_t *uimusicq)
   nlistFree (uimusicq->savelist);
 
   mdfree (uimusicq);
-  logProcEnd (LOG_PROC, "uimusicqFree", "");
+  logProcEnd ("");
 }
 
 void
@@ -241,10 +241,10 @@ uimusicqGetCount (uimusicq_t *uimusicq)
 void
 uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 {
-  logProcBegin (LOG_PROC, "uimusicqSave");
+  logProcBegin ();
 
   if (! uimusicq->changed) {
-    logProcEnd (LOG_PROC, "uimusicqSave", "not-changed");
+    logProcEnd ("not-changed");
     return;
   }
 
@@ -253,7 +253,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 
   uimusicq->changed = false;
 
-  logProcEnd (LOG_PROC, "uimusicqSave", "");
+  logProcEnd ("");
 }
 
 void

@@ -85,7 +85,7 @@ manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar)
   uiwcont_t   *menu = NULL;
   uiwcont_t   *menuitem = NULL;
 
-  logProcBegin (LOG_PROC, "manageAudioIDMenu");
+  logProcBegin ();
   if (! uiMenuIsInitialized (maudioid->audioidmenu)) {
     /* empty menu for now */
     menuitem = uiMenuAddMainItem (menubar, maudioid->audioidmenu, "");
@@ -98,7 +98,7 @@ manageAudioIDMenu (manageaudioid_t *maudioid, uiwcont_t *menubar)
 
   uiMenuDisplay (maudioid->audioidmenu);
 
-  logProcEnd (LOG_PROC, "manageAudioIDMenu", "");
+  logProcEnd ("");
   return maudioid->audioidmenu;
 }
 

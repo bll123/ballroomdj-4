@@ -180,7 +180,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcont_t          *szgrpNum;
   uiwcont_t          *szgrpText;
 
-  logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
+  logProcBegin ();
 
   szgrp = uiCreateSizeGroupHoriz ();          // labels
   szgrpSpinText = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
@@ -462,7 +462,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (szgrpNum);
   uiwcontFree (szgrpText);
 
-  logProcEnd (LOG_PROC, "manageBuildUIPlaylist", "");
+  logProcEnd ("");
 }
 
 uiwcont_t *
@@ -471,10 +471,10 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
   uiwcont_t   *menu = NULL;
   uiwcont_t   *menuitem = NULL;
 
-  logProcBegin (LOG_PROC, "managePlaylistMenu");
+  logProcBegin ();
   if (uiMenuIsInitialized (managepl->wcont [MPL_W_MENU_PL])) {
     uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
-    logProcEnd (LOG_PROC, "managePlaylistMenu", "menu-is-init");
+    logProcEnd ("menu-is-init");
     return managepl->wcont [MPL_W_MENU_PL];
   }
 
@@ -518,7 +518,7 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 
   uiMenuDisplay (managepl->wcont [MPL_W_MENU_PL]);
 
-  logProcEnd (LOG_PROC, "managePlaylistMenu", "");
+  logProcEnd ("");
   return managepl->wcont [MPL_W_MENU_PL];
 }
 
@@ -527,9 +527,9 @@ managePlaylistSave (managepl_t *managepl)
 {
   char      *name;
 
-  logProcBegin (LOG_PROC, "managePlaylistSave");
+  logProcBegin ();
   if (managepl->ploldname == NULL) {
-    logProcEnd (LOG_PROC, "managePlaylistSave", "no-old-name");
+    logProcEnd ("no-old-name");
     return;
   }
 
@@ -556,7 +556,7 @@ managePlaylistSave (managepl_t *managepl)
     }
   }
   mdfree (name);
-  logProcEnd (LOG_PROC, "managePlaylistSave", "");
+  logProcEnd ("");
 }
 
 /* the current playlist may be renamed or deleted. */
@@ -567,9 +567,9 @@ managePlaylistLoadCheck (managepl_t *managepl)
 {
   char        *name;
 
-  logProcBegin (LOG_PROC, "managePlaylistLoadCheck");
+  logProcBegin ();
   if (managepl->ploldname == NULL) {
-    logProcEnd (LOG_PROC, "managePlaylistLoadCheck", "no-old-name");
+    logProcEnd ("no-old-name");
     return;
   }
 
@@ -579,7 +579,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
     managePlaylistNew (managepl, MANAGE_STD);
   }
   mdfree (name);
-  logProcEnd (LOG_PROC, "managePlaylistLoadCheck", "");
+  logProcEnd ("");
 }
 
 void
@@ -590,12 +590,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   if (managepl->inload) {
     return;
   }
-  logProcBegin (LOG_PROC, "managePlaylistLoadFile");
+  logProcBegin ();
 
   if (preloadflag != MANAGE_PRELOAD_FORCE &&
       managepl->playlist != NULL &&
       strcmp (fn, playlistGetName (managepl->playlist)) == 0) {
-    logProcEnd (LOG_PROC, "managePlaylistLoadFile", "already");
+    logProcEnd ("already");
     return;
   }
 
@@ -610,7 +610,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   if (pl == NULL) {
     managePlaylistNew (managepl, preloadflag);
     managepl->inload = false;
-    logProcEnd (LOG_PROC, "managePlaylistLoadFile", "null");
+    logProcEnd ("null");
     return;
   }
 
@@ -639,7 +639,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 
   manageResetChanged (managepl);
   managepl->inload = false;
-  logProcEnd (LOG_PROC, "managePlaylistLoadFile", "");
+  logProcEnd ("");
 }
 
 bool
@@ -648,7 +648,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   char        tbuff [200];
   playlist_t  *pl = NULL;
 
-  logProcBegin (LOG_PROC, "managePlaylistNew");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
   if (preloadflag == MANAGE_STD) {
     managePlaylistSave (managepl);
@@ -665,7 +665,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   manageResetChanged (managepl);
   managePlaylistUpdateData (managepl);
 
-  logProcEnd (LOG_PROC, "managePlaylistNew", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -676,12 +676,12 @@ managePlaylistLoad (void *udata)
 {
   managepl_t  *managepl = udata;
 
-  logProcBegin (LOG_PROC, "managePlaylistLoad");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   managePlaylistSave (managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->minfo->window,
       managepl->minfo->options, managepl->callbacks [MPL_CB_SEL_FILE]);
-  logProcEnd (LOG_PROC, "managePlaylistLoad", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -690,9 +690,9 @@ managePlaylistLoadCB (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
 
-  logProcBegin (LOG_PROC, "managePlaylistLoadCB");
+  logProcBegin ();
   managePlaylistLoadFile (managepl, fn, MANAGE_STD);
-  logProcEnd (LOG_PROC, "managePlaylistLoadCB", "");
+  logProcEnd ("");
   return 0;
 }
 
@@ -701,9 +701,9 @@ managePlaylistNewCB (void *udata)
 {
   managepl_t  *managepl = udata;
 
-  logProcBegin (LOG_PROC, "managePlaylistNewCB");
+  logProcBegin ();
   managePlaylistNew (managepl, MANAGE_STD);
-  logProcEnd (LOG_PROC, "managePlaylistNewCB", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -714,7 +714,7 @@ managePlaylistUpdateData (managepl_t *managepl)
   playlist_t  *pl;
   char        tbuff [200];
 
-  logProcBegin (LOG_PROC, "managePlaylistUpdateData");
+  logProcBegin ();
   pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
@@ -770,7 +770,7 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT));
 
   managepl->plbackupcreated = false;
-  logProcEnd (LOG_PROC, "managePlaylistUpdateData", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -780,7 +780,7 @@ managePlaylistCopy (void *udata)
   char        *oname;
   char        newname [200];
 
-  logProcBegin (LOG_PROC, "managePlaylistCopy");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
@@ -797,7 +797,7 @@ managePlaylistCopy (void *udata)
   }
   mdfree (oname);
 
-  logProcEnd (LOG_PROC, "managePlaylistCopy", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -807,7 +807,7 @@ managePlaylistDelete (void *udata)
   managepl_t  *managepl = udata;
   char        *oname;
 
-  logProcBegin (LOG_PROC, "managePlaylistDelete");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
   manageDeletePlaylist (managepl->minfo->errorMsg, oname);
@@ -816,18 +816,18 @@ managePlaylistDelete (void *udata)
   managePlaylistNew (managepl, MANAGE_STD);
 
   mdfree (oname);
-  logProcEnd (LOG_PROC, "managePlaylistDelete", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
 static void
 manageSetPlaylistName (managepl_t *managepl, const char *name)
 {
-  logProcBegin (LOG_PROC, "manageSetPlaylistName");
+  logProcBegin ();
   dataFree (managepl->ploldname);
   managepl->ploldname = mdstrdup (name);
   uiEntrySetValue (managepl->wcont [MPL_W_PL_NAME], name);
-  logProcEnd (LOG_PROC, "manageSetPlaylistName", "");
+  logProcEnd ("");
 }
 
 static long
@@ -838,18 +838,18 @@ managePlaylistValHMSCallback (void *udata, const char *txt)
   char        tbuff [200];
   long        value;
 
-  logProcBegin (LOG_PROC, "managePlaylistValHMSCallback");
+  logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN_SEC);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
-    logProcEnd (LOG_PROC, "managePlaylistValHMSCallback", "not-valid");
+    logProcEnd ("not-valid");
     return -1;
   }
 
   value = tmutilStrToMS (txt);
-  logProcEnd (LOG_PROC, "managePlaylistValHMSCallback", "");
+  logProcEnd ("");
   return value;
 }
 
@@ -861,18 +861,18 @@ managePlaylistValHMCallback (void *udata, const char *txt)
   char        tbuff [200];
   long        value;
 
-  logProcBegin (LOG_PROC, "managePlaylistValHMCallback");
+  logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
-    logProcEnd (LOG_PROC, "managePlaylistValHMCallback", "not-valid");
+    logProcEnd ("not-valid");
     return -1;
   }
 
   value = tmutilStrToHM (txt);
-  logProcEnd (LOG_PROC, "managePlaylistValHMCallback", "");
+  logProcEnd ("");
   return value;
 }
 
@@ -884,7 +884,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   double        dval;
   const char    *tstr;
 
-  logProcBegin (LOG_PROC, "managePlaylistUpdatePlaylist");
+  logProcBegin ();
   pl = managepl->playlist;
 
   managePlaylistTreeUpdatePlaylist (managepl->managepltree);
@@ -924,7 +924,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
   playlistSetConfigNum (pl, PLAYLIST_TAG_WEIGHT, tval);
 
-  logProcEnd (LOG_PROC, "managePlaylistUpdatePlaylist", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -934,7 +934,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
   long          tval;
   double        dval;
 
-  logProcBegin (LOG_PROC, "managePlaylistCheckChanged");
+  logProcBegin ();
   if (managePlaylistTreeIsChanged (managepl->managepltree)) {
     managepl->changed = true;
   }
@@ -988,7 +988,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  logProcEnd (LOG_PROC, "managePlaylistCheckChanged", "");
+  logProcEnd ("");
   return managepl->changed;
 }
 

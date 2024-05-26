@@ -23,26 +23,26 @@
 void
 confuiDanceSet (uiwcont_t *uitree, const char *dancedisp, ilistidx_t key)
 {
-  logProcBegin (LOG_PROC, "confuiDanceSet");
+  logProcBegin ();
   uiTreeViewSetValues (uitree,
       CONFUI_DANCE_COL_DANCE, dancedisp,
       CONFUI_DANCE_COL_SB_PAD, "    ",
       CONFUI_DANCE_COL_DANCE_IDX, (treenum_t) key,
       TREE_VALUE_END);
-  logProcEnd (LOG_PROC, "confuiDanceSet", "");
+  logProcEnd ("");
 }
 
 void
 confuiGenreSet (uiwcont_t *uitree,
     int editable, const char *genredisp, int clflag)
 {
-  logProcBegin (LOG_PROC, "confuiGenreSet");
+  logProcBegin ();
   uiTreeViewSetValues (uitree,
       CONFUI_GENRE_COL_EDITABLE, (treeint_t) editable,
       CONFUI_GENRE_COL_GENRE, genredisp,
       CONFUI_GENRE_COL_CLASSICAL, (treeint_t) clflag,
       TREE_VALUE_END);
-  logProcEnd (LOG_PROC, "confuiGenreSet", "");
+  logProcEnd ("");
 }
 
 void
@@ -51,7 +51,7 @@ confuiLevelSet (uiwcont_t *uitree,
 {
   uiwcont_t      *adjustment;
 
-  logProcBegin (LOG_PROC, "confuiLevelSet");
+  logProcBegin ();
   adjustment = uiCreateAdjustment (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_LEVEL_COL_EDITABLE, (treeint_t) editable,
@@ -62,7 +62,7 @@ confuiLevelSet (uiwcont_t *uitree,
       CONFUI_LEVEL_COL_DEFAULT, (treebool_t) def,
       TREE_VALUE_END);
   uiwcontFree (adjustment);
-  logProcEnd (LOG_PROC, "confuiLevelSet", "");
+  logProcEnd ("");
 }
 
 void
@@ -71,7 +71,7 @@ confuiRatingSet (uiwcont_t *uitree,
 {
   uiwcont_t   *adjustment;
 
-  logProcBegin (LOG_PROC, "confuiRatingSet");
+  logProcBegin ();
   adjustment = uiCreateAdjustment (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_RATING_COL_R_EDITABLE, (treeint_t) editable,
@@ -82,20 +82,20 @@ confuiRatingSet (uiwcont_t *uitree,
       CONFUI_RATING_COL_DIGITS, (treeint_t) 0,
       TREE_VALUE_END);
   uiwcontFree (adjustment);
-  logProcEnd (LOG_PROC, "confuiRatingSet", "");
+  logProcEnd ("");
 }
 
 void
 confuiStatusSet (uiwcont_t *uitree,
     int editable, const char *statusdisp, int playflag)
 {
-  logProcBegin (LOG_PROC, "confuiStatusSet");
+  logProcBegin ();
   uiTreeViewSetValues (uitree,
       CONFUI_STATUS_COL_EDITABLE, (treeint_t) editable,
       CONFUI_STATUS_COL_STATUS, statusdisp,
       CONFUI_STATUS_COL_PLAY_FLAG, (treebool_t) playflag,
       TREE_VALUE_END);
-  logProcEnd (LOG_PROC, "confuiStatusSet", "");
+  logProcEnd ("");
 }
 
 

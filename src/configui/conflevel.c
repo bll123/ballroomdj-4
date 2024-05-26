@@ -33,7 +33,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   /* edit levels */
@@ -62,7 +62,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIEditLevels", "");
+  logProcEnd ("");
 }
 
 void
@@ -73,7 +73,7 @@ confuiCreateLevelTable (confuigui_t *gui)
   level_t           *levels;
   uiwcont_t         *uitree;
 
-  logProcBegin (LOG_PROC, "confuiCreateLevelTable");
+  logProcBegin ();
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
@@ -142,7 +142,7 @@ confuiCreateLevelTable (confuigui_t *gui)
       TREE_COL_TYPE_ACTIVE, CONFUI_LEVEL_COL_DEFAULT,
       TREE_COL_TYPE_END);
 
-  logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -153,7 +153,7 @@ confuiLevelListCreate (void *udata)
   int         weight;
   int         def;
 
-  logProcBegin (LOG_PROC, "confuiLevelListCreate");
+  logProcBegin ();
   leveldisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_LEVELS].uitree,
       CONFUI_LEVEL_COL_LEVEL);
   weight = uiTreeViewGetValue (gui->tables [CONFUI_ID_LEVELS].uitree,
@@ -168,7 +168,7 @@ confuiLevelListCreate (void *udata)
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_DEFAULT_FLAG, def);
   gui->tables [CONFUI_ID_LEVELS].saveidx += 1;
   dataFree (leveldisp);
-  logProcEnd (LOG_PROC, "confuiLevelListCreate", "");
+  logProcEnd ("");
   return UI_FOREACH_CONT;
 }
 
@@ -177,10 +177,10 @@ confuiLevelSave (confuigui_t *gui)
 {
   level_t    *levels;
 
-  logProcBegin (LOG_PROC, "confuiLevelSave");
+  logProcBegin ();
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   levelSave (levels, gui->tables [CONFUI_ID_LEVELS].savelist);
   ilistFree (gui->tables [CONFUI_ID_LEVELS].savelist);
-  logProcEnd (LOG_PROC, "confuiLevelSave", "");
+  logProcEnd ("");
 }
 

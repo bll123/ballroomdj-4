@@ -42,13 +42,13 @@ endif()
 
 if (NOT WIN32 AND NOT APPLE)
   if (PIPEWIRE_FOUND)
-    add_library (libvolpipewire SHARED volpipewire.c)
-    target_include_directories (libvolpipewire
-      PRIVATE "${PIPEWIRE_INCLUDE_DIRS}"
-    )
-    target_link_libraries (libvolpipewire PRIVATE
-      ${PIPEWIRE_LDFLAGS}
-    )
+#    add_library (libvolpipewire SHARED volpipewire.c)
+#    target_include_directories (libvolpipewire
+#      PRIVATE "${PIPEWIRE_INCLUDE_DIRS}"
+#    )
+#    target_link_libraries (libvolpipewire PRIVATE
+#      ${PIPEWIRE_LDFLAGS}
+#    )
   endif()
 endif()
 

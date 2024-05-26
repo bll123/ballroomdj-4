@@ -146,7 +146,7 @@ uieibdj4Dialog (uieibdj4_t *uieibdj4, int expimptype)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uieibdj4Dialog");
+  logProcBegin ();
   uieibdj4->currtype = expimptype;
   uieibdj4CreateDialog (uieibdj4);
   uieibdj4InitDisplay (uieibdj4);
@@ -156,7 +156,7 @@ uieibdj4Dialog (uieibdj4_t *uieibdj4, int expimptype)
   x = nlistGetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_X);
   y = nlistGetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_Y);
   uiWindowMove (uieibdj4->dialog [expimptype].wcont [UIEIBDJ4_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uieibdj4Dialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -254,7 +254,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   int           currtype;
   const char    *odir = NULL;
 
-  logProcBegin (LOG_PROC, "uieibdj4CreateDialog");
+  logProcBegin ();
 
   if (uieibdj4 == NULL) {
     return;
@@ -413,7 +413,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "uieibdj4CreateDialog", "");
+  logProcEnd ("");
 }
 
 static bool

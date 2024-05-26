@@ -222,7 +222,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   char              tbuff [200];
   int               col;
 
-  logProcBegin (LOG_PROC, "uisongselBuildUI");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
@@ -409,7 +409,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "uisongselBuildUI", "");
+  logProcEnd ("");
   return ssint->wcont [SONGSEL_W_MAIN_VBOX];
 }
 
@@ -418,7 +418,7 @@ uisongselClearData (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
 
-  logProcBegin (LOG_PROC, "uisongselClearData");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
 
@@ -427,7 +427,7 @@ uisongselClearData (uisongsel_t *uisongsel)
   /* having cleared the list, the rows must be re-created */
   uisongselCreateRows (uisongsel);
   uiScrollbarSetPosition (ssint->wcont [SONGSEL_W_SCROLLBAR], 0.0);
-  logProcEnd (LOG_PROC, "uisongselClearData", "");
+  logProcEnd ("");
 }
 
 void
@@ -442,7 +442,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   slist_t         * sellist = NULL;
   const char      * sscolor = ""; // "#000000";
 
-  logProcBegin (LOG_PROC, "uisongselPopulateData");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
@@ -508,7 +508,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   }
 
   uiTreeViewValueIteratorClear (ssint->wcont [SONGSEL_W_TREE]);
-  logProcEnd (LOG_PROC, "uisongselPopulateData", "");
+  logProcEnd ("");
 }
 
 bool
@@ -895,7 +895,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
   nlistidx_t      iteridx;
   dbidx_t         dbidx;
 
-  logProcBegin (LOG_PROC, "uisongselQueueHandler");
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
 
@@ -910,7 +910,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
     action = UISONGSEL_QUEUE;
   }
 
-  logProcEnd (LOG_PROC, "uisongselQueueHandler", "");
+  logProcEnd ("");
   return;
 }
 
@@ -931,7 +931,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   ss_internal_t     * ssint;
   slist_t           *sellist;
 
-  logProcBegin (LOG_PROC, "uisongselInitializeStore");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
   ssint->typelist = mdmalloc (sizeof (int) * SONGSEL_COL_MAX);
@@ -952,7 +952,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
       ssint->colcount, ssint->typelist);
   mdfree (ssint->typelist);
 
-  logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
+  logProcEnd ("");
 }
 
 static void
@@ -973,7 +973,7 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 {
   ss_internal_t    *ssint;
 
-  logProcBegin (LOG_PROC, "uisongselCreateRows");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
   /* enough pre-allocated rows are needed so that if the windows is */
@@ -982,7 +982,7 @@ uisongselCreateRows (uisongsel_t *uisongsel)
   for (int i = 0; i < STORE_ROWS; ++i) {
     uiTreeViewValueAppend (ssint->wcont [SONGSEL_W_TREE]);
   }
-  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
+  logProcEnd ("");
 }
 
 static void
@@ -999,7 +999,7 @@ uisongselRowClickCallback (void *udata, long col)
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
 
-  logProcBegin (LOG_PROC, "uisongselRowClickCallback");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
 
@@ -1025,13 +1025,13 @@ uisongselRowClickCallback (void *udata, long col)
   ssint->lastRowDBIdx = uisongsel->lastdbidx;
 
   if (col == TREE_NO_COLUMN) {
-    logProcEnd (LOG_PROC, "uisongselRowClickCallback", "not-fav-col");
+    logProcEnd ("not-fav-col");
     return UICB_CONT;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
-  logProcEnd (LOG_PROC, "uisongselRowClickCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1041,12 +1041,12 @@ uisongselRightClickCallback (void *udata)
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
 
-  logProcBegin (LOG_PROC, "uisongselRightClickCallback");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
   ssint->rightclick = true;
 
-  logProcEnd (LOG_PROC, "uisongselRightClickCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1060,7 +1060,7 @@ uisongselProcessTreeSize (void *udata, long rows)
     return UICB_CONT;
   }
 
-  logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
+  logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
 
@@ -1092,7 +1092,7 @@ uisongselProcessTreeSize (void *udata, long rows)
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 
-  logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1104,7 +1104,7 @@ uisongselScroll (void *udata, double value)
   double          start;
   double          tval;
 
-  logProcBegin (LOG_PROC, "uisongselScroll");
+  logProcBegin ();
 
   if (uisongsel == NULL) {
     return UICB_STOP;
@@ -1143,7 +1143,7 @@ uisongselScroll (void *udata, double value)
   uisongselUpdateSelections (uisongsel);
 
   ssint->inscroll = false;
-  logProcEnd (LOG_PROC, "uisongselScroll", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1191,7 +1191,7 @@ uisongselScrollEvent (void *udata, long dir)
   uisongsel_t     *uisongsel = udata;
   int             ndir = UISONGSEL_NEXT;
 
-  logProcBegin (LOG_PROC, "uisongselScrollEvent");
+  logProcBegin ();
 
   if (dir == TREE_SCROLL_NEXT) {
     ndir = UISONGSEL_NEXT;
@@ -1201,7 +1201,7 @@ uisongselScrollEvent (void *udata, long dir)
   }
   uisongselProcessScroll (uisongsel, ndir, 1);
 
-  logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
+  logProcEnd ("");
   return UICB_STOP;
 }
 
@@ -1231,7 +1231,7 @@ uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines)
 
   uisongselScroll (uisongsel, (double) uisongsel->idxStart);
 
-  logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
+  logProcEnd ("");
 }
 
 static bool

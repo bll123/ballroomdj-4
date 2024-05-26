@@ -70,7 +70,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIOrganization");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -105,6 +105,6 @@ confuiBuildUIOrganization (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIOrganization", "");
+  logProcEnd ("");
 }
 

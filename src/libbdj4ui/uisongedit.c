@@ -27,7 +27,7 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
 {
   uisongedit_t  *uisongedit;
 
-  logProcBegin (LOG_PROC, "uisongeditInit");
+  logProcBegin ();
 
   uisongedit = mdmalloc (sizeof (uisongedit_t));
 
@@ -41,21 +41,21 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
 
   uisongeditUIInit (uisongedit);
 
-  logProcEnd (LOG_PROC, "uisongeditInit", "");
+  logProcEnd ("");
   return uisongedit;
 }
 
 void
 uisongeditFree (uisongedit_t *uisongedit)
 {
-  logProcBegin (LOG_PROC, "uisongeditFree");
+  logProcBegin ();
 
   if (uisongedit != NULL) {
     uisongeditUIFree (uisongedit);
     mdfree (uisongedit);
   }
 
-  logProcEnd (LOG_PROC, "uisongeditFree", "");
+  logProcEnd ("");
 }
 
 void
