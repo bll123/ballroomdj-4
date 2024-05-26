@@ -9,8 +9,21 @@
  * audacious pipewire interface
  * https://github.com/audacious-media-player/audacious-plugins/blob/5ef1a7438db8733ef2bdbe49dc691b55fb3a0002/src/pipewire/pipewire.cc#L131-L155
  *
+ *  get a list of nodes
+ *    pw-cli ls Node
+ *  get the info for a node
+ *    pw-cli i 78
+ *      device.id
+ *      card.profile.device
+ *      media.class
+ *  get the enumerations for a device
+ *    pw e 74 Route
+ *      index
+ *      direction
+ *      device (card.profile.device)
+ *      channelVolumes
  *  set-volume for the route
- *   pw-cli set-param <device-id> \
+ *    pw-cli set-param <device-id> \
  *       Route '{ index: <route-index>, device: <card-profile-device>, \
  *       props: { mute: false, channelVolumes: [ 0.5, 0.5 ] }, save: true }'
  *
@@ -34,7 +47,7 @@
 #include <signal.h>
 #include <math.h>
 
-#define BDJ4_PW_DEBUG 1
+#define BDJ4_PW_DEBUG 0
 
 #include <pipewire/pipewire.h>
 #include <pipewire/keys.h>
@@ -131,7 +144,6 @@ static void pipewireWaitForInit (pwstate_t *pwstate);
 static void pipewireCoreEvent (void *udata, uint32_t id, int seq);
 static void pipewireRegistryEvent (void *udata, uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props);
 static int pipewireMetadataEvent (void *udata, uint32_t id, const char *key, const char *type, const char *value);
-static void pipewireDeviceInfoEvent (void *udata, const struct pw_device_info *info);
 static void pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info);
 static void pipewireParamEvent (void *udata, int seq, uint32_t id, uint32_t index, uint32_t next, const struct spa_pod *param);
 static int pipewireMapDevice (void *item, void *udata);
@@ -172,17 +184,7 @@ static const struct pw_node_events node_events = {
 
 static const struct pw_device_events device_events = {
   .version = PW_VERSION_DEVICE_EVENTS,
-  .info = pipewireDeviceInfoEvent,
   .param = pipewireParamEvent,
-};
-
-static uint32_t device_subs [] = {
-  SPA_PARAM_Route,
-  SPA_PARAM_ROUTE_props,
-  SPA_PROP_channelVolumes,
-};
-enum {
-  device_subs_sz = sizeof (device_subs) / sizeof (uint32_t),
 };
 
 static const struct pw_proxy_events proxy_events = {
@@ -329,6 +331,10 @@ voliProcess (volaction_t action, const char *sinkname,
     return orig;
   }
 
+  pw_thread_loop_lock (pwstate->pwloop);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
+  pw_thread_loop_unlock (pwstate->pwloop);
+
   pipewireGetCurrentSink (pwstate, sinkname);
 
   if (action == VOL_SET) {
@@ -357,10 +363,6 @@ pipewireInit (void)
 
   mdebugSubTag ("volpipewire");
   pw_init (0, NULL);
-
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
 
   pwstate = mdmalloc (sizeof (pwstate_t));
   pwstate->ident = BDJ4_PWSTATE;
@@ -412,6 +414,7 @@ pipewireWaitForInit (pwstate_t *pwstate)
 {
   pw_thread_loop_lock (pwstate->pwloop);
   while (pwstate->initialized == false) {
+    pw_thread_loop_unlock (pwstate->pwloop);
     pw_thread_loop_timed_wait (pwstate->pwloop, 10);
     pw_thread_loop_lock (pwstate->pwloop);
   }
@@ -447,10 +450,6 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   struct pw_proxy             *proxy;
   pwproxy_t                   *pd;
 
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
-
   if (pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: reg-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
@@ -463,7 +462,6 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   if (strcmp (type, PW_TYPE_INTERFACE_Metadata) == 0) {
     const char  *name;
 
-fprintf (stderr, "reg-metadata\n");
     name = spa_dict_lookup (props, PW_KEY_METADATA_NAME);
     if (name == NULL || strcmp (name, "default") != 0) {
       return;
@@ -481,8 +479,6 @@ fprintf (stderr, "reg-metadata\n");
   }
 
   if (strcmp (type, PW_TYPE_INTERFACE_Device) == 0) {
-
-fprintf (stderr, "reg-device\n");
     proxy = pw_registry_bind (pwstate->registry, id, type,
         version, sizeof (pwproxy_t));
     mdextalloc (proxy);
@@ -496,11 +492,11 @@ fprintf (stderr, "reg-device\n");
     pd->internalid = pwstate->devidcount;
     pw_proxy_add_object_listener (proxy, &pd->object_listener, &device_events, pd);
     pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
-    pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
-    pw_device_subscribe_params ((struct pw_device *) proxy, device_subs, device_subs_sz);
     pw_map_insert_new (&pwstate->pwdevlist, pd);
     ++pwstate->devidcount;
+
     pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
+
     return;
   }
 
@@ -509,7 +505,6 @@ fprintf (stderr, "reg-device\n");
   if (strcmp (type, PW_TYPE_INTERFACE_Node) != 0) {
     return;
   }
-fprintf (stderr, "reg-node\n");
 
   item = spa_dict_lookup_item (props, SPA_KEY_MEDIA_CLASS);
   if (item == NULL || strcmp (item->value, "Audio/Sink") != 0) {
@@ -572,16 +567,10 @@ pipewireMetadataEvent (void *udata, uint32_t id,
 {
   pwstate_t *pwstate = udata;
 
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
-
   if (pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: metadata-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
-
-fprintf (stderr, "metadata-event\n");
 
   if (strcmp (key, "default.configured.audio.sink") == 0) {
     struct spa_json   iter[3];
@@ -620,10 +609,6 @@ pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
   pwstate_t     *pwstate = pd->pwstate;
   uint32_t      param_id;
 
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
-
   if (pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: node-info-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
@@ -638,8 +623,6 @@ pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
     fprintf (stderr, "ERR: node-info-event-state: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSTATE);
     exit (1);
   }
-
-fprintf (stderr, "node-info-event\n");
 
   pwsink->info = pw_node_info_update (pwsink->info, info);
   mdextalloc (pwsink->info);
@@ -663,15 +646,6 @@ fprintf (stderr, "node-info-event\n");
 }
 
 static void
-pipewireDeviceInfoEvent (void *udata, const struct pw_device_info *info)
-{
-  pwproxy_t     *pd = udata;
-  pwstate_t     *pwstate = pd->pwstate;
-
-fprintf (stderr, "dev-info-event\n");
-}
-
-static void
 pipewireParamEvent (void *udata, int seq, uint32_t id,
     uint32_t index, uint32_t next, const struct spa_pod *param)
 {
@@ -679,16 +653,10 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
   pwsink_t    *pwsink = pd->pwsink;
   struct spa_pod_parser p;
 
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
-
   if (pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: param-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
-
-fprintf (stderr, "param-event\n");
 
   spa_pod_parser_pod (&p, param);
 # if BDJ4_PW_DEBUG
@@ -705,7 +673,6 @@ fprintf (stderr, "param-event\n");
     int                 nvol;
     bool                mute = false;
 
-fprintf (stderr, "param event - device\n");
     for (int i = 0; i < BDJ4_PW_MAX_CHAN; ++i) {
       volume [i] = 0.0;
     }
@@ -741,7 +708,6 @@ fprintf (stderr, "param event - device\n");
       /* this is very odd */
       pwsink->currvolume =
           (int) round (pow ((double) volume [0], (1.0 / 3.0)) * 100.0);
-fprintf (stderr, "curr-vol: %d\n", pwsink->currvolume);
     }
   }
 
@@ -952,10 +918,6 @@ pipewireFreeNode (void *item, void *udata)
 static void
 pipewireGetCurrentSink (pwstate_t *pwstate, const char *sinkname)
 {
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
-
   pw_thread_loop_lock (pwstate->pwloop);
 
   pwstate->findsink = sinkname;
@@ -1006,10 +968,7 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
   float           vols [BDJ4_PW_MAX_CHAN];
   float           tvol;
   pwsink_t        *pwsink = NULL;
-
-# if BDJ4_PW_DEBUG
-  pw_log_set_level (SPA_LOG_LEVEL_DEBUG);
-# endif
+  pwproxy_t       *pd = NULL;
 
   pw_thread_loop_lock (pwstate->pwloop);
 
@@ -1063,15 +1022,16 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
       SPA_TYPE_OBJECT_ParamRoute, SPA_PARAM_Route,
       SPA_PARAM_ROUTE_index, SPA_POD_Int (pwsink->routeidx),
       SPA_PARAM_ROUTE_device, SPA_POD_Int (pwsink->routedevid),
-      SPA_PARAM_ROUTE_save, SPA_POD_Bool (true),
+//      SPA_PARAM_ROUTE_save, SPA_POD_Bool (true),
       SPA_PARAM_ROUTE_props, SPA_POD_PodObject (ppod),
       NULL);
 #if BDJ4_PW_DEBUG
   spa_debug_pod (0, NULL, pod); fflush (stdout);
 #endif
 
-  pw_device_set_param ((struct pw_device *) pwsink->pwdevproxy->proxy,
-      SPA_PARAM_Route, 0, pod);
+  pd = pwsink->pwdevproxy;
+  pw_device_set_param ((struct pw_device *) pd->proxy, SPA_PARAM_Route, 0, pod);
+  pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
 
   pw_thread_loop_unlock (pwstate->pwloop);
 }
