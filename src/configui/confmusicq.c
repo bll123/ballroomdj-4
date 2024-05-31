@@ -319,9 +319,6 @@ confuiUpdateMusicQList (confuigui_t *gui)
 {
   nlist_t     *tlist;
   int         widx;
-  nlistidx_t  iteridx;
-  nlistidx_t  key;
-  const char  *val;
   size_t      maxWidth = 10;
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
@@ -331,14 +328,8 @@ confuiUpdateMusicQList (confuigui_t *gui)
 
   tlist = gui->uiitem [widx].displist;
 
-  nlistStartIterator (tlist, &iteridx);
-  while ((key = nlistIterateKey (tlist, &iteridx)) >= 0) {
-    size_t      len;
-
-    val = nlistGetStr (tlist, key);
-    len = istrlen (val);
-    maxWidth = len > maxWidth ? len : maxWidth;
-  }
+  nlistCalcMaxValueWidth (tlist);
+  maxWidth = nlistGetMaxValueWidth (tlist);
 
   uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
       nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);

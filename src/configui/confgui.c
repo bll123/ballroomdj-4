@@ -247,19 +247,10 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     keylist = NULL;
   }
   maxWidth = 0;
+
   if (list != NULL) {
-    nlistidx_t    iteridx;
-    nlistidx_t    key;
-    const char    *val;
-
-    nlistStartIterator (list, &iteridx);
-    while ((key = nlistIterateKey (list, &iteridx)) >= 0) {
-      size_t      len;
-
-      val = nlistGetStr (list, key);
-      len = istrlen (val);
-      maxWidth = len > maxWidth ? len : maxWidth;
-    }
+    nlistCalcMaxValueWidth (list);
+    maxWidth = nlistGetMaxValueWidth (list);
   }
 
   uiSpinboxTextSet (uiwidgetp, 0,

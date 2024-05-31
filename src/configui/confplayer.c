@@ -138,8 +138,6 @@ confuiPlayerAudioSinkChg (void *udata)
   const char  *sval;
   nlist_t     *tlist;
   nlist_t     *keylist;
-  nlistidx_t  key;
-  nlistidx_t  iteridx;
   size_t      maxWidth = 10;
   int         widx;
 
@@ -165,14 +163,8 @@ confuiPlayerAudioSinkChg (void *udata)
   tlist = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
 
-  nlistStartIterator (tlist, &iteridx);
-  while ((key = nlistIterateKey (tlist, &iteridx)) >= 0) {
-    size_t      len;
-
-    sval = nlistGetStr (tlist, key);
-    len = istrlen (sval);
-    maxWidth = len > maxWidth ? len : maxWidth;
-  }
+  nlistCalcMaxValueWidth (tlist);
+  maxWidth = nlistGetMaxValueWidth (tlist);
 
   uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
       nlistGetCount (tlist), maxWidth, tlist, keylist, NULL);

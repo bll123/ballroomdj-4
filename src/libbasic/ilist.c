@@ -11,6 +11,7 @@
 
 #include "bdjstring.h"
 #include "ilist.h"
+#include "istring.h"
 #include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
@@ -58,6 +59,30 @@ void
 ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
   listSetSize (LIST_KEY_IND, list, siz);
+}
+
+int
+ilistGetMaxValueWidth (ilist_t *list, ilistidx_t lidx)
+{
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  size_t        maxWidth = 10;
+
+  ilistStartIterator (list, &iteridx);
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    size_t      len;
+    const char  *val;
+
+    val = ilistGetStr (list, key, lidx);
+    if (val != NULL) {
+      len = istrlen (val);
+      if (len > maxWidth) {
+        maxWidth = (int) len;
+      }
+    }
+  }
+
+  return (int) maxWidth;
 }
 
 void
