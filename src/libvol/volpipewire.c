@@ -6,9 +6,6 @@
  * pw-cli, pw-metadata
  * https://gitlab.freedesktop.org/pipewire/pipewire/-/blob/master/src/tools/
  *
- * audacious pipewire interface
- * https://github.com/audacious-media-player/audacious-plugins/blob/5ef1a7438db8733ef2bdbe49dc691b55fb3a0002/src/pipewire/pipewire.cc#L131-L155
- *
  *  get a list of nodes
  *    pw-cli ls Node
  *  get the info for a node
@@ -30,9 +27,6 @@
  *  pipewire has their own pod, dict structures, json, standard c structures.
  *  very inconsistent and strange api.
  *  the api is too low-level, and much parsing has to be done here.
- *
- *  to do:
- *    check and see if the metadata json can be converted to pod.
  *
  */
 
@@ -101,8 +95,11 @@ typedef struct pwstate {
   struct pw_map         pwsinklist;
   volsinklist_t         *sinklist;
   char                  *defsinkname;
-  const char            *findsink;
+  const char            *findname;
+  uint32_t              findid;
   pwsink_t              *currsink;
+  pwsink_t              *findsink;
+  pwproxy_t             *finddev;
   uint32_t              metadata_id;
   int                   pwsinkcount;
   int                   coreseq;
@@ -125,6 +122,7 @@ typedef struct pwsink {
   int                   internalid;
   int                   routeidx;
   int                   channels;
+  int                   available : 1;
 } pwsink_t;
 
 typedef struct pwproxy {
@@ -137,23 +135,27 @@ typedef struct pwproxy {
   uint32_t              deviceid;
   int                   internalid;
   int                   type;
+  int                   available : 1;
 } pwproxy_t;
 
 static pwstate_t *pipewireInit (void);
 static void pipewireWaitForInit (pwstate_t *pwstate);
 static void pipewireCoreEvent (void *udata, uint32_t id, int seq);
 static void pipewireRegistryEvent (void *udata, uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props);
+static void pipewireRegistryRemoveEvent (void *udata, uint32_t id);
 static int pipewireMetadataEvent (void *udata, uint32_t id, const char *key, const char *type, const char *value);
 static void pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info);
 static void pipewireParamEvent (void *udata, int seq, uint32_t id, uint32_t index, uint32_t next, const struct spa_pod *param);
 static int pipewireMapDevice (void *item, void *udata);
 static int pipewireGetRoute (void *item, void *udata);
-static int pipewireGetSink (void *item, void *udata);
+static int pipewireCheckSink (void *item, void *udata);
 static void pipewireFreeProxy (void *udata);
 static int pipewireFreeDevice (void *item, void *udata);
 static int pipewireFreeNode (void *item, void *udata);
 static void pipewireGetCurrentSink (pwstate_t *pwstate, const char *sinkname);
-static int pipewireFindSink (void *item, void *udata);
+static int pipewireFindSinkByName (void *item, void *udata);
+static int pipewireFindSinkByID (void *item, void *udata);
+static int pipewireFindDevByID (void *item, void *udata);
 static void pipewireSetVolume (pwstate_t *pwstate, int vol);
 # if BDJ4_PW_DEBUG
 static int pipewireDumpSink (void *item, void *udata);
@@ -167,8 +169,7 @@ static const struct pw_core_events core_events = {
 static const struct pw_registry_events registry_events = {
   .version = PW_VERSION_REGISTRY_EVENTS,
   .global = pipewireRegistryEvent,
-// ### implement remove
-  .global_remove = NULL,
+  .global_remove = pipewireRegistryRemoveEvent,
 };
 
 static const struct pw_metadata_events metadata_events = {
@@ -223,7 +224,6 @@ voliCleanup (void **udata)
   pwstate = *udata;
 
   if (pwstate->pwloop != NULL) {
-    pw_thread_loop_unlock (pwstate->pwloop);
     pw_thread_loop_stop (pwstate->pwloop);
   }
 
@@ -269,7 +269,6 @@ voliCleanup (void **udata)
   dataFree (pwstate->defsinkname);
   pwstate->defsinkname = NULL;
 
-fflush (stdout); // ###
   pw_deinit ();
   mdfree (pwstate);
   *udata = NULL;
@@ -314,7 +313,7 @@ voliProcess (volaction_t action, const char *sinkname,
         pwstate->pwsinkcount * sizeof (volsinkitem_t));
 
     pwstate->sinklist = sinklist;
-    pw_map_for_each (&pwstate->pwsinklist, pipewireGetSink, pwstate);
+    pw_map_for_each (&pwstate->pwsinklist, pipewireCheckSink, pwstate);
 
     pw_thread_loop_unlock (pwstate->pwloop);
     return 0;
@@ -372,8 +371,11 @@ pipewireInit (void)
   pwstate->registry = NULL;
   pwstate->metadata = NULL;
   pwstate->defsinkname = NULL;
-  pwstate->findsink = NULL;
+  pwstate->findname = NULL;
+  pwstate->findid = 0;
   pwstate->currsink = NULL;
+  pwstate->findsink = NULL;
+  pwstate->finddev = NULL;
   pwstate->pwsinkcount = 0;
   pwstate->coreseq = 0;
   pwstate->devidcount = 0;
@@ -414,9 +416,7 @@ pipewireWaitForInit (pwstate_t *pwstate)
 {
   pw_thread_loop_lock (pwstate->pwloop);
   while (pwstate->initialized == false) {
-    pw_thread_loop_unlock (pwstate->pwloop);
     pw_thread_loop_timed_wait (pwstate->pwloop, 10);
-    pw_thread_loop_lock (pwstate->pwloop);
   }
   pw_thread_loop_unlock (pwstate->pwloop);
 }
@@ -450,7 +450,7 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   struct pw_proxy             *proxy;
   pwproxy_t                   *pd;
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: reg-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -490,9 +490,12 @@ pipewireRegistryEvent (void *udata, uint32_t id,
     pd->pwsink = NULL;
     pd->proxy = proxy;
     pd->internalid = pwstate->devidcount;
+    pd->available = true;
     pw_proxy_add_object_listener (proxy, &pd->object_listener, &device_events, pd);
     pw_proxy_add_listener (proxy, &pd->proxy_listener, &proxy_events, pd);
-    pw_map_insert_new (&pwstate->pwdevlist, pd);
+    /* the node-ids change all the time, there's no point in trying to */
+    /* find the original entry, just re-add it. */
+    pw_map_insert_at (&pwstate->pwdevlist, pd->internalid, pd);
     ++pwstate->devidcount;
 
     pwstate->coreseq = pw_core_sync (pwstate->core, PW_ID_CORE, pwstate->coreseq);
@@ -523,6 +526,7 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   sink->description = NULL;
   sink->info = NULL;
   sink->channels = 0;
+  sink->available = true;
 
   item = spa_dict_lookup_item (props, PW_KEY_NODE_NAME);
   if (item != NULL) {
@@ -537,8 +541,10 @@ pipewireRegistryEvent (void *udata, uint32_t id,
     sink->deviceid = atoi (item->value);
   }
 
-  pw_map_insert_new (&pwstate->pwsinklist, sink);
   ++pwstate->pwsinkcount;
+  /* the node-ids change all the time, there's no point in trying to */
+  /* find the original entry, just re-add it. */
+  pw_map_insert_at (&pwstate->pwsinklist, sink->internalid, sink);
 
   proxy = pw_registry_bind (pwstate->registry, sink->nodeid,
       PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, sizeof (pwproxy_t));
@@ -561,13 +567,44 @@ pipewireRegistryEvent (void *udata, uint32_t id,
   pw_map_for_each (&pwstate->pwdevlist, pipewireMapDevice, sink);
 }
 
+static void
+pipewireRegistryRemoveEvent (void *udata, uint32_t id)
+{
+  pwstate_t   *pwstate = udata;
+
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: reg-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  /* it is unknown whether the id is a node, a device, or something else */
+
+  pwstate->findid = id;
+  pwstate->findsink = NULL;
+  pwstate->finddev = NULL;
+  pw_map_for_each (&pwstate->pwsinklist, pipewireFindSinkByID, pwstate);
+  if (pwstate->findsink != NULL) {
+    pwstate->findsink->available = false;
+    pwstate->findsink->nodeid = 0;
+    if (pwstate->findsink == pwstate->currsink) {
+      pwstate->changed = true;
+    }
+  } else {
+    pw_map_for_each (&pwstate->pwdevlist, pipewireFindDevByID, pwstate);
+    if (pwstate->finddev != NULL) {
+      pwstate->finddev->available = false;
+      pwstate->finddev->deviceid = 0;
+    }
+  }
+}
+
 static int
 pipewireMetadataEvent (void *udata, uint32_t id,
     const char *key, const char *type, const char *value)
 {
   pwstate_t *pwstate = udata;
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: metadata-event: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -609,17 +646,17 @@ pipewireNodeInfoEvent (void *udata, const struct pw_node_info *info)
   pwstate_t     *pwstate = pd->pwstate;
   uint32_t      param_id;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: node-info-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: node-info-event-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: node-info-event-state: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -653,7 +690,7 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
   pwsink_t    *pwsink = pd->pwsink;
   struct spa_pod_parser p;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: param-event: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
@@ -735,14 +772,18 @@ pipewireMapDevice (void *item, void *udata)
   pwproxy_t     *pd = item;
   pwsink_t      *pwsink = udata;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: map-dev: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: map-dev-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
+  }
+
+  if (pd->available == false) {
+    return 0;
   }
 
   if (pd->deviceid != pwsink->deviceid) {
@@ -765,19 +806,23 @@ pipewireGetRoute (void *item, void *udata)
   pwstate_t   *pwstate = pd->pwstate;
   uint32_t    param_id;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: get-route: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: get-route-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: get-route-state: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSTATE);
     exit (1);
+  }
+
+  if (pd->available == false) {
+    return 0;
   }
 
   if (pd->deviceid != pwsink->deviceid) {
@@ -797,25 +842,35 @@ pipewireGetRoute (void *item, void *udata)
 /* the thread loop is locked by the caller */
 
 static int
-pipewireGetSink (void *item, void *udata)
+pipewireCheckSink (void *item, void *udata)
 {
   pwsink_t      *pwsink = item;
   pwstate_t     *pwstate = udata;
   volsinklist_t *sinklist = pwstate->sinklist;
   int           idx;
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: get-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: get-sink-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
 
+  if (pwsink->available == false) {
+    return 0;
+  }
+
   if (pwsink->channels < 2) {
     return 0;
+  }
+
+  if (pwsink->pwdevproxy != NULL) {
+    if (pwsink->pwdevproxy->available == false) {
+      return 0;
+    }
   }
 
   idx = sinklist->count;
@@ -842,12 +897,12 @@ pipewireFreeProxy (void *udata)
   pwproxy_t     *pd = udata;
   pwstate_t     *pwstate = pd->pwstate;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: free-proxy: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: free-proxy-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -867,12 +922,12 @@ pipewireFreeDevice (void *item, void *udata)
   pwproxy_t     *pd = item;
   pwstate_t     *pwstate = udata;
 
-  if (pd->ident != BDJ4_PWPROXY) {
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
     fprintf (stderr, "ERR: free-device: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: free-device-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -890,12 +945,12 @@ pipewireFreeNode (void *item, void *udata)
   pwsink_t      *pwsink = item;
   pwstate_t     *pwstate = udata;
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: free-node: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
     fprintf (stderr, "ERR: free-node-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
@@ -918,38 +973,117 @@ pipewireFreeNode (void *item, void *udata)
 static void
 pipewireGetCurrentSink (pwstate_t *pwstate, const char *sinkname)
 {
+  bool    usedefault = false;
+
   pw_thread_loop_lock (pwstate->pwloop);
 
-  pwstate->findsink = sinkname;
+  if (pwstate->currsink != NULL && pwstate->changed == false) {
+    pw_thread_loop_unlock (pwstate->pwloop);
+    return;
+  }
+
+  pwstate->findname = sinkname;
   if (sinkname == NULL || ! *sinkname) {
-    pwstate->findsink = pwstate->defsinkname;
+    pwstate->findname = pwstate->defsinkname;
+    usedefault = true;
   }
 
   if (pwstate->currsink == NULL || pwstate->changed) {
-    pw_map_for_each (&pwstate->pwsinklist, pipewireFindSink, pwstate);
+    pwstate->findsink = NULL;
+    pw_map_for_each (&pwstate->pwsinklist, pipewireFindSinkByName, pwstate);
   }
+
+  if (pwstate->findsink == NULL && usedefault == false) {
+    /* try and find the default sink */
+    pwstate->findname = pwstate->defsinkname;
+    pwstate->findsink = NULL;
+    pw_map_for_each (&pwstate->pwsinklist, pipewireFindSinkByName, pwstate);
+  }
+
+  pwstate->currsink = pwstate->findsink;
 
   pw_thread_loop_unlock (pwstate->pwloop);
 }
 
 static int
-pipewireFindSink (void *item, void *udata)
+pipewireFindSinkByName (void *item, void *udata)
 {
   pwsink_t      *pwsink = item;
   pwstate_t     *pwstate = udata;
 
-  if (pwsink->ident != BDJ4_PWSINK) {
-    fprintf (stderr, "ERR: get-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: find-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
   }
 
-  if (pwstate->ident != BDJ4_PWSTATE) {
-    fprintf (stderr, "ERR: get-sink-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: find-sink-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
     exit (1);
   }
 
-  if (strcmp (pwstate->findsink, pwsink->name) == 0) {
-    pwstate->currsink = pwsink;
+  if (pwsink->available == false) {
+    return 0;
+  }
+
+  if (strcmp (pwstate->findname, pwsink->name) == 0) {
+    pwstate->findsink = pwsink;
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+pipewireFindSinkByID (void *item, void *udata)
+{
+  pwsink_t      *pwsink = item;
+  pwstate_t     *pwstate = udata;
+
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
+    fprintf (stderr, "ERR: find-sink-id: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
+    exit (1);
+  }
+
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: find-sink-id-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  if (pwsink->available == false) {
+    return 0;
+  }
+
+  if (pwsink->nodeid == pwstate->findid) {
+    pwstate->findsink = pwsink;
+    return 1;
+  }
+
+  return 0;
+}
+
+static int
+pipewireFindDevByID (void *item, void *udata)
+{
+  pwproxy_t     *pd = item;
+  pwstate_t     *pwstate = udata;
+
+  if (pd == NULL || pd->ident != BDJ4_PWPROXY) {
+    fprintf (stderr, "ERR: find-dev: invalid struct %d(%d)\n", pd->ident, BDJ4_PWPROXY);
+    exit (1);
+  }
+
+  if (pwstate == NULL || pwstate->ident != BDJ4_PWSTATE) {
+    fprintf (stderr, "ERR: find-dev-state: invalid struct %d(%d)\n", pwstate->ident, BDJ4_PWSTATE);
+    exit (1);
+  }
+
+  if (pd->available == false) {
+    return 0;
+  }
+
+  if (pd->deviceid == pwstate->findid) {
+    pwstate->finddev = pd;
     return 1;
   }
 
@@ -975,6 +1109,7 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
   pwsink = pwstate->currsink;
 
   if (pwsink == NULL) {
+    pw_thread_loop_unlock (pwstate->pwloop);
     return;
   }
 
@@ -1044,9 +1179,13 @@ pipewireDumpSink (void *item, void *udata)
 {
   pwsink_t      *pwsink = item;
 
-  if (pwsink->ident != BDJ4_PWSINK) {
+  if (pwsink == NULL || pwsink->ident != BDJ4_PWSINK) {
     fprintf (stderr, "ERR: dump-sink: invalid struct %d(%d)\n", pwsink->ident, BDJ4_PWSINK);
     exit (1);
+  }
+
+  if (pwsink->available == false) {
+    return 0;
   }
 
   fprintf (stderr, "--   int-id: %d\n", pwsink->internalid);
