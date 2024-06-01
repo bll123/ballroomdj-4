@@ -59,9 +59,9 @@ slistSetSize (slist_t *list, listidx_t siz)
 }
 
 void
-slistCalcMaxWidth (slist_t *list)
+slistCalcMaxKeyWidth (slist_t *list)
 {
-  listCalcMaxWidth (LIST_KEY_STR, list);
+  listCalcMaxKeyWidth (LIST_KEY_STR, list);
 }
 
 void

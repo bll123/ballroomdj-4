@@ -4,7 +4,14 @@
 
 <!--
 
-**4.10.1 2024-5-22**
+**4.10.2 2024-5---**
+
+* Bug Fixes:
+    * Configuration: Update audio sink list on change of audio interface.
+* New Features:
+    * PENDING: Linux: Add native pipewire audio interface.
+* Internal:
+    * Code Cleanup.
 
 -->
 

@@ -78,10 +78,10 @@ if (NOT WIN32 AND NOT APPLE)
     libvolpa
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
   )
-#  install (TARGETS
-#    libvolpipewire
-#    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
-#  )
+  install (TARGETS
+    libvolpipewire
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
 endif()
 if (APPLE)
   install (TARGETS

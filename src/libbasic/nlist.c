@@ -56,6 +56,25 @@ nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
 }
 
 void
+nlistCalcMaxValueWidth (nlist_t *list)
+{
+  listCalcMaxValueWidth (LIST_KEY_NUM, list);
+}
+
+int
+nlistGetMaxValueWidth (nlist_t *list)
+{
+  int     value;
+
+  if (list == NULL) {
+    return 0;
+  }
+
+  value = listGetMaxValueWidth (LIST_KEY_NUM, list);
+  return value;
+}
+
+void
 nlistSort (nlist_t *list)
 {
   listSort (LIST_KEY_NUM, list);

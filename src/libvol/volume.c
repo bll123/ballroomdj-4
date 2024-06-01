@@ -69,13 +69,17 @@ volumeInit (const char *volpkg)
 void
 volumeFree (volume_t *volume)
 {
-  if (volume != NULL) {
-    volume->voliCleanup (&volume->udata);
-    if (volume->dlHandle != NULL) {
-      dylibClose (volume->dlHandle);
-    }
-    mdfree (volume);
+  if (volume == NULL) {
+    return;
   }
+
+  if (volume->voliCleanup != NULL) {
+    volume->voliCleanup (&(volume->udata));
+  }
+  if (volume->dlHandle != NULL) {
+    dylibClose (volume->dlHandle);
+  }
+  mdfree (volume);
 }
 
 bool
@@ -163,7 +167,6 @@ volumeCheckInterface (const char *volintfc)
   ilist_t     *interfaces;
   ilistidx_t  iteridx;
   const char  *intfc;
-  const char  *gintfc = NULL;
   const char  *dfltintfc = NULL;
   bool        found = false;
   char        *voli = NULL;
@@ -176,9 +179,7 @@ volumeCheckInterface (const char *volintfc)
     if (intfc == NULL) {
       continue;
     }
-    if (gintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
-      gintfc = intfc;
-    }
+    /* the null interface should not be set as the default */
     if (dfltintfc == NULL && strcmp (intfc, "libvolnull") != 0) {
       if (isLinux ()) {
         if (strcmp (intfc, "libvolpa") == 0 ||
@@ -195,13 +196,13 @@ volumeCheckInterface (const char *volintfc)
     }
   }
 
-  if (! found && gintfc != NULL) {
-    voli = mdstrdup (gintfc);
-  } else {
+  if (! found) {
     /* no matching volume interface was found or the vol interface is null */
     if (dfltintfc != NULL) {
       voli = mdstrdup (dfltintfc);
     }
+  } else {
+    voli = mdstrdup (intfc);
   }
   ilistFree (interfaces);
 

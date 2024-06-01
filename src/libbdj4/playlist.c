@@ -675,7 +675,7 @@ playlistGetPlaylistList (int flag, const char *dir)
   }
 
   slistSort (pnlist);
-  slistCalcMaxWidth (pnlist);
+  slistCalcMaxKeyWidth (pnlist);
   slistFree (filelist);
 
   return pnlist;

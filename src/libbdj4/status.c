@@ -64,17 +64,14 @@ statusAlloc (void)
   status->statusList = slistAlloc ("status-disp", LIST_UNORDERED, NULL);
   slistSetSize (status->statusList, ilistGetCount (status->status));
 
+  status->maxWidth = ilistGetMaxValueWidth (status->status, STATUS_STATUS);
+
   ilistStartIterator (status->status, &iteridx);
   while ((key = ilistIterateKey (status->status, &iteridx)) >= 0) {
     const char  *val;
-    int         len;
 
     val = ilistGetStr (status->status, key, STATUS_STATUS);
     slistSetNum (status->statusList, val, key);
-    len = istrlen (val);
-    if (len > status->maxWidth) {
-      status->maxWidth = len;
-    }
   }
 
   slistSort (status->statusList);

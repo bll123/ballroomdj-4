@@ -61,22 +61,18 @@ levelAlloc ()
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
 
-  level->maxWidth = 0;
   level->levelList = slistAlloc ("level-disp", LIST_UNORDERED, NULL);
   slistSetSize (level->levelList, ilistGetCount (level->level));
+
+  level->maxWidth = ilistGetMaxValueWidth (level->level, LEVEL_LEVEL);
 
   ilistStartIterator (level->level, &iteridx);
   while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
     const char  *val;
     ssize_t     nval;
-    int         len;
 
     val = ilistGetStr (level->level, key, LEVEL_LEVEL);
     slistSetNum (level->levelList, val, key);
-    len = istrlen (val);
-    if (len > level->maxWidth) {
-      level->maxWidth = len;
-    }
     nval = ilistGetNum (level->level, key, LEVEL_DEFAULT_FLAG);
     if (nval && val != NULL) {
       level->defaultName = mdstrdup (val);

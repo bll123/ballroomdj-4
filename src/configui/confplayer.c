@@ -19,6 +19,7 @@
 #include "configui.h"
 #include "log.h"
 #include "ilist.h"
+#include "istring.h"
 #include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
@@ -31,56 +32,22 @@
 
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
+static void confuiPlayerAudioSinkChg (void *udata);
+static void confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc);
 
 void
 confuiInitPlayer (confuigui_t *gui)
 {
-  volsinklist_t   sinklist;
-  volume_t        *volume = NULL;
-  nlist_t         *tlist = NULL;
-  nlist_t         *llist = NULL;
   char            *volintfc;
-  const char      *audiosink;
 
   volintfc = volumeCheckInterface (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   bdjoptSetStr (OPT_M_VOLUME_INTFC, volintfc);
-  mdfree (volintfc);
 
-  confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
+  confuiLoadVolIntfcList (gui);
+  confuiPlayerLoadSinkList (gui, volintfc);
 
-  volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
-  volumeInitSinkList (&sinklist);
-  volumeGetSinkList (volume, "", &sinklist);
-  if (! volumeHaveSinkList (volume)) {
-    pli_t     *pli;
-
-    pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
-        bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
-    pliAudioDeviceList (pli, &sinklist);
-    pliFree (pli);
-  }
-
-  tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, NULL);
-  /* CONTEXT: configuration: audio: The default audio sink (audio output) */
-  nlistSetStr (tlist, 0, _("Default"));
-  nlistSetStr (llist, 0, VOL_DEFAULT_NAME);
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
-  audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
-  for (int i = 0; i < sinklist.count; ++i) {
-    if (audiosink != NULL &&
-        strcmp (sinklist.sinklist [i].name, audiosink) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
-    }
-    nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
-    nlistSetStr (llist, i + 1, sinklist.sinklist [i].name);
-  }
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sbkeylist = llist;
-
-  volumeFreeSinkList (&sinklist);
-  volumeFree (volume);
+  dataFree (volintfc);
 }
 
 void
@@ -109,7 +76,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
   /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx, NULL);
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx,
+      confuiPlayerAudioSinkChg);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Output"),
@@ -162,3 +130,86 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   ilistFree (interfaces);
 }
 
+static void
+confuiPlayerAudioSinkChg (void *udata)
+{
+  confuigui_t *gui = udata;
+  int         nval;
+  const char  *sval;
+  nlist_t     *tlist;
+  nlist_t     *keylist;
+  size_t      maxWidth = 10;
+  int         widx;
+
+  if (gui == NULL) {
+    return;
+  }
+
+  widx = CONFUI_SPINBOX_VOL_INTFC;
+  if (gui->uiitem [widx].uiwidgetp == NULL) {
+    return;
+  }
+
+  nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+  sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
+  bdjoptSetStr (OPT_M_VOLUME_INTFC, sval);
+  confuiPlayerLoadSinkList (gui, sval);
+
+  widx = CONFUI_SPINBOX_AUDIO_OUTPUT;
+  if (gui->uiitem [widx].uiwidgetp == NULL) {
+    return;
+  }
+
+  tlist = gui->uiitem [widx].displist;
+  keylist = gui->uiitem [widx].sbkeylist;
+
+  nlistCalcMaxValueWidth (tlist);
+  maxWidth = nlistGetMaxValueWidth (tlist);
+
+  uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
+      nlistGetCount (tlist), maxWidth, tlist, keylist, NULL);
+}
+
+static void
+confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc)
+{
+  volsinklist_t   sinklist;
+  volume_t        *volume = NULL;
+  nlist_t         *tlist = NULL;
+  nlist_t         *llist = NULL;
+  const char      *audiosink;
+
+  volume = volumeInit (intfc);
+
+  volumeInitSinkList (&sinklist);
+  volumeGetSinkList (volume, "", &sinklist);
+  if (! volumeHaveSinkList (volume)) {
+    pli_t     *pli;
+
+    pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+        bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+    pliAudioDeviceList (pli, &sinklist);
+    pliFree (pli);
+  }
+
+  tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, NULL);
+  /* CONTEXT: configuration: audio: The default audio sink (audio output) */
+  nlistSetStr (tlist, 0, _("Default"));
+  nlistSetStr (llist, 0, VOL_DEFAULT_NAME);
+  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
+  audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
+  for (int i = 0; i < sinklist.count; ++i) {
+    if (audiosink != NULL &&
+        strcmp (sinklist.sinklist [i].name, audiosink) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
+    }
+    nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
+    nlistSetStr (llist, i + 1, sinklist.sinklist [i].name);
+  }
+  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sbkeylist = llist;
+
+  volumeFreeSinkList (&sinklist);
+  volumeFree (volume);
+}

@@ -65,11 +65,13 @@ dbusConnClose (dbus_t *dbus)
 {
   mdextfree (dbus->dconn);
   g_object_unref (dbus->dconn);
-  /* apparently, the data variant does not need to be unref'd */
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
     g_variant_unref (dbus->result);
   }
+
+  /* apparently, the data variant does not need to be unref'd */
+
   dbus->dconn = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
@@ -81,7 +83,6 @@ void
 dbusMessageInit (dbus_t *dbus)
 {
   dbus->data = g_variant_new_parsed ("()");
-  mdextalloc (dbus->data);
 }
 
 /* used in the cases where a value is wrapped as a variant (e.g. Rate) */
@@ -117,11 +118,9 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_start (args, sdata);
   if (dbus->data != NULL) {
     /* dbusMessageInit() should have been called */
-    mdextfree (dbus->data);
     g_variant_unref (dbus->data);
   }
   dbus->data = g_variant_new_va (sdata, NULL, &args);
-  mdextalloc (dbus->data);
 # if DBUS_DEBUG
   dumpResult ("data-va", dbus->data);
 # endif
@@ -137,11 +136,9 @@ dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
   va_start (args, sdata);
   if (dbus->data != NULL) {
     /* dbusMessageInit() should have been called */
-    mdextfree (dbus->data);
     g_variant_unref (dbus->data);
   }
   dbus->data = g_variant_new_parsed_va (sdata, &args);
-  mdextalloc (dbus->data);
 # if DBUS_DEBUG
   dumpResult ("data-parsed", dbus->data);
 # endif
