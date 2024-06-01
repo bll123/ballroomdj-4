@@ -10,6 +10,8 @@
     * Configuration: Update audio sink list on change of audio interface.
 * New Features:
     * PENDING: Linux: Add native pipewire audio interface.
+* Internal:
+    * Code Cleanup.
 
 -->
 

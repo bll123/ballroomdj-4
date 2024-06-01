@@ -24,7 +24,8 @@
  *       Route '{ index: <route-index>, device: <card-profile-device>, \
  *       props: { mute: false, channelVolumes: [ 0.5, 0.5 ] }, save: true }'
  *
- *  pipewire has their own pod, dict structures, json, standard c structures.
+ *  pipewire has their own pod, dict structures, json, standard c structures,
+ *    a real mess.
  *  very inconsistent and strange api.
  *  the api is too low-level, and much parsing has to be done here.
  *
@@ -53,8 +54,10 @@
 #include <spa/pod/builder.h>
 #include <spa/pod/parser.h>
 #include <spa/pod/filter.h>
-#include <spa/utils/json.h>
+#include <spa/utils/json.h>   //
+#include <spa/utils/json-pod.h>
 #include <spa/utils/result.h>
+// #include <spa/utils/type.h>
 #if BDJ4_PW_DEBUG
 # include <pipewire/log.h>
 # include <spa/utils/json-pod.h>
@@ -157,9 +160,9 @@ static int pipewireFindSinkByName (void *item, void *udata);
 static int pipewireFindSinkByID (void *item, void *udata);
 static int pipewireFindDevByID (void *item, void *udata);
 static void pipewireSetVolume (pwstate_t *pwstate, int vol);
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
 static int pipewireDumpSink (void *item, void *udata);
-# endif
+#endif
 
 static const struct pw_core_events core_events = {
   .version = PW_VERSION_CORE_EVENTS,
@@ -292,11 +295,11 @@ voliProcess (volaction_t action, const char *sinkname,
 
     *udata = pwstate;
 
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
     pw_thread_loop_lock (pwstate->pwloop);
     pw_map_for_each (&pwstate->pwsinklist, pipewireDumpSink, pwstate);
     pw_thread_loop_unlock (pwstate->pwloop);
-# endif
+#endif
   }
 
   if (action == VOL_GETSINKLIST) {
@@ -615,6 +618,7 @@ pipewireMetadataEvent (void *udata, uint32_t id,
     const char        *val;
     char              res [200];
 
+    /* is there another way to deal with this stuff? */
     res [0] = '\0';
     spa_json_init (&iter[0], value, strlen (value));
 
@@ -631,6 +635,7 @@ pipewireMetadataEvent (void *udata, uint32_t id,
     }
     if (pwstate->defsinkname == NULL || pwstate->changed) {
       dataFree (pwstate->defsinkname);
+fprintf (stderr, "res-orig: %s\n", res);
       pwstate->defsinkname = mdstrdup (res);
     }
   }
@@ -696,9 +701,9 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
   }
 
   spa_pod_parser_pod (&p, param);
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
   // spa_debug_pod (4, NULL, param); fflush (stdout);
-# endif
+#endif
 
   if (pd->type == BDJ4_PW_TYPE_DEVICE) {
     int                 routeidx = 0;
@@ -714,9 +719,9 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
       volume [i] = 0.0;
     }
 
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
     // spa_debug_pod (4, NULL, param); fflush (stdout);
-# endif
+#endif
     spa_pod_parser_get_object (&p,
         SPA_TYPE_OBJECT_ParamRoute, NULL,
         SPA_PARAM_ROUTE_index, SPA_POD_Int (&routeidx),
@@ -725,18 +730,18 @@ pipewireParamEvent (void *udata, int seq, uint32_t id,
     if (dir == SPA_DIRECTION_OUTPUT) {
       pwsink->routeidx = routeidx;
 
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
       // spa_debug_pod (6, NULL, props); fflush (stdout);
-# endif
+#endif
       spa_pod_parser_pod (&pp, props);
       spa_pod_parser_get_object (&pp,
           SPA_TYPE_OBJECT_Props, NULL,
           SPA_PROP_channelVolumes, SPA_POD_Pod (&vols),
           SPA_PROP_mute, SPA_POD_Bool (&mute));
 
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
       // spa_debug_pod (6, NULL, vols);
-# endif
+#endif
       nvol = spa_pod_copy_array (vols, SPA_TYPE_Float, volume, BDJ4_PW_MAX_CHAN);
 
       /* where is the cubic root documented? */
@@ -1123,6 +1128,8 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
  * set-params 49 Route
  *    '{ index: 3, device: 6, save: true, props: { channelVolumes: [ 0.125, 0.125 ], mute: false }}'
  *
+ * It is unknown what 'save' does, and whether it is needed (left out).
+ *
  * Object: size 160, type Spa:Pod:Object:Param:Route (262153), id Spa:Enum:ParamId:Route (13)
  *   Prop: key Spa:Pod:Object:Param:Route:index (1), flags 00000000
  *     Int 3
@@ -1148,7 +1155,7 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
           SPA_POD_Array (sizeof (float), SPA_TYPE_Float, pwsink->channels, vols),
       SPA_PROP_mute, SPA_POD_Bool (false),
       NULL);
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
   // spa_debug_pod (0, NULL, ppod); fflush (stdout);
 #endif
 
@@ -1157,7 +1164,6 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
       SPA_TYPE_OBJECT_ParamRoute, SPA_PARAM_Route,
       SPA_PARAM_ROUTE_index, SPA_POD_Int (pwsink->routeidx),
       SPA_PARAM_ROUTE_device, SPA_POD_Int (pwsink->routedevid),
-//      SPA_PARAM_ROUTE_save, SPA_POD_Bool (true),
       SPA_PARAM_ROUTE_props, SPA_POD_PodObject (ppod),
       NULL);
 #if BDJ4_PW_DEBUG
@@ -1172,7 +1178,7 @@ pipewireSetVolume (pwstate_t *pwstate, int vol)
 }
 
 
-# if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG
 
 static int
 pipewireDumpSink (void *item, void *udata)
@@ -1203,6 +1209,6 @@ pipewireDumpSink (void *item, void *udata)
   return 0;
 }
 
-# endif
+#endif /* BDJ4_PW_DEBUG */
 
 #endif /* _hdr_pipewire_pipewire - have pipewire header */
