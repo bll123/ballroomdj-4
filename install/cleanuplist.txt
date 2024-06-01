@@ -267,9 +267,10 @@ plocal/bin/postproc-56\.dll$
 plocal/bin/swscale-6\.dll$
 # 2023-8 windows msys2 library updates
 # 2023-11
-plocal/bin/libicudt7[23]\.dll$
-plocal/bin/libicuin7[23]\.dll$
-plocal/bin/libicuuc7[23]\.dll$
+# 2024-6-1
+plocal/bin/libicudt7[234]\.dll$
+plocal/bin/libicuin7[234]\.dll$
+plocal/bin/libicuuc7[234]\.dll$
 
 licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$

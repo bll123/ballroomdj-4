@@ -79,7 +79,7 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
-grep '^#define BDJ4_PW_DEBUG 0' src/libvo/volpipewire.c > /dev/null 2>&1
+grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "pipewire debugging is on"

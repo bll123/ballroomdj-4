@@ -4,16 +4,18 @@
 
 <!--
 
-**4.10.2 2024-5---**
+**4.10.3 2024-6---**
+
+-->
+
+**4.10.2 2024-6-1**
 
 * Bug Fixes:
     * Configuration: Update audio sink list on change of audio interface.
 * New Features:
-    * PENDING: Linux: Add native pipewire audio interface.
+    * Linux: Add native pipewire audio interface.
 * Internal:
     * Code Cleanup.
-
--->
 
 **4.10.1 2024-5-22**
 
@@ -884,4 +886,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-22 14:33:00; BDJ4 version 4.10.1)_
+<br>_(Updated 2024-06-01 10:50:10; BDJ4 version 4.10.2)_

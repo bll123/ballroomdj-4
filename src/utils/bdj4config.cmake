@@ -347,6 +347,8 @@ check_include_file (ws2tcpip.h _hdr_ws2tcpip)
 
 set (CMAKE_REQUIRED_INCLUDES ${PIPEWIRE_INCLUDE_DIRS})
 check_include_file (pipewire/pipewire.h _hdr_pipewire_pipewire)
+# the older version of pipewire does not have spa/utils/json-pod.h
+check_include_file (spa/utils/json-pod.h _hdr_spa_utils_jsonpod)
 set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${GST_INCLUDE_DIRS})

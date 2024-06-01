@@ -33,7 +33,7 @@
 
 #include "config.h"
 
-#if _hdr_pipewire_pipewire
+#if _hdr_pipewire_pipewire && _hdr_spa_utils_jsonpod
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -54,11 +54,10 @@
 #include <spa/pod/builder.h>
 #include <spa/pod/parser.h>
 #include <spa/pod/filter.h>
-#include <spa/utils/json.h>   //
-#include <spa/utils/json-pod.h>
+#include <spa/utils/json.h>
 #include <spa/utils/result.h>
-// #include <spa/utils/type.h>
 #if BDJ4_PW_DEBUG
+ // #include <spa/utils/type.h>
 # include <pipewire/log.h>
 # include <spa/utils/json-pod.h>
 # include <spa/debug/pod.h>
