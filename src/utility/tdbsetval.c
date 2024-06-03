@@ -57,6 +57,7 @@ main (int argc, char *argv [])
     { "tdbsetval",    no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
     { "wait",         no_argument,      NULL,   0, },
+    { "vlc",          required_argument, NULL,   0, },
     { "nodetach",     no_argument,      NULL,   0, },
     { "verbose",      no_argument,      NULL,   'V', },
     { "origcwd",      required_argument,  NULL,   0 },

@@ -19,6 +19,8 @@
 #include "vlci.h"
 #include "volsink.h"
 
+#define VLCLOGGING 1
+
 typedef struct plidata {
   char              *name;
   vlcdata_t         *vlcdata;
@@ -44,7 +46,7 @@ static char *vlcDefaultOptions [] = {
       "--no-metadata-network-access",
 /* VLC logging options */
 /* turn off SILENCE_LOG in vlci.c also */
-#if 0
+#if VLCLOGGING
       "-vv",
       "--file-logging",
       "--logfile", "vlc-log.txt",

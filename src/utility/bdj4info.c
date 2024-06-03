@@ -32,6 +32,8 @@
 
 const char *envitems [] = {
   "DESKTOP_SESSION",
+  "DYLD_FALLBACK_LIBRARY_PATH",
+  "G_FILENAME_ENCODING",
   "GDK_SCALE",
   "GTK_CSD",
   "GTK_THEME",
@@ -46,6 +48,7 @@ const char *envitems [] = {
   "USER",
   "USERNAME",
   "USERPROFILE",
+  "VLC_PLUGIN_PATH",
   "XDG_CACHE_HOME",
   "XDG_CONFIG_HOME",
   "XDG_CURRENT_DESKTOP",

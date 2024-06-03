@@ -81,6 +81,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "nostart",        no_argument,        NULL,   'n' },
     { "nomarquee",      no_argument,        NULL,   'm' },
     { "nodetach",       no_argument,        NULL,   'N' },
+    { "vlc",            required_argument,  NULL,   0 },
     { "wait",           no_argument,        NULL,   'w' },
     /* starter */
     { "datatopdir",     required_argument,  NULL,   't' },

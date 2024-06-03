@@ -58,6 +58,7 @@ main (int argc, char *argv [])
     { "debug",        required_argument,  NULL,   'd' },
     { "debugself",    no_argument,      NULL,   0 },
     { "wait",         no_argument,      NULL,   0, },
+    { "vlc",          required_argument, NULL,   0, },
     { "nodetach",     no_argument,      NULL,   0, },
     { "origcwd",      required_argument,  NULL,   0 },
     { "ignoremissing",no_argument,      NULL,   'I', },

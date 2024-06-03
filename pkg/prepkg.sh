@@ -44,6 +44,8 @@ pkgnmgetdata
 # make sure the tmp dir exists
 test -d tmp || mkdir tmp
 
+grc=0
+
 maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
   sed -e 's,.* ,,')
 min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |
@@ -56,62 +58,83 @@ if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
     ! -f plocal/bin/libmp4tag.dll &&
     ! -f plocal/lib/libmp4tag.${LIBMP4TAGVER}.dylib ]]; then
   echo "libmp4tag is not up to date"
-  exit 1
+  grc=1
 fi
 grep "LIBMP4TAG_VERS_REVISION ${rev}" plocal/include/libmp4tag.h > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "libmp4tag is not up to date"
-  exit 1
+  grc=1
 fi
 
 grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "audioid debugging is on"
-  exit 1
+  grc=1
 fi
 
 grep '^#define DBUS_DEBUG 0' src/libpli/dbusi.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "dbus debugging is on"
-  exit 1
+  grc=1
 fi
 
 grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "pipewire debugging is on"
-  exit 1
+  grc=1
 fi
 
 grep '^#define BDJ4_DYLIB_DEBUG 0' src/libdylib/dyintfc.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "dylib debugging is on"
-  exit 1
+  grc=1
+fi
+
+grep '^#define VLCDEBUG 0' src/libpli/vlci.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "vlci debugging is on"
+  grc=1
+fi
+
+grep '^#define SILENCE_LOG 1' src/libpli/vlci.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "vlci silence-log is off"
+  grc=1
+fi
+
+grep '^#define VLCLOGGING 0' src/libpli/plivlc.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "plivlc logging is on"
+  grc=1
 fi
 
 grep 'ACRCLOUD_REUSE = 0,' src/libaudioid/acrcloud.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "acrcloud debugging is on"
-  exit 1
+  grc=1
 fi
 
 grep 'ACOUSTID_REUSE = 0,' src/libaudioid/acoustid.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "acoustid debugging is on"
-  exit 1
+  grc=1
 fi
 
 grep 'MUSICBRAINZ_REUSE = 0,' src/libaudioid/musicbrainz.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "musicbrainz debugging is on"
-  exit 1
+  grc=1
 fi
 
 for f in automatic.pldances standardrounds.pldances QueueDance.pldances dances.txt; do
@@ -119,9 +142,13 @@ for f in automatic.pldances standardrounds.pldances QueueDance.pldances dances.t
   b=$(grep '^# version' templates/en_US/$f)
   if [[ $a != $b ]]; then
     echo "version mismatch $f"
-    exit 1
+    grc=1
   fi
 done
+
+if [[ $grc == 1 ]]; then
+  exit 1
+fi
 
 echo "-- $(date +%T) copying licenses"
 licdir=licenses

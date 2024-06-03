@@ -112,8 +112,8 @@ main (int argc, char * argv[])
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
-    { "wait",           no_argument,        NULL,   'w' },
     { "vlc",            required_argument,  NULL,   'V' },
+    { "wait",           no_argument,        NULL,   'w' },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
     { "compact",        no_argument,        NULL,   0 },
@@ -465,10 +465,18 @@ main (int argc, char * argv[])
   }
 
   if (isMacOS ()) {
-    osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
-        "/Applications/VLC.app/Contents/MacOS/lib/");
-    osSetEnv ("VLC_PLUGIN_PATH",
-        "/Applications/VLC.app/Contents/MacOS/plugins");
+    if (strcmp (vlctag, "VLC") == 0) {
+      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
+          "/Applications/VLC.app/Contents/MacOS/lib/");
+      osSetEnv ("VLC_PLUGIN_PATH",
+          "/Applications/VLC.app/Contents/MacOS/plugins");
+    } else {
+      /* temporary for development */
+      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
+          "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks");
+      osSetEnv ("VLC_PLUGIN_PATH",
+          "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks/plugins");
+    }
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 

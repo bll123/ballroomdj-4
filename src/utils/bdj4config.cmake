@@ -85,7 +85,12 @@ if (NOT WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-set (LIBVLC4_FOUND TRUE)
+# temporary for development
+if (APPLE AND NOT LIBVLC4_FOUND)
+  set (LIBVLC4_INCLUDE_DIR "/Volumes/Users/bll/Applications/VLC4.app/Contents/MacOS/include")
+  set (LIBVLC4_LIBRARY "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+  set (LIBVLC4_FOUND TRUE)
+endif()
 
 # windows will not find any vlc include files in the vlc dir
 # as the standard package does not include the sdk.
