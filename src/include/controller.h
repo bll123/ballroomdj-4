@@ -5,6 +5,10 @@
 #ifndef INC_CONTROLLER_H
 #define INC_CONTROLLER_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "ilist.h"
 
@@ -49,5 +53,9 @@ void contiSetCallback (contdata_t *contdata, callback_t *cb);
 void contiSetPlayState (contdata_t *contdata, int state);
 void contiSetRepeatState (contdata_t *contdata, bool state);
 void contiSetPosition (contdata_t *contdata, double pos);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_CONTROLLER_H */

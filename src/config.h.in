@@ -4,6 +4,10 @@
 #ifndef INC_CONFIG_H
 #define INC_CONFIG_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #cmakedefine SHLIB_EXT "${SHLIB_EXT}"
 
 #cmakedefine BDJ4_VERSION ${BDJ4_VERSION}
@@ -153,5 +157,9 @@
 #cmakedefine01 _typ_SOCKET
 #cmakedefine01 _typ_socklen_t
 #cmakedefine01 _typ_suseconds_t
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_CONFIG_H */

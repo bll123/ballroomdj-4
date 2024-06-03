@@ -14,18 +14,25 @@ target_link_libraries (libbdj4cont PRIVATE
   ${CMAKE_DL_LIBS}
 )
 
-add_library (libcontmpris SHARED mprisi.c)
-target_link_libraries (libcontmpris PRIVATE
-  libbdj4common
-  objdbusi
-  ${GIO_LDFLAGS}
-)
+if (NOT WIN32 AND NOT APPLE)
+  add_library (libcontmpris SHARED mprisi.c)
+  target_link_libraries (libcontmpris PRIVATE
+    libbdj4common
+    objdbusi
+    ${GIO_LDFLAGS}
+  )
+endif()
 
 install (TARGETS
   libbdj4cont
-  libcontmpris
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+if (NOT WIN32 AND NOT APPLE)
+  install (TARGETS
+    libcontmpris
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
+
 updateRPath (libbdj4cont)
-updateRPath (libcontmpris)
