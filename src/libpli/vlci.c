@@ -8,12 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#if _hdr_stdatomic
-# include <stdatomic.h>
-#endif
-#if defined(__STDC_NO_ATOMICS__)
-# define _Atomic(type) type
-#endif
 #include <string.h>
 #include <inttypes.h>
 #include <memory.h>
@@ -40,7 +34,7 @@ typedef struct vlcdata {
   char                    version [40];
   libvlc_media_t          *media;
   libvlc_media_player_t   *mp;
-  _Atomic(libvlc_state_t) state;
+  libvlc_state_t          state;
   int                     argc;
   char                    **argv;
   char                    *device;
@@ -76,7 +70,6 @@ static const char *stateToStr (libvlc_state_t state); /* for debugging */
 # endif /* VLCDEBUG */
 
 static bool vlcHaveAudioDevList (void);
-static void vlcEventHandler (const struct libvlc_event_t *event, void *);
 static void vlcReleaseMedia (vlcdata_t *vlcdata);
 static void vlcSetAudioOutput (vlcdata_t *vlcdata);
 static void vlcCreateNewMediaPlayer (vlcdata_t *vlcdata);
@@ -105,6 +98,8 @@ vlcGetDuration (vlcdata_t *vlcdata)
     return -1;
   }
 
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+
   tm = libvlc_media_player_get_length (vlcdata->mp);
   vlclog (vlcdata, "get-dur: %zd\n", tm);
   return tm;
@@ -118,6 +113,8 @@ vlcGetTime (vlcdata_t *vlcdata)
   if (vlcdata == NULL || vlcdata->inst == NULL || vlcdata->mp == NULL) {
     return -1;
   }
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 
   tm = libvlc_media_player_get_time (vlcdata->mp);
   vlclog (vlcdata, "get-tm: %zd\n", tm);
@@ -140,6 +137,8 @@ vlcStop (vlcdata_t *vlcdata)
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
   libvlc_media_player_pause (vlcdata->mp);
 #endif
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
   return 0;
 }
 
@@ -151,6 +150,8 @@ vlcPause (vlcdata_t *vlcdata)
   if (vlcdata == NULL || vlcdata->inst == NULL || vlcdata->mp == NULL) {
     return -1;
   }
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 
   vlclog (vlcdata, "pause state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
   rc = 1;
@@ -171,6 +172,8 @@ vlcPlay (vlcdata_t *vlcdata)
     return -1;
   }
 
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+
   vlclog (vlcdata, "play\n");
   libvlc_media_player_play (vlcdata->mp);
   return 0;
@@ -187,6 +190,8 @@ vlcSeek (vlcdata_t *vlcdata, ssize_t pos)
     return -1;
   }
 
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+
   vlclog (vlcdata, "seek\n");
   if ((vlcdata->state == libvlc_Playing ||
       vlcdata->state == libvlc_Paused) &&
@@ -198,6 +203,9 @@ vlcSeek (vlcdata_t *vlcdata, ssize_t pos)
   dpos = libvlc_media_player_get_position (vlcdata->mp);
   newpos = (ssize_t) round (dpos * (double) dur);
   vlclog (vlcdata, "vlci: seek: dpos: %.6f new-pos: %.6f new-pos: %" PRId64 "\n", dpos, pos, newpos);
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+
   return newpos;
 }
 
@@ -209,6 +217,8 @@ vlcRate (vlcdata_t *vlcdata, double drate)
   if (vlcdata == NULL || vlcdata->inst == NULL || vlcdata->mp == NULL) {
     return -1;
   }
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 
   vlclog (vlcdata, "rate\n");
   if (vlcdata->state == libvlc_Playing) {
@@ -254,6 +264,8 @@ vlcState (vlcdata_t *vlcdata)
     return state;
   }
 
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+
   switch ((int) vlcdata->state) {
     case libvlc_NothingSpecial: { state = PLI_STATE_IDLE; break; }
     case libvlc_Opening: { state = PLI_STATE_OPENING; break; }
@@ -274,8 +286,6 @@ vlcState (vlcdata_t *vlcdata)
 int
 vlcMedia (vlcdata_t *vlcdata, const char *fn)
 {
-  libvlc_event_manager_t  *em;
-
   if (vlcdata == NULL || vlcdata->inst == NULL) {
     return -1;
   }
@@ -313,27 +323,9 @@ vlcMedia (vlcdata_t *vlcdata, const char *fn)
   libvlc_media_player_set_rate (vlcdata->mp, 1.0);
   libvlc_media_player_set_media (vlcdata->mp, vlcdata->media);
 
-  em = libvlc_media_event_manager (vlcdata->media);
-#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-  libvlc_event_attach (em, libvlc_MediaStateChanged,
-      &vlcEventHandler, vlcdata);
-#endif
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-  libvlc_event_attach (em, libvlc_MediaPlayerNothingSpecial,
-      &vlcEventHandler, vlcdata);
-  libvlc_event_attach (em, libvlc_MediaPlayerOpening,
-      &vlcEventHandler, vlcdata);
-  libvlc_event_attach (em, libvlc_MediaPlayerBuffering,
-      &vlcEventHandler, vlcdata);
-  libvlc_event_attach (em, libvlc_MediaPlayerPlaying,
-      &vlcEventHandler, vlcdata);
-  libvlc_event_attach (em, libvlc_MediaPlayerPaused,
-      &vlcEventHandler, vlcdata);
-  libvlc_event_attach (em, libvlc_MediaPlayerStopped,
-      &vlcEventHandler, vlcdata);
-#endif
-
   vlcSetAudioOutput (vlcdata);
+
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 
   return 0;
 }
@@ -446,59 +438,6 @@ vlcRelease (vlcdata_t *vlcdata)
   vlcClose (vlcdata);
 }
 
-/* event handlers */
-
-static void
-vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
-{
-  vlcdata_t     *vlcdata = (vlcdata_t *) userdata;
-
-  switch (event->type) {
-#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-    case libvlc_MediaStateChanged: {
-      libvlc_state_t    state;
-
-      state = (libvlc_state_t) event->u.media_state_changed.new_state;
-      vlclog (vlcdata, "event: state-chg %d/%s\n", state, stateToStr (state));
-      vlcdata->state = (libvlc_state_t) state;
-      break;
-    }
-#endif
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-    case libvlc_MediaPlayerNothingSpecial: {
-      vlclog (vlcdata, "event: state: nil\n");
-      vlcdata->state = libvlc_NothingSpecial;
-      break;
-    }
-    case libvlc_MediaPlayerOpening: {
-      vlclog (vlcdata, "event: state: opening\n");
-      vlcdata->state = libvlc_Opening;
-      break;
-    }
-    case libvlc_MediaPlayerBuffering: {
-      vlclog (vlcdata, "event: state: buffering\n");
-      vlcdata->state = libvlc_Buffering;
-      break;
-    }
-    case libvlc_MediaPlayerPlaying: {
-      vlclog (vlcdata, "event: state: playing\n");
-      vlcdata->state = libvlc_Playing;
-      break;
-    }
-    case libvlc_MediaPlayerPaused: {
-      vlclog (vlcdata, "event: state: paused\n");
-      vlcdata->state = libvlc_Paused;
-      break;
-    }
-    case libvlc_MediaPlayerStopped: {
-      vlclog (vlcdata, "event: state: stopped\n");
-      vlcdata->state = libvlc_Stopped;
-      break;
-    }
-#endif
-  }
-}
-
 /* internal routines */
 
 static bool
@@ -517,28 +456,11 @@ vlcHaveAudioDevList (void)
 static void
 vlcReleaseMedia (vlcdata_t *vlcdata)
 {
-  libvlc_event_manager_t  *em;
+  if (vlcdata == NULL) {
+    return;
+  }
 
   if (vlcdata->media != NULL) {
-    em = libvlc_media_event_manager (vlcdata->media);
-#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-    libvlc_event_detach (em, libvlc_MediaStateChanged,
-        &vlcEventHandler, vlcdata);
-#endif
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-    libvlc_event_detach (em, libvlc_MediaPlayerNothingSpecial,
-        &vlcEventHandler, vlcdata);
-    libvlc_event_detach (em, libvlc_MediaPlayerOpening,
-        &vlcEventHandler, vlcdata);
-    libvlc_event_detach (em, libvlc_MediaPlayerBuffering,
-        &vlcEventHandler, vlcdata);
-    libvlc_event_detach (em, libvlc_MediaPlayerPlaying,
-        &vlcEventHandler, vlcdata);
-    libvlc_event_detach (em, libvlc_MediaPlayerPaused,
-        &vlcEventHandler, vlcdata);
-    libvlc_event_detach (em, libvlc_MediaPlayerStopped,
-        &vlcEventHandler, vlcdata);
-#endif
     mdextfree (vlcdata->media);
     libvlc_media_release (vlcdata->media);
     vlcdata->media = NULL;
@@ -605,6 +527,7 @@ vlcSetPosition (vlcdata_t *vlcdata, double dpos)
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
   libvlc_media_player_set_position (vlcdata->mp, fpos, false);
 #endif
+  vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 }
 
 /* tests if the interface was linked with the correct libvlc version */
