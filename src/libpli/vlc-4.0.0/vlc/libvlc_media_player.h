@@ -151,7 +151,7 @@ typedef enum libvlc_position_t {
  * Enumeration of values used to set the video fitting inside the display area.
  */
 typedef enum libvlc_video_fit_mode_t {
-    libvlc_video_fit_none,    /**< Explicit zoom set by \ref libvlc_video_set_scale */
+    libvlc_video_fit_none = 0,    /**< Explicit zoom set by \ref libvlc_video_set_scale */
     libvlc_video_fit_smaller, /**< Fit inside / to smallest display dimension */
     libvlc_video_fit_larger,  /**< Fit outside / to largest display dimension */
     libvlc_video_fit_width,   /**< Fit to display width */
@@ -1227,16 +1227,33 @@ LIBVLC_API libvlc_time_t libvlc_media_player_get_length( libvlc_media_player_t *
 LIBVLC_API libvlc_time_t libvlc_media_player_get_time( libvlc_media_player_t *p_mi );
 
 /**
- * Set the movie time (in ms). This has no effect if no media is being played.
+ * Set the movie time (in ms).
+ *
+ * This has no effect if no media is being played.
  * Not all formats and protocols support this.
  *
  * \param p_mi the Media Player
- * \param b_fast prefer fast seeking or precise seeking
  * \param i_time the movie time (in ms).
+ * \param b_fast prefer fast seeking or precise seeking
  * \return 0 on success, -1 on error
  */
 LIBVLC_API int libvlc_media_player_set_time( libvlc_media_player_t *p_mi,
                                              libvlc_time_t i_time, bool b_fast );
+
+/**
+ * Jump the movie time (in ms).
+ *
+ * This will trigger a precise and relative seek (from the current time).
+ * This has no effect if no media is being played.
+ * Not all formats and protocols support this.
+ *
+ * \param p_mi the Media Player
+ * \param i_time the movie time (in ms).
+ * \return 0 on success, -1 on error
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API int libvlc_media_player_jump_time( libvlc_media_player_t *p_mi,
+                                              libvlc_time_t i_time );
 
 /**
  * Get movie position as percentage between 0.0 and 1.0.
@@ -1895,6 +1912,8 @@ LIBVLC_API void libvlc_video_set_aspect_ratio( libvlc_media_player_t *p_mi, cons
 /**
  * Get current video display fit mode.
  *
+ * \version LibVLC 4.0.0 or later
+ *
  * \param p_mi the media player
  * \return the video display fit mode.
  */
@@ -1902,6 +1921,8 @@ LIBVLC_API libvlc_video_fit_mode_t libvlc_video_get_display_fit( libvlc_media_pl
 
 /**
  * Set new video display fit.
+ *
+ * \version LibVLC 4.0.0 or later
  *
  * \param p_mi the media player
  * \param fit new display fit mode
@@ -2148,6 +2169,25 @@ LIBVLC_API int libvlc_video_get_teletext( libvlc_media_player_t *p_mi );
  * \ref libvlc_teletext_key_t. 100 is the default teletext page.
  */
 LIBVLC_API void libvlc_video_set_teletext( libvlc_media_player_t *p_mi, int i_page );
+
+/**
+ * Set teletext background transparency.
+ *
+ * \param p_mi the media player
+ * \param transparent whether background should be transparent.
+ * \version LibVLC 4.0.0 or later
+ */
+LIBVLC_API void libvlc_video_set_teletext_transparency( libvlc_media_player_t *p_mi, bool transparent );
+
+/**
+ * Get teletext background transparency.
+ *
+ * \param p_mi the media player
+ * \retval true teletext has transparent background
+ * \retval false teletext has opaque background
+ * \version LibVLC 4.0.0 or later
+ */
+LIBVLC_API bool libvlc_video_get_teletext_transparency( libvlc_media_player_t *p_mi );
 
 /**
  * Take a snapshot of the current video window.

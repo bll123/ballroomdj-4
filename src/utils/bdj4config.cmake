@@ -76,6 +76,7 @@ pkg_check_modules (XML2 libxml-2.0)
 
 # pkg_check_modules (LIBVLC libvlc)
 
+# will need to determine whether both vlc3 and vlc4 are installed
 if (NOT LIBVLC_FOUND)
   find_package (LIBVLC)
 endif()
@@ -83,11 +84,27 @@ if (NOT WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC_LIBRARY "-lvlc")
   set (LIBVLC_FOUND TRUE)
 endif()
+
 # windows will not find any vlc include files in the vlc dir
+# as the standard package does not include the sdk.
+# The include files are found in the .7z package.
+# for the purposes of development,
+#   VLC 3 is installed into Program Files/VideoLAN/VLC3
+#   and VLC 4 is installed into Program Files/VideoLAN/VLC4
 if (WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.18")
-  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
   set (LIBVLC_FOUND TRUE)
+  set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+  set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+  set (LIBVLC4_FOUND TRUE)
+endif()
+
+if (LIBVLC_FOUND)
+  set (BDJ4_VLC3 T)
+endif()
+if (LIBVLC4_FOUND)
+  set (BDJ4_VLC4 T)
 endif()
 
 #### MPV
@@ -362,6 +379,9 @@ set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
+set (CMAKE_REQUIRED_INCLUDES ${LIBVLC4_INCLUDE_DIR})
+check_include_file (vlc/vlc.h _hdr_vlc_vlc)
+set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${LIBMPV_INCLUDE_DIRS})
 check_include_file (mpv/client.h _hdr_mpv_client)
@@ -496,6 +516,10 @@ check_function_exists (timegm _lib_timegm)
 check_function_exists (uname _lib_uname)
 
 set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LIBRARY})
+check_function_exists (libvlc_new _lib_libvlc_new)
+check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
+set (CMAKE_REQUIRED_LIBRARIES "")
+set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC4_LIBRARY})
 check_function_exists (libvlc_new _lib_libvlc_new)
 check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
 set (CMAKE_REQUIRED_LIBRARIES "")

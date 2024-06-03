@@ -21,7 +21,7 @@
 
 typedef struct plidata {
   char              *name;
-  vlcData_t         *vlcdata;
+  vlcdata_t         *vlcdata;
   ssize_t           duration;
   ssize_t           playTime;
   plistate_t        state;
@@ -60,13 +60,20 @@ static void pliiWaitUntilPlaying (plidata_t *pliData);
 void
 pliiDesc (char **ret, int max)
 {
-  int         c = 0;
+  int   c = 0;
+  int   vers;
 
   if (max < 2) {
     return;
   }
 
-  ret [c++] = "Integrated VLC";
+  vers = vlcVersionCheck ();
+  if (vers == 4) {
+    ret [c++] = "Integrated VLC 4";
+  }
+  if (vers == 3) {
+    ret [c++] = "Integrated VLC";
+  }
   ret [c++] = NULL;
 }
 
