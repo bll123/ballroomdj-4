@@ -14,26 +14,37 @@ Notes
 
 Linux
 
+  # step a1)
   # bdj4-src-VERSION.tar.gz
   tar xf bdj4-src-4*.tar.gz
+
+  # step a2)
   # bdj4-VERSION
   cd bdj4-4*
   cd src
+
+  # step a3)
   # tested
-  #   debian 2023-10-29
+  #   debian 2024-5-18
   #   opensuse 2023-10-30
   #   fedora 2023-10-30 broken 2023-12 not working for me after an os update.
   #   arch 2023-10-30
   # the pre-build script only needs to be run once.
   # check the release notes in the README.txt file for updates.
   ../install/linux-pre-build.sh
+
+  # step a4)
   # build-all only needs to be run when the dependent packages are updated
   # not every time.
   ../pkg/build-all.sh
-  make distclean
+
+  # step a5)
   # for opensuse
   #   use: make CC=gcc-13 CXX=g++-13
+  make distclean
   make
+
+  # step a6)
   ../pkg/mkpkg.sh
   cd ..
   ls bdj4-install-l*
@@ -41,21 +52,34 @@ Linux
 
 MacOS
 
+  # step a1)
   # bdj4-src-VERSION.tar.gz
   tar xf bdj4-src-4*.tar.gz
+
+  # step a2)
   # bdj4-src-macos-VERSION.tar.gz
   tar xf bdj4-src-macos.tar.gz
+
+  # step a3)
   # bdj4-VERSION
   cd bdj4-4*
   cd src
+
+  # step a4)
   # the pre-build script only needs to be run once.
   # check the release notes in the README.txt file for updates.
   ../install/macos-pre-build.sh
+
+  # step a5)
   # build-all only needs to be run when the dependent packages are updated
   # not every time.
   ../pkg/build-all.sh
+
+  # step a6)
   make distclean
   make
+
+  # step a7)
   ../pkg/mkpkg.sh
   cd ..
   ./install/macos-run-installer.sh
@@ -69,25 +93,49 @@ Windows
 
   B)
 
+  # step b1)
+  Select the 'start' button, then start 'MSYS2 UCRT64' (yellow-brown icon).
+
+  # step b2)
+  # install unzip
   pacman -S --noconfirm --needed unzip
+
+  # step b3)
   # bdj4-src-VERSION.zip
   unzip -q bdj4-src-4*.zip
-  # bdj4-src-win64-VERSION.tar.gz
-  unzip -q bdj4-src-win64.zip
+
+  # step b4)
+  # bdj4-src-win64-DATE.zip
+  unzip -q bdj4-src-win64-*.zip
+
+  # step b5)
   # bdj4-VERSION
   cd bdj4-4*
   cd src
+
+  # step b6)
   # the pre-build script only needs to be run once.
   # thereafter, a "pacman -Syu" can be done to update the packages.
+  # if MSys2 closes the terminal, re-open the terminal (step b1), then
+  # start with step b5) again.
   ../install/win-pre-build.sh
+
+  # step b7)
   # build-all only needs to be run when the dependent packages are updated
   # not every time.
   ../pkg/build-all.sh
+
+  # step b8)
   make distclean
   make
+
+  # step b9)
   ../pkg/mkpkg.sh
+
+  # step b10)
   # open a cmd.exe window
   cd \msys64\home\USER
+  cd bdj4-4*
   # bdj4-installer-win64-VERSION.exe
-  .\bdj4-installer-win*
+  .\bdj4-installer-win64*
 

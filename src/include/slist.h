@@ -20,7 +20,7 @@ void      slistSetVersion (slist_t *list, int version);
 int       slistGetVersion (slist_t *list);
 slistidx_t slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, slistidx_t);
-void      slistCalcMaxWidth (slist_t *list);
+void      slistCalcMaxKeyWidth (slist_t *list);
 int       slistGetMaxKeyWidth (slist_t *);
 void      slistSort (slist_t *);
 /* set routines */

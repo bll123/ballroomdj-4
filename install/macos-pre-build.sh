@@ -2,7 +2,7 @@
 #
 # Copyright 2023-2024 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -30,20 +30,17 @@ fi
 
 cwd=$(pwd)
 
-LOG=/tmp/bdj4-pre-build.log
-> $LOG
-
 bdir=$(dirname $0)
-${bdir}/macos-pre-install.sh
+${bdir}/macos-pre-install-macports.sh
 
 sudo -v
 
-sudo port uninstall gtk3 >> $LOG
-sudo port install -N gtk3-devel +quartz >> $LOG
+sudo port uninstall -f gtk3
+sudo port -N install gtk3-devel +quartz
+sudo port -N install cmake check
 
 sudo -k
 
-echo "** Pre-build log is located at: $LOG"
 echo "Press enter to finish."
 read answer
 exit $rc

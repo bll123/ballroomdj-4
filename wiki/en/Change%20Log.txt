@@ -4,12 +4,26 @@
 
 <!--
 
-**4.10.1 2024-5---**
-
-* Internal:
-    * Open source dependencies updated to latest.
+**4.10.3 2024-6---**
 
 -->
+
+**4.10.2 2024-6-1**
+
+* Bug Fixes:
+    * Configuration: Update audio sink list on change of audio interface.
+* New Features:
+    * Linux: Add native pipewire audio interface.
+* Internal:
+    * Code Cleanup.
+
+**4.10.1 2024-5-22**
+
+* Bug Fixes:
+    * Auto Song Selection: Fix same-song processing.
+    * MacOS: Fix incorrect data path handling.
+* Internal:
+    * Open source dependencies updated to latest version.
 
 **4.10.0 2024-5-4**
 
@@ -124,8 +138,8 @@
     * Conversion: Minor fixes.
     * Marquee: Possible fix for blank song information display.
     * Playlist Management: Fix default value for tag weight.
-    * Song Selection: Better same-song marks handling.
-    * Song Selection: Re-work, fix all issues.
+    * Auto Song Selection: Better same-song marks handling.
+    * Auto Song Selection: Re-work, fix all issues.
     * Fix some memory leaks.
 * Changes:
     * Quick Edit: Add 'Favorite' to the dialog.
@@ -143,11 +157,11 @@
     * Audio Identification: Fix match listing display.
     * Auto Organize: Be less restrictive for allowed characters in audio filenames.
     * Playlist Management: Fix save; reset; allowed keywords.
-    * Song Selection: Fix incorrect weighting for dance rating and dance level.
+    * Auto Song Selection: Fix incorrect weighting for dance rating and dance level.
     * Starter: Fixed incorrect profile folder creation.
 * New Features:
     * Linux: MPRIS player support.
-    * Song Selection / Playlist Management: Tag selection with weight.
+    * Auto Song Selection / Playlist Management: Tag selection with weight.
 * Internal:
     * Code cleanup.
     * Fix various memory leaks and memory issues.
@@ -611,7 +625,7 @@
     * Song Selection: Shift-click is now working.
 * Bug Fixes:
     * Song Selection: Fix control-click.
-    * Song Selection: Fix 'Date Added' filter.
+    * Auto Song Selection: Fix 'Date Added' filter.
 * Changes:
     * Song Editor: Changed Control-A to Control-Shift-A.
     * Automatic Playlists: Dance selection values adjusted.
@@ -872,4 +886,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-04 11:53:45; BDJ4 version 4.10.0)_
+<br>_(Updated 2024-06-01 10:50:10; BDJ4 version 4.10.2)_

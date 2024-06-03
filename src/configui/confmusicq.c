@@ -47,7 +47,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcont_t    *szgrp;
   uiwcont_t    *szgrpB;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIMusicQs");
+  logProcBegin ();
 
   gui->inbuild = true;
 
@@ -137,7 +137,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIMusicQs", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -216,7 +216,7 @@ confuiMusicQChg (void *udata)
   int         nselidx;
   int         widx;
 
-  logProcBegin (LOG_PROC, "confuiMusicQChg");
+  logProcBegin ();
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -273,7 +273,7 @@ confuiMusicQChg (void *udata)
   confuiMusicQActiveChg (gui);
   confuiMusicQUpdateState (gui, nselidx);
 
-  logProcEnd (LOG_PROC, "confuiMusicQChg", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -319,9 +319,6 @@ confuiUpdateMusicQList (confuigui_t *gui)
 {
   nlist_t     *tlist;
   int         widx;
-  nlistidx_t  iteridx;
-  nlistidx_t  key;
-  const char  *val;
   size_t      maxWidth = 10;
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
@@ -331,14 +328,8 @@ confuiUpdateMusicQList (confuigui_t *gui)
 
   tlist = gui->uiitem [widx].displist;
 
-  nlistStartIterator (tlist, &iteridx);
-  while ((key = nlistIterateKey (tlist, &iteridx)) >= 0) {
-    size_t      len;
-
-    val = nlistGetStr (tlist, key);
-    len = istrlen (val);
-    maxWidth = len > maxWidth ? len : maxWidth;
-  }
+  nlistCalcMaxValueWidth (tlist);
+  maxWidth = nlistGetMaxValueWidth (tlist);
 
   uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
       nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);

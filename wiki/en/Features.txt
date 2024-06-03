@@ -4,11 +4,11 @@
 
 * Supported Platforms as of 2023-3-16
     * Windows 10, Windows 11
-    [Install / Installating on Windows](en-Install-Windows)
+    [Install / Installing on Windows](en-Install-Windows)
     * MacOS Big Sur, Monterey, Ventura, Sonoma
-    [Install / Installating on MacOS](en-Install-MacOS)
+    [Install / Installing on MacOS](en-Install-MacOS)
     * Linux (Only OpenSUSE and Debian are packaged, other Linux must be built from source)
-    [Install / Installating on Linux](en-Install-Linux)
+    [Install / Installing on Linux](en-Install-Linux)
 * Free and open source software.
 * Full unicode support, supports all languages.
 * No limitation on the number of audio files.
@@ -125,4 +125,4 @@
   [Subjects / Profiles](en-Subjects-Profiles)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-28 05:30:07; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-05-19 11:40:18; BDJ4 version 4.10.0)_

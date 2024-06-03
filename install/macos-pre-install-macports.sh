@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=19
+ver=20
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -22,6 +22,9 @@ function getresponse {
   esac
   echo $answer
 }
+
+MPCHKTXT=mpchk.txt
+MPVERS=macports_version
 
 if [[ $(uname -s) != Darwin ]]; then
   echo "Not running on MacOS"
@@ -58,61 +61,48 @@ if [[ $rc -ne 0 ]]; then
   exit 0
 fi
 
-# not sure if there's a way to determine the latest python version
-# this needs to be fixed.
-
-# When macports transitions to a new version of python, the builds and
-# dependencies can be unstable.  Be conservative about changing this.
-# The versions of python listed in oldpyverlist will be uninstalled.
-oldpyverlist="39 310 311"
-pyver=312
-
 skipmpinst=F
-#  when adding a new version, be sure to update the 'too-new' regex.    ###
+oldmacos=F
+
 case $vers in
-  1[56789]*)
-    mp_os_nm=$vers
-    mp_os_vers=$vers
-    echo "This script has no knowledge of this version of MacOS (too new)."
-    echo "If macports is already installed, the script can continue."
-    echo "Continue? "
-    gr=$(getresponse)
-    if [[ $gr != Y ]]; then
-      exit 1
-    fi
-    skipmpinst=T
-    ;;
-  14*)
-    mp_os_nm=Sonoma
-    mp_os_vers=14
-    ;;
-  13*)
-    mp_os_nm=Ventura
-    mp_os_vers=13
-    ;;
-  12*)
-    mp_os_nm=Monterey
-    mp_os_vers=12
-    ;;
-  11*)
-    mp_os_nm=BigSur
-    mp_os_vers=11
-    ;;
-  10.15*)
-    mp_os_nm=Catalina
-    mp_os_vers=10.15
-    ;;
-  10.14*)
-    mp_os_nm=Mojave
-    mp_os_vers=10.14
+  10.*)
+    # in version 10, the macos release name changes
+    # were based on the second value.
+    mp_os_vers=$(echo $vers | sed 's,^10\.\([0-9]*\).*,10.\1,')
     ;;
   *)
-    echo "BallroomDJ 4 cannot be installed on this version of MacOS."
-    echo "This version of MacOS is too old."
-    echo "MacOS Mojave and later are supported."
-    exit 1
+    mp_os_vers=$(echo $vers | sed 's,\..*,,')
     ;;
 esac
+
+case $mp_os_vers in
+  [2345][0-9])
+    # future use
+    ;;
+  1[1-9])
+    # 11: big sur, 12: monterey, 13: ventura, 14: sonoma
+    # and future use
+    ;;
+  10.15)
+    # catalina
+    oldmacos=T
+    ;;
+  10.14)
+    # mojave
+    oldmacos=T
+    ;;
+  *)
+    oldmacos=T
+    ;;
+esac
+
+if [[ $oldmacos == T ]]; then
+  echo "BallroomDJ 4 cannot be installed on this version of MacOS."
+  echo "This version of MacOS is too old."
+  echo "MacOS Big Sur and later are supported."
+  echo "Contact BDJ4 support."
+  exit 1
+fi
 
 if [[ $skipmpinst == F ]]; then
   mp_installed=F
@@ -134,18 +124,41 @@ if [[ $skipmpinst == F ]]; then
   fi
 
   if [[ $mp_installed == F ]]; then
-    url=https://github.com/macports/macports-base/releases
-    # find the current version
-    mp_tag=$(curl --include --head --silent \
-      ${url}/latest |
-      grep '^.ocation:' |
-      sed -e 's,.*/,,' -e 's,\r$,,')
-    mp_vers=$(echo ${mp_tag} | sed -e 's,^v,,')
+    # grab the latest version number
+    rsync -q rsync://rsync.macports.org/release/base/config/${MPVERS} .
+    if [[ -f ${MPVERS} ]]; then
+      mp_vers=$(cat ${MPVERS})
+      rm -f ${MPVERS}
+    else
+      echo "Unable to connect to macports.org"
+      exit 1
+    fi
 
-    url=https://github.com/macports/macports-base/releases/download
+    # the chk.txt file is a messy way to locate the macports name,
+    # but it works.
+    baseurl=https://github.com/macports/macports-base/releases/download
+    url=${baseurl}/v${mp_vers}/MacPorts-${mp_vers}.chk.txt
+    curl -L --silent --output ${MPCHKTXT} ${url}
+    if [[ ! -f ${MPCHKTXT} ]]; then
+      echo "Unable to connect to macports.org"
+      exit 1
+    fi
+
+    while read line ; do
+      case ${line} in
+        *MacPorts-${mp_vers}-${mp_os_vers}-*.pkg*)
+          mp_os_nm=$(echo $line |
+              sed -e "s,.*MacPorts-${mp_vers}-${mp_os_vers}-,," \
+              -e 's,\.pkg.*,,')
+          break
+          ;;
+      esac
+    done < ${MPCHKTXT}
+    test -f ${MPCHKTXT} && rm -f ${MPCHKTXT}
+
     pkgnm=MacPorts-${mp_vers}-${mp_os_vers}-${mp_os_nm}.pkg
     echo "-- Downloading MacPorts"
-    curl -JOL ${url}/${mp_tag}/${pkgnm}
+    curl --silent -JOL ${baseurl}/v${mp_vers}/${pkgnm}
     echo "-- Installing MacPorts using sudo"
     sudo installer -pkg ${pkgnm} -target /Applications
     rm -f ${pkgnm}
@@ -207,19 +220,16 @@ sudo port -N install \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11 -rav1e \
     chromaprint
+
 sudo -v
 
 echo "-- Cleaning up old MacPorts files"
 
 sudo port -N uninstall \
     taglib \
-    py${pyver}-mutagen
-
-sudo -v
-
-for opyver in $oldpyverlist; do
-  sudo port uninstall -N --follow-dependents python${opyver}
-done
+    py310-mutagen \
+    py311-mutagen \
+    py312-mutagen
 
 sudo -v
 

@@ -41,6 +41,9 @@ fi
 . src/utils/pkgnm.sh
 pkgnmgetdata
 
+# make sure the tmp dir exists
+test -d tmp || mkdir tmp
+
 maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
   sed -e 's,.* ,,')
 min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |
@@ -73,6 +76,13 @@ grep '^#define DBUS_DEBUG 0' src/libpli/dbusi.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "dbus debugging is on"
+  exit 1
+fi
+
+grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "pipewire debugging is on"
   exit 1
 fi
 

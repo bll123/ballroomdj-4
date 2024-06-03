@@ -44,7 +44,7 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
 {
   uiwcont_t   *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
+  logProcBegin ();
   uiwidgetp = uiCreateLabel (txt);
   uiWidgetSetAllMargins (uiwidgetp, 0);
   uiWidgetExpandHoriz (boxp);
@@ -54,7 +54,7 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
   uinbutilIDAdd (gui->nbtabid, id);
   uiwcontFree (uiwidgetp);
 
-  logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");
+  logProcEnd ("");
 }
 
 void
@@ -70,22 +70,22 @@ confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 {
   uiwcont_t  *hbox;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemEntry");
+  logProcBegin ();
   hbox = uiCreateHorizBox ();
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, indent, CONFUI_NO_EXPAND);
   uiBoxPackStart (boxp, hbox);
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemEntry", "");
+  logProcEnd ("");
 }
 
 void
 confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
-  logProcBegin (LOG_PROC, "confuiMakeItemEntryEncrypt");
+  logProcBegin ();
   confuiMakeItemEntry (gui, boxp, szgrp, txt, widx, bdjoptIdx, disp, indent);
   gui->uiitem [widx].basetype = CONFUI_ENTRY_ENCRYPT;
-  logProcEnd (LOG_PROC, "confuiMakeItemEntryEncrypt", "");
+  logProcEnd ("");
 }
 
 void
@@ -96,7 +96,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
+  logProcBegin ();
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
@@ -112,7 +112,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 
   uiBoxPackStart (boxp, hbox);
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
+  logProcEnd ("");
 }
 
 void
@@ -123,7 +123,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemCombobox");
+  logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_COMBOBOX;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
 
@@ -145,7 +145,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uibutton = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
+  logProcEnd ("");
 }
 
 void
@@ -155,7 +155,7 @@ confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp = NULL;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemLink");
+  logProcBegin ();
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
   uiwidgetp = uiCreateLink (disp, NULL);
@@ -169,7 +169,7 @@ confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
+  logProcEnd ("");
 }
 
 void
@@ -179,7 +179,7 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
+  logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_FONT;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   hbox = uiCreateHorizBox ();
@@ -193,7 +193,7 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
+  logProcEnd ("");
 }
 
 void
@@ -203,7 +203,7 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemColorButton");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_COLOR;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
@@ -219,7 +219,7 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
+  logProcEnd ("");
 }
 
 void
@@ -233,7 +233,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   nlist_t     *keylist;
   size_t      maxWidth;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxText");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
   gui->uiitem [widx].outtype = outtype;
@@ -247,19 +247,10 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     keylist = NULL;
   }
   maxWidth = 0;
+
   if (list != NULL) {
-    nlistidx_t    iteridx;
-    nlistidx_t    key;
-    const char    *val;
-
-    nlistStartIterator (list, &iteridx);
-    while ((key = nlistIterateKey (list, &iteridx)) >= 0) {
-      size_t      len;
-
-      val = nlistGetStr (list, key);
-      len = istrlen (val);
-      maxWidth = len > maxWidth ? len : maxWidth;
-    }
+    nlistCalcMaxValueWidth (list);
+    maxWidth = nlistGetMaxValueWidth (list);
   }
 
   uiSpinboxTextSet (uiwidgetp, 0,
@@ -281,7 +272,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
         gui->uiitem [widx].callback);
   }
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
+  logProcEnd ("");
 }
 
 void
@@ -292,7 +283,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxTime");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -326,7 +317,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxTime", "");
+  logProcEnd ("");
 }
 
 void
@@ -337,7 +328,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxNum");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -361,7 +352,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxNum", "");
+  logProcEnd ("");
 }
 
 void
@@ -372,7 +363,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
   gui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
@@ -390,7 +381,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
+  logProcEnd ("");
 }
 
 void
@@ -400,7 +391,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SWITCH;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
@@ -421,7 +412,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   }
 
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
+  logProcEnd ("");
 }
 
 void
@@ -431,7 +422,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemLabelDisp");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_NONE;
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
@@ -444,7 +435,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
-  logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
+  logProcEnd ("");
 }
 
 void
@@ -453,7 +444,7 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 {
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemCheckButton");
+  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
@@ -462,7 +453,7 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiBoxPackStart (boxp, uiwidgetp);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
+  logProcEnd ("");
 }
 
 void
@@ -472,7 +463,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   char        ntxt [200];
   const char  *ttxt;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemLabel");
+  logProcBegin ();
   ttxt = txt;
   if (indent == CONFUI_INDENT) {
     *ntxt = '\0';
@@ -498,7 +489,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
     uiBoxPackStart (boxp, uiwidgetp);
     uiwcontFree (uiwidgetp);
   }
-  logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
+  logProcEnd ("");
 }
 
 void
@@ -596,7 +587,7 @@ confuiValMSCallback (void *udata, const char *txt)
   char        tbuff [200];
   long        val;
 
-  logProcBegin (LOG_PROC, "confuiValMSCallback");
+  logProcBegin ();
 
   uiLabelSetText (gui->statusMsg, "");
   valstr = validate (txt, VAL_MIN_SEC);
@@ -607,7 +598,7 @@ confuiValMSCallback (void *udata, const char *txt)
   }
 
   val = tmutilStrToMS (txt);
-  logProcEnd (LOG_PROC, "confuiValMSCallback", "");
+  logProcEnd ("");
   return val;
 }
 
@@ -619,7 +610,7 @@ confuiValHMCallback (void *udata, const char *txt)
   char        tbuff [200];
   long        val;
 
-  logProcBegin (LOG_PROC, "confuiValHMCallback");
+  logProcBegin ();
 
   uiLabelSetText (gui->statusMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN);
@@ -630,7 +621,7 @@ confuiValHMCallback (void *udata, const char *txt)
   }
 
   val = tmutilStrToHM (txt);
-  logProcEnd (LOG_PROC, "confuiValHMCallback", "");
+  logProcEnd ("");
   return val;
 }
 
@@ -642,7 +633,7 @@ confuiValHMSCallback (void *udata, const char *txt)
   char        tbuff [200];
   long        val;
 
-  logProcBegin (LOG_PROC, "confuiValHMSCallback");
+  logProcBegin ();
 
   uiLabelSetText (gui->statusMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN_SEC);
@@ -653,7 +644,7 @@ confuiValHMSCallback (void *udata, const char *txt)
   }
 
   val = tmutilStrToMS (txt);
-  logProcEnd (LOG_PROC, "confuiValHMSCallback", "");
+  logProcEnd ("");
   return val;
 }
 

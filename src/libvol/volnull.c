@@ -64,6 +64,7 @@ voliCleanup (void **udata)
   if (udata == NULL || *udata == NULL) {
     return;
   }
+
   volnull = *udata;
   mdfree (volnull);
   mdfree (gsinklist.sinklist);
@@ -93,7 +94,10 @@ voliProcess (volaction_t action, const char *sinkname,
     for (int i = 0; i < MAX_SINKS; ++i) {
       gsinklist.sinklist [i].defaultFlag = 0;
       gsinklist.sinklist [i].idxNumber = i;
-      gsinklist.sinklist [i].nmlen = strlen (sinklist->sinklist [i].name);
+      gsinklist.sinklist [i].nmlen = 0;
+      if (gsinklist.sinklist [i].name != NULL) {
+        gsinklist.sinklist [i].nmlen = strlen (gsinklist.sinklist [i].name);
+      }
     }
     ginit = true;
   }
@@ -102,7 +106,8 @@ voliProcess (volaction_t action, const char *sinkname,
     if (gsinklist.sinklist [i].defaultFlag) {
       defsink = i;
     }
-    if (strcmp (gsinklist.sinklist [i].name, sinkname) == 0) {
+    if (sinkname != NULL &&
+        strcmp (gsinklist.sinklist [i].name, sinkname) == 0) {
       usersink = i;
       break;
     }
@@ -129,7 +134,7 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_HAVE_SINK_LIST) {
-    return true;
+    return 0;
   }
 
   if (action == VOL_CHK_SINK) {

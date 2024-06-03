@@ -262,7 +262,7 @@ main (int argc, char *argv[])
   dbupdate.startflags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &dbupdate.musicdb,
       "dbup", ROUTE_DBUPDATE, &dbupdate.startflags);
-  logProcBegin (LOG_PROC, "dbupdate");
+  logProcBegin ();
 
   dbupdate.autoorg = bdjoptGetNum (OPT_G_AUTOORGANIZE);
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
@@ -344,7 +344,7 @@ main (int argc, char *argv[])
   connFree (dbupdate.conn);
   progstateFree (dbupdate.progstate);
 
-  logProcEnd (LOG_PROC, "dbupdate", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -843,7 +843,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
   dbupdate_t    *dbupdate = tdbupdate;
   bool          rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "dbupdateConnectingCallback");
+  logProcBegin ();
 
   connProcessUnconnected (dbupdate->conn);
 
@@ -859,7 +859,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "dbupdateConnectingCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -869,7 +869,7 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
   dbupdate_t    *dbupdate = tdbupdate;
   bool          rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "dbupdateHandshakeCallback");
+  logProcBegin ();
 
   connProcessUnconnected (dbupdate->conn);
 
@@ -884,7 +884,7 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_WAIT_FINISH, NULL);
   }
 
-  logProcEnd (LOG_PROC, "dbupdateHandshakeCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -893,11 +893,11 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
 
-  logProcBegin (LOG_PROC, "dbupdateStoppingCallback");
+  logProcBegin ();
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, PROCUTIL_NORM_TERM);
   connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
-  logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -916,7 +916,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
 
-  logProcBegin (LOG_PROC, "dbupdateClosingCallback");
+  logProcBegin ();
 
   bdj4shutdown (ROUTE_DBUPDATE, dbupdate->musicdb);
   dbClose (dbupdate->newmusicdb);
@@ -932,7 +932,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   audiosrcCleanIterator (dbupdate->asiter);
   queueFree (dbupdate->tagdataq);
 
-  logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 

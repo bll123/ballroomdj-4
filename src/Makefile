@@ -155,9 +155,12 @@ checktag:
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
+# testoption could be:
+#   --pligst
+#   --volpipewire
 .PHONY: testsuite
 testsuite:
-	./utils/mktestsetup.sh --force
+	./utils/mktestsetup.sh --force $(testoption)
 	(cd ..;./bin/bdj4 --testsuite)
 
 .PHONY: testsuitemprisvlc
@@ -169,11 +172,6 @@ testsuitemprisvlc:
 	(cd ..;./bin/bdj4 --testsuite); \
 	kill $${pid}; \
 	true
-
-.PHONY: testsuitegst
-testsuitegst:
-	./utils/mktestsetup.sh --force --pligst
-	(cd ..;./bin/bdj4 --testsuite)
 
 .PHONY: testsection
 testsection:

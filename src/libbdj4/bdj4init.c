@@ -357,7 +357,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       logStartAppend (lockName (route), tag, loglevel);
     }
   }
-  logProcBegin (LOG_PROC, "bdj4startup");
+  logProcBegin ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
   if (route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
@@ -390,7 +390,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
 
   bdj4argCleanup (bdj4arg);
-  logProcEnd (LOG_PROC, "bdj4startup", "");
+  logProcEnd ("");
   return loglevel;
 }
 
@@ -415,7 +415,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
 {
   mstime_t       mt;
 
-  logProcBegin (LOG_PROC, "bdj4shutdown");
+  logProcBegin ();
 
   if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
     char    tbuff [MAXPATHLEN];
@@ -439,6 +439,6 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   if (route != ROUTE_NONE) {
     lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   }
-  logProcEnd (LOG_PROC, "bdj4shutdown", "");
+  logProcEnd ("");
 }
 

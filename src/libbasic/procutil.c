@@ -68,7 +68,7 @@ procutilExists (procutil_t *process)
   if (GetExitCodeProcess (hProcess, &exitCode)) {
     logMsg (LOG_DBG, LOG_PROCESS, "found: %ld", exitCode);
     /* return 0 if the process is still active */
-    logProcEnd (LOG_PROC, "procutilExists", "ok");
+    logProcEnd ("ok");
     if (! process->hasHandle) {
       CloseHandle (hProcess);
     }
@@ -79,7 +79,7 @@ procutilExists (procutil_t *process)
   if (! process->hasHandle) {
     CloseHandle (hProcess);
   }
-  logProcEnd (LOG_PROC, "procutilExists", "");
+  logProcEnd ("");
   return -1;
 #endif
 }
@@ -101,7 +101,7 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
   process->hasHandle = false;
   process->started = false;
 
-  logProcBegin (LOG_PROC, "procutilStart");
+  logProcBegin ();
   snprintf (sprof, sizeof (sprof), "%d", profile);
   snprintf (sloglvl, sizeof (sloglvl), "%d", loglvl);
 
@@ -135,7 +135,7 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
     process->hasHandle = true;
   }
 
-  logProcEnd (LOG_PROC, "procutilStart", "");
+  logProcEnd ("");
   process->started = true;
   return process;
 }
@@ -143,13 +143,13 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
 void
 procutilFreeAll (procutil_t *processes [ROUTE_MAX])
 {
-  logProcBegin (LOG_PROC, "procutilFreeAll");
+  logProcBegin ();
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (processes [i] != NULL) {
       procutilFreeRoute (processes, i);
     }
   }
-  logProcEnd (LOG_PROC, "procutilFreeAll", "");
+  logProcEnd ("");
 }
 
 void
@@ -190,7 +190,7 @@ procutilKill (procutil_t *process, bool force)
 #if _lib_TerminateProcess
   HANDLE hProcess = process->processHandle;
 
-  logProcBegin (LOG_PROC, "processKill");
+  logProcBegin ();
   if (! process->hasHandle) {
     /* need PROCESS_TERMINATE */
     hProcess = procutilGetProcessHandle (process->pid, PROCESS_TERMINATE);
@@ -199,12 +199,12 @@ procutilKill (procutil_t *process, bool force)
   if (hProcess != NULL) {
     if (TerminateProcess (hProcess, 0)) {
       logMsg (LOG_DBG, LOG_PROCESS, "terminated");
-      logProcEnd (LOG_PROC, "processKill", "ran-terminate");
+      logProcEnd ("ran-terminate");
       return 0;
     }
   }
 
-  logProcEnd (LOG_PROC, "procutilKill", "fail");
+  logProcEnd ("fail");
   return -1;
 #endif
 }
@@ -229,7 +229,7 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
   procutil_t *process = NULL;
 
 
-  logProcBegin (LOG_PROC, "procutilStartProcess");
+  logProcBegin ();
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
@@ -249,7 +249,7 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
         (int64_t) process->pid);
     process->started = true;
   }
-  logProcEnd (LOG_PROC, "procutilStartProcess", "");
+  logProcEnd ("");
 
   return process;
 }
@@ -257,29 +257,29 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
 void
 procutilStopAllProcess (procutil_t *processes [ROUTE_MAX], conn_t *conn, bool force)
 {
-  logProcBegin (LOG_PROC, "procutilStopAllProcess");
+  logProcBegin ();
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (processes [i] != NULL) {
       procutilStopProcess (processes [i], conn, i, force);
     }
   }
-  logProcEnd (LOG_PROC, "procutilStopAllProcess", "");
+  logProcEnd ("");
 }
 
 void
 procutilStopProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route, bool force)
 {
-  logProcBegin (LOG_PROC, "procutilStopProcess");
+  logProcBegin ();
 
   if (process == NULL) {
-    logProcEnd (LOG_PROC, "procutilStopProcess", "null");
+    logProcEnd ("null");
     return;
   }
 
   if (force == PROCUTIL_NORM_TERM) {
     if (! process->started) {
-      logProcEnd (LOG_PROC, "procutilStopProcess", "not-started");
+      logProcEnd ("not-started");
       return;
     }
     connSendMessage (conn, route, MSG_EXIT_REQUEST, NULL);
@@ -288,25 +288,25 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
   if (force == PROCUTIL_FORCE_TERM) {
     procutilForceStop (process, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX, route);
   }
-  logProcEnd (LOG_PROC, "procutilStopProcess", "");
+  logProcEnd ("");
 }
 
 void
 procutilCloseProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route)
 {
-  logProcBegin (LOG_PROC, "procutilCloseProcess");
+  logProcBegin ();
   if (process == NULL) {
-    logProcEnd (LOG_PROC, "procutilCloseProcess", "null");
+    logProcEnd ("null");
     return;
   }
 
   if (! process->started) {
-    logProcEnd (LOG_PROC, "procutilCloseProcess", "not-started");
+    logProcEnd ("not-started");
     return;
   }
   process->started = false;
-  logProcEnd (LOG_PROC, "procutilCloseProcess", "");
+  logProcEnd ("");
 }
 
 void
@@ -345,11 +345,11 @@ procutilGetProcessHandle (pid_t pid, DWORD procaccess)
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-      logProcEnd (LOG_PROC, "openprocess", "fail-a");
+      logProcEnd ("fail-a");
       return NULL;
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-    logProcEnd (LOG_PROC, "openprocess", "fail-b");
+    logProcEnd ("fail-b");
     return NULL;
   }
 

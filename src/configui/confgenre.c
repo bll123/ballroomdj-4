@@ -34,7 +34,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   /* edit genres */
@@ -56,7 +56,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   confuiCreateGenreTable (gui);
   uiwcontFree (hbox);
   uiwcontFree (vbox);
-  logProcEnd (LOG_PROC, "confuiBuildUIEditGenres", "");
+  logProcEnd ("");
 }
 
 void
@@ -67,7 +67,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   genre_t           *genres;
   uiwcont_t         *uitree;
 
-  logProcBegin (LOG_PROC, "confuiCreateGenreTable");
+  logProcBegin ();
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
@@ -119,7 +119,7 @@ confuiCreateGenreTable (confuigui_t *gui)
       TREE_COL_TYPE_TEXT, CONFUI_GENRE_COL_SB_PAD,
       TREE_COL_TYPE_END);
 
-  logProcEnd (LOG_PROC, "confuiCreateGenreTable", "");
+  logProcEnd ("");
 }
 
 
@@ -130,7 +130,7 @@ confuiGenreListCreate (void *udata)
   char        *genredisp;
   int         clflag;
 
-  logProcBegin (LOG_PROC, "confuiGenreListCreate");
+  logProcBegin ();
   genredisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_GENRES].uitree,
       CONFUI_GENRE_COL_GENRE);
   clflag = uiTreeViewGetValue (gui->tables [CONFUI_ID_GENRES].uitree,
@@ -141,7 +141,7 @@ confuiGenreListCreate (void *udata)
       gui->tables [CONFUI_ID_GENRES].saveidx, GENRE_CLASSICAL_FLAG, clflag);
   gui->tables [CONFUI_ID_GENRES].saveidx += 1;
   dataFree (genredisp);
-  logProcEnd (LOG_PROC, "confuiGenreListCreate", "");
+  logProcEnd ("");
   return UI_FOREACH_CONT;
 }
 
@@ -150,10 +150,9 @@ confuiGenreSave (confuigui_t *gui)
 {
   genre_t    *genres;
 
-  logProcBegin (LOG_PROC, "confuiGenreSave");
+  logProcBegin ();
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   genreSave (genres, gui->tables [CONFUI_ID_GENRES].savelist);
   ilistFree (gui->tables [CONFUI_ID_GENRES].savelist);
-  logProcEnd (LOG_PROC, "confuiGenreSave", "");
+  logProcEnd ("");
 }
-

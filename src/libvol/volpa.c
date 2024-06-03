@@ -100,13 +100,18 @@ voliDisconnect (void)
 void
 voliCleanup (void **udata)
 {
-  if (udata != NULL && *udata != NULL) {
-    pa_track_data_t *trackdata = *udata;
+  pa_track_data_t *trackdata;
 
-    dataFree (trackdata->defaultsink);
-    dataFree (trackdata);
-    *udata = NULL;
+  if (udata == NULL || *udata == NULL) {
+    return;
   }
+
+  trackdata = *udata;
+
+  dataFree (trackdata->defaultsink);
+  dataFree (trackdata);
+  *udata = NULL;
+
   return;
 }
 

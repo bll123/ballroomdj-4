@@ -36,7 +36,7 @@ confuiPopulateOptions (confuigui_t *gui)
   confuiouttype_t outtype;
   long        debug = 0;
 
-  logProcBegin (LOG_PROC, "confuiPopulateOptions");
+  logProcBegin ();
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     int     musicq = 0;
@@ -300,5 +300,5 @@ confuiPopulateOptions (confuigui_t *gui)
   confuiDispSaveTable (gui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
-  logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
+  logProcEnd ("");
 }

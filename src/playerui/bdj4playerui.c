@@ -329,7 +329,7 @@ main (int argc, char *argv[])
   plui.dbgflags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &plui.musicdb,
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
-  logProcBegin (LOG_PROC, "playerui");
+  logProcBegin ();
 
   plui.songdb = songdbAlloc (plui.musicdb);
 
@@ -393,7 +393,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
   connFree (plui.conn);
   progstateFree (plui.progstate);
-  logProcEnd (LOG_PROC, "playerui", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -410,7 +410,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   playerui_t    * plui = udata;
   int           x, y, ws;
 
-  logProcBegin (LOG_PROC, "pluiStoppingCallback");
+  logProcBegin ();
   if (! plui->marqueeoff &&
       connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connIsConnected (plui->conn, ROUTE_MARQUEE)) {
@@ -428,7 +428,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnectAll (plui->conn);
 
-  logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -447,7 +447,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 {
   playerui_t    *plui = udata;
 
-  logProcBegin (LOG_PROC, "pluiClosingCallback");
+  logProcBegin ();
 
   uiCloseWindow (plui->wcont [PLUI_W_WINDOW]);
   uiCleanup ();
@@ -486,7 +486,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   controllerFree (plui->controller);
 
-  logProcEnd (LOG_PROC, "pluiClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -506,7 +506,7 @@ pluiBuildUI (playerui_t *plui)
   void        *tempp;
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "pluiBuildUI");
+  logProcBegin ();
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
@@ -534,7 +534,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
-  uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 2);
+  uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 4);
 
   plui->wcont [PLUI_W_KEY_HNDLR] = uiKeyAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
@@ -775,7 +775,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcontFree (menu);
   uiwcontFree (menubar);
 
-  logProcEnd (LOG_PROC, "pluiBuildUI", "");
+  logProcEnd ("");
 }
 
 static void
@@ -923,7 +923,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
   playerui_t   *plui = udata;
   bool        rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "pluiConnectingCallback");
+  logProcBegin ();
 
   if (! connIsConnected (plui->conn, ROUTE_STARTERUI)) {
     connConnect (plui->conn, ROUTE_STARTERUI);
@@ -946,7 +946,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "pluiConnectingCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -956,7 +956,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   playerui_t    *plui = udata;
   bool          rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "pluiHandshakeCallback");
+  logProcBegin ();
 
   if (! connIsConnected (plui->conn, ROUTE_MAIN)) {
     connConnect (plui->conn, ROUTE_MAIN);
@@ -1011,7 +1011,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "pluiHandshakeCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -1051,7 +1051,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   playerui_t  *plui = udata;
   char        *targs = NULL;
 
-  logProcBegin (LOG_PROC, "pluiProcessMsg");
+  logProcBegin ();
 
   if (args != NULL) {
     targs = mdstrdup (args);
@@ -1242,7 +1242,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  logProcEnd (LOG_PROC, "pluiProcessMsg", "");
+  logProcEnd ("");
   return gKillReceived;
 }
 
@@ -1252,16 +1252,16 @@ pluiCloseWin (void *udata)
 {
   playerui_t   *plui = udata;
 
-  logProcBegin (LOG_PROC, "pluiCloseWin");
+  logProcBegin ();
   if (progstateCurrState (plui->progstate) <= STATE_RUNNING) {
     plui->stopping = true;
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    logProcEnd (LOG_PROC, "pluiCloseWin", "not-done");
+    logProcEnd ("not-done");
     return UICB_STOP;
   }
 
-  logProcEnd (LOG_PROC, "pluiCloseWin", "");
+  logProcEnd ("");
   return UICB_STOP;
 }
 
@@ -1305,10 +1305,10 @@ pluiSwitchPage (void *udata, long pagenum)
   playerui_t  *plui = udata;
   int         tabid;
 
-  logProcBegin (LOG_PROC, "pluiSwitchPage");
+  logProcBegin ();
 
   if (! plui->uibuilt) {
-    logProcEnd (LOG_PROC, "pluiSwitchPage", "no-ui");
+    logProcEnd ("no-ui");
     return UICB_STOP;
   }
 
@@ -1337,7 +1337,7 @@ pluiSwitchPage (void *udata, long pagenum)
   }
 
   pluiPlaybackButtonHideShow (plui, pagenum);
-  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1361,9 +1361,9 @@ pluiProcessSetPlaybackQueue (void *udata)
 {
   playerui_t      *plui = udata;
 
-  logProcBegin (LOG_PROC, "pluiProcessSetPlaybackQueue");
+  logProcBegin ();
   pluiSetPlaybackQueue (plui, plui->musicqManageIdx, PLUI_UPDATE_MAIN);
-  logProcEnd (LOG_PROC, "pluiProcessSetPlaybackQueue", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1372,7 +1372,7 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
 {
   char            tbuff [40];
 
-  logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
+  logProcBegin ();
 
   plui->musicqPlayIdx = newQueue;
 
@@ -1396,7 +1396,7 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
   }
-  logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1428,7 +1428,7 @@ pluiToggleExtraQueues (void *udata)
   playerui_t      *plui = udata;
   listnum_t       val;
 
-  logProcBegin (LOG_PROC, "pluiToggleExtraQueues");
+  logProcBegin ();
   val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
   val = ! val;
   nlistSetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES, val);
@@ -1444,7 +1444,7 @@ pluiToggleExtraQueues (void *udata)
     uimusicqSetRequestLabel (plui->uimusicq,
         bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, plui->musicqManageIdx));
   }
-  logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1456,9 +1456,9 @@ pluiSetExtraQueues (playerui_t *plui)
   bool            show;
   bool            resetcurr = false;
 
-  logProcBegin (LOG_PROC, "pluiSetExtraQueues");
+  logProcBegin ();
   if (! plui->uibuilt) {
-    logProcEnd (LOG_PROC, "pluiSetExtraQueues", "no-notebook");
+    logProcEnd ("no-notebook");
     return;
   }
 
@@ -1478,7 +1478,7 @@ pluiSetExtraQueues (playerui_t *plui)
   }
 
   pluiPlaybackButtonHideShow (plui, plui->currpage);
-  logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -1487,12 +1487,12 @@ pluiToggleSwitchQueue (void *udata)
   playerui_t      *plui = udata;
   listnum_t       val;
 
-  logProcBegin (LOG_PROC, "pluiToggleSwitchQueue");
+  logProcBegin ();
   val = nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY);
   val = ! val;
   nlistSetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, val);
   pluiSetSwitchQueue (plui);
-  logProcEnd (LOG_PROC, "pluiToggleSwitchQueue", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1501,11 +1501,11 @@ pluiSetSwitchQueue (playerui_t *plui)
 {
   char  tbuff [40];
 
-  logProcBegin (LOG_PROC, "pluiSetSwitchQueue");
+  logProcBegin ();
   snprintf (tbuff, sizeof (tbuff), "%" PRId64,
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
-  logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -1518,7 +1518,7 @@ pluiMarqueeFontSizeDialog (void *udata)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "pluiMarqueeFontSizeDialog");
+  logProcBegin ();
   plui->mqfontsizeactive = true;
 
   if (! plui->fontszdialogcreated) {
@@ -1534,7 +1534,7 @@ pluiMarqueeFontSizeDialog (void *udata)
   uiSpinboxSetValue (plui->wcont [PLUI_W_MQ_SZ], (double) sz);
   uiDialogShow (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG]);
 
-  logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1545,7 +1545,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
+  logProcBegin ();
 
   plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
       pluiMarqueeFontSizeDialogResponse, plui);
@@ -1593,7 +1593,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiwcontFree (vbox);
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "pluiCreateMarqueeFontSizeDialog", "");
+  logProcEnd ("");
 }
 
 static bool

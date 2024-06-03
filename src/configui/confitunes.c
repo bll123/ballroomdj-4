@@ -137,7 +137,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   const char    *itunesName;
   int           tagidx;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIiTunes");
+  logProcBegin ();
   mvbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -269,7 +269,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpr);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIiTunes", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -280,11 +280,11 @@ confuiSelectiTunesDir (void *udata)
   uisfcb_t    *sfcb = udata;
   char        tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "confuiSelectiTunesDir");
+  logProcBegin ();
   /* CONTEXT: configuration: itunes media folder selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Media Location"), ITUNES_NAME);
   confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), tbuff);
-  logProcEnd (LOG_PROC, "confuiSelectiTunesDir", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -298,7 +298,7 @@ confuiSelectiTunesFile (void *udata)
   char        dirbuff [MAXPATHLEN];
   pathinfo_t  *pi;
 
-  logProcBegin (LOG_PROC, "confuiSelectiTunesFile");
+  logProcBegin ();
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
   strlcpy (dirbuff, bdjoptGetStr (OPT_M_ITUNES_XML_FILE), sizeof (dirbuff));
@@ -317,7 +317,7 @@ confuiSelectiTunesFile (void *udata)
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd (LOG_PROC, "confuiSelectiTunesFile", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -329,7 +329,7 @@ confuiValidateMediaDir (uiwcont_t *entry, void *udata)
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
 
-  logProcBegin (LOG_PROC, "confuiValidateMediaDir");
+  logProcBegin ();
   sval = uiEntryGetValue (entry);
   if (! fileopIsDirectory (sval)) {
     return UIENTRY_ERROR;
@@ -345,7 +345,7 @@ confuiValidateMediaDir (uiwcont_t *entry, void *udata)
     }
   }
   pathInfoFree (pi);
-  logProcEnd (LOG_PROC, "confuiValidateMediaDir", "");
+  logProcEnd ("");
   return UIENTRY_OK;
 }
 

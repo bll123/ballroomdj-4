@@ -28,7 +28,7 @@ function copysrcfiles {
   stage=$2
 
   filelist="LICENSE.txt README.txt VERSION.txt BUILD.txt "
-  filelist+="packages/mongoose*/LICENSE packages/README.txt "
+  filelist+="packages/mongoose*/LICENSE "
   dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki wiki-i"
 
@@ -322,10 +322,12 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
 
       copysrcfiles ${tag} ${stagedir}
 
-      filelist="packages/acrcloud-linux "
+      f="packages/acrcloud-linux"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-      rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+      if [[ -f ${f} ]]; then
+        rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+      fi
 
       dirlist="packages/libmp4tag* packages/libid3tag* "
       for d in $dirlist; do
@@ -354,10 +356,12 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       mkdir -p ${stagedir}
       nm=$(pkgsrcadditionalnm)
 
-      filelist="packages/acrcloud-macos${pn_archtag}"
+      f="packages/acrcloud-macos${pn_archtag}"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-      rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+      if [[ -f ${f} ]]; then
+        rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+      fi
 
       dirlist="packages/icu* packages/bundles/Mojave* "
       for d in $dirlist; do
@@ -380,16 +384,21 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       f="packages/acrcloud-win64*"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-      rsync -aS ${f} ${stagedir}/${dir}/acrcloud.exe
+      if [[ -f ${f} ]]; then
+        rsync -aS ${f} ${stagedir}/${dir}/acrcloud.exe
+      fi
 
       f="packages/fpcalc-windows.exe"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
-      rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
+      # the fpcalc executable is pre-installed in the build package.
+      if [[ -f ${f} ]]; then
+        rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
+      fi
 
       dirlist="packages/check* packages/curl* packages/ffmpeg* "
-      dirlist+="packages/flac* packages/icu* "
-      dirlist+="packages/libogg* packages/libvorbis* packages/nghttp* "
+      dirlist+="packages/flac* "
+      dirlist+="packages/libogg* packages/libvorbis* packages/nghttp2* "
       dirlist+="packages/opus* packages/opusfile* "
       dirlist+="packages/bundles/Windows* "
       for d in $dirlist; do

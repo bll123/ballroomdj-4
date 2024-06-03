@@ -24,6 +24,7 @@ void      ilistSetVersion (ilist_t *list, int version);
 int       ilistGetVersion (ilist_t *list);
 ilistidx_t   ilistGetCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ilistidx_t);
+int       ilistGetMaxValueWidth (ilist_t *list, ilistidx_t lidx);
 void      ilistSort (ilist_t *);
 void      ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist);
   /* set routines */

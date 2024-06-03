@@ -50,6 +50,7 @@ typedef struct list {
   listidx_t       count;
   listidx_t       allocCount;
   int             maxKeyWidth;
+  int             maxValueWidth;
   keytype_t       keytype;
   listorder_t     ordered;
   listitem_t      *data;        /* array */
@@ -95,6 +96,7 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   list->count = 0;
   list->allocCount = 0;
   list->maxKeyWidth = 0;
+  list->maxValueWidth = 0;
   /* flags */
   list->replace = false;
   list->setmaxkey = false;
@@ -180,7 +182,7 @@ listSort (keytype_t keytype, list_t *list)
 }
 
 void
-listCalcMaxWidth (keytype_t keytype, list_t *list)
+listCalcMaxKeyWidth (keytype_t keytype, list_t *list)
 {
   int     maxlen = 10;
 
@@ -199,6 +201,30 @@ listCalcMaxWidth (keytype_t keytype, list_t *list)
     }
   }
   list->maxKeyWidth = maxlen;
+}
+
+void
+listCalcMaxValueWidth (keytype_t keytype, list_t *list)
+{
+  int     maxlen = 10;
+
+  if (! listCheckIfValid (list, keytype)) {
+    return;
+  }
+
+  for (listidx_t i = 0; i < list->count; ++i) {
+    listitem_t    *item = &list->data [i];
+
+    if (item->valuetype == VALUE_STR) {
+      size_t    len;
+
+      len = istrlen ((const char *) list->data [i].value.data);
+      if ((int) len > maxlen) {
+        maxlen = len;
+      }
+    }
+  }
+  list->maxValueWidth = maxlen;
 }
 
 const char *
@@ -237,6 +263,15 @@ listGetMaxKeyWidth (keytype_t keytype, list_t *list)
     return 0;
   }
   return list->maxKeyWidth;
+}
+
+int
+listGetMaxValueWidth (keytype_t keytype, list_t *list)
+{
+  if (! listCheckIfValid (list, keytype)) {
+    return 0;
+  }
+  return list->maxValueWidth;
 }
 
 /* version */

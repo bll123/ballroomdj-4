@@ -53,7 +53,7 @@ musicqAlloc (musicdb_t *db)
     exit (1);
   }
 
-  logProcBegin (LOG_PROC, "musicqAlloc");
+  logProcBegin ();
 
   musicq = mdmalloc (sizeof (musicq_t));
   musicq->musicdb = db;
@@ -65,14 +65,14 @@ musicqAlloc (musicdb_t *db)
     musicq->dispidx [i] = 1;
     musicq->duration [i] = 0;
   }
-  logProcEnd (LOG_PROC, "musicqAlloc", "");
+  logProcEnd ("");
   return musicq;
 }
 
 void
 musicqFree (musicq_t *musicq)
 {
-  logProcBegin (LOG_PROC, "musicqFree");
+  logProcBegin ();
   if (musicq != NULL) {
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       if (musicq->q [i] != NULL) {
@@ -81,7 +81,7 @@ musicqFree (musicq_t *musicq)
     }
     mdfree (musicq);
   }
-  logProcEnd (LOG_PROC, "musicqFree", "");
+  logProcEnd ("");
 }
 
 void
@@ -101,15 +101,15 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
   musicqitem_t      *musicqitem;
   song_t            *song = NULL;
 
-  logProcBegin (LOG_PROC, "musicqPush");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL || dbidx < 0) {
-    logProcEnd (LOG_PROC, "musicqPush", "bad-ptr-or-bad-dbidx");
+    logProcEnd ("bad-ptr-or-bad-dbidx");
     return;
   }
 
   song = dbGetByIdx (musicq->musicdb, dbidx);
   if (song == NULL) {
-    logProcEnd (LOG_PROC, "musicqPush", "song-not-found");
+    logProcEnd ("song-not-found");
     return;
   }
 
@@ -125,7 +125,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
   musicqitem->dur = dur;
   musicq->duration [musicqidx] += dur;
   queuePush (musicq->q [musicqidx], musicqitem);
-  logProcEnd (LOG_PROC, "musicqPush", "");
+  logProcEnd ("");
 }
 
 void
@@ -133,9 +133,9 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqPushHeadEmpty");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqPushHeadEmpty", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
 
@@ -148,7 +148,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dur = 0;
   queuePushHead (musicq->q [musicqidx], musicqitem);
-  logProcEnd (LOG_PROC, "musicqPushHeadEmpty", "");
+  logProcEnd ("");
 }
 
 void
@@ -158,11 +158,11 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
   int   olddispidx;
 
 
-  logProcBegin (LOG_PROC, "musicqMove");
+  logProcBegin ();
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueMove (musicq->q [musicqidx], fromidx, toidx);
   musicqRenumber (musicq, musicqidx, olddispidx);
-  logProcEnd (LOG_PROC, "musicqMove", "");
+  logProcEnd ("");
 }
 
 int
@@ -173,25 +173,25 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
   musicqitem_t  *musicqitem;
   song_t        *song;
 
-  logProcBegin (LOG_PROC, "musicqInsert");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL || dbidx < 0) {
-    logProcEnd (LOG_PROC, "musicqInsert", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return -1;
   }
   if (idx < 1) {
-    logProcEnd (LOG_PROC, "musicqInsert", "bad-idx");
+    logProcEnd ("bad-idx");
     return -1;
   }
 
   song = dbGetByIdx (musicq->musicdb, dbidx);
   if (song == NULL) {
-    logProcEnd (LOG_PROC, "musicqPush", "song-not-found");
+    logProcEnd ("song-not-found");
     return -1;
   }
 
   if (idx >= queueGetCount (musicq->q [musicqidx])) {
     musicqPush (musicq, musicqidx, dbidx, MUSICQ_PLAYLIST_EMPTY, dur);
-    logProcEnd (LOG_PROC, "musicqInsert", "idx>q-count; push");
+    logProcEnd ("idx>q-count; push");
     return (queueGetCount (musicq->q [musicqidx]) - 1);
   }
 
@@ -209,7 +209,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
-  logProcEnd (LOG_PROC, "musicqInsert", "");
+  logProcEnd ("");
   return idx;
 }
 
@@ -218,22 +218,22 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqGetCurrent");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetCurrent", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return -1;
   }
 
   musicqitem = queueGetFirst (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetCurrent", "no-item");
+    logProcEnd ("no-item");
     return -1;
   }
   if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) == MUSICQ_FLAG_EMPTY) {
-    logProcEnd (LOG_PROC, "musicqGetCurrent", "empty-item");
+    logProcEnd ("empty-item");
     return -1;
   }
-  logProcEnd (LOG_PROC, "musicqGetCurrent", "");
+  logProcEnd ("");
   return musicqitem->dbidx;
 }
 
@@ -243,18 +243,18 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqGetByIdx");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetByIdx", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return -1;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqGetByIdx", "");
+    logProcEnd ("");
     return musicqitem->dbidx;
   }
-  logProcEnd (LOG_PROC, "musicqGetByIdx", "no-item");
+  logProcEnd ("no-item");
   return -1;
 }
 
@@ -263,18 +263,18 @@ musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqGetFlags");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetFlags", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return MUSICQ_FLAG_NONE;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqGetFlags", "");
+    logProcEnd ("");
     return musicqitem->flags;
   }
-  logProcEnd (LOG_PROC, "musicqGetFlags", "no-item");
+  logProcEnd ("no-item");
   return MUSICQ_FLAG_NONE;
 }
 
@@ -283,18 +283,18 @@ musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqGetDispIdx");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetDispIdx", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return MUSICQ_FLAG_NONE;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqGetDispIdx", "");
+    logProcEnd ("");
     return musicqitem->dispidx;
   }
-  logProcEnd (LOG_PROC, "musicqGetDispIdx", "no-item");
+  logProcEnd ("no-item");
   return -1;
 }
 
@@ -303,18 +303,18 @@ musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqGetUniqueIdx");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqGetUniqueIdx", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return MUSICQ_FLAG_NONE;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqGetUniqueIdx", "");
+    logProcEnd ("");
     return musicqitem->uniqueidx;
   }
-  logProcEnd (LOG_PROC, "musicqGetUniqueIdx", "no-item");
+  logProcEnd ("no-item");
   return -1;
 }
 
@@ -324,18 +324,18 @@ musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqSetFlag");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqSetFlag", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqSetFlag", "");
+    logProcEnd ("");
     musicqitem->flags |= flags;
   }
-  logProcEnd (LOG_PROC, "musicqSetFlag", "no-item");
+  logProcEnd ("no-item");
   return;
 }
 
@@ -345,18 +345,18 @@ musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,
 {
   musicqitem_t      *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqClearFlag");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqClearFlag", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    logProcEnd (LOG_PROC, "musicqClearFlag", "");
+    logProcEnd ("");
     musicqitem->flags &= ~flags;
   }
-  logProcEnd (LOG_PROC, "musicqClearFlag", "no-item");
+  logProcEnd ("no-item");
   return;
 }
 
@@ -414,9 +414,9 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t  *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqPop");
+  logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqPop", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
 
@@ -434,7 +434,7 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
   if (queueGetCount (musicq->q [musicqidx]) == 0) {
     musicq->dispidx [musicqidx] = 1;
   }
-  logProcEnd (LOG_PROC, "musicqPop", "");
+  logProcEnd ("");
 }
 
 /* does not clear the initial entry -- that's the song that is playing */
@@ -445,18 +445,18 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, qidx_t startIdx)
   qidx_t        qiteridx;
   musicqitem_t  *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqClear");
+  logProcBegin ();
   if (musicq == NULL) {
-    logProcEnd (LOG_PROC, "musicqClear", "bad-ptr");
+    logProcEnd ("bad-ptr");
     return;
   }
   if (musicq->q [musicqidx] == NULL) {
-    logProcEnd (LOG_PROC, "musicqClear", "bad-ptr-b");
+    logProcEnd ("bad-ptr-b");
     return;
   }
 
   if (startIdx < 1 || startIdx >= queueGetCount (musicq->q [musicqidx])) {
-    logProcEnd (LOG_PROC, "musicqClear", "bad-idx");
+    logProcEnd ("bad-idx");
     return;
   }
 
@@ -471,7 +471,7 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, qidx_t startIdx)
   }
 
   musicq->dispidx [musicqidx] = olddispidx + queueGetCount (musicq->q [musicqidx]);
-  logProcEnd (LOG_PROC, "musicqClear", "");
+  logProcEnd ("");
 }
 
 void
@@ -481,9 +481,9 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
   musicqitem_t  *musicqitem;
 
 
-  logProcBegin (LOG_PROC, "musicqRemove");
+  logProcBegin ();
   if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
-    logProcEnd (LOG_PROC, "musicqRemove", "bad-idx");
+    logProcEnd ("bad-idx");
     return;
   }
 
@@ -495,7 +495,7 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
   musicqRenumber (musicq, musicqidx, olddispidx);
   musicqQueueItemFree (musicqitem);
 
-  logProcEnd (LOG_PROC, "musicqRemove", "");
+  logProcEnd ("");
 }
 
 void
@@ -504,13 +504,13 @@ musicqSwap (musicq_t *musicq, musicqidx_t musicqidx, qidx_t fromidx, qidx_t toid
   int           olddispidx;
 
 
-  logProcBegin (LOG_PROC, "musicqSwap");
+  logProcBegin ();
   if (fromidx < 0 || fromidx >= queueGetCount (musicq->q [musicqidx])) {
-    logProcEnd (LOG_PROC, "musicqSwap", "bad-idx-from");
+    logProcEnd ("bad-idx-from");
     return;
   }
   if (toidx < 0 || toidx >= queueGetCount (musicq->q [musicqidx])) {
-    logProcEnd (LOG_PROC, "musicqSwap", "bad-idx-to");
+    logProcEnd ("bad-idx-to");
     return;
   }
 
@@ -518,7 +518,7 @@ musicqSwap (musicq_t *musicq, musicqidx_t musicqidx, qidx_t fromidx, qidx_t toid
   queueMove (musicq->q [musicqidx], fromidx, toidx);
   musicqRenumber (musicq, musicqidx, olddispidx);
 
-  logProcEnd (LOG_PROC, "musicqRemove", "");
+  logProcEnd ("");
 }
 
 int
@@ -611,12 +611,12 @@ musicqQueueItemFree (void *titem)
 {
   musicqitem_t        *musicqitem = titem;
 
-  logProcBegin (LOG_PROC, "musicqQueueItemFree");
+  logProcBegin ();
   if (musicqitem != NULL) {
     dataFree (musicqitem->announce);
     mdfree (musicqitem);
   }
-  logProcEnd (LOG_PROC, "musicqQueueItemFree", "");
+  logProcEnd ("");
 }
 
 static int
@@ -625,12 +625,12 @@ musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem_t  *musicqitem;
   int           dispidx = -1;
 
-  logProcBegin (LOG_PROC, "musicqRenumberStart");
+  logProcBegin ();
   musicqitem = queueGetByIdx (musicq->q [musicqidx], 0);
   if (musicqitem != NULL) {
     dispidx = musicqitem->dispidx;
   }
-  logProcEnd (LOG_PROC, "musicqRenumberStart", "");
+  logProcEnd ("");
   return dispidx;
 }
 
@@ -641,13 +641,13 @@ musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx)
   qidx_t        qiteridx;
   musicqitem_t  *musicqitem;
 
-  logProcBegin (LOG_PROC, "musicqRenumber");
+  logProcBegin ();
   queueStartIterator (musicq->q [musicqidx], &qiteridx);
   while ((musicqitem = queueIterateData (musicq->q [musicqidx], &qiteridx)) != NULL) {
     musicqitem->dispidx = dispidx;
     ++dispidx;
   }
   musicq->dispidx [musicqidx] = dispidx;
-  logProcEnd (LOG_PROC, "musicqRenumber", "");
+  logProcEnd ("");
 }
 

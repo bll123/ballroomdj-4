@@ -21,8 +21,11 @@ if [[ $pkgname == "" || $pkgname = "fpcalc" ]]; then
   cd $cwd
   if [ $? -eq 0 ]; then
     echo ""
-    echo "## install ${pkgname}"
-    cp -f fpcalc-${tag}${archtag}${esuffix} $INSTLOC/bin/fpcalc${esuffix}
+    fn=fpcalc-${tag}${archtag}${esuffix}
+    if [[ -f $fn ]]; then
+      echo "## install fpcalc"
+      cp -f $fn $INSTLOC/bin/fpcalc${esuffix}
+    fi
   fi
 fi
 

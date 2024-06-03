@@ -32,7 +32,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   /* edit ratings */
@@ -61,7 +61,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIEditRatings", "");
+  logProcEnd ("");
 }
 
 void
@@ -73,7 +73,7 @@ confuiCreateRatingTable (confuigui_t *gui)
   uiwcont_t         *uitree;
   int               editable;
 
-  logProcBegin (LOG_PROC, "confuiCreateRatingTable");
+  logProcBegin ();
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
@@ -127,7 +127,7 @@ confuiCreateRatingTable (confuigui_t *gui)
       TREE_COL_TYPE_DIGITS, CONFUI_RATING_COL_DIGITS,
       TREE_COL_TYPE_END);
 
-  logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -137,7 +137,7 @@ confuiRatingListCreate (void *udata)
   char        *ratingdisp;
   int         weight;
 
-  logProcBegin (LOG_PROC, "confuiRatingListCreate");
+  logProcBegin ();
   ratingdisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_RATINGS].uitree,
       CONFUI_RATING_COL_RATING);
   weight = uiTreeViewGetValue (gui->tables [CONFUI_ID_RATINGS].uitree,
@@ -148,7 +148,7 @@ confuiRatingListCreate (void *udata)
       gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_WEIGHT, weight);
   dataFree (ratingdisp);
   gui->tables [CONFUI_ID_RATINGS].saveidx += 1;
-  logProcEnd (LOG_PROC, "confuiRatingListCreate", "");
+  logProcEnd ("");
   return UI_FOREACH_CONT;
 }
 
@@ -157,10 +157,10 @@ confuiRatingSave (confuigui_t *gui)
 {
   rating_t    *ratings;
 
-  logProcBegin (LOG_PROC, "confuiRatingSave");
+  logProcBegin ();
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   ratingSave (ratings, gui->tables [CONFUI_ID_RATINGS].savelist);
   ilistFree (gui->tables [CONFUI_ID_RATINGS].savelist);
-  logProcEnd (LOG_PROC, "confuiRatingSave", "");
+  logProcEnd ("");
 }
 

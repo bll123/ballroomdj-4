@@ -89,7 +89,7 @@ danceselAlloc (nlist_t *countList,
     return NULL;
   }
 
-  logProcBegin (LOG_PROC, "danceselAlloc");
+  logProcBegin ();
   dancesel = mdmalloc (sizeof (dancesel_t));
 
   dancesel->method = bdjoptGetNum (OPT_G_DANCESEL_METHOD);
@@ -154,14 +154,14 @@ danceselAlloc (nlist_t *countList,
     danceselInitDecrement (dancesel);
   } /* method == windowed */
 
-  logProcEnd (LOG_PROC, "danceselAlloc", "");
+  logProcEnd ("");
   return dancesel;
 }
 
 void
 danceselFree (dancesel_t *dancesel)
 {
-  logProcBegin (LOG_PROC, "danceselFree");
+  logProcBegin ();
   if (dancesel != NULL) {
     nlistFree (dancesel->base);
     nlistFree (dancesel->adjustBase);
@@ -173,7 +173,7 @@ danceselFree (dancesel_t *dancesel)
     nlistFree (dancesel->winEarlySel);
     mdfree (dancesel);
   }
-  logProcEnd (LOG_PROC, "danceselFree", "");
+  logProcEnd ("");
 }
 
 /* used by main for mix */
@@ -245,11 +245,11 @@ danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx)
     return;
   }
 
-  logProcBegin (LOG_PROC, "danceselAddPlayed");
+  logProcBegin ();
   pd = mdmalloc (sizeof (playedDance_t));
   pd->danceIdx = danceIdx;
   queuePushHead (dancesel->playedDances, pd);
-  logProcEnd (LOG_PROC, "danceselAddPlayed", "");
+  logProcEnd ("");
 }
 
 /* after selecting a dance, call danceselAddCount() if the dance will */
@@ -284,7 +284,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   double        tval;
 
 
-  logProcBegin (LOG_PROC, "danceselSelect");
+  logProcBegin ();
   nlistFree (dancesel->adjustBase);
   nlistFree (dancesel->danceProbTable);
   dancesel->adjustBase = nlistAlloc ("dancesel-adjust-base", LIST_ORDERED, NULL);
@@ -556,7 +556,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     }
   } /* method = windowed */
 
-  logProcEnd (LOG_PROC, "danceselSelect", "");
+  logProcEnd ("");
   return didx;
 }
 
@@ -578,18 +578,18 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
   double        abase;
   int           matchrc = false;
 
-  logProcBegin (LOG_PROC, "danceselProcessPrior");
+  logProcBegin ();
 
   /* only the first hist-distance songs are checked */
 
   if (priordist > dancesel->histDistance) {
-    logProcEnd (LOG_PROC, "danceselProcessPrior", "past-distance");
+    logProcEnd ("past-distance");
     return false;
   }
 
   abase = nlistGetDouble (dancesel->adjustBase, didx);
   if (abase == 0.0) {
-    logProcEnd (LOG_PROC, "danceselProcessPrior", "at-zero");
+    logProcEnd ("at-zero");
     return false;
   }
 
@@ -647,7 +647,7 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
 
   nlistSetDouble (dancesel->adjustBase, didx, abase);
 
-  logProcEnd (LOG_PROC, "danceselProcessPrior", "");
+  logProcEnd ("");
   return matchrc;
 }
 

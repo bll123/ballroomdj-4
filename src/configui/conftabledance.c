@@ -34,7 +34,7 @@ confuiDanceSelect (void *udata, long col)
   uiwcont_t     *uitree = NULL;
   ilistidx_t    key;
 
-  logProcBegin (LOG_PROC, "confuiDanceSelect");
+  logProcBegin ();
   gui->inchange = true;
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
@@ -47,7 +47,7 @@ confuiDanceSelect (void *udata, long col)
   key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
   confuiDanceSelectLoadValues (gui, key);
   gui->inchange = false;
-  logProcEnd (LOG_PROC, "confuiDanceSelect", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

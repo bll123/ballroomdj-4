@@ -17,6 +17,8 @@ void        nlistFree (void * list);
 nlistidx_t  nlistGetCount (nlist_t *list);
 void        nlistSetSize (nlist_t *, nlistidx_t);
 void        nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);
+void        nlistCalcMaxValueWidth (nlist_t *list);
+int         nlistGetMaxValueWidth (nlist_t *);
 void        nlistSort (nlist_t *);
 /* version */
 void        nlistSetVersion (nlist_t *list, int version);

@@ -383,7 +383,7 @@ main (int argc, char *argv[])
       BDJ4_INIT_NO_LOCK;
   starter.loglevel = bdj4startup (argc, argv, NULL, "strt",
       ROUTE_STARTERUI, &flags);
-  logProcBegin (LOG_PROC, "starterui");
+  logProcBegin ();
 
   starterLoadOptions (&starter);
 
@@ -447,7 +447,7 @@ main (int argc, char *argv[])
 
   connFree (starter.conn);
   progstateFree (starter.progstate);
-  logProcEnd (LOG_PROC, "starterui", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -484,7 +484,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
 
-  logProcBegin (LOG_PROC, "starterStoppingCallback");
+  logProcBegin ();
 
   if (starter->started [ROUTE_PLAYERUI]) {
     starterPlayerShutdown ();
@@ -502,7 +502,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
 
   procutilStopAllProcess (starter->processes, starter->conn, PROCUTIL_NORM_TERM);
 
-  logProcEnd (LOG_PROC, "starterStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -521,7 +521,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
 
-  logProcBegin (LOG_PROC, "starterClosingCallback");
+  logProcBegin ();
 
   uiCloseWindow (starter->wcont [START_W_WINDOW]);
   uiCleanup ();
@@ -563,7 +563,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   nlistFree (starter->proflist);
   nlistFree (starter->profidxlist);
 
-  logProcEnd (LOG_PROC, "starterClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -583,7 +583,7 @@ starterBuildUI (startui_t  *starter)
   int         dispidx;
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "starterBuildUI");
+  logProcBegin ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -597,7 +597,7 @@ starterBuildUI (startui_t  *starter)
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
+  uiWidgetSetAllMargins (vbox, 4);
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
@@ -771,7 +771,7 @@ starterBuildUI (startui_t  *starter)
   uiwcontFree (menu);
   uiwcontFree (menubar);
 
-  logProcEnd (LOG_PROC, "starterBuildUI", "");
+  logProcEnd ("");
 }
 
 int
@@ -1100,7 +1100,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   startui_t       *starter = udata;
 
-  logProcBegin (LOG_PROC, "starterProcessMsg");
+  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -1174,7 +1174,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  logProcEnd (LOG_PROC, "starterProcessMsg", "");
+  logProcEnd ("");
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -2235,13 +2235,13 @@ starterStartAltInst (void *udata)
   int         targc = 0;
 
 
-  logProcBegin (LOG_PROC, "starterStartAltInst");
+  logProcBegin ();
 
   targv [targc++] = NULL;
   starter->processes [ROUTE_ALTINST] = procutilStartProcess (
       ROUTE_ALTINST, "bdj4altinst", PROCUTIL_DETACH, targv);
 
-  logProcEnd (LOG_PROC, "starterStartAltInst", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

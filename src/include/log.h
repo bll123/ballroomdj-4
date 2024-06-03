@@ -100,10 +100,10 @@ enum {
   LOG_MAX_BUFF    = 4096,
 };
 
-#define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
-#define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)
-#define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__)
-#define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, fmt __VA_OPT__(,) __VA_ARGS__)
+#define logProcBegin()   rlogProcBegin (__FILE__, __LINE__, __func__)
+#define logProcEnd(suffix)  rlogProcEnd (suffix, __FILE__, __LINE__, __func__)
+#define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__, __func__)
+#define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, __func__, fmt __VA_OPT__(,) __VA_ARGS__)
 
 bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);
@@ -124,10 +124,10 @@ void logStderr (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
-void rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line);
-void rlogProcEnd (loglevel_t level, const char *tag, const char *suffix, const char *fn, int line);
-void rlogError (const char *msg, int err, const char *fn, int line);
-void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *fmt, ...)
-    __attribute__ ((format (printf, 5, 6)));
+void rlogProcBegin (const char *fn, int line, const char *func);
+void rlogProcEnd (const char *suffix, const char *fn, int line, const char *func);
+void rlogError (const char *msg, int err, const char *fn, int line, const char *func);
+void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *func, const char *fmt, ...)
+    __attribute__ ((format (printf, 6, 7)));
 
 #endif /* INC_BDJLOG_H */

@@ -58,21 +58,17 @@ ratingAlloc (void)
   rating->rating = datafileGetList (rating->df);
   ilistDumpInfo (rating->rating);
 
-  rating->maxWidth = 0;
   rating->ratingList = slistAlloc ("rating-disp", LIST_UNORDERED, NULL);
   slistSetSize (rating->ratingList, ilistGetCount (rating->rating));
+
+  rating->maxWidth = ilistGetMaxValueWidth (rating->rating, RATING_RATING);
 
   ilistStartIterator (rating->rating, &iteridx);
   while ((key = ilistIterateKey (rating->rating, &iteridx)) >= 0) {
     const char  *val;
-    int         len;
 
     val = ilistGetStr (rating->rating, key, RATING_RATING);
     slistSetNum (rating->ratingList, val, key);
-    len = istrlen (val);
-    if (len > rating->maxWidth) {
-      rating->maxWidth = len;
-    }
   }
   slistSort (rating->ratingList);
 

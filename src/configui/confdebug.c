@@ -28,7 +28,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiwcont_t     *szgrp;
   nlistidx_t    val;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIDebug");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -122,6 +122,6 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
+  logProcEnd ("");
 }
 

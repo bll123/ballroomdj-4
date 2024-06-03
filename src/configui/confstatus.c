@@ -34,7 +34,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIEditStatus");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   /* edit status */
@@ -59,7 +59,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcontFree (vbox);
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIEditStatus", "");
+  logProcEnd ("");
 }
 
 void
@@ -71,7 +71,7 @@ confuiCreateStatusTable (confuigui_t *gui)
   uiwcont_t         *uitree;
   int               editable;
 
-  logProcBegin (LOG_PROC, "confuiCreateStatusTable");
+  logProcBegin ();
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
@@ -123,7 +123,7 @@ confuiCreateStatusTable (confuigui_t *gui)
       TREE_COL_TYPE_ACTIVE, CONFUI_STATUS_COL_PLAY_FLAG,
       TREE_COL_TYPE_END);
 
-  logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -133,7 +133,7 @@ confuiStatusListCreate (void *udata)
   char        *statusdisp;
   int         playflag;
 
-  logProcBegin (LOG_PROC, "confuiStatusListCreate");
+  logProcBegin ();
   statusdisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_STATUS].uitree,
       CONFUI_STATUS_COL_STATUS);
   playflag = uiTreeViewGetValue (gui->tables [CONFUI_ID_STATUS].uitree,
@@ -144,7 +144,7 @@ confuiStatusListCreate (void *udata)
       gui->tables [CONFUI_ID_STATUS].saveidx, STATUS_PLAY_FLAG, playflag);
   gui->tables [CONFUI_ID_STATUS].saveidx += 1;
   dataFree (statusdisp);
-  logProcEnd (LOG_PROC, "confuiStatusListCreate", "");
+  logProcEnd ("");
   return UI_FOREACH_CONT;
 }
 
@@ -153,10 +153,10 @@ confuiStatusSave (confuigui_t *gui)
 {
   status_t    *status;
 
-  logProcBegin (LOG_PROC, "confuiStatusSave");
+  logProcBegin ();
   status = bdjvarsdfGet (BDJVDF_STATUS);
   statusSave (status, gui->tables [CONFUI_ID_STATUS].savelist);
   ilistFree (gui->tables [CONFUI_ID_STATUS].savelist);
-  logProcEnd (LOG_PROC, "confuiStatusSave", "");
+  logProcEnd ("");
 }
 

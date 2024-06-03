@@ -232,8 +232,11 @@ sysvarsInit (const char *argv0)
 
   snprintf (sysvars [SV_OS_VERS], SV_MAX_SZ, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
-  snprintf (sysvars [SV_OS_BUILD], SV_MAX_SZ, "%ld",
-      osvi.dwBuildNumber);
+  snprintf (sysvars [SV_OS_BUILD], SV_MAX_SZ, "%ld", osvi.dwBuildNumber);
+  if (osvi.dwBuildNumber >= 22000) {
+    /* this is the official way to determine windows 11 at this time */
+    strlcpy (sysvars [SV_OS_VERS], "11.0", SV_MAX_SZ);
+  }
 #endif
 #if _lib_GetNativeSystemInfo
   GetNativeSystemInfo (&winsysinfo);
@@ -263,26 +266,19 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OS_DISP], "Windows ", SV_MAX_SZ);
   if (strcmp (sysvars [SV_OS_VERS], "5.0") == 0) {
     strlcat (sysvars [SV_OS_DISP], "2000", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "5.1") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "5.1") == 0) {
     strlcat (sysvars [SV_OS_DISP], "XP", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "5.2") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "5.2") == 0) {
     strlcat (sysvars [SV_OS_DISP], "XP Pro", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "6.0") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "6.0") == 0) {
     strlcat (sysvars [SV_OS_DISP], "Vista", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "6.1") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "6.1") == 0) {
     strlcat (sysvars [SV_OS_DISP], "7", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "6.2") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "6.2") == 0) {
     strlcat (sysvars [SV_OS_DISP], "8.0", SV_MAX_SZ);
-  }
-  else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
+  } else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
     strlcat (sysvars [SV_OS_DISP], "8.1", SV_MAX_SZ);
-  }
-  else {
+  } else {
     strlcat (sysvars [SV_OS_DISP], sysvars [SV_OS_VERS], SV_MAX_SZ);
   }
   strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
@@ -479,9 +475,28 @@ sysvarsInit (const char *argv0)
         *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
         if (isMacOS ()) {
+          char        tmp [MAXPATHLEN];
+          ssize_t     offset;
+          const char  *tp;
+
+          /* extract the name of the app from the main-dir */
+          strlcpy (tmp, sysvars [SV_BDJ4_DIR_MAIN], sizeof (tmp));
+          offset = strlen (tmp) -
+              strlen (MACOS_APP_PREFIX) -
+              strlen (MACOS_APP_EXT);
+          if (offset >= 0) {
+            tmp [offset] = '\0';
+          }
+          tp = strrchr (tmp, '/');
+          if (tp != NULL) {
+            ++tp;
+          } else {
+            tp = BDJ4_NAME;
+          }
+
           strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
           strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
-          strlcat (buff, BDJ4_NAME, SV_MAX_SZ);
+          strlcat (buff, tp, SV_MAX_SZ);
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
         } else {
           strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
@@ -689,29 +704,8 @@ sysvarsInit (const char *argv0)
 
     data = sysvars [SV_OS_VERS];
     if (data != NULL) {
-      if (strcmp (data, "15") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
-      } else if (strcmp (data, "14") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Sonoma", SV_MAX_SZ);
-      } else if (strcmp (data, "13") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Ventura", SV_MAX_SZ);
-      } else if (strcmp (data, "12") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Monterey", SV_MAX_SZ);
-      } else if (strcmp (data, "11") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Big Sur", SV_MAX_SZ);
-      } else if (strcmp (data, "10.15") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Catalina", SV_MAX_SZ);
-      } else if (strcmp (data, "10.14") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Mojave", SV_MAX_SZ);
-      } else if (strcmp (data, "10.13") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " High Sierra", SV_MAX_SZ);
-      } else if (strcmp (data, "10.12") > 0) {
-        strlcat (sysvars [SV_OS_DISP], " Sierra", SV_MAX_SZ);
-      } else {
-        strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-        strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
-      }
+      strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
+      strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {

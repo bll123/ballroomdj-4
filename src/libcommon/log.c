@@ -89,44 +89,44 @@ logClose (logidx_t idx)
 }
 
 void
-rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line)
+rlogProcBegin (const char *fn, int line, const char *func)
 {
-  if (! logCheck (LOG_DBG, level)) {
+  if (! logCheck (LOG_DBG, LOG_PROC)) {
     return;
   }
-  rlogVarMsg (LOG_DBG, level, fn, line, "- %s begin", tag);
+  rlogVarMsg (LOG_DBG, LOG_PROC, fn, line, func, "- %s begin", func);
   syslogs [LOG_DBG]->indent += 2;
 }
 
 void
-rlogProcEnd (loglevel_t level, const char *tag, const char *suffix,
-    const char *fn, int line)
+rlogProcEnd (const char *suffix,
+    const char *fn, int line, const char *func)
 {
-  if (! logCheck (LOG_DBG, level)) {
+  if (! logCheck (LOG_DBG, LOG_PROC)) {
     return;
   }
   syslogs [LOG_DBG]->indent -= 2;
   if (syslogs [LOG_DBG]->indent < 0) {
     syslogs [LOG_DBG]->indent = 0;
   }
-  rlogVarMsg (LOG_DBG, level, fn, line, "- %s end %s", tag, suffix);
+  rlogVarMsg (LOG_DBG, LOG_PROC, fn, line, func, "- %s end %s", func, suffix);
 }
 
 void
-rlogError (const char *msg, int err, const char *fn, int line)
+rlogError (const char *msg, int err, const char *fn, int line, const char *func)
 {
   if (syslogs [LOG_ERR] == NULL) {
     return;
   }
-  rlogVarMsg (LOG_ERR, LOG_IMPORTANT, fn, line,
+  rlogVarMsg (LOG_ERR, LOG_IMPORTANT, fn, line, func,
       "err: %s %d %s", msg, err, strerror (err));
-  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line,
+  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line, func,
       "err: %s %d %s", msg, err, strerror (err));
 }
 
 void
 rlogVarMsg (logidx_t idx, loglevel_t level,
-    const char *fn, int line, const char *fmt, ...)
+    const char *fn, int line, const char *func, const char *fmt, ...)
 {
   bdjlog_t      *l;
   char          ttm [40];
@@ -165,7 +165,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     va_end (args);
   }
   if (fn != NULL) {
-    snprintf (tfn, sizeof (tfn), "(%s: %d)", logTail (fn), line);
+    snprintf (tfn, sizeof (tfn), "(%s: %s(): %d)", logTail (fn), func, line);
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-4s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
@@ -294,7 +294,7 @@ logBacktrace (void)
   for (size_t i = 0; i < size; ++i) {
     if (syslogs [LOG_ERR] != NULL) {
       syslogs [LOG_ERR]->level |= LOG_IMPORTANT;
-      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "bt", 0, "bt: %2ld: %s", i, out [i]);
+      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "bt", 0, "", "bt: %2ld: %s", i, out [i]);
     } else {
       fprintf (stderr, "bt: %2ld: %s\n", i, out [i]);
     }

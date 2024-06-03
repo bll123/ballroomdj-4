@@ -115,7 +115,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uiaaDialog");
+  logProcBegin ();
   uiaaCreateDialog (uiaa, aaflags, hasorig);
   uiaaInitDisplay (uiaa);
   uiDialogShow (uiaa->aaDialog);
@@ -127,7 +127,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
     uiWindowMove (uiaa->aaDialog, x, y, -1);
   }
 
-  logProcEnd (LOG_PROC, "uiaaDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -150,7 +150,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "uiaaCreateDialog");
+  logProcBegin ();
 
   if (uiaa == NULL) {
     return;
@@ -219,7 +219,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "uiaaCreateDialog", "");
+  logProcEnd ("");
 }
 
 static void

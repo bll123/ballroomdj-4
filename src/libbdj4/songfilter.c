@@ -103,7 +103,7 @@ songfilterAlloc (void)
 {
   songfilter_t    *sf;
 
-  logProcBegin (LOG_PROC, "songfilterAlloc");
+  logProcBegin ();
 
   sf = mdmalloc (sizeof (songfilter_t));
 
@@ -123,14 +123,14 @@ songfilterAlloc (void)
   sf->dances = bdjvarsdfGet (BDJVDF_DANCES);
   sf->danceList = danceGetDanceList (sf->dances);
 
-  logProcEnd (LOG_PROC, "songfilterAlloc", "");
+  logProcEnd ("");
   return sf;
 }
 
 void
 songfilterFree (songfilter_t *sf)
 {
-  logProcBegin (LOG_PROC, "songfilterFree");
+  logProcBegin ();
 
   if (sf == NULL) {
     return;
@@ -143,7 +143,7 @@ songfilterFree (songfilter_t *sf)
   nlistFree (sf->indexList);
   nlistFree (sf->parsed);
   mdfree (sf);
-  logProcEnd (LOG_PROC, "songfilterFree", "");
+  logProcEnd ("");
 }
 
 nlist_t *
@@ -169,19 +169,19 @@ songfilterSave (songfilter_t *sf, nlist_t *dispsel)
 void
 songfilterSetSort (songfilter_t *sf, const char *sortselection)
 {
-  logProcBegin (LOG_PROC, "songfilterSetSort");
+  logProcBegin ();
 
   dataFree (sf->sortselection);
   sf->sortselection = mdstrdup (sortselection);
   nlistFree (sf->parsed);
   sf->parsed = songfilterParseSortKey (sf);
-  logProcEnd (LOG_PROC, "songfilterSetSort", "");
+  logProcEnd ("");
 }
 
 void
 songfilterReset (songfilter_t *sf)
 {
-  logProcBegin (LOG_PROC, "songfilterReset");
+  logProcBegin ();
 
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
     songfilterFreeData (sf, i);
@@ -189,7 +189,7 @@ songfilterReset (songfilter_t *sf)
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
     sf->inuse [i] = false;
   }
-  logProcEnd (LOG_PROC, "songfilterReset", "");
+  logProcEnd ("");
 }
 
 /* checks to see if the song-filter is turned on in the display settings */
@@ -202,29 +202,29 @@ songfilterCheckSelection (songfilter_t *sf, int type)
 void
 songfilterClear (songfilter_t *sf, int filterType)
 {
-  logProcBegin (LOG_PROC, "songfilterClear");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterClear", "null");
+    logProcEnd ("null");
     return;
   }
 
   songfilterFreeData (sf, filterType);
   sf->numfilter [filterType] = 0;
   sf->inuse [filterType] = false;
-  logProcEnd (LOG_PROC, "songfilterClear", "");
+  logProcEnd ("");
 }
 
 bool
 songfilterInUse (songfilter_t *sf, int filterType)
 {
-  logProcBegin (LOG_PROC, "songfilterInUse");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterInUse", "null");
+    logProcEnd ("null");
     return false;
   }
-  logProcEnd (LOG_PROC, "songfilterInUse", "");
+  logProcEnd ("");
   return sf->inuse [filterType];
 }
 
@@ -234,14 +234,14 @@ void
 songfilterOff (songfilter_t *sf, int filterType)
 {
 
-  logProcBegin (LOG_PROC, "songfilterOff");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterOff", "null");
+    logProcEnd ("null");
     return;
   }
   sf->inuse [filterType] = false;
-  logProcEnd (LOG_PROC, "songfilterOff", "");
+  logProcEnd ("");
 }
 
 /* currently used for playlists */
@@ -250,10 +250,10 @@ songfilterOn (songfilter_t *sf, int filterType)
 {
   int     valueType;
 
-  logProcBegin (LOG_PROC, "songfilterOn");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterOn", "null");
+    logProcEnd ("null");
     return;
   }
   valueType = valueTypeLookup [filterType];
@@ -267,7 +267,7 @@ songfilterOn (songfilter_t *sf, int filterType)
       sf->inuse [filterType] = true;
     }
   }
-  logProcEnd (LOG_PROC, "songfilterOn", "");
+  logProcEnd ("");
 }
 
 void
@@ -275,10 +275,10 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
 {
   int     valueType;
 
-  logProcBegin (LOG_PROC, "songfilterSetData");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterSetData", "null");
+    logProcEnd ("null");
     return;
   }
 
@@ -304,7 +304,7 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
     }
   }
   sf->inuse [filterType] = true;
-  logProcEnd (LOG_PROC, "songfilterSetData", "");
+  logProcEnd ("");
 }
 
 void
@@ -312,10 +312,10 @@ songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
 {
   int     valueType;
 
-  logProcBegin (LOG_PROC, "songfilterSetNum");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterSetNum", "null");
+    logProcEnd ("null");
     return;
   }
 
@@ -325,7 +325,7 @@ songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
     sf->numfilter [filterType] = (nlistidx_t) value;
     sf->inuse [filterType] = true;
   }
-  logProcEnd (LOG_PROC, "songfilterSetNum", "");
+  logProcEnd ("");
 }
 
 void
@@ -335,7 +335,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
   int         valueType;
   ilist_t     *danceFilterList;
 
-  logProcBegin (LOG_PROC, "songfilterDanceSet");
+  logProcBegin ();
 
   if (sf == NULL) {
     return;
@@ -344,11 +344,11 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
   valueType = valueTypeLookup [filterType];
   danceFilterList = sf->datafilter [SONG_FILTER_DANCE_LIST];
   if (danceFilterList == NULL) {
-    logProcEnd (LOG_PROC, "songfilterDanceSet", "no-dancelist");
+    logProcEnd ("no-dancelist");
     return;
   }
   if (! ilistExists (danceFilterList, danceIdx)) {
-    logProcEnd (LOG_PROC, "songfilterDanceSet", "not-in-list");
+    logProcEnd ("not-in-list");
     return;
   }
 
@@ -356,7 +356,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
     ilistSetNum (danceFilterList, danceIdx, filterType, (ssize_t) value);
   }
   sf->inuse [filterType] = true;
-  logProcEnd (LOG_PROC, "songfilterDanceSet", "");
+  logProcEnd ("");
 }
 
 dbidx_t
@@ -369,14 +369,14 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   song_t      *song;
   pltype_t    pltype = PLTYPE_NONE;
 
-  logProcBegin (LOG_PROC, "songfilterProcess");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterProcess", "null");
+    logProcEnd ("null");
     return 0;
   }
   if (musicdb == NULL) {
-    logProcEnd (LOG_PROC, "songfilterProcess", "null-db");
+    logProcEnd ("null-db");
     return 0;
   }
 
@@ -445,7 +445,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   slistSort (sf->sortList);
   nlistSort (sf->indexList);
 
-  logProcEnd (LOG_PROC, "songfilterProcess", "");
+  logProcEnd ("");
   return nlistGetCount (sf->indexList);
 }
 
@@ -456,10 +456,10 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   rating_t      *ratings;
   level_t       *levels;
 
-  logProcBegin (LOG_PROC, "songfilterFilterSong");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterFilterSong", "null");
+    logProcEnd ("null");
     return false;
   }
 
@@ -476,7 +476,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     danceIdx = songGetNum (song, TAG_DANCE);
     if (danceIdx != sf->numfilter [SONG_FILTER_DANCE_IDX]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: reject: %d %d", dbidx, danceIdx);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "dance-idx-reject");
+      logProcEnd ("dance-idx-reject");
       return false;
     } else {
       logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: ok: %d %d", dbidx, danceIdx);
@@ -494,7 +494,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     danceFilterList = sf->datafilter [SONG_FILTER_DANCE_LIST];
     if (danceFilterList != NULL && ! ilistExists (danceFilterList, danceIdx)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "dance-list: reject: %d %d", dbidx, danceIdx);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "dance-list-reject");
+      logProcEnd ("dance-list-reject");
       return false;
     } else {
       logMsg (LOG_DBG, LOG_SONGSEL, "dance-list: ok: %d %d", dbidx, danceIdx);
@@ -507,7 +507,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     genre = songGetNum (song, TAG_GENRE);
     if (genre != sf->numfilter [SONG_FILTER_GENRE]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "genre: reject: %d %d != %d", dbidx, genre, sf->numfilter [SONG_FILTER_GENRE]);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "genre-reject");
+      logProcEnd ("genre-reject");
       return false;
     }
   }
@@ -522,18 +522,18 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     rating = songGetNum (song, TAG_DANCERATING);
     if (rating < 0) {
       logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d unknown %d", dbidx, rating);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "rating-reject-unknown");
+      logProcEnd ("rating-reject-unknown");
       return false;
     }
     weight = ratingGetWeight (ratings, rating);
     if (weight == 0) {
       logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d %d weight 0", dbidx, rating);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "rating-reject-weight-0");
+      logProcEnd ("rating-reject-weight-0");
       return false;
     }
     if (rating < sf->numfilter [SONG_FILTER_RATING]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d %d < %d", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "rating-reject");
+      logProcEnd ("rating-reject");
       return false;
     }
   }
@@ -545,20 +545,20 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     level = songGetNum (song, TAG_DANCELEVEL);
     if (level < 0) {
       logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d unknown %d", dbidx, level);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "level-reject-unknown");
+      logProcEnd ("level-reject-unknown");
       return false;
     }
     weight = levelGetWeight (levels, level);
     if (weight == 0) {
       logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d %d weight 0", dbidx, level);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "level-reject-weight-0");
+      logProcEnd ("level-reject-weight-0");
       return false;
     }
     if (level < sf->numfilter [SONG_FILTER_LEVEL_LOW] ||
         level > sf->numfilter [SONG_FILTER_LEVEL_HIGH]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d %d < %d / > %d", dbidx, level,
           sf->numfilter [SONG_FILTER_LEVEL_LOW], sf->numfilter [SONG_FILTER_LEVEL_HIGH]);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "level-reject");
+      logProcEnd ("level-reject");
       return false;
     }
   }
@@ -569,7 +569,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     sstatus = songGetNum (song, TAG_STATUS);
     if (sstatus != sf->numfilter [SONG_FILTER_STATUS]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "status: reject: %d %d != %d", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "status-reject");
+      logProcEnd ("status-reject");
       return false;
     }
   }
@@ -580,7 +580,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     fav = songGetNum (song, TAG_FAVORITE);
     if (fav != sf->numfilter [SONG_FILTER_FAVORITE]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "favorite: reject: %d %d != %d", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "favorite-reject");
+      logProcEnd ("favorite-reject");
       return false;
     }
   }
@@ -596,7 +596,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     if (sf->numfilter [SONG_FILTER_STATUS_PLAYABLE] == SONG_FILTER_FOR_PLAYBACK &&
         ! statusGetPlayFlag (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject %d status not playable", dbidx);
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "playable-reject");
+      logProcEnd ("playable-reject");
       return false;
     }
   }
@@ -624,7 +624,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       bpm = songGetNum (song, TAG_BPM);
       if (bpm < 0 || bpm < bpmlow || bpm > bpmhigh) {
         logMsg (LOG_DBG, LOG_SONGSEL, "reject %d dance %d bpm %d [%d,%d]", dbidx, danceIdx, bpm, bpmlow, bpmhigh);
-        logProcEnd (LOG_PROC, "songfilterFilterSong", "bpm-reject");
+        logProcEnd ("bpm-reject");
         return false;
       }
     }
@@ -658,7 +658,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       }
       if (idx < 0) {
         logMsg (LOG_DBG, LOG_SONGSEL, "keyword: reject: %d %s not in allowed", dbidx, keyword);
-        logProcEnd (LOG_PROC, "songfilterFilterSong", "keyword-reject");
+        logProcEnd ("keyword-reject");
         return false;
       }
     }
@@ -708,13 +708,13 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       found = songfilterCheckStr (songGetStr (song, TAG_CONDUCTOR), searchstr);
     }
     if (! found) {
-      logProcEnd (LOG_PROC, "songfilterFilterSong", "search-reject");
+      logProcEnd ("search-reject");
       return false;
     }
   }
 
   logMsg (LOG_DBG, LOG_SONGSEL, "ok: %d %s", dbidx, songGetStr (song, TAG_TITLE));
-  logProcEnd (LOG_PROC, "songfilterFilterSong", "");
+  logProcEnd ("");
   return true;
 }
 
@@ -722,14 +722,14 @@ char *
 songfilterGetSort (songfilter_t *sf)
 {
 
-  logProcBegin (LOG_PROC, "songfilterGetSort");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterGetSort", "null");
+    logProcEnd ("null");
     return NULL;
   }
 
-  logProcEnd (LOG_PROC, "songfilterGetSort", "");
+  logProcEnd ("");
   return sf->sortselection;
 }
 
@@ -739,14 +739,14 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   nlistidx_t      internalIdx;
   dbidx_t         dbidx;
 
-  logProcBegin (LOG_PROC, "songfilterGetByIdx");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterGetByIdx", "null");
+    logProcEnd ("null");
     return -1;
   }
   if (lookupIdx < 0 || lookupIdx >= nlistGetCount (sf->indexList)) {
-    logProcEnd (LOG_PROC, "songfilterGetByIdx", "bad-lookup");
+    logProcEnd ("bad-lookup");
     return -1;
   }
 
@@ -756,20 +756,20 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
     internalIdx = nlistGetNumByIdx (sf->indexList, lookupIdx);
   }
   dbidx = nlistGetNum (sf->indexList, internalIdx);
-  logProcEnd (LOG_PROC, "songfilterGetByIdx", "");
+  logProcEnd ("");
   return dbidx;
 }
 
 dbidx_t
 songfilterGetCount (songfilter_t *sf)
 {
-  logProcBegin (LOG_PROC, "songfilterGetCount");
+  logProcBegin ();
 
   if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterGetCount", "null");
+    logProcEnd ("null");
     return 0;
   }
-  logProcEnd (LOG_PROC, "songfilterGetCount", "");
+  logProcEnd ("");
   return nlistGetCount (sf->indexList);
 }
 
@@ -779,7 +779,7 @@ songfilterGetCount (songfilter_t *sf)
 static void
 songfilterFreeData (songfilter_t *sf, int i)
 {
-  logProcBegin (LOG_PROC, "songfilterFreeData");
+  logProcBegin ();
 
   if (sf->datafilter [i] != NULL) {
     if (valueTypeLookup [i] == SONG_FILTER_STR) {
@@ -796,7 +796,7 @@ songfilterFreeData (songfilter_t *sf, int i)
     }
   }
   sf->datafilter [i] = NULL;
-  logProcEnd (LOG_PROC, "songfilterFreeData", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -805,14 +805,14 @@ songfilterCheckStr (const char *str, char *searchstr)
   bool  found = false;
   char  tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "songfilterCheckStr");
+  logProcBegin ();
 
   if (str == NULL || searchstr == NULL) {
-    logProcEnd (LOG_PROC, "songfilterCheckStr", "null-str");
+    logProcEnd ("null-str");
     return found;
   }
   if (*searchstr == '\0') {
-    logProcEnd (LOG_PROC, "songfilterCheckStr", "no-data");
+    logProcEnd ("no-data");
     return found;
   }
 
@@ -822,7 +822,7 @@ songfilterCheckStr (const char *str, char *searchstr)
     found = true;
   }
 
-  logProcEnd (LOG_PROC, "songfilterCheckStr", "");
+  logProcEnd ("");
   return found;
 }
 
@@ -834,16 +834,16 @@ songfilterMakeSortKey (songfilter_t *sf,
   char        tbuff [100];
   nlistidx_t  iteridx;
 
-  logProcBegin (LOG_PROC, "songfilterMakeSortKey");
+  logProcBegin ();
 
   sortkey [0] = '\0';
   if (song == NULL) {
-    logProcEnd (LOG_PROC, "songfilterMakeSortKey", "null-song");
+    logProcEnd ("null-song");
     return;
   }
 
   if (sf->parsed == NULL) {
-    logProcEnd (LOG_PROC, "songfilterMakeSortKey", "bad-parse");
+    logProcEnd ("bad-parse");
     return;
   }
 
@@ -955,7 +955,7 @@ songfilterMakeSortKey (songfilter_t *sf,
       strlcat (sortkey, tbuff, sz);
     }
   }
-  logProcEnd (LOG_PROC, "songfilterMakeSortKey", "");
+  logProcEnd ("");
 }
 
 static nlist_t *
@@ -967,7 +967,7 @@ songfilterParseSortKey (songfilter_t *sf)
   nlist_t     *parsed;
   int         tagkey;
 
-  logProcBegin (LOG_PROC, "songfilterParseSortKey");
+  logProcBegin ();
 
   parsed = nlistAlloc ("songfilter-sortkey-parse", LIST_UNORDERED, NULL);
 
@@ -987,7 +987,7 @@ songfilterParseSortKey (songfilter_t *sf)
   }
   mdfree (sortsel);
 
-  logProcEnd (LOG_PROC, "songfilterParseSortKey", "");
+  logProcEnd ("");
   return parsed;
 }
 
@@ -996,7 +996,7 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
 {
   char    tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "songfilterLoadFilterDisplay");
+  logProcBegin ();
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       DS_FILTER_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -1011,5 +1011,5 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
   if (nlistGetNum (sf->dispsel, FILTER_DISP_DANCERATING) < 0) {
     nlistSetNum (sf->dispsel, FILTER_DISP_DANCERATING, true);
   }
-  logProcEnd (LOG_PROC, "songfilterLoadFilterDisplay", "");
+  logProcEnd ("");
 }

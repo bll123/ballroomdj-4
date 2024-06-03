@@ -434,6 +434,14 @@ function checkInstallation {
       echo "  ${fn} should not be present"
     fi
 
+    fn=${DATADIR}/profile00/ds-currsong.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f ${fn} ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no ${fn}"
+    fi
+
     fn=${DATADIR}/profile00/bdjconfig.txt
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then

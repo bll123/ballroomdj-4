@@ -180,7 +180,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 {
   se_internal_t  *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditUIInit");
+  logProcBegin ();
 
   seint = mdmalloc (sizeof (se_internal_t));
   seint->itemcount = 0;
@@ -207,7 +207,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->ineditallapply = false;
 
   uisongedit->seInternalData = seint;
-  logProcEnd (LOG_PROC, "uisongeditUIInit", "");
+  logProcEnd ("");
 }
 
 void
@@ -215,9 +215,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 {
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditUIFree");
+  logProcBegin ();
   if (uisongedit == NULL) {
-    logProcEnd (LOG_PROC, "uisongeditUIFree", "null");
+    logProcEnd ("null");
     return;
   }
 
@@ -296,7 +296,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
     uisongedit->seInternalData = NULL;
   }
 
-  logProcEnd (LOG_PROC, "uisongeditUIFree", "");
+  logProcEnd ("");
 }
 
 uiwcont_t *
@@ -309,8 +309,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   int               count;
   char              tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "uisongeditBuildUI");
-  logProcBegin (LOG_PROC, "uisongeditBuildUI");
+  logProcBegin ();
+  logProcBegin ();
 
   uisongedit->statusMsg = statusMsg;
   uisongedit->uisongsel = uisongsel;
@@ -490,7 +490,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
+  logProcEnd ("");
   return seint->wcont [UISE_W_MAIN_VBOX];
 }
 
@@ -505,7 +505,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   double          dval;
   int             bpmdispidx = UISE_NOT_DISPLAYED;
 
-  logProcBegin (LOG_PROC, "uisongeditLoadData");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   seint->song = song;
   seint->dbidx = dbidx;
@@ -653,7 +653,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   uisongeditSetBPMRangeDisplay (seint, bpmdispidx, seint->currdanceidx);
   uisongeditSetBPMIncrement (seint, seint->currdanceidx);
 
-  logProcEnd (LOG_PROC, "uisongeditLoadData", "");
+  logProcEnd ("");
 }
 
 void
@@ -674,11 +674,11 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
 {
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditSetBPMValue");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
 
   if (seint->bpmidx < 0) {
-    logProcEnd (LOG_PROC, "uisongeditSetBPMValue", "bad-bpmidx");
+    logProcEnd ("bad-bpmidx");
     return;
   }
 
@@ -686,7 +686,7 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
   val = danceConvertMPMtoBPM (seint->currdanceidx, val);
 
   uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
-  logProcEnd (LOG_PROC, "uisongeditSetBPMValue", "");
+  logProcEnd ("");
 }
 
 void
@@ -694,7 +694,7 @@ uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
 {
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditSetPlayButtonState");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
 
   /* if the player is active, disable the button */
@@ -703,7 +703,7 @@ uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
   } else {
     uiWidgetSetState (seint->wcont [UISE_W_BUTTON_PLAY], UIWIDGET_ENABLE);
   }
-  logProcEnd (LOG_PROC, "uisongeditSetPlayButtonState", "");
+  logProcEnd ("");
 }
 
 /* also sets the edit-all display label */
@@ -804,7 +804,7 @@ uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag)
 {
   se_internal_t *seint =  NULL;
 
-  logProcBegin (LOG_PROC, "uisongeditClearChanged");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   for (int count = 0; count < seint->itemcount; ++count) {
     int tagkey = seint->items [count].tagkey;
@@ -822,7 +822,7 @@ uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag)
     seint->items [count].lastchanged = false;
   }
   seint->changed = 0;
-  logProcEnd (LOG_PROC, "uisongeditClearChanged", "");
+  logProcEnd ("");
 }
 
 bool
@@ -832,7 +832,7 @@ uisongeditEditAllApply (uisongedit_t *uisongedit)
   nlist_t         *chglist;
   dbidx_t         lastdbidx;
 
-  logProcBegin (LOG_PROC, "uisongeditEditAllApply");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: edit-all apply");
   seint = uisongedit->seInternalData;
 
@@ -849,7 +849,7 @@ uisongeditEditAllApply (uisongedit_t *uisongedit)
   uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
   seint->ineditallapply = false;
 
-  logProcEnd (LOG_PROC, "uisongeditEditAllApply", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1069,7 +1069,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
   slistidx_t      dsiteridx;
   se_internal_t   *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddDisplay");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   sellist = dispselGetList (uisongedit->dispsel, dispsel);
 
@@ -1102,7 +1102,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
     uiwcontFree (hbox);
   }
 
-  logProcEnd (LOG_PROC, "uisongeditAddDisplay", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1111,7 +1111,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
   uiwcont_t      *uiwidgetp;
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddItem");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
 
   if (! tagdefs [tagkey].secondaryDisplay) {
@@ -1221,7 +1221,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
       break;
     }
   }
-  logProcEnd (LOG_PROC, "uisongeditAddItem", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1230,7 +1230,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiwcont_t     *entryp;
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddEntry");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   entryp = uiEntryInit (20, 250);
   seint->items [seint->itemcount].uiwidgetp = entryp;
@@ -1241,7 +1241,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiWidgetAlignHorizFill (entryp);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
   uiBoxPackStartExpand (hbox, entryp);
-  logProcEnd (LOG_PROC, "uisongeditAddEntry", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1250,7 +1250,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiwcont_t      *uiwidgetp;
   se_internal_t *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddSpinboxInt");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   uiwidgetp = uiSpinboxIntCreate ();
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
@@ -1265,7 +1265,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       seint->callbacks [UISE_CB_CHANGED]);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_NUM], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  logProcEnd (LOG_PROC, "uisongeditAddSpinboxInt", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1274,13 +1274,13 @@ uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiwcont_t       *uiwidgetp;
   se_internal_t   *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddLabel");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   uiwidgetp = uiCreateLabel ("");
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
-  logProcEnd (LOG_PROC, "uisongeditAddLabel", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1289,12 +1289,12 @@ uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagk
   uiwcont_t       *uiwidgetp;
   se_internal_t   *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddSecondaryLabel");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (hbox, uiwidgetp);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
-  logProcEnd (LOG_PROC, "uisongeditAddSecondaryLabel", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1303,7 +1303,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiwcont_t       *sbp;
   se_internal_t   *seint;
 
-  logProcBegin (LOG_PROC, "uisongeditAddSpinboxTime");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   sbp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uisongedit, NULL);
   seint->items [seint->itemcount].uiwidgetp = sbp;
@@ -1314,7 +1314,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_TIME], sbp);
   uiBoxPackStart (hbox, sbp);
-  logProcEnd (LOG_PROC, "uisongeditAddSpinboxTime", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1326,7 +1326,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   double          inca, incb;
   int             digits;
 
-  logProcBegin (LOG_PROC, "uisongeditAddScale");
+  logProcBegin ();
   seint = uisongedit->seInternalData;
   if (tagkey == TAG_SPEEDADJUSTMENT) {
     lower = SPD_LOWER;
@@ -1356,7 +1356,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE_DISP], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   seint->items [seint->itemcount].display = uiwidgetp;
-  logProcEnd (LOG_PROC, "uisongeditAddScale", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1365,7 +1365,7 @@ uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   se_internal_t   *seint;
   uiwcont_t       *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "uisongeditAddSwitch");
+  logProcBegin ();
 
   seint = uisongedit->seInternalData;
   uiwidgetp = uiCreateSwitch (0);
@@ -1375,7 +1375,7 @@ uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       uisongeditSwitchCallback, &seint->items [seint->itemcount]);
   uiSwitchSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
-  logProcEnd (LOG_PROC, "uisongeditAddSwitch", "");
+  logProcEnd ("");
 }
 
 /* also sets the changed flag */
@@ -1387,14 +1387,14 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   char              tbuff [40];
   int               digits;
 
-  logProcBegin (LOG_PROC, "uisongeditScaleDisplayCallback");
+  logProcBegin ();
   seint = item->seint;
   seint->checkchanged = true;
   digits = uiScaleGetDigits (item->uiwidgetp);
   value = uiScaleEnforceMax (item->uiwidgetp, value);
   snprintf (tbuff, sizeof (tbuff), "%4.*f%%", digits, value);
   uiLabelSetText (item->display, tbuff);
-  logProcEnd (LOG_PROC, "uisongeditScaleDisplayCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1425,7 +1425,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
   char            tbuff [200];
   bool            valid = false;
 
-  logProcBegin (LOG_PROC, "uisongeditSaveCallback");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
   seint = uisongedit->seInternalData;
 
@@ -1606,7 +1606,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
     callbackHandlerLong (uisongedit->savecb, seint->dbidx);
   }
 
-  logProcEnd (LOG_PROC, "uisongeditSaveCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1777,11 +1777,11 @@ uisongeditFirstSelection (void *udata)
 {
   uisongedit_t  *uisongedit = udata;
 
-  logProcBegin (LOG_PROC, "uisongeditFirstSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: first");
   uisongselFirstSelection (uisongedit->uisongsel);
   uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
-  logProcEnd (LOG_PROC, "uisongeditFirstSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1790,11 +1790,11 @@ uisongeditPreviousSelection (void *udata)
 {
   uisongedit_t  *uisongedit = udata;
 
-  logProcBegin (LOG_PROC, "uisongeditPreviousSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: previous");
   uisongselPreviousSelection (uisongedit->uisongsel);
   uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
-  logProcEnd (LOG_PROC, "uisongeditPreviousSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1803,11 +1803,11 @@ uisongeditNextSelection (void *udata)
 {
   uisongedit_t  *uisongedit = udata;
 
-  logProcBegin (LOG_PROC, "uisongeditNextSelection");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: next");
   uisongselNextSelection (uisongedit->uisongsel);
   uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
-  logProcEnd (LOG_PROC, "uisongeditNextSelection", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

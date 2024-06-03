@@ -122,7 +122,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   bool          enabled;
   uiwcont_t    *uiwidgetp = NULL;
 
-  logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
+  logProcBegin ();
 
   enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
 
@@ -152,7 +152,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   if (*qruri) {
     mdfree (qruri);
   }
-  logProcEnd (LOG_PROC, "confuiUpdateMobmqQrcode", "");
+  logProcEnd ("");
 }
 
 void
@@ -164,7 +164,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   bool          enabled;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
+  logProcBegin ();
 
   enabled = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
@@ -193,7 +193,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   if (*qruri) {
     mdfree (qruri);
   }
-  logProcEnd (LOG_PROC, "confuiUpdateRemctrlQrcode", "");
+  logProcEnd ("");
 }
 
 void
@@ -208,7 +208,7 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
     return;
   }
 
-  logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
+  logProcBegin ();
   org = orgAlloc (orgpath);
 
   /* the only genres that are shipped are : */
@@ -221,7 +221,7 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   }
 
   orgFree (org);
-  logProcEnd (LOG_PROC, "confuiUpdateOrgExamples", "");
+  logProcEnd ("");
 }
 
 void
@@ -237,7 +237,7 @@ confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath,
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  logProcBegin (LOG_PROC, "confuiSelectDirDialog");
+  logProcBegin ();
   selectdata = uiSelectInit (sfcb->window, title, startpath, NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -246,7 +246,7 @@ confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath,
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd (LOG_PROC, "confuiSelectDirDialog", "");
+  logProcEnd ("");
 }
 
 void
@@ -256,7 +256,7 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  logProcBegin (LOG_PROC, "confuiSelectFileDialog");
+  logProcBegin ();
   selectdata = uiSelectInit (sfcb->window,
       /* CONTEXT: configuration: file selection dialog: window title */
       _("Select File"), startpath, NULL, mimefiltername, mimetype);
@@ -267,7 +267,7 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
+  logProcEnd ("");
 }
 
 void
@@ -275,7 +275,7 @@ confuiCreateTagListingDisp (confuigui_t *gui)
 {
   dispselsel_t  selidx;
 
-  logProcBegin (LOG_PROC, "confuiCreateTagListingDisp");
+  logProcBegin ();
 
   selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
 
@@ -291,14 +291,14 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   } else if (selidx == DISP_SEL_MARQUEE) {
     uiduallistSet (gui->dispselduallist, gui->marqueetaglist,
         DUALLIST_TREE_SOURCE);
-  } else if (selidx == DISP_SEL_PLAYER_UI) {
+  } else if (selidx == DISP_SEL_CURRSONG) {
     uiduallistSet (gui->dispselduallist, gui->pluitaglist,
         DUALLIST_TREE_SOURCE);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
         DUALLIST_TREE_SOURCE);
   }
-  logProcEnd (LOG_PROC, "confuiCreateTagListingDisp", "");
+  logProcEnd ("");
 }
 
 void
@@ -308,7 +308,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   slist_t       *sellist;
   dispsel_t     *dispsel;
 
-  logProcBegin (LOG_PROC, "confuiCreateTagSelectedDisp");
+  logProcBegin ();
 
   selidx = uiSpinboxTextGetValue (
       gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
@@ -317,7 +317,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   sellist = dispselGetList (dispsel, selidx);
 
   uiduallistSet (gui->dispselduallist, sellist, DUALLIST_TREE_TARGET);
-  logProcEnd (LOG_PROC, "confuiCreateTagSelectedDisp", "");
+  logProcEnd ("");
 }
 
 void
@@ -385,7 +385,7 @@ confuiGetThemeList (void)
   int         count;
 
 
-  logProcBegin (LOG_PROC, "confuiGetThemeList");
+  logProcBegin ();
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
@@ -429,7 +429,7 @@ confuiGetThemeList (void)
 
   slistFree (sthemelist);
 
-  logProcEnd (LOG_PROC, "confuiGetThemeList", "");
+  logProcEnd ("");
   return themelist;
 }
 
@@ -443,9 +443,9 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   char          tbuff [MAXPATHLEN];
   char          tmp [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "confuiGetThemeNames");
+  logProcBegin ();
   if (filelist == NULL) {
-    logProcEnd (LOG_PROC, "confuiGetThemeNames", "no-filelist");
+    logProcEnd ("no-filelist");
     return NULL;
   }
 
@@ -467,7 +467,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
     } /* is directory */
   } /* for each file */
 
-  logProcEnd (LOG_PROC, "confuiGetThemeNames", "");
+  logProcEnd ("");
   return themelist;
 }
 
@@ -482,7 +482,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   FILE          *fh;
   size_t        dlen;
 
-  logProcBegin (LOG_PROC, "confuiMakeQRCodeFile");
+  logProcBegin ();
   qruri = mdmalloc (MAXPATHLEN);
 
   pathbldMakePath (baseuri, sizeof (baseuri),
@@ -512,7 +512,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
       AS_FILE_PFX, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   mdfree (ndata);
-  logProcEnd (LOG_PROC, "confuiMakeQRCodeFile", "");
+  logProcEnd ("");
   return qruri;
 }
 
@@ -527,7 +527,7 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
     return;
   }
 
-  logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
+  logProcBegin ();
   tdata = mdstrdup (data);
   song = songAlloc ();
   songParse (song, tdata, 0);
@@ -537,7 +537,7 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
   songFree (song);
   mdfree (disp);
   mdfree (tdata);
-  logProcEnd (LOG_PROC, "confuiUpdateOrgExample", "");
+  logProcEnd ("");
 }
 
 bool
@@ -547,7 +547,7 @@ confuiOrgPathSelect (void *udata, long idx)
   char        *sval = NULL;
   int         widx;
 
-  logProcBegin (LOG_PROC, "confuiOrgPathSelect");
+  logProcBegin ();
   widx = CONFUI_COMBOBOX_ORGPATH;
   sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
   gui->uiitem [widx].listidx = idx;
@@ -555,7 +555,7 @@ confuiOrgPathSelect (void *udata, long idx)
     bdjoptSetStr (OPT_G_ORGPATH, sval);
   }
   confuiUpdateOrgExamples (gui, sval);
-  logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

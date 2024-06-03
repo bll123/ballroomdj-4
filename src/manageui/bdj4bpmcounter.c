@@ -171,7 +171,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "bpmc", ROUTE_BPM_COUNTER, &flags);
-  logProcBegin (LOG_PROC, "bpmcounter");
+  logProcBegin ();
 
   listenPort = bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT);
   bpmcounter.conn = connInit (ROUTE_BPM_COUNTER);
@@ -203,7 +203,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, bpmcounterProcessMsg, bpmcounterMainLoop, &bpmcounter);
   connFree (bpmcounter.conn);
   progstateFree (bpmcounter.progstate);
-  logProcEnd (LOG_PROC, "bpmcounter", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -258,7 +258,7 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
   bpmcounter_t   *bpmcounter = udata;
   int             x, y, ws;
 
-  logProcBegin (LOG_PROC, "bpmcounterStoppingCallback");
+  logProcBegin ();
 
   uiWindowGetSize (bpmcounter->wcont [BPM_W_WINDOW], &x, &y);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_SIZE_X, x);
@@ -269,7 +269,7 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnectAll (bpmcounter->conn);
 
-  logProcEnd (LOG_PROC, "bpmcounterStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -288,7 +288,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 {
   bpmcounter_t   *bpmcounter = udata;
 
-  logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
+  logProcBegin ();
   uiCloseWindow (bpmcounter->wcont [BPM_W_WINDOW]);
   uiCleanup ();
   for (int i = 0; i < BPM_W_MAX; ++i) {
@@ -313,7 +313,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (bpmcounter->optiondf);
 
-  logProcEnd (LOG_PROC, "bpmcounterClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -331,7 +331,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   int         x, y;
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "bpmcounterBuildUI");
+  logProcBegin ();
 
   szgrp = uiCreateSizeGroupHoriz ();      // labels
   szgrpDisp = uiCreateSizeGroupHoriz ();     // display
@@ -346,7 +346,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       _("BPM Counter"), imgbuff);
 
   vboxmain = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vboxmain, 2);
+  uiWidgetSetAllMargins (vboxmain, 4);
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
@@ -479,7 +479,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpDisp);
 
-  logProcEnd (LOG_PROC, "bpmcounterBuildUI", "");
+  logProcEnd ("");
 }
 
 static int
@@ -521,7 +521,7 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   bpmcounter_t       *bpmcounter = udata;
 
-  logProcBegin (LOG_PROC, "bpmcounterProcessMsg");
+  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -568,7 +568,7 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  logProcEnd (LOG_PROC, "bpmcounterProcessMsg", "");
+  logProcEnd ("");
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

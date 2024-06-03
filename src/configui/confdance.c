@@ -88,7 +88,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   const char    *bpmstr;
   char          tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
+  logProcBegin ();
   gui->inchange = true;
   vbox = uiCreateVertBox ();
 
@@ -186,7 +186,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiwcontFree (szgrpB);
   uiwcontFree (szgrpC);
 
-  logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -201,7 +201,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   slist_t           *dancelist;
 
 
-  logProcBegin (LOG_PROC, "confuiCreateDanceTable");
+  logProcBegin ();
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -232,7 +232,7 @@ confuiCreateDanceTable (confuigui_t *gui)
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_TYPE_END);
 
-  logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");
+  logProcEnd ("");
 }
 
 static int
@@ -266,15 +266,15 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   datafileconv_t  conv;
   int             entryrc = UIENTRY_ERROR;
 
-  logProcBegin (LOG_PROC, "confuiDanceEntryChg");
+  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "in-dance-select");
+    logProcEnd ("in-dance-select");
     return UIENTRY_OK;
   }
 
   str = uiEntryGetValue (entry);
   if (str == NULL) {
-    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "null-string");
+    logProcEnd ("null-string");
     return UIENTRY_OK;
   }
 
@@ -283,7 +283,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
   count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
-    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
+    logProcEnd ("no-selection");
     return UIENTRY_OK;
   }
 
@@ -316,7 +316,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   if (entryrc == UIENTRY_OK) {
     gui->tables [gui->tablecurr].changed = true;
   }
-  logProcEnd (LOG_PROC, "confuiDanceEntryChg", "");
+  logProcEnd ("");
   return entryrc;
 }
 
@@ -367,9 +367,9 @@ confuiDanceSpinboxChg (void *udata, int widx)
   dance_t         *dances;
   int             didx;
 
-  logProcBegin (LOG_PROC, "confuiDanceSpinboxChg");
+  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "in-dance-select");
+    logProcEnd ("in-dance-select");
     return;
   }
 
@@ -387,7 +387,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
   count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
-    logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
+    logProcEnd ("no-selection");
     return;
   }
 
@@ -398,7 +398,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
   danceSetNum (dances, key, didx, nval);
   gui->tables [gui->tablecurr].changed = true;
-  logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "");
+  logProcEnd ("");
 }
 
 static int
@@ -408,9 +408,9 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
   const char  *fn;
   char        nfn [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "confuiDanceValidateAnnouncement");
+  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "in-dance-select");
+    logProcEnd ("in-dance-select");
     return UIENTRY_OK;
   }
 
@@ -418,7 +418,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 
   fn = uiEntryGetValue (entry);
   if (fn == NULL) {
-    logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
+    logProcEnd ("bad-fn");
     return UIENTRY_ERROR;
   }
 
@@ -451,7 +451,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
   }
 
   gui->inchange = false;
-  logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -460,17 +460,17 @@ confuiDanceSave (confuigui_t *gui)
 {
   dance_t   *dances;
 
-  logProcBegin (LOG_PROC, "confuiDanceSave");
+  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_DANCE].changed == false) {
-    logProcEnd (LOG_PROC, "confuiTableSave", "not-changed");
+    logProcEnd ("not-changed");
     return;
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   /* the data is already saved in the dance list; just re-use it */
   danceSave (dances, NULL, -1);
-  logProcEnd (LOG_PROC, "confuiDanceSave", "");
+  logProcEnd ("");
 }
 
 static void
@@ -483,7 +483,7 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   const char    *key;
   int           count;
 
-  logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");
+  logProcBegin ();
 
   tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, NULL);
@@ -499,6 +499,6 @@ confuiLoadDanceTypeList (confuigui_t *gui)
 
   gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
+  logProcEnd ("");
 }
 

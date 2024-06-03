@@ -69,7 +69,7 @@ genreAlloc (void)
         ilistGetStr (genre->genre, gkey, GENRE_GENRE), gkey);
   }
   slistSort (genre->genreList);
-  slistCalcMaxWidth (genre->genreList);
+  slistCalcMaxKeyWidth (genre->genreList);
 
   ilistStartIterator (genre->genre, &iteridx);
 

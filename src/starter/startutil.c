@@ -30,12 +30,12 @@ starterStopAllProcesses (conn_t *conn)
   pid_t         pid;
   int           count;
 
-  logProcBegin (LOG_PROC, "starterStopAllProcesses");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_INFO, "stop-all-processes");
 
   count = starterCountProcesses ();
   if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-none");
+    logProcEnd ("begin-none");
     return;
   }
 
@@ -53,7 +53,7 @@ starterStopAllProcesses (conn_t *conn)
 
   count = starterCountProcesses ();
   if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
+    logProcEnd ("after-ui");
     return;
   }
 
@@ -71,7 +71,7 @@ starterStopAllProcesses (conn_t *conn)
 
   count = starterCountProcesses ();
   if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
+    logProcEnd ("after-main");
     return;
   }
 
@@ -94,7 +94,7 @@ starterStopAllProcesses (conn_t *conn)
   }
 
   if (count <= 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-exit-all");
+    logProcEnd ("after-exit-all");
     return;
   }
 
@@ -104,7 +104,7 @@ starterStopAllProcesses (conn_t *conn)
   /* see which lock files still exist and kill the processes */
   count = starterTerminateProcesses (PROCUTIL_NORM_TERM);
   if (count <= 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-term");
+    logProcEnd ("after-term");
     return;
   }
 
@@ -117,7 +117,7 @@ starterStopAllProcesses (conn_t *conn)
   starterRemoveAllLocks ();
   starterCleanVolumeReg ();
 
-  logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
+  logProcEnd ("");
   return;
 }
 
@@ -206,7 +206,7 @@ starterCountProcesses (void)
   pid_t         pid;
   int           count;
 
-  logProcBegin (LOG_PROC, "starterCountProcesses");
+  logProcBegin ();
   count = 0;
   for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     if (route == ROUTE_STARTERUI) {
@@ -220,7 +220,7 @@ starterCountProcesses (void)
     }
   }
 
-  logProcEnd (LOG_PROC, "starterCountProcesses", "");
+  logProcEnd ("");
   return count;
 }
 

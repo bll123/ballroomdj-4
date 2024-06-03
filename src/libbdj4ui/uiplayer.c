@@ -168,7 +168,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
 {
   uiplayer_t    *uiplayer;
 
-  logProcBegin (LOG_PROC, "uiplayerInit");
+  logProcBegin ();
   uiplayer = mdmalloc (sizeof (uiplayer_t));
   uiplayer->tag = tag;
   uiplayer->progstate = progstate;
@@ -191,7 +191,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
 
-  logProcEnd (LOG_PROC, "uiplayerInit", "");
+  logProcEnd ("");
   return uiplayer;
 }
 
@@ -204,7 +204,7 @@ uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb)
 void
 uiplayerFree (uiplayer_t *uiplayer)
 {
-  logProcBegin (LOG_PROC, "uiplayerFree");
+  logProcBegin ();
   if (uiplayer != NULL) {
     for (int i = 0; i < UIPL_CB_MAX; ++i) {
       callbackFree (uiplayer->callbacks [i]);
@@ -217,7 +217,7 @@ uiplayerFree (uiplayer_t *uiplayer)
     }
     mdfree (uiplayer);
   }
-  logProcEnd (LOG_PROC, "uiplayerFree", "");
+  logProcEnd ("");
 }
 
 uiwcont_t *
@@ -233,7 +233,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcont_t       *szgrpD;
   uiwcont_t       *szgrpE;
 
-  logProcBegin (LOG_PROC, "uiplayerBuildUI");
+  logProcBegin ();
 
   szgrpA = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
@@ -528,7 +528,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontFree (szgrpD);
   uiwcontFree (szgrpE);
 
-  logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
+  logProcEnd ("");
   return uiplayer->wcont [UIPL_W_MAIN_VBOX];
 }
 
@@ -613,7 +613,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   uiplayer_t    *uiplayer = udata;
   char          *targs = NULL;
 
-  logProcBegin (LOG_PROC, "uiplayerProcessMsg");
+  logProcBegin ();
   if (args != NULL) {
     targs = mdstrdup (args);
   }
@@ -665,7 +665,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   dataFree (targs);
 
-  logProcEnd (LOG_PROC, "uiplayerProcessMsg", "");
+  logProcEnd ("");
   return 0;
 }
 
@@ -721,7 +721,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
 {
   uiplayer_t *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerInitCallback");
+  logProcBegin ();
 
   uiplayer->playerState = PL_STATE_STOPPED;
   mstimeset (&uiplayer->speedLockTimeout, 3600000);
@@ -745,7 +745,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   uiplayer->seekdisabled = false;
   uiplayer->pliSupported = PLI_SUPPORT_NONE;
 
-  logProcEnd (LOG_PROC, "uiplayerInitCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -754,28 +754,28 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerClosingCallback");
+  logProcBegin ();
   uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_PLAY]);
   uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_PAUSE]);
   uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_REPEAT]);
   uiWidgetClearPersistent (uiplayer->images [UIPL_IMG_LED_ON]);
   uiWidgetClearPersistent (uiplayer->images [UIPL_IMG_LED_OFF]);
-  logProcEnd (LOG_PROC, "uiplayerClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
 static void
 uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 {
-  logProcBegin (LOG_PROC, "uiplayerProcessPauseatend");
+  logProcBegin ();
 
   if (! uiplayer->uibuilt) {
-    logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "no-ui");
+    logProcEnd ("no-ui");
     return;
   }
   if (uiplayer->pauseatendLock) {
-    logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "pae-lock");
+    logProcEnd ("pae-lock");
     return;
   }
 
@@ -792,7 +792,7 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
   uiplayer->pauseatendstate = onoff;
 
   uiplayer->pauseatendLock = false;
-  logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "");
+  logProcEnd ("");
 }
 
 static void
@@ -800,7 +800,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 {
   int   state;
 
-  logProcBegin (LOG_PROC, "uiplayerProcessPlayerState");
+  logProcBegin ();
 
   uiplayer->playerState = playerState;
 
@@ -844,7 +844,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
       break;
     }
   }
-  logProcEnd (LOG_PROC, "uiplayerProcessPlayerState", "");
+  logProcEnd ("");
 }
 
 static void
@@ -858,7 +858,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   ssize_t       dur = 0;
   mp_playerstatus_t *ps = NULL;
 
-  logProcBegin (LOG_PROC, "uiplayerProcessPlayerStatusData");
+  logProcBegin ();
 
   ps = msgparsePlayerStatusData (args);
 
@@ -927,7 +927,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   msgparsePlayerStatusFree (ps);
 
-  logProcEnd (LOG_PROC, "uiplayerProcessPlayerStatusData", "");
+  logProcEnd ("");
 }
 
 static void
@@ -946,7 +946,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   int           tagidx;
   slistidx_t    seliteridx;
 
-  logProcBegin (LOG_PROC, "uiplayerProcessMusicqStatusData");
+  logProcBegin ();
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -960,18 +960,18 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   if (dbidx < 0) {
     uiplayerClearDisplay (uiplayer);
-    logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "no-dbidx");
+    logProcEnd ("no-dbidx");
     return;
   }
 
   song = dbGetByIdx (uiplayer->musicdb, dbidx);
   if (song == NULL) {
     uiplayerClearDisplay (uiplayer);
-    logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "null-song");
+    logProcEnd ("null-song");
     return;
   }
 
-  sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_PLAYER_UI);
+  sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_CURRSONG);
 
   idx = UIPL_W_INFO_DISP_A;
   slistStartIterator (sellist, &seliteridx);
@@ -1015,7 +1015,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     }
   }
 
-  logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -1023,9 +1023,9 @@ uiplayerFadeProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerFadeProcess");
+  logProcBegin ();
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
-  logProcEnd (LOG_PROC, "uiplayerFadeProcess", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1034,9 +1034,9 @@ uiplayerPlayPauseProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerPlayPauseProcess");
+  logProcBegin ();
   connSendMessage (uiplayer->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
-  logProcEnd (LOG_PROC, "uiplayerPlayPauseProcess", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1045,15 +1045,15 @@ uiplayerRepeatCallback (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerRepeatCallback");
+  logProcBegin ();
 
   if (uiplayer->repeatLock) {
-    logProcEnd (LOG_PROC, "uiplayerRepeatCallback", "repeat-lock");
+    logProcEnd ("repeat-lock");
     return UICB_CONT;
   }
 
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
-  logProcEnd (LOG_PROC, "uiplayerRepeatCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1062,9 +1062,9 @@ uiplayerSongBeginProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerSongBeginProcess");
+  logProcBegin ();
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
-  logProcEnd (LOG_PROC, "uiplayerSongBeginProcess", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1073,9 +1073,9 @@ uiplayerNextSongProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerNextSongProcess");
+  logProcBegin ();
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-  logProcEnd (LOG_PROC, "uiplayerNextSongProcess", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1084,15 +1084,15 @@ uiplayerPauseatendCallback (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerPauseatendCallback");
+  logProcBegin ();
 
   if (uiplayer->pauseatendLock) {
-    logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "pae-lock");
+    logProcEnd ("pae-lock");
     return UICB_STOP;
   }
 
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
-  logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1102,7 +1102,7 @@ uiplayerSpeedCallback (void *udata, double value)
   uiplayer_t    *uiplayer = udata;
   char          tbuff [40];
 
-  logProcBegin (LOG_PROC, "uiplayerSpeedCallback");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: speed chg", uiplayer->tag);
 
   if (! uiplayer->speedLock) {
@@ -1113,7 +1113,7 @@ uiplayerSpeedCallback (void *udata, double value)
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SPEED], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
-  logProcEnd (LOG_PROC, "uiplayerSpeedCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1125,7 +1125,7 @@ uiplayerSeekCallback (void *udata, double value)
   ssize_t       position;
   ssize_t       timeleft;
 
-  logProcBegin (LOG_PROC, "uiplayerSeekCallback");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: position chg", uiplayer->tag);
 
   if (! uiplayer->seekLock) {
@@ -1143,7 +1143,7 @@ uiplayerSeekCallback (void *udata, double value)
   timeleft = uiplayer->lastdur - position;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));
   uiLabelSetText (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER], tbuff);
-  logProcEnd (LOG_PROC, "uiplayerSeekCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1153,7 +1153,7 @@ uiplayerVolumeCallback (void *udata, double value)
   uiplayer_t    *uiplayer = udata;
   char          tbuff [40];
 
-  logProcBegin (LOG_PROC, "uiplayerVolumeCallback");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: volume chg", uiplayer->tag);
 
   if (! uiplayer->volumeLock) {
@@ -1165,7 +1165,7 @@ uiplayerVolumeCallback (void *udata, double value)
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_VOLUME], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
-  logProcEnd (LOG_PROC, "uiplayerVolumeCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

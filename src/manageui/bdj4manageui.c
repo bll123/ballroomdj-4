@@ -533,7 +533,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
-  logProcBegin (LOG_PROC, "manageui");
+  logProcBegin ();
 
   manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
@@ -604,7 +604,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage);
   connFree (manage.conn);
   progstateFree (manage.progstate);
-  logProcEnd (LOG_PROC, "manageui", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -621,7 +621,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   manageui_t    * manage = udata;
   int           x, y, ws;
 
-  logProcBegin (LOG_PROC, "manageStoppingCallback");
+  logProcBegin ();
 
   /* remove any songs in the removal list */
   manageRemoveSongs (manage);
@@ -651,7 +651,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->minfo.options, MANAGE_POSITION_X, x);
   nlistSetNum (manage->minfo.options, MANAGE_POSITION_Y, y);
 
-  logProcEnd (LOG_PROC, "manageStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -670,7 +670,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 {
   manageui_t    *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageClosingCallback");
+  logProcBegin ();
 
   uiCloseWindow (manage->minfo.window);
   uiCleanup ();
@@ -738,7 +738,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (manage->optiondf);
 
-  logProcEnd (LOG_PROC, "manageClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -753,7 +753,7 @@ manageBuildUI (manageui_t *manage)
   int         x, y;
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "manageBuildUI");
+  logProcBegin ();
   *imgbuff = '\0';
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
@@ -901,7 +901,7 @@ manageBuildUI (manageui_t *manage)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "manageBuildUI", "");
+  logProcEnd ("");
 }
 
 static void
@@ -1334,7 +1334,7 @@ manageConnectingCallback (void *udata, programstate_t programState)
   manageui_t   *manage = udata;
   bool        rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "manageConnectingCallback");
+  logProcBegin ();
 
   connProcessUnconnected (manage->conn);
 
@@ -1353,7 +1353,7 @@ manageConnectingCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "manageConnectingCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -1363,7 +1363,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   manageui_t   *manage = udata;
   bool        rc = STATE_NOT_FINISH;
 
-  logProcBegin (LOG_PROC, "manageHandshakeCallback");
+  logProcBegin ();
 
   connProcessUnconnected (manage->conn);
 
@@ -1390,7 +1390,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     rc = STATE_FINISHED;
   }
 
-  logProcEnd (LOG_PROC, "manageHandshakeCallback", "");
+  logProcEnd ("");
   return rc;
 }
 
@@ -1564,15 +1564,15 @@ manageCloseWin (void *udata)
   manageui_t   *manage = udata;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: close window");
-  logProcBegin (LOG_PROC, "manageCloseWin");
+  logProcBegin ();
   if (progstateCurrState (manage->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (manage->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    logProcEnd (LOG_PROC, "manageCloseWin", "not-done");
+    logProcEnd ("not-done");
     return UICB_STOP;
   }
 
-  logProcEnd (LOG_PROC, "manageCloseWin", "");
+  logProcEnd ("");
   return UICB_STOP;
 }
 
@@ -1592,7 +1592,7 @@ manageSongEditMenu (manageui_t *manage)
   const char  *p;
   void        *tempp;
 
-  logProcBegin (LOG_PROC, "manageSongEditMenu");
+  logProcBegin ();
 
   if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT])) {
     uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
@@ -1680,7 +1680,7 @@ manageSongEditMenu (manageui_t *manage)
   uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
   manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
 
-  logProcEnd (LOG_PROC, "manageSongEditMenu", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -1689,14 +1689,14 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   manageui_t  *manage = udata;
   song_t      *song = NULL;
 
-  logProcBegin (LOG_PROC, "manageNewSelectionSongSel");
+  logProcBegin ();
   if (manage->selbypass) {
-    logProcEnd (LOG_PROC, "manageNewSelectionSongSel", "sel-bypass");
+    logProcEnd ("sel-bypass");
     return UICB_CONT;
   }
 
   if (dbidx < 0) {
-    logProcEnd (LOG_PROC, "manageNewSelectionSongSel", "bad-dbidx");
+    logProcEnd ("bad-dbidx");
     return UICB_CONT;
   }
 
@@ -1710,7 +1710,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   song = dbGetByIdx (manage->musicdb, dbidx);
   manageSetBPMCounter (manage, song);
 
-  logProcEnd (LOG_PROC, "manageNewSelectionSongSel", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1719,9 +1719,9 @@ manageNewSelectionSonglist (void *udata, long dbidx)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageNewSelectionSonglist");
+  logProcBegin ();
   if (manage->selbypass) {
-    logProcEnd (LOG_PROC, "manageNewSelectionSonglist", "sel-bypass");
+    logProcEnd ("sel-bypass");
     return UICB_CONT;
   }
 
@@ -1729,7 +1729,7 @@ manageNewSelectionSonglist (void *udata, long dbidx)
   manage->selusesonglist = true;
   manage->songlistdbidx = dbidx;
 
-  logProcEnd (LOG_PROC, "manageNewSelectionSonglist", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1739,7 +1739,7 @@ manageSwitchToSongEditor (void *udata)
   manageui_t  *manage = udata;
   int         pagenum;
 
-  logProcBegin (LOG_PROC, "manageSwitchToSongEditor");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: switch to song editor");
   if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
     /* switching to the music manager tab will also apply the appropriate */
@@ -1754,7 +1754,7 @@ manageSwitchToSongEditor (void *udata)
 
   /* the notebook-switch-page callback will load the song editor data */
 
-  logProcEnd (LOG_PROC, "manageSwitchToSongEditor", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1764,7 +1764,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   manageui_t  *manage = udata;
   char        tmp [40];
 
-  logProcBegin (LOG_PROC, "manageSongEditSaveCallback");
+  logProcBegin ();
 
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
     dbBackup ();
@@ -1789,7 +1789,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
 
   ++manage->dbchangecount;
 
-  logProcEnd (LOG_PROC, "manageSongEditSaveCallback", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1974,11 +1974,11 @@ managePlaylistImportiTunes (void *udata)
     return UICB_CONT;
   }
 
-  logProcBegin (LOG_PROC, "managePlaylistImportiTunes");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
   manage->impitunesstate = BDJ4_STATE_START;
 
-  logProcEnd (LOG_PROC, "managePlaylistImportiTunes", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -1990,9 +1990,9 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiwcont_t   *uiwidgetp;
   char        tbuff [50];
 
-  logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
+  logProcBegin ();
   if (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG] != NULL) {
-    logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "already");
+    logProcEnd ("already");
     return;
   }
 
@@ -2038,7 +2038,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiwcontFree (vbox);
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "");
+  logProcEnd ("");
 }
 
 static void
@@ -2047,18 +2047,18 @@ manageiTunesDialogCreateList (manageui_t *manage)
   slist_t     *pllist;
   const char  *skey;
 
-  logProcBegin (LOG_PROC, "manageiTunesCreateList");
+  logProcBegin ();
 
   pllist = slistAlloc ("itunes-pl-sel", LIST_ORDERED, NULL);
   itunesStartIteratePlaylists (manage->itunes);
   while ((skey = itunesIteratePlaylists (manage->itunes)) != NULL) {
     slistSetStr (pllist, skey, skey);
   }
-  slistCalcMaxWidth (pllist);
+  slistCalcMaxKeyWidth (pllist);
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (manage->wcont [MANAGE_W_ITUNES_SEL], pllist, "");
   slistFree (pllist);
-  logProcEnd (LOG_PROC, "manageiTunesCreateList", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -2072,7 +2072,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageiTunesResponseHandler");
+  logProcBegin ();
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
@@ -2127,7 +2127,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
     }
   }
 
-  logProcEnd (LOG_PROC, "manageiTunesResponseHandler", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2140,7 +2140,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiwcont_t  *uiwidgetp;
   uiwcont_t  *vbox;
 
-  logProcBegin (LOG_PROC, "manageBuildUIMusicManager");
+  logProcBegin ();
   /* music manager */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
@@ -2200,7 +2200,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "manageBuildUIMusicManager", "");
+  logProcEnd ("");
 }
 
 void
@@ -2209,7 +2209,7 @@ manageMusicManagerMenu (manageui_t *manage)
   uiwcont_t  *menu = NULL;
   uiwcont_t  *menuitem = NULL;
 
-  logProcBegin (LOG_PROC, "manageMusicManagerMenu");
+  logProcBegin ();
   if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_MM])) {
     uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
     manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
@@ -2259,7 +2259,7 @@ manageMusicManagerMenu (manageui_t *manage)
   uiMenuDisplay (manage->wcont [MANAGE_W_MENU_MM]);
   manage->currmenu = manage->wcont [MANAGE_W_MENU_MM];
 
-  logProcEnd (LOG_PROC, "manageMusicManagerMenu", "");
+  logProcEnd ("");
 }
 
 /* song list */
@@ -2271,11 +2271,11 @@ manageSonglistMenu (manageui_t *manage)
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
 
-  logProcBegin (LOG_PROC, "manageSonglistMenu");
+  logProcBegin ();
   if (uiMenuIsInitialized (manage->wcont [MANAGE_W_MENU_SL])) {
     uiMenuDisplay (manage->wcont [MANAGE_W_MENU_SL]);
     manage->currmenu = manage->wcont [MANAGE_W_MENU_SL];
-    logProcEnd (LOG_PROC, "manageSonglistMenu", "already");
+    logProcEnd ("already");
     return;
   }
 
@@ -2421,7 +2421,7 @@ manageSonglistMenu (manageui_t *manage)
 
   uiwcontFree (menu);
 
-  logProcEnd (LOG_PROC, "manageSonglistMenu", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -2429,12 +2429,12 @@ manageSonglistLoad (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSonglistLoad");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   manageSonglistSave (manage);
   selectFileDialog (SELFILE_SONGLIST, manage->minfo.window, manage->minfo.options,
       manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
-  logProcEnd (LOG_PROC, "manageSonglistLoad", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2454,7 +2454,7 @@ manageSonglistCopy (void *udata)
   char        *oname;
   char        newname [200];
 
-  logProcBegin (LOG_PROC, "manageSonglistCopy");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
   manageSonglistSave (manage);
 
@@ -2468,7 +2468,7 @@ manageSonglistCopy (void *udata)
     manage->slbackupcreated = false;
   }
   mdfree (oname);
-  logProcEnd (LOG_PROC, "manageSonglistCopy", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2477,7 +2477,7 @@ manageSonglistNew (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSonglistNew");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   manageSonglistSave (manage);
 
@@ -2490,7 +2490,7 @@ manageSonglistNew (void *udata)
   /* the music manager must be reset to use the song selection as */
   /* there are no songs selected */
   manageNewSelectionSongSel (manage, manage->seldbidx);
-  logProcEnd (LOG_PROC, "manageSonglistNew", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2500,7 +2500,7 @@ manageSonglistDelete (void *udata)
   manageui_t  *manage = udata;
   char        *oname;
 
-  logProcBegin (LOG_PROC, "manageSonglistDelete");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->slmusicq);
 
@@ -2510,7 +2510,7 @@ manageSonglistDelete (void *udata)
   manage->sloldname = NULL;
   manageSonglistNew (manage);
   mdfree (oname);
-  logProcEnd (LOG_PROC, "manageSonglistDelete", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2519,10 +2519,10 @@ manageSonglistTruncate (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSonglistTruncate");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: truncate songlist");
   uimusicqTruncateQueueCallback (manage->slmusicq);
-  logProcEnd (LOG_PROC, "manageSonglistTruncate", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2537,7 +2537,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   }
 
   manage->cfplactive = true;
-  logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
 
@@ -2556,7 +2556,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   y = nlistGetNum (manage->minfo.options, MANAGE_CFPL_POSITION_Y);
   uiWindowMove (manage->wcont [MANAGE_W_CFPL_DIALOG], x, y, -1);
 
-  logProcEnd (LOG_PROC, "manageSonglistCreateFromPlaylist", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2568,9 +2568,9 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcont_t  *uiwidgetp;
   uiwcont_t  *szgrp;  // labels
 
-  logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
+  logProcBegin ();
   if (manage->wcont [MANAGE_W_CFPL_DIALOG] != NULL) {
-    logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "already");
+    logProcEnd ("already");
     return;
   }
 
@@ -2625,7 +2625,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
-  logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -2634,7 +2634,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
   manageui_t  *manage = udata;
   int         x, y, ws;
 
-  logProcBegin (LOG_PROC, "manageCFPLResponseHandler");
+  logProcBegin ();
   uiWindowGetPosition (manage->wcont [MANAGE_W_CFPL_DIALOG], &x, &y, &ws);
   nlistSetNum (manage->minfo.options, MANAGE_CFPL_POSITION_X, x);
   nlistSetNum (manage->minfo.options, MANAGE_CFPL_POSITION_Y, y);
@@ -2659,7 +2659,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
     }
   }
 
-  logProcEnd (LOG_PROC, "manageCFPLResponseHandler", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2778,12 +2778,12 @@ manageSonglistMix (void *udata)
   manageui_t  *manage = udata;
   char        tbuff [40];
 
-  logProcBegin (LOG_PROC, "manageSonglistMix");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: mix songlist");
   uiLabelSetText (manage->minfo.statusMsg, manage->minfo.pleasewaitmsg);
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_MIX, tbuff);
-  logProcEnd (LOG_PROC, "manageSonglistMix", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2792,10 +2792,10 @@ manageSonglistSwap (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSonglistSwap");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist swap");
   uimusicqSwap (manage->slmusicq, manage->musicqManageIdx);
-  logProcEnd (LOG_PROC, "manageSonglistSwap", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2805,21 +2805,21 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   manageui_t  *manage = udata;
   char  tbuff [200];
 
-  logProcBegin (LOG_PROC, "manageSonglistLoadFile");
+  logProcBegin ();
   if (manage->inload) {
-    logProcEnd (LOG_PROC, "manageSonglistLoadFile", "in-load");
+    logProcEnd ("in-load");
     return;
   }
 
   if (preloadflag == MANAGE_CREATE) {
     if (! playlistExists (fn)) {
-      logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-playlist");
+      logProcEnd ("no-playlist");
       return;
     }
   }
   if (preloadflag == MANAGE_STD || preloadflag == MANAGE_PRELOAD) {
     if (! songlistExists (fn)) {
-      logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-songlist");
+      logProcEnd ("no-songlist");
       return;
     }
   }
@@ -2854,7 +2854,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   }
   manage->slbackupcreated = false;
   manage->inload = false;
-  logProcEnd (LOG_PROC, "manageSonglistLoadFile", "");
+  logProcEnd ("");
 }
 
 /* callback to load playlist upon songlist/sequence load */
@@ -2885,11 +2885,11 @@ manageLoadSonglistSeqCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageLoadSonglistSeqCB");
+  logProcBegin ();
   /* the load will save any current song list */
   manageSonglistLoadFile (manage, fn, MANAGE_PRELOAD);
   manageSequenceLoadFile (manage->manageseq, fn, MANAGE_PRELOAD);
-  logProcEnd (LOG_PROC, "manageLoadSonglistSeqCB", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2899,13 +2899,13 @@ manageToggleEasySonglist (void *udata)
   manageui_t  *manage = udata;
   int         val;
 
-  logProcBegin (LOG_PROC, "manageToggleEasySonglist");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle side-by-side songlist");
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   val = ! val;
   nlistSetNum (manage->minfo.options, MANAGE_SBS_SONGLIST, val);
   manageSetEasySonglist (manage);
-  logProcEnd (LOG_PROC, "manageToggleEasySonglist", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -2914,7 +2914,7 @@ manageSetEasySonglist (manageui_t *manage)
 {
   int     val;
 
-  logProcBegin (LOG_PROC, "manageSetEasySonglist");
+  logProcBegin ();
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   if (val) {
     uiWidgetShowAll (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
@@ -2927,7 +2927,7 @@ manageSetEasySonglist (manageui_t *manage)
     uiWidgetShowAll (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 1);
   }
-  logProcEnd (LOG_PROC, "manageSetEasySonglist", "");
+  logProcEnd ("");
 }
 
 static void
@@ -2945,22 +2945,22 @@ manageSonglistSave (manageui_t *manage)
   char  *name;
   char  nnm [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "manageSonglistSave");
+  logProcBegin ();
   if (manage == NULL) {
-    logProcEnd (LOG_PROC, "manageSonglistSave", "null-manage");
+    logProcEnd ("null-manage");
     return;
   }
   if (manage->sloldname == NULL) {
-    logProcEnd (LOG_PROC, "manageSonglistSave", "no-sl-old-name");
+    logProcEnd ("no-sl-old-name");
     return;
   }
   if (manage->slmusicq == NULL) {
-    logProcEnd (LOG_PROC, "manageSonglistSave", "no-slmusicq");
+    logProcEnd ("no-slmusicq");
     return;
   }
 
   if (uimusicqGetCount (manage->slmusicq) <= 0) {
-    logProcEnd (LOG_PROC, "manageSonglistSave", "count <= 0");
+    logProcEnd ("count <= 0");
     return;
   }
 
@@ -2985,7 +2985,7 @@ manageSonglistSave (manageui_t *manage)
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   manageLoadPlaylistCB (manage, name);
   mdfree (name);
-  logProcEnd (LOG_PROC, "manageSonglistSave", "");
+  logProcEnd ("");
 }
 
 static int
@@ -3047,7 +3047,7 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
   long        loc = QUEUE_LOC_LAST;
   uimusicq_t  *uimusicq = NULL;
 
-  logProcBegin (LOG_PROC, "manageQueueProcess");
+  logProcBegin ();
   if (dispsel == DISP_SEL_SONGLIST) {
     uimusicq = manage->slmusicq;
   }
@@ -3090,7 +3090,7 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
         MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
   }
-  logProcEnd (LOG_PROC, "manageQueueProcess", "");
+  logProcEnd ("");
 }
 
 /* export and import (m3u, xspf, jspf) */
@@ -3105,7 +3105,7 @@ managePlaylistExport (void *udata)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "managePlaylistExport");
+  logProcBegin ();
   manage->exportactive = true;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export");
 
@@ -3116,7 +3116,7 @@ managePlaylistExport (void *udata)
   mdfree (slname);
 
   manage->exportactive = false;
-  logProcEnd (LOG_PROC, "managePlaylistExport", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3134,7 +3134,7 @@ managePlaylistImport (void *udata)
   }
 
   manage->importactive = true;
-  logProcBegin (LOG_PROC, "managePlaylistImport");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
   manageSonglistSave (manage);
@@ -3208,7 +3208,7 @@ managePlaylistImport (void *udata)
 
   manageLoadPlaylistCB (manage, nplname);
   manage->importactive = false;
-  logProcEnd (LOG_PROC, "managePlaylistImportM3U", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3225,7 +3225,7 @@ managePlaylistExportBDJ4 (void *udata)
   }
 
   manage->exportbdj4active = true;
-  logProcBegin (LOG_PROC, "managePlaylistExportBDJ4");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export bdj4");
 
   manageSonglistSave (manage);
@@ -3233,7 +3233,7 @@ managePlaylistExportBDJ4 (void *udata)
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_EXPORT);
 
   manage->exportbdj4active = false;
-  logProcEnd (LOG_PROC, "managePlaylistExportBDJ4", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3247,7 +3247,7 @@ managePlaylistImportBDJ4 (void *udata)
   }
 
   manage->importbdj4active = true;
-  logProcBegin (LOG_PROC, "managePlaylistImportBDJ4");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import bdj4");
 
   manageSonglistSave (manage);
@@ -3255,7 +3255,7 @@ managePlaylistImportBDJ4 (void *udata)
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_IMPORT);
 
   manage->importbdj4active = false;
-  logProcEnd (LOG_PROC, "managePlaylistImportBDJ4", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3366,7 +3366,7 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   bool        mmnb = false;
   uinbtabid_t  *nbtabid = NULL;
 
-  logProcBegin (LOG_PROC, "manageSwitchPage");
+  logProcBegin ();
   uiLabelSetText (manage->minfo.errorMsg, "");
   uiLabelSetText (manage->minfo.statusMsg, "");
 
@@ -3388,7 +3388,7 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     mmnb = true;
   }
   if (nbtabid == NULL) {
-    logProcEnd (LOG_PROC, "manageSwitchPage", "no-tab-id");
+    logProcEnd ("no-tab-id");
     return;
   }
 
@@ -3496,7 +3496,7 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
       break;
     }
   }
-  logProcEnd (LOG_PROC, "manageSwitchPage", "");
+  logProcEnd ("");
 }
 
 /* when switching pages, the music manager must be adjusted to */
@@ -3509,7 +3509,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 {
   dbidx_t     dbidx;
 
-  logProcBegin (LOG_PROC, "manageSetDisplayPerSelection");
+  logProcBegin ();
   if (id == MANAGE_TAB_MAIN_SL) {
     if (uisfPlaylistInUse (manage->uisongfilter) ||
         manage->lastdisp == MANAGE_DISP_SONG_LIST) {
@@ -3584,15 +3584,15 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     song = dbGetByIdx (manage->musicdb, dbidx);
     manageSetBPMCounter (manage, song);
   }
-  logProcEnd (LOG_PROC, "manageSetDisplayPerSelection", "");
+  logProcEnd ("");
 }
 
 static void
 manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb)
 {
-  logProcBegin (LOG_PROC, "manageSetMenuCallback");
+  logProcBegin ();
   manage->callbacks [midx] = callbackInit (cb, manage, NULL);
-  logProcEnd (LOG_PROC, "manageSetMenuCallback", "");
+  logProcEnd ("");
 }
 
 /* the current songlist may be renamed or deleted. */
@@ -3603,9 +3603,9 @@ manageSonglistLoadCheck (manageui_t *manage)
 {
   char  *name;
 
-  logProcBegin (LOG_PROC, "manageSonglistLoadCheck");
+  logProcBegin ();
   if (manage->sloldname == NULL) {
-    logProcEnd (LOG_PROC, "manageSonglistLoadCheck", "no-old-name");
+    logProcEnd ("no-old-name");
     return;
   }
 
@@ -3621,7 +3621,7 @@ manageSonglistLoadCheck (manageui_t *manage)
     manageLoadPlaylistCB (manage, name);
   }
   mdfree (name);
-  logProcEnd (LOG_PROC, "manageSonglistLoadCheck", "");
+  logProcEnd ("");
 }
 
 static void
@@ -3660,7 +3660,7 @@ manageStartBPMCounter (void *udata)
   const char  *targv [2];
   int         targc = 0;
 
-  logProcBegin (LOG_PROC, "manageStartBPMCounter");
+  logProcBegin ();
 
   if (manage->bpmcounterstarted) {
     connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_WINDOW_FIND, NULL);
@@ -3678,7 +3678,7 @@ manageStartBPMCounter (void *udata)
   }
 
   manageSendBPMCounter (manage);
-  logProcEnd (LOG_PROC, "manageStartBPMCounter", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3687,7 +3687,7 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
 {
   ilistidx_t  danceIdx;
 
-  logProcBegin (LOG_PROC, "manageSetBPMCounter");
+  logProcBegin ();
 
   danceIdx = songGetNum (song, TAG_DANCE);
   if (danceIdx < 0) {
@@ -3696,7 +3696,7 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
   manage->currtimesig = danceGetTimeSignature (danceIdx);
 
   manageSendBPMCounter (manage);
-  logProcEnd (LOG_PROC, "manageSetBPMCounter", "");
+  logProcEnd ("");
 }
 
 static void
@@ -3704,15 +3704,15 @@ manageSendBPMCounter (manageui_t *manage)
 {
   char        tbuff [60];
 
-  logProcBegin (LOG_PROC, "manageSendBPMCounter");
+  logProcBegin ();
   if (! manage->bpmcounterstarted) {
-    logProcEnd (LOG_PROC, "manageSendBPMCounter", "not-started");
+    logProcEnd ("not-started");
     return;
   }
 
   snprintf (tbuff, sizeof (tbuff), "%d", manage->currtimesig);
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
-  logProcEnd (LOG_PROC, "manageSendBPMCounter", "");
+  logProcEnd ("");
 }
 
 /* same song */
@@ -3722,10 +3722,10 @@ manageSameSongSetMark (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSameSongSetMark");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: set mark");
   manageSameSongChangeMark (manage, MANAGE_SET_MARK);
-  logProcEnd (LOG_PROC, "manageSameSongSetMark", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3734,10 +3734,10 @@ manageSameSongClearMark (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin (LOG_PROC, "manageSameSongClearMark");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: clear mark");
   manageSameSongChangeMark (manage, MANAGE_CLEAR_MARK);
-  logProcEnd (LOG_PROC, "manageSameSongClearMark", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -3748,7 +3748,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
 
-  logProcBegin (LOG_PROC, "manageSameSongChangeMark");
+  logProcBegin ();
   sellist = uisongselGetSelectedList (manage->mmsongsel);
 
   if (flag == MANAGE_SET_MARK) {
@@ -3766,7 +3766,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   nlistFree (sellist);
   /* the same song marks only appear in the music manager */
   uisongselPopulateData (manage->mmsongsel);
-  logProcEnd (LOG_PROC, "manageSameSongChangeMark", "");
+  logProcEnd ("");
 }
 
 /* remove song */
@@ -3779,7 +3779,7 @@ manageMarkSongRemoved (void *udata)
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
 
-  logProcBegin (LOG_PROC, "manageMarkSongRemoved");
+  logProcBegin ();
 
   sellist = uisongselGetSelectedList (manage->mmsongsel);
 
@@ -3807,7 +3807,7 @@ manageMarkSongRemoved (void *udata)
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
 
   nlistFree (sellist);
-  logProcEnd (LOG_PROC, "manageMarkSongRemoved", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

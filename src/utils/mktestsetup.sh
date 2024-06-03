@@ -52,6 +52,7 @@ function copytestf {
 
 ATIBDJ4=F
 PLI=VLC
+VOL=
 DBCOPY=T
 KEEPDB=F
 for arg in "$@"; do
@@ -64,6 +65,9 @@ for arg in "$@"; do
       ;;
     --pligst)
       PLI=GST
+      ;;
+    --volpipewire)
+      VOL=pipewire
       ;;
     --nodbcopy)
       DBCOPY=F
@@ -185,6 +189,11 @@ if [[ $PLI == GST ]]; then
   PLII=libpligst
   PLIINM="GStreamer"
 fi
+# if VOLI is empty, no change is made, and the default is used
+VOLI=
+if [[ $VOL == pipewire ]]; then
+  VOLI=libvolpipewire
+fi
 
 tfn=data/${hostname}/bdjconfig.txt
 tmusicdir="${cwd}/test-music"
@@ -202,6 +211,12 @@ sed \
     -e "/^PLAYER_I_NM/ { n ; s,.*,..${PLIINM}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
+if [[ $VOLI != "" ]]; then
+  sed \
+      -e "/^VOLUME$/ { n ; s,.*,..${VOLI}, ; }" \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
 
 tfn=data/bdjconfig.txt
 sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \

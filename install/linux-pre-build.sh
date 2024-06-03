@@ -129,7 +129,7 @@ if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
   # tested
   # updated 2023-10-29
-  # tested 2023-10-30
+  # tested 2024-5-22
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
   pkglist="cmake make gcc gcc-objc pipewire curl gtk3 vlc pulseaudio
@@ -138,7 +138,7 @@ fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # updated 2023-10-29
-  # tested 2023-10-29
+  # tested 2024-5-22
   pkglist="cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
@@ -149,8 +149,8 @@ if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: vlc
   # tested
-  # updated 2023-10-29
-  # tested 2023-10-30
+  # updated 2024-5-22
+  # tested 2024-5-22
   # the installed libcurl is 'minimal' and should be replaced.
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
@@ -161,12 +161,12 @@ if [[ -f /usr/bin/dnf ]]; then
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
       libvorbis-devel
       flac-devel check-devel json-c-devel
-      chromprint-tools"
+      chromaprint-tools"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
   # updated 2024-4-22 (gcc13)
-  # tested 2023-10-30
+  # tested 2024-5-22
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
   pkglist="cmake make gcc13 gcc13-c++ gcc13-objc ffmpeg-4

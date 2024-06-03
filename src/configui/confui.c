@@ -28,7 +28,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   uiwcont_t     *szgrp;
   const char    *tstr;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIUserInterface");
+  logProcBegin ();
   vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -68,7 +68,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  logProcEnd (LOG_PROC, "confuiBuildUIUserInterface", "");
+  logProcEnd ("");
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

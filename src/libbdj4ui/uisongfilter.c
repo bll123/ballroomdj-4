@@ -258,7 +258,7 @@ uisfDialog (void *udata)
   uisongfilter_t *uisf = udata;
   int             x, y;
 
-  logProcBegin (LOG_PROC, "uisfDialog");
+  logProcBegin ();
 
   uisfCreateDialog (uisf);
   uisfInitDisplay (uisf);
@@ -272,7 +272,7 @@ uisfDialog (void *udata)
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
   uiWindowMove (uisf->wcont [UISF_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uisfDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -342,7 +342,7 @@ uisfInitDisplay (uisongfilter_t *uisf)
 {
   char        *sortby;
 
-  logProcBegin (LOG_PROC, "uisfInitFilterDisplay");
+  logProcBegin ();
 
   /* this is run when the filter dialog is first started, */
   /* and after a reset */
@@ -363,7 +363,7 @@ uisfInitDisplay (uisongfilter_t *uisf)
   uilevelSetValue (uisf->uilevel, -1);
   uistatusSetValue (uisf->uistatus, -1);
   uifavoriteSetValue (uisf->uifavorite, 0);
-  logProcEnd (LOG_PROC, "uisfInitFilterDisplay", "");
+  logProcEnd ("");
 }
 
 static void
@@ -372,7 +372,7 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
   const char  *str;
   pltype_t    pltype;
 
-  logProcBegin (LOG_PROC, "uisfPlaylistSelect");
+  logProcBegin ();
   if (idx >= 0) {
     str = uiplaylistGetValue (uisf->uiplaylist);
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, (void *) str);
@@ -390,20 +390,20 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
     uisfEnableWidgets (uisf);
   }
   uisf->playlistsel = true;
-  logProcEnd (LOG_PROC, "uisfPlaylistSelect", "");
+  logProcEnd ("");
 }
 
 static void
 uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx)
 {
-  logProcBegin (LOG_PROC, "uisfSortBySelect");
+  logProcBegin ();
   if (idx >= 0) {
     songfilterSetSort (uisf->songfilter,
         uiDropDownGetString (uisf->wcont [UISF_W_SORT_BY]));
     nlistSetStr (uisf->options, SONGSEL_SORT_BY,
         uiDropDownGetString (uisf->wcont [UISF_W_SORT_BY]));
   }
-  logProcEnd (LOG_PROC, "uisfSortBySelect", "");
+  logProcEnd ("");
 }
 
 static void
@@ -411,17 +411,17 @@ uisfCreateSortByList (uisongfilter_t *uisf)
 {
   slist_t           *sortoptlist;
 
-  logProcBegin (LOG_PROC, "uisfCreateSortByList");
+  logProcBegin ();
 
   sortoptlist = sortoptGetList (uisf->sortopt);
   uiDropDownSetList (uisf->wcont [UISF_W_SORT_BY], sortoptlist, NULL);
-  logProcEnd (LOG_PROC, "uisfCreateSortByList", "");
+  logProcEnd ("");
 }
 
 static void
 uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx)
 {
-  logProcBegin (LOG_PROC, "uisfGenreSelect");
+  logProcBegin ();
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
     if (idx >= 0) {
       songfilterSetNum (uisf->songfilter, SONG_FILTER_GENRE, idx);
@@ -429,7 +429,7 @@ uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx)
       songfilterClear (uisf->songfilter, SONG_FILTER_GENRE);
     }
   }
-  logProcEnd (LOG_PROC, "uisfGenreSelect", "");
+  logProcEnd ("");
 }
 
 static void
@@ -444,7 +444,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcont_t    *szgrpSpinText;  // spinboxes, not including favorite
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "uisfCreateDialog");
+  logProcBegin ();
 
   if (uisf->wcont [UISF_W_DIALOG] != NULL) {
     return;
@@ -678,7 +678,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       uisf->wcont [UISF_W_DIALOG],
       uisf->callbacks [UISF_CB_KEY]);
 
-  logProcEnd (LOG_PROC, "uisfCreateDialog", "");
+  logProcEnd ("");
 }
 
 static bool
@@ -687,7 +687,7 @@ uisfResponseHandler (void *udata, long responseid)
   uisongfilter_t  *uisf = udata;
   int             x, y, ws;
 
-  logProcBegin (LOG_PROC, "uisfResponseHandler");
+  logProcBegin ();
 
   uiWindowGetPosition (uisf->wcont [UISF_W_DIALOG], &x, &y, &ws);
   nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
@@ -839,7 +839,7 @@ uisfUpdate (uisongfilter_t *uisf)
   if (uisf->applycb != NULL) {
     callbackHandler (uisf->applycb);
   }
-  logProcEnd (LOG_PROC, "uisfResponseHandler", "");
+  logProcEnd ("");
 }
 
 /* internal routines */

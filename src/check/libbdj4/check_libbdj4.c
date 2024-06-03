@@ -54,9 +54,9 @@ check_libbdj4 (SRunner *sr)
    *  orgutil               partial
    *  dispsel               complete
    *  samesong              complete
-   *  webclient             complete 2022-12-27
    *  songdb
    *  msgparse              complete 2022-12-27
+   *  webclient             complete 2022-12-27
    *  audioadjust
    *  templateutil          complete // needed by tests; needs localized tests
    *  aesencdec             --
@@ -65,11 +65,13 @@ check_libbdj4 (SRunner *sr)
    *  orgopt                complete
    *  volreg                complete 2022-12-27 (missing lock tests)
    *  m3u
+   *  jspf
    *  songlistutil
+   *  xspf
+   *  quickedit
    *  itunes
-   *  bdj4init
    *  instutil
-   *  support
+   *  bdj4init
    *  mp3exp
    *  expimpbdj4
    */
@@ -149,12 +151,12 @@ check_libbdj4 (SRunner *sr)
   s = samesong_suite();
   srunner_add_suite (sr, s);
 
-  s = webclient_suite();
-  srunner_add_suite (sr, s);
-
   /* songdb */
 
   s = msgparse_suite();
+  srunner_add_suite (sr, s);
+
+  s = webclient_suite();
   srunner_add_suite (sr, s);
 
   /* audioadjust */
@@ -179,15 +181,19 @@ check_libbdj4 (SRunner *sr)
 
   /* m3u */
 
+  /* jspf */
+
   /* songlistutil */
+
+  /* xspf */
+
+  /* quickedit */
 
   /* itunes */
 
-  /* bdj4init */
-
   /* instutil */
 
-  /* support */
+  /* bdj4init */
 
   /* mp3exp */
 

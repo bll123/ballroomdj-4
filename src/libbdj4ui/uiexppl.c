@@ -157,7 +157,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uiexpplDialog");
+  logProcBegin ();
   dataFree (uiexppl->slname);
   uiexppl->slname = NULL;
   if (slname != NULL) {
@@ -181,7 +181,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   x = nlistGetNum (uiexppl->options, EXP_PL_POSITION_X);
   y = nlistGetNum (uiexppl->options, EXP_PL_POSITION_Y);
   uiWindowMove (uiexppl->wcont [UIEXPPL_W_DIALOG], x, y, -1);
-  logProcEnd (LOG_PROC, "uiexpplDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -219,7 +219,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwcont_t     *uiwidgetp = NULL;
   uiwcont_t     *szgrp;  // labels
 
-  logProcBegin (LOG_PROC, "uiexpplCreateDialog");
+  logProcBegin ();
 
   if (uiexppl == NULL) {
     return;
@@ -310,7 +310,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiSpinboxTextSetValueChangedCallback (uiexppl->wcont [UIEXPPL_W_EXP_TYPE],
       uiexppl->callbacks [UIEXPPL_CB_EXP_TYPE]);
 
-  logProcEnd (LOG_PROC, "uiexpplCreateDialog", "");
+  logProcEnd ("");
 }
 
 static bool

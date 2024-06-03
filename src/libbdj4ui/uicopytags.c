@@ -113,7 +113,7 @@ uicopytagsDialog (uict_t *uict)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "uicopytagsDialog");
+  logProcBegin ();
   uict->state = BDJ4_STATE_WAIT;
   uicopytagsCreateDialog (uict);
   uiDialogShow (uict->ctDialog);
@@ -125,7 +125,7 @@ uicopytagsDialog (uict_t *uict)
     uiWindowMove (uict->ctDialog, x, y, -1);
   }
 
-  logProcEnd (LOG_PROC, "uicopytagsDialog", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -168,7 +168,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin (LOG_PROC, "uicopytagsCreateDialog");
+  logProcBegin ();
 
   if (uict == NULL) {
     return;
@@ -259,7 +259,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
-  logProcEnd (LOG_PROC, "uicopytagsCreateDialog", "");
+  logProcEnd ("");
 }
 
 static bool

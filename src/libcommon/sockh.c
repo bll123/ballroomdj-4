@@ -66,7 +66,7 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
   } /* wait for a message */
 
   sockhCloseServer (sockserver);
-  logProcEnd (LOG_PROC, "sockhMainLoop", "");
+  logProcEnd ("");
 }
 
 sockserver_t *
@@ -79,7 +79,7 @@ sockhStartServer (uint16_t listenPort)
   sockserver->listenSock = INVALID_SOCKET;
   sockserver->si = NULL;
 
-  logProcBegin (LOG_PROC, "sockhMainLoop");
+  logProcBegin ();
   sockserver->listenSock = sockServer (listenPort, &err);
   sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
   logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %" PRId64,

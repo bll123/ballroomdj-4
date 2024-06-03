@@ -192,7 +192,7 @@ main (int argc, char *argv[])
 
   confui.dbgflags = BDJ4_INIT_NO_DB_LOAD;
   bdj4startup (argc, argv, NULL, "cfui", ROUTE_CONFIGUI, &confui.dbgflags);
-  logProcBegin (LOG_PROC, "configui");
+  logProcBegin ();
 
   confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
@@ -277,7 +277,7 @@ main (int argc, char *argv[])
   confuiCleanOrganization (&confui.gui);
   confuiCleaniTunes (&confui.gui);
 
-  logProcEnd (LOG_PROC, "configui", "");
+  logProcEnd ("");
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -295,7 +295,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   int           x, y, ws;
   char          tmp [40];
 
-  logProcBegin (LOG_PROC, "confuiStoppingCallback");
+  logProcBegin ();
 
   confuiPopulateOptions (&confui->gui);
 
@@ -322,7 +322,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 
-  logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -341,7 +341,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 {
   configui_t    *confui = udata;
 
-  logProcBegin (LOG_PROC, "confuiClosingCallback");
+  logProcBegin ();
 
   uiCloseWindow (confui->gui.window);
   uiCleanup ();
@@ -404,7 +404,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  logProcEnd (LOG_PROC, "confuiClosingCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -418,7 +418,7 @@ confuiBuildUI (configui_t *confui)
   int           x, y;
   uiutilsaccent_t accent;
 
-  logProcBegin (LOG_PROC, "confuiBuildUI");
+  logProcBegin ();
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_DIR_IMG);
@@ -431,7 +431,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.vbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (confui->gui.vbox);
   uiWidgetExpandVert (confui->gui.vbox);
-  uiWidgetSetAllMargins (confui->gui.vbox, 2);
+  uiWidgetSetAllMargins (confui->gui.vbox, 4);
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
 
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
@@ -485,7 +485,7 @@ confuiBuildUI (configui_t *confui)
 
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "confuiBuildUI", "");
+  logProcEnd ("");
 }
 
 
@@ -534,11 +534,11 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
 
-  logProcBegin (LOG_PROC, "confuiHandshakeCallback");
+  logProcBegin ();
   connProcessUnconnected (confui->conn);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
-  logProcEnd (LOG_PROC, "confuiHandshakeCallback", "");
+  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -548,7 +548,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   configui_t       *confui = udata;
 
-  logProcBegin (LOG_PROC, "confuiProcessMsg");
+  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -592,7 +592,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  logProcEnd (LOG_PROC, "confuiProcessMsg", "");
+  logProcEnd ("");
   return gKillReceived;
 }
 
@@ -602,15 +602,15 @@ confuiCloseWin (void *udata)
 {
   configui_t   *confui = udata;
 
-  logProcBegin (LOG_PROC, "confuiCloseWin");
+  logProcBegin ();
   if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (confui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    logProcEnd (LOG_PROC, "confuiCloseWin", "not-done");
+    logProcEnd ("not-done");
     return UICB_STOP;
   }
 
-  logProcEnd (LOG_PROC, "confuiCloseWin", "");
+  logProcEnd ("");
   return UICB_STOP;
 }
 
@@ -631,7 +631,7 @@ confuiLoadTagList (configui_t *confui)
   slist_t       *mlist = NULL;
   slist_t       *pluilist = NULL;
 
-  logProcBegin (LOG_PROC, "confuiLoadTagList");
+  logProcBegin ();
 
   llist = slistAlloc ("cu-list-tag-list", LIST_ORDERED, NULL);
   elist = slistAlloc ("cu-edit-tag-list", LIST_ORDERED, NULL);
@@ -663,6 +663,6 @@ confuiLoadTagList (configui_t *confui)
   confui->gui.audioidtaglist = aidlist;
   confui->gui.marqueetaglist = mlist;
   confui->gui.pluitaglist = pluilist;
-  logProcEnd (LOG_PROC, "confuiLoadTagList", "");
+  logProcEnd ("");
 }
 

@@ -128,7 +128,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   dance_t             *dances;
   slist_t             *dancelist;
 
-  logProcBegin (LOG_PROC, "manageBuildUISequence");
+  logProcBegin ();
 
   /* edit sequences */
   uiWidgetSetAllMargins (vboxp, 2);
@@ -162,7 +162,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  logProcEnd (LOG_PROC, "manageBuildUISequence", "");
+  logProcEnd ("");
 }
 
 uiwcont_t *
@@ -171,10 +171,10 @@ manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
   uiwcont_t   *menu = NULL;
   uiwcont_t   *menuitem = NULL;
 
-  logProcBegin (LOG_PROC, "manageSequenceMenu");
+  logProcBegin ();
   if (uiMenuIsInitialized (manageseq->seqmenu)) {
     uiMenuDisplay (manageseq->seqmenu);
-    logProcEnd (LOG_PROC, "manageSequenceMenu", "is-init");
+    logProcEnd ("is-init");
     return manageseq->seqmenu;
   }
 
@@ -217,7 +217,7 @@ manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
 
   uiMenuDisplay (manageseq->seqmenu);
 
-  logProcEnd (LOG_PROC, "manageSequenceMenu", "");
+  logProcEnd ("");
   return manageseq->seqmenu;
 }
 
@@ -230,16 +230,16 @@ manageSequenceSave (manageseq_t *manageseq)
   char        *name;
   bool        changed = false;
 
-  logProcBegin (LOG_PROC, "manageSequenceSave");
+  logProcBegin ();
   if (manageseq->seqoldname == NULL) {
-    logProcEnd (LOG_PROC, "manageSequenceSave", "no-old-name");
+    logProcEnd ("no-old-name");
     return;
   }
 
   slist = uiduallistGetList (manageseq->seqduallist);
   if (slistGetCount (slist) <= 0) {
     slistFree (slist);
-    logProcEnd (LOG_PROC, "manageSequenceSave", "no-seq-data");
+    logProcEnd ("no-seq-data");
     return;
   }
 
@@ -258,7 +258,7 @@ manageSequenceSave (manageseq_t *manageseq)
   if (! changed) {
     mdfree (name);
     slistFree (slist);
-    logProcEnd (LOG_PROC, "manageSequenceSave", "not-changed");
+    logProcEnd ("not-changed");
     return;
   }
 
@@ -281,7 +281,7 @@ manageSequenceSave (manageseq_t *manageseq)
     callbackHandlerStr (manageseq->seqloadcb, name);
   }
   mdfree (name);
-  logProcEnd (LOG_PROC, "manageSequenceSave", "");
+  logProcEnd ("");
 }
 
 /* the current sequence may be renamed or deleted. */
@@ -292,9 +292,9 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
 {
   char    *name;
 
-  logProcBegin (LOG_PROC, "manageSequenceLoadCheck");
+  logProcBegin ();
   if (manageseq->seqoldname == NULL) {
-    logProcEnd (LOG_PROC, "manageSequenceLoadCheck", "no-old-name");
+    logProcEnd ("no-old-name");
     return;
   }
 
@@ -311,7 +311,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     }
   }
   mdfree (name);
-  logProcEnd (LOG_PROC, "manageSequenceLoadCheck", "");
+  logProcEnd ("");
 }
 
 void
@@ -327,11 +327,11 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
   if (manageseq->inload) {
     return;
   }
-  logProcBegin (LOG_PROC, "manageSequenceLoadFile");
+  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_ACTIONS, "load sequence file");
   if (! sequenceExists (fn)) {
-    logProcEnd (LOG_PROC, "manageSequenceLoadFile", "no-seq-file");
+    logProcEnd ("no-seq-file");
     return;
   }
 
@@ -343,7 +343,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
 
   seq = sequenceLoad (fn);
   if (seq == NULL) {
-    logProcEnd (LOG_PROC, "manageSequenceLoadFile", "null");
+    logProcEnd ("null");
     manageseq->inload = false;
     return;
   }
@@ -367,7 +367,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
   sequenceFree (seq);
   manageseq->seqbackupcreated = false;
   manageseq->inload = false;
-  logProcEnd (LOG_PROC, "manageSequenceLoadFile", "");
+  logProcEnd ("");
 }
 
 /* internal routines */
@@ -377,13 +377,13 @@ manageSequenceLoad (void *udata)
 {
   manageseq_t  *manageseq = udata;
 
-  logProcBegin (LOG_PROC, "manageSequenceLoad");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
   manageSequenceSave (manageseq);
   selectFileDialog (SELFILE_SEQUENCE, manageseq->minfo->window,
       manageseq->minfo->options,
       manageseq->callbacks [MSEQ_CB_SEL_FILE]);
-  logProcEnd (LOG_PROC, "manageSequenceLoad", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -392,9 +392,9 @@ manageSequenceLoadCB (void *udata, const char *fn)
 {
   manageseq_t *manageseq = udata;
 
-  logProcBegin (LOG_PROC, "manageSequenceLoadCB");
+  logProcBegin ();
   manageSequenceLoadFile (manageseq, fn, MANAGE_STD);
-  logProcEnd (LOG_PROC, "manageSequenceLoadCB", "");
+  logProcEnd ("");
   return 0;
 }
 
@@ -405,7 +405,7 @@ manageSequenceCopy (void *udata)
   char        *oname;
   char        newname [200];
 
-  logProcBegin (LOG_PROC, "manageSequenceCopy");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
@@ -422,7 +422,7 @@ manageSequenceCopy (void *udata)
     }
   }
   mdfree (oname);
-  logProcEnd (LOG_PROC, "manageSequenceCopy", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -433,7 +433,7 @@ manageSequenceNew (void *udata)
   char        tbuff [200];
   slist_t     *tlist;
 
-  logProcBegin (LOG_PROC, "manageSequenceNew");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
   manageSequenceSave (manageseq);
 
@@ -448,7 +448,7 @@ manageSequenceNew (void *udata)
   if (manageseq->seqnewcb != NULL) {
     callbackHandler (manageseq->seqnewcb);
   }
-  logProcEnd (LOG_PROC, "manageSequenceNew", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -458,14 +458,14 @@ manageSequenceDelete (void *udata)
   manageseq_t *manageseq = udata;
   char        *oname;
 
-  logProcBegin (LOG_PROC, "manageSequenceDelete");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
   oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
   manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
   mdfree (oname);
-  logProcEnd (LOG_PROC, "manageSequenceDelete", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -473,9 +473,9 @@ static void
 manageSetSequenceName (manageseq_t *manageseq, const char *name)
 {
 
-  logProcBegin (LOG_PROC, "manageSetSequenceName");
+  logProcBegin ();
   dataFree (manageseq->seqoldname);
   manageseq->seqoldname = mdstrdup (name);
   uiEntrySetValue (manageseq->seqname, name);
-  logProcEnd (LOG_PROC, "manageSetSequenceName", "");
+  logProcEnd ("");
 }

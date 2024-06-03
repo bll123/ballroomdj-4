@@ -26,7 +26,7 @@ uiaudioidInit (nlist_t *options, dispsel_t *dispsel)
 {
   uiaudioid_t  *uiaudioid;
 
-  logProcBegin (LOG_PROC, "uiaudioidInit");
+  logProcBegin ();
 
   uiaudioid = mdmalloc (sizeof (uiaudioid_t));
 
@@ -37,21 +37,21 @@ uiaudioidInit (nlist_t *options, dispsel_t *dispsel)
 
   uiaudioidUIInit (uiaudioid);
 
-  logProcEnd (LOG_PROC, "uiaudioidInit", "");
+  logProcEnd ("");
   return uiaudioid;
 }
 
 void
 uiaudioidFree (uiaudioid_t *uiaudioid)
 {
-  logProcBegin (LOG_PROC, "uiaudioidFree");
+  logProcBegin ();
 
   if (uiaudioid != NULL) {
     uiaudioidUIFree (uiaudioid);
     mdfree (uiaudioid);
   }
 
-  logProcEnd (LOG_PROC, "uiaudioidFree", "");
+  logProcEnd ("");
 }
 
 void

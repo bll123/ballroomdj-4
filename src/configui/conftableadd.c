@@ -32,16 +32,16 @@ confuiTableAdd (void *udata)
   int               flags;
   bool              found = false;
 
-  logProcBegin (LOG_PROC, "confuiTableAdd");
+  logProcBegin ();
 
   if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
-    logProcEnd (LOG_PROC, "confuiTableAdd", "non-table");
+    logProcEnd ("non-table");
     return UICB_STOP;
   }
 
   uitree = gui->tables [gui->tablecurr].uitree;
   if (uitree == NULL) {
-    logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
+    logProcEnd ("no-tree");
     return UICB_STOP;
   }
 
@@ -122,7 +122,7 @@ confuiTableAdd (void *udata)
 
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount += 1;
-  logProcEnd (LOG_PROC, "confuiTableAdd", "");
+  logProcEnd ("");
   return UICB_CONT;
 }
 

@@ -70,24 +70,24 @@ parseInit (void)
 {
   parseinfo_t   *pi;
 
-  logProcBegin (LOG_PROC, "parseInit");
+  logProcBegin ();
   pi = mdmalloc (sizeof (parseinfo_t));
   pi->strdata = NULL;
   pi->allocCount = 0;
   pi->count = 0;
-  logProcEnd (LOG_PROC, "parseInit", "");
+  logProcEnd ("");
   return pi;
 }
 
 void
 parseFree (parseinfo_t *pi)
 {
-  logProcBegin (LOG_PROC, "parseFree");
+  logProcBegin ();
   if (pi != NULL) {
     dataFree (pi->strdata);
     mdfree (pi);
   }
-  logProcEnd (LOG_PROC, "parseFree", "");
+  logProcEnd ("");
 }
 
 char **
@@ -139,7 +139,7 @@ convTextList (datafileconv_t *conv)
 {
   char  *p;
 
-  logProcBegin (LOG_PROC, "convTextList");
+  logProcBegin ();
   if (conv->invt == VALUE_STR) {
     char    *tokptr;
     char    *str;
@@ -178,7 +178,7 @@ convTextList (datafileconv_t *conv)
     conv->strval = mdstrdup (tbuff);
   }
 
-  logProcEnd (LOG_PROC, "convTextList", "");
+  logProcEnd ("");
 }
 
 /* datafile loading routines */
@@ -188,7 +188,7 @@ datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafi
 {
   datafile_t      *df;
 
-  logProcBegin (LOG_PROC, "datafileAlloc");
+  logProcBegin ();
   df = mdmalloc (sizeof (datafile_t));
   df->tag = mdstrdup (tag);
   df->fname = mdstrdup (fname);
@@ -197,7 +197,7 @@ datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafi
   df->dfkeycount = dfkeycount;
   df->distvers = 1;
   df->data = NULL;
-  logProcEnd (LOG_PROC, "datafileAlloc", "");
+  logProcEnd ("");
   return df;
 }
 
@@ -208,7 +208,7 @@ datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname,
   datafile_t      *df;
   int             distvers = 1;
 
-  logProcBegin (LOG_PROC, "datafileAllocParse");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
   df = datafileAlloc (tag, dftype, fname, dfkeys, dfkeycount);
   if (df != NULL) {
@@ -242,7 +242,7 @@ datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname,
       }
     }
   }
-  logProcEnd (LOG_PROC, "datafileAllocParse", "");
+  logProcEnd ("");
   return df;
 }
 
@@ -251,7 +251,7 @@ datafileFree (void *tdf)
 {
   datafile_t    *df = (datafile_t *) tdf;
 
-  logProcBegin (LOG_PROC, "datafileFree");
+  logProcBegin ();
   if (df != NULL) {
     logMsg (LOG_DBG, LOG_INFO | LOG_DATAFILE, "datafile free %s", df->fname);
     datafileFreeData (df);
@@ -259,7 +259,7 @@ datafileFree (void *tdf)
     dataFree (df->fname);
     mdfree (df);
   }
-  logProcEnd (LOG_PROC, "datafileFree", "");
+  logProcEnd ("");
 }
 
 /* datafileLoad is also used by bdjopt to load the data before */
@@ -269,7 +269,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 {
   char    *data;
 
-  logProcBegin (LOG_PROC, "datafileLoad");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_INFO | LOG_DATAFILE, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
@@ -278,7 +278,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 
   /* load the new filename */
   data = filedataReadAll (fname, NULL);
-  logProcEnd (LOG_PROC, "datafileLoad", "");
+  logProcEnd ("");
   return data;
 }
 
@@ -494,10 +494,10 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
   char        *str;
   ssize_t     dataCounter;
 
-  logProcBegin (LOG_PROC, "parse");
+  logProcBegin ();
   tokptr = NULL;
   if (data == NULL) {
-    logProcEnd (LOG_PROC, "parse", "null-data");
+    logProcEnd ("null-data");
     return 0;
   }
 
@@ -533,7 +533,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
     str = strtok_r (NULL, "\r\n", &tokptr);
   }
   pi->count = dataCounter;
-  logProcEnd (LOG_PROC, "parse", "");
+  logProcEnd ("");
   return dataCounter;
 }
 
@@ -542,7 +542,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
 static void
 datafileFreeData (datafile_t *df)
 {
-  logProcBegin (LOG_PROC, "datafileFreeData");
+  logProcBegin ();
   if (df != NULL) {
     if (df->data != NULL) {
       switch (df->dftype) {
@@ -571,7 +571,7 @@ datafileFreeData (datafile_t *df)
       df->data = NULL;
     }
   }
-  logProcEnd (LOG_PROC, "datafileFreeData", "");
+  logProcEnd ("");
 }
 
 
@@ -597,7 +597,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   datafileconv_t conv;
 
 
-  logProcBegin (LOG_PROC, "datafileParseMerge");
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
 
   if (dfkeys != NULL) {
@@ -796,7 +796,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   }
 
   parseFree (pi);
-  logProcEnd (LOG_PROC, "datafileParseMerge", "");
+  logProcEnd ("");
   return datalist;
 }
 
@@ -911,11 +911,11 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   char        buff [DATAFILE_MAX_SIZE];
   char        tbuff [1024];
 
-  logProcBegin (LOG_PROC, "datafileSaveList");
+  logProcBegin ();
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
-    logProcEnd (LOG_PROC, "datafileSaveList", "no-file");
+    logProcEnd ("no-file");
     return;
   }
 
@@ -932,7 +932,7 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   fprintf (fh, "%s", buff);
   mdextfclose (fh);
   fclose (fh);
-  logProcEnd (LOG_PROC, "datafileSaveList", "");
+  logProcEnd ("");
 }
 
 static FILE *
