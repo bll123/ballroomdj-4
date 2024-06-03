@@ -56,6 +56,7 @@ main (int argc, char * argv[])
   int       rc;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  const char  *vlctag = "VLC";
 
   static struct option bdj_options [] = {
     { "aesed",          no_argument,        NULL,   30 },
@@ -112,6 +113,7 @@ main (int argc, char * argv[])
     { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
     { "wait",           no_argument,        NULL,   'w' },
+    { "vlc",            required_argument,  NULL,   'V' },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
     { "compact",        no_argument,        NULL,   0 },
@@ -398,6 +400,10 @@ main (int argc, char * argv[])
         havescale = true;
         break;
       }
+      case 'V': {
+        vlctag = bdj4argGet (bdj4arg, optind - 1, optarg);
+        break;
+      }
       default: {
         break;
       }
@@ -493,7 +499,8 @@ main (int argc, char * argv[])
     }
 
     /* do not use double quotes w/environment var */
-    strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
+    snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", vlctag);
+    strlcat (path, tbuff, sz);
     strlcat (path, ";", sz);
     strlcat (path, getenv ("PATH"), sz);
 

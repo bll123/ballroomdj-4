@@ -19,8 +19,9 @@ target_link_libraries (libplinull PRIVATE
   libbdj4common
 )
 
-if (BDJ4_VLC3 STREQUAL "T")
+if (LIBVLC_FOUND)
   add_library (libplivlc SHARED plivlc.c vlci.c)
+  target_compile_options (libplivlc PRIVATE -DBDJ4_VLC_VERS=3)
   target_include_directories (libplivlc
     PRIVATE "${LIBVLC_INCLUDE_DIR}"
   )
@@ -30,9 +31,9 @@ if (BDJ4_VLC3 STREQUAL "T")
   )
 endif()
 
-if (BDJ4_VLC4 STREQUAL "T")
+if (LIBVLC4_FOUND)
   add_library (libplivlc4 SHARED plivlc.c vlci.c)
-  target_compile_options (libplivlc4 PRIVATE -DBDJ4_VLC4=1)
+  target_compile_options (libplivlc4 PRIVATE -DBDJ4_VLC_VERS=4)
   target_include_directories (libplivlc4
     PRIVATE "${LIBVLC4_INCLUDE_DIR}"
   )
@@ -81,7 +82,7 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (BDJ4_VLC3 STREQUAL "T")
+if (LIBVLC_FOUND)
   install (TARGETS
     libplivlc
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
@@ -89,7 +90,7 @@ if (BDJ4_VLC3 STREQUAL "T")
   updateRPath (libplivlc)
 endif()
 
-if (BDJ4_VLC4 STREQUAL "T")
+if (LIBVLC4_FOUND)
   install (TARGETS
     libplivlc4
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin

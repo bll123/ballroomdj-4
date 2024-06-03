@@ -85,6 +85,8 @@ if (NOT WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC_FOUND TRUE)
 endif()
 
+set (LIBVLC4_FOUND TRUE)
+
 # windows will not find any vlc include files in the vlc dir
 # as the standard package does not include the sdk.
 # The include files are found in the .7z package.
@@ -98,13 +100,6 @@ if (WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
   set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
   set (LIBVLC4_FOUND TRUE)
-endif()
-
-if (LIBVLC_FOUND)
-  set (BDJ4_VLC3 T)
-endif()
-if (LIBVLC4_FOUND)
-  set (BDJ4_VLC4 T)
 endif()
 
 #### MPV

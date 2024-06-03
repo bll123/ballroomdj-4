@@ -116,23 +116,25 @@ function copyreleasefiles {
   echo "   removing exclusions"
   # bdj4se is only used for packaging
   # testing:
-  #   check_all, chkprocess, chkfileshared, dmkmfromdb
+  #   aesed, check_all, chkprocess, chkfileshared, dmkmfromdb
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   dbustest, plisinklist, voltest, vsencdec, uitest
   # img/profile[1-9] may be left over from testing
   # 2024-1-16 do not ship the pli-mpv interface either.
+  # 2024-6-3 for the time being, do not ship libplivlc4
   rm -f \
       ${stage}/bin/aesed* \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
       ${stage}/bin/chkfileshared* \
       ${stage}/bin/chkprocess* \
-      ${stage}/bin/dmkmfromdb* \
-      ${stage}/bin/libvolnull* \
-      ${stage}/bin/libplinull* \
       ${stage}/bin/dbustest* \
-      ${stage}/bin/plisinklist* \
+      ${stage}/bin/dmkmfromdb* \
       ${stage}/bin/libplimpv* \
+      ${stage}/bin/libplinull* \
+      ${stage}/bin/libplivlc4* \
+      ${stage}/bin/libvolnull* \
+      ${stage}/bin/plisinklist* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \

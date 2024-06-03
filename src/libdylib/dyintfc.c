@@ -18,6 +18,8 @@
 #include "slist.h"
 #include "sysvars.h"
 
+#define BDJ4_DYLIB_DEBUG 0
+
 enum {
   MAX_DESC = 10,
 };
@@ -37,7 +39,13 @@ dyInterfaceList (const char *pfx, const char *funcnm)
   void        (*cleanupProc) (dlhandle_t *);
   char        *descarr [MAX_DESC];
   size_t      pfxlen;
+#if BDJ4_DYLIB_DEBUG
+  FILE        *logfh;
+#endif
 
+#if BDJ4_DYLIB_DEBUG
+  logfh = fopen ("out.txt", "a");
+#endif
   pfxlen = strlen (pfx);
 
   interfaces = ilistAlloc ("intfc-list", LIST_ORDERED);
@@ -52,8 +60,14 @@ dyInterfaceList (const char *pfx, const char *funcnm)
     }
 
     pathbldMakePath (dlpath, sizeof (dlpath), fn, "", PATHBLD_MP_DIR_EXEC);
+#if BDJ4_DYLIB_DEBUG
+    fprintf (logfh, "dylib: %s\n", fn);
+#endif
     dlHandle = dylibLoad (dlpath);
     if (dlHandle == NULL) {
+#if BDJ4_DYLIB_DEBUG
+      fprintf (logfh, "  cannot dlopen\n");
+#endif
       continue;
     }
 
@@ -64,6 +78,9 @@ dyInterfaceList (const char *pfx, const char *funcnm)
 
       descProc (descarr, MAX_DESC);
       while ((desc = descarr [c]) != NULL) {
+#if BDJ4_DYLIB_DEBUG
+        fprintf (logfh, "  desc: %d %s\n", c, desc);
+#endif
         strlcpy (tmp, fn, sizeof (tmp));
         tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
         ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
@@ -71,6 +88,10 @@ dyInterfaceList (const char *pfx, const char *funcnm)
         ++c;
         ++ikey;
       }
+    } else {
+#if BDJ4_DYLIB_DEBUG
+      fprintf (logfh, "  no desc proc\n");
+#endif
     }
 
     /* special case for pli */
@@ -82,6 +103,10 @@ dyInterfaceList (const char *pfx, const char *funcnm)
     dylibClose (dlHandle);
   }
   slistFree (files);
+
+#if BDJ4_DYLIB_DEBUG
+  fclose (logfh);
+#endif
 
   return interfaces;
 }

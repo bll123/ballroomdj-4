@@ -23,13 +23,14 @@ int               vlcPlay (vlcdata_t *vlcdata);
 ssize_t           vlcSeek (vlcdata_t *vlcdata, ssize_t dpos);
 double            vlcRate (vlcdata_t *vlcdata, double drate);
 const char *      vlcVersion (vlcdata_t *vlcdata);
-int               vlcVersionCheck (void);
 plistate_t        vlcState (vlcdata_t *vlcdata);
 int               vlcMedia (vlcdata_t *vlcdata, const char *fn);
 vlcdata_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcdata_t *vlcdata);
 void              vlcRelease (vlcdata_t *vlcdata);
 int               vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plidevtype);
+bool              vlcVersionLinkCheck (void);
+bool              vlcVersionCheck (void);
 
 #endif /* _hdr_vlc_vlc */
 

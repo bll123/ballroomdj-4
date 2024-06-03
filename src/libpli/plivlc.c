@@ -61,18 +61,20 @@ void
 pliiDesc (char **ret, int max)
 {
   int   c = 0;
-  int   vers;
 
   if (max < 2) {
     return;
   }
 
-  vers = vlcVersionCheck ();
-  if (vers == 4) {
-    ret [c++] = "Integrated VLC 4";
-  }
-  if (vers == 3) {
-    ret [c++] = "Integrated VLC";
+  if (vlcVersionLinkCheck ()) {
+    if (vlcVersionCheck ()) {
+#if BDJ4_VLC_VERS == 4
+      ret [c++] = "Integrated VLC 4";
+#endif
+#if BDJ4_VLC_VERS == 3
+      ret [c++] = "Integrated VLC 3";
+#endif
+    }
   }
   ret [c++] = NULL;
 }

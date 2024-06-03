@@ -233,20 +233,6 @@ vlcVersion (vlcdata_t *vlcdata)
   return vlcdata->version;
 }
 
-int
-vlcVersionCheck (void)
-{
-  int     vers;
-
-#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-  vers = 3;
-#endif
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-  vers = 4;
-#endif
-  return vers;
-}
-
 plistate_t
 vlcState (vlcdata_t *vlcdata)
 {
@@ -639,4 +625,26 @@ silence (void *data, int level, const libvlc_log_t *ctx,
 }
 # endif
 
-#endif /* have libvlc_new() */
+/* tests if the interface was linked with the correct libvlc version */
+bool
+vlcVersionLinkCheck (void)
+{
+  bool    valid;
+
+  valid = (LIBVLC_VERSION_MAJOR == BDJ4_VLC_VERS);
+  return valid;
+}
+
+/* tests if the loaded version matches the wanted version */
+bool
+vlcVersionCheck (void)
+{
+  bool    valid;
+  int     vers;
+
+  vers = atoi (libvlc_get_version());
+  valid = BDJ4_VLC_VERS == vers;
+  return valid;
+}
+
+#endif /* libvlc_new() */
