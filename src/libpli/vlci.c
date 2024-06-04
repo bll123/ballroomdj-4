@@ -78,7 +78,6 @@ static void vlcSetPosition (vlcdata_t *vlcdata, double dpos);
 #if VLCDEBUG
 static void vlclog (vlcdata_t *vlcdata, const char *msg, ...);
 static const char * stateToStr (libvlc_state_t state);
-static libvlc_state_t stateToValue (char *name);
 #else
 # define vlclog(vlcdata,msg,...)
 #endif
@@ -480,11 +479,11 @@ vlcSetAudioOutput (vlcdata_t *vlcdata)
       const char  *carg = vlcdata->device;
 
       {
-#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-        int   rc = 0;
-        rc = libvlc_audio_output_device_set (vlcdata->mp, carg);
-#else
+#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
         libvlc_audio_output_device_set (vlcdata->mp, NULL, carg);
+#endif
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+        libvlc_audio_output_device_set (vlcdata->mp, carg);
 #endif
       }
     }
@@ -582,22 +581,6 @@ stateToStr (libvlc_state_t state)
     }
   }
   return tptr;
-}
-
-static libvlc_state_t
-stateToValue (char *name)
-{
-  size_t          i;
-  libvlc_state_t  state;
-
-  state = libvlc_NothingSpecial;
-  for (i = 0; i < stateMapMax; ++i) {
-    if (strcmp (name, stateMap[i].name) == 0) {
-      state = stateMap[i].state;
-      break;
-    }
-  }
-  return state;
 }
 
 #endif

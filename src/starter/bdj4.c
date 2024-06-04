@@ -471,11 +471,17 @@ main (int argc, char * argv[])
       osSetEnv ("VLC_PLUGIN_PATH",
           "/Applications/VLC.app/Contents/MacOS/plugins");
     } else {
-      /* temporary for development */
-      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
-          "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks");
-      osSetEnv ("VLC_PLUGIN_PATH",
-          "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks/plugins");
+      char    tbuff [1024];
+
+      /* for development */
+      snprintf (tbuff, sizeof (tbuff),
+          "%s/Applications/%s.app/Contents/Frameworks",
+          sysvarsGetStr (SV_HOME), vlctag);
+      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
+      snprintf (tbuff, sizeof (tbuff),
+          "%s/Applications/%s.app/Contents/Frameworks/plugins",
+          sysvarsGetStr (SV_HOME), vlctag);
+      osSetEnv ("VLC_PLUGIN_PATH", tbuff);
     }
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }

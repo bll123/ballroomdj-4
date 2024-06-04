@@ -315,4 +315,3 @@ pliiWaitUntilPlaying (plidata_t *pliData)
 }
 
 #endif /* have libvlc_new */
-

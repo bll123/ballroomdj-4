@@ -69,6 +69,7 @@ plistate_t    pliState (pli_t *pli);
 int           pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
+
 const char    *pliStateText (pli_t *pli);
 ilist_t       *pliInterfaceList (void);
 
