@@ -84,6 +84,7 @@ while test $# -gt 0; do
       ;;
     --vlc)
       # ignored
+      shift
       ;;
     --volpipewire)
       # ignored

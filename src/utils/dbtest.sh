@@ -383,6 +383,10 @@ if [[ $ATIBDJ4 == T ]]; then
   ATIFLAG=--atibdj4
 fi
 ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
+if [[ $? -ne 0 ]]; then
+  echo "ERR: mktestsetup failed"
+  exit 1
+fi
 cp -pf $DATADB $KDBMAIN
 
 if [[ $ATIBDJ4 == T ]]; then
@@ -501,6 +505,11 @@ if [[ $TESTON == T ]]; then
       --outfile $TDBCOMPAT \
       --debug ${DBG} ${ATIFLAG} \
       --keepmusic
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
+
   # want the fixed version after the updater has run
   cp -f $DATADB $TDBCOMPAT
 
@@ -539,8 +548,11 @@ if [[ $TESTON == T ]]; then
       SONGEND*28000)
         ;;
       *)
-        msg+="audio tags not written"
+        msg+="audio tags not written (incorrect SONGEND)"
         rc=1
+        if [[ $VERBOSE == --verbose ]]; then
+          ./bin/bdj4 --bdj4tags "${TMSONGEND}" | grep SONGEND
+        fi
         ;;
     esac
     updateCounts $rc
@@ -553,6 +565,10 @@ if [[ $TESTON == T ]]; then
   # the tags are now incorrect due to the prior test.
   # re-create the main database and test music
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   # clean any leftover foxtrot from the tmp dir
   rm -rf $TMPDIRA
@@ -565,6 +581,10 @@ if [[ $TESTON == T ]]; then
       --infile $INNOFOXTROT \
       --outfile $TDBNOFOXTROT \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   # restore the main database
   cp -f $KDBMAIN $DATADB
@@ -622,11 +642,19 @@ if [[ $TESTON == T ]]; then
       --infile $INCHACHA \
       --outfile $TDBEMPTY \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # create test db w/chacha
   ./src/utils/mktestsetup.sh \
       --infile $INCHACHA \
       --outfile $TDBCHACHA \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # save the cha cha
   rm -f $TMPDIRA/001-chacha.mp3
   mv -f $musicdir/001-chacha.mp3 $TMPDIRA
@@ -636,6 +664,10 @@ if [[ $TESTON == T ]]; then
       --infile $INNOCHACHA \
       --outfile $TDBNOCHACHA \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   # test db : rebuild of test-m-nochacha
   if [[ -f $musicdir/001-chacha.mp3 ]]; then
@@ -779,11 +811,19 @@ if [[ $TESTON == T ]]; then
       --infile $INRDAT \
       --outfile $TDBRDAT \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # create test regex db w/tags (dance/title)
   ./src/utils/mktestsetup.sh \
       --infile $INRDT \
       --outfile $TDBRDT \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # create test regex db w/tags (dance/title) and w/secondary entries
   tdir="$(dirname ${musicdir})"
   ./src/utils/mktestsetup.sh \
@@ -791,16 +831,28 @@ if [[ $TESTON == T ]]; then
       --outfile $TDBRDTSECOND \
       --seconddir "${tdir}/$TMPDIRDT" \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # create test regex db w/tags (dance/tn-artist - title)
   ./src/utils/mktestsetup.sh \
       --infile $INRDTAT \
       --outfile $TDBRDTAT \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # create test music dir w/o any tags, tmpa is not used
   ./src/utils/mktestsetup.sh \
       --infile $INR \
       --outfile $TMPA \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
   # copy the music-dir to an alternate folder for testing
   # secondary folder builds
   test -d $TMPDIRDT && rm -rf $TMPDIRDT
@@ -909,6 +961,10 @@ if [[ $TESTON == T ]]; then
   # re-create both the main and second music dir
 
   ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   ./src/utils/mktestsetup.sh \
       --infile $INSECOND \
@@ -917,6 +973,10 @@ if [[ $TESTON == T ]]; then
       --musicdir "$SECONDMUSICDIR" \
       --nodbcopy \
       --keepdb
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   # second test db : check-new with a second dir
   tname=second-checknew
@@ -977,6 +1037,10 @@ if [[ $TESTON == T ]]; then
       --musicdir "$SECONDMUSICDIR" \
       --keepmusic \
       --debug ${DBG} ${ATIFLAG}
+  if [[ $? -ne 0 ]]; then
+    echo "ERR: mktestsetup failed"
+    exit 1
+  fi
 
   # restore the main+second database
   cp -f $KDBSECOND $DATADB

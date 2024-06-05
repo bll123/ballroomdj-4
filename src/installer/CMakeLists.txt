@@ -70,7 +70,7 @@ if (WIN32)
   target_compile_options (bdj4updater PRIVATE -municode)
 endif()
 target_link_libraries (bdj4updater PRIVATE
-  libbdj4ati libbdj4pli
+  libbdj4ati
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )

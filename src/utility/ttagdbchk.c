@@ -55,14 +55,17 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "ttagdbchk",    no_argument,      NULL,   0 },
-    { "debug",        required_argument,  NULL,   'd' },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "wait",         no_argument,      NULL,   0, },
-    { "vlc",          required_argument, NULL,   0, },
-    { "nodetach",     no_argument,      NULL,   0, },
-    { "origcwd",      required_argument,  NULL,   0 },
     { "ignoremissing",no_argument,      NULL,   'I', },
     { "verbose",      no_argument,      NULL,   'V', },
+    /* launcher options */
+    { "debug",        required_argument,  NULL,   'd' },
+    { "debugself",    no_argument,      NULL,   0 },
+    { "nodetach",     no_argument,      NULL,   0, },
+    { "origcwd",      required_argument,  NULL,   0 },
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
+    { "vlc",          required_argument, NULL,   0, },
+    { "wait",         no_argument,      NULL,   0, },
   };
 
 #if BDJ4_MEM_DEBUG

@@ -19,7 +19,7 @@
 #include "vlci.h"
 #include "volsink.h"
 
-#define VLCLOGGING 1
+#define VLCLOGGING 0
 
 typedef struct plidata {
   char              *name;

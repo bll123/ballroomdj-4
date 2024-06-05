@@ -221,11 +221,10 @@ tclean:
 	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
 	@-$(RM) -f */w */ww ../asan.* ./asan.* po/*.debug
-	@-$(RM) -f ../mdebug.txt ../out.txt out.txt ../vlc-out.txt
+	@-$(RM) -f ../mdebug.txt ../out.txt out.txt
 	@-$(RM) -f ../out-acoustid.xml ../out-acr.json ../out-mb.xml
-	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../mpvdebug.txt
+	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../vlc-out.txt ../mpvdebug.txt
 	@-$(RM) -f ../vgcore.* vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 	@-$(RM) -f inctest.c inctest.log dep-*.txt
-

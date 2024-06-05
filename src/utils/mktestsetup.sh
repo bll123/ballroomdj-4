@@ -55,8 +55,9 @@ PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
-while test $# -gt 0; do
-  case $1 in
+# $@ must be preserved, it is passed on to mkdbtest.sh
+for arg in "$@"; do
+  case $arg in
     --atibdj4)
       ATIBDJ4=T
       ;;
@@ -67,7 +68,8 @@ while test $# -gt 0; do
       PLI=GST
       ;;
     --vlc)
-      shift
+      # there will be another argument
+      # this case statement ignores anything unknown
       PLI=$1
       ;;
     --volpipewire)
@@ -80,7 +82,6 @@ while test $# -gt 0; do
       KEEPDB=T
       ;;
   esac
-  shift
 done
 
 # copy this stuff before creating the database...
@@ -282,6 +283,11 @@ _HERE_
 args=""
 
 outfile=$(./src/utils/mktestdb.sh "$@")
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "FAIL: mktestdb failed"
+  exit 1
+fi
 # if an outfile was specified,
 # copy the db to the data dir after it is created
 if [[ $DBCOPY == T ]]; then

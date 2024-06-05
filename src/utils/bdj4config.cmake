@@ -85,10 +85,10 @@ if (NOT WIN32 AND NOT LIBVLC_FOUND)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-# temporary for development
+# for development
 if (APPLE AND NOT LIBVLC4_FOUND)
-  set (LIBVLC4_INCLUDE_DIR "/Volumes/Users/bll/Applications/VLC4.app/Contents/MacOS/include")
-  set (LIBVLC4_LIBRARY "/Volumes/Users/bll/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+  set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+  set (LIBVLC4_LIBRARY "${ENV{HOME}}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
   set (LIBVLC4_FOUND TRUE)
 endif()
 
