@@ -10,6 +10,7 @@
 
 * Bug Fixes:
     * PENDING Configuration: Crash when changing audio interface.
+    * MacOS: Check both system and home application folders for VLC.
 * Changes:
     * Prepare for VLC version 4 support.
 * Internal:

@@ -82,6 +82,9 @@ while test $# -gt 0; do
     --pligst)
       # ignored
       ;;
+    --vlc)
+      # ignored
+      ;;
     --volpipewire)
       # ignored
       ;;

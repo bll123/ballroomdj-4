@@ -481,17 +481,18 @@ sysvarsInit (const char *argv0)
 
           /* extract the name of the app from the main-dir */
           strlcpy (tmp, sysvars [SV_BDJ4_DIR_MAIN], sizeof (tmp));
-          offset = strlen (tmp) -
-              strlen (MACOS_APP_PREFIX) -
-              strlen (MACOS_APP_EXT);
-          if (offset >= 0) {
-            tmp [offset] = '\0';
-          }
-          tp = strrchr (tmp, '/');
-          if (tp != NULL) {
-            ++tp;
-          } else {
-            tp = BDJ4_NAME;
+          tp = BDJ4_NAME;
+          if (strstr (tmp, MACOS_APP_PREFIX) != NULL) {
+            offset = strlen (tmp) -
+                strlen (MACOS_APP_PREFIX) -
+                strlen (MACOS_APP_EXT);
+            if (offset >= 0) {
+              tmp [offset] = '\0';
+            }
+            tp = strrchr (tmp, '/');
+            if (tp != NULL) {
+              ++tp;
+            }
           }
 
           strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);

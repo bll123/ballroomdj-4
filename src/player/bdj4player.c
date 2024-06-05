@@ -30,8 +30,10 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dyintfc.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -194,6 +196,7 @@ static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
+static const char * playerGetAudioInterface (void);
 
 static int  gKillReceived = 0;
 
@@ -204,6 +207,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   uint32_t        flags;
   const char      *audiosink;
+  const char      *plintfc;
   char            *volintfc;
   int             plidevtype;
 
@@ -289,14 +293,16 @@ main (int argc, char *argv[])
     }
   }
 
+  /* vlc must be checked for a switch in versions */
+  plintfc = playerGetAudioInterface ();
+
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   plidevtype = playerSetAudioSink (&playerData, audiosink);
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", plintfc);
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
-  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
-      bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+  playerData.pli = pliInit (plintfc, bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   playerData.pliSupported = pliSupported (playerData.pli);
 
   /* vlc needs to have the audio device set */
@@ -2065,4 +2071,75 @@ playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault)
     /* this works for pulse-audio and pipewire */
     osSetEnv ("PULSE_SINK", playerData->actualSink);
   }
+}
+
+static const char *
+playerGetAudioInterface (void)
+{
+  const char  *currplintfc;
+  bool        currvlc3 = false;
+  bool        currvlc4 = false;
+  bool        havevlc3 = false;
+  bool        havevlc4 = false;
+  ilist_t     *interfaces;
+  ilistidx_t  iter;
+  ilistidx_t  key;
+  ilistidx_t  vlc3key = -1;
+  ilistidx_t  vlc4key = -1;
+  const char  *intfc;
+  const char  *newnm = NULL;
+  bool        chg = false;
+
+  currplintfc = bdjoptGetStr (OPT_M_PLAYER_INTFC);
+  if (currplintfc == NULL || strstr (currplintfc, "vlc") == NULL) {
+    return currplintfc;
+  }
+
+  /* 4.10.3 if the configuration is set to use a VLC player, */
+  /* use the player interface list to check and see which */
+  /* versions of VLC are available */
+  /* if version 3 is configured, and version 4 is available, switch */
+  /* if version 4 is configured, and version 3 is available, switch */
+
+  if (strcmp (currplintfc, "libplivlc") == 0) {
+    currvlc3 = true;
+  }
+  if (strcmp (currplintfc, "libplivlc4") == 0) {
+    currvlc4 = true;
+  }
+
+  interfaces = pliInterfaceList ();
+  ilistStartIterator (interfaces, &iter);
+  while ((key = ilistIterateKey (interfaces, &iter)) >= 0) {
+    intfc = ilistGetStr (interfaces, key, DYI_LIB);
+    if (intfc != NULL && strcmp (intfc, "libplivlc") == 0) {
+      havevlc3 = true;
+      vlc3key = key;
+    }
+    if (intfc != NULL && strcmp (intfc, "libplivlc4") == 0) {
+      havevlc4 = true;
+      vlc4key = key;
+    }
+  }
+
+  if (currvlc3 && ! havevlc3 && havevlc4) {
+    intfc = ilistGetStr (interfaces, vlc4key, DYI_LIB);
+    newnm = ilistGetStr (interfaces, vlc4key, DYI_DESC);
+    chg = true;
+  }
+  if (currvlc4 && ! havevlc4 && havevlc3) {
+    intfc = ilistGetStr (interfaces, vlc3key, DYI_LIB);
+    newnm = ilistGetStr (interfaces, vlc3key, DYI_DESC);
+    chg = true;
+  }
+
+  if (chg) {
+    bdjoptSetStr (OPT_M_PLAYER_INTFC, intfc);
+    bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, newnm);
+    bdjoptSave ();
+  }
+
+  ilistFree (interfaces);
+
+  return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }

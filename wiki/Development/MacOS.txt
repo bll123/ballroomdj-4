@@ -1,6 +1,13 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
+====== VLC Installation for development:
+
+Start the VLC installer, drag the VLC installation to
+$HOME/Applications.  Rename to VLC3.app and VLC4.app.
+
+====== Setting up MacOS
+
 VNC:
 
 https://apple.stackexchange.com/questions/339114/allowing-vnc-to-control-computer-under-10-14-mojave

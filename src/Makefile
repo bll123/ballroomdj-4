@@ -158,6 +158,7 @@ checksuite:
 # testoption could be:
 #   --pligst
 #   --volpipewire
+#   --vlc VLC4
 .PHONY: testsuite
 testsuite:
 	./utils/mktestsetup.sh --force $(testoption)

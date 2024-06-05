@@ -51,12 +51,12 @@ function copytestf {
 }
 
 ATIBDJ4=F
-PLI=VLC
+PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
-for arg in "$@"; do
-  case $arg in
+while test $# -gt 0; do
+  case $1 in
     --atibdj4)
       ATIBDJ4=T
       ;;
@@ -65,6 +65,10 @@ for arg in "$@"; do
       ;;
     --pligst)
       PLI=GST
+      ;;
+    --vlc)
+      shift
+      PLI=$1
       ;;
     --volpipewire)
       VOL=pipewire
@@ -76,6 +80,7 @@ for arg in "$@"; do
       KEEPDB=T
       ;;
   esac
+  shift
 done
 
 # copy this stuff before creating the database...
@@ -179,8 +184,9 @@ ATII=libatibdj4
 if [[ $ATIBDJ4 == T ]]; then
   ATII=libatibdj4
 fi
+
 PLII=libplivlc
-PLIINM="Integrated VLC"
+PLIINM="Integrated VLC 3"
 if [[ $PLI == MPRISVLC ]]; then
   PLII=libplimpris
   PLIINM="MPRIS VLC Media Player"
@@ -189,6 +195,11 @@ if [[ $PLI == GST ]]; then
   PLII=libpligst
   PLIINM="GStreamer"
 fi
+if [[ $PLI == VLC4 ]]; then
+  PLII=libplivlc4
+  PLIINM="Integrated VLC 4"
+fi
+
 # if VOLI is empty, no change is made, and the default is used
 VOLI=
 if [[ $VOL == pipewire ]]; then

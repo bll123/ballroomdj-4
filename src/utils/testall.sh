@@ -33,7 +33,28 @@ for arg in "$@"; do
       INSTTEST=F
       ;;
   esac
+  shift
 done
+
+systype=$(uname -s)
+case $systype in
+  Linux)
+    os=linux
+    platform=unix
+    ;;
+  Darwin)
+    os=macos
+    platform=unix
+    ;;
+  MINGW64*)
+    os=win64
+    platform=windows
+    ;;
+  MINGW32*)
+    echo "Platform not supported"
+    exit 1
+    ;;
+esac
 
 . ./src/utils/pkgnm.sh
 pkgnmgetdata
@@ -48,6 +69,23 @@ fi
 
 LOG=src/testall.log
 > $LOG
+
+
+function runTestSuite {
+  vlc=$1
+
+  echo "-- testsuite" >> $LOG
+  echo "-- $(date +%T) make test setup"
+  ./src/utils/mktestsetup.sh --force --vlc ${vlc} >> $LOG 2>&1
+  echo "-- $(date +%T) testsuite"
+  vlcargs=""
+  if [[ $platform != linux ]]; then
+    vlcargs="--vlc $vlc"
+  fi
+  ./bin/bdj4 --testsuite $vlcargs >> $LOG 2>&1
+  rc=$?
+  return $rc
+}
 
 if [[ $TBUILD == T ]]; then
   (
@@ -151,17 +189,15 @@ fi
 
 if [[ $TESTSUITE == T ]]; then
   if [[ $grc -eq 0 ]]; then
-    echo "-- testsuite" >> $LOG
-    echo "-- $(date +%T) make test setup"
-    ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
-    echo "-- $(date +%T) testsuite"
-    ./bin/bdj4 --testsuite >> $LOG 2>&1
-    rc=$?
+    runTestSuite VLC3
     if [[ $rc -ne 0 ]]; then
       echo "-- $(date +%T) testsuite FAIL"
       grc=1
     else
       echo "-- $(date +%T) testsuite OK"
+    fi
+    if [[ $platform != linux ]]; then
+      runTestSuite VLC4
     fi
   else
     echo "testsuite not run"

@@ -1,5 +1,14 @@
 [Wiki Home](Home)
 
+====== Installing VLC for development
+
+
+
+
+====== Turning off 8.3 name generation.
+
+Many applications break.
+
 fsutil.exe 8dot3name query C:
 <br>fsutil.exe 8dot3name set C: 1
 <br>fsutil.exe 8dot3name strip /s /v C:
