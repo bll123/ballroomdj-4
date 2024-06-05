@@ -558,7 +558,7 @@ altinstMainLoop (void *udata)
       /* to the data-top-dir */
       logStart ("bdj4altinst", "alt",
           LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
+      logStartProgram ("alternate-setup");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altinst->target);
       break;
     }

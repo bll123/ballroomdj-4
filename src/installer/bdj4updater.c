@@ -32,9 +32,11 @@
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
+#include "dyintfc.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "instutil.h"
 #include "log.h"
 #include "localeutil.h"
@@ -46,6 +48,7 @@
 #include "pathbld.h"
 #include "pathinfo.h"
 #include "playlist.h"
+#include "pli.h"
 #include "slist.h"
 #include "song.h"
 #include "sysvars.h"
@@ -169,7 +172,7 @@ main (int argc, char *argv [])
 
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_INFO, "updt");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST, "updt");
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
+  logStartProgram ("updater");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       READONLY_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
@@ -406,6 +409,56 @@ main (int argc, char *argv [])
           LINUX_SHUTDOWN_SCRIPT, "", PATHBLD_MP_DIR_MAIN);
       if (strcmp (tbuff, tval) == 0) {
         bdjoptSetStr (OPT_M_SHUTDOWN_SCRIPT, LINUX_SHUTDOWN_SCRIPT);
+        bdjoptchanged = true;
+      }
+    }
+  }
+
+  {
+    const char  *currplintfc;
+    bool        currvlc3 = false;
+    bool        currvlc4 = false;
+    bool        havevlc3 = false;
+    bool        havevlc4 = false;
+
+    /* 4.10.3 if the configuration is set to use a VLC player, */
+    /* use the player interface list to check and see which */
+    /* versions of VLC are available */
+    /* if version 3 is configured, and version 4 is available, switch it */
+    /* if version 4 is configured, and version 3 is available, switch it */
+    currplintfc = bdjoptGetStr (OPT_M_PLAYER_INTFC);
+    if (currplintfc != NULL && strstr (currplintfc, "vlc") != NULL) {
+      ilist_t     *interfaces;
+      ilistidx_t  iter;
+      ilistidx_t  key;
+      const char  *intfc;
+
+      if (strcmp (currplintfc, "libplivlc") == 0) {
+        currvlc3 = true;
+      }
+      if (strcmp (currplintfc, "libplivlc4") == 0) {
+        currvlc4 = true;
+      }
+
+      interfaces = pliInterfaceList ();
+      ilistStartIterator (interfaces, &iter);
+      while ((key = ilistIterateKey (interfaces, &iter)) >= 0) {
+        intfc = ilistGetStr (interfaces, key, DYI_LIB);
+        if (intfc != NULL && strcmp (intfc, "libplivlc") == 0) {
+          havevlc3 = true;
+        }
+        if (intfc != NULL && strcmp (intfc, "libplivlc4") == 0) {
+          havevlc4 = true;
+        }
+      }
+      ilistFree (interfaces);
+
+      if (currvlc3 && ! havevlc3 && havevlc4) {
+        bdjoptSetStr (OPT_M_PLAYER_INTFC, "libplivlc4");
+        bdjoptchanged = true;
+      }
+      if (currvlc4 && ! havevlc4 && havevlc3) {
+        bdjoptSetStr (OPT_M_PLAYER_INTFC, "libplivlc");
         bdjoptchanged = true;
       }
     }

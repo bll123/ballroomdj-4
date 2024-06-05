@@ -100,8 +100,9 @@ enum {
   LOG_MAX_BUFF    = 4096,
 };
 
-#define logProcBegin()   rlogProcBegin (__FILE__, __LINE__, __func__)
-#define logProcEnd(suffix)  rlogProcEnd (suffix, __FILE__, __LINE__, __func__)
+#define logStartProgram(prog)   rlogStartProgram (prog, __FILE__, __LINE__, __func__)
+#define logProcBegin()          rlogProcBegin (__FILE__, __LINE__, __func__)
+#define logProcEnd(suffix)      rlogProcEnd (suffix, __FILE__, __LINE__, __func__)
 #define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__, __func__)
 #define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, __func__, fmt __VA_OPT__(,) __VA_ARGS__)
 
@@ -124,6 +125,7 @@ void logStderr (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
+void rlogStartProgram (const char *prog, const char *fn, int line, const char *func);
 void rlogProcBegin (const char *fn, int line, const char *func);
 void rlogProcEnd (const char *suffix, const char *fn, int line, const char *func);
 void rlogError (const char *msg, int err, const char *fn, int line, const char *func);

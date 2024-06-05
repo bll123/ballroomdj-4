@@ -4,7 +4,16 @@
 
 <!--
 
+**4.10.4 2024-6---**
+
 **4.10.3 2024-6---**
+
+* Bug Fixes:
+    * PENDING Configuration: Crash when changing audio interface.
+* Changes:
+    * Prepare for VLC version 4 support.
+* Internal:
+    * Update VLC player interface.
 
 -->
 
