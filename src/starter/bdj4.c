@@ -465,24 +465,64 @@ main (int argc, char * argv[])
   }
 
   if (isMacOS ()) {
-    if (strcmp (vlctag, "VLC") == 0) {
-      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
-          "/Applications/VLC.app/Contents/MacOS/lib/");
-      osSetEnv ("VLC_PLUGIN_PATH",
-          "/Applications/VLC.app/Contents/MacOS/plugins");
-    } else {
-      char    tbuff [1024];
+    char    pbuff [MAXPATHLEN];
+    char    tbuff [MAXPATHLEN];
+    bool    foundvlc = false;
 
-      /* for development */
+    /* players other than vlc may need a different setup */
+
+    /* determine the location of VLC, /Applications or $HOME/Applications */
+    snprintf (tbuff, sizeof (tbuff),
+          "/Applications/%s.app", vlctag);
+    if (fileopIsDirectory (tbuff)) {
+      foundvlc = true;
+    } else {
       snprintf (tbuff, sizeof (tbuff),
-          "%s/Applications/%s.app/Contents/Frameworks",
-          sysvarsGetStr (SV_HOME), vlctag);
-      osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
-      snprintf (tbuff, sizeof (tbuff),
-          "%s/Applications/%s.app/Contents/Frameworks/plugins",
-          sysvarsGetStr (SV_HOME), vlctag);
-      osSetEnv ("VLC_PLUGIN_PATH", tbuff);
+          "%s/Applications/%s.app", sysvarsGetStr (SV_HOME), vlctag);
+      if (fileopIsDirectory (tbuff)) {
+        foundvlc = true;
+      }
     }
+
+    if (! foundvlc) {
+      fprintf (stderr, "ERR: Unable to locate VLC\n");
+    }
+
+    if (foundvlc) {
+      /* determine if this is vlc-3 or vlc-4 */
+      /* vlc-3 has the library in ../Contents/MacOS/lib */
+      /* vlc-4 has the library in ../Contents/Frameworks */
+      /* note that 'tbuff' currently has the main path */
+
+      strlcpy (pbuff, tbuff, sizeof (pbuff));
+
+      /* libvlc.dylib is a symlink to the current version of the library */
+
+      snprintf (tbuff, sizeof (tbuff),
+          "%s/Contents/MacOS/lib/libvlc.dylib", pbuff);
+      if (fileopFileExists (tbuff)) {
+        /* VLC 3 */
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Contents/MacOS/lib/", pbuff);
+        osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Contents/MacOS/plugins", pbuff);
+        osSetEnv ("VLC_PLUGIN_PATH", tbuff);
+      }
+
+      snprintf (tbuff, sizeof (tbuff),
+          "%s/Contents/Frameworks/libvlc.dylib", pbuff);
+      if (fileopFileExists (tbuff)) {
+        /* VLC 4 */
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Contents/Frameworks", pbuff);
+        osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Contents/Frameworks/plugins", pbuff);
+        osSetEnv ("VLC_PLUGIN_PATH", tbuff);
+      }
+    }
+
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 

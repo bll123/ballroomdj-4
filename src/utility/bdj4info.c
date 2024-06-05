@@ -68,16 +68,18 @@ main (int argc, char *argv [])
   const char  *targ;
 
   static struct option bdj_options [] = {
-    { "bdj4info",   no_argument,        NULL,   0 },
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "datatopdir", required_argument,  NULL,   't' },
+    { "bdj4info",     no_argument,        NULL,   0 },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "datatopdir",   required_argument,  NULL,   't' },
     /* ignored */
-    { "nodetach",     no_argument,      NULL,   0 },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "scale",        required_argument,NULL,   0 },
-    { "theme",        required_argument,NULL,   0 },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "nodetach",     no_argument,        NULL,   0 },
     { "origcwd",      required_argument,  NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
+    { "vlc",          required_argument,  NULL,   0 },
+    { "wait",         no_argument,        NULL,   0 },
+    { NULL,           0,                  NULL,   0 }
   };
 
 #if BDJ4_MEM_DEBUG
