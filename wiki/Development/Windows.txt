@@ -4,8 +4,10 @@
 
 Install VLC 4 using a VLC4 installpath.
 Rename the VideoLAN/VLC4 dir to VLC4temp.
-Install VLC 3 using a VLC installpath.
+Install VLC 3 using a VLC3 installpath.
 Rename the VideoLAN/VLC4temp dir to VLC4.
+Copy VideoLan/VLC3 to VideoLan/VLC
+Fix the shortcuts on the desktop if wanted.
 
 ====== Turning off 8.3 name generation.
 

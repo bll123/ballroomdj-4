@@ -74,10 +74,10 @@ LOG=src/testall.log
 function runTestSuite {
   vlc=$1
 
-  echo "-- testsuite" >> $LOG
   echo "-- $(date +%T) make test setup"
   ./src/utils/mktestsetup.sh --force --vlc ${vlc} >> $LOG 2>&1
-  echo "-- $(date +%T) testsuite"
+  echo "-- $(date +%T) testsuite ($vlc)" >> $LOG
+  echo "-- $(date +%T) testsuite ($vlc)"
   vlcargs=""
   if [[ $platform != linux ]]; then
     vlcargs="--vlc $vlc"
@@ -198,6 +198,12 @@ if [[ $TESTSUITE == T ]]; then
     fi
     if [[ $platform != linux ]]; then
       runTestSuite VLC4
+      if [[ $rc -ne 0 ]]; then
+        echo "-- $(date +%T) testsuite FAIL"
+        grc=1
+      else
+        echo "-- $(date +%T) testsuite OK"
+      fi
     fi
   else
     echo "testsuite not run"
