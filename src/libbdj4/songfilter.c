@@ -708,6 +708,9 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       found = songfilterCheckStr (songGetStr (song, TAG_CONDUCTOR), searchstr);
     }
     if (! found) {
+      found = songfilterCheckStr (songGetStr (song, TAG_MQDISPLAY), searchstr);
+    }
+    if (! found) {
       logProcEnd ("search-reject");
       return false;
     }

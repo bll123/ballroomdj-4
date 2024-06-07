@@ -153,7 +153,7 @@ main (int argc, char *argv [])
     { "origcwd",      required_argument,  NULL,   0 },
     { "scale",        required_argument,  NULL,   0 },
     { "theme",        required_argument,  NULL,   0 },
-    { "vlc",          required_argument,  NULL,   0, },
+    { "pli",          required_argument,  NULL,   0, },
     { "wait",         no_argument,        NULL,   0, },
   };
 

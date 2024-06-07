@@ -155,10 +155,9 @@ checktag:
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
-# testoption could be:
-#   --pligst
-#   --volpipewire
-#   --vlc VLC4
+# testoption could have:
+#   --pli VLC3/VLC4/GST/MPRISVLC
+#   --vol pipewire
 .PHONY: testsuite
 testsuite:
 	./utils/mktestsetup.sh --force $(testoption)
@@ -166,7 +165,7 @@ testsuite:
 
 .PHONY: testsuitemprisvlc
 testsuitemprisvlc:
-	./utils/mktestsetup.sh --force --plimprisvlc
+	./utils/mktestsetup.sh --force --pli MPRISVLC
 	# & is a shell command terminator, no semicolon
 	vlc --intf=dummy --no-video & \
         pid=$$$$; \

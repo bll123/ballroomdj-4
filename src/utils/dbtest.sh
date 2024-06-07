@@ -287,13 +287,15 @@ function checkreorg {
 
 
 VERBOSE=""
-ATIBDJ4=F
+ATI=BDJ4
 FIRSTONLY=F
 EXITONFAIL=F
+setati=F
 for arg in "$@"; do
+
   case $arg in
-    --atibdj4)
-      ATIBDJ4=T
+    --ati)
+      setati=T
       ;;
     --firstonly)
       FIRSTONLY=T
@@ -303,6 +305,12 @@ for arg in "$@"; do
       ;;
     --exitonfail)
       EXITONFAIL=T
+      ;;
+    *)
+      if [[ setati == T ]]; then
+        ATI=$arg
+        setati=F
+      fi
       ;;
   esac
 done
@@ -378,9 +386,10 @@ KDBREORGNOFT=tmp/second-noft-db.dat
 SECONDMUSICDIR=${cwd}/tmp/music-second
 
 echo "## make test setup"
+#
 ATIFLAG=""
-if [[ $ATIBDJ4 == T ]]; then
-  ATIFLAG=--atibdj4
+if [[ $ATI != BDJ4 ]]; then
+  ATIFLAG="--ati $ATI"
 fi
 ./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 if [[ $? -ne 0 ]]; then
@@ -389,7 +398,7 @@ if [[ $? -ne 0 ]]; then
 fi
 cp -pf $DATADB $KDBMAIN
 
-if [[ $ATIBDJ4 == T ]]; then
+if [[ $ATI == BDJ4 ]]; then
   ATII=libatibdj4
   hostname=$(hostname)
   tfn=data/${hostname}/bdjconfig.txt

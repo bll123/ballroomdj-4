@@ -634,7 +634,6 @@ pipewireMetadataEvent (void *udata, uint32_t id,
     }
     if (pwstate->defsinkname == NULL || pwstate->changed) {
       dataFree (pwstate->defsinkname);
-fprintf (stderr, "res-orig: %s\n", res);
       pwstate->defsinkname = mdstrdup (res);
     }
   }

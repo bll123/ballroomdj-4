@@ -112,7 +112,7 @@ main (int argc, char * argv[])
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
-    { "vlc",            required_argument,  NULL,   'V' },
+    { "pli",            required_argument,  NULL,   'P' },
     { "wait",           no_argument,        NULL,   'w' },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
@@ -400,7 +400,7 @@ main (int argc, char * argv[])
         havescale = true;
         break;
       }
-      case 'V': {
+      case 'P': {
         vlctag = bdj4argGet (bdj4arg, optind - 1, optarg);
         break;
       }

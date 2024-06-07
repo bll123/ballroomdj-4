@@ -66,7 +66,7 @@ main (int argc, char *argv [])
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "origcwd",      required_argument,  NULL,   0 },
-    { "vlc",          required_argument,  NULL,   0, },
+    { "pli",          required_argument,  NULL,   0, },
     { "wait",         no_argument,        NULL,   0, },
     /* standard stuff */
     { "debug",        required_argument,  NULL,   'd' },

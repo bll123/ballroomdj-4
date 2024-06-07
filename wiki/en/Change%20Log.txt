@@ -9,10 +9,11 @@
 **4.10.3 2024-6---**
 
 * Bug Fixes:
-    * PENDING Configuration: Crash when changing audio interface.
+    * Song Filter: Also search the marquee display.
     * MacOS: Check both system and home application folders for VLC.
 * Changes:
     * Prepare for VLC version 4 support.
+    * Linux: GStreamer player interface: now fully functional.
 * Internal:
     * Update VLC player interface.
 

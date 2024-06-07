@@ -50,36 +50,47 @@ function copytestf {
   fi
 }
 
-ATIBDJ4=F
+ATI=BDJ4
 PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
+setpli=F
+setvol=F
+setati=F
 # $@ must be preserved, it is passed on to mkdbtest.sh
 for arg in "$@"; do
   case $arg in
-    --atibdj4)
-      ATIBDJ4=T
+    --ati)
+      setati=T
       ;;
-    --plimprisvlc)
-      PLI=MPRISVLC
+    --pli)
+      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC
+      setpli=T
       ;;
-    --pligst)
-      PLI=GST
-      ;;
-    --vlc)
-      # there will be another argument
-      # this case statement ignores anything unknown
-      PLI=$1
-      ;;
-    --volpipewire)
-      VOL=pipewire
+    --vol)
+      # vol argument may be one of: pipewire
+      setvol=T
       ;;
     --nodbcopy)
       DBCOPY=F
       ;;
     --keepdb)
       KEEPDB=T
+      ;;
+    *)
+      if [[ $setpli == T ]]; then
+        PLI=$arg
+        setpli=F
+      fi
+      if [[ $setvol == T ]]; then
+        VOL=$arg
+        setvol=F
+      fi
+      if [[ $setati == T ]]; then
+        ATI=$arg
+        setati=F
+      fi
       ;;
   esac
 done
@@ -182,9 +193,6 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 ATII=libatibdj4
-if [[ $ATIBDJ4 == T ]]; then
-  ATII=libatibdj4
-fi
 
 PLII=libplivlc
 PLIINM="Integrated VLC 3"
