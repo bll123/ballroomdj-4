@@ -201,7 +201,8 @@ if [[ $INSTTEST == T ]]; then
 fi
 
 if [[ $TESTSUITE == T ]]; then
-  if [[ $grc -eq 0 ]]; then
+  TESTVLC3ON=T
+  if [[ $grc -eq 0 && $TESTVLC3ON == T ]]; then
     runTestSuite VLC3
     rc=$?
     if [[ $rc -ne 0 ]]; then
@@ -212,7 +213,8 @@ if [[ $TESTSUITE == T ]]; then
   # the pipewire volume interface is only tested on linux
   # need to modify this to check if the pipewire interface is available
   # on the particular linux platform.
-  if [[ $grc -eq 0 && $os == linux ]]; then
+  TESTPWON=F
+  if [[ $grc -eq 0 && $TESTPWON == T && $os == linux ]]; then
     runTestSuite VLC3 pipewire
     rc=$?
     if [[ $rc -ne 0 ]]; then
@@ -221,7 +223,8 @@ if [[ $TESTSUITE == T ]]; then
   fi
 
   # for the moment, only test gstreamer on linux
-  if [[ $grc -eq 0 && $os == linux ]]; then
+  TESTGSTON=T
+  if [[ $grc -eq 0 && $TESTGSTON == T && $os == linux ]]; then
     runTestSuite GST
     rc=$?
     if [[ $rc -ne 0 ]]; then
@@ -231,7 +234,8 @@ if [[ $TESTSUITE == T ]]; then
 
   # for the time being, do not run the VLC 4 tests. (2024-6)
   # VLC 4 has no release date scheduled.
-  if [[ $grc -eq 0 && T == F && $os != linux ]]; then
+  TESTVLC4ON=F
+  if [[ $grc -eq 0 && $TESTVLC4ON == T && $os != linux ]]; then
     runTestSuite VLC4
     rc=$?
     if [[ $rc -ne 0 ]]; then

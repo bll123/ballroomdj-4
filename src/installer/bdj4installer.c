@@ -2038,6 +2038,7 @@ installerVLCCheck (installer_t *installer)
   char    tbuff [MAXPATHLEN];
 
   /* on linux, vlc is installed via other methods */
+  /* also on linux, gstreamer can be used even if there is no vlc */
   if (installer->vlcinstalled || isLinux ()) {
     installer->instState = INST_FINALIZE;
     return;
