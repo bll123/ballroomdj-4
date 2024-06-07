@@ -47,8 +47,7 @@ pliiInit (const char *plinm)
   pliData->state = PLI_STATE_STOPPED;
   pliData->supported = PLI_SUPPORT_NONE;
   pliData->supported |= PLI_SUPPORT_SEEK;
-  /* GStreamer has a rate, but no pitch adjustment */
-  /* pliData->supported |= PLI_SUPPORT_SPEED; */
+  pliData->supported |= PLI_SUPPORT_SPEED;
 
   return pliData;
 }

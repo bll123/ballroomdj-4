@@ -4,6 +4,13 @@
  * gst-launch-1.0 -vv playbin \
  *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3
  *
+ * gst-launch-1.0 -vv playbin \
+ *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3 \
+ *    audio_sink="scaletempo ! audioconvert ! audioresample ! autoaudiosink"
+ *
+ * modifying a playbin pipeline:
+ * https://gstreamer.freedesktop.org/documentation/tutorials/playback/custom-playbin-sinks.html?gi-language=c
+ *
  */
 #include "config.h"
 
@@ -67,6 +74,13 @@ gstiInit (const char *plinm)
 {
   gsti_t            *gsti;
   GstBus            *bus;
+  GstPad            *pad;
+  GstPad            *ghost_pad;
+  GstElement        *sinkbin;
+  GstElement        *convert;
+  GstElement        *scaletempo;
+  GstElement        *resample;
+  GstElement        *sink;
   GstPlayFlags      flags;
 
   gst_init (NULL, 0);
@@ -88,6 +102,24 @@ gstiInit (const char *plinm)
   flags &= ~GST_PLAY_FLAG_VIS;
   g_object_set (G_OBJECT (gsti->pipeline), "flags", flags, NULL);
   g_object_set (G_OBJECT (gsti->pipeline), "volume", 1.0, NULL);
+
+  scaletempo = gst_element_factory_make ("scaletempo", "scaletempo");
+  convert = gst_element_factory_make ("audioconvert", "convert");
+  resample = gst_element_factory_make ("audioresample", "resample");
+  g_object_set (G_OBJECT (resample), "quality", 8, NULL);
+  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+
+  sinkbin = gst_bin_new ("audio_sink_bin");
+  gst_bin_add_many (GST_BIN (sinkbin), scaletempo, convert, resample, sink, NULL);
+  gst_element_link_many (scaletempo, convert, resample, sink, NULL);
+
+  pad = gst_element_get_static_pad (scaletempo, "sink");
+  ghost_pad = gst_ghost_pad_new ("sink", pad);
+  gst_pad_set_active (ghost_pad, TRUE);
+  gst_element_add_pad (sinkbin, ghost_pad);
+  gst_object_unref (pad);
+
+  g_object_set (G_OBJECT (gsti->pipeline), "audio-sink", sinkbin, NULL);
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (gsti->pipeline));
   gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
