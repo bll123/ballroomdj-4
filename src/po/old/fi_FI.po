@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
-"PO-Revision-Date: 2022-05-27 04:44\n"
+"PO-Revision-Date: 2024-06-08 14:59\n"
 
 msgid "   #"
 msgstr "   #"
@@ -500,129 +500,129 @@ msgid "Configuration"
 msgstr "Asetukset"
 
 msgid "Connect to Server:"
-msgstr ""
+msgstr "Yhdistä palvelimeen:"
 
 msgid "Connecting..."
 msgstr "Yhdistetään..."
 
 msgid "Connection Information:"
-msgstr ""
+msgstr "Yhteyden tiedot:"
 
 msgid "Connection OK."
-msgstr ""
+msgstr "Yhteys OK."
 
 # Playlist: after stopping this playlist, continue with the next
 # Playlist: after stopping this playlist, continue with the next
 # Raffle Game: continue playing game
 msgid "Continue"
-msgstr ""
+msgstr "Jatka"
 
 msgid "Continuous Playback"
-msgstr ""
+msgstr "Jatkuva toisto"
 
 msgid "Copy"
-msgstr ""
+msgstr "Kopioi"
 
 msgid "Copy Complete"
-msgstr ""
+msgstr "Kopiointi valmistui"
 
 msgid "Copy Files From"
-msgstr ""
+msgstr "Kopioi tiedostoja"
 
 msgid "Copy Files To"
-msgstr ""
+msgstr "Kopioi tiedostoja..."
 
 msgid "Copy Missing Files To"
-msgstr ""
+msgstr "Kopioi puuttuvat tiedostot..."
 
 msgid "Copy Music Files"
-msgstr ""
+msgstr "Kopioi musiikkitiedostoja"
 
 msgid "Copy of external file finished."
-msgstr ""
+msgstr "Kopio ulkoisesta tiedostosta valmistui."
 
 msgid "Copy of external file in progress"
-msgstr ""
+msgstr "Kopio ulkoisesta tiedostosta käynnissä"
 
 msgid "Copy Updated Files From"
-msgstr ""
+msgstr "Kopioi päivitetyt tiedostot"
 
 msgid "Copy Updated Files To"
-msgstr ""
+msgstr "Kopioi päivitetyt tiedostot..."
 
 msgid "Copying Files"
-msgstr ""
+msgstr "Kopioidaan tiedostoja"
 
 msgid "Copyright 2012-%d Brad Lanam Walnut Creek CA USA"
-msgstr ""
+msgstr "Copyright 2012-%d Brad Lanam Walnut Creek CA USA"
 
 msgid "Count"
-msgstr ""
+msgstr "Määrä"
 
 msgid "Count:"
-msgstr ""
+msgstr "Määrä:"
 
 # Marquee Color
 # User Interface Color
 msgid "Countdown Timer:"
-msgstr ""
+msgstr "Lähtölaskenta ajastin:"
 
 msgid "Cover Page:"
-msgstr ""
+msgstr "Etusivu:"
 
 msgid "Create"
-msgstr ""
+msgstr "Luo"
 
 msgid "Create an empty %s"
-msgstr ""
+msgstr "Luo tyhjä %s"
 
 msgid "Create Backup"
-msgstr ""
+msgstr "Luo varmuuskopio"
 
 msgid "Create Copy"
-msgstr ""
+msgstr "Luo kopio"
 
 msgid "Create New Profile"
-msgstr ""
+msgstr "Luo uusi profiili"
 
 msgid "Create Song List"
-msgstr ""
+msgstr "Luo biisilista"
 
 msgid "Create Startup File"
-msgstr ""
+msgstr "Luo käynnistystiedosto"
 
 msgid "Current"
-msgstr ""
+msgstr "Nykyinen"
 
 # Marquee Color
 msgid "Current Dance:"
-msgstr ""
+msgstr "Nykyinen tanssi:"
 
 msgid "Cut"
-msgstr ""
+msgstr "Leikkaa"
 
 # Sort key: dance
 # Organization: display text for 'dance'
 msgid "Dance"
-msgstr ""
+msgstr "Tanssi"
 
 msgid "Dance Display:"
-msgstr ""
+msgstr "Tanssinäyttö:"
 
 # Options: How much larger or smaller than the marquee font size the dance font will be
 msgid "Dance Font Size Multiplier:"
-msgstr ""
+msgstr "Tanssi fonttikoon kerroin:"
 
 msgid "Dance Font:"
-msgstr ""
+msgstr "Tanssi fontti:"
 
 # Marquee Color
 msgid "Dance List Fade:"
-msgstr ""
+msgstr "Tanssilistan häivytys:"
 
 # Marquee Color
 msgid "Dance List:"
-msgstr ""
+msgstr "Tanssilista:"
 
 # Sort key: dance rating
 # Organization: display text for 'dance rating'
@@ -703,22 +703,22 @@ msgid "Display Message"
 msgstr "Näytä viesti"
 
 msgid "Displaying all songs may take some time to display."
-msgstr ""
+msgstr "Kaikkien kappaleiden näyttäminen voi kestää jonkin aikaa."
 
 msgid "do not display"
-msgstr ""
+msgstr "älä näytä"
 
 msgid "Does Not Exist"
-msgstr ""
+msgstr "Ei löydy"
 
 msgid "Does not exist."
-msgstr ""
+msgstr "Ei löydy."
 
 msgid "Don't Write"
-msgstr ""
+msgstr "Älä kirjoita"
 
 msgid "Done"
-msgstr ""
+msgstr "Valmis"
 
 msgid "dpcm:"
 msgstr ""
@@ -867,164 +867,164 @@ msgid "Errors:"
 msgstr ""
 
 msgid "Examples:"
-msgstr ""
+msgstr "Esimerkkejä:"
 
 # Exit Program
 # Exit Program
 # Exit Program
 # Exit Program
 msgid "Exit"
-msgstr ""
+msgstr "Poistu"
 
 msgid "Exit %s and restart"
-msgstr ""
+msgstr "Poistu %s ja käynnistä uudelleen"
 
 # mobile marquee: restart bdj after configuration
 msgid "Exit %s and restart."
-msgstr ""
+msgstr "Poistu %s ja käynnistä uudelleen."
 
 msgid "Exit All"
-msgstr ""
+msgstr "Poistu kaikista"
 
 msgid "Export"
-msgstr ""
+msgstr "Vie"
 
 msgid "Export as %s"
-msgstr ""
+msgstr "Vie %s..."
 
 msgid "Export as %s Playlist"
-msgstr ""
+msgstr "Vie soittolistana %s"
 
 msgid "Export Complete"
-msgstr ""
+msgstr "Vienti valmis"
 
 msgid "Export for %s"
-msgstr ""
+msgstr "Vie %s"
 
 msgid "Export for CD"
-msgstr ""
+msgstr "Vie CD:lle"
 
 msgid "Export Song List to %s"
-msgstr ""
+msgstr "Vie soittolista %s"
 
 msgid "Export to %s:"
-msgstr ""
+msgstr "Vie %s"
 
 # Fade and stop music, continue to next song
 # Fade and stop music, continue to next song
 msgid "Fade"
-msgstr ""
+msgstr "Häivytä"
 
 msgid "Fade In Time:"
-msgstr ""
+msgstr "Häivytysaika sisään:"
 
 msgid "Fade Out Time:"
-msgstr ""
+msgstr "Häivytysaika ulos:"
 
 msgid "Fade Type:"
-msgstr ""
+msgstr "Häivytystyyppi:"
 
 # default dance rating
 msgid "Fair"
-msgstr ""
+msgstr "Kohtalainen"
 
 # dance speed
 msgid "fast"
-msgstr ""
+msgstr "nopea"
 
 msgid "Fatal Error"
-msgstr ""
+msgstr "Vakava virhe"
 
 msgid "Fetching %1$s and %2$s data."
-msgstr ""
+msgstr "Haetaan tietoja %1$s ja %2$s."
 
 msgid "Fetching %s data."
-msgstr ""
+msgstr "Haetaan %s dataa."
 
 msgid "Field Selection"
-msgstr ""
+msgstr "Kentän valinta"
 
 msgid "File already exists"
-msgstr ""
+msgstr "Tiedosto on jo olemassa"
 
 msgid "File does not exist."
-msgstr ""
+msgstr "Tiedostoja ei ole."
 
 msgid "File Manager"
-msgstr ""
+msgstr "Tiedostonhallinta"
 
 # User Interface Color
 msgid "File Manager: Associated:"
-msgstr ""
+msgstr "Tiedostonhallinta: Yhdistetty:"
 
 # User Interface Color
 msgid "File Manager: Current:"
-msgstr ""
+msgstr "Tiedostonhallinta: Nykyinen:"
 
 # User Interface Color
 msgid "File Manager: Missing:"
-msgstr ""
+msgstr "Tiedostonhallinta: Puuttuu:"
 
 msgid "File Modification Date"
-msgstr ""
+msgstr "Tiedoston muokkausaika"
 
 msgid "Files Processed:"
-msgstr ""
+msgstr "Käsitellyt tiedostot:"
 
 msgid "Files Skipped:"
-msgstr ""
+msgstr "Ohitetut tiedostot:"
 
 msgid "Filter"
-msgstr ""
+msgstr "Suodatin"
 
 msgid "Find"
-msgstr ""
+msgstr "Etsi"
 
 msgid "Find Duplicates"
-msgstr ""
+msgstr "Etsi kaksoiskappaleet"
 
 msgid "First"
-msgstr ""
+msgstr "Ensimmäinen"
 
 msgid "First Song"
-msgstr ""
+msgstr "Ensimmäinen kappale"
 
 msgid "Fixed Width Font:"
-msgstr ""
+msgstr "Kiinteäleveä fontti:"
 
 msgid "Folder"
-msgstr ""
+msgstr "Kansio"
 
 msgid "folder"
-msgstr ""
+msgstr "kansio"
 
 msgid "Folders"
-msgstr ""
+msgstr "Kansiot"
 
 msgid "folders"
-msgstr ""
+msgstr "kansiot"
 
 msgid "Font Chooser"
-msgstr ""
+msgstr "fontinvalitsin"
 
 msgid "Font Scale"
-msgstr ""
+msgstr "Fontin koko"
 
 msgid "Font size:"
-msgstr ""
+msgstr "Fonttikoko:"
 
 msgid "Font style:"
-msgstr ""
+msgstr "Fonttityyli:"
 
 msgid "Font:"
-msgstr ""
+msgstr "Fontti:"
 
 # Export for CD: The export format (CD, MP3, etc.)
 msgid "Format:"
-msgstr ""
+msgstr "Formaatti:"
 
 msgid "Forum:"
-msgstr ""
+msgstr "Foorumi:"
 
 msgid "Found %d Songs"
 msgstr ""
@@ -1040,7 +1040,7 @@ msgid "Fullscreen:"
 msgstr ""
 
 msgid "Fuzzy Match"
-msgstr ""
+msgstr "Epätarkka osuma"
 
 msgid "Game:"
 msgstr ""
@@ -1188,7 +1188,7 @@ msgid "Include Unrated?"
 msgstr ""
 
 msgid "Initialize Synchronization"
-msgstr ""
+msgstr "Aloita synkronointi"
 
 msgid "Initializing"
 msgstr ""
@@ -1212,173 +1212,173 @@ msgid "Instructions: Using a ruler,\n"
 msgstr ""
 
 msgid "Integrated %s"
-msgstr ""
+msgstr "Integroitu %s"
 
 # mobile marquee uses internet connection
 msgid "Internet"
 msgstr "Internet"
 
 msgid "Invalid"
-msgstr ""
+msgstr "Virheellinen"
 
 msgid "Invalid %s"
-msgstr ""
+msgstr "Virheellinen %s"
 
 msgid "Invalid %s."
-msgstr ""
+msgstr "Virheellinen %s."
 
 msgid "Invalid Backup %s"
-msgstr ""
+msgstr "Virheellinen varmuuskopio %s"
 
 msgid "Invalid characters %s"
 msgstr ""
 
 msgid "Invalid characters."
-msgstr ""
+msgstr "Virheelliset merkit."
 
 msgid "Invalid Level Settings"
-msgstr ""
+msgstr "Virheelliset tasoasetukset"
 
 msgid "Invalid maximum time."
-msgstr ""
+msgstr "Virheellinen maksimiaika."
 
 # Error: Invalid original folder/directory
 msgid "Invalid Original %s"
-msgstr ""
+msgstr "Virheellinen alkuperäinen %s"
 
 msgid "Invalid song list name (/)."
-msgstr ""
+msgstr "Virheellinen soittolistan nimi (/)."
 
 msgid "Invalid Time Limit"
-msgstr ""
+msgstr "Virheellinen aikaraja"
 
 msgid "Invalid time limit."
-msgstr ""
+msgstr "Virheellinen aikaraja."
 
 msgid "Invalid."
-msgstr ""
+msgstr "Virheellinen."
 
 msgid "Invalid. Not Saved"
-msgstr ""
+msgstr "Virheellinen. Ei tallennettu"
 
 # Audio fade type
 msgid "Inverted Parabola"
-msgstr ""
+msgstr "Käänteinen Parabola"
 
 # Font style
 msgid "Italic"
-msgstr ""
+msgstr "Kursivoitu"
 
 msgid "iTunes default"
-msgstr ""
+msgstr "iTunes oletus"
 
 msgid "iTunes Import Setup"
-msgstr ""
+msgstr "iTunes tuonnin asetukset"
 
 # default dance genre
 msgid "Jazz"
-msgstr ""
+msgstr "Jazz"
 
 # default dance list
 msgid "Jive"
-msgstr ""
+msgstr "Jive"
 
 # The keyboard key assigned to the action
 msgid "Key"
-msgstr ""
+msgstr "Avain"
 
 # Sort key: keyword
 # Organization: display text for 'keyword'
 msgid "Keyword"
-msgstr ""
+msgstr "Avainsana"
 
 msgid "Last Song"
-msgstr ""
+msgstr "Viimeinen kappale"
 
 # Sort key: last update date
 msgid "Last Updated"
-msgstr ""
+msgstr "Viimeksi päivitetty"
 
 # Sort key: The Level of the dance
 # The level of the dance
 # The level of the dance
 msgid "Level"
-msgstr ""
+msgstr "Taso"
 
 # Song filter: The level of the dance
 msgid "Level:"
-msgstr ""
+msgstr "Taso:"
 
 msgid "LICENSE"
-msgstr ""
+msgstr "LISENSSI"
 
 # Export for a CD: The size and duration limits
 msgid "Limits:"
-msgstr ""
+msgstr "Rajoitukset:"
 
 # Options: The font size for displays of lists of songs
 msgid "Listing Font Size:"
-msgstr ""
+msgstr "Listauksen fonttikoko:"
 
 msgid "Load"
-msgstr ""
+msgstr "Lataa"
 
 msgid "Loaded existing playlist"
-msgstr ""
+msgstr "Ladattu olemassa oleva soittolista"
 
 msgid "Loaded existing sequence"
-msgstr ""
+msgstr "Ladattu nykyinen järjestys"
 
 msgid "Loaded existing song list"
-msgstr ""
+msgstr "Ladattu olemassa oleva soittolista"
 
 msgid "Loaded from Database:"
-msgstr ""
+msgstr "Ladattu tietokannasta:"
 
 msgid "Loading"
-msgstr ""
+msgstr "Ladataan"
 
 msgid "Loading file list"
-msgstr ""
+msgstr "Ladataan tiedostolistaa"
 
 msgid "Loading Song Data."
-msgstr ""
+msgstr "Ladataan kappaleen tietoja."
 
 # mobile marquee uses local ip address
 msgid "Local"
 msgstr "Paikallinen"
 
 msgid "Locale:"
-msgstr ""
+msgstr "Maa:"
 
 msgid "Locating %d"
-msgstr ""
+msgstr "Etsitään %d"
 
 # Audio fade type
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritminen"
 
 msgid "Low %s"
-msgstr ""
+msgstr "Matala %s"
 
 msgid "Low %s:"
-msgstr ""
+msgstr "Matala %s:"
 
 msgid "Main"
 msgstr ""
 
 msgid "Main website:"
-msgstr ""
+msgstr "Kotisivu:"
 
 # default dance list
 msgid "Mambo"
-msgstr ""
+msgstr "Mambo"
 
 msgid "Manual"
-msgstr ""
+msgstr "Manuaali"
 
 msgid "Mark"
-msgstr ""
+msgstr "Merkitse"
 
 msgid "Mark as Same Song"
 msgstr ""
@@ -1560,93 +1560,93 @@ msgid "New Year's Countdown"
 msgstr ""
 
 msgid "Next"
-msgstr ""
+msgstr "Seuraava"
 
 # Balloon help: Player: Next Song
 msgid "Next Song"
 msgstr "Seuraava kappale"
 
 msgid "No Action"
-msgstr ""
+msgstr "Ei toimintaa"
 
 msgid "No Album Match."
-msgstr ""
+msgstr "Ei albumin täsmäystä."
 
 msgid "No Artist Match."
-msgstr ""
+msgstr "Ei artistin täsmäystä."
 
 msgid "No audio found."
-msgstr ""
+msgstr "Ei audiota löytynyt."
 
 msgid "No History"
-msgstr ""
+msgstr "Ei historiaa"
 
 msgid "No internet connection."
-msgstr ""
+msgstr "Ei Internet-yhteyttä."
 
 msgid "No matches found."
-msgstr ""
+msgstr "Ei löydettyjä osumia."
 
 # Short version of: no maximum play time
 msgid "No Max"
 msgstr ""
 
 msgid "No Maximum Play Time"
-msgstr ""
+msgstr "Ei maksimi soittoaikaa"
 
 msgid "No More Playlists"
-msgstr ""
+msgstr "Ei lisää soittolistoja"
 
 msgid "No Playlists in Queue"
-msgstr ""
+msgstr "Ei soittolistoja jonossa"
 
 msgid "No Processing Needed"
-msgstr ""
+msgstr "Käsittelyä ei tarvita"
 
 msgid "No results found"
-msgstr ""
+msgstr "Tuloksia ei löytynyt"
 
 msgid "No Sequence is selected."
-msgstr ""
+msgstr "Sekvenssiä ei ole valittu."
 
 msgid "No Song List is selected."
-msgstr ""
+msgstr "Soittolistaa ei ole valittu."
 
 msgid "None"
-msgstr ""
+msgstr "Ei ole"
 
 # Options: Marquee: normal progress bar
 # Font style
 # default dance level
 # default dance level
 msgid "Normal"
-msgstr ""
+msgstr "Normaali"
 
 # dance speed
 msgid "normal"
-msgstr ""
+msgstr "normaali"
 
 msgid "Normal Operation"
-msgstr ""
+msgstr "Normaali toiminta"
 
 msgid "Normalize Volume"
-msgstr ""
+msgstr "Normalisoi voimakkuus"
 
 # Export for CD: Normalize volume?
 msgid "Normalize Volume:"
-msgstr ""
+msgstr "Normalisoi voimakkuus:"
 
 msgid "Not a %s."
-msgstr ""
+msgstr "Ei %s."
 
 msgid "Not a file."
-msgstr ""
+msgstr "Ei tiedosto."
 
 msgid "Not Found"
-msgstr ""
+msgstr "Ei löydy"
 
 msgid "Not found."
-msgstr ""
+msgstr "Ei löydy."
 
 # mobile marquee: no music is playing
 msgid "Not Playing"
@@ -1654,93 +1654,93 @@ msgstr "Ei toistoa"
 
 # Sort key: notes
 msgid "Notes"
-msgstr ""
+msgstr "Merkinnät"
 
 msgid "Number"
-msgstr ""
+msgstr "Numero"
 
 # mobile marquee is off
 msgid "Off"
-msgstr ""
+msgstr "Pois"
 
 # status message indicating that the path is ok
 # status message displayed when the organization path is ok.
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 msgid "Optional Components"
-msgstr ""
+msgstr "Valinnaiset komponentit"
 
 msgid "Options"
-msgstr ""
+msgstr "Asetukset"
 
 msgid "Order from easiest to most advanced."
-msgstr ""
+msgstr "Järjestä helpoimmasta edistyneimpään."
 
 msgid "Ordinary Text"
-msgstr ""
+msgstr "Tavallinen teksti"
 
 msgid "Organization"
-msgstr ""
+msgstr "Organisaatio"
 
 msgid "Original"
-msgstr ""
+msgstr "Alkuperäinen"
 
 msgid "Original Files:"
-msgstr ""
+msgstr "Alkuperäiset tiedostot:"
 
 # Original audio file has been restored
 msgid "Original restored."
 msgstr ""
 
 msgid "Out of range: %1$s - %2$s."
-msgstr ""
+msgstr "Alueen ulkopuolella: %1$s - %2$s."
 
 msgid "Output %s"
-msgstr ""
+msgstr "Ulostulo %s"
 
 # Organization: Path keyword: Album Artist
 msgid "PALBART"
-msgstr ""
+msgstr "PALBART"
 
 # Organization: Path keyword: Album
 msgid "PALBUM"
-msgstr ""
+msgstr "PALBUM"
 
 # Organization: Path keyword: Artist
 msgid "PARTIST"
-msgstr ""
+msgstr "PARTIST"
 
 # default dance list
 msgid "Paso Doble"
-msgstr ""
+msgstr "Paso Doble"
 
 msgid "Password:"
 msgstr ""
 
 msgid "Paste"
-msgstr ""
+msgstr "Liitä"
 
 msgid "Path Keyword"
-msgstr ""
+msgstr "Polun hakusana"
 
 msgid "Pause"
-msgstr ""
+msgstr "Keskeytä"
 
 msgid "Pause After Each Song:"
-msgstr ""
+msgstr "Keskeytä jokaisen kappaleen jälkeen:"
 
 # Pause at end of song
 # Pause at end of song
 msgid "Pause at End"
-msgstr ""
+msgstr "Keskeytä lopussa"
 
 msgid "Pause Each Song"
-msgstr ""
+msgstr "Keskeytä jokainen kappale"
 
 # Marquee Color
 msgid "Pause/Completion Message:"
-msgstr ""
+msgstr "Viesti keskeytys/valmis:"
 
 msgid "Paused"
 msgstr ""
@@ -1931,19 +1931,19 @@ msgid "Processing iTunes data"
 msgstr ""
 
 msgid "Profile"
-msgstr ""
+msgstr "Profiili"
 
 msgid "Profile is in use"
-msgstr ""
+msgstr "Profiili on käytössä"
 
 msgid "Profile Name:"
-msgstr ""
+msgstr "Profiilin nimi:"
 
 msgid "Progress Bar Color:"
-msgstr ""
+msgstr "Etenemispalkin väri:"
 
 msgid "Progress Bar:"
-msgstr ""
+msgstr "Etenemispalkki:"
 
 # Organization: Path keyword: Status
 msgid "PSTATUS"
@@ -1972,45 +1972,45 @@ msgstr "QR-koodi:"
 
 # Audio fade type
 msgid "Quarter Sine Wave"
-msgstr ""
+msgstr "Neljännes siniaalto"
 
 # quickplay: queue a dance to be played
 # remote: queue music to play
 msgid "Queue"
-msgstr ""
+msgstr "Jono"
 
 msgid "Queue %d"
-msgstr ""
+msgstr "Jono %d"
 
 msgid "Queue %d Length:"
-msgstr ""
+msgstr "Jono %d pituus:"
 
 msgid "Queue %d Name:"
-msgstr ""
+msgstr "Jonon %d nimi:"
 
 msgid "Queue Length:"
-msgstr ""
+msgstr "Jonon pituus:"
 
 msgid "Queue: Clear & Remove"
-msgstr ""
+msgstr "Jono: tyhjennä ja poista"
 
 msgid "Queue: Move Down"
-msgstr ""
+msgstr "Jono: Siirrä alaspäin"
 
 msgid "Queue: Move Up"
-msgstr ""
+msgstr "Jono: Siirrä ylöspäin"
 
 msgid "Queue: Remove"
-msgstr ""
+msgstr "Jono: Poista"
 
 msgid "Queue: Swap"
-msgstr ""
+msgstr "Jono: Vaihda"
 
 msgid "Queue: Toggle Pause"
-msgstr ""
+msgstr "Jono: Aseta tauko"
 
 msgid "Queued"
-msgstr ""
+msgstr "Jonossa"
 
 # Edit menu to make quick changes to the current song
 msgid "Quick Edit"
@@ -2032,72 +2032,72 @@ msgid "Quick Edit: Set Base Volume"
 msgstr ""
 
 msgid "Quick Play"
-msgstr ""
+msgstr "Pika toisto"
 
 # default dance list
 msgid "Quickstep"
-msgstr ""
+msgstr "Quickstep"
 
 msgid "Raffle"
-msgstr ""
+msgstr "Arvo"
 
 msgid "Raffle Games"
-msgstr ""
+msgstr "Arvo pelit"
 
 msgid "Raffle Songs"
-msgstr ""
+msgstr "Arvo kappaleet"
 
 msgid "Rating"
-msgstr ""
+msgstr "Luokitus"
 
 msgid "Ratings must be ordered from worst at the top to best at the bottom."
-msgstr ""
+msgstr "Luokitus on järjestettävä huonoimmasta ylimpänä parhaaseen alimpana."
 
 msgid "Re-install %s."
-msgstr ""
+msgstr "Asenna uudelleen %s."
 
 msgid "Re-Select"
-msgstr ""
+msgstr "Valitse uudestaan"
 
 msgid "Rebuild"
-msgstr ""
+msgstr "Rakenna uudelleen"
 
 # rebuild the database
 msgid "Rebuild Database"
-msgstr ""
+msgstr "Rakenna tietokanta uudelleen"
 
 msgid "Rebuild Database: will replace the %s database in its entirety."
-msgstr ""
+msgstr "Rakenna tietokanta uudelleen: korvaa %s -tietokannan kokonaisuudessaan."
 
 # rebuild the database and create a log file for debugging purposes
 msgid "Rebuild with logging"
-msgstr ""
+msgstr "Rakenna uudelleen lokin kanssa"
 
 msgid "Red"
-msgstr ""
+msgstr "Punainen"
 
 # Song list editor: redo change/revert undo
 # Sequence editor: redo change/revert undo
 msgid "Redo"
-msgstr ""
+msgstr "Uudelleen"
 
 # Refresh the list of volume sinks
 msgid "Refresh"
-msgstr ""
+msgstr "Virkistä"
 
 # Database is reloading.
 msgid "Reloading Database"
-msgstr ""
+msgstr "Lataa tietokanta uudelleen"
 
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 # Database update: How many entries were removed
 msgid "Removed from Database:"
-msgstr ""
+msgstr "Poistettu tietokannasta:"
 
 msgid "Rename"
-msgstr ""
+msgstr "Nimeä uudelleen"
 
 msgid "Rename File:"
 msgstr ""
@@ -2146,7 +2146,7 @@ msgstr ""
 
 # Organization: Reset the path to the default
 msgid "Reset to Default"
-msgstr ""
+msgstr "Palauta oletukset"
 
 # Balloon help: Player: Restart from beginning of song
 msgid "Restart"
@@ -2236,173 +2236,173 @@ msgid "Satellite has never been synchronized."
 msgstr ""
 
 msgid "Save"
-msgstr ""
+msgstr "Tallenna"
 
 msgid "Save & Select"
-msgstr ""
+msgstr "Tallenna & valitse"
 
 msgid "Save Album"
-msgstr ""
+msgstr "Tallenna albumi"
 
 msgid "Save All"
-msgstr ""
+msgstr "Tallenna kaikki"
 
 msgid "Save Complete"
-msgstr ""
+msgstr "Tallennus valmis"
 
 msgid "Save Dance"
 msgstr "Tallenna tanssi"
 
 msgid "Save Playlist"
-msgstr ""
+msgstr "Tallenna soittolista"
 
 msgid "Save Rating"
-msgstr ""
+msgstr "Tallenna luokitus"
 
 msgid "Save Sequence"
-msgstr ""
+msgstr "Tallenna sekvenssi"
 
 msgid "Save Song List"
-msgstr ""
+msgstr "Tallenna soittolista"
 
 msgid "Save Speed"
-msgstr ""
+msgstr "Tallenna nopeus"
 
 msgid "Save Volume"
-msgstr ""
+msgstr "Tallenna voimakkuus"
 
 msgid "Saved %s."
-msgstr ""
+msgstr "Tallennettu %s."
 
 msgid "Saved and renamed."
-msgstr ""
+msgstr "Tallennettu ja nimetty uudelleen."
 
 msgid "Saved."
-msgstr ""
+msgstr "Tallennettu."
 
 # Database update: How many entries were saved
 msgid "Saved:"
-msgstr ""
+msgstr "Tallennettu:"
 
 msgid "Scaled Widgets:"
-msgstr ""
+msgstr "Skaalatut widgetit:"
 
 msgid "Score"
-msgstr ""
+msgstr "Pisteet"
 
 msgid "Search"
-msgstr ""
+msgstr "Etsi"
 
 msgid "Search Fields"
-msgstr ""
+msgstr "Hakukentät"
 
 msgid "Search:"
-msgstr ""
+msgstr "Etsi:"
 
 msgid "Searching %s data."
-msgstr ""
+msgstr "Haetaan %s dataa."
 
 msgid "Seconds until %d :"
-msgstr ""
+msgstr "Sekuntia kunnes %d :"
 
 msgid "Seconds:"
-msgstr ""
+msgstr "Sekuntia:"
 
 msgid "Select"
-msgstr ""
+msgstr "Valitse"
 
 # quickplay: allow selection of a song and play it
 msgid "Select & Play"
-msgstr ""
+msgstr "Valitse & toista"
 
 msgid "Select Announcement"
-msgstr ""
+msgstr "Valitse Ilmoitus"
 
 msgid "Select Audio File"
-msgstr ""
+msgstr "Valitse audiotiedosto"
 
 msgid "Select Columns"
-msgstr ""
+msgstr "Valitse sarakkeet"
 
 # In order to edit a dance, click on a dance
 msgid "Select Dance to Edit"
-msgstr ""
+msgstr "Valitse tanssi muokattavaksi"
 
 msgid "Select File"
-msgstr ""
+msgstr "Valitse tiedosto"
 
 msgid "Select Font"
-msgstr ""
+msgstr "Valitse fontti"
 
 msgid "Select Image"
-msgstr ""
+msgstr "Valitse kuva"
 
 # Choose which iTunes playlist to import in the drop-down
 msgid "Select iTunes playlist to import"
-msgstr ""
+msgstr "Valitse tuotava iTunes soittolista"
 
 # Select which playlist to load
 msgid "Select Playlist"
-msgstr ""
+msgstr "Valitse soittolista"
 
 # Select which BallroomDJ profile (saved settings) to use
 msgid "Select Profile"
-msgstr ""
+msgstr "Valitse profiili"
 
 # Select which sequence file to load
 msgid "Select Sequence"
-msgstr ""
+msgstr "Valitse sekvenssi"
 
 # Select which song list to load
 msgid "Select Song List"
-msgstr ""
+msgstr "Valitse soittolista"
 
 # Audio ID: Select either the original value or new value for each field before saving
 msgid "Select the original or the new value for each item."
-msgstr ""
+msgstr "Valitse alkuperäinen tai uusi arvo jokaiselle kohteelle."
 
 # Keyboard action: move the current queue selection to the bottom
 msgid "Select: Bottom"
-msgstr ""
+msgstr "Valitse: Alin"
 
 # Keyboard action: move the current queue selection down
 msgid "Select: Down"
-msgstr ""
+msgstr "Valitse: Alas"
 
 # Keyboard action: move the current queue selection to the top
 msgid "Select: Top"
-msgstr ""
+msgstr "Valitse: Ylin"
 
 # Keyboard action: move the current queue selection up
 msgid "Select: Up"
-msgstr ""
+msgstr "Valitse: Ylös"
 
 # User Interface Color: The color of the selected notebook tab in the user interface
 msgid "Selected Tab Text:"
-msgstr ""
+msgstr "Valittu välilehtiteksti:"
 
 # User Interface Color: The highlight color for the current selection
 msgid "Selection Highlight:"
-msgstr ""
+msgstr "Valinnan korostus:"
 
 # Checkbox: Only send the message, do not send any files along with the message
 msgid "Send message only, do not send any files."
-msgstr ""
+msgstr "Lähetä vain viesti, älä lähetä tiedostoja."
 
 msgid "Send Report"
-msgstr ""
+msgstr "Lähetä raportti"
 
 msgid "Send Support Message"
-msgstr ""
+msgstr "Lähetä tukiviesti"
 
 msgid "Sequence"
-msgstr ""
+msgstr "Järjestys"
 
 msgid "Sequence:"
-msgstr ""
+msgstr "Järjestys:"
 
 msgid "Server"
-msgstr ""
+msgstr "Palvelin"
 
 # missing server name
 msgid "Server name must be set."
@@ -2592,112 +2592,112 @@ msgid "Speed: Decrease"
 msgstr ""
 
 msgid "Speed: Increase"
-msgstr ""
+msgstr "Nopeus: Lisää"
 
 msgid "Speed: Normal"
-msgstr ""
+msgstr "Nopeus: Normaali"
 
 # Song list editor: spread selected songs throughout list
 msgid "Spread"
-msgstr ""
+msgstr "Hajonta"
 
 msgid "Standard Path:"
-msgstr ""
+msgstr "Normaali polku:"
 
 msgid "Star"
-msgstr ""
+msgstr "Tähti"
 
 msgid "Start"
-msgstr ""
+msgstr "Aloita"
 
 msgid "Start Maximized:"
-msgstr ""
+msgstr "Aloita suurennettuna:"
 
 msgid "Start New %s"
-msgstr ""
+msgstr "Aloita uusi %s"
 
 msgid "Start:"
-msgstr ""
+msgstr "Aloita:"
 
 msgid "Starting Player."
-msgstr ""
+msgstr "Avataan soitin."
 
 msgid "Startup"
-msgstr ""
+msgstr "Aloitus"
 
 msgid "Startup File"
-msgstr ""
+msgstr "Aloitustiedosto"
 
 msgid "Startup Files Play Automatically:"
-msgstr ""
+msgstr "Aloitustiedostot toistuvat automaattisesti:"
 
 msgid "Startup Script:"
-msgstr ""
+msgstr "Aloituskomento:"
 
 msgid "Startup:"
-msgstr ""
+msgstr "Aloitus:"
 
 # Sort key: status
 # Organization: display text for 'status'
 msgid "Status"
-msgstr ""
+msgstr "Tila"
 
 msgid "Stop"
-msgstr ""
+msgstr "Lopeta"
 
 msgid "Stop After Playing:"
-msgstr ""
+msgstr "Lopeta toiston jälkeen:"
 
 msgid "Stopped by User"
-msgstr ""
+msgstr "Käyttäjä lopetti"
 
 msgid "Subject:"
-msgstr ""
+msgstr "Aihe:"
 
 msgid "Support"
-msgstr ""
+msgstr "Tuki"
 
 msgid "Support message sent."
-msgstr ""
+msgstr "Tukiviesti lähetetty."
 
 msgid "Swap"
-msgstr ""
+msgstr "Vaihda"
 
 msgid "Switch Music Queue"
-msgstr ""
+msgstr "Vaihda musiikkijono"
 
 msgid "Switch Playlist Queue"
-msgstr ""
+msgstr "Vaihda soittolistajono"
 
 msgid "Synchronization"
-msgstr ""
+msgstr "Synkronointi"
 
 # Synchronization status message: Synchronization was initialized
 msgid "Synchronization is reset."
-msgstr ""
+msgstr "Synkronointi on nollattu."
 
 msgid "Synchronization:"
-msgstr ""
+msgstr "Synkronointi:"
 
 # Sort key: tags
 msgid "Tags"
-msgstr ""
+msgstr "Tagit"
 
 msgid "Tags:"
-msgstr ""
+msgstr "Tagit:"
 
 # default dance list
 msgid "Tango"
-msgstr ""
+msgstr "Tango"
 
 msgid "Temporary Files:"
-msgstr ""
+msgstr "Väliaikaiset tiedostot:"
 
 msgid "Thank You"
-msgstr ""
+msgstr "Kiitos"
 
 msgid "Theme:"
-msgstr ""
+msgstr "Teema:"
 
 msgid "This software is provided 'as-is', without any express or implied\n"
 "warranty.  In no event will the authors be held liable for any damages\n"
@@ -2705,67 +2705,67 @@ msgid "This software is provided 'as-is', without any express or implied\n"
 msgstr ""
 
 msgid "Time"
-msgstr ""
+msgstr "Aika"
 
 msgid "Time Limit:"
-msgstr ""
+msgstr "Aikaraja:"
 
 # The time signature of the music (e.g. 3/4, 4/4, etc.)
 msgid "Time Signature:"
-msgstr ""
+msgstr "Aika merkintä:"
 
 msgid "Time:"
-msgstr ""
+msgstr "Aika:"
 
 # Sort key: title
 # Organization: display text for 'title'
 msgid "Title"
-msgstr ""
+msgstr "Otsikko"
 
 # Music queue: Toggle the pause flag on the selected song
 msgid "Toggle Pause"
-msgstr ""
+msgstr "Vaihda tauolle"
 
 # User Interface Color
 msgid "Tooltip Background:"
-msgstr ""
+msgstr "Työkaluvihjeen tausta:"
 
 msgid "Tooltip Columns"
-msgstr ""
+msgstr "Työkaluvihjeen sarakkeet"
 
 # User Interface Color
 msgid "Tooltip Text:"
-msgstr ""
+msgstr "Työkaluvihjeen teksti:"
 
 msgid "Top"
-msgstr ""
+msgstr "Ylös"
 
 msgid "Total Discs"
-msgstr ""
+msgstr "Levyjä yhteensä"
 
 msgid "Total Files:"
-msgstr ""
+msgstr "Tiedostoja yhteensä:"
 
 msgid "Total Time:"
-msgstr ""
+msgstr "Aika yhteensä:"
 
 # The total number of audio tracks for the album
 msgid "Total Tracks"
-msgstr ""
+msgstr "Raidat yhteensä"
 
 # Sort key: track number
 # The audio track number in the album
 msgid "Track"
-msgstr ""
+msgstr "Raita"
 
 # Organization: display text for 'track number'
 # The audio track number in the album
 msgid "Track Number"
-msgstr ""
+msgstr "Raidan numero"
 
 # Organization: display text for 'track number with leading zeros'
 msgid "Track Number Leading 0"
-msgstr ""
+msgstr "Radan numero alkaen 0"
 
 # Audio fade type
 msgid "Triangle"
@@ -2966,106 +2966,106 @@ msgid "Verify import prefix."
 msgstr ""
 
 msgid "version"
-msgstr ""
+msgstr "versio"
 
 # default dance list
 msgid "Viennese Waltz"
-msgstr ""
+msgstr "Wienin valssi"
 
 # Player: view playback history
 # Image assignment: view the image
 msgid "View"
-msgstr ""
+msgstr "Katso"
 
 # Song list editor: checkbutton: view the table with the count of each dance
 msgid "View Dance Counts"
-msgstr ""
+msgstr "Näytä tanssilaskenta"
 
 msgid "View Filename"
-msgstr ""
+msgstr "Näytä tiedostonimi"
 
 msgid "VLC version is too old or missing files.\n"
 "Please upgrade VLC."
 msgstr ""
 
 msgid "Vol. Adj."
-msgstr ""
+msgstr "Vol. säätö."
 
 msgid "Volume Adjustment"
-msgstr ""
+msgstr "Voimakkuuden säätö"
 
 msgid "Volume:"
-msgstr ""
+msgstr "Voimakkuus:"
 
 msgid "Volume: Lower"
-msgstr ""
+msgstr "Voimakkuus: Pienempi"
 
 msgid "Volume: Mute"
-msgstr ""
+msgstr "Voimakkuus: Mykistä"
 
 msgid "Volume: Raise"
-msgstr ""
+msgstr "Voimakkuus: Nosta"
 
 # default dance list
 msgid "Waltz"
-msgstr ""
+msgstr "Waltz"
 
 msgid "Warning"
-msgstr ""
+msgstr "Varoitus"
 
 msgid "Weight"
-msgstr ""
+msgstr "Paino"
 
 # default dance list
 msgid "West Coast Swing"
-msgstr ""
+msgstr "West Coast Swing"
 
 # Options: Marquee: wide progress bar
 msgid "Wide"
-msgstr ""
+msgstr "Leveä"
 
 msgid "Wiki:"
-msgstr ""
+msgstr "Wiki:"
 
 # Options: select whether to write the audio file tags to the audio file
 msgid "Write Audio File Tags:"
-msgstr ""
+msgstr "Kirjoita audiotiedoston tunnisteet:"
 
 # write the tags stored in the database to audio files
 msgid "Write Tags to Audio Files"
-msgstr ""
+msgstr "Kirjoita tunnisteet audiotiedostoihin"
 
 msgid "Write Tags to Audio Files: will update the audio file tags with the information from the %s database."
-msgstr ""
+msgstr "Kirjoita tunnisteet audiotiedostoihin: päivittää tiedoston tunnisteet %s -tietokannan tiedoilla."
 
 msgid "Yellow"
-msgstr ""
+msgstr "Keltainen"
 
 # Raffle game: title of a game
 msgid "Bounce"
-msgstr ""
+msgstr "Bounce"
 
 # Raffle game: title of a game
 msgid "Bump"
-msgstr ""
+msgstr "Bump"
 
 # Raffle game: title of a game
 msgid "Capture"
-msgstr ""
+msgstr "Capture"
 
 # Raffle game: title of a game
 msgid "Growth"
-msgstr ""
+msgstr "Growth"
 
 # Raffle game: title of a game
 msgid "Laser"
-msgstr ""
+msgstr "Laser"
 
 # Raffle game: title of a game
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 # Raffle game: title of a game
 msgid "Virus"
-msgstr ""
+msgstr "Virus"
 
