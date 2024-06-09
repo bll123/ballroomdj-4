@@ -194,7 +194,8 @@ plocal/lib/libvorbis\.0\.dylib$
 plocal/lib/libvorbisenc\.2\.dylib$
 plocal/lib/libvorbisfile\.3\.dylib$
 plocal/lib/libmp4tag-1\.2\.[3456789]\.dylib$
-plocal/lib/libmp4tag-1\.2\.1[012]\.dylib$
+# 2024-6-9
+plocal/lib/libmp4tag-1\.2\.1[0123]\.dylib$
 
 # 2023-11-13 bdj4winmksc is only used by windows
 bin/bdj4winmksc
@@ -228,6 +229,8 @@ licenses/flac\.LICENSE$
 # make sure some old libraries are gone
 plocal/lib/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib/libmp4tag\.so\.1\.2\.1[012]$
+# 2024-6-9
+plocal/lib/libmp4tag\.so\.1\.2\.1[0123]$
 
 # 2023-11-13 bdj4winmksc is only used by windows
 bin/bdj4winmksc$
