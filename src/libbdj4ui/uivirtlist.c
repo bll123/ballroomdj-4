@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-#include <gtk/gtk.h>
-
+#include "callback.h"
 #include "mdebug.h"
 #include "ui.h"
 #include "uivirtlist.h"
@@ -65,21 +65,26 @@ typedef struct {
 
 typedef struct uivirtlist {
   uint64_t      ident;
+  uiwcont_t     *headbox;
   uiwcont_t     *hbox;
   uiwcont_t     *vbox;
+  uiwcont_t     *sbszgrp;
+  uiwcont_t     *filler;
   uiwcont_t     *sb;
+  callback_t    *sbcb;
+  int           numcols;
+  uivlcoldata_t *coldata;
+  uivlrow_t     *rows;
+  uivlrow_t     headingrow;
+  int           disprows;
+  int32_t       numrows;
+  uint32_t      rowoffset;
+  int           initialized;
+  /* user callbacks */
   uivlfillcb_t  fillcb;
   uivlselcb_t   selcb;
   uivlchangecb_t changecb;
   void          *udata;
-  uivlrow_t     *rows;
-  uivlrow_t     headingrow;
-  uivlcoldata_t *coldata;
-  int           numcols;
-  uint32_t      rowoffset;
-  int32_t       numrows;
-  int           disprows;
-  int           initialized;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -87,6 +92,7 @@ static void uivlFreeCol (uivlcol_t *col);
 static void uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading);
 static uivlrow_t * uivlGetRow (uivirtlist_t *vl, int32_t rownum);
 static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
+static bool uivlScrollbarCallback (void *udata, double value);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -98,14 +104,26 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->fillcb = NULL;
   vl->selcb = NULL;
   vl->changecb = NULL;
+
+  vl->headbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (vl->headbox);
+  uiBoxPackStartExpand (boxp, vl->headbox);
   vl->hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (vl->hbox);
   vl->vbox = uiCreateVertBox ();
   uiWidgetAlignHorizFill (vl->vbox);
   uiWidgetAlignVertFill (vl->vbox);
   uiBoxPackStartExpand (vl->hbox, vl->vbox);
+
+  vl->sbszgrp = uiCreateSizeGroupHoriz ();
   vl->sb = uiCreateVerticalScrollbar (10.0);
+  uiSizeGroupAdd (vl->sbszgrp, vl->sb);
   uiBoxPackEnd (vl->hbox, vl->sb);
+  vl->sbcb = callbackInitDouble (uivlScrollbarCallback, vl);
+  uiScrollbarSetChangeCallback (vl->sb, vl->sbcb);
+
+  vl->filler = uiCreateLabel ("");
+  uiSizeGroupAdd (vl->sbszgrp, vl->filler);
 
   vl->coldata = NULL;
   vl->rows = NULL;
@@ -144,6 +162,7 @@ uivlFree (uivirtlist_t *vl)
   }
 
   uiwcontFree (vl->sb);
+  uiwcontFree (vl->sbszgrp);
 
   uivlFreeRow (vl, &vl->headingrow);
 
@@ -151,18 +170,15 @@ uivlFree (uivirtlist_t *vl)
     uivlFreeRow (vl, &vl->rows [i]);
   }
   dataFree (vl->rows);
-  vl->rows = NULL;
 
   for (int i = 0; i < vl->numcols; ++i) {
     uiwcontFree (vl->coldata [i].szgrp);
   }
   dataFree (vl->coldata);
-  vl->coldata = NULL;
 
   uiwcontFree (vl->vbox);
-  vl->vbox = NULL;
   uiwcontFree (vl->hbox);
-  vl->hbox = NULL;
+  uiwcontFree (vl->headbox);
 
   vl->ident = 0;
   mdfree (vl);
@@ -176,6 +192,7 @@ uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows)
   }
 
   vl->numrows = numrows;
+  uiScrollbarSetUpper (vl->sb, (double) numrows);
 }
 
 void
@@ -525,7 +542,8 @@ uivlDisplay (uivirtlist_t *vl)
 {
   uivlrow_t   *row;
 
-  uivlPackRow (vl, &vl->headingrow);
+  uiBoxPackEnd (vl->headingrow.hbox, vl->filler);
+  uiBoxPackStartExpand (vl->headbox, vl->headingrow.hbox);
   for (int i = 0; i < vl->disprows; ++i) {
     row = uivlGetRow (vl, i + vl->rowoffset);
     if (row == NULL) {
@@ -538,6 +556,7 @@ uivlDisplay (uivirtlist_t *vl)
   }
 
   vl->initialized = VL_INIT_DISP;
+  uiScrollbarSetPosition (vl->sb, 0.0);
 }
 
 /* internal routines */
@@ -648,4 +667,36 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   uiBoxPackStartExpand (vl->vbox, row->hbox);
+}
+
+static bool
+uivlScrollbarCallback (void *udata, double value)
+{
+  uivirtlist_t  *vl = udata;
+  int32_t       start;
+
+  start = (uint32_t) floor (value);
+  if (start < 0) {
+    start = 0;
+  }
+  if (start > vl->numrows - vl->disprows) {
+    start = vl->numrows - vl->disprows;
+  }
+
+  vl->rowoffset = start;
+
+  /* re-populate */
+  for (int i = 0; i < vl->disprows; ++i) {
+    uivlrow_t   *row;
+
+    row = uivlGetRow (vl, i + vl->rowoffset);
+    if (row == NULL) {
+      break;
+    }
+    if (vl->fillcb != NULL) {
+      vl->fillcb (vl->udata, vl, i + vl->rowoffset);
+    }
+  }
+
+  return UICB_CONT;
 }
