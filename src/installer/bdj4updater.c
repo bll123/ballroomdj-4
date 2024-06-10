@@ -458,8 +458,9 @@ main (int argc, char *argv [])
     /* 4.10.0 2023-1-29 gtk-static.css */
     /*    This is a new file; simply check and see if it does not exist. */
     /* 4.5.0 2024-2-10 updated switch */
+    /* 4.11.0 2024-6-10 virlist */
     updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 4);
+    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 5);
   }
 
   {

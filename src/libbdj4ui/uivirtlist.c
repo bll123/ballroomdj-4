@@ -12,6 +12,7 @@
 
 #include "callback.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "ui.h"
 #include "uivirtlist.h"
 #include "uiwcont.h"
@@ -36,6 +37,8 @@ enum {
   VL_IDENT          = 0x766caabbccddeeff,
 };
 
+#define VL_SELECTED_CLASS "bdj-selected"
+
 typedef struct {
   uiwcont_t *szgrp;
   uint64_t  ident;
@@ -59,7 +62,6 @@ typedef struct {
   uint64_t    ident;
   uiwcont_t   *hbox;
   uivlcol_t   *cols;
-  bool        selected : 1;
   bool        initialized : 1;
 } uivlrow_t;
 
@@ -79,6 +81,7 @@ typedef struct uivirtlist {
   int           disprows;
   int32_t       numrows;
   uint32_t      rowoffset;
+  nlist_t       *selected;
   int           initialized;
   /* user callbacks */
   uivlfillcb_t  fillcb;
@@ -93,6 +96,7 @@ static void uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading);
 static uivlrow_t * uivlGetRow (uivirtlist_t *vl, int32_t rownum);
 static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
+static void uivlPopulate (uivirtlist_t *vl);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -130,6 +134,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->numcols = 0;
   vl->numrows = 0;
   vl->rowoffset = 0;
+  vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
+  /* default selection */
+  nlistSetNum (vl->selected, 0, 1);
   vl->initialized = VL_NOT_INIT;
 
   vl->disprows = disprows;
@@ -138,14 +145,12 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
     vl->rows [i].ident = VL_IDENT_ROW;
     vl->rows [i].hbox = NULL;
     vl->rows [i].cols = NULL;
-    vl->rows [i].selected = false;
     vl->rows [i].initialized = false;
   }
 
   vl->headingrow.ident = VL_IDENT_ROW;
   vl->headingrow.hbox = NULL;
   vl->headingrow.cols = NULL;
-  vl->headingrow.selected = false;
   vl->headingrow.initialized = false;
 
   uiBoxPackStart (boxp, vl->hbox);
@@ -176,6 +181,7 @@ uivlFree (uivirtlist_t *vl)
   }
   dataFree (vl->coldata);
 
+  nlistFree (vl->selected);
   uiwcontFree (vl->vbox);
   uiwcontFree (vl->hbox);
   uiwcontFree (vl->headbox);
@@ -544,13 +550,12 @@ uivlDisplay (uivirtlist_t *vl)
 
   uiBoxPackEnd (vl->headingrow.hbox, vl->filler);
   uiBoxPackStartExpand (vl->headbox, vl->headingrow.hbox);
+  uivlPopulate (vl);
+
   for (int i = 0; i < vl->disprows; ++i) {
     row = uivlGetRow (vl, i + vl->rowoffset);
     if (row == NULL) {
       break;
-    }
-    if (vl->fillcb != NULL) {
-      vl->fillcb (vl->udata, vl, i + vl->rowoffset);
     }
     uivlPackRow (vl, row);
   }
@@ -685,7 +690,18 @@ uivlScrollbarCallback (void *udata, double value)
 
   vl->rowoffset = start;
 
-  /* re-populate */
+  uivlPopulate (vl);
+
+  return UICB_CONT;
+}
+
+static void
+uivlPopulate (uivirtlist_t *vl)
+{
+  nlistidx_t    iter;
+  nlistidx_t    val;
+
+
   for (int i = 0; i < vl->disprows; ++i) {
     uivlrow_t   *row;
 
@@ -696,7 +712,25 @@ uivlScrollbarCallback (void *udata, double value)
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->udata, vl, i + vl->rowoffset);
     }
+
+    uiWidgetRemoveClass (row->hbox, "bdj-selected");
+    for (int j = 0; j < vl->numcols; ++j) {
+      uiWidgetRemoveClass (row->cols [j].uiwidget, "bdj-selected");
+    }
   }
 
-  return UICB_CONT;
+  nlistStartIterator (vl->selected, &iter);
+  while ((val = nlistIterateKey (vl->selected, &iter)) >= 0) {
+    uint32_t    tval;
+    tval = val - vl->rowoffset;
+    if (val >= 0 && val < vl->disprows) {
+      uivlrow_t   *row;
+
+      row = uivlGetRow (vl, val);
+      uiWidgetSetClass (row->hbox, "bdj-selected");
+      for (int j = 0; j < vl->numcols; ++j) {
+        uiWidgetSetClass (row->cols [j].uiwidget, "bdj-selected");
+      }
+    }
+  }
 }
