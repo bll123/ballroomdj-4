@@ -20,9 +20,10 @@
 
 #include "ui/uibox.h"
 #include "ui/uilabel.h"
+#include "ui/uiscrollbar.h"
 #include "ui/uiui.h"
 #include "ui/uivirtlist.h"
-// #include "ui/uiwidget.h"
+#include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
 typedef struct {
@@ -42,6 +43,7 @@ typedef struct {
 } uivlrow_t;
 
 typedef struct uivirtlist {
+  uiwcont_t     *hbox;
   uiwcont_t     *vbox;
   uiwcont_t     *sb;
   uivlrow_t     *rows;
@@ -66,8 +68,15 @@ uiCreateVirtList (int disprows)
   uivirtlist_t  *vl;
 
   vl = mdmalloc (sizeof (uivirtlist_t));
+  vl->hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (vl->hbox);
+  uiWidgetAlignVertFill (vl->hbox);
   vl->vbox = uiCreateVertBox ();
-  vl->sb = NULL;
+  uiWidgetAlignHorizFill (vl->vbox);
+  uiWidgetAlignVertFill (vl->vbox);
+  uiBoxPackStartExpand (vl->hbox, vl->vbox);
+  vl->sb = uiCreateVerticalScrollbar (10.0);
+  uiBoxPackEnd (vl->hbox, vl->sb);
   vl->rows = NULL;
   vl->numcols = 0;
   vl->numrows = 0;
@@ -88,7 +97,7 @@ uiCreateVirtList (int disprows)
   vlcont->wbasetype = WCONT_T_VIRTLIST;
   vlcont->wtype = WCONT_T_VIRTLIST;
   vlcont->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
-  vlcont->uidata.packwidget = vl->vbox->uidata.widget;
+  vlcont->uidata.packwidget = vl->hbox->uidata.widget;
   vlcont->uiint.uivirtlist = vl;
 
   return vlcont;
@@ -107,7 +116,7 @@ uivlFree (uiwcont_t *vlcont)
   }
 
   vl = vlcont->uiint.uivirtlist;
-  uiwcontBaseFree (vl->sb);
+  uiScrollbarFree (vl->sb);
 
   uivlFreeRow (vl, &vl->headingrow);
 
@@ -116,6 +125,11 @@ uivlFree (uiwcont_t *vlcont)
   }
   mdfree (vl->rows);
   vl->rows = NULL;
+
+  uiwcontBaseFree (vl->vbox);
+  vl->vbox = NULL;
+  uiwcontBaseFree (vl->hbox);
+  vl->hbox = NULL;
 
   mdfree (vl);
 }
@@ -166,6 +180,7 @@ uivlSetHeadings (uiwcont_t *vlcont, ...)
   heading = va_arg (args, const char *);
   for (int i = 0; i < count; ++i) {
     uivlSetColumn (vlcont, i, VL_TYPE_LABEL, 0, false);
+//    uivlSetHeadingFont (vlcont, VL_ROW_HEADING, i, need-bold-listing-font);
     uivlSetColumnValue (vlcont, VL_ROW_HEADING, i, heading);
     heading = va_arg (args, const char *);
   }
@@ -449,11 +464,12 @@ static void
 uivlInitRow (uivirtlist_t *vl, uivlrow_t *row)
 {
   row->hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (row->hbox);
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
   for (int i = 0; i < vl->numcols; ++i) {
     row->cols [i].type = VL_TYPE_LABEL;
     row->cols [i].uiwidget = uiCreateLabel ("");
-    uiBoxPackStart (row->hbox, row->cols [i].uiwidget);
+    uiBoxPackStartExpand (row->hbox, row->cols [i].uiwidget);
     row->cols [i].ident = 0;
     row->cols [i].maxwidth = VL_MAX_WIDTH_ANY;
     row->cols [i].hidden = VL_COL_SHOW;
@@ -490,5 +506,5 @@ uivlPackRow (uivirtlist_t *vl, int32_t rownum)
     return;
   }
 
-  uiBoxPackStart (vl->vbox, row->hbox);
+  uiBoxPackStartExpand (vl->vbox, row->hbox);
 }

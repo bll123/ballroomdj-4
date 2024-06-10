@@ -1031,6 +1031,7 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetNumRows (uitest->wcont [UITEST_W_VL], 0);
   uivlSetHeadings (uitest->wcont [UITEST_W_VL],
       "First", "Second", "Third", NULL);
+  uiBoxPackStart (vbox, uitest->wcont [UITEST_W_VL]);
 
   uiwcontFree (vbox);
 }
