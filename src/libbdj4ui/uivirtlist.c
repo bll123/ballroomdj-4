@@ -68,6 +68,10 @@ typedef struct uivirtlist {
   uiwcont_t     *hbox;
   uiwcont_t     *vbox;
   uiwcont_t     *sb;
+  uivlfillcb_t  fillcb;
+  uivlselcb_t   selcb;
+  uivlchangecb_t changecb;
+  void          *udata;
   uivlrow_t     *rows;
   uivlrow_t     headingrow;
   uivlcoldata_t *coldata;
@@ -91,6 +95,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl = mdmalloc (sizeof (uivirtlist_t));
   vl->ident = VL_IDENT;
+  vl->fillcb = NULL;
+  vl->selcb = NULL;
+  vl->changecb = NULL;
   vl->hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (vl->hbox);
   vl->vbox = uiCreateVertBox ();
@@ -473,7 +480,7 @@ uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
 /* callbacks */
 
 void
-uivlSetSelectionCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
+uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -484,7 +491,7 @@ uivlSetSelectionCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
 }
 
 void
-uivlSetEntryCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
+uivlSetChangeCallback (uivirtlist_t *vl, uivlchangecb_t cb, void *udata)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -495,7 +502,7 @@ uivlSetEntryCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
 }
 
 void
-uivlSetRowFillCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
+uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -503,6 +510,12 @@ uivlSetRowFillCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
   if (vl->initialized < VL_INIT_COLS) {
     return;
   }
+  if (cb == NULL) {
+    return;
+  }
+
+  vl->fillcb = cb;
+  vl->udata = udata;
 }
 
 /* processing */
@@ -517,6 +530,9 @@ uivlDisplay (uivirtlist_t *vl)
     row = uivlGetRow (vl, i + vl->rowoffset);
     if (row == NULL) {
       break;
+    }
+    if (vl->fillcb != NULL) {
+      vl->fillcb (vl->udata, vl, i + vl->rowoffset);
     }
     uivlPackRow (vl, row);
   }
@@ -577,6 +593,7 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
   for (int i = 0; i < vl->numcols; ++i) {
     row->cols [i].ident = VL_IDENT_COL;
     row->cols [i].uiwidget = uiCreateLabel ("");
+    uiWidgetSetMarginEnd (row->cols [i].uiwidget, 2);
 
     if (vl->coldata [i].hidden == VL_COL_SHOW) {
       uiBoxPackStartExpand (row->hbox, row->cols [i].uiwidget);

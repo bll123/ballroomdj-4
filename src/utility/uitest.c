@@ -107,6 +107,8 @@ static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
 static void uitestCleanup (uitest_t *uitest);
 
+static void uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum);
+
 int
 main (int argc, char *argv[])
 {
@@ -1058,15 +1060,8 @@ uitestUIVirtList (uitest_t *uitest)
 
   uivlSetColumnEllipsizeOn (uitest->vl, 1);
   uivlSetColumnAlignEnd (uitest->vl, 2);
+  uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
 
-  for (int i = 0; i < UITEST_VL_DISPROWS; ++i) {
-    char    tbuff [40];
-
-    for (int j = 0; j < UITEST_VL_COLS; ++j) {
-      snprintf (tbuff, sizeof (tbuff), "%d / %d .", j, i);
-      uivlSetColumnValue (uitest->vl, i, j, tbuff);
-    }
-  }
   uivlDisplay (uitest->vl);
 
   uiwcontFree (vbox);
@@ -1142,3 +1137,20 @@ uitestCleanup (uitest_t *uitest)
   localeCleanup ();
 }
 
+static void
+uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
+{
+  uitest_t  *uitest = udata;
+  char      tbuff [40];
+
+  for (int j = 0; j < UITEST_VL_COLS; ++j) {
+    snprintf (tbuff, sizeof (tbuff), "%d / %d", rownum, j);
+    if (rownum % 5 == 0 && (j == 1 || j == 0)) {
+      snprintf (tbuff, sizeof (tbuff), "%d / %d stuff stuff stuff stuff", rownum, j);
+    }
+    if (rownum % 7 == 0 && j == 2) {
+      snprintf (tbuff, sizeof (tbuff), "%d", rownum);
+    }
+    uivlSetColumnValue (uitest->vl, rownum, j, tbuff);
+  }
+}
