@@ -72,6 +72,16 @@ typedef struct {
   bool          stop : 1;
 } uitest_t;
 
+enum {
+  UITEST_VL_COLS = 4,
+  UITEST_VL_DISPROWS = 10,
+  UITEST_VL_MAXROWS = 100,
+};
+
+static const char *vllabs [] = {
+  "First", "Second", "Third", "Fourth", "Fifth", "Sixth",
+};
+
 static void uitestMainLoop (uitest_t *uitest);
 static void uitestBuildUI (uitest_t *uitest);
 static void uitestUIButtons (uitest_t *uitest);
@@ -103,6 +113,10 @@ main (int argc, char *argv[])
   uitest_t    uitest;
   const char  *targ;
   bdj4arg_t   *bdj4arg;
+
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("uitest");
+#endif
 
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uitest.wcont [i] = NULL;
@@ -190,6 +204,7 @@ uitestBuildUI (uitest_t *uitest)
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_STATUS_MSG] = uiwidgetp;
+  uiwcontFree (hbox);
 
   /* main notebook */
 
@@ -215,6 +230,7 @@ uitestBuildUI (uitest_t *uitest)
   uitestUIVirtList (uitest);
 
   uiWidgetShowAll (uitest->wcont [UITEST_W_WINDOW]);
+  uiwcontFree (vbox);
 }
 
 void
@@ -1029,9 +1045,29 @@ uitestUIVirtList (uitest_t *uitest)
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uitest->vl = uiCreateVirtList (vbox, 10);
-  uivlSetNumRows (uitest->vl, 0);
-  uivlSetHeadings (uitest->vl, "First", "Second", "Third", NULL);
+  uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS);
+  uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
+  uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
+  for (int j = 0; j < UITEST_VL_COLS; ++j) {
+    uivlSetColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_SHOW);
+  }
+  uivlSetColumn (uitest->vl, 3, VL_TYPE_LABEL, 3, VL_COL_HIDE);
+  for (int j = 0; j < UITEST_VL_COLS; ++j) {
+    uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
+  }
+
+  uivlSetColumnEllipsizeOn (uitest->vl, 1);
+  uivlSetColumnAlignEnd (uitest->vl, 2);
+
+  for (int i = 0; i < UITEST_VL_DISPROWS; ++i) {
+    char    tbuff [40];
+
+    for (int j = 0; j < UITEST_VL_COLS; ++j) {
+      snprintf (tbuff, sizeof (tbuff), "%d / %d .", j, i);
+      uivlSetColumnValue (uitest->vl, i, j, tbuff);
+    }
+  }
+  uivlDisplay (uitest->vl);
 
   uiwcontFree (vbox);
 }
@@ -1087,6 +1123,8 @@ uitestCleanup (uitest_t *uitest)
 {
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
+
+  uivlFree (uitest->vl);
 
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uiwcontFree (uitest->wcont [i]);

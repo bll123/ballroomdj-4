@@ -24,12 +24,9 @@ typedef enum {
 } vltype_t;
 
 enum {
-  VL_COL_HIDDEN = false,
+  VL_COL_HIDE = false,
   VL_COL_SHOW = true,
   VL_COL_UNKNOWN = -1,
-  VL_ROW_UNKNOWN = -1,
-  VL_ROW_HEADING = -2,
-  VL_MAX_WIDTH_ANY = -1,
 };
 
 typedef struct uivirtlist uivirtlist_t;
@@ -37,24 +34,29 @@ typedef struct uivirtlist uivirtlist_t;
 uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows);
+void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 
 /* headings */
-/* setting the headings also determines the number of columns */
-void  uivlSetHeadings (uivirtlist_t *vl, ...);
 void  uivlSetHeadingFont (uivirtlist_t *vl, int colnum, const char *font);
 void  uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class);
 
-/* column operations */
+/* column set */
 void  uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int ident, bool hidden);
+void  uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading);
 void  uivlSetColumnMaxWidth (uivirtlist_t *vl, int colnum, int maxwidth);
 void  uivlSetColumnFont (uivirtlist_t *vl, int colnum, const char *font);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
+
+/* column set specific to a row */
 void  uivlSetColumnClass (uivirtlist_t *vl, uint32_t rownum, int colnum, const char *class);
 void  uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value);
 void  uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val);
 
+/* column get */
 int   uivlGetColumnIdent (uivirtlist_t *vl, int col);
+
+/* column get specific to a row */
 const char *uivlGetColumnValue (uivirtlist_t *vl, int row, int col);
 const char *uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int col);
 
@@ -62,6 +64,10 @@ const char *uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int col);
 void  uivlSetSelectionCallback (uivirtlist_t *vl, callback_t *cb, void *udata);
 void  uivlSetEntryCallback (uivirtlist_t *vl, callback_t *cb, void *udata);
 void  uivlSetRowFillCallback (uivirtlist_t *vl, callback_t *cb, void *udata);
+
+/* processing */
+void  uivlDisplay (uivirtlist_t *vl);
+
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

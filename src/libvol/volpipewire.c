@@ -385,7 +385,7 @@ pipewireInit (void)
   pwstate->initialized = false;
 
   pwstate->pwloop = pw_thread_loop_new (NULL, NULL);
-  mdextalloc (pwstate->pwthreadloop);
+  mdextalloc (pwstate->pwloop);
 
   pwstate->context = pw_context_new (
       pw_thread_loop_get_loop (pwstate->pwloop),
