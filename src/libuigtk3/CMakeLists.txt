@@ -34,7 +34,6 @@ add_library (libuigtk3 SHARED
   uigtktoggle.c
   uigtktreeview.c
   uigtkui.c
-  uigtkvirtlist.c
   uigtkwidget.c
   uigtkwindow.c
 )

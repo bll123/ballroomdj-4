@@ -23,6 +23,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
+#include "uivirtlist.h"
 #include "uiwcont.h"
 #include "sysvars.h"
 
@@ -41,7 +42,6 @@ enum {
   UITEST_W_NB_V,
   UITEST_W_NB_H,
   UITEST_W_NB_HI,
-  UITEST_W_VL,
   UITEST_W_MAX,
 };
 
@@ -65,6 +65,7 @@ enum {
 
 typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
+  uivirtlist_t  *vl;
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
   long          counter;
@@ -112,6 +113,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < UITEST_I_MAX; ++i) {
     uitest.images [i] = NULL;
   }
+  uitest.vl = NULL;
   uitest.stop = false;
   uitest.counter = 1;
 
@@ -1027,11 +1029,9 @@ uitestUIVirtList (uitest_t *uitest)
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uitest->wcont [UITEST_W_VL] = uiCreateVirtList (10);
-  uivlSetNumRows (uitest->wcont [UITEST_W_VL], 0);
-  uivlSetHeadings (uitest->wcont [UITEST_W_VL],
-      "First", "Second", "Third", NULL);
-  uiBoxPackStart (vbox, uitest->wcont [UITEST_W_VL]);
+  uitest->vl = uiCreateVirtList (vbox, 10);
+  uivlSetNumRows (uitest->vl, 0);
+  uivlSetHeadings (uitest->vl, "First", "Second", "Third", NULL);
 
   uiwcontFree (vbox);
 }

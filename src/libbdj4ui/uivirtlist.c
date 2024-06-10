@@ -12,28 +12,22 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
+#include "ui.h"
+#include "uivirtlist.h"
 #include "uiwcont.h"
-
-#include "ui-gtk3.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uibox.h"
-#include "ui/uilabel.h"
-#include "ui/uiscrollbar.h"
-#include "ui/uiui.h"
-#include "ui/uivirtlist.h"
-#include "ui/uiwidget.h"
-#include "ui/uiwindow.h"
 
 typedef struct {
   uiwcont_t *uiwidget;
-  /* the following data is only set in the heading row */
+  /* the following data is specific to a column */
+  /* it is only stored in the heading row */
   vltype_t  type;
   int       ident;
   int       maxwidth;
+  bool      alignend: 1;
   bool      hidden : 1;
   bool      ellipsize : 1;
+  /* the following data is specific to a row and column */
+  char      *class;
 } uivlcol_t;
 
 typedef struct {
@@ -60,11 +54,9 @@ static void uivlInitRow (uivirtlist_t *vl, uivlrow_t *row);
 static uivlrow_t * uivlGetRow (uivirtlist_t *vl, int32_t rownum);
 static void uivlPackRow (uivirtlist_t *vl, int32_t rownum);
 
-uiwcont_t *
-uiCreateVirtList (int disprows)
+uivirtlist_t *
+uiCreateVirtList (uiwcont_t *boxp, int disprows)
 {
-  uiwcont_t     *vlcont;
-//  uiwcont_t     *sb;
   uivirtlist_t  *vl;
 
   vl = mdmalloc (sizeof (uivirtlist_t));
@@ -93,29 +85,18 @@ uiCreateVirtList (int disprows)
   vl->headingrow.cols = NULL;
   vl->headingrow.selected = false;
 
-  vlcont = uiwcontAlloc ();
-  vlcont->wbasetype = WCONT_T_VIRTLIST;
-  vlcont->wtype = WCONT_T_VIRTLIST;
-  vlcont->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
-  vlcont->uidata.packwidget = vl->hbox->uidata.widget;
-  vlcont->uiint.uivirtlist = vl;
+  uiBoxPackStart (boxp, vl->hbox);
 
-  return vlcont;
+  return vl;
 }
 
 void
-uivlFree (uiwcont_t *vlcont)
+uivlFree (uivirtlist_t *vl)
 {
-  uivirtlist_t  *vl;
-
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-free")) {
-    return;
-  }
-  if (vlcont->uiint.uivirtlist == NULL) {
+  if (vl == NULL) {
     return;
   }
 
-  vl = vlcont->uiint.uivirtlist;
   uiScrollbarFree (vl->sb);
 
   uivlFreeRow (vl, &vl->headingrow);
@@ -126,45 +107,38 @@ uivlFree (uiwcont_t *vlcont)
   mdfree (vl->rows);
   vl->rows = NULL;
 
-  uiwcontBaseFree (vl->vbox);
+  uiwcontFree (vl->vbox);
   vl->vbox = NULL;
-  uiwcontBaseFree (vl->hbox);
+  uiwcontFree (vl->hbox);
   vl->hbox = NULL;
 
   mdfree (vl);
 }
 
 void
-uivlSetNumRows (uiwcont_t *vlcont, uint32_t numrows)
+uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows)
 {
-  uivirtlist_t  *vl;
-
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-num-rows")) {
-    return;
-  }
-  if (vlcont->uiint.uivirtlist == NULL) {
+  if (vl == NULL) {
     return;
   }
 
-  vl = vlcont->uiint.uivirtlist;
   vl->numrows = numrows;
 }
 
 /* headings */
 
 void
-uivlSetHeadings (uiwcont_t *vlcont, ...)
+uivlSetHeadings (uivirtlist_t *vl, ...)
 {
   va_list       args;
   const char    *heading;
   int           count = 0;
-  uivirtlist_t  *vl;
 
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-head")) {
+  if (vl == NULL) {
     return;
   }
 
-  va_start (args, vlcont);
+  va_start (args, vl);
   heading = va_arg (args, const char *);
   while (heading != NULL) {
     ++count;
@@ -172,16 +146,15 @@ uivlSetHeadings (uiwcont_t *vlcont, ...)
   }
   va_end (args);
 
-  vl = vlcont->uiint.uivirtlist;
   vl->numcols = count;
   uivlInitRow (vl, &vl->headingrow);
 
-  va_start (args, vlcont);
+  va_start (args, vl);
   heading = va_arg (args, const char *);
   for (int i = 0; i < count; ++i) {
-    uivlSetColumn (vlcont, i, VL_TYPE_LABEL, 0, false);
-//    uivlSetHeadingFont (vlcont, VL_ROW_HEADING, i, need-bold-listing-font);
-    uivlSetColumnValue (vlcont, VL_ROW_HEADING, i, heading);
+    uivlSetColumn (vl, i, VL_TYPE_LABEL, 0, false);
+//    uivlSetHeadingFont (vl, VL_ROW_HEADING, i, need-bold-listing-font);
+    uivlSetColumnValue (vl, VL_ROW_HEADING, i, heading);
     heading = va_arg (args, const char *);
   }
   va_end (args);
@@ -190,110 +163,103 @@ uivlSetHeadings (uiwcont_t *vlcont, ...)
 }
 
 void
-uivlSetHeadingFont (uiwcont_t *vlcont, int col, const char *font)
+uivlSetHeadingFont (uivirtlist_t *vl, int colnum, const char *font)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-head-font")) {
+  if (vl == NULL) {
     return;
   }
 
 }
 
 void
-uivlSetHeadingClass (uiwcont_t *vlcont, int col, const char *class)
+uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-head-class")) {
+  if (vl == NULL) {
     return;
   }
-
 }
 
 
 /* column set */
 
 void
-uivlSetColumn (uiwcont_t *vlcont, int col, vltype_t type, int ident, bool hidden)
+uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int ident, bool hidden)
 {
-  uivirtlist_t    *vl;
   uivlrow_t       *row;
 
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col")) {
-    return;
-  }
-  if (vlcont->uiint.uivirtlist == NULL) {
+  if (vl == NULL) {
     return;
   }
 
-  vl = vlcont->uiint.uivirtlist;
-
-  if (col < 0 || col >= vl->numcols) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
 
   row = &vl->headingrow;
-  row->cols [col].type = type;
-  row->cols [col].ident = ident;
-  row->cols [col].hidden = hidden;
+  row->cols [colnum].type = type;
+  row->cols [colnum].ident = ident;
+  row->cols [colnum].hidden = hidden;
+  row->cols [colnum].alignend = false;
+  row->cols [colnum].class = NULL;
 }
 
 void
-uivlSetColumnMaxWidth (uiwcont_t *vlcont, int col, int maxwidth)
+uivlSetColumnMaxWidth (uivirtlist_t *vl, int colnum, int maxwidth)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-maxw")) {
+  uivlrow_t   *row;
+  uivlcol_t   *col;
+
+  if (vl == NULL) {
     return;
   }
-}
-
-void
-uivlSetColumnFont (uiwcont_t *vlcont, int col, const char *font)
-{
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-font")) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
+
+  row = &vl->headingrow;
+  col = &row->cols [colnum];
+  col->maxwidth = maxwidth;
 }
 
 void
-uivlSetColumnEllipsizeOn (uiwcont_t *vlcont, int col)
+uivlSetColumnFont (uivirtlist_t *vl, int colnum, const char *font)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-ell")) {
+  if (vl == NULL) {
     return;
   }
-}
-
-void
-uivlSetColumnClass (uiwcont_t *vlcont, int col, const char *class)
-{
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-class")) {
-    return;
-  }
-}
-
-void
-uivlSetColumnAlignEnd (uiwcont_t *vlcont, int col)
-{
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-align-end")) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
 }
 
 void
-uivlSetColumnValue (uiwcont_t *vlcont, int32_t rownum, int col, const char *value)
+uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colnum)
 {
-  uivirtlist_t    *vl;
-  uivlrow_t       *row = NULL;
+  uivlrow_t   *row;
+  uivlcol_t   *col;
 
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-align-end")) {
+  if (vl == NULL) {
     return;
   }
-  if (vlcont->uiint.uivirtlist == NULL) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
 
-  vl = vlcont->uiint.uivirtlist;
+  row = &vl->headingrow;
+  col = &row->cols [colnum];
+  col->ellipsize = true;
+}
 
-  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+void
+uivlSetColumnClass (uivirtlist_t *vl, uint32_t rownum, int colnum, const char *class)
+{
+  uivlrow_t   *row;
+  uivlcol_t   *col;
+
+  if (vl == NULL) {
     return;
   }
-  if (col < 0 || col >= vl->numcols) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
 
@@ -302,9 +268,52 @@ uivlSetColumnValue (uiwcont_t *vlcont, int32_t rownum, int col, const char *valu
     return;
   }
 
-  switch (row->cols [col].type) {
+  col = &row->cols [colnum];
+  col->class = mdstrdup (class);
+}
+
+void
+uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
+{
+  uivlrow_t   *row;
+  uivlcol_t   *col;
+
+  if (vl == NULL) {
+    return;
+  }
+  if (colnum < 0 || colnum >= vl->numcols) {
+    return;
+  }
+
+  row = &vl->headingrow;
+  col = &row->cols [colnum];
+  col->alignend = true;
+}
+
+void
+uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value)
+{
+  uivlrow_t       *row = NULL;
+
+  if (vl == NULL) {
+    return;
+  }
+
+  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+    return;
+  }
+  if (colnum < 0 || colnum >= vl->numcols) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  switch (row->cols [colnum].type) {
     case VL_TYPE_LABEL: {
-      uiLabelSetText (row->cols [col].uiwidget, value);
+      uiLabelSetText (row->cols [colnum].uiwidget, value);
       break;
     }
     case VL_TYPE_IMAGE: {
@@ -324,24 +333,18 @@ uivlSetColumnValue (uiwcont_t *vlcont, int32_t rownum, int col, const char *valu
 }
 
 void
-uivlSetColumnValueNum (uiwcont_t *vlcont, int32_t rownum, int col, int32_t val)
+uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val)
 {
-  uivirtlist_t    *vl;
   uivlrow_t       *row = NULL;
 
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-col-align-end")) {
+  if (vl == NULL) {
     return;
   }
-  if (vlcont->uiint.uivirtlist == NULL) {
-    return;
-  }
-
-  vl = vlcont->uiint.uivirtlist;
 
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
     return;
   }
-  if (col < 0 || col >= vl->numcols) {
+  if (colnum < 0 || colnum >= vl->numcols) {
     return;
   }
 
@@ -350,7 +353,7 @@ uivlSetColumnValueNum (uiwcont_t *vlcont, int32_t rownum, int col, int32_t val)
     return;
   }
 
-  switch (row->cols [col].type) {
+  switch (row->cols [colnum].type) {
     case VL_TYPE_LABEL:
     case VL_TYPE_IMAGE:
     case VL_TYPE_ENTRY: {
@@ -375,9 +378,9 @@ uivlSetColumnValueNum (uiwcont_t *vlcont, int32_t rownum, int col, int32_t val)
 /* column get */
 
 int
-uivlGetColumnIdent (uiwcont_t *vlcont, int col)
+uivlGetColumnIdent (uivirtlist_t *vl, int colnum)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-get-col-ident")) {
+  if (vl == NULL) {
     return VL_COL_UNKNOWN;
   }
 
@@ -385,18 +388,18 @@ uivlGetColumnIdent (uiwcont_t *vlcont, int col)
 }
 
 const char *
-uivlGetColumnValue (uiwcont_t *vlcont, int row, int col)
+uivlGetColumnValue (uivirtlist_t *vl, int row, int colnum)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-get-col-value")) {
+  if (vl == NULL) {
     return NULL;
   }
   return NULL;
 }
 
 const char *
-uivlGetColumnEntryValue (uiwcont_t *vlcont, int row, int col)
+uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-get-col-entry-value")) {
+  if (vl == NULL) {
     return NULL;
   }
   return NULL;
@@ -405,25 +408,25 @@ uivlGetColumnEntryValue (uiwcont_t *vlcont, int row, int col)
 /* callbacks */
 
 void
-uivlSetSelectionCallback (uiwcont_t *vlcont, callback_t *cb, void *udata)
+uivlSetSelectionCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-sel-cb")) {
+  if (vl == NULL) {
     return;
   }
 }
 
 void
-uivlSetEntryCallback (uiwcont_t *vlcont, callback_t *cb, void *udata)
+uivlSetEntryCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-entry-cb")) {
+  if (vl == NULL) {
     return;
   }
 }
 
 void
-uivlSetRowFillCallback (uiwcont_t *vlcont, callback_t *cb, void *udata)
+uivlSetRowFillCallback (uivirtlist_t *vl, callback_t *cb, void *udata)
 {
-  if (! uiwcontValid (vlcont, WCONT_T_VIRTLIST, "vl-set-row-fill-cb")) {
+  if (vl == NULL) {
     return;
   }
 }
@@ -443,7 +446,7 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
       uivlFreeCol (&row->cols [i]);
     }
   }
-  uiwcontBaseFree (row->hbox);
+  uiwcontFree (row->hbox);
   row->hbox = NULL;
   mdfree (row->cols);
   row->cols = NULL;
@@ -456,7 +459,9 @@ uivlFreeCol (uivlcol_t *col)
     return;
   }
 
-  uiwcontBaseFree (col->uiwidget);
+  dataFree (col->class);
+  col->class = NULL;
+  uiwcontFree (col->uiwidget);
   col->uiwidget = NULL;
 }
 
