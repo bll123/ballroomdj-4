@@ -49,7 +49,8 @@ uiCreateScale (double lower, double upper,
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SCALE;
   uiwidget->wtype = WCONT_T_SCALE;
-  uiwidget->widget = scale;
+  uiwidget->uidata.widget = scale;
+  uiwidget->uidata.packwidget = scale;
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 2);
@@ -64,7 +65,7 @@ uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiscale->widget, "change-value",
+  g_signal_connect (uiscale->uidata.widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
 
@@ -79,7 +80,7 @@ uiScaleEnforceMax (uiwcont_t *uiscale, double value)
   }
 
   /* gtk scale's lower limit works, but upper limit is not respected */
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->widget));
+  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->uidata.widget));
   max = gtk_adjustment_get_upper (adjustment);
   if (value > max) {
     value = max;
@@ -97,7 +98,7 @@ uiScaleGetValue (uiwcont_t *uiscale)
     return value;
   }
 
-  value = gtk_range_get_value (GTK_RANGE (uiscale->widget));
+  value = gtk_range_get_value (GTK_RANGE (uiscale->uidata.widget));
   return value;
 }
 
@@ -110,7 +111,7 @@ uiScaleGetDigits (uiwcont_t *uiscale)
     return value;
   }
 
-  value = gtk_scale_get_digits (GTK_SCALE (uiscale->widget));
+  value = gtk_scale_get_digits (GTK_SCALE (uiscale->uidata.widget));
   return value;
 }
 
@@ -121,7 +122,7 @@ uiScaleSetValue (uiwcont_t *uiscale, double value)
     return;
   }
 
-  gtk_range_set_value (GTK_RANGE (uiscale->widget), value);
+  gtk_range_set_value (GTK_RANGE (uiscale->uidata.widget), value);
 }
 
 void
@@ -131,7 +132,7 @@ uiScaleSetRange (uiwcont_t *uiscale, double start, double end)
     return;
   }
 
-  gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
+  gtk_range_set_range (GTK_RANGE (uiscale->uidata.widget), start, end);
 }
 
 void

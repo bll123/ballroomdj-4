@@ -131,7 +131,8 @@ uiCreateTreeView (void)
   uitree->lastTreeSize = -1;
   uitree->valueRowCount = 0;
 
-  uiwidget->widget = tree;
+  uiwidget->uidata.widget = tree;
+  uiwidget->uidata.packwidget = tree;
   uiwidget->uiint.uitree = uitree;
 
   uiWidgetSetAllMargins (uiwidget, 2);
@@ -159,7 +160,7 @@ uiTreeViewEnableHeaders (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->widget), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->uidata.widget), TRUE);
 }
 
 void
@@ -169,7 +170,7 @@ uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->widget), FALSE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->uidata.widget), FALSE);
 }
 
 void
@@ -189,7 +190,7 @@ uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uiwidget->widget), FALSE);
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uiwidget->uidata.widget), FALSE);
 }
 
 void
@@ -243,7 +244,7 @@ uiTreeViewSetSizeChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
   uitree = uiwidget->uiint.uitree;
 
   uitree->callbacks [TV_CB_SIZE_CHG] = cb;
-  g_signal_connect (uiwidget->widget, "size-allocate",
+  g_signal_connect (uiwidget->uidata.widget, "size-allocate",
       G_CALLBACK (uiTreeViewSizeChangeHandler), uiwidget);
 }
 
@@ -259,7 +260,7 @@ uiTreeViewSetScrollEventCallback (uiwcont_t *uiwidget, callback_t *cb)
   uitree = uiwidget->uiint.uitree;
 
   uitree->callbacks [TV_CB_SCROLL_EVENT] = cb;
-  g_signal_connect (uiwidget->widget, "scroll-event",
+  g_signal_connect (uiwidget->uidata.widget, "scroll-event",
       G_CALLBACK (uiTreeViewScrollEventHandler), uiwidget);
 }
 
@@ -275,9 +276,9 @@ uiTreeViewSetRowActivatedCallback (uiwcont_t *uiwidget, callback_t *cb)
   uitree = uiwidget->uiint.uitree;
 
   uitree->callbacks [TV_CB_ROW_ACTIVE] = cb;
-  g_signal_connect (uiwidget->widget, "row-activated",
+  g_signal_connect (uiwidget->uidata.widget, "row-activated",
       G_CALLBACK (uiTreeViewRowActiveHandler), uiwidget);
-  g_signal_connect (uiwidget->widget, "button-press-event",
+  g_signal_connect (uiwidget->uidata.widget, "button-press-event",
       G_CALLBACK (uiTreeViewClickHandler), uiwidget);
 }
 
@@ -537,7 +538,7 @@ uiTreeViewAppendColumn (uiwcont_t *uiwidget, int activecol, int widgettype,
   if (title != NULL) {
     gtk_tree_view_column_set_title (column, title);
   }
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidget->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidget->uidata.widget), column);
 
   if (activecol != TREE_NO_COLUMN) {
     uitree->activeColumn = column;
@@ -554,7 +555,7 @@ uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
     return;
   }
 
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uiwidget->widget), col);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uiwidget->uidata.widget), col);
   if (column != NULL) {
     int     val = TRUE;
 
@@ -606,11 +607,11 @@ uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
     va_end (args);
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->uidata.widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->uidata.widget));
   }
 
   uitree->valueRowCount = 0;
@@ -641,11 +642,11 @@ uiTreeViewCreateValueStoreFromList (uiwcont_t *uiwidget, int colmax, int *typeli
     }
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget->uidata.widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidget->uidata.widget));
   }
 
   uitree->valueRowCount = 0;
@@ -1435,14 +1436,14 @@ uiTreeViewScrollToCell (uiwcont_t *uiwidget)
     return;
   }
 
-  if (! GTK_IS_TREE_VIEW (uiwidget->widget)) {
+  if (! GTK_IS_TREE_VIEW (uiwidget->uidata.widget)) {
     return;
   }
 
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidget->widget),
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidget->uidata.widget),
         path, NULL, FALSE, 0.0, 0.0);
     mdextfree (path);
     gtk_tree_path_free (path);
@@ -1462,13 +1463,13 @@ uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
   uitree = uiwidget->uiint.uitree;
 
   adjustment = gtk_scrollable_get_vadjustment (
-      GTK_SCROLLABLE (uiwidget->widget));
+      GTK_SCROLLABLE (uiwidget->uidata.widget));
   gtk_adjustment_set_upper (adjustment, upper);
   uitree->scrollController =
-      gtk_event_controller_scroll_new (uiwidget->widget,
+      gtk_event_controller_scroll_new (uiwidget->uidata.widget,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
-  gtk_widget_add_events (uiwidget->widget, GDK_SCROLL_MASK);
+  gtk_widget_add_events (uiwidget->uidata.widget, GDK_SCROLL_MASK);
 }
 
 int
@@ -1483,7 +1484,7 @@ uiTreeViewGetDragDropRow (uiwcont_t *uiwidget, int x, int y)
   }
 
   row = -1;
-  if (gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (uiwidget->widget),
+  if (gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (uiwidget->uidata.widget),
       x, y, &path, &pos)) {
     char      *pathstr;
 
@@ -1576,7 +1577,7 @@ uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
     return;
   }
 
-  tree = uiwidget->widget;
+  tree = uiwidget->uidata.widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */
@@ -1613,7 +1614,7 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
     return;
   }
 
-  tree = uiwidget->widget;
+  tree = uiwidget->uidata.widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */
@@ -1876,7 +1877,7 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
     return;
   }
 
-  tree = uiwidget->widget;
+  tree = uiwidget->uidata.widget;
   rc = gtk_tree_view_get_visible_range (GTK_TREE_VIEW (tree), &tpstart, &tpend);
   if (rc) {
     char          *tstr;

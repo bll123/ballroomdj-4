@@ -32,7 +32,8 @@ uiCreateFontButton (const char *fontname)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_FONT_BUTTON;
-  uiwidget->widget = fb;
+  uiwidget->uidata.widget = fb;
+  uiwidget->uidata.packwidget = fb;
   return uiwidget;
 }
 
@@ -41,7 +42,11 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 {
   const char *sval;
 
-  sval = gtk_font_chooser_get_font (GTK_FONT_CHOOSER (uiwidget->widget));
+  if (! uiwcontValid (uiwidget, WCONT_T_FONT_BUTTON, "font-button-get")) {
+    return NULL;
+  }
+
+  sval = gtk_font_chooser_get_font (GTK_FONT_CHOOSER (uiwidget->uidata.widget));
   return sval;
 }
 
@@ -61,7 +66,7 @@ uiCreateColorButton (const char *color)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_COLOR_BUTTON;
-  uiwidget->widget = cb;
+  uiwidget->uidata.widget = cb;
   return uiwidget;
 }
 
@@ -70,8 +75,12 @@ uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
 {
   GdkRGBA     gcolor;
 
+  if (! uiwcontValid (uiwidget, WCONT_T_COLOR_BUTTON, "col-button-get")) {
+    return;
+  }
+
   gtk_color_chooser_get_rgba (
-      GTK_COLOR_CHOOSER (uiwidget->widget), &gcolor);
+      GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &gcolor);
   snprintf (tbuff, sz, "#%02x%02x%02x",
       (int) round (gcolor.red * 255.0),
       (int) round (gcolor.green * 255.0),

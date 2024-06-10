@@ -39,12 +39,6 @@ uiTextBoxFree (uiwcont_t *uiwidget)
   return;
 }
 
-uiwcont_t *
-uiTextBoxGetScrolledWindow (uiwcont_t *uiwidget)
-{
-  return NULL;
-}
-
 void
 uiTextBoxSetReadonly (uiwcont_t *uiwidget)
 {

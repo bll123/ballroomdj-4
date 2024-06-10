@@ -98,7 +98,8 @@ uiSpinboxTextCreate (void *udata)
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TEXT;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   uiKeySetKeyCallback (uispinbox->uikey, uiwidget, uispinbox->presscb);
 
   uiWidgetSetClass (uiwidget, SPINBOX_READONLY_CLASS);
@@ -125,8 +126,8 @@ uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
   uispinbox = uiwidget->uiint.uispinbox;
 
   uispinbox->maxWidth = maxWidth;
-  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->widget), uispinbox->maxWidth + 2);
-  gtk_entry_set_max_width_chars (GTK_ENTRY (uiwidget->widget), uispinbox->maxWidth + 2);
+  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uispinbox->maxWidth + 2);
+  gtk_entry_set_max_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uispinbox->maxWidth + 2);
   uispinbox->list = list;
   uispinbox->keylist = keylist;
   if (uispinbox->keylist != NULL) {
@@ -241,7 +242,8 @@ uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TIME;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
 
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), uiwidget);
@@ -293,8 +295,6 @@ uiSpinboxIntCreate (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SPINBOX;
   uiwidget->wtype = WCONT_T_SPINBOX_NUM;
-  uiwidget->widget = NULL;
-  uiwidget->uiint.uispinbox = NULL;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
@@ -304,7 +304,8 @@ uiSpinboxIntCreate (void)
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
-  uiwidget->widget = spinbox;
+  uiwidget->uidata.widget = spinbox;
+  uiwidget->uidata.packwidget = spinbox;
 
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxNumInput), NULL);
@@ -321,8 +322,6 @@ uiSpinboxDoubleCreate (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SPINBOX;
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE;
-  uiwidget->widget = NULL;
-  uiwidget->uiint.uispinbox = NULL;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
@@ -332,7 +331,8 @@ uiSpinboxDoubleCreate (void)
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
-  uiwidget->widget = spinbox;
+  uiwidget->uidata.widget = spinbox;
+  uiwidget->uidata.packwidget = spinbox;
 
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
@@ -357,7 +357,8 @@ uiSpinboxDoubleDefaultCreate (void)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
 
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxDoubleDefaultDisplay), uiwidget);
@@ -384,7 +385,7 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->widget, "value-changed",
+  g_signal_connect (uiwidget->uidata.widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
@@ -395,7 +396,7 @@ uiSpinboxSetRange (uiwcont_t *uiwidget, double min, double max)
     return;
   }
 
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (uiwidget->widget), min, max);
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (uiwidget->uidata.widget), min, max);
 }
 
 void
@@ -405,7 +406,7 @@ uiSpinboxSetIncrement (uiwcont_t *uiwidget, double incr, double pageincr)
     return;
   }
 
-  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (uiwidget->widget),
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (uiwidget->uidata.widget),
       incr, pageincr);
 }
 
@@ -417,7 +418,7 @@ uiSpinboxWrap (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (uiwidget->widget), TRUE);
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (uiwidget->uidata.widget), TRUE);
 }
 
 void
@@ -427,8 +428,8 @@ uiSpinboxSet (uiwcont_t *uiwidget, double min, double max)
     return;
   }
 
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (uiwidget->widget), min, max);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->widget), min);
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (uiwidget->uidata.widget), min, max);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->uidata.widget), min);
 }
 
 double
@@ -442,7 +443,7 @@ uiSpinboxGetValue (uiwcont_t *uiwidget)
   }
 
   adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uiwidget->widget));
+      GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   value = gtk_adjustment_get_value (adjustment);
   return value;
 }
@@ -457,7 +458,7 @@ uiSpinboxSetValue (uiwcont_t *uiwidget, double value)
   }
 
   adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uiwidget->widget));
+      GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   gtk_adjustment_set_value (adjustment, value);
 }
 
@@ -501,7 +502,7 @@ uiSpinboxAlignRight (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->widget), 1.0);
+  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->uidata.widget), 1.0);
 }
 
 void
@@ -621,7 +622,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   }
   uispinbox->processing = true;
 
-  newtext = gtk_entry_get_text (GTK_ENTRY (uiwidget->widget));
+  newtext = gtk_entry_get_text (GTK_ENTRY (uiwidget->uidata.widget));
   if (uispinbox->convcb != NULL) {
     newvalue = callbackHandlerStr (uispinbox->convcb, newtext);
   } else {
@@ -633,7 +634,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
     return UICB_NOT_CONVERTED;
   }
 
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->widget));
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;
   if (newvalue != -1) {
@@ -663,9 +664,9 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
 
   *tbuff = '\0';
   adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uiwidget->widget));
+      GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   value = gtk_adjustment_get_value (adjustment);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->widget), value);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->uidata.widget), value);
   uispinbox->curridx = (int) value;
   disp = "";
   if (uispinbox->textGetProc != NULL) {
@@ -674,7 +675,7 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
     disp = uiSpinboxTextGetDisp (uispinbox->list, uispinbox->curridx);
   }
   snprintf (tbuff, sizeof (tbuff), "%-*s", uispinbox->maxWidth, disp);
-  gtk_entry_set_text (GTK_ENTRY (uiwidget->widget), tbuff);
+  gtk_entry_set_text (GTK_ENTRY (uiwidget->uidata.widget), tbuff);
   uispinbox->processing = false;
 
   return UICB_DISPLAY_ON;
@@ -697,16 +698,16 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   uispinbox->processing = true;
 
   *tbuff = '\0';
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->widget));
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   value = gtk_adjustment_get_value (adjustment);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->widget), value);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->uidata.widget), value);
   if (uispinbox->sbtype == SB_TIME_BASIC) {
     tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
   }
   if (uispinbox->sbtype == SB_TIME_PRECISE) {
     tmutilToMSD ((ssize_t) value, tbuff, sizeof (tbuff), 1);
   }
-  gtk_entry_set_text (GTK_ENTRY (uiwidget->widget), tbuff);
+  gtk_entry_set_text (GTK_ENTRY (uiwidget->uidata.widget), tbuff);
   uispinbox->processing = false;
   return UICB_DISPLAY_ON;
 }
@@ -781,18 +782,18 @@ uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
   if (uiwidget == NULL) {
     return UICB_DISPLAY_OFF;
   }
-  if (uiwidget->widget == NULL) {
+  if (uiwidget->uidata.widget == NULL) {
     return UICB_DISPLAY_OFF;
   }
   uispinbox->processing = true;
 
   *tbuff = '\0';
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->widget));
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->uidata.widget));
   value = gtk_adjustment_get_value (adjustment);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->widget), value);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->uidata.widget), value);
   if (value < 0) {
     /* CONTEXT: user interface: default setting display */
-    gtk_entry_set_text (GTK_ENTRY (uiwidget->widget), _("Default"));
+    gtk_entry_set_text (GTK_ENTRY (uiwidget->uidata.widget), _("Default"));
   }
   uispinbox->processing = false;
   return UICB_DISPLAY_ON;

@@ -60,7 +60,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwin = uiwcontAlloc ();
   uiwin->wbasetype = WCONT_T_WINDOW;
   uiwin->wtype = WCONT_T_WINDOW;
-  uiwin->widget = window;
+  uiwin->uidata.widget = window;
+  uiwin->uidata.packwidget = window;
   return uiwin;
 }
 
@@ -74,7 +75,7 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
     return;
   }
 
-  gtk_window_set_title (GTK_WINDOW (uiwindow->widget), title);
+  gtk_window_set_title (GTK_WINDOW (uiwindow->uidata.widget), title);
 }
 
 void
@@ -84,8 +85,8 @@ uiCloseWindow (uiwcont_t *uiwindow)
     return;
   }
 
-  if (GTK_IS_WIDGET (uiwindow->widget)) {
-    gtk_widget_destroy (uiwindow->widget);
+  if (GTK_IS_WIDGET (uiwindow->uidata.widget)) {
+    gtk_widget_destroy (uiwindow->uidata.widget);
   }
 }
 
@@ -96,7 +97,7 @@ uiWindowIsMaximized (uiwcont_t *uiwindow)
     return false;
   }
 
-  return (bool) gtk_window_is_maximized (GTK_WINDOW (uiwindow->widget));
+  return (bool) gtk_window_is_maximized (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -106,7 +107,7 @@ uiWindowIconify (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_iconify (GTK_WINDOW (uiwindow->widget));
+  gtk_window_iconify (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -116,7 +117,7 @@ uiWindowDeIconify (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_deiconify (GTK_WINDOW (uiwindow->widget));
+  gtk_window_deiconify (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -126,7 +127,7 @@ uiWindowMaximize (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_maximize (GTK_WINDOW (uiwindow->widget));
+  gtk_window_maximize (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -136,7 +137,7 @@ uiWindowUnMaximize (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_unmaximize (GTK_WINDOW (uiwindow->widget));
+  gtk_window_unmaximize (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -146,7 +147,7 @@ uiWindowDisableDecorations (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), FALSE);
+  gtk_window_set_decorated (GTK_WINDOW (uiwindow->uidata.widget), FALSE);
 }
 
 void
@@ -158,7 +159,7 @@ uiWindowEnableDecorations (uiwcont_t *uiwindow)
 
   /* this does not work on windows, the decorations are not recovered */
   /* after being disabled. */
-  gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), TRUE);
+  gtk_window_set_decorated (GTK_WINDOW (uiwindow->uidata.widget), TRUE);
 }
 
 void
@@ -168,7 +169,7 @@ uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y)
     return;
   }
 
-  gtk_window_get_size (GTK_WINDOW (uiwindow->widget), x, y);
+  gtk_window_get_size (GTK_WINDOW (uiwindow->uidata.widget), x, y);
 }
 
 void
@@ -179,7 +180,7 @@ uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
   }
 
   if (x >= 0 && y >= 0) {
-    gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
+    gtk_window_set_default_size (GTK_WINDOW (uiwindow->uidata.widget), x, y);
   }
 }
 
@@ -192,8 +193,8 @@ uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws)
     return;
   }
 
-  gtk_window_get_position (GTK_WINDOW (uiwindow->widget), x, y);
-  gdkwin = gtk_widget_get_window (uiwindow->widget);
+  gtk_window_get_position (GTK_WINDOW (uiwindow->uidata.widget), x, y);
+  gdkwin = gtk_widget_get_window (uiwindow->uidata.widget);
   *ws = -1;
   if (gdkwin != NULL) {
 /* being lazy here, just check for the header to see if it is x11 */
@@ -213,10 +214,10 @@ uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
   }
 
   if (x >= 0 && y>= 0) {
-    gtk_window_move (GTK_WINDOW (uiwindow->widget), x, y);
+    gtk_window_move (GTK_WINDOW (uiwindow->uidata.widget), x, y);
   }
   if (ws >= 0) {
-    gdkwin = gtk_widget_get_window (uiwindow->widget);
+    gdkwin = gtk_widget_get_window (uiwindow->uidata.widget);
     if (gdkwin != NULL) {
 #if _hdr_gdk_gdkx
       gdk_x11_window_move_to_desktop (gdkwin, ws);
@@ -234,7 +235,7 @@ uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow)
     return;
   }
 
-  gdkwin = gtk_widget_get_window (uiwindow->widget);
+  gdkwin = gtk_widget_get_window (uiwindow->uidata.widget);
 
   if (gdkwin != NULL) {
 /* being lazy here, just check for the header to see if it is x11 */
@@ -251,7 +252,7 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
     return;
   }
 
-  gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);
+  gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->uidata.widget), FALSE);
 }
 
 uiwcont_t *
@@ -277,7 +278,8 @@ uiCreateScrolledWindow (int minheight)
   scwindow = uiwcontAlloc ();
   scwindow->wbasetype = WCONT_T_WINDOW;
   scwindow->wtype = WCONT_T_SCROLL_WINDOW;
-  scwindow->widget = widget;
+  scwindow->uidata.widget = widget;
+  scwindow->uidata.packwidget = widget;
   return scwindow;
 }
 
@@ -288,7 +290,7 @@ uiWindowSetPolicyExternal (uiwcont_t *uiscw)
     return;
   }
 
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (uiscw->widget),
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (uiscw->uidata.widget),
       GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
 }
 
@@ -301,11 +303,11 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   if (attachment != NULL) {
-    gtk_window_set_attached_to (GTK_WINDOW (window), attachment->widget);
+    gtk_window_set_attached_to (GTK_WINDOW (window), attachment->uidata.widget);
   }
   if (parentwin != NULL) {
     gtk_window_set_transient_for (GTK_WINDOW (window),
-        GTK_WINDOW (parentwin->widget));
+        GTK_WINDOW (parentwin->uidata.widget));
   }
   gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
   gtk_window_set_deletable (GTK_WINDOW (window), FALSE);
@@ -328,7 +330,8 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
   uiwindow = uiwcontAlloc ();
   uiwindow->wbasetype = WCONT_T_WINDOW;
   uiwindow->wtype = WCONT_T_DIALOG_WINDOW;
-  uiwindow->widget = window;
+  uiwindow->uidata.widget = window;
+  uiwindow->uidata.packwidget = window;
   return uiwindow;
 }
 
@@ -339,7 +342,7 @@ uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwindow->widget, "button-press-event",
+  g_signal_connect (uiwindow->uidata.widget, "button-press-event",
       G_CALLBACK (uiWindowDoubleClickHandler), uicb);
 }
 
@@ -350,7 +353,7 @@ uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwindow->widget, "window-state-event",
+  g_signal_connect (uiwindow->uidata.widget, "window-state-event",
       G_CALLBACK (uiWindowWinStateHandler), uicb);
 }
 
@@ -361,7 +364,7 @@ uiWindowNoDim (uiwcont_t *uiwindow)
     return;
   }
 
-  g_signal_connect (uiwindow->widget, "state-flags-changed",
+  g_signal_connect (uiwindow->uidata.widget, "state-flags-changed",
       G_CALLBACK (uiWindowNoDimHandler), uiwindow);
 }
 
@@ -372,7 +375,7 @@ uiWindowSetMappedCallback (uiwcont_t *uiwindow, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwindow->widget, "map-event",
+  g_signal_connect (uiwindow->uidata.widget, "map-event",
       G_CALLBACK (uiWindowMappedHandler), uicb);
 }
 
@@ -384,7 +387,7 @@ uiWindowPresent (uiwcont_t *uiwindow)
   }
 
   /* this does not work on mac os */
-  gtk_window_present (GTK_WINDOW (uiwindow->widget));
+  gtk_window_present (GTK_WINDOW (uiwindow->uidata.widget));
 }
 
 void
@@ -422,11 +425,11 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 
   /* the type of the uiwidget is not known */
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
-  gtk_container_add (GTK_CONTAINER (uiwindow->widget), uiwidget->widget);
+  gtk_container_add (GTK_CONTAINER (uiwindow->uidata.widget), uiwidget->uidata.widget);
 }
 
 void
@@ -436,7 +439,7 @@ uiWindowSetNoMaximize (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_window_set_resizable (GTK_WINDOW (uiwidget->widget), false);
+  gtk_window_set_resizable (GTK_WINDOW (uiwidget->uidata.widget), false);
 }
 
 /* internal routines */

@@ -800,7 +800,7 @@ installerBuildUI (installer_t *installer)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  uiBoxPackStartExpand (vbox, uiwidgetp);
   installer->wcont [INST_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);

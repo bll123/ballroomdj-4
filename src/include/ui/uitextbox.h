@@ -12,7 +12,6 @@ extern "C" {
 
 uiwcont_t *uiTextBoxCreate (int height, const char *hlcolor);
 void  uiTextBoxFree (uiwcont_t *uiwidget);
-uiwcont_t * uiTextBoxGetScrolledWindow (uiwcont_t *uiwidget);
 char  *uiTextBoxGetValue (uiwcont_t *uiwidget);
 void  uiTextBoxSetReadonly (uiwcont_t *uiwidget);
 void  uiTextBoxScrollToEnd (uiwcont_t *uiwidget);

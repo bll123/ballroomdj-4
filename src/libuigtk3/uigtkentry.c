@@ -65,15 +65,16 @@ uiEntryInit (int entrySize, int maxSize)
   uiwidget->wbasetype = WCONT_T_ENTRY;
   uiwidget->wtype = WCONT_T_ENTRY;
   uiwidget->uiint.uientry = uientry;
-  uiwidget->widget = gtk_entry_new_with_buffer (uientry->buffer);
+  uiwidget->uidata.widget = gtk_entry_new_with_buffer (uientry->buffer);
+  uiwidget->uidata.packwidget = uiwidget->uidata.widget;
 
-  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->widget), uientry->entrySize);
-  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->widget), uientry->maxSize);
-  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->widget), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_margin_top (uiwidget->widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (uiwidget->widget, uiBaseMarginSz * 2);
-  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (uiwidget->widget, FALSE);
+  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uientry->entrySize);
+  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), uientry->maxSize);
+  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->uidata.widget), GTK_INPUT_PURPOSE_FREE_FORM);
+  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz * 2);
+  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (uiwidget->uidata.widget, FALSE);
 
   return uiwidget;
 }
@@ -100,7 +101,7 @@ uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
     return;
   }
 
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->uidata.widget),
       GTK_ENTRY_ICON_SECONDARY, name);
 }
 
@@ -111,7 +112,7 @@ uiEntryClearIcon (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->uidata.widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
 }
 
@@ -131,7 +132,7 @@ uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry)
   target = targetentry->uiint.uientry;
   source = sourceentry->uiint.uientry;
 
-  gtk_entry_set_buffer (GTK_ENTRY (targetentry->widget), source->buffer);
+  gtk_entry_set_buffer (GTK_ENTRY (targetentry->uidata.widget), source->buffer);
   target->buffer = source->buffer;
 }
 
@@ -197,7 +198,7 @@ uiEntrySetValidate (uiwcont_t *uiwidget, uientryval_t valfunc, void *udata,
       mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
       uientry->valdelay = true;
     }
-    g_signal_connect (uiwidget->widget, "changed",
+    g_signal_connect (uiwidget->uidata.widget, "changed",
         G_CALLBACK (uiEntryValidateHandler), uiwidget);
   }
 }
@@ -335,7 +336,7 @@ uiEntryValidateStart (uiwcont_t *uiwidget)
 {
   uientry_t   *uientry;
 
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->uidata.widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   uientry = uiwidget->uiint.uientry;
   if (uientry->validateFunc != NULL) {

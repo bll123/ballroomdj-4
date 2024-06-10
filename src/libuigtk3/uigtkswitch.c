@@ -54,7 +54,6 @@ uiCreateSwitch (int value)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SWITCH;
   uiwidget->wtype = WCONT_T_SWITCH;
-  uiwidget->widget = NULL;
 
   uiswitch = mdmalloc (sizeof (uiswitch_t));
   uiswitch->switchoffimg = NULL;
@@ -71,7 +70,8 @@ uiCreateSwitch (int value)
   uiWidgetMakePersistent (uiswitch->switchonimg);
 
   widget = gtk_toggle_button_new ();
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiswitch = uiswitch;
 
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -114,8 +114,8 @@ uiSwitchSetValue (uiwcont_t *uiwidget, int value)
     return;
   }
 
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), value);
-  uiSwitchSetImage (uiwidget->widget, uiwidget);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget), value);
+  uiSwitchSetImage (uiwidget->uidata.widget, uiwidget);
 }
 
 int
@@ -125,7 +125,7 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
     return false;
   }
 
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
 }
 
 void
@@ -135,7 +135,7 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->widget, "toggled",
+  g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
@@ -174,10 +174,10 @@ uiSwitchSetImage (GtkWidget *w, void *udata)
 
   sw = uiwidget->uiint.uiswitch;
 
-  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
+  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
   if (value) {
-    gtk_button_set_image (GTK_BUTTON (w), sw->switchonimg->widget);
+    gtk_button_set_image (GTK_BUTTON (w), sw->switchonimg->uidata.widget);
   } else {
-    gtk_button_set_image (GTK_BUTTON (w), sw->switchoffimg->widget);
+    gtk_button_set_image (GTK_BUTTON (w), sw->switchoffimg->uidata.widget);
   }
 }

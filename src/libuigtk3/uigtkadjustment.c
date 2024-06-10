@@ -27,10 +27,10 @@ uiCreateAdjustment (double value, double start, double end,
   uiadj = uiwcontAlloc ();
   uiadj->wbasetype = WCONT_T_ADJUSTMENT;
   uiadj->wtype = WCONT_T_ADJUSTMENT;
-  uiadj->widget = NULL;
+  uiadj->uidata.widget = NULL;
 
   adjustment = gtk_adjustment_new (value, start, end, stepinc, pageinc, pagesz);
-  uiadj->adjustment = adjustment;
+  uiadj->uidata.adjustment = adjustment;
   return uiadj;
 }
 
@@ -41,5 +41,5 @@ uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
     return NULL;
   }
 
-  return uiadj->adjustment;
+  return uiadj->uidata.adjustment;
 }

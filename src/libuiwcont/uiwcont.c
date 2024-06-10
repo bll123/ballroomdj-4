@@ -22,7 +22,8 @@ uiwcontAlloc (void)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = WCONT_T_UNKNOWN;
   uiwidget->wtype = WCONT_T_UNKNOWN;
-  uiwidget->widget = NULL;
+  uiwidget->uidata.widget = NULL;
+  uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->uiint.voidwidget = NULL;    // union
   return uiwidget;
 }

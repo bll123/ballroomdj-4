@@ -29,7 +29,8 @@ uiCreateHorizSeparator (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_SEPARATOR;
   uiwidget->wtype = WCONT_T_SEPARATOR;
-  uiwidget->widget = sep;
+  uiwidget->uidata.widget = sep;
+  uiwidget->uidata.packwidget = sep;
   uiWidgetExpandHoriz (uiwidget);
   uiWidgetSetMarginTop (uiwidget, uiBaseMarginSz);
   return uiwidget;

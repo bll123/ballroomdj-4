@@ -58,6 +58,7 @@ typedef enum {
   /* base type for check-box, radio-button */
   WCONT_T_TOGGLE_BUTTON,
   WCONT_T_TREE,
+  WCONT_T_VIRTLIST,
   WCONT_T_UNKNOWN,
   /* base type for scroll-window, dialog-window, paned-window */
   WCONT_T_WINDOW,
@@ -79,11 +80,8 @@ typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 typedef struct uitree uitree_t;
+typedef struct uivirtlist uivirtlist_t;
 
-/* for future use */
-/* the widget pointer will be moved out of the below structure */
-/* and into the uiwcont_t union */
-/* partially done: 2024-1 */
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;
@@ -96,38 +94,22 @@ typedef union {
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;
     uitree_t      *uitree;
+    uivirtlist_t  *uivirtlist;
 } uiwcontint_t;
 
-/* UISPECIFIC is defined as the contents of the anonymous union. */
-/* UISPECIFIC must contain a value named 'widget' */
-
 # if BDJ4_USE_GTK3 /* gtk3 */
-
-#  include <gtk/gtk.h>
-
-#define UISPECIFIC \
-  GtkWidget     *widget; \
-  GtkSizeGroup  *sg; \
-  GdkPixbuf     *pixbuf; \
-  GtkTextBuffer *buffer; \
-  GtkAdjustment *adjustment;
-
+#  include "ui/uigtk3-int.h"
 # endif /* BDJ4_USE_GTK3 */
 
 # if BDJ4_USE_NULLUI
-
-#define UISPECIFIC \
-  void      *widget;
-
+#  include "ui/uinull-int.h"
 # endif /* BDJ4_USE_NULLUI */
 
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
   uiwcontint_t    uiint;
-  union {
-    UISPECIFIC
-  };
+  uispecific_t    uidata;
 } uiwcont_t;
 
 static inline bool
@@ -136,8 +118,7 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   if (uiwidget == NULL) {
     return false;
   }
-  if ((int) uiwidget->wbasetype != WCONT_T_DROPDOWN &&
-      uiwidget->widget == NULL) {
+  if (uiwidget->uidata.widget == NULL) {
     return false;
   }
   if ((int) uiwidget->wbasetype != exptype &&

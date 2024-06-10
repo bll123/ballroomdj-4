@@ -25,6 +25,7 @@
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uitreeview.h"
+#include "ui/uivirtlist.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -78,6 +79,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_TREE: {
       uiTreeViewFree (uiwidget);
+      break;
+    }
+    case WCONT_T_VIRTLIST: {
+      uivlFree (uiwidget);
       break;
     }
     default: {

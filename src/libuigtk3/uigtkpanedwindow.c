@@ -41,20 +41,23 @@ uiPanedWindowCreateVert (void)
 void
 uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box)
 {
-  if (panedwin == NULL || box == NULL) {
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-pack-start")) {
     return;
   }
-  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
+  if (box == NULL) {
     return;
   }
 
-  gtk_paned_pack1 (GTK_PANED (panedwin->widget), box->widget, true, true);
+  gtk_paned_pack1 (GTK_PANED (panedwin->uidata.widget), box->uidata.widget, true, true);
 }
 
 void
 uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
 {
-  if (panedwin == NULL || box == NULL) {
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-pack-end")) {
+    return;
+  }
+  if (box == NULL) {
     return;
   }
 
@@ -62,35 +65,27 @@ uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
     return;
   }
 
-  gtk_paned_pack2 (GTK_PANED (panedwin->widget), box->widget, true, true);
+  gtk_paned_pack2 (GTK_PANED (panedwin->uidata.widget), box->uidata.widget, true, true);
 }
 
 int
 uiPanedWindowGetPosition (uiwcont_t *panedwin)
 {
-  if (panedwin == NULL) {
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-get-pos")) {
     return -1;
   }
 
-  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
-    return -1;
-  }
-
-  return gtk_paned_get_position (GTK_PANED (panedwin->widget));
+  return gtk_paned_get_position (GTK_PANED (panedwin->uidata.widget));
 }
 
 void
 uiPanedWindowSetPosition (uiwcont_t *panedwin, int position)
 {
-  if (panedwin == NULL) {
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-set-pos")) {
     return;
   }
 
-  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
-    return;
-  }
-
-  gtk_paned_set_position (GTK_PANED (panedwin->widget), position);
+  gtk_paned_set_position (GTK_PANED (panedwin->uidata.widget), position);
 }
 
 /* internal routines */
@@ -112,6 +107,7 @@ uiPanedWindowCreate (int orientation)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_WINDOW;
   uiwidget->wtype = WCONT_T_PANED_WINDOW;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }

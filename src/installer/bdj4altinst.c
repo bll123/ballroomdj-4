@@ -485,7 +485,7 @@ altinstBuildUI (altinst_t *altinst)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  uiBoxPackStartExpand (vbox, uiwidgetp);
   altinst->wcont [ALT_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);

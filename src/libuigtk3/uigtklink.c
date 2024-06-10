@@ -43,7 +43,8 @@ uiCreateLink (const char *label, const char *uri)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_LINK;
   uiwidget->wtype = WCONT_T_LINK;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -55,10 +56,10 @@ uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
   }
 
   if (uri != NULL) {
-    gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->widget), uri);
+    gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->uidata.widget), uri);
   }
   if (label != NULL) {
-    gtk_button_set_label (GTK_BUTTON (uilink->widget), label);
+    gtk_button_set_label (GTK_BUTTON (uilink->uidata.widget), label);
   }
 }
 
@@ -69,7 +70,7 @@ uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uilink->widget, "activate-link",
+  g_signal_connect (uilink->uidata.widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
 }
 

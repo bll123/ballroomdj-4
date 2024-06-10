@@ -27,7 +27,8 @@ uiImageNew (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_IMAGE;
   uiwidget->wtype = WCONT_T_IMAGE;
-  uiwidget->widget = image;
+  uiwidget->uidata.widget = image;
+  uiwidget->uidata.packwidget = image;
   return uiwidget;
 }
 
@@ -45,7 +46,8 @@ uiImageFromFile (const char *fn)
     uiwidget = uiwcontAlloc ();
     uiwidget->wbasetype = WCONT_T_IMAGE;
     uiwidget->wtype = WCONT_T_IMAGE;
-    uiwidget->widget = image;
+    uiwidget->uidata.widget = image;
+    uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);
   }
   return uiwidget;
@@ -65,7 +67,8 @@ uiImageScaledFromFile (const char *fn, int scale)
     uiwidget = uiwcontAlloc ();
     uiwidget->wbasetype = WCONT_T_IMAGE;
     uiwidget->wtype = WCONT_T_IMAGE;
-    uiwidget->widget = image;
+    uiwidget->uidata.widget = image;
+    uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);
   }
   return uiwidget;
@@ -74,15 +77,12 @@ uiImageScaledFromFile (const char *fn, int scale)
 void
 uiImageClear (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-clr")) {
     return;
   }
 
-  if (GTK_IS_IMAGE (uiwidget->widget)) {
-    gtk_image_clear (GTK_IMAGE (uiwidget->widget));
+  if (GTK_IS_IMAGE (uiwidget->uidata.widget)) {
+    gtk_image_clear (GTK_IMAGE (uiwidget->uidata.widget));
   }
 }
 
@@ -91,47 +91,38 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
 {
   GdkPixbuf   *pixbuf;
 
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-cvt-pixbuf")) {
     return;
   }
 
-  pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->widget));
+  pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->uidata.widget));
   uiwidget->wbasetype = WCONT_T_PIXBUF;
   uiwidget->wtype = WCONT_T_PIXBUF;
-  uiwidget->pixbuf = pixbuf;
+  uiwidget->uidata.pixbuf = pixbuf;
 }
 
 void *
 uiImageGetPixbuf (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-get-pixbuf")) {
     return NULL;
   }
-  if (uiwidget->pixbuf == NULL) {
+  if (uiwidget->uidata.pixbuf == NULL) {
     return NULL;
   }
 
-  return uiwidget->pixbuf;
+  return uiwidget->uidata.pixbuf;
 }
 
 void
 uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
 {
-  if (uiwidget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-set-from-pixbuf-img")) {
     return;
   }
-  if (uiwidget->widget == NULL) {
-    return;
-  }
-  if (uipixbuf == NULL) {
-    return;
-  }
-  if (uipixbuf->pixbuf == NULL) {
+  if (! uiwcontValid (uipixbuf, WCONT_T_PIXBUF, "image-set-from-pixbuf-pixbuf")) {
     return;
   }
 
-  gtk_image_set_from_pixbuf (GTK_IMAGE (uiwidget->widget), uipixbuf->pixbuf);
+  gtk_image_set_from_pixbuf (GTK_IMAGE (uiwidget->uidata.widget), uipixbuf->uidata.pixbuf);
 }

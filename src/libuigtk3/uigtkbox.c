@@ -41,11 +41,11 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
 }
 
 void
@@ -54,11 +54,11 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
 }
 
 void
@@ -67,11 +67,11 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
+  gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
 }
 
 void
@@ -80,10 +80,10 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
     return;
   }
-  gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
 }
 
 /* internal routines */
@@ -98,7 +98,8 @@ uiCreateBox (int orientation)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;
   uiwidget->wtype = WCONT_T_BOX;
-  uiwidget->widget = box;
+  uiwidget->uidata.widget = box;
+  uiwidget->uidata.packwidget = box;
   return uiwidget;
 }
 

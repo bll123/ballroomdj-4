@@ -57,7 +57,6 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_BUTTON;
-  uiwidget->widget = NULL;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -92,7 +91,8 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibutton->repeatOn = false;
   uibutton->repeatMS = 250;
 
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uibutton = uibutton;
 
   return uiwidget;
@@ -121,7 +121,7 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_button_set_image_position (GTK_BUTTON (uiwidget->widget),
+  gtk_button_set_image_position (GTK_BUTTON (uiwidget->uidata.widget),
       GTK_POS_RIGHT);
 }
 
@@ -136,17 +136,17 @@ uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,
     return;
   }
 
-  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), "");
+  gtk_button_set_label (GTK_BUTTON (uiwidget->uidata.widget), "");
   /* relative path */
   pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image);
+  gtk_button_set_image (GTK_BUTTON (uiwidget->uidata.widget), image);
   /* macos needs this */
   gtk_button_set_always_show_image (
-      GTK_BUTTON (uiwidget->widget), TRUE);
+      GTK_BUTTON (uiwidget->uidata.widget), TRUE);
   if (tooltip != NULL) {
-    gtk_widget_set_tooltip_text (uiwidget->widget, tooltip);
+    gtk_widget_set_tooltip_text (uiwidget->uidata.widget, tooltip);
   }
 }
 
@@ -160,9 +160,9 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
   }
 
   image = gtk_image_new_from_icon_name (nm, GTK_ICON_SIZE_BUTTON);
-  gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image);
+  gtk_button_set_image (GTK_BUTTON (uiwidget->uidata.widget), image);
   gtk_button_set_always_show_image (
-      GTK_BUTTON (uiwidget->widget), TRUE);
+      GTK_BUTTON (uiwidget->uidata.widget), TRUE);
 }
 
 void
@@ -179,7 +179,7 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
   /* a button w/image is: */
   /*    button / alignment / box / label, image (or image, label) */
   /* widget is either a label or an alignment */
-  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->uidata.widget));
   if (GTK_IS_LABEL (widget)) {
     gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   } else {
@@ -197,7 +197,7 @@ uiButtonSetReliefNone (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_button_set_relief (GTK_BUTTON (uiwidget->widget), GTK_RELIEF_NONE);
+  gtk_button_set_relief (GTK_BUTTON (uiwidget->uidata.widget), GTK_RELIEF_NONE);
 }
 
 void
@@ -217,7 +217,7 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
-  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
+  gtk_button_set_label (GTK_BUTTON (uiwidget->uidata.widget), txt);
 }
 
 void
@@ -233,9 +233,9 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 
   uibutton->repeatMS = repeatms;
   uibutton->repeatOn = true;
-  g_signal_connect (uiwidget->widget, "pressed",
+  g_signal_connect (uiwidget->uidata.widget, "pressed",
       G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->presscb);
-  g_signal_connect (uiwidget->widget, "released",
+  g_signal_connect (uiwidget->uidata.widget, "released",
       G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->releasecb);
 }
 

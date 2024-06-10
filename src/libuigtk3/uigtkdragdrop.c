@@ -33,19 +33,19 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
   if (uiwcont == NULL) {
     return;
   }
-  if (uiwcont->widget == NULL) {
+  if (uiwcont->uidata.widget == NULL) {
     return;
   }
 
-  if (GTK_IS_TREE_VIEW (uiwcont->widget)) {
-    gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (uiwcont->widget),
+  if (GTK_IS_TREE_VIEW (uiwcont->uidata.widget)) {
+    gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (uiwcont->uidata.widget),
         NULL, 0, GDK_ACTION_COPY);
   } else {
-    gtk_drag_dest_set (uiwcont->widget, GTK_DEST_DEFAULT_ALL,
+    gtk_drag_dest_set (uiwcont->uidata.widget, GTK_DEST_DEFAULT_ALL,
         NULL, 0, GDK_ACTION_COPY);
   }
-  gtk_drag_dest_add_uri_targets (uiwcont->widget);
-  g_signal_connect (GTK_WIDGET (uiwcont->widget), "drag-data-received",
+  gtk_drag_dest_add_uri_targets (uiwcont->uidata.widget);
+  g_signal_connect (GTK_WIDGET (uiwcont->uidata.widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
 }
 
@@ -63,7 +63,7 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
   if (GTK_IS_TREE_VIEW (w)) {
     uiwcont_t   uiwcont;
 
-    uiwcont.widget = w;
+    uiwcont.uidata.widget = w;
     row = uiTreeViewGetDragDropRow (&uiwcont, x, y);
   }
 

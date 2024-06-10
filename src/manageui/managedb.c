@@ -321,7 +321,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxDarken (uiwidgetp);
   uiTextBoxSetHeight (uiwidgetp, 300);
-  uiBoxPackStartExpand (vboxp, uiTextBoxGetScrolledWindow (uiwidgetp));
+  uiBoxPackStartExpand (vboxp, uiwidgetp);
   managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;
 
   uiwcontFree (hbox);

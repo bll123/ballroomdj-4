@@ -34,7 +34,8 @@ uiCreateProgressBar (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_PROGRESS_BAR;
   uiwidget->wtype = WCONT_T_PROGRESS_BAR;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -45,5 +46,5 @@ uiProgressBarSet (uiwcont_t *uipb, double val)
     return;
   }
 
-  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->widget), val);
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->uidata.widget), val);
 }

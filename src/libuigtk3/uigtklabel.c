@@ -35,7 +35,8 @@ uiCreateLabel (const char *label)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_LABEL;
   uiwidget->wtype = WCONT_T_LABEL;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -72,8 +73,7 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
   PangoAttribute        *attr;
   PangoAttrList         *attrlist;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-font")) {
     return;
   }
 
@@ -81,19 +81,18 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
   font_desc = pango_font_description_from_string (font);
   attr = pango_attr_font_desc_new (font_desc);
   pango_attr_list_insert (attrlist, attr);
-  gtk_label_set_attributes (GTK_LABEL (uiwidget->widget), attrlist);
+  gtk_label_set_attributes (GTK_LABEL (uiwidget->uidata.widget), attrlist);
   pango_attr_list_unref (attrlist);
 }
 
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-text")) {
     return;
   }
 
-  gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
+  gtk_label_set_text (GTK_LABEL (uiwidget->uidata.widget), text);
 }
 
 const char *
@@ -101,67 +100,61 @@ uiLabelGetText (uiwcont_t *uiwidget)
 {
   const char *txt;
 
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-get-text")) {
     return NULL;
   }
 
-  txt = gtk_label_get_text (GTK_LABEL (uiwidget->widget));
+  txt = gtk_label_get_text (GTK_LABEL (uiwidget->uidata.widget));
   return txt;
 }
 
 void
 uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-ell-on")) {
     return;
   }
 
-  gtk_label_set_ellipsize (GTK_LABEL (uiwidget->widget), PANGO_ELLIPSIZE_END);
+  gtk_label_set_ellipsize (GTK_LABEL (uiwidget->uidata.widget), PANGO_ELLIPSIZE_END);
 }
 
 void
 uiLabelWrapOn (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-wrap-on")) {
     return;
   }
 
-  gtk_label_set_line_wrap (GTK_LABEL (uiwidget->widget), TRUE);
+  gtk_label_set_line_wrap (GTK_LABEL (uiwidget->uidata.widget), TRUE);
 }
 
 void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-sel")) {
     return;
   }
 
-  gtk_label_set_selectable (GTK_LABEL (uiwidget->widget), TRUE);
+  gtk_label_set_selectable (GTK_LABEL (uiwidget->uidata.widget), TRUE);
 }
 
 void
 uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-maxw")) {
     return;
   }
 
-  gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
+  gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->uidata.widget), width);
 }
 
 void
 uiLabelAlignEnd (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->wtype != WCONT_T_LABEL ||
-        uiwidget->widget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-align-end")) {
     return;
   }
 
-  gtk_label_set_xalign (GTK_LABEL (uiwidget->widget), 1.0);
+  gtk_label_set_xalign (GTK_LABEL (uiwidget->uidata.widget), 1.0);
 }
 

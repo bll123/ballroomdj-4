@@ -42,6 +42,7 @@
 #include "ui/uitoggle.h"
 #include "ui/uitreeview.h"
 #include "ui/uiui.h"
+#include "ui/uivirtlist.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 

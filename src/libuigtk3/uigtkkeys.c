@@ -67,7 +67,9 @@ uiKeyAlloc (void)
 
   uiwidget->wbasetype = WCONT_T_KEY;
   uiwidget->wtype = WCONT_T_KEY;
-  uiwidget->widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
+  /* empty widget is used so that the validity check works */
+  uiwidget->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
+  uiwidget->uidata.packwidget = (GtkWidget *) WCONT_EMPTY_WIDGET;
   uiwidget->uiint.uikey = uikey;
 
   return uiwidget;
@@ -101,9 +103,9 @@ uiKeySetKeyCallback (uiwcont_t *uikeywidget,
 
   uikey->presscb = uicb;
   uikey->releasecb = uicb;
-  g_signal_connect (uiwidgetp->widget, "key-press-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
       G_CALLBACK (uiKeyCallback), uikeywidget);
-  g_signal_connect (uiwidgetp->widget, "key-release-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
       G_CALLBACK (uiKeyCallback), uikeywidget);
 }
 

@@ -38,7 +38,8 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 
   uiwidget->wbasetype = WCONT_T_CHGIND;
   uiwidget->wtype = WCONT_T_CHGIND;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   /* the change indicator is a label packed in the beginning of */
   /* the supplied box */
   uiBoxPackStart (boxp, uiwidget);

@@ -27,7 +27,7 @@ uiCreateSizeGroupHoriz (void)
   szgrp = uiwcontAlloc ();
   szgrp->wbasetype = WCONT_T_SIZE_GROUP;
   szgrp->wtype = WCONT_T_SIZE_GROUP;
-  szgrp->sg = sg;
+  szgrp->uidata.sg = sg;
   return szgrp;
 }
 
@@ -38,6 +38,6 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_size_group_add_widget (uisg->sg, uiwidget->widget);
+  gtk_size_group_add_widget (uisg->uidata.sg, uiwidget->uidata.widget);
 }
 

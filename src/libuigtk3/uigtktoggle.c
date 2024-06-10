@@ -36,7 +36,8 @@ uiCreateCheckButton (const char *txt, int value)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
   uiwidget->wtype = WCONT_T_CHECK_BOX;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -48,7 +49,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   GtkWidget   *gwidget = NULL;
 
   if (widgetgrp != NULL) {
-    gwidget = widgetgrp->widget;
+    gwidget = widgetgrp->uidata.widget;
   }
   widget = gtk_radio_button_new_with_label_from_widget (
       GTK_RADIO_BUTTON (gwidget), txt);
@@ -58,7 +59,8 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
   uiwidget->wtype = WCONT_T_RADIO_BUTTON;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -78,7 +80,7 @@ uiCreateToggleButton (const char *txt,
     imagewidget = gtk_image_new_from_file (imgname);
   }
   if (image != NULL) {
-    imagewidget = image->widget;
+    imagewidget = image->uidata.widget;
   }
   if (imagewidget != NULL) {
     gtk_button_set_image (GTK_BUTTON (widget), imagewidget);
@@ -100,7 +102,8 @@ uiCreateToggleButton (const char *txt,
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
   uiwidget->wtype = WCONT_T_TOGGLE_BUTTON;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -111,7 +114,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->widget, "toggled",
+  g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
 
@@ -124,8 +127,8 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
     return;
   }
 
-  gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
-  uiToggleButtonSetImageAlignment (uiwidget->widget, &pad);
+  gtk_button_set_image (GTK_BUTTON (uiwidget->uidata.widget), image->uidata.widget);
+  uiToggleButtonSetImageAlignment (uiwidget->uidata.widget, &pad);
 }
 
 void
@@ -135,7 +138,7 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
-  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
+  gtk_button_set_label (GTK_BUTTON (uiwidget->uidata.widget), txt);
 }
 
 bool
@@ -145,7 +148,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
     return 0;
   }
 
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
 }
 
 void
@@ -155,7 +158,7 @@ uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
     return;
   }
 
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget), state);
 }
 
 /* gtk appears to re-allocate the radio button label, */
@@ -172,7 +175,7 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
   /* this seems to work for radio buttons. */
   /* for other buttons, a recursive child descent like the image alignment */
   /* may be necessary */
-  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->uidata.widget));
   if (GTK_IS_LABEL (widget)) {
     gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
   }

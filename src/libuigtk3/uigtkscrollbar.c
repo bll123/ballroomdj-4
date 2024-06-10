@@ -44,7 +44,8 @@ uiCreateVerticalScrollbar (double upper)
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
   widget = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   sb->adjustment = adjustment;
-  uiwidget->widget = widget;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiscrollbar = sb;
 
   uiWidgetExpandVert (uiwidget);
@@ -74,7 +75,7 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 
   sb = uiwidget->uiint.uiscrollbar;
   sb->changecb = cb;
-  g_signal_connect (uiwidget->widget, "change-value",
+  g_signal_connect (uiwidget->uidata.widget, "change-value",
       G_CALLBACK (uiScrollbarChangeHandler), cb);
 }
 

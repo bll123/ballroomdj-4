@@ -1950,7 +1950,7 @@ starterCreateSupportMsgDialog (void *udata)
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (tb));
+  uiBoxPackStartExpand (vbox, tb);
   starter->wcont [START_W_SUPPORT_TEXTBOX] = tb;
 
   /* line 5 */
