@@ -18,7 +18,7 @@
 #include "ui/uibutton.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
-#include "ui/uikeys.h"
+#include "ui/uievents.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
 #include "ui/uispinbox.h"
@@ -51,7 +51,7 @@ uiwcontFree (uiwcont_t *uiwidget)
       break;
     }
     case WCONT_T_KEY: {
-      uiKeyFree (uiwidget);
+      uiEventFree (uiwidget);
       break;
     }
     case WCONT_T_MENU: {

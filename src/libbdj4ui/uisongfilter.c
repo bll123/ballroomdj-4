@@ -143,7 +143,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
     uisf->wcont [i] = NULL;
   }
   uisf->wcont [UISF_W_WINDOW] = windowp;
-  uisf->wcont [UISF_W_KEY_HNDLR] = uiKeyAlloc ();
+  uisf->wcont [UISF_W_KEY_HNDLR] = uiEventAlloc ();
   uisf->options = options;
   uisf->songfilter = songfilterAlloc ();
   songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
@@ -674,7 +674,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_KEY] = callbackInit (
       uisfKeyHandler, uisf, NULL);
-  uiKeySetKeyCallback (uisf->wcont [UISF_W_KEY_HNDLR],
+  uiEventSetKeyCallback (uisf->wcont [UISF_W_KEY_HNDLR],
       uisf->wcont [UISF_W_DIALOG],
       uisf->callbacks [UISF_CB_KEY]);
 
@@ -970,7 +970,7 @@ uisfKeyHandler (void *udata)
     return UICB_CONT;
   }
 
-  if (uiKeyIsEnterKey (uisf->wcont [UISF_W_KEY_HNDLR])) {
+  if (uiEventIsEnterKey (uisf->wcont [UISF_W_KEY_HNDLR])) {
     uisfResponseHandler (uisf, RESPONSE_APPLY);
   }
 

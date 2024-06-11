@@ -443,10 +443,10 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uiwcontFree (col);
 
-  audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiKeyAlloc ();
+  audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiEventAlloc ();
   audioidint->callbacks [UIAUDID_CB_KEYB] = callbackInit (
       uiaudioidKeyEvent, uiaudioid, NULL);
-  uiKeySetKeyCallback (audioidint->wcont [UIAUDID_W_KEY_HNDLR],
+  uiEventSetKeyCallback (audioidint->wcont [UIAUDID_W_KEY_HNDLR],
       audioidint->wcont [UIAUDID_W_MAIN_VBOX],
       audioidint->callbacks [UIAUDID_CB_KEYB]);
 
@@ -990,22 +990,22 @@ uiaudioidKeyEvent (void *udata)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  if (uiKeyIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR]) &&
+      uiEventIsAudioPlayKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
     uisongselPlayCallback (uiaudioid->uisongsel);
   }
 
-  if (uiKeyIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
-    if (uiKeyIsControlPressed (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
-      if (uiKeyIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'S')) {
+  if (uiEventIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
+    if (uiEventIsControlPressed (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
+      if (uiEventIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'S')) {
         uiaudioidSaveCallback (uiaudioid);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'N')) {
+      if (uiEventIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'N')) {
         uiaudioidNextSelection (uiaudioid);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'P')) {
+      if (uiEventIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'P')) {
         uiaudioidPreviousSelection (uiaudioid);
         return UICB_STOP;
       }

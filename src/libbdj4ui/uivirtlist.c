@@ -135,7 +135,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
     vl->wcont [i] = NULL;
   }
 
-  vl->wcont [VL_W_KEYH] = uiKeyAlloc ();
+  vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->keycb = callbackInit (uivlKeyEvent, vl, NULL);
   vl->clickcb = callbackInit (uivlButtonEvent, vl, NULL);
 
@@ -702,9 +702,9 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  row->eventbox = uiKeyCreateEventBox (row->hbox);
-  uiKeySetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX], vl->keycb);
-  uiKeySetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
+  row->eventbox = uiEventCreateEventBox (row->hbox);
+  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX], vl->keycb);
+  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->eventbox);
 }
 
@@ -753,22 +753,22 @@ uivlKeyEvent (void *udata)
   }
 
 fprintf (stderr, "got key event\n");
-  if (uiKeyIsMovementKey (vl->wcont [VL_W_KEYH])) {
+  if (uiEventIsMovementKey (vl->wcont [VL_W_KEYH])) {
     int32_t     start;
     int32_t     offset = 1;
 
 fprintf (stderr, "   is move\n");
     start = vl->rowoffset;
 
-    if (uiKeyIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
+    if (uiEventIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
 fprintf (stderr, "   is press\n");
-      if (uiKeyIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
+      if (uiEventIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
         offset = vl->disprows;
       }
-      if (uiKeyIsUpKey (vl->wcont [VL_W_KEYH])) {
+      if (uiEventIsUpKey (vl->wcont [VL_W_KEYH])) {
         start -= offset;
       }
-      if (uiKeyIsDownKey (vl->wcont [VL_W_KEYH])) {
+      if (uiEventIsDownKey (vl->wcont [VL_W_KEYH])) {
         start += offset;
       }
 
@@ -796,11 +796,11 @@ uivlButtonEvent (void *udata)
     return UICB_CONT;
   }
 
-  if (! uiKeyIsButtonPressEvent (vl->wcont [VL_W_KEYH])) {
+  if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_KEYH])) {
     return UICB_CONT;
   }
 
-  button = uiKeyButtonPressed (vl->wcont [VL_W_KEYH]);
+  button = uiEventButtonPressed (vl->wcont [VL_W_KEYH]);
 fprintf (stderr, "  button %d\n", button);
 
   /* button 4 and 5 cause a single scroll event */
@@ -823,22 +823,22 @@ fprintf (stderr, "  button %d\n", button);
   /* all other buttons (1-3) cause a selection */
 
   for (int i = 0; i < vl->disprows; ++i) {
-    if (uiKeyCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [i].eventbox)) {
+    if (uiEventCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [i].eventbox)) {
       fprintf (stderr, "  found at %d\n", i);
       rownum = i + vl->rowoffset;
       break;
     }
   }
 
-fprintf (stderr, "  control-pressed %d\n", uiKeyIsControlPressed (vl->wcont [VL_W_KEYH]));
-fprintf (stderr, "  shift-pressed %d\n", uiKeyIsShiftPressed (vl->wcont [VL_W_KEYH]));
+fprintf (stderr, "  control-pressed %d\n", uiEventIsControlPressed (vl->wcont [VL_W_KEYH]));
+fprintf (stderr, "  shift-pressed %d\n", uiEventIsShiftPressed (vl->wcont [VL_W_KEYH]));
 
   if (rownum < 0) {
     /* not found */
     return UICB_CONT;
   }
 
-  if (! uiKeyIsControlPressed (vl->wcont [VL_W_KEYH])) {
+  if (! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
     uivlClearSelections (vl);
     uivlClearDisplaySelections (vl);
   }

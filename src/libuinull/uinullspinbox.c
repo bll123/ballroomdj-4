@@ -20,7 +20,7 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uikeys.h"
+#include "ui/uievents.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uispinbox.h"

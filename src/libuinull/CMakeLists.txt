@@ -15,8 +15,8 @@ add_library (libuinull SHARED
   uinulldragdrop.c
   uinulldropdown.c
   uinullentry.c
+  uinullevents.c
   uinullimage.c
-  uinullkeys.c
   uinulllabel.c
   uinulllink.c
   uinullmenu.c

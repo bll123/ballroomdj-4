@@ -246,7 +246,7 @@ static bool     pluiReload (void *udata);
 static void     pluiReloadCurrent (playerui_t *plui);
 static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
-static bool     pluiKeyEvent (void *udata);
+static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
 
@@ -525,10 +525,10 @@ pluiBuildUI (playerui_t *plui)
   uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 4);
 
-  plui->wcont [PLUI_W_KEY_HNDLR] = uiKeyAlloc ();
+  plui->wcont [PLUI_W_KEY_HNDLR] = uiEventAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
-      pluiKeyEvent, plui, NULL);
-  uiKeySetKeyCallback (plui->wcont [PLUI_W_KEY_HNDLR],
+      pluiEventEvent, plui, NULL);
+  uiEventSetKeyCallback (plui->wcont [PLUI_W_KEY_HNDLR],
       plui->wcont [PLUI_W_MAIN_VBOX], plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
@@ -1975,28 +1975,28 @@ pluiReloadSaveCurrent (playerui_t *plui)
 }
 
 static bool
-pluiKeyEvent (void *udata)
+pluiEventEvent (void *udata)
 {
   playerui_t  *plui = udata;
 
-  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
     return UICB_STOP;
   }
   /* isaudiopausekey() also checks for the stop key */
-  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
     return UICB_STOP;
   }

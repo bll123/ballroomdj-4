@@ -320,10 +320,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->wcont [UISE_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (seint->wcont [UISE_W_MAIN_VBOX]);
 
-  seint->wcont [UISE_W_KEY_HNDLR] = uiKeyAlloc ();
+  seint->wcont [UISE_W_KEY_HNDLR] = uiEventAlloc ();
   seint->callbacks [UISE_CB_KEYB] = callbackInit (
       uisongeditKeyEvent, uisongedit, NULL);
-  uiKeySetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
+  uiEventSetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
       seint->wcont [UISE_W_MAIN_VBOX], seint->callbacks [UISE_CB_KEYB]);
 
   hbox = uiCreateHorizBox ();
@@ -1837,22 +1837,22 @@ uisongeditKeyEvent (void *udata)
 
   seint = uisongedit->seInternalData;
 
-  if (uiKeyIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (seint->wcont [UISE_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR]) &&
+      uiEventIsAudioPlayKey (seint->wcont [UISE_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongedit->uisongsel);
   }
 
-  if (uiKeyIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR])) {
-    if (uiKeyIsControlPressed (seint->wcont [UISE_W_KEY_HNDLR])) {
-      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'S')) {
+  if (uiEventIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR])) {
+    if (uiEventIsControlPressed (seint->wcont [UISE_W_KEY_HNDLR])) {
+      if (uiEventIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'S')) {
         uisongeditSaveCallback (uisongedit);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'N')) {
+      if (uiEventIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'N')) {
         uisongeditNextSelection (uisongedit);
         return UICB_STOP;
       }
-      if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'P')) {
+      if (uiEventIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'P')) {
         uisongeditPreviousSelection (uisongedit);
         return UICB_STOP;
       }

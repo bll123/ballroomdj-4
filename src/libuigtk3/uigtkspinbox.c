@@ -24,7 +24,7 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uikeys.h"
+#include "ui/uievents.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uispinbox.h"
@@ -40,7 +40,7 @@ typedef struct uispinbox {
   nlist_t         *keylist;
   nlist_t         *idxlist;
   callback_t      *presscb;
-  uiwcont_t       *uikey;
+  uiwcont_t       *uievent;
   bool            processing : 1;
   bool            changed : 1;
 } uispinbox_t;
@@ -73,8 +73,8 @@ uiSpinboxFree (uiwcont_t *uiwidget)
   callbackFree (uispinbox->presscb);
   nlistFree (uispinbox->idxlist);
 
-  uiKeyFree (uispinbox->uikey);
-  uiwcontBaseFree (uispinbox->uikey);
+  uiEventFree (uispinbox->uievent);
+  uiwcontBaseFree (uispinbox->uievent);
 
   mdfree (uispinbox);
 }
@@ -100,7 +100,7 @@ uiSpinboxTextCreate (void *udata)
   uiwidget->wtype = WCONT_T_SPINBOX_TEXT;
   uiwidget->uidata.widget = widget;
   uiwidget->uidata.packwidget = widget;
-  uiKeySetKeyCallback (uispinbox->uikey, uiwidget, uispinbox->presscb);
+  uiEventSetKeyCallback (uispinbox->uievent, uiwidget, uispinbox->presscb);
 
   uiWidgetSetClass (uiwidget, SPINBOX_READONLY_CLASS);
 
@@ -542,7 +542,7 @@ uiSpinboxInit (void)
   uispinbox->keylist = NULL;
   uispinbox->idxlist = NULL;
   uispinbox->sbtype = SB_TEXT;
-  uispinbox->uikey = uiKeyAlloc ();
+  uispinbox->uievent = uiEventAlloc ();
   uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback, uiwidget, NULL);
 
   uiwidget->uiint.uispinbox = uispinbox;
@@ -727,20 +727,20 @@ uiSpinboxTextKeyCallback (void *udata)
 
   uispinbox = uiwidget->uiint.uispinbox;
 
-  rc = uiKeyIsMovementKey (uispinbox->uikey);
+  rc = uiEventIsMovementKey (uispinbox->uievent);
   if (rc) {
     return UICB_CONT;
   }
-  rc = uiKeyIsNavKey (uispinbox->uikey);
+  rc = uiEventIsNavKey (uispinbox->uievent);
   if (rc) {
     return UICB_CONT;
   }
 
-  rc = uiKeyIsMaskedKey (uispinbox->uikey);
+  rc = uiEventIsMaskedKey (uispinbox->uievent);
   if (rc) {
     /* masked keys are allowed, but not paste or cut */
     /* this allows the pass-through of keys like control-s */
-    if (uiKeyIsPasteCutKey (uispinbox->uikey)) {
+    if (uiEventIsPasteCutKey (uispinbox->uievent)) {
       return UICB_STOP;
     }
 

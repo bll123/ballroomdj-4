@@ -402,10 +402,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-    mqint->wcont [UIMUSICQ_W_KEY_HNDLR] = uiKeyAlloc ();
+    mqint->wcont [UIMUSICQ_W_KEY_HNDLR] = uiEventAlloc ();
     mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
         uimusicqKeyEvent, uimusicq, NULL);
-    uiKeySetKeyCallback (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], mqint->wcont [UIMUSICQ_W_TREE],
+    uiEventSetKeyCallback (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], mqint->wcont [UIMUSICQ_W_TREE],
         mqint->callbacks [MQINT_CB_KEYB]);
   }
 
@@ -1228,22 +1228,22 @@ uimusicqKeyEvent (void *udata)
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
-  if (uiKeyIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
-    if (uiKeyIsAudioPlayKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+    if (uiEventIsAudioPlayKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
       uimusicqPlayCallback (uimusicq);
     }
-    if (uiKeyIsKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], 'S')) {
+    if (uiEventIsKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], 'S')) {
       uimusicqSwap (uimusicq, ci);
     }
   }
 
-  if (uiKeyIsControlPressed (mqint->wcont [UIMUSICQ_W_KEY_HNDLR]) &&
-      uiKeyIsMovementKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
-    if (uiKeyIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
-      if (uiKeyIsUpKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+  if (uiEventIsControlPressed (mqint->wcont [UIMUSICQ_W_KEY_HNDLR]) &&
+      uiEventIsMovementKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+    if (uiEventIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+      if (uiEventIsUpKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
         uimusicqMoveUpCallback (uimusicq);
       }
-      if (uiKeyIsDownKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+      if (uiEventIsDownKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
         uimusicqMoveDownCallback (uimusicq);
       }
     }

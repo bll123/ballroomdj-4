@@ -181,7 +181,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
   mstimeset (&ssint->lastRowCheck, 0);
 
-  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiKeyAlloc ();
+  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
   ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitLong (
@@ -346,7 +346,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   /* all types of song selection will allow multiple selections */
   uiTreeViewSelectSetMode (uiwidgetp, SELECT_MULTIPLE);
 
-  uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uiwidgetp,
+  uiEventSetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uiwidgetp,
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (uiwidgetp, uisongsel->dfilterCount);
@@ -1246,26 +1246,26 @@ uisongselKeyEvent (void *udata)
 
   ssint = uisongsel->ssInternalData;
 
-  if (uiKeyIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
+      uiEventIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongsel);
   }
 
-  if (uiKeyIsMovementKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsMovementKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     int     dir;
     int     lines;
 
     dir = UISONGSEL_DIR_NONE;
     lines = 1;
 
-    if (uiKeyIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-      if (uiKeyIsUpKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+    if (uiEventIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+      if (uiEventIsUpKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         dir = UISONGSEL_PREVIOUS;
       }
-      if (uiKeyIsDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+      if (uiEventIsDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         dir = UISONGSEL_NEXT;
       }
-      if (uiKeyIsPageUpDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+      if (uiEventIsPageUpDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         lines = ssint->maxRows;
       }
 
@@ -1326,7 +1326,7 @@ uisongselSelectionChgCallback (void *udata)
   /* if the shift key is pressed, get the first and the last item */
   /* in the selection list (both, as it is not yet known where */
   /* the new selection is in relation). */
-  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     ssint->shiftfirstidx = -1;
     ssint->shiftlastidx = -1;
     nlistStartIterator (ssint->selectedList, &iteridx);
@@ -1340,7 +1340,7 @@ uisongselSelectionChgCallback (void *udata)
 
   /* if the control-key is pressed, add any current */
   /* selection that is not in view to the new selection list */
-  if (uiKeyIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     nlistStartIterator (ssint->selectedList, &iteridx);
     while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
@@ -1404,7 +1404,7 @@ uisongselProcessSelection (void *udata, long row)
   idx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
       SONGSEL_COL_IDX);
 
-  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     nlistidx_t    beg = 0;
     nlistidx_t    end = -1;
 

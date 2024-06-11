@@ -73,7 +73,7 @@ enum {
 typedef struct uibutton uibutton_t;
 typedef struct uidropdown uidropdown_t;
 typedef struct uientry uientry_t;
-typedef struct uikey uikey_t;
+typedef struct uievent uievent_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
@@ -87,7 +87,7 @@ typedef union {
     uibutton_t    *uibutton;
     uidropdown_t  *uidropdown;
     uientry_t     *uientry;
-    uikey_t       *uikey;
+    uievent_t       *uievent;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
     uispinbox_t   *uispinbox;
