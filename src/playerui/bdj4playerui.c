@@ -1979,23 +1979,23 @@ pluiKeyEvent (void *udata)
 {
   playerui_t  *plui = udata;
 
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
       uiKeyIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
     return UICB_STOP;
   }
   /* isaudiopausekey() also checks for the stop key */
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
       uiKeyIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
       uiKeyIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
       uiKeyIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
     return UICB_STOP;

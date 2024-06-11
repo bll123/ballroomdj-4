@@ -45,7 +45,7 @@ void  uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class);
 /* column set */
 void  uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int ident, bool hidden);
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading);
-void  uivlSetColumnMaxWidth (uivirtlist_t *vl, int colnum, int maxwidth);
+void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth);
 void  uivlSetColumnFont (uivirtlist_t *vl, int colnum, const char *font);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);

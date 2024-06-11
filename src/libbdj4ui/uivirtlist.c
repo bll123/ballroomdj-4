@@ -57,7 +57,7 @@ typedef struct {
   /* the following data is specific to a column */
   vltype_t  type;
   int       colident;
-  int       maxwidth;
+  int       minwidth;
   bool      alignend: 1;
   bool      hidden : 1;
   bool      ellipsize : 1;
@@ -83,6 +83,7 @@ typedef struct uivirtlist {
   uint64_t      ident;
   uiwcont_t     *wcont [VL_W_MAX];
   callback_t    *sbcb;
+  callback_t    *keycb;
   callback_t    *clickcb;
   int           numcols;
   uivlcoldata_t *coldata;
@@ -90,7 +91,7 @@ typedef struct uivirtlist {
   uivlrow_t     headingrow;
   int           disprows;
   int32_t       numrows;
-  uint32_t      rowoffset;
+  int32_t       rowoffset;
   nlist_t       *selected;
   int           initialized;
   /* user callbacks */
@@ -109,7 +110,13 @@ static uivlrow_t * uivlGetRow (uivirtlist_t *vl, int32_t rownum);
 static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
+static bool uivlKeyEvent (void *udata);
 static bool uivlButtonEvent (void *udata);
+static void uivlClearDisplaySelections (uivirtlist_t *vl);
+static void uivlSetDisplaySelections (uivirtlist_t *vl);
+static void uivlClearSelections (uivirtlist_t *vl);
+static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
+static void uivlProcessScroll (uivirtlist_t *vl, int32_t start);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -129,6 +136,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   }
 
   vl->wcont [VL_W_KEYH] = uiKeyAlloc ();
+  vl->keycb = callbackInit (uivlKeyEvent, vl, NULL);
   vl->clickcb = callbackInit (uivlButtonEvent, vl, NULL);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
@@ -142,6 +150,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiWidgetAlignVertFill (vl->wcont [VL_W_VBOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_VBOX]);
+  uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);
 
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
@@ -238,7 +247,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     vl->coldata [i].ident = VL_IDENT_COLDATA;
     vl->coldata [i].type = VL_TYPE_LABEL;
     vl->coldata [i].colident = 0;
-    vl->coldata [i].maxwidth = VL_MAX_WIDTH_ANY;
+    vl->coldata [i].minwidth = VL_MAX_WIDTH_ANY;
     vl->coldata [i].hidden = VL_COL_SHOW;
     vl->coldata [i].ellipsize = false;
   }
@@ -309,7 +318,7 @@ uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int colident, bool h
 }
 
 void
-uivlSetColumnMaxWidth (uivirtlist_t *vl, int colnum, int maxwidth)
+uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -321,7 +330,7 @@ uivlSetColumnMaxWidth (uivirtlist_t *vl, int colnum, int maxwidth)
     return;
   }
 
-  vl->coldata [colnum].maxwidth = maxwidth;
+  vl->coldata [colnum].minwidth = minwidth;
 }
 
 void
@@ -645,8 +654,8 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
       uiSizeGroupAdd (vl->coldata [i].szgrp, row->cols [i].uiwidget);
     }
     if (vl->coldata [i].type == VL_TYPE_LABEL) {
-      if (vl->coldata [i].maxwidth != VL_MAX_WIDTH_ANY) {
-        uiLabelSetMaxWidth (row->cols [i].uiwidget, vl->coldata [i].maxwidth);
+      if (vl->coldata [i].minwidth != VL_MAX_WIDTH_ANY) {
+        uiLabelSetMinWidth (row->cols [i].uiwidget, vl->coldata [i].minwidth);
       }
       if (! isheading && vl->coldata [i].ellipsize) {
         uiLabelEllipsizeOn (row->cols [i].uiwidget);
@@ -694,7 +703,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   row->eventbox = uiKeyCreateEventBox (row->hbox);
-//  uiKeySetKeyCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
+  uiKeySetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX], vl->keycb);
   uiKeySetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->eventbox);
 }
@@ -706,18 +715,8 @@ uivlScrollbarCallback (void *udata, double value)
   int32_t       start;
 
   start = (uint32_t) floor (value);
-  if (start < 0) {
-    start = 0;
-  }
-  if (start > vl->numrows - vl->disprows) {
-    start = vl->numrows - vl->disprows;
-  }
 
-  vl->inscroll = true;
-  vl->rowoffset = start;
-
-  uivlPopulate (vl);
-  vl->inscroll = false;
+  uivlProcessScroll (vl, start);
 
   return UICB_CONT;
 }
@@ -725,10 +724,6 @@ uivlScrollbarCallback (void *udata, double value)
 static void
 uivlPopulate (uivirtlist_t *vl)
 {
-  nlistidx_t    iter;
-  nlistidx_t    val;
-
-
   for (int i = 0; i < vl->disprows; ++i) {
     uivlrow_t   *row;
 
@@ -739,6 +734,125 @@ uivlPopulate (uivirtlist_t *vl)
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->udata, vl, i + vl->rowoffset);
     }
+  }
+
+  uivlClearDisplaySelections (vl);
+  uivlSetDisplaySelections (vl);
+}
+
+static bool
+uivlKeyEvent (void *udata)
+{
+  uivirtlist_t  *vl = udata;
+
+  if (vl == NULL) {
+    return UICB_CONT;
+  }
+  if (vl->inscroll) {
+    return UICB_CONT;
+  }
+
+fprintf (stderr, "got key event\n");
+  if (uiKeyIsMovementKey (vl->wcont [VL_W_KEYH])) {
+    int32_t     start;
+    int32_t     offset = 1;
+
+fprintf (stderr, "   is move\n");
+    start = vl->rowoffset;
+
+    if (uiKeyIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
+fprintf (stderr, "   is press\n");
+      if (uiKeyIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
+        offset = vl->disprows;
+      }
+      if (uiKeyIsUpKey (vl->wcont [VL_W_KEYH])) {
+        start -= offset;
+      }
+      if (uiKeyIsDownKey (vl->wcont [VL_W_KEYH])) {
+        start += offset;
+      }
+
+      uivlProcessScroll (vl, start);
+    }
+
+    /* movement keys are handled internally */
+    return UICB_STOP;
+  }
+
+  return UICB_CONT;
+}
+
+static bool
+uivlButtonEvent (void *udata)
+{
+  uivirtlist_t  *vl = udata;
+  int           button;
+  int32_t       rownum = -1;
+
+  if (vl == NULL) {
+    return UICB_CONT;
+  }
+  if (vl->inscroll) {
+    return UICB_CONT;
+  }
+
+  if (! uiKeyIsButtonPressEvent (vl->wcont [VL_W_KEYH])) {
+    return UICB_CONT;
+  }
+
+  button = uiKeyButtonPressed (vl->wcont [VL_W_KEYH]);
+fprintf (stderr, "  button %d\n", button);
+
+  /* button 4 and 5 cause a single scroll event */
+  if (button == UIKEY_BUTTON_4 || button == UIKEY_BUTTON_5) {
+    int32_t     start;
+
+    start = vl->rowoffset;
+
+    if (button == UIKEY_BUTTON_4) {
+      start -= 1;
+    }
+    if (button == UIKEY_BUTTON_5) {
+      start += 1;
+    }
+
+    uivlProcessScroll (vl, start);
+    return UICB_CONT;
+  }
+
+  /* all other buttons (1-3) cause a selection */
+
+  for (int i = 0; i < vl->disprows; ++i) {
+    if (uiKeyCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [i].eventbox)) {
+      fprintf (stderr, "  found at %d\n", i);
+      rownum = i + vl->rowoffset;
+      break;
+    }
+  }
+
+fprintf (stderr, "  control-pressed %d\n", uiKeyIsControlPressed (vl->wcont [VL_W_KEYH]));
+fprintf (stderr, "  shift-pressed %d\n", uiKeyIsShiftPressed (vl->wcont [VL_W_KEYH]));
+
+  if (rownum < 0) {
+    /* not found */
+    return UICB_CONT;
+  }
+
+  if (! uiKeyIsControlPressed (vl->wcont [VL_W_KEYH])) {
+    uivlClearSelections (vl);
+    uivlClearDisplaySelections (vl);
+  }
+  uivlAddSelection (vl, rownum);
+  uivlSetDisplaySelections (vl);
+
+  return UICB_CONT;
+}
+
+static void
+uivlClearDisplaySelections (uivirtlist_t *vl)
+{
+  for (int i = 0; i < vl->disprows; ++i) {
+    uivlrow_t   *row = &vl->rows [i];
 
     if (row->selected) {
       uiWidgetRemoveClass (row->hbox, "bdj-selected");
@@ -748,6 +862,13 @@ uivlPopulate (uivirtlist_t *vl)
       row->selected = false;
     }
   }
+}
+
+static void
+uivlSetDisplaySelections (uivirtlist_t *vl)
+{
+  nlistidx_t    iter;
+  nlistidx_t    val;
 
   nlistStartIterator (vl->selected, &iter);
   while ((val = nlistIterateKey (vl->selected, &iter)) >= 0) {
@@ -767,20 +888,44 @@ uivlPopulate (uivirtlist_t *vl)
   }
 }
 
-static bool
-uivlButtonEvent (void *udata)
+static void
+uivlClearSelections (uivirtlist_t *vl)
 {
-  uivirtlist_t  *vl = udata;
+  nlistFree (vl->selected);
+  vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
+}
 
-  if (vl == NULL) {
-    return UICB_CONT;
+static void
+uivlAddSelection (uivirtlist_t *vl, uint32_t rownum)
+{
+  uivlrow_t   *row = NULL;
+  int32_t     rowidx;
+
+  rowidx = rownum - vl->rowoffset;
+  if (rowidx >= 0 && rowidx < vl->disprows) {
+    row = &vl->rows [rowidx];
   }
-  if (vl->inscroll) {
-    return UICB_CONT;
+  nlistSetNum (vl->selected, rownum, rownum);
+}
+
+static void
+uivlProcessScroll (uivirtlist_t *vl, int32_t start)
+{
+  vl->inscroll = true;
+
+  if (start < 0) {
+    start = 0;
+  }
+  if (start > vl->numrows - vl->disprows) {
+    start = vl->numrows - vl->disprows;
   }
 
-  if (uiKeyButtonPressed (vl->wcont [VL_W_KEYH], 1)) {
-    /* which row are we on? */
+  if (start == vl->rowoffset) {
+    vl->inscroll = false;
+    return;
   }
-  return UICB_CONT;
+
+  vl->rowoffset = start;
+  uivlPopulate (vl);
+  vl->inscroll = false;
 }

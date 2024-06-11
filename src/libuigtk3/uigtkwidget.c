@@ -189,6 +189,26 @@ uiWidgetDisableFocus (uiwcont_t *uiwidget)
 }
 
 void
+uiWidgetEnableFocus (uiwcont_t *uiwidget)
+{
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_can_focus (uiwidget->uidata.widget, TRUE);
+}
+
+void
+uiWidgetGrabFocus (uiwcont_t *uiwidget)
+{
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  gtk_widget_grab_focus (uiwidget->uidata.widget);
+}
+
+void
 uiWidgetHide (uiwcont_t *uiwidget)
 {
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {

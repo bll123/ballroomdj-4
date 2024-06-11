@@ -990,12 +990,12 @@ uiaudioidKeyEvent (void *udata)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  if (uiKeyIsPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR]) &&
       uiKeyIsAudioPlayKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
     uisongselPlayCallback (uiaudioid->uisongsel);
   }
 
-  if (uiKeyIsPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
+  if (uiKeyIsKeyPressEvent (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
     if (uiKeyIsControlPressed (audioidint->wcont [UIAUDID_W_KEY_HNDLR])) {
       if (uiKeyIsKey (audioidint->wcont [UIAUDID_W_KEY_HNDLR], 'S')) {
         uiaudioidSaveCallback (uiaudioid);

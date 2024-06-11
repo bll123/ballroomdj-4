@@ -42,13 +42,13 @@ uiKeySetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb
 }
 
 bool
-uiKeyIsPressEvent (uiwcont_t *uiwidget)
+uiKeyIsKeyPressEvent (uiwcont_t *uiwidget)
 {
   return false;
 }
 
 bool
-uiKeyIsReleaseEvent (uiwcont_t *uiwidget)
+uiKeyIsKeyReleaseEvent (uiwcont_t *uiwidget)
 {
   return false;
 }

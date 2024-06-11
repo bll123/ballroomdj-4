@@ -1059,6 +1059,7 @@ uitestUIVirtList (uitest_t *uitest)
     uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
   }
 
+  uivlSetColumnMinWidth (uitest->vl, 1, 15);
   uivlSetColumnEllipsizeOn (uitest->vl, 1);
   uivlSetColumnAlignEnd (uitest->vl, 2);
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);

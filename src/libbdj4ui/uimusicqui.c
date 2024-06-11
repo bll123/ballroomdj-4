@@ -1228,7 +1228,7 @@ uimusicqKeyEvent (void *udata)
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
-  if (uiKeyIsPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+  if (uiKeyIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
     if (uiKeyIsAudioPlayKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
       uimusicqPlayCallback (uimusicq);
     }
@@ -1239,7 +1239,7 @@ uimusicqKeyEvent (void *udata)
 
   if (uiKeyIsControlPressed (mqint->wcont [UIMUSICQ_W_KEY_HNDLR]) &&
       uiKeyIsMovementKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
-    if (uiKeyIsPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+    if (uiKeyIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
       if (uiKeyIsUpKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
         uimusicqMoveUpCallback (uimusicq);
       }

@@ -1837,12 +1837,12 @@ uisongeditKeyEvent (void *udata)
 
   seint = uisongedit->seInternalData;
 
-  if (uiKeyIsPressEvent (seint->wcont [UISE_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR]) &&
       uiKeyIsAudioPlayKey (seint->wcont [UISE_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongedit->uisongsel);
   }
 
-  if (uiKeyIsPressEvent (seint->wcont [UISE_W_KEY_HNDLR])) {
+  if (uiKeyIsKeyPressEvent (seint->wcont [UISE_W_KEY_HNDLR])) {
     if (uiKeyIsControlPressed (seint->wcont [UISE_W_KEY_HNDLR])) {
       if (uiKeyIsKey (seint->wcont [UISE_W_KEY_HNDLR], 'S')) {
         uisongeditSaveCallback (uisongedit);

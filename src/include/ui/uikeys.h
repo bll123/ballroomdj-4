@@ -11,14 +11,24 @@ extern "C" {
 #include "callback.h"
 #include "uiwcont.h"
 
+enum {
+  UIKEY_BUTTON_1 = 1,
+  UIKEY_BUTTON_2 = 2,
+  UIKEY_BUTTON_3 = 3,
+  UIKEY_BUTTON_4 = 4,
+  UIKEY_BUTTON_5 = 5,
+};
+
 uiwcont_t * uiKeyAlloc (void);
 void    uiKeyFree (uiwcont_t *uiwidget);
 uiwcont_t * uiKeyCreateEventBox (uiwcont_t *uiwidgetp);
 void    uiKeySetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 void    uiKeySetButtonCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 int     uiKeyEvent (uiwcont_t *uiwidget);
-bool    uiKeyIsPressEvent (uiwcont_t *uiwidget);
-bool    uiKeyIsReleaseEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsKeyPressEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsKeyReleaseEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsButtonPressEvent (uiwcont_t *uiwidget);
+bool    uiKeyIsButtonReleaseEvent (uiwcont_t *uiwidget);
 bool    uiKeyIsMovementKey (uiwcont_t *uiwidget);
 bool    uiKeyIsKey (uiwcont_t *uiwidget, unsigned char keyval);
 bool    uiKeyIsEnterKey (uiwcont_t *uiwidget);
@@ -35,7 +45,8 @@ bool    uiKeyIsMaskedKey (uiwcont_t *uiwidget);
 bool    uiKeyIsAltPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsControlPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsShiftPressed (uiwcont_t *uiwidget);
-bool    uiKeyButtonPressed (uiwcont_t *uiwidget, uint button);
+int     uiKeyButtonPressed (uiwcont_t *uiwidget);
+bool    uiKeyCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

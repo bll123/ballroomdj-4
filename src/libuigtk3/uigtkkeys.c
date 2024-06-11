@@ -24,19 +24,25 @@
 #include "ui/uikeys.h"
 
 enum {
-  KEY_EVENT_NONE,
+  EVENT_NONE,
   KEY_EVENT_PRESS,
   KEY_EVENT_RELEASE,
   BUTTON_EVENT_PRESS,
   BUTTON_EVENT_DOUBLE_PRESS,
   BUTTON_EVENT_RELEASE,
+  SCROLL_EVENT,
 };
 
 typedef struct uikey {
-  callback_t    *presscb;
-  callback_t    *releasecb;
+  callback_t    *keypresscb;
+  callback_t    *keyreleasecb;
+  callback_t    *buttonpresscb;
+  callback_t    *buttonreleasecb;
+  callback_t    *scrollcb;
   int           eventtype;
   guint         keyval;
+  guint         button;
+  void          *savewidget;
   bool          controlpressed : 1;
   bool          shiftpressed : 1;
   bool          altpressed : 1;
@@ -44,16 +50,13 @@ typedef struct uikey {
   bool          superpressed : 1;
   bool          hyperpressed : 1;
   bool          ismaskedkey : 1;
-  bool          button1press : 1;
-  bool          button1release : 1;
-  bool          button2press : 1;
-  bool          button2release : 1;
-  bool          button3press : 1;
-  bool          button3release : 1;
+  bool          buttonpressed : 1;
+  bool          buttonreleased : 1;
 } uikey_t;
 
 static gboolean uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static gboolean uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata);
+static gboolean uiScrollCallback (GtkWidget *w, GdkEventScroll *event, gpointer udata);
 
 uiwcont_t *
 uiKeyAlloc (void)
@@ -64,9 +67,12 @@ uiKeyAlloc (void)
   uiwidget = uiwcontAlloc ();
 
   uikey = mdmalloc (sizeof (uikey_t));
-  uikey->presscb = NULL;
-  uikey->releasecb = NULL;
-  uikey->eventtype = KEY_EVENT_NONE;
+  uikey->keypresscb = NULL;
+  uikey->keyreleasecb = NULL;
+  uikey->buttonpresscb = NULL;
+  uikey->buttonreleasecb = NULL;
+  uikey->scrollcb = NULL;
+  uikey->eventtype = EVENT_NONE;
   uikey->controlpressed = false;
   uikey->shiftpressed = false;
   uikey->altpressed = false;
@@ -74,6 +80,8 @@ uiKeyAlloc (void)
   uikey->superpressed = false;
   uikey->hyperpressed = false;
   uikey->ismaskedkey = false;
+  uikey->buttonpressed = false;
+  uikey->buttonreleased = false;
 
   uiwidget->wbasetype = WCONT_T_KEY;
   uiwidget->wtype = WCONT_T_KEY;
@@ -107,6 +115,7 @@ uiKeyCreateEventBox (uiwcont_t *uiwidgetp)
 
   widget = gtk_event_box_new ();
   gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->uidata.widget);
+  gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
   wcont = uiwcontAlloc ();
   wcont->wbasetype = WCONT_T_EVENT_BOX;
@@ -129,8 +138,11 @@ uiKeySetKeyCallback (uiwcont_t *uikeywidget,
 
   uikey = uikeywidget->uiint.uikey;
 
-  uikey->presscb = uicb;
-  uikey->releasecb = uicb;
+  uikey->keypresscb = uicb;
+  uikey->keyreleasecb = uicb;
+  /* usually, the key masks are already present */
+  gtk_widget_add_events (uiwidgetp->uidata.widget,
+      GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
       G_CALLBACK (uiKeyCallback), uikeywidget);
   g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
@@ -149,40 +161,76 @@ uiKeySetButtonCallback (uiwcont_t *uikeywidget,
 
   uikey = uikeywidget->uiint.uikey;
 
-  uikey->presscb = uicb;
-  uikey->releasecb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_BUTTON_PRESS_MASK);
-  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_BUTTON_RELEASE_MASK);
+  uikey->buttonpresscb = uicb;
+  uikey->buttonreleasecb = uicb;
+  gtk_widget_add_events (uiwidgetp->uidata.widget,
+      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_SCROLL_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
       G_CALLBACK (uiButtonCallback), uikeywidget);
   g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
       G_CALLBACK (uiButtonCallback), uikeywidget);
+  g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
+      G_CALLBACK (uiScrollCallback), uikeywidget);
 }
 
 bool
-uiKeyIsPressEvent (uiwcont_t *uiwidget)
+uiKeyIsKeyPressEvent (uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;
+  bool      rc = false;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-press")) {
-    return KEY_EVENT_NONE;
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-key-press")) {
+    return rc;
   }
 
   uikey = uiwidget->uiint.uikey;
-  return uikey->eventtype == KEY_EVENT_PRESS;
+  rc = uikey->eventtype == KEY_EVENT_PRESS;
+  return rc;
 }
 
 bool
-uiKeyIsReleaseEvent (uiwcont_t *uiwidget)
+uiKeyIsKeyReleaseEvent (uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;
+  bool      rc = false;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-release")) {
-    return KEY_EVENT_NONE;
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-key-release")) {
+    return rc;
   }
 
   uikey = uiwidget->uiint.uikey;
-  return uikey->eventtype == KEY_EVENT_RELEASE;
+  rc = uikey->eventtype == KEY_EVENT_RELEASE;
+  return rc;
+}
+
+bool
+uiKeyIsButtonPressEvent (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-press")) {
+    return rc;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+  rc = uikey->eventtype == BUTTON_EVENT_PRESS;
+  return rc;
+}
+
+bool
+uiKeyIsButtonReleaseEvent (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-release")) {
+    return rc;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+  rc = uikey->eventtype == BUTTON_EVENT_RELEASE;
+  return rc;
 }
 
 bool
@@ -519,18 +567,43 @@ uiKeyIsShiftPressed (uiwcont_t *uiwidget)
   return uikey->shiftpressed;
 }
 
+int
+uiKeyButtonPressed (uiwcont_t *uiwidget)
+{
+  uikey_t   *uikey;
+  int       rc = -1;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-button-pressed")) {
+    return rc;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+
+  if (! uikey->buttonpressed && ! uikey->buttonreleased) {
+    return rc;
+  }
+
+  rc = uikey->button;
+
+  return rc;
+}
+
 bool
-uiKeyButtonPressed (uiwcont_t *uiwidget, uint button)
+uiKeyCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)
 {
   uikey_t   *uikey;
   bool      rc = false;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-button-pressed")) {
+  if (! uiwcontValid (keywcont, WCONT_T_KEY, "key-button-pressed")) {
     return false;
   }
 
-  uikey = uiwidget->uiint.uikey;
-  if (uikey->keyval == button) {
+  uikey = keywcont->uiint.uikey;
+  if (! uikey->buttonpressed && ! uikey->buttonreleased) {
+    return rc;
+  }
+
+  if (uiwidget->uidata.widget == uikey->savewidget) {
     rc = true;
   }
 
@@ -548,12 +621,14 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   guint     ttype;
   int       rc = UICB_CONT;
   bool      skip = false;
+  GdkModifierType state;
+
+  uikey = uiwidget->uiint.uikey;
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
-  uikey = uiwidget->uiint.uikey;
   uikey->keyval = keyval;
 
-  uikey->eventtype = KEY_EVENT_NONE;
+  uikey->eventtype = EVENT_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_KEY_PRESS) {
     uikey->eventtype = KEY_EVENT_PRESS;
@@ -561,6 +636,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE) {
     uikey->eventtype = KEY_EVENT_RELEASE;
   }
+fprintf (stderr, "key: %d %d\n", uikey->eventtype, uikey->keyval);
 
   if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
@@ -570,6 +646,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = false;
+    skip = true;
   }
 
   if (ttype == GDK_KEY_PRESS &&
@@ -580,6 +657,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = false;
+    skip = true;
   }
 
   if (ttype == GDK_KEY_PRESS &&
@@ -590,6 +668,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R)) {
     uikey->altpressed = false;
+    skip = true;
   }
 
   if (ttype == GDK_KEY_PRESS &&
@@ -600,6 +679,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R)) {
     uikey->metapressed = false;
+    skip = true;
   }
 
   if (ttype == GDK_KEY_PRESS &&
@@ -610,6 +690,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Super_L || keyval == GDK_KEY_Super_R)) {
     uikey->superpressed = false;
+    skip = true;
   }
 
   if (ttype == GDK_KEY_PRESS &&
@@ -620,31 +701,37 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Hyper_L || keyval == GDK_KEY_Hyper_R)) {
     uikey->hyperpressed = false;
+    skip = true;
   }
 
   uikey->ismaskedkey = false;
   /* do not test for shift */
-  if (((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) ||
-      ((event->state & GDK_META_MASK) == GDK_META_MASK) ||
-      ((event->state & GDK_SUPER_MASK) == GDK_SUPER_MASK) ||
-      ((event->state & GDK_HYPER_MASK) == GDK_HYPER_MASK)) {
+  gdk_event_get_state ((GdkEvent *) event, &state);
+  if (((state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) ||
+      ((state & GDK_META_MASK) == GDK_META_MASK) ||
+      ((state & GDK_SUPER_MASK) == GDK_SUPER_MASK) ||
+      ((state & GDK_HYPER_MASK) == GDK_HYPER_MASK)) {
     uikey->ismaskedkey = true;
+    skip = true;
   }
 
   if (skip) {
-    /* a press of a mask key does not need */
+    /* a press or release of a mask key does not need */
     /* to be processed.  this key handler gets called twice, and processing */
     /* a mask key will cause issues with the callbacks */
+fprintf (stderr, "   skip\n");
     return rc;
   }
 
   if (ttype == GDK_KEY_PRESS &&
-      uikey->presscb != NULL) {
-    rc = callbackHandler (uikey->presscb);
+      uikey->keypresscb != NULL) {
+fprintf (stderr, "   call press-h\n");
+    rc = callbackHandler (uikey->keypresscb);
   }
   if (ttype == GDK_KEY_RELEASE &&
-      uikey->releasecb != NULL) {
-    rc = callbackHandler (uikey->releasecb);
+      uikey->keyreleasecb != NULL) {
+fprintf (stderr, "   call release-h\n");
+    rc = callbackHandler (uikey->keyreleasecb);
   }
 
   return rc;
@@ -663,10 +750,16 @@ uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
   uikey = uiwidget->uiint.uikey;
 
   gdk_event_get_button ((GdkEvent *) event, &button);
-  uikey->keyval = button;
+  uikey->button = button;
+  /* save the widget address for the check-widget function */
+  /* this is the only way to determine the row */
+  uikey->savewidget = w;
 
-  uikey->eventtype = KEY_EVENT_NONE;
+  uikey->eventtype = EVENT_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
+  if (ttype == GDK_SCROLL) {
+fprintf (stderr, "scroll\n");
+  }
   if (ttype == GDK_BUTTON_PRESS) {
     uikey->eventtype = BUTTON_EVENT_PRESS;
   }
@@ -676,6 +769,7 @@ uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
   if (ttype == GDK_BUTTON_RELEASE) {
     uikey->eventtype = BUTTON_EVENT_RELEASE;
   }
+fprintf (stderr, "button: %d %d\n", uikey->eventtype, uikey->button);
 
   if (skip) {
     /* a press of a mask key does not need */
@@ -684,15 +778,70 @@ uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
     return rc;
   }
 
+  uikey->buttonpressed = false;
+  uikey->buttonreleased = false;
+
   if ((ttype == GDK_BUTTON_PRESS ||
       ttype == GDK_2BUTTON_PRESS) &&
-      uikey->presscb != NULL) {
-    rc = callbackHandler (uikey->presscb);
+      uikey->buttonpresscb != NULL) {
+    uikey->buttonpressed = true;
+    rc = callbackHandler (uikey->buttonpresscb);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
-      uikey->releasecb != NULL) {
-    rc = callbackHandler (uikey->releasecb);
+      uikey->buttonreleasecb != NULL) {
+    uikey->buttonreleased = true;
+    rc = callbackHandler (uikey->buttonreleasecb);
   }
+
+  return rc;
+}
+
+static gboolean
+uiScrollCallback (GtkWidget *w, GdkEventScroll *event, gpointer udata)
+{
+  uiwcont_t *uiwidget = udata;
+  uikey_t   *uikey;
+  guint     ttype;
+  int       rc = UICB_CONT;
+  bool      skip = false;
+  double    x, y;
+  GdkScrollDirection dir;
+
+  uikey = uiwidget->uiint.uikey;
+
+  uikey->eventtype = EVENT_NONE;
+  ttype = gdk_event_get_event_type ((GdkEvent *) event);
+  if (ttype == GDK_SCROLL) {
+    gdk_event_get_coords ((GdkEvent *) event, &x, &y);
+fprintf (stderr, "scroll %.2f/%.2f\n", x, y);
+    gdk_event_get_root_coords ((GdkEvent *) event, &x, &y);
+fprintf (stderr, "  root %.2f/%.2f\n", x, y);
+    gdk_event_get_scroll_deltas ((GdkEvent *) event, &x, &y);
+fprintf (stderr, "  delta %.2f/%.2f\n", x, y);
+    gdk_event_get_scroll_direction ((GdkEvent *) event, &dir);
+fprintf (stderr, "  dir %d\n", dir);
+  }
+
+  if (skip) {
+    /* a press of a mask key does not need */
+    /* to be processed.  this key handler gets called twice, and processing */
+    /* a mask key will cause issues with the callbacks */
+    return rc;
+  }
+
+#if 0
+  if ((ttype == GDK_BUTTON_PRESS ||
+      ttype == GDK_2BUTTON_PRESS) &&
+      uikey->keypresscb != NULL) {
+    uikey->buttonpressed = true;
+    rc = callbackHandler (uikey->keypresscb);
+  }
+  if (ttype == GDK_BUTTON_RELEASE &&
+      uikey->keyreleasecb != NULL) {
+    uikey->buttonreleased = true;
+    rc = callbackHandler (uikey->keyreleasecb);
+  }
+#endif
 
   return rc;
 }

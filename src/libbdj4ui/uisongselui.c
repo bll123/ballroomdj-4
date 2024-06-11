@@ -1246,7 +1246,7 @@ uisongselKeyEvent (void *udata)
 
   ssint = uisongsel->ssInternalData;
 
-  if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
+  if (uiKeyIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
       uiKeyIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
     uisongselPlayCallback (uisongsel);
   }
@@ -1258,7 +1258,7 @@ uisongselKeyEvent (void *udata)
     dir = UISONGSEL_DIR_NONE;
     lines = 1;
 
-    if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+    if (uiKeyIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
       if (uiKeyIsUpKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
         dir = UISONGSEL_PREVIOUS;
       }

@@ -139,6 +139,16 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
 }
 
 void
+uiLabelSetMinWidth (uiwcont_t *uiwidget, int width)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-minw")) {
+    return;
+  }
+
+  gtk_label_set_width_chars (GTK_LABEL (uiwidget->uidata.widget), width);
+}
+
+void
 uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-maxw")) {
