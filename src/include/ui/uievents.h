@@ -19,6 +19,10 @@ enum {
   UIEVENT_BUTTON_5 = 5,
   UIEVENT_ENTER = true,
   UIEVENT_LEAVE = false,
+  UIEVENT_DIR_PREV = 0,
+  UIEVENT_DIR_NEXT = 1,
+  UIEVENT_DIR_LEFT = 2,
+  UIEVENT_DIR_RIGHT = 3,
 };
 
 uiwcont_t * uiEventAlloc (void);
@@ -32,6 +36,7 @@ int     uiEventEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyPressEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget);
 bool    uiEventIsButtonPressEvent (uiwcont_t *uiwidget);
+bool    uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget);
 bool    uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget);
 bool    uiEventIsMovementKey (uiwcont_t *uiwidget);
 bool    uiEventIsKey (uiwcont_t *uiwidget, unsigned char keyval);

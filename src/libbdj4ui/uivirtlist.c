@@ -114,7 +114,7 @@ static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
 static bool uivlButtonEvent (void *udata);
-static bool uivlScrollEvent (void *udata);
+static bool uivlScrollEvent (void *udata, long dir);
 static bool uivlEnterLeaveEvent (void *udata, long el);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
@@ -142,7 +142,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->keycb = callbackInit (uivlKeyEvent, vl, NULL);
   vl->clickcb = callbackInit (uivlButtonEvent, vl, NULL);
-  vl->scrollcb = callbackInit (uivlScrollEvent, vl, NULL);
+  vl->scrollcb = callbackInitLong (uivlScrollEvent, vl);
   vl->elcb = callbackInitLong (uivlEnterLeaveEvent, vl);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
@@ -163,6 +163,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_SB]);
   uiBoxPackEnd (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_SB]);
   vl->sbcb = callbackInitDouble (uivlScrollbarCallback, vl);
+  uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 4.0);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
+  uiScrollbarSetUpper (vl->wcont [VL_W_SB], 10.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->sbcb);
 
   vl->wcont [VL_W_FILLER] = uiCreateLabel ("");
@@ -581,6 +584,7 @@ uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
 
 /* processing */
 
+/* the initial display */
 void
 uivlDisplay (uivirtlist_t *vl)
 {
@@ -727,6 +731,10 @@ uivlScrollbarCallback (void *udata, double value)
   uivirtlist_t  *vl = udata;
   int32_t       start;
 
+  if (vl->inscroll) {
+    return UICB_STOP;
+  }
+
   start = (uint32_t) floor (value);
 
   uivlProcessScroll (vl, start);
@@ -855,9 +863,10 @@ uivlButtonEvent (void *udata)
 }
 
 static bool
-uivlScrollEvent (void *udata)
+uivlScrollEvent (void *udata, long dir)
 {
   uivirtlist_t  *vl = udata;
+  int32_t       start;
 
   if (vl == NULL) {
     return UICB_CONT;
@@ -866,7 +875,14 @@ uivlScrollEvent (void *udata)
     return UICB_CONT;
   }
 
-fprintf (stderr, "got scroll event\n");
+  start = vl->rowoffset;
+  if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
+    start -= 1;
+  }
+  if (dir == UIEVENT_DIR_NEXT || dir == UIEVENT_DIR_RIGHT) {
+    start += 1;
+  }
+  uivlProcessScroll (vl, start);
 
   return UICB_CONT;
 }
@@ -961,5 +977,6 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start)
 
   vl->rowoffset = start;
   uivlPopulate (vl);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) start);
   vl->inscroll = false;
 }

@@ -261,6 +261,21 @@ uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
 }
 
 bool
+uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
+{
+  uievent_t   *uievent;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-press")) {
+    return rc;
+  }
+
+  uievent = uiwidget->uiint.uievent;
+  rc = uievent->eventtype == EVENT_BUTTON_DOUBLE_PRESS;
+  return rc;
+}
+
+bool
 uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)
 {
   uievent_t   *uievent;
@@ -809,7 +824,6 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   if (ttype == GDK_BUTTON_RELEASE) {
     uievent->eventtype = EVENT_BUTTON_RELEASE;
   }
-fprintf (stderr, "button: %d %d\n", uievent->eventtype, uievent->button);
 
   if (uievent->eventtype == EVENT_NONE) {
     return rc;
@@ -844,47 +858,36 @@ static gboolean
 uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t   *uievent;
+  uievent_t *uievent;
   guint     ttype;
   int       rc = UICB_CONT;
-  bool      skip = false;
-  double    x, y;
-  GdkScrollDirection dir;
+  GdkScrollDirection gdir;
+  long      dir;
 
   uievent = uiwidget->uiint.uievent;
 
   uievent->eventtype = EVENT_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_SCROLL) {
-    gdk_event_get_coords ((GdkEvent *) event, &x, &y);
-fprintf (stderr, "scroll %.2f/%.2f\n", x, y);
-    gdk_event_get_root_coords ((GdkEvent *) event, &x, &y);
-fprintf (stderr, "  root %.2f/%.2f\n", x, y);
-    gdk_event_get_scroll_deltas ((GdkEvent *) event, &x, &y);
-fprintf (stderr, "  delta %.2f/%.2f\n", x, y);
-    gdk_event_get_scroll_direction ((GdkEvent *) event, &dir);
-fprintf (stderr, "  dir %d\n", dir);
+    uievent->eventtype = EVENT_SCROLL;
+    gdk_event_get_scroll_direction ((GdkEvent *) event, &gdir);
   }
 
   if (uievent->eventtype == EVENT_NONE) {
     return rc;
   }
 
-  if (skip) {
-    /* a press of a mask key does not need */
-    /* to be processed.  this key handler gets called twice, and processing */
-    /* a mask key will cause issues with the callbacks */
-    return rc;
+  switch (gdir) {
+    case GDK_SCROLL_UP:     { dir = UIEVENT_DIR_PREV; break; }
+    case GDK_SCROLL_DOWN:   { dir = UIEVENT_DIR_NEXT; break; }
+    case GDK_SCROLL_LEFT:   { dir = UIEVENT_DIR_LEFT; break; }
+    case GDK_SCROLL_RIGHT:  { dir = UIEVENT_DIR_RIGHT; break; }
+    default:                { dir = UIEVENT_DIR_PREV; break; }
   }
 
-  if ((ttype == GDK_BUTTON_PRESS ||
-      ttype == GDK_2BUTTON_PRESS) &&
+  if (ttype == GDK_SCROLL &&
       uievent->scrollcb != NULL) {
-    rc = callbackHandler (uievent->scrollcb);
-  }
-  if (ttype == GDK_BUTTON_RELEASE &&
-      uievent->keyreleasecb != NULL) {
-    rc = callbackHandler (uievent->scrollcb);
+    rc = callbackHandlerLong (uievent->scrollcb, dir);
   }
 
   return rc;
