@@ -27,23 +27,33 @@ enum {
   KEY_EVENT_NONE,
   KEY_EVENT_PRESS,
   KEY_EVENT_RELEASE,
+  BUTTON_EVENT_PRESS,
+  BUTTON_EVENT_DOUBLE_PRESS,
+  BUTTON_EVENT_RELEASE,
 };
 
 typedef struct uikey {
   callback_t    *presscb;
   callback_t    *releasecb;
   int           eventtype;
-  bool          controlpressed;
-  bool          shiftpressed;
-  bool          altpressed;
-  bool          metapressed;
-  bool          superpressed;
-  bool          hyperpressed;
-  bool          ismaskedkey;
   guint         keyval;
+  bool          controlpressed : 1;
+  bool          shiftpressed : 1;
+  bool          altpressed : 1;
+  bool          metapressed : 1;
+  bool          superpressed : 1;
+  bool          hyperpressed : 1;
+  bool          ismaskedkey : 1;
+  bool          button1press : 1;
+  bool          button1release : 1;
+  bool          button2press : 1;
+  bool          button2release : 1;
+  bool          button3press : 1;
+  bool          button3release : 1;
 } uikey_t;
 
 static gboolean uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static gboolean uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata);
 
 uiwcont_t *
 uiKeyAlloc (void)
@@ -89,6 +99,24 @@ uiKeyFree (uiwcont_t *uiwidget)
   /* the container is freed by uiwcontFree() */
 }
 
+uiwcont_t *
+uiKeyCreateEventBox (uiwcont_t *uiwidgetp)
+{
+  GtkWidget *widget;
+  uiwcont_t *wcont;
+
+  widget = gtk_event_box_new ();
+  gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->uidata.widget);
+
+  wcont = uiwcontAlloc ();
+  wcont->wbasetype = WCONT_T_EVENT_BOX;
+  wcont->wtype = WCONT_T_EVENT_BOX;
+  wcont->uidata.widget = widget;
+  wcont->uidata.packwidget = widget;
+
+  return wcont;
+}
+
 void
 uiKeySetKeyCallback (uiwcont_t *uikeywidget,
     uiwcont_t *uiwidgetp, callback_t *uicb)
@@ -109,6 +137,28 @@ uiKeySetKeyCallback (uiwcont_t *uikeywidget,
       G_CALLBACK (uiKeyCallback), uikeywidget);
 }
 
+void
+uiKeySetButtonCallback (uiwcont_t *uikeywidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  uikey_t   *uikey;
+
+  if (! uiwcontValid (uikeywidget, WCONT_T_KEY, "key-set-button-cb")) {
+    return;
+  }
+
+  uikey = uikeywidget->uiint.uikey;
+
+  uikey->presscb = uicb;
+  uikey->releasecb = uicb;
+  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_BUTTON_PRESS_MASK);
+  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_BUTTON_RELEASE_MASK);
+  g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
+      G_CALLBACK (uiButtonCallback), uikeywidget);
+  g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
+      G_CALLBACK (uiButtonCallback), uikeywidget);
+}
+
 bool
 uiKeyIsPressEvent (uiwcont_t *uiwidget)
 {
@@ -117,7 +167,6 @@ uiKeyIsPressEvent (uiwcont_t *uiwidget)
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-press")) {
     return KEY_EVENT_NONE;
   }
-
 
   uikey = uiwidget->uiint.uikey;
   return uikey->eventtype == KEY_EVENT_PRESS;
@@ -470,6 +519,24 @@ uiKeyIsShiftPressed (uiwcont_t *uiwidget)
   return uikey->shiftpressed;
 }
 
+bool
+uiKeyButtonPressed (uiwcont_t *uiwidget, uint button)
+{
+  uikey_t   *uikey;
+  bool      rc = false;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-button-pressed")) {
+    return false;
+  }
+
+  uikey = uiwidget->uiint.uikey;
+  if (uikey->keyval == button) {
+    rc = true;
+  }
+
+  return rc;
+}
+
 /* internal routines */
 
 static gboolean
@@ -478,6 +545,7 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   uiwcont_t *uiwidget = udata;
   uikey_t   *uikey;
   guint     keyval;
+  guint     ttype;
   int       rc = UICB_CONT;
   bool      skip = false;
 
@@ -486,69 +554,70 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   uikey->keyval = keyval;
 
   uikey->eventtype = KEY_EVENT_NONE;
-  if (event->type == GDK_KEY_PRESS) {
+  ttype = gdk_event_get_event_type ((GdkEvent *) event);
+  if (ttype == GDK_KEY_PRESS) {
     uikey->eventtype = KEY_EVENT_PRESS;
   }
-  if (event->type == GDK_KEY_RELEASE) {
+  if (ttype == GDK_KEY_RELEASE) {
     uikey->eventtype = KEY_EVENT_RELEASE;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = false;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = false;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R)) {
     uikey->altpressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R)) {
     uikey->altpressed = false;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R)) {
     uikey->metapressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R)) {
     uikey->metapressed = false;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Super_L || keyval == GDK_KEY_Super_R)) {
     uikey->superpressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Super_L || keyval == GDK_KEY_Super_R)) {
     uikey->superpressed = false;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Hyper_L || keyval == GDK_KEY_Hyper_R)) {
     uikey->hyperpressed = true;
     skip = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
       (keyval == GDK_KEY_Hyper_L || keyval == GDK_KEY_Hyper_R)) {
     uikey->hyperpressed = false;
   }
@@ -569,11 +638,58 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
     return rc;
   }
 
-  if (event->type == GDK_KEY_PRESS &&
+  if (ttype == GDK_KEY_PRESS &&
       uikey->presscb != NULL) {
     rc = callbackHandler (uikey->presscb);
   }
-  if (event->type == GDK_KEY_RELEASE &&
+  if (ttype == GDK_KEY_RELEASE &&
+      uikey->releasecb != NULL) {
+    rc = callbackHandler (uikey->releasecb);
+  }
+
+  return rc;
+}
+
+static gboolean
+uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
+{
+  uiwcont_t *uiwidget = udata;
+  uikey_t   *uikey;
+  guint     button;
+  guint     ttype;
+  int       rc = UICB_CONT;
+  bool      skip = false;
+
+  uikey = uiwidget->uiint.uikey;
+
+  gdk_event_get_button ((GdkEvent *) event, &button);
+  uikey->keyval = button;
+
+  uikey->eventtype = KEY_EVENT_NONE;
+  ttype = gdk_event_get_event_type ((GdkEvent *) event);
+  if (ttype == GDK_BUTTON_PRESS) {
+    uikey->eventtype = BUTTON_EVENT_PRESS;
+  }
+  if (ttype == GDK_2BUTTON_PRESS) {
+    uikey->eventtype = BUTTON_EVENT_DOUBLE_PRESS;
+  }
+  if (ttype == GDK_BUTTON_RELEASE) {
+    uikey->eventtype = BUTTON_EVENT_RELEASE;
+  }
+
+  if (skip) {
+    /* a press of a mask key does not need */
+    /* to be processed.  this key handler gets called twice, and processing */
+    /* a mask key will cause issues with the callbacks */
+    return rc;
+  }
+
+  if ((ttype == GDK_BUTTON_PRESS ||
+      ttype == GDK_2BUTTON_PRESS) &&
+      uikey->presscb != NULL) {
+    rc = callbackHandler (uikey->presscb);
+  }
+  if (ttype == GDK_BUTTON_RELEASE &&
       uikey->releasecb != NULL) {
     rc = callbackHandler (uikey->releasecb);
   }

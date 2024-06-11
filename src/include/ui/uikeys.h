@@ -13,7 +13,9 @@ extern "C" {
 
 uiwcont_t * uiKeyAlloc (void);
 void    uiKeyFree (uiwcont_t *uiwidget);
+uiwcont_t * uiKeyCreateEventBox (uiwcont_t *uiwidgetp);
 void    uiKeySetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
+void    uiKeySetButtonCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 int     uiKeyEvent (uiwcont_t *uiwidget);
 bool    uiKeyIsPressEvent (uiwcont_t *uiwidget);
 bool    uiKeyIsReleaseEvent (uiwcont_t *uiwidget);
@@ -33,6 +35,7 @@ bool    uiKeyIsMaskedKey (uiwcont_t *uiwidget);
 bool    uiKeyIsAltPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsControlPressed (uiwcont_t *uiwidget);
 bool    uiKeyIsShiftPressed (uiwcont_t *uiwidget);
+bool    uiKeyButtonPressed (uiwcont_t *uiwidget, uint button);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

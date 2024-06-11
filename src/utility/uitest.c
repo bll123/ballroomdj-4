@@ -1042,6 +1042,7 @@ uitestUIVirtList (uitest_t *uitest)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetExpandVert (vbox);
 
   uiwidgetp = uiCreateLabel ("Virtual List");
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);

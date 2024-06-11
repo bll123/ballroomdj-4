@@ -58,6 +58,7 @@ typedef enum {
   /* base type for check-box, radio-button */
   WCONT_T_TOGGLE_BUTTON,
   WCONT_T_TREE,
+  WCONT_T_EVENT_BOX,
   WCONT_T_UNKNOWN,
   /* base type for scroll-window, dialog-window, paned-window */
   WCONT_T_WINDOW,
