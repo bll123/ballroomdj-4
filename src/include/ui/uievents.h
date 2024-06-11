@@ -12,11 +12,13 @@ extern "C" {
 #include "uiwcont.h"
 
 enum {
-  UIKEY_BUTTON_1 = 1,
-  UIKEY_BUTTON_2 = 2,
-  UIKEY_BUTTON_3 = 3,
-  UIKEY_BUTTON_4 = 4,
-  UIKEY_BUTTON_5 = 5,
+  UIEVENT_BUTTON_1 = 1,
+  UIEVENT_BUTTON_2 = 2,
+  UIEVENT_BUTTON_3 = 3,
+  UIEVENT_BUTTON_4 = 4,
+  UIEVENT_BUTTON_5 = 5,
+  UIEVENT_ENTER = true,
+  UIEVENT_LEAVE = false,
 };
 
 uiwcont_t * uiEventAlloc (void);
@@ -24,6 +26,8 @@ void    uiEventFree (uiwcont_t *uiwidget);
 uiwcont_t * uiEventCreateEventBox (uiwcont_t *uiwidgetp);
 void    uiEventSetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 void    uiEventSetButtonCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
+void    uiEventSetScrollCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
+void    uiEventSetEnterLeaveCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 int     uiEventEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyPressEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget);

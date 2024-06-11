@@ -85,6 +85,8 @@ typedef struct uivirtlist {
   callback_t    *sbcb;
   callback_t    *keycb;
   callback_t    *clickcb;
+  callback_t    *scrollcb;
+  callback_t    *elcb;
   int           numcols;
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
@@ -112,6 +114,8 @@ static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
 static bool uivlButtonEvent (void *udata);
+static bool uivlScrollEvent (void *udata);
+static bool uivlEnterLeaveEvent (void *udata, long el);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
@@ -138,6 +142,8 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->keycb = callbackInit (uivlKeyEvent, vl, NULL);
   vl->clickcb = callbackInit (uivlButtonEvent, vl, NULL);
+  vl->scrollcb = callbackInit (uivlScrollEvent, vl, NULL);
+  vl->elcb = callbackInitLong (uivlEnterLeaveEvent, vl);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_HEADBOX]);
@@ -705,6 +711,13 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   row->eventbox = uiEventCreateEventBox (row->hbox);
   uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX], vl->keycb);
   uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
+// ### fix
+  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->scrollcb);
+  /* the vbox does not receive an enter/leave event */
+  /* (as it is overlaid presumably) */
+  /* set the enter/leave on the row event-boxes, and the handler */
+  /* grabs the focus on to the vbox for the keyboard events */
+  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->elcb);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->eventbox);
 }
 
@@ -752,16 +765,13 @@ uivlKeyEvent (void *udata)
     return UICB_CONT;
   }
 
-fprintf (stderr, "got key event\n");
   if (uiEventIsMovementKey (vl->wcont [VL_W_KEYH])) {
     int32_t     start;
     int32_t     offset = 1;
 
-fprintf (stderr, "   is move\n");
     start = vl->rowoffset;
 
     if (uiEventIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
-fprintf (stderr, "   is press\n");
       if (uiEventIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
         offset = vl->disprows;
       }
@@ -801,18 +811,17 @@ uivlButtonEvent (void *udata)
   }
 
   button = uiEventButtonPressed (vl->wcont [VL_W_KEYH]);
-fprintf (stderr, "  button %d\n", button);
 
   /* button 4 and 5 cause a single scroll event */
-  if (button == UIKEY_BUTTON_4 || button == UIKEY_BUTTON_5) {
+  if (button == UIEVENT_BUTTON_4 || button == UIEVENT_BUTTON_5) {
     int32_t     start;
 
     start = vl->rowoffset;
 
-    if (button == UIKEY_BUTTON_4) {
+    if (button == UIEVENT_BUTTON_4) {
       start -= 1;
     }
-    if (button == UIKEY_BUTTON_5) {
+    if (button == UIEVENT_BUTTON_5) {
       start += 1;
     }
 
@@ -830,9 +839,6 @@ fprintf (stderr, "  button %d\n", button);
     }
   }
 
-fprintf (stderr, "  control-pressed %d\n", uiEventIsControlPressed (vl->wcont [VL_W_KEYH]));
-fprintf (stderr, "  shift-pressed %d\n", uiEventIsShiftPressed (vl->wcont [VL_W_KEYH]));
-
   if (rownum < 0) {
     /* not found */
     return UICB_CONT;
@@ -845,6 +851,34 @@ fprintf (stderr, "  shift-pressed %d\n", uiEventIsShiftPressed (vl->wcont [VL_W_
   uivlAddSelection (vl, rownum);
   uivlSetDisplaySelections (vl);
 
+  return UICB_CONT;
+}
+
+static bool
+uivlScrollEvent (void *udata)
+{
+  uivirtlist_t  *vl = udata;
+
+  if (vl == NULL) {
+    return UICB_CONT;
+  }
+  if (vl->inscroll) {
+    return UICB_CONT;
+  }
+
+fprintf (stderr, "got scroll event\n");
+
+  return UICB_CONT;
+}
+
+static bool
+uivlEnterLeaveEvent (void *udata, long el)
+{
+  uivirtlist_t  *vl = udata;
+
+  if (el == UIEVENT_ENTER) {
+    uiWidgetGrabFocus (vl->wcont [VL_W_VBOX]);
+  }
   return UICB_CONT;
 }
 

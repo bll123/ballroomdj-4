@@ -196,6 +196,7 @@ uiWidgetEnableFocus (uiwcont_t *uiwidget)
   }
 
   gtk_widget_set_can_focus (uiwidget->uidata.widget, TRUE);
+  gtk_widget_set_focus_on_click (uiwidget->uidata.widget, TRUE);
 }
 
 void

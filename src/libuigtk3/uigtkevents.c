@@ -31,6 +31,8 @@ enum {
   EVENT_BUTTON_DOUBLE_PRESS,
   EVENT_BUTTON_RELEASE,
   EVENT_SCROLL,
+  EVENT_ENTER,
+  EVENT_LEAVE,
 };
 
 typedef struct uievent {
@@ -39,6 +41,7 @@ typedef struct uievent {
   callback_t    *buttonpresscb;
   callback_t    *buttonreleasecb;
   callback_t    *scrollcb;
+  callback_t    *elcb;
   int           eventtype;
   guint         keyval;
   guint         button;
@@ -54,9 +57,10 @@ typedef struct uievent {
   bool          buttonreleased : 1;
 } uievent_t;
 
-static gboolean uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
-static gboolean uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata);
-static gboolean uiScrollCallback (GtkWidget *w, GdkEventScroll *event, gpointer udata);
+static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata);
+static gboolean uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata);
+static gboolean uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
 
 uiwcont_t *
 uiEventAlloc (void)
@@ -72,6 +76,7 @@ uiEventAlloc (void)
   uievent->buttonpresscb = NULL;
   uievent->buttonreleasecb = NULL;
   uievent->scrollcb = NULL;
+  uievent->elcb = NULL;
   uievent->eventtype = EVENT_NONE;
   uievent->controlpressed = false;
   uievent->shiftpressed = false;
@@ -144,9 +149,9 @@ uiEventSetKeyCallback (uiwcont_t *uieventwidget,
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
-      G_CALLBACK (uiKeyCallback), uieventwidget);
+      G_CALLBACK (uiEventKeyHandler), uieventwidget);
   g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
-      G_CALLBACK (uiKeyCallback), uieventwidget);
+      G_CALLBACK (uiEventKeyHandler), uieventwidget);
 }
 
 void
@@ -164,13 +169,50 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
   uievent->buttonpresscb = uicb;
   uievent->buttonreleasecb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
-      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_SCROLL_MASK);
+      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
-      G_CALLBACK (uiButtonCallback), uieventwidget);
+      G_CALLBACK (uiEventButtonHandler), uieventwidget);
   g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
-      G_CALLBACK (uiButtonCallback), uieventwidget);
+      G_CALLBACK (uiEventButtonHandler), uieventwidget);
+}
+
+void
+uiEventSetScrollCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  uievent_t   *uievent;
+
+  if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-scroll-cb")) {
+    return;
+  }
+
+  uievent = uieventwidget->uiint.uievent;
+
+  uievent->scrollcb = uicb;
+  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_SCROLL_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
-      G_CALLBACK (uiScrollCallback), uieventwidget);
+      G_CALLBACK (uiEventScrollHandler), uieventwidget);
+}
+
+void
+uiEventSetEnterLeaveCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  uievent_t   *uievent;
+
+  if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-scroll-cb")) {
+    return;
+  }
+
+  uievent = uieventwidget->uiint.uievent;
+
+  uievent->elcb = uicb;
+  gtk_widget_add_events (uiwidgetp->uidata.widget,
+       GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+  g_signal_connect (uiwidgetp->uidata.widget, "enter-notify-event",
+      G_CALLBACK (uiEventEnterLeaveHandler), uieventwidget);
+  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
+      G_CALLBACK (uiEventEnterLeaveHandler), uieventwidget);
 }
 
 bool
@@ -613,7 +655,7 @@ uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)
 /* internal routines */
 
 static gboolean
-uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
+uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
   uievent_t   *uievent;
@@ -637,6 +679,10 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
     uievent->eventtype = EVENT_KEY_RELEASE;
   }
 fprintf (stderr, "key: %d %d\n", uievent->eventtype, uievent->keyval);
+
+  if (uievent->eventtype == EVENT_NONE) {
+    return rc;
+  }
 
   if (ttype == GDK_KEY_PRESS &&
       (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
@@ -719,18 +765,15 @@ fprintf (stderr, "key: %d %d\n", uievent->eventtype, uievent->keyval);
     /* a press or release of a mask key does not need */
     /* to be processed.  this key handler gets called twice, and processing */
     /* a mask key will cause issues with the callbacks */
-fprintf (stderr, "   skip\n");
     return rc;
   }
 
   if (ttype == GDK_KEY_PRESS &&
       uievent->keypresscb != NULL) {
-fprintf (stderr, "   call press-h\n");
     rc = callbackHandler (uievent->keypresscb);
   }
   if (ttype == GDK_KEY_RELEASE &&
       uievent->keyreleasecb != NULL) {
-fprintf (stderr, "   call release-h\n");
     rc = callbackHandler (uievent->keyreleasecb);
   }
 
@@ -738,7 +781,7 @@ fprintf (stderr, "   call release-h\n");
 }
 
 static gboolean
-uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
+uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
   uievent_t   *uievent;
@@ -757,9 +800,6 @@ uiButtonCallback (GtkWidget *w, GdkEventButton *event, gpointer udata)
 
   uievent->eventtype = EVENT_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
-  if (ttype == GDK_SCROLL) {
-fprintf (stderr, "scroll\n");
-  }
   if (ttype == GDK_BUTTON_PRESS) {
     uievent->eventtype = EVENT_BUTTON_PRESS;
   }
@@ -770,6 +810,10 @@ fprintf (stderr, "scroll\n");
     uievent->eventtype = EVENT_BUTTON_RELEASE;
   }
 fprintf (stderr, "button: %d %d\n", uievent->eventtype, uievent->button);
+
+  if (uievent->eventtype == EVENT_NONE) {
+    return rc;
+  }
 
   if (skip) {
     /* a press of a mask key does not need */
@@ -797,7 +841,7 @@ fprintf (stderr, "button: %d %d\n", uievent->eventtype, uievent->button);
 }
 
 static gboolean
-uiScrollCallback (GtkWidget *w, GdkEventScroll *event, gpointer udata)
+uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
   uievent_t   *uievent;
@@ -822,6 +866,10 @@ fprintf (stderr, "  delta %.2f/%.2f\n", x, y);
 fprintf (stderr, "  dir %d\n", dir);
   }
 
+  if (uievent->eventtype == EVENT_NONE) {
+    return rc;
+  }
+
   if (skip) {
     /* a press of a mask key does not need */
     /* to be processed.  this key handler gets called twice, and processing */
@@ -829,19 +877,50 @@ fprintf (stderr, "  dir %d\n", dir);
     return rc;
   }
 
-#if 0
   if ((ttype == GDK_BUTTON_PRESS ||
       ttype == GDK_2BUTTON_PRESS) &&
-      uievent->keypresscb != NULL) {
-    uievent->buttonpressed = true;
-    rc = callbackHandler (uievent->keypresscb);
+      uievent->scrollcb != NULL) {
+    rc = callbackHandler (uievent->scrollcb);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
       uievent->keyreleasecb != NULL) {
-    uievent->buttonreleased = true;
-    rc = callbackHandler (uievent->keyreleasecb);
+    rc = callbackHandler (uievent->scrollcb);
   }
-#endif
+
+  return rc;
+}
+
+static gboolean
+uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
+{
+  uiwcont_t *uiwidget = udata;
+  uievent_t   *uievent;
+  guint     ttype;
+  int       rc = UICB_CONT;
+  long      el = UIEVENT_LEAVE;
+
+  uievent = uiwidget->uiint.uievent;
+
+  uievent->eventtype = EVENT_NONE;
+  ttype = gdk_event_get_event_type ((GdkEvent *) event);
+  if (ttype == GDK_ENTER_NOTIFY) {
+    uievent->eventtype = EVENT_ENTER;
+    el = UIEVENT_ENTER;
+  }
+  if (ttype == GDK_LEAVE_NOTIFY) {
+    uievent->eventtype = EVENT_LEAVE;
+    el = UIEVENT_LEAVE;
+  }
+
+  if (uievent->eventtype == EVENT_NONE) {
+    return rc;
+  }
+
+  if ((ttype == GDK_ENTER_NOTIFY ||
+      ttype == GDK_LEAVE_NOTIFY) &&
+      uievent->elcb != NULL) {
+    rc = callbackHandlerLong (uievent->elcb, el);
+  }
 
   return rc;
 }
