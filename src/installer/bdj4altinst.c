@@ -5,8 +5,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -1153,7 +1154,7 @@ altinstFinalize (altinst_t *altinst)
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
-    fprintf (fh, "%u\n", baseport);
+    fprintf (fh, "%" PRIu32 "\n", baseport);
     mdextfclose (fh);
     fclose (fh);
   }

@@ -492,7 +492,7 @@ dbupdateProcessing (void *udata)
         dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);
         logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
             dbupdate->processmusicdir, (int64_t) mstimeend (&dbupdate->starttm));
-        logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "  %" PRId32 " files found", dbupdate->counts [C_FILE_COUNT]);
       }
     }
 
@@ -501,7 +501,7 @@ dbupdateProcessing (void *udata)
       dbupdate->counts [C_FILE_COUNT] = dbCount (dbupdate->musicdb);
       logMsg (LOG_DBG, LOG_IMPORTANT, "prep: %" PRId64 " ms",
           (int64_t) mstimeend (&dbupdate->starttm));
-      logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "  %" PRId32 " files found", dbupdate->counts [C_FILE_COUNT]);
     }
 
     /* message to manageui */
@@ -620,7 +620,7 @@ dbupdateProcessing (void *udata)
           }
 
           dbupdateIncCount (dbupdate, C_IN_DB);
-          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%" PRId32 ") ", dbupdate->counts [C_IN_DB]);
 
           /* if doing a checknew, no need for further processing */
           /* if doing a compact, the information must be written to */
@@ -653,7 +653,7 @@ dbupdateProcessing (void *udata)
       if (regexMatch (dbupdate->badfnregex, fn)) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
         dbupdateIncCount (dbupdate, C_BAD);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%u) ", dbupdate->counts [C_BAD]);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%" PRId32 ") ", dbupdate->counts [C_BAD]);
 
         continue;
       }
@@ -667,8 +667,8 @@ dbupdateProcessing (void *udata)
     }
 
     if (fn == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%u)", dbupdate->counts [C_FILE_SKIPPED]);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %" PRId64 " ms",
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%" PRId32 ")", dbupdate->counts [C_FILE_SKIPPED]);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%" PRId32 "): %" PRId64 " ms",
           dbupdate->counts [C_FILE_QUEUED], (int64_t) mstimeend (&dbupdate->starttm));
       dbupdate->state = DB_UPD_PROCESS;
     }
@@ -679,7 +679,7 @@ dbupdateProcessing (void *udata)
     dbupdateProcessFileQueue (dbupdate);
     dbupdateOutputProgress (dbupdate);
 
-    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
+    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %" PRId32 "+%" PRId32 "(%" PRId32 ") >= %" PRId32 "",
         dbupdate->counts [C_FILE_PROC],
         dbupdate->counts [C_FILE_SKIPPED],
         dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED],
@@ -696,7 +696,7 @@ dbupdateProcessing (void *udata)
         }
         if (dbupdate->verbose) {
           fprintf (stdout,
-              "found %u skip %u indb %u new %u updated %u renamed %u norename %u notaudio %u writetag %u\n",
+              "found %" PRId32 " skip %" PRId32 " indb %" PRId32 " new %" PRId32 " updated %" PRId32 " renamed %" PRId32 " norename %" PRId32 " notaudio %" PRId32 " writetag %" PRId32 "\n",
               dbupdate->counts [C_FILE_COUNT],
               dbupdate->counts [C_FILE_SKIPPED],
               dbupdate->counts [C_IN_DB],
@@ -743,34 +743,34 @@ dbupdateProcessing (void *udata)
     dbupdateOutputProgress (dbupdate);
 
     /* CONTEXT: database update: status message: total number of files found */
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Total Files"), dbupdate->counts [C_FILE_COUNT]);
+    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Total Files"), dbupdate->counts [C_FILE_COUNT]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     if (! dbupdate->rebuild) {
       /* CONTEXT: database update: status message: files found in the database */
-      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->counts [C_IN_DB]);
+      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Loaded from Database"), dbupdate->counts [C_IN_DB]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
 
     /* CONTEXT: database update: status message: new files saved to the database */
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->counts [C_NEW]);
+    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("New Files"), dbupdate->counts [C_NEW]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     if (! dbupdate->rebuild && ! dbupdate->writetags) {
       /* CONTEXT: database update: status message: number of files updated in the database */
-      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_UPDATED]);
+      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Updated"), dbupdate->counts [C_UPDATED]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
 
     if (dbupdate->reorganize || dbupdate->checknew || dbupdate->rebuild) {
       if (dbupdate->counts [C_RENAMED] > 0) {
         /* CONTEXT: database update: status message: number of files renamed */
-        snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Renamed"), dbupdate->counts [C_RENAMED]);
+        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Renamed"), dbupdate->counts [C_RENAMED]);
         connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
       }
       if (dbupdate->counts [C_CANNOT_RENAME] > 0) {
         /* CONTEXT: database update: status message: number of files that cannot be renamed */
-        snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Cannot Rename"), dbupdate->counts [C_CANNOT_RENAME]);
+        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Cannot Rename"), dbupdate->counts [C_CANNOT_RENAME]);
         connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
       }
     }
@@ -778,12 +778,12 @@ dbupdateProcessing (void *udata)
     if (dbupdate->writetags) {
       /* re-use the 'Updated' label for write-tags */
       /* CONTEXT: database update: status message: number of files updated */
-      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_WRITE_TAGS]);
+      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Updated"), dbupdate->counts [C_WRITE_TAGS]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
 
     /* CONTEXT: database update: status message: other files that cannot be processed */
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
+    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Other Files"),
         dbupdate->counts [C_BAD] + dbupdate->counts [C_NULL_DATA] +
         dbupdate->counts [C_NO_TAGS] + dbupdate->counts [C_NON_AUDIO] +
         dbupdate->counts [C_BDJ_OLD_DIR] + dbupdate->counts [C_DEL_SKIP]);
@@ -801,24 +801,24 @@ dbupdateProcessing (void *udata)
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %" PRId64 " ms stop-req: %d",
         (int64_t) mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "   queued: %u", dbupdate->counts [C_FILE_QUEUED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->counts [C_FILE_PROC]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "queue-max: %u", dbupdate->counts [C_QUEUE_MAX]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->counts [C_IN_DB]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->counts [C_NEW]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->counts [C_UPDATED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  renamed: %u", dbupdate->counts [C_RENAMED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "no rename: %u", dbupdate->counts [C_CANNOT_RENAME]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %u", dbupdate->counts [C_WRITE_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->counts [C_BAD]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->counts [C_NULL_DATA]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->counts [C_NO_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->counts [C_NON_AUDIO]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %u", dbupdate->counts [C_ORIG_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %u", dbupdate->counts [C_DEL_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %" PRId32 "", dbupdate->counts [C_FILE_COUNT]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %" PRId32 "", dbupdate->counts [C_FILE_SKIPPED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "   queued: %" PRId32 "", dbupdate->counts [C_FILE_QUEUED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %" PRId32 "", dbupdate->counts [C_FILE_PROC]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "queue-max: %" PRId32 "", dbupdate->counts [C_QUEUE_MAX]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %" PRId32 "", dbupdate->counts [C_IN_DB]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %" PRId32 "", dbupdate->counts [C_NEW]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %" PRId32 "", dbupdate->counts [C_UPDATED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  renamed: %" PRId32 "", dbupdate->counts [C_RENAMED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "no rename: %" PRId32 "", dbupdate->counts [C_CANNOT_RENAME]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %" PRId32 "", dbupdate->counts [C_WRITE_TAGS]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %" PRId32 "", dbupdate->counts [C_BAD]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %" PRId32 "", dbupdate->counts [C_NULL_DATA]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %" PRId32 "", dbupdate->counts [C_NO_TAGS]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %" PRId32 "", dbupdate->counts [C_NON_AUDIO]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %" PRId32 "", dbupdate->counts [C_ORIG_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %" PRId32 "", dbupdate->counts [C_DEL_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %" PRId32 "", dbupdate->counts [C_BDJ_OLD_DIR]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %" PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
@@ -1378,7 +1378,7 @@ dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
   if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {
     dbupdateIncCount (dbupdate, C_BAD);
     dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  bad-null (%u) ", dbupdate->counts [C_BAD]);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  bad-null (%" PRId32 ") ", dbupdate->counts [C_BAD]);
   } else if ((*songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
     dbupdateIncCount (dbupdate, C_RENAMED);
   } else if ((*songdbflags & SONGDB_RET_REN_FILE_EXISTS) == SONGDB_RET_REN_FILE_EXISTS) {
