@@ -190,12 +190,12 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl->disprows = disprows;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * disprows);
-  for (int i = 0; i < disprows; ++i) {
-    vl->rows [i].ident = VL_IDENT_ROW;
-    vl->rows [i].eventbox = NULL;
-    vl->rows [i].hbox = NULL;
-    vl->rows [i].cols = NULL;
-    vl->rows [i].initialized = false;
+  for (int dispidx = 0; dispidx < disprows; ++dispidx) {
+    vl->rows [dispidx].ident = VL_IDENT_ROW;
+    vl->rows [dispidx].eventbox = NULL;
+    vl->rows [dispidx].hbox = NULL;
+    vl->rows [dispidx].cols = NULL;
+    vl->rows [dispidx].initialized = false;
   }
 
   vl->headingrow.ident = VL_IDENT_ROW;
@@ -218,13 +218,13 @@ uivlFree (uivirtlist_t *vl)
 
   uivlFreeRow (vl, &vl->headingrow);
 
-  for (int i = 0; i < vl->disprows; ++i) {
-    uivlFreeRow (vl, &vl->rows [i]);
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+    uivlFreeRow (vl, &vl->rows [dispidx]);
   }
   dataFree (vl->rows);
 
-  for (int i = 0; i < vl->numcols; ++i) {
-    uiwcontFree (vl->coldata [i].szgrp);
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    uiwcontFree (vl->coldata [colidx].szgrp);
   }
   dataFree (vl->coldata);
 
@@ -258,14 +258,14 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
 
   vl->numcols = numcols;
   vl->coldata = mdmalloc (sizeof (uivlcoldata_t) * numcols);
-  for (int i = 0; i < numcols; ++i) {
-    vl->coldata [i].szgrp = uiCreateSizeGroupHoriz ();
-    vl->coldata [i].ident = VL_IDENT_COLDATA;
-    vl->coldata [i].type = VL_TYPE_LABEL;
-    vl->coldata [i].colident = 0;
-    vl->coldata [i].minwidth = VL_MAX_WIDTH_ANY;
-    vl->coldata [i].hidden = VL_COL_SHOW;
-    vl->coldata [i].ellipsize = false;
+  for (int colidx = 0; colidx < numcols; ++colidx) {
+    vl->coldata [colidx].szgrp = uiCreateSizeGroupHoriz ();
+    vl->coldata [colidx].ident = VL_IDENT_COLDATA;
+    vl->coldata [colidx].type = VL_TYPE_LABEL;
+    vl->coldata [colidx].colident = 0;
+    vl->coldata [colidx].minwidth = VL_MAX_WIDTH_ANY;
+    vl->coldata [colidx].hidden = VL_COL_SHOW;
+    vl->coldata [colidx].ellipsize = false;
   }
 
   vl->initialized = VL_INIT_COLS;
@@ -606,8 +606,8 @@ uivlDisplay (uivirtlist_t *vl)
   uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
   uivlPopulate (vl);
 
-  for (int i = 0; i < vl->disprows; ++i) {
-    row = uivlGetRow (vl, i + vl->rowoffset);
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+    row = uivlGetRow (vl, dispidx + vl->rowoffset);
     if (row == NULL) {
       break;
     }
@@ -627,9 +627,9 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  for (int i = 0; i < vl->numcols; ++i) {
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols != NULL) {
-      uivlFreeCol (&row->cols [i]);
+      uivlFreeCol (&row->cols [colidx]);
     }
   }
   uiwcontFree (row->hbox);
@@ -666,29 +666,29 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
 
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
-  for (int i = 0; i < vl->numcols; ++i) {
-    row->cols [i].ident = VL_IDENT_COL;
-    row->cols [i].uiwidget = uiCreateLabel ("");
-    uiWidgetSetMarginEnd (row->cols [i].uiwidget, 2);
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    row->cols [colidx].ident = VL_IDENT_COL;
+    row->cols [colidx].uiwidget = uiCreateLabel ("");
+    uiWidgetSetMarginEnd (row->cols [colidx].uiwidget, 2);
 
-    if (vl->coldata [i].hidden == VL_COL_SHOW) {
-      uiBoxPackStartExpand (row->hbox, row->cols [i].uiwidget);
-      uiSizeGroupAdd (vl->coldata [i].szgrp, row->cols [i].uiwidget);
+    if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+      uiBoxPackStartExpand (row->hbox, row->cols [colidx].uiwidget);
+      uiSizeGroupAdd (vl->coldata [colidx].szgrp, row->cols [colidx].uiwidget);
     }
-    if (vl->coldata [i].type == VL_TYPE_LABEL) {
-      if (vl->coldata [i].minwidth != VL_MAX_WIDTH_ANY) {
-        uiLabelSetMinWidth (row->cols [i].uiwidget, vl->coldata [i].minwidth);
+    if (vl->coldata [colidx].type == VL_TYPE_LABEL) {
+      if (vl->coldata [colidx].minwidth != VL_MAX_WIDTH_ANY) {
+        uiLabelSetMinWidth (row->cols [colidx].uiwidget, vl->coldata [colidx].minwidth);
       }
-      if (! isheading && vl->coldata [i].ellipsize) {
-        uiLabelEllipsizeOn (row->cols [i].uiwidget);
+      if (! isheading && vl->coldata [colidx].ellipsize) {
+        uiLabelEllipsizeOn (row->cols [colidx].uiwidget);
       }
-      if (vl->coldata [i].alignend) {
-        uiLabelAlignEnd (row->cols [i].uiwidget);
+      if (vl->coldata [colidx].alignend) {
+        uiLabelAlignEnd (row->cols [colidx].uiwidget);
       }
-      if (row->cols [i].class != NULL) {
+      if (row->cols [colidx].class != NULL) {
       }
     }
-    row->cols [i].class = NULL;
+    row->cols [colidx].class = NULL;
   }
   row->selected = false;
   row->initialized = true;
@@ -762,16 +762,17 @@ uivlScrollbarCallback (void *udata, double value)
 static void
 uivlPopulate (uivirtlist_t *vl)
 {
-  for (int i = 0; i < vl->disprows; ++i) {
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
     uivlrow_t   *row;
     uivlcol_t   *col;
 
-    row = uivlGetRow (vl, i + vl->rowoffset);
+    row = uivlGetRow (vl, dispidx + vl->rowoffset);
     if (row == NULL) {
       break;
     }
-    for (int j = 0; j < vl->numcols; ++j) {
-      col = &row->cols [j];
+
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      col = &row->cols [colidx];
       if (col->class != NULL) {
         uiWidgetRemoveClass (col->uiwidget, col->class);
         dataFree (col->class);
@@ -780,15 +781,15 @@ uivlPopulate (uivirtlist_t *vl)
     }
   }
 
-  for (int i = 0; i < vl->disprows; ++i) {
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
     uivlrow_t   *row;
 
-    row = uivlGetRow (vl, i + vl->rowoffset);
+    row = uivlGetRow (vl, dispidx + vl->rowoffset);
     if (row == NULL) {
       break;
     }
     if (vl->fillcb != NULL) {
-      vl->fillcb (vl->udata, vl, i + vl->rowoffset);
+      vl->fillcb (vl->udata, vl, dispidx + vl->rowoffset);
     }
   }
 
@@ -875,10 +876,10 @@ fprintf (stderr, "button 4/5\n");
 
   /* all other buttons (1-3) cause a selection */
 
-  for (int i = 0; i < vl->disprows; ++i) {
-    if (uiEventCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [i].eventbox)) {
-fprintf (stderr, "  found at %d\n", i);
-      rownum = i + vl->rowoffset;
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+    if (uiEventCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [dispidx].eventbox)) {
+fprintf (stderr, "  found at %d\n", dispidx);
+      rownum = dispidx + vl->rowoffset;
       break;
     }
   }
@@ -938,13 +939,13 @@ uivlEnterLeaveEvent (void *udata, int32_t el)
 static void
 uivlClearDisplaySelections (uivirtlist_t *vl)
 {
-  for (int i = 0; i < vl->disprows; ++i) {
-    uivlrow_t   *row = &vl->rows [i];
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+    uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
       uiWidgetRemoveClass (row->hbox, "bdj-selected");
-      for (int j = 0; j < vl->numcols; ++j) {
-        uiWidgetRemoveClass (row->cols [j].uiwidget, "bdj-selected");
+      for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+        uiWidgetRemoveClass (row->cols [colidx].uiwidget, "bdj-selected");
       }
       row->selected = false;
     }
@@ -968,8 +969,8 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       row = uivlGetRow (vl, val);
       uiWidgetSetClass (row->hbox, "bdj-selected");
       row->selected = true;
-      for (int j = 0; j < vl->numcols; ++j) {
-        uiWidgetSetClass (row->cols [j].uiwidget, "bdj-selected");
+      for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+        uiWidgetSetClass (row->cols [colidx].uiwidget, "bdj-selected");
       }
     }
   }
