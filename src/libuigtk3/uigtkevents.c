@@ -27,9 +27,9 @@ enum {
   EVENT_NONE,
   EVENT_KEY_PRESS,
   EVENT_KEY_RELEASE,
-  EVENT_BUTTON_PRESS,
-  EVENT_BUTTON_DOUBLE_PRESS,
-  EVENT_BUTTON_RELEASE,
+  EVENT_MBUTTON_PRESS,
+  EVENT_MBUTTON_DOUBLE_PRESS,
+  EVENT_MBUTTON_RELEASE,
   EVENT_SCROLL,
   EVENT_ENTER,
   EVENT_LEAVE,
@@ -38,8 +38,8 @@ enum {
 typedef struct uievent {
   callback_t    *keypresscb;
   callback_t    *keyreleasecb;
-  callback_t    *buttonpresscb;
-  callback_t    *buttonreleasecb;
+  callback_t    *mbuttonpresscb;
+  callback_t    *mbuttonreleasecb;
   callback_t    *scrollcb;
   callback_t    *elcb;
   int           eventtype;
@@ -73,8 +73,8 @@ uiEventAlloc (void)
   uievent = mdmalloc (sizeof (uievent_t));
   uievent->keypresscb = NULL;
   uievent->keyreleasecb = NULL;
-  uievent->buttonpresscb = NULL;
-  uievent->buttonreleasecb = NULL;
+  uievent->mbuttonpresscb = NULL;
+  uievent->mbuttonreleasecb = NULL;
   uievent->scrollcb = NULL;
   uievent->elcb = NULL;
   uievent->eventtype = EVENT_NONE;
@@ -120,6 +120,10 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
 
   widget = gtk_event_box_new ();
   gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->uidata.widget);
+  /* the uivirtlist module creates an event box overlaying the */
+  /* entire listing. */
+  /* it is important that the event box be above the children */
+  gtk_event_box_set_above_child (GTK_EVENT_BOX (widget), true);
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
   wcont = uiwcontAlloc ();
@@ -166,8 +170,8 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
 
   uievent = uieventwidget->uiint.uievent;
 
-  uievent->buttonpresscb = uicb;
-  uievent->buttonreleasecb = uicb;
+  uievent->mbuttonpresscb = uicb;
+  uievent->mbuttonreleasecb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
@@ -256,7 +260,7 @@ uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_BUTTON_PRESS;
+  rc = uievent->eventtype == EVENT_MBUTTON_PRESS;
   return rc;
 }
 
@@ -271,7 +275,7 @@ uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_BUTTON_DOUBLE_PRESS;
+  rc = uievent->eventtype == EVENT_MBUTTON_DOUBLE_PRESS;
   return rc;
 }
 
@@ -286,7 +290,7 @@ uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_BUTTON_RELEASE;
+  rc = uievent->eventtype == EVENT_MBUTTON_RELEASE;
   return rc;
 }
 
@@ -802,6 +806,7 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   guint     button;
   guint     ttype;
   int       rc = UICB_CONT;
+  int       dispidx = -1;
   int       colnum = -1;
 
   uievent = uiwidget->uiint.uievent;
@@ -815,30 +820,37 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   uievent->eventtype = EVENT_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_BUTTON_PRESS) {
-    uievent->eventtype = EVENT_BUTTON_PRESS;
+    uievent->eventtype = EVENT_MBUTTON_PRESS;
   }
   if (ttype == GDK_2BUTTON_PRESS) {
-    uievent->eventtype = EVENT_BUTTON_DOUBLE_PRESS;
+    uievent->eventtype = EVENT_MBUTTON_DOUBLE_PRESS;
   }
   if (ttype == GDK_BUTTON_RELEASE) {
-    uievent->eventtype = EVENT_BUTTON_RELEASE;
+    uievent->eventtype = EVENT_MBUTTON_RELEASE;
   }
 
   if (uievent->eventtype == EVENT_NONE) {
     return rc;
   }
 
-  /* figure out which column the mouse pointer is in */
-  /* only do this for press events (single-click) */
-  if (ttype == GDK_BUTTON_PRESS) {
+  /* figure out which row and column the mouse pointer is in. */
+  /* as there is an eventbox overlaying the entire uivirtlist listing */
+  /* it's relatively easy to figure out the row and the column. */
+  /* only do this for press events. */
+  if (ttype == GDK_BUTTON_PRESS || ttype == GDK_2BUTTON_PRESS) {
     double        x, y;
     GtkWidget     *tw;
     GtkAllocation eba;
-    GtkAllocation cola;
+    GtkAllocation rowa;
 
     gdk_event_get_coords ((GdkEvent *) event, &x, &y);
     /* the coordinates of the event box or container */
     gtk_widget_get_allocation (w, &eba);
+
+    /* event-box    */
+    /*  vbox        */
+    /*   hbox (row) */
+    /*    col...    */
 
     tw = w;
     while (GTK_IS_BIN (tw)) {
@@ -850,32 +862,52 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
       list = gtk_container_get_children (GTK_CONTAINER (tw));
       for (elem = list; elem != NULL; elem = elem->next) {
         tw = elem->data;
-        gtk_widget_get_allocation (tw, &cola);
-        /* note that colnum starts at -1, so the first increment points */
-        /* at column 0 */
-        if (eba.x + (int) x > cola.x) {
-          ++colnum;
+        gtk_widget_get_allocation (tw, &rowa);
+        /* note that dispidx starts at -1, so the first increment points */
+        /* at row 0 */
+        if (eba.y + (int) y > rowa.y) {
+          ++dispidx;
         } else {
           break;
+        }
+
+        /* process the x coordinates (only once) to get the column number */
+        /* the tw gtk-widget should be pointing at a row-hbox */
+        if (elem == list) {
+          GList         *clist, *celem;
+          GtkWidget     *tcol;
+          GtkAllocation cola;
+
+          clist = gtk_container_get_children (GTK_CONTAINER (tw));
+          for (celem = clist; celem != NULL; celem = celem->next) {
+            tcol = celem->data;
+            gtk_widget_get_allocation (tcol, &cola);
+            /* note that colnum starts at -1, so the first increment points */
+            /* at column 0 */
+            if (eba.x + (int) x > cola.x) {
+              ++colnum;
+            } else {
+              break;
+            }
+          }
         }
       }
     }
   }
-fprintf (stderr, "found: column %d\n", colnum);
 
   uievent->buttonpressed = false;
   uievent->buttonreleased = false;
 
   if ((ttype == GDK_BUTTON_PRESS ||
       ttype == GDK_2BUTTON_PRESS) &&
-      uievent->buttonpresscb != NULL) {
+      uievent->mbuttonpresscb != NULL) {
     uievent->buttonpressed = true;
-    rc = callbackHandlerI (uievent->buttonpresscb, colnum);
+    rc = callbackHandlerII (uievent->mbuttonpresscb, dispidx, colnum);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
-      uievent->buttonreleasecb != NULL) {
+      uievent->mbuttonreleasecb != NULL) {
     uievent->buttonreleased = true;
-    rc = callbackHandlerI (uievent->buttonreleasecb, colnum);
+    rc = callbackHandlerII (uievent->mbuttonreleasecb, dispidx, colnum);
   }
 
   return rc;

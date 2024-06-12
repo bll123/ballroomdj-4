@@ -83,7 +83,6 @@ typedef struct {
 
 typedef struct {
   uint64_t    ident;
-  uiwcont_t   *eventbox;
   uiwcont_t   *hbox;
   uivlcol_t   *cols;
   bool        selected : 1;
@@ -120,7 +119,7 @@ static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
-static bool uivlButtonEvent (void *udata, int32_t colnum);
+static bool uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum);
 static bool uivlScrollEvent (void *udata, int32_t dir);
 static bool uivlEnterLeaveEvent (void *udata, int32_t el);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
@@ -148,7 +147,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
-  vl->callbacks [VL_CB_MBUTTON] = callbackInitI (uivlButtonEvent, vl);
+  vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
   vl->callbacks [VL_CB_ENTER] = callbackInitI (uivlEnterLeaveEvent, vl);
 
@@ -162,15 +161,18 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiWidgetAlignVertFill (vl->wcont [VL_W_VBOX]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_VBOX]);
-  uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);
+  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_VBOX]);
+  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_EVENT_BOX]);
+  uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);    // for keyboard events
 
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
   uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_SB]);
   uiBoxPackEnd (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_SB]);
+
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
-  uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 4.0);
+  uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], 1.0);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], 10.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
@@ -192,7 +194,6 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->rows = mdmalloc (sizeof (uivlrow_t) * disprows);
   for (int dispidx = 0; dispidx < disprows; ++dispidx) {
     vl->rows [dispidx].ident = VL_IDENT_ROW;
-    vl->rows [dispidx].eventbox = NULL;
     vl->rows [dispidx].hbox = NULL;
     vl->rows [dispidx].cols = NULL;
     vl->rows [dispidx].initialized = false;
@@ -726,20 +727,19 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  row->eventbox = uiEventCreateEventBox (row->hbox);
   uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX],
       vl->callbacks [VL_CB_KEY]);
-  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox,
+  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_MBUTTON]);
-  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], row->eventbox,
+  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_SCROLL]);
   /* the vbox does not receive an enter/leave event */
   /* (as it is overlaid presumably) */
-  /* set the enter/leave on the row event-boxes, and the handler */
+  /* set the enter/leave on the main event-box, and the handler */
   /* grabs the focus on to the vbox so the keyboard events work */
-  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], row->eventbox,
+  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_ENTER]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->eventbox);
+  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->hbox);
 }
 
 static bool
@@ -837,7 +837,7 @@ uivlKeyEvent (void *udata)
 }
 
 static bool
-uivlButtonEvent (void *udata, int32_t colnum)
+uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum)
 {
   uivirtlist_t  *vl = udata;
   int           button;
@@ -876,12 +876,8 @@ fprintf (stderr, "button 4/5\n");
 
   /* all other buttons (1-3) cause a selection */
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
-    if (uiEventCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [dispidx].eventbox)) {
-fprintf (stderr, "  found at %d\n", dispidx);
-      rownum = dispidx + vl->rowoffset;
-      break;
-    }
+  if (dispidx >= 0) {
+    rownum = dispidx + vl->rowoffset;
   }
 
   if (rownum < 0) {
