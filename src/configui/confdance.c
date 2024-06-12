@@ -169,7 +169,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
 
   gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT] =
-      callbackInitLong (confuiDanceSelect, gui);
+      callbackInitI (confuiDanceSelect, gui);
   uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
       gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
 

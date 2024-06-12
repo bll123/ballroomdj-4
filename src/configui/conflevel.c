@@ -80,7 +80,7 @@ confuiCreateLevelTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_LEVELS].uitree;
 
   gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED] =
-      callbackInitLong (confuiTableChanged, gui);
+      callbackInitI (confuiTableChanged, gui);
   uiTreeViewSetEditedCallback (uitree,
       gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 

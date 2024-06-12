@@ -870,12 +870,12 @@ fprintf (stderr, "found: column %d\n", colnum);
       ttype == GDK_2BUTTON_PRESS) &&
       uievent->buttonpresscb != NULL) {
     uievent->buttonpressed = true;
-    rc = callbackHandlerLong (uievent->buttonpresscb, colnum);
+    rc = callbackHandlerI (uievent->buttonpresscb, colnum);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
       uievent->buttonreleasecb != NULL) {
     uievent->buttonreleased = true;
-    rc = callbackHandlerLong (uievent->buttonreleasecb, colnum);
+    rc = callbackHandlerI (uievent->buttonreleasecb, colnum);
   }
 
   return rc;
@@ -914,7 +914,7 @@ uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
 
   if (ttype == GDK_SCROLL &&
       uievent->scrollcb != NULL) {
-    rc = callbackHandlerLong (uievent->scrollcb, dir);
+    rc = callbackHandlerI (uievent->scrollcb, dir);
   }
 
   return rc;
@@ -949,7 +949,7 @@ uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
   if ((ttype == GDK_ENTER_NOTIFY ||
       ttype == GDK_LEAVE_NOTIFY) &&
       uievent->elcb != NULL) {
-    rc = callbackHandlerLong (uievent->elcb, el);
+    rc = callbackHandlerI (uievent->elcb, el);
   }
 
   return rc;

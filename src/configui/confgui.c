@@ -35,9 +35,9 @@ enum {
 
 static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
-static long confuiValMSCallback (void *udata, const char *txt);
-static long confuiValHMCallback (void *udata, const char *txt);
-static long confuiValHMSCallback (void *udata, const char *txt);
+static int32_t confuiValMSCallback (void *udata, const char *txt);
+static int32_t confuiValHMCallback (void *udata, const char *txt);
+static int32_t confuiValHMSCallback (void *udata, const char *txt);
 
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
@@ -117,7 +117,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 
 void
 confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
-    const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
+    const char *txt, int widx, int bdjoptIdx, callbackFuncI ddcb,
     const char *value)
 {
   uiwcont_t  *hbox;
@@ -130,7 +130,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
+  gui->uiitem [widx].callback = callbackInitI (ddcb, gui);
   gui->uiitem [widx].uiwidgetp = uiDropDownInit ();
   uiwidgetp = uiComboboxCreate (gui->uiitem [widx].uiwidgetp,
       gui->window, txt, gui->uiitem [widx].callback, gui);
@@ -291,15 +291,15 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   confuiMakeItemLabel (hbox, szgrp, txt, indent);
 
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    gui->uiitem [widx].callback = callbackInitStr (
+    gui->uiitem [widx].callback = callbackInitS (
         confuiValHMCallback, gui);
     /* convert value to mm:ss */
     value /= 60;
   } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
-    gui->uiitem [widx].callback = callbackInitStr (
+    gui->uiitem [widx].callback = callbackInitS (
         confuiValHMSCallback, gui);
   } else {
-    gui->uiitem [widx].callback = callbackInitStr (
+    gui->uiitem [widx].callback = callbackInitS (
         confuiValMSCallback, gui);
   }
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
@@ -579,13 +579,13 @@ confuiLinkCallback (void *udata)
 }
 
 
-static long
+static int32_t
 confuiValMSCallback (void *udata, const char *txt)
 {
   confuigui_t *gui = udata;
   const char  *valstr;
   char        tbuff [200];
-  long        val;
+  int32_t     val;
 
   logProcBegin ();
 
@@ -602,13 +602,13 @@ confuiValMSCallback (void *udata, const char *txt)
   return val;
 }
 
-static long
+static int32_t
 confuiValHMCallback (void *udata, const char *txt)
 {
   confuigui_t *gui = udata;
   const char  *valstr;
   char        tbuff [200];
-  long        val;
+  int32_t     val;
 
   logProcBegin ();
 
@@ -625,13 +625,13 @@ confuiValHMCallback (void *udata, const char *txt)
   return val;
 }
 
-static long
+static int32_t
 confuiValHMSCallback (void *udata, const char *txt)
 {
   confuigui_t *gui = udata;
   const char  *valstr;
   char        tbuff [200];
-  long        val;
+  int32_t     val;
 
   logProcBegin ();
 

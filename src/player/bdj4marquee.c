@@ -357,7 +357,7 @@ marqueeBuildUI (marquee_t *marquee)
       marqueeToggleFullscreen, marquee, NULL);
   uiWindowSetDoubleClickCallback (marquee->wcont [MQ_W_WINDOW], marquee->callbacks [MQ_CB_DBL_CLICK]);
 
-  marquee->callbacks [MQ_CB_WINSTATE] = callbackInitIntInt (
+  marquee->callbacks [MQ_CB_WINSTATE] = callbackInitII (
       marqueeWinState, marquee);
   uiWindowSetWinStateCallback (marquee->wcont [MQ_W_WINDOW], marquee->callbacks [MQ_CB_WINSTATE]);
 

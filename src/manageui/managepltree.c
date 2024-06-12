@@ -60,7 +60,7 @@ typedef struct managepltree {
 } managepltree_t;
 
 static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
-static bool managePlaylistTreeChanged (void *udata, long col);
+static bool managePlaylistTreeChanged (void *udata, int32_t col);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 static int  managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm);
@@ -128,7 +128,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp)
 
   managepltree->uitree = uiCreateTreeView ();
 
-  managepltree->callbacks [MPLTREE_CB_CHANGED] = callbackInitLong (
+  managepltree->callbacks [MPLTREE_CB_CHANGED] = callbackInitI (
       managePlaylistTreeChanged, managepltree);
   uiTreeViewSetEditedCallback (managepltree->uitree,
       managepltree->callbacks [MPLTREE_CB_CHANGED]);
@@ -393,7 +393,7 @@ managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype)
 }
 
 static bool
-managePlaylistTreeChanged (void *udata, long col)
+managePlaylistTreeChanged (void *udata, int32_t col)
 {
   managepltree_t  *managepltree = udata;
   bool            rc = UICB_CONT;

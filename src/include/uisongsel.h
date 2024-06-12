@@ -100,7 +100,7 @@ bool  uisongselFirstSelection (void *udata);
 nlistidx_t uisongselGetSelectLocation (uisongsel_t *uisongsel);
 bool  uisongselApplySongFilter (void *udata);
 void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t idx);
-bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
+bool  uisongselDanceSelectCallback (void *udata, int32_t danceIdx);
 void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);

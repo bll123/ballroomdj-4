@@ -80,7 +80,7 @@ confuiCreateRatingTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
 
   gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED] =
-      callbackInitLong (confuiTableChanged, gui);
+      callbackInitI (confuiTableChanged, gui);
   uiTreeViewSetEditedCallback (uitree,
       gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 

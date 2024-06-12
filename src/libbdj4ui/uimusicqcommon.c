@@ -172,7 +172,7 @@ void
 uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   if (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] != NULL) {
-    callbackHandlerLongInt (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx, mqidx);
+    callbackHandlerII (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx, mqidx);
   }
 }
 
@@ -183,7 +183,7 @@ uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)
 }
 
 bool
-uimusicqSaveListCallback (void *udata, long dbidx)
+uimusicqSaveListCallback (void *udata, int32_t dbidx)
 {
   uimusicq_t  *uimusicq = udata;
 

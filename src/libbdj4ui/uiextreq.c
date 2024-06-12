@@ -68,10 +68,10 @@ typedef struct uiextreq {
 
 /* external request */
 static void   uiextreqCreateDialog (uiextreq_t *uiextreq);
-static bool   uiextreqDanceSelectHandler (void *udata, long idx, int count);
+static bool   uiextreqDanceSelectHandler (void *udata, int32_t idx, int32_t count);
 static void   uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn);
 static void   uiextreqClearSong (uiextreq_t *uiextreq);
-static bool   uiextreqResponseHandler (void *udata, long responseid);
+static bool   uiextreqResponseHandler (void *udata, int32_t responseid);
 static void   uiextreqProcessAudioFile (uiextreq_t *uiextreq);
 static int    uiextreqValidateAudioFile (uiwcont_t *entry, void *udata);
 static int    uiextreqValidateArtist (uiwcont_t *entry, void *udata);
@@ -210,7 +210,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpEntry = uiCreateSizeGroupHoriz ();
 
-  uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitLong (
+  uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitI (
       uiextreqResponseHandler, uiextreq);
   uiextreq->wcont [UIEXTREQ_W_DIALOG] = uiCreateDialog (uiextreq->wcont [UIEXTREQ_W_WINDOW],
       uiextreq->callbacks [UIEXTREQ_CB_DIALOG],
@@ -310,7 +310,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitLongInt (
+  uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitII (
       uiextreqDanceSelectHandler, uiextreq);
   uiextreq->uidance = uidanceDropDownCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
       /* CONTEXT: external request: dance drop-down */
@@ -354,7 +354,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
 /* count is not used */
 static bool
-uiextreqDanceSelectHandler (void *udata, long idx, int count)
+uiextreqDanceSelectHandler (void *udata, int32_t idx, int32_t count)
 {
   uiextreq_t  *uiextreq = udata;
 
@@ -398,7 +398,7 @@ uiextreqClearSong (uiextreq_t *uiextreq)
 }
 
 static bool
-uiextreqResponseHandler (void *udata, long responseid)
+uiextreqResponseHandler (void *udata, int32_t responseid)
 {
   uiextreq_t  *uiextreq = udata;
   int         x, y, ws;

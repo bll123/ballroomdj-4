@@ -89,14 +89,14 @@ typedef struct managepl {
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
-static long managePlaylistLoadCB (void *udata, const char *fn);
+static int32_t managePlaylistLoadCB (void *udata, const char *fn);
 static bool managePlaylistNewCB (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
-static long managePlaylistValHMSCallback (void *udata, const char *txt);
-static long managePlaylistValHMCallback (void *udata, const char *txt);
+static int32_t managePlaylistValHMSCallback (void *udata, const char *txt);
+static int32_t managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistTextEntryChg (uiwcont_t *e, void *udata);
@@ -131,7 +131,7 @@ managePlaylistAlloc (manageinfo_t *minfo)
   }
 
   managepl->callbacks [MPL_CB_SEL_FILE] =
-      callbackInitStr (managePlaylistLoadCB, managepl);
+      callbackInitS (managePlaylistLoadCB, managepl);
 
   return managepl;
 }
@@ -249,7 +249,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitStr (
+  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitS (
       managePlaylistValHMSCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
       managepl->callbacks [MPL_CB_MAXPLAYTIME]);
@@ -269,7 +269,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_STOPAT] = callbackInitStr (
+  managepl->callbacks [MPL_CB_STOPAT] = callbackInitS (
       managePlaylistValHMCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
       managepl->callbacks [MPL_CB_STOPAT]);
@@ -552,7 +552,7 @@ managePlaylistSave (managepl_t *managepl)
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE)) {
-      callbackHandlerStr (managepl->plloadcb, name);
+      callbackHandlerS (managepl->plloadcb, name);
     }
   }
   mdfree (name);
@@ -633,7 +633,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 
     pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
     if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
-      callbackHandlerStr (managepl->plloadcb, fn);
+      callbackHandlerS (managepl->plloadcb, fn);
     }
   }
 
@@ -685,7 +685,7 @@ managePlaylistLoad (void *udata)
   return UICB_CONT;
 }
 
-static long
+static int32_t
 managePlaylistLoadCB (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
@@ -792,7 +792,7 @@ managePlaylistCopy (void *udata)
     managepl->plbackupcreated = false;
     manageResetChanged (managepl);
     if (managepl->plloadcb != NULL) {
-      callbackHandlerStr (managepl->plloadcb, newname);
+      callbackHandlerS (managepl->plloadcb, newname);
     }
   }
   mdfree (oname);
@@ -830,7 +830,7 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
   logProcEnd ("");
 }
 
-static long
+static int32_t
 managePlaylistValHMSCallback (void *udata, const char *txt)
 {
   managepl_t  *managepl = udata;
@@ -853,7 +853,7 @@ managePlaylistValHMSCallback (void *udata, const char *txt)
   return value;
 }
 
-static long
+static int32_t
 managePlaylistValHMCallback (void *udata, const char *txt)
 {
   managepl_t  *managepl = udata;

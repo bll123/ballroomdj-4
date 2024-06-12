@@ -47,7 +47,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
       uisongselApplySongFilter, uisongsel, NULL);
   uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
 
-  uisongsel->sfdanceselcb = callbackInitLong (
+  uisongsel->sfdanceselcb = callbackInitI (
       uisongselDanceSelectCallback, uisongsel);
   uisfSetDanceSelectCallback (uisf, uisongsel->sfdanceselcb);
 

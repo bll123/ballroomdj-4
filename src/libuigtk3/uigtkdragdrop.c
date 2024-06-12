@@ -77,7 +77,7 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
     urilist = gtk_selection_data_get_uris (seldata);
     mdextalloc (urilist);
 
-    rc = callbackHandlerStrInt (cb, urilist [0], row);
+    rc = callbackHandlerSI (cb, urilist [0], row);
     mdextfree (urilist);
     g_strfreev (urilist);
     gtk_drag_finish (context, rc, FALSE, tm);
@@ -88,7 +88,7 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
       gtk_selection_data_get_format (seldata) == 32 ) {
     int     rc;
 
-    rc = callbackHandlerLong (cb, row);
+    rc = callbackHandlerI (cb, row);
     gtk_drag_finish (context, rc, FALSE, tm);
   }
 

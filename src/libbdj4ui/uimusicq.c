@@ -97,7 +97,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   }
 
   uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =
-      callbackInitLong (uimusicqSaveListCallback, uimusicq);
+      callbackInitI (uimusicqSaveListCallback, uimusicq);
 
   logProcEnd ("");
   return uimusicq;

@@ -157,7 +157,7 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
 }
 
 bool
-confuiTableChanged (void *udata, long col)
+confuiTableChanged (void *udata, int32_t col)
 {
   confuigui_t   *gui = udata;
 
@@ -166,7 +166,7 @@ confuiTableChanged (void *udata, long col)
 }
 
 bool
-confuiSwitchTable (void *udata, long pagenum)
+confuiSwitchTable (void *udata, int32_t pagenum)
 {
   confuigui_t       *gui = udata;
   uiwcont_t         *uitree;

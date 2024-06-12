@@ -28,7 +28,7 @@
 #include "ui.h"
 
 bool
-confuiDanceSelect (void *udata, long col)
+confuiDanceSelect (void *udata, int32_t col)
 {
   confuigui_t   *gui = udata;
   uiwcont_t     *uitree = NULL;

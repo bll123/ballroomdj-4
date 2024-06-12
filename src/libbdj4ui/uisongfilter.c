@@ -110,12 +110,12 @@ typedef struct uisongfilter {
 static void uisfDisableWidgets (uisongfilter_t *uisf);
 static void uisfEnableWidgets (uisongfilter_t *uisf);
 static void uisfCreateDialog (uisongfilter_t *uisf);
-static bool uisfResponseHandler (void *udata, long responseid);
+static bool uisfResponseHandler (void *udata, int32_t responseid);
 static void uisfUpdate (uisongfilter_t *uisf);
-static bool uisfPlaylistSelectHandler (void *udata, long idx);
-static bool uisfSortBySelectHandler (void *udata, long idx);
-static bool uisfGenreSelectHandler (void *udata, long idx);
-static bool uisfDanceSelectHandler (void *udata, long idx, int count);
+static bool uisfPlaylistSelectHandler (void *udata, int32_t idx);
+static bool uisfSortBySelectHandler (void *udata, int32_t idx);
+static bool uisfGenreSelectHandler (void *udata, int32_t idx);
+static bool uisfDanceSelectHandler (void *udata, int32_t idx, int32_t count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
@@ -455,7 +455,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   szgrpDD = uiCreateSizeGroupHoriz ();
   szgrpSpinText = uiCreateSizeGroupHoriz ();
 
-  uisf->callbacks [UISF_CB_FILTER] = callbackInitLong (
+  uisf->callbacks [UISF_CB_FILTER] = callbackInitI (
       uisfResponseHandler, uisf);
   uisf->wcont [UISF_W_DIALOG] = uiCreateDialog (uisf->wcont [UISF_W_WINDOW],
       uisf->callbacks [UISF_CB_FILTER],
@@ -496,7 +496,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
+  uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitI (
       uisfPlaylistSelectHandler, uisf);
   uisf->uiplaylist = uiplaylistCreate (uisf->wcont [UISF_W_DIALOG], hbox, PL_LIST_ALL);
   uiplaylistSetSelectCallback (uisf->uiplaylist, uisf->callbacks [UISF_CB_PLAYLIST_SEL]);
@@ -516,7 +516,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->labels [UISF_LABEL_SORTBY] = uiwidgetp;
 
   uisf->wcont [UISF_W_SORT_BY] = uiDropDownInit ();
-  uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitLong (
+  uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitI (
       uisfSortBySelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (uisf->wcont [UISF_W_SORT_BY],
       uisf->wcont [UISF_W_DIALOG], "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
@@ -554,7 +554,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_GENRE] = uiwidgetp;
 
-    uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitLong (
+    uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitI (
         uisfGenreSelectHandler, uisf);
     uisf->uigenre = uigenreDropDownCreate (hbox, uisf->wcont [UISF_W_DIALOG], true);
     uigenreSetCallback (uisf->uigenre, uisf->callbacks [UISF_CB_GENRE_SEL]);
@@ -572,7 +572,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_DANCE] = uiwidgetp;
 
-    uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
+    uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitII (
         uisfDanceSelectHandler, uisf);
     uisf->uidance = uidanceDropDownCreate (hbox, uisf->wcont [UISF_W_DIALOG],
         /* CONTEXT: song selection filter: a filter: all dances are selected */
@@ -682,7 +682,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 }
 
 static bool
-uisfResponseHandler (void *udata, long responseid)
+uisfResponseHandler (void *udata, int32_t responseid)
 {
   uisongfilter_t  *uisf = udata;
   int             x, y, ws;
@@ -719,7 +719,7 @@ uisfResponseHandler (void *udata, long responseid)
       uisf->danceIdx = -1;
       uidanceSetValue (uisf->uidance, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
-        callbackHandlerLong (uisf->danceselcb, uisf->danceIdx);
+        callbackHandlerI (uisf->danceselcb, uisf->danceIdx);
       }
       uisfInitDisplay (uisf);
       if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
@@ -887,7 +887,7 @@ uisfEnableWidgets (uisongfilter_t *uisf)
 }
 
 static bool
-uisfPlaylistSelectHandler (void *udata, long idx)
+uisfPlaylistSelectHandler (void *udata, int32_t idx)
 {
   uisongfilter_t *uisf = udata;
 
@@ -896,7 +896,7 @@ uisfPlaylistSelectHandler (void *udata, long idx)
 }
 
 static bool
-uisfSortBySelectHandler (void *udata, long idx)
+uisfSortBySelectHandler (void *udata, int32_t idx)
 {
   uisongfilter_t *uisf = udata;
 
@@ -905,7 +905,7 @@ uisfSortBySelectHandler (void *udata, long idx)
 }
 
 static bool
-uisfGenreSelectHandler (void *udata, long idx)
+uisfGenreSelectHandler (void *udata, int32_t idx)
 {
   uisongfilter_t *uisf = udata;
 
@@ -915,14 +915,14 @@ uisfGenreSelectHandler (void *udata, long idx)
 
 /* count is not used */
 static bool
-uisfDanceSelectHandler (void *udata, long idx, int count)
+uisfDanceSelectHandler (void *udata, int32_t idx, int32_t count)
 {
   uisongfilter_t  *uisf = udata;
 
   uisf->danceIdx = idx;
   uisfSetDanceIdx (uisf, idx);
   if (uisf->danceselcb != NULL) {
-    callbackHandlerLong (uisf->danceselcb, idx);
+    callbackHandlerI (uisf->danceselcb, idx);
   }
   return UICB_CONT;
 }

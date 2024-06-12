@@ -76,7 +76,7 @@ typedef struct uiexppl {
 /* export playlist */
 static void   uiexpplCreateDialog (uiexppl_t *uiexppl);
 static bool   uiexpplTargetDialog (void *udata);
-static bool   uiexpplResponseHandler (void *udata, long responseid);
+static bool   uiexpplResponseHandler (void *udata, int32_t responseid);
 static void   uiexpplFreeDialog (uiexppl_t *uiexppl);
 static int    uiexpplValidateTarget (uiwcont_t *entry, void *udata);
 static bool   uiexpplExportTypeCallback (void *udata);
@@ -103,7 +103,7 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
 
   uiexppl->exptype = nlistGetNum (uiexppl->options, MANAGE_EXP_PL_TYPE);
 
-  uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
+  uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitI (
       uiexpplResponseHandler, uiexppl);
   uiexppl->callbacks [UIEXPPL_CB_TARGET] = callbackInit (
       uiexpplTargetDialog, uiexppl, NULL);
@@ -355,7 +355,7 @@ uiexpplTargetDialog (void *udata)
 
 
 static bool
-uiexpplResponseHandler (void *udata, long responseid)
+uiexpplResponseHandler (void *udata, int32_t responseid)
 {
   uiexppl_t  *uiexppl = udata;
   int             x, y, ws;
@@ -382,7 +382,7 @@ uiexpplResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: apply");
       str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
       if (uiexppl->responsecb != NULL) {
-        callbackHandlerStrInt (uiexppl->responsecb, str, uiexppl->exptype);
+        callbackHandlerSI (uiexppl->responsecb, str, uiexppl->exptype);
       }
       uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;

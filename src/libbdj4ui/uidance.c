@@ -34,7 +34,7 @@ typedef struct uidance {
   int           flags;
 } uidance_t;
 
-static bool uidanceSelectHandler (void *udata, long idx);
+static bool uidanceSelectHandler (void *udata, int32_t idx);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
@@ -55,7 +55,7 @@ uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->selectcb = NULL;
 
   uidance->dropdown = uiDropDownInit ();
-  uidance->cb = callbackInitLong (uidanceSelectHandler, uidance);
+  uidance->cb = callbackInitI (uidanceSelectHandler, uidance);
   uidance->label = label;  /* this is a temporary value */
   if (flags == UIDANCE_NONE) {
     uidance->buttonp = uiDropDownCreate (uidance->dropdown,
@@ -147,7 +147,7 @@ uidanceSetCallback (uidance_t *uidance, callback_t *cb)
 /* internal routines */
 
 static bool
-uidanceSelectHandler (void *udata, long idx)
+uidanceSelectHandler (void *udata, int32_t idx)
 {
   uidance_t   *uidance = udata;
 
@@ -158,7 +158,7 @@ uidanceSelectHandler (void *udata, long idx)
   }
 
   if (uidance->selectcb != NULL) {
-    callbackHandlerLongInt (uidance->selectcb, idx, uidance->count);
+    callbackHandlerII (uidance->selectcb, idx, uidance->count);
   }
   return UICB_CONT;
 }

@@ -160,7 +160,7 @@ uiScrollbarChangeHandler (GtkRange *range, GtkScrollType scrolltype,
   bool          rc = false;
 
   if (cb != NULL) {
-    rc = callbackHandlerDouble (cb, value);
+    rc = callbackHandlerD (cb, value);
   }
 
   return rc;

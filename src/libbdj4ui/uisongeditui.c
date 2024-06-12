@@ -159,7 +159,7 @@ static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox,
 static void uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
 static void uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
-static bool uisongeditSwitchCallback (void *udata, long value);
+static bool uisongeditSwitchCallback (void *udata, int32_t value);
 static bool uisongeditSaveCallback (void *udata);
 static bool uisongeditSave (void *udata, nlist_t *chglist);
 static int  uisongeditGetCheckValue (uisongedit_t *uisongedit, int tagkey);
@@ -1344,7 +1344,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   }
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
-  seint->items [seint->itemcount].callback = callbackInitDouble (
+  seint->items [seint->itemcount].callback = callbackInitD (
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);
   uiScaleSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
@@ -1371,7 +1371,7 @@ uisongeditAddSwitch (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiwidgetp = uiCreateSwitch (0);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   uiBoxPackStart (hbox, uiwidgetp);
-  seint->items [seint->itemcount].callback = callbackInitLong (
+  seint->items [seint->itemcount].callback = callbackInitI (
       uisongeditSwitchCallback, &seint->items [seint->itemcount]);
   uiSwitchSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
@@ -1399,7 +1399,7 @@ uisongeditScaleDisplayCallback (void *udata, double value)
 }
 
 static bool
-uisongeditSwitchCallback (void *udata, long value)
+uisongeditSwitchCallback (void *udata, int32_t value)
 {
   uisongedititem_t  *item = udata;
   se_internal_t     *seint;
@@ -1603,7 +1603,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
 
   if (uisongedit->savecb != NULL) {
     /* the callback re-loads the song editor */
-    callbackHandlerLong (uisongedit->savecb, seint->dbidx);
+    callbackHandlerI (uisongedit->savecb, seint->dbidx);
   }
 
   logProcEnd ("");

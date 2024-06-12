@@ -269,10 +269,10 @@ static bool     starterCreateProfileShortcut (void *udata);
 static void     starterSupportInit (startui_t *starter);
 static bool     starterProcessSupport (void *udata);
 static void     starterSupportDialogClear (startui_t *starter);
-static bool     starterSupportResponseHandler (void *udata, long responseid);
+static bool     starterSupportResponseHandler (void *udata, int32_t responseid);
 static bool     starterCreateSupportMsgDialog (void *udata);
 static void     starterSupportMsgDialogClear (startui_t *starter);
-static bool     starterSupportMsgHandler (void *udata, long responseid);
+static bool     starterSupportMsgHandler (void *udata, int32_t responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
 
@@ -283,7 +283,7 @@ static bool     starterDownloadLinkHandler (void *udata);
 static bool     starterWikiLinkHandler (void *udata);
 static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
-static void     starterLinkHandler (startui_t *starter, int cbidx);
+static void     starterLinkHandler (startui_t *starter, int32_t cbidx);
 
 static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
@@ -368,9 +368,9 @@ main (int argc, char *argv[])
 
   starter.callbacks [START_CB_SEND_SUPPORT] = callbackInit (
       starterCreateSupportMsgDialog, &starter, NULL);
-  starter.callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
+  starter.callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitI (
       starterSupportMsgHandler, &starter);
-  starter.callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
+  starter.callbacks [START_CB_SUPPORT_RESP] = callbackInitI (
       starterSupportResponseHandler, &starter);
   starter.callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
       starterCreateProfileShortcut, &starter, NULL);
@@ -1605,7 +1605,7 @@ starterSupportDialogClear (startui_t *starter)
 
 
 static bool
-starterSupportResponseHandler (void *udata, long responseid)
+starterSupportResponseHandler (void *udata, int32_t responseid)
 {
   startui_t *starter = udata;
 
@@ -2009,7 +2009,7 @@ starterSupportMsgDialogClear (startui_t *starter)
 
 
 static bool
-starterSupportMsgHandler (void *udata, long responseid)
+starterSupportMsgHandler (void *udata, int32_t responseid)
 {
   startui_t   *starter = udata;
 
@@ -2163,7 +2163,7 @@ starterTicketLinkHandler (void *udata)
 }
 
 static void
-starterLinkHandler (startui_t *starter, int cbidx)
+starterLinkHandler (startui_t *starter, int32_t cbidx)
 {
   char        *uri;
   char        tmp [200];

@@ -1547,7 +1547,7 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
   if (uitree->callbacks [TV_CB_EDITED] != NULL) {
     int   rc;
 
-    rc = callbackHandlerLong (uitree->callbacks [TV_CB_EDITED], col);
+    rc = callbackHandlerI (uitree->callbacks [TV_CB_EDITED], col);
     if (oldstr != NULL && rc == UICB_STOP) {
       gtk_list_store_set (GTK_LIST_STORE (uitree->model), &iter, col, oldstr, -1);
     }
@@ -1589,7 +1589,7 @@ uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
 
   if (uitree->callbacks [TV_CB_EDITED] != NULL) {
-    callbackHandlerLong (uitree->callbacks [TV_CB_EDITED], col);
+    callbackHandlerI (uitree->callbacks [TV_CB_EDITED], col);
   }
 }
 
@@ -1635,7 +1635,7 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
   uitree->radiorow = atoi (pathstr);
 
   if (uitree->callbacks [TV_CB_EDITED] != NULL) {
-    callbackHandlerLong (uitree->callbacks [TV_CB_EDITED], col);
+    callbackHandlerI (uitree->callbacks [TV_CB_EDITED], col);
   }
 }
 
@@ -1675,7 +1675,7 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
     }
   }
   if (uitree->callbacks [TV_CB_ROW_ACTIVE] != NULL) {
-    callbackHandlerLong (uitree->callbacks [TV_CB_ROW_ACTIVE], col);
+    callbackHandlerI (uitree->callbacks [TV_CB_ROW_ACTIVE], col);
   }
 }
 
@@ -1830,7 +1830,7 @@ uiTreeViewSelectForeachHandler (GtkTreeModel *model,
 
     memcpy (&uitree->selectforeachiter, iter, sizeof (GtkTreeIter));
 
-    callbackHandlerLong (uitree->callbacks [TV_CB_FOREACH], row);
+    callbackHandlerI (uitree->callbacks [TV_CB_FOREACH], row);
   }
 }
 
@@ -1904,7 +1904,7 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
   }
 
   if (uitree->callbacks [TV_CB_SIZE_CHG] != NULL && rows > 0) {
-    callbackHandlerLong (uitree->callbacks [TV_CB_SIZE_CHG], rows);
+    callbackHandlerI (uitree->callbacks [TV_CB_SIZE_CHG], rows);
   }
 }
 
@@ -1943,7 +1943,7 @@ uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event,
   }
 
   if (uitree->callbacks [TV_CB_SCROLL_EVENT] != NULL) {
-    rc = callbackHandlerLong (uitree->callbacks [TV_CB_SCROLL_EVENT], dir);
+    rc = callbackHandlerI (uitree->callbacks [TV_CB_SCROLL_EVENT], dir);
   }
 
   return rc;

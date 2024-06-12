@@ -158,6 +158,6 @@ uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value,
     return rc;
   }
 
-  rc = callbackHandlerDouble (uicb, value);
+  rc = callbackHandlerD (uicb, value);
   return rc;
 }

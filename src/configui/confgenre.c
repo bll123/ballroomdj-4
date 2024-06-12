@@ -74,7 +74,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_GENRES].uitree;
 
   gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED] =
-      callbackInitLong (confuiTableChanged, gui);
+      callbackInitI (confuiTableChanged, gui);
   uiTreeViewSetEditedCallback (uitree,
       gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED]);
 

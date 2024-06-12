@@ -33,7 +33,7 @@ typedef struct uiplaylist {
   callback_t        *selectcb;
 } uiplaylist_t;
 
-static bool     uiplaylistSelectHandler (void *udata, long idx);
+static bool     uiplaylistSelectHandler (void *udata, int32_t idx);
 
 uiplaylist_t *
 uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
@@ -50,7 +50,7 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
 
   uiplaylist->dropdown = uiDropDownInit ();
   uiplaylist->callbacks [UIPLAYLIST_CB_SEL] =
-      callbackInitLong (uiplaylistSelectHandler, uiplaylist);
+      callbackInitI (uiplaylistSelectHandler, uiplaylist);
   uiwidgetp = uiComboboxCreate (uiplaylist->dropdown,
       parentwin, "",
       uiplaylist->callbacks [UIPLAYLIST_CB_SEL], uiplaylist);
@@ -87,12 +87,12 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
 }
 
 static bool
-uiplaylistSelectHandler (void *udata, long idx)
+uiplaylistSelectHandler (void *udata, int32_t idx)
 {
   uiplaylist_t  *uiplaylist = udata;
 
   if (uiplaylist->selectcb != NULL) {
-    callbackHandlerLong (uiplaylist->selectcb, idx);
+    callbackHandlerI (uiplaylist->selectcb, idx);
   }
 
   return UICB_CONT;

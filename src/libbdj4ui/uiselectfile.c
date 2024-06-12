@@ -40,8 +40,8 @@ typedef struct uiselectfile {
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb);
-static bool selectFileSelect (void *udata, long col);
-static bool selectFileResponseHandler (void *udata, long responseid);
+static bool selectFileSelect (void *udata, int32_t col);
+static bool selectFileResponseHandler (void *udata, int32_t responseid);
 static bool selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype);
 
 void
@@ -71,7 +71,7 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
   selectfile->respcb = NULL;
   selectfile->selfilecb = NULL;
   selectfile->options = options;
-  selectfile->respcb = callbackInitLong (
+  selectfile->respcb = callbackInitI (
       selectFileResponseHandler, selectfile);
 
   /* CONTEXT: select file: file type for the file selection dialog (song list) */
@@ -211,7 +211,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_TYPE_END);
 
-  selectfile->rowactivecb = callbackInitLong (selectFileSelect, selectfile);
+  selectfile->rowactivecb = callbackInitI (selectFileSelect, selectfile);
   uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);
 
   /* the dialog doesn't have any space above the buttons */
@@ -227,7 +227,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 }
 
 static bool
-selectFileSelect (void *udata, long col)
+selectFileSelect (void *udata, int32_t col)
 {
   uiselectfile_t  *selectfile = udata;
 
@@ -236,7 +236,7 @@ selectFileSelect (void *udata, long col)
 }
 
 static bool
-selectFileResponseHandler (void *udata, long responseid)
+selectFileResponseHandler (void *udata, int32_t responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int           x, y, ws;
@@ -272,7 +272,7 @@ selectFileResponseHandler (void *udata, long responseid)
       uiwcontFree (selectfile->selfileDialog);
       selectfile->selfileDialog = NULL;
       if (selectfile->selfilecb != NULL) {
-        callbackHandlerStr (selectfile->selfilecb, str);
+        callbackHandlerS (selectfile->selfilecb, str);
       }
       dataFree (str);
       selectfile->selfilecb = NULL;

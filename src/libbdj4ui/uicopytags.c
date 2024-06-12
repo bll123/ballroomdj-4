@@ -50,7 +50,7 @@ typedef struct uict {
 } uict_t;
 
 static void   uicopytagsCreateDialog (uict_t *uict);
-static bool   uicopytagsResponseHandler (void *udata, long responseid);
+static bool   uicopytagsResponseHandler (void *udata, int32_t responseid);
 
 uict_t *
 uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
@@ -81,7 +81,7 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
   uict->targetsfcb.entry = uict->target;
   uict->targetsfcb.window = uict->parentwin;
 
-  uict->callbacks [UICT_CB_DIALOG] = callbackInitLong (
+  uict->callbacks [UICT_CB_DIALOG] = callbackInitI (
       uicopytagsResponseHandler, uict);
 
   return uict;
@@ -263,7 +263,7 @@ uicopytagsCreateDialog (uict_t *uict)
 }
 
 static bool
-uicopytagsResponseHandler (void *udata, long responseid)
+uicopytagsResponseHandler (void *udata, int32_t responseid)
 {
   uict_t      *uict = udata;
   int         x, y, ws;

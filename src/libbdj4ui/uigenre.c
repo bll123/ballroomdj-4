@@ -32,7 +32,7 @@ typedef struct uigenre {
   bool          allflag : 1;
 } uigenre_t;
 
-static bool uigenreSelectHandler (void *udata, long idx);
+static bool uigenreSelectHandler (void *udata, int32_t idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
@@ -51,7 +51,7 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenre->selectcb = NULL;
 
   uigenre->dropdown = uiDropDownInit ();
-  uigenre->cb = callbackInitLong (uigenreSelectHandler, uigenre);
+  uigenre->cb = callbackInitI (uigenreSelectHandler, uigenre);
   uigenre->buttonp = uiComboboxCreate (uigenre->dropdown,
       parentwin, "", uigenre->cb, uigenre);
   uigenreCreateGenreList (uigenre);
@@ -131,14 +131,14 @@ uigenreSetCallback (uigenre_t *uigenre, callback_t *cb)
 /* internal routines */
 
 static bool
-uigenreSelectHandler (void *udata, long idx)
+uigenreSelectHandler (void *udata, int32_t idx)
 {
   uigenre_t   *uigenre = udata;
 
   uigenre->selectedidx = idx;
 
   if (uigenre->selectcb != NULL) {
-    callbackHandlerLong (uigenre->selectcb, idx);
+    callbackHandlerI (uigenre->selectcb, idx);
   }
   return UICB_CONT;
 }

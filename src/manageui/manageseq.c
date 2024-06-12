@@ -55,7 +55,7 @@ typedef struct manageseq {
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
-static long   manageSequenceLoadCB (void *udata, const char *fn);
+static int32_t manageSequenceLoadCB (void *udata, const char *fn);
 static bool   manageSequenceCopy (void *udata);
 static bool   manageSequenceNew (void *udata);
 static bool   manageSequenceDelete (void *udata);
@@ -82,7 +82,7 @@ manageSequenceAlloc (manageinfo_t *minfo)
   }
 
   manageseq->callbacks [MSEQ_CB_SEL_FILE] =
-      callbackInitStr (manageSequenceLoadCB, manageseq);
+      callbackInitS (manageSequenceLoadCB, manageseq);
 
   return manageseq;
 }
@@ -278,7 +278,7 @@ manageSequenceSave (manageseq_t *manageseq)
   playlistCheckAndCreate (name, PLTYPE_SEQUENCE);
   slistFree (slist);
   if (manageseq->seqloadcb != NULL) {
-    callbackHandlerStr (manageseq->seqloadcb, name);
+    callbackHandlerS (manageseq->seqloadcb, name);
   }
   mdfree (name);
   logProcEnd ("");
@@ -307,7 +307,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     manageSequenceNew (manageseq);
   } else {
     if (manageseq->seqloadcb != NULL) {
-      callbackHandlerStr (manageseq->seqloadcb, name);
+      callbackHandlerS (manageseq->seqloadcb, name);
     }
   }
   mdfree (name);
@@ -361,7 +361,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
 
   manageSetSequenceName (manageseq, fn);
   if (manageseq->seqloadcb != NULL && preloadflag == MANAGE_STD) {
-    callbackHandlerStr (manageseq->seqloadcb, fn);
+    callbackHandlerS (manageseq->seqloadcb, fn);
   }
 
   sequenceFree (seq);
@@ -387,7 +387,7 @@ manageSequenceLoad (void *udata)
   return UICB_CONT;
 }
 
-static long
+static int32_t
 manageSequenceLoadCB (void *udata, const char *fn)
 {
   manageseq_t *manageseq = udata;
@@ -418,7 +418,7 @@ manageSequenceCopy (void *udata)
     manageseq->seqbackupcreated = false;
     uiduallistClearChanged (manageseq->seqduallist);
     if (manageseq->seqloadcb != NULL) {
-      callbackHandlerStr (manageseq->seqloadcb, newname);
+      callbackHandlerS (manageseq->seqloadcb, newname);
     }
   }
   mdfree (oname);

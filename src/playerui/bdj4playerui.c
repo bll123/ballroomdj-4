@@ -216,7 +216,7 @@ static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 static char *   pluiExportMP3Dialog (playerui_t *plui);
 /* queue selection handlers */
-static bool     pluiSwitchPage (void *udata, long pagenum);
+static bool     pluiSwitchPage (void *udata, int32_t pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, int newqueue, int updateFlag);
@@ -228,13 +228,13 @@ static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
-static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
+static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid);
 static bool     pluiMarqueeFontSizeChg (void *udata);
 static bool     pluiMarqueeRecover (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
-static bool     pluiQueueProcess (void *udata, long dbidx);
-static bool     pluiSongSaveCallback (void *udata, long dbidx);
+static bool     pluiQueueProcess (void *udata, int32_t dbidx);
+static bool     pluiSongSaveCallback (void *udata, int32_t dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
@@ -666,7 +666,7 @@ pluiBuildUI (playerui_t *plui)
   plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
 
-  plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
+  plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
       pluiSwitchPage, plui);
   uiNotebookSetCallback (plui->wcont [PLUI_W_NOTEBOOK], plui->callbacks [PLUI_CB_NOTEBOOK]);
 
@@ -679,7 +679,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (uiwidgetp);
   plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
 
-  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStrInt (
+  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitSI (
       pluiDragDropCallback, plui);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -749,7 +749,7 @@ pluiBuildUI (playerui_t *plui)
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
 
-  plui->callbacks [PLUI_CB_SONG_SAVE] = callbackInitLong (
+  plui->callbacks [PLUI_CB_SONG_SAVE] = callbackInitI (
       pluiSongSaveCallback, plui);
   uimusicqSetSongSaveCallback (plui->uimusicq, plui->callbacks [PLUI_CB_SONG_SAVE]);
   uisongselSetSongSaveCallback (plui->uisongsel, plui->callbacks [PLUI_CB_SONG_SAVE]);
@@ -794,7 +794,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
-  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitLong (
+  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitI (
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
       plui->callbacks [PLUI_CB_QUEUE_SL]);
@@ -1260,7 +1260,7 @@ pluiExportMP3Dialog (playerui_t *plui)
 }
 
 static bool
-pluiSwitchPage (void *udata, long pagenum)
+pluiSwitchPage (void *udata, int32_t pagenum)
 {
   playerui_t  *plui = udata;
   int         tabid;
@@ -1507,7 +1507,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   logProcBegin ();
 
-  plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
+  plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitI (
       pluiMarqueeFontSizeDialogResponse, plui);
   plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG] = uiCreateDialog (plui->wcont [PLUI_W_WINDOW],
       plui->callbacks [PLUI_CB_FONT_SIZE],
@@ -1557,7 +1557,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 }
 
 static bool
-pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
+pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid)
 {
   playerui_t  *plui = udata;
 
@@ -1632,7 +1632,7 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
 }
 
 static bool
-pluiQueueProcess (void *udata, long dbidx)
+pluiQueueProcess (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
   nlistidx_t  loc;
@@ -1661,13 +1661,13 @@ pluiQueueProcess (void *udata, long dbidx)
   /* increment the location by 1 as the tree-view index is one less than */
   /* the music queue index */
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
-      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
+      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, (long) dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;
 }
 
 static bool
-pluiSongSaveCallback (void *udata, long dbidx)
+pluiSongSaveCallback (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
   char        tmp [40];
@@ -1676,7 +1676,7 @@ pluiSongSaveCallback (void *udata, long dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%ld", dbidx);
+  snprintf (tmp, sizeof (tmp), "%ld", (long) dbidx);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   uisongselPopulateData (plui->uisongsel);

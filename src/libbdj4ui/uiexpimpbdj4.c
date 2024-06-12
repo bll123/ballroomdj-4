@@ -68,10 +68,10 @@ typedef struct uieibdj4 {
 static void   uieibdj4CreateDialog (uieibdj4_t *uieibdj4);
 static bool   uieibdj4TargetDialog (void *udata);
 static void   uieibdj4InitDisplay (uieibdj4_t *uieibdj4);
-static bool   uieibdj4ResponseHandler (void *udata, long responseid);
+static bool   uieibdj4ResponseHandler (void *udata, int32_t responseid);
 static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
 static int    uieibdj4ValidateTarget (uiwcont_t *entry, void *udata);
-static bool   uieibdj4SelectHandler (void *udata, long idx);
+static bool   uieibdj4SelectHandler (void *udata, int32_t idx);
 static int    uieibdj4ValidateNewName (uiwcont_t *entry, void *udata);
 
 uieibdj4_t *
@@ -95,11 +95,11 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
   }
   uieibdj4->isactive = false;
 
-  uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
+  uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitI (
       uieibdj4ResponseHandler, uieibdj4);
   uieibdj4->callbacks [UIEIBDJ4_CB_TARGET] = callbackInit (
       uieibdj4TargetDialog, uieibdj4, NULL);
-  uieibdj4->callbacks [UIEIBDJ4_CB_SEL] = callbackInitLong (
+  uieibdj4->callbacks [UIEIBDJ4_CB_SEL] = callbackInitI (
       uieibdj4SelectHandler, uieibdj4);
 
   return uieibdj4;
@@ -455,7 +455,7 @@ uieibdj4InitDisplay (uieibdj4_t *uieibdj4)
 }
 
 static bool
-uieibdj4ResponseHandler (void *udata, long responseid)
+uieibdj4ResponseHandler (void *udata, int32_t responseid)
 {
   uieibdj4_t  *uieibdj4 = udata;
   int             x, y, ws;
@@ -553,7 +553,7 @@ uieibdj4ValidateTarget (uiwcont_t *entry, void *udata)
 
 
 static bool
-uieibdj4SelectHandler (void *udata, long idx)
+uieibdj4SelectHandler (void *udata, int32_t idx)
 {
   uieibdj4_t  *uieibdj4 = udata;
   int         currtype;

@@ -934,7 +934,7 @@ uiaudioidSaveCallback (void *udata)
 
   if (uiaudioid->savecb != NULL) {
     /* the callback re-loads the song editor and audio id */
-    callbackHandlerLong (uiaudioid->savecb, audioidint->dbidx);
+    callbackHandlerI (uiaudioid->savecb, audioidint->dbidx);
   }
 
   audioidint->insave = false;

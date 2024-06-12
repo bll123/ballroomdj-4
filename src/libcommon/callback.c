@@ -16,12 +16,11 @@
 typedef struct callback {
   union {
     callbackFunc        cbfunc;
-    callbackFuncDouble  doublecbfunc;
-    callbackFuncIntInt  intintcbfunc;
-    callbackFuncLong    longcbfunc;
-    callbackFuncLongInt longintcbfunc;
-    callbackFuncStr     strcbfunc;
-    callbackFuncStrInt  strintcbfunc;
+    callbackFuncD       doublecbfunc;
+    callbackFuncI       intcbfunc;
+    callbackFuncII      intintcbfunc;
+    callbackFuncS       strcbfunc;
+    callbackFuncSI      strintcbfunc;
   };
   void            *udata;
   const char      *actiontext;
@@ -49,7 +48,7 @@ callbackInit (callbackFunc cbfunc, void *udata, const char *actiontext)
 }
 
 callback_t *
-callbackInitDouble (callbackFuncDouble cbfunc, void *udata)
+callbackInitD (callbackFuncD cbfunc, void *udata)
 {
   callback_t    *cb;
 
@@ -61,7 +60,19 @@ callbackInitDouble (callbackFuncDouble cbfunc, void *udata)
 }
 
 callback_t *
-callbackInitIntInt (callbackFuncIntInt cbfunc, void *udata)
+callbackInitI (callbackFuncI cbfunc, void *udata)
+{
+  callback_t    *cb;
+
+  cb = mdmalloc (sizeof (callback_t));
+  cb->intcbfunc = cbfunc;
+  cb->udata = udata;
+  cb->actiontext = NULL;
+  return cb;
+}
+
+callback_t *
+callbackInitII (callbackFuncII cbfunc, void *udata)
 {
   callback_t    *cb;
 
@@ -73,31 +84,7 @@ callbackInitIntInt (callbackFuncIntInt cbfunc, void *udata)
 }
 
 callback_t *
-callbackInitLong (callbackFuncLong cbfunc, void *udata)
-{
-  callback_t    *cb;
-
-  cb = mdmalloc (sizeof (callback_t));
-  cb->longcbfunc = cbfunc;
-  cb->udata = udata;
-  cb->actiontext = NULL;
-  return cb;
-}
-
-callback_t *
-callbackInitLongInt (callbackFuncLongInt cbfunc, void *udata)
-{
-  callback_t    *cb;
-
-  cb = mdmalloc (sizeof (callback_t));
-  cb->longintcbfunc = cbfunc;
-  cb->udata = udata;
-  cb->actiontext = NULL;
-  return cb;
-}
-
-callback_t *
-callbackInitStr (callbackFuncStr cbfunc, void *udata)
+callbackInitS (callbackFuncS cbfunc, void *udata)
 {
   callback_t    *cb;
 
@@ -109,7 +96,7 @@ callbackInitStr (callbackFuncStr cbfunc, void *udata)
 }
 
 callback_t *
-callbackInitStrInt (callbackFuncStrInt cbfunc, void *udata)
+callbackInitSI (callbackFuncSI cbfunc, void *udata)
 {
   callback_t    *cb;
 
@@ -153,7 +140,7 @@ callbackHandler (callback_t *cb)
 }
 
 bool
-callbackHandlerDouble (callback_t *cb, double value)
+callbackHandlerD (callback_t *cb, double value)
 {
   bool  rc = false;
 
@@ -170,23 +157,23 @@ callbackHandlerDouble (callback_t *cb, double value)
 
 
 bool
-callbackHandlerLong (callback_t *cb, long value)
+callbackHandlerI (callback_t *cb, int32_t value)
 {
   bool  rc = false;
 
   if (cb == NULL) {
     return 0;
   }
-  if (cb->longcbfunc == NULL) {
+  if (cb->intcbfunc == NULL) {
     return 0;
   }
 
-  rc = cb->longcbfunc (cb->udata, value);
+  rc = cb->intcbfunc (cb->udata, value);
   return rc;
 }
 
 bool
-callbackHandlerIntInt (callback_t *cb, int a, int b)
+callbackHandlerII (callback_t *cb, int a, int b)
 {
   bool  rc = false;
 
@@ -201,26 +188,10 @@ callbackHandlerIntInt (callback_t *cb, int a, int b)
   return rc;
 }
 
-bool
-callbackHandlerLongInt (callback_t *cb, long lval, int ival)
+int32_t
+callbackHandlerS (callback_t *cb, const char *str)
 {
-  bool  rc = false;
-
-  if (cb == NULL) {
-    return 0;
-  }
-  if (cb->longintcbfunc == NULL) {
-    return 0;
-  }
-
-  rc = cb->longintcbfunc (cb->udata, lval, ival);
-  return rc;
-}
-
-long
-callbackHandlerStr (callback_t *cb, const char *str)
-{
-  long    value;
+  int32_t   value;
 
   if (cb == NULL) {
     return 0;
@@ -234,7 +205,7 @@ callbackHandlerStr (callback_t *cb, const char *str)
 }
 
 bool
-callbackHandlerStrInt (callback_t *cb, const char *str, int value)
+callbackHandlerSI (callback_t *cb, const char *str, int value)
 {
   bool  rc = false;
 

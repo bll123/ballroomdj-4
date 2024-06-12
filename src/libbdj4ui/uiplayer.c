@@ -333,7 +333,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SPEED]);
-  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitD (
       uiplayerSpeedCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_SPEED], uiplayer->callbacks [UIPL_CB_SPEED]);
 
@@ -394,7 +394,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SEEK]);
-  uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitD (
       uiplayerSeekCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_SEEK], uiplayer->callbacks [UIPL_CB_SEEK]);
 
@@ -505,7 +505,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
   uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_VOLUME]);
-  uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitD (
       uiplayerVolumeCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_VOLUME], uiplayer->callbacks [UIPL_CB_VOLUME]);
 

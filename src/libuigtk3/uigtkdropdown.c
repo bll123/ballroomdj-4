@@ -566,7 +566,7 @@ uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
 
   idx = uiDropDownSelectionGet (uiwidget, path);
   dropdown = uiwidget->uiint.uidropdown;
-  callbackHandlerLong (dropdown->selectcb, idx);
+  callbackHandlerI (dropdown->selectcb, idx);
 }
 
 static nlistidx_t

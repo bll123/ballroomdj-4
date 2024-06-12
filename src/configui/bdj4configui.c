@@ -466,7 +466,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
 
-  confui->gui.nbcb = callbackInitLong (confuiSwitchTable, &confui->gui);
+  confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
   uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);

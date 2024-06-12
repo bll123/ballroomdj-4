@@ -513,7 +513,7 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
   }
 
   if (uicb != NULL) {
-    rc = callbackHandlerIntInt (uicb, isicon, ismax);
+    rc = callbackHandlerII (uicb, isicon, ismax);
   }
   return rc;
 }

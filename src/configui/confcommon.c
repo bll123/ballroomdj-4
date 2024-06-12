@@ -541,7 +541,7 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
 }
 
 bool
-confuiOrgPathSelect (void *udata, long idx)
+confuiOrgPathSelect (void *udata, int32_t idx)
 {
   confuigui_t *gui = udata;
   char        *sval = NULL;

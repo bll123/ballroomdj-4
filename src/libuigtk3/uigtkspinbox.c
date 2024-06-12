@@ -624,7 +624,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
   newtext = gtk_entry_get_text (GTK_ENTRY (uiwidget->uidata.widget));
   if (uispinbox->convcb != NULL) {
-    newvalue = callbackHandlerStr (uispinbox->convcb, newtext);
+    newvalue = callbackHandlerS (uispinbox->convcb, newtext);
   } else {
     newvalue = tmutilStrToMS (newtext);
   }

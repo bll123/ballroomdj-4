@@ -4,6 +4,8 @@
 #ifndef INC_CONFIGUI_H
 #define INC_CONFIGUI_H
 
+#include <stdint.h>
+
 #include "dispsel.h"
 #include "ilist.h"
 #include "nlist.h"
@@ -439,7 +441,7 @@ void confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath, const char *
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
-bool confuiOrgPathSelect (void *udata, long idx);
+bool confuiOrgPathSelect (void *udata, int32_t idx);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx);
 
 /* confdance.c */
@@ -470,7 +472,7 @@ void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, 
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, const char *value);
+void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncI ddcb, const char *value);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
@@ -535,14 +537,14 @@ void confuiCreateStatusTable (confuigui_t *gui);
 void confuiMakeItemTable (confuigui_t *gui, uiwcont_t *box, confuiident_t id, int flags);
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
-bool confuiTableChanged (void *udata, long col);
-bool confuiSwitchTable (void *udata, long pagenum);
+bool confuiTableChanged (void *udata, int32_t col);
+bool confuiSwitchTable (void *udata, int32_t pagenum);
 
 /* conftableadd.c */
 bool confuiTableAdd (void *udata);
 
 /* conftabledance.c */
-bool confuiDanceSelect (void *udata, long col);
+bool confuiDanceSelect (void *udata, int32_t col);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */

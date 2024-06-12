@@ -344,14 +344,14 @@ static bool     manageCloseWin (void *udata);
 static void     manageSigHandler (int sig);
 /* song editor */
 static void     manageSongEditMenu (manageui_t *manage);
-static bool     manageNewSelectionSongSel (void *udata, long dbidx);
-static bool     manageNewSelectionSonglist (void *udata, long dbidx);
+static bool     manageNewSelectionSongSel (void *udata, int32_t dbidx);
+static bool     manageNewSelectionSonglist (void *udata, int32_t dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
-static bool     manageSongEditSaveCallback (void *udata, long dbidx);
+static bool     manageSongEditSaveCallback (void *udata, int32_t dbidx);
 static void     manageRePopulateData (manageui_t *manage);
 static void     manageSetEditMenuItems (manageui_t *manage);
 static bool     manageApplyAdjDialog (void *udata);
-static bool     manageApplyAdjCallback (void *udata, long aaflags);
+static bool     manageApplyAdjCallback (void *udata, int32_t aaflags);
 static bool     manageRestoreOrigCallback (void *udata);
 static bool     manageCopyTagsStart (void *udata);
 static bool     manageEditAllStart (void *udata);
@@ -362,8 +362,8 @@ static void     manageReloadSongEdit (manageui_t *manage);
 static bool     managePlaylistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
 static void     manageiTunesDialogCreateList (manageui_t *manage);
-static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
-static bool     manageiTunesDialogResponseHandler (void *udata, long responseid);
+static bool     manageiTunesDialogSelectHandler (void *udata, int32_t idx);
+static bool     manageiTunesDialogResponseHandler (void *udata, int32_t responseid);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageMusicManagerMenu (manageui_t *manage);
@@ -371,31 +371,31 @@ static void     manageMusicManagerMenu (manageui_t *manage);
 static void     manageBuildUISongListEditor (manageui_t *manage);
 static void     manageSonglistMenu (manageui_t *manage);
 static bool     manageSonglistLoad (void *udata);
-static long     manageSonglistLoadCB (void *udata, const char *fn);
+static int32_t  manageSonglistLoadCB (void *udata, const char *fn);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
 static bool     manageSonglistDelete (void *udata);
 static bool     manageSonglistTruncate (void *udata);
 static bool     manageSonglistCreateFromPlaylist (void *udata);
 static void     manageSongListCFPLCreateDialog (manageui_t *manage);
-static bool     manageCFPLResponseHandler (void *udata, long responseid);
+static bool     manageCFPLResponseHandler (void *udata, int32_t responseid);
 static void     manageCFPLCreate (manageui_t *manage);
 static void     manageCFPLPostProcess (manageui_t *manage);
 static bool     manageSonglistMix (void *udata);
 static bool     manageSonglistSwap (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn, int preloadflag);
-static long     manageLoadPlaylistCB (void *udata, const char *fn);
+static int32_t  manageLoadPlaylistCB (void *udata, const char *fn);
 static bool     manageNewPlaylistCB (void *udata);
-static long     manageLoadSonglistSeqCB (void *udata, const char *fn);
+static int32_t  manageLoadSonglistSeqCB (void *udata, const char *fn);
 static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
-static bool     managePlayProcessSonglist (void *udata, long dbidx, int mqidx);
-static bool     managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx);
-static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
-static bool     manageQueueProcessSonglist (void *udata, long dbidx);
-static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
+static bool     managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t mqidx);
+static bool     managePlayProcessEasySonglist (void *udata, int32_t dbidx, int32_t mqidx);
+static bool     managePlayProcessMusicManager (void *udata, int32_t dbidx, int32_t mqidx);
+static bool     manageQueueProcessSonglist (void *udata, int32_t dbidx);
+static bool     manageQueueProcessEasySonglist (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 /* playlist */
 static bool     managePlaylistExport (void *udata);
@@ -407,10 +407,10 @@ static bool     managePlaylistImportBDJ4 (void *udata);
 static bool     manageExportBDJ4ResponseHandler (void *udata);
 static bool     manageImportBDJ4ResponseHandler (void *udata);
 /* general */
-static bool     manageSwitchPageMain (void *udata, long pagenum);
-static bool     manageSwitchPageSonglist (void *udata, long pagenum);
-static bool     manageSwitchPageMM (void *udata, long pagenum);
-static void     manageSwitchPage (manageui_t *manage, long pagenum, int which);
+static bool     manageSwitchPageMain (void *udata, int32_t pagenum);
+static bool     manageSwitchPageSonglist (void *udata, int32_t pagenum);
+static bool     manageSwitchPageMM (void *udata, int32_t pagenum);
+static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
 static void     manageSetDisplayPerSelection (manageui_t *manage, int id);
 static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
@@ -847,7 +847,7 @@ manageBuildUI (manageui_t *manage)
   y = nlistGetNum (manage->minfo.options, MANAGE_SIZE_Y);
   uiWindowSetDefaultSize (manage->minfo.window, x, y);
 
-  manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitI (
       manageSwitchPageMain, manage);
   uiNotebookSetCallback (manage->wcont [MANAGE_W_MAIN_NB],
       manage->callbacks [MANAGE_CB_MAIN_NB]);
@@ -862,7 +862,7 @@ manageBuildUI (manageui_t *manage)
       "bdj4_icon_manage", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL] = callbackInitI (
       manageNewSelectionSongSel, manage);
   uisongselSetSelectionCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
@@ -871,14 +871,14 @@ manageBuildUI (manageui_t *manage)
   uisongselSetSelectionCallback (manage->mmsongsel,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
 
-  manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST] = callbackInitI (
       manageNewSelectionSonglist, manage);
   uimusicqSetSelectionCallback (manage->slmusicq,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
   uimusicqSetSelectionCallback (manage->slsbsmusicq,
       manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
 
-  manage->callbacks [MANAGE_CB_SEQ_LOAD] = callbackInitStr (
+  manage->callbacks [MANAGE_CB_SEQ_LOAD] = callbackInitS (
       manageLoadPlaylistCB, manage);
   manageSequenceSetLoadCallback (manage->manageseq,
       manage->callbacks [MANAGE_CB_SEQ_LOAD]);
@@ -888,7 +888,7 @@ manageBuildUI (manageui_t *manage)
   manageSequenceSetNewCallback (manage->manageseq,
       manage->callbacks [MANAGE_CB_SEQ_NEW]);
 
-  manage->callbacks [MANAGE_CB_PL_LOAD] = callbackInitStr (
+  manage->callbacks [MANAGE_CB_PL_LOAD] = callbackInitS (
       manageLoadSonglistSeqCB, manage);
   managePlaylistSetLoadCallback (manage->managepl,
       manage->callbacks [MANAGE_CB_PL_LOAD]);
@@ -908,12 +908,12 @@ static void
 manageInitializeUI (manageui_t *manage)
 {
   manage->callbacks [MANAGE_CB_SL_SEL_FILE] =
-      callbackInitStr (manageSonglistLoadCB, manage);
-  manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
+      callbackInitS (manageSonglistLoadCB, manage);
+  manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitI (
       manageCFPLResponseHandler, manage);
-  manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitI (
       manageiTunesDialogResponseHandler, manage);
-  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitI (
       manageiTunesDialogSelectHandler, manage);
 
   manage->samesong = samesongAlloc (manage->musicdb);
@@ -930,11 +930,11 @@ manageInitializeUI (manageui_t *manage)
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
       manage->uisongfilter, DISP_SEL_SONGSEL);
-  manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitLongInt (
+  manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitII (
       managePlayProcessSonglist, manage);
   uisongselSetPlayCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL]);
-  manage->callbacks [MANAGE_CB_QUEUE_SL] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_QUEUE_SL] = callbackInitI (
       manageQueueProcessSonglist, manage);
   uisongselSetQueueCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL]);
@@ -946,11 +946,11 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
-  manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitLongInt (
+  manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitII (
       managePlayProcessEasySonglist, manage);
   uisongselSetPlayCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL_SBS]);
-  manage->callbacks [MANAGE_CB_QUEUE_SL_SBS] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_QUEUE_SL_SBS] = callbackInitI (
       manageQueueProcessEasySonglist, manage);
   uisongselSetQueueCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL_SBS]);
@@ -964,7 +964,7 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_MM);
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
-  manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitLongInt (
+  manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitII (
       managePlayProcessMusicManager, manage);
   uisongselSetPlayCallback (manage->mmsongsel,
       manage->callbacks [MANAGE_CB_PLAY_MM]);
@@ -992,7 +992,7 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetEditCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_EDIT]);
   uimusicqSetEditCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_EDIT]);
 
-  manage->callbacks [MANAGE_CB_SAVE] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_SAVE] = callbackInitI (
       manageSongEditSaveCallback, manage);
   uisongeditSetSaveCallback (manage->mmsongedit, manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_SAVE]);
@@ -1012,7 +1012,7 @@ manageInitializeUI (manageui_t *manage)
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
 
   manage->uiexppl = uiexpplInit (manage->minfo.window, manage->minfo.options);
-  manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitStrInt (
+  manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitSI (
       managePlaylistExportRespHandler, manage);
   uiexpplSetResponseCallback (manage->uiexppl,
       manage->callbacks [MANAGE_CB_EXP_PL]);
@@ -1110,7 +1110,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
   uiwcontFree (uiwidgetp);
 
-  manage->callbacks [MANAGE_CB_SL_NB] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_SL_NB] = callbackInitI (
       manageSwitchPageSonglist, manage);
   uiNotebookSetCallback (manage->wcont [MANAGE_W_SONGLIST_NB], manage->callbacks [MANAGE_CB_SL_NB]);
 
@@ -1684,7 +1684,7 @@ manageSongEditMenu (manageui_t *manage)
 }
 
 static bool
-manageNewSelectionSongSel (void *udata, long dbidx)
+manageNewSelectionSongSel (void *udata, int32_t dbidx)
 {
   manageui_t  *manage = udata;
   song_t      *song = NULL;
@@ -1715,7 +1715,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
 }
 
 static bool
-manageNewSelectionSonglist (void *udata, long dbidx)
+manageNewSelectionSonglist (void *udata, int32_t dbidx)
 {
   manageui_t  *manage = udata;
 
@@ -1759,7 +1759,7 @@ manageSwitchToSongEditor (void *udata)
 }
 
 static bool
-manageSongEditSaveCallback (void *udata, long dbidx)
+manageSongEditSaveCallback (void *udata, int32_t dbidx)
 {
   manageui_t  *manage = udata;
   char        tmp [40];
@@ -1776,7 +1776,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%ld", dbidx);
+  snprintf (tmp, sizeof (tmp), "%ld", (long) dbidx);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   manageRePopulateData (manage);
@@ -1847,7 +1847,7 @@ manageApplyAdjDialog (void *udata)
 }
 
 static bool
-manageApplyAdjCallback (void *udata, long aaflags)
+manageApplyAdjCallback (void *udata, int32_t aaflags)
 {
   manageui_t  *manage = udata;
 
@@ -2062,13 +2062,13 @@ manageiTunesDialogCreateList (manageui_t *manage)
 }
 
 static bool
-manageiTunesDialogSelectHandler (void *udata, long idx)
+manageiTunesDialogSelectHandler (void *udata, int32_t idx)
 {
   return UICB_CONT;
 }
 
 static bool
-manageiTunesDialogResponseHandler (void *udata, long responseid)
+manageiTunesDialogResponseHandler (void *udata, int32_t responseid)
 {
   manageui_t  *manage = udata;
 
@@ -2170,7 +2170,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   manage->uict = uicopytagsInit (manage->minfo.window, manage->minfo.options);
   manage->uiaa = uiaaInit (manage->minfo.window, manage->minfo.options);
-  manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitI (
       manageApplyAdjCallback, manage);
   uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
 
@@ -2194,7 +2194,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiwcontFree (uiwidgetp);
 
 
-  manage->callbacks [MANAGE_CB_MM_NB] = callbackInitLong (
+  manage->callbacks [MANAGE_CB_MM_NB] = callbackInitI (
       manageSwitchPageMM, manage);
   uiNotebookSetCallback (manage->wcont [MANAGE_W_MM_NB], manage->callbacks [MANAGE_CB_MM_NB]);
 
@@ -2438,7 +2438,7 @@ manageSonglistLoad (void *udata)
   return UICB_CONT;
 }
 
-static long
+static int32_t
 manageSonglistLoadCB (void *udata, const char *fn)
 {
   manageui_t  *manage = udata;
@@ -2629,7 +2629,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 }
 
 static bool
-manageCFPLResponseHandler (void *udata, long responseid)
+manageCFPLResponseHandler (void *udata, int32_t responseid)
 {
   manageui_t  *manage = udata;
   int         x, y, ws;
@@ -2858,7 +2858,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
 }
 
 /* callback to load playlist upon songlist/sequence load */
-static long
+static int32_t
 manageLoadPlaylistCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
@@ -2880,7 +2880,7 @@ manageNewPlaylistCB (void *udata)
 }
 
 /* callback to load upon playlist load */
-static long
+static int32_t
 manageLoadSonglistSeqCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
@@ -2989,7 +2989,7 @@ manageSonglistSave (manageui_t *manage)
 }
 
 static bool
-managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
+managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_PLAY);
@@ -2997,7 +2997,7 @@ managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
 }
 
 static bool
-managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
+managePlayProcessEasySonglist (void *udata, int32_t dbidx, int32_t mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from side-by-side songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SBS_SONGLIST, MANAGE_PLAY);
@@ -3005,7 +3005,7 @@ managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 }
 
 static bool
-managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
+managePlayProcessMusicManager (void *udata, int32_t dbidx, int32_t mqidx)
 {
   manageui_t  *manage = udata;
 
@@ -3024,7 +3024,7 @@ managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 }
 
 static bool
-manageQueueProcessSonglist (void *udata, long dbidx)
+manageQueueProcessSonglist (void *udata, int32_t dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to songlist");
   manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SONGLIST, MANAGE_QUEUE);
@@ -3032,7 +3032,7 @@ manageQueueProcessSonglist (void *udata, long dbidx)
 }
 
 static bool
-manageQueueProcessEasySonglist (void *udata, long dbidx)
+manageQueueProcessEasySonglist (void *udata, int32_t dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to side-by-side songlist");
   manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SBS_SONGLIST, MANAGE_QUEUE);
@@ -3331,7 +3331,7 @@ manageImportBDJ4ResponseHandler (void *udata)
 /* general */
 
 static bool
-manageSwitchPageMain (void *udata, long pagenum)
+manageSwitchPageMain (void *udata, int32_t pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -3340,7 +3340,7 @@ manageSwitchPageMain (void *udata, long pagenum)
 }
 
 static bool
-manageSwitchPageSonglist (void *udata, long pagenum)
+manageSwitchPageSonglist (void *udata, int32_t pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -3349,7 +3349,7 @@ manageSwitchPageSonglist (void *udata, long pagenum)
 }
 
 static bool
-manageSwitchPageMM (void *udata, long pagenum)
+manageSwitchPageMM (void *udata, int32_t pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -3358,7 +3358,7 @@ manageSwitchPageMM (void *udata, long pagenum)
 }
 
 static void
-manageSwitchPage (manageui_t *manage, long pagenum, int which)
+manageSwitchPage (manageui_t *manage, int pagenum, int which)
 {
   int         id;
   bool        mainnb = false;

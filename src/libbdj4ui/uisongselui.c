@@ -137,22 +137,22 @@ static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
-static bool uisongselRowClickCallback (void *udata, long col);
+static bool uisongselRowClickCallback (void *udata, int32_t col);
 static bool uisongselRightClickCallback (void *udata);
 
-static bool uisongselProcessTreeSize (void *udata, long rows);
+static bool uisongselProcessTreeSize (void *udata, int32_t rows);
 static bool uisongselScroll (void *udata, double value);
 static void uisongselUpdateSelections (uisongsel_t *uisongsel);
-static bool uisongselScrollEvent (void *udata, long dir);
+static bool uisongselScrollEvent (void *udata, int32_t dir);
 static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static bool uisongselKeyEvent (void *udata);
 static bool uisongselSelectionChgCallback (void *udata);
-static bool uisongselProcessSelection (void *udata, long row);
+static bool uisongselProcessSelection (void *udata, int32_t row);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
 static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
 
-static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
+static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
 
 void
@@ -184,7 +184,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
-  ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitLong (
+  ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitI (
       uisongselProcessSelection, uisongsel);
 
   uisongsel->ssInternalData = ssint;
@@ -300,7 +300,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_BUTTON_PLAY] = uiwidgetp;
   }
 
-  ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitLongInt (
+  ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitII (
       uisongselUIDanceSelectCallback, uisongsel);
   uisongsel->uidance = uidanceDropDownCreate (hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
@@ -327,7 +327,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->wcont [SONGSEL_W_SCROLLBAR] =
       uiCreateVerticalScrollbar (uisongsel->dfilterCount);
   uiBoxPackEnd (hbox, ssint->wcont [SONGSEL_W_SCROLLBAR]);
-  ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitDouble (
+  ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitD (
       uisongselScroll, uisongsel);
   uiScrollbarSetChangeCallback (ssint->wcont [SONGSEL_W_SCROLLBAR],
       ssint->callbacks [SONGSEL_CB_SCROLL_CHG]);
@@ -352,7 +352,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiTreeViewAttachScrollController (uiwidgetp, uisongsel->dfilterCount);
   uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uiwidgetp);
 
-  ssint->callbacks [SONGSEL_CB_ROW_CLICK] = callbackInitLong (
+  ssint->callbacks [SONGSEL_CB_ROW_CLICK] = callbackInitI (
         uisongselRowClickCallback, uisongsel);
   uiTreeViewSetRowActivatedCallback (uiwidgetp,
         ssint->callbacks [SONGSEL_CB_ROW_CLICK]);
@@ -362,7 +362,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiTreeViewSetButton3Callback (uiwidgetp,
         ssint->callbacks [SONGSEL_CB_RIGHT_CLICK]);
 
-  ssint->callbacks [SONGSEL_CB_SCROLL_EVENT] = callbackInitLong (
+  ssint->callbacks [SONGSEL_CB_SCROLL_EVENT] = callbackInitI (
         uisongselScrollEvent, uisongsel);
   uiTreeViewSetScrollEventCallback (uiwidgetp,
         ssint->callbacks [SONGSEL_CB_SCROLL_EVENT]);
@@ -401,7 +401,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiTreeViewSetSelectChangedCallback (ssint->wcont [SONGSEL_W_TREE],
       ssint->callbacks [SONGSEL_CB_SEL_CHG]);
 
-  ssint->callbacks [SONGSEL_CB_SZ_CHG] = callbackInitLong (
+  ssint->callbacks [SONGSEL_CB_SZ_CHG] = callbackInitI (
       uisongselProcessTreeSize, uisongsel);
   uiTreeViewSetSizeChangeCallback (ssint->wcont [SONGSEL_W_TREE],
       ssint->callbacks [SONGSEL_CB_SZ_CHG]);
@@ -664,7 +664,7 @@ uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
 /* also used by DanceSelectHandler to set the peers dance drop-down */
 /* does not apply the filter */
 bool
-uisongselDanceSelectCallback (void *udata, long danceIdx)
+uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 {
   uisongsel_t *uisongsel = udata;
 
@@ -916,7 +916,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 
 /* count is not used */
 static bool
-uisongselUIDanceSelectCallback (void *udata, long idx, int count)
+uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count)
 {
   uisongsel_t *uisongsel = udata;
 
@@ -994,7 +994,7 @@ uisongselProcessSongFilter (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselRowClickCallback (void *udata, long col)
+uisongselRowClickCallback (void *udata, int32_t col)
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
@@ -1051,7 +1051,7 @@ uisongselRightClickCallback (void *udata)
 }
 
 static bool
-uisongselProcessTreeSize (void *udata, long rows)
+uisongselProcessTreeSize (void *udata, int32_t rows)
 {
   uisongsel_t     *uisongsel = udata;
   ss_internal_t   *ssint;
@@ -1186,7 +1186,7 @@ uisongselUpdateSelections (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselScrollEvent (void *udata, long dir)
+uisongselScrollEvent (void *udata, int32_t dir)
 {
   uisongsel_t     *uisongsel = udata;
   int             ndir = UISONGSEL_NEXT;
@@ -1382,7 +1382,7 @@ uisongselSelectionChgCallback (void *udata)
     /* the song editor points to the first selected */
     dbidx = nlistGetNum (ssint->selectedList, ssint->selectListKey);
     if (dbidx >= 0) {
-      callbackHandlerLong (uisongsel->newselcb, dbidx);
+      callbackHandlerI (uisongsel->newselcb, dbidx);
     }
   }
 
@@ -1392,7 +1392,7 @@ uisongselSelectionChgCallback (void *udata)
 }
 
 static bool
-uisongselProcessSelection (void *udata, long row)
+uisongselProcessSelection (void *udata, int32_t row)
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
@@ -1537,7 +1537,7 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
 
       dbidx = nlistGetNum (ssint->selectedList, ssint->selectListKey);
       if (dbidx >= 0) {
-        callbackHandlerLong (uisongsel->newselcb, dbidx);
+        callbackHandlerI (uisongsel->newselcb, dbidx);
       }
     }
   }
@@ -1619,7 +1619,7 @@ uisongselSongEditCallback (void *udata)
     if (dbidx < 0) {
       return UICB_CONT;
     }
-    callbackHandlerLong (uisongsel->newselcb, dbidx);
+    callbackHandlerI (uisongsel->newselcb, dbidx);
   }
   return callbackHandler (uisongsel->editcb);
 }
