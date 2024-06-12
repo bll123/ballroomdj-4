@@ -1229,12 +1229,12 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
       }
 
       if (tagdefs [tagidx].valueType == VALUE_NUM) {
-        long      val;
+        listnum_t   val;
 
         val = nlistGetNum (entry, tagidx);
         if (songGetNum (song, tagidx) != val) {
           songSetNum (song, tagidx, val);
-          logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: %s %ld", tagdefs [tagidx].tag, val);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: %s %" PRId64, tagdefs [tagidx].tag, val);
           changed = true;
         }
       } else {

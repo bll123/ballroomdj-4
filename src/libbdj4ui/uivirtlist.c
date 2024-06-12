@@ -912,7 +912,7 @@ uivlScrollEvent (void *udata, int32_t dir)
   }
 
   start = vl->rowoffset;
-fprintf (stderr, "dir: %ld\n", (long) dir);
+fprintf (stderr, "dir: %" PRId32 "\n", dir);
   if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
     start -= 1;
   }

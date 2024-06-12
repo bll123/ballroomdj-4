@@ -1676,7 +1676,7 @@ pluiSongSaveCallback (void *udata, int32_t dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%ld", (long) dbidx);
+  snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   uisongselPopulateData (plui->uisongsel);

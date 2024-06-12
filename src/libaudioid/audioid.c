@@ -152,7 +152,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         char      tmp [40];
         nlist_t   *respdata;
 
-        snprintf (tmp, sizeof (tmp), "%ld", (long) songGetNum (song, TAG_DURATION));
+        snprintf (tmp, sizeof (tmp), "%" PRIu64, songGetNum (song, TAG_DURATION));
         respdata = audioidGetResponseData (audioid->resp, 0);
         nlistSetStr (respdata, TAG_DURATION, tmp);
         audioid->respcount [AUDIOID_ID_ACOUSTID] =
@@ -219,8 +219,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid_id_t  ident;
       double        score;
       const char    *str;
-      long          dur;
-      long          tdur = -1;
+      int32_t       dur;
+      int32_t       tdur = -1;
       nlist_t       *respdata;
 
       respdata = audioidGetResponseData (audioid->resp, key);
@@ -250,7 +250,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         }
         dur = songGetNum (song, TAG_DURATION);
         if (labs (dur - tdur) > AUDIOID_DUR_DIFF) {
-          logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " duration reject %ld/%ld", key, dur, tdur);
+          logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " duration reject %" PRId32 "/%" PRId32, key, dur, tdur);
           continue;
         }
       }

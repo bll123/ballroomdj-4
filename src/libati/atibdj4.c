@@ -160,7 +160,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
     duration = ictx->duration;
     duration /= 1000;
-    snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
+    snprintf (pbuff, sizeof (pbuff), "%" PRId32, duration);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
     slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
 

@@ -108,13 +108,13 @@ typedef struct {
   int               pbfinishType;
   bdjmsgroute_t     pbfinishRoute;
   int               pbfinishrcv;
-  long              ploverridestoptime;
+  int32_t           ploverridestoptime;
   int               songplaysentcount;        // for testsuite
   int               musicqChanged [MUSICQ_MAX];
   bool              changeSuspend [MUSICQ_MAX];
   time_t            stopTime [MUSICQ_MAX];
   time_t            nStopTime [MUSICQ_MAX];
-  long              lastGapSent;
+  int32_t           lastGapSent;
   bool              switchQueueWhenEmpty : 1;
   bool              finished : 1;
   bool              marqueestarted : 1;
@@ -170,7 +170,7 @@ static int  mainMusicqIndexNumParse (maindata_t *mainData, char *args, ilistidx_
 static int  mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode);
 static int  mainMusicqIndexParse (maindata_t *mainData, const char *p);
 static void mainSendFinished (maindata_t *mainData);
-static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx, int mqidx, int speedCalcFlag);
+static int32_t mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx, int mqidx, int speedCalcFlag);
 static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx);
 static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
@@ -183,7 +183,7 @@ static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static time_t mainCalcStopTime (time_t stopTime);
 static void mainSendPlaybackGap (maindata_t *mainData);
 static int  mainLocateQueueWithSongs (maindata_t *mainData);
-static long mainGetGap (maindata_t *mainData, int mqidx, int index);
+static int32_t mainGetGap (maindata_t *mainData, int mqidx, int index);
 static void mainSendPlayerUISwitchQueue (maindata_t *mainData, int mqidx);
 static playlist_t * mainNextPlaylist (maindata_t *mainData, int mqidx);
 static void mainSetMusicQueuesChanged (maindata_t *mainData);
@@ -193,7 +193,7 @@ static void mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
 static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime, int mqidx);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
-static long globalCounter = 0;
+static int32_t globalCounter = 0;
 static int  gKillReceived = 0;
 
 int
@@ -1380,7 +1380,7 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
   playlist_t      *playlist = NULL;
   pltype_t        pltype = PLTYPE_SONGLIST;
   bool            stopatflag = false;
-  long            dur;
+  int32_t         dur;
   int             editmode = EDIT_FALSE;
   time_t          stopTime = 0;
   time_t          nStopTime = 0;
@@ -2582,17 +2582,17 @@ mainSendFinished (maindata_t *mainData)
   }
 }
 
-static long
+static int32_t
 mainCalculateSongDuration (maindata_t *mainData, song_t *song,
     int playlistIdx, int mqidx, int speedCalcFlag)
 {
-  long        maxdur;
-  long        dur;
+  int32_t     maxdur;
+  int32_t     dur;
   playlist_t  *playlist = NULL;
-  long        pldncmaxdur;
-  long        plmaxdur;
-  long        songstart;
-  long        songend;
+  int32_t     pldncmaxdur;
+  int32_t     plmaxdur;
+  int32_t     songstart;
+  int32_t     songend;
   int         speed;
   ilistidx_t  danceidx;
 
@@ -2606,7 +2606,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   songstart = 0;
   speed = 100;
   dur = songGetNum (song, TAG_DURATION);
-  logMsg (LOG_DBG, LOG_INFO, "song base-dur: %ld", dur);
+  logMsg (LOG_DBG, LOG_INFO, "song base-dur: %" PRId32, dur);
 
   songstart = songGetNum (song, TAG_SONGSTART);
   if (songstart < 0) {
@@ -2622,16 +2622,16 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   }
 
   /* apply songend if set to a reasonable value */
-  logMsg (LOG_DBG, LOG_INFO, "dur: %ld songstart: %ld songend: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "dur: %" PRId32 " songstart: %" PRId32 " songend: %" PRId32,
       dur, songstart, songend);
   if (songend >= 10000 && dur > songend) {
     dur = songend;
-    logMsg (LOG_DBG, LOG_INFO, "dur-songend: %ld", dur);
+    logMsg (LOG_DBG, LOG_INFO, "dur-songend: %" PRId32, dur);
   }
   /* adjust the song's duration by the songstart value */
   if (songstart > 0) {
     dur -= songstart;
-    logMsg (LOG_DBG, LOG_INFO, "dur-songstart: %ld", dur);
+    logMsg (LOG_DBG, LOG_INFO, "dur-songstart: %" PRId32, dur);
   }
 
   /* after adjusting the duration by song start/end, then adjust */
@@ -2639,12 +2639,12 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   /* this is the real duration for the song */
   if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
     dur = songutilAdjustPosReal (dur, speed);
-    logMsg (LOG_DBG, LOG_INFO, "dur-speed: %ld", dur);
+    logMsg (LOG_DBG, LOG_INFO, "dur-speed: %" PRId32, dur);
   }
 
   maxdur = bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, mqidx);
-  logMsg (LOG_DBG, LOG_INFO, "dur: %ld", dur);
-  logMsg (LOG_DBG, LOG_INFO, "dur-q-maxdur: %ld", maxdur);
+  logMsg (LOG_DBG, LOG_INFO, "dur: %" PRId32, dur);
+  logMsg (LOG_DBG, LOG_INFO, "dur-q-maxdur: %" PRId32, maxdur);
 
   /* the playlist pointer is needed to get the playlist dance-max-dur */
   plmaxdur = LIST_VALUE_INVALID;
@@ -2659,15 +2659,15 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   pldncmaxdur = playlistGetDanceNum (playlist, danceidx, PLDANCE_MAXPLAYTIME);
   if (pldncmaxdur >= 5000 && dur > pldncmaxdur) {
     dur = pldncmaxdur;
-    logMsg (LOG_DBG, LOG_INFO, "dur-pl-dnc-dur: %ld", dur);
+    logMsg (LOG_DBG, LOG_INFO, "dur-pl-dnc-dur: %" PRId32, dur);
   } else {
     /* the playlist max-play-time overrides the global max-play-time */
     if (plmaxdur >= 5000 && dur > plmaxdur) {
       dur = plmaxdur;
-      logMsg (LOG_DBG, LOG_INFO, "dur-pl-dur: %ld", dur);
+      logMsg (LOG_DBG, LOG_INFO, "dur-pl-dur: %" PRId32, dur);
     } else if (maxdur >= 5000 && dur > maxdur) {
       dur = maxdur;
-      logMsg (LOG_DBG, LOG_INFO, "dur-q-dur: %ld", dur);
+      logMsg (LOG_DBG, LOG_INFO, "dur-q-dur: %" PRId32, dur);
     }
   }
 
@@ -2793,8 +2793,8 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
     song = songselSelect (songsel, danceIdx);
     if (song != NULL) {
-      int   plidx;
-      long  dur;
+      int     plidx;
+      int32_t dur;
 
       songselSelectFinalize (songsel, danceIdx);
       logMsg (LOG_DBG, LOG_BASIC, "mix: (%d) d:%d/%s select: %s",
@@ -2954,7 +2954,7 @@ static void
 mainSendPlaybackGap (maindata_t *mainData)
 {
   int         mqidx;
-  long        gap;
+  int32_t     gap;
   char        tmp [40];
 
   mqidx = mainData->musicqPlayIdx;
@@ -2969,7 +2969,7 @@ mainSendPlaybackGap (maindata_t *mainData)
     return;
   }
 
-  snprintf (tmp, sizeof (tmp), "%ld", gap);
+  snprintf (tmp, sizeof (tmp), "%" PRId32, gap);
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
   mainData->lastGapSent = gap;
 }
@@ -2994,13 +2994,13 @@ mainLocateQueueWithSongs (maindata_t *mainData)
   return tplayidx;
 }
 
-static long
+static int32_t
 mainGetGap (maindata_t *mainData, int mqidx, int index)
 {
-  long        gap;
+  int32_t     gap;
   int         playlistIdx;
   playlist_t  *playlist = NULL;
-  long        plgap = -1;
+  int32_t     plgap = -1;
 
   playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, index);
   if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
@@ -3122,9 +3122,9 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
   snprintf (sbuff, BDJMSG_MAX, "%" PRId32 "%c", musicqLen, MSG_ARGS_RS);
 
   for (int i = 0; i <= musicqLen; ++i) {
-    long        dur;
+    int32_t     dur;
     int         plidx;
-    long        gap;
+    int32_t     gap;
 
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -3138,12 +3138,12 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
     strlcat (sbuff, tbuff, BDJMSG_MAX);
 
     dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx, MAIN_CALC_NO_SPEED);
-    snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", dur, MSG_ARGS_RS);
     strlcat (sbuff, tbuff, BDJMSG_MAX);
 
     gap = mainGetGap (mainData, musicqidx, i);
 
-    snprintf (tbuff, sizeof (tbuff), "%ld%c", gap, MSG_ARGS_RS);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", gap, MSG_ARGS_RS);
     strlcat (sbuff, tbuff, BDJMSG_MAX);
   }
 

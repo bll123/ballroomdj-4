@@ -252,10 +252,10 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   char        durtmp [60];
   char        tmp [60];
   int         rc;
-  long        songstart;
-  long        songend;
-  long        songdur;
-  long        calcdur;
+  int32_t     songstart;
+  int32_t     songend;
+  int32_t     songdur;
+  int32_t     calcdur;
   int         speed;
   int         fadetype;
   const char  *afprefix = "";
@@ -311,7 +311,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
 
   if (songstart > 0) {
     /* seek start before input file is accurate and fast */
-    snprintf (sstmp, sizeof (sstmp), "%ldms", songstart);
+    snprintf (sstmp, sizeof (sstmp), "%d" PRId32 "ms", songstart);
     targv [targc++] = "-ss";
     targv [targc++] = sstmp;
   }
@@ -320,14 +320,14 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   targv [targc++] = infn;
 
   if (calcdur > 0 && calcdur < songdur) {
-    long    tdur = calcdur;
+    int32_t   tdur = calcdur;
 
     if (speed == 100 && gap > 0) {
       /* duration passed to ffmpeg must include gap time */
       /* this is only done here if the speed is not changed */
       tdur += gap;
     }
-    snprintf (durtmp, sizeof (durtmp), "%ldms", tdur);
+    snprintf (durtmp, sizeof (durtmp), "%" PRId32 "ms", tdur);
     targv [targc++] = "-t";
     targv [targc++] = durtmp;
   }
@@ -342,7 +342,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
 
   if (fadeout > 0) {
     snprintf (tmp, sizeof (tmp),
-        "%safade=t=out:curve=%s:st=%ldms:d=%dms",
+        "%safade=t=out:curve=%s:st=%" PRId32 "ms:d=%dms",
         afprefix, ftstr, calcdur - fadeout, fadeout);
     strlcat (aftext, tmp, sizeof (aftext));
     afprefix = ", ";
@@ -367,8 +367,8 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
   rc = aaProcess ("aa-adjust", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_INFO, "aa: adjust: elapsed: %ld",
-      (long) mstimeend (&etm));
+  logMsg (LOG_DBG, LOG_INFO, "aa: adjust: elapsed: %" PRIu64,
+      mstimeend (&etm));
 
   /* applying the speed change afterwards is slower, but saves a lot */
   /* of headache. */

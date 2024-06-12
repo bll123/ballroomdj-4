@@ -1778,7 +1778,7 @@ manageSongEditSaveCallback (void *udata, int32_t dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%ld", (long) dbidx);
+  snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   manageRePopulateData (manage);
@@ -2669,7 +2669,7 @@ static void
 manageCFPLCreate (manageui_t *manage)
 {
   const char  *fn;
-  long        stoptime;
+  int32_t     stoptime;
   char        tbuff [40];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
@@ -2696,7 +2696,7 @@ manageCFPLCreate (manageui_t *manage)
 
   /* overriding the stop time will set the stop time for the next */
   /* playlist that is loaded */
-  snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
+  snprintf (tbuff, sizeof (tbuff), "%" PRId32, stoptime);
   connSendMessage (manage->conn, ROUTE_MAIN,
       MSG_PL_OVERRIDE_STOP_TIME, tbuff);
 

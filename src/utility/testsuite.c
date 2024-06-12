@@ -99,7 +99,7 @@ typedef struct {
   slistidx_t  tliteridx;
   FILE        *fh;
   int         lineno;
-  long        defaultVol;
+  int         defaultVol;
   bool        greaterthan : 1;
   bool        lessthan : 1;
   bool        checkor : 1;
@@ -1233,7 +1233,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
       valresp = slistGetStr (testsuite->chkresponse, key);
 
       if (strcmp (valexp, "defaultvol") == 0) {
-        snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+        snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
         valexp = tmp;
       }
 
@@ -1439,7 +1439,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     }
 
     if (strcmp (p, "defaultvol") == 0) {
-      snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+      snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
       p = tmp;
     }
 
@@ -1529,7 +1529,7 @@ resetPlayer (testsuite_t *testsuite)
   char  tmp [40];
 
   /* clears both queue and playlist queue, resets manage idx */
-  snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+  snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
