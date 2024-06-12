@@ -4,6 +4,8 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
+#include <stdint.h>
+
 typedef enum {
   SV_AUDIOID_MUSICBRAINZ_URI,
   SV_AUDIOID_ACOUSTID_URI,
