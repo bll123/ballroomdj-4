@@ -66,7 +66,7 @@ typedef struct {
 typedef struct {
   uint64_t  ident;
   uiwcont_t *uiwidget;
-  /* the following data is specific to a row and column */
+  /* class needs to be held temporarily so it can be removed */
   char      *class;
 } uivlcol_t;
 
@@ -113,7 +113,7 @@ static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
-static bool uivlButtonEvent (void *udata);
+static bool uivlButtonEvent (void *udata, long colnum);
 static bool uivlScrollEvent (void *udata, long dir);
 static bool uivlEnterLeaveEvent (void *udata, long el);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
@@ -141,7 +141,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->keycb = callbackInit (uivlKeyEvent, vl, NULL);
-  vl->clickcb = callbackInit (uivlButtonEvent, vl, NULL);
+  vl->clickcb = callbackInitLong (uivlButtonEvent, vl);
   vl->scrollcb = callbackInitLong (uivlScrollEvent, vl);
   vl->elcb = callbackInitLong (uivlEnterLeaveEvent, vl);
 
@@ -373,31 +373,6 @@ uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colnum)
 }
 
 void
-uivlSetColumnClass (uivirtlist_t *vl, uint32_t rownum, int colnum, const char *class)
-{
-  uivlrow_t   *row;
-  uivlcol_t   *col;
-
-  if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
-  }
-  if (vl->initialized < VL_INIT_COLS) {
-    return;
-  }
-  if (colnum < 0 || colnum >= vl->numcols) {
-    return;
-  }
-
-  row = uivlGetRow (vl, rownum);
-  if (row == NULL) {
-    return;
-  }
-
-  col = &row->cols [colnum];
-  col->class = mdstrdup (class);
-}
-
-void
 uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -411,6 +386,36 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
   }
 
   vl->coldata [colnum].alignend = true;
+}
+
+void
+uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class)
+{
+  uivlrow_t *row = NULL;
+  uivlcol_t *col = NULL;
+
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_COLS) {
+    return;
+  }
+  if (colnum < 0 || colnum >= vl->numcols) {
+    return;
+  }
+  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  col = &row->cols [colnum];
+  dataFree (col->class);
+  col->class = mdstrdup (class);    // save for removal process
+  uiWidgetSetClass (col->uiwidget, class);
 }
 
 void
@@ -673,6 +678,8 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
       if (vl->coldata [i].alignend) {
         uiLabelAlignEnd (row->cols [i].uiwidget);
       }
+      if (row->cols [i].class != NULL) {
+      }
     }
     row->cols [i].class = NULL;
   }
@@ -715,12 +722,11 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   row->eventbox = uiEventCreateEventBox (row->hbox);
   uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX], vl->keycb);
   uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->clickcb);
-// ### fix
   uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->scrollcb);
   /* the vbox does not receive an enter/leave event */
   /* (as it is overlaid presumably) */
   /* set the enter/leave on the row event-boxes, and the handler */
-  /* grabs the focus on to the vbox for the keyboard events */
+  /* grabs the focus on to the vbox so the keyboard events work */
   uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], row->eventbox, vl->elcb);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->eventbox);
 }
@@ -745,6 +751,24 @@ uivlScrollbarCallback (void *udata, double value)
 static void
 uivlPopulate (uivirtlist_t *vl)
 {
+  for (int i = 0; i < vl->disprows; ++i) {
+    uivlrow_t   *row;
+    uivlcol_t   *col;
+
+    row = uivlGetRow (vl, i + vl->rowoffset);
+    if (row == NULL) {
+      break;
+    }
+    for (int j = 0; j < vl->numcols; ++j) {
+      col = &row->cols [j];
+      if (col->class != NULL) {
+        uiWidgetRemoveClass (col->uiwidget, col->class);
+        dataFree (col->class);
+        col->class = NULL;
+      }
+    }
+  }
+
   for (int i = 0; i < vl->disprows; ++i) {
     uivlrow_t   *row;
 
@@ -801,7 +825,7 @@ uivlKeyEvent (void *udata)
 }
 
 static bool
-uivlButtonEvent (void *udata)
+uivlButtonEvent (void *udata, long colnum)
 {
   uivirtlist_t  *vl = udata;
   int           button;
@@ -824,6 +848,7 @@ uivlButtonEvent (void *udata)
   if (button == UIEVENT_BUTTON_4 || button == UIEVENT_BUTTON_5) {
     int32_t     start;
 
+fprintf (stderr, "button 4/5\n");
     start = vl->rowoffset;
 
     if (button == UIEVENT_BUTTON_4) {
@@ -876,6 +901,7 @@ uivlScrollEvent (void *udata, long dir)
   }
 
   start = vl->rowoffset;
+fprintf (stderr, "dir: %ld\n", dir);
   if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
     start -= 1;
   }
@@ -980,3 +1006,4 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start)
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) start);
   vl->inscroll = false;
 }
+

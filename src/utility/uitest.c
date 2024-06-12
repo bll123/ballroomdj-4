@@ -1154,5 +1154,8 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
       snprintf (tbuff, sizeof (tbuff), "%d", rownum);
     }
     uivlSetColumnValue (uitest->vl, rownum, j, tbuff);
+    if (rownum % 9 == 0 && j == 0) {
+      uivlSetColumnClass (uitest->vl, rownum, j, ACCENT_CLASS);
+    }
   }
 }

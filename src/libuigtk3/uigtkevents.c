@@ -693,7 +693,6 @@ uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
   if (ttype == GDK_KEY_RELEASE) {
     uievent->eventtype = EVENT_KEY_RELEASE;
   }
-fprintf (stderr, "key: %d %d\n", uievent->eventtype, uievent->keyval);
 
   if (uievent->eventtype == EVENT_NONE) {
     return rc;
@@ -803,7 +802,7 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   guint     button;
   guint     ttype;
   int       rc = UICB_CONT;
-  bool      skip = false;
+  int       colnum = -1;
 
   uievent = uiwidget->uiint.uievent;
 
@@ -829,12 +828,40 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
     return rc;
   }
 
-  if (skip) {
-    /* a press of a mask key does not need */
-    /* to be processed.  this key handler gets called twice, and processing */
-    /* a mask key will cause issues with the callbacks */
-    return rc;
+  /* figure out which column the mouse pointer is in */
+  /* only do this for press events (single-click) */
+  if (ttype == GDK_BUTTON_PRESS) {
+    double        x, y;
+    GtkWidget     *tw;
+    GtkAllocation eba;
+    GtkAllocation cola;
+
+    gdk_event_get_coords ((GdkEvent *) event, &x, &y);
+    /* the coordinates of the event box or container */
+    gtk_widget_get_allocation (w, &eba);
+
+    tw = w;
+    while (GTK_IS_BIN (tw)) {
+      tw = gtk_bin_get_child (GTK_BIN (w));
+    }
+    if (GTK_IS_CONTAINER (tw)) {
+      GList *list, *elem;
+
+      list = gtk_container_get_children (GTK_CONTAINER (tw));
+      for (elem = list; elem != NULL; elem = elem->next) {
+        tw = elem->data;
+        gtk_widget_get_allocation (tw, &cola);
+        /* note that colnum starts at -1, so the first increment points */
+        /* at column 0 */
+        if (eba.x + (int) x > cola.x) {
+          ++colnum;
+        } else {
+          break;
+        }
+      }
+    }
   }
+fprintf (stderr, "found: column %d\n", colnum);
 
   uievent->buttonpressed = false;
   uievent->buttonreleased = false;
@@ -843,12 +870,12 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
       ttype == GDK_2BUTTON_PRESS) &&
       uievent->buttonpresscb != NULL) {
     uievent->buttonpressed = true;
-    rc = callbackHandler (uievent->buttonpresscb);
+    rc = callbackHandlerLong (uievent->buttonpresscb, colnum);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
       uievent->buttonreleasecb != NULL) {
     uievent->buttonreleased = true;
-    rc = callbackHandler (uievent->buttonreleasecb);
+    rc = callbackHandlerLong (uievent->buttonreleasecb, colnum);
   }
 
   return rc;

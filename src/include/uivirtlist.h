@@ -51,7 +51,7 @@ void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
 
 /* column set specific to a row */
-void  uivlSetColumnClass (uivirtlist_t *vl, uint32_t rownum, int colnum, const char *class);
+void  uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class);
 void  uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value);
 void  uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val);
 
