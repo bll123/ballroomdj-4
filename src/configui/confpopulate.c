@@ -29,12 +29,12 @@ void
 confuiPopulateOptions (confuigui_t *gui)
 {
   const char  *sval;
-  ssize_t     nval;
+  int64_t     nval;
   nlistidx_t  selidx;
   double      dval;
   confuibasetype_t basetype;
   confuiouttype_t outtype;
-  long        debug = 0;
+  int32_t     debug = 0;
 
   logProcBegin ();
 
@@ -253,7 +253,7 @@ confuiPopulateOptions (confuigui_t *gui)
       fileopDelete (tbuff);
 
       fh = fileopOpen (tbuff, "w");
-      fprintf (fh, "%d\n", (int) nval);
+      fprintf (fh, "%" PRId64 "\n", nval);
       mdextfclose (fh);
       fclose (fh);
     }

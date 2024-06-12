@@ -51,7 +51,6 @@ for fn in include/*.h include/ui/*.h; do
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdint.h>
 
 #include "${bfn}"
 

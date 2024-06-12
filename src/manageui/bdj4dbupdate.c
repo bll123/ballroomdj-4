@@ -453,7 +453,7 @@ dbupdateProcessing (void *udata)
       dbStartBatch (dbupdate->newmusicdb);
     }
 
-    logMsg (LOG_DBG, LOG_BASIC, "existing db count: %d", dbCount (dbupdate->musicdb));
+    logMsg (LOG_DBG, LOG_BASIC, "existing db count: %" PRId32, dbCount (dbupdate->musicdb));
     dbStartBatch (dbupdate->musicdb);
 
     dbupdate->state = DB_UPD_PREP;
@@ -506,7 +506,7 @@ dbupdateProcessing (void *udata)
 
     /* message to manageui */
     /* CONTEXT: database update: status message */
-    snprintf (tbuff, sizeof (tbuff), _("%d files found"), dbupdate->counts [C_FILE_COUNT]);
+    snprintf (tbuff, sizeof (tbuff), _("%" PRId32 " files found"), dbupdate->counts [C_FILE_COUNT]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     dbupdate->state = DB_UPD_PROC_FN;
@@ -956,7 +956,7 @@ dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn,
   tdi->relfn = mdstrdup (relfn);
   queuePush (dbupdate->tagdataq, tdi);
   count = queueGetCount (dbupdate->tagdataq);
-  // fprintf (stderr, "q-push: %s %d\n", ffn, count);
+  // fprintf (stderr, "q-push: %s %" PRId32 "\n", ffn, count);
   if (count > dbupdate->counts [C_QUEUE_MAX]) {
     dbupdate->counts [C_QUEUE_MAX] = count;
   }

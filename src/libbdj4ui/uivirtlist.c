@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -706,7 +708,7 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
     if (rowidx >= 0 && rowidx < vl->disprows) {
       row = &vl->rows [rowidx];
       if (row->ident != VL_IDENT_ROW) {
-        fprintf (stderr, "ERR: invalid row: rownum %d rowoffset: %d rowidx: %d\n", rownum, vl->rowoffset, rowidx);
+        fprintf (stderr, "ERR: invalid row: rownum %" PRId32 " rowoffset: %" PRId32 " rowidx: %" PRId32 "\n", rownum, vl->rowoffset, rowidx);
       }
       if (! row->initialized) {
         uivlInitRow (vl, row, false);
@@ -875,7 +877,7 @@ fprintf (stderr, "button 4/5\n");
 
   for (int i = 0; i < vl->disprows; ++i) {
     if (uiEventCheckWidget (vl->wcont [VL_W_KEYH], vl->rows [i].eventbox)) {
-      fprintf (stderr, "  found at %d\n", i);
+fprintf (stderr, "  found at %d\n", i);
       rownum = i + vl->rowoffset;
       break;
     }

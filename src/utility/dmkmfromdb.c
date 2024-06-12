@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -196,7 +198,7 @@ dbReadEntry (rafile_t *radb, rafileidx_t rrn)
   *data = '\0';
   rc = raRead (radb, rrn, data);
   if (rc != 1) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %d", rrn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %" PRId32, rrn);
   }
   if (rc == 0 || ! *data) {
     return NULL;

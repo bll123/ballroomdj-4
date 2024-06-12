@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -1146,12 +1148,12 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
   char      tbuff [40];
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    snprintf (tbuff, sizeof (tbuff), "%d / %d", rownum, j);
+    snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
     if (rownum % 5 == 0 && (j == 1 || j == 0)) {
-      snprintf (tbuff, sizeof (tbuff), "%d / %d stuff stuff stuff stuff", rownum, j);
+      snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
     }
     if (rownum % 7 == 0 && j == 2) {
-      snprintf (tbuff, sizeof (tbuff), "%d", rownum);
+      snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
     }
     uivlSetColumnValue (uitest->vl, rownum, j, tbuff);
     if (rownum % 9 == 0 && j == 0) {

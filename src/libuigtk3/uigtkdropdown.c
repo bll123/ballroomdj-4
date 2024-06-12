@@ -4,9 +4,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
@@ -537,7 +538,7 @@ uiDropDownSelectionSet (uiwcont_t *uiwidget, nlistidx_t internalidx)
 
   uiTreeViewSelectSet (dropdown->uitree, internalidx);
 
-  snprintf (tbuff, sizeof (tbuff), "%d", internalidx);
+  snprintf (tbuff, sizeof (tbuff), "%" PRId32, internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   mdextalloc (path);
   if (path != NULL) {

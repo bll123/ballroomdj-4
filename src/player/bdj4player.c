@@ -11,10 +11,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
+#include <stdint.h>
 #include <inttypes.h>
+#include <string.h>
 #include <errno.h>
 #include <getopt.h>
 #include <ctype.h>
@@ -76,13 +76,13 @@ typedef struct {
   int32_t       plidur;
   listnum_t     songstart;
   double        voladjperc;
-  long          uniqueidx;
+  int32_t       uniqueidx;
   int           speed;
   int           announce;     // one of PREP_SONG or PREP_ANNOUNCE
 } prepqueue_t;
 
 typedef struct {
-  long          uniqueidx;
+  int32_t       uniqueidx;
   char          *songname;
 } playrequest_t;
 
@@ -164,7 +164,7 @@ static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
-static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *sfname);
+static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname);
 static void     playerPause (playerdata_t *playerData);
 static void     playerPlay (playerdata_t *playerData);
 static void     playerNextSong (playerdata_t *playerData);
@@ -712,7 +712,7 @@ playerProcessing (void *udata)
         if (tdur >= 0) {
           pq->dur = tdur;
         }
-        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %d", pq->dur);
+        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %" PRId32, pq->dur);
       }
 
       /* save for later use */
@@ -1024,10 +1024,10 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->uniqueidx = atol (p);
-  logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %ld", npq->uniqueidx);
+  logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %" PRId32, npq->uniqueidx);
 
   queuePush (playerData->prepRequestQueue, npq);
-  logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
 }
 
@@ -1054,7 +1054,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
     /* prevent any issues by checking the uniqueidx again */
     if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
-      logMsg (LOG_DBG, LOG_INFO, "prep-clear: %ld %s r:%d p:%d", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+      logMsg (LOG_DBG, LOG_INFO, "prep-clear: %" PRId32 " %s r:%d p:%" PRId32, tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
       playerPrepQueueFree (tpq);
     }
   }
@@ -1082,7 +1082,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   }
   npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
-  logMsg (LOG_DBG, LOG_INFO, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
 }
 
@@ -1093,7 +1093,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   playrequest_t *preq = NULL;
   char          *p;
   char          *tokstr = NULL;
-  long          uniqueidx;
+  qidx_t        uniqueidx;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1113,7 +1113,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "play request: %ld %s", uniqueidx, p);
+  logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (pq == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
@@ -1134,7 +1134,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
 }
 
 static prepqueue_t *
-playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *sfname)
+playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname)
 {
   prepqueue_t       *pq = NULL;
   bool              found = false;
@@ -1148,8 +1148,8 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     pq = playerData->currentSong;
     if (pq != NULL && pq->announce == PREP_SONG &&
         uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld as repeat", sfname, uniqueidx);
-      logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32 " as repeat", sfname, uniqueidx);
+      logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
       found = true;
     }
   }
@@ -1162,15 +1162,15 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
       if (uniqueidx == PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx &&
           strcmp (sfname, pq->songname) == 0) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
@@ -1191,7 +1191,7 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     return NULL;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+  logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
   logProcEnd ("");
   return pq;
 }
@@ -1561,7 +1561,7 @@ playerPrepQueueFree (void *data)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_INFO, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
+  logMsg (LOG_DBG, LOG_INFO, "prep-free: %" PRId32 " %s", pq->uniqueidx, pq->songname);
 
   if (pq->ident != PREP_QUEUE_IDENT) {
     logMsg (LOG_DBG, LOG_ERR, "ERR: double free of prep queue");
@@ -2000,7 +2000,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "playtimeplayed%c%" PRIu64 "%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
-      "prepqueuecount%c%d%c"
+      "prepqueuecount%c%" PRId32 "%c"
       "currentsink%c%s",
       MSG_ARGS_RS, logPlstateDebugText (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,

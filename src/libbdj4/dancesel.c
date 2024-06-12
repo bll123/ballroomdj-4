@@ -44,7 +44,7 @@ typedef struct dancesel {
   nlist_t       *base;
   nlist_t       *adjustBase;
   nlist_t       *danceProbTable;
-  ssize_t       selCount;
+  dbidx_t       selCount;
   /* windowed probability tables */
   nlist_t       *winsize;
   nlist_t       *wdecrement;
@@ -125,14 +125,14 @@ danceselAlloc (nlist_t *countList,
   dancesel->windowedDiffB = autoselGetDouble (dancesel->autosel, AUTOSEL_WINDOWED_DIFF_B);
   dancesel->windowedDiffC = autoselGetDouble (dancesel->autosel, AUTOSEL_WINDOWED_DIFF_C);
 
-  logMsg (LOG_DBG, LOG_DANCESEL, "countlist: %d", nlistGetCount (countList));
+  logMsg (LOG_DBG, LOG_DANCESEL, "countlist: %" PRId32, nlistGetCount (countList));
   if (DANCESEL_DEBUG) {
-    fprintf (stderr, "countlist: %d\n", nlistGetCount (countList));
+    fprintf (stderr, "countlist: %" PRId32 "\n", nlistGetCount (countList));
   }
 
   nlistStartIterator (countList, &iteridx);
   while ((didx = nlistIterateKey (countList, &iteridx)) >= 0) {
-    long    count;
+    nlistidx_t  count;
 
     count = nlistGetNum (countList, didx);
     if (count <= 0) {
@@ -141,10 +141,10 @@ danceselAlloc (nlist_t *countList,
 
     nlistSetNum (dancesel->base, didx, count);
     dancesel->basetotal += (double) count;
-    logMsg (LOG_DBG, LOG_DANCESEL, "base: %d/%s: %ld", didx,
+    logMsg (LOG_DBG, LOG_DANCESEL, "base: %" PRId32 "/%s: %" PRId32, didx,
         danceGetStr (dancesel->dances, didx, DANCE_DANCE), count);
     if (DANCESEL_DEBUG) {
-      fprintf (stderr, "base: %d/%s: %ld\n", didx,
+      fprintf (stderr, "base: %" PRId32 "/%s: %" PRId32 "\n", didx,
           danceGetStr (dancesel->dances, didx, DANCE_DANCE), count);
     }
   }
@@ -187,9 +187,9 @@ danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx)
   /* all methods */
   nlistDecrement (dancesel->base, danceIdx);
   dancesel->basetotal -= 1.0;
-  logMsg (LOG_DBG, LOG_DANCESEL, "decrement %d/%s now %ld total %.0f",
+  logMsg (LOG_DBG, LOG_DANCESEL, "decrement %" PRId32 "/%s now %" PRId64 " total %.0f",
       danceIdx, danceGetStr (dancesel->dances, danceIdx, DANCE_DANCE),
-      (long) nlistGetNum (dancesel->base, danceIdx), dancesel->basetotal);
+      nlistGetNum (dancesel->base, danceIdx), dancesel->basetotal);
 
   /* base and basetotal are already decremented */
   if (dancesel->method == DANCESEL_METHOD_WINDOWED) {
@@ -221,11 +221,11 @@ danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx)
       if (dval > 0.0 || didx == danceIdx) {
         dval += 1.0;
         nlistSetDouble (dancesel->wdecrement, didx, dval);
-        logMsg (LOG_DBG, LOG_DANCESEL, "win: decrement %d/%s %.2f",
+        logMsg (LOG_DBG, LOG_DANCESEL, "win: decrement %" PRId32 "/%s %.2f",
             didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
             nlistGetDouble (dancesel->wdecrement, didx));
         if (DANCESEL_DEBUG) {
-          fprintf (stderr, "win: decrement %d/%s %.2f\n",
+          fprintf (stderr, "win: decrement %" PRId32 "/%s %.2f\n",
               didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
               nlistGetDouble (dancesel->wdecrement, didx));
         }
@@ -295,10 +295,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   danceselGetPriorInfo (dancesel, queueCount, queueCount - 1, &pddanceIdx);
 
   if (pddanceIdx >= 0) {
-    logMsg (LOG_DBG, LOG_DANCESEL, "found previous dance %d/%s", pddanceIdx,
+    logMsg (LOG_DBG, LOG_DANCESEL, "found previous dance %" PRId32 "/%s", pddanceIdx,
         danceGetStr (dancesel->dances, pddanceIdx, DANCE_DANCE));
     if (DANCESEL_DEBUG) {
-      fprintf (stderr, "  get previous dance: %d/%s\n", pddanceIdx,
+      fprintf (stderr, "  get previous dance: %" PRId32 "/%s\n", pddanceIdx,
           danceGetStr (dancesel->dances, pddanceIdx, DANCE_DANCE));
     }
     pdspeed = danceGetNum (dancesel->dances, pddanceIdx, DANCE_SPEED);
@@ -381,13 +381,13 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
           }
         }
 
-        logMsg (LOG_DBG, LOG_DANCESEL, "win:  didx:%d/%s",
+        logMsg (LOG_DBG, LOG_DANCESEL, "win:  didx:%" PRId32 "/%s",
             didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
         logMsg (LOG_DBG, LOG_DANCESEL, "win:    winsz:%.2f decr:%.2f diff:%.2f",
             twinsz, dec, diff);
         logMsg (LOG_DBG, LOG_DANCESEL, "win:    base-prob:%.2f", tbase);
         if (DANCESEL_DEBUG) {
-          fprintf (stderr, "win:  didx:%d/%s\n",
+          fprintf (stderr, "win:  didx:%" PRId32 "/%s\n",
               didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
           fprintf (stderr, "win:    winsz:%.2f decr:%.2f diff:%.2f\n",
               twinsz, dec, diff);
@@ -400,10 +400,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       } /* method = windowed */
 
       abase = tbase;
-      logMsg (LOG_DBG, LOG_DANCESEL, "  didx:%d/%s base:%.0f",
+      logMsg (LOG_DBG, LOG_DANCESEL, "  didx:%" PRId32 "/%s base:%.0f",
           didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE), tbase);
       if (DANCESEL_DEBUG) {
-        fprintf (stderr, "  didx:%d/%s base:%.0f\n",
+        fprintf (stderr, "  didx:%" PRId32 "/%s base:%.0f\n",
           didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE), tbase);
       }
 
@@ -420,7 +420,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
           logMsg (LOG_DBG, LOG_DANCESEL, "   fast / begin of playlist: abase: %.6f", abase);
           if (DANCESEL_DEBUG) {
             fprintf (stderr, "   fast / begin of playlist: abase: %.6f\n", abase);
-            fprintf (stderr, "     selcount: %ld\n", (long) dancesel->selCount);
+            fprintf (stderr, "     selcount: %" PRId32 "\n", dancesel->selCount);
           }
         }
       }
@@ -508,10 +508,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   while ((didx = nlistIterateKey (dancesel->adjustBase, &iteridx)) >= 0) {
     abase = nlistGetDouble (dancesel->adjustBase, didx);
     if (abase > 0.0) {
-      logMsg (LOG_DBG, LOG_DANCESEL, "    pre-final:%d/%s %.6f", didx,
+      logMsg (LOG_DBG, LOG_DANCESEL, "    pre-final:%" PRId32 "/%s %.6f", didx,
             danceGetStr (dancesel->dances, didx, DANCE_DANCE), abase);
       if (DANCESEL_DEBUG) {
-        fprintf (stderr, "    pre-final:%d/%s %.6f\n", didx,
+        fprintf (stderr, "    pre-final:%" PRId32 "/%s %.6f\n", didx,
             danceGetStr (dancesel->dances, didx, DANCE_DANCE), abase);
       }
     }
@@ -529,10 +529,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       tval = abase / adjTotal;
     }
     tprob += tval;
-    logMsg (LOG_DBG, LOG_DANCESEL, "  final prob: %d/%s: %.6f",
+    logMsg (LOG_DBG, LOG_DANCESEL, "  final prob: %" PRId32 "/%s: %.6f",
         didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE), tprob);
     if (DANCESEL_DEBUG) {
-      fprintf (stderr, "     final prob: %d/%s: %.6f\n",
+      fprintf (stderr, "     final prob: %" PRId32 "/%s: %.6f\n",
           didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE), tprob);
     }
     nlistSetDouble (dancesel->danceProbTable, didx, tprob);
@@ -542,10 +542,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
 
   tval = dRandom ();
   didx = nlistSearchProbTable (dancesel->danceProbTable, tval);
-  logMsg (LOG_DBG, LOG_BASIC, "== select %.6f %d/%s",
+  logMsg (LOG_DBG, LOG_BASIC, "== select %.6f %" PRId32 "/%s",
         tval, didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
   if (DANCESEL_DEBUG) {
-    fprintf (stderr, "== select %.6f %d/%s\n",
+    fprintf (stderr, "== select %.6f %" PRId32 "/%s\n",
         tval, didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
   }
   if (dancesel->method == DANCESEL_METHOD_WINDOWED) {
@@ -596,7 +596,7 @@ danceselProcessPrior (dancesel_t *dancesel, ilistidx_t didx,
   /* the previous dance's tags have already been adjusted */
 
   if (priordist > 0) {
-    logMsg (LOG_DBG, LOG_DANCESEL, "     process prior didx:%d/%s prior:%d/%s",
+    logMsg (LOG_DBG, LOG_DANCESEL, "     process prior didx:%" PRId32 "/%s prior:%" PRId32 "/%s",
         didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
         priordidx, danceGetStr (dancesel->dances, priordidx, DANCE_DANCE));
   }
@@ -736,11 +736,11 @@ danceselInitWindowSizes (dancesel_t *dancesel)
     }
     nlistSetDouble (dancesel->winsize, didx, dval);
     if (dval > 0.0) {
-      logMsg (LOG_DBG, LOG_DANCESEL, "win: winsize: %d/%s %.2f",
+      logMsg (LOG_DBG, LOG_DANCESEL, "win: winsize: %" PRId32 "/%s %.2f",
           didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
           dval);
       if (DANCESEL_DEBUG) {
-        fprintf (stderr, "win: winsize: %d/%s %.2f\n",
+        fprintf (stderr, "win: winsize: %" PRId32 "/%s %.2f\n",
             didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
             dval);
       }

@@ -37,7 +37,7 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
   mg_mgr_init (&websrv->mgr);
   websrv->mgr.userdata = userdata;
 
-  snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%d", listenPort);
+  snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%" PRIu16, listenPort);
   mg_http_listen (&websrv->mgr, tbuff, eventHandler, userdata);
   return websrv;
 }

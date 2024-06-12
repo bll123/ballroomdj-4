@@ -103,7 +103,7 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
 
   logProcBegin ();
   snprintf (sprof, sizeof (sprof), "%d", profile);
-  snprintf (sloglvl, sizeof (sloglvl), "%d", loglvl);
+  snprintf (sloglvl, sizeof (sloglvl), "%" PRId32, loglvl);
 
   idx = 0;
   targv [idx++] = (char *) fn;

@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -207,10 +209,10 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
     taglist = songTagList (song);
 
     if (verbose) {
-      fprintf (stderr, "  ttag: audio tagdata: %d\n", slistGetCount (tagdata));
+      fprintf (stderr, "  ttag: audio tagdata: %" PRId32 "\n", slistGetCount (tagdata));
     }
     if (verbose) {
-      fprintf (stderr, "  ttag: song tags: %d\n", slistGetCount (taglist));
+      fprintf (stderr, "  ttag: song tags: %" PRId32 "\n", slistGetCount (taglist));
     }
 
     slistStartIterator (tagdata, &tagiteridx);

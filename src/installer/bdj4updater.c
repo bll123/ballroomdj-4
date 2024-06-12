@@ -139,7 +139,7 @@ main (int argc, char *argv [])
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
   int         statusflags [UPD_MAX];
-  int         counters [UPD_MAX];
+  int32_t     counters [UPD_MAX];
   bool        processflags [UPD_MAX];
   bool        processaf= false;
   bool        processdb = false;
@@ -661,7 +661,7 @@ main (int argc, char *argv [])
     mstimestart (&dbmt);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: started");
     musicdb = dbOpen (tbuff);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %d items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %" PRId32 " items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   }
 
   if (processaf) {
@@ -714,7 +714,7 @@ main (int argc, char *argv [])
 
       if (processflags [UPD_FIX_AF_TAGS] &&
           rewrite != AF_REWRITE_NONE) {
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "write audio tags: %d %s", dbidx, ffn);
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "write audio tags: %" PRId32 " %s", dbidx, ffn);
         audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
@@ -803,13 +803,13 @@ main (int argc, char *argv [])
   }
 
   if (counters [UPD_FIX_DB_DATE_ADDED] > 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-added: %d", counters [UPD_FIX_DB_DATE_ADDED]);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-added: %" PRId32, counters [UPD_FIX_DB_DATE_ADDED]);
   }
   if (counters [UPD_FIX_DB_DATE_ADDED_B] > 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-add-B: %d", counters [UPD_FIX_DB_DATE_ADDED]);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-add-B: %" PRId32, counters [UPD_FIX_DB_DATE_ADDED]);
   }
   if (counters [UPD_FIX_DB_DISCNUM] > 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %d", counters [UPD_FIX_DB_DISCNUM]);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %" PRId32, counters [UPD_FIX_DB_DISCNUM]);
   }
 
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));

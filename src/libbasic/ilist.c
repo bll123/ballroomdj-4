@@ -3,10 +3,11 @@
  */
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 
 #include "bdjstring.h"
@@ -297,7 +298,7 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
   datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
 
   if (gsflag == ILIST_SET && datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%" PRId32,
         listGetName (LIST_KEY_IND, list), ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
 

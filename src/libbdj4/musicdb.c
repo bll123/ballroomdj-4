@@ -132,7 +132,7 @@ dbLoad (musicdb_t *musicdb)
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   racount = raGetCount (musicdb->radb);
   slistSetSize (musicdb->songs, racount);
-  logMsg (LOG_DBG, LOG_DB, "db-load: %s %d\n", musicdb->fn, racount);
+  logMsg (LOG_DBG, LOG_DB, "db-load: %s %" PRId32 "\n", musicdb->fn, racount);
 
   raStartBatch (musicdb->radb);
 
@@ -168,7 +168,7 @@ dbLoad (musicdb_t *musicdb)
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %d", dkey, count);
+      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %" PRId32, dkey, count);
     }
   }
 
@@ -511,7 +511,7 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   *data = '\0';
   rc = raRead (musicdb->radb, rrn, data);
   if (rc != 1) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %d", rrn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %" PRId32, rrn);
   }
   if (rc == 0 || ! *data) {
     return NULL;
@@ -554,7 +554,7 @@ dbRebuildDanceCounts (musicdb_t *musicdb)
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %d count: %d", dkey, count);
+      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %" PRId32 " count: %" PRId32, dkey, count);
     }
   }
 }

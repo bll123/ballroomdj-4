@@ -184,7 +184,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     return -1;
   }
 
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%d del:%d", ffn, slistGetCount (updatelist), slistGetCount (dellist));
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%" PRId32 " del:%" PRId32, ffn, slistGetCount (updatelist), slistGetCount (dellist));
 
   if (filetype == AFILE_TYPE_FLAC) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");

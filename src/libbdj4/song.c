@@ -204,7 +204,7 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "song-%d", dbidx);
+  snprintf (tbuff, sizeof (tbuff), "song-%" PRId32, dbidx);
   nlistFree (song->songInfo);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT, NULL);

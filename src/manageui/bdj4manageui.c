@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -1228,7 +1230,7 @@ manageMainLoop (void *tmanage)
           if (manage->songeditdbidx == dbidx) {
             manageReloadSongEdit (manage);
           }
-          snprintf (tmp, sizeof (tmp), "%d", dbidx);
+          snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
         }
       }
@@ -1256,7 +1258,7 @@ manageMainLoop (void *tmanage)
       manageRePopulateData (manage);
       manageReloadSongEdit (manage);
 
-      snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
+      snprintf (tmp, sizeof (tmp), "%" PRId32, manage->songeditdbidx);
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (manage->minfo.statusMsg, "");
@@ -2112,7 +2114,7 @@ manageiTunesDialogResponseHandler (void *udata, int32_t responseid)
         song = dbGetByName (manage->musicdb, songfn);
         if (song != NULL) {
           dbidx = songGetNum (song, TAG_DBIDX);
-          snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",
+          snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32,
               manage->musicqManageIdx, MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
           connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
         } else {
@@ -3044,7 +3046,7 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
 {
   manageui_t  *manage = udata;
   char        tbuff [100];
-  long        loc = QUEUE_LOC_LAST;
+  qidx_t      loc = QUEUE_LOC_LAST;
   uimusicq_t  *uimusicq = NULL;
 
   logProcBegin ();
@@ -3080,13 +3082,13 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
     /* the music queue index */
     manage->musicqueueprocessflag = false;
     manage->lastinsertlocation = loc;
-    snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%d", mqidx,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
         MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   }
 
   if (action == MANAGE_PLAY) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", mqidx,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, mqidx,
         MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
   }
@@ -3794,7 +3796,7 @@ manageMarkSongRemoved (void *udata)
     }
     nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_URI));
     dbMarkEntryRemoved (manage->musicdb, dbidx);
-    snprintf (tmp, sizeof (tmp), "%d", dbidx);
+    snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_REMOVE, tmp);
     manage->songeditdbidx = -1;
   }
@@ -3823,7 +3825,7 @@ manageUndoRemove (void *udata)
     char    tmp [40];
 
     dbClearEntryRemoved (manage->musicdb, dbidx);
-    snprintf (tmp, sizeof (tmp), "%d", dbidx);
+    snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UNREMOVE, tmp);
   }
 

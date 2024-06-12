@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <sys/types.h>
 
@@ -422,7 +424,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     }
 
     songlistFree (sl);
-    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %d songs from playlist", nlistGetCount (sf->indexList));
+    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %" PRId32 " songs from playlist", nlistGetCount (sf->indexList));
   }
 
   if (! sf->inuse [SONG_FILTER_PLAYLIST] || pltype != PLTYPE_SONGLIST) {
@@ -434,12 +436,12 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 
       dbidx = songGetNum (song, TAG_DBIDX);
       songfilterMakeSortKey (sf, song, sortkey, MAXPATHLEN);
-      logMsg (LOG_DBG, LOG_SONGSEL, "%d sortkey: %s", dbidx, sortkey);
+      logMsg (LOG_DBG, LOG_SONGSEL, "%" PRId32 " sortkey: %s", dbidx, sortkey);
       slistSetNum (sf->sortList, sortkey, idx);
       nlistSetNum (sf->indexList, idx, dbidx);
       ++idx;
     }
-    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %d songs from db", nlistGetCount (sf->indexList));
+    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %" PRId32 " songs from db", nlistGetCount (sf->indexList));
   }
 
   slistSort (sf->sortList);
@@ -467,7 +469,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   dbidx = songGetNum (song, TAG_DBIDX);
-  logMsg (LOG_DBG, LOG_SONGSEL, "check: %d", dbidx);
+  logMsg (LOG_DBG, LOG_SONGSEL, "check: %" PRId32, dbidx);
 
   if (sf->inuse [SONG_FILTER_DANCE_IDX]) {
     ilistidx_t    danceIdx;
@@ -475,11 +477,11 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     /* the dance idx filter is one dance, or all */
     danceIdx = songGetNum (song, TAG_DANCE);
     if (danceIdx != sf->numfilter [SONG_FILTER_DANCE_IDX]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: reject: %d %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: reject: %" PRId32 " %d", dbidx, danceIdx);
       logProcEnd ("dance-idx-reject");
       return false;
     } else {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: ok: %d %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: ok: %" PRId32 " %d", dbidx, danceIdx);
     }
   }
 

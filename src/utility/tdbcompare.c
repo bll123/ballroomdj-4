@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
 #include <unistd.h>
@@ -162,9 +164,9 @@ main (int argc, char *argv [])
       return 1;
     }
     count [i] = dbCount (db [i]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "count: %d %s", count [i], dbfn [i]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "count: %" PRId32 " %s", count [i], dbfn [i]);
     if (verbose) {
-      fprintf (stderr, "count: %d %s\n", count [i], dbfn [i]);
+      fprintf (stderr, "count: %" PRId32 " %s\n", count [i], dbfn [i]);
     }
     if (i > DB_A) {
       totcount += count [i];
@@ -172,7 +174,7 @@ main (int argc, char *argv [])
   }
 
   if (count [DB_A] != totcount) {
-    fprintf (stderr, "  tdbcompare: count mismatch /%d/%d/\n", count [DB_A], totcount);
+    fprintf (stderr, "  tdbcompare: count mismatch /%" PRId32 "/%" PRId32 "/\n", count [DB_A], totcount);
     grc = 1;
   }
 
@@ -213,7 +215,7 @@ main (int argc, char *argv [])
     taglist [dblocidx] = songTagList (song [dblocidx]);
 
     if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [dblocidx])) {
-      fprintf (stderr, "    tdbcomp: song tag count mismatch /%d/%d/ %s\n",
+      fprintf (stderr, "    tdbcomp: song tag count mismatch /%" PRId32 "/%" PRId32 "/ %s\n",
           slistGetCount (taglist [DB_A]), slistGetCount (taglist [dblocidx]), fn);
       grc = 1;
       continue;

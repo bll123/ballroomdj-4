@@ -703,7 +703,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         nikey++;
       }
       key = atol (tvalstr);
-      snprintf (temp, sizeof (temp), "%s-item-%d", name, nikey);
+      snprintf (temp, sizeof (temp), "%s-item-%" PRId32, name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, NULL);
       continue;
     }
@@ -717,10 +717,10 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
       listidx_t idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
-        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %d", tkeystr, idx);
+        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %" PRId32, tkeystr, idx);
         ikey = dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
-        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%d(%d) vt:%d tvalstr:%s", ikey, ikey + offset, vt, tvalstr);
+        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%" PRId32 "(%" PRId32 ") vt:%d tvalstr:%s", ikey, ikey + offset, vt, tvalstr);
 
         conv.invt = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
@@ -861,7 +861,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   ilistStartIterator (list, &iteridx);
 
   fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, ilistGetVersion (list));
-  fprintf (fh, "count\n..%d\n", count);
+  fprintf (fh, "count\n..%" PRId32 "\n", count);
 
   count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {

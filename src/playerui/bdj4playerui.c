@@ -1660,8 +1660,8 @@ pluiQueueProcess (void *udata, int32_t dbidx)
 
   /* increment the location by 1 as the tree-view index is one less than */
   /* the music queue index */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
-      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, (long) dbidx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
+      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;
 }
@@ -1703,7 +1703,7 @@ pluiPushHistory (playerui_t *plui, const char *args)
 
   dbidx = atol (args);
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_HISTORY,
       MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
@@ -1736,7 +1736,7 @@ pluiExtReqCallback (void *udata)
 
     tbuff = mdmalloc (BDJMSG_MAX);
     tmp = songCreateSaveData (song);
-    snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
+    snprintf (tbuff, BDJMSG_MAX, "%s%c%" PRId32 "%c%s",
         songGetStr (song, TAG_URI),
         MSG_ARGS_RS, dbidx,
         MSG_ARGS_RS, tmp);
@@ -1887,7 +1887,7 @@ pluiReloadCurrent (playerui_t *plui)
   song = dbGetByName (plui->musicdb, nm);
   if (song != NULL) {
     dbidx = songGetNum (song, TAG_DBIDX);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_PB_A,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_PB_A,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 1);
