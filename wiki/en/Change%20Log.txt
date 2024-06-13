@@ -11,7 +11,7 @@
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
     * PENDING: Crash in player when a playlist has no dances selected.
-    * PENDING: Allow speed to be changed while paused.
+    * Player: Allow speed to be changed while paused.
     * Windows: Reject invalid characters in filenames.
 * Changes:
     * Improved validation messages.
