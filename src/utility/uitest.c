@@ -1057,14 +1057,15 @@ uitestUIVirtList (uitest_t *uitest)
     uivlSetColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_SHOW);
   }
   uivlSetColumn (uitest->vl, 3, VL_TYPE_LABEL, 3, VL_COL_HIDE);
-  for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
-  }
 
   uivlSetColumnMinWidth (uitest->vl, 1, 15);
   uivlSetColumnEllipsizeOn (uitest->vl, 1);
   uivlSetColumnAlignEnd (uitest->vl, 2);
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
+
+  for (int j = 0; j < UITEST_VL_COLS; ++j) {
+    uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
+  }
 
   uivlDisplay (uitest->vl);
 

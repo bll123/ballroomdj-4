@@ -21,9 +21,10 @@
 
 /* initialization states */
 enum {
-  VL_NOT_INIT = 0,
-  VL_INIT_COLS = 1,
-  VL_INIT_DISP = 2,
+  VL_INIT_NONE = 0,
+  VL_INIT_BASIC = 1,
+  VL_INIT_ROWS = 3,
+  VL_INIT_DISP = 4,
 };
 
 enum {
@@ -165,27 +166,30 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
-  uiWidgetAlignHorizStart (vl->wcont [VL_W_HEADBOX]);
   uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_HEADBOX]);
-  uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
+//  uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HEADBOX]);
 
   vl->wcont [VL_W_HBOX] = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_HBOX]);
   uiWidgetAlignVertFill (vl->wcont [VL_W_HBOX]);
-  uiWidgetExpandHoriz (vl->wcont [VL_W_HBOX]);
-  uiWidgetExpandVert (vl->wcont [VL_W_HBOX]);
+//  uiWidgetExpandHoriz (vl->wcont [VL_W_HBOX]);
+//  uiWidgetExpandVert (vl->wcont [VL_W_HBOX]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HBOX]);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiWidgetAlignVertFill (vl->wcont [VL_W_VBOX]);
+//  uiWidgetExpandHoriz (vl->wcont [VL_W_VBOX]);
+//  uiWidgetExpandVert (vl->wcont [VL_W_VBOX]);
   uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);    // for keyboard events
 
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_VBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_EVENT_BOX]);
-  uiWidgetAlignVertFill (vl->wcont [VL_W_EVENT_BOX]);
+  uiWidgetAlignVertFill(vl->wcont [VL_W_EVENT_BOX]);
+//  uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
+//  uiWidgetExpandVert (vl->wcont [VL_W_EVENT_BOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_EVENT_BOX]);
 
   uiBoxSetSizeChgCallback (vl->wcont [VL_W_VBOX], vl->callbacks [VL_CB_VBOX_SZ_CHG]);
@@ -213,7 +217,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
   /* default selection */
   nlistSetNum (vl->selected, 0, 1);
-  vl->initialized = VL_NOT_INIT;
+  vl->initialized = VL_INIT_NONE;
 
 fprintf (stderr, "init: disprows: %d\n", disprows);
   vl->disprows = disprows;
@@ -300,18 +304,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     vl->coldata [colidx].ellipsize = false;
   }
 
-fprintf (stderr, "head-row-init\n");
-  uivlInitRow (vl, &vl->headingrow, true);
-
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
-    uivlrow_t *row;
-
-    row = &vl->rows [dispidx];
-fprintf (stderr, "row-init: %d\n", dispidx);
-    uivlInitRow (vl, row, false);
-  }
-
-  vl->initialized = VL_INIT_COLS;
+  vl->initialized = VL_INIT_BASIC;
 }
 
 void
@@ -320,7 +313,7 @@ uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
 }
@@ -333,11 +326,25 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
     return;
+  }
+
+  if (vl->initialized < VL_INIT_ROWS) {
+fprintf (stderr, "head-row-init\n");
+    uivlInitRow (vl, &vl->headingrow, true);
+
+    for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+      uivlrow_t *row;
+
+      row = &vl->rows [dispidx];
+fprintf (stderr, "row-init: %d\n", dispidx);
+      uivlInitRow (vl, row, false);
+    }
+    vl->initialized = VL_INIT_ROWS;
   }
 
   uivlSetColumnValue (vl, VL_ROW_HEADING, colnum, heading);
@@ -349,7 +356,7 @@ uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int colident, bool h
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -368,7 +375,7 @@ uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -379,26 +386,12 @@ uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth)
 }
 
 void
-uivlSetColumnFont (uivirtlist_t *vl, int colnum, const char *font)
-{
-  if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
-  }
-  if (vl->initialized < VL_INIT_COLS) {
-    return;
-  }
-  if (colnum < 0 || colnum >= vl->numcols) {
-    return;
-  }
-}
-
-void
 uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colnum)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -414,7 +407,7 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -433,7 +426,7 @@ uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *cl
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -462,7 +455,7 @@ uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *va
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (colnum < 0 || colnum >= vl->numcols) {
@@ -506,7 +499,7 @@ uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
@@ -551,7 +544,7 @@ uivlGetColumnIdent (uivirtlist_t *vl, int colnum)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return VL_COL_UNKNOWN;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return VL_COL_UNKNOWN;
   }
 
@@ -564,7 +557,7 @@ uivlGetColumnValue (uivirtlist_t *vl, int row, int colnum)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return NULL;
   }
   return NULL;
@@ -576,7 +569,7 @@ uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return NULL;
   }
   return NULL;
@@ -590,7 +583,7 @@ uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
 }
@@ -601,7 +594,7 @@ uivlSetChangeCallback (uivirtlist_t *vl, uivlchangecb_t cb, void *udata)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
 }
@@ -612,7 +605,7 @@ uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_COLS) {
+  if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
   if (cb == NULL) {
@@ -633,6 +626,7 @@ uivlDisplay (uivirtlist_t *vl)
 
   uiBoxPackEnd (vl->headingrow.hbox, vl->wcont [VL_W_FILLER]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
+
 fprintf (stderr, "disp-pop\n");
   uivlPopulate (vl);
 
@@ -693,18 +687,15 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
   }
 
   row->hbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizStart (row->hbox);
-  uiWidgetAlignVertStart (row->hbox);
   uiWidgetAlignHorizFill (row->hbox);
-//  uiWidgetExpandHoriz (row->hbox);
+  uiWidgetAlignVertStart (row->hbox);
 
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     row->cols [colidx].ident = VL_IDENT_COL;
     row->cols [colidx].uiwidget = uiCreateLabel ("");
-    uiWidgetSetMarginEnd (row->cols [colidx].uiwidget, 2);
-    uiWidgetAlignHorizStart (row->cols [colidx].uiwidget);
+    uiWidgetSetMarginEnd (row->cols [colidx].uiwidget, 3);
     uiWidgetAlignHorizFill (row->cols [colidx].uiwidget);
 
     if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
