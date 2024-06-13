@@ -460,7 +460,8 @@ dbupdateProcessing (void *udata)
   }
 
   if (dbupdate->state == DB_UPD_PREP) {
-    char  tbuff [100];
+    char  tmp [40];
+    char  tbuff [200];
     char  *tstr;
 
     mstimestart (&dbupdate->starttm);
@@ -505,8 +506,9 @@ dbupdateProcessing (void *udata)
     }
 
     /* message to manageui */
+    snprintf (tmp, sizeof (tmp), "%" PRId32, dbupdate->counts [C_FILE_COUNT]);
     /* CONTEXT: database update: status message */
-    snprintf (tbuff, sizeof (tbuff), _("%" PRId32 " files found"), dbupdate->counts [C_FILE_COUNT]);
+    snprintf (tbuff, sizeof (tbuff), _("%s files found"), tmp);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     dbupdate->state = DB_UPD_PROC_FN;

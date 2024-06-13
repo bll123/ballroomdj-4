@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-03 11:26-0700\n"
+"POT-Creation-Date: 2024-06-13 16:26-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,11 +20,6 @@ msgstr ""
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
 msgid "%1$s must be greater than %2$s"
-msgstr ""
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
 msgstr ""
 
 #. CONTEXT: configuration: the ACRCloud API Host
@@ -123,6 +118,11 @@ msgstr ""
 msgid "%s data will be converted."
 msgstr ""
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -149,14 +149,9 @@ msgstr ""
 msgid "%s may not exceed the song duration"
 msgstr ""
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr ""
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
+msgid "%s: *'\":|<>^ characters are not allowed."
 msgstr ""
 
 #. CONTEXT: validation: invalid time (hours/minutes)
@@ -166,9 +161,20 @@ msgstr ""
 msgid "%s: Invalid time."
 msgstr ""
 
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr ""
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr ""
+
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
+msgid "%s: Slashes are not allowed."
 msgstr ""
 
 #. CONTEXT: validation: spaces are not allowed
@@ -176,9 +182,8 @@ msgstr ""
 msgid "%s: Spaces are not allowed."
 msgstr ""
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
 msgstr ""
 
 #. CONTEXT: configuration: dance time signature
@@ -1077,6 +1082,7 @@ msgstr ""
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr ""
 
@@ -1143,7 +1149,6 @@ msgid "Mute"
 msgstr ""
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr ""
 
@@ -1715,6 +1720,7 @@ msgstr ""
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr ""

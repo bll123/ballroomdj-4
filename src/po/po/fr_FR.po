@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-06-09\n"
+"PO-Revision-Date: 2024-06-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -23,11 +23,6 @@ msgstr ""
 #, c-format
 msgid "%1$s must be greater than %2$s"
 msgstr "%1$s doit être supérieur à %2$s"
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
-msgstr "%d fichiers trouvés"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
@@ -125,6 +120,11 @@ msgstr "%s Fichier XML"
 msgid "%s data will be converted."
 msgstr "%s seront converties."
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s fichiers trouvés"
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -151,15 +151,10 @@ msgstr "%s n'est pas installé"
 msgid "%s may not exceed the song duration"
 msgstr "%s ne doit pas dépasser la durée de la chanson"
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr "%s doit être numérique."
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
-msgstr "%s doit être défini."
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr ""
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
@@ -168,20 +163,30 @@ msgstr "%s doit être défini."
 msgid "%s: Invalid time."
 msgstr "%s: Heure non valide."
 
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Doit être numérique."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Doit être défini."
+
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
-msgstr "%sLes barres obliques ne sont pas autorisées"
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Les barres obliques ne sont pas autorisées."
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
-msgstr "%sLes espaces ne sont pas autorisés."
+msgstr "%s: Les espaces ne sont pas autorisés."
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
-msgstr "%s: doit être numérique."
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -1079,6 +1084,7 @@ msgstr "Temps de jeu\\nmaximum"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Durée maximale de jeu"
 
@@ -1145,7 +1151,6 @@ msgid "Mute"
 msgstr "Muet"
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Nom"
 
@@ -1717,6 +1722,7 @@ msgstr "Envoi d'un message de soutien"
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr "Séquence"
