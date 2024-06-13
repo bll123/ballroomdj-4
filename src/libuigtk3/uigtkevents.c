@@ -23,18 +23,6 @@
 
 #include "ui/uievents.h"
 
-enum {
-  EVENT_NONE,
-  EVENT_KEY_PRESS,
-  EVENT_KEY_RELEASE,
-  EVENT_MBUTTON_PRESS,
-  EVENT_MBUTTON_DOUBLE_PRESS,
-  EVENT_MBUTTON_RELEASE,
-  EVENT_SCROLL,
-  EVENT_ENTER,
-  EVENT_LEAVE,
-};
-
 typedef struct uievent {
   callback_t    *keypresscb;
   callback_t    *keyreleasecb;
@@ -77,7 +65,7 @@ uiEventAlloc (void)
   uievent->mbuttonreleasecb = NULL;
   uievent->scrollcb = NULL;
   uievent->elcb = NULL;
-  uievent->eventtype = EVENT_NONE;
+  uievent->eventtype = UIEVENT_EV_NONE;
   uievent->controlpressed = false;
   uievent->shiftpressed = false;
   uievent->altpressed = false;
@@ -127,7 +115,7 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
   wcont = uiwcontAlloc ();
-  wcont->wbasetype = WCONT_T_EVENT_BOX;
+  wcont->wbasetype = WCONT_T_BOX;
   wcont->wtype = WCONT_T_EVENT_BOX;
   wcont->uidata.widget = widget;
   wcont->uidata.packwidget = widget;
@@ -230,7 +218,7 @@ uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_KEY_PRESS;
+  rc = uievent->eventtype == UIEVENT_EV_KEY_PRESS;
   return rc;
 }
 
@@ -245,7 +233,7 @@ uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_KEY_RELEASE;
+  rc = uievent->eventtype == UIEVENT_EV_KEY_RELEASE;
   return rc;
 }
 
@@ -260,7 +248,7 @@ uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_MBUTTON_PRESS;
+  rc = uievent->eventtype == UIEVENT_EV_MBUTTON_PRESS;
   return rc;
 }
 
@@ -275,7 +263,7 @@ uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_MBUTTON_DOUBLE_PRESS;
+  rc = uievent->eventtype == UIEVENT_EV_MBUTTON_DOUBLE_PRESS;
   return rc;
 }
 
@@ -290,7 +278,7 @@ uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)
   }
 
   uievent = uiwidget->uiint.uievent;
-  rc = uievent->eventtype == EVENT_MBUTTON_RELEASE;
+  rc = uievent->eventtype == UIEVENT_EV_MBUTTON_RELEASE;
   return rc;
 }
 
@@ -689,16 +677,16 @@ uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
   uievent->keyval = keyval;
 
-  uievent->eventtype = EVENT_NONE;
+  uievent->eventtype = UIEVENT_EV_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_KEY_PRESS) {
-    uievent->eventtype = EVENT_KEY_PRESS;
+    uievent->eventtype = UIEVENT_EV_KEY_PRESS;
   }
   if (ttype == GDK_KEY_RELEASE) {
-    uievent->eventtype = EVENT_KEY_RELEASE;
+    uievent->eventtype = UIEVENT_EV_KEY_RELEASE;
   }
 
-  if (uievent->eventtype == EVENT_NONE) {
+  if (uievent->eventtype == UIEVENT_EV_NONE) {
     return rc;
   }
 
@@ -817,19 +805,19 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   /* this is the only way to determine the row */
   uievent->savewidget = w;
 
-  uievent->eventtype = EVENT_NONE;
+  uievent->eventtype = UIEVENT_EV_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_BUTTON_PRESS) {
-    uievent->eventtype = EVENT_MBUTTON_PRESS;
+    uievent->eventtype = UIEVENT_EV_MBUTTON_PRESS;
   }
   if (ttype == GDK_2BUTTON_PRESS) {
-    uievent->eventtype = EVENT_MBUTTON_DOUBLE_PRESS;
+    uievent->eventtype = UIEVENT_EV_MBUTTON_DOUBLE_PRESS;
   }
   if (ttype == GDK_BUTTON_RELEASE) {
-    uievent->eventtype = EVENT_MBUTTON_RELEASE;
+    uievent->eventtype = UIEVENT_EV_MBUTTON_RELEASE;
   }
 
-  if (uievent->eventtype == EVENT_NONE) {
+  if (uievent->eventtype == UIEVENT_EV_NONE) {
     return rc;
   }
 
@@ -919,20 +907,20 @@ uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
   uiwcont_t *uiwidget = udata;
   uievent_t *uievent;
   guint     ttype;
-  int       rc = UICB_CONT;
+  int       rc = UICB_STOP;
   GdkScrollDirection gdir;
-  long      dir;
+  int32_t   dir = UIEVENT_DIR_PREV;
 
   uievent = uiwidget->uiint.uievent;
 
-  uievent->eventtype = EVENT_NONE;
+  uievent->eventtype = UIEVENT_EV_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_SCROLL) {
-    uievent->eventtype = EVENT_SCROLL;
+    uievent->eventtype = UIEVENT_EV_SCROLL;
     gdk_event_get_scroll_direction ((GdkEvent *) event, &gdir);
   }
 
-  if (uievent->eventtype == EVENT_NONE) {
+  if (uievent->eventtype == UIEVENT_EV_NONE) {
     return rc;
   }
 
@@ -941,7 +929,7 @@ uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
     case GDK_SCROLL_DOWN:   { dir = UIEVENT_DIR_NEXT; break; }
     case GDK_SCROLL_LEFT:   { dir = UIEVENT_DIR_LEFT; break; }
     case GDK_SCROLL_RIGHT:  { dir = UIEVENT_DIR_RIGHT; break; }
-    default:                { dir = UIEVENT_DIR_PREV; break; }
+    case GDK_SCROLL_SMOOTH: { return rc; }
   }
 
   if (ttype == GDK_SCROLL &&
@@ -959,29 +947,26 @@ uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
   uievent_t   *uievent;
   guint     ttype;
   int       rc = UICB_CONT;
-  long      el = UIEVENT_LEAVE;
 
   uievent = uiwidget->uiint.uievent;
 
-  uievent->eventtype = EVENT_NONE;
+  uievent->eventtype = UIEVENT_EV_NONE;
   ttype = gdk_event_get_event_type ((GdkEvent *) event);
   if (ttype == GDK_ENTER_NOTIFY) {
-    uievent->eventtype = EVENT_ENTER;
-    el = UIEVENT_ENTER;
+    uievent->eventtype = UIEVENT_EV_ENTER;
   }
   if (ttype == GDK_LEAVE_NOTIFY) {
-    uievent->eventtype = EVENT_LEAVE;
-    el = UIEVENT_LEAVE;
+    uievent->eventtype = UIEVENT_EV_LEAVE;
   }
 
-  if (uievent->eventtype == EVENT_NONE) {
+  if (uievent->eventtype == UIEVENT_EV_NONE) {
     return rc;
   }
 
   if ((ttype == GDK_ENTER_NOTIFY ||
       ttype == GDK_LEAVE_NOTIFY) &&
       uievent->elcb != NULL) {
-    rc = callbackHandlerI (uievent->elcb, el);
+    rc = callbackHandlerI (uievent->elcb, uievent->eventtype);
   }
 
   return rc;

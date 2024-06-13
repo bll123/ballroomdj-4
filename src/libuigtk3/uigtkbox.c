@@ -13,6 +13,7 @@
 
 #include <gtk/gtk.h>
 
+#include "callback.h"
 #include "oslocale.h"
 #include "uiwcont.h"
 
@@ -20,6 +21,7 @@
 
 #include "ui/uibox.h"
 #include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 static uiwcont_t * uiCreateBox (int orientation);
 
@@ -84,6 +86,16 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
+}
+
+void
+uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
+    return;
+  }
+
+  uiWidgetSetSizeChgCallback (uiwindow, uicb);
 }
 
 /* internal routines */

@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#include "callback.h"
 #include "uiwcont.h"
 
 /* widget interface */
@@ -38,9 +39,12 @@ void  uiWidgetClearPersistent (uiwcont_t *uiuiwidget);
 void  uiWidgetSetSizeRequest (uiwcont_t *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (uiwcont_t *uiwidget);
 void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
+void  uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height);
 void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
+void  uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void  uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

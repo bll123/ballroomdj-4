@@ -75,13 +75,13 @@ typedef struct {
 } uitest_t;
 
 enum {
-  UITEST_VL_COLS = 4,
+  UITEST_VL_COLS = 5,
   UITEST_VL_DISPROWS = 10,
   UITEST_VL_MAXROWS = 100,
 };
 
 static const char *vllabs [] = {
-  "First", "Second", "Third", "Fourth", "Fifth", "Sixth",
+  "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
 };
 
 static void uitestMainLoop (uitest_t *uitest);

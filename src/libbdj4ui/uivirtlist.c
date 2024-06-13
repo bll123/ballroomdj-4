@@ -50,6 +50,8 @@ enum {
   VL_CB_MBUTTON,
   VL_CB_SCROLL,
   VL_CB_ENTER,
+  VL_CB_VBOX_SZ_CHG,
+  VL_CB_ROW_SZ_CHG,
   VL_CB_MAX,
 };
 
@@ -85,7 +87,8 @@ typedef struct {
   uint64_t    ident;
   uiwcont_t   *hbox;
   uivlcol_t   *cols;
-  bool        selected : 1;
+  bool        hidden : 1;
+  bool        selected : 1;       // a temporary flag to ease processing
   bool        initialized : 1;
 } uivlrow_t;
 
@@ -98,6 +101,9 @@ typedef struct uivirtlist {
   uivlrow_t     *rows;
   uivlrow_t     headingrow;
   int           disprows;
+  int           allocrows;
+  int           vboxheight;
+  int           rowheight;
   int32_t       numrows;
   int32_t       rowoffset;
   nlist_t       *selected;
@@ -127,6 +133,9 @@ static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start);
+static bool uivlVboxSizeChg (void *udata, int32_t width, int32_t height);
+static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
+static void uivlRowBasicInit (uivlrow_t *row);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -140,6 +149,8 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->changecb = NULL;
   vl->udata = NULL;
   vl->inscroll = false;
+  vl->vboxheight = -1;
+  vl->rowheight = -1;
 
   for (int i = 0; i < VL_W_MAX; ++i) {
     vl->wcont [i] = NULL;
@@ -150,20 +161,34 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
   vl->callbacks [VL_CB_ENTER] = callbackInitI (uivlEnterLeaveEvent, vl);
+  vl->callbacks [VL_CB_VBOX_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
+  vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
+  uiWidgetAlignHorizStart (vl->wcont [VL_W_HEADBOX]);
+  uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_HEADBOX]);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HEADBOX]);
 
   vl->wcont [VL_W_HBOX] = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_HBOX]);
+  uiWidgetAlignVertFill (vl->wcont [VL_W_HBOX]);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_HBOX]);
+  uiWidgetExpandVert (vl->wcont [VL_W_HBOX]);
+  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HBOX]);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiWidgetAlignVertFill (vl->wcont [VL_W_VBOX]);
-  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_VBOX]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_EVENT_BOX]);
   uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);    // for keyboard events
+
+  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_VBOX]);
+  uiWidgetAlignHorizFill (vl->wcont [VL_W_EVENT_BOX]);
+  uiWidgetAlignVertFill (vl->wcont [VL_W_EVENT_BOX]);
+  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_EVENT_BOX]);
+
+  uiBoxSetSizeChgCallback (vl->wcont [VL_W_VBOX], vl->callbacks [VL_CB_VBOX_SZ_CHG]);
 
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
@@ -171,10 +196,10 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   uiBoxPackEnd (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], floor ((double) disprows / 2));
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
-  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], 1.0);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
-  uiScrollbarSetUpper (vl->wcont [VL_W_SB], 10.0);
+  uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) disprows);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
 
   vl->wcont [VL_W_FILLER] = uiCreateLabel ("");
@@ -190,22 +215,28 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   nlistSetNum (vl->selected, 0, 1);
   vl->initialized = VL_NOT_INIT;
 
+fprintf (stderr, "init: disprows: %d\n", disprows);
   vl->disprows = disprows;
-  vl->rows = mdmalloc (sizeof (uivlrow_t) * disprows);
+  vl->allocrows = disprows;
+  vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->allocrows);
   for (int dispidx = 0; dispidx < disprows; ++dispidx) {
-    vl->rows [dispidx].ident = VL_IDENT_ROW;
-    vl->rows [dispidx].hbox = NULL;
-    vl->rows [dispidx].cols = NULL;
-    vl->rows [dispidx].initialized = false;
+    uivlRowBasicInit (&vl->rows [dispidx]);
   }
 
-  vl->headingrow.ident = VL_IDENT_ROW;
-  vl->headingrow.hbox = NULL;
-  vl->headingrow.cols = NULL;
-  vl->headingrow.initialized = false;
+  uivlRowBasicInit (&vl->headingrow);
 
-  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HBOX]);
-  uiWidgetAlignVertStart (boxp);
+  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX],
+      vl->callbacks [VL_CB_KEY]);
+  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
+      vl->callbacks [VL_CB_MBUTTON]);
+  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
+      vl->callbacks [VL_CB_SCROLL]);
+  /* the vbox does not receive an enter/leave event */
+  /* (as it is overlaid presumably) */
+  /* set the enter/leave on the main event-box, and the handler */
+  /* grabs the focus on to the vbox so the keyboard events work */
+  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
+      vl->callbacks [VL_CB_ENTER]);
 
   return vl;
 }
@@ -219,7 +250,7 @@ uivlFree (uivirtlist_t *vl)
 
   uivlFreeRow (vl, &vl->headingrow);
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->allocrows; ++dispidx) {
     uivlFreeRow (vl, &vl->rows [dispidx]);
   }
   dataFree (vl->rows);
@@ -269,19 +300,18 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     vl->coldata [colidx].ellipsize = false;
   }
 
+fprintf (stderr, "head-row-init\n");
+  uivlInitRow (vl, &vl->headingrow, true);
+
+  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+    uivlrow_t *row;
+
+    row = &vl->rows [dispidx];
+fprintf (stderr, "row-init: %d\n", dispidx);
+    uivlInitRow (vl, row, false);
+  }
+
   vl->initialized = VL_INIT_COLS;
-}
-
-void
-uivlSetHeadingFont (uivirtlist_t *vl, int colnum, const char *font)
-{
-  if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
-  }
-  if (vl->initialized < VL_INIT_COLS) {
-    return;
-  }
-
 }
 
 void
@@ -310,8 +340,6 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
     return;
   }
 
-  uivlInitRow (vl, &vl->headingrow, true);
-//    uivlSetHeadingFont (vl, VL_ROW_HEADING, colnum, need-bold-listing-font);
   uivlSetColumnValue (vl, VL_ROW_HEADING, colnum, heading);
 }
 
@@ -605,14 +633,16 @@ uivlDisplay (uivirtlist_t *vl)
 
   uiBoxPackEnd (vl->headingrow.hbox, vl->wcont [VL_W_FILLER]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
+fprintf (stderr, "disp-pop\n");
   uivlPopulate (vl);
 
   for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
-    row = uivlGetRow (vl, dispidx + vl->rowoffset);
-    if (row == NULL) {
-      break;
-    }
+    row = &vl->rows [dispidx];
+fprintf (stderr, "disp-pack: %d\n", dispidx);
     uivlPackRow (vl, row);
+    if (dispidx == 0) {
+      uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
+    }
   }
 
   vl->initialized = VL_INIT_DISP;
@@ -663,7 +693,10 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
   }
 
   row->hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizStart (row->hbox);
+  uiWidgetAlignVertStart (row->hbox);
   uiWidgetAlignHorizFill (row->hbox);
+//  uiWidgetExpandHoriz (row->hbox);
 
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
@@ -671,6 +704,8 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
     row->cols [colidx].ident = VL_IDENT_COL;
     row->cols [colidx].uiwidget = uiCreateLabel ("");
     uiWidgetSetMarginEnd (row->cols [colidx].uiwidget, 2);
+    uiWidgetAlignHorizStart (row->cols [colidx].uiwidget);
+    uiWidgetAlignHorizFill (row->cols [colidx].uiwidget);
 
     if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
       uiBoxPackStartExpand (row->hbox, row->cols [colidx].uiwidget);
@@ -686,11 +721,10 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
       if (vl->coldata [colidx].alignend) {
         uiLabelAlignEnd (row->cols [colidx].uiwidget);
       }
-      if (row->cols [colidx].class != NULL) {
-      }
     }
     row->cols [colidx].class = NULL;
   }
+  row->hidden = false;
   row->selected = false;
   row->initialized = true;
 }
@@ -711,9 +745,6 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
       if (row->ident != VL_IDENT_ROW) {
         fprintf (stderr, "ERR: invalid row: rownum %" PRId32 " rowoffset: %" PRId32 " rowidx: %" PRId32 "\n", rownum, vl->rowoffset, rowidx);
       }
-      if (! row->initialized) {
-        uivlInitRow (vl, row, false);
-      }
     }
   }
 
@@ -727,19 +758,11 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX],
-      vl->callbacks [VL_CB_KEY]);
-  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
-      vl->callbacks [VL_CB_MBUTTON]);
-  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
-      vl->callbacks [VL_CB_SCROLL]);
-  /* the vbox does not receive an enter/leave event */
-  /* (as it is overlaid presumably) */
-  /* set the enter/leave on the main event-box, and the handler */
-  /* grabs the focus on to the vbox so the keyboard events work */
-  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
-      vl->callbacks [VL_CB_ENTER]);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->hbox);
+  /* rows packed after the initial display need */
+  /* to have their contents shown */
+  uiWidgetShowAll (row->hbox);
+  row->hidden = false;
 }
 
 static bool
@@ -762,14 +785,17 @@ uivlScrollbarCallback (void *udata, double value)
 static void
 uivlPopulate (uivirtlist_t *vl)
 {
+  for (int dispidx = vl->disprows; dispidx < vl->allocrows; ++dispidx) {
+    vl->rows [dispidx].hidden = true;
+    uiWidgetHide (vl->rows [dispidx].hbox);
+  }
+
   for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
     uivlrow_t   *row;
     uivlcol_t   *col;
 
-    row = uivlGetRow (vl, dispidx + vl->rowoffset);
-    if (row == NULL) {
-      break;
-    }
+    row = &vl->rows [dispidx];
+fprintf (stderr, "pop: %d %p\n", dispidx, row);
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       col = &row->cols [colidx];
@@ -784,12 +810,14 @@ uivlPopulate (uivirtlist_t *vl)
   for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
     uivlrow_t   *row;
 
-    row = uivlGetRow (vl, dispidx + vl->rowoffset);
-    if (row == NULL) {
-      break;
-    }
+    row = &vl->rows [dispidx];
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->udata, vl, dispidx + vl->rowoffset);
+    }
+
+    if (row->hidden) {
+      row->hidden = false;
+      uiWidgetShow (row->hbox);
     }
   }
 
@@ -860,7 +888,6 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum)
   if (button == UIEVENT_BUTTON_4 || button == UIEVENT_BUTTON_5) {
     int32_t     start;
 
-fprintf (stderr, "button 4/5\n");
     start = vl->rowoffset;
 
     if (button == UIEVENT_BUTTON_4) {
@@ -909,7 +936,6 @@ uivlScrollEvent (void *udata, int32_t dir)
   }
 
   start = vl->rowoffset;
-fprintf (stderr, "dir: %" PRId32 "\n", dir);
   if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
     start -= 1;
   }
@@ -926,7 +952,7 @@ uivlEnterLeaveEvent (void *udata, int32_t el)
 {
   uivirtlist_t  *vl = udata;
 
-  if (el == UIEVENT_ENTER) {
+  if (el == UIEVENT_EV_ENTER) {
     uiWidgetGrabFocus (vl->wcont [VL_W_VBOX]);
   }
   return UICB_CONT;
@@ -1010,8 +1036,72 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start)
   }
 
   vl->rowoffset = start;
+fprintf (stderr, "scroll-pop\n");
   uivlPopulate (vl);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) start);
   vl->inscroll = false;
 }
 
+static bool
+uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
+{
+  uivirtlist_t  *vl = udata;
+  int           calcrows;
+  int           theight;
+
+fprintf (stderr, "vbox: size-chg: %d %d\n", width, height);
+
+  vl->vboxheight = height;
+
+  if (vl->vboxheight > 0 && vl->rowheight > 0) {
+    theight = vl->vboxheight;
+fprintf (stderr, "  theight: %d\n", theight);
+    calcrows = theight / vl->rowheight;
+fprintf (stderr, "  calcrows: %d\n", calcrows);
+
+    if (calcrows != vl->disprows) {
+
+      /* only if the number of rows has increased */
+      if (vl->allocrows < calcrows) {
+        vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * calcrows);
+        for (int dispidx = vl->disprows; dispidx < calcrows; ++dispidx) {
+          uivlrow_t *row;
+
+          row = &vl->rows [dispidx];
+          uivlRowBasicInit (row);
+fprintf (stderr, "sz-row-init: %d\n", dispidx);
+          uivlInitRow (vl, row, false);
+
+fprintf (stderr, "sz-chg-pack: %d\n", dispidx);
+          uivlPackRow (vl, row);
+        }
+
+        vl->allocrows = calcrows;
+      }
+
+      vl->disprows = calcrows;
+fprintf (stderr, "sz-pop: disprows: %d\n", vl->disprows);
+      uivlPopulate (vl);
+    }
+  }
+  return UICB_CONT;
+}
+
+static bool
+uivlRowSizeChg (void *udata, int32_t width, int32_t height)
+{
+  uivirtlist_t  *vl = udata;
+
+fprintf (stderr, "row: size-chg: %d %d\n", width, height);
+  vl->rowheight = height;
+  return UICB_CONT;
+}
+
+static void
+uivlRowBasicInit (uivlrow_t *row)
+{
+  row->ident = VL_IDENT_ROW;
+  row->hbox = NULL;
+  row->cols = NULL;
+  row->initialized = false;
+}

@@ -32,7 +32,6 @@ static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpoin
 static gboolean uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata);
 static gboolean uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata);
 static void uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata);
-static gboolean uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata);
 
 uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
@@ -42,6 +41,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
+  gtk_widget_set_events (window, GDK_STRUCTURE_MASK);
   if (imagenm != NULL) {
     GdkPixbuf *pixbuf;
 
@@ -375,8 +375,7 @@ uiWindowSetMappedCallback (uiwcont_t *uiwindow, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwindow->uidata.widget, "map-event",
-      G_CALLBACK (uiWindowMappedHandler), uicb);
+  uiWidgetSetMappedCallback (uiwindow, uicb);
 }
 
 void
@@ -517,17 +516,6 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
   }
   return rc;
 }
-
-static gboolean
-uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata)
-{
-  callback_t  *uicb = udata;
-  bool        rc = false;
-
-  rc = callbackHandler (uicb);
-  return rc;
-}
-
 
 static void
 uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata)

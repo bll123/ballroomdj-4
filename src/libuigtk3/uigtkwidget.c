@@ -11,12 +11,16 @@
 
 #include <gtk/gtk.h>
 
+#include "callback.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
+
+static gboolean uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata);
+static gboolean uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata);
 
 /* widget interface */
 
@@ -311,6 +315,23 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 }
 
 void
+uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height)
+{
+  GtkAllocation alloc;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  gtk_widget_get_allocation (uiwidget->uidata.widget, &alloc);
+  *width = alloc.width;
+  *height = alloc.height;
+}
+
+void
 uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 {
   if (uiwidget == NULL) {
@@ -349,4 +370,45 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
   }
 
   gtk_widget_set_tooltip_text (uiwidget->uidata.widget, tooltip);
+}
+
+void
+uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  g_signal_connect (uiwidget->uidata.widget, "map-event",
+      G_CALLBACK (uiWidgetMappedHandler), uicb);
+}
+
+void
+uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  g_signal_connect (uiwidget->uidata.widget, "size-allocate",
+      G_CALLBACK (uiWidgetSizeChgHandler), uicb);
+}
+
+/* internal routines */
+
+static gboolean
+uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata)
+{
+  callback_t  *uicb = udata;
+  bool        rc = false;
+
+  if (uicb != NULL) {
+    rc = callbackHandler (uicb);
+  }
+  return rc;
+}
+
+static gboolean
+uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata)
+{
+  callback_t  *uicb = udata;
+  bool        rc = false;
+
+fprintf (stderr, "w-size-chg: %d/%d\n", allocation->width, allocation->height);
+  if (uicb != NULL) {
+    rc = callbackHandlerII (uicb, allocation->width, allocation->height);
+  }
+  return rc;
 }
