@@ -730,6 +730,7 @@ altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
   const char    *name;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
+  int           valflags;
   bool          val;
 
   if (! altinst->guienabled) {
@@ -751,8 +752,11 @@ altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
   }
 
   /* CONTEXT: alternate installer: name (for shortcut) */
-  val = validate (tbuff, sizeof (tbuff), label,
-      name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  valflags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
+  if (isWindows ()) {
+    valflags |= VAL_NO_WINCHARS;
+  }
+  val = validate (tbuff, sizeof (tbuff), label, name, valflags);
   if (val == false) {
     uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], tbuff);
     return rc;

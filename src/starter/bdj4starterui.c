@@ -290,7 +290,7 @@ static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterStartAltInst (void *udata);
 static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
-static int      starterValidateEmail (uiwcont_t *entry, void *udata);
+static int      starterValidateEmail (uiwcont_t *entry, const char *label, void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -2257,7 +2257,7 @@ starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int route
 }
 
 static int
-starterValidateEmail (uiwcont_t *entry, void *udata)
+starterValidateEmail (uiwcont_t *entry, const char *label, void *udata)
 {
   startui_t   *starter = udata;
   const char  *email;

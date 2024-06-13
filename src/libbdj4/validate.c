@@ -19,6 +19,7 @@ enum {
   VAL_REGEX_MIN_SEC,
   VAL_REGEX_HOUR_MIN_SEC,
   VAL_REGEX_HOUR_MIN,
+  VAL_REGEX_WINCHARS,
   VAL_REGEX_MAX,
 };
 
@@ -35,6 +36,7 @@ static valregex_t valregex [VAL_REGEX_MAX] = {
   /* americans are likely to type in am/pm */
   /* hour-min is use for a clock value */
   [VAL_REGEX_HOUR_MIN]   = { "^ *(0?[0-9]|[1][0-9]|[2][0-4])([:.][0-5][0-9])?( *([Aa]|[Pp])(\\.?[Mm]\\.?)?)? *$" },
+  [VAL_REGEX_WINCHARS]   = { "[*'\":|<>^]" },
 };
 
 /**
@@ -78,12 +80,14 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
       rc = false;
     }
   }
-  if ((valflags & VAL_NO_COLON) == VAL_NO_COLON) {
-    if (str != NULL && strstr (str, ":") != NULL) {
-      /* CONTEXT: validation: colon is not allowed  */
-      snprintf (buff, sz, _("%s: Colon is not allowed."), label);
+  if ((valflags & VAL_NO_WINCHARS) == VAL_NO_WINCHARS) {
+    rx = regexInit (valregex [VAL_REGEX_WINCHARS].regex);
+    if (str != NULL && regexMatch (rx, str)) {
+      /* CONTEXT: validation: characters not allowed*/
+      snprintf (buff, sz, _("%s: *'\":|<>^ characters are not allowed."), label);
       rc = false;
     }
+    regexFree (rx);
   }
   if ((valflags & VAL_NUMERIC) == VAL_NUMERIC) {
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);

@@ -97,7 +97,7 @@ uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
   uiLabelSetText (msgwidget, "");
   str = uiEntryGetValue (entry);
   if (isWindows ()) {
-    flags |= VAL_NO_COLON;
+    flags |= VAL_NO_WINCHARS;
   }
   val = validate (tbuff, sizeof (tbuff), label, str, flags);
   if (val == false) {

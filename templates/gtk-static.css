@@ -77,6 +77,13 @@ scrolledwindow undershoot.left, scrolledwindow undershoot.bottom {
   outline-width: 0px;
 }
 
+button.bdj-spd-reset {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
 button.bdj-switch {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;

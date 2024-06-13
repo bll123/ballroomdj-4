@@ -79,19 +79,29 @@ START_TEST(validate_noslash)
 }
 END_TEST
 
-START_TEST(validate_nocolon)
+START_TEST(validate_nowinchar)
 {
   bool    val;
   char    tbuff [200];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_nocolon");
-  mdebugSubTag ("validate_nocolon");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_nowinchar");
+  mdebugSubTag ("validate_nowinchar");
 
-  val = validate (tbuff, sizeof (tbuff), "nocolon", "stuff", VAL_NO_SLASHES);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff", VAL_NO_WINCHARS);
   ck_assert_int_eq (val, true);
-  val = validate (tbuff, sizeof (tbuff), "nocolon", "stuff:", VAL_NO_SLASHES);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff:", VAL_NO_WINCHARS);
   ck_assert_int_eq (val, false);
-  val = validate (tbuff, sizeof (tbuff), "nocolon", "st:uff", VAL_NO_SLASHES);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff*", VAL_NO_WINCHARS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff|", VAL_NO_WINCHARS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff<", VAL_NO_WINCHARS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff>", VAL_NO_WINCHARS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff'", VAL_NO_WINCHARS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "nowinchar", "stuff\"", VAL_NO_WINCHARS);
   ck_assert_int_eq (val, false);
 }
 END_TEST
@@ -267,7 +277,7 @@ validate_suite (void)
   tcase_add_test (tc, validate_empty);
   tcase_add_test (tc, validate_nospace);
   tcase_add_test (tc, validate_noslash);
-  tcase_add_test (tc, validate_nocolon);
+  tcase_add_test (tc, validate_nowinchar);
   tcase_add_test (tc, validate_numeric);
   tcase_add_test (tc, validate_float);
   tcase_add_test (tc, validate_hour_min);

@@ -159,14 +159,22 @@ uiSetUICSS (const char *uifont, const char *accentColor,
   }
 
   if (sz > 0) {
+    int   tsz;
+
     snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
-    sz -= 2;
-    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
+
+    tsz = sz - 2;
+    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", tsz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
-    ++sz;
+
+    tsz = sz - 1;
     snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; } ",
-        LEFT_NB_CLASS, sz);
+        LEFT_NB_CLASS, tsz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+
+    tsz = sz - 3;
+    snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; } ", tsz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 

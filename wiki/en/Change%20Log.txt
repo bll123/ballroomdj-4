@@ -11,12 +11,12 @@
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
     * PENDING: Crash in player when a playlist has no dances selected.
-    * PENDING: Windows: Crash in player on exit.
     * PENDING: Allow speed to be changed while paused.
+    * Windows: Reject invalid characters in filenames.
 * Changes:
     * Improved validation messages.
 * New Features:
-    * PENDING Player: Added reset speed to 100% button.
+    * Player: Speed: Add button to reset speed to 100%.
 
 -->
 
