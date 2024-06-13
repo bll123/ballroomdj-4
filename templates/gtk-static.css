@@ -82,6 +82,7 @@ button.bdj-spd-reset {
   padding-bottom: 0;
   padding-left: 1px;
   padding-right: 1px;
+  border-color: black;
 }
 
 button.bdj-switch {

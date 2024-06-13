@@ -174,7 +174,11 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     tsz = sz - 3;
-    snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; } ", tsz);
+    if (accentColor != NULL) {
+      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; color: %s; } ", tsz, accentColor);
+    } else {
+      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; } ", tsz);
+    }
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
