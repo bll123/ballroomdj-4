@@ -94,7 +94,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].uiwidgetp,
-      uiEntryValidateDir, NULL, UIENTRY_DELAYED);
+      "", uiEntryValidateDir, NULL, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the name of this profile */
   confuiMakeItemEntry (gui, vbox, szgrp, _("Profile Name"),
@@ -122,14 +122,14 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUP_SCRIPT,
       bdjoptGetStr (OPT_M_STARTUP_SCRIPT), confuiSelectStartup);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].uiwidgetp,
-      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+      "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Shutdown Script"),
       CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWN_SCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].uiwidgetp,
-      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+      "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   /* audio tag stuff */
 

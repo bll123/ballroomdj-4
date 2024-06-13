@@ -70,9 +70,9 @@ static bool   uieibdj4TargetDialog (void *udata);
 static void   uieibdj4InitDisplay (uieibdj4_t *uieibdj4);
 static bool   uieibdj4ResponseHandler (void *udata, int32_t responseid);
 static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
-static int    uieibdj4ValidateTarget (uiwcont_t *entry, void *udata);
+static int    uieibdj4ValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static bool   uieibdj4SelectHandler (void *udata, int32_t idx);
-static int    uieibdj4ValidateNewName (uiwcont_t *entry, void *udata);
+static int    uieibdj4ValidateNewName (uiwcont_t *entry, const char *label, void *udata);
 
 uieibdj4_t *
 uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
@@ -357,7 +357,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   strlcpy (tbuff, odir, sizeof (tbuff));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], tbuff);
-  uiEntrySetValidate (uiwidgetp,
+  uiEntrySetValidate (uiwidgetp, "",
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
   uiwidgetp = uiCreateButton (
@@ -405,7 +405,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (hbox, uiwidgetp);
     uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME] = uiwidgetp;
 
-    uiEntrySetValidate (uiwidgetp,
+    /* CONTEXT: export/import bdj4: playlist: select the song list */
+    uiEntrySetValidate (uiwidgetp, _("Song List"),
         uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
   }
 
@@ -511,7 +512,7 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
 }
 
 static int
-uieibdj4ValidateTarget (uiwcont_t *entry, void *udata)
+uieibdj4ValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
   const char  *str;
@@ -566,7 +567,7 @@ uieibdj4SelectHandler (void *udata, int32_t idx)
 }
 
 static int
-uieibdj4ValidateNewName (uiwcont_t *entry, void *udata)
+uieibdj4ValidateNewName (uiwcont_t *entry, const char *label, void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
   uiwcont_t   *statusMsg = NULL;
@@ -580,7 +581,7 @@ uieibdj4ValidateNewName (uiwcont_t *entry, void *udata)
   errorMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_ERROR_MSG];
   uiLabelSetText (statusMsg, "");
   uiLabelSetText (errorMsg, "");
-  rc = uiutilsValidatePlaylistName (entry, errorMsg);
+  rc = uiutilsValidatePlaylistName (entry, label, errorMsg);
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);

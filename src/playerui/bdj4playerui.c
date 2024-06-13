@@ -697,7 +697,7 @@ pluiBuildUI (playerui_t *plui)
     }
 
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
-        plui->wcont [PLUI_W_ERROR_MSG], NULL);
+        plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
 
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();

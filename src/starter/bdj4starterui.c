@@ -1922,7 +1922,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiEntryInit (50, 100);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp, starterValidateEmail, starter, UIENTRY_DELAYED);
+  /* CONTEXT: starterui: sending support message: user's e-mail address */
+  uiEntrySetValidate (uiwidgetp, _("E-Mail Address"),
+      starterValidateEmail, starter, UIENTRY_DELAYED);
 
   uiwcontFree (hbox);
 

@@ -25,7 +25,6 @@
 #include "songutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "validate.h"
 
 bool
 manageCreatePlaylistCopy (uiwcont_t *errorMsg,

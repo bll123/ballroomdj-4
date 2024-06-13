@@ -193,11 +193,11 @@ static bool installerConversionCBHandler (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
 static bool installerBDJ3LocDirDialog (void *udata);
-static int  installerValidateTarget (uiwcont_t *entry, void *udata);
+static int  installerValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
 static void installerTargetFeedbackMsg (installer_t *installer);
 static void installerSetConversionFlags (installer_t *installer);
-static int  installerValidateBDJ3Loc (uiwcont_t *entry, void *udata);
+static int  installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata);
 static int  installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 static void installerSetConvertStatus (installer_t *installer, int val);
@@ -810,9 +810,9 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  uiEntrySetValidate (installer->wcont [INST_W_TARGET],
+  uiEntrySetValidate (installer->wcont [INST_W_TARGET], "",
       installerValidateTarget, installer, UIENTRY_DELAYED);
-  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC],
+  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC], "",
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 }
 
@@ -1035,7 +1035,7 @@ installerConversionCBHandler (void *udata)
 }
 
 static int
-installerValidateTarget (uiwcont_t *entry, void *udata)
+installerValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -1225,7 +1225,7 @@ installerSetConversionFlags (installer_t *installer)
 }
 
 static int
-installerValidateBDJ3Loc (uiwcont_t *entry, void *udata)
+installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;

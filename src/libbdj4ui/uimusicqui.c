@@ -150,7 +150,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
 
 uiwcont_t *
 uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
-    uiwcont_t *statusMsg, uientryval_t validateFunc)
+    uiwcont_t *errorMsg, uiwcont_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
   uiwcont_t         *hbox;
@@ -166,6 +166,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   /* temporary */
   uimusicq->musicqManageIdx = ci;
   mqint = uimusicq->ui [ci].mqInternalData;
+  uimusicq->errorMsg = errorMsg;
   uimusicq->statusMsg = statusMsg;
 
   uimusicq->ui [ci].hasui = true;
@@ -202,7 +203,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
     uimusicq->ui [ci].slname = uiwidgetp;
     if (validateFunc != NULL) {
-      uiEntrySetValidate (uiwidgetp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
+      uiEntrySetValidate (uiwidgetp, _("Song List"),
+          validateFunc, errorMsg, UIENTRY_IMMEDIATE);
     }
 
     uiwcontFree (hbox);

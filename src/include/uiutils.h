@@ -14,7 +14,7 @@ typedef struct {
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetProfileColor (uiwcont_t *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
-int uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata);
+int uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 void uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
 

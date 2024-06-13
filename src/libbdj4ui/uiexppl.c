@@ -78,7 +78,7 @@ static void   uiexpplCreateDialog (uiexppl_t *uiexppl);
 static bool   uiexpplTargetDialog (void *udata);
 static bool   uiexpplResponseHandler (void *udata, int32_t responseid);
 static void   uiexpplFreeDialog (uiexppl_t *uiexppl);
-static int    uiexpplValidateTarget (uiwcont_t *entry, void *udata);
+static int    uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static bool   uiexpplExportTypeCallback (void *udata);
 
 uiexppl_t *
@@ -291,7 +291,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
 
-  uiEntrySetValidate (uiwidgetp,
+  uiEntrySetValidate (uiwidgetp, "",
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
   /* target folder button */
@@ -403,7 +403,7 @@ uiexpplFreeDialog (uiexppl_t *uiexppl)
 }
 
 static int
-uiexpplValidateTarget (uiwcont_t *entry, void *udata)
+uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   uiexppl_t   *uiexppl = udata;
   const char  *str;

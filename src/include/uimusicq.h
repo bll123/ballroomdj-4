@@ -81,6 +81,7 @@ typedef struct uimusicq {
   musicdb_t         *musicdb;
   uiwcont_t         *parentwin;
   uiwcont_t         *pausePixbuf;
+  uiwcont_t         *errorMsg;
   uiwcont_t         *statusMsg;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
   callback_t        *cbcopy [UIMUSICQ_CBC_MAX];
@@ -121,7 +122,7 @@ void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 /* uimusicqui.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
-uiwcont_t   * uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci, uiwcont_t *statusMsg, uientryval_t validateFunc);
+uiwcont_t   * uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci, uiwcont_t *errorMsg, uiwcont_t *statusMsg, uientryval_t validateFunc);
 void      uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb);
 void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);

@@ -95,11 +95,11 @@ static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
-static int32_t managePlaylistValHMSCallback (void *udata, const char *txt);
-static int32_t managePlaylistValHMCallback (void *udata, const char *txt);
+static int32_t managePlaylistValHMSCallback (void *udata, const char *label, const char *txt);
+static int32_t managePlaylistValHMCallback (void *udata, const char *label, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
-static int  managePlaylistTextEntryChg (uiwcont_t *e, void *udata);
+static int  managePlaylistTextEntryChg (uiwcont_t *e, const char *label, void *udata);
 static void manageResetChanged (managepl_t *managepl);
 
 managepl_t *
@@ -205,7 +205,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp, uiutilsValidatePlaylistName,
+  /* CONTEXT: playlist management: label for playlist name */
+  uiEntrySetValidate (uiwidgetp, _("Playlist"),
+      uiutilsValidatePlaylistName,
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);
@@ -249,7 +251,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitS (
+  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitSS (
       managePlaylistValHMSCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
       managepl->callbacks [MPL_CB_MAXPLAYTIME]);
@@ -269,7 +271,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_STOPAT] = callbackInitS (
+  managepl->callbacks [MPL_CB_STOPAT] = callbackInitSS (
       managePlaylistValHMCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
       managepl->callbacks [MPL_CB_STOPAT]);
@@ -405,7 +407,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiEntryInit (15, 50);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp,
+  uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
 
   /* new line : tags, tag weight */
@@ -423,7 +425,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiEntryInit (15, 50);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_TAGS] = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp,
+  uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: playlist management: tag weight */
@@ -831,18 +833,17 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
 }
 
 static int32_t
-managePlaylistValHMSCallback (void *udata, const char *txt)
+managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
 {
   managepl_t  *managepl = udata;
-  const char  *valstr;
   char        tbuff [200];
-  long        value;
+  int32_t     value;
+  bool        val;
 
   logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
-  valstr = validate (txt, VAL_HOUR_MIN_SEC);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN_SEC);
+  if (val == false) {
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
     return -1;
@@ -854,18 +855,17 @@ managePlaylistValHMSCallback (void *udata, const char *txt)
 }
 
 static int32_t
-managePlaylistValHMCallback (void *udata, const char *txt)
+managePlaylistValHMCallback (void *udata, const char *label, const char *txt)
 {
   managepl_t  *managepl = udata;
-  const char  *valstr;
   char        tbuff [200];
-  long        value;
+  int32_t     value;
+  bool        val;
 
   logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
-  valstr = validate (txt, VAL_HOUR_MIN);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
+  if (val == false) {
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
     return -1;
@@ -993,7 +993,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
 }
 
 static int
-managePlaylistTextEntryChg (uiwcont_t *e, void *udata)
+managePlaylistTextEntryChg (uiwcont_t *e, const char *label, void *udata)
 {
   managepl_t *managepl = udata;
 

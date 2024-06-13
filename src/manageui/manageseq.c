@@ -147,7 +147,9 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
   uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
+  /* CONTEXT: sequence editor: sequence name */
+  uiEntrySetValidate (manageseq->seqname, _("Sequence"),
+      uiutilsValidatePlaylistName,
       manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   manageseq->seqduallist = uiCreateDualList (vboxp,

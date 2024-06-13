@@ -73,10 +73,10 @@ static void   uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn);
 static void   uiextreqClearSong (uiextreq_t *uiextreq);
 static bool   uiextreqResponseHandler (void *udata, int32_t responseid);
 static void   uiextreqProcessAudioFile (uiextreq_t *uiextreq);
-static int    uiextreqValidateAudioFile (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateArtist (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateTitle (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata);
+static int    uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateArtist (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateTitle (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata);
 
 uiextreq_t *
 uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
@@ -340,13 +340,13 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
 
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], "",
       uiextreqValidateAudioFile, uiextreq, UIENTRY_DELAYED);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST], "",
       uiextreqValidateArtist, uiextreq, UIENTRY_IMMEDIATE);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_TITLE],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_TITLE], "",
       uiextreqValidateTitle, uiextreq, UIENTRY_IMMEDIATE);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "",
       uiextreqValidateMQDisplay, uiextreq, UIENTRY_IMMEDIATE);
 
   logProcEnd ("");
@@ -496,12 +496,12 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
 }
 
 static int
-uiextreqValidateAudioFile (uiwcont_t *entry, void *udata)
+uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   int         rc;
 
-  rc = uiEntryValidateFile (entry, NULL);
+  rc = uiEntryValidateFile (entry, label, NULL);
   if (rc == UIENTRY_OK) {
     pathinfo_t    *pi;
     const char    *fn;
@@ -522,7 +522,7 @@ uiextreqValidateAudioFile (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateArtist (uiwcont_t *entry, void *udata)
+uiextreqValidateArtist (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;
@@ -535,7 +535,7 @@ uiextreqValidateArtist (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateTitle (uiwcont_t *entry, void *udata)
+uiextreqValidateTitle (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;
@@ -548,7 +548,7 @@ uiextreqValidateTitle (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata)
+uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;

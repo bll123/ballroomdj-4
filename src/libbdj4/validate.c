@@ -40,27 +40,33 @@ static valregex_t valregex [VAL_REGEX_MAX] = {
 /**
  * Validate a string.
  *
+ * @param[in] buff Output buffer for response.
+ * @param[in] sz Size of output buffer.
  * @param[in] str The string to validate.
  * @param[in] valflags The validation flags (see validate.h).
  * @return On error, returns a constant string with a %s in it to hold the display name.
- * @return On success, returns a null.
+ * @return On success, returns true
  */
-const char *
-validate (const char *str, int valflags)
+bool
+validate (char *buff, size_t sz, const char *label, const char *str, int valflags)
 {
-  char        *valstr = NULL;
   bdjregex_t  *rx = NULL;
+  bool        rc = true;
+
+  *buff = '\0';
 
   if ((valflags & VAL_NOT_EMPTY) == VAL_NOT_EMPTY) {
     if (str == NULL || ! *str) {
       /* CONTEXT: validation: a value must be set */
-      valstr = _("%s must be set.");
+      snprintf (buff, sz, _("%s: Must be set."), label);
+      rc = false;
     }
   }
   if ((valflags & VAL_NO_SPACES) == VAL_NO_SPACES) {
     if (str != NULL && strstr (str, " ") != NULL) {
       /* CONTEXT: validation: spaces are not allowed  */
-      valstr = _("%s: Spaces are not allowed.");
+      snprintf (buff, sz, _("%s: Spaces are not allowed."), label);
+      rc = false;
     }
   }
   if ((valflags & VAL_NO_SLASHES) == VAL_NO_SLASHES) {
@@ -68,14 +74,23 @@ validate (const char *str, int valflags)
       (strstr (str, "/") != NULL ||
       strstr (str, "\\") != NULL)) {
       /* CONTEXT: validation: slashes ( / and \\ ) are not allowed  */
-      valstr = _("%s: Slashes are not allowed");
+      snprintf (buff, sz, _("%s: Slashes are not allowed."), label);
+      rc = false;
+    }
+  }
+  if ((valflags & VAL_NO_COLON) == VAL_NO_COLON) {
+    if (str != NULL && strstr (str, ":") != NULL) {
+      /* CONTEXT: validation: colon is not allowed  */
+      snprintf (buff, sz, _("%s: Colon is not allowed."), label);
+      rc = false;
     }
   }
   if ((valflags & VAL_NUMERIC) == VAL_NUMERIC) {
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: must be numeric */
-      valstr = _("%s: must be numeric.");
+      snprintf (buff, sz, _("%s: Must be numeric."), label);
+      rc = false;
     }
     regexFree (rx);
   }
@@ -83,7 +98,8 @@ validate (const char *str, int valflags)
     rx = regexInit (valregex [VAL_REGEX_FLOAT].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: must be a numeric value */
-      valstr = _("%s must be numeric.");
+      snprintf (buff, sz, _("%s: Must be numeric."), label);
+      rc = false;
     }
     regexFree (rx);
   }
@@ -91,7 +107,8 @@ validate (const char *str, int valflags)
     rx = regexInit (valregex [VAL_REGEX_HOUR_MIN].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes) */
-      valstr = _("%s: Invalid time.");
+      snprintf (buff, sz, _("%s: Invalid time."), label);
+      rc = false;
     }
     regexFree (rx);
   }
@@ -99,7 +116,8 @@ validate (const char *str, int valflags)
     rx = regexInit (valregex [VAL_REGEX_MIN_SEC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (minutes/seconds) */
-      valstr = _("%s: Invalid time.");
+      snprintf (buff, sz, _("%s: Invalid time."), label);
+      rc = false;
     }
     regexFree (rx);
   }
@@ -107,11 +125,12 @@ validate (const char *str, int valflags)
     rx = regexInit (valregex [VAL_REGEX_HOUR_MIN_SEC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes/seconds) */
-      valstr = _("%s: Invalid time.");
+      snprintf (buff, sz, _("%s: Invalid time."), label);
+      rc = false;
     }
     regexFree (rx);
   }
 
-  return valstr;
+  return rc;
 }
 

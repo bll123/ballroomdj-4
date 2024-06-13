@@ -222,7 +222,8 @@ uicopytagsCreateDialog (uict_t *uict)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->source = uiwidgetp;
-  uiEntrySetValidate (uict->source, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uiEntrySetValidate (uict->source, "",
+      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
       selectAllFileCallback, &uict->sourcesfcb, NULL);
@@ -247,7 +248,8 @@ uicopytagsCreateDialog (uict_t *uict)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->target = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uiEntrySetValidate (uiwidgetp, "",
+      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_TARGET_SEL] = callbackInit (
       selectAudioFileCallback, &uict->targetsfcb, NULL);

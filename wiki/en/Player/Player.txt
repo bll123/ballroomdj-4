@@ -61,10 +61,10 @@ Re-starts the song from the beginning and sets the song position to 0:00.
 
 __Next Song__:
 (![b-nextsong](https://ballroomdj4.sourceforge.io/wikiimg/player-b-nextsong-A.png))
-Immediately skips the next song in the queue.  There is no fade out
-and no gap applied.  If the player is playing, the next song will
-start playing.  The next song button may be used when the player is
-paused or stopped.
+Immediately skips to the next song in the queue.  There is no fade out
+and no gap applied.  If repeat is on for the song, it is turned off.
+If the player is currently playing, the next song will start playing.
+The next song button may be used when the player is paused or stopped.
 
 __Pause at End__: Turns on and off the pause at end toggle.  The
 player will stop playing after the song finishes.

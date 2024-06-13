@@ -39,6 +39,7 @@ uiCreateMenubar (void)
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_MENU;
   uiwidget->wtype = WCONT_T_MENUBAR;
+  uiwidget->uidata.widget = menubar;
   uiwidget->uidata.packwidget = menubar;
   return uiwidget;
 }

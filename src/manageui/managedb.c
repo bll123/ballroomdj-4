@@ -272,7 +272,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   managedb->wcont [MDB_W_DB_MUSIC_DIR] = uiwidgetp;
-  uiEntrySetValidate (managedb->wcont [MDB_W_DB_MUSIC_DIR],
+  /* CONTEXT: update database: music folder to process */
+  uiEntrySetValidate (managedb->wcont [MDB_W_DB_MUSIC_DIR], _("Music Folder"),
       uiEntryValidateDir, NULL, UIENTRY_DELAYED);
 
   managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (

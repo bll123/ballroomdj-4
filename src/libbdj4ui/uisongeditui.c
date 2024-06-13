@@ -169,7 +169,7 @@ static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
 static bool uisongeditKeyEvent (void *udata);
-static int uisongeditEntryChangedCallback (uiwcont_t *entry, void *udata);
+static int uisongeditEntryChangedCallback (uiwcont_t *entry, const char *label, void *udata);
 static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
 static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
@@ -1235,7 +1235,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   entryp = uiEntryInit (20, 250);
   seint->items [seint->itemcount].uiwidgetp = entryp;
   /* set the validate callback to set the changed flag */
-  uiEntrySetValidate (entryp,
+  uiEntrySetValidate (entryp, tagdefs [tagkey].displayname,
       uisongeditEntryChangedCallback, seint, UIENTRY_IMMEDIATE);
 
   uiWidgetAlignHorizFill (entryp);
@@ -1501,13 +1501,12 @@ uisongeditSave (void *udata, nlist_t *chglist)
     }
 
     if (seint->keywordidx != UISE_NOT_DISPLAYED) {
-      const char    *tstr;
+      bool        val;
 
       tval = uiEntryGetValue (seint->items [seint->keywordidx].uiwidgetp);
-      tstr = validate (tval, VAL_NO_SPACES);
-      if (tstr != NULL) {
-        snprintf (tbuff, sizeof (tbuff), tstr,
-            tagdefs [TAG_KEYWORD].displayname);
+      val = validate (tbuff, sizeof (tbuff), tagdefs [TAG_KEYWORD].displayname,
+          tval, VAL_NO_SPACES);
+      if (val == false) {
         uiLabelSetText (uisongedit->statusMsg, tbuff);
         logMsg (LOG_DBG, LOG_IMPORTANT, "keyword-has-spaces");
         valid = false;
@@ -1863,7 +1862,7 @@ uisongeditKeyEvent (void *udata)
 }
 
 static int
-uisongeditEntryChangedCallback (uiwcont_t *entry, void *udata)
+uisongeditEntryChangedCallback (uiwcont_t *entry, const char *label, void *udata)
 {
   se_internal_t *seint =  udata;
 

@@ -6,8 +6,17 @@
 
 **4.11.0 2024-7---**
 
+**4.10.4 2024-6---**
+
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
+    * PENDING: Crash in player when a playlist has no dances selected.
+    * PENDING: Windows: Crash in player on exit.
+    * PENDING: Allow speed to be changed while paused.
+* Changes:
+    * Improved validation messages.
+* New Features:
+    * PENDING Player: Added reset speed to 100% button.
 
 -->
 

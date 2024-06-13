@@ -14,8 +14,9 @@ enum {
   VAL_HOUR_MIN      = (1 << 5),
   VAL_MIN_SEC       = (1 << 6),
   VAL_HOUR_MIN_SEC  = (1 << 7),
+  VAL_NO_COLON      = (1 << 8),
 };
 
-const char * validate (const char *str, int flags);
+bool validate (char *buff, size_t sz, const char *label, const char *str, int flags);
 
 #endif /* INC_VALIDATION_H */

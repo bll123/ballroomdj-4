@@ -84,21 +84,24 @@ uiutilsGetCurrentFont (void)
 }
 
 int
-uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata)
+uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
 {
-  uiwcont_t   *statusMsg = udata;
+  uiwcont_t   *msgwidget = udata;
   int         rc;
   const char  *str;
   char        tbuff [200];
-  const char  *valstr;
+  int         flags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
+  bool        val;
 
   rc = UIENTRY_OK;
-  uiLabelSetText (statusMsg, "");
+  uiLabelSetText (msgwidget, "");
   str = uiEntryGetValue (entry);
-  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, str);
-    uiLabelSetText (statusMsg, tbuff);
+  if (isWindows ()) {
+    flags |= VAL_NO_COLON;
+  }
+  val = validate (tbuff, sizeof (tbuff), label, str, flags);
+  if (val == false) {
+    uiLabelSetText (msgwidget, tbuff);
     rc = UIENTRY_ERROR;
   }
 

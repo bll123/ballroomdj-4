@@ -138,9 +138,9 @@ static int  altinstMainLoop (void *udata);
 static bool altinstExitCallback (void *udata);
 static bool altinstReinstallCBHandler (void *udata);
 static bool altinstTargetDirDialog (void *udata);
-static int  altinstValidateTarget (uiwcont_t *entry, void *udata);
+static int  altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static int  altinstValidateProcessTarget (altinst_t *altinst, const char *dir);
-static int  altinstValidateName (uiwcont_t *entry, void *udata);
+static int  altinstValidateName (uiwcont_t *entry, const char *label, void *udata);
 static void altinstTargetFeedbackMsg (altinst_t *altinst);
 static bool altinstSetupCallback (void *udata);
 static void altinstSetPaths (altinst_t *altinst);
@@ -492,9 +492,10 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);
   altinst->uiBuilt = true;
 
-  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET],
+  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET], "",
       altinstValidateTarget, altinst, UIENTRY_DELAYED);
-  uiEntrySetValidate (altinst->wcont [ALT_W_NAME],
+  /* CONTEXT: alternate installation: name (for shortcut) */
+  uiEntrySetValidate (altinst->wcont [ALT_W_NAME], _("Name"),
       altinstValidateName, altinst, UIENTRY_IMMEDIATE);
 
   uiwcontFree (vbox);
@@ -617,7 +618,7 @@ altinstReinstallCBHandler (void *udata)
 }
 
 static int
-altinstValidateTarget (uiwcont_t *entry, void *udata)
+altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *dir;
@@ -723,13 +724,13 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 }
 
 static int
-altinstValidateName (uiwcont_t *entry, void *udata)
+altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *name;
-  const char    *msg;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
+  bool          val;
 
   if (! altinst->guienabled) {
     return UIENTRY_ERROR;
@@ -749,10 +750,10 @@ altinstValidateName (uiwcont_t *entry, void *udata)
     return rc;
   }
 
-  msg = validate (name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (msg != NULL) {
-    /* CONTEXT: alternate installer: name (for shortcut) */
-    snprintf (tbuff, sizeof (tbuff), msg, _("Name"));
+  /* CONTEXT: alternate installer: name (for shortcut) */
+  val = validate (tbuff, sizeof (tbuff), label,
+      name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  if (val == false) {
     uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], tbuff);
     return rc;
   }
@@ -765,7 +766,7 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   altinstSetTargetEntry (altinst, tbuff);
   if (isMacOS ()) {
     /* on macos, the field is disabled, so the validation must be forced */
-    rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], altinst);
+    rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], "", altinst);
   }
 
   if (rc == UIENTRY_ERROR) {

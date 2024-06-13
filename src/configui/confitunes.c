@@ -39,7 +39,7 @@ typedef struct confitunes {
 
 static bool confuiSelectiTunesDir (void *udata);
 static bool confuiSelectiTunesFile (void *udata);
-static int  confuiValidateMediaDir (uiwcont_t *entry, void *udata);
+static int  confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata);
 
 void
 confuiInitiTunes (confuigui_t *gui)
@@ -158,7 +158,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].uiwidgetp,
-      confuiValidateMediaDir, gui, UIENTRY_DELAYED);
+      "", confuiValidateMediaDir, gui, UIENTRY_DELAYED);
 
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_ITUNES_XML_FILE);
@@ -172,7 +172,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
-      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+      "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   mhbox = uiCreateHorizBox ();
   uiBoxPackStart (mvbox, mhbox);
@@ -322,7 +322,7 @@ confuiSelectiTunesFile (void *udata)
 }
 
 static int
-confuiValidateMediaDir (uiwcont_t *entry, void *udata)
+confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata)
 {
   confuigui_t *gui = udata;
   const char  *sval;

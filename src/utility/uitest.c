@@ -25,7 +25,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "uivirtlist.h"
+// #include "uivirtlist.h"
 #include "uiwcont.h"
 #include "sysvars.h"
 
@@ -67,7 +67,7 @@ enum {
 
 typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
-  uivirtlist_t  *vl;
+//  uivirtlist_t  *vl;
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
   long          counter;
@@ -80,9 +80,9 @@ enum {
   UITEST_VL_MAXROWS = 100,
 };
 
-static const char *vllabs [] = {
-  "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
-};
+//static const char *vllabs [] = {
+//  "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
+//};
 
 static void uitestMainLoop (uitest_t *uitest);
 static void uitestBuildUI (uitest_t *uitest);
@@ -100,7 +100,7 @@ static void uitestUISizeGroup (uitest_t *uitest);
 static void uitestUISpinboxes (uitest_t *uitest);
 static void uitestUITextBox (uitest_t *uitest);
 static void uitestUITreeView (uitest_t *uitest);
-static void uitestUIVirtList (uitest_t *uitest);
+//static void uitestUIVirtList (uitest_t *uitest);
 
 static bool uitestCloseWin (void *udata);
 static void uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp);
@@ -109,7 +109,7 @@ static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
 static void uitestCleanup (uitest_t *uitest);
 
-static void uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum);
+//static void uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum);
 
 int
 main (int argc, char *argv[])
@@ -131,7 +131,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < UITEST_I_MAX; ++i) {
     uitest.images [i] = NULL;
   }
-  uitest.vl = NULL;
+//  uitest.vl = NULL;
   uitest.stop = false;
   uitest.counter = 1;
 
@@ -231,7 +231,7 @@ uitestBuildUI (uitest_t *uitest)
   uitestUISpinboxes (uitest);
   uitestUITextBox (uitest);
   uitestUITreeView (uitest);
-  uitestUIVirtList (uitest);
+//  uitestUIVirtList (uitest);
 
   uiWidgetShowAll (uitest->wcont [UITEST_W_WINDOW]);
   uiwcontFree (vbox);
@@ -1034,6 +1034,7 @@ uitestUITreeView (uitest_t *uitest)
   uiwcontFree (vbox);
 }
 
+#if 0
 void
 uitestUIVirtList (uitest_t *uitest)
 {
@@ -1071,6 +1072,7 @@ uitestUIVirtList (uitest_t *uitest)
 
   uiwcontFree (vbox);
 }
+#endif
 
 static bool
 uitestCloseWin (void *udata)
@@ -1124,7 +1126,7 @@ uitestCleanup (uitest_t *uitest)
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
 
-  uivlFree (uitest->vl);
+//  uivlFree (uitest->vl);
 
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uiwcontFree (uitest->wcont [i]);
@@ -1142,6 +1144,7 @@ uitestCleanup (uitest_t *uitest)
   localeCleanup ();
 }
 
+#if 0
 static void
 uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
 {
@@ -1162,3 +1165,4 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
     }
   }
 }
+#endif

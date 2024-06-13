@@ -37,6 +37,7 @@ typedef struct uientry {
   int             entrySize;
   int             maxSize;
   uientryval_t    validateFunc;
+  const char      *label;
   mstime_t        validateTimer;
   void            *udata;
   bool            valdelay : 1;
@@ -56,6 +57,7 @@ uiEntryInit (int entrySize, int maxSize)
   uientry->maxSize = maxSize;
   uientry->buffer = NULL;
   uientry->validateFunc = NULL;
+  uientry->label = "";
   uientry->udata = NULL;
   mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
   uientry->valdelay = false;
@@ -179,8 +181,8 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 }
 
 void
-uiEntrySetValidate (uiwcont_t *uiwidget, uientryval_t valfunc, void *udata,
-    int valdelay)
+uiEntrySetValidate (uiwcont_t *uiwidget, const char *label,
+    uientryval_t valfunc, void *udata, int valdelay)
 {
   uientry_t   *uientry;
 
@@ -191,6 +193,7 @@ uiEntrySetValidate (uiwcont_t *uiwidget, uientryval_t valfunc, void *udata,
   uientry = uiwidget->uiint.uientry;
 
   uientry->validateFunc = valfunc;
+  uientry->label = label;
   uientry->udata = udata;
 
   if (valfunc != NULL) {
@@ -224,7 +227,7 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
   }
 
   mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
-  rc = uientry->validateFunc (uiwidget, uientry->udata);
+  rc = uientry->validateFunc (uiwidget, uientry->label, uientry->udata);
   if (rc == UIENTRY_RESET) {
     mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
   }
@@ -254,7 +257,7 @@ uiEntryValidateClear (uiwcont_t *uiwidget)
 }
 
 int
-uiEntryValidateDir (uiwcont_t *uiwidget, void *udata)
+uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata)
 {
   int         rc;
   const char  *dir;
@@ -285,7 +288,7 @@ uiEntryValidateDir (uiwcont_t *uiwidget, void *udata)
 }
 
 int
-uiEntryValidateFile (uiwcont_t *uiwidget, void *udata)
+uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 {
   int         rc;
   const char  *fn;
@@ -356,7 +359,7 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
     uiEntryValidateStart (uiwidget);
   } else {
     if (uientry->validateFunc != NULL) {
-      uientry->validateFunc (uiwidget, uientry->udata);
+      uientry->validateFunc (uiwidget, uientry->label, uientry->udata);
     }
   }
   return;

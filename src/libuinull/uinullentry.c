@@ -70,8 +70,8 @@ uiEntrySetValue (uiwcont_t *uientry, const char *value)
 }
 
 void
-uiEntrySetValidate (uiwcont_t *uientry, uientryval_t valfunc, void *udata,
-    int valdelay)
+uiEntrySetValidate (uiwcont_t *uientry, const char *label,
+    uientryval_t valfunc, void *udata, int valdelay)
 {
   return;
 }
@@ -83,13 +83,13 @@ uiEntryValidate (uiwcont_t *uientry, bool forceflag)
 }
 
 int
-uiEntryValidateDir (uiwcont_t *uientry, void *udata)
+uiEntryValidateDir (uiwcont_t *uientry, const char *label, void *udata)
 {
   return 0;
 }
 
 int
-uiEntryValidateFile (uiwcont_t *uientry, void *udata)
+uiEntryValidateFile (uiwcont_t *uientry, const char *label, void *udata)
 {
   return 0;
 }
