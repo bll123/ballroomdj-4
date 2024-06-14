@@ -10,7 +10,7 @@
 
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
-    * PENDING: Playlist Management: Do not save automatic playlists with no dances.
+    * Playlist Management: Do not save automatic playlists with no dances.
     * Player: Prevent any processing of bad playlists.
     * Player: Fix hang when loading an automatic playlist with no dances.
     * Player: Allow speed to be changed while paused.

@@ -552,6 +552,11 @@ managePlaylistSave (managepl_t *managepl)
 
     manageSetPlaylistName (managepl, name);
     managePlaylistUpdatePlaylist (managepl);
+
+    if (! playlistCheck (managepl->playlist)) {
+      return;
+    }
+
     playlistSave (managepl->playlist, name);
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
