@@ -31,6 +31,7 @@
 
 typedef struct uispinbox {
   int             sbtype;
+  const char      *label;
   callback_t      *convcb;
   int             curridx;
   uispinboxdisp_t textGetProc;
@@ -208,7 +209,8 @@ uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 uiwcont_t *
-uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
+uiSpinboxTimeCreate (int sbtype, void *udata,
+    const char *label, callback_t *convcb)
 {
   double      inca = 5000.0;
   double      incb = 60000.0;
@@ -221,6 +223,7 @@ uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb)
 
   uispinbox->sbtype = sbtype;
 
+  uispinbox->label = label;
   uispinbox->convcb = convcb;
   widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_entry_set_alignment (GTK_ENTRY (widget), 1.0);
@@ -532,6 +535,7 @@ uiSpinboxInit (void)
 
   uispinbox = mdmalloc (sizeof (uispinbox_t));
   uispinbox->convcb = NULL;
+  uispinbox->label = "";
   uispinbox->curridx = 0;
   uispinbox->textGetProc = NULL;
   uispinbox->udata = NULL;
@@ -624,7 +628,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
   newtext = gtk_entry_get_text (GTK_ENTRY (uiwidget->uidata.widget));
   if (uispinbox->convcb != NULL) {
-    newvalue = callbackHandlerS (uispinbox->convcb, newtext);
+    newvalue = callbackHandlerSS (uispinbox->convcb, uispinbox->label, newtext);
   } else {
     newvalue = tmutilStrToMS (newtext);
   }

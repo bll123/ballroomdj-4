@@ -303,7 +303,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
         confuiValMSCallback, gui);
   }
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
-      gui->uiitem [widx].callback);
+      txt, gui->uiitem [widx].callback);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);

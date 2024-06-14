@@ -2617,7 +2617,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, manage, NULL);
+  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, manage, "", NULL);
   uiSpinboxTimeSetValue (uiwidgetp, 3 * 60 * 1000);
   uiSpinboxSetRange (uiwidgetp, 0.0, 600000.0);
   uiBoxPackStart (hbox, uiwidgetp);
