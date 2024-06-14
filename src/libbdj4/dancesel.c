@@ -309,8 +309,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
   }
 
   countAvailable = 0;
+  /* countTries is used to adjust the percentages to prevent starvation, */
+  /* and it is also used to prevent an infinite loop. */
   countTries = 0;
-  while (countAvailable == 0) {
+  while (countAvailable == 0 && countTries < 200) {
     nlistStartIterator (dancesel->base, &iteridx);
     while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
 
@@ -322,6 +324,9 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       /* at this time, only the 'windowed' method is implemented. */
       /* there was a (more complicated) 'expected-count' method, */
       /* but it has been removed. */
+
+      /* 'windowed' is a re-write of 'expected-count' that removed */
+      /* a lot of complexity. */
 
       if (dancesel->method == DANCESEL_METHOD_WINDOWED) {
         double    twinsz;

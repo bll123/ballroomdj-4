@@ -1334,6 +1334,12 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     return;
   }
 
+  if (! playlistCheck (playlist)) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "Bad Playlist: %s", plname);
+    playlistFree (playlist);
+    return;
+  }
+
   /* check and see if a stop time override is in effect */
   /* if so, set the playlist's stop time */
   if (mainData->ploverridestoptime > 0) {

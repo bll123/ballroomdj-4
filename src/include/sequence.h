@@ -14,6 +14,7 @@ sequence_t    *sequenceLoad (const char *fname);
 sequence_t    *sequenceCreate (const char *fname);
 void          sequenceFree (sequence_t *sequence);
 bool          sequenceExists (const char *name);
+int32_t       sequenceGetCount (sequence_t *sequence);
 nlist_t       *sequenceGetDanceList (sequence_t *sequence);
 void          sequenceStartIterator (sequence_t *sequence, nlistidx_t *idx);
 nlistidx_t    sequenceIterate (sequence_t *sequence, nlistidx_t *idx);
