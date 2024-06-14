@@ -63,10 +63,12 @@ uiCreateColorButton (const char *color)
   } else {
     cb = gtk_color_button_new ();
   }
+
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_COLOR_BUTTON;
   uiwidget->uidata.widget = cb;
+  uiwidget->uidata.packwidget = cb;
   return uiwidget;
 }
 
