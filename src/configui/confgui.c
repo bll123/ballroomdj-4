@@ -293,7 +293,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     gui->uiitem [widx].callback = callbackInitSS (
         confuiValHMCallback, gui);
-    /* convert value to mm:ss */
+    /* convert value to mm:ss for display */
     value /= 60;
   } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
     gui->uiitem [widx].callback = callbackInitSS (

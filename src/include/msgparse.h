@@ -29,13 +29,14 @@ typedef struct {
 } mp_songselect_t;
 
 typedef struct {
-  bool      repeat;
-  bool      pauseatend;
   int       currentVolume;
   int       currentSpeed;
   int       baseVolume;
   uint64_t  playedtime;
   int64_t   duration;
+  bool      repeat : 1;
+  bool      pauseatend : 1;
+  bool      newsong : 1;
 } mp_playerstatus_t;
 
 mp_musicqupdate_t *msgparseMusicQueueData (char * args);
