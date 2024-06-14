@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-06-13\n"
+"PO-Revision-Date: 2024-06-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -160,8 +160,8 @@ msgstr ""
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #. CONTEXT: validation: invalid time (hours/minutes/seconds)
 #, c-format
-msgid "%s: Invalid time."
-msgstr "%s: 無効な時間です。"
+msgid "%s: Invalid time (%s)."
+msgstr "%s: 無効な時間です (%s)。"
 
 #. CONTEXT: validation: must be numeric
 #. CONTEXT: validation: must be a numeric value

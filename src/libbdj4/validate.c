@@ -111,7 +111,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     rx = regexInit (valregex [VAL_REGEX_HOUR_MIN].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes) */
-      snprintf (buff, sz, _("%s: Invalid time."), label);
+      snprintf (buff, sz, _("%s: Invalid time (%s)."), label, str);
       rc = false;
     }
     regexFree (rx);
@@ -120,7 +120,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     rx = regexInit (valregex [VAL_REGEX_MIN_SEC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (minutes/seconds) */
-      snprintf (buff, sz, _("%s: Invalid time."), label);
+      snprintf (buff, sz, _("%s: Invalid time (%s)."), label, str);
       rc = false;
     }
     regexFree (rx);
@@ -129,7 +129,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     rx = regexInit (valregex [VAL_REGEX_HOUR_MIN_SEC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes/seconds) */
-      snprintf (buff, sz, _("%s: Invalid time."), label);
+      snprintf (buff, sz, _("%s: Invalid time (%s)."), label, str);
       rc = false;
     }
     regexFree (rx);

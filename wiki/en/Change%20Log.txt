@@ -10,15 +10,19 @@
 
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
-    * Playlist Management: Do not save automatic playlists with no dances.
-    * Player: Prevent any processing of bad playlists.
-    * Player: Fix hang when loading an automatic playlist with no dances.
+    * Export Playlist: Fix a crash.
+    * Export Playlist: Improve validation.
+    * PENDING: Import from BDJ4: Fix.
     * Player: Allow speed to be changed while paused.
+    * Player: Fix hang when loading an automatic playlist with no dances.
+    * Player: Prevent any processing of bad playlists.
+    * Playlist Management: Do not save automatic playlists with no dances.
     * Windows: Reject invalid characters in filenames.
 * Changes:
     * Improved validation messages.
 * New Features:
     * Player: Speed: Add button to reset speed to 100%.
+    * Player: Speed: Speed of the song can be changed while paused.
 
 -->
 

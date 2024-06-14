@@ -70,7 +70,7 @@ typedef struct uiexppl {
   char              *slname;
   int               exptype;
   bool              isactive : 1;
-  bool              in_validation : 1;
+  bool              invalidation : 1;
 } uiexppl_t;
 
 /* export playlist */
@@ -99,9 +99,12 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
   }
   uiexppl->slname = NULL;
   uiexppl->isactive = false;
-  uiexppl->in_validation = false;
+  uiexppl->invalidation = false;
 
   uiexppl->exptype = nlistGetNum (uiexppl->options, MANAGE_EXP_PL_TYPE);
+  if (uiexppl->exptype < 0) {
+    uiexppl->exptype = EI_TYPE_M3U;
+  }
 
   uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitI (
       uiexpplResponseHandler, uiexppl);
@@ -167,7 +170,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   uiexpplCreateDialog (uiexppl);
 
   odir = nlistGetStr (uiexppl->options, MANAGE_EXP_PL_DIR);
-  if (odir == NULL) {
+  if (odir == NULL || ! *odir) {
     odir = sysvarsGetStr (SV_HOME);
   }
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
@@ -410,12 +413,13 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   char        tbuff [MAXPATHLEN];
   char        tdir [MAXPATHLEN];
   pathinfo_t  *pi;
+  bool        found = false;
 
-  if (uiexppl->in_validation) {
-    return UICB_CONT;
+  if (uiexppl->invalidation) {
+    return UIENTRY_OK;
   }
 
-  uiexppl->in_validation = true;
+  uiexppl->invalidation = true;
 
   str = uiEntryGetValue (entry);
 
@@ -424,7 +428,7 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   /*   target is a directory */
   /* file may or may not exist */
   if (! *str || fileopIsDirectory (str)) {
-    uiexppl->in_validation = false;
+    uiexppl->invalidation = false;
     return UIENTRY_ERROR;
   }
 
@@ -433,8 +437,10 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 
   pi = pathInfo (tbuff);
   snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
-  nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
+  if (! fileopIsDirectory (tdir)) {
+    uiexppl->invalidation = false;
+    return UIENTRY_ERROR;
+  }
 
   if (pi->dlen > 0 &&
       ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
@@ -444,12 +450,22 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
           pathInfoExtCheck (pi, exptypes [i].extb))) {
         uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
         uiexppl->exptype = i;
+        found = true;
+        break;
       }
     }
   }
   pathInfoFree (pi);
 
-  uiexppl->in_validation = false;
+  if (! found) {
+    uiexppl->invalidation = false;
+    return UIENTRY_ERROR;
+  }
+
+  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
+  nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
+
+  uiexppl->invalidation = false;
   return UIENTRY_OK;
 }
 
@@ -461,11 +477,11 @@ uiexpplExportTypeCallback (void *udata)
   const char  *str;
   pathinfo_t  *pi;
 
-  if (uiexppl->in_validation) {
+  if (uiexppl->invalidation) {
     return UICB_CONT;
   }
 
-  uiexppl->in_validation = true;
+  uiexppl->invalidation = true;
 
   uiexppl->exptype = uiSpinboxTextGetValue (
       uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
@@ -485,7 +501,7 @@ uiexpplExportTypeCallback (void *udata)
   }
   pathInfoFree (pi);
 
-  uiexppl->in_validation = false;
+  uiexppl->invalidation = false;
   return UICB_CONT;
 }
 
