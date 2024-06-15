@@ -40,7 +40,6 @@ char      *tmutilTstamp (char *, size_t);
 char      *tmutilShortTstamp (char *, size_t);
 char      *tmutilToMS (time_t ms, char *buff, size_t max);
 char      *tmutilToMSD (time_t ms, char *buff, size_t max, int decimals);
-char      * tmutilToDate (time_t ms, char *buff, size_t max);
 char      * tmutilToDateHM (time_t ms, char *buff, size_t max);
 long      tmutilStrToMS (const char *str);
 long      tmutilStrToHM (const char *str);

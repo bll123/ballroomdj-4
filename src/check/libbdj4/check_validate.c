@@ -265,6 +265,102 @@ START_TEST(validate_min_sec)
 END_TEST
 
 
+START_TEST(validate_hms)
+{
+  bool    val;
+  char    tbuff [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_hms");
+  mdebugSubTag ("validate_hms");
+
+  val = validate (tbuff, sizeof (tbuff), "hms", "1:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "1:29", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "1:59", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "12:34", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "120:34", VAL_HMS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms", "1:62", VAL_HMS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms", "24:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "0:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "x24:00", VAL_HMS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms", "34:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "25:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "12:00x", VAL_HMS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms", "12:00m", VAL_HMS);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms", "1:12:00", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "2:59:59", VAL_HMS);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms", "2:60:59", VAL_HMS);
+  ck_assert_int_eq (val, false);
+}
+END_TEST
+
+START_TEST(validate_hms_precise)
+{
+  bool    val;
+  char    tbuff [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_hms_precise");
+  mdebugSubTag ("validate_hms_precise");
+
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "1:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "1:29", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "1:59", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:34", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "120:34", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "1:62", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "24:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "0:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "x24:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "34:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "25:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:00x", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:00m", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "1:12:00", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "2:59:59", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "2:60:59", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "2.59.59", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "2.60.59", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:20.1", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:20.01", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "hms_p", "12:20.65", VAL_HMS_PRECISE);
+  ck_assert_int_eq (val, true);
+}
+END_TEST
+
 Suite *
 validate_suite (void)
 {
@@ -282,6 +378,8 @@ validate_suite (void)
   tcase_add_test (tc, validate_float);
   tcase_add_test (tc, validate_hour_min);
   tcase_add_test (tc, validate_min_sec);
+  tcase_add_test (tc, validate_hms);
+  tcase_add_test (tc, validate_hms_precise);
   suite_add_tcase (s, tc);
   return s;
 }

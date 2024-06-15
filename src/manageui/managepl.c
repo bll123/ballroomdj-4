@@ -849,7 +849,7 @@ managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN_SEC);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
   if (val == false) {
     int32_t oval;
 

@@ -6,17 +6,23 @@
 
 **4.11.0 2024-7---**
 
+**4.10.5 2024-6---**
+
+* Bug Fixes:
+    * PENDING: Import from BDJ4: Fix.
+
 **4.10.4 2024-6---**
 
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
+    * Configuration: Improved validation for time fields.
     * Export Playlist: Fix a crash.
     * Export Playlist: Improve validation.
-    * PENDING: Import from BDJ4: Fix.
     * Player: Allow speed to be changed while paused.
     * Player: Fix hang when loading an automatic playlist with no dances.
     * Player: Prevent any processing of bad playlists.
     * Playlist Management: Do not save automatic playlists with no dances.
+    * Song Editor: Validate song start and song end.
     * Windows: Reject invalid characters in filenames.
 * Changes:
     * Improved validation messages.
