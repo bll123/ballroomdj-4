@@ -1305,6 +1305,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   logProcBegin ();
   seint = uisongedit->seInternalData;
+  /* FIX: no validation! */
   sbp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uisongedit, "", NULL);
   seint->items [seint->itemcount].uiwidgetp = sbp;
   uiSpinboxSetRange (sbp, 0.0, 1200000.0);

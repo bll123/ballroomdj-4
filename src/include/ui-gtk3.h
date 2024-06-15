@@ -13,6 +13,7 @@ enum {
   UICB_DISPLAY_OFF = false,
   UICB_CONVERTED = true,
   UICB_NOT_CONVERTED = false,
+  UICB_CONVERT_FAIL = -1,       // GTK_INPUT_ERROR
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,

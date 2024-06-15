@@ -851,9 +851,12 @@ managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
   uiLabelSetText (managepl->minfo->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN_SEC);
   if (val == false) {
+    int32_t oval;
+
+    oval = uiSpinboxTimeGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
-    return -1;
+    return oval;
   }
 
   value = tmutilStrToMS (txt);
@@ -873,9 +876,12 @@ managePlaylistValHMCallback (void *udata, const char *label, const char *txt)
   uiLabelSetText (managepl->minfo->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
   if (val == false) {
+    int32_t     oval;
+
+    oval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AT]);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
-    return -1;
+    return oval;
   }
 
   value = tmutilStrToHM (txt);

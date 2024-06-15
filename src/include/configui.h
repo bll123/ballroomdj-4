@@ -214,7 +214,14 @@ enum {
   CONFUI_ITEM_MAX,
 };
 
+typedef struct configui configui_t;
+typedef struct confuigui confuigui_t;
+typedef struct confuitable confuitable_t;
+typedef void (*savefunc_t) (confuigui_t *);
+typedef bool (*listcreatefunc_t) (void *);
+
 typedef struct {
+  confuigui_t       *gui;
   confuibasetype_t  basetype;
   confuiouttype_t   outtype;
   long              debuglvl;
@@ -232,7 +239,7 @@ typedef struct {
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
   char              *uri;
-  bool              changed;
+  bool              changed : 1;
 } confuiitem_t;
 
 typedef enum {
@@ -301,12 +308,6 @@ enum {
   CONFUI_TABLE_CB_DANCE_SELECT,
   CONFUI_TABLE_CB_MAX,
 };
-
-typedef struct configui configui_t;
-typedef struct confuigui confuigui_t;
-typedef struct confuitable confuitable_t;
-typedef void (*savefunc_t) (confuigui_t *);
-typedef bool (*listcreatefunc_t) (void *);
 
 enum {
   CONFUI_BUTTON_TABLE_UP,

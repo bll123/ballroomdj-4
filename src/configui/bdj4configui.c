@@ -150,6 +150,7 @@ main (int argc, char *argv[])
   }
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    confui.gui.uiitem [i].gui = &confui.gui;
     confui.gui.uiitem [i].uibutton = NULL;
     confui.gui.uiitem [i].basetype = CONFUI_NONE;
     confui.gui.uiitem [i].outtype = CONFUI_OUT_NONE;

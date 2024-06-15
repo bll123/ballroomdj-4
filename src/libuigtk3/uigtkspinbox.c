@@ -634,8 +634,11 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   }
 
   if (newvalue < 0) {
+    /* as the spinbox does not retain the old value on failure, */
+    /* all of the validation routines will return the old value on failure */
+    /* this code will never be used. */
     uispinbox->processing = false;
-    return UICB_NOT_CONVERTED;
+    return UICB_CONVERT_FAIL;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (uiwidget->uidata.widget));

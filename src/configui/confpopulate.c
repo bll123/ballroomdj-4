@@ -100,6 +100,13 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_SPINBOX_TIME: {
         nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [i].uiwidgetp);
+
+        /* do some additional validation, as after a failed validation, */
+        /* the spinbox value can be junk */
+        if (nval < 5000 || nval > 7200000) {
+          nval = 0;
+        }
+
         if (i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
