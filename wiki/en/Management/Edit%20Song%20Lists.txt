@@ -62,6 +62,12 @@ At the top of the song list, there is an entry box with the song list
 name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
 box and change the name of the song list.
 
+On all platforms, the slash and backslash characters are not allowed
+in song list names.
+
+On Windows, the following characters are not allowed in song list names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the name, the song list will be saved as
 _New&nbsp;Song&nbsp;List_.  To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select

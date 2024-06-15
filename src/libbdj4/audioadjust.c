@@ -368,7 +368,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   resp = mdmalloc (AA_RESP_BUFF_SZ);
   rc = aaProcess ("aa-adjust", targv, targc, resp);
   logMsg (LOG_DBG, LOG_INFO, "aa: adjust: elapsed: %" PRIu64,
-      mstimeend (&etm));
+      (uint64_t) mstimeend (&etm));
 
   /* applying the speed change afterwards is slower, but saves a lot */
   /* of headache. */

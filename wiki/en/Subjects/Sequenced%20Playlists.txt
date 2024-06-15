@@ -22,6 +22,12 @@ A sample _Standard&nbsp;Rounds_ sequence is installed with BDJ4.
 The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
 Enter the new name of the sequence playlist at any time.
 
+On all platforms, the slash and backslash characters are not allowed
+in sequence names.
+
+On Windows, the following characters are not allowed in sequence names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the name, the sequence will be named
 _New&nbsp;Sequence_.  Select __Load__ from the __Edit__ menu.  Select
 _New&nbsp;Sequence_.  Change the name of the sequence.

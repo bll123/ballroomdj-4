@@ -11,7 +11,9 @@
 * Bug Fixes:
     * PENDING: Import from BDJ4: Fix.
 
-**4.10.4 2024-6---**
+-->
+
+**4.10.4 2024-6-15**
 
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
@@ -29,8 +31,6 @@
 * New Features:
     * Player: Speed: Add button to reset speed to 100%.
     * Player: Speed: Speed of the song can be changed while paused.
-
--->
 
 **4.10.3 2024-6-7**
 
