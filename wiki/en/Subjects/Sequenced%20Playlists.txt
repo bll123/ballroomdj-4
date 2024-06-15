@@ -87,4 +87,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 06:45:21; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-06-15 11:23:29; BDJ4 version 4.10.4)_
