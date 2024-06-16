@@ -30,7 +30,7 @@
 #include "osenv.h"
 #include "sysvars.h"
 
-const char *envitems [] = {
+static const char *envitems [] = {
   "DESKTOP_SESSION",
   "DYLD_FALLBACK_LIBRARY_PATH",
   "G_FILENAME_ENCODING",

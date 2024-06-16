@@ -102,7 +102,8 @@ enum {
 };
 
 
-#define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
+/* left five-eights block */
+static const char * const MARK_DISPLAY = "\xe2\x96\x8B";
 
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];

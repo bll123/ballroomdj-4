@@ -54,9 +54,8 @@
 #include "tmutil.h"
 #include "volreg.h"
 
-#define UPDATER_TMP_FILE "tmpupdater"
-#define LINUX_STARTUP_SCRIPT "scripts/linux/bdjstartup.sh"
-#define LINUX_SHUTDOWN_SCRIPT "scripts/linux/bdjshutdown.sh"
+static const char * const LINUX_STARTUP_SCRIPT = "scripts/linux/bdjstartup.sh";
+static const char * const LINUX_SHUTDOWN_SCRIPT = "scripts/linux/bdjshutdown.sh";
 
 enum {
   UPD_NOT_DONE,

@@ -91,7 +91,7 @@ static int valueTypeLookup [SONG_FILTER_MAX] = {
   [SONG_FILTER_STATUS_PLAYABLE] =   SONG_FILTER_NUM,
 };
 
-#define SONG_FILTER_SORT_DEFAULT "TITLE"
+static const char * const SONG_FILTER_SORT_DEFAULT = "TITLE";
 
 static void songfilterFreeData (songfilter_t *sf, int i);
 static bool songfilterCheckStr (const char *str, char *searchstr);

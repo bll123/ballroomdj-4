@@ -31,7 +31,7 @@ enum {
   AES_RAND_SZ = 7,
 };
 
-#define AES_E_PFX "A256"
+static const char * const AES_E_PFX = "A256";
 
 static bool initialized = false;
 

@@ -63,7 +63,7 @@ enum {
   VL_IDENT          = 0x766caabbccddeeff,
 };
 
-#define VL_SELECTED_CLASS "bdj-selected"
+static const char * const VL_SELECTED_CLASS = "bdj-selected";
 
 typedef struct {
   uiwcont_t *szgrp;

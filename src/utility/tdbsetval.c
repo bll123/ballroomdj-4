@@ -27,7 +27,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
-#define DBSET_CLEAR "xclearx"
+static const char * const DBSET_CLEAR = "xclearx";
 
 int
 main (int argc, char *argv [])

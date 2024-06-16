@@ -18,8 +18,8 @@
 
 #include "fileshared.h"
 
-#define FN  "tmp/fileshared.txt"
-#define DATAB "def456\n"
+static const char * const FN  = "tmp/fileshared.txt";
+static const char * const DATAB = "def456\n";
 
 int
 main (int argc, char *argv [])
