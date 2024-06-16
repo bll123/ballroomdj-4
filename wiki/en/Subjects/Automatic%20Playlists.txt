@@ -18,6 +18,12 @@ The automatic playlist's name is at the top of the
 _Playlist&nbsp;Management_ tab. Enter the new name of the automatic
 playlist at any time.
 
+On all platforms, the slash and backslash characters are not allowed
+in playlist names.
+
+On Windows, the following characters are not allowed in playlist names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the name, the automatic playlist will be named
 _New&nbsp;Playlist_.  Select __Load__ from the __Edit__ menu.  Select
 _New&nbsp;Playlist_.  Change the name of the automatic playlist.
@@ -89,4 +95,4 @@ In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
 particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-06-15 11:23:29; BDJ4 version 4.10.4)_

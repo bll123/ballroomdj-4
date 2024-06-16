@@ -102,6 +102,8 @@ enum {
   UISE_CB_NEXT,
   UISE_CB_KEYB,
   UISE_CB_CHANGED,
+  UISE_CB_VAL_TIME,     /* there are currently only two time fields */
+  UISE_CB_VAL_TIME_B,
   UISE_CB_MAX,
 };
 
@@ -128,6 +130,7 @@ enum {
 };
 
 typedef struct se_internal {
+  uisongedit_t        *uisongedit;
   uiwcont_t           *wcont [UISE_W_MAX];
   uiwcont_t           *szgrp [UISE_SZGRP_MAX];
   callback_t          *callbacks [UISE_CB_MAX];
@@ -174,6 +177,7 @@ static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
 static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
 static void uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx);
+static int32_t uisongeditValHMSPCallback (void *udata, const char *label, const char *txt);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -183,6 +187,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   logProcBegin ();
 
   seint = mdmalloc (sizeof (se_internal_t));
+  seint->uisongedit = uisongedit;
   seint->itemcount = 0;
   seint->items = NULL;
   seint->changed = 0;
@@ -1302,10 +1307,22 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 {
   uiwcont_t       *sbp;
   se_internal_t   *seint;
+  int             cbidx;
 
   logProcBegin ();
   seint = uisongedit->seInternalData;
-  sbp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uisongedit, NULL);
+
+  /* there are currently only two time fields */
+  cbidx = UISE_CB_VAL_TIME;
+  while (seint->callbacks [cbidx] != NULL) {
+    ++cbidx;
+  }
+  seint->callbacks [cbidx] = callbackInitSS (
+      uisongeditValHMSPCallback, &seint->items [seint->itemcount]);
+
+  sbp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uisongedit,
+      tagdefs [tagkey].displayname,
+      seint->callbacks [cbidx]);
   seint->items [seint->itemcount].uiwidgetp = sbp;
   uiSpinboxSetRange (sbp, 0.0, 1200000.0);
   uiSpinboxTimeSetValue (sbp, 0);
@@ -1940,3 +1957,34 @@ uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx)
         (double) danceTimesigValues [timesig] * 5.0);
   }
 }
+
+static int32_t
+uisongeditValHMSPCallback (void *udata, const char *label, const char *txt)
+{
+  uisongedititem_t *item = udata;
+  uisongedit_t  *uisongedit;
+  se_internal_t *seint;
+  char          tbuff [200];
+  int32_t       value;
+  bool          val;
+
+  logProcBegin ();
+
+  seint = item->seint;
+  uisongedit = seint->uisongedit;
+
+  uiLabelSetText (uisongedit->statusMsg, "");
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS_PRECISE);
+  if (val == false) {
+    int32_t oval;
+
+    oval = uiSpinboxTimeGetValue (item->uiwidgetp);
+    uiLabelSetText (uisongedit->statusMsg, tbuff);
+    return oval;
+  }
+
+  value = tmutilStrToMS (txt);
+  logProcEnd ("");
+  return value;
+}
+

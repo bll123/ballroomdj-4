@@ -36,7 +36,7 @@ uiwcont_t *uiSpinboxDoubleCreate (void);
 
 uiwcont_t *uiSpinboxDoubleDefaultCreate (void);
 
-uiwcont_t *uiSpinboxTimeCreate (int sbtype, void *udata, callback_t *convcb);
+uiwcont_t *uiSpinboxTimeCreate (int sbtype, void *udata, const char *label, callback_t *convcb);
 ssize_t uiSpinboxTimeGetValue (uiwcont_t *uiwidget);
 void  uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value);
 void uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);

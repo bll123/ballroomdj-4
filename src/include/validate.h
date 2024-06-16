@@ -13,8 +13,9 @@ enum {
   VAL_FLOAT         = (1 << 4),
   VAL_HOUR_MIN      = (1 << 5),
   VAL_MIN_SEC       = (1 << 6),
-  VAL_HOUR_MIN_SEC  = (1 << 7),
-  VAL_NO_WINCHARS      = (1 << 8),
+  VAL_HMS  = (1 << 7),
+  VAL_HMS_PRECISE   = (1 << 8),
+  VAL_NO_WINCHARS   = (1 << 9),
 };
 
 bool validate (char *buff, size_t sz, const char *label, const char *str, int flags);

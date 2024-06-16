@@ -139,6 +139,7 @@ msgparsePlayerStatusData (char * args)
   char              *tokstr;
 
   ps = mdmalloc (sizeof (mp_playerstatus_t));
+  ps->newsong = false;
   ps->repeat = false;
   ps->pauseatend = false;
   ps->currentVolume = 0;
@@ -148,6 +149,11 @@ msgparsePlayerStatusData (char * args)
   ps->duration = 0;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->newsong = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     ps->repeat = atoi (p);
   }

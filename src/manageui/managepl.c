@@ -254,7 +254,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitSS (
       managePlaylistValHMSCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
-      managepl->callbacks [MPL_CB_MAXPLAYTIME]);
+      /* CONTEXT: playlist management: maximum play time */
+      _("Maximum Play Time"), managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
   managepl->wcont [MPL_W_MAX_PLAY_TIME] = uiwidgetp;
@@ -274,7 +275,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->callbacks [MPL_CB_STOPAT] = callbackInitSS (
       managePlaylistValHMCallback, managepl);
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
-      managepl->callbacks [MPL_CB_STOPAT]);
+      /* CONTEXT: playlist management: stop at */
+      _("Stop At"), managepl->callbacks [MPL_CB_STOPAT]);
   uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
   uiSpinboxWrap (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -550,6 +552,11 @@ managePlaylistSave (managepl_t *managepl)
 
     manageSetPlaylistName (managepl, name);
     managePlaylistUpdatePlaylist (managepl);
+
+    if (! playlistCheck (managepl->playlist)) {
+      return;
+    }
+
     playlistSave (managepl->playlist, name);
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
@@ -842,11 +849,14 @@ managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
   uiLabelSetText (managepl->minfo->errorMsg, "");
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN_SEC);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
   if (val == false) {
+    int32_t oval;
+
+    oval = uiSpinboxTimeGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
-    return -1;
+    return oval;
   }
 
   value = tmutilStrToMS (txt);
@@ -866,9 +876,12 @@ managePlaylistValHMCallback (void *udata, const char *label, const char *txt)
   uiLabelSetText (managepl->minfo->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
   if (val == false) {
+    int32_t     oval;
+
+    oval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AT]);
     uiLabelSetText (managepl->minfo->errorMsg, tbuff);
     logProcEnd ("not-valid");
-    return -1;
+    return oval;
   }
 
   value = tmutilStrToHM (txt);

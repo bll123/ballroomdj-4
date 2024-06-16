@@ -544,7 +544,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
-              mainData->playerState, logPlstateDebugText (mainData->playerState));
+              mainData->playerState, logPlayerState (mainData->playerState));
           mainData->marqueeChanged = true;
 
           if (mainData->playerState == PL_STATE_STOPPED) {
@@ -1334,6 +1334,12 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     return;
   }
 
+  if (! playlistCheck (playlist)) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "Bad Playlist: %s", plname);
+    playlistFree (playlist);
+    return;
+  }
+
   /* check and see if a stop time override is in effect */
   /* if so, set the playlist's stop time */
   if (mainData->ploverridestoptime > 0) {
@@ -2075,7 +2081,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   }
 
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-      mainData->playerState, logPlstateDebugText (mainData->playerState));
+      mainData->playerState, logPlayerState (mainData->playerState));
 
   if (! mainData->finished && mainData->playerState != PL_STATE_PAUSED) {
     if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
@@ -2144,7 +2150,7 @@ mainMusicQueuePlay (maindata_t *mainData)
         }
       } else {
         logMsg (LOG_DBG, LOG_INFO, "no more songs; pl-state: %d/%s; finished <= true",
-            mainData->playerState, logPlstateDebugText (mainData->playerState));
+            mainData->playerState, logPlayerState (mainData->playerState));
         mainData->finished = true;
         mainData->marqueeChanged = true;
       }

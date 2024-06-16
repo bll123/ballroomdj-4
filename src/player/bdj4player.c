@@ -149,6 +149,7 @@ typedef struct {
   bool            pauseAtEnd : 1;
   bool            repeat : 1;
   bool            stopPlaying : 1;
+  bool            newsong : 1;      // used in the player status msg
 } playerdata_t;
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -243,6 +244,7 @@ main (int argc, char *argv[])
   playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopwaitcount = 0;
   playerData.stopPlaying = false;
+  playerData.newsong = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
       playerConnectingCallback, &playerData);
@@ -824,6 +826,7 @@ playerProcessing (void *udata)
             playerSetPlayerState (playerData, PL_STATE_STOPPED);
             if (! playerData->repeat) {
               /* let main know we're done with this song. */
+              playerData->newsong = true;
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH_STOP, nsflag);
             }
@@ -838,6 +841,7 @@ playerProcessing (void *udata)
             }
           } else {
             if (! playerData->repeat) {
+              playerData->newsong = true;
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, nsflag);
             }
@@ -1827,7 +1831,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-        playerData->playerState, logPlstateDebugText (playerData->playerState));
+        playerData->playerState, logPlayerState (playerData->playerState));
     snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
@@ -1885,7 +1889,8 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
+  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
+      playerData->newsong, MSG_ARGS_RS,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
@@ -1893,9 +1898,10 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
       playerData->baseVolume, MSG_ARGS_RS,
       (uint64_t) tm, MSG_ARGS_RS,
       (int64_t) dur);
+  playerData->newsong = false;
 
   /* 4.4.4 send the playerui and manageui the messages from here, */
-  /* avoid some latency by routing through main */
+  /* avoid some latency by not routing through main */
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAYER_STATUS_DATA, rbuff);
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
@@ -2002,7 +2008,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "repeat%c%d%c"
       "prepqueuecount%c%" PRId32 "%c"
       "currentsink%c%s",
-      MSG_ARGS_RS, logPlstateDebugText (playerData->playerState), MSG_ARGS_RS,
+      MSG_ARGS_RS, logPlayerState (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,

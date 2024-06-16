@@ -230,7 +230,7 @@ callbackHandlerSS (callback_t *cb, const char *a, const char *b)
   }
 
   value = cb->strstrcbfunc (cb->udata, a, b);
-  return true;
+  return value;
 }
 
 bool

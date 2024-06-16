@@ -263,7 +263,7 @@ logCheck (logidx_t idx, loglevel_t level)
 
 /* for debugging */
 const char *
-logPlstateDebugText (playerstate_t plstate)
+logPlayerState (playerstate_t plstate)
 {
   if (plstate < 0 || plstate >= PL_STATE_MAX) {
     return "invalid";

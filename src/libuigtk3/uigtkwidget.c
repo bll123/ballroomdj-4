@@ -406,7 +406,6 @@ uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata)
   callback_t  *uicb = udata;
   bool        rc = false;
 
-fprintf (stderr, "w-size-chg: %d/%d\n", allocation->width, allocation->height);
   if (uicb != NULL) {
     rc = callbackHandlerII (uicb, allocation->width, allocation->height);
   }

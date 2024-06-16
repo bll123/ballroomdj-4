@@ -126,6 +126,12 @@ name.  This defaults to _New&nbsp;Playlist_.  Click in the entry
 box and change the name of the playlist.  If there is a song list or
 sequence associated with the playlist, it will also be renamed.
 
+On all platforms, the slash and backslash characters are not allowed
+in playlist names.
+
+On Windows, the following characters are not allowed in playlist names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the name, the automatic playlist will be saved
 as _New&nbsp;Playlist_. To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select _New&nbsp;Playlist_,
@@ -154,4 +160,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-21 03:12:49; BDJ4 version 4.6.0)_
+<br>_(Updated 2024-06-15 11:23:29; BDJ4 version 4.10.4)_

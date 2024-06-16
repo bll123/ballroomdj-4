@@ -223,7 +223,7 @@ tclean:
 	@-$(RM) -f ../mdebug.txt ../out.txt out.txt
 	@-$(RM) -f ../out-acoustid.xml ../out-acr.json ../out-mb.xml
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../vlc-out.txt ../mpvdebug.txt
-	@-$(RM) -f ../vgcore.* vgcore.* ../core gmon.out ../gmon.out
+	@-$(RM) -f ../vgcore.* vgcore.* ../core core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 	@-$(RM) -f inctest.c inctest.log dep-*.txt

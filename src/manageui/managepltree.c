@@ -410,7 +410,7 @@ managePlaylistTreeChanged (void *udata, int32_t col)
 
     str = uiTreeViewGetValueStr (managepltree->uitree, MPLTREE_COL_MAXPLAYTIME);
     /* CONTEXT: playlist management: validation: max play time */
-    val = validate (tbuff, sizeof (tbuff), _("Maximum Play Time"), str, VAL_HOUR_MIN_SEC);
+    val = validate (tbuff, sizeof (tbuff), _("Maximum Play Time"), str, VAL_HMS);
     if (val == false) {
       uiLabelSetText (managepltree->errorMsg, tbuff);
       managepltree->changed = false;

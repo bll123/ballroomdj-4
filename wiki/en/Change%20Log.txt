@@ -6,19 +6,31 @@
 
 **4.11.0 2024-7---**
 
-**4.10.4 2024-6---**
+**4.10.5 2024-6---**
+
+* Bug Fixes:
+    * PENDING: Import from BDJ4: Fix.
+
+-->
+
+**4.10.4 2024-6-15**
 
 * Bug Fixes:
     * Code cleanup: Fix various portability issues.
-    * PENDING: Crash in player when a playlist has no dances selected.
+    * Configuration: Improved validation for time fields.
+    * Export Playlist: Fix a crash.
+    * Export Playlist: Improve validation.
     * Player: Allow speed to be changed while paused.
+    * Player: Fix hang when loading an automatic playlist with no dances.
+    * Player: Prevent any processing of bad playlists.
+    * Playlist Management: Do not save automatic playlists with no dances.
+    * Song Editor: Validate song start and song end.
     * Windows: Reject invalid characters in filenames.
 * Changes:
     * Improved validation messages.
 * New Features:
     * Player: Speed: Add button to reset speed to 100%.
-
--->
+    * Player: Speed: Speed of the song can be changed while paused.
 
 **4.10.3 2024-6-7**
 
@@ -908,4 +920,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-07 11:27:08; BDJ4 version 4.10.3)_
+<br>_(Updated 2024-06-15 11:23:29; BDJ4 version 4.10.4)_

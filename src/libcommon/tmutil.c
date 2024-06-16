@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <locale.h>
 #include <math.h>
+#include <ctype.h>
 
 #if _hdr_windows
 # define WIN32_LEAN_AND_MEAN 1
@@ -211,7 +212,7 @@ tmutilDstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%Y-%m-%d", tp);
+  strftime (buff, max, "%F", tp);
   return buff;
 }
 
@@ -236,7 +237,7 @@ tmutilDisp (char *buff, size_t sz, int type)
   if (type == TM_CLOCK_ISO) {
     ssize_t    pos;
 
-    strftime (buff, sz, "%A %Y-%m-%d %H:%M", tp);
+    strftime (buff, sz, "%A %F %R", tp);
     pos = strlen (buff);
     pos -= 5;
     if (pos > 0 && buff [pos] == '0') {
@@ -270,13 +271,13 @@ tmutilDisp (char *buff, size_t sz, int type)
 #endif
   }
   if (type == TM_CLOCK_TIME_12) {
-    strftime (buff, sz, "%I:%M %p", tp);
+    strftime (buff, sz, "%r", tp);
     if (*buff == '0') {
       *buff = ' ';
     }
   }
   if (type == TM_CLOCK_TIME_24) {
-    strftime (buff, sz, "%H:%M", tp);
+    strftime (buff, sz, "%R", tp);
     if (*buff == '0') {
       *buff = ' ';
     }
@@ -375,26 +376,6 @@ tmutilToMSD (time_t ms, char *buff, size_t sz, int decimals)
 
 
 char *
-tmutilToDate (time_t ms, char *buff, size_t sz)
-{
-  struct tm         *tp;
-  time_t            s;
-#if _lib_localtime_r
-  struct tm         t;
-#endif
-
-  s = ms / 1000;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
-  strftime (buff, sz, "%Y-%m-%d", tp);
-  return buff;
-}
-
-char *
 tmutilToDateHM (time_t ms, char *buff, size_t sz)
 {
   struct tm         *tp;
@@ -410,7 +391,11 @@ tmutilToDateHM (time_t ms, char *buff, size_t sz)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, sz, "%Y-%m-%d %H:%M", tp);
+  /* I'd like to use the locale aware %X, but it returns the 12-hour clock */
+  /* for many locales */
+  /* there doesn't appear to be a locale aware 24-hour clock display */
+  strftime (buff, sz, "%F %R", tp);
+
   return buff;
 }
 

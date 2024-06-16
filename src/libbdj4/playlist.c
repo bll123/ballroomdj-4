@@ -284,6 +284,42 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   return pl;
 }
 
+bool
+playlistCheck (playlist_t *pl)
+{
+  pltype_t    type;
+  bool        rc = false;
+
+  if (pl == NULL) {
+    return rc;
+  }
+
+  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+
+  if (type == PLTYPE_SONGLIST) {
+    if (pl->songlist != NULL &&
+        songlistGetCount (pl->songlist) > 0) {
+      rc = true;
+    }
+  }
+  if (type == PLTYPE_AUTO) {
+    if (pl->countList == NULL) {
+      playlistCountList (pl);
+    }
+    if (nlistGetCount (pl->countList) > 0) {
+      rc = true;
+    }
+  }
+  if (type == PLTYPE_SEQUENCE) {
+    if (pl->sequence != NULL &&
+        sequenceGetCount (pl->sequence) > 0) {
+      rc = true;
+    }
+  }
+
+  return rc;
+}
+
 playlist_t *
 playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
 {

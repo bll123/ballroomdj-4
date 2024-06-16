@@ -117,10 +117,45 @@ main (int argc, char *argv[])
   uitest_t    uitest;
   const char  *targ;
   bdj4arg_t   *bdj4arg;
+  bool        isbdj4 = false;
+  int         c;
+  int         option_index;
+
+  static struct option bdj_options [] = {
+    { "bdj4",         no_argument,      NULL,   'B' },
+    { "uitest",       no_argument,      NULL,   0 },
+    { "debugself",    no_argument,      NULL,   0 },
+    { "verbose",      no_argument,      NULL,   0, },
+    { "quiet",        no_argument,      NULL,   0, },
+    { "nodetach",     no_argument,      NULL,   0, },
+    { "origcwd",      required_argument,  NULL,   0 },
+    { "scale",        required_argument,NULL,   0 },
+    { "theme",        required_argument,NULL,   0 },
+  };
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("uitest");
 #endif
+
+  bdj4arg = bdj4argInit (argc, argv);
+
+  while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
+      "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'B': {
+        isbdj4 = true;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (! isbdj4) {
+    fprintf (stderr, "not started with launcher\n");
+    exit (1);
+  }
 
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uitest.wcont [i] = NULL;
@@ -135,7 +170,6 @@ main (int argc, char *argv[])
   uitest.stop = false;
   uitest.counter = 1;
 
-  bdj4arg = bdj4argInit (argc, argv);
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
   localeInit ();
