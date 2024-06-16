@@ -83,6 +83,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, DF_NORM },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, DF_NORM },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, DF_NORM },
+  { "SHOWSPDCONTROL",       OPT_P_SHOW_SPD_CONTROL,     VALUE_NUM, convBoolean, DF_NORM },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, DF_NORM },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, DF_NORM },
@@ -273,6 +274,11 @@ bdjoptInit (void)
   /* added 4.8.3, make sure it is set */
   if (nlistGetStr (bdjopt->bdjoptList, OPT_P_PLAYER_UI_SEP) == NULL) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_PLAYER_UI_SEP, ":");
+  }
+
+  /* added 4.10.5, make sure it is set */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_SHOW_SPD_CONTROL) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_SHOW_SPD_CONTROL, false);
   }
 }
 

@@ -68,9 +68,15 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  logProcEnd ("");
+
+  /* CONTEXT: configuration: whether or not to show the speed controls */
+  confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Speed Control"),
+      CONFUI_SWITCH_SHOW_SPD_CONTROL, OPT_P_SHOW_SPD_CONTROL,
+      bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL), NULL, 0);
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
+
+  logProcEnd ("");
 }
 
