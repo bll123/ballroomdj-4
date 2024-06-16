@@ -10,8 +10,8 @@
 
 * Bug Fixes:
     * PENDING: Export to BDJ4 / Import from BDJ4: Fix.
-* Changes:
-    * Configuration: Added option to show speed control (defaults to off).
+* New Features:
+    * Configuration: Added option to show speed reset in the player (defaults to off).
 
 -->
 
