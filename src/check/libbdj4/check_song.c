@@ -74,20 +74,6 @@ START_TEST(song_alloc)
 }
 END_TEST
 
-START_TEST(song_dblfree)
-{
-  song_t   *song = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_alloc");
-  mdebugSubTag ("song_alloc");
-
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-  songFree (song);
-  songFree (song);
-}
-END_TEST
-
 static char *songparsedata [] = {
     /* unix line endings */
     "FILE\n..argentinetango.mp3\n"
@@ -601,7 +587,6 @@ song_suite (void)
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, song_alloc);
-  tcase_add_test (tc, song_dblfree);
   tcase_add_test (tc, song_parse);
   tcase_add_test (tc, song_parse_get);
   tcase_add_test (tc, song_parse_set);

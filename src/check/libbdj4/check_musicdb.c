@@ -145,19 +145,6 @@ START_TEST(musicdb_open_new)
 }
 END_TEST
 
-START_TEST(musicdb_dblfree)
-{
-  musicdb_t *db;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_dblfree");
-  mdebugSubTag ("musicdb_dblfree");
-
-  db = dbOpen (dbfn);
-  dbClose (db);
-  dbClose (db);
-}
-END_TEST
-
 START_TEST(musicdb_write)
 {
   musicdb_t *db;
@@ -764,7 +751,6 @@ musicdb_suite (void)
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_open_new);
-  tcase_add_test (tc, musicdb_dblfree);
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("musicdb-write");

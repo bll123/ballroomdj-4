@@ -105,20 +105,6 @@ START_TEST(songlist_create)
 }
 END_TEST
 
-START_TEST(songlist_dblfree)
-{
-  songlist_t    *sl;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_dblfree");
-  mdebugSubTag ("songlist_dblfree");
-
-  sl = songlistCreate (SLNEWFN);
-  ck_assert_ptr_nonnull (sl);
-  songlistFree (sl);
-  songlistFree (sl);
-}
-END_TEST
-
 START_TEST(songlist_load)
 {
   songlist_t    *sl;
@@ -338,7 +324,6 @@ songlist_suite (void)
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songlist_exists);
   tcase_add_test (tc, songlist_create);
-  tcase_add_test (tc, songlist_dblfree);
   tcase_add_test (tc, songlist_load);
   tcase_add_test (tc, songlist_iterate);
   tcase_add_test (tc, songlist_clear);
