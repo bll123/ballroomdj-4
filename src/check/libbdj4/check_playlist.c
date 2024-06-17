@@ -262,6 +262,23 @@ START_TEST(playlist_create_basic)
 }
 END_TEST
 
+START_TEST(playlist_dblfree)
+{
+  playlist_t    *pl;
+  int           idxt;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_dblfree");
+  mdebugSubTag ("playlist_dblfree");
+
+  /* auto */
+  idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistFree (pl);
+  playlistFree (pl);
+}
+END_TEST
+
 START_TEST(playlist_load_basic)
 {
   playlist_t    *pl;
@@ -955,6 +972,7 @@ playlist_suite (void)
   tcase_add_test (tc, playlist_exists);
   tcase_add_test (tc, playlist_get_type);
   tcase_add_test (tc, playlist_create_basic);
+  tcase_add_test (tc, playlist_dblfree);
   tcase_add_test (tc, playlist_load_basic);
   tcase_add_test (tc, playlist_get);
   tcase_add_test (tc, playlist_set);

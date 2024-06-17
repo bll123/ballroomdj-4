@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "bdj4.h"
@@ -38,6 +39,7 @@
 #include "tagdef.h"
 
 typedef struct playlist {
+  int64_t       ident;
   char          *name;
   musicdb_t     *musicdb;
   dance_t       *dances;
@@ -60,6 +62,7 @@ typedef struct playlist {
 enum {
   PL_BPM_VERSION = 1,
   PL_DANCE_VERSION = 2,
+  PL_IDENT = 0x706c61796c737400,
 };
 
 static playlist_t *playlistAlloc (musicdb_t *musicdb);
@@ -106,23 +109,26 @@ playlistFree (void *tpl)
 {
   playlist_t    *pl = tpl;
 
-  if (pl != NULL) {
-    if (pl->plinfo != datafileGetList (pl->plinfodf)) {
-      nlistFree (pl->plinfo);
-    }
-    datafileFree (pl->plinfodf);
-    datafileFree (pl->pldancesdf);
-    ilistFree (pl->pldances);
-    songlistFree (pl->songlist);
-    songfilterFree (pl->songfilter);
-    sequenceFree (pl->sequence);
-    songselFree (pl->songsel);
-    danceselFree (pl->dancesel);
-    nlistFree (pl->countList);
-    dataFree (pl->name);
-    pl->name = NULL;
-    mdfree (pl);
+  if (pl == NULL || pl->ident != PL_IDENT) {
+    return;
   }
+
+  if (pl->plinfo != datafileGetList (pl->plinfodf)) {
+    nlistFree (pl->plinfo);
+  }
+  datafileFree (pl->plinfodf);
+  datafileFree (pl->pldancesdf);
+  ilistFree (pl->pldances);
+  songlistFree (pl->songlist);
+  songfilterFree (pl->songfilter);
+  sequenceFree (pl->sequence);
+  songselFree (pl->songsel);
+  danceselFree (pl->dancesel);
+  nlistFree (pl->countList);
+  dataFree (pl->name);
+  pl->name = NULL;
+  pl->ident = 0;
+  mdfree (pl);
 }
 
 playlist_t *
@@ -290,7 +296,7 @@ playlistCheck (playlist_t *pl)
   pltype_t    type;
   bool        rc = false;
 
-  if (pl == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT) {
     return rc;
   }
 
@@ -393,6 +399,10 @@ playlistResetAll (playlist_t *pl)
   ilistidx_t    iteridx;
   ilistidx_t    didx;
 
+  if (pl == NULL || pl->ident != PL_IDENT) {
+    return;
+  }
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
   while ((didx = danceIterate (dances, &iteridx)) >= 0) {
@@ -404,7 +414,7 @@ playlistResetAll (playlist_t *pl)
 const char *
 playlistGetName (playlist_t *pl)
 {
-  if (pl == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT) {
     return NULL;
   }
 
@@ -416,7 +426,7 @@ playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
 {
   ssize_t     val;
 
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return LIST_VALUE_INVALID;
   }
 
@@ -432,7 +442,7 @@ playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t 
 
   *buff = '\0';
 
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
   }
 
@@ -451,7 +461,7 @@ playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t 
 void
 playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
 {
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
   }
 
@@ -469,7 +479,7 @@ playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *value)
 {
   datafileconv_t  conv;
 
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
   }
 
@@ -486,7 +496,7 @@ playlistGetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key)
 {
   ssize_t     val;
 
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return LIST_VALUE_INVALID;
   }
 
@@ -497,7 +507,7 @@ playlistGetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key)
 void
 playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
 {
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
   }
 
@@ -513,7 +523,7 @@ playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
 void
 playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value)
 {
-  if (pl == NULL || pl->plinfo == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
   }
 
@@ -537,8 +547,7 @@ playlistGetNextSong (playlist_t *pl,
   int         stopAfter;
   bool        songselalloc = false;
 
-
-  if (pl == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return NULL;
   }
 
@@ -658,7 +667,6 @@ playlistGetPlaylistList (int flag, const char *dir)
   slistidx_t  iteridx;
   char        *ext = NULL;
 
-
   if (flag < 0 || flag >= PL_LIST_MAX) {
     return NULL;
   }
@@ -723,6 +731,9 @@ playlistAddCount (playlist_t *pl, song_t *song)
   pltype_t      type;
   ilistidx_t     danceIdx;
 
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
+    return;
+  }
 
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
@@ -745,6 +756,9 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
   pltype_t      type;
   ilistidx_t     danceIdx;
 
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
+    return;
+  }
 
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
@@ -765,6 +779,10 @@ void
 playlistSave (playlist_t *pl, const char *name)
 {
   char  tfn [MAXPATHLEN];
+
+  if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
+    return;
+  }
 
   if (name != NULL) {
     dataFree (pl->name);
@@ -788,7 +806,7 @@ playlistSave (playlist_t *pl, const char *name)
 void
 playlistSetEditMode (playlist_t *pl, int editmode)
 {
-  if (pl == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT) {
     return;
   }
 
@@ -798,7 +816,7 @@ playlistSetEditMode (playlist_t *pl, int editmode)
 int
 playlistGetEditMode (playlist_t *pl)
 {
-  if (pl == NULL) {
+  if (pl == NULL || pl->ident != PL_IDENT) {
     return EDIT_FALSE;
   }
 
@@ -818,6 +836,10 @@ playlistSetSongFilter (playlist_t *pl, songfilter_t *sf)
   ilist_t       *danceList;
   ilistidx_t    iteridx;
 
+
+  if (pl == NULL || pl->ident != PL_IDENT) {
+    return;
+  }
 
   logMsg (LOG_DBG, LOG_SONGSEL, "initializing song filter");
   songfilterSetNum (sf, SONG_FILTER_STATUS_PLAYABLE,
@@ -1016,6 +1038,7 @@ playlistAlloc (musicdb_t *musicdb)
   playlist_t    *pl = NULL;
 
   pl = mdmalloc (sizeof (playlist_t));
+  pl->ident = PL_IDENT;
   pl->name = NULL;
   pl->songlistiter = 0;
   pl->plinfodf = NULL;

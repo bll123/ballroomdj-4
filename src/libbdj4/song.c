@@ -37,6 +37,7 @@
 #include "orgutil.h"
 
 typedef struct song {
+  int64_t     ident;
   nlist_t     *songInfo;
   bool        changed;
   bool        songlistchange;
@@ -44,6 +45,7 @@ typedef struct song {
 
 enum {
   TEMP_TAG_DBADD = TAG_KEY_MAX,
+  SONG_IDENT = 0x736f6e6700aabbcc,
 };
 
 static void songInit (void);
@@ -123,6 +125,7 @@ songAlloc (void)
   songInit ();
 
   song = mdmalloc (sizeof (song_t));
+  song->ident = SONG_IDENT;
   song->changed = false;
   song->songlistchange = false;
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
@@ -136,19 +139,26 @@ songFree (void *tsong)
 {
   song_t  *song = (song_t *) tsong;
 
-  if (song != NULL) {
-    nlistFree (song->songInfo);
-    mdfree (song);
-    --gsonginit.songcount;
-    if (gsonginit.songcount <= 0) {
-      songCleanup ();
-    }
+  if (song != NULL || song->ident != SONG_IDENT) {
+    return;
+  }
+
+  nlistFree (song->songInfo);
+  song->ident = 0;
+  mdfree (song);
+  --gsonginit.songcount;
+  if (gsonginit.songcount <= 0) {
+    songCleanup ();
   }
 }
 
 void
 songFromTagList (song_t *song, slist_t *tagdata)
 {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
+    return;
+  }
+
   nlistFree (song->songInfo);
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
 
@@ -200,7 +210,7 @@ songParse (song_t *song, char *data, ilistidx_t dbidx)
 {
   char        tbuff [40];
 
-  if (song == NULL || data == NULL) {
+  if (song == NULL || data == NULL || song->ident != SONG_IDENT) {
     return;
   }
 
@@ -221,7 +231,7 @@ songGetStr (const song_t *song, nlistidx_t idx)
 {
   const char  *value;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return NULL;
   }
 
@@ -234,7 +244,7 @@ songGetNum (const song_t *song, nlistidx_t idx)
 {
   ssize_t     value;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return LIST_VALUE_INVALID;
   }
 
@@ -247,7 +257,7 @@ songGetDouble (const song_t *song, nlistidx_t idx)
 {
   double      value;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return LIST_DOUBLE_INVALID;
   }
 
@@ -260,7 +270,7 @@ songGetList (const song_t *song, nlistidx_t idx)
 {
   slist_t   *value;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return NULL;
   }
 
@@ -271,7 +281,7 @@ songGetList (const song_t *song, nlistidx_t idx)
 void
 songSetNum (song_t *song, nlistidx_t tagidx, listnum_t value)
 {
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return;
   }
 
@@ -285,7 +295,7 @@ songSetNum (song_t *song, nlistidx_t tagidx, listnum_t value)
 void
 songSetDouble (song_t *song, nlistidx_t tagidx, double value)
 {
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return;
   }
 
@@ -296,7 +306,7 @@ songSetDouble (song_t *song, nlistidx_t tagidx, double value)
 void
 songSetStr (song_t *song, nlistidx_t tagidx, const char *str)
 {
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return;
   }
 
@@ -314,7 +324,7 @@ songSetList (song_t *song, nlistidx_t tagidx, const char *str)
   datafileconv_t  conv;
   slist_t         *slist = NULL;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return;
   }
 
@@ -338,7 +348,7 @@ songChangeFavorite (song_t *song)
 {
   int fav = SONG_FAVORITE_NONE;
 
-  if (song == NULL || song->songInfo == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return;
   }
 
@@ -355,6 +365,10 @@ bool
 songAudioSourceExists (song_t *song)
 {
   const char  *sfname;
+
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
+    return false;
+  }
 
   sfname = songGetStr (song, TAG_URI);
   return audiosrcExists (sfname);
@@ -373,7 +387,7 @@ songDisplayString (song_t *song, int tagidx, int flag)
   char            *str = NULL;
   const char      *tstr = NULL;
 
-  if (song == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
     return NULL;
   }
 
@@ -490,6 +504,10 @@ songTagList (song_t *song)
 {
   slist_t   *taglist;
 
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
+    return NULL;
+  }
+
   taglist = datafileSaveKeyValList ("song-tag", songdfkeys, SONG_DFKEY_COUNT, song->songInfo);
   return taglist;
 }
@@ -498,6 +516,10 @@ char *
 songCreateSaveData (song_t *song)
 {
   char      *sbuffer;
+
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
+    return NULL;
+  }
 
   sbuffer = mdmalloc (MUSICDB_MAX_SAVE);
   datafileSaveKeyValBuffer (sbuffer, MUSICDB_MAX_SAVE, "song-buff",
@@ -508,7 +530,7 @@ songCreateSaveData (song_t *song)
 bool
 songIsChanged (song_t *song)
 {
-  if (song == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT) {
     return false;
   }
   return song->changed;
@@ -517,7 +539,7 @@ songIsChanged (song_t *song)
 void
 songSetChanged (song_t *song)
 {
-  if (song == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT) {
     return;
   }
   song->changed = true;
@@ -526,7 +548,7 @@ songSetChanged (song_t *song)
 bool
 songHasSonglistChange (song_t *song)
 {
-  if (song == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT) {
     return false;
   }
   return song->songlistchange;
@@ -535,7 +557,7 @@ songHasSonglistChange (song_t *song)
 void
 songClearChanged (song_t *song)
 {
-  if (song == NULL) {
+  if (song == NULL || song->ident != SONG_IDENT) {
     return;
   }
 
@@ -548,6 +570,10 @@ songGetClassicalWork (const song_t *song, char *work, size_t sz)
 {
   const char    *title;
   char          *p;
+
+  if (song == NULL || song->ident != SONG_IDENT || song->songInfo == NULL) {
+    return;
+  }
 
   *work = '\0';
   title = nlistGetStr (song->songInfo, TAG_TITLE);
