@@ -22,6 +22,9 @@ __Queue Length__: The number of songs the music queue is filled with.
 __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
+__Show Speed Reset__: The 'reset speed to 100%' button will be
+displayed in the player.
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-E.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>

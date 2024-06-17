@@ -69,11 +69,6 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
-  /* CONTEXT: configuration: whether or not to show the speed reset button */
-  confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Speed Reset"),
-      CONFUI_SWITCH_SHOW_SPD_CONTROL, OPT_P_SHOW_SPD_CONTROL,
-      bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL), NULL, 0);
-
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
