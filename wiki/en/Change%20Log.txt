@@ -12,6 +12,8 @@
 
 * Bug Fixes:
     * Export to BDJ4 / Import from BDJ4: Fixed.
+* Changes:
+    * The sample automatic playlist has been removed for new installs.
 * New Features:
     * Configuration: Player: Added option to show speed reset.
 

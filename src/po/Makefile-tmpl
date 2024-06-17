@@ -11,8 +11,7 @@
 TMPLDIR = ../../templates
 PODIR = po
 
-PLAYLISTSRC = $(TMPLDIR)/automatic.pl \
-	$(TMPLDIR)/automatic.pldances \
+PLAYLISTSRC = \
 	$(TMPLDIR)/QueueDance.pl \
 	$(TMPLDIR)/QueueDance.pldances \
 	$(TMPLDIR)/standardrounds.pl \
@@ -39,8 +38,7 @@ HTMLFILESRC = \
 	$(TMPLDIR)/bdj-flex.html \
 	$(TMPLDIR)/bdj.html
 
-PLAYLISTS = $(TMPLDIR)/$(SLOCALE)/automatic.pl \
-	$(TMPLDIR)/$(SLOCALE)/automatic.pldances \
+PLAYLISTS = \
 	$(TMPLDIR)/$(SLOCALE)/QueueDance.pl \
 	$(TMPLDIR)/$(SLOCALE)/QueueDance.pldances \
 	$(TMPLDIR)/$(SLOCALE)/standardrounds.pl \

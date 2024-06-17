@@ -623,56 +623,6 @@ function checkInstallation {
       echo "  no autoselection.txt file"
     fi
 
-    # automatic.pl file
-    fna="${DATADIR}/automatic.pl"
-    fnb=""
-    if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/automatisch.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == es_ES ]]; then
-      fna="${DATADIR}/automático.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == fi_FI ]]; then
-      fna="${DATADIR}/automaattinen.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fna="${DATADIR}/automatique.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == it_IT ]]; then
-      fna="${DATADIR}/automatico.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == ja_JP ]]; then
-      fna="${DATADIR}/自動.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fna="${DATADIR}/Automatisch.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == pl_PL ]]; then
-      fna="${DATADIR}/automatyczny.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fna="${DATADIR}/автоматически.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    res=$(($res+1))   # automatic playlist
-    if [[ -f ${fna} ]]; then
-      if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename ${fnb})"
-      else
-        chk=$(($chk+1))
-      fi
-    else
-      echo "  no $(basename ${fna})"
-    fi
-
     res=$(($res+1))  # itunes-fields.txt file
     fn="${DATADIR}/itunes-fields.txt"
     if [[ $fin == T && -f ${fn} ]]; then

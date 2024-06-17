@@ -137,7 +137,7 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
-for f in automatic.pldances standardrounds.pldances QueueDance.pldances dances.txt; do
+for f in standardrounds.pldances QueueDance.pldances dances.txt; do
   a=$(grep '^# version' templates/$f)
   b=$(grep '^# version' templates/en_US/$f)
   if [[ $a != $b ]]; then

@@ -478,11 +478,11 @@ main (int argc, char *argv [])
     /*             Updated internal key names */
     /* 2023-12-22 : 4.4.8 */
     /*             Cleanup, fix en-us */
+    /* 2024-6-17 : 4.10.5 remove automatic */
     updaterCopyVersionCheck (_("QueueDance"), BDJ4_PLAYLIST_EXT, 2);
     updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
     updaterCopyVersionCheck (_("standardrounds"), BDJ4_PLAYLIST_EXT, 2);
     updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
-    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, 3);
   }
 
   {

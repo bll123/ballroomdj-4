@@ -151,7 +151,6 @@ for fn in templates/bdjconfig.q?.txt; do
 done
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
 cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
-cp -f templates/automatic.* data
 cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
 # the test dances data file has announcements set for tango & waltz

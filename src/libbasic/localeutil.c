@@ -36,7 +36,6 @@
 
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
-  { "AUTO",       LOCALE_KEY_AUTO,      VALUE_STR, NULL, DF_NORM },
   { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
   { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
   { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },

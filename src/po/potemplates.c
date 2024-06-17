@@ -178,8 +178,6 @@ _("Speed")
 _("Volume")
 // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Speed")
-// CONTEXT: The name of the 'automatic' playlist file
-_("automatic")
 // CONTEXT: The name of the 'standardrounds' playlist file
 _("standardrounds")
 // CONTEXT: The name of the 'queuedance' playlist file

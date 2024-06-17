@@ -66,8 +66,6 @@ grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
 
 # names of playlist files
-echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMPLOUT
-echo "..automatic" >> $TMPLOUT
 echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMPLOUT
 echo "..standardrounds" >> $TMPLOUT
 echo "// CONTEXT: The name of the 'queuedance' playlist file" >> $TMPLOUT

@@ -143,8 +143,6 @@ grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
 
 # names of playlist files
-echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMP
-echo "..automatic" >> $TMP
 echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMP
 echo "..standardrounds" >> $TMP
 echo "// CONTEXT: The name of the 'queuedance' playlist file" >> $TMP
