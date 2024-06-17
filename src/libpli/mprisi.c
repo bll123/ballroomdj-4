@@ -22,7 +22,7 @@
 #include "mprisi.h"
 #include "pli.h"
 
-#define MPRIS_PFX "MPRIS "
+static const char * const MPRIS_PFX = "MPRIS ";
 
 enum {
   MPRIS_MAX_PLAYERS = 10,

@@ -22,11 +22,11 @@
 #include "uiutils.h"
 #include "validate.h"
 
-#define RHB "\xE2\x96\x90"  /* right half block 0xE2 0x96 0x90 */
-#define FB  "\xE2\x96\x88"  /* full block 0xE2 0x96 0x88 */
-#define LHB "\xE2\x96\x8c"  /* left half block 0xE2 0x96 0x8c */
+#define RHB "\xE2\x96\x90" /* right half block 0xE2 0x96 0x90 */
+#define FB  "\xE2\x96\x88" /* full block 0xE2 0x96 0x88 */
+#define LHB "\xE2\x96\x8c" /* left half block 0xE2 0x96 0x8c */
 
-/* as a side effect, hbox is set, and */
+/* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
 uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)

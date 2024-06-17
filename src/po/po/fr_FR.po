@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-06-15\n"
+"PO-Revision-Date: 2024-06-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -1761,6 +1761,10 @@ msgstr "Chapiteau d'exposition"
 msgid "Show Song Information"
 msgstr "Informations sur les chansons"
 
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "Script d'arrêt"
@@ -2136,10 +2140,6 @@ msgstr "Écrit les balises du fichier audio en utilisant les informations de la 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
 msgstr "Fichiers XML"
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
-msgstr "automatique"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"

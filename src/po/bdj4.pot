@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-15 07:05-0700\n"
+"POT-Creation-Date: 2024-06-17 08:20-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1759,6 +1759,10 @@ msgstr ""
 msgid "Show Song Information"
 msgstr ""
 
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr ""
@@ -2133,10 +2137,6 @@ msgstr ""
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
-msgstr ""
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
 msgstr ""
 
 #. CONTEXT: configuration file: dance type

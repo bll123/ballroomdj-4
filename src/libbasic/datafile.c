@@ -46,9 +46,9 @@ typedef struct datafile {
   list_t          *data;
 } datafile_t;
 
-#define DF_VERSION_STR      "version"
-#define DF_VERSION_DIST_STR "# version "
-#define DF_VERSION_FMT      "# version %d"
+static const char * const DF_VERSION_STR      = "version";
+static const char * const DF_VERSION_DIST_STR = "# version ";
+static const char * const DF_VERSION_FMT      = "# version %d";
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
 static void     datafileFreeData (datafile_t *df);

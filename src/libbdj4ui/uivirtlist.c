@@ -57,13 +57,13 @@ enum {
 };
 
 enum {
-  VL_IDENT_COLDATA  = 0x766c636f6c646174,
-  VL_IDENT_COL      = 0x766c636f6caabbcc,
-  VL_IDENT_ROW      = 0x766c726f77aabbcc,
-  VL_IDENT          = 0x766caabbccddeeff,
+  VL_IDENT_COLDATA  = 0x766c636f6c647400,
+  VL_IDENT_COL      = 0x766c636f6c00bbcc,
+  VL_IDENT_ROW      = 0x766c726f7700bbcc,
+  VL_IDENT          = 0x766c00bbccddeeff,
 };
 
-#define VL_SELECTED_CLASS "bdj-selected"
+static const char * const VL_SELECTED_CLASS = "bdj-selected";
 
 typedef struct {
   uiwcont_t *szgrp;

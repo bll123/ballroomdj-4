@@ -237,6 +237,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcont_t       *szgrpScaleLabel;
   uiwcont_t       *szgrpScaleButton;
   uiwcont_t       *szgrpStatus;
+  bool            showspd = false;
 
   logProcBegin ();
 
@@ -322,17 +323,20 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  /* size group F */
-  uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
-      uiplayerSpdResetCallback, uiplayer, "spd-reset");
-  uiwidgetp = uiCreateButton (
-      uiplayer->callbacks [UIPL_CB_SPD_RESET],
-      /* CONTEXT: playerui: button: reset speed to 100% */
-      _("100%"), NULL);
-  uiWidgetSetClass (uiwidgetp, "bdj-spd-reset");
-  uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;
+  showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
+  if (showspd) {
+    /* size group F */
+    uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
+        uiplayerSpdResetCallback, uiplayer, "spd-reset");
+    uiwidgetp = uiCreateButton (
+        uiplayer->callbacks [UIPL_CB_SPD_RESET],
+        /* CONTEXT: playerui: button: reset speed to 100% */
+        _("100%"), NULL);
+    uiWidgetSetClass (uiwidgetp, "bdj-spd-reset");
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;
+  }
 
   /* size group A */
   uiwidgetp = uiCreateLabel ("%");
@@ -395,11 +399,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  /* size group F */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  if (showspd) {
+    /* size group F */
+    uiwidgetp = uiCreateLabel ("");
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+  }
 
   /* size group A */
   uiwidgetp = uiCreateLabel ("");
@@ -512,11 +518,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* volume controls / display */
 
-  /* size group F */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  if (showspd) {
+    /* size group F */
+    uiwidgetp = uiCreateLabel ("");
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+  }
 
   /* size group A */
   uiwidgetp = uiCreateLabel ("%");

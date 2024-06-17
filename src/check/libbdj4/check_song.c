@@ -44,6 +44,13 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   templateFileCopy ("favorites.txt", "favorites.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(song_alloc)
@@ -53,8 +60,6 @@ START_TEST(song_alloc)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_alloc");
   mdebugSubTag ("song_alloc");
-
-  bdjvarsdfloadInit ();
 
   song = songAlloc ();
   ck_assert_ptr_nonnull (song);
@@ -66,8 +71,6 @@ START_TEST(song_alloc)
   ck_assert_ptr_nonnull (songb);
   songFree (song);
   songFree (songb);
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -202,8 +205,6 @@ START_TEST(song_parse)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse");
   mdebugSubTag ("song_parse");
 
-  bdjvarsdfloadInit ();
-
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
     data = mdstrdup (songparsedata [i]);
@@ -213,8 +214,6 @@ START_TEST(song_parse)
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     songFree (song);
   }
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -228,8 +227,6 @@ START_TEST(song_parse_get)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_get");
   mdebugSubTag ("song_parse_get");
-
-  bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
     double          dval;
@@ -285,8 +282,6 @@ START_TEST(song_parse_get)
     }
     songFree (song);
   }
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -301,8 +296,6 @@ START_TEST(song_parse_set)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_set");
   mdebugSubTag ("song_parse_set");
-
-  bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
@@ -366,8 +359,6 @@ START_TEST(song_parse_set)
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
     songFree (song);
   }
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -385,7 +376,6 @@ START_TEST(song_audio_file)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
@@ -409,7 +399,6 @@ START_TEST(song_audio_file)
 
   diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC), DIROP_ALL);
 
-  bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
 }
 END_TEST
@@ -422,8 +411,6 @@ START_TEST(song_display)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_display");
   mdebugSubTag ("song_display");
-
-  bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
@@ -484,8 +471,6 @@ START_TEST(song_display)
     }
     songFree (song);
   }
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -502,8 +487,6 @@ START_TEST(song_tag_list)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
   mdebugSubTag ("song_tag_list");
-
-  bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
     double  dval;
@@ -590,8 +573,6 @@ START_TEST(song_tag_list)
 
     songFree (song);
   }
-
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -604,7 +585,7 @@ song_suite (void)
   s = suite_create ("song");
   tc = tcase_create ("song");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, song_alloc);
   tcase_add_test (tc, song_parse);
   tcase_add_test (tc, song_parse_get);

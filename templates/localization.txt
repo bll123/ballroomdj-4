@@ -7,8 +7,6 @@ SHORT
 ..en
 DISPLAY
 ..English (GB)
-AUTO
-..automatic
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -21,8 +19,6 @@ SHORT
 ..en
 DISPLAY
 ..English (US)
-AUTO
-..automatic
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -35,8 +31,6 @@ SHORT
 ..de
 DISPLAY
 ..Deutsch
-AUTO
-..automatisch
 STDROUNDS
 ..Standardrunden
 QDANCE
@@ -49,8 +43,6 @@ SHORT
 ..es
 DISPLAY
 ..Español
-AUTO
-..automático
 STDROUNDS
 ..estándares
 QDANCE
@@ -63,8 +55,6 @@ SHORT
 ..fi
 DISPLAY
 ..Suomi
-AUTO
-..automaattinen
 STDROUNDS
 ..vakiokierrokset
 QDANCE
@@ -77,8 +67,6 @@ SHORT
 ..fr
 DISPLAY
 ..Français
-AUTO
-..automatique
 STDROUNDS
 ..les rounds standards
 QDANCE
@@ -91,8 +79,6 @@ SHORT
 ..it
 DISPLAY
 ..Italiano
-AUTO
-..automatico
 STDROUNDS
 ..giri standard
 QDANCE
@@ -105,8 +91,6 @@ SHORT
 ..ja
 DISPLAY
 ..日本語
-AUTO
-..自動
 STDROUNDS
 ..スタンダードラウンド
 QDANCE
@@ -119,8 +103,6 @@ SHORT
 ..nl
 DISPLAY
 ..Nederlands
-AUTO
-..Automatisch
 STDROUNDS
 ..Standaardrondes
 QDANCE
@@ -133,8 +115,6 @@ SHORT
 ..pl
 DISPLAY
 ..Polski
-AUTO
-..automatyczny
 STDROUNDS
 ..rundy standardowe
 QDANCE
@@ -147,8 +127,6 @@ SHORT
 ..ru
 DISPLAY
 ..Русский‬
-AUTO
-..автоматически
 STDROUNDS
 ..стандартные циклы
 QDANCE

@@ -100,7 +100,7 @@ fileSharedOpen (const char *fname, int truncflag)
 }
 
 ssize_t
-fileSharedWrite (fileshared_t *fhandle, char *data, size_t len)
+fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
 {
   ssize_t rc;
 #if _lib_WriteFile

@@ -51,7 +51,7 @@ function appendlocaledata {
   slocale=$3
   langdesc=$4
 
-  for txt in automatic standardrounds queuedance; do
+  for txt in standardrounds queuedance; do
     ttxt=$txt
     if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
     xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
@@ -70,8 +70,6 @@ function appendlocaledata {
   echo "..$slocale" >> $LOCALEDATA
   echo DISPLAY >> $LOCALEDATA
   echo "..$langdesc" >> $LOCALEDATA
-  echo AUTO >> $LOCALEDATA
-  echo "..${automatic}" >> $LOCALEDATA
   echo STDROUNDS >> $LOCALEDATA
   echo "..${standardrounds}" >> $LOCALEDATA
   echo QDANCE >> $LOCALEDATA

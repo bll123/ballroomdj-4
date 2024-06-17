@@ -68,9 +68,10 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  logProcEnd ("");
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
+
+  logProcEnd ("");
 }
 

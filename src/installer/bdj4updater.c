@@ -54,9 +54,8 @@
 #include "tmutil.h"
 #include "volreg.h"
 
-#define UPDATER_TMP_FILE "tmpupdater"
-#define LINUX_STARTUP_SCRIPT "scripts/linux/bdjstartup.sh"
-#define LINUX_SHUTDOWN_SCRIPT "scripts/linux/bdjshutdown.sh"
+static const char * const LINUX_STARTUP_SCRIPT = "scripts/linux/bdjstartup.sh";
+static const char * const LINUX_SHUTDOWN_SCRIPT = "scripts/linux/bdjshutdown.sh";
 
 enum {
   UPD_NOT_DONE,
@@ -479,11 +478,11 @@ main (int argc, char *argv [])
     /*             Updated internal key names */
     /* 2023-12-22 : 4.4.8 */
     /*             Cleanup, fix en-us */
+    /* 2024-6-17 : 4.10.5 remove automatic */
     updaterCopyVersionCheck (_("QueueDance"), BDJ4_PLAYLIST_EXT, 2);
     updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
     updaterCopyVersionCheck (_("standardrounds"), BDJ4_PLAYLIST_EXT, 2);
     updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
-    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, 3);
   }
 
   {

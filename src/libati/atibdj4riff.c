@@ -33,11 +33,11 @@ enum {
   RIFF_ID_LEN = 4,
 };
 
-#define RIFF_ID_RIFF "RIFF"
-#define RIFF_ID_WAVE "WAVE"
-#define RIFF_ID_FMT  "fmt "
-#define RIFF_ID_LIST "LIST"
-#define RIFF_ID_INFO "INFO"
+static const char * const RIFF_ID_RIFF = "RIFF";
+static const char * const RIFF_ID_WAVE = "WAVE";
+static const char * const RIFF_ID_FMT  = "fmt ";
+static const char * const RIFF_ID_LIST = "LIST";
+static const char * const RIFF_ID_INFO = "INFO";
 
 typedef struct {
   uint16_t      audioformat;

@@ -122,12 +122,15 @@ setup (void)
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
+  bdjvarsdfloadInit ();
+  bdjoptInit ();
 }
 
 static void
 teardown (void)
 {
-  return;
+  bdjoptCleanup ();
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(musicdb_open_new)
@@ -137,10 +140,8 @@ START_TEST(musicdb_open_new)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_open_new");
   mdebugSubTag ("musicdb_open_new");
 
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
   dbClose (db);
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -157,10 +158,8 @@ START_TEST(musicdb_write)
   mdebugSubTag ("musicdb_write");
 
   // fprintf (stdout, "  write\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = 0;
@@ -188,8 +187,6 @@ START_TEST(musicdb_write)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
   logMsg (LOG_DBG, LOG_IMPORTANT, "musicdb_write; done");
 }
 END_TEST
@@ -207,10 +204,8 @@ START_TEST(musicdb_overwrite)
   mdebugSubTag ("musicdb_overwrite");
 
   // fprintf (stdout, "  overwrite\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = 0;
@@ -238,8 +233,6 @@ START_TEST(musicdb_overwrite)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -258,10 +251,8 @@ START_TEST(musicdb_batch_write)
   mdebugSubTag ("musicdb_batch_write");
 
   // fprintf (stdout, "  batch write\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
   dbStartBatch (db);
 
@@ -291,8 +282,6 @@ START_TEST(musicdb_batch_write)
   dbEndBatch (db);
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -309,10 +298,8 @@ START_TEST(musicdb_batch_overwrite)
   mdebugSubTag ("musicdb_batch_overwrite");
 
   // fprintf (stdout, "  batch overwrite\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
   dbStartBatch (db);
 
@@ -342,8 +329,6 @@ START_TEST(musicdb_batch_overwrite)
   dbEndBatch (db);
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -365,10 +350,8 @@ START_TEST(musicdb_write_song)
   /* 2022-8-18 */
 
   // fprintf (stdout, "  write song\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = 0;
@@ -396,8 +379,6 @@ START_TEST(musicdb_write_song)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -414,10 +395,8 @@ START_TEST(musicdb_overwrite_song)
   mdebugSubTag ("musicdb_overwrite_song");
 
   // fprintf (stdout, "  overwrite song\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = 0;
@@ -445,8 +424,6 @@ START_TEST(musicdb_overwrite_song)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -462,9 +439,7 @@ START_TEST(musicdb_load_get_byidx)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_get_byidx");
   mdebugSubTag ("musicdb_load_get_byidx");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = dbCount (db);
@@ -494,8 +469,6 @@ START_TEST(musicdb_load_get_byidx)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -512,9 +485,7 @@ START_TEST(musicdb_load_get_byname)
   mdebugSubTag ("musicdb_load_get_byname");
 
   // fprintf (stdout, "   load byname\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   count = dbCount (db);
@@ -545,8 +516,6 @@ START_TEST(musicdb_load_get_byname)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -566,9 +535,7 @@ START_TEST(musicdb_iterate)
   mdebugSubTag ("musicdb_iterate");
 
   // fprintf (stdout, "   iterate\n");
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
 
   db = dbOpen (dbfn);
 
@@ -596,8 +563,6 @@ START_TEST(musicdb_iterate)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -610,9 +575,7 @@ START_TEST(musicdb_load_entry)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_entry");
   mdebugSubTag ("musicdb_load_entry");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   song = dbGetByName (db, "argentinetango05.mp3");
@@ -630,8 +593,6 @@ START_TEST(musicdb_load_entry)
   ck_assert_str_eq (songGetStr (dbsong, TAG_ARTIST), "newartist");
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -646,9 +607,7 @@ START_TEST(musicdb_temp)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_temp");
   mdebugSubTag ("musicdb_temp");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   song = songAlloc ();
@@ -675,8 +634,6 @@ START_TEST(musicdb_temp)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -694,9 +651,7 @@ START_TEST(musicdb_remove)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_remove");
   mdebugSubTag ("musicdb_remove");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   song = dbGetByName (db, "argentinetango05.mp3");
@@ -734,8 +689,6 @@ START_TEST(musicdb_remove)
 
   dbClose (db);
 
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -753,9 +706,7 @@ START_TEST(musicdb_db)
 
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 
   fh = fileopOpen ("data/musicdb.dat", "r");
@@ -771,9 +722,6 @@ START_TEST(musicdb_db)
   ck_assert_int_eq (count, racount);
 
   dbClose (db);
-
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
@@ -784,11 +732,9 @@ START_TEST(musicdb_cleanup)
 
   // fprintf (stdout, "   cleanup\n");
 
-  bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   fileopDelete (dbfn);
   diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC), DIROP_ALL);
-  bdjoptCleanup ();
 }
 END_TEST
 

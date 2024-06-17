@@ -181,9 +181,7 @@ typedef struct {
   bool            vlcinstalled : 1;
 } installer_t;
 
-#define INST_TEMP_FILE  "tmp/bdj4instout.txt"
-#define CONV_TEMP_FILE "tmp/bdj4convout.txt"
-#define BDJ3_LOC_FILE "install/bdj3loc.txt"
+static const char * const BDJ3_LOC_FILE = "install/bdj3loc.txt";
 
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);

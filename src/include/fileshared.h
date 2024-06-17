@@ -12,7 +12,7 @@ enum {
 };
 
 fileshared_t  *fileSharedOpen (const char *fname, int truncflag);
-ssize_t       fileSharedWrite (fileshared_t *fileHandle, char *data, size_t len);
+ssize_t       fileSharedWrite (fileshared_t *fileHandle, const char *data, size_t len);
 void          fileSharedClose (fileshared_t *fileHandle);
 
 #endif /* INC_FILESHARED_H */
