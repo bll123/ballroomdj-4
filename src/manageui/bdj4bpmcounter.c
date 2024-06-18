@@ -352,7 +352,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   /* instructions */
   uiwcontFree (hbox);

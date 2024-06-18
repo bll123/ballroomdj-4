@@ -375,7 +375,7 @@ altinstBuildUI (altinst_t *altinst)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   /* begin line : status message */
 

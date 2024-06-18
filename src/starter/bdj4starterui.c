@@ -603,7 +603,7 @@ starterBuildUI (startui_t  *starter)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  starter->wcont [START_W_PROFILE_ACCENT] = accent.label;
+  starter->wcont [START_W_PROFILE_ACCENT] = accent.cbox;
 
   uiwidgetp = uiCreateLabel ("");
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
@@ -1405,7 +1405,7 @@ starterProcessSupport (void *udata)
   /* status message line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
@@ -1907,7 +1907,7 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* profile color line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
   uiwcontFree (accent.hbox);
 
   /* line 1 */

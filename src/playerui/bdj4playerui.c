@@ -535,7 +535,7 @@ pluiBuildUI (playerui_t *plui)
   /* menu */
   uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
   uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();

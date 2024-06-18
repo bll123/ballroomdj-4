@@ -8,7 +8,7 @@
 
 typedef struct {
   uiwcont_t   *hbox;
-  uiwcont_t   *label;
+  uiwcont_t   *cbox;
 } uiutilsaccent_t;
 
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);

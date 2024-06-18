@@ -479,7 +479,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* accent color */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   uiwcontFree (hbox);
   /* begin line */

@@ -22,43 +22,35 @@
 #include "uiutils.h"
 #include "validate.h"
 
-#define RHB "\xE2\x96\x90" /* right half block 0xE2 0x96 0x90 */
-#define FB  "\xE2\x96\x88" /* full block 0xE2 0x96 0x88 */
-#define LHB "\xE2\x96\x8c" /* left half block 0xE2 0x96 0x8c */
-
 /* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
 uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
-  uiwcont_t       *label;
-  const char      *txt;
+  uiwcont_t       *cbox;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
-    txt = LHB FB;
-  } else {
-    txt = RHB FB;
-  }
-  /* there is some weird bug on macos where the color profile box */
-  /* does not display properly */
+  cbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizCenter (cbox);
+  uiWidgetAlignVertCenter (cbox);
+  uiWidgetSetMarginStart (cbox, 4);
+  uiWidgetSetSizeRequest (cbox, 20, 20);
+  uiutilsSetProfileColor (cbox);
+  uiBoxPackEnd (hbox, cbox);
+  uiWidgetShowAll (hbox);
 
-  label = uiCreateLabel (txt);
-  uiWidgetSetMarginStart (label, 3);
-  uiutilsSetProfileColor (label);
-  uiBoxPackEnd (hbox, label);
-
+  accent->cbox = cbox;
   accent->hbox = hbox;
-  accent->label = label;
 }
 
 void
 uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
 {
   char        classnm [100];
+  char        bclassnm [100];
   const char  *tcolor = NULL;
 
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
@@ -67,7 +59,8 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
-  uiLabelAddClass (classnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  snprintf (bclassnm, sizeof (bclassnm), "box.profcol%s", tcolor + 1);
+  uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiWidgetAddClass (uiwidgetp, classnm);
 }
 
