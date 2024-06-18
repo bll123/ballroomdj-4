@@ -75,14 +75,14 @@ typedef struct {
 } uitest_t;
 
 enum {
-  UITEST_VL_COLS = 9,
+  UITEST_VL_COLS = 12,
   UITEST_VL_DISPROWS = 10,
   UITEST_VL_MAXROWS = 100,
 };
 
 static const char *vllabs [] = {
   "One", "Two", "Three", "Four", "Five", "☆",
-  "Entry", "RB", "CB", "Spinbox", "Other",
+  "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", "Other",
 };
 
 static void uitestMainLoop (uitest_t *uitest);
@@ -528,6 +528,10 @@ uitestUIEntry (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("Entry");
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (10, 100);
+  uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (10, 100);
@@ -1083,6 +1087,12 @@ uitestUIVirtList (uitest_t *uitest)
       uivlMakeColumn (uitest->vl, j, VL_TYPE_RADIO_BUTTON, j, VL_COL_SHOW);
     } else if (j == 8) {
       uivlMakeColumn (uitest->vl, j, VL_TYPE_CHECK_BUTTON, j, VL_COL_SHOW);
+    } else if (j == 9) {
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_IMAGE, j, VL_COL_SHOW);
+    } else if (j == 10) {
+      uivlMakeColumnSpinboxTime (uitest->vl, j, j, SB_TIME_BASIC, NULL);
+    } else if (j == 11) {
+      uivlMakeColumnSpinboxNum (uitest->vl, j, j, 0.0, 20.0, 1.0, 5.0);
     } else {
       uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_SHOW);
     }
@@ -1194,7 +1204,11 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
     }
     if (j == 7 || j == 8) {
-      uivlSetRowColumnValueNum (uitest->vl, rownum, j, 0);
+      uivlSetRowColumnNum (uitest->vl, rownum, j, 0);
+    } else if (j == 10) {
+      uivlSetRowColumnNum (uitest->vl, rownum, j, 90000);
+    } else if (j == 11) {
+      uivlSetRowColumnNum (uitest->vl, rownum, j, 5);
     } else {
       uivlSetRowColumnValue (uitest->vl, rownum, j, tbuff);
     }

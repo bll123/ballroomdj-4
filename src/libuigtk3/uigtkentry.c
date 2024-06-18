@@ -45,6 +45,7 @@ typedef struct uientry {
 
 static void uiEntryValidateStart (uiwcont_t *uiwidget);
 static void uiEntryValidateHandler (GtkEditable *e, gpointer udata);
+static gboolean uiEntryFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
@@ -323,6 +324,21 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 }
 
 void
+uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
+    return;
+  }
+
+  uientry = uiwidget->uiint.uientry;
+
+  g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
+      G_CALLBACK (uiEntryFocusHandler), uicb);
+}
+
+void
 uiEntrySetState (uiwcont_t *uiwidget, int state)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
@@ -365,3 +381,14 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
   return;
 }
 
+static gboolean
+uiEntryFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+{
+  callback_t    *uicb = udata;
+
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+
+  return false;
+}

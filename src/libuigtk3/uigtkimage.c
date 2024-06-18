@@ -16,6 +16,7 @@
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
+#include "ui/uiwidget.h"
 
 uiwcont_t *
 uiImageNew (void)
@@ -29,6 +30,10 @@ uiImageNew (void)
   uiwidget->wtype = WCONT_T_IMAGE;
   uiwidget->uidata.widget = image;
   uiwidget->uidata.packwidget = image;
+
+  uiWidgetAlignHorizCenter (uiwidget);
+  uiWidgetAlignVertCenter (uiwidget);
+
   return uiwidget;
 }
 
@@ -50,6 +55,10 @@ uiImageFromFile (const char *fn)
     uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);
   }
+
+  uiWidgetAlignHorizCenter (uiwidget);
+  uiWidgetAlignVertCenter (uiwidget);
+
   return uiwidget;
 }
 
@@ -71,6 +80,10 @@ uiImageScaledFromFile (const char *fn, int scale)
     uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);
   }
+
+  uiWidgetAlignHorizCenter (uiwidget);
+  uiWidgetAlignVertCenter (uiwidget);
+
   return uiwidget;
 }
 

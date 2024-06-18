@@ -58,6 +58,7 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
+static gboolean uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 /* only frees the internals */
 void
@@ -390,6 +391,17 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 
   g_signal_connect (uiwidget->uidata.widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
+}
+
+void
+uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX, "spinbox-set-focus-cb")) {
+    return;
+  }
+
+  g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
+      G_CALLBACK (uiSpinboxFocusHandler), uicb);
 }
 
 void
@@ -806,3 +818,14 @@ uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
   return UICB_DISPLAY_ON;
 }
 
+static gboolean
+uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+{
+  callback_t    *uicb = udata;
+
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+
+  return false;
+}

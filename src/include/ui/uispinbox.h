@@ -43,6 +43,7 @@ void uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb
 
 void  uiSpinboxSetState (uiwcont_t *uiwidget, int state);
 void uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void  uiSpinboxSetRange (uiwcont_t *uiwidget, double min, double max);
 void  uiSpinboxSetIncrement (uiwcont_t *uiwidget, double incr, double pageincr);
 void  uiSpinboxWrap (uiwcont_t *uiwidget);

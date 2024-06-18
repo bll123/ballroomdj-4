@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#include "callback.h"
 #include "uiwcont.h"
 
 typedef int (*uientryval_t)(uiwcont_t *uiwidget, const char *label, void *udata);
@@ -36,6 +37,7 @@ int uiEntryValidate (uiwcont_t *entry, bool forceflag);
 void uiEntryValidateClear (uiwcont_t *entry);
 int uiEntryValidateDir (uiwcont_t *edata, const char *label, void *udata);
 int uiEntryValidateFile (uiwcont_t *edata, const char *label, void *udata);
+void uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiEntrySetState (uiwcont_t *entry, int state);
 
 #if defined (__cplusplus) || defined (c_plusplus)

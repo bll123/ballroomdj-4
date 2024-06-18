@@ -51,7 +51,6 @@ enum {
   VL_CB_KEY,
   VL_CB_MBUTTON,
   VL_CB_SCROLL,
-  VL_CB_ENTER,
   VL_CB_VBOX_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
   VL_CB_MAX,
@@ -76,20 +75,26 @@ static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 
 typedef struct {
-  uiwcont_t *szgrp;
-  uint64_t  ident;
+  uiwcont_t   *szgrp;
+  uint64_t    ident;
   /* the following data is specific to a column */
-  vltype_t  type;
+  vltype_t    type;
   /* the baseclass is always applied */
-  char      *baseclass;
-  int       colident;
-  int       minwidth;
-  int       entrySz;
-  int       entryMaxSz;
-  bool      alignend: 1;
-  bool      ellipsize : 1;
-  bool      grow : 1;
-  bool      hidden : 1;
+  char        *baseclass;
+  int         colident;
+  int         minwidth;
+  int         entrySz;
+  int         entryMaxSz;
+  int         sbtype;
+  callback_t  *sbcb;
+  double      sbmin;
+  double      sbmax;
+  double      sbincr;
+  double      sbpageincr;
+  bool        alignend: 1;
+  bool        ellipsize : 1;
+  bool        grow : 1;
+  bool        hidden : 1;
 } uivlcoldata_t;
 
 typedef struct {
@@ -155,9 +160,8 @@ static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
-static bool uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum);
+static bool uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx);
 static bool uivlScrollEvent (void *udata, int32_t dir);
-static bool uivlEnterLeaveEvent (void *udata, int32_t el);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
@@ -197,7 +201,6 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
-  vl->callbacks [VL_CB_ENTER] = callbackInitI (uivlEnterLeaveEvent, vl);
   vl->callbacks [VL_CB_VBOX_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
@@ -266,12 +269,10 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
       vl->callbacks [VL_CB_MBUTTON]);
   uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_SCROLL]);
-  /* the vbox does not receive an enter/leave event */
-  /* (as it is overlaid presumably) */
-  /* set the enter/leave on the main event-box, and the handler */
-  /* grabs the focus on to the vbox so the keyboard events work */
-  uiEventSetEnterLeaveCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
-      vl->callbacks [VL_CB_ENTER]);
+  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
+      vl->callbacks [VL_CB_MBUTTON]);
+  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
+      vl->callbacks [VL_CB_SCROLL]);
 
   return vl;
 }
@@ -339,6 +340,12 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     vl->coldata [colidx].minwidth = VL_MIN_WIDTH_ANY;
     vl->coldata [colidx].entrySz = 0;
     vl->coldata [colidx].entryMaxSz = 0;
+    vl->coldata [colidx].sbtype = 0;
+    vl->coldata [colidx].sbcb = NULL;
+    vl->coldata [colidx].sbmin = 0;
+    vl->coldata [colidx].sbmax = 10;
+    vl->coldata [colidx].sbincr = 1;
+    vl->coldata [colidx].sbpageincr = 5;
     vl->coldata [colidx].alignend = false;
     vl->coldata [colidx].ellipsize = false;
     vl->coldata [colidx].grow = VL_COL_WIDTH_FIXED;
@@ -349,7 +356,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
 }
 
 void
-uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class)
+uivlSetHeadingClass (uivirtlist_t *vl, int colidx, const char *class)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -362,7 +369,7 @@ uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class)
 /* column set */
 
 void
-uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
+uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -370,7 +377,7 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
@@ -386,11 +393,11 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
     vl->initialized = VL_INIT_ROWS;
   }
 
-  uivlSetRowColumnValue (vl, VL_ROW_HEADING, colnum, heading);
+  uivlSetRowColumnValue (vl, VL_ROW_HEADING, colidx, heading);
 }
 
 void
-uivlMakeColumn (uivirtlist_t *vl, int colnum, vltype_t type,
+uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type,
     int colident, bool hidden)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -399,17 +406,17 @@ uivlMakeColumn (uivirtlist_t *vl, int colnum, vltype_t type,
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].type = type;
-  vl->coldata [colnum].colident = colident;
-  vl->coldata [colnum].hidden = hidden;
+  vl->coldata [colidx].type = type;
+  vl->coldata [colidx].colident = colident;
+  vl->coldata [colidx].hidden = hidden;
 }
 
 void
-uivlMakeColumnEntry (uivirtlist_t *vl, int colnum, int colident, int sz, int maxsz)
+uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int colident, int sz, int maxsz)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -417,18 +424,19 @@ uivlMakeColumnEntry (uivirtlist_t *vl, int colnum, int colident, int sz, int max
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].type = VL_TYPE_ENTRY;
-  vl->coldata [colnum].colident = colident;
-  vl->coldata [colnum].entrySz = sz;
-  vl->coldata [colnum].entryMaxSz = maxsz;
+  vl->coldata [colidx].type = VL_TYPE_ENTRY;
+  vl->coldata [colidx].colident = colident;
+  vl->coldata [colidx].entrySz = sz;
+  vl->coldata [colidx].entryMaxSz = maxsz;
 }
 
 void
-uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth)
+uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx, int colident,
+    int sbtype, callback_t *uicb)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -436,15 +444,19 @@ uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].minwidth = minwidth;
+  vl->coldata [colidx].type = VL_TYPE_SPINBOX_TIME;
+  vl->coldata [colidx].colident = colident;
+  vl->coldata [colidx].sbtype = sbtype;
+  vl->coldata [colidx].sbcb = uicb;
 }
 
 void
-uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colnum)
+uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx, int colident,
+    double min, double max, double incr, double pageincr)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -452,16 +464,20 @@ uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colnum)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].ellipsize = true;
-  vl->coldata [colnum].grow = true;
+  vl->coldata [colidx].type = VL_TYPE_SPINBOX_NUM;
+  vl->coldata [colidx].colident = colident;
+  vl->coldata [colidx].sbmin = min;
+  vl->coldata [colidx].sbmax = max;
+  vl->coldata [colidx].sbincr = incr;
+  vl->coldata [colidx].sbpageincr = pageincr;
 }
 
 void
-uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
+uivlSetColumnMinWidth (uivirtlist_t *vl, int colidx, int minwidth)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -469,15 +485,15 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].alignend = true;
+  vl->coldata [colidx].minwidth = minwidth;
 }
 
 void
-uivlSetColumnGrow (uivirtlist_t *vl, int colnum, bool grow)
+uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colidx)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -485,15 +501,16 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colnum, bool grow)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  vl->coldata [colnum].grow = grow;
+  vl->coldata [colidx].ellipsize = true;
+  vl->coldata [colidx].grow = true;
 }
 
 void
-uivlSetColumnClass (uivirtlist_t *vl, int colnum, const char *class)
+uivlSetColumnAlignEnd (uivirtlist_t *vl, int colidx)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -501,16 +518,48 @@ uivlSetColumnClass (uivirtlist_t *vl, int colnum, const char *class)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
-  dataFree (vl->coldata [colnum].baseclass);
-  vl->coldata [colnum].baseclass = mdstrdup (class);
+  vl->coldata [colidx].alignend = true;
 }
 
 void
-uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class)
+uivlSetColumnGrow (uivirtlist_t *vl, int colidx, bool grow)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_BASIC) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+
+  vl->coldata [colidx].grow = grow;
+}
+
+void
+uivlSetColumnClass (uivirtlist_t *vl, int colidx, const char *class)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_BASIC) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+
+  dataFree (vl->coldata [colidx].baseclass);
+  vl->coldata [colidx].baseclass = mdstrdup (class);
+}
+
+void
+uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class)
 {
   uivlrow_t *row = NULL;
   uivlcol_t *col = NULL;
@@ -521,7 +570,7 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char 
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
@@ -533,14 +582,14 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char 
     return;
   }
 
-  col = &row->cols [colnum];
+  col = &row->cols [colidx];
   dataFree (col->class);
   col->class = mdstrdup (class);    // save for removal process
   uiWidgetAddClass (col->uiwidget, class);
 }
 
 void
-uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value)
+uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
 {
   uivlrow_t   *row = NULL;
   vltype_t    type;
@@ -551,7 +600,7 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char 
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
@@ -563,27 +612,26 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char 
     return;
   }
 
-  type = vl->coldata [colnum].type;
+  type = vl->coldata [colidx].type;
   if (rownum == VL_ROW_HEADING) {
     type = VL_TYPE_LABEL;
   }
 
   switch (type) {
     case VL_TYPE_LABEL: {
-      uiLabelSetText (row->cols [colnum].uiwidget, value);
-      break;
-    }
-    case VL_TYPE_IMAGE: {
+      uiLabelSetText (row->cols [colidx].uiwidget, value);
       break;
     }
     case VL_TYPE_ENTRY: {
-      uiEntrySetValue (row->cols [colnum].uiwidget, value);
+      uiEntrySetValue (row->cols [colidx].uiwidget, value);
       break;
     }
+    case VL_TYPE_IMAGE:
     case VL_TYPE_INT_NUMERIC:
     case VL_TYPE_RADIO_BUTTON:
     case VL_TYPE_CHECK_BUTTON:
-    case VL_TYPE_SPINBOX_NUM: {
+    case VL_TYPE_SPINBOX_NUM:
+    case VL_TYPE_SPINBOX_TIME: {
       /* not handled here */
       break;
     }
@@ -591,7 +639,44 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char 
 }
 
 void
-uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val)
+uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
+    uiwcont_t *img, int width)
+{
+  uivlrow_t   *row = NULL;
+
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_BASIC) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  switch (vl->coldata [colidx].type) {
+    case VL_TYPE_IMAGE: {
+      uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
+      uiImageSetFromPixbuf (row->cols [colidx].uiwidget, img);
+      break;
+    }
+    default: {
+      /* not handled here */
+      break;
+    }
+  }
+}
+
+void
+uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
 {
   uivlrow_t       *row = NULL;
 
@@ -604,7 +689,7 @@ uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t 
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
     return;
   }
-  if (colnum < 0 || colnum >= vl->numcols) {
+  if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
 
@@ -613,7 +698,7 @@ uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t 
     return;
   }
 
-  switch (vl->coldata [colnum].type) {
+  switch (vl->coldata [colidx].type) {
     case VL_TYPE_LABEL:
     case VL_TYPE_IMAGE:
     case VL_TYPE_ENTRY: {
@@ -625,10 +710,15 @@ uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t 
     }
     case VL_TYPE_RADIO_BUTTON:
     case VL_TYPE_CHECK_BUTTON: {
-      uiToggleButtonSetState (row->cols [colnum].uiwidget, val);
+      uiToggleButtonSetState (row->cols [colidx].uiwidget, val);
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {
+      uiSpinboxSetValue (row->cols [colidx].uiwidget, val);
+      break;
+    }
+    case VL_TYPE_SPINBOX_TIME: {
+      uiSpinboxTimeSetValue (row->cols [colidx].uiwidget, val);
       break;
     }
   }
@@ -637,7 +727,7 @@ uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t 
 /* column get */
 
 int
-uivlGetColumnIdent (uivirtlist_t *vl, int colnum)
+uivlGetColumnIdent (uivirtlist_t *vl, int colidx)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return VL_COL_UNKNOWN;
@@ -650,7 +740,7 @@ uivlGetColumnIdent (uivirtlist_t *vl, int colnum)
 }
 
 const char *
-uivlGetRowColumnValue (uivirtlist_t *vl, int row, int colnum)
+uivlGetRowColumnValue (uivirtlist_t *vl, int row, int colidx)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
@@ -662,7 +752,7 @@ uivlGetRowColumnValue (uivirtlist_t *vl, int row, int colnum)
 }
 
 const char *
-uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
+uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int colidx)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
@@ -806,13 +896,20 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       type = VL_TYPE_LABEL;
     }
     switch (type) {
-      case VL_TYPE_LABEL:
-      case VL_TYPE_IMAGE: {
+      case VL_TYPE_LABEL: {
         col->uiwidget = uiCreateLabel ("");
+        break;
+      }
+      case VL_TYPE_IMAGE: {
+        col->uiwidget = uiImageNew ();
+        uiImageClear (col->uiwidget);
+        uiWidgetSetMarginStart (col->uiwidget, 1);
         break;
       }
       case VL_TYPE_ENTRY: {
         col->uiwidget = uiEntryInit (coldata->entrySz, coldata->entryMaxSz);
+        uiWidgetEnableFocus (col->uiwidget);
+        uiEntrySetFocusCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_RADIO_BUTTON: {
@@ -825,15 +922,29 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
           col->uiwidget =
               uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
         }
+        uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_CHECK_BUTTON: {
         col->uiwidget = uiCreateCheckButton ("", 0);
+        uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_SPINBOX_NUM: {
+        col->uiwidget = uiSpinboxIntCreate ();
+        uiSpinboxSetRange (col->uiwidget, coldata->sbmin, coldata->sbmax);
+        uiSpinboxSetIncrement (col->uiwidget, coldata->sbincr, coldata->sbpageincr);
+        uiWidgetEnableFocus (col->uiwidget);
+        uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        break;
+      }
+      case VL_TYPE_SPINBOX_TIME: {
+        col->uiwidget = uiSpinboxTimeCreate (coldata->sbtype,
+            vl, "", coldata->sbcb);
+        uiWidgetEnableFocus (col->uiwidget);
+        uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_INT_NUMERIC: {
@@ -1017,7 +1128,7 @@ uivlKeyEvent (void *udata)
 }
 
 static bool
-uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum)
+uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 {
   uivirtlist_t  *vl = udata;
   int           button;
@@ -1034,6 +1145,7 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colnum)
     return UICB_CONT;
   }
 
+  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   button = uiEventButtonPressed (vl->wcont [VL_W_KEYH]);
 
   /* button 4 and 5 cause a single scroll event */
@@ -1087,6 +1199,8 @@ uivlScrollEvent (void *udata, int32_t dir)
     return UICB_CONT;
   }
 
+  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
+
   start = vl->rowoffset;
   if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
     start -= 1;
@@ -1096,17 +1210,6 @@ uivlScrollEvent (void *udata, int32_t dir)
   }
   uivlProcessScroll (vl, start);
 
-  return UICB_CONT;
-}
-
-static bool
-uivlEnterLeaveEvent (void *udata, int32_t el)
-{
-  uivirtlist_t  *vl = udata;
-
-  if (el == UIEVENT_EV_ENTER) {
-    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
-  }
   return UICB_CONT;
 }
 
