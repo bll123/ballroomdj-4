@@ -309,6 +309,7 @@ main (int argc, char *argv[])
     uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
 
     uiSetUICSS (uiutilsGetCurrentFont (),
+        uiutilsGetListingFont (),
         bdjoptGetStr (OPT_P_UI_ACCENT_COL),
         bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -379,7 +380,7 @@ altinstBuildUI (altinst_t *altinst)
   /* begin line : status message */
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   altinst->wcont [ALT_W_ERROR_MSG] = uiwidgetp;
 
@@ -455,7 +456,7 @@ altinstBuildUI (altinst_t *altinst)
   uiToggleButtonSetCallback (altinst->wcont [ALT_W_REINST], altinst->callbacks [ALT_CB_REINST]);
 
   altinst->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
+  uiWidgetAddClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);

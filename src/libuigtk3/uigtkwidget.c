@@ -332,7 +332,7 @@ uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height)
 }
 
 void
-uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
+uiWidgetAddClass (uiwcont_t *uiwidget, const char *class)
 {
   if (uiwidget == NULL) {
     return;

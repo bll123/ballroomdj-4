@@ -265,6 +265,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -440,12 +441,12 @@ confuiBuildUI (configui_t *confui)
   uiwcontFree (accent.label);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.statusMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
-  uiWidgetSetClass (confui->gui.notebook, LEFT_NB_CLASS);
+  uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 

@@ -332,13 +332,13 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_ARTIST_DISP] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiWidgetSetMarginStart (uiwidgetp, 10);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;

@@ -55,7 +55,7 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
 
   uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
   uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (uiwidget, CHGIND_NORMAL_CLASS);
+  uiWidgetAddClass (uiwidget, CHGIND_NORMAL_CLASS);
 }
 
 void
@@ -67,7 +67,7 @@ uichgindMarkError (uiwcont_t *uiwidget)
 
   uiWidgetRemoveClass (uiwidget, CHGIND_NORMAL_CLASS);
   uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
-  uiWidgetSetClass (uiwidget, CHGIND_ERROR_CLASS);
+  uiWidgetAddClass (uiwidget, CHGIND_ERROR_CLASS);
 }
 
 void
@@ -79,5 +79,5 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
 
   uiWidgetRemoveClass (uiwidget, CHGIND_NORMAL_CLASS);
   uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (uiwidget, CHGIND_CHANGED_CLASS);
+  uiWidgetAddClass (uiwidget, CHGIND_CHANGED_CLASS);
 }

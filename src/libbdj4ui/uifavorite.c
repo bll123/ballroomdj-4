@@ -130,7 +130,7 @@ uifavoriteFavoriteGet (void *udata, int idx)
   for (int i = 0; i < count; ++i) {
     name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
     if (i == idx) {
-      uiWidgetSetClass (uifavorite->spinbox, name);
+      uiWidgetAddClass (uifavorite->spinbox, name);
     } else {
       uiWidgetRemoveClass (uifavorite->spinbox, name);
     }

@@ -78,7 +78,7 @@ uiCreateSwitch (int value)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
-  uiWidgetSetClass (uiwidget, SWITCH_CLASS);
+  uiWidgetAddClass (uiwidget, SWITCH_CLASS);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   uiSwitchSetImage (widget, uiwidget);
 

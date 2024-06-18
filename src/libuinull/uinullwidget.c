@@ -165,7 +165,7 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 }
 
 void
-uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
+uiWidgetAddClass (uiwcont_t *uiwidget, const char *class)
 {
   return;
 }

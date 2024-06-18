@@ -585,6 +585,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -781,13 +782,13 @@ manageBuildUI (manageui_t *manage)
   uiwcontFree (accent.label);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   manage->minfo.errorMsg = uiwidgetp;
   manage->wcont [MANAGE_W_ERROR_MSG] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   manage->minfo.statusMsg = uiwidgetp;
   manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
@@ -796,7 +797,7 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
   manage->wcont [MANAGE_W_MAIN_NB] = uiCreateNotebook ();
-  uiWidgetSetClass (manage->wcont [MANAGE_W_MAIN_NB], LEFT_NB_CLASS);
+  uiWidgetAddClass (manage->wcont [MANAGE_W_MAIN_NB], LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (manage->wcont [MANAGE_W_MAIN_NB]);
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MAIN_NB]);
 

@@ -307,7 +307,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
     if (i == UIPL_W_INFO_DISP_A) {
-      uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+      uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
     }
     uiWidgetAlignHorizStart (uiwidgetp);
     if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
@@ -332,7 +332,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
         uiplayer->callbacks [UIPL_CB_SPD_RESET],
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL);
-    uiWidgetSetClass (uiwidgetp, "bdj-spd-reset");
+    uiWidgetAddClass (uiwidgetp, "bdj-spd-reset");
     uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
     uiBoxPackEnd (hbox, uiwidgetp);
     uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;

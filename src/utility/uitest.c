@@ -99,7 +99,6 @@ static void uitestUIMisc (uitest_t *uitest);
 static void uitestUISizeGroup (uitest_t *uitest);
 static void uitestUISpinboxes (uitest_t *uitest);
 static void uitestUITextBox (uitest_t *uitest);
-static void uitestUITreeView (uitest_t *uitest);
 static void uitestUIVirtList (uitest_t *uitest);
 
 static bool uitestCloseWin (void *udata);
@@ -177,6 +176,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -226,6 +226,7 @@ uitestBuildUI (uitest_t *uitest)
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uitest->wcont [UITEST_W_WINDOW] = uiCreateMainWindow (
       uitest->callbacks [UITEST_CB_CLOSE], "uitest", imgbuff);
+  uiWindowSetDefaultSize (uitest->wcont [UITEST_W_WINDOW], -1, 400);
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
@@ -239,7 +240,7 @@ uitestBuildUI (uitest_t *uitest)
   uiBoxPackStart (hbox, uitest->wcont [UITEST_W_MENUBAR]);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_STATUS_MSG] = uiwidgetp;
   uiwcontFree (hbox);
@@ -247,7 +248,7 @@ uitestBuildUI (uitest_t *uitest)
   /* main notebook */
 
   uitest->wcont [UITEST_W_MAIN_NB] = uiCreateNotebook ();
-  uiWidgetSetClass (uitest->wcont [UITEST_W_MAIN_NB], LEFT_NB_CLASS);
+  uiWidgetAddClass (uitest->wcont [UITEST_W_MAIN_NB], LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (uitest->wcont [UITEST_W_MAIN_NB]);
   uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_MAIN_NB]);
 
@@ -264,7 +265,6 @@ uitestBuildUI (uitest_t *uitest)
   uitestUISizeGroup (uitest);
   uitestUISpinboxes (uitest);
   uitestUITextBox (uitest);
-  uitestUITreeView (uitest);
   uitestUIVirtList (uitest);
 
   uiWidgetShowAll (uitest->wcont [UITEST_W_WINDOW]);
@@ -754,7 +754,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("accent");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -768,7 +768,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("error");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -782,7 +782,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("dark-accent");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -827,7 +827,7 @@ uitestUINotebook (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uitest->wcont [UITEST_W_NB_V] = uiCreateNotebook ();
-  uiWidgetSetClass (uitest->wcont [UITEST_W_NB_V], LEFT_NB_CLASS);
+  uiWidgetAddClass (uitest->wcont [UITEST_W_NB_V], LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (uitest->wcont [UITEST_W_NB_V]);
   uiBoxPackStart (vbox, uitest->wcont [UITEST_W_NB_V]);
 
@@ -1051,24 +1051,6 @@ uitestUITextBox (uitest_t *uitest)
 }
 
 void
-uitestUITreeView (uitest_t *uitest)
-{
-  uiwcont_t   *vbox;
-  uiwcont_t   *uiwidgetp;
-
-  /* tree view */
-
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
-
-  uiwidgetp = uiCreateLabel ("Tree View");
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (vbox);
-}
-
-void
 uitestUIVirtList (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
@@ -1190,9 +1172,9 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
     if (rownum % 7 == 0 && j == 2) {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
     }
-    uivlSetColumnValue (uitest->vl, rownum, j, tbuff);
+    uivlSetRowColumnValue (uitest->vl, rownum, j, tbuff);
     if (rownum % 9 == 0 && j == 0) {
-      uivlSetColumnClass (uitest->vl, rownum, j, ACCENT_CLASS);
+      uivlSetRowColumnClass (uitest->vl, rownum, j, ACCENT_CLASS);
     }
   }
 }

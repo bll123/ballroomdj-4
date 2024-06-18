@@ -48,18 +48,19 @@ void  uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading);
 void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
+void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
 
 /* column set specific to a row */
-void  uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class);
-void  uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value);
-void  uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val);
+void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class);
+void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value);
+void  uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val);
 
 /* column get */
 int   uivlGetColumnIdent (uivirtlist_t *vl, int col);
 
 /* column get specific to a row */
-const char *uivlGetColumnValue (uivirtlist_t *vl, int row, int col);
-const char *uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int col);
+const char *uivlGetRowColumnValue (uivirtlist_t *vl, int row, int col);
+const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int col);
 
 /* callbacks */
 void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);

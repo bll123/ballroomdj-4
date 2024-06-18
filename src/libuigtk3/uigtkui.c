@@ -114,8 +114,8 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *accentColor,
-    const char *errorColor)
+uiSetUICSS (const char *uifont, const char *listingfont,
+    const char *accentColor, const char *errorColor)
 {
   char            tbuff [8192];
   char            wbuff [400];
@@ -141,22 +141,55 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     char  tmp [100];
 
     strlcpy (tmp, uifont, sizeof (tmp));
-    if (uifont != NULL && *uifont) {
-      p = strrchr (tmp, ' ');
-      if (p != NULL) {
+    p = strrchr (tmp, ' ');
+    if (p != NULL) {
+      ++p;
+      if (isdigit (*p)) {
+        --p;
+        *p = '\0';
         ++p;
-        if (isdigit (*p)) {
-          --p;
-          *p = '\0';
-          ++p;
-          sz = atoi (p);
-        }
+        sz = atoi (p);
       }
+    }
 
-      snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; } ", tmp);
+    snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; } ", tmp);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
+
+  if (listingfont != NULL && *listingfont) {
+    char  tmp [100];
+    int   lsz = 0;
+
+    strlcpy (tmp, listingfont, sizeof (tmp));
+    p = strrchr (tmp, ' ');
+    if (p != NULL) {
+      ++p;
+      if (isdigit (*p)) {
+        --p;
+        *p = '\0';
+        ++p;
+        lsz = atoi (p);
+      }
+    }
+
+    if (lsz > 0) {
+      snprintf (wbuff, sizeof (wbuff),
+          ".bdj-listing { font-family: '%s'; font-size: %dpt; } ",
+          tmp, lsz);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
+      snprintf (wbuff, sizeof (wbuff),
+          ".bdj-heading { font-family: '%s'; font-size: %dpt; font-weight: bold; } ",
+          tmp, lsz + 1);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
+    } else {
+      snprintf (wbuff, sizeof (wbuff),
+          ".bdj-listing { font-family: '%s'; } ", tmp);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
+      snprintf (wbuff, sizeof (wbuff),
+          ".bdj-heading { font-family: '%s'; font-weight: bold; } ", tmp);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
-  }
+   }
 
   if (sz > 0) {
     int   tsz;

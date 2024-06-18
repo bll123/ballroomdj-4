@@ -230,6 +230,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -379,7 +380,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->wcont [MQ_W_PBAR] = uiCreateProgressBar ();
   uiAddProgressbarClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiWidgetSetClass (marquee->wcont [MQ_W_PBAR], MQ_ACCENT_CLASS);
+  uiWidgetAddClass (marquee->wcont [MQ_W_PBAR], MQ_ACCENT_CLASS);
   uiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR]);
 
   vbox = uiCreateVertBox ();
@@ -395,7 +396,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiwidgetp = uiCreateLabel (_("Not Playing"));
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   marquee->wcont [MQ_W_INFO_DANCE] = uiwidgetp;
 
@@ -403,7 +404,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiLabelSetMaxWidth (uiwidgetp, 6);
   uiWidgetAlignHorizEnd (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
 
@@ -423,11 +424,11 @@ marqueeBuildUI (marquee_t *marquee)
     }
     uiBoxPackStart (hbox, uiwidgetp);
     marquee->wcont [i] = uiwidgetp;
-    uiWidgetSetClass (marquee->wcont [i], MQ_INFO_CLASS);
+    uiWidgetAddClass (marquee->wcont [i], MQ_INFO_CLASS);
   }
 
   marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
-  uiWidgetSetClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
+  uiWidgetAddClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
   uiWidgetExpandHoriz (marquee->wcont [MQ_W_SEP]);
   uiWidgetSetMarginTop (marquee->wcont [MQ_W_SEP], 2);
   uiWidgetSetMarginBottom (marquee->wcont [MQ_W_SEP], 4);
@@ -984,7 +985,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
   for (int i = 0; i < marquee->mqLen; ++i) {
     marqueeSetFontSize (marquee, marquee->marqueeLabs [i], newfont);
-    uiWidgetSetClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
+    uiWidgetAddClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
   }
 
   sz = (int) round ((double) sz * 0.7);

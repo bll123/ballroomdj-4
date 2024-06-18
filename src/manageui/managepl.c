@@ -202,7 +202,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (30, 100);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
   /* CONTEXT: playlist management: label for playlist name */

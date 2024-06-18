@@ -381,7 +381,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 6);
-  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   seint->wcont [UISE_W_EDIT_ALL] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -409,7 +409,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiwidgetp = uiCreateLabel (" ");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
@@ -431,7 +431,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   uiLabelSetSelectable (uiwidgetp);
   seint->wcont [UISE_W_FILE_DISP] = uiwidgetp;
 

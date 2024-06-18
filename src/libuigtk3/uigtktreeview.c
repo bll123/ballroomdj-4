@@ -180,7 +180,7 @@ uiTreeViewDarkBackground (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetSetClass (uiwidget, TREEVIEW_DARK_CLASS);
+  uiWidgetAddClass (uiwidget, TREEVIEW_DARK_CLASS);
 }
 
 void

@@ -366,6 +366,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -546,12 +547,12 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_ERROR_MSG] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_STATUS_MSG] = uiwidgetp;
 

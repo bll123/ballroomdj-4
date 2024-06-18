@@ -421,6 +421,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -605,7 +606,7 @@ starterBuildUI (startui_t  *starter)
   starter->wcont [START_W_PROFILE_ACCENT] = accent.label;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_MSG] = uiwidgetp;
 
@@ -1407,7 +1408,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (accent.label);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_DISP_MSG] = uiwidgetp;
 
@@ -1969,7 +1970,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (vbox, uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   starter->wcont [START_W_STATUS_DISP] = uiwidgetp;
 
   starter->wcont [START_W_SUPPORT_MSG_DIALOG] = uidialog;

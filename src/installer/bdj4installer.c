@@ -525,7 +525,7 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 16";
       }
     }
-    uiSetUICSS (uifont, INST_HL_COLOR, NULL);
+    uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL);
   }
 
   if (installer.guienabled) {
@@ -612,7 +612,7 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
-  uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
 
   /* begin line : target instructions */
@@ -662,7 +662,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_REINST]);
 
   installer->wcont [INST_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -671,7 +671,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -742,7 +742,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_CONV]);
 
   installer->wcont [INST_W_CONV_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -751,7 +751,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -767,7 +767,7 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
-  uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
 
   uiwcontFree (hbox);

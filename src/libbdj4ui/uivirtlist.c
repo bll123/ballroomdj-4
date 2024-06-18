@@ -34,13 +34,14 @@ enum {
 };
 
 enum {
+  VL_W_SCROLL_WIN,
   VL_W_HEADBOX,
   VL_W_EVENT_BOX,
-  VL_W_HBOX,
-  VL_W_VBOX,
+  VL_W_MAIN_HBOX,
+  VL_W_MAIN_VBOX,
   VL_W_SB,
   VL_W_SB_SZGRP,
-  VL_W_FILLER,
+  VL_W_HEAD_FILLER,
   VL_W_KEYH,
   VL_W_MAX,
 };
@@ -64,12 +65,16 @@ enum {
 };
 
 static const char * const VL_SELECTED_CLASS = "bdj-selected";
+static const char * const VL_LIST_CLASS = "bdj-listing";
+static const char * const VL_HEAD_CLASS = "bdj-heading";
 
 typedef struct {
   uiwcont_t *szgrp;
   uint64_t  ident;
   /* the following data is specific to a column */
   vltype_t  type;
+  /* the baseclass is always applied */
+  char      *baseclass;
   int       colident;
   int       minwidth;
   bool      alignend: 1;
@@ -166,38 +171,32 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
-  uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_HEADBOX]);
-//  uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
-  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HEADBOX]);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
+  uiBoxPackStart (boxp, vl->wcont [VL_W_HEADBOX]);
 
-  vl->wcont [VL_W_HBOX] = uiCreateHorizBox ();
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_HBOX]);
-  uiWidgetAlignVertFill (vl->wcont [VL_W_HBOX]);
-//  uiWidgetExpandHoriz (vl->wcont [VL_W_HBOX]);
-//  uiWidgetExpandVert (vl->wcont [VL_W_HBOX]);
-  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_HBOX]);
+  /* a scrolled window is necessary to allow the window to shrink */
+  vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
+  uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_SCROLL_WIN]);
+  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);
 
-  vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
-  uiWidgetAlignVertFill (vl->wcont [VL_W_VBOX]);
-//  uiWidgetExpandHoriz (vl->wcont [VL_W_VBOX]);
-//  uiWidgetExpandVert (vl->wcont [VL_W_VBOX]);
-  uiWidgetEnableFocus (vl->wcont [VL_W_VBOX]);    // for keyboard events
+  vl->wcont [VL_W_MAIN_HBOX] = uiCreateHorizBox ();
+  uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_MAIN_HBOX]);
 
-  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_VBOX]);
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_EVENT_BOX]);
-  uiWidgetAlignVertFill(vl->wcont [VL_W_EVENT_BOX]);
-//  uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
-//  uiWidgetExpandVert (vl->wcont [VL_W_EVENT_BOX]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_EVENT_BOX]);
+  vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
+  uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
+  uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);    // for keyboard events
 
-  uiBoxSetSizeChgCallback (vl->wcont [VL_W_VBOX], vl->callbacks [VL_CB_VBOX_SZ_CHG]);
+  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
+  uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_EVENT_BOX]);
+
+  uiBoxSetSizeChgCallback (vl->wcont [VL_W_MAIN_VBOX], vl->callbacks [VL_CB_VBOX_SZ_CHG]);
 
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
   uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_SB]);
-  uiBoxPackEnd (vl->wcont [VL_W_HBOX], vl->wcont [VL_W_SB]);
+  uiBoxPackEnd (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], floor ((double) disprows / 2));
@@ -206,8 +205,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) disprows);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
 
-  vl->wcont [VL_W_FILLER] = uiCreateLabel ("");
-  uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_FILLER]);
+  vl->wcont [VL_W_HEAD_FILLER] = uiCreateLabel ("");
+  uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_HEAD_FILLER]);
+  uiBoxPackEnd (vl->wcont [VL_W_HEADBOX], vl->wcont [VL_W_HEAD_FILLER]);
 
   vl->coldata = NULL;
   vl->rows = NULL;
@@ -229,7 +229,7 @@ fprintf (stderr, "init: disprows: %d\n", disprows);
 
   uivlRowBasicInit (&vl->headingrow);
 
-  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_VBOX],
+  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
       vl->callbacks [VL_CB_KEY]);
   uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_MBUTTON]);
@@ -260,6 +260,7 @@ uivlFree (uivirtlist_t *vl)
   dataFree (vl->rows);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    dataFree (vl->coldata [colidx].baseclass);
     uiwcontFree (vl->coldata [colidx].szgrp);
   }
   dataFree (vl->coldata);
@@ -298,6 +299,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     vl->coldata [colidx].szgrp = uiCreateSizeGroupHoriz ();
     vl->coldata [colidx].ident = VL_IDENT_COLDATA;
     vl->coldata [colidx].type = VL_TYPE_LABEL;
+    vl->coldata [colidx].baseclass = NULL;
     vl->coldata [colidx].colident = 0;
     vl->coldata [colidx].minwidth = VL_MAX_WIDTH_ANY;
     vl->coldata [colidx].hidden = VL_COL_SHOW;
@@ -347,7 +349,7 @@ fprintf (stderr, "row-init: %d\n", dispidx);
     vl->initialized = VL_INIT_ROWS;
   }
 
-  uivlSetColumnValue (vl, VL_ROW_HEADING, colnum, heading);
+  uivlSetRowColumnValue (vl, VL_ROW_HEADING, colnum, heading);
 }
 
 void
@@ -418,7 +420,24 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colnum)
 }
 
 void
-uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class)
+uivlSetColumnClass (uivirtlist_t *vl, int colnum, const char *class)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_BASIC) {
+    return;
+  }
+  if (colnum < 0 || colnum >= vl->numcols) {
+    return;
+  }
+
+  dataFree (vl->coldata [colnum].baseclass);
+  vl->coldata [colnum].baseclass = mdstrdup (class);
+}
+
+void
+uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *class)
 {
   uivlrow_t *row = NULL;
   uivlcol_t *col = NULL;
@@ -444,11 +463,11 @@ uivlSetColumnClass (uivirtlist_t *vl, int32_t rownum, int colnum, const char *cl
   col = &row->cols [colnum];
   dataFree (col->class);
   col->class = mdstrdup (class);    // save for removal process
-  uiWidgetSetClass (col->uiwidget, class);
+  uiWidgetAddClass (col->uiwidget, class);
 }
 
 void
-uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value)
+uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *value)
 {
   uivlrow_t       *row = NULL;
 
@@ -492,7 +511,7 @@ uivlSetColumnValue (uivirtlist_t *vl, int32_t rownum, int colnum, const char *va
 }
 
 void
-uivlSetColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val)
+uivlSetRowColumnValueNum (uivirtlist_t *vl, int32_t rownum, int colnum, int32_t val)
 {
   uivlrow_t       *row = NULL;
 
@@ -552,7 +571,7 @@ uivlGetColumnIdent (uivirtlist_t *vl, int colnum)
 }
 
 const char *
-uivlGetColumnValue (uivirtlist_t *vl, int row, int colnum)
+uivlGetRowColumnValue (uivirtlist_t *vl, int row, int colnum)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
@@ -564,7 +583,7 @@ uivlGetColumnValue (uivirtlist_t *vl, int row, int colnum)
 }
 
 const char *
-uivlGetColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
+uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int colnum)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return NULL;
@@ -624,7 +643,6 @@ uivlDisplay (uivirtlist_t *vl)
 {
   uivlrow_t   *row;
 
-  uiBoxPackEnd (vl->headingrow.hbox, vl->wcont [VL_W_FILLER]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
 
 fprintf (stderr, "disp-pop\n");
@@ -697,10 +715,18 @@ uivlInitRow (uivirtlist_t *vl, uivlrow_t *row, bool isheading)
     row->cols [colidx].uiwidget = uiCreateLabel ("");
     uiWidgetSetMarginEnd (row->cols [colidx].uiwidget, 3);
     uiWidgetAlignHorizFill (row->cols [colidx].uiwidget);
+    if (isheading) {
+      uiWidgetAddClass (row->cols [colidx].uiwidget, VL_HEAD_CLASS);
+    } else {
+      uiWidgetAddClass (row->cols [colidx].uiwidget, VL_LIST_CLASS);
+    }
 
     if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
       uiBoxPackStartExpand (row->hbox, row->cols [colidx].uiwidget);
       uiSizeGroupAdd (vl->coldata [colidx].szgrp, row->cols [colidx].uiwidget);
+    }
+    if (vl->coldata [colidx].baseclass != NULL) {
+      uiWidgetAddClass (row->cols [colidx].uiwidget, vl->coldata [colidx].baseclass);
     }
     if (vl->coldata [colidx].type == VL_TYPE_LABEL) {
       if (vl->coldata [colidx].minwidth != VL_MAX_WIDTH_ANY) {
@@ -749,7 +775,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], row->hbox);
+  uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
   /* rows packed after the initial display need */
   /* to have their contents shown */
   uiWidgetShowAll (row->hbox);
@@ -944,7 +970,7 @@ uivlEnterLeaveEvent (void *udata, int32_t el)
   uivirtlist_t  *vl = udata;
 
   if (el == UIEVENT_EV_ENTER) {
-    uiWidgetGrabFocus (vl->wcont [VL_W_VBOX]);
+    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   }
   return UICB_CONT;
 }
@@ -956,9 +982,10 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
-      uiWidgetRemoveClass (row->hbox, "bdj-selected");
+      uiWidgetRemoveClass (row->hbox, VL_SELECTED_CLASS);
+
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        uiWidgetRemoveClass (row->cols [colidx].uiwidget, "bdj-selected");
+        uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
       }
       row->selected = false;
     }
@@ -980,10 +1007,10 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       uivlrow_t   *row;
 
       row = uivlGetRow (vl, val);
-      uiWidgetSetClass (row->hbox, "bdj-selected");
+      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
       row->selected = true;
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        uiWidgetSetClass (row->cols [colidx].uiwidget, "bdj-selected");
+        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
       }
     }
   }

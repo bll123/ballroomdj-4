@@ -308,13 +308,13 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);

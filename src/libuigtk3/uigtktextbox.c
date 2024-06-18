@@ -223,7 +223,7 @@ uiTextBoxDarken (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetSetClass (uiwidget, TEXTBOX_DARK_CLASS);
+  uiWidgetAddClass (uiwidget, TEXTBOX_DARK_CLASS);
 }
 
 void

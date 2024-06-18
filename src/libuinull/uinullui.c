@@ -50,8 +50,8 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *accentColor,
-    const char *errorColor)
+uiSetUICSS (const char *uifont, const char *listingfont,
+    const char *accentColor, const char *errorColor)
 {
   return;
 }

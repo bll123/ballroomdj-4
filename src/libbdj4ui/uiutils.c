@@ -68,7 +68,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
   uiLabelAddClass (classnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiWidgetSetClass (uiwidgetp, classnm);
+  uiWidgetAddClass (uiwidgetp, classnm);
 }
 
 const char *
@@ -79,6 +79,21 @@ uiutilsGetCurrentFont (void)
   tstr = bdjoptGetStr (OPT_MP_UIFONT);
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+  }
+  return tstr;
+}
+
+const char *
+uiutilsGetListingFont (void)
+{
+  const char  *tstr;
+
+  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  if (tstr == NULL || ! *tstr) {
+    tstr = bdjoptGetStr (OPT_MP_UIFONT);
+    if (tstr == NULL || ! *tstr) {
+      tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+    }
   }
   return tstr;
 }

@@ -207,7 +207,7 @@ uiButtonSetFlat (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetSetClass (uiwidget, FLATBUTTON_CLASS);
+  uiWidgetAddClass (uiwidget, FLATBUTTON_CLASS);
 }
 
 void

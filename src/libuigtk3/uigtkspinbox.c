@@ -103,7 +103,7 @@ uiSpinboxTextCreate (void *udata)
   uiwidget->uidata.packwidget = widget;
   uiEventSetKeyCallback (uispinbox->uievent, uiwidget, uispinbox->presscb);
 
-  uiWidgetSetClass (uiwidget, SPINBOX_READONLY_CLASS);
+  uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
 
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
