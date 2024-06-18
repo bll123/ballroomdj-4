@@ -115,8 +115,8 @@ enum {
   MARQUEE_UNMAX_WAIT_COUNT = 3,
 };
 #define INFO_LAB_HEIGHT_ADJUST  0.85
-#define MQ_TEXT_CLASS           "mqtext"
-#define MQ_INFO_CLASS           "mqinfo"
+static const char * const MQ_TEXT_CLASS = "mqtext";
+static const char * const MQ_INFO_CLASS = "mqinfo";
 
 static bool marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool marqueeHandshakeCallback (void *udata, programstate_t programState);
