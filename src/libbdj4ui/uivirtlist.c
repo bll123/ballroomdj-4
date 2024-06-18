@@ -100,20 +100,21 @@ typedef struct {
 } uivlcol_t;
 
 typedef struct {
-  uivirtlist_t  *vl;
-  uint64_t      ident;
-  uiwcont_t     *hbox;
-  uivlcol_t     *cols;
-  bool          hidden : 1;
-  bool          selected : 1;       // a temporary flag to ease processing
-  bool          initialized : 1;
-} uivlrow_t;
-
-typedef struct {
   uivirtlist_t    *vl;
   int             dispidx;
   callback_t      *focuscb;
 } uivlrowcb_t;
+
+typedef struct {
+  uivirtlist_t  *vl;
+  uint64_t      ident;
+  uiwcont_t     *hbox;
+  uivlcol_t     *cols;
+  uivlrowcb_t   *rowcb;             // must have a stable address
+  bool          hidden : 1;
+  bool          selected : 1;       // a temporary flag to ease processing
+  bool          initialized : 1;
+} uivlrow_t;
 
 /* need a container of stable allocated addresses */
 typedef struct {
@@ -128,7 +129,6 @@ typedef struct uivirtlist {
   int           numcols;
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
-  uivlcbcont_t  *rowcbcont;
   uivlrow_t     headingrow;
   int           disprows;
   int           allocrows;
@@ -243,7 +243,6 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl->coldata = NULL;
   vl->rows = NULL;
-  vl->rowcbcont = NULL;
   vl->numcols = 0;
   vl->numrows = 0;
   vl->rowoffset = 0;
@@ -255,7 +254,6 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->disprows = disprows;
   vl->allocrows = disprows;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->allocrows);
-  vl->rowcbcont = mdmalloc (sizeof (uivlcbcont_t) * vl->allocrows);
   for (int dispidx = 0; dispidx < disprows; ++dispidx) {
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
@@ -292,11 +290,9 @@ uivlFree (uivirtlist_t *vl)
   uivlFreeRow (vl, &vl->headingrow);
 
   for (int dispidx = 0; dispidx < vl->allocrows; ++dispidx) {
-    callbackFree (vl->rowcbcont [dispidx].rowcb->focuscb);
     uivlFreeRow (vl, &vl->rows [dispidx]);
   }
   dataFree (vl->rows);
-  dataFree (vl->rowcbcont);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     dataFree (vl->coldata [colidx].baseclass);
@@ -751,6 +747,11 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
+  if (row->rowcb != NULL) {
+    callbackFree (row->rowcb->focuscb);
+    dataFree (row->rowcb);
+  }
+
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols != NULL) {
       uivlFreeCol (&row->cols [colidx]);
@@ -824,14 +825,12 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
           col->uiwidget =
               uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
         }
-        uiToggleButtonSetCallback (col->uiwidget,
-            vl->rowcbcont [dispidx].rowcb->focuscb);
+        uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_CHECK_BUTTON: {
         col->uiwidget = uiCreateCheckButton ("", 0);
-        uiToggleButtonSetCallback (col->uiwidget,
-            vl->rowcbcont [dispidx].rowcb->focuscb);
+        uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
         break;
       }
       case VL_TYPE_SPINBOX_NUM: {
@@ -1214,7 +1213,6 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
       /* only if the number of rows has increased */
       if (vl->allocrows < calcrows) {
         vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * calcrows);
-        vl->rowcbcont = mdrealloc (vl->rowcbcont, sizeof (uivlcbcont_t) * calcrows);
 
         for (int dispidx = vl->disprows; dispidx < calcrows; ++dispidx) {
           uivlrow_t *row;
@@ -1255,13 +1253,13 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->hbox = NULL;
   row->cols = NULL;
   row->initialized = false;
+  row->rowcb = NULL;
 
   if (dispidx != VL_ROW_HEADING) {
-    vl->rowcbcont [dispidx].rowcb = mdmalloc (sizeof (uivlrowcb_t));
-    vl->rowcbcont [dispidx].rowcb->vl = vl;
-    vl->rowcbcont [dispidx].rowcb->dispidx = dispidx;
-    vl->rowcbcont [dispidx].rowcb->focuscb =
-        callbackInit (uivlFocusCallback, vl->rowcbcont [dispidx].rowcb, NULL);
+    row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
+    row->rowcb->vl = vl;
+    row->rowcb->dispidx = dispidx;
+    row->rowcb->focuscb = callbackInit (uivlFocusCallback, row->rowcb, NULL);
   }
 }
 
