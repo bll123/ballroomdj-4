@@ -75,13 +75,14 @@ typedef struct {
 } uitest_t;
 
 enum {
-  UITEST_VL_COLS = 5,
+  UITEST_VL_COLS = 9,
   UITEST_VL_DISPROWS = 10,
   UITEST_VL_MAXROWS = 100,
 };
 
 static const char *vllabs [] = {
-  "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
+  "One", "Two", "Three", "Four", "Five", "☆",
+  "Entry", "RB", "CB", "Spinbox", "Other",
 };
 
 static void uitestMainLoop (uitest_t *uitest);
@@ -527,6 +528,10 @@ uitestUIEntry (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("Entry");
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (10, 100);
+  uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (vbox);
@@ -1070,13 +1075,25 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    uivlSetColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_SHOW);
+    if (j == 3) {
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_HIDE);
+    } else if (j == 6) {
+      uivlMakeColumnEntry (uitest->vl, j, j, 10, 100);
+    } else if (j == 7) {
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_RADIO_BUTTON, j, VL_COL_SHOW);
+    } else if (j == 8) {
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_CHECK_BUTTON, j, VL_COL_SHOW);
+    } else {
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL, j, VL_COL_SHOW);
+    }
   }
-  uivlSetColumn (uitest->vl, 3, VL_TYPE_LABEL, 3, VL_COL_HIDE);
 
   uivlSetColumnMinWidth (uitest->vl, 1, 15);
   uivlSetColumnEllipsizeOn (uitest->vl, 1);
+  uivlSetColumnGrow (uitest->vl, 0, VL_COL_WIDTH_GROW);
+  uivlSetColumnGrow (uitest->vl, 1, VL_COL_WIDTH_GROW);
   uivlSetColumnAlignEnd (uitest->vl, 2);
+  uivlSetColumnClass (uitest->vl, 5, "bdj-list-fav");
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
@@ -1165,14 +1182,22 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
   char      tbuff [40];
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
+    if (j == 5) {
+      snprintf (tbuff, sizeof (tbuff), "★");
+    } else {
+      snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
+    }
     if (rownum % 5 == 0 && (j == 1 || j == 0)) {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
     }
     if (rownum % 7 == 0 && j == 2) {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
     }
-    uivlSetRowColumnValue (uitest->vl, rownum, j, tbuff);
+    if (j == 7 || j == 8) {
+      uivlSetRowColumnValueNum (uitest->vl, rownum, j, 0);
+    } else {
+      uivlSetRowColumnValue (uitest->vl, rownum, j, tbuff);
+    }
     if (rownum % 9 == 0 && j == 0) {
       uivlSetRowColumnClass (uitest->vl, rownum, j, ACCENT_CLASS);
     }

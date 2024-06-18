@@ -173,23 +173,34 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     }
 
     if (lsz > 0) {
+      int   fsz = lsz + 2;
+      int   hsz = lsz + 3;
+
+      if (fsz > sz) {
+        fsz = sz;
+      }
+      if (hsz > sz) {
+        hsz = sz;
+      }
       snprintf (wbuff, sizeof (wbuff),
           ".bdj-listing { font-family: '%s'; font-size: %dpt; } ",
           tmp, lsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-heading { font-family: '%s'; font-size: %dpt; font-weight: bold; } ",
-          tmp, lsz + 1);
+          ".bdj-list-fav { font-size: %dpt; } ", fsz);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
+      snprintf (wbuff, sizeof (wbuff),
+          ".bdj-heading { font-size: %dpt; font-weight: bold; } ", hsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     } else {
       snprintf (wbuff, sizeof (wbuff),
           ".bdj-listing { font-family: '%s'; } ", tmp);
       strlcat (tbuff, wbuff, sizeof (tbuff));
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-heading { font-family: '%s'; font-weight: bold; } ", tmp);
+          ".bdj-heading { font-weight: bold; } ");
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
-   }
+  }
 
   if (sz > 0) {
     int   tsz;

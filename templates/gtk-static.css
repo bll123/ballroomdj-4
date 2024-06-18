@@ -1,5 +1,5 @@
-/* 2024-6-10 */
-/* version 5 */
+/* 2024-6-18 */
+/* version 6 */
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
@@ -47,8 +47,12 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
+/* the problem with using the standard selected-bg-color is */
+/* that there is no easy way to switch the radio buttons and */
+/* check buttons to the obverse colors */
+/* background-color: @theme_selected_bg_color; */
 box.horizontal.bdj-selected {
-  background-color: @theme_selected_bg_color;
+  background-color: #000000;
 }
 label.bdj-selected {
   color: @theme_selected_fg_color;

@@ -25,6 +25,8 @@ typedef enum {
 enum {
   VL_COL_HIDE = false,
   VL_COL_SHOW = true,
+  VL_COL_WIDTH_FIXED = false,
+  VL_COL_WIDTH_GROW = true,
   VL_COL_UNKNOWN = -1,
 };
 
@@ -42,12 +44,16 @@ void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 void  uivlSetHeadingFont (uivirtlist_t *vl, int colnum, const char *font);
 void  uivlSetHeadingClass (uivirtlist_t *vl, int colnum, const char *class);
 
+/* make columns */
+void  uivlMakeColumn (uivirtlist_t *vl, int colnum, vltype_t type, int ident, bool hidden);
+void  uivlMakeColumnEntry (uivirtlist_t *vl, int colnum, int colident, int sz, int maxsz);
+
 /* column set */
-void  uivlSetColumn (uivirtlist_t *vl, int colnum, vltype_t type, int ident, bool hidden);
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading);
 void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colnum, int minwidth);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
+void  uivlSetColumnGrow (uivirtlist_t *vl, int col, bool grow);
 void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
 
 /* column set specific to a row */

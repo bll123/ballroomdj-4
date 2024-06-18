@@ -25,7 +25,6 @@ enum {
 
 uiwcont_t *uiEntryInit (int entrySize, int maxSize);
 void uiEntryFree (uiwcont_t *entry);
-void uiEntryCreate (uiwcont_t *entry);
 void uiEntrySetIcon (uiwcont_t *entry, const char *name);
 void uiEntryClearIcon (uiwcont_t *entry);
 void uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry);

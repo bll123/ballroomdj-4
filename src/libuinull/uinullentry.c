@@ -34,12 +34,6 @@ uiEntryFree (uiwcont_t *uientry)
 }
 
 void
-uiEntryCreate (uiwcont_t *uientry)
-{
-  return;
-}
-
-void
 uiEntrySetIcon (uiwcont_t *uientry, const char *name)
 {
   return;

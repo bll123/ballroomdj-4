@@ -118,6 +118,18 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
 
+/* the focus callback is piggybacked on the 'toggled' signal */
+void
+uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-focus-cb")) {
+    return;
+  }
+
+  g_signal_connect (uiwidget->uidata.widget, "toggled",
+      G_CALLBACK (uiToggleButtonToggleHandler), uicb);
+}
+
 void
 uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {

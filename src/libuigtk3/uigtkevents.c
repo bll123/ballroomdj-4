@@ -110,8 +110,9 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
   gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->uidata.widget);
   /* the uivirtlist module creates an event box overlaying the */
   /* entire listing. */
-  /* it is important that the event box be above the children */
-  gtk_event_box_set_above_child (GTK_EVENT_BOX (widget), true);
+  /* the event box must be below the children so that */
+  /* entry widgets, et. al. work properly */
+  gtk_event_box_set_above_child (GTK_EVENT_BOX (widget), false);
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
   wcont = uiwcontAlloc ();
