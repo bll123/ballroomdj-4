@@ -109,10 +109,10 @@ typedef struct {
   double      sbmax;
   double      sbincr;
   double      sbpageincr;
+  int         grow;
+  int         hidden;
   bool        alignend: 1;
   bool        ellipsize : 1;
-  bool        grow : 1;
-  bool        hidden : 1;
 } uivlcoldata_t;
 
 typedef struct {
@@ -171,6 +171,7 @@ typedef struct uivirtlist {
   bool          inscroll : 1;
   bool          dispheading : 1;
   bool          darkbg : 1;
+  bool          uselistingfont : 1;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -218,6 +219,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
     vl->dispheading = false;
   }
   vl->darkbg = false;
+  vl->uselistingfont = false;
   vl->vboxheight = -1;
   vl->rowheight = -1;
 
@@ -362,11 +364,8 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: num-rows: %" PRId32, numrows);
 fprintf (stderr, "set numrows %d\n", numrows);
 
-  if (numrows < vl->currSelection) {
-    int32_t   nsel;
-
-    nsel = uivlRownumLimit (vl, numrows);
-    uivlSetSelection (vl, nsel);
+  if (numrows <= vl->currSelection) {
+    uivlMoveSelection (vl, VL_DIR_UP);
   }
 
   if (numrows < vl->disprows) {
@@ -428,6 +427,16 @@ uivlSetDarkBackground (uivirtlist_t *vl)
   if (vl->dispheading) {
     uiWidgetAddClass (vl->wcont [VL_W_HEADBOX], VL_DARKBG_CLASS);
   }
+}
+
+void
+uivlSetUseListingFont (uivirtlist_t *vl)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+
+  vl->uselistingfont = true;
 }
 
 /* column set */
@@ -568,7 +577,7 @@ uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colidx)
   }
 
   vl->coldata [colidx].ellipsize = true;
-  vl->coldata [colidx].grow = true;
+  vl->coldata [colidx].grow = VL_COL_WIDTH_GROW;
 }
 
 void
@@ -589,7 +598,7 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colidx)
 }
 
 void
-uivlSetColumnGrow (uivirtlist_t *vl, int colidx, bool grow)
+uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -606,7 +615,7 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colidx, bool grow)
 }
 
 void
-uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, bool hidden)
+uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -1163,6 +1172,29 @@ uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
 }
 
+void
+uivlMoveSelection (uivirtlist_t *vl, int dir)
+{
+  int32_t     rownum;
+
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+
+  rownum = vl->currSelection;
+fprintf (stderr, "move: orig: %d %d\n", rownum, dir);
+  if (dir == VL_DIR_UP) {
+    rownum -= 1;
+  }
+  if (dir == VL_DIR_DOWN) {
+    rownum += 1;
+  }
+  rownum = uivlRownumLimit (vl, rownum);
+fprintf (stderr, "   new: %d\n", rownum);
+
+  uivlSetSelection (vl, rownum);
+}
+
 /* internal routines */
 
 static void
@@ -1311,9 +1343,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     if (coldata->grow == VL_COL_WIDTH_GROW) {
       uiWidgetAlignHorizFill (col->uiwidget);
     }
-    uiWidgetAddClass (col->uiwidget, VL_LIST_CLASS);
-    if (isheading) {
-      uiWidgetAddClass (col->uiwidget, VL_HEAD_CLASS);
+    if (vl->uselistingfont) {
+      uiWidgetAddClass (col->uiwidget, VL_LIST_CLASS);
+      if (isheading) {
+        uiWidgetAddClass (col->uiwidget, VL_HEAD_CLASS);
+      }
     }
 
     if (coldata->hidden == VL_COL_SHOW) {

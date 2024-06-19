@@ -213,6 +213,8 @@ uiduallistFree (uiduallist_t *duallist)
   if (duallist != NULL) {
     for (int i = 0; i < DL_LIST_MAX; ++i) {
       uivlFree (duallist->uivl [i]);
+      queueFree (duallist->dispq [i]);
+      slistFree (duallist->displist [i]);
     }
     for (int i = 0; i < DL_CB_MAX; ++i) {
       callbackFree (duallist->callbacks [i]);
@@ -238,6 +240,10 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   if (which < 0 || which >= DL_LIST_MAX) {
     return;
   }
+
+  queueClear (duallist->dispq [which], 0);
+  slistFree (duallist->displist [which]);
+  duallist->displist [which] = slistAlloc ("duallist", LIST_UNORDERED, NULL);
 
   /* the caller should set the target list first */
   slistStartIterator (slist, &siteridx);
@@ -393,6 +399,7 @@ uiduallistDispSelect (void *udata)
       slistGetNum (duallist->displist [DL_LIST_SOURCE], keystr));
   uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
+  uivlMoveSelection (duallist->uivl [DL_LIST_TARGET], VL_DIR_DOWN);
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
     queueRemoveByIdx (duallist->dispq [DL_LIST_SOURCE], idx);
@@ -431,17 +438,27 @@ uiduallistDispRemove (void *udata)
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
-// ### locate the proper position within the source queue.
-    toidx = 0;
-    if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_SOURCE])) {
-      queuePush (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
-    } else {
-      queueInsert (duallist->dispq [DL_LIST_SOURCE], toidx + 1, (void *) keystr);
-    }
+    int32_t   currsel;
+
     slistSetNum (duallist->displist [DL_LIST_SOURCE], keystr,
         slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
+    toidx = slistGetIdx (duallist->displist [DL_LIST_SOURCE], keystr);
+    if (toidx == 0) {
+      queuePushHead (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
+    } else {
+      toidx -= 1;
+      if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_SOURCE])) {
+        queuePush (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
+      } else {
+        queueInsert (duallist->dispq [DL_LIST_SOURCE], toidx + 1, (void *) keystr);
+      }
+    }
     uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],
         queueGetCount (duallist->dispq [DL_LIST_SOURCE]));
+    currsel = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
+    if (toidx < currsel) {
+      uivlMoveSelection (duallist->uivl [DL_LIST_SOURCE], VL_DIR_DOWN);
+    }
   }
 
   slistDelete (duallist->displist [DL_LIST_TARGET], keystr);

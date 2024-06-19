@@ -26,15 +26,20 @@ typedef enum {
 } vltype_t;
 
 enum {
-  VL_COL_HIDE = false,
-  VL_COL_SHOW = true,
-  VL_COL_WIDTH_FIXED = false,
-  VL_COL_WIDTH_GROW = true,
+  VL_COL_HIDE,
+  VL_COL_SHOW,
+  VL_COL_WIDTH_FIXED,
+  VL_COL_WIDTH_GROW,
+  VL_SEL_DISP_NORM,
+  VL_SEL_DISP_WIDGET,
+  VL_NO_HEADING,
+  VL_SHOW_HEADING,
+  VL_DIR_UP,
+  VL_DIR_DOWN,
+};
+
+enum {
   VL_COL_UNKNOWN = -1,
-  VL_SEL_DISP_NORM = 0,
-  VL_SEL_DISP_WIDGET = 1,
-  VL_NO_HEADING = 0,
-  VL_SHOW_HEADING = 1,
 };
 
 typedef struct uivirtlist uivirtlist_t;
@@ -47,6 +52,7 @@ void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 void  uivlSetDarkBackground (uivirtlist_t *vl);
+void  uivlSetUseListingFont (uivirtlist_t *vl);
 
 /* make columns */
 void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type);
@@ -59,9 +65,9 @@ void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);
 void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colidx, int minwidth);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
-void  uivlSetColumnGrow (uivirtlist_t *vl, int col, bool grow);
+void  uivlSetColumnGrow (uivirtlist_t *vl, int col, int grow);
 void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
-void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, bool hidden);
+void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);
 
 /* column set specific to a row */
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
@@ -90,6 +96,7 @@ void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
+void uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 
 #if defined (__cplusplus) || defined (c_plusplus)
