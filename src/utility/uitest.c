@@ -70,6 +70,7 @@ typedef struct {
   uivirtlist_t  *vl;
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
+  callback_t    *chgcb;
   long          counter;
   bool          stop : 1;
 } uitest_t;
@@ -111,6 +112,8 @@ static void uitestCleanup (uitest_t *uitest);
 
 static void uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static int uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata);
+static bool uitestVLChangeCB (void *udata);
 
 int
 main (int argc, char *argv[])
@@ -1107,6 +1110,10 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetColumnClass (uitest->vl, 5, "bdj-list-fav");
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
   uivlSetSelectionCallback (uitest->vl, uitestVLSelectCB, uitest);
+  uivlSetEntryValidation (uitest->vl, 6, uitestVLEntryValidateCB, uitest);
+  uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
+  uivlSetRadioChangeCallback (uitest->vl, 7, uitest->chgcb);
+  uivlSetCheckBoxChangeCallback (uitest->vl, 8, uitest->chgcb);
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
     uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
@@ -1229,4 +1236,18 @@ uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   fprintf (stderr, "select-cb: %d %d\n", rownum, colidx);
 }
 
+static int
+uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata)
+{
+//  uitest_t  *uitest = udata;
 
+  fprintf (stderr, "entry-val\n");
+  return UIENTRY_OK;
+}
+
+static bool
+uitestVLChangeCB (void *udata)
+{
+  fprintf (stderr, "change-cb\n");
+  return UICB_CONT;
+}

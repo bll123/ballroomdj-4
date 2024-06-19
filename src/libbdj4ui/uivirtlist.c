@@ -78,11 +78,21 @@ static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 
 typedef struct {
+  uivirtlist_t    *vl;
+  int             dispidx;
+  int             colidx;
+  callback_t      *focuscb;
+} uivlrowcb_t;
+
+typedef struct {
   uiwcont_t   *szgrp;
   uint64_t    ident;
   /* the following data is specific to a column */
   vltype_t    type;
   /* the baseclass is always applied */
+  uientryval_t  entrycb;
+  void        *entryudata;
+  callback_t  *togglecb;      // radio buttons and check buttons
   char        *baseclass;
   int         colident;
   int         minwidth;
@@ -106,12 +116,6 @@ typedef struct {
   /* class needs to be held temporarily so it can be removed */
   char      *class;
 } uivlcol_t;
-
-typedef struct {
-  uivirtlist_t    *vl;
-  int             dispidx;
-  callback_t      *focuscb;
-} uivlrowcb_t;
 
 typedef struct {
   uivirtlist_t  *vl;
@@ -179,6 +183,7 @@ static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
 int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
 int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
 static void uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -341,24 +346,29 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
   vl->numcols = numcols;
   vl->coldata = mdmalloc (sizeof (uivlcoldata_t) * numcols);
   for (int colidx = 0; colidx < numcols; ++colidx) {
-    vl->coldata [colidx].szgrp = uiCreateSizeGroupHoriz ();
-    vl->coldata [colidx].ident = VL_IDENT_COLDATA;
-    vl->coldata [colidx].type = VL_TYPE_LABEL;
-    vl->coldata [colidx].baseclass = NULL;
-    vl->coldata [colidx].colident = 0;
-    vl->coldata [colidx].minwidth = VL_MIN_WIDTH_ANY;
-    vl->coldata [colidx].entrySz = 0;
-    vl->coldata [colidx].entryMaxSz = 0;
-    vl->coldata [colidx].sbtype = 0;
-    vl->coldata [colidx].sbcb = NULL;
-    vl->coldata [colidx].sbmin = 0;
-    vl->coldata [colidx].sbmax = 10;
-    vl->coldata [colidx].sbincr = 1;
-    vl->coldata [colidx].sbpageincr = 5;
-    vl->coldata [colidx].alignend = false;
-    vl->coldata [colidx].ellipsize = false;
-    vl->coldata [colidx].grow = VL_COL_WIDTH_FIXED;
-    vl->coldata [colidx].hidden = VL_COL_SHOW;
+    uivlcoldata_t *coldata = &vl->coldata [colidx];
+
+    coldata->szgrp = uiCreateSizeGroupHoriz ();
+    coldata->ident = VL_IDENT_COLDATA;
+    coldata->type = VL_TYPE_LABEL;
+    coldata->entrycb = NULL;
+    coldata->entryudata = NULL;
+    coldata->togglecb = NULL;
+    coldata->baseclass = NULL;
+    coldata->colident = 0;
+    coldata->minwidth = VL_MIN_WIDTH_ANY;
+    coldata->entrySz = 0;
+    coldata->entryMaxSz = 0;
+    coldata->sbtype = 0;
+    coldata->sbcb = NULL;
+    coldata->sbmin = 0;
+    coldata->sbmax = 10;
+    coldata->sbincr = 1;
+    coldata->sbpageincr = 5;
+    coldata->alignend = false;
+    coldata->ellipsize = false;
+    coldata->grow = VL_COL_WIDTH_FIXED;
+    coldata->hidden = VL_COL_SHOW;
   }
 
   vl->initialized = VL_INIT_BASIC;
@@ -805,6 +815,38 @@ uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
   vl->filludata = udata;
 }
 
+void
+uivlSetEntryValidation (uivirtlist_t *vl, int colidx,
+    uientryval_t cb, void *udata)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+  if (vl->coldata [colidx].type != VL_TYPE_ENTRY) {
+    return;
+  }
+
+  vl->coldata [colidx].entrycb = cb;
+  vl->coldata [colidx].entryudata = udata;
+}
+
+void
+uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+{
+fprintf (stderr, "radio-chg\n");
+  uivlSetToggleChangeCallback (vl, colidx, cb);
+}
+
+void
+uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+{
+fprintf (stderr, "cb-chg\n");
+  uivlSetToggleChangeCallback (vl, colidx, cb);
+}
+
 /* processing */
 
 /* the initial display */
@@ -898,6 +940,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     return;
   }
 
+fprintf (stderr, "create-row: %d\n", dispidx);
   row->hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (row->hbox);
   uiWidgetAlignVertStart (row->hbox);
@@ -932,6 +975,10 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         col->uiwidget = uiEntryInit (coldata->entrySz, coldata->entryMaxSz);
         uiWidgetEnableFocus (col->uiwidget);
         uiEntrySetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        if (coldata->entrycb != NULL) {
+          uiEntrySetValidate (col->uiwidget, "", coldata->entrycb,
+              coldata->entryudata, UIENTRY_IMMEDIATE);
+        }
         break;
       }
       case VL_TYPE_RADIO_BUTTON: {
@@ -945,13 +992,19 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
               uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
         }
         uiWidgetEnableFocus (col->uiwidget);
-        uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
+        uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        if (coldata->togglecb != NULL) {
+          uiToggleButtonSetCallback (col->uiwidget, coldata->togglecb);
+        }
         break;
       }
       case VL_TYPE_CHECK_BUTTON: {
         col->uiwidget = uiCreateCheckButton ("", 0);
         uiWidgetEnableFocus (col->uiwidget);
-        uiToggleButtonSetCallback (col->uiwidget, row->rowcb->focuscb);
+        uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        if (coldata->togglecb != NULL) {
+          uiToggleButtonSetCallback (col->uiwidget, coldata->togglecb);
+        }
         break;
       }
       case VL_TYPE_SPINBOX_NUM: {
@@ -1415,6 +1468,7 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
     row->rowcb->vl = vl;
     row->rowcb->dispidx = dispidx;
+    row->rowcb->colidx = VL_COL_UNKNOWN;
     row->rowcb->focuscb = callbackInit (uivlFocusCallback, row->rowcb, NULL);
   }
 }
@@ -1428,6 +1482,7 @@ uivlFocusCallback (void *udata)
   int32_t       rownum;
 
   rownum = rowcb->dispidx + vl->rowoffset;
+
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
   uivlUpdateSelections (vl, rownum);
 
@@ -1481,3 +1536,22 @@ uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
     vl->selcb (vl->seludata, vl, rownum, colidx);
   }
 }
+
+static void
+uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+  if (vl->coldata [colidx].type != VL_TYPE_RADIO_BUTTON &&
+     vl->coldata [colidx].type != VL_TYPE_CHECK_BUTTON) {
+    return;
+  }
+
+fprintf (stderr, "  set togglecb\n");
+  vl->coldata [colidx].togglecb = cb;
+}
+

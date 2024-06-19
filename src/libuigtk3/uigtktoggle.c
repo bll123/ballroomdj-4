@@ -22,6 +22,7 @@
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 static void uiToggleButtonSetImageAlignment (GtkWidget *widget, void *udata);
 static void uiToggleButtonSIACallback (GtkWidget *widget, void *udata);
+static gboolean uiToggleButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
@@ -114,20 +115,21 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
+fprintf (stderr, "conn-toggle: %p\n", uicb);
   g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
 
-/* the focus callback is piggybacked on the 'toggled' signal */
 void
 uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-focus-cb")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-cb")) {
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "toggled",
-      G_CALLBACK (uiToggleButtonToggleHandler), uicb);
+fprintf (stderr, "conn-focus: %p\n", uicb);
+  g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
+      G_CALLBACK (uiToggleButtonFocusHandler), uicb);
 }
 
 void
@@ -200,6 +202,7 @@ uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   callback_t *uicb = udata;
 
+fprintf (stderr, "tb: toggle\n");
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
@@ -231,3 +234,15 @@ uiToggleButtonSIACallback (GtkWidget *widget, void *udata)
   }
 }
 
+static gboolean
+uiToggleButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+{
+  callback_t    *uicb = udata;
+
+fprintf (stderr, "tb: focus\n");
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+
+  return false;
+}

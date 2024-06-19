@@ -12,6 +12,7 @@ extern "C" {
 
 #include "callback.h"
 #include "uiwcont.h"
+#include "ui/uientry.h"
 
 typedef enum {
   VL_TYPE_LABEL,
@@ -75,6 +76,9 @@ const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int col);
 /* callbacks */
 void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);
+void  uivlSetEntryValidation (uivirtlist_t *vl, int colidx, uientryval_t cb, void *udata);
+void  uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
+void  uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
