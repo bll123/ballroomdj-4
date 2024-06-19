@@ -1079,24 +1079,24 @@ uitestUIVirtList (uitest_t *uitest)
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS);
+  uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS, VL_SHOW_HEADING);
   uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
     if (j == 6) {
-      uivlMakeColumnEntry (uitest->vl, j, j, 10, 100);
+      uivlMakeColumnEntry (uitest->vl, j, 10, 100);
     } else if (j == 7) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_RADIO_BUTTON, j);
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_RADIO_BUTTON);
     } else if (j == 8) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_CHECK_BUTTON, j);
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_CHECK_BUTTON);
     } else if (j == 9) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_IMAGE, j);
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_IMAGE);
     } else if (j == 10) {
-      uivlMakeColumnSpinboxTime (uitest->vl, j, j, SB_TIME_BASIC, NULL);
+      uivlMakeColumnSpinboxTime (uitest->vl, j, SB_TIME_BASIC, NULL);
     } else if (j == 11) {
-      uivlMakeColumnSpinboxNum (uitest->vl, j, j, 0.0, 20.0, 1.0, 5.0);
+      uivlMakeColumnSpinboxNum (uitest->vl, j, 0.0, 20.0, 1.0, 5.0);
     } else {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL, j);
+      uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL);
       if (j == 3) {
         uivlSetColumnDisplay (uitest->vl, j, VL_COL_HIDE);
       }

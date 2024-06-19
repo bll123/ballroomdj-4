@@ -121,12 +121,11 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15);
-  uivlDisableHeaders (uivl);
+  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING);
   duallist->uivl [DL_LIST_SOURCE] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
-  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL, DL_COL_DISP);
+  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
   uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
@@ -162,12 +161,11 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15);
+  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING);
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);
-  uivlDisableHeaders (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
-  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL, DL_COL_DISP);
+  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
   uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 
@@ -259,6 +257,10 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     queuePush (duallist->dispq [which], (void *) keystr);
   }
 
+  if (which == DL_LIST_SOURCE) {
+    slistSort (duallist->displist [which]);
+  }
+
   /* initial number of rows */
   uivlSetNumRows (duallist->uivl [which],
       queueGetCount (duallist->dispq [which]));
@@ -298,7 +300,7 @@ uiduallistGetList (uiduallist_t *duallist)
   while ((keystr =
       queueIterateData (duallist->dispq [DL_LIST_TARGET], &qiter)) != NULL) {
     slistSetNum (slist, keystr,
-      slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
+        slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
   }
 
   return slist;
@@ -382,7 +384,11 @@ uiduallistDispSelect (void *udata)
   idx = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
   toidx = uivlGetCurrSelection (duallist->uivl [DL_LIST_TARGET]);
   keystr = queueGetByIdx (duallist->dispq [DL_LIST_SOURCE], idx);
-  queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, keystr);
+  if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_TARGET])) {
+    queuePush (duallist->dispq [DL_LIST_TARGET], keystr);
+  } else {
+    queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, keystr);
+  }
   slistSetNum (duallist->displist [DL_LIST_TARGET], keystr,
       slistGetNum (duallist->displist [DL_LIST_SOURCE], keystr));
   uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
@@ -425,8 +431,13 @@ uiduallistDispRemove (void *udata)
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
-    toidx = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
-    queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, (void *) keystr);
+// ### locate the proper position within the source queue.
+    toidx = 0;
+    if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_SOURCE])) {
+      queuePush (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
+    } else {
+      queueInsert (duallist->dispq [DL_LIST_SOURCE], toidx + 1, (void *) keystr);
+    }
     slistSetNum (duallist->displist [DL_LIST_SOURCE], keystr,
         slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
     uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],

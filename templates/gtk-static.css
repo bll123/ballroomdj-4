@@ -47,6 +47,9 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
+.bdj-dark-bg {
+  background-color: shade(@theme_base_color,0.8);
+}
 label.bdj-selected {
   color: @theme_selected_fg_color;
 }

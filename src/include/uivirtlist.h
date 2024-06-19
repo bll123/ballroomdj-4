@@ -33,6 +33,8 @@ enum {
   VL_COL_UNKNOWN = -1,
   VL_SEL_DISP_NORM = 0,
   VL_SEL_DISP_WIDGET = 1,
+  VL_NO_HEADING = 0,
+  VL_SHOW_HEADING = 1,
 };
 
 typedef struct uivirtlist uivirtlist_t;
@@ -40,18 +42,17 @@ typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* basic */
-uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows);
+uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows, int headingflag);
 void  uivlFree (uivirtlist_t *vl);
-void  uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows);
+void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
-void  uivlDisableHeaders (uivirtlist_t *vl);
 void  uivlSetDarkBackground (uivirtlist_t *vl);
 
 /* make columns */
-void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type, int ident);
-void  uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int colident, int sz, int maxsz);
-void  uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx, int colident, int sbtype, callback_t *uicb);
-void  uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx, int colident, double min, double max, double incr, double pageincr);
+void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type);
+void  uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int sz, int maxsz);
+void  uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx, int sbtype, callback_t *uicb);
+void  uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx, double min, double max, double incr, double pageincr);
 
 /* column set */
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);
@@ -67,9 +68,6 @@ void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const
 void  uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx, uiwcont_t *img, int width);
 void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);
 void  uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val);
-
-/* column get */
-// int   uivlGetColumnIdent (uivirtlist_t *vl, int col);
 
 /* column get specific to a row */
 const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int32_t rownum, int colidx);
