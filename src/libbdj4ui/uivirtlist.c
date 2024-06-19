@@ -15,6 +15,7 @@
 #include "callback.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "tmutil.h"
 #include "ui.h"
 #include "uivirtlist.h"
 #include "uiwcont.h"
@@ -33,6 +34,7 @@ enum {
   VL_MIN_WIDTH_ANY = -1,
   VL_SCROLL_NORM = false,
   VL_SCROLL_FORCE = true,
+  VL_DOUBLE_CLICK_TIME = 200,   // milliseconds
 };
 
 enum {
@@ -139,6 +141,7 @@ typedef struct uivirtlist {
   uiwcont_t     *wcont [VL_W_MAX];
   callback_t    *callbacks [VL_CB_MAX];
   callback_t    *usercb [VL_USER_CB_MAX];
+  mstime_t      doubleClickCheck;
   int           numcols;
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
@@ -157,6 +160,8 @@ typedef struct uivirtlist {
   void          *filludata;
   uivlselcb_t   selcb;
   void          *seludata;
+  uivlselcb_t   dclickcb;
+  void          *dclickudata;
   /* flags */
   bool          inscroll : 1;
 } uivirtlist_t;
@@ -169,7 +174,7 @@ static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static void uivlPopulate (uivirtlist_t *vl);
 static bool uivlKeyEvent (void *udata);
-static bool uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx);
+static bool uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx);
 static bool uivlScrollEvent (void *udata, int32_t dir);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
@@ -184,6 +189,7 @@ static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
 int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
 int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
 static void uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 
 uivirtlist_t *
@@ -197,6 +203,8 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->filludata = NULL;
   vl->selcb = NULL;
   vl->seludata = NULL;
+  vl->dclickcb = NULL;
+  vl->dclickudata = NULL;
   vl->inscroll = false;
   vl->vboxheight = -1;
   vl->rowheight = -1;
@@ -213,7 +221,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
 
   vl->wcont [VL_W_KEYH] = uiEventAlloc ();
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
-  vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlButtonEvent, vl);
+  vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
   vl->callbacks [VL_CB_VBOX_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
@@ -791,6 +799,20 @@ uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 }
 
 void
+uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (vl->initialized < VL_INIT_BASIC) {
+    return;
+  }
+
+  vl->dclickcb = cb;
+  vl->dclickudata = udata;
+}
+
+void
 uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
 {
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -1224,8 +1246,8 @@ uivlKeyEvent (void *udata)
       nsel = vl->currSelection + dir;
       nsel = uivlRownumLimit (vl, nsel);
       uivlProcessScroll (vl, nsel, VL_SCROLL_NORM);
-      uivlSelectionHandler (vl, nsel, VL_COL_UNKNOWN);
       uivlUpdateSelections (vl, nsel);
+      uivlSelectionHandler (vl, nsel, VL_COL_UNKNOWN);
     }
 
     /* movement keys are handled internally */
@@ -1236,7 +1258,7 @@ uivlKeyEvent (void *udata)
 }
 
 static bool
-uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
+uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 {
   uivirtlist_t  *vl = udata;
   int           button;
@@ -1249,7 +1271,8 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_KEYH])) {
+  if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_KEYH]) &&
+      ! uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
     return UICB_CONT;
   }
 
@@ -1284,8 +1307,12 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  uivlSelectionHandler (vl, rownum, colidx);
   uivlUpdateSelections (vl, rownum);
+  /* call the selection handler before the double-click handler */
+  uivlSelectionHandler (vl, rownum, colidx);
+  if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
+    uivlDoubleClickHandler (vl, rownum, colidx);
+  }
 
   return UICB_CONT;
 }
@@ -1507,8 +1534,8 @@ uivlFocusCallback (void *udata)
 
   rownum = rowcb->dispidx + vl->rowoffset;
 
-  uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
   uivlUpdateSelections (vl, rownum);
+  uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
 
   return UICB_CONT;
 }
@@ -1558,6 +1585,14 @@ uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 {
   if (vl->selcb != NULL) {
     vl->selcb (vl->seludata, vl, rownum, colidx);
+  }
+}
+
+static void
+uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
+{
+  if (vl->dclickcb != NULL) {
+    vl->dclickcb (vl->dclickudata, vl, rownum, colidx);
   }
 }
 

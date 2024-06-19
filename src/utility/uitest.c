@@ -1110,6 +1110,7 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetColumnClass (uitest->vl, 5, "bdj-list-fav");
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
   uivlSetSelectionCallback (uitest->vl, uitestVLSelectCB, uitest);
+  uivlSetDoubleClickCallback (uitest->vl, uitestVLSelectCB, uitest);
   uivlSetEntryValidation (uitest->vl, 6, uitestVLEntryValidateCB, uitest);
   uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
   uivlSetRadioChangeCallback (uitest->vl, 7, uitest->chgcb);
