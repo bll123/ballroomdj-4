@@ -115,6 +115,9 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
   gtk_event_box_set_above_child (GTK_EVENT_BOX (widget), false);
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
+  gtk_widget_set_can_focus (widget, false);
+  gtk_widget_set_focus_on_click (widget, false);
+
   wcont = uiwcontAlloc ();
   wcont->wbasetype = WCONT_T_BOX;
   wcont->wtype = WCONT_T_EVENT_BOX;

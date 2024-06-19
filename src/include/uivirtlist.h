@@ -33,9 +33,8 @@ enum {
 };
 
 typedef struct uivirtlist uivirtlist_t;
-typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, uint32_t rownum);
-typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, uint32_t rownum, int colidx);
-typedef void (*uivlchangecb_t) (void *udata, uivirtlist_t *vl, uint32_t rownum, int colidx);
+typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
+typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows);
 void  uivlFree (uivirtlist_t *vl);
@@ -75,12 +74,13 @@ const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int col);
 
 /* callbacks */
 void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
-void  uivlSetChangeCallback (uivirtlist_t *vl, uivlchangecb_t cb, void *udata);
 void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
-
+void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
+int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
+int32_t uivlSelectionCount (uivirtlist_t *vl);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

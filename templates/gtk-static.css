@@ -52,7 +52,10 @@ progressbar > trough progress {
 /* check buttons to the obverse colors */
 /* background-color: @theme_selected_bg_color; */
 box.horizontal.bdj-selected {
-  background-color: #000000;
+  background-color: @theme_selected_bg_color;
+}
+box.horizontal.bdj-sel-widget {
+  background-color: shade(@theme_base_color,0.6);
 }
 label.bdj-selected {
   color: @theme_selected_fg_color;

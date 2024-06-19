@@ -31,6 +31,8 @@ enum {
   VL_ROW_UNKNOWN = -1,
   VL_ROW_HEADING = -2,
   VL_MIN_WIDTH_ANY = -1,
+  VL_SCROLL_NORM = false,
+  VL_SCROLL_FORCE = true,
 };
 
 enum {
@@ -71,6 +73,7 @@ enum {
 };
 
 static const char * const VL_SELECTED_CLASS = "bdj-selected";
+static const char * const VL_SEL_WIDGET_CLASS = "bdj-sel-widget";
 static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 
@@ -141,13 +144,14 @@ typedef struct uivirtlist {
   int           rowheight;
   int32_t       numrows;
   int32_t       rowoffset;
+  int32_t       currSelection;
   nlist_t       *selected;
   int           initialized;
   /* user callbacks */
   uivlfillcb_t  fillcb;
+  void          *filludata;
   uivlselcb_t   selcb;
-  uivlchangecb_t changecb;
-  void          *udata;
+  void          *seludata;
   /* flags */
   bool          inscroll : 1;
 } uivirtlist_t;
@@ -166,11 +170,15 @@ static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
-static void uivlProcessScroll (uivirtlist_t *vl, int32_t start);
+static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVboxSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
 static bool uivlFocusCallback (void *udata);
+static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
+int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
+int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
+static void uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 
 uivirtlist_t *
 uiCreateVirtList (uiwcont_t *boxp, int disprows)
@@ -180,9 +188,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl = mdmalloc (sizeof (uivirtlist_t));
   vl->ident = VL_IDENT;
   vl->fillcb = NULL;
+  vl->filludata = NULL;
   vl->selcb = NULL;
-  vl->changecb = NULL;
-  vl->udata = NULL;
+  vl->seludata = NULL;
   vl->inscroll = false;
   vl->vboxheight = -1;
   vl->rowheight = -1;
@@ -249,9 +257,10 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   vl->numcols = 0;
   vl->numrows = 0;
   vl->rowoffset = 0;
+  vl->currSelection = 0;
   vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
   /* default selection */
-  nlistSetNum (vl->selected, 0, 1);
+  nlistSetNum (vl->selected, 0, true);
   vl->initialized = VL_INIT_NONE;
 
   vl->disprows = disprows;
@@ -774,17 +783,9 @@ uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
   if (vl->initialized < VL_INIT_BASIC) {
     return;
   }
-}
 
-void
-uivlSetChangeCallback (uivirtlist_t *vl, uivlchangecb_t cb, void *udata)
-{
-  if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
-  }
-  if (vl->initialized < VL_INIT_BASIC) {
-    return;
-  }
+  vl->selcb = cb;
+  vl->seludata = udata;
 }
 
 void
@@ -801,7 +802,7 @@ uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata)
   }
 
   vl->fillcb = cb;
-  vl->udata = udata;
+  vl->filludata = udata;
 }
 
 /* processing */
@@ -826,6 +827,27 @@ uivlDisplay (uivirtlist_t *vl)
 
   vl->initialized = VL_INIT_DISP;
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
+}
+
+void
+uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
+{
+  nlistStartIterator (vl->selected, iteridx);
+}
+
+int32_t
+uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
+{
+  nlistidx_t    key;
+
+  key = nlistIterateKey (vl->selected, iteridx);
+  return key;
+}
+
+int32_t
+uivlSelectionCount (uivirtlist_t *vl)
+{
+  return nlistGetCount (vl->selected);
 }
 
 /* internal routines */
@@ -1041,7 +1063,7 @@ uivlScrollbarCallback (void *udata, double value)
 
   start = (uint32_t) floor (value);
 
-  uivlProcessScroll (vl, start);
+  uivlProcessScroll (vl, start, VL_SCROLL_FORCE);
 
   return UICB_CONT;
 }
@@ -1075,7 +1097,7 @@ uivlPopulate (uivirtlist_t *vl)
 
     row = &vl->rows [dispidx];
     if (vl->fillcb != NULL) {
-      vl->fillcb (vl->udata, vl, dispidx + vl->rowoffset);
+      vl->fillcb (vl->filludata, vl, dispidx + vl->rowoffset);
     }
 
     if (row->hidden) {
@@ -1100,24 +1122,29 @@ uivlKeyEvent (void *udata)
     return UICB_CONT;
   }
 
-  if (uiEventIsMovementKey (vl->wcont [VL_W_KEYH])) {
-    int32_t     start;
-    int32_t     offset = 1;
+  if (uiEventIsKeyReleaseEvent (vl->wcont [VL_W_KEYH])) {
+    return UICB_CONT;
+  }
 
-    start = vl->rowoffset;
+  if (uiEventIsMovementKey (vl->wcont [VL_W_KEYH])) {
+    int32_t     dir = 1;
+    int32_t     nsel;
 
     if (uiEventIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
       if (uiEventIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
-        offset = vl->disprows;
+        dir = vl->disprows;
       }
       if (uiEventIsUpKey (vl->wcont [VL_W_KEYH])) {
-        start -= offset;
+        dir = - dir;
       }
-      if (uiEventIsDownKey (vl->wcont [VL_W_KEYH])) {
-        start += offset;
-      }
+    }
 
-      uivlProcessScroll (vl, start);
+    if (nlistGetCount (vl->selected) == 1) {
+      nsel = vl->currSelection + dir;
+      nsel = uivlRownumLimit (vl, nsel);
+      uivlProcessScroll (vl, nsel, VL_SCROLL_NORM);
+      uivlSelectionHandler (vl, nsel, VL_COL_UNKNOWN);
+      uivlUpdateSelections (vl, nsel);
     }
 
     /* movement keys are handled internally */
@@ -1161,7 +1188,7 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
       start += 1;
     }
 
-    uivlProcessScroll (vl, start);
+    uivlProcessScroll (vl, start, VL_SCROLL_FORCE);
     return UICB_CONT;
   }
 
@@ -1176,12 +1203,8 @@ uivlButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  if (! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
-    uivlClearSelections (vl);
-    uivlClearDisplaySelections (vl);
-  }
-  uivlAddSelection (vl, rownum);
-  uivlSetDisplaySelections (vl);
+  uivlSelectionHandler (vl, rownum, colidx);
+  uivlUpdateSelections (vl, rownum);
 
   return UICB_CONT;
 }
@@ -1208,7 +1231,7 @@ uivlScrollEvent (void *udata, int32_t dir)
   if (dir == UIEVENT_DIR_NEXT || dir == UIEVENT_DIR_RIGHT) {
     start += 1;
   }
-  uivlProcessScroll (vl, start);
+  uivlProcessScroll (vl, start, VL_SCROLL_FORCE);
 
   return UICB_CONT;
 }
@@ -1221,9 +1244,11 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
 
     if (row->selected) {
       uiWidgetRemoveClass (row->hbox, VL_SELECTED_CLASS);
+      uiWidgetRemoveClass (row->hbox, VL_SEL_WIDGET_CLASS);
 
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
         uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SEL_WIDGET_CLASS);
       }
       row->selected = false;
     }
@@ -1245,10 +1270,12 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       uivlrow_t   *row;
 
       row = uivlGetRow (vl, val);
-      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
+//      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
+      uiWidgetAddClass (row->hbox, VL_SEL_WIDGET_CLASS);
       row->selected = true;
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+//        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SEL_WIDGET_CLASS);
       }
     }
   }
@@ -1271,24 +1298,50 @@ uivlAddSelection (uivirtlist_t *vl, uint32_t rownum)
   if (rowidx >= 0 && rowidx < vl->disprows) {
     row = &vl->rows [rowidx];
   }
-  nlistSetNum (vl->selected, rownum, rownum);
+  nlistSetNum (vl->selected, rownum, true);
+
+  vl->currSelection = rownum;
 }
 
 static void
-uivlProcessScroll (uivirtlist_t *vl, int32_t start)
+uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
 {
+  int32_t       wantrow = start;
+
   vl->inscroll = true;
 
-  if (start < 0) {
-    start = 0;
-  }
-  if (start > vl->numrows - vl->disprows) {
-    start = vl->numrows - vl->disprows;
-  }
+  start = uivlRowOffsetLimit (vl, start);
 
   if (start == vl->rowoffset) {
     vl->inscroll = false;
     return;
+  }
+
+  /* if this is a keyboard movement, and there's only one selection */
+  /* and the requested row-offset is on-screen */
+  if (sctype == VL_SCROLL_NORM &&
+      nlistGetCount (vl->selected) == 1 &&
+      wantrow >= vl->rowoffset &&
+      wantrow < vl->rowoffset + vl->disprows) {
+    if (wantrow < vl->currSelection) {
+      /* selection up */
+      if (wantrow < vl->rowoffset + vl->disprows / 2 - 1) {
+        start = vl->rowoffset - 1;
+      } else {
+        vl->inscroll = false;
+        return;
+      }
+    } else {
+      /* selection down */
+      if (wantrow >= vl->rowoffset + vl->disprows / 2) {
+        start = vl->rowoffset + 1;
+      } else {
+        vl->inscroll = false;
+        return;
+      }
+    }
+
+    start = uivlRowOffsetLimit (vl, start);
   }
 
   vl->rowoffset = start;
@@ -1372,15 +1425,59 @@ uivlFocusCallback (void *udata)
 {
   uivlrowcb_t   *rowcb = udata;
   uivirtlist_t  *vl = rowcb->vl;
+  int32_t       rownum;
 
+  rownum = rowcb->dispidx + vl->rowoffset;
+  uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
+  uivlUpdateSelections (vl, rownum);
+
+  return UICB_CONT;
+}
+
+static void
+uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
+{
   if (vl->wcont [VL_W_KEYH] != NULL) {
     if (! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
       uivlClearSelections (vl);
       uivlClearDisplaySelections (vl);
     }
   }
-  uivlAddSelection (vl, rowcb->dispidx);
+  uivlAddSelection (vl, rownum);
   uivlSetDisplaySelections (vl);
+}
 
-  return UICB_CONT;
+
+int32_t
+uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset)
+{
+  if (rowoffset < 0) {
+    rowoffset = 0;
+  }
+  if (rowoffset > vl->numrows - vl->disprows) {
+    rowoffset = vl->numrows - vl->disprows;
+  }
+
+  return rowoffset;
+}
+
+int32_t
+uivlRownumLimit (uivirtlist_t *vl, int32_t rownum)
+{
+  if (rownum < 0) {
+    rownum = 0;
+  }
+  if (rownum >= vl->numrows) {
+    rownum = vl->numrows - 1;
+  }
+
+  return rownum;
+}
+
+static void
+uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
+{
+  if (vl->selcb != NULL) {
+    vl->selcb (vl->seludata, vl, rownum, colidx);
+  }
 }

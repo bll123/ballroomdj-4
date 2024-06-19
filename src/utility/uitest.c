@@ -109,7 +109,8 @@ static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
 static void uitestCleanup (uitest_t *uitest);
 
-static void uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum);
+static void uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 int
 main (int argc, char *argv[])
@@ -1105,6 +1106,7 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetColumnAlignEnd (uitest->vl, 2);
   uivlSetColumnClass (uitest->vl, 5, "bdj-list-fav");
   uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
+  uivlSetSelectionCallback (uitest->vl, uitestVLSelectCB, uitest);
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
     uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
@@ -1186,7 +1188,7 @@ uitestCleanup (uitest_t *uitest)
 }
 
 static void
-uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
+uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
   uitest_t  *uitest = udata;
   char      tbuff [40];
@@ -1217,3 +1219,14 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, uint32_t rownum)
     }
   }
 }
+
+
+static void
+uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
+{
+//  uitest_t  *uitest = udata;
+
+  fprintf (stderr, "select-cb: %d %d\n", rownum, colidx);
+}
+
+
