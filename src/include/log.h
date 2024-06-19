@@ -73,6 +73,7 @@ enum {
   LOG_AUDIO_TAG       = (1 << 22), // 4194304
   LOG_AUDIO_ID        = (1 << 23), // 8388608
   LOG_AUDIOID_DUMP    = (1 << 24), // 16777216
+  LOG_VIRTLIST        = (1 << 25), // 33554432
   /* insert new values here, push redir_inst down */
   LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,

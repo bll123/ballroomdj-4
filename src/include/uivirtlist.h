@@ -44,9 +44,11 @@ uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
+void  uivlDisableHeaders (uivirtlist_t *vl);
+void  uivlSetDarkBackground (uivirtlist_t *vl);
 
 /* make columns */
-void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type, int ident, bool hidden);
+void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type, int ident);
 void  uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int colident, int sz, int maxsz);
 void  uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx, int colident, int sbtype, callback_t *uicb);
 void  uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx, int colident, double min, double max, double incr, double pageincr);
@@ -58,6 +60,7 @@ void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
 void  uivlSetColumnGrow (uivirtlist_t *vl, int col, bool grow);
 void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
+void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, bool hidden);
 
 /* column set specific to a row */
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
@@ -66,11 +69,11 @@ void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const
 void  uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val);
 
 /* column get */
-int   uivlGetColumnIdent (uivirtlist_t *vl, int col);
+// int   uivlGetColumnIdent (uivirtlist_t *vl, int col);
 
 /* column get specific to a row */
-const char *uivlGetRowColumnValue (uivirtlist_t *vl, int row, int col);
-const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int row, int col);
+const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int32_t rownum, int colidx);
+int32_t uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* callbacks */
 void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
@@ -84,9 +87,12 @@ void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
+void  uivlPopulate (uivirtlist_t *vl);
 void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
+int32_t uivlGetCurrSelection (uivirtlist_t *vl);
+void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

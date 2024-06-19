@@ -153,14 +153,14 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
       manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
-      DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
+      DL_FLAGS_MULTIPLE | DL_FLAGS_PERSISTENT,
       tagdefs [TAG_DANCE].displayname,
       /* CONTEXT: sequence editor: title for the sequence list  */
       _("Sequence"));
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
-  uiduallistSet (manageseq->seqduallist, dancelist, DUALLIST_TREE_SOURCE);
+  uiduallistSet (manageseq->seqduallist, dancelist, DL_LIST_SOURCE);
 
   uiwcontFree (hbox);
 
@@ -357,7 +357,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
     dstr = nlistGetStr (dancelist, didx);
     slistSetNum (tlist, dstr, didx);
   }
-  uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistSet (manageseq->seqduallist, tlist, DL_LIST_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
 
@@ -444,7 +444,7 @@ manageSequenceNew (void *udata)
   manageSetSequenceName (manageseq, tbuff);
   manageseq->seqbackupcreated = false;
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
-  uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistSet (manageseq->seqduallist, tlist, DL_LIST_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
   if (manageseq->seqnewcb != NULL) {

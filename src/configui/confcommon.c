@@ -287,16 +287,16 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   } else if (selidx == DISP_SEL_AUDIOID_LIST ||
       selidx == DISP_SEL_AUDIOID) {
     uiduallistSet (gui->dispselduallist, gui->audioidtaglist,
-        DUALLIST_TREE_SOURCE);
+        DL_LIST_SOURCE);
   } else if (selidx == DISP_SEL_MARQUEE) {
     uiduallistSet (gui->dispselduallist, gui->marqueetaglist,
-        DUALLIST_TREE_SOURCE);
+        DL_LIST_SOURCE);
   } else if (selidx == DISP_SEL_CURRSONG) {
     uiduallistSet (gui->dispselduallist, gui->pluitaglist,
-        DUALLIST_TREE_SOURCE);
+        DL_LIST_SOURCE);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
-        DUALLIST_TREE_SOURCE);
+        DL_LIST_SOURCE);
   }
   logProcEnd ("");
 }
@@ -316,7 +316,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   dispsel = gui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
 
-  uiduallistSet (gui->dispselduallist, sellist, DUALLIST_TREE_TARGET);
+  uiduallistSet (gui->dispselduallist, sellist, DL_LIST_TARGET);
   logProcEnd ("");
 }
 
@@ -608,7 +608,7 @@ confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist,
     }
   }
 
-  uiduallistSet (gui->dispselduallist, editlist, DUALLIST_TREE_SOURCE);
+  uiduallistSet (gui->dispselduallist, editlist, DL_LIST_SOURCE);
   slistFree (editlist);
 }
 

@@ -91,7 +91,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   gui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
 
   gui->dispselduallist = uiCreateDualList (vbox,
-      DUALLIST_FLAGS_NONE, NULL, NULL);
+      DL_FLAGS_NONE, NULL, NULL);
 
   uiwcontFree (vbox);
   logProcEnd ("");
@@ -149,9 +149,9 @@ confuiDispSettingChg (void *udata)
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (gui, oselidx);
-  /* be sure to create the listing first */
-  confuiCreateTagListingDisp (gui);
+  /* be sure to create the selected list (target) first */
   confuiCreateTagSelectedDisp (gui);
+  confuiCreateTagListingDisp (gui);
   logProcEnd ("");
   return UICB_CONT;
 }
