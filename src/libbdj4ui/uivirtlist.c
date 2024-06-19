@@ -73,7 +73,6 @@ enum {
 };
 
 static const char * const VL_SELECTED_CLASS = "bdj-selected";
-static const char * const VL_SEL_WIDGET_CLASS = "bdj-sel-widget";
 static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 
@@ -93,6 +92,8 @@ typedef struct {
   uientryval_t  entrycb;
   void        *entryudata;
   callback_t  *togglecb;      // radio buttons and check buttons
+  callback_t  *spinboxcb;
+  callback_t  *spinboxtimecb;
   char        *baseclass;
   int         colident;
   int         minwidth;
@@ -354,6 +355,8 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->entrycb = NULL;
     coldata->entryudata = NULL;
     coldata->togglecb = NULL;
+    coldata->spinboxcb = NULL;
+    coldata->spinboxtimecb = NULL;
     coldata->baseclass = NULL;
     coldata->colident = 0;
     coldata->minwidth = VL_MIN_WIDTH_ANY;
@@ -372,17 +375,6 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
   }
 
   vl->initialized = VL_INIT_BASIC;
-}
-
-void
-uivlSetHeadingClass (uivirtlist_t *vl, int colidx, const char *class)
-{
-  if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
-  }
-  if (vl->initialized < VL_INIT_BASIC) {
-    return;
-  }
 }
 
 /* column set */
@@ -646,7 +638,7 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
       break;
     }
     case VL_TYPE_IMAGE:
-    case VL_TYPE_INT_NUMERIC:
+    case VL_TYPE_INTERNAL_NUMERIC:
     case VL_TYPE_RADIO_BUTTON:
     case VL_TYPE_CHECK_BUTTON:
     case VL_TYPE_SPINBOX_NUM:
@@ -724,7 +716,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
       /* not handled here */
       break;
     }
-    case VL_TYPE_INT_NUMERIC: {
+    case VL_TYPE_INTERNAL_NUMERIC: {
       break;
     }
     case VL_TYPE_RADIO_BUTTON:
@@ -836,16 +828,47 @@ uivlSetEntryValidation (uivirtlist_t *vl, int colidx,
 void
 uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 {
-fprintf (stderr, "radio-chg\n");
   uivlSetToggleChangeCallback (vl, colidx, cb);
 }
 
 void
 uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 {
-fprintf (stderr, "cb-chg\n");
   uivlSetToggleChangeCallback (vl, colidx, cb);
 }
+
+void
+uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+  if (vl->coldata [colidx].type != VL_TYPE_SPINBOX_TIME) {
+    return;
+  }
+
+  vl->coldata [colidx].spinboxtimecb = cb;
+}
+
+void
+uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+  if (colidx < 0 || colidx >= vl->numcols) {
+    return;
+  }
+  if (vl->coldata [colidx].type != VL_TYPE_SPINBOX_NUM) {
+    return;
+  }
+
+  vl->coldata [colidx].spinboxcb = cb;
+}
+
 
 /* processing */
 
@@ -940,7 +963,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     return;
   }
 
-fprintf (stderr, "create-row: %d\n", dispidx);
   row->hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (row->hbox);
   uiWidgetAlignVertStart (row->hbox);
@@ -1013,6 +1035,9 @@ fprintf (stderr, "create-row: %d\n", dispidx);
         uiSpinboxSetIncrement (col->uiwidget, coldata->sbincr, coldata->sbpageincr);
         uiWidgetEnableFocus (col->uiwidget);
         uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        if (coldata->spinboxcb != NULL) {
+          uiSpinboxSetValueChangedCallback (col->uiwidget, coldata->spinboxcb);
+        }
         break;
       }
       case VL_TYPE_SPINBOX_TIME: {
@@ -1020,9 +1045,12 @@ fprintf (stderr, "create-row: %d\n", dispidx);
             vl, "", coldata->sbcb);
         uiWidgetEnableFocus (col->uiwidget);
         uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        if (coldata->spinboxtimecb != NULL) {
+          uiSpinboxTimeSetValueChangedCallback (col->uiwidget, coldata->spinboxtimecb);
+        }
         break;
       }
-      case VL_TYPE_INT_NUMERIC: {
+      case VL_TYPE_INTERNAL_NUMERIC: {
         /* an internal numeric type will always be hidden */
         /* used to associate values with the row */
         coldata->hidden = VL_COL_HIDE;
@@ -1297,11 +1325,9 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
 
     if (row->selected) {
       uiWidgetRemoveClass (row->hbox, VL_SELECTED_CLASS);
-      uiWidgetRemoveClass (row->hbox, VL_SEL_WIDGET_CLASS);
 
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
         uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
-        uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SEL_WIDGET_CLASS);
       }
       row->selected = false;
     }
@@ -1323,12 +1349,10 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       uivlrow_t   *row;
 
       row = uivlGetRow (vl, val);
-//      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
-      uiWidgetAddClass (row->hbox, VL_SEL_WIDGET_CLASS);
+      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
       row->selected = true;
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-//        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
-        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SEL_WIDGET_CLASS);
+        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
       }
     }
   }
@@ -1551,7 +1575,6 @@ uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
     return;
   }
 
-fprintf (stderr, "  set togglecb\n");
   vl->coldata [colidx].togglecb = cb;
 }
 

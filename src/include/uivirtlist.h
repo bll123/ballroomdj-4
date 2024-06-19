@@ -22,7 +22,7 @@ typedef enum {
   VL_TYPE_CHECK_BUTTON,
   VL_TYPE_SPINBOX_NUM,
   VL_TYPE_SPINBOX_TIME,
-  VL_TYPE_INT_NUMERIC,
+  VL_TYPE_INTERNAL_NUMERIC,
 } vltype_t;
 
 enum {
@@ -31,20 +31,19 @@ enum {
   VL_COL_WIDTH_FIXED = false,
   VL_COL_WIDTH_GROW = true,
   VL_COL_UNKNOWN = -1,
+  VL_SEL_DISP_NORM = 0,
+  VL_SEL_DISP_WIDGET = 1,
 };
 
 typedef struct uivirtlist uivirtlist_t;
 typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
+/* basic */
 uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, uint32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
-
-/* headings */
-void  uivlSetHeadingFont (uivirtlist_t *vl, int colidx, const char *font);
-void  uivlSetHeadingClass (uivirtlist_t *vl, int colidx, const char *class);
 
 /* make columns */
 void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type, int ident, bool hidden);
@@ -79,6 +78,8 @@ void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);
 void  uivlSetEntryValidation (uivirtlist_t *vl, int colidx, uientryval_t cb, void *udata);
 void  uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
+void  uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
+void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);

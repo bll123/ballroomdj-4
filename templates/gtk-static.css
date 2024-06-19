@@ -47,16 +47,6 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
-/* the problem with using the standard selected-bg-color is */
-/* that there is no easy way to switch the radio buttons and */
-/* check buttons to the obverse colors */
-/* background-color: @theme_selected_bg_color; */
-box.horizontal.bdj-selected {
-  background-color: @theme_selected_bg_color;
-}
-box.horizontal.bdj-sel-widget {
-  background-color: shade(@theme_base_color,0.6);
-}
 label.bdj-selected {
   color: @theme_selected_fg_color;
 }

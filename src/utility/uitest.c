@@ -1114,6 +1114,8 @@ uitestUIVirtList (uitest_t *uitest)
   uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
   uivlSetRadioChangeCallback (uitest->vl, 7, uitest->chgcb);
   uivlSetCheckBoxChangeCallback (uitest->vl, 8, uitest->chgcb);
+  uivlSetSpinboxTimeChangeCallback (uitest->vl, 10, uitest->chgcb);
+  uivlSetSpinboxChangeCallback (uitest->vl, 11, uitest->chgcb);
 
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
     uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
@@ -1233,7 +1235,7 @@ uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
 //  uitest_t  *uitest = udata;
 
-  fprintf (stderr, "select-cb: %d %d\n", rownum, colidx);
+  return;
 }
 
 static int
@@ -1241,13 +1243,11 @@ uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata)
 {
 //  uitest_t  *uitest = udata;
 
-  fprintf (stderr, "entry-val\n");
   return UIENTRY_OK;
 }
 
 static bool
 uitestVLChangeCB (void *udata)
 {
-  fprintf (stderr, "change-cb\n");
   return UICB_CONT;
 }

@@ -115,7 +115,6 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-fprintf (stderr, "conn-toggle: %p\n", uicb);
   g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
@@ -127,7 +126,6 @@ uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-fprintf (stderr, "conn-focus: %p\n", uicb);
   g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiToggleButtonFocusHandler), uicb);
 }
@@ -202,7 +200,6 @@ uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   callback_t *uicb = udata;
 
-fprintf (stderr, "tb: toggle\n");
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
@@ -239,7 +236,6 @@ uiToggleButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
 {
   callback_t    *uicb = udata;
 
-fprintf (stderr, "tb: focus\n");
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
