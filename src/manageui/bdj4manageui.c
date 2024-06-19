@@ -794,7 +794,7 @@ manageBuildUI (manageui_t *manage)
   manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
 
   manage->wcont [MANAGE_W_MENUBAR] = uiCreateMenubar ();
-  uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
+  uiBoxPackStartExpand (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
   manage->wcont [MANAGE_W_MAIN_NB] = uiCreateNotebook ();
   uiWidgetAddClass (manage->wcont [MANAGE_W_MAIN_NB], LEFT_NB_CLASS);

@@ -1416,13 +1416,8 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
 
   start = uivlRowOffsetLimit (vl, start);
 
-  if (start == vl->rowoffset) {
-    vl->inscroll = false;
-    return;
-  }
-
   /* if this is a keyboard movement, and there's only one selection */
-  /* and the requested row-offset is on-screen */
+  /* and the desired row-number is on-screen */
   if (sctype == VL_SCROLL_NORM &&
       nlistGetCount (vl->selected) == 1 &&
       wantrow >= vl->rowoffset &&
@@ -1446,6 +1441,11 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
     }
 
     start = uivlRowOffsetLimit (vl, start);
+  }
+
+  if (start == vl->rowoffset) {
+    vl->inscroll = false;
+    return;
   }
 
   vl->rowoffset = start;

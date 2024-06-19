@@ -22,6 +22,10 @@
 #include "uiutils.h"
 #include "validate.h"
 
+enum {
+  PROFILE_BOX_SZ = 26,
+};
+
 /* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
@@ -37,7 +41,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
-  uiWidgetSetSizeRequest (cbox, 20, 20);
+  uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
   uiutilsSetProfileColor (cbox);
   uiBoxPackEnd (hbox, cbox);
   uiWidgetShowAll (hbox);

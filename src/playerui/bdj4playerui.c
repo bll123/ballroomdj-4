@@ -539,7 +539,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartExpand (hbox, menubar);
 
   plui->wcont [PLUI_W_CLOCK] = uiCreateLabel ("");
   uiBoxPackEnd (hbox, plui->wcont [PLUI_W_CLOCK]);

@@ -242,7 +242,7 @@ uitestBuildUI (uitest_t *uitest)
   uiwcontFree (accent.cbox);
 
   uitest->wcont [UITEST_W_MENUBAR] = uiCreateMenubar ();
-  uiBoxPackStart (hbox, uitest->wcont [UITEST_W_MENUBAR]);
+  uiBoxPackStartExpand (hbox, uitest->wcont [UITEST_W_MENUBAR]);
 
   uiwidgetp = uiCreateLabel ("");
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
