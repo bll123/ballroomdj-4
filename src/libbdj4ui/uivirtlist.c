@@ -25,7 +25,7 @@
 enum {
   VL_INIT_NONE,
   VL_INIT_BASIC,
-  VL_INIT_HEADER,   // may be skipped
+  VL_INIT_HEADING,   // may be skipped
   VL_INIT_ROWS,
   VL_INIT_DISP,
 };
@@ -473,10 +473,10 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
     return;
   }
 
-  if (vl->initialized < VL_INIT_HEADER) {
+  if (vl->initialized < VL_INIT_HEADING) {
     uivlCreateRow (vl, &vl->headingrow, VL_ROW_HEADING, true);
-    vl->initialized = VL_INIT_HEADER;
-    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: [init-header]");
+    vl->initialized = VL_INIT_HEADING;
+    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: [init-heading]");
   }
 
   uivlSetRowColumnValue (vl, VL_ROW_HEADING, colidx, heading);
@@ -704,7 +704,11 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (vl->initialized < VL_INIT_ROWS) {
+  if (rownum == VL_ROW_HEADING && vl->initialized < VL_INIT_HEADING) {
+    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: not-init (%d<%d)", vl->initialized, VL_INIT_ROWS);
+    return;
+  }
+  if (rownum != VL_ROW_HEADING && vl->initialized < VL_INIT_ROWS) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: not-init (%d<%d)", vl->initialized, VL_INIT_ROWS);
     return;
   }
@@ -1061,6 +1065,7 @@ uivlDisplay (uivirtlist_t *vl)
 
   if (vl->dispheading) {
     uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
+//    uiWidgetShowAll (vl->headingrow.hbox);
   }
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {

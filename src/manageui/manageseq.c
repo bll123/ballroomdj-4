@@ -160,6 +160,8 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
+  /* as the source list is persistent, it is ok to set it before */
+  /* setting the duallist target */
   uiduallistSet (manageseq->seqduallist, dancelist, DL_LIST_SOURCE);
 
   uiwcontFree (hbox);
