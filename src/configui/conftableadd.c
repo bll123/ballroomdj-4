@@ -101,6 +101,7 @@ confuiTableAdd (void *udata)
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
       danceAdd (dances, _("New Dance"));
       uivlPopulate (uivl);
+// ### want to set the selection to the new dance, wherever it is.
       break;
     }
 

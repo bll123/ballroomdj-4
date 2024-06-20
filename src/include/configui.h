@@ -235,7 +235,7 @@ typedef struct {
                                     //    value: display
   nlist_t           *sbkeylist;     // indexed by spinbox index
                                     //    value: key
-  int               danceidx;       // for dance edit
+  int               danceitemidx;   // for dance edit
   int               entrysz;
   int               entrymaxsz;
   uiwcont_t         *uiwidgetp;

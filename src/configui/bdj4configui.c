@@ -160,7 +160,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].debuglvl = 0;
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
-    confui.gui.uiitem [i].danceidx = DANCE_DANCE;
+    confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
