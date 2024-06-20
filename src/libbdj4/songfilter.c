@@ -44,7 +44,6 @@ enum {
 typedef struct songfilter {
   char        *sortselection;
   dance_t     *dances;
-  ilist_t     *danceList;
   void        *datafilter [SONG_FILTER_MAX];
   nlistidx_t  numfilter [SONG_FILTER_MAX];
   bool        inuse [SONG_FILTER_MAX];
@@ -123,7 +122,6 @@ songfilterAlloc (void)
   songfilterLoadFilterDisplay (sf);
   songfilterReset (sf);
   sf->dances = bdjvarsdfGet (BDJVDF_DANCES);
-  sf->danceList = danceGetDanceList (sf->dances);
 
   logProcEnd ("");
   return sf;

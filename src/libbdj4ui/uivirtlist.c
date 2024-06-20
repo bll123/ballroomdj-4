@@ -210,7 +210,7 @@ static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_
 static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 
 uivirtlist_t *
-uiCreateVirtList (uiwcont_t *boxp, int dispsize, int headingflag)
+uiCreateVirtList (uiwcont_t *boxp, int dispsize, int headingflag, int minwidth)
 {
   uivirtlist_t  *vl;
 
@@ -258,15 +258,15 @@ uiCreateVirtList (uiwcont_t *boxp, int dispsize, int headingflag)
 
   /* a scrolled window is necessary to allow the window to shrink */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
-//  uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-//  uiWidgetExpandHoriz (vl->wcont [VL_W_SCROLL_WIN]);
   uiWidgetExpandVert (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);
 
   vl->wcont [VL_W_MAIN_HBOX] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_MAIN_HBOX]);
   /* need a minimum width so it looks nice */
-  uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_HBOX], 200, -1);
+  if (minwidth != VL_NO_WIDTH) {
+    uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_HBOX], minwidth, -1);
+  }
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
@@ -1275,6 +1275,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   uiWidgetAlignHorizFill (row->hbox);
   uiWidgetAlignVertStart (row->hbox);
 
+  row->hidden = false;
+  row->selected = false;
+  row->initialized = true;
+  row->cleared = true;
+
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -1369,6 +1374,10 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
+    if (coldata->hidden == VL_COL_HIDE) {
+      return;
+    }
+
     /* need a box for the size change callback */
     col->box = uiCreateHorizBox ();
     uiWidgetSetAllMargins (col->box, 0);
@@ -1393,14 +1402,13 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (coldata->hidden == VL_COL_SHOW) {
-      if (coldata->grow == VL_COL_WIDTH_GROW) {
-        uiBoxPackStartExpand (row->hbox, col->box);
-      } else {
-        uiBoxPackStart (row->hbox, col->box);
-      }
-      uiSizeGroupAdd (coldata->szgrp, col->box);
+    if (coldata->grow == VL_COL_WIDTH_GROW) {
+      uiBoxPackStartExpand (row->hbox, col->box);
+    } else {
+      uiBoxPackStart (row->hbox, col->box);
     }
+    uiSizeGroupAdd (coldata->szgrp, col->box);
+
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
     }
@@ -1417,11 +1425,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
     col->class = NULL;
   }
-
-  row->hidden = false;
-  row->selected = false;
-  row->initialized = true;
-  row->cleared = true;
 }
 
 static uivlrow_t *

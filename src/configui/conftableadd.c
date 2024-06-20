@@ -78,7 +78,7 @@ confuiTableAdd (void *udata)
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
       dkey = danceAdd (dances, _("New Dance"));
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
-      confuiDanceSet (uitree, _("New Dance"), dkey);
+//      confuiDanceSet (uitree, _("New Dance"), dkey);
       break;
     }
 

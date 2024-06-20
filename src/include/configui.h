@@ -6,14 +6,15 @@
 
 #include <stdint.h>
 
+#include "callback.h"
 #include "dispsel.h"
 #include "ilist.h"
 #include "nlist.h"
 #include "orgutil.h"
-#include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "uiselectfile.h"
+#include "uivirtlist.h"
 #include "uiwcont.h"
 
 /* base type */
@@ -320,6 +321,7 @@ enum {
 
 typedef struct confuitable {
   uiwcont_t         *uitree;
+  uivirtlist_t      *uivl;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uiwcont_t         *buttons [CONFUI_BUTTON_TABLE_MAX];
   int               flags;
@@ -333,7 +335,7 @@ typedef struct confuitable {
 
 enum {
   CONFUI_DANCE_COL_DANCE,
-  CONFUI_DANCE_COL_SB_PAD,
+//  CONFUI_DANCE_COL_SB_PAD,
   CONFUI_DANCE_COL_DANCE_IDX,
   CONFUI_DANCE_COL_MAX,
 };

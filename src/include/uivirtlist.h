@@ -36,6 +36,7 @@ enum {
 
 enum {
   VL_COL_UNKNOWN = -1,
+  VL_NO_WIDTH = 0,
 };
 
 typedef struct uivirtlist uivirtlist_t;
@@ -43,7 +44,7 @@ typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* basic */
-uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows, int headingflag);
+uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows, int headingflag, int minwidth);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);

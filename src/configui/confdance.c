@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -32,6 +33,7 @@
 #include "slist.h"
 #include "ui.h"
 #include "uiselectfile.h"
+#include "uivirtlist.h"
 
 /* dance table */
 static void confuiCreateDanceTable (confuigui_t *gui);
@@ -48,6 +50,7 @@ static void confuiDanceSpinboxChg (void *udata, int widx);
 static int  confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui);
 static void confuiDanceSave (confuigui_t *gui);
 static void confuiLoadDanceTypeList (confuigui_t *gui);
+static void confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 
 void
 confuiInitEditDances (confuigui_t *gui)
@@ -194,17 +197,41 @@ confuiBuildUIEditDances (confuigui_t *gui)
 static void
 confuiCreateDanceTable (confuigui_t *gui)
 {
-  slistidx_t        iteridx;
-  ilistidx_t        key;
+//  slistidx_t        iteridx;
+//  ilistidx_t        key;
   dance_t           *dances;
-  uiwcont_t         *uitree;
-  slist_t           *dancelist;
+//  uiwcont_t         *uitree;
+//  slist_t           *dancelist;
+  uivirtlist_t      *uivl;
 
 
   logProcBegin ();
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
+  uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
+  uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE_IDX, VL_TYPE_INTERNAL_NUMERIC);
 
+  uivlSetNumRows (uivl, danceGetCount (dances));
+  gui->tables [CONFUI_ID_DANCE].currcount = danceGetCount (dances);
+  uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
+  uivlDisplay (uivl);
+
+#if 0
+  dancelist = danceGetDanceList (dances);
+  slistStartIterator (dancelist, &iteridx);
+  while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
+    const char  *dancedisp;
+
+    dancedisp = danceGetStr (dances, key, DANCE_DANCE);
+
+    confuiDanceSet (uitree, dancedisp, key);
+    gui->tables [CONFUI_ID_DANCE].currcount += 1;
+  }
+#endif
+
+#if 0
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
   uiTreeViewDisableHeaders (uitree);
 
@@ -231,6 +258,7 @@ confuiCreateDanceTable (confuigui_t *gui)
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_TYPE_END);
+#endif
 
   logProcEnd ("");
 }
@@ -502,3 +530,22 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   logProcEnd ("");
 }
 
+static void
+confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+{
+  confuigui_t *gui = udata;
+  dance_t     *dances;
+  slist_t     *dancelist;
+  const char  *dancedisp;
+  slistidx_t  didx;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  /* dancelist has the correct display order */
+  dancelist = danceGetDanceList (dances);
+  didx = slistGetNumByIdx (dancelist, rownum);
+  dancedisp = danceGetStr (dances, didx, DANCE_DANCE);
+  uivlSetRowColumnValue (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
+      CONFUI_DANCE_COL_DANCE, dancedisp);
+  uivlSetRowColumnNum (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
+      CONFUI_DANCE_COL_DANCE_IDX, didx);
+}

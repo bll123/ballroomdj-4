@@ -48,6 +48,10 @@ enum {
   DL_CB_MAX,
 };
 
+enum {
+  DL_MIN_WIDTH = 200,
+};
+
 typedef struct uiduallist {
   uivirtlist_t      *uivl [DL_LIST_MAX];
   callback_t        *callbacks [DL_CB_MAX];
@@ -121,7 +125,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING);
+  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
   duallist->uivl [DL_LIST_SOURCE] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
@@ -161,7 +165,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING);
+  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);

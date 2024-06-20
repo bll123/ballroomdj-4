@@ -1079,7 +1079,8 @@ uitestUIVirtList (uitest_t *uitest)
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS, VL_SHOW_HEADING);
+  uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS,
+      VL_SHOW_HEADING, VL_NO_WIDTH);
   uivlSetUseListingFont (uitest->vl);
   uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
