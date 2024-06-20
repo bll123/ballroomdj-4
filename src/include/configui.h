@@ -451,6 +451,7 @@ void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
 void confuiBuildUIEditDances (confuigui_t *gui);
+void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* confdebug.c */
 void confuiBuildUIDebug (confuigui_t *gui);
@@ -547,12 +548,7 @@ bool confuiSwitchTable (void *udata, int32_t pagenum);
 /* conftableadd.c */
 bool confuiTableAdd (void *udata);
 
-/* conftabledance.c */
-bool confuiDanceSelect (void *udata, int32_t col);
-void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
-
 /* conftableset.c */
-void confuiDanceSet (uiwcont_t *uiwidget, const char *dancedisp, ilistidx_t key);
 void confuiGenreSet (uiwcont_t *uiwidget, int editable, const char *genredisp, int clflag);
 void confuiLevelSet (uiwcont_t *uiwidget, int editable, const char *leveldisp, long weight, int def);
 void confuiRatingSet (uiwcont_t *uiwidget, int editable, const char *ratingdisp, long weight);

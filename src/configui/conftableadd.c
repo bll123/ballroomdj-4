@@ -28,7 +28,8 @@ confuiTableAdd (void *udata)
 {
   confuigui_t       *gui = udata;
   uiwcont_t         *uitree = NULL;
-  int               count;
+  uivirtlist_t      *uivl = NULL;
+  int               count = 0;
   int               flags;
   bool              found = false;
 
@@ -40,13 +41,19 @@ confuiTableAdd (void *udata)
   }
 
   uitree = gui->tables [gui->tablecurr].uitree;
-  if (uitree == NULL) {
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uitree == NULL && uivl == NULL) {
     logProcEnd ("no-tree");
     return UICB_STOP;
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  count = uiTreeViewSelectGetCount (uitree);
+  if (uitree != NULL) {
+    count = uiTreeViewSelectGetCount (uitree);
+  }
+  if (uivl != NULL) {
+    count = uivlSelectionCount (uivl);
+  }
   if (count == 1) {
     found = true;
   }
@@ -54,31 +61,46 @@ confuiTableAdd (void *udata)
   if (found) {
     int     idx;
 
-    idx = uiTreeViewSelectGetIndex (uitree);
+    if (uitree != NULL) {
+      idx = uiTreeViewSelectGetIndex (uitree);
+    }
+    if (uivl != NULL) {
+      idx = uivlGetCurrSelection (uivl);
+    }
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
-      if (! uiTreeViewSelectNext (uitree)) {
-        found = false;
+      if (uitree != NULL) {
+        if (! uiTreeViewSelectNext (uitree)) {
+          found = false;
+        }
+      }
+      if (uivl != NULL) {
+        int   nidx;
+
+        nidx = uivlMoveSelection (uivl, VL_DIR_DOWN);
+        if (idx == nidx) {
+          found = false;
+        }
       }
     }
   }
 
-  if (! found) {
-    uiTreeViewValueAppend (uitree);
-  } else {
-    uiTreeViewValueInsertBefore (uitree);
+  if (uitree != NULL) {
+    if (! found) {
+      uiTreeViewValueAppend (uitree);
+    } else {
+      uiTreeViewValueInsertBefore (uitree);
+    }
   }
 
   switch (gui->tablecurr) {
     case CONFUI_ID_DANCE: {
       dance_t     *dances;
-      ilistidx_t  dkey;
 
       dances = bdjvarsdfGet (BDJVDF_DANCES);
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
-      dkey = danceAdd (dances, _("New Dance"));
-      /* CONTEXT: configuration: dance name that is set when adding a new dance */
-//      confuiDanceSet (uitree, _("New Dance"), dkey);
+      danceAdd (dances, _("New Dance"));
+      uivlPopulate (uivl);
       break;
     }
 

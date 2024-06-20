@@ -51,6 +51,7 @@ static int  confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 static void confuiDanceSave (confuigui_t *gui);
 static void confuiLoadDanceTypeList (confuigui_t *gui);
 static void confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 void
 confuiInitEditDances (confuigui_t *gui)
@@ -90,6 +91,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiwcont_t     *szgrpC;
   const char    *bpmstr;
   char          tbuff [MAXPATHLEN];
+  uivirtlist_t  *uivl;
 
   logProcBegin ();
   gui->inchange = true;
@@ -171,16 +173,16 @@ confuiBuildUIEditDances (confuigui_t *gui)
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
 
-  gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT] =
-      callbackInitI (confuiDanceSelect, gui);
-  uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
-      gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
-
+  uivlSetSelectionCallback (gui->tables [CONFUI_ID_DANCE].uivl,
+      confuiDanceSelect, gui);
+//  uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
+//      gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
 
   gui->inchange = false;
 
   uiTreeViewSelectSet (gui->tables [CONFUI_ID_DANCE].uitree, 0);
-  confuiDanceSelect (gui, 0);
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  confuiDanceSelect (gui, uivl, 0, CONFUI_DANCE_COL_DANCE);
 
   uiwcontFree (dvbox);
   uiwcontFree (vbox);
@@ -192,16 +194,74 @@ confuiBuildUIEditDances (confuigui_t *gui)
   logProcEnd ("");
 }
 
+void
+confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
+{
+  dance_t         *dances;
+  const char      *sval;
+  slist_t         *slist;
+  datafileconv_t  conv;
+  int             widx;
+  nlistidx_t      num;
+  int             timesig;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+
+  sval = danceGetStr (dances, danceIdx, DANCE_DANCE);
+  widx = CONFUI_ENTRY_DANCE_DANCE;
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  /* because the same entry field is used when switching dances, */
+  /* and there is a validation timer running, */
+  /* the validation timer must be cleared */
+  /* the entry field does not need to be validated when being loaded */
+  /* this applies to the dance, tags and announcement */
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
+
+  slist = danceGetList (dances, danceIdx, DANCE_TAGS);
+  conv.list = slist;
+  conv.invt = VALUE_LIST;
+  convTextList (&conv);
+  sval = conv.strval;
+  widx = CONFUI_ENTRY_DANCE_TAGS;
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  dataFree (conv.strval);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
+
+  timesig = danceGetTimeSignature (danceIdx);
+
+  sval = danceGetStr (dances, danceIdx, DANCE_ANNOUNCE);
+  widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
+
+  num = danceGetNum (dances, danceIdx, DANCE_MPM_HIGH);
+  widx = CONFUI_WIDGET_DANCE_MPM_HIGH;
+  num = danceConvertMPMtoBPM (danceIdx, num);
+  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  num = danceGetNum (dances, danceIdx, DANCE_MPM_LOW);
+  widx = CONFUI_WIDGET_DANCE_MPM_LOW;
+  num = danceConvertMPMtoBPM (danceIdx, num);
+  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  num = danceGetNum (dances, danceIdx, DANCE_SPEED);
+  widx = CONFUI_SPINBOX_DANCE_SPEED;
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, timesig);
+
+  num = danceGetNum (dances, danceIdx, DANCE_TYPE);
+  widx = CONFUI_SPINBOX_DANCE_TYPE;
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+}
+
 /* internal routines */
 
 static void
 confuiCreateDanceTable (confuigui_t *gui)
 {
-//  slistidx_t        iteridx;
-//  ilistidx_t        key;
   dance_t           *dances;
-//  uiwcont_t         *uitree;
-//  slist_t           *dancelist;
   uivirtlist_t      *uivl;
 
 
@@ -217,48 +277,6 @@ confuiCreateDanceTable (confuigui_t *gui)
   gui->tables [CONFUI_ID_DANCE].currcount = danceGetCount (dances);
   uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
   uivlDisplay (uivl);
-
-#if 0
-  dancelist = danceGetDanceList (dances);
-  slistStartIterator (dancelist, &iteridx);
-  while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    const char  *dancedisp;
-
-    dancedisp = danceGetStr (dances, key, DANCE_DANCE);
-
-    confuiDanceSet (uitree, dancedisp, key);
-    gui->tables [CONFUI_ID_DANCE].currcount += 1;
-  }
-#endif
-
-#if 0
-  uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  uiTreeViewDisableHeaders (uitree);
-
-  uiTreeViewCreateValueStore (uitree, CONFUI_DANCE_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
-
-  dancelist = danceGetDanceList (dances);
-  slistStartIterator (dancelist, &iteridx);
-  while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    const char  *dancedisp;
-
-    dancedisp = danceGetStr (dances, key, DANCE_DANCE);
-
-    uiTreeViewValueAppend (uitree);
-    confuiDanceSet (uitree, dancedisp, key);
-    gui->tables [CONFUI_ID_DANCE].currcount += 1;
-  }
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_DANCE, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_TYPE_END);
-#endif
 
   logProcEnd ("");
 }
@@ -548,4 +566,22 @@ confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       CONFUI_DANCE_COL_DANCE, dancedisp);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
       CONFUI_DANCE_COL_DANCE_IDX, didx);
+}
+
+static void
+confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
+{
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  ilistidx_t    didx;
+
+  gui->inchange = true;
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  if (uivl == NULL) {
+    return;
+  }
+
+  didx = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_IDX);
+  confuiDanceSelectLoadValues (gui, didx);
+  gui->inchange = false;
 }

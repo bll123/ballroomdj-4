@@ -93,7 +93,7 @@ void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
-void uivlMoveSelection (uivirtlist_t *vl, int dir);
+int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 
 #endif /* INC_UIVIRTLIST_H */

@@ -1200,13 +1200,13 @@ uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
 }
 
-void
+int32_t
 uivlMoveSelection (uivirtlist_t *vl, int dir)
 {
   int32_t     rownum;
 
   if (vl == NULL || vl->ident != VL_IDENT) {
-    return;
+    return 0;
   }
 
   rownum = vl->currSelection;
@@ -1219,6 +1219,8 @@ uivlMoveSelection (uivirtlist_t *vl, int dir)
   rownum = uivlRownumLimit (vl, rownum);
 
   uivlSetSelection (vl, rownum);
+
+  return rownum;
 }
 
 /* internal routines */

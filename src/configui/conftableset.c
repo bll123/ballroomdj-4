@@ -21,20 +21,6 @@
 #include "ui.h"
 
 void
-confuiDanceSet (uiwcont_t *uitree, const char *dancedisp, ilistidx_t key)
-{
-  logProcBegin ();
-#if 0
-  uiTreeViewSetValues (uitree,
-      CONFUI_DANCE_COL_DANCE, dancedisp,
-      CONFUI_DANCE_COL_SB_PAD, "    ",
-      CONFUI_DANCE_COL_DANCE_IDX, (treenum_t) key,
-      TREE_VALUE_END);
-#endif
-  logProcEnd ("");
-}
-
-void
 confuiGenreSet (uiwcont_t *uitree,
     int editable, const char *genredisp, int clflag)
 {

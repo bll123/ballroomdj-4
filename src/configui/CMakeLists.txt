@@ -28,7 +28,6 @@ add_executable (bdj4configui
   confstatus.c
   conftable.c
   conftableadd.c
-  conftabledance.c
   conftableset.c
   confui.c
 )
