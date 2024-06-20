@@ -4,10 +4,6 @@
 #ifndef INC_UIVIRTLIST_H
 #define INC_UIVIRTLIST_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 #include "callback.h"
@@ -98,9 +94,5 @@ int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 void uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
-
-#if defined (__cplusplus) || defined (c_plusplus)
-} /* extern C */
-#endif
 
 #endif /* INC_UIVIRTLIST_H */

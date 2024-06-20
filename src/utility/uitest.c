@@ -1080,6 +1080,7 @@ uitestUIVirtList (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uitest->vl = uiCreateVirtList (vbox, UITEST_VL_DISPROWS, VL_SHOW_HEADING);
+  uivlSetUseListingFont (uitest->vl);
   uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
   for (int j = 0; j < UITEST_VL_COLS; ++j) {

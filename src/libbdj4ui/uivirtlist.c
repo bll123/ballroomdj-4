@@ -81,10 +81,11 @@ static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 static const char * const VL_DARKBG_CLASS = "bdj-dark-bg";
 
+typedef struct uivlcol uivlcol_t;
+
 typedef struct {
   uivirtlist_t    *vl;
   int             dispidx;
-  int             colidx;
   callback_t      *focuscb;
 } uivlrowcb_t;
 
@@ -99,11 +100,14 @@ typedef struct {
   callback_t  *togglecb;      // radio buttons and check buttons
   callback_t  *spinboxcb;
   callback_t  *spinboxtimecb;
+  callback_t  *colszcb;
+  uivlcol_t   *col0;
   char        *baseclass;
   int         minwidth;
   int         entrySz;
   int         entryMaxSz;
   int         sbtype;
+  int         colwidth;
   callback_t  *sbcb;
   double      sbmin;
   double      sbmax;
@@ -115,11 +119,13 @@ typedef struct {
   bool        ellipsize : 1;
 } uivlcoldata_t;
 
-typedef struct {
+typedef struct uivlcol {
   uint64_t  ident;
+  uiwcont_t *box;
   uiwcont_t *uiwidget;
   /* class needs to be held temporarily so it can be removed */
   char      *class;
+  int       colidx;
   int32_t   value;        // internal numeric value
   bool      hidden;
 } uivlcol_t;
@@ -130,6 +136,7 @@ typedef struct {
   uiwcont_t     *hbox;
   uivlcol_t     *cols;
   uivlrowcb_t   *rowcb;             // must have a stable address
+  int           dispidx;
   bool          hidden : 1;
   bool          selected : 1;       // a temporary flag to ease processing
   bool          initialized : 1;
@@ -151,9 +158,10 @@ typedef struct uivirtlist {
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
   uivlrow_t     headingrow;
-  int           disprows;
-  int           allocrows;
+  int           dispsize;
+  int           dispalloc;
   int           vboxheight;
+  int           vboxwidth;
   int           rowheight;
   int32_t       numrows;
   int32_t       rowoffset;
@@ -190,6 +198,7 @@ static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVboxSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
+static bool uivlColSizeChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
 static bool uivlFocusCallback (void *udata);
 static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
@@ -201,7 +210,7 @@ static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_
 static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 
 uivirtlist_t *
-uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
+uiCreateVirtList (uiwcont_t *boxp, int dispsize, int headingflag)
 {
   uivirtlist_t  *vl;
 
@@ -221,6 +230,7 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
   vl->darkbg = false;
   vl->uselistingfont = false;
   vl->vboxheight = -1;
+  vl->vboxwidth = -1;
   vl->rowheight = -1;
 
   for (int i = 0; i < VL_W_MAX; ++i) {
@@ -248,17 +258,21 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
 
   /* a scrolled window is necessary to allow the window to shrink */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
-  uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  uiWidgetExpandHoriz (vl->wcont [VL_W_SCROLL_WIN]);
+//  uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
+//  uiWidgetExpandHoriz (vl->wcont [VL_W_SCROLL_WIN]);
+  uiWidgetExpandVert (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);
 
   vl->wcont [VL_W_MAIN_HBOX] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_MAIN_HBOX]);
+  /* need a minimum width so it looks nice */
+  uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_HBOX], 200, -1);
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
   uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);    // for keyboard events
 
+  /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_EVENT_BOX]);
@@ -271,9 +285,9 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
   uiBoxPackEnd (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
-  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], (double) (disprows / 2));
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], (double) (dispsize / 2));
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
-  uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) disprows);
+  uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) dispsize);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
@@ -295,10 +309,10 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows, int headingflag)
   nlistSetNum (vl->selected, 0, true);
   vl->initialized = VL_INIT_NONE;
 
-  vl->disprows = disprows;
-  vl->allocrows = disprows;
-  vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->allocrows);
-  for (int dispidx = 0; dispidx < disprows; ++dispidx) {
+  vl->dispsize = dispsize;
+  vl->dispalloc = dispsize;
+  vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->dispalloc);
+  for (int dispidx = 0; dispidx < dispsize; ++dispidx) {
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
 
@@ -331,7 +345,7 @@ uivlFree (uivirtlist_t *vl)
 
   uivlFreeRow (vl, &vl->headingrow);
 
-  for (int dispidx = 0; dispidx < vl->allocrows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispalloc; ++dispidx) {
     uivlFreeRow (vl, &vl->rows [dispidx]);
   }
   dataFree (vl->rows);
@@ -362,14 +376,13 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   vl->numrows = numrows;
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: num-rows: %" PRId32, numrows);
-fprintf (stderr, "set numrows %d\n", numrows);
 
   if (numrows <= vl->currSelection) {
     uivlMoveSelection (vl, VL_DIR_UP);
   }
 
-  if (numrows < vl->disprows) {
-    for (int i = numrows; i < vl->disprows; ++i) {
+  if (numrows < vl->dispsize) {
+    for (int i = numrows; i < vl->dispsize; ++i) {
       uivlClearRowDisp (vl, i);
     }
   }
@@ -395,6 +408,8 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->togglecb = NULL;
     coldata->spinboxcb = NULL;
     coldata->spinboxtimecb = NULL;
+    coldata->colszcb = NULL;
+    coldata->colwidth = -1;
     coldata->baseclass = NULL;
     coldata->minwidth = VL_MIN_WIDTH_ANY;
     coldata->entrySz = 0;
@@ -1035,7 +1050,7 @@ uivlDisplay (uivirtlist_t *vl)
     return;
   }
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t *row;
 
     row = &vl->rows [dispidx];
@@ -1048,7 +1063,7 @@ uivlDisplay (uivirtlist_t *vl)
     uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
   }
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
     uivlPackRow (vl, row);
     if (dispidx == 0) {
@@ -1071,20 +1086,24 @@ uivlPopulate (uivirtlist_t *vl)
     return;
   }
 
-  for (int dispidx = vl->disprows; dispidx < vl->allocrows; ++dispidx) {
+  for (int dispidx = vl->dispsize; dispidx < vl->dispalloc; ++dispidx) {
     vl->rows [dispidx].hidden = true;
     uiWidgetHide (vl->rows [dispidx].hbox);
   }
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
     uivlcol_t   *col;
+
+    if (dispidx + vl->rowoffset > vl->numrows) {
+      break;
+    }
 
     row = &vl->rows [dispidx];
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       col = &row->cols [colidx];
-      if (col->class != NULL) {
+      if (vl->coldata [colidx].hidden == VL_COL_SHOW && col->class != NULL) {
         uiWidgetRemoveClass (col->uiwidget, col->class);
         dataFree (col->class);
         col->class = NULL;
@@ -1092,8 +1111,12 @@ uivlPopulate (uivirtlist_t *vl)
     }
   }
 
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
+
+    if (dispidx + vl->rowoffset > vl->numrows) {
+      break;
+    }
 
     row = &vl->rows [dispidx];
     if (vl->fillcb != NULL) {
@@ -1182,7 +1205,6 @@ uivlMoveSelection (uivirtlist_t *vl, int dir)
   }
 
   rownum = vl->currSelection;
-fprintf (stderr, "move: orig: %d %d\n", rownum, dir);
   if (dir == VL_DIR_UP) {
     rownum -= 1;
   }
@@ -1190,7 +1212,6 @@ fprintf (stderr, "move: orig: %d %d\n", rownum, dir);
     rownum += 1;
   }
   rownum = uivlRownumLimit (vl, rownum);
-fprintf (stderr, "   new: %d\n", rownum);
 
   uivlSetSelection (vl, rownum);
 }
@@ -1228,7 +1249,9 @@ uivlFreeCol (uivlcol_t *col)
 
   dataFree (col->class);
   col->class = NULL;
+  uiwcontFree (col->box);
   uiwcontFree (col->uiwidget);
+  col->box = NULL;
   col->uiwidget = NULL;
   col->ident = 0;
 }
@@ -1259,6 +1282,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     col->ident = VL_IDENT_COL;
     col->hidden = false;
+    col->colidx = colidx;
 
     type = coldata->type;
     if (isheading) {
@@ -1339,6 +1363,20 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
     }
+
+    /* need a box for the size change callback */
+    col->box = uiCreateHorizBox ();
+    uiWidgetSetAllMargins (col->box, 0);
+    uiBoxPackStart (col->box, col->uiwidget);
+
+    if (row->dispidx == 0 && col->uiwidget != NULL) {
+      /* set up the size change callback so that the columns */
+      /* can be made to only grow, and never shrink on their own */
+      coldata->colszcb = callbackInitII (uivlColSizeChg, coldata);
+      coldata->col0 = col;
+      uiBoxSetSizeChgCallback (col->box, coldata->colszcb);
+    }
+
     uiWidgetSetMarginEnd (col->uiwidget, 3);
     if (coldata->grow == VL_COL_WIDTH_GROW) {
       uiWidgetAlignHorizFill (col->uiwidget);
@@ -1352,11 +1390,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     if (coldata->hidden == VL_COL_SHOW) {
       if (coldata->grow == VL_COL_WIDTH_GROW) {
-        uiBoxPackStartExpand (row->hbox, col->uiwidget);
+        uiBoxPackStartExpand (row->hbox, col->box);
       } else {
-        uiBoxPackStart (row->hbox, col->uiwidget);
+        uiBoxPackStart (row->hbox, col->box);
       }
-      uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
+      uiSizeGroupAdd (coldata->szgrp, col->box);
     }
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
@@ -1392,7 +1430,7 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
     int32_t   rowidx;
 
     rowidx = rownum - vl->rowoffset;
-    if (rowidx >= 0 && rowidx < vl->disprows) {
+    if (rowidx >= 0 && rowidx < vl->dispsize) {
       row = &vl->rows [rowidx];
       if (row->ident != VL_IDENT_ROW) {
         fprintf (stderr, "ERR: invalid row: rownum %" PRId32 " rowoffset: %" PRId32 " rowidx: %" PRId32, rownum, vl->rowoffset, rowidx);
@@ -1456,7 +1494,7 @@ uivlKeyEvent (void *udata)
 
     if (uiEventIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
       if (uiEventIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
-        dir = vl->disprows;
+        dir = vl->dispsize;
       }
       if (uiEventIsUpKey (vl->wcont [VL_W_KEYH])) {
         dir = - dir;
@@ -1568,14 +1606,16 @@ uivlScrollEvent (void *udata, int32_t dir)
 static void
 uivlClearDisplaySelections (uivirtlist_t *vl)
 {
-  for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
       uiWidgetRemoveClass (row->hbox, VL_SELECTED_CLASS);
 
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+          uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        }
       }
       row->selected = false;
     }
@@ -1593,14 +1633,16 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     int32_t     tval;
 
     tval = val - vl->rowoffset;
-    if (tval >= 0 && tval < vl->disprows) {
+    if (tval >= 0 && tval < vl->dispsize) {
       uivlrow_t   *row;
 
       row = uivlGetRow (vl, val);
       uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
       row->selected = true;
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+          uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        }
       }
     }
   }
@@ -1620,7 +1662,7 @@ uivlAddSelection (uivirtlist_t *vl, uint32_t rownum)
   int32_t     rowidx;
 
   rowidx = rownum - vl->rowoffset;
-  if (rowidx >= 0 && rowidx < vl->disprows) {
+  if (rowidx >= 0 && rowidx < vl->dispsize) {
     row = &vl->rows [rowidx];
   }
   nlistSetNum (vl->selected, rownum, true);
@@ -1642,10 +1684,10 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
   if (sctype == VL_SCROLL_NORM &&
       nlistGetCount (vl->selected) == 1 &&
       wantrow >= vl->rowoffset &&
-      wantrow < vl->rowoffset + vl->disprows) {
+      wantrow < vl->rowoffset + vl->dispsize) {
     if (wantrow < vl->currSelection) {
       /* selection up */
-      if (wantrow < vl->rowoffset + vl->disprows / 2 - 1) {
+      if (wantrow < vl->rowoffset + vl->dispsize / 2 - 1) {
         start = vl->rowoffset - 1;
       } else {
         vl->inscroll = false;
@@ -1653,7 +1695,7 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
       }
     } else {
       /* selection down */
-      if (wantrow >= vl->rowoffset + vl->disprows / 2) {
+      if (wantrow >= vl->rowoffset + vl->dispsize / 2) {
         start = vl->rowoffset + 1;
       } else {
         vl->inscroll = false;
@@ -1682,6 +1724,26 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
   int           calcrows;
   int           theight;
 
+  if (width < vl->vboxwidth) {
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      uivlrow_t   *row;
+      uivlcol_t   *col;
+
+      row = &vl->rows [0];
+      if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+        vl->coldata [colidx].colwidth = 0;
+        col = &row->cols [colidx];
+        uiWidgetSetSizeRequest (col->box, -1, -1);
+      }
+    }
+  }
+
+  vl->vboxwidth = width;
+
+  if (uiWidgetIsMapped (vl->wcont [VL_W_MAIN_VBOX]) &&
+      vl->vboxheight == height) {
+    return UICB_CONT;
+  }
 
   vl->vboxheight = height;
 
@@ -1689,13 +1751,13 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
     theight = vl->vboxheight;
     calcrows = theight / vl->rowheight;
 
-    if (calcrows != vl->disprows) {
+    if (calcrows != vl->dispsize) {
 
       /* only if the number of rows has increased */
-      if (vl->allocrows < calcrows) {
+      if (vl->dispalloc < calcrows) {
         vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * calcrows);
 
-        for (int dispidx = vl->disprows; dispidx < calcrows; ++dispidx) {
+        for (int dispidx = vl->dispsize; dispidx < calcrows; ++dispidx) {
           uivlrow_t *row;
 
           row = &vl->rows [dispidx];
@@ -1704,22 +1766,23 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
           uivlPackRow (vl, row);
         }
 
-        vl->allocrows = calcrows;
+        vl->dispalloc = calcrows;
       }
 
-      if (calcrows < vl->disprows) {
-        for (int i = calcrows; i < vl->disprows; ++i) {
+      if (calcrows < vl->dispsize) {
+        for (int i = calcrows; i < vl->dispsize; ++i) {
           uivlClearRowDisp (vl, i);
         }
       }
 
-      vl->disprows = calcrows;
+      vl->dispsize = calcrows;
       uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
-          (double) (vl->disprows / 2));
-      uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->disprows);
+          (double) (vl->dispsize / 2));
+      uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
       uivlPopulate (vl);
     }
   }
+
   return UICB_CONT;
 }
 
@@ -1729,6 +1792,25 @@ uivlRowSizeChg (void *udata, int32_t width, int32_t height)
   uivirtlist_t  *vl = udata;
 
   vl->rowheight = height;
+  return UICB_CONT;
+}
+
+static bool
+uivlColSizeChg (void *udata, int32_t width, int32_t height)
+{
+  uivlcoldata_t   *coldata = udata;
+
+  /* gtk seems to resize the box some number of pixels */
+  /* greater than requested */
+  /* just need a stable number */
+  /* a smaller size may help to allow user-shrinking */
+  if (width - 16 > 0 && width > coldata->colwidth) {
+    coldata->colwidth = width;
+    if (uiWidgetIsMapped (coldata->col0->box)) {
+      uiWidgetSetSizeRequest (coldata->col0->box, width - 16, -1);
+    }
+  }
+
   return UICB_CONT;
 }
 
@@ -1742,12 +1824,12 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->initialized = false;
   row->cleared = false;
   row->rowcb = NULL;
+  row->dispidx = dispidx;
 
   if (dispidx != VL_ROW_HEADING) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
     row->rowcb->vl = vl;
     row->rowcb->dispidx = dispidx;
-    row->rowcb->colidx = VL_COL_UNKNOWN;
     row->rowcb->focuscb = callbackInit (uivlFocusCallback, row->rowcb, NULL);
   }
 }
@@ -1785,11 +1867,19 @@ uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
 int32_t
 uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset)
 {
+  int   tdispsize;
+
   if (rowoffset < 0) {
     rowoffset = 0;
   }
-  if (rowoffset > vl->numrows - vl->disprows) {
-    rowoffset = vl->numrows - vl->disprows;
+
+  /* the number of rows may be less than the available display size */
+  tdispsize = vl->dispsize;
+  if (vl->numrows < vl->dispsize) {
+    tdispsize = vl->numrows;
+  }
+  if (rowoffset > vl->numrows - tdispsize) {
+    rowoffset = vl->numrows - tdispsize;
   }
 
   return rowoffset;
@@ -1849,7 +1939,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (dispidx < 0 || dispidx >= vl->disprows) {
+  if (dispidx < 0 || dispidx >= vl->dispsize) {
     return;
   }
 
@@ -1858,7 +1948,6 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
     return;
   }
 
-fprintf (stderr, "clear-row %d\n", dispidx);
   row->cleared = true;
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {

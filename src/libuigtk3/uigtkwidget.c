@@ -288,6 +288,22 @@ uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
 }
 
 bool
+uiWidgetIsMapped (uiwcont_t *uiwidget)
+{
+  bool    rc = false;
+
+  if (uiwidget == NULL) {
+    return rc;
+  }
+  if (uiwidget->uidata.widget == NULL) {
+    return rc;
+  }
+
+  rc = gtk_widget_get_mapped (uiwidget->uidata.widget);
+  return rc;
+}
+
+bool
 uiWidgetIsValid (uiwcont_t *uiwidget)
 {
   bool    rc = false;

@@ -55,8 +55,8 @@ typedef struct uiduallist {
   /* dispq is the display list of strings */
   /* it is used as the source to display in the virtlist */
   queue_t           *dispq [DL_LIST_MAX];
-  /* displist is used to look up the keys, and to retain the values */
-  /* passed in by the caller */
+  /* displist is used to look up the keys */
+  /* and to retain the values from the caller */
   slist_t           *displist [DL_LIST_MAX];
   int               flags;
   bool              changed : 1;
@@ -85,7 +85,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DL_LIST_MAX; ++i) {
     duallist->uivl [i] = NULL;
-    duallist->dispq [i] = queueAlloc ("duallist-q", NULL);
+    duallist->dispq [i] = queueAlloc ("duallist-q", free);
     duallist->displist [i] = slistAlloc ("duallist-list", LIST_ORDERED, NULL);
   }
   duallist->flags = flags;
@@ -246,9 +246,11 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   duallist->displist [which] = slistAlloc ("duallist", LIST_UNORDERED, NULL);
 
   /* the caller should set the target list first */
+  /* so that the source list can be populated correctly */
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
-    long    val;
+    long  val;
+    char  *tkeystr;
 
     val = slistGetNum (slist, keystr);
     if (which == DL_LIST_SOURCE &&
@@ -260,12 +262,11 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     }
 
     slistSetNum (duallist->displist [which], keystr, val);
-    queuePush (duallist->dispq [which], (void *) keystr);
+    tkeystr = mdstrdup (keystr);
+    queuePush (duallist->dispq [which], tkeystr);
   }
 
-  if (which == DL_LIST_SOURCE) {
-    slistSort (duallist->displist [which]);
-  }
+  slistSort (duallist->displist [which]);
 
   /* initial number of rows */
   uivlSetNumRows (duallist->uivl [which],
@@ -293,6 +294,7 @@ uiduallistClearChanged (uiduallist_t *duallist)
   duallist->changed = false;
 }
 
+/* the caller takes ownership of the list */
 slist_t *
 uiduallistGetList (uiduallist_t *duallist)
 {
@@ -305,8 +307,10 @@ uiduallistGetList (uiduallist_t *duallist)
   queueStartIterator (duallist->dispq [DL_LIST_TARGET], &qiter);
   while ((keystr =
       queueIterateData (duallist->dispq [DL_LIST_TARGET], &qiter)) != NULL) {
-    slistSetNum (slist, keystr,
-        slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
+    listnum_t   val;
+
+    val = slistGetNum (duallist->displist [DL_LIST_TARGET], keystr);
+    slistSetNum (slist, keystr, val);
   }
 
   return slist;
@@ -352,14 +356,14 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   idx = uivlGetCurrSelection (duallist->uivl [which]);
   count = queueGetCount (duallist->dispq [which]);
 
-  /* a move has no effect on duallist->displist */
+  /* a move has no effect on duallist->displist, as it is sorted */
   if (idx > 0 && dir == DL_MOVE_PREV) {
     toidx = idx - 1;
   }
   if (idx < count - 1 && dir == DL_MOVE_NEXT) {
     toidx = idx + 1;
   }
-  if (toidx < 0) {
+  if (toidx < 0 || toidx >= count) {
     return;
   }
 
@@ -376,11 +380,13 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
 static bool
 uiduallistDispSelect (void *udata)
 {
-  uiduallist_t      *duallist = udata;
-  int               count;
-  char              *keystr;
-  int               idx;
-  int               toidx;
+  uiduallist_t  *duallist = udata;
+  int           count;
+  char          *keystr;
+  char          *tkeystr;
+  int           idx;
+  int           toidx;
+  listnum_t     val;
 
   count = uivlSelectionCount (duallist->uivl [DL_LIST_SOURCE]);
   if (count != 1) {
@@ -390,13 +396,15 @@ uiduallistDispSelect (void *udata)
   idx = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
   toidx = uivlGetCurrSelection (duallist->uivl [DL_LIST_TARGET]);
   keystr = queueGetByIdx (duallist->dispq [DL_LIST_SOURCE], idx);
+  val = slistGetNum (duallist->displist [DL_LIST_SOURCE], keystr);
+
+  tkeystr = mdstrdup (keystr);
   if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_TARGET])) {
-    queuePush (duallist->dispq [DL_LIST_TARGET], keystr);
+    queuePush (duallist->dispq [DL_LIST_TARGET], tkeystr);
   } else {
-    queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, keystr);
+    queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, tkeystr);
   }
-  slistSetNum (duallist->displist [DL_LIST_TARGET], keystr,
-      slistGetNum (duallist->displist [DL_LIST_SOURCE], keystr));
+  slistSetNum (duallist->displist [DL_LIST_TARGET], keystr, val);
   uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
   uivlMoveSelection (duallist->uivl [DL_LIST_TARGET], VL_DIR_DOWN);
@@ -438,11 +446,13 @@ uiduallistDispRemove (void *udata)
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
-    int32_t   currsel;
+    int32_t     currsel;
+    listnum_t   val;
 
-    slistSetNum (duallist->displist [DL_LIST_SOURCE], keystr,
-        slistGetNum (duallist->displist [DL_LIST_TARGET], keystr));
+    val = slistGetNum (duallist->displist [DL_LIST_TARGET], keystr);
+    slistSetNum (duallist->displist [DL_LIST_SOURCE], keystr, val);
     toidx = slistGetIdx (duallist->displist [DL_LIST_SOURCE], keystr);
+
     if (toidx == 0) {
       queuePushHead (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
     } else {
@@ -456,9 +466,7 @@ uiduallistDispRemove (void *udata)
     uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],
         queueGetCount (duallist->dispq [DL_LIST_SOURCE]));
     currsel = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
-    if (toidx < currsel) {
-      uivlMoveSelection (duallist->uivl [DL_LIST_SOURCE], VL_DIR_DOWN);
-    }
+    uivlSetSelection (duallist->uivl [DL_LIST_SOURCE], toidx + 1);
   }
 
   slistDelete (duallist->displist [DL_LIST_TARGET], keystr);
@@ -468,24 +476,6 @@ uiduallistDispRemove (void *udata)
   uivlPopulate (duallist->uivl [DL_LIST_TARGET]);
   return UICB_CONT;
 }
-
-#if 0
-static void
-uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
-{
-  uiwcont_t         *uitree;
-
-  if (duallist == NULL) {
-    return;
-  }
-  if (which < 0 || which >= DL_LIST_MAX) {
-    return;
-  }
-
-  uitree = duallist->uitrees [which];
-  uiTreeViewSelectDefault (uitree);
-}
-#endif
 
 static void
 uiduallistVLFillSourceCB (void *udata, uivirtlist_t *vl, int32_t rownum)
@@ -502,6 +492,7 @@ uiduallistVLFillTargetCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 static void
 uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, int which)
 {
+  qidx_t        count;
   const char    *keystr;
 
   if (duallist->dispq [which] == NULL) {
@@ -511,6 +502,13 @@ uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, in
     return;
   }
 
+  count = queueGetCount (duallist->dispq [which]);
+  if (rownum >= count) {
+    return;
+  }
+
   keystr = queueGetByIdx (duallist->dispq [which], rownum);
-  uivlSetRowColumnValue (duallist->uivl [which], rownum, DL_COL_DISP, keystr);
+  uivlSetRowColumnValue (duallist->uivl [which], rownum,
+      DL_COL_DISP, keystr);
 }
+

@@ -198,9 +198,9 @@ confuiSwitchTable (void *udata, int32_t pagenum)
     confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_ORGPATH));
   }
   if (gui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
-    /* be sure to create the listing first */
-    confuiCreateTagListingDisp (gui);
+    /* be sure to create the target first */
     confuiCreateTagSelectedDisp (gui);
+    confuiCreateTagListingDisp (gui);
   }
 
   if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
