@@ -253,6 +253,23 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
 }
 
+void
+confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey)
+{
+  dance_t       *dances;
+  slist_t       *dancelist;
+  const char    *dancedisp;
+  int32_t       idx;
+  uivirtlist_t  *uivl;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dancelist = danceGetDanceList (dances);
+  dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
+  idx = slistGetIdx (dancelist, dancedisp);
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  uivlSetSelection (uivl, idx);
+}
+
 /* internal routines */
 
 static void
@@ -561,6 +578,10 @@ confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   /* dancelist has the correct display order */
   dancelist = danceGetDanceList (dances);
   dkey = slistGetNumByIdx (dancelist, rownum);
+  if (dkey == LIST_VALUE_INVALID) {
+    return;
+  }
+
   dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
   uivlSetRowColumnValue (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
       CONFUI_DANCE_COL_DANCE, dancedisp);
@@ -575,6 +596,11 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   uivirtlist_t  *uivl;
   ilistidx_t    dkey;
 
+  if (gui->inchange) {
+    logProcEnd ("in-dance-select");
+    return;
+  }
+
   gui->inchange = true;
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   if (uivl == NULL) {
@@ -582,7 +608,6 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   }
 
   dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_IDX);
-fprintf (stderr, "load: row %d dkey: %d\n", rownum, dkey);
   confuiDanceSelectLoadValues (gui, dkey);
   gui->inchange = false;
 }

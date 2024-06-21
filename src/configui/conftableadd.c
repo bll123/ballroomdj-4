@@ -96,12 +96,15 @@ confuiTableAdd (void *udata)
   switch (gui->tablecurr) {
     case CONFUI_ID_DANCE: {
       dance_t     *dances;
+      ilistidx_t  dkey;
 
       dances = bdjvarsdfGet (BDJVDF_DANCES);
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
-      danceAdd (dances, _("New Dance"));
+      dkey = danceAdd (dances, _("New Dance"));
+      danceSave (dances, NULL, -1);
+      uivlSetNumRows (uivl, danceGetCount (dances));
       uivlPopulate (uivl);
-// ### want to set the selection to the new dance, wherever it is.
+      confuiDanceSearchSelect (gui, dkey);
       break;
     }
 
@@ -134,14 +137,16 @@ confuiTableAdd (void *udata)
     }
   }
 
-  uiTreeViewSelectCurrent (uitree);
-
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
-    ilistidx_t    key;
-
-    key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
-    confuiDanceSelectLoadValues (gui, key);
+  if (uitree != NULL) {
+    uiTreeViewSelectCurrent (uitree);
   }
+
+//  if (gui->tablecurr == CONFUI_ID_DANCE) {
+//    ilistidx_t    key;
+//
+//    key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
+//    confuiDanceSelectLoadValues (gui, key);
+//  }
 
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount += 1;

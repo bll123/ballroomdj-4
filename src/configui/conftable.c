@@ -359,6 +359,8 @@ confuiTableRemove (void *udata)
     dkey = uivlGetRowColumnNum (uivl, idx, CONFUI_DANCE_COL_DANCE_IDX);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceDelete (dances, dkey);
+    danceSave (dances, NULL, -1);
+    uivlSetNumRows (uivl, danceGetCount (dances));
     uivlPopulate (uivl);
   }
 

@@ -6,6 +6,11 @@
 
 **4.11.0 2024-7---**
 
+* Bug Fixes:
+    * Edit Dances: Fixed a bug when adding multiple dances.
+* Internal:
+    * Re-work of all table handling.
+
 -->
 
 **4.10.5 2024-6-17**

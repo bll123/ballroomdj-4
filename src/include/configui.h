@@ -335,7 +335,6 @@ typedef struct confuitable {
 
 enum {
   CONFUI_DANCE_COL_DANCE,
-//  CONFUI_DANCE_COL_SB_PAD,
   CONFUI_DANCE_COL_DANCE_IDX,
   CONFUI_DANCE_COL_MAX,
 };
@@ -452,6 +451,7 @@ void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int
 void confuiInitEditDances (confuigui_t *gui);
 void confuiBuildUIEditDances (confuigui_t *gui);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
+void confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey);
 
 /* confdebug.c */
 void confuiBuildUIDebug (confuigui_t *gui);
