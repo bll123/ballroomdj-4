@@ -657,8 +657,11 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
 
   col = &row->cols [colidx];
   dataFree (col->class);
-  col->class = mdstrdup (class);    // save for removal process
-  uiWidgetAddClass (col->uiwidget, class);
+  col->class = NULL;
+  if (class != NULL) {
+    col->class = mdstrdup (class);    // save for removal process
+    uiWidgetAddClass (col->uiwidget, class);
+  }
 }
 
 void
@@ -682,6 +685,9 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
     return;
   }
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+    return;
+  }
+  if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
     return;
   }
 
@@ -1012,8 +1018,11 @@ uivlPopulate (uivirtlist_t *vl)
     row = &vl->rows [dispidx];
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
+        continue;
+      }
       col = &row->cols [colidx];
-      if (vl->coldata [colidx].hidden == VL_COL_SHOW && col->class != NULL) {
+      if (col->class != NULL) {
         uiWidgetRemoveClass (col->uiwidget, col->class);
         dataFree (col->class);
         col->class = NULL;
@@ -1207,12 +1216,17 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     coldata = &vl->coldata [colidx];
 
     col->ident = VL_IDENT_COL;
+    col->box = NULL;
+    col->uiwidget = NULL;
+    col->class = NULL;
     col->colidx = colidx;
+    col->value = LIST_VALUE_INVALID;
 
     type = coldata->type;
     if (isheading) {
       type = VL_TYPE_LABEL;
     }
+
     switch (type) {
       case VL_TYPE_LABEL: {
         col->uiwidget = uiCreateLabel ("");
@@ -1297,6 +1311,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     col->box = uiCreateHorizBox ();
     uiWidgetSetAllMargins (col->box, 0);
     uiBoxPackStart (col->box, col->uiwidget);
+    uiWidgetSetAllMargins (col->uiwidget, 0);
 
     if (row->dispidx == 0 && col->uiwidget != NULL) {
       /* set up the size change callback so that the columns */
@@ -1338,7 +1353,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         uiLabelAlignEnd (col->uiwidget);
       }
     }
-    col->class = NULL;
 
     /* when a row is first created, it is in the cleared state */
     uiWidgetHide (col->uiwidget);

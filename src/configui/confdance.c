@@ -107,8 +107,8 @@ confuiBuildUIEditDances (confuigui_t *gui)
       _("Edit Dances"), CONFUI_ID_DANCE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
+  uiBoxPackStartExpand (vbox, hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   gui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;

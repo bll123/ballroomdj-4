@@ -35,28 +35,43 @@ void
 confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     int flags)
 {
-  uiwcont_t     *mhbox = NULL;
+//  uiwcont_t     *mhbox = NULL;
+  uiwcont_t     *vbox = NULL;
   uiwcont_t     *bvbox = NULL;
   uiwcont_t     *scwindow = NULL;
   uiwcont_t     *uiwidgetp = NULL;
   uivirtlist_t  *uivl = NULL;
+  const char    *tag;
 
   logProcBegin ();
 
-  mhbox = uiCreateHorizBox ();
-  uiWidgetSetMarginTop (mhbox, 2);
-  uiBoxPackStart (boxp, mhbox);
+//  mhbox = uiCreateHorizBox ();
+//  uiWidgetSetMarginTop (mhbox, 2);
+//  uiWidgetAlignHorizStart (mhbox);
+//  uiBoxPackStart (boxp, mhbox);
 
-  if (id == CONFUI_ID_DANCE) {
-    uivl = uiCreateVirtList ("conf-dance", mhbox, 5, VL_NO_HEADING, 100);
-    gui->tables [id].uivl = uivl;
-  } else if (id == CONFUI_ID_RATINGS) {
-    uivl = uiCreateVirtList ("conf-rating", mhbox, 5, VL_NO_HEADING, 100);
+  switch (id) {
+    case CONFUI_ID_DANCE: { tag = "conf-dance"; break; }
+    case CONFUI_ID_RATINGS: { tag = "conf-rating"; break; }
+    default: { tag = "conf"; break; }
+  }
+
+  if (id == CONFUI_ID_DANCE || id == CONFUI_ID_RATINGS) {
+    int   heading = VL_SHOW_HEADING;
+
+    if (id == CONFUI_ID_DANCE) {
+      heading = VL_NO_HEADING;
+    }
+    vbox = uiCreateVertBox ();
+    uiWidgetSetAllMargins (vbox, 1);
+    uiWidgetAlignHorizStart (vbox);
+    uiBoxPackStartExpand (boxp, vbox);
+    uivl = uiCreateVirtList (tag, vbox, 5, heading, 100);
     gui->tables [id].uivl = uivl;
   } else {
     scwindow = uiCreateScrolledWindow (300);
     uiWidgetExpandVert (scwindow);
-    uiBoxPackStartExpand (mhbox, scwindow);
+    uiBoxPackStartExpand (boxp, scwindow);
 
     gui->tables [id].uitree = uiCreateTreeView ();
     gui->tables [id].flags = flags;
@@ -72,7 +87,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiWidgetSetAllMargins (bvbox, 4);
   uiWidgetSetMarginTop (bvbox, 32);
   uiWidgetAlignVertStart (bvbox);
-  uiBoxPackStart (mhbox, bvbox);
+  uiBoxPackStart (boxp, bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     gui->tables [id].callbacks [CONFUI_TABLE_CB_UP] = callbackInit (
@@ -112,7 +127,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
-  uiwcontFree (mhbox);
+//  uiwcontFree (mhbox);
   uiwcontFree (bvbox);
 
   logProcEnd ("");
