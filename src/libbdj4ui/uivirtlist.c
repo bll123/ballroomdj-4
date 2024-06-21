@@ -684,9 +684,6 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
   if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
     return;
   }
-  if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-    return;
-  }
 
   row = uivlGetRow (vl, rownum);
   if (row == NULL) {
@@ -1201,7 +1198,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   /* create a label so that cleared rows with only widgets will still */
   /* have a height */
   /* hair-space */
-  uiwidget = uiCreateLabel (" \xe2\x80\x8a");
+  uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
   if (vl->uselistingfont) {
     uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
@@ -1306,7 +1303,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (coldata->hidden == VL_COL_HIDE) {
-      return;
+      continue;
     }
 
     /* need a box for the size change callback */

@@ -83,7 +83,8 @@ enum {
 
 static const char *vllabs [] = {
   "One", "Two", "Three", "Four", "Five", "☆",
-  "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", "Other",
+  "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", "Thirteen",
+  "Fourteen", "Fifteen",
 };
 
 static void uitestMainLoop (uitest_t *uitest);
