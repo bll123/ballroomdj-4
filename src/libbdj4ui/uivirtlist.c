@@ -138,10 +138,11 @@ typedef struct {
   uivlcol_t     *cols;
   uivlrowcb_t   *rowcb;             // must have a stable address
   int           dispidx;
-  bool          hidden : 1;         // the row is off-screen
-  bool          selected : 1;       // a temporary flag to ease processing
-  bool          initialized : 1;
   bool          cleared : 1;        // row is on-screen, no display
+  bool          created : 1;
+  bool          hidden : 1;         // the row is off-screen
+  bool          initialized : 1;
+  bool          selected : 1;       // a temporary flag to ease processing
 } uivlrow_t;
 
 /* need a container of stable allocated addresses */
@@ -319,7 +320,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   vl->dispsize = dispsize;
   vl->dispalloc = dispsize;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->dispalloc);
-  for (int dispidx = 0; dispidx < dispsize; ++dispidx) {
+  for (int dispidx = 0; dispidx < vl->dispalloc; ++dispidx) {
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
 
@@ -359,6 +360,7 @@ uivlFree (uivirtlist_t *vl)
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     dataFree (vl->coldata [colidx].baseclass);
+    callbackFree (vl->coldata [colidx].colszcb);
     uiwcontFree (vl->coldata [colidx].szgrp);
   }
   dataFree (vl->coldata);
@@ -389,11 +391,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   }
 
   if (numrows < vl->dispsize) {
-    /* this saves some trouble with the display state getting messed up, */
-    /* as the initial display will set the row and contents to visible */
-    if (vl->initialized < VL_INIT_ROWS) {
-      vl->dispsize = numrows;
-    }
     if (vl->initialized >= VL_INIT_ROWS) {
       for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
@@ -980,6 +977,7 @@ uivlDisplay (uivirtlist_t *vl)
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
     uivlPackRow (vl, row);
+    row->cleared = false;
     if (dispidx == 0) {
       uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
     }
@@ -1011,7 +1009,7 @@ uivlPopulate (uivirtlist_t *vl)
     uivlrow_t   *row;
     uivlcol_t   *col;
 
-    if (dispidx + vl->rowoffset > vl->numrows) {
+    if (dispidx + vl->rowoffset >= vl->numrows) {
       break;
     }
 
@@ -1037,11 +1035,11 @@ uivlPopulate (uivirtlist_t *vl)
       break;
     }
 
-    row = &vl->rows [dispidx];
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->filludata, vl, dispidx + vl->rowoffset);
     }
 
+    row = &vl->rows [dispidx];
     if (row->hidden) {
       row->hidden = false;
       uiWidgetShowAll (row->hbox);
@@ -1181,7 +1179,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   if (row == NULL) {
     return;
   }
-  if (row->initialized) {
+  if (! row->initialized) {
+    fprintf (stderr, "%s create-row: not-init %d\n", vl->tag, dispidx);
+    return;
+  }
+  if (row->created) {
     return;
   }
 
@@ -1191,7 +1193,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
   row->hidden = false;
   row->selected = false;
-  row->initialized = true;
+  row->created = true;
   row->cleared = true;
 
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
@@ -1730,6 +1732,17 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
         uivlClearRowDisp (vl, dispidx);
       }
 
+      if (vl->dispsize > vl->numrows) {
+        for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
+          uivlrow_t *row;
+
+          row = &vl->rows [dispidx];
+          if (! row->cleared) {
+            uivlClearRowDisp (vl, dispidx);
+          }
+        }
+      }
+
       uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
           (double) (vl->dispsize / 2));
       uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
@@ -1775,10 +1788,11 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->ident = VL_IDENT_ROW;
   row->hbox = NULL;
   row->cols = NULL;
-  row->initialized = false;
+  row->created = false;
   row->cleared = false;
   row->rowcb = NULL;
   row->dispidx = dispidx;
+  row->initialized = true;
 
   if (dispidx != VL_ROW_HEADING) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
@@ -1898,7 +1912,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
   }
 
   row = &vl->rows [dispidx];
-  if (! row->initialized) {
+  if (! row->created) {
     return;
   }
   if (row->cleared) {

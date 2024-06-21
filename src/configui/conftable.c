@@ -35,7 +35,6 @@ void
 confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     int flags)
 {
-//  uiwcont_t     *mhbox = NULL;
   uiwcont_t     *vbox = NULL;
   uiwcont_t     *bvbox = NULL;
   uiwcont_t     *scwindow = NULL;
@@ -44,11 +43,6 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   const char    *tag;
 
   logProcBegin ();
-
-//  mhbox = uiCreateHorizBox ();
-//  uiWidgetSetMarginTop (mhbox, 2);
-//  uiWidgetAlignHorizStart (mhbox);
-//  uiBoxPackStart (boxp, mhbox);
 
   switch (id) {
     case CONFUI_ID_DANCE: { tag = "conf-dance"; break; }
@@ -68,6 +62,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     uiBoxPackStartExpand (boxp, vbox);
     uivl = uiCreateVirtList (tag, vbox, 5, heading, 100);
     gui->tables [id].uivl = uivl;
+    uiwcontFree (vbox);
   } else {
     scwindow = uiCreateScrolledWindow (300);
     uiWidgetExpandVert (scwindow);
@@ -127,7 +122,6 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
-//  uiwcontFree (mhbox);
   uiwcontFree (bvbox);
 
   logProcEnd ("");
