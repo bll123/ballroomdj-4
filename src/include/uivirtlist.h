@@ -74,7 +74,7 @@ void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const
 void  uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val);
 
 /* column get specific to a row */
-const char *uivlGetRowColumnEntryValue (uivirtlist_t *vl, int32_t rownum, int colidx);
+const char *uivlGetRowColumnEntry (uivirtlist_t *vl, int32_t rownum, int colidx);
 int32_t uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* callbacks */

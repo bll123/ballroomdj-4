@@ -386,16 +386,21 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
-  if (numrows <= vl->currSelection) {
-    uivlMoveSelection (vl, VL_DIR_UP);
-  }
-
-  if (numrows < vl->dispsize) {
-    if (vl->initialized >= VL_INIT_ROWS) {
+  if (vl->initialized >= VL_INIT_ROWS) {
+    if (numrows <= vl->currSelection) {
+      uivlMoveSelection (vl, VL_DIR_UP);
+    }
+    if (numrows < vl->dispsize) {
       for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
     }
+  }
+
+  if (numrows <= vl->dispsize) {
+    uiWidgetHide (vl->wcont [VL_W_SB]);
+  } else {
+    uiWidgetShow (vl->wcont [VL_W_SB]);
   }
 }
 
@@ -801,13 +806,22 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
 }
 
 const char *
-uivlGetRowColumnEntryValue (uivirtlist_t *vl, int32_t rownum, int colidx)
+uivlGetRowColumnEntry (uivirtlist_t *vl, int32_t rownum, int colidx)
 {
+  uivlrow_t   *row;
+  const char  *val = NULL;
+
   if (! uivlValidateRowColumn (vl, VL_INIT_ROWS, rownum, colidx, __func__)) {
     return NULL;
   }
 
-  return NULL;
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return NULL;
+  }
+
+  val = uiEntryGetValue (row->cols [colidx].uiwidget);
+  return val;
 }
 
 int32_t
@@ -896,7 +910,7 @@ void
 uivlSetEntryValidation (uivirtlist_t *vl, int colidx,
     uientryval_t cb, void *udata)
 {
-  if (! uivlValidateColumn (vl, VL_INIT_ROWS, colidx, __func__)) {
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
     return;
   }
   if (vl->coldata [colidx].type != VL_TYPE_ENTRY) {
@@ -1745,6 +1759,12 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
       uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
       uivlPopulate (vl);
     }
+  }
+
+  if (vl->numrows <= vl->dispsize) {
+    uiWidgetHide (vl->wcont [VL_W_SB]);
+  } else {
+    uiWidgetShow (vl->wcont [VL_W_SB]);
   }
 
   return UICB_CONT;

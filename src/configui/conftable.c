@@ -229,12 +229,9 @@ confuiSwitchTable (void *udata, int32_t pagenum)
   }
 
   uitree = gui->tables [gui->tablecurr].uitree;
-  if (uitree == NULL) {
-    logProcEnd ("no-tree-a");
-    return UICB_CONT;
+  if (uitree != NULL) {
+    uiTreeViewSelectDefault (uitree);
   }
-
-  uiTreeViewSelectDefault (uitree);
 
   logProcEnd ("");
   return UICB_CONT;

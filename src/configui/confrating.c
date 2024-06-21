@@ -22,9 +22,10 @@
 #include "rating.h"
 #include "ui.h"
 
-static bool confuiRatingListCreate (void *udata);
 static void confuiRatingSave (confuigui_t *gui);
 static void confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static bool confuiRatingChangeCB (void *udata);
+static int confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
@@ -51,7 +52,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiBoxPackStartExpand (vbox, hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
-  gui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   gui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (gui);
 
@@ -64,12 +64,8 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 void
 confuiCreateRatingTable (confuigui_t *gui)
 {
-//  ilistidx_t        iteridx;
-//  ilistidx_t        key;
   rating_t          *ratings;
-//  uiwcont_t         *uitree;
   uivirtlist_t      *uivl;
-//  int               editable;
 
   logProcBegin ();
 
@@ -84,99 +80,54 @@ confuiCreateRatingTable (confuigui_t *gui)
   /* CONTEXT: configuration: rating: title of the weight column */
   uivlSetColumnHeading (uivl, CONFUI_RATING_COL_WEIGHT, _("Weight"));
   uivlSetNumRows (uivl, ratingGetCount (ratings));
+  gui->tables [CONFUI_ID_RATINGS].currcount = ratingGetCount (ratings);
 
-  gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED] =
-      callbackInitI (confuiTableChanged, gui);
+  gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_RATING_CB_WEIGHT] =
+      callbackInit (confuiRatingChangeCB, gui, NULL);
+  uivlSetEntryValidation (uivl, CONFUI_RATING_COL_RATING,
+      confuiRatingEntryChangeCB, gui);
+  uivlSetSpinboxChangeCallback (uivl, CONFUI_RATING_COL_WEIGHT,
+      gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_RATING_CB_WEIGHT]);
 
   uivlSetRowFillCallback (uivl, confuiRatingFillRow, gui);
   uivlDisplay (uivl);
   /* the first entry field is read-only */
   uivlSetRowColumnReadonly (uivl, 0, CONFUI_RATING_COL_RATING);
 
-#if 0
-  uiTreeViewSetEditedCallback (uitree,
-      gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED]);
-
-  uiTreeViewCreateValueStore (uitree, CONFUI_RATING_COL_MAX,
-      TREE_TYPE_INT,        // rating-editable
-      TREE_TYPE_INT,        // weight-editable
-      TREE_TYPE_STRING,     // rating-disp
-      TREE_TYPE_NUM,        // weight
-      TREE_TYPE_WIDGET,     // adjustment
-      TREE_TYPE_INT,        // digits
-      TREE_TYPE_END);
-
-  ratingStartIterator (ratings, &iteridx);
-
-  editable = false;
-  while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
-    const char  *ratingdisp;
-    long        weight;
-
-    ratingdisp = ratingGetRating (ratings, key);
-    weight = ratingGetWeight (ratings, key);
-
-    uiTreeViewValueAppend (uitree);
-    confuiRatingSet (uitree, editable, ratingdisp, weight);
-    /* all cells other than the very first (Unrated) are editable */
-    editable = true;
-    gui->tables [CONFUI_ID_RATINGS].currcount += 1;
-  }
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, tagdefs [TAG_DANCERATING].shortdisplayname,
-      TREE_COL_TYPE_TEXT, CONFUI_RATING_COL_RATING,
-      TREE_COL_TYPE_EDITABLE, CONFUI_RATING_COL_R_EDITABLE,
-      TREE_COL_TYPE_END);
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
-      /* CONTEXT: configuration: rating: title of the weight column */
-      TREE_COL_DISP_GROW, _("Weight"),
-      TREE_COL_TYPE_TEXT, CONFUI_RATING_COL_WEIGHT,
-      TREE_COL_TYPE_EDITABLE, CONFUI_RATING_COL_W_EDITABLE,
-      TREE_COL_TYPE_ADJUSTMENT, CONFUI_RATING_COL_ADJUST,
-      TREE_COL_TYPE_DIGITS, CONFUI_RATING_COL_DIGITS,
-      TREE_COL_TYPE_END);
-#endif
-
   logProcEnd ("");
 }
 
 /* internal routines */
 
-static bool
-confuiRatingListCreate (void *udata)
-{
-  confuigui_t *gui = udata;
-  char        *ratingdisp;
-  int         weight;
-
-  logProcBegin ();
-  ratingdisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_RATINGS].uitree,
-      CONFUI_RATING_COL_RATING);
-  weight = uiTreeViewGetValue (gui->tables [CONFUI_ID_RATINGS].uitree,
-      CONFUI_RATING_COL_WEIGHT);
-  ilistSetStr (gui->tables [CONFUI_ID_RATINGS].savelist,
-      gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_RATING, ratingdisp);
-  ilistSetNum (gui->tables [CONFUI_ID_RATINGS].savelist,
-      gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_WEIGHT, weight);
-  dataFree (ratingdisp);
-  gui->tables [CONFUI_ID_RATINGS].saveidx += 1;
-  logProcEnd ("");
-  return UI_FOREACH_CONT;
-}
-
 static void
 confuiRatingSave (confuigui_t *gui)
 {
-  rating_t    *ratings;
+  rating_t      *ratings;
+  ilist_t       *ratinglist;
+  uivirtlist_t  *uivl;
 
   logProcBegin ();
+
+  if (gui->tables [CONFUI_ID_RATINGS].changed == false) {
+    return;
+  }
+
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
-  ratingSave (ratings, gui->tables [CONFUI_ID_RATINGS].savelist);
-  ilistFree (gui->tables [CONFUI_ID_RATINGS].savelist);
+
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  ratinglist = ilistAlloc ("rating-save", LIST_ORDERED);
+  for (int rowidx = 0; rowidx < gui->tables [CONFUI_ID_RATINGS].currcount; ++rowidx) {
+    const char  *ratingdisp;
+    int         weight;
+
+    ratingdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_RATING_COL_RATING);
+    weight = uivlGetRowColumnNum (uivl, rowidx, CONFUI_RATING_COL_WEIGHT);
+    ilistSetStr (ratinglist, rowidx, RATING_RATING, ratingdisp);
+    ilistSetNum (ratinglist, rowidx, RATING_WEIGHT, weight);
+  }
+
+  ratingSave (ratings, ratinglist);
+  ilistFree (ratinglist);
   logProcEnd ("");
 }
 
@@ -187,6 +138,8 @@ confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   rating_t    *ratings;
   const char  *ratingdisp;
   int         weight;
+
+  gui->inchange = true;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   if (rownum >= ratingGetCount (ratings)) {
@@ -199,5 +152,32 @@ confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       CONFUI_RATING_COL_RATING, ratingdisp);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_RATINGS].uivl, rownum,
       CONFUI_RATING_COL_WEIGHT, weight);
+
+  gui->inchange = false;
 }
 
+static bool
+confuiRatingChangeCB (void *udata)
+{
+  confuigui_t *gui = udata;
+
+  if (gui->inchange) {
+    return UICB_CONT;
+  }
+
+  gui->tables [CONFUI_ID_RATINGS].changed = true;
+  return UICB_CONT;
+}
+
+static int
+confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
+{
+  confuigui_t *gui = udata;
+
+  if (gui->inchange) {
+    return UIENTRY_OK;
+  }
+
+  gui->tables [CONFUI_ID_RATINGS].changed = true;
+  return UIENTRY_OK;
+}
