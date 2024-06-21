@@ -115,12 +115,16 @@ uiCleanup (void)
 
 void
 uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor)
+    const char *accentColor, const char *errorColor, const char *selectColor)
 {
   char            tbuff [8192];
   char            wbuff [400];
   char            *p;
   int             sz = 0;
+
+  if (selectColor == NULL || ! *selectColor) {
+    selectColor = accentColor;
+  }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
@@ -240,14 +244,14 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     /* check buttons to the obverse colors */
     snprintf (wbuff, sizeof (wbuff),
         "box.horizontal.%s { background-color: shade(%s,0.4); } ",
-        SELECTED_CLASS, accentColor);
+        SELECTED_CLASS, selectColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
     snprintf (wbuff, sizeof (wbuff),
         "spinbutton.%s, "
         "spinbutton.%s entry, "
         "spinbutton.%s button "
         "{ background-color: shade(%s,0.4); } ",
-        SELECTED_CLASS, SELECTED_CLASS, SELECTED_CLASS, accentColor);
+        SELECTED_CLASS, SELECTED_CLASS, SELECTED_CLASS, selectColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),

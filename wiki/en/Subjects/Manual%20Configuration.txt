@@ -39,6 +39,8 @@ These items are not configurable via the user interface.
   * UI_MARK_COL
     User Interface Mark Color.
     The color for the request list in-queue mark.
+  * UI_ROWSEL_COL
+    Row selection color.
 
 ###### data/favorites.txt
 

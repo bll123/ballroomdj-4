@@ -587,7 +587,8 @@ main (int argc, char *argv[])
   uiSetUICSS (uiutilsGetCurrentFont (),
       uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+      bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL));
 
   manageBuildUI (&manage);
   osuiFinalize ();

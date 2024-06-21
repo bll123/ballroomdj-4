@@ -46,21 +46,21 @@ enum {
 static bdjopt_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
-  { "ACOUSTID_KEY",       OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },
-  { "ACRCLOUD_API_HOST",  OPT_G_ACRCLOUD_API_HOST,  VALUE_STR, NULL, DF_NORM },
-  { "ACRCLOUD_API_KEY",   OPT_G_ACRCLOUD_API_KEY,   VALUE_STR, NULL, DF_NORM },
-  { "ACRCLOUD_API_SECRET",OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
-  { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
-  { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
-  { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
-  { "DANCESELMETHOD",     OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
-  { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, DF_NORM },
-  { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, DF_NORM },
-  { "OLDORGPATH",         OPT_G_OLDORGPATH,         VALUE_STR, NULL, DF_NORM },
-  { "ORGPATH",            OPT_G_ORGPATH,            VALUE_STR, NULL, DF_NORM },
-  { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, DF_NORM },
-  { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, DF_NORM },
-  { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, DF_NORM },
+  { "ACOUSTID_KEY",         OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },
+  { "ACRCLOUD_API_HOST",    OPT_G_ACRCLOUD_API_HOST,  VALUE_STR, NULL, DF_NORM },
+  { "ACRCLOUD_API_KEY",     OPT_G_ACRCLOUD_API_KEY,   VALUE_STR, NULL, DF_NORM },
+  { "ACRCLOUD_API_SECRET",  OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
+  { "AUTOORGANIZE",         OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
+  { "BPM",                  OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
+  { "CLOCKDISP",            OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
+  { "DANCESELMETHOD",       OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
+  { "DEBUGLVL",             OPT_G_DEBUGLVL,           VALUE_NUM, NULL, DF_NORM },
+  { "LOADDANCEFROMGENRE",   OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, DF_NORM },
+  { "OLDORGPATH",           OPT_G_OLDORGPATH,         VALUE_STR, NULL, DF_NORM },
+  { "ORGPATH",              OPT_G_ORGPATH,            VALUE_STR, NULL, DF_NORM },
+  { "PLAYERQLEN",           OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, DF_NORM },
+  { "REMCONTROLHTML",       OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, DF_NORM },
+  { "WRITETAGS",            OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, DF_NORM },
 };
 
 static datafilekey_t bdjoptprofiledfkeys [] = {
@@ -88,6 +88,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, DF_NORM },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, DF_NORM },
   { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, DF_NORM },
+  { "UI_ROWSEL_COL",        OPT_P_UI_ROWSEL_COL,        VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptqueuedfkeys [] = {
@@ -106,17 +107,17 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
 };
 
 static datafilekey_t bdjoptmachinedfkeys [] = {
-  { "AUDIOTAG",       OPT_M_AUDIOTAG_INTFC,     VALUE_STR, NULL, DF_NORM },
-  { "DIRITUNESMEDIA", OPT_M_DIR_ITUNES_MEDIA,   VALUE_STR, NULL, DF_NORM },
-  { "DIRMUSIC",       OPT_M_DIR_MUSIC,          VALUE_STR, NULL, DF_NORM },
-  { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },
-  { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, DF_NORM },
-  { "PLAYER",         OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
-  { "PLAYER_I_NM",    OPT_M_PLAYER_INTFC_NM,    VALUE_STR, NULL, DF_NORM },
-  { "SCALE",          OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
-  { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWN_SCRIPT,    VALUE_STR, NULL, DF_NORM },
-  { "STARTUPSCRIPT",  OPT_M_STARTUP_SCRIPT,     VALUE_STR, NULL, DF_NORM },
-  { "VOLUME",         OPT_M_VOLUME_INTFC,       VALUE_STR, NULL, DF_NORM },
+  { "AUDIOTAG",           OPT_M_AUDIOTAG_INTFC,     VALUE_STR, NULL, DF_NORM },
+  { "DIRITUNESMEDIA",     OPT_M_DIR_ITUNES_MEDIA,   VALUE_STR, NULL, DF_NORM },
+  { "DIRMUSIC",           OPT_M_DIR_MUSIC,          VALUE_STR, NULL, DF_NORM },
+  { "DIROLDSKIP",         OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },
+  { "ITUNESXMLFILE",      OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, DF_NORM },
+  { "PLAYER",             OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
+  { "PLAYER_I_NM",        OPT_M_PLAYER_INTFC_NM,    VALUE_STR, NULL, DF_NORM },
+  { "SCALE",              OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
+  { "SHUTDOWNSCRIPT",     OPT_M_SHUTDOWN_SCRIPT,    VALUE_STR, NULL, DF_NORM },
+  { "STARTUPSCRIPT",      OPT_M_STARTUP_SCRIPT,     VALUE_STR, NULL, DF_NORM },
+  { "VOLUME",             OPT_M_VOLUME_INTFC,       VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptmachprofdfkeys [] = {

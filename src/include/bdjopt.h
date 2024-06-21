@@ -102,6 +102,7 @@ typedef enum {
   OPT_P_UI_ERROR_COL,
   OPT_P_UI_MARK_COL,
   OPT_P_UI_PROFILE_COL,
+  OPT_P_UI_ROWSEL_COL,
   /* the queue values must be at the end of enum list, as they are */
   /* duplicated for each playback queue */
   /* opt_q_active must be the first opt_q_ item */
