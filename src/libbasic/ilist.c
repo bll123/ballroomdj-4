@@ -247,7 +247,7 @@ ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 }
 
 void
-ilistDelete (list_t *list, ilistidx_t ikey)
+ilistDelete (ilist_t *list, ilistidx_t ikey)
 {
   ilistidx_t      idx;
 
@@ -259,49 +259,31 @@ ilistDelete (list_t *list, ilistidx_t ikey)
   listDeleteByIdx (LIST_KEY_IND, list, idx);
 }
 
-void
-ilistRenumber (list_t *list)
+ilist_t *
+ilistRenumber (ilist_t *list)
 {
-  int         count;
-  nlist_t     *datalist;
-  ilistidx_t  oidx = 0;
-  ilistidx_t  nkey = 0;
-  ilistidx_t  okey = 0;
-  bool        copyflag = false;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  ilistidx_t    nkey = 0;
+  ilist_t       *nlist;
 
-  count = ilistGetCount (list);
-fprintf (stderr, "renum: count: %d\n", count);
-  while (nkey < count) {
-    okey = listGetIdxNumKey (LIST_KEY_IND, list, oidx);
-fprintf (stderr, "renum: oidx: %d okey %d nkey: %d\n", oidx, okey, nkey);
-    if (okey != LIST_LOC_INVALID && copyflag) {
-fprintf (stderr, "  copy idx:%d to key:%d\n", oidx, nkey);
-      datalist = listGetDataByIdx (LIST_KEY_IND, list, oidx);
-      /* do not want two pointers to the same datalist */
-      listSetNumList (LIST_KEY_IND, list, okey, NULL);
-      listSetNumList (LIST_KEY_IND, list, nkey, datalist);
-      copyflag = true;
-    }
-    if (okey == LIST_LOC_INVALID) {
-      copyflag = true;
-    }
-    if (okey != LIST_LOC_INVALID) {
-      ++nkey;
-    }
-    ++oidx;
+  nlist = ilistAlloc (listGetName (LIST_KEY_IND, list), LIST_ORDERED);
+  ilistSetSize (nlist, ilistGetCount (list));
+
+  nkey = 0;
+  ilistStartIterator (list, &iteridx);
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    ilistidx_t    idx;
+    nlist_t       *datalist;
+
+    idx = listGetIdxNumKey (LIST_KEY_IND, list, key);
+    datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
+    ilistSetDatalist (nlist, nkey, datalist);
+    listClearData (LIST_KEY_IND, list, key);
+    ++nkey;
   }
 
-  count = ilistGetCount (list);
-fprintf (stderr, "renum: count-B: %d\n", count);
-  oidx = nkey;
-  while (oidx < count) {
-    okey = listGetIdxNumKey (LIST_KEY_IND, list, oidx);
-fprintf (stderr, "renum: del: oidx: %d okey: %d\n", oidx, okey);
-    ilistDelete (list, okey);
-    ++oidx;
-  }
-  count = ilistGetCount (list);
-fprintf (stderr, "renum: count-C: %d\n", count);
+  return nlist;
 }
 
 /* debug / informational */

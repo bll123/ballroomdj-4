@@ -70,5 +70,6 @@ listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
 void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 int         listGetOrdering (keytype_t keytype, list_t *list);
+void        listClearData (keytype_t keytype, list_t *list, listidx_t idx);
 
 #endif /* LIST_MODULE_H */

@@ -151,12 +151,19 @@ ratingSetWeight (rating_t *ratings, ilistidx_t ikey, int val)
 void
 ratingDelete (rating_t *ratings, ilistidx_t ikey)
 {
+  ilist_t   *nlist;
+
   if (ratings == NULL) {
     return;
   }
 
   ilistDelete (ratings->rating, ikey);
-  ilistRenumber (ratings->rating);
+  nlist = ilistRenumber (ratings->rating);
+  ilistFree (ratings->rating);
+  ratings->rating = nlist;
+  /* note that the ratinglist used for conversion is now incorrect */
+  /* this routine is only used by the configuration, and no rating */
+  /* conversion are done */
 }
 
 void
