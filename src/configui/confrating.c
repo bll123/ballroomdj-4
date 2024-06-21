@@ -26,6 +26,9 @@ static void confuiRatingSave (confuigui_t *gui);
 static void confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static bool confuiRatingChangeCB (void *udata);
 static int confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
+static void confuiRatingAdd (confuigui_t *gui);
+static void confuiRatingRemove (confuigui_t *gui);
+static void confuiRatingUpdateData (confuigui_t *gui);
 
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
@@ -53,6 +56,8 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   gui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
+  gui->tables [CONFUI_ID_RATINGS].addfunc = confuiRatingAdd;
+  gui->tables [CONFUI_ID_RATINGS].removefunc = confuiRatingRemove;
   confuiCreateRatingTable (gui);
 
   uiwcontFree (vbox);
@@ -180,4 +185,66 @@ confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
 
   gui->tables [CONFUI_ID_RATINGS].changed = true;
   return UIENTRY_OK;
+}
+
+static void
+confuiRatingAdd (confuigui_t *gui)
+{
+  rating_t      *ratings;
+  int           count;
+  uivirtlist_t  *uivl;
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+
+  confuiRatingUpdateData (gui);
+  count = ratingGetCount (ratings);
+  /* CONTEXT: configuration: rating name that is set when adding a new rating */
+  ratingSetRating (ratings, count, _("New Rating"));
+  ratingSetWeight (ratings, count, 0);
+  count += 1;
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  uivlPopulate (uivl);
+}
+
+static void
+confuiRatingRemove (confuigui_t *gui)
+{
+  rating_t      *ratings;
+  int           count;
+  uivirtlist_t  *uivl;
+  int           rowidx;
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+
+  confuiRatingUpdateData (gui);
+  rowidx = uivlGetCurrSelection (uivl);
+  ratingDelete (ratings, rowidx);
+  count = ratingGetCount (ratings);
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  uivlPopulate (uivl);
+}
+
+static void
+confuiRatingUpdateData (confuigui_t *gui)
+{
+  rating_t      *ratings;
+  uivirtlist_t  *uivl;
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+
+  for (int rowidx = 0; rowidx < gui->tables [CONFUI_ID_RATINGS].currcount; ++rowidx) {
+    const char  *ratingdisp;
+    int         weight;
+
+    ratingdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_RATING_COL_RATING);
+    weight = uivlGetRowColumnNum (uivl, rowidx, CONFUI_RATING_COL_WEIGHT);
+    ratingSetRating (ratings, rowidx, ratingdisp);
+    ratingSetWeight (ratings, rowidx, weight);
+  }
 }

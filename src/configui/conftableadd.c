@@ -115,8 +115,12 @@ confuiTableAdd (void *udata)
     }
 
     case CONFUI_ID_RATINGS: {
-      /* CONTEXT: configuration: rating name that is set when adding a new rating */
-//      confuiRatingSet (uitree, true, _("New Rating"), 0);
+      addfunc_t   addfunc;
+
+      addfunc = gui->tables [gui->tablecurr].addfunc;
+      if (addfunc != NULL) {
+        addfunc (gui);
+      }
       break;
     }
 
@@ -141,8 +145,8 @@ confuiTableAdd (void *udata)
     uiTreeViewSelectCurrent (uitree);
   }
 
-  gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount += 1;
+  gui->tables [gui->tablecurr].changed = true;
   logProcEnd ("");
   return UICB_CONT;
 }

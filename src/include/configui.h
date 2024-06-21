@@ -221,6 +221,8 @@ typedef struct confuigui confuigui_t;
 typedef struct confuitable confuitable_t;
 typedef void (*savefunc_t) (confuigui_t *);
 typedef bool (*listcreatefunc_t) (void *);
+typedef void (*addfunc_t) (confuigui_t *);
+typedef void (*removefunc_t) (confuigui_t *);
 
 typedef struct {
   confuigui_t       *gui;
@@ -302,7 +304,6 @@ enum {
 };
 
 enum {
-  CONFUI_RATING_CB_ENTRY,
   CONFUI_RATING_CB_WEIGHT,
   CONFUI_TABLE_CB_UP,
   CONFUI_TABLE_CB_DOWN,
@@ -332,6 +333,8 @@ typedef struct confuitable {
   int               saveidx;
   ilist_t           *savelist;
   listcreatefunc_t  listcreatefunc;
+  addfunc_t         addfunc;
+  removefunc_t      removefunc;
   savefunc_t        savefunc;
 } confuitable_t;
 
@@ -342,12 +345,8 @@ enum {
 };
 
 enum {
-//  CONFUI_RATING_COL_R_EDITABLE,
-//  CONFUI_RATING_COL_W_EDITABLE,
   CONFUI_RATING_COL_RATING,
   CONFUI_RATING_COL_WEIGHT,
-//  CONFUI_RATING_COL_ADJUST,
-//  CONFUI_RATING_COL_DIGITS,
   CONFUI_RATING_COL_MAX,
 };
 

@@ -38,7 +38,7 @@ static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
 rating_t *
 ratingAlloc (void)
 {
-  rating_t        *rating;
+  rating_t        *ratings;
   ilistidx_t      key;
   ilistidx_t      iteridx;
   char            fname [MAXPATHLEN];
@@ -50,88 +50,145 @@ ratingAlloc (void)
     return NULL;
   }
 
-  rating = mdmalloc (sizeof (rating_t));
+  ratings = mdmalloc (sizeof (rating_t));
 
-  rating->path = mdstrdup (fname);
-  rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
+  ratings->path = mdstrdup (fname);
+  ratings->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_KEY_MAX, DF_NO_OFFSET, NULL);
-  rating->rating = datafileGetList (rating->df);
-  ilistDumpInfo (rating->rating);
+  ratings->rating = datafileGetList (ratings->df);
+  ilistDumpInfo (ratings->rating);
 
-  rating->ratingList = slistAlloc ("rating-disp", LIST_UNORDERED, NULL);
-  slistSetSize (rating->ratingList, ilistGetCount (rating->rating));
+  ratings->ratingList = slistAlloc ("rating-disp", LIST_UNORDERED, NULL);
+  slistSetSize (ratings->ratingList, ilistGetCount (ratings->rating));
 
-  rating->maxWidth = ilistGetMaxValueWidth (rating->rating, RATING_RATING);
+  ratings->maxWidth = ilistGetMaxValueWidth (ratings->rating, RATING_RATING);
 
-  ilistStartIterator (rating->rating, &iteridx);
-  while ((key = ilistIterateKey (rating->rating, &iteridx)) >= 0) {
+  ilistStartIterator (ratings->rating, &iteridx);
+  while ((key = ilistIterateKey (ratings->rating, &iteridx)) >= 0) {
     const char  *val;
 
-    val = ilistGetStr (rating->rating, key, RATING_RATING);
-    slistSetNum (rating->ratingList, val, key);
+    val = ilistGetStr (ratings->rating, key, RATING_RATING);
+    slistSetNum (ratings->ratingList, val, key);
   }
-  slistSort (rating->ratingList);
+  slistSort (ratings->ratingList);
 
-  return rating;
+  return ratings;
 }
 
 void
-ratingFree (rating_t *rating)
+ratingFree (rating_t *ratings)
 {
-  if (rating != NULL) {
-    dataFree (rating->path);
-    datafileFree (rating->df);
-    slistFree (rating->ratingList);
-    mdfree (rating);
+  if (ratings == NULL) {
+    return;
   }
+
+  dataFree (ratings->path);
+  datafileFree (ratings->df);
+  slistFree (ratings->ratingList);
+  mdfree (ratings);
 }
 
 ssize_t
-ratingGetCount (rating_t *rating)
+ratingGetCount (rating_t *ratings)
 {
-  return ilistGetCount (rating->rating);
+  if (ratings == NULL) {
+    return 0;
+  }
+
+  return ilistGetCount (ratings->rating);
 }
 
 int
-ratingGetMaxWidth (rating_t *rating)
+ratingGetMaxWidth (rating_t *ratings)
 {
-  return rating->maxWidth;
+  if (ratings == NULL) {
+    return 0;
+  }
+
+  return ratings->maxWidth;
 }
 
 const char *
-ratingGetRating (rating_t *rating, ilistidx_t ikey)
+ratingGetRating (rating_t *ratings, ilistidx_t ikey)
 {
-  return ilistGetStr (rating->rating, ikey, RATING_RATING);
+  if (ratings == NULL) {
+    return NULL;
+  }
+
+  return ilistGetStr (ratings->rating, ikey, RATING_RATING);
 }
 
 ssize_t
-ratingGetWeight (rating_t *rating, ilistidx_t ikey)
+ratingGetWeight (rating_t *ratings, ilistidx_t ikey)
 {
-  return ilistGetNum (rating->rating, ikey, RATING_WEIGHT);
+  if (ratings == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+
+  return ilistGetNum (ratings->rating, ikey, RATING_WEIGHT);
 }
 
 void
-ratingStartIterator (rating_t *rating, ilistidx_t *iteridx)
+ratingSetRating (rating_t *ratings, ilistidx_t ikey, const char *val)
 {
-  ilistStartIterator (rating->rating, iteridx);
+  if (ratings == NULL) {
+    return;
+  }
+
+  ilistSetStr (ratings->rating, ikey, RATING_RATING, val);
+}
+
+void
+ratingSetWeight (rating_t *ratings, ilistidx_t ikey, int val)
+{
+  if (ratings == NULL) {
+    return;
+  }
+
+  ilistSetNum (ratings->rating, ikey, RATING_WEIGHT, val);
+}
+
+void
+ratingDelete (rating_t *ratings, ilistidx_t ikey)
+{
+  if (ratings == NULL) {
+    return;
+  }
+
+  ilistDelete (ratings->rating, ikey);
+  ilistRenumber (ratings->rating);
+}
+
+void
+ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx)
+{
+  if (ratings == NULL) {
+    return;
+  }
+
+  ilistStartIterator (ratings->rating, iteridx);
 }
 
 ilistidx_t
-ratingIterate (rating_t *rating, ilistidx_t *iteridx)
+ratingIterate (rating_t *ratings, ilistidx_t *iteridx)
 {
-  return ilistIterateKey (rating->rating, iteridx);
+  if (ratings == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+
+  return ilistIterateKey (ratings->rating, iteridx);
 }
 
 void
 ratingConv (datafileconv_t *conv)
 {
-  rating_t    *rating;
+  rating_t    *ratings;
   ssize_t     num;
 
-  rating = bdjvarsdfGet (BDJVDF_RATINGS);
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   if (conv->invt == VALUE_STR) {
-    num = slistGetNum (rating->ratingList, conv->str);
+    num = slistGetNum (ratings->ratingList, conv->str);
     if (num == LIST_VALUE_INVALID) {
       /* unknown ratings are dumped into the unrated bucket */
       num = RATING_UNRATED_IDX;
@@ -141,13 +198,13 @@ ratingConv (datafileconv_t *conv)
   } else if (conv->invt == VALUE_NUM) {
     num = conv->num;
     conv->outvt = VALUE_STR;
-    conv->str = ilistGetStr (rating->rating, num, RATING_RATING);
+    conv->str = ilistGetStr (ratings->rating, num, RATING_RATING);
   }
 }
 
 void
-ratingSave (rating_t *rating, ilist_t *list)
+ratingSave (rating_t *ratings, ilist_t *list)
 {
-  datafileSave (rating->df, NULL, list, DF_NO_OFFSET,
-      datafileDistVersion (rating->df));
+  datafileSave (ratings->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (ratings->df));
 }

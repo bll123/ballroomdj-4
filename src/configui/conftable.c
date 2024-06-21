@@ -375,13 +375,24 @@ confuiTableRemove (void *udata)
     uivlPopulate (uivl);
   }
 
-  if (uitree != NULL) {
-    uiTreeViewValueRemove (uitree);
+  if (gui->tablecurr != CONFUI_ID_DANCE) {
+    if (uivl != NULL) {
+      removefunc_t  removefunc;
+
+      removefunc = gui->tables [gui->tablecurr].removefunc;
+      if (removefunc != NULL) {
+        removefunc (gui);
+      }
+    }
+    if (uitree != NULL) {
+      uiTreeViewValueRemove (uitree);
+    }
   }
+
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount -= 1;
 
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
+  if (uivl != NULL) {
     uivlSetSelection (uivl, 0);
   }
 

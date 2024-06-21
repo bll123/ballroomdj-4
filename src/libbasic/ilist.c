@@ -235,6 +235,18 @@ ilistGetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 }
 
 void
+ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
+{
+  *iteridx = -1;
+}
+
+ilistidx_t
+ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
+{
+  return listIterateKeyNum (LIST_KEY_IND, list, iteridx);
+}
+
+void
 ilistDelete (list_t *list, ilistidx_t ikey)
 {
   ilistidx_t      idx;
@@ -248,15 +260,48 @@ ilistDelete (list_t *list, ilistidx_t ikey)
 }
 
 void
-ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
+ilistRenumber (list_t *list)
 {
-  *iteridx = -1;
-}
+  int         count;
+  nlist_t     *datalist;
+  ilistidx_t  oidx = 0;
+  ilistidx_t  nkey = 0;
+  ilistidx_t  okey = 0;
+  bool        copyflag = false;
 
-ilistidx_t
-ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
-{
-  return listIterateKeyNum (LIST_KEY_IND, list, iteridx);
+  count = ilistGetCount (list);
+fprintf (stderr, "renum: count: %d\n", count);
+  while (nkey < count) {
+    okey = listGetIdxNumKey (LIST_KEY_IND, list, oidx);
+fprintf (stderr, "renum: oidx: %d okey %d nkey: %d\n", oidx, okey, nkey);
+    if (okey != LIST_LOC_INVALID && copyflag) {
+fprintf (stderr, "  copy idx:%d to key:%d\n", oidx, nkey);
+      datalist = listGetDataByIdx (LIST_KEY_IND, list, oidx);
+      /* do not want two pointers to the same datalist */
+      listSetNumList (LIST_KEY_IND, list, okey, NULL);
+      listSetNumList (LIST_KEY_IND, list, nkey, datalist);
+      copyflag = true;
+    }
+    if (okey == LIST_LOC_INVALID) {
+      copyflag = true;
+    }
+    if (okey != LIST_LOC_INVALID) {
+      ++nkey;
+    }
+    ++oidx;
+  }
+
+  count = ilistGetCount (list);
+fprintf (stderr, "renum: count-B: %d\n", count);
+  oidx = nkey;
+  while (oidx < count) {
+    okey = listGetIdxNumKey (LIST_KEY_IND, list, oidx);
+fprintf (stderr, "renum: del: oidx: %d okey: %d\n", oidx, okey);
+    ilistDelete (list, okey);
+    ++oidx;
+  }
+  count = ilistGetCount (list);
+fprintf (stderr, "renum: count-C: %d\n", count);
 }
 
 /* debug / informational */
@@ -306,6 +351,3 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
   }
   return datalist;
 }
-
-
-

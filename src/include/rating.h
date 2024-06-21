@@ -20,14 +20,17 @@ enum {
 };
 
 rating_t    *ratingAlloc (void);
-void        ratingFree (rating_t *rating);
-ssize_t     ratingGetCount (rating_t *rating);
-int         ratingGetMaxWidth (rating_t *rating);
-const char  * ratingGetRating (rating_t *rating, ilistidx_t idx);
-ssize_t     ratingGetWeight (rating_t *rating, ilistidx_t idx);
-void        ratingStartIterator (rating_t *rating, ilistidx_t *iteridx);
-ilistidx_t  ratingIterate (rating_t *rating, ilistidx_t *iteridx);
+void        ratingFree (rating_t *ratings);
+ssize_t     ratingGetCount (rating_t *ratings);
+int         ratingGetMaxWidth (rating_t *ratings);
+const char  * ratingGetRating (rating_t *ratings, ilistidx_t idx);
+ssize_t     ratingGetWeight (rating_t *ratings, ilistidx_t idx);
+void        ratingSetRating (rating_t *ratings, ilistidx_t ikey, const char *val);
+void        ratingSetWeight (rating_t *ratings, ilistidx_t ikey, int val);
+void        ratingDelete (rating_t *ratings, ilistidx_t ikey);
+void        ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx);
+ilistidx_t  ratingIterate (rating_t *ratings, ilistidx_t *iteridx);
 void        ratingConv (datafileconv_t *conv);
-void        ratingSave (rating_t *rating, ilist_t *list);
+void        ratingSave (rating_t *ratings, ilist_t *list);
 
 #endif /* INC_RATING_H */
