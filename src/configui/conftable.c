@@ -48,7 +48,10 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStart (boxp, mhbox);
 
   if (id == CONFUI_ID_DANCE) {
-    uivl = uiCreateVirtList (mhbox, 5, VL_NO_HEADING, 100);
+    uivl = uiCreateVirtList ("conf-dance", mhbox, 5, VL_NO_HEADING, 100);
+    gui->tables [id].uivl = uivl;
+  } else if (id == CONFUI_ID_RATINGS) {
+    uivl = uiCreateVirtList ("conf-rating", mhbox, 5, VL_NO_HEADING, 100);
     gui->tables [id].uivl = uivl;
   } else {
     scwindow = uiCreateScrolledWindow (300);
@@ -128,6 +131,8 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
   }
   uiwcontFree (gui->tables [id].uitree);
   gui->tables [id].uitree = NULL;
+  uivlFree (gui->tables [id].uivl);
+  gui->tables [id].uivl = NULL;
 }
 
 void

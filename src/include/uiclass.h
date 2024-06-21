@@ -17,5 +17,6 @@
 #define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
 #define MQ_ACCENT_CLASS "bdj-mqaccent"
 #define LEFT_NB_CLASS "bdj-leftnotebook"
+#define SELECTED_CLASS "bdj-selected"
 
 #endif /* INC_UICLASS_H */

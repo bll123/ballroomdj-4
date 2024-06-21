@@ -286,8 +286,8 @@ confuiCreateDanceTable (confuigui_t *gui)
   uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
   uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE_IDX, VL_TYPE_INTERNAL_NUMERIC);
-
   uivlSetNumRows (uivl, danceGetCount (dances));
+
   gui->tables [CONFUI_ID_DANCE].currcount = danceGetCount (dances);
   uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
   uivlDisplay (uivl);

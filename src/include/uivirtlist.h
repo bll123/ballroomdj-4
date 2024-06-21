@@ -11,14 +11,14 @@
 #include "ui/uientry.h"
 
 typedef enum {
-  VL_TYPE_LABEL,
-  VL_TYPE_IMAGE,
-  VL_TYPE_ENTRY,
-  VL_TYPE_RADIO_BUTTON,
   VL_TYPE_CHECK_BUTTON,
+  VL_TYPE_ENTRY,
+  VL_TYPE_IMAGE,
+  VL_TYPE_INTERNAL_NUMERIC,
+  VL_TYPE_LABEL,
+  VL_TYPE_RADIO_BUTTON,
   VL_TYPE_SPINBOX_NUM,
   VL_TYPE_SPINBOX_TIME,
-  VL_TYPE_INTERNAL_NUMERIC,
 } vltype_t;
 
 enum {
@@ -44,7 +44,7 @@ typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* basic */
-uivirtlist_t *uiCreateVirtList (uiwcont_t *boxp, int initialdisprows, int headingflag, int minwidth);
+uivirtlist_t *uiCreateVirtList (const char *tag, uiwcont_t *boxp, int initialdisprows, int headingflag, int minwidth);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
@@ -67,6 +67,7 @@ void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
 void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);
 
 /* column set specific to a row */
+void  uivlSetRowColumnReadonly (uivirtlist_t *vl, int32_t rownum, int colidx);
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
 void  uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx, uiwcont_t *img, int width);
 void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);

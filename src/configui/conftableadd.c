@@ -116,7 +116,7 @@ confuiTableAdd (void *udata)
 
     case CONFUI_ID_RATINGS: {
       /* CONTEXT: configuration: rating name that is set when adding a new rating */
-      confuiRatingSet (uitree, true, _("New Rating"), 0);
+//      confuiRatingSet (uitree, true, _("New Rating"), 0);
       break;
     }
 
@@ -140,13 +140,6 @@ confuiTableAdd (void *udata)
   if (uitree != NULL) {
     uiTreeViewSelectCurrent (uitree);
   }
-
-//  if (gui->tablecurr == CONFUI_ID_DANCE) {
-//    ilistidx_t    key;
-//
-//    key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
-//    confuiDanceSelectLoadValues (gui, key);
-//  }
 
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount += 1;

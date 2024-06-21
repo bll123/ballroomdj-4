@@ -53,6 +53,7 @@ confuiLevelSet (uiwcont_t *uitree,
   logProcEnd ("");
 }
 
+#if 0
 void
 confuiRatingSet (uiwcont_t *uitree,
     int editable, const char *ratingdisp, long weight)
@@ -72,6 +73,7 @@ confuiRatingSet (uiwcont_t *uitree,
   uiwcontFree (adjustment);
   logProcEnd ("");
 }
+#endif
 
 void
 confuiStatusSet (uiwcont_t *uitree,

@@ -22,8 +22,9 @@
 #include "rating.h"
 #include "ui.h"
 
-static bool   confuiRatingListCreate (void *udata);
-static void   confuiRatingSave (confuigui_t *gui);
+static bool confuiRatingListCreate (void *udata);
+static void confuiRatingSave (confuigui_t *gui);
+static void confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
@@ -45,11 +46,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
-  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);
 
@@ -67,20 +63,36 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 void
 confuiCreateRatingTable (confuigui_t *gui)
 {
-  ilistidx_t        iteridx;
-  ilistidx_t        key;
+//  ilistidx_t        iteridx;
+//  ilistidx_t        key;
   rating_t          *ratings;
-  uiwcont_t         *uitree;
-  int               editable;
+//  uiwcont_t         *uitree;
+  uivirtlist_t      *uivl;
+//  int               editable;
 
   logProcBegin ();
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
-  uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  uivlSetNumColumns (uivl, CONFUI_RATING_COL_MAX);
+  uivlMakeColumnEntry (uivl, CONFUI_RATING_COL_RATING, 15, 30);
+  uivlMakeColumnSpinboxNum (uivl, CONFUI_RATING_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
+  uivlSetColumnHeading (uivl, CONFUI_RATING_COL_RATING,
+      tagdefs [TAG_DANCERATING].shortdisplayname);
+  /* CONTEXT: configuration: rating: title of the weight column */
+  uivlSetColumnHeading (uivl, CONFUI_RATING_COL_WEIGHT, _("Weight"));
+  uivlSetNumRows (uivl, ratingGetCount (ratings));
 
   gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED] =
       callbackInitI (confuiTableChanged, gui);
+
+  uivlSetRowFillCallback (uivl, confuiRatingFillRow, gui);
+  uivlDisplay (uivl);
+  /* the first entry field is read-only */
+  uivlSetRowColumnReadonly (uivl, 0, CONFUI_RATING_COL_RATING);
+
+#if 0
   uiTreeViewSetEditedCallback (uitree,
       gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 
@@ -126,9 +138,12 @@ confuiCreateRatingTable (confuigui_t *gui)
       TREE_COL_TYPE_ADJUSTMENT, CONFUI_RATING_COL_ADJUST,
       TREE_COL_TYPE_DIGITS, CONFUI_RATING_COL_DIGITS,
       TREE_COL_TYPE_END);
+#endif
 
   logProcEnd ("");
 }
+
+/* internal routines */
 
 static bool
 confuiRatingListCreate (void *udata)
@@ -162,5 +177,26 @@ confuiRatingSave (confuigui_t *gui)
   ratingSave (ratings, gui->tables [CONFUI_ID_RATINGS].savelist);
   ilistFree (gui->tables [CONFUI_ID_RATINGS].savelist);
   logProcEnd ("");
+}
+
+static void
+confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+{
+  confuigui_t *gui = udata;
+  rating_t    *ratings;
+  const char  *ratingdisp;
+  int         weight;
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  if (rownum >= ratingGetCount (ratings)) {
+    return;
+  }
+
+  ratingdisp = ratingGetRating (ratings, rownum);
+  weight = ratingGetWeight (ratings, rownum);
+  uivlSetRowColumnValue (gui->tables [CONFUI_ID_RATINGS].uivl, rownum,
+      CONFUI_RATING_COL_RATING, ratingdisp);
+  uivlSetRowColumnNum (gui->tables [CONFUI_ID_RATINGS].uivl, rownum,
+      CONFUI_RATING_COL_WEIGHT, weight);
 }
 

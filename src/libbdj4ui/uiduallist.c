@@ -125,7 +125,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
+  uivl = uiCreateVirtList ("dl-source", vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
   duallist->uivl [DL_LIST_SOURCE] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
@@ -165,7 +165,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uiCreateVirtList (vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
+  uivl = uiCreateVirtList ("dl-target", vbox, 15, VL_NO_HEADING, DL_MIN_WIDTH);
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);

@@ -7,7 +7,10 @@
 **4.11.0 2024-7---**
 
 * Bug Fixes:
-    * Edit Dances: Fixed a bug when adding multiple dances.
+    * Edit Dances: Fixed a long-standing bug when adding multiple dances.
+* Changes:
+    * Configuration: Rating/Level/Status/Genre are easier to use.
+    * Playlist Management: Easier to use.
 * Internal:
     * Re-work of all table handling.
 
