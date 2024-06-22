@@ -29,7 +29,6 @@
 
 enum {
   UIENTRY_VAL_TIMER = 400,
-  UIENTRY_VAL_TIMER_OFF = 3600000,
 };
 
 typedef struct uientry {
@@ -59,7 +58,7 @@ uiEntryInit (int entrySize, int maxSize)
   uientry->validateFunc = NULL;
   uientry->label = "";
   uientry->udata = NULL;
-  mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
+  mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
   uientry->valdelay = false;
   uientry->buffer = gtk_entry_buffer_new (NULL, -1);
 
@@ -226,7 +225,7 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
     return UIENTRY_OK;
   }
 
-  mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
+  mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
   rc = uientry->validateFunc (uiwidget, uientry->label, uientry->udata);
   if (rc == UIENTRY_RESET) {
     mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER);
@@ -252,7 +251,7 @@ uiEntryValidateClear (uiwcont_t *uiwidget)
   uientry = uiwidget->uiint.uientry;
 
   if (uientry->validateFunc != NULL) {
-    mstimeset (&uientry->validateTimer, UIENTRY_VAL_TIMER_OFF);
+    mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
   }
 }
 

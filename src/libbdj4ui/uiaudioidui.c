@@ -251,7 +251,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcont_t         *uiwidgetp;
   int               count;
   uiwcont_t         *col;
-  uiwcont_t         *hhbox;
   char              tbuff [MAXPATHLEN];
 
   logProcBegin ();
@@ -384,6 +383,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetAlignHorizFill (hbox);
   uiWindowPackInWindow (uiwidgetp, hbox);
 
+  uiwcontFree (uiwidgetp);
+
   count = slistGetCount (audioidint->sellist);
 
   /* the items must all be alloc'd beforehand so that the callback */
@@ -402,19 +403,21 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetExpandVert (col);
   uiBoxPackStartExpand (hbox, col);
 
+  uiwcontFree (hbox);
+
   /* headings */
 
-  hhbox = uiCreateHorizBox ();
-  uiBoxPackStart (col, hhbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (col, hbox);
 
   uiwidgetp = uiCreateLabel ("");
   uiWidgetSetMarginEnd (uiwidgetp, 4);
-  uiBoxPackStart (hhbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hhbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   snprintf (tbuff, sizeof (tbuff), "%s bold", bdjoptGetStr (OPT_MP_UIFONT));
@@ -424,20 +427,20 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiLabelSetFont (uiwidgetp, tbuff);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_A], uiwidgetp);
-  uiBoxPackStartExpand (hhbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hhbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* CONTEXT: audio identification: the data for the selected matched song */
   uiwidgetp = uiCreateLabel (_("Selected"));
   uiLabelSetFont (uiwidgetp, tbuff);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_B], uiwidgetp);
-  uiBoxPackStartExpand (hhbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
-  uiwcontFree (hhbox);
+  uiwcontFree (hbox);
 
   uiaudioidAddDisplay (uiaudioid, col);
 

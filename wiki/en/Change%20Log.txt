@@ -6,7 +6,21 @@
 
 **4.11.0 2024-7---**
 
+* New Features:
+  * PENDING Configuration: Improved table user interface.
+* Internal:
+  * Re-work of all listing displays.
+
 -->
+
+**4.10.6 2024-6-22**
+
+* Bug Fixes:
+    * Player: Fixed toggle-pause display (introduced in 4.10.4).
+* Changes:
+    * Player: Allow change of speed when the player is stopped.
+* Internal:
+    * Fix various memory leaks.
 
 **4.10.5 2024-6-17**
 

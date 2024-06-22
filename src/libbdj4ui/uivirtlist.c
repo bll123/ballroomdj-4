@@ -219,7 +219,6 @@ uiCreateVirtList (uiwcont_t *boxp, int disprows)
   nlistSetNum (vl->selected, 0, 1);
   vl->initialized = VL_INIT_NONE;
 
-fprintf (stderr, "init: disprows: %d\n", disprows);
   vl->disprows = disprows;
   vl->allocrows = disprows;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->allocrows);
@@ -334,14 +333,12 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colnum, const char *heading)
   }
 
   if (vl->initialized < VL_INIT_ROWS) {
-fprintf (stderr, "head-row-init\n");
     uivlInitRow (vl, &vl->headingrow, true);
 
     for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
       uivlrow_t *row;
 
       row = &vl->rows [dispidx];
-fprintf (stderr, "row-init: %d\n", dispidx);
       uivlInitRow (vl, row, false);
     }
     vl->initialized = VL_INIT_ROWS;
@@ -627,12 +624,10 @@ uivlDisplay (uivirtlist_t *vl)
   uiBoxPackEnd (vl->headingrow.hbox, vl->wcont [VL_W_FILLER]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
 
-fprintf (stderr, "disp-pop\n");
   uivlPopulate (vl);
 
   for (int dispidx = 0; dispidx < vl->disprows; ++dispidx) {
     row = &vl->rows [dispidx];
-fprintf (stderr, "disp-pack: %d\n", dispidx);
     uivlPackRow (vl, row);
     if (dispidx == 0) {
       uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
@@ -786,7 +781,6 @@ uivlPopulate (uivirtlist_t *vl)
     uivlcol_t   *col;
 
     row = &vl->rows [dispidx];
-fprintf (stderr, "pop: %d %p\n", dispidx, row);
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       col = &row->cols [colidx];
@@ -1027,7 +1021,6 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start)
   }
 
   vl->rowoffset = start;
-fprintf (stderr, "scroll-pop\n");
   uivlPopulate (vl);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) start);
   vl->inscroll = false;
@@ -1040,15 +1033,12 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
   int           calcrows;
   int           theight;
 
-fprintf (stderr, "vbox: size-chg: %d %d\n", width, height);
 
   vl->vboxheight = height;
 
   if (vl->vboxheight > 0 && vl->rowheight > 0) {
     theight = vl->vboxheight;
-fprintf (stderr, "  theight: %d\n", theight);
     calcrows = theight / vl->rowheight;
-fprintf (stderr, "  calcrows: %d\n", calcrows);
 
     if (calcrows != vl->disprows) {
 
@@ -1060,10 +1050,8 @@ fprintf (stderr, "  calcrows: %d\n", calcrows);
 
           row = &vl->rows [dispidx];
           uivlRowBasicInit (row);
-fprintf (stderr, "sz-row-init: %d\n", dispidx);
           uivlInitRow (vl, row, false);
 
-fprintf (stderr, "sz-chg-pack: %d\n", dispidx);
           uivlPackRow (vl, row);
         }
 
@@ -1071,7 +1059,6 @@ fprintf (stderr, "sz-chg-pack: %d\n", dispidx);
       }
 
       vl->disprows = calcrows;
-fprintf (stderr, "sz-pop: disprows: %d\n", vl->disprows);
       uivlPopulate (vl);
     }
   }
@@ -1083,7 +1070,6 @@ uivlRowSizeChg (void *udata, int32_t width, int32_t height)
 {
   uivirtlist_t  *vl = udata;
 
-fprintf (stderr, "row: size-chg: %d %d\n", width, height);
   vl->rowheight = height;
   return UICB_CONT;
 }

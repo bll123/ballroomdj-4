@@ -42,7 +42,6 @@
 enum {
   UIPLAYER_LOCK_TIME_WAIT = 300,
   UIPLAYER_LOCK_TIME_SEND = 50,
-  UIPLAYER_LOCK_CLEAR = 3600000,
 };
 
 enum {
@@ -151,7 +150,7 @@ static bool  uiplayerInitCallback (void *udata, programstate_t programState);
 static bool  uiplayerClosingCallback (void *udata, programstate_t programState);
 
 static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
-static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState);
+static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data);
 static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static bool     uiplayerFadeProcess (void *udata);
@@ -228,20 +227,23 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uiwcont_t       *uiwidgetp;
-  uiwcont_t       *hbox;
-  uiwcont_t       *statusbox;
-  uiwcont_t       *szgrpScalePerc;
-  uiwcont_t       *szgrpScaleDisp;
-  uiwcont_t       *szgrpScale;
-  uiwcont_t       *szgrpScaleLabel;
-  uiwcont_t       *szgrpScaleButton;
-  uiwcont_t       *szgrpStatus;
+  uiwcont_t       *uiwidgetp = NULL;
+  uiwcont_t       *hbox = NULL;
+  uiwcont_t       *statusbox = NULL;
+  uiwcont_t       *szgrpScalePerc = NULL;
+  uiwcont_t       *szgrpScaleDisp = NULL;
+  uiwcont_t       *szgrpScale = NULL;
+  uiwcont_t       *szgrpScaleLabel = NULL;
+  uiwcont_t       *szgrpScaleButton = NULL;
+  uiwcont_t       *szgrpStatus = NULL;
   bool            showspd = false;
 
   logProcBegin ();
 
-  szgrpScaleButton= uiCreateSizeGroupHoriz ();
+  showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
+  if (showspd) {
+    szgrpScaleButton = uiCreateSizeGroupHoriz ();
+  }
   szgrpScalePerc = uiCreateSizeGroupHoriz ();
   szgrpScaleDisp = uiCreateSizeGroupHoriz ();
   szgrpScale = uiCreateSizeGroupHoriz ();
@@ -323,7 +325,6 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
   if (showspd) {
     /* size group F */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
@@ -560,6 +561,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiwcontFree (statusbox);
   uiwcontFree (hbox);
+  if (showspd) {
+    uiwcontFree (szgrpScaleButton);
+  }
   uiwcontFree (szgrpScalePerc);
   uiwcontFree (szgrpScaleDisp);
   uiwcontFree (szgrpScale);
@@ -574,7 +578,7 @@ void
 uiplayerMainLoop (uiplayer_t *uiplayer)
 {
   if (mstimeCheck (&uiplayer->volumeLockTimeout)) {
-    mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_CLEAR);
+    mstimeset (&uiplayer->volumeLockTimeout, TM_TIMER_OFF);
     uiplayer->volumeLock = false;
   }
 
@@ -590,7 +594,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       if (uiplayer->volumeLock) {
         mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_TIME_SEND);
       } else {
-        mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_CLEAR);
+        mstimeset (&uiplayer->volumeLockSend, TM_TIMER_OFF);
         uiplayer->volumeLastValue = -1.0;
       }
     }
@@ -600,8 +604,9 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     /* if the player is paused, keep resetting the lock timers */
     /* until such time as the player starts playing again */
     /* VLC cannot change the speed while paused */
-    if (uiplayer->playerState != PL_STATE_PAUSED) {
-      mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_CLEAR);
+    if (uiplayer->playerState != PL_STATE_PAUSED &&
+        uiplayer->playerState != PL_STATE_STOPPED) {
+      mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
       uiplayer->speedLock = false;
     }
   }
@@ -618,25 +623,26 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
         connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
       }
 
-      if (uiplayer->playerState == PL_STATE_PAUSED) {
+      if (uiplayer->playerState == PL_STATE_PAUSED ||
+          uiplayer->playerState == PL_STATE_STOPPED) {
         /* if the player is paused, keep resetting the lock timers */
         /* until such time as the player starts playing again */
         /* VLC cannot change the speed while paused */
         mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
-        mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_SEND);
+        mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
       } else if (uiplayer->speedLock) {
         /* if the speedlock is on, keep re-testing for a speed change */
         /* the speedlock is turned off by the speed-lock timeout */
         mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
       } else {
         /* no speedlock is set, clear the send timer */
-        mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_CLEAR);
+        mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
       }
     }
   }
 
   if (mstimeCheck (&uiplayer->seekLockTimeout)) {
-    mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_CLEAR);
+    mstimeset (&uiplayer->seekLockTimeout, TM_TIMER_OFF);
     uiplayer->seekLock = false;
   }
 
@@ -654,7 +660,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
         mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
       }
     } else {
-      mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_CLEAR);
+      mstimeset (&uiplayer->seekLockSend, TM_TIMER_OFF);
       uiplayer->seekLastValue = -1.0;
     }
   }
@@ -678,7 +684,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, atol (targs));
+          uiplayerProcessPlayerState (uiplayer, targs);
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
@@ -778,14 +784,14 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   logProcBegin ();
 
   uiplayer->playerState = PL_STATE_STOPPED;
-  mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_CLEAR);
-  mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_CLEAR);
-  mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_CLEAR);
-  mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_CLEAR);
+  mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
+  mstimeset (&uiplayer->volumeLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->volumeLockSend, TM_TIMER_OFF);
   uiplayer->baseVolume = -1;
   uiplayer->lastdur = 180000;
-  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_CLEAR);
-  mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_CLEAR);
+  mstimeset (&uiplayer->seekLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->seekLockSend, TM_TIMER_OFF);
   uiplayer->seekLastValue = -1.0;
   uiplayer->volumeLastValue = -1.0;
   uiplayer->speedLastValue = 100.0;
@@ -850,16 +856,26 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 }
 
 static void
-uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
+uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
 {
-  int   state;
+  int               state;
+  mp_playerstate_t  *ps;
 
   logProcBegin ();
 
-  uiplayer->playerState = playerState;
+  ps = msgparsePlayerStateData (data);
+  uiplayer->playerState = ps->playerState;
+
+  if (ps->newsong) {
+    /* clear any speed lock */
+    /* this will force the speed to be reset */
+    uiplayer->speedLock = false;
+    mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
+    mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
+  }
 
   state = UIWIDGET_ENABLE;
-  if (playerState == PL_STATE_IN_FADEOUT) {
+  if (uiplayer->playerState == PL_STATE_IN_FADEOUT) {
     state = UIWIDGET_DISABLE;
   }
 
@@ -872,7 +888,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
-  switch (playerState) {
+  switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
@@ -898,6 +914,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
       break;
     }
   }
+  msgparsePlayerStateFree (ps);
   logProcEnd ("");
 }
 
@@ -915,14 +932,6 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   logProcBegin ();
 
   ps = msgparsePlayerStatusData (args);
-
-  if (ps->newsong) {
-    /* clear any speed lock */
-    /* this will force the speed to be reset */
-    uiplayer->speedLock = false;
-    mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_CLEAR);
-    mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_CLEAR);
-  }
 
   /* repeat */
   uiplayer->repeatLock = true;

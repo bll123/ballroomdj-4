@@ -139,13 +139,14 @@ songFree (void *tsong)
 {
   song_t  *song = (song_t *) tsong;
 
-  if (song != NULL || song->ident != SONG_IDENT) {
+  if (song == NULL || song->ident != SONG_IDENT) {
     return;
   }
 
   nlistFree (song->songInfo);
   song->ident = 0;
   mdfree (song);
+
   --gsonginit.songcount;
   if (gsonginit.songcount <= 0) {
     songCleanup ();

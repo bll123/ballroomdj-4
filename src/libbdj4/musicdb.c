@@ -90,7 +90,6 @@ dbClose (musicdb_t *musicdb)
   if (musicdb->inbatch) {
     dbEndBatch (musicdb);
   }
-  musicdb->ident = 0;
   raClose (musicdb->radb);
   musicdb->radb = NULL;
 
@@ -98,6 +97,7 @@ dbClose (musicdb_t *musicdb)
   nlistFree (musicdb->danceCounts);
   dataFree (musicdb->fn);
   nlistFree (musicdb->tempSongs);
+  musicdb->ident = 0;
   mdfree (musicdb);
 }
 
