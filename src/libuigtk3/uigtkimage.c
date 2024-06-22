@@ -104,7 +104,7 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
 void *
 uiImageGetPixbuf (uiwcont_t *uiwidget)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-get-pixbuf")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_PIXBUF, "image-get-pixbuf")) {
     return NULL;
   }
   if (uiwidget->uidata.pixbuf == NULL) {
