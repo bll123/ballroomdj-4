@@ -279,7 +279,7 @@ main (int argc, char *argv[])
   plui.marqueeIsMaximized = false;
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
-  mstimeset (&plui.marqueeFontSizeCheck, 3600000);
+  mstimeset (&plui.marqueeFontSizeCheck, TM_TIMER_OFF);
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
   plui.nbtabid = uinbutilIDInit ();
@@ -870,7 +870,7 @@ pluiMainLoop (void *tplui)
     }
     snprintf (tbuff, sizeof (tbuff), "%d", sz);
     connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_SET_FONT_SZ, tbuff);
-    mstimeset (&plui->marqueeFontSizeCheck, 3600000);
+    mstimeset (&plui->marqueeFontSizeCheck, TM_TIMER_OFF);
   }
 
   connProcessUnconnected (plui->conn);
@@ -901,7 +901,7 @@ pluiClock (playerui_t *plui)
   uiLabelSetText (plui->wcont [PLUI_W_CLOCK],
       tmutilDisp (tbuff, sizeof (tbuff), bdjoptGetNum (OPT_G_CLOCK_DISP)));
   if (bdjoptGetNum (OPT_G_CLOCK_DISP) == TM_CLOCK_OFF) {
-    mstimeset (&plui->clockCheck, 3600000);
+    mstimeset (&plui->clockCheck, TM_TIMER_OFF);
   } else {
     mstimeset (&plui->clockCheck, 200);
   }

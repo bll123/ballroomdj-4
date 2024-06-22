@@ -59,4 +59,4 @@ display. [Contact](en-Getting%20Help) the developers for more
 information.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-18 17:05:25; BDJ4 version 4.8.3)_
+<br>_(Updated 2024-06-22 11:57:40; BDJ4 version 4.10.6)_

@@ -9,12 +9,21 @@
 * Bug Fixes:
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
 * Changes:
-    * Configuration: Rating/Level/Status/Genre are easier to use.
-    * Playlist Management: Easier to use.
+    * PENDING Configuration: Rating/Level/Status/Genre are easier to use.
+    * PENDING Playlist Management: Easier to use.
 * Internal:
     * Re-work of all table handling.
 
 -->
+
+**4.10.6 2024-6-22**
+
+* Bug Fixes:
+    * Player: Fixed toggle-pause display (introduced in 4.10.4).
+* Changes:
+    * Player: Allow change of speed when the player is stopped.
+* Internal:
+    * Fix various memory leaks.
 
 **4.10.5 2024-6-17**
 
@@ -931,4 +940,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-17 11:45:10; BDJ4 version 4.10.5)_
+<br>_(Updated 2024-06-22 11:57:40; BDJ4 version 4.10.6)_

@@ -37,6 +37,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "msgparse.h"
 #include "osenv.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -226,7 +227,7 @@ main (int argc, char *argv[])
   mstimestart (&playerData.playTimeStart);
   playerData.playTimePlayed = 0;
   playerData.playRequest = queueAlloc ("play-request", playerFreePlayRequest);
-  mstimeset (&playerData.statusCheck, 3600000);
+  mstimeset (&playerData.statusCheck, TM_TIMER_OFF);
   playerData.priorGap = 2000;
   playerData.gap = 2000;
   playerData.pli = NULL;
@@ -823,13 +824,16 @@ playerProcessing (void *udata)
             playerData->pauseAtEnd = false;
             playerSendPauseAtEndState (playerData);
             logMsg (LOG_DBG, LOG_BASIC, "pause-at-end");
-            playerSetPlayerState (playerData, PL_STATE_STOPPED);
+
+            /* want the newsong flag to be sent with the stop state */
             if (! playerData->repeat) {
               /* let main know we're done with this song. */
               playerData->newsong = true;
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH_STOP, nsflag);
             }
+            playerSetPlayerState (playerData, PL_STATE_STOPPED);
+
             if (playerData->repeat) {
               playrequest_t *preq;
 
@@ -1008,11 +1012,11 @@ playerSongPrep (playerdata_t *playerData, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
   npq->plidur = 0;
-  logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId64, (int64_t) npq->dur);
+  logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId32, npq->dur);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->songstart = atol (p);
-  logMsg (LOG_DBG, LOG_INFO, "     songstart: %" PRId64, (int64_t) npq->songstart);
+  npq->songstart = atoll (p);
+  logMsg (LOG_DBG, LOG_INFO, "     songstart: %" PRId64, npq->songstart);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->speed = atoi (p);
@@ -1796,7 +1800,7 @@ playerStartFadeOut (playerdata_t *playerData)
 static void
 playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 {
-  ssize_t newdur;
+  int32_t     newdur;
 
   logProcBegin ();
 
@@ -1812,8 +1816,8 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   if (pq->announce == PREP_SONG && playerData->fadeoutTime > 0) {
     mstimeset (&playerData->fadeTimeCheck, newdur - playerData->fadeoutTime);
   }
-  logMsg (LOG_DBG, LOG_INFO, "pq->dur: %" PRId64, (int64_t) pq->dur);
-  logMsg (LOG_DBG, LOG_INFO, "newdur: %" PRId64, (int64_t) newdur);
+  logMsg (LOG_DBG, LOG_INFO, "pq->dur: %" PRId32, pq->dur);
+  logMsg (LOG_DBG, LOG_INFO, "newdur: %" PRId32, newdur);
   logMsg (LOG_DBG, LOG_INFO, "playTimeStart: %" PRId64, (int64_t) mstimeend (&playerData->playTimeStart));
   logMsg (LOG_DBG, LOG_INFO, "playEndCheck: %" PRId64, (int64_t) mstimeend (&playerData->playEndCheck));
   logMsg (LOG_DBG, LOG_INFO, "playTimeCheck: %" PRId64, (int64_t) mstimeend (&playerData->playTimeCheck));
@@ -1832,12 +1836,15 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
     playerData->playerState = pstate;
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
         playerData->playerState, logPlayerState (playerData->playerState));
-    snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
+    msgbuildPlayerState (tbuff, sizeof (tbuff),
+        playerData->playerState, playerData->newsong);
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATE, tbuff);
     /* any time there is a change of player state, send the status */
     playerSendStatus (playerData, STATUS_NO_FORCE);
+    /* reset the new-song flag after it has been sent */
+    playerData->newsong = false;
   }
   logProcEnd ("");
 }
@@ -1848,8 +1855,8 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 {
   char        *rbuff;
   prepqueue_t *pq = playerData->currentSong;
-  ssize_t     tm;
-  ssize_t     dur;
+  int32_t     tm;
+  int32_t     dur;
 
   logProcBegin ();
 
@@ -1889,16 +1896,9 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
-      playerData->newsong, MSG_ARGS_RS,
-      playerData->repeat, MSG_ARGS_RS,
-      playerData->pauseAtEnd, MSG_ARGS_RS,
-      playerData->currentVolume, MSG_ARGS_RS,
-      playerData->currentSpeed, MSG_ARGS_RS,
-      playerData->baseVolume, MSG_ARGS_RS,
-      (uint64_t) tm, MSG_ARGS_RS,
-      (int64_t) dur);
-  playerData->newsong = false;
+  msgbuildPlayerStatus (rbuff, BDJMSG_MAX,
+      playerData->repeat, playerData->pauseAtEnd, playerData->currentVolume,
+      playerData->currentSpeed, playerData->baseVolume, tm, dur);
 
   /* 4.4.4 send the playerui and manageui the messages from here, */
   /* avoid some latency by not routing through main */

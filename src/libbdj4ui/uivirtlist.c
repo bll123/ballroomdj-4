@@ -1715,6 +1715,7 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
           row = &vl->rows [dispidx];
           uivlRowBasicInit (vl, row, dispidx);
           uivlCreateRow (vl, row, dispidx, false);
+
           uivlPackRow (vl, row);
           /* rows packed after the initial display need */
           /* to have their contents shown */

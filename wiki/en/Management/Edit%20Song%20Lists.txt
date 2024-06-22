@@ -226,4 +226,4 @@ playlist from iTunes.
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Menu__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-17 11:45:10; BDJ4 version 4.10.5)_
+<br>_(Updated 2024-06-22 11:57:40; BDJ4 version 4.10.6)_

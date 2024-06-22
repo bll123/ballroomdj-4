@@ -192,6 +192,7 @@ static bool mainGetAnnounceFlag (maindata_t *mainData, int mqidx, int playlistId
 static void mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom, const char *args);
 static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime, int mqidx);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
+static void mainProcessPlayerState (maindata_t *mainData, char *data);
 
 static int32_t globalCounter = 0;
 static int  gKillReceived = 0;
@@ -542,14 +543,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_STATE: {
-          mainData->playerState = (playerstate_t) atol (targs);
-          logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
-              mainData->playerState, logPlayerState (mainData->playerState));
-          mainData->marqueeChanged = true;
-
-          if (mainData->playerState == PL_STATE_STOPPED) {
-            ++mainData->pbfinishrcv;
-          }
+          mainProcessPlayerState (mainData, targs);
           break;
         }
         case MSG_GET_DANCE_LIST: {
@@ -2367,10 +2361,10 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     /* for marquee */
     timerbuff = mdmalloc (BDJMSG_MAX);
 
-    snprintf (tbuff, sizeof (tbuff), "%" PRIu64 "%c", ps->playedtime, MSG_ARGS_RS);
+    snprintf (tbuff, sizeof (tbuff), "%" PRIu32 "%c", ps->playedtime, MSG_ARGS_RS);
     strlcpy (timerbuff, tbuff, BDJMSG_MAX);
 
-    snprintf (tbuff, sizeof (tbuff), "%" PRId64, ps->duration);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId32, ps->duration);
     strlcat (timerbuff, tbuff, BDJMSG_MAX);
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
@@ -3284,4 +3278,21 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, (musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 5) & MUSICQ_FLAG_PAUSE) ? 1 : 0, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
+}
+
+static void
+mainProcessPlayerState (maindata_t *mainData, char *data)
+{
+  mp_playerstate_t *ps;
+
+  ps = msgparsePlayerStateData (data);
+  mainData->playerState = ps->playerState;
+  logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
+      mainData->playerState, logPlayerState (mainData->playerState));
+  mainData->marqueeChanged = true;
+
+  if (mainData->playerState == PL_STATE_STOPPED) {
+    ++mainData->pbfinishrcv;
+  }
+  msgparsePlayerStateFree (ps);
 }

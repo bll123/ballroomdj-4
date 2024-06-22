@@ -22,6 +22,12 @@ enum {
   TM_CLOCK_OFF,
 };
 
+enum {
+  /* this is just a very large number so that the timer won't pop */
+  /* any time soon. use 48 hours */
+  TM_TIMER_OFF = 172800000,
+};
+
 typedef struct {
   struct timeval    tm;
 } mstime_t;

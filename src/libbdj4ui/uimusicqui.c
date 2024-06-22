@@ -579,7 +579,7 @@ uimusicqTruncateQueueCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
   int           ci;
-  long          idx;
+  nlistidx_t    idx;
 
 
   logProcBegin ();
@@ -1072,7 +1072,7 @@ uimusicqMoveTopCallback (void *udata)
 {
   uimusicq_t  *uimusicq = udata;
   int         ci;
-  long        idx;
+  nlistidx_t  idx;
 
 
   logProcBegin ();
@@ -1096,7 +1096,7 @@ uimusicqMoveUpCallback (void *udata)
 {
   uimusicq_t  *uimusicq = udata;
   int         ci;
-  long        idx;
+  nlistidx_t  idx;
 
 
   logProcBegin ();
@@ -1122,7 +1122,7 @@ uimusicqMoveDownCallback (void *udata)
 {
   uimusicq_t  *uimusicq = udata;
   int         ci;
-  long        idx;
+  nlistidx_t  idx;
 
   logProcBegin ();
 
@@ -1146,7 +1146,7 @@ uimusicqTogglePauseCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
   int           ci;
-  long          idx;
+  nlistidx_t    idx;
 
 
   logProcBegin ();
@@ -1170,7 +1170,7 @@ uimusicqRemoveCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
   int           ci;
-  long          idx;
+  nlistidx_t    idx;
 
 
   logProcBegin ();

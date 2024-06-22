@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -20,7 +22,7 @@
 static void msgparseMusicQueueDispFree (void *data);
 
 mp_musicqupdate_t *
-msgparseMusicQueueData (char *args)
+msgparseMusicQueueData (char *data)
 {
   int               mqidx = 0;
   char              *p;
@@ -39,7 +41,7 @@ msgparseMusicQueueData (char *args)
   musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED,
       msgparseMusicQueueDispFree);
 
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     mqidx = atoi (p);
     musicqupdate->mqidx = mqidx;
@@ -97,7 +99,7 @@ msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate)
 }
 
 mp_songselect_t *
-msgparseSongSelect (char *args)
+msgparseSongSelect (char *data)
 {
   int               mqidx;
   char              *p;
@@ -109,7 +111,7 @@ msgparseSongSelect (char *args)
   songselect->mqidx = 0;
   songselect->loc = 0;
 
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     mqidx = atoi (p);
     songselect->mqidx = mqidx;
@@ -131,15 +133,31 @@ msgparseSongSelectFree (mp_songselect_t *songselect)
   }
 }
 
+void
+msgbuildPlayerStatus (char *buff, size_t sz,
+    bool repeat, bool pauseatend,
+    int currvol, int currspeed, int basevol,
+    uint32_t tm, int32_t dur)
+{
+  snprintf (buff, sz, "%d%c%d%c%d%c%d%c%d%c%" PRIu32 "%c%" PRId32,
+      repeat, MSG_ARGS_RS,
+      pauseatend, MSG_ARGS_RS,
+      currvol, MSG_ARGS_RS,
+      currspeed, MSG_ARGS_RS,
+      basevol, MSG_ARGS_RS,
+      tm, MSG_ARGS_RS,
+      dur);
+}
+
+
 mp_playerstatus_t *
-msgparsePlayerStatusData (char * args)
+msgparsePlayerStatusData (char * data)
 {
   mp_playerstatus_t *ps = NULL;
   char              *p;
   char              *tokstr;
 
   ps = mdmalloc (sizeof (mp_playerstatus_t));
-  ps->newsong = false;
   ps->repeat = false;
   ps->pauseatend = false;
   ps->currentVolume = 0;
@@ -148,12 +166,7 @@ msgparsePlayerStatusData (char * args)
   ps->playedtime = 0;
   ps->duration = 0;
 
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL) {
-    ps->newsong = atoi (p);
-  }
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     ps->repeat = atoi (p);
   }
@@ -199,6 +212,46 @@ msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus)
   }
 
   mdfree (playerstatus);
+}
+
+void
+msgbuildPlayerState (char *buff, size_t sz, int playerState, bool newsong)
+{
+  snprintf (buff, sz, "%d%c%d", playerState, MSG_ARGS_RS, newsong);
+}
+
+mp_playerstate_t *
+msgparsePlayerStateData (char * data)
+{
+  mp_playerstate_t *ps = NULL;
+  char              *p;
+  char              *tokstr;
+
+  ps = mdmalloc (sizeof (mp_playerstate_t));
+  ps->playerState = PL_STATE_STOPPED;
+  ps->newsong = false;
+
+  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->playerState = atoi (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    ps->newsong = atoi (p);
+  }
+
+  return ps;
+}
+
+void
+msgparsePlayerStateFree (mp_playerstate_t *playerstate)
+{
+  if (playerstate == NULL) {
+    return;
+  }
+
+  mdfree (playerstate);
 }
 
 
