@@ -9,8 +9,8 @@
 * Bug Fixes:
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
 * Changes:
-    * PENDING Configuration: Rating/Level/Status/Genre are easier to use.
-    * PENDING Playlist Management: Easier to use.
+    * Configuration: New interface for Rating / Level / Status / Genre.
+    * PENDING Playlist Management: New interface for dances table.
 * Internal:
     * Re-work of all table handling.
 
