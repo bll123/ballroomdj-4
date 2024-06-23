@@ -1936,9 +1936,6 @@ uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
     int32_t   min = rownum;
     int32_t   max = rownum;
 
-    /* gtk does some unusual stuff when shift-click is pressed within */
-    /* an already selected area.  let's not do unusual things */
-
     if (vl->lastSelection < rownum) {
       min = vl->lastSelection;
       max = rownum;
