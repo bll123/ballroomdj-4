@@ -187,6 +187,10 @@ ratingConv (datafileconv_t *conv)
   rating_t    *ratings;
   slistidx_t  num;
 
+  if (conv == NULL) {
+    return;
+  }
+
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   if (conv->invt == VALUE_STR) {

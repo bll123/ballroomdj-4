@@ -1,6 +1,9 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
+/* the conversion routines use the internal status-list, but it */
+/* is not necessary to update this for editing or for the save */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -93,8 +96,6 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   uivlSetRowFillCallback (uivl, confuiStatusFillRow, gui);
   uivlDisplay (uivl);
-  /* the first entry field is read-only */
-  uivlSetRowColumnReadonly (uivl, 0, CONFUI_STATUS_COL_STATUS);
 
   logProcEnd ("");
 }
@@ -125,8 +126,8 @@ confuiStatusSave (confuigui_t *gui)
     const char  *statusdisp;
     int         playflag;
 
-    statusdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_STATUS_COL_STATUS);
-    playflag = uivlGetRowColumnNum (uivl, rowidx, CONFUI_STATUS_COL_PLAY_FLAG);
+    statusdisp = statusGetStatus (status, rowidx);
+    playflag = statusGetPlayFlag (status, rowidx);
     ilistSetStr (statuslist, rowidx, STATUS_STATUS, statusdisp);
     ilistSetNum (statuslist, rowidx, STATUS_PLAY_FLAG, playflag);
   }
@@ -139,24 +140,34 @@ confuiStatusSave (confuigui_t *gui)
 static void
 confuiStatusFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  confuigui_t *gui = udata;
-  status_t    *status;
-  const char  *statusdisp;
-  int         playflag;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  status_t      *status;
+  const char    *statusdisp;
+  int           playflag;
+  ilistidx_t    count;
 
-  gui->inchange = true;
-
+  uivl = gui->tables [CONFUI_ID_STATUS].uivl;
   status = bdjvarsdfGet (BDJVDF_STATUS);
-  if (rownum >= statusGetCount (status)) {
+
+  count = statusGetCount (status);
+  if (rownum >= count) {
     return;
   }
 
+  gui->inchange = true;
+
   statusdisp = statusGetStatus (status, rownum);
   playflag = statusGetPlayFlag (status, rownum);
-  uivlSetRowColumnValue (gui->tables [CONFUI_ID_STATUS].uivl, rownum,
-      CONFUI_STATUS_COL_STATUS, statusdisp);
-  uivlSetRowColumnNum (gui->tables [CONFUI_ID_STATUS].uivl, rownum,
-      CONFUI_STATUS_COL_PLAY_FLAG, playflag);
+  uivlSetRowColumnValue (uivl, rownum, CONFUI_STATUS_COL_STATUS, statusdisp);
+  uivlSetRowColumnNum (uivl, rownum, CONFUI_STATUS_COL_PLAY_FLAG, playflag);
+  if (rownum == 0 || rownum == count - 1) {
+    /* the first entry field, if displayed is read-only */
+    /* the last entry field, if displayed, is read-only */
+    uivlSetRowColumnEditable (uivl, rownum, CONFUI_STATUS_COL_STATUS, UIWIDGET_DISABLE);
+  } else {
+    uivlSetRowColumnEditable (uivl, rownum, CONFUI_STATUS_COL_STATUS, UIWIDGET_ENABLE);
+  }
 
   gui->inchange = false;
 }
@@ -170,6 +181,9 @@ confuiStatusChangeCB (void *udata)
     return UICB_CONT;
   }
 
+  /* must update the data here in case of a scroll */
+  confuiStatusUpdateData (gui);
+
   gui->tables [CONFUI_ID_STATUS].changed = true;
   return UICB_CONT;
 }
@@ -182,6 +196,9 @@ confuiStatusEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
   if (gui->inchange) {
     return UIENTRY_OK;
   }
+
+  /* must update the data here in case of a scroll */
+  confuiStatusUpdateData (gui);
 
   gui->tables [CONFUI_ID_STATUS].changed = true;
   return UIENTRY_OK;
@@ -206,9 +223,13 @@ confuiStatusAdd (confuigui_t *gui)
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_STATUS].currcount = count;
   uivlPopulate (uivl);
-  /* the 'complete' status entry, must be last */
+
+  /* the 'complete' status entry must be last */
   /* move the just added value to the prior position */
   confuiStatusMove (gui, count - 1, CONFUI_MOVE_PREV);
+  /* display the last row also */
+  uivlSetSelection (uivl, count - 1);
+  uivlMoveSelection (uivl, VL_DIR_PREV);
 }
 
 static void
@@ -233,8 +254,8 @@ confuiStatusRemove (confuigui_t *gui, ilistidx_t delidx)
       const char  *statusdisp;
       int         playflag;
 
-      statusdisp = uivlGetRowColumnEntry (uivl, idx + 1, CONFUI_STATUS_COL_STATUS);
-      playflag = uivlGetRowColumnNum (uivl, idx + 1, CONFUI_STATUS_COL_PLAY_FLAG);
+      statusdisp = statusGetStatus (status, idx + 1);
+      playflag = statusGetPlayFlag (status, idx + 1);
       statusSetStatus (status, idx, statusdisp);
       statusSetPlayFlag (status, idx, playflag);
     }
@@ -253,20 +274,23 @@ confuiStatusUpdateData (confuigui_t *gui)
   status_t      *status;
   uivirtlist_t  *uivl;
   ilistidx_t    count;
+  int32_t       rowiter;
+  int32_t       rownum;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
   count = statusGetCount (status);
 
-  for (int rowidx = 0; rowidx < count; ++rowidx) {
+  uivlStartRowDispIterator (uivl, &rowiter);
+  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
     const char  *statusdisp;
     int         playflag;
 
-    statusdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_STATUS_COL_STATUS);
-    playflag = uivlGetRowColumnNum (uivl, rowidx, CONFUI_STATUS_COL_PLAY_FLAG);
-    statusSetStatus (status, rowidx, statusdisp);
-    statusSetPlayFlag (status, rowidx, playflag);
+    statusdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_STATUS_COL_STATUS);
+    playflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_STATUS_COL_PLAY_FLAG);
+    statusSetStatus (status, rownum, statusdisp);
+    statusSetPlayFlag (status, rownum, playflag);
   }
 }
 
@@ -276,7 +300,7 @@ confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir)
   status_t      *status;
   uivirtlist_t  *uivl;
   ilistidx_t    toidx;
-  const char    *statusdisp;
+  char          *statusdisp;
   int           playflag;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
@@ -293,14 +317,13 @@ confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir)
     uivlMoveSelection (uivl, VL_DIR_NEXT);
   }
 
-  statusdisp = uivlGetRowColumnEntry (uivl, toidx, CONFUI_STATUS_COL_STATUS);
-  playflag = uivlGetRowColumnNum (uivl, toidx, CONFUI_STATUS_COL_PLAY_FLAG);
-  statusSetStatus (status, toidx,
-      uivlGetRowColumnEntry (uivl, idx, CONFUI_STATUS_COL_STATUS));
-  statusSetPlayFlag (status, toidx,
-      uivlGetRowColumnNum (uivl, idx, CONFUI_STATUS_COL_PLAY_FLAG));
+  statusdisp = mdstrdup (statusGetStatus (status, toidx));
+  playflag = statusGetPlayFlag (status, toidx);
+  statusSetStatus (status, toidx, statusGetStatus (status, idx));
+  statusSetPlayFlag (status, toidx, statusGetPlayFlag (status, idx));
   statusSetStatus (status, idx, statusdisp);
   statusSetPlayFlag (status, idx, playflag);
+  dataFree (statusdisp);
 
   uivlPopulate (uivl);
 

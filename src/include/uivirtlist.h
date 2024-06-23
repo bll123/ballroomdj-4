@@ -50,6 +50,7 @@ void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 void  uivlSetDarkBackground (uivirtlist_t *vl);
 void  uivlSetUseListingFont (uivirtlist_t *vl);
+void  uivlSetAllowMultiple (uivirtlist_t *vl);
 
 /* make columns */
 void  uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type);
@@ -67,7 +68,7 @@ void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
 void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);
 
 /* column set specific to a row */
-void  uivlSetRowColumnReadonly (uivirtlist_t *vl, int32_t rownum, int colidx);
+void  uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int state);
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
 void  uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx, uiwcont_t *img, int width);
 void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);
@@ -90,6 +91,8 @@ void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
 void  uivlPopulate (uivirtlist_t *vl);
+void uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter);
+int32_t uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter);
 void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);

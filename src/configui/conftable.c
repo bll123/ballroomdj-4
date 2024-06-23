@@ -61,7 +61,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 1);
   uiWidgetAlignHorizStart (vbox);
-  uiBoxPackStartExpand (boxp, vbox);
+  uiBoxPackStart (boxp, vbox);
   uivl = uiCreateVirtList (tag, vbox, 5, heading, 100);
   gui->tables [id].uivl = uivl;
   uiwcontFree (vbox);

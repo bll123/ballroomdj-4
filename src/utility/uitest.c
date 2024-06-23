@@ -1084,6 +1084,7 @@ uitestUIVirtList (uitest_t *uitest)
   uitest->vl = uiCreateVirtList ("uitest", vbox, UITEST_VL_DISPROWS,
       VL_SHOW_HEADING, VL_NO_WIDTH);
   uivlSetUseListingFont (uitest->vl);
+  uivlSetAllowMultiple (uitest->vl);
   uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
@@ -1101,9 +1102,6 @@ uitestUIVirtList (uitest_t *uitest)
       uivlMakeColumnSpinboxNum (uitest->vl, j, 0.0, 20.0, 1.0, 5.0);
     } else {
       uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL);
-      if (j == 3) {
-        uivlSetColumnDisplay (uitest->vl, j, VL_COL_HIDE);
-      }
     }
   }
 

@@ -57,7 +57,7 @@ enum {
   VL_CB_KEY,
   VL_CB_MBUTTON,
   VL_CB_SCROLL,
-  VL_CB_VBOX_SZ_CHG,
+  VL_CB_VERT_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
   VL_CB_MAX,
 };
@@ -140,7 +140,7 @@ typedef struct {
   int           dispidx;
   bool          cleared : 1;        // row is on-screen, no display
   bool          created : 1;
-  bool          hidden : 1;         // the row is off-screen
+  bool          offscreen : 1;
   bool          initialized : 1;
   bool          selected : 1;       // a temporary flag to ease processing
 } uivlrow_t;
@@ -183,6 +183,7 @@ typedef struct uivirtlist {
   bool          dispheading : 1;
   bool          darkbg : 1;
   bool          uselistingfont : 1;
+  bool          allowmultiple : 1;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -234,6 +235,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   if (headingflag == VL_NO_HEADING) {
     vl->dispheading = false;
   }
+  vl->allowmultiple = false;
   vl->darkbg = false;
   vl->uselistingfont = false;
   vl->vboxheight = -1;
@@ -254,7 +256,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
-  vl->callbacks [VL_CB_VBOX_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
+  vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   if (vl->dispheading) {
@@ -285,7 +287,9 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_EVENT_BOX]);
 
-  uiBoxSetSizeChgCallback (vl->wcont [VL_W_MAIN_VBOX], vl->callbacks [VL_CB_VBOX_SZ_CHG]);
+  /* the size change callback must be set on the scroll-window */
+  /* as the child windows within it only grow */
+  uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
@@ -470,6 +474,16 @@ uivlSetUseListingFont (uivirtlist_t *vl)
   vl->uselistingfont = true;
 }
 
+void
+uivlSetAllowMultiple (uivirtlist_t *vl)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+
+  vl->allowmultiple = true;
+}
+
 /* column set */
 
 void
@@ -585,11 +599,36 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow)
 void
 uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 {
+  int   washidden;
+
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
     return;
   }
 
+  washidden = vl->coldata [colidx].hidden;
   vl->coldata [colidx].hidden = hidden;
+
+  if (vl->coldata [colidx].type == VL_TYPE_INTERNAL_NUMERIC) {
+    return;
+  }
+
+  if (washidden != hidden) {
+    for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
+      uivlrow_t   *row;
+
+      row = &vl->rows [dispidx];
+      if (row->offscreen || row->cleared) {
+        continue;
+      }
+
+      if (hidden == VL_COL_HIDE) {
+        uiWidgetHide (row->cols [colidx].uiwidget);
+      }
+      if (hidden == VL_COL_SHOW) {
+        uiWidgetShowAll (row->hbox);
+      }
+    }
+  }
 }
 
 void
@@ -604,7 +643,7 @@ uivlSetColumnClass (uivirtlist_t *vl, int colidx, const char *class)
 }
 
 void
-uivlSetRowColumnReadonly (uivirtlist_t *vl, int32_t rownum, int colidx)
+uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int state)
 {
   uivlrow_t   *row;
 
@@ -620,22 +659,26 @@ uivlSetRowColumnReadonly (uivirtlist_t *vl, int32_t rownum, int colidx)
     return;
   }
 
+  /* at this time, the user interfaces only have read-only entries */
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_ENTRY: {
-      uiEntrySetState (row->cols [colidx].uiwidget, UIWIDGET_DISABLE);
+      uiEntrySetState (row->cols [colidx].uiwidget, state);
       break;
     }
     case VL_TYPE_SPINBOX_NUM:
     case VL_TYPE_SPINBOX_TIME: {
-      uiSpinboxSetState (row->cols [colidx].uiwidget, UIWIDGET_DISABLE);
+      uiSpinboxSetState (row->cols [colidx].uiwidget, state);
       break;
     }
     case VL_TYPE_CHECK_BUTTON:
+    case VL_TYPE_RADIO_BUTTON: {
+      uiToggleButtonSetState (row->cols [colidx].uiwidget, state);
+      break;
+    }
     case VL_TYPE_IMAGE:
     case VL_TYPE_INTERNAL_NUMERIC:
-    case VL_TYPE_LABEL:
-    case VL_TYPE_RADIO_BUTTON: {
-      /* not handled here */
+    case VL_TYPE_LABEL: {
+      /* not necessary */
       break;
     }
   }
@@ -720,7 +763,7 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
     }
   }
 
-  if (row->hidden == false && row->cleared) {
+  if (row->offscreen == false && row->cleared) {
     uiWidgetShowAll (row->hbox);
   }
   row->cleared = false;
@@ -753,7 +796,7 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
     }
   }
 
-  if (row->hidden == false && row->cleared) {
+  if (row->offscreen == false && row->cleared) {
     uiWidgetShowAll (row->hbox);
   }
   row->cleared = false;
@@ -804,7 +847,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
     }
   }
 
-  if (row->hidden == false && row->cleared) {
+  if (row->offscreen == false && row->cleared) {
     uiWidgetShowAll (row->hbox);
   }
   row->cleared = false;
@@ -1020,10 +1063,10 @@ uivlPopulate (uivirtlist_t *vl)
   }
 
   for (int dispidx = vl->dispsize; dispidx < vl->dispalloc; ++dispidx) {
-    if (vl->rows [dispidx].hidden) {
+    if (vl->rows [dispidx].offscreen) {
       continue;
     }
-    vl->rows [dispidx].hidden = true;
+    vl->rows [dispidx].offscreen = true;
     uiWidgetHide (vl->rows [dispidx].hbox);
   }
 
@@ -1062,14 +1105,41 @@ uivlPopulate (uivirtlist_t *vl)
     }
 
     row = &vl->rows [dispidx];
-    if (row->hidden) {
-      row->hidden = false;
+    if (row->offscreen) {
+      row->offscreen = false;
       uiWidgetShowAll (row->hbox);
     }
   }
 
   uivlClearDisplaySelections (vl);
   uivlSetDisplaySelections (vl);
+}
+
+void
+uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return;
+  }
+
+  *rowiter = vl->rowoffset - 1;
+}
+
+int32_t
+uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return LIST_LOC_INVALID;
+  }
+
+  ++(*rowiter);
+  if (*rowiter >= vl->numrows) {
+    return LIST_LOC_INVALID;
+  }
+  if (*rowiter - vl->rowoffset >= vl->dispsize) {
+    return LIST_LOC_INVALID;
+  }
+  return *rowiter;
 }
 
 void
@@ -1213,7 +1283,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   uiWidgetAlignHorizFill (row->hbox);
   uiWidgetAlignVertStart (row->hbox);
 
-  row->hidden = false;
+  row->offscreen = false;
   row->selected = false;
   row->created = true;
   row->cleared = true;
@@ -1412,8 +1482,8 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
-  row->hidden = false;
+  uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
+  row->offscreen = false;
 }
 
 static bool
@@ -1730,7 +1800,7 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
           uivlPackRow (vl, row);
           /* rows packed after the initial display need */
           /* to have their contents shown */
-          if (row->hidden == false) {
+          if (row->offscreen == false) {
             uiWidgetShowAll (row->hbox);
           }
         }
@@ -1851,7 +1921,8 @@ static void
 uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
 {
   if (vl->wcont [VL_W_KEYH] != NULL) {
-    if (! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
+    if (vl->allowmultiple == false ||
+        ! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
       uivlClearSelections (vl);
       uivlClearDisplaySelections (vl);
     }
@@ -1955,26 +2026,8 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
       continue;
     }
 
-    switch (vl->coldata [colidx].type) {
-      case VL_TYPE_INTERNAL_NUMERIC: {
-        break;
-      }
-      case VL_TYPE_LABEL: {
-        uiLabelSetText (row->cols [colidx].uiwidget, "");
-        break;
-      }
-      case VL_TYPE_IMAGE: {
-        uiImageClear (row->cols [colidx].uiwidget);
-        break;
-      }
-      case VL_TYPE_CHECK_BUTTON:
-      case VL_TYPE_ENTRY:
-      case VL_TYPE_RADIO_BUTTON:
-      case VL_TYPE_SPINBOX_NUM:
-      case VL_TYPE_SPINBOX_TIME: {
-        uiWidgetHide (row->cols [colidx].uiwidget);
-        break;
-      }
+    if (vl->coldata [colidx].type != VL_TYPE_INTERNAL_NUMERIC) {
+      uiWidgetHide (row->cols [colidx].uiwidget);
     }
   }
 }

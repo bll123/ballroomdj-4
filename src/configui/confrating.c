@@ -1,6 +1,9 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
+/* the conversion routines use the internal rating-list, but it */
+/* is not necessary to update this for editing or for the save */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -98,8 +101,6 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   uivlSetRowFillCallback (uivl, confuiRatingFillRow, gui);
   uivlDisplay (uivl);
-  /* the first entry field is read-only */
-  uivlSetRowColumnReadonly (uivl, 0, CONFUI_RATING_COL_RATING);
 
   logProcEnd ("");
 }
@@ -130,8 +131,8 @@ confuiRatingSave (confuigui_t *gui)
     const char  *ratingdisp;
     int         weight;
 
-    ratingdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_RATING_COL_RATING);
-    weight = uivlGetRowColumnNum (uivl, rowidx, CONFUI_RATING_COL_WEIGHT);
+    ratingdisp = ratingGetRating (ratings, rowidx);
+    weight = ratingGetWeight (ratings, rowidx);
     ilistSetStr (ratinglist, rowidx, RATING_RATING, ratingdisp);
     ilistSetNum (ratinglist, rowidx, RATING_WEIGHT, weight);
   }
@@ -144,24 +145,31 @@ confuiRatingSave (confuigui_t *gui)
 static void
 confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  confuigui_t *gui = udata;
-  rating_t    *ratings;
-  const char  *ratingdisp;
-  int         weight;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  rating_t      *ratings;
+  const char    *ratingdisp;
+  int           weight;
 
-  gui->inchange = true;
-
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+
   if (rownum >= ratingGetCount (ratings)) {
     return;
   }
 
+  gui->inchange = true;
+
   ratingdisp = ratingGetRating (ratings, rownum);
   weight = ratingGetWeight (ratings, rownum);
-  uivlSetRowColumnValue (gui->tables [CONFUI_ID_RATINGS].uivl, rownum,
-      CONFUI_RATING_COL_RATING, ratingdisp);
-  uivlSetRowColumnNum (gui->tables [CONFUI_ID_RATINGS].uivl, rownum,
-      CONFUI_RATING_COL_WEIGHT, weight);
+  uivlSetRowColumnValue (uivl, rownum, CONFUI_RATING_COL_RATING, ratingdisp);
+  uivlSetRowColumnNum (uivl, rownum, CONFUI_RATING_COL_WEIGHT, weight);
+  if (rownum == 0) {
+    /* the first entry field, if displayed, is read-only */
+    uivlSetRowColumnEditable (uivl, rownum, CONFUI_STATUS_COL_STATUS, UIWIDGET_DISABLE);
+  } else {
+    uivlSetRowColumnEditable (uivl, rownum, CONFUI_STATUS_COL_STATUS, UIWIDGET_ENABLE);
+  }
 
   gui->inchange = false;
 }
@@ -175,6 +183,9 @@ confuiRatingChangeCB (void *udata)
     return UICB_CONT;
   }
 
+  /* must update the data here in case of a scroll */
+  confuiRatingUpdateData (gui);
+
   gui->tables [CONFUI_ID_RATINGS].changed = true;
   return UICB_CONT;
 }
@@ -187,6 +198,9 @@ confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
   if (gui->inchange) {
     return UIENTRY_OK;
   }
+
+  /* must update the data here in case of a scroll */
+  confuiRatingUpdateData (gui);
 
   gui->tables [CONFUI_ID_RATINGS].changed = true;
   return UIENTRY_OK;
@@ -211,6 +225,7 @@ confuiRatingAdd (confuigui_t *gui)
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_RATINGS].currcount = count;
   uivlPopulate (uivl);
+  uivlSetSelection (uivl, count - 1);
 }
 
 static void
@@ -235,8 +250,8 @@ confuiRatingRemove (confuigui_t *gui, ilistidx_t delidx)
       const char  *ratingdisp;
       int         weight;
 
-      ratingdisp = uivlGetRowColumnEntry (uivl, idx + 1, CONFUI_RATING_COL_RATING);
-      weight = uivlGetRowColumnNum (uivl, idx + 1, CONFUI_RATING_COL_WEIGHT);
+      ratingdisp = ratingGetRating (ratings, idx + 1);
+      weight = ratingGetWeight (ratings, idx + 1);
       ratingSetRating (ratings, idx, ratingdisp);
       ratingSetWeight (ratings, idx, weight);
     }
@@ -255,20 +270,23 @@ confuiRatingUpdateData (confuigui_t *gui)
   rating_t      *ratings;
   uivirtlist_t  *uivl;
   ilistidx_t    count;
+  int32_t       rowiter;
+  int32_t       rownum;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   count = ratingGetCount (ratings);
 
-  for (int rowidx = 0; rowidx < count; ++rowidx) {
+  uivlStartRowDispIterator (uivl, &rowiter);
+  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
     const char  *ratingdisp;
     int         weight;
 
-    ratingdisp = uivlGetRowColumnEntry (uivl, rowidx, CONFUI_RATING_COL_RATING);
-    weight = uivlGetRowColumnNum (uivl, rowidx, CONFUI_RATING_COL_WEIGHT);
-    ratingSetRating (ratings, rowidx, ratingdisp);
-    ratingSetWeight (ratings, rowidx, weight);
+    ratingdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_RATING_COL_RATING);
+    weight = uivlGetRowColumnNum (uivl, rownum, CONFUI_RATING_COL_WEIGHT);
+    ratingSetRating (ratings, rownum, ratingdisp);
+    ratingSetWeight (ratings, rownum, weight);
   }
 }
 
@@ -278,7 +296,7 @@ confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
   rating_t      *ratings;
   uivirtlist_t  *uivl;
   ilistidx_t    toidx;
-  const char    *ratingdisp;
+  char          *ratingdisp;
   int           weight;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
@@ -295,14 +313,13 @@ confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
     uivlMoveSelection (uivl, VL_DIR_NEXT);
   }
 
-  ratingdisp = uivlGetRowColumnEntry (uivl, toidx, CONFUI_RATING_COL_RATING);
-  weight = uivlGetRowColumnNum (uivl, toidx, CONFUI_RATING_COL_WEIGHT);
-  ratingSetRating (ratings, toidx,
-      uivlGetRowColumnEntry (uivl, idx, CONFUI_RATING_COL_RATING));
-  ratingSetWeight (ratings, toidx,
-      uivlGetRowColumnNum (uivl, idx, CONFUI_RATING_COL_WEIGHT));
+  ratingdisp = mdstrdup (ratingGetRating (ratings, toidx));
+  weight = ratingGetWeight (ratings, toidx);
+  ratingSetRating (ratings, toidx, ratingGetRating (ratings, idx));
+  ratingSetWeight (ratings, toidx, ratingGetWeight (ratings, idx));
   ratingSetRating (ratings, idx, ratingdisp);
   ratingSetWeight (ratings, idx, weight);
+  dataFree (ratingdisp);
 
   uivlPopulate (uivl);
 
