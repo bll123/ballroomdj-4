@@ -25,7 +25,7 @@
 enum {
   VL_INIT_NONE,
   VL_INIT_BASIC,
-  VL_INIT_HEADING,   // may be skipped
+  VL_INIT_HEADING,      // may be skipped
   VL_INIT_ROWS,
   VL_INIT_DISP,
 };
@@ -138,7 +138,9 @@ typedef struct {
   uivlcol_t     *cols;
   uivlrowcb_t   *rowcb;             // must have a stable address
   int           dispidx;
-  bool          cleared : 1;        // row is on-screen, no display
+  /* cleared: row is on-screen, no display */
+  /* all widgets are hidden */
+  bool          cleared : 1;
   bool          created : 1;
   bool          offscreen : 1;
   bool          initialized : 1;
@@ -280,7 +282,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
-  uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);    // for keyboard events
+  uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);    // for mouse events
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
@@ -704,7 +706,8 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
   dataFree (col->class);
   col->class = NULL;
   if (class != NULL) {
-    col->class = mdstrdup (class);    // save for removal process
+    /* save for removal process */
+    col->class = mdstrdup (class);
     uiWidgetAddClass (col->uiwidget, class);
   }
 }
