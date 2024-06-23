@@ -18,13 +18,20 @@ typedef struct genre genre_t;
 
 genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);
-int       genreGetCount (genre_t *genre);
-const char *genreGetGenre (genre_t *genre, ilistidx_t ikey);
-ssize_t   genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey);
-void      genreStartIterator (genre_t *genre, ilistidx_t *iteridx);
-ilistidx_t genreIterate (genre_t *genre, ilistidx_t *iteridx);
+ilistidx_t genreGetCount (genre_t *genres);
+
+const char *genreGetGenre (genre_t *genres, ilistidx_t ikey);
+int genreGetClassicalFlag (genre_t *genres, ilistidx_t ikey);
+
+void genreSetGenre (genre_t *genres, ilistidx_t ikey, const char *genredisp);
+void genreSetClassicalFlag (genre_t *genres, ilistidx_t ikey, int cflag);
+
+void  genreDeleteLast (genre_t *genres);
+
+void      genreStartIterator (genre_t *genres, ilistidx_t *iteridx);
+ilistidx_t genreIterate (genre_t *genres, ilistidx_t *iteridx);
 void      genreConv (datafileconv_t *conv);
-slist_t   *genreGetList (genre_t *);
-void      genreSave (genre_t *genre, ilist_t *list);
+slist_t   *genreGetList (genre_t *genres);
+void      genreSave (genre_t *genres, ilist_t *list);
 
 #endif /* INC_GENRE_H */

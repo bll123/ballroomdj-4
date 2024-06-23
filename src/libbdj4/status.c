@@ -154,7 +154,7 @@ void
 statusConv (datafileconv_t *conv)
 {
   status_t      *status;
-  ilistidx_t    num;
+  slistidx_t    num;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 

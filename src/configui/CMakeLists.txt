@@ -27,7 +27,6 @@ add_executable (bdj4configui
   confrc.c
   confstatus.c
   conftable.c
-  conftableset.c
   confui.c
 )
 if (WIN32)

@@ -308,12 +308,11 @@ enum {
   CONFUI_RATING_CB_WEIGHT,
   CONFUI_LEVEL_CB,
   CONFUI_STATUS_CB,
+  CONFUI_GENRE_CB,
   CONFUI_TABLE_CB_UP,
   CONFUI_TABLE_CB_DOWN,
   CONFUI_TABLE_CB_REMOVE,
   CONFUI_TABLE_CB_ADD,
-  CONFUI_TABLE_CB_CHANGED,
-  CONFUI_TABLE_CB_DANCE_SELECT,
   CONFUI_TABLE_CB_MAX,
 };
 
@@ -326,7 +325,6 @@ enum {
 };
 
 typedef struct confuitable {
-  uiwcont_t         *uitree;
   uivirtlist_t      *uivl;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uiwcont_t         *buttons [CONFUI_BUTTON_TABLE_MAX];
@@ -362,10 +360,8 @@ enum {
 };
 
 enum {
-  CONFUI_GENRE_COL_EDITABLE,
   CONFUI_GENRE_COL_GENRE,
   CONFUI_GENRE_COL_CLASSICAL,
-  CONFUI_GENRE_COL_SB_PAD,
   CONFUI_GENRE_COL_MAX,
 };
 
@@ -546,12 +542,6 @@ void confuiTableSave (confuigui_t *gui, confuiident_t id);
 bool confuiTableChanged (void *udata, int32_t col);
 bool confuiSwitchTable (void *udata, int32_t pagenum);
 bool confuiTableAdd (void *udata);
-
-/* conftableset.c */
-void confuiGenreSet (uiwcont_t *uiwidget, int editable, const char *genredisp, int clflag);
-void confuiLevelSet (uiwcont_t *uiwidget, int editable, const char *leveldisp, long weight, int def);
-void confuiRatingSet (uiwcont_t *uiwidget, int editable, const char *ratingdisp, long weight);
-void confuiStatusSet (uiwcont_t *uiwidget, int editable, const char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);

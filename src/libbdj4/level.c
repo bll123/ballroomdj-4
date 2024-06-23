@@ -246,7 +246,7 @@ void
 levelConv (datafileconv_t *conv)
 {
   level_t     *levels;
-  ilistidx_t  num;
+  slistidx_t  num;
 
   if (conv == NULL) {
     return;

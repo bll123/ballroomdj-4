@@ -21,10 +21,10 @@ enum {
 
 rating_t    *ratingAlloc (void);
 void        ratingFree (rating_t *ratings);
-ssize_t     ratingGetCount (rating_t *ratings);
+ilistidx_t  ratingGetCount (rating_t *ratings);
 int         ratingGetMaxWidth (rating_t *ratings);
 const char  * ratingGetRating (rating_t *ratings, ilistidx_t idx);
-ssize_t     ratingGetWeight (rating_t *ratings, ilistidx_t idx);
+int         ratingGetWeight (rating_t *ratings, ilistidx_t idx);
 void        ratingSetRating (rating_t *ratings, ilistidx_t ikey, const char *val);
 void        ratingSetWeight (rating_t *ratings, ilistidx_t ikey, int val);
 void        ratingDeleteLast (rating_t *ratings);

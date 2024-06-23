@@ -88,7 +88,7 @@ ratingFree (rating_t *ratings)
   mdfree (ratings);
 }
 
-ssize_t
+ilistidx_t
 ratingGetCount (rating_t *ratings)
 {
   if (ratings == NULL) {
@@ -118,7 +118,7 @@ ratingGetRating (rating_t *ratings, ilistidx_t ikey)
   return ilistGetStr (ratings->rating, ikey, RATING_RATING);
 }
 
-ssize_t
+int
 ratingGetWeight (rating_t *ratings, ilistidx_t ikey)
 {
   if (ratings == NULL) {
@@ -185,7 +185,7 @@ void
 ratingConv (datafileconv_t *conv)
 {
   rating_t    *ratings;
-  ssize_t     num;
+  slistidx_t  num;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 

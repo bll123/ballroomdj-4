@@ -37,7 +37,7 @@ static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
 genre_t *
 genreAlloc (void)
 {
-  genre_t       *genre = NULL;
+  genre_t       *genres = NULL;
   ilistidx_t    gkey;
   ilistidx_t    iteridx;
   char          fname [MAXPATHLEN];
@@ -49,84 +49,143 @@ genreAlloc (void)
     return NULL;
   }
 
-  genre = mdmalloc (sizeof (genre_t));
+  genres = mdmalloc (sizeof (genre_t));
 
-  genre->path = mdstrdup (fname);
-  genre->df = NULL;
-  genre->genreList = NULL;
+  genres->path = mdstrdup (fname);
+  genres->df = NULL;
+  genres->genreList = NULL;
 
-  genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
+  genres->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_KEY_MAX, DF_NO_OFFSET, NULL);
-  genre->genre = datafileGetList (genre->df);
-  ilistDumpInfo (genre->genre);
+  genres->genre = datafileGetList (genres->df);
+  ilistDumpInfo (genres->genre);
 
-  genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
-  slistSetSize (genre->genreList, ilistGetCount (genre->genre));
+  genres->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
+  slistSetSize (genres->genreList, ilistGetCount (genres->genre));
 
-  ilistStartIterator (genre->genre, &iteridx);
-  while ((gkey = ilistIterateKey (genre->genre, &iteridx)) >= 0) {
-    slistSetNum (genre->genreList,
-        ilistGetStr (genre->genre, gkey, GENRE_GENRE), gkey);
+  ilistStartIterator (genres->genre, &iteridx);
+  while ((gkey = ilistIterateKey (genres->genre, &iteridx)) >= 0) {
+    slistSetNum (genres->genreList,
+        ilistGetStr (genres->genre, gkey, GENRE_GENRE), gkey);
   }
-  slistSort (genre->genreList);
-  slistCalcMaxKeyWidth (genre->genreList);
+  slistSort (genres->genreList);
+  slistCalcMaxKeyWidth (genres->genreList);
 
-  ilistStartIterator (genre->genre, &iteridx);
+  ilistStartIterator (genres->genre, &iteridx);
 
-  return genre;
+  return genres;
 }
 
 void
-genreFree (genre_t *genre)
+genreFree (genre_t *genres)
 {
-  if (genre != NULL) {
-    dataFree (genre->path);
-    datafileFree (genre->df);
-    slistFree (genre->genreList);
-    mdfree (genre);
+  if (genres == NULL) {
+    return;
   }
-}
 
-int
-genreGetCount (genre_t *genre)
-{
-  return ilistGetCount (genre->genre);
-}
-
-const char *
-genreGetGenre (genre_t *genre, ilistidx_t ikey)
-{
-  return ilistGetStr (genre->genre, ikey, GENRE_GENRE);
-}
-
-ssize_t
-genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey)
-{
-  return ilistGetNum (genre->genre, ikey, GENRE_CLASSICAL_FLAG);
-}
-
-void
-genreStartIterator (genre_t *genre, ilistidx_t *iteridx)
-{
-  ilistStartIterator (genre->genre, iteridx);
+  dataFree (genres->path);
+  datafileFree (genres->df);
+  slistFree (genres->genreList);
+  mdfree (genres);
 }
 
 ilistidx_t
-genreIterate (genre_t *genre, ilistidx_t *iteridx)
+genreGetCount (genre_t *genres)
 {
-  return ilistIterateKey (genre->genre, iteridx);
+  if (genres == NULL) {
+    return 0;
+  }
+
+  return ilistGetCount (genres->genre);
+}
+
+const char *
+genreGetGenre (genre_t *genres, ilistidx_t ikey)
+{
+  if (genres == NULL) {
+    return NULL;
+  }
+
+  return ilistGetStr (genres->genre, ikey, GENRE_GENRE);
+}
+
+int
+genreGetClassicalFlag (genre_t *genres, ilistidx_t ikey)
+{
+  if (genres == NULL) {
+    return 0;
+  }
+
+  return ilistGetNum (genres->genre, ikey, GENRE_CLASSICAL_FLAG);
+}
+
+void
+genreSetGenre (genre_t *genres, ilistidx_t ikey, const char *genredisp)
+{
+  if (genres == NULL) {
+    return;
+  }
+
+  ilistSetStr (genres->genre, ikey, GENRE_GENRE, genredisp);
+}
+
+void
+genreSetClassicalFlag (genre_t *genres, ilistidx_t ikey, int cflag)
+{
+  if (genres == NULL) {
+    return;
+  }
+
+  ilistSetNum (genres->genre, ikey, GENRE_CLASSICAL_FLAG, cflag);
+}
+
+void
+genreDeleteLast (genre_t *genres)
+{
+  ilistidx_t    count;
+
+  if (genres == NULL) {
+    return;
+  }
+
+  count = ilistGetCount (genres->genre);
+  ilistDelete (genres->genre, count - 1);
+}
+
+void
+genreStartIterator (genre_t *genres, ilistidx_t *iteridx)
+{
+  if (genres == NULL) {
+    return;
+  }
+
+  ilistStartIterator (genres->genre, iteridx);
+}
+
+ilistidx_t
+genreIterate (genre_t *genres, ilistidx_t *iteridx)
+{
+  if (genres == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
+  return ilistIterateKey (genres->genre, iteridx);
 }
 
 void
 genreConv (datafileconv_t *conv)
 {
-  genre_t     *genre;
-  ssize_t     num;
+  genre_t     *genres;
+  slistidx_t  num;
 
-  genre = bdjvarsdfGet (BDJVDF_GENRES);
+  if (conv == NULL) {
+    return;
+  }
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
 
   if (conv->invt == VALUE_STR) {
-    num = slistGetNum (genre->genreList, conv->str);
+    num = slistGetNum (genres->genreList, conv->str);
     conv->outvt = VALUE_NUM;
     conv->num = num;
   } else if (conv->invt == VALUE_NUM) {
@@ -135,24 +194,24 @@ genreConv (datafileconv_t *conv)
     } else {
       num = conv->num;
       conv->outvt = VALUE_STR;
-      conv->str = ilistGetStr (genre->genre, num, GENRE_GENRE);
+      conv->str = ilistGetStr (genres->genre, num, GENRE_GENRE);
     }
   }
 }
 
 slist_t *
-genreGetList (genre_t *genre)
+genreGetList (genre_t *genres)
 {
-  if (genre == NULL) {
+  if (genres == NULL) {
     return NULL;
   }
 
-  return genre->genreList;
+  return genres->genreList;
 }
 
 void
-genreSave (genre_t *genre, ilist_t *list)
+genreSave (genre_t *genres, ilist_t *list)
 {
-  datafileSave (genre->df, NULL, list, DF_NO_OFFSET,
-      datafileDistVersion (genre->df));
+  datafileSave (genres->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (genres->df));
 }
