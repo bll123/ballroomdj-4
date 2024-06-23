@@ -30,8 +30,8 @@ enum {
   VL_SEL_DISP_WIDGET,
   VL_NO_HEADING,
   VL_SHOW_HEADING,
-  VL_DIR_UP,
-  VL_DIR_DOWN,
+  VL_DIR_PREV,
+  VL_DIR_NEXT,
 };
 
 enum {

@@ -411,7 +411,7 @@ uiduallistDispSelect (void *udata)
   slistSetNum (duallist->displist [DL_LIST_TARGET], keystr, val);
   uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
-  uivlMoveSelection (duallist->uivl [DL_LIST_TARGET], VL_DIR_DOWN);
+  uivlMoveSelection (duallist->uivl [DL_LIST_TARGET], VL_DIR_NEXT);
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
     queueRemoveByIdx (duallist->dispq [DL_LIST_SOURCE], idx);

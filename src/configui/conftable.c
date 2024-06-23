@@ -50,6 +50,8 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     default: { tag = "conf"; break; }
   }
 
+  gui->tables [id].flags = flags;
+
   if (id == CONFUI_ID_DANCE || id == CONFUI_ID_RATINGS) {
     int   heading = VL_SHOW_HEADING;
 
@@ -69,7 +71,6 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     uiBoxPackStartExpand (boxp, scwindow);
 
     gui->tables [id].uitree = uiCreateTreeView ();
-    gui->tables [id].flags = flags;
 
     uiWidgetSetMarginStart (gui->tables [id].uitree, 8);
     uiTreeViewEnableHeaders (gui->tables [id].uitree);
@@ -189,7 +190,7 @@ bool
 confuiSwitchTable (void *udata, int32_t pagenum)
 {
   confuigui_t       *gui = udata;
-  uiwcont_t         *uitree;
+  uiwcont_t         *uitree = NULL;
   confuiident_t     newid;
 
   logProcBegin ();
@@ -291,7 +292,7 @@ confuiTableAdd (void *udata)
       if (uivl != NULL) {
         int   nidx;
 
-        nidx = uivlMoveSelection (uivl, VL_DIR_DOWN);
+        nidx = uivlMoveSelection (uivl, VL_DIR_NEXT);
         if (idx == nidx) {
           found = false;
         }
@@ -379,52 +380,105 @@ confuiTableMoveDown (void *udata)
 static void
 confuiTableMove (confuigui_t *gui, int dir)
 {
-  uiwcont_t         *uitree;
-  int               count;
-  int               idx;
+  uiwcont_t         *uitree = NULL;
+  uivirtlist_t      *uivl = NULL;
+  int               count = 0;
+  ilistidx_t        idx = -1;
   int               flags;
 
   logProcBegin ();
   flags = gui->tables [gui->tablecurr].flags;
 
   uitree = gui->tables [gui->tablecurr].uitree;
-  count = uiTreeViewSelectGetCount (uitree);
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uitree == NULL && uivl == NULL) {
+fprintf (stderr, "null\n");
+    logProcEnd ("no-tree");
+    return;
+  }
+
+  if (uitree != NULL) {
+    count = uiTreeViewSelectGetCount (uitree);
+  }
+  if (uivl != NULL) {
+    count = uivlSelectionCount (uivl);
+  }
   if (count != 1) {
+fprintf (stderr, "no-sel\n");
     logProcEnd ("no-selection");
     return;
   }
 
-  idx = uiTreeViewSelectGetIndex (uitree);
+  if (uitree != NULL) {
+    idx = uiTreeViewSelectGetIndex (uitree);
+  }
+  if (uivl != NULL) {
+    idx = uivlGetCurrSelection (uivl);
+  }
+  if (idx < 0) {
+fprintf (stderr, "bad idx\n");
+    return;
+  }
+fprintf (stderr, "move: idx: %d\n", idx);
+fprintf (stderr, "keep-first: %d\n", (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST);
+fprintf (stderr, "keep-last: %d\n", (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST);
+fprintf (stderr, "dir: %d\n", dir);
 
+  count = gui->tables [gui->tablecurr].currcount;
+
+  if (idx == 0 && dir == CONFUI_MOVE_PREV) {
+fprintf (stderr, "move-prev-first\n");
+    logProcEnd ("move-prev-first");
+    return;
+  }
+  if (idx == count - 1 && dir == CONFUI_MOVE_NEXT) {
+fprintf (stderr, "move-next-last\n");
+    logProcEnd ("move-next-last");
+    return;
+  }
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+fprintf (stderr, "prev-keep-first\n");
     logProcEnd ("move-prev-keep-first");
     return;
   }
-  if (idx == gui->tables [gui->tablecurr].currcount - 1 &&
+  if (idx == count - 1 &&
       dir == CONFUI_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+fprintf (stderr, "prev-keep-last\n");
     logProcEnd ("move-prev-keep-last");
     return;
   }
-  if (idx == gui->tables [gui->tablecurr].currcount - 2 &&
+  if (idx == count - 2 &&
       dir == CONFUI_MOVE_NEXT &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+fprintf (stderr, "next-keep-last\n");
     logProcEnd ("move-next-keep-last");
     return;
   }
   if (idx == 0 &&
       dir == CONFUI_MOVE_NEXT &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+fprintf (stderr, "next-keep-first\n");
     logProcEnd ("move-next-keep-first");
     return;
   }
 
-  if (dir == CONFUI_MOVE_PREV) {
-    uiTreeViewMoveBefore (uitree);
-  } else {
-    uiTreeViewMoveAfter (uitree);
+  if (uitree != NULL) {
+    if (dir == CONFUI_MOVE_PREV) {
+      uiTreeViewMoveBefore (uitree);
+    } else {
+      uiTreeViewMoveAfter (uitree);
+    }
+  }
+  if (uivl != NULL) {
+    movefunc_t    movefunc;
+
+    movefunc = gui->tables [gui->tablecurr].movefunc;
+    if (movefunc != NULL) {
+      movefunc (gui, idx, dir);
+    }
   }
   gui->tables [gui->tablecurr].changed = true;
   logProcEnd ("");

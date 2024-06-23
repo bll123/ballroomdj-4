@@ -222,8 +222,8 @@ typedef struct confuitable confuitable_t;
 typedef void (*savefunc_t) (confuigui_t *);
 typedef bool (*listcreatefunc_t) (void *);
 typedef void (*addfunc_t) (confuigui_t *);
-typedef void (*removefunc_t) (confuigui_t *, ilistidx_t);
-typedef void (*movefunc_t) (confuigui_t *, int dir);
+typedef void (*removefunc_t) (confuigui_t *, ilistidx_t delidx);
+typedef void (*movefunc_t) (confuigui_t *, ilistidx_t idx, int dir);
 
 typedef struct {
   confuigui_t       *gui;

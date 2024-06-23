@@ -388,7 +388,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
   if (vl->initialized >= VL_INIT_ROWS) {
     if (numrows <= vl->currSelection) {
-      uivlMoveSelection (vl, VL_DIR_UP);
+      uivlMoveSelection (vl, VL_DIR_PREV);
     }
     if (numrows < vl->dispsize) {
       for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
@@ -1129,10 +1129,10 @@ uivlMoveSelection (uivirtlist_t *vl, int dir)
   }
 
   rownum = vl->currSelection;
-  if (dir == VL_DIR_UP) {
+  if (dir == VL_DIR_PREV) {
     rownum -= 1;
   }
-  if (dir == VL_DIR_DOWN) {
+  if (dir == VL_DIR_NEXT) {
     rownum += 1;
   }
   rownum = uivlRownumLimit (vl, rownum);

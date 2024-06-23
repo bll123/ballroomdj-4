@@ -29,6 +29,7 @@ static int confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void 
 static void confuiRatingAdd (confuigui_t *gui);
 static void confuiRatingRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiRatingUpdateData (confuigui_t *gui);
+static void confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
@@ -58,6 +59,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   gui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   gui->tables [CONFUI_ID_RATINGS].addfunc = confuiRatingAdd;
   gui->tables [CONFUI_ID_RATINGS].removefunc = confuiRatingRemove;
+  gui->tables [CONFUI_ID_RATINGS].movefunc = confuiRatingMove;
   confuiCreateRatingTable (gui);
 
   uiwcontFree (vbox);
@@ -268,4 +270,41 @@ confuiRatingUpdateData (confuigui_t *gui)
     ratingSetRating (ratings, rowidx, ratingdisp);
     ratingSetWeight (ratings, rowidx, weight);
   }
+}
+
+static void
+confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
+{
+  rating_t      *ratings;
+  uivirtlist_t  *uivl;
+  ilistidx_t    toidx;
+  const char    *ratingdisp;
+  int           weight;
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+
+  toidx = idx;
+  if (dir == CONFUI_MOVE_PREV) {
+    toidx -= 1;
+    uivlMoveSelection (uivl, VL_DIR_PREV);
+  }
+  if (dir == CONFUI_MOVE_NEXT) {
+    toidx += 1;
+    uivlMoveSelection (uivl, VL_DIR_NEXT);
+  }
+fprintf (stderr, "idx: %d toidx: %d\n", idx, toidx);
+
+  ratingdisp = uivlGetRowColumnEntry (uivl, toidx, CONFUI_RATING_COL_RATING);
+  weight = uivlGetRowColumnNum (uivl, toidx, CONFUI_RATING_COL_WEIGHT);
+  ratingSetRating (ratings, toidx,
+      uivlGetRowColumnEntry (uivl, idx, CONFUI_RATING_COL_RATING));
+  ratingSetWeight (ratings, toidx,
+      uivlGetRowColumnNum (uivl, idx, CONFUI_RATING_COL_WEIGHT));
+  ratingSetRating (ratings, idx, ratingdisp);
+  ratingSetWeight (ratings, toidx, weight);
+
+  uivlPopulate (uivl);
+
+  return;
 }
