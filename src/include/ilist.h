@@ -48,8 +48,7 @@ void      ilistStartIterator (ilist_t *list, ilistidx_t *idx);
 ilistidx_t ilistIterateKey (ilist_t *list, ilistidx_t *idx);
 
 /* other */
-void      ilistDelete (ilist_t *, ilistidx_t ikey);
-ilist_t   *ilistRenumber (ilist_t *);
+void      ilistDelete (ilist_t *list, ilistidx_t ikey);
 
 /* debug / information routines */
 void      ilistDumpInfo (ilist_t *list);

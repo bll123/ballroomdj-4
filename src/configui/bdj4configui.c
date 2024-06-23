@@ -145,6 +145,9 @@ main (int argc, char *argv[])
     confui.gui.tables [i].savelist = NULL;
     confui.gui.tables [i].listcreatefunc = NULL;
     confui.gui.tables [i].savefunc = NULL;
+    confui.gui.tables [i].addfunc = NULL;
+    confui.gui.tables [i].removefunc = NULL;
+    confui.gui.tables [i].movefunc = NULL;
     for (int j = 0; j < CONFUI_BUTTON_TABLE_MAX; ++j) {
       confui.gui.tables [i].buttons [j] = NULL;
     }

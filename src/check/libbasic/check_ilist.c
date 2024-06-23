@@ -454,53 +454,6 @@ START_TEST(ilist_delete)
 }
 END_TEST
 
-START_TEST(ilist_renumber)
-{
-  ilist_t     *list;
-  ilist_t     *nlist;
-  ilistidx_t  iteridx;
-  ilistidx_t  key;
-  ilistidx_t  chkval;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_renumber");
-  mdebugSubTag ("ilist_renumber");
-
-  list = ilistAlloc ("chk-g", LIST_ORDERED);
-  ck_assert_ptr_nonnull (list);
-  ilistSetStr (list, 6, 2, "0-2L");
-  ilistSetStr (list, 6, 3, "0-3L");
-  ilistSetStr (list, 26, 2, "1L");
-  ilistSetStr (list, 18, 2, "2L");
-  ilistSetStr (list, 11, 2, "3L");
-  ilistSetStr (list, 3, 2, "4L");
-  ilistSetStr (list, 1, 2, "5L");
-  ilistSetStr (list, 2, 2, "6L");
-  ck_assert_int_eq (ilistGetCount (list), 7);
-
-  nlist = ilistRenumber (list);
-  ck_assert_int_eq (ilistGetCount (nlist), 7);
-
-  ck_assert_str_eq (ilistGetStr (nlist, 0, 2), "5L");
-  ck_assert_str_eq (ilistGetStr (nlist, 1, 2), "6L");
-  ck_assert_str_eq (ilistGetStr (nlist, 2, 2), "4L");
-  ck_assert_str_eq (ilistGetStr (nlist, 3, 2), "0-2L");
-  ck_assert_str_eq (ilistGetStr (nlist, 3, 3), "0-3L");
-  ck_assert_str_eq (ilistGetStr (nlist, 4, 2), "3L");
-  ck_assert_str_eq (ilistGetStr (nlist, 5, 2), "2L");
-  ck_assert_str_eq (ilistGetStr (nlist, 6, 2), "1L");
-
-  chkval = 0;
-  ilistStartIterator (nlist, &iteridx);
-  while ((key = ilistIterateKey (nlist, &iteridx)) >= 0) {
-    ck_assert_int_eq (key, chkval);
-    ++chkval;
-  }
-
-  ilistFree (nlist);
-  ilistFree (list);
-}
-END_TEST
-
 START_TEST(ilist_bug_20231020)
 {
   ilist_t     *list;
@@ -547,7 +500,6 @@ ilist_suite (void)
   tcase_add_test (tc, ilist_free_str);
   tcase_add_test (tc, ilist_exists);
   tcase_add_test (tc, ilist_delete);
-  tcase_add_test (tc, ilist_renumber);
   tcase_add_test (tc, ilist_bug_20231020);
   suite_add_tcase (s, tc);
   return s;

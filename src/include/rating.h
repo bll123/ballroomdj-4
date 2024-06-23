@@ -27,7 +27,7 @@ const char  * ratingGetRating (rating_t *ratings, ilistidx_t idx);
 ssize_t     ratingGetWeight (rating_t *ratings, ilistidx_t idx);
 void        ratingSetRating (rating_t *ratings, ilistidx_t ikey, const char *val);
 void        ratingSetWeight (rating_t *ratings, ilistidx_t ikey, int val);
-void        ratingDelete (rating_t *ratings, ilistidx_t ikey);
+void        ratingDeleteLast (rating_t *ratings);
 void        ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx);
 ilistidx_t  ratingIterate (rating_t *ratings, ilistidx_t *iteridx);
 void        ratingConv (datafileconv_t *conv);

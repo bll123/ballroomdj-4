@@ -27,7 +27,7 @@ static void confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static bool confuiRatingChangeCB (void *udata);
 static int confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 static void confuiRatingAdd (confuigui_t *gui);
-static void confuiRatingRemove (confuigui_t *gui);
+static void confuiRatingRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiRatingUpdateData (confuigui_t *gui);
 
 void
@@ -110,6 +110,7 @@ confuiRatingSave (confuigui_t *gui)
   rating_t      *ratings;
   ilist_t       *ratinglist;
   uivirtlist_t  *uivl;
+  ilistidx_t    count;
 
   logProcBegin ();
 
@@ -121,7 +122,9 @@ confuiRatingSave (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   ratinglist = ilistAlloc ("rating-save", LIST_ORDERED);
-  for (int rowidx = 0; rowidx < gui->tables [CONFUI_ID_RATINGS].currcount; ++rowidx) {
+  count = ratingGetCount (ratings);
+  confuiRatingUpdateData (gui);
+  for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *ratingdisp;
     int         weight;
 
@@ -209,19 +212,35 @@ confuiRatingAdd (confuigui_t *gui)
 }
 
 static void
-confuiRatingRemove (confuigui_t *gui)
+confuiRatingRemove (confuigui_t *gui, ilistidx_t delidx)
 {
   rating_t      *ratings;
-  int           count;
   uivirtlist_t  *uivl;
-  int           rowidx;
+  int           count;
+  bool          docopy = false;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
-
+  /* update with any changes */
   confuiRatingUpdateData (gui);
-  rowidx = uivlGetCurrSelection (uivl);
-  ratingDelete (ratings, rowidx);
+  count = ratingGetCount (ratings);
+
+  for (int idx = 0; idx < count - 1; ++idx) {
+    if (idx == delidx) {
+      docopy = true;
+    }
+    if (idx > 0 && docopy) {
+      const char  *ratingdisp;
+      int         weight;
+
+      ratingdisp = uivlGetRowColumnEntry (uivl, idx + 1, CONFUI_RATING_COL_RATING);
+      weight = uivlGetRowColumnNum (uivl, idx + 1, CONFUI_RATING_COL_WEIGHT);
+      ratingSetRating (ratings, idx, ratingdisp);
+      ratingSetWeight (ratings, idx, weight);
+    }
+  }
+
+  ratingDeleteLast (ratings);
   count = ratingGetCount (ratings);
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_RATINGS].currcount = count;
@@ -233,12 +252,14 @@ confuiRatingUpdateData (confuigui_t *gui)
 {
   rating_t      *ratings;
   uivirtlist_t  *uivl;
+  ilistidx_t    count;
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  count = ratingGetCount (ratings);
 
-  for (int rowidx = 0; rowidx < gui->tables [CONFUI_ID_RATINGS].currcount; ++rowidx) {
+  for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *ratingdisp;
     int         weight;
 

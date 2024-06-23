@@ -237,6 +237,123 @@ confuiSwitchTable (void *udata, int32_t pagenum)
   return UICB_CONT;
 }
 
+bool
+confuiTableAdd (void *udata)
+{
+  confuigui_t       *gui = udata;
+  uiwcont_t         *uitree = NULL;
+  uivirtlist_t      *uivl = NULL;
+  int               count = 0;
+  int               flags;
+  bool              found = false;
+
+  logProcBegin ();
+
+  if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
+    logProcEnd ("non-table");
+    return UICB_STOP;
+  }
+
+  uitree = gui->tables [gui->tablecurr].uitree;
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uitree == NULL && uivl == NULL) {
+    logProcEnd ("no-tree");
+    return UICB_STOP;
+  }
+
+  flags = gui->tables [gui->tablecurr].flags;
+  if (uitree != NULL) {
+    count = uiTreeViewSelectGetCount (uitree);
+  }
+  if (uivl != NULL) {
+    count = uivlSelectionCount (uivl);
+  }
+  if (count == 1) {
+    found = true;
+  }
+
+  if (found) {
+    int     idx;
+
+    if (uitree != NULL) {
+      idx = uiTreeViewSelectGetIndex (uitree);
+    }
+    if (uivl != NULL) {
+      idx = uivlGetCurrSelection (uivl);
+    }
+    if (idx == 0 &&
+        (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+      if (uitree != NULL) {
+        if (! uiTreeViewSelectNext (uitree)) {
+          found = false;
+        }
+      }
+      if (uivl != NULL) {
+        int   nidx;
+
+        nidx = uivlMoveSelection (uivl, VL_DIR_DOWN);
+        if (idx == nidx) {
+          found = false;
+        }
+      }
+    }
+  }
+
+  if (uitree != NULL) {
+    if (! found) {
+      uiTreeViewValueAppend (uitree);
+    } else {
+      uiTreeViewValueInsertBefore (uitree);
+    }
+  }
+
+  switch (gui->tablecurr) {
+    case CONFUI_ID_DANCE:
+    case CONFUI_ID_RATINGS: {
+      addfunc_t   addfunc;
+
+      addfunc = gui->tables [gui->tablecurr].addfunc;
+      if (addfunc != NULL) {
+        addfunc (gui);
+      }
+      break;
+    }
+
+    case CONFUI_ID_GENRES: {
+      /* CONTEXT: configuration: genre name that is set when adding a new genre */
+      confuiGenreSet (uitree, true, _("New Genre"), 0);
+      break;
+    }
+
+    case CONFUI_ID_LEVELS: {
+      /* CONTEXT: configuration: level name that is set when adding a new level */
+      confuiLevelSet (uitree, true, _("New Level"), 0, 0);
+      break;
+    }
+
+    case CONFUI_ID_STATUS: {
+      /* CONTEXT: configuration: status name that is set when adding a new status */
+      confuiStatusSet (uitree, true, _("New Status"), 0);
+      break;
+    }
+
+    default: {
+      break;
+    }
+  }
+
+  if (uitree != NULL) {
+    uiTreeViewSelectCurrent (uitree);
+  }
+
+  if (uitree != NULL) {
+    gui->tables [gui->tablecurr].currcount += 1;
+  }
+  gui->tables [gui->tablecurr].changed = true;
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
 /* internal routines */
 
 /* table editing */
@@ -325,13 +442,14 @@ confuiTableRemove (void *udata)
 
   logProcBegin ();
 
+  flags = gui->tables [gui->tablecurr].flags;
+
   uitree = gui->tables [gui->tablecurr].uitree;
   uivl = gui->tables [gui->tablecurr].uivl;
   if (uitree == NULL && uivl == NULL) {
     return UICB_STOP;
   }
 
-  flags = gui->tables [gui->tablecurr].flags;
   if (uitree != NULL) {
     count = uiTreeViewSelectGetCount (uitree);
   }
@@ -352,6 +470,7 @@ confuiTableRemove (void *udata)
   if (idx < 0) {
     return UICB_STOP;
   }
+
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
     logProcEnd ("keep-first");
@@ -363,34 +482,22 @@ confuiTableRemove (void *udata)
     return UICB_CONT;
   }
 
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
-    ilistidx_t    dkey;
-    dance_t       *dances;
+  if (uivl != NULL) {
+    removefunc_t  removefunc;
 
-    dkey = uivlGetRowColumnNum (uivl, idx, CONFUI_DANCE_COL_DANCE_IDX);
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceDelete (dances, dkey);
-    danceSave (dances, NULL, -1);
-    uivlSetNumRows (uivl, danceGetCount (dances));
-    uivlPopulate (uivl);
+    removefunc = gui->tables [gui->tablecurr].removefunc;
+    if (removefunc != NULL) {
+      removefunc (gui, idx);
+    }
   }
-
-  if (gui->tablecurr != CONFUI_ID_DANCE) {
-    if (uivl != NULL) {
-      removefunc_t  removefunc;
-
-      removefunc = gui->tables [gui->tablecurr].removefunc;
-      if (removefunc != NULL) {
-        removefunc (gui);
-      }
-    }
-    if (uitree != NULL) {
-      uiTreeViewValueRemove (uitree);
-    }
+  if (uitree != NULL) {
+    uiTreeViewValueRemove (uitree);
   }
 
   gui->tables [gui->tablecurr].changed = true;
-  gui->tables [gui->tablecurr].currcount -= 1;
+  if (uitree != NULL) {
+    gui->tables [gui->tablecurr].currcount -= 1;
+  }
 
   if (uivl != NULL) {
     uivlSetSelection (uivl, 0);
@@ -399,3 +506,4 @@ confuiTableRemove (void *udata)
   logProcEnd ("");
   return UICB_CONT;
 }
+

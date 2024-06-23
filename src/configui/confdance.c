@@ -52,6 +52,8 @@ static void confuiDanceSave (confuigui_t *gui);
 static void confuiLoadDanceTypeList (confuigui_t *gui);
 static void confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static void confuiDanceRemove (confuigui_t *gui, ilistidx_t idx);
+static void confuiDanceAdd (confuigui_t *gui);
 
 void
 confuiInitEditDances (confuigui_t *gui)
@@ -77,8 +79,10 @@ confuiInitEditDances (confuigui_t *gui)
       /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_44, _("4/4"),
       -1);
-}
 
+  gui->tables [CONFUI_ID_DANCE].addfunc = confuiDanceAdd;
+  gui->tables [CONFUI_ID_DANCE].removefunc = confuiDanceRemove;
+}
 
 void
 confuiBuildUIEditDances (confuigui_t *gui)
@@ -277,6 +281,7 @@ confuiCreateDanceTable (confuigui_t *gui)
 {
   dance_t           *dances;
   uivirtlist_t      *uivl;
+  ilistidx_t        count;
 
 
   logProcBegin ();
@@ -286,9 +291,9 @@ confuiCreateDanceTable (confuigui_t *gui)
   uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
   uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumn (uivl, CONFUI_DANCE_COL_DANCE_IDX, VL_TYPE_INTERNAL_NUMERIC);
-  uivlSetNumRows (uivl, danceGetCount (dances));
-
-  gui->tables [CONFUI_ID_DANCE].currcount = danceGetCount (dances);
+  count = danceGetCount (dances);
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_DANCE].currcount = count;
   uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
   uivlDisplay (uivl);
 
@@ -610,4 +615,45 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_IDX);
   confuiDanceSelectLoadValues (gui, dkey);
   gui->inchange = false;
+}
+
+static void
+confuiDanceRemove (confuigui_t *gui, ilistidx_t delidx)
+{
+  uivirtlist_t  *uivl;
+  ilistidx_t    dkey;
+  dance_t       *dances;
+  ilistidx_t    count;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+
+  dkey = uivlGetRowColumnNum (uivl, delidx, CONFUI_DANCE_COL_DANCE_IDX);
+  danceDelete (dances, dkey);
+  danceSave (dances, NULL, -1);
+  count = danceGetCount (dances);
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  uivlPopulate (uivl);
+}
+
+static void
+confuiDanceAdd (confuigui_t *gui)
+{
+  dance_t       *dances;
+  ilistidx_t    dkey;
+  uivirtlist_t  *uivl;
+  ilistidx_t    count;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+
+  /* CONTEXT: configuration: dance name that is set when adding a new dance */
+  dkey = danceAdd (dances, _("New Dance"));
+  danceSave (dances, NULL, -1);
+  count = danceGetCount (dances);
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  uivlPopulate (uivl);
+  confuiDanceSearchSelect (gui, dkey);
 }

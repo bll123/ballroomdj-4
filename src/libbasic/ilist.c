@@ -259,33 +259,6 @@ ilistDelete (ilist_t *list, ilistidx_t ikey)
   listDeleteByIdx (LIST_KEY_IND, list, idx);
 }
 
-ilist_t *
-ilistRenumber (ilist_t *list)
-{
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  ilistidx_t    nkey = 0;
-  ilist_t       *nlist;
-
-  nlist = ilistAlloc (listGetName (LIST_KEY_IND, list), LIST_ORDERED);
-  ilistSetSize (nlist, ilistGetCount (list));
-
-  nkey = 0;
-  ilistStartIterator (list, &iteridx);
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    ilistidx_t    idx;
-    nlist_t       *datalist;
-
-    idx = listGetIdxNumKey (LIST_KEY_IND, list, key);
-    datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
-    ilistSetDatalist (nlist, nkey, datalist);
-    listClearData (LIST_KEY_IND, list, key);
-    ++nkey;
-  }
-
-  return nlist;
-}
-
 /* debug / informational */
 
 void

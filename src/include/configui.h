@@ -222,7 +222,8 @@ typedef struct confuitable confuitable_t;
 typedef void (*savefunc_t) (confuigui_t *);
 typedef bool (*listcreatefunc_t) (void *);
 typedef void (*addfunc_t) (confuigui_t *);
-typedef void (*removefunc_t) (confuigui_t *);
+typedef void (*removefunc_t) (confuigui_t *, ilistidx_t);
+typedef void (*movefunc_t) (confuigui_t *, int dir);
 
 typedef struct {
   confuigui_t       *gui;
@@ -333,9 +334,10 @@ typedef struct confuitable {
   int               saveidx;
   ilist_t           *savelist;
   listcreatefunc_t  listcreatefunc;
+  savefunc_t        savefunc;
   addfunc_t         addfunc;
   removefunc_t      removefunc;
-  savefunc_t        savefunc;
+  movefunc_t        movefunc;
 } confuitable_t;
 
 enum {
@@ -545,8 +547,6 @@ void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
 bool confuiTableChanged (void *udata, int32_t col);
 bool confuiSwitchTable (void *udata, int32_t pagenum);
-
-/* conftableadd.c */
 bool confuiTableAdd (void *udata);
 
 /* conftableset.c */

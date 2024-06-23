@@ -757,24 +757,6 @@ listGetOrdering (keytype_t keytype, list_t *list)
   return list->ordered;
 }
 
-/* this is only used by ilistDelete */
-/* so that it can efficiently move the datalist to a different */
-/* location */
-void
-listClearData (keytype_t keytype, list_t *list, listidx_t idx)
-{
-  listkeylookup_t key;
-  listidx_t       loc;
-
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  key.idx = idx;
-  loc = listGetIdx_int (list, &key);
-  list->data [loc].value.data = NULL;
-}
-
 /* internal routines */
 
 static void
