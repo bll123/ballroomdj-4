@@ -170,6 +170,7 @@ typedef struct uivirtlist {
   int           rowheight;
   int32_t       numrows;
   int32_t       rowoffset;
+  int32_t       lastSelection;    // used for shift-click
   int32_t       currSelection;
   nlist_t       *selected;
   int           initialized;
@@ -1930,8 +1931,30 @@ uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
       uivlClearDisplaySelections (vl);
     }
   }
+  if (vl->allowmultiple == true &&
+      uiEventIsShiftPressed (vl->wcont [VL_W_KEYH])) {
+    int32_t   min = rownum;
+    int32_t   max = rownum;
+
+    /* gtk does some unusual stuff when shift-click is pressed within */
+    /* an already selected area.  let's not do unusual things */
+
+    if (vl->lastSelection < rownum) {
+      min = vl->lastSelection;
+      max = rownum;
+    } else {
+      min = rownum;
+      max = vl->lastSelection;
+    }
+    for (int32_t rowidx = min; rowidx <= max; ++rowidx) {
+      uivlAddSelection (vl, rowidx);
+    }
+  }
   uivlAddSelection (vl, rownum);
   uivlSetDisplaySelections (vl);
+  if (nlistGetCount (vl->selected) == 1) {
+    vl->lastSelection = vl->currSelection;
+  }
 }
 
 
