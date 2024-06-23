@@ -17,10 +17,13 @@ typedef struct status status_t;
 
 status_t    * statusAlloc (void);
 void        statusFree (status_t *);
-ssize_t     statusGetCount (status_t *);
+ilistidx_t  statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);
 const char  * statusGetStatus (status_t *, ilistidx_t ikey);
-ssize_t     statusGetPlayFlag (status_t *status, ilistidx_t ikey);
+int         statusGetPlayFlag (status_t *status, ilistidx_t ikey);
+void        statusSetStatus (status_t *, ilistidx_t ikey, const char *statusdisp);
+void        statusSetPlayFlag (status_t *status, ilistidx_t ikey, int playflag);
+void        statusDeleteLast (status_t *status);
 void        statusStartIterator (status_t *status, ilistidx_t *iteridx);
 ilistidx_t  statusIterate (status_t *status, ilistidx_t *iteridx);
 void        statusConv (datafileconv_t *conv);

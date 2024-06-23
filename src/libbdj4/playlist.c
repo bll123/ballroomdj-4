@@ -348,7 +348,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   nlistSetStr (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_ANNOUNCE, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_GAP, PL_GAP_DEFAULT);
-  nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetMax (levels));
+  nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetCount (levels) - 1);
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_RATING, 0);

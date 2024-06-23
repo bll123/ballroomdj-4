@@ -231,7 +231,7 @@ confuiRatingRemove (confuigui_t *gui, ilistidx_t delidx)
     if (idx == delidx) {
       docopy = true;
     }
-    if (idx > 0 && docopy) {
+    if (docopy) {
       const char  *ratingdisp;
       int         weight;
 
@@ -283,6 +283,7 @@ confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  confuiRatingUpdateData (gui);
 
   toidx = idx;
   if (dir == CONFUI_MOVE_PREV) {
@@ -293,7 +294,6 @@ confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
     toidx += 1;
     uivlMoveSelection (uivl, VL_DIR_NEXT);
   }
-fprintf (stderr, "idx: %d toidx: %d\n", idx, toidx);
 
   ratingdisp = uivlGetRowColumnEntry (uivl, toidx, CONFUI_RATING_COL_RATING);
   weight = uivlGetRowColumnNum (uivl, toidx, CONFUI_RATING_COL_WEIGHT);
@@ -302,7 +302,7 @@ fprintf (stderr, "idx: %d toidx: %d\n", idx, toidx);
   ratingSetWeight (ratings, toidx,
       uivlGetRowColumnNum (uivl, idx, CONFUI_RATING_COL_WEIGHT));
   ratingSetRating (ratings, idx, ratingdisp);
-  ratingSetWeight (ratings, toidx, weight);
+  ratingSetWeight (ratings, idx, weight);
 
   uivlPopulate (uivl);
 

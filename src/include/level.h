@@ -18,17 +18,24 @@ typedef struct level level_t;
 
 level_t     *levelAlloc (void);
 void        levelFree (level_t *);
-ssize_t     levelGetCount (level_t *level);
-int         levelGetMaxWidth (level_t *level);
-const char  * levelGetLevel (level_t *level, ilistidx_t idx);
-ssize_t     levelGetWeight (level_t *level, ilistidx_t idx);
-ssize_t     levelGetDefault (level_t *level, ilistidx_t idx);
-char        * levelGetDefaultName (level_t *level);
-ssize_t     levelGetDefaultKey (level_t *level);
-ssize_t     levelGetMax (level_t *level);
-void        levelStartIterator (level_t *level, ilistidx_t *iteridx);
-ilistidx_t  levelIterate (level_t *level, ilistidx_t *iteridx);
+ilistidx_t  levelGetCount (level_t *levels);
+int         levelGetMaxWidth (level_t *levels);
+
+const char  * levelGetLevel (level_t *levels, ilistidx_t idx);
+int levelGetWeight (level_t *levels, ilistidx_t idx);
+int levelGetDefault (level_t *levels, ilistidx_t idx);
+char        * levelGetDefaultName (level_t *levels);
+
+void levelSetLevel (level_t *levels, ilistidx_t idx, const char *leveldisp);
+void levelSetWeight (level_t *levels, ilistidx_t idx, int weight);
+void levelSetDefault (level_t *levels, ilistidx_t idx);
+
+void levelDeleteLast (level_t *levels);
+ilistidx_t levelGetDefaultKey (level_t *levels);
+
+void        levelStartIterator (level_t *levels, ilistidx_t *iteridx);
+ilistidx_t  levelIterate (level_t *levels, ilistidx_t *iteridx);
 void        levelConv (datafileconv_t *conv);
-void        levelSave (level_t *level, ilist_t *list);
+void        levelSave (level_t *levels, ilist_t *list);
 
 #endif /* INC_LEVEL_H */

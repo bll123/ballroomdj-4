@@ -786,7 +786,12 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
     }
     case VL_TYPE_CHECK_BUTTON:
     case VL_TYPE_RADIO_BUTTON: {
-      uiToggleButtonSetState (row->cols [colidx].uiwidget, val);
+      int   nstate = UI_TOGGLE_BUTTON_OFF;
+
+      if (val) {
+        nstate = UI_TOGGLE_BUTTON_ON;
+      }
+      uiToggleButtonSetState (row->cols [colidx].uiwidget, nstate);
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {
@@ -852,7 +857,13 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
     }
     case VL_TYPE_CHECK_BUTTON:
     case VL_TYPE_RADIO_BUTTON: {
-      value = uiToggleButtonIsActive (row->cols [colidx].uiwidget);
+      int   tval;
+
+      tval = uiToggleButtonIsActive (row->cols [colidx].uiwidget);
+      value = false;
+      if (tval == UI_TOGGLE_BUTTON_ON) {
+        value = true;
+      }
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {

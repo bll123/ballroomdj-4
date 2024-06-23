@@ -158,7 +158,7 @@ ratingDeleteLast (rating_t *ratings)
   }
 
   count = ilistGetCount (ratings->rating);
-  ilistDelete (ratings->rating, count -1);
+  ilistDelete (ratings->rating, count - 1);
 }
 
 void

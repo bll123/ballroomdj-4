@@ -89,7 +89,7 @@ statusFree (status_t *status)
   }
 }
 
-ssize_t
+ilistidx_t
 statusGetCount (status_t *status)
 {
   return ilistGetCount (status->status);
@@ -107,10 +107,35 @@ statusGetStatus (status_t *status, ilistidx_t idx)
   return ilistGetStr (status->status, idx, STATUS_STATUS);
 }
 
-ssize_t
+int
 statusGetPlayFlag (status_t *status, ilistidx_t ikey)
 {
   return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
+}
+
+void
+statusSetStatus (status_t *status, ilistidx_t idx, const char *statusdisp)
+{
+  ilistSetStr (status->status, idx, STATUS_STATUS, statusdisp);
+}
+
+void
+statusSetPlayFlag (status_t *status, ilistidx_t ikey, int playflag)
+{
+  ilistSetNum (status->status, ikey, STATUS_PLAY_FLAG, playflag);
+}
+
+void
+statusDeleteLast (status_t *status)
+{
+  ilistidx_t    count;
+
+  if (status == NULL) {
+    return;
+  }
+
+  count = ilistGetCount (status->status);
+  ilistDelete (status->status, count - 1);
 }
 
 void
@@ -129,7 +154,7 @@ void
 statusConv (datafileconv_t *conv)
 {
   status_t      *status;
-  ssize_t       num;
+  ilistidx_t    num;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
