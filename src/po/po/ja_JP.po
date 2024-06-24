@@ -1035,7 +1035,7 @@ msgstr "場所は「tclsh」。"
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "%s"
+msgstr "低%s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"

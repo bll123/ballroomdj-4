@@ -82,7 +82,7 @@ typedef struct managepl {
   uilevel_t       *uilowlevel;
   uilevel_t       *uihighlevel;
   uinbtabid_t     *tabids;
-  managepltree_t  *managepltree;
+  mpldance_t      *mpldnc;
   playlist_t      *playlist;
   bool            changed : 1;
   bool            inload : 1;
@@ -118,7 +118,7 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->wcont [MPL_W_MENU_PL] = uiMenuAlloc ();
   managepl->pltype = PLTYPE_AUTO;
   managepl->tabids = uinbutilIDInit ();
-  managepl->managepltree = NULL;
+  managepl->mpldnc = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
@@ -142,8 +142,8 @@ managePlaylistFree (managepl_t *managepl)
   if (managepl != NULL) {
     uinbutilIDFree (managepl->tabids);
     dataFree (managepl->ploldname);
-    if (managepl->managepltree != NULL) {
-      managePlaylistTreeFree (managepl->managepltree);
+    if (managepl->mpldnc != NULL) {
+      managePLDanceFree (managepl->mpldnc);
     }
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
@@ -454,8 +454,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 
-  managepl->managepltree = managePlaylistTreeAlloc (managepl->minfo->errorMsg);
-  manageBuildUIPlaylistTree (managepl->managepltree, vbox);
+  managepl->mpldnc = managePLDanceAlloc (managepl->minfo->errorMsg);
+  manageBuildUIPlaylistTree (managepl->mpldnc, vbox);
   managePlaylistNew (managepl, MANAGE_STD);
   manageResetChanged (managepl);
 
@@ -727,8 +727,8 @@ managePlaylistUpdateData (managepl_t *managepl)
   pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
-  managePlaylistTreePrePopulate (managepl->managepltree, pl);
-  managePlaylistTreePopulate (managepl->managepltree, pl);
+  managePLDancePrePopulate (managepl->mpldnc, pl);
+  managePLDancePopulate (managepl->mpldnc, pl);
 
   if (pltype == PLTYPE_SONGLIST) {
     uiWidgetHide (managepl->wcont [MPL_W_RATING_ITEM]);
@@ -900,7 +900,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   logProcBegin ();
   pl = managepl->playlist;
 
-  managePlaylistTreeUpdatePlaylist (managepl->managepltree);
+  managePLDanceUpdatePlaylist (managepl->mpldnc);
 
   tval = uiSpinboxGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
@@ -948,7 +948,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
   double        dval;
 
   logProcBegin ();
-  if (managePlaylistTreeIsChanged (managepl->managepltree)) {
+  if (managePLDanceIsChanged (managepl->mpldnc)) {
     managepl->changed = true;
   }
 

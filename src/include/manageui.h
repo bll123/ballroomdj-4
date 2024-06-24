@@ -48,16 +48,16 @@ void managePlaylistLoadCheck (managepl_t *managepl);
 void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
 bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 
-/* managepltree.c */
-typedef struct managepltree managepltree_t;
+/* managepldance.c */
+typedef struct mpldance mpldance_t;
 
-managepltree_t *managePlaylistTreeAlloc (uiwcont_t *errorMsg);
-void managePlaylistTreeFree (managepltree_t *managepltree);
-void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp);
-void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
-void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
-bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
-void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
+mpldance_t *managePLDanceAlloc (uiwcont_t *errorMsg);
+void managePLDanceFree (mpldance_t *managepltree);
+void manageBuildUIPlaylistTree (mpldance_t *managepltree, uiwcont_t *vboxp);
+void managePLDancePrePopulate (mpldance_t *managepltree, playlist_t *pl);
+void managePLDancePopulate (mpldance_t *managepltree, playlist_t *pl);
+bool managePLDanceIsChanged (mpldance_t *managepltree);
+void managePLDanceUpdatePlaylist (mpldance_t *managepltree);
 
 /* manageseq.c */
 typedef struct manageseq manageseq_t;
