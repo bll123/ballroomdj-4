@@ -111,7 +111,6 @@ void
 manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
 {
   uiwcont_t   *hbox;
-  uiwcont_t   *vbox;
   uiwcont_t   *uiwidgetp;
 //  uiwcont_t   *scwindow;
   const char  *bpmstr;
@@ -130,10 +129,8 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   mpldnc->uihideunsel = uiwidgetp;
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
-
-  mpldnc->uivl = uiCreateVirtList ("mpl-dance", vbox, 15, VL_SHOW_HEADING, 0);
+  mpldnc->uivl = uiCreateVirtList ("mpl-dance", vboxp, 15, VL_SHOW_HEADING, 100);
+  uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
   uivlMakeColumn (mpldnc->uivl, MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
   uivlMakeColumn (mpldnc->uivl, MPLDNC_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
@@ -158,8 +155,6 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_HIGHMPM, tbuff);
 
   uivlSetRowFillCallback (mpldnc->uivl, managePLDanceFillRow, mpldnc);
-
-  uivlDisplay (mpldnc->uivl);
 
 #if 0
   scwindow = uiCreateScrolledWindow (300);
@@ -245,6 +240,7 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uiwcontFree (hbox);
 
   managePLDanceCreate (mpldnc);
+  uivlDisplay (mpldnc->uivl);
 }
 
 void
@@ -517,7 +513,6 @@ managePLDanceCreate (mpldance_t *mpldnc)
   }
 
   uivlSetNumRows (mpldnc->uivl, count);
-  uivlPopulate (mpldnc->uivl);
 
 #if 0
   dance_t       *dances;
