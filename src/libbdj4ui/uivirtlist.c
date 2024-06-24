@@ -627,7 +627,6 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
   }
 
   if (washidden != hidden) {
-fprintf (stderr, "%s switch hidden state: %d/%s\n", vl->tag, colidx, vl->coldata [colidx].tag);
     if (vl->dispheading) {
       if (hidden == VL_COL_HIDE) {
         uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
@@ -1440,8 +1439,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     if (row->dispidx == 0 &&
         col->uiwidget != NULL &&
-        (type == VL_TYPE_LABEL ||
-        type == VL_TYPE_IMAGE)) {
+        (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
       /* set up the size change callback so that the columns */
       /* can be made to only grow, and never shrink on their own */
       /* only need this on labels and images. */
@@ -1787,7 +1785,9 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
   int           calcrows;
   int           theight;
 
-  if (width < vl->vboxwidth - 6) {
+  /* see the comments in colsizechg */
+
+  if (width < vl->vboxwidth - 5) {
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       uivlrow_t   *row;
       uivlcol_t   *col;
@@ -1901,16 +1901,18 @@ uivlColSizeChg (void *udata, int32_t width, int32_t height)
   /* gtk seems to resize the box some number of pixels */
   /* greater than requested */
   /* just need a stable number */
-  /* a smaller size may help to allow user-shrinking */
+  /* a smaller size allows user-shrinking */
   if (width > 0 && width > coldata->colwidth) {
-    coldata->colwidth = width;
     if (uiWidgetIsMapped (coldata->col0->box)) {
+      coldata->colwidth = width;
+
       /* if the size is set to the actual size, it can no longer shrink. */
       /* if the size is set to the actual size, in gtk, and the vbox size */
-      /* change test is not modified, the window will keep growing. */
+      /* change test is not modified, the vbox will keep growing. */
       /* the vbox size change test is modified to ignore minor changes */
-      /* so that it does not think the window is not changing. */
-      uiWidgetSetSizeRequest (coldata->col0->box, width - 5, -1);
+      /* so that it does not think the window is changing. */
+      width -= 5;
+      uiWidgetSetSizeRequest (coldata->col0->box, width, -1);
     }
   }
 

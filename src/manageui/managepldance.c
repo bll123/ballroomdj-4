@@ -137,6 +137,9 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
 
   bpmstr = tagdefs [TAG_BPM].displayname;
 
+  /* this helps to prevent the column width from bouncing around */
+  uivlSetColumnMinWidth (mpldnc->uivl, MPLDNC_COL_DANCE, 20);
+
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_DANCE_SELECT, "");
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_DANCE, tagdefs [TAG_DANCE].displayname);
   /* CONTEXT: playlist management: count column header */
