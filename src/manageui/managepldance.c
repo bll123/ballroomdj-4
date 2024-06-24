@@ -279,10 +279,9 @@ managePLDancePopulate (mpldance_t *mpldnc, playlist_t *pl)
   ilistidx_t    dkey;
   int           count;
 
-  if (mpldnc->uitree == NULL) {
-    return;
-  }
+  uivlPopulate (mpldnc->uivl);
 
+#if 0
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   mpldnc->playlist = pl;
@@ -329,6 +328,7 @@ managePLDancePopulate (mpldance_t *mpldnc, playlist_t *pl)
 
   uiTreeViewSelectSet (mpldnc->uitree, 0);
   mpldnc->currcount = count;
+#endif
   mpldnc->changed = false;
 }
 
@@ -512,6 +512,7 @@ managePLDanceCreate (mpldance_t *mpldnc)
     }
   }
 
+fprintf (stderr, "mpl: set-num-rows %d\n", count);
   uivlSetNumRows (mpldnc->uivl, count);
 
 #if 0
@@ -593,7 +594,8 @@ managePLDanceHideUnselectedCallback (void *udata)
   }
   managePLDanceUpdatePlaylist (mpldnc);
   managePLDanceCreate (mpldnc);
-  managePLDancePopulate (mpldnc, mpldnc->playlist);
+  uivlPopulate (mpldnc->uivl);
+//  managePLDancePopulate (mpldnc, mpldnc->playlist);
   mpldnc->changed = tchg;
   return UICB_CONT;
 }
@@ -640,6 +642,7 @@ managePLDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   dancelist = danceGetDanceList (dances);
   pl = mpldnc->playlist;
 
+fprintf (stderr, "-- fill rownum: %d\n", rownum);
   /* since some of the dances may be hidden, traverse through the */
   /* list to find the correct dance to display */
   count = 0;
@@ -648,22 +651,29 @@ managePLDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
     int32_t     val;
 
     val = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
-    if (! val) {
-      continue;
+fprintf (stderr, "  dkey: %d/%s count:%d sel:%d\n", dkey, danceGetStr (dances, dkey, DANCE_DANCE), count, val);
+    if (mpldnc->hideunselected && pl != NULL) {
+      if (! val) {
+        continue;
+      }
     }
 
     if (count == rownum) {
       const char  *dancedisp;
 
       val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_SELECTED);
+      if (val == LIST_VALUE_INVALID) { val = 0; }
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_SELECT, val);
       dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
       uivlSetRowColumnValue (mpldnc->uivl, rownum, MPLDNC_COL_DANCE, dancedisp);
       val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MAXPLAYTIME);
+      if (val == LIST_VALUE_INVALID) { val = 0; }
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_MAXPLAYTIME, val);
       val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MPM_LOW);
+      if (val == LIST_VALUE_INVALID) { val = 0; }
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_LOWMPM, val);
       val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MPM_HIGH);
+      if (val == LIST_VALUE_INVALID) { val = 0; }
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM, val);
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_IDX, dkey);
       break;
