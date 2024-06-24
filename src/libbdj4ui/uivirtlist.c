@@ -396,7 +396,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   }
 
   vl->numrows = numrows;
-  uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
   if (vl->initialized >= VL_INIT_ROWS) {
@@ -417,7 +416,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
       diff = vl->numrows - (vl->dispsize + vl->rowoffset);
       vl->rowoffset += diff;
       vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
-      uivlPopulate (vl);
     }
   }
 
@@ -426,6 +424,10 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   } else {
     uiWidgetShow (vl->wcont [VL_W_SB]);
   }
+
+  uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], vl->currSelection);
+  uivlPopulate (vl);
 }
 
 void
@@ -1860,21 +1862,21 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
       vl->dispsize = calcrows;
 
+      if (vl->dispsize + vl->rowoffset > vl->numrows) {
+        int32_t   diff;
+
+        diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+        vl->rowoffset += diff;
+        vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+      }
+
       for (int dispidx = odispsize; dispidx < calcrows; ++dispidx) {
         uivlrow_t *row;
 
-        if (vl->dispsize + vl->rowoffset > vl->numrows) {
-          int32_t   diff;
-
-          diff = vl->numrows - (vl->dispsize + vl->rowoffset);
-          vl->rowoffset += diff;
-          vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
-        } else {
-          /* force a reset as a show-all was done, the rows must be cleared */
-          row = &vl->rows [dispidx];
-          row->cleared = false;
-          uivlClearRowDisp (vl, dispidx);
-        }
+        /* force a reset as a show-all was done, the rows must be cleared */
+        row = &vl->rows [dispidx];
+        row->cleared = false;
+        uivlClearRowDisp (vl, dispidx);
       }
 
       if (vl->dispsize > vl->numrows) {
