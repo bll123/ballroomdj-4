@@ -626,16 +626,14 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 
   washidden = vl->coldata [colidx].hidden;
   vl->coldata [colidx].hidden = hidden;
-fprintf (stderr, "%s switch %d/%s %d %d\n", vl->tag, colidx, vl->coldata [colidx].tag, washidden, hidden);
 
   if (washidden != hidden) {
-fprintf (stderr, "  update\n");
     if (vl->dispheading) {
       if (hidden == VL_COL_HIDE) {
         uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
       }
       if (hidden == VL_COL_SHOW) {
-        uiWidgetShowAll (vl->headingrow.hbox);
+        uiWidgetShow (vl->headingrow.cols [colidx].uiwidget);
       }
     }
     for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
@@ -650,7 +648,7 @@ fprintf (stderr, "  update\n");
         uiWidgetHide (row->cols [colidx].uiwidget);
       }
       if (hidden == VL_COL_SHOW) {
-        uiWidgetShowAll (row->hbox);
+        uiWidgetShow (row->cols [colidx].uiwidget);
       }
     }
   }
@@ -2129,6 +2127,7 @@ uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
 {
   uiWidgetShowAll (row->hbox);
 
+  /* re-hide any colums that should be hidden */
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
       uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);

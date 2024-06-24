@@ -180,6 +180,8 @@ managePLDancePrePopulate (mpldance_t *mpldnc, playlist_t *pl)
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   if (pltype == PLTYPE_SONGLIST) {
+    /* a song list displays all the dances, as other dances */
+    /* could be added to the song list via requests, etc. */
     widgetstate = UIWIDGET_DISABLE;
   }
   if (pltype == PLTYPE_SEQUENCE) {
