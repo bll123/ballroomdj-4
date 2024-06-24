@@ -206,7 +206,7 @@ static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
-static bool uivlVboxSizeChg (void *udata, int32_t width, int32_t height);
+static bool uivlVertSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlColSizeChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
@@ -263,7 +263,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
-  vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVboxSizeChg, vl);
+  vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVertSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   if (vl->dispheading) {
@@ -407,6 +407,17 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
       for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
+    }
+    if (vl->dispsize + vl->rowoffset > vl->numrows &&
+        vl->dispsize < vl->numrows) {
+      int32_t   diff;
+
+      /* usually this happens due to a removal of a row, */
+      /* and diff will be -1 */
+      diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+      vl->rowoffset += diff;
+      vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+      uivlPopulate (vl);
     }
   }
 
@@ -1780,7 +1791,7 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
 }
 
 static bool
-uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
+uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 {
   uivirtlist_t  *vl = udata;
   int           calcrows;
@@ -1852,10 +1863,18 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
       for (int dispidx = odispsize; dispidx < calcrows; ++dispidx) {
         uivlrow_t *row;
 
-        /* force a reset as a show-all was done, the rows must be cleared */
-        row = &vl->rows [dispidx];
-        row->cleared = false;
-        uivlClearRowDisp (vl, dispidx);
+        if (vl->dispsize + vl->rowoffset > vl->numrows) {
+          int32_t   diff;
+
+          diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+          vl->rowoffset += diff;
+          vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+        } else {
+          /* force a reset as a show-all was done, the rows must be cleared */
+          row = &vl->rows [dispidx];
+          row->cleared = false;
+          uivlClearRowDisp (vl, dispidx);
+        }
       }
 
       if (vl->dispsize > vl->numrows) {
