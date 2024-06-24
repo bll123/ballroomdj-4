@@ -220,6 +220,7 @@ static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_
 static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, const char *func);
 static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int colidx, const char *func);
+static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
 
 uivirtlist_t *
 uiCreateVirtList (const char *tag, uiwcont_t *boxp,
@@ -613,20 +614,22 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow)
 void
 uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 {
-  int   washidden;
+  int     washidden;
 
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
     return;
   }
 
-  washidden = vl->coldata [colidx].hidden;
-  vl->coldata [colidx].hidden = hidden;
-
   if (vl->coldata [colidx].type == VL_TYPE_INTERNAL_NUMERIC) {
     return;
   }
 
+  washidden = vl->coldata [colidx].hidden;
+  vl->coldata [colidx].hidden = hidden;
+fprintf (stderr, "%s switch %d/%s %d %d\n", vl->tag, colidx, vl->coldata [colidx].tag, washidden, hidden);
+
   if (washidden != hidden) {
+fprintf (stderr, "  update\n");
     if (vl->dispheading) {
       if (hidden == VL_COL_HIDE) {
         uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
@@ -787,7 +790,7 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
   }
 
   if (row->offscreen == false && row->cleared) {
-    uiWidgetShowAll (row->hbox);
+    uivlRowDisplay (vl, row);
   }
   row->cleared = false;
 }
@@ -820,7 +823,7 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
   }
 
   if (row->offscreen == false && row->cleared) {
-    uiWidgetShowAll (row->hbox);
+    uivlRowDisplay (vl, row);
   }
   row->cleared = false;
 }
@@ -871,7 +874,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
   }
 
   if (row->offscreen == false && row->cleared) {
-    uiWidgetShowAll (row->hbox);
+    uivlRowDisplay (vl, row);
   }
   row->cleared = false;
 }
@@ -1911,6 +1914,7 @@ uivlColSizeChg (void *udata, int32_t width, int32_t height)
       /* change test is not modified, the vbox will keep growing. */
       /* the vbox size change test is modified to ignore minor changes */
       /* so that it does not think the window is changing. */
+      /* because of this, columns can still bounce their width by 5 pixels */
       width -= 5;
       uiWidgetSetSizeRequest (coldata->col0->box, width, -1);
     }
@@ -2120,3 +2124,18 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
   return rc;
 }
 
+static void
+uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
+{
+  uiWidgetShowAll (row->hbox);
+
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
+      uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
+      for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
+        row = &vl->rows [dispidx];
+        uiWidgetHide (row->cols [colidx].uiwidget);
+      }
+    }
+  }
+}
