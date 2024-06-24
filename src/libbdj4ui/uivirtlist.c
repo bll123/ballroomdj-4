@@ -1006,7 +1006,7 @@ uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 }
 
 void
-uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
+uivlSetCheckboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 {
   uivlSetToggleChangeCallback (vl, colidx, cb);
 }

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -257,21 +258,21 @@ uiSpinboxTimeCreate (int sbtype, void *udata,
   return uiwidget;
 }
 
-ssize_t
+int32_t
 uiSpinboxTimeGetValue (uiwcont_t *uiwidget)
 {
-  ssize_t value;
+  int32_t value;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TIME, "spinbox-time-get-val")) {
     return -1;
   }
 
-  value = (ssize_t) uiSpinboxGetValue (uiwidget);
+  value = uiSpinboxGetValue (uiwidget);
   return value;
 }
 
 void
-uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value)
+uiSpinboxTimeSetValue (uiwcont_t *uiwidget, int32_t value)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TIME, "spinbox-time-set-val")) {
     return;

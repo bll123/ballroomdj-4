@@ -90,7 +90,7 @@ confuiCreateGenreTable (confuigui_t *gui)
       callbackInit (confuiGenreChangeCB, gui, NULL);
   uivlSetEntryValidation (uivl, CONFUI_GENRE_COL_GENRE,
       confuiGenreEntryChangeCB, gui);
-  uivlSetCheckBoxChangeCallback (uivl, CONFUI_GENRE_COL_CLASSICAL,
+  uivlSetCheckboxChangeCallback (uivl, CONFUI_GENRE_COL_CLASSICAL,
       gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_GENRE_CB]);
 
   uivlSetRowFillCallback (uivl, confuiGenreFillRow, gui);

@@ -91,7 +91,7 @@ confuiCreateStatusTable (confuigui_t *gui)
       callbackInit (confuiStatusChangeCB, gui, NULL);
   uivlSetEntryValidation (uivl, CONFUI_STATUS_COL_STATUS,
       confuiStatusEntryChangeCB, gui);
-  uivlSetCheckBoxChangeCallback (uivl, CONFUI_STATUS_COL_PLAY_FLAG,
+  uivlSetCheckboxChangeCallback (uivl, CONFUI_STATUS_COL_PLAY_FLAG,
       gui->tables [CONFUI_ID_STATUS].callbacks [CONFUI_STATUS_CB]);
 
   uivlSetRowFillCallback (uivl, confuiStatusFillRow, gui);

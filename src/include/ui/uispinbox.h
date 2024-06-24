@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #include "callback.h"
 #include "nlist.h"
 #include "slist.h"
@@ -37,23 +39,23 @@ uiwcont_t *uiSpinboxDoubleCreate (void);
 uiwcont_t *uiSpinboxDoubleDefaultCreate (void);
 
 uiwcont_t *uiSpinboxTimeCreate (int sbtype, void *udata, const char *label, callback_t *convcb);
-ssize_t uiSpinboxTimeGetValue (uiwcont_t *uiwidget);
-void  uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value);
+int32_t uiSpinboxTimeGetValue (uiwcont_t *uiwidget);
+void  uiSpinboxTimeSetValue (uiwcont_t *uiwidget, int32_t value);
 void uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
-void  uiSpinboxSetState (uiwcont_t *uiwidget, int state);
+void uiSpinboxSetState (uiwcont_t *uiwidget, int state);
 void uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
-void  uiSpinboxSetRange (uiwcont_t *uiwidget, double min, double max);
-void  uiSpinboxSetIncrement (uiwcont_t *uiwidget, double incr, double pageincr);
-void  uiSpinboxWrap (uiwcont_t *uiwidget);
-void  uiSpinboxSet (uiwcont_t *uispinbox, double min, double max);
+void uiSpinboxSetRange (uiwcont_t *uiwidget, double min, double max);
+void uiSpinboxSetIncrement (uiwcont_t *uiwidget, double incr, double pageincr);
+void uiSpinboxWrap (uiwcont_t *uiwidget);
+void uiSpinboxSet (uiwcont_t *uispinbox, double min, double max);
 double uiSpinboxGetValue (uiwcont_t *uiwidget);
-void  uiSpinboxSetValue (uiwcont_t *uiwidget, double ivalue);
-bool  uiSpinboxIsChanged (uiwcont_t *uiwidget);
-void  uiSpinboxResetChanged (uiwcont_t *uiwidget);
-void  uiSpinboxAlignRight (uiwcont_t *uiwidget);
-void  uiSpinboxAddClass (const char *classnm, const char *color);
+void uiSpinboxSetValue (uiwcont_t *uiwidget, double ivalue);
+bool uiSpinboxIsChanged (uiwcont_t *uiwidget);
+void uiSpinboxResetChanged (uiwcont_t *uiwidget);
+void uiSpinboxAlignRight (uiwcont_t *uiwidget);
+void uiSpinboxAddClass (const char *classnm, const char *color);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

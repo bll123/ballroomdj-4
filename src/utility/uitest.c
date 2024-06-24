@@ -1117,7 +1117,7 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetEntryValidation (uitest->vl, 6, uitestVLEntryValidateCB, uitest);
   uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
   uivlSetRadioChangeCallback (uitest->vl, 7, uitest->chgcb);
-  uivlSetCheckBoxChangeCallback (uitest->vl, 8, uitest->chgcb);
+  uivlSetCheckboxChangeCallback (uitest->vl, 8, uitest->chgcb);
   uivlSetSpinboxTimeChangeCallback (uitest->vl, 10, uitest->chgcb);
   uivlSetSpinboxChangeCallback (uitest->vl, 11, uitest->chgcb);
 

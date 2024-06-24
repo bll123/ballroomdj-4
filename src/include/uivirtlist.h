@@ -84,7 +84,7 @@ void  uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);
 void  uivlSetEntryValidation (uivirtlist_t *vl, int colidx, uientryval_t cb, void *udata);
 void  uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
-void  uivlSetCheckBoxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
+void  uivlSetCheckboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 
