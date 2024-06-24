@@ -267,6 +267,8 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
 
   if (vl->dispheading) {
     vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
+    uiWidgetAlignHorizStart (vl->wcont [VL_W_HEADBOX]);
+    uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
     uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
     uiBoxPackStart (boxp, vl->wcont [VL_W_HEADBOX]);
   }
