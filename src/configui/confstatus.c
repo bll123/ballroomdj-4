@@ -78,8 +78,8 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
   uivlSetNumColumns (uivl, CONFUI_STATUS_COL_MAX);
-  uivlMakeColumnEntry (uivl, CONFUI_STATUS_COL_STATUS, 15, 30);
-  uivlMakeColumn (uivl, CONFUI_STATUS_COL_PLAY_FLAG, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumnEntry (uivl, "status", CONFUI_STATUS_COL_STATUS, 15, 30);
+  uivlMakeColumn (uivl, "pf", CONFUI_STATUS_COL_PLAY_FLAG, VL_TYPE_CHECK_BUTTON);
   uivlSetColumnHeading (uivl, CONFUI_STATUS_COL_STATUS,
       tagdefs [TAG_STATUS].displayname);
   /* CONTEXT: configuration: status: title of the "playable" column */

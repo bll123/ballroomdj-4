@@ -83,9 +83,9 @@ confuiCreateLevelTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
   uivlSetNumColumns (uivl, CONFUI_LEVEL_COL_MAX);
-  uivlMakeColumnEntry (uivl, CONFUI_LEVEL_COL_LEVEL, 15, 30);
-  uivlMakeColumnSpinboxNum (uivl, CONFUI_LEVEL_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
-  uivlMakeColumn (uivl, CONFUI_LEVEL_COL_DEFAULT, VL_TYPE_RADIO_BUTTON);
+  uivlMakeColumnEntry (uivl, "level", CONFUI_LEVEL_COL_LEVEL, 15, 30);
+  uivlMakeColumnSpinboxNum (uivl, "lweight", CONFUI_LEVEL_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
+  uivlMakeColumn (uivl, "ldflt", CONFUI_LEVEL_COL_DEFAULT, VL_TYPE_RADIO_BUTTON);
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_LEVEL,
       tagdefs [TAG_DANCELEVEL].shortdisplayname);
   /* CONTEXT: configuration: level: title of the weight column */

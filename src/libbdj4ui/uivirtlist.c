@@ -102,11 +102,13 @@ typedef struct {
   callback_t  *spinboxtimecb;
   callback_t  *colszcb;
   uivlcol_t   *col0;
+  const char  *tag;
   char        *baseclass;
   int         minwidth;
   int         entrySz;
   int         entryMaxSz;
   int         sbtype;
+  int         colidx;
   int         colwidth;
   callback_t  *sbcb;
   double      sbmin;
@@ -142,6 +144,7 @@ typedef struct {
   /* all widgets are hidden */
   bool          cleared : 1;
   bool          created : 1;
+  /* offscreen: row is off-screen, entire row is hidden */
   bool          offscreen : 1;
   bool          initialized : 1;
   bool          selected : 1;       // a temporary flag to ease processing
@@ -425,6 +428,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
 
     coldata->szgrp = uiCreateSizeGroupHoriz ();
     coldata->ident = VL_IDENT_COLDATA;
+    coldata->tag = "unk";
     coldata->type = VL_TYPE_LABEL;
     coldata->entrycb = NULL;
     coldata->entryudata = NULL;
@@ -432,6 +436,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->spinboxcb = NULL;
     coldata->spinboxtimecb = NULL;
     coldata->colszcb = NULL;
+    coldata->colidx = colidx;
     coldata->colwidth = -1;
     coldata->baseclass = NULL;
     coldata->minwidth = VL_MIN_WIDTH_ANY;
@@ -509,17 +514,18 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
 }
 
 void
-uivlMakeColumn (uivirtlist_t *vl, int colidx, vltype_t type)
+uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t type)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
     return;
   }
 
   vl->coldata [colidx].type = type;
+  vl->coldata [colidx].tag = tag;
 }
 
 void
-uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int sz, int maxsz)
+uivlMakeColumnEntry (uivirtlist_t *vl, const char *tag, int colidx, int sz, int maxsz)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
     return;
@@ -528,10 +534,11 @@ uivlMakeColumnEntry (uivirtlist_t *vl, int colidx, int sz, int maxsz)
   vl->coldata [colidx].type = VL_TYPE_ENTRY;
   vl->coldata [colidx].entrySz = sz;
   vl->coldata [colidx].entryMaxSz = maxsz;
+  vl->coldata [colidx].tag = tag;
 }
 
 void
-uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx,
+uivlMakeColumnSpinboxTime (uivirtlist_t *vl, const char *tag, int colidx,
     int sbtype, callback_t *uicb)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
@@ -541,10 +548,11 @@ uivlMakeColumnSpinboxTime (uivirtlist_t *vl, int colidx,
   vl->coldata [colidx].type = VL_TYPE_SPINBOX_TIME;
   vl->coldata [colidx].sbtype = sbtype;
   vl->coldata [colidx].sbcb = uicb;
+  vl->coldata [colidx].tag = tag;
 }
 
 void
-uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx,
+uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx,
     double min, double max, double incr, double pageincr)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
@@ -556,6 +564,7 @@ uivlMakeColumnSpinboxNum (uivirtlist_t *vl, int colidx,
   vl->coldata [colidx].sbmax = max;
   vl->coldata [colidx].sbincr = incr;
   vl->coldata [colidx].sbpageincr = pageincr;
+  vl->coldata [colidx].tag = tag;
 }
 
 void
@@ -616,6 +625,15 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
   }
 
   if (washidden != hidden) {
+fprintf (stderr, "%s switch hidden state: %d/%s\n", vl->tag, colidx, vl->coldata [colidx].tag);
+    if (vl->dispheading) {
+      if (hidden == VL_COL_HIDE) {
+        uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
+      }
+      if (hidden == VL_COL_SHOW) {
+        uiWidgetShowAll (vl->headingrow.hbox);
+      }
+    }
     for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t   *row;
 
@@ -1040,7 +1058,7 @@ uivlDisplay (uivirtlist_t *vl)
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-rows]", vl->tag);
 
   if (vl->dispheading) {
-    uiBoxPackStartExpand (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
+    uiBoxPackStart (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
   }
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
@@ -1285,7 +1303,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
   row->hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (row->hbox);
-  uiWidgetAlignVertStart (row->hbox);
+  uiWidgetAlignVertStart (row->hbox);   // no vertical growth
+  uiWidgetExpandHoriz (row->hbox);
 
   row->offscreen = false;
   row->selected = false;
@@ -1407,22 +1426,29 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     /* need a box for the size change callback */
     col->box = uiCreateHorizBox ();
+    uiWidgetAlignHorizFill (col->box);
     uiWidgetSetAllMargins (col->box, 0);
+
+    uiWidgetAlignHorizFill (col->uiwidget);
     uiBoxPackStart (col->box, col->uiwidget);
     uiWidgetSetAllMargins (col->uiwidget, 0);
+    if (isheading) {
+      uiWidgetAlignVertEnd (col->uiwidget);
+    }
 
-    if (row->dispidx == 0 && col->uiwidget != NULL) {
+    if (row->dispidx == 0 &&
+        col->uiwidget != NULL &&
+        (type == VL_TYPE_LABEL ||
+        type == VL_TYPE_IMAGE)) {
       /* set up the size change callback so that the columns */
       /* can be made to only grow, and never shrink on their own */
+      /* only need this on labels and images. */
       coldata->colszcb = callbackInitII (uivlColSizeChg, coldata);
       coldata->col0 = col;
       uiBoxSetSizeChgCallback (col->box, coldata->colszcb);
     }
 
     uiWidgetSetMarginEnd (col->uiwidget, 3);
-    if (coldata->grow == VL_COL_WIDTH_GROW) {
-      uiWidgetAlignHorizFill (col->uiwidget);
-    }
     if (vl->uselistingfont) {
       uiWidgetAddClass (col->uiwidget, VL_LIST_CLASS);
       if (isheading) {
@@ -1759,14 +1785,14 @@ uivlVboxSizeChg (void *udata, int32_t width, int32_t height)
   int           calcrows;
   int           theight;
 
-  if (width < vl->vboxwidth) {
+  if (width < vl->vboxwidth - 6) {
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       uivlrow_t   *row;
       uivlcol_t   *col;
 
       row = &vl->rows [0];
       if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-        vl->coldata [colidx].colwidth = 0;
+        vl->coldata [colidx].colwidth = -1;
         col = &row->cols [colidx];
         uiWidgetSetSizeRequest (col->box, -1, -1);
       }
@@ -1874,10 +1900,15 @@ uivlColSizeChg (void *udata, int32_t width, int32_t height)
   /* greater than requested */
   /* just need a stable number */
   /* a smaller size may help to allow user-shrinking */
-  if (width - 16 > 0 && width > coldata->colwidth) {
+  if (width > 0 && width > coldata->colwidth) {
     coldata->colwidth = width;
     if (uiWidgetIsMapped (coldata->col0->box)) {
-      uiWidgetSetSizeRequest (coldata->col0->box, width - 16, -1);
+      /* if the size is set to the actual size, it can no longer shrink. */
+      /* if the size is set to the actual size, in gtk, and the vbox size */
+      /* change test is not modified, the window will keep growing. */
+      /* the vbox size change test is modified to ignore minor changes */
+      /* so that it does not think the window is not changing. */
+      uiWidgetSetSizeRequest (coldata->col0->box, width - 5, -1);
     }
   }
 

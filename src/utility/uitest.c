@@ -1089,19 +1089,19 @@ uitestUIVirtList (uitest_t *uitest)
   uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
   for (int j = 0; j < UITEST_VL_COLS; ++j) {
     if (j == 6) {
-      uivlMakeColumnEntry (uitest->vl, j, 10, 100);
+      uivlMakeColumnEntry (uitest->vl, "entry", j, 10, 100);
     } else if (j == 7) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_RADIO_BUTTON);
+      uivlMakeColumn (uitest->vl, "rb", j, VL_TYPE_RADIO_BUTTON);
     } else if (j == 8) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_CHECK_BUTTON);
+      uivlMakeColumn (uitest->vl, "cb", j, VL_TYPE_CHECK_BUTTON);
     } else if (j == 9) {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_IMAGE);
+      uivlMakeColumn (uitest->vl, "img", j, VL_TYPE_IMAGE);
     } else if (j == 10) {
-      uivlMakeColumnSpinboxTime (uitest->vl, j, SB_TIME_BASIC, NULL);
+      uivlMakeColumnSpinboxTime (uitest->vl, "sb-time", j, SB_TIME_BASIC, NULL);
     } else if (j == 11) {
-      uivlMakeColumnSpinboxNum (uitest->vl, j, 0.0, 20.0, 1.0, 5.0);
+      uivlMakeColumnSpinboxNum (uitest->vl, "sb-num", j, 0.0, 20.0, 1.0, 5.0);
     } else {
-      uivlMakeColumn (uitest->vl, j, VL_TYPE_LABEL);
+      uivlMakeColumn (uitest->vl, "label", j, VL_TYPE_LABEL);
     }
   }
 

@@ -342,7 +342,7 @@ typedef struct confuitable {
 
 enum {
   CONFUI_DANCE_COL_DANCE,
-  CONFUI_DANCE_COL_DANCE_IDX,
+  CONFUI_DANCE_COL_DANCE_KEY,
   CONFUI_DANCE_COL_MAX,
 };
 

@@ -34,11 +34,7 @@ enum {
   MPLDNC_COL_MAXPLAYTIME,
   MPLDNC_COL_LOWMPM,
   MPLDNC_COL_HIGHMPM,
-  MPLDNC_COL_SB_PAD,
-  MPLDNC_COL_DANCE_IDX,
-  MPLDNC_COL_EDITABLE,
-  MPLDNC_COL_ADJUST,
-  MPLDNC_COL_DIGITS,
+  MPLDNC_COL_DANCE_KEY,
   MPLDNC_COL_MAX,
 };
 
@@ -131,13 +127,13 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
 
   mpldnc->uivl = uiCreateVirtList ("mpl-dance", vboxp, 15, VL_SHOW_HEADING, 100);
   uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
-  uivlMakeColumn (mpldnc->uivl, MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
-  uivlMakeColumn (mpldnc->uivl, MPLDNC_COL_DANCE, VL_TYPE_LABEL);
-  uivlMakeColumnSpinboxNum (mpldnc->uivl, MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
-  uivlMakeColumnSpinboxTime (mpldnc->uivl, MPLDNC_COL_MAXPLAYTIME, SB_TIME_BASIC, NULL);
-  uivlMakeColumnSpinboxNum (mpldnc->uivl, MPLDNC_COL_LOWMPM, 0.0, 500.0, 1.0, 5.0);
-  uivlMakeColumnSpinboxNum (mpldnc->uivl, MPLDNC_COL_HIGHMPM, 0.0, 500.0, 1.0, 5.0);
-  uivlMakeColumn (mpldnc->uivl, MPLDNC_COL_DANCE_IDX, VL_TYPE_INTERNAL_NUMERIC);
+  uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);
+  uivlMakeColumnSpinboxNum (mpldnc->uivl, "count", MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
+  uivlMakeColumnSpinboxTime (mpldnc->uivl, "mpt", MPLDNC_COL_MAXPLAYTIME, SB_TIME_BASIC, NULL);
+  uivlMakeColumnSpinboxNum (mpldnc->uivl, "lowmpm", MPLDNC_COL_LOWMPM, 0.0, 500.0, 1.0, 5.0);
+  uivlMakeColumnSpinboxNum (mpldnc->uivl, "himpm", MPLDNC_COL_HIGHMPM, 0.0, 500.0, 1.0, 5.0);
+  uivlMakeColumn (mpldnc->uivl, "dkey", MPLDNC_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
 
   bpmstr = tagdefs [TAG_BPM].displayname;
 
@@ -273,11 +269,16 @@ managePLDancePrePopulate (mpldance_t *mpldnc, playlist_t *pl)
 void
 managePLDancePopulate (mpldance_t *mpldnc, playlist_t *pl)
 {
-  dance_t       *dances;
+//  dance_t       *dances;
   int           pltype;
-  ilistidx_t    iteridx;
-  ilistidx_t    dkey;
-  int           count;
+//  ilistidx_t    iteridx;
+//  ilistidx_t    dkey;
+//  int           count;
+
+  mpldnc->playlist = pl;
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+
+  managePLDanceSetColumnVisibility (mpldnc, pltype);
 
   uivlPopulate (mpldnc->uivl);
 
@@ -362,7 +363,7 @@ managePLDanceUpdatePlaylist (mpldance_t *mpldnc)
   for (count = 0; count < mpldnc->currcount; ++count) {
     uiTreeViewSelectSet (mpldnc->uitree, count);
 
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_IDX);
+    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_KEY);
     dkey = tval;
     tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_SELECT);
     playlistSetDanceNum (pl, dkey, PLDANCE_SELECTED, tval);
@@ -479,7 +480,7 @@ managePLDanceChanged (void *udata, int32_t col)
     ilistidx_t  dkey;
 
     val = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_SELECT);
-    dkey = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_IDX);
+    dkey = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_KEY);
     playlistSetDanceNum (mpldnc->playlist, dkey, PLDANCE_SELECTED, val);
   }
 
@@ -512,7 +513,6 @@ managePLDanceCreate (mpldance_t *mpldnc)
     }
   }
 
-fprintf (stderr, "mpl: set-num-rows %d\n", count);
   uivlSetNumRows (mpldnc->uivl, count);
 
 #if 0
@@ -568,7 +568,7 @@ fprintf (stderr, "mpl: set-num-rows %d\n", count);
         MPLDNC_COL_LOWMPM, (treenum_t) 0,
         MPLDNC_COL_HIGHMPM, (treenum_t) 0,
         MPLDNC_COL_SB_PAD, "  ",
-        MPLDNC_COL_DANCE_IDX, (treenum_t) key,
+        MPLDNC_COL_DANCE_KEY, (treenum_t) key,
         MPLDNC_COL_EDITABLE, (treeint_t) 1,
         MPLDNC_COL_ADJUST, uiAdjustmentGetAdjustment (adjustment),
         MPLDNC_COL_DIGITS, (treeint_t) 0,
@@ -642,7 +642,6 @@ managePLDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   dancelist = danceGetDanceList (dances);
   pl = mpldnc->playlist;
 
-fprintf (stderr, "-- fill rownum: %d\n", rownum);
   /* since some of the dances may be hidden, traverse through the */
   /* list to find the correct dance to display */
   count = 0;
@@ -651,7 +650,6 @@ fprintf (stderr, "-- fill rownum: %d\n", rownum);
     int32_t     val;
 
     val = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
-fprintf (stderr, "  dkey: %d/%s count:%d sel:%d\n", dkey, danceGetStr (dances, dkey, DANCE_DANCE), count, val);
     if (mpldnc->hideunselected && pl != NULL) {
       if (! val) {
         continue;
@@ -675,7 +673,7 @@ fprintf (stderr, "  dkey: %d/%s count:%d sel:%d\n", dkey, danceGetStr (dances, d
       val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MPM_HIGH);
       if (val == LIST_VALUE_INVALID) { val = 0; }
       uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM, val);
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_IDX, dkey);
+      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_KEY, dkey);
       break;
     }
     ++count;

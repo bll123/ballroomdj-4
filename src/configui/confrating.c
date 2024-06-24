@@ -83,8 +83,8 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   uivlSetNumColumns (uivl, CONFUI_RATING_COL_MAX);
-  uivlMakeColumnEntry (uivl, CONFUI_RATING_COL_RATING, 15, 30);
-  uivlMakeColumnSpinboxNum (uivl, CONFUI_RATING_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
+  uivlMakeColumnEntry (uivl, "rating", CONFUI_RATING_COL_RATING, 15, 30);
+  uivlMakeColumnSpinboxNum (uivl, "rweight", CONFUI_RATING_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
   uivlSetColumnHeading (uivl, CONFUI_RATING_COL_RATING,
       tagdefs [TAG_DANCERATING].shortdisplayname);
   /* CONTEXT: configuration: rating: title of the weight column */

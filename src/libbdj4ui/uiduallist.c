@@ -129,14 +129,13 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist->uivl [DL_LIST_SOURCE] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
-  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL);
+  uivlMakeColumn (uivl, "src", DL_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
   uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
   dvbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
-  uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
   uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_SELECT],
@@ -169,7 +168,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
-  uivlMakeColumn (uivl, DL_COL_DISP, VL_TYPE_LABEL);
+  uivlMakeColumn (uivl, "tgt", DL_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
   uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 

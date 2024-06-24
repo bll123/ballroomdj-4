@@ -77,8 +77,8 @@ confuiCreateGenreTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
   uivlSetNumColumns (uivl, CONFUI_GENRE_COL_MAX);
-  uivlMakeColumnEntry (uivl, CONFUI_GENRE_COL_GENRE, 15, 30);
-  uivlMakeColumn (uivl, CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumnEntry (uivl, "genre", CONFUI_GENRE_COL_GENRE, 15, 30);
+  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECK_BUTTON);
   uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_GENRE,
       tagdefs [TAG_GENRE].displayname);
   /* CONTEXT: configuration: genre: title of the classical setting column */
