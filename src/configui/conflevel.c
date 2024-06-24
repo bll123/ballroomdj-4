@@ -31,7 +31,6 @@ static bool confuiLevelChangeCB (void *udata);
 static int confuiLevelEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 static void confuiLevelAdd (confuigui_t *gui);
 static void confuiLevelRemove (confuigui_t *gui, ilistidx_t idx);
-static void confuiLevelUpdateData (confuigui_t *gui);
 static void confuiLevelMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
@@ -131,7 +130,6 @@ confuiLevelSave (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
   levellist = ilistAlloc ("level-save", LIST_ORDERED);
   count = levelGetCount (levels);
-  confuiLevelUpdateData (gui);
   for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *leveldisp;
     int         weight;
@@ -183,13 +181,25 @@ static bool
 confuiLevelChangeCB (void *udata)
 {
   confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  int           weight;
+  int           defflag;
+  level_t       *levels;
 
   if (gui->inchange) {
     return UICB_CONT;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiLevelUpdateData (gui);
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  weight = uivlGetRowColumnNum (uivl, rownum, CONFUI_LEVEL_COL_WEIGHT);
+  defflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_LEVEL_COL_DEFAULT);
+  levelSetWeight (levels, rownum, weight);
+  if (defflag) {
+    levelSetDefault (levels, rownum);
+  }
 
   gui->tables [CONFUI_ID_LEVELS].changed = true;
   return UICB_CONT;
@@ -198,15 +208,21 @@ confuiLevelChangeCB (void *udata)
 static int
 confuiLevelEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  const char    *leveldisp;
+  level_t       *levels;
 
   if (gui->inchange) {
     return UIENTRY_OK;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiLevelUpdateData (gui);
-
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  leveldisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_LEVEL_COL_LEVEL);
+  levelSetLevel (levels, rownum, leveldisp);
   gui->tables [CONFUI_ID_LEVELS].changed = true;
   return UIENTRY_OK;
 }
@@ -221,7 +237,6 @@ confuiLevelAdd (confuigui_t *gui)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
 
-  confuiLevelUpdateData (gui);
   count = levelGetCount (levels);
   /* CONTEXT: configuration: level name that is set when adding a new level */
   levelSetLevel (levels, count, _("New Level"));
@@ -247,8 +262,6 @@ confuiLevelRemove (confuigui_t *gui, ilistidx_t delidx)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
-  /* update with any changes */
-  confuiLevelUpdateData (gui);
   count = levelGetCount (levels);
   defaultkey = levelGetDefaultKey (levels);
 
@@ -283,37 +296,6 @@ confuiLevelRemove (confuigui_t *gui, ilistidx_t delidx)
 }
 
 static void
-confuiLevelUpdateData (confuigui_t *gui)
-{
-  level_t       *levels;
-  uivirtlist_t  *uivl;
-  ilistidx_t    count;
-  int32_t       rowiter;
-  int32_t       rownum;
-
-  levels = bdjvarsdfGet (BDJVDF_LEVELS);
-
-  uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
-  count = levelGetCount (levels);
-
-  uivlStartRowDispIterator (uivl, &rowiter);
-  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
-    const char  *leveldisp;
-    int         weight;
-    int         defflag;
-
-    leveldisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_LEVEL_COL_LEVEL);
-    weight = uivlGetRowColumnNum (uivl, rownum, CONFUI_LEVEL_COL_WEIGHT);
-    defflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_LEVEL_COL_DEFAULT);
-    levelSetLevel (levels, rownum, leveldisp);
-    levelSetWeight (levels, rownum, weight);
-    if (defflag) {
-      levelSetDefault (levels, rownum);
-    }
-  }
-}
-
-static void
 confuiLevelMove (confuigui_t *gui, ilistidx_t idx, int dir)
 {
   level_t       *levels;
@@ -325,7 +307,6 @@ confuiLevelMove (confuigui_t *gui, ilistidx_t idx, int dir)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
-  confuiLevelUpdateData (gui);
 
   toidx = idx;
   if (dir == CONFUI_MOVE_PREV) {

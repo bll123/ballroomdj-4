@@ -31,7 +31,6 @@ static bool confuiStatusChangeCB (void *udata);
 static int confuiStatusEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 static void confuiStatusAdd (confuigui_t *gui);
 static void confuiStatusRemove (confuigui_t *gui, ilistidx_t idx);
-static void confuiStatusUpdateData (confuigui_t *gui);
 static void confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
@@ -121,7 +120,6 @@ confuiStatusSave (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
   statuslist = ilistAlloc ("status-save", LIST_ORDERED);
   count = statusGetCount (status);
-  confuiStatusUpdateData (gui);
   for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *statusdisp;
     int         playflag;
@@ -175,15 +173,21 @@ confuiStatusFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 static bool
 confuiStatusChangeCB (void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  int           playflag;
+  status_t      *status;
 
   if (gui->inchange) {
     return UICB_CONT;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiStatusUpdateData (gui);
-
+  status = bdjvarsdfGet (BDJVDF_STATUS);
+  uivl = gui->tables [CONFUI_ID_STATUS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  playflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_STATUS_COL_PLAY_FLAG);
+  statusSetPlayFlag (status, rownum, playflag);
   gui->tables [CONFUI_ID_STATUS].changed = true;
   return UICB_CONT;
 }
@@ -191,15 +195,21 @@ confuiStatusChangeCB (void *udata)
 static int
 confuiStatusEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  const char    *statusdisp;
+  status_t      *status;
 
   if (gui->inchange) {
     return UIENTRY_OK;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiStatusUpdateData (gui);
-
+  status = bdjvarsdfGet (BDJVDF_STATUS);
+  uivl = gui->tables [CONFUI_ID_STATUS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  statusdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_STATUS_COL_STATUS);
+  statusSetStatus (status, rownum, statusdisp);
   gui->tables [CONFUI_ID_STATUS].changed = true;
   return UIENTRY_OK;
 }
@@ -214,7 +224,6 @@ confuiStatusAdd (confuigui_t *gui)
   status = bdjvarsdfGet (BDJVDF_STATUS);
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
 
-  confuiStatusUpdateData (gui);
   count = statusGetCount (status);
   /* CONTEXT: configuration: status name that is set when adding a new status */
   statusSetStatus (status, count, _("New Status"));
@@ -242,8 +251,6 @@ confuiStatusRemove (confuigui_t *gui, ilistidx_t delidx)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
-  /* update with any changes */
-  confuiStatusUpdateData (gui);
   count = statusGetCount (status);
 
   for (int idx = 0; idx < count - 1; ++idx) {
@@ -269,32 +276,6 @@ confuiStatusRemove (confuigui_t *gui, ilistidx_t delidx)
 }
 
 static void
-confuiStatusUpdateData (confuigui_t *gui)
-{
-  status_t      *status;
-  uivirtlist_t  *uivl;
-  ilistidx_t    count;
-  int32_t       rowiter;
-  int32_t       rownum;
-
-  status = bdjvarsdfGet (BDJVDF_STATUS);
-
-  uivl = gui->tables [CONFUI_ID_STATUS].uivl;
-  count = statusGetCount (status);
-
-  uivlStartRowDispIterator (uivl, &rowiter);
-  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
-    const char  *statusdisp;
-    int         playflag;
-
-    statusdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_STATUS_COL_STATUS);
-    playflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_STATUS_COL_PLAY_FLAG);
-    statusSetStatus (status, rownum, statusdisp);
-    statusSetPlayFlag (status, rownum, playflag);
-  }
-}
-
-static void
 confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir)
 {
   status_t      *status;
@@ -305,7 +286,6 @@ confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
   uivl = gui->tables [CONFUI_ID_STATUS].uivl;
-  confuiStatusUpdateData (gui);
 
   toidx = idx;
   if (dir == CONFUI_MOVE_PREV) {

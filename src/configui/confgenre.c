@@ -31,7 +31,6 @@ static bool confuiGenreChangeCB (void *udata);
 static int confuiGenreEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 static void confuiGenreAdd (confuigui_t *gui);
 static void confuiGenreRemove (confuigui_t *gui, ilistidx_t idx);
-static void confuiGenreUpdateData (confuigui_t *gui);
 static void confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
@@ -120,7 +119,6 @@ confuiGenreSave (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
   genrelist = ilistAlloc ("genre-save", LIST_ORDERED);
   count = genreGetCount (genres);
-  confuiGenreUpdateData (gui);
   for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *genredisp;
     int         clflag;
@@ -164,15 +162,21 @@ confuiGenreFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 static bool
 confuiGenreChangeCB (void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  int           clflag;
+  genre_t       *genres;
 
   if (gui->inchange) {
     return UICB_CONT;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiGenreUpdateData (gui);
-
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  clflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_GENRE_COL_CLASSICAL);
+  genreSetClassicalFlag (genres, rownum, clflag);
   gui->tables [CONFUI_ID_GENRES].changed = true;
   return UICB_CONT;
 }
@@ -180,15 +184,21 @@ confuiGenreChangeCB (void *udata)
 static int
 confuiGenreEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  const char    *genredisp;
+  genre_t       *genres;
 
   if (gui->inchange) {
     return UIENTRY_OK;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiGenreUpdateData (gui);
-
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  genredisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_GENRE_COL_GENRE);
+  genreSetGenre (genres, rownum, genredisp);
   gui->tables [CONFUI_ID_GENRES].changed = true;
   return UIENTRY_OK;
 }
@@ -203,7 +213,6 @@ confuiGenreAdd (confuigui_t *gui)
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
 
-  confuiGenreUpdateData (gui);
   count = genreGetCount (genres);
   /* CONTEXT: configuration: genre name that is set when adding a new genre */
   genreSetGenre (genres, count, _("New Genre"));
@@ -225,8 +234,6 @@ confuiGenreRemove (confuigui_t *gui, ilistidx_t delidx)
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
-  /* update with any changes */
-  confuiGenreUpdateData (gui);
   count = genreGetCount (genres);
 
   for (int idx = 0; idx < count - 1; ++idx) {
@@ -252,32 +259,6 @@ confuiGenreRemove (confuigui_t *gui, ilistidx_t delidx)
 }
 
 static void
-confuiGenreUpdateData (confuigui_t *gui)
-{
-  genre_t       *genres;
-  uivirtlist_t  *uivl;
-  ilistidx_t    count;
-  int32_t       rownum;
-  int32_t       rowiter;
-
-  genres = bdjvarsdfGet (BDJVDF_GENRES);
-
-  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
-  count = genreGetCount (genres);
-
-  uivlStartRowDispIterator (uivl, &rowiter);
-  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
-    const char  *genredisp;
-    int         clflag;
-
-    genredisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_GENRE_COL_GENRE);
-    clflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_GENRE_COL_CLASSICAL);
-    genreSetGenre (genres, rownum, genredisp);
-    genreSetClassicalFlag (genres, rownum, clflag);
-  }
-}
-
-static void
 confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir)
 {
   genre_t       *genres;
@@ -288,7 +269,6 @@ confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir)
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
-  confuiGenreUpdateData (gui);
 
   toidx = idx;
   if (dir == CONFUI_MOVE_PREV) {

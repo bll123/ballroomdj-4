@@ -2129,6 +2129,9 @@ uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
 
   /* re-hide any colums that should be hidden */
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    if (vl->coldata [colidx].type == VL_TYPE_INTERNAL_NUMERIC) {
+      continue;
+    }
     if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
       uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
       for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {

@@ -31,7 +31,6 @@ static bool confuiRatingChangeCB (void *udata);
 static int confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
 static void confuiRatingAdd (confuigui_t *gui);
 static void confuiRatingRemove (confuigui_t *gui, ilistidx_t idx);
-static void confuiRatingUpdateData (confuigui_t *gui);
 static void confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
@@ -126,7 +125,6 @@ confuiRatingSave (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   ratinglist = ilistAlloc ("rating-save", LIST_ORDERED);
   count = ratingGetCount (ratings);
-  confuiRatingUpdateData (gui);
   for (int rowidx = 0; rowidx < count; ++rowidx) {
     const char  *ratingdisp;
     int         weight;
@@ -177,14 +175,21 @@ confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 static bool
 confuiRatingChangeCB (void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  int           weight;
+  rating_t      *ratings;
 
   if (gui->inchange) {
     return UICB_CONT;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiRatingUpdateData (gui);
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  weight = uivlGetRowColumnNum (uivl, rownum, CONFUI_RATING_COL_WEIGHT);
+  ratingSetWeight (ratings, rownum, weight);
 
   gui->tables [CONFUI_ID_RATINGS].changed = true;
   return UICB_CONT;
@@ -193,15 +198,21 @@ confuiRatingChangeCB (void *udata)
 static int
 confuiRatingEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
 {
-  confuigui_t *gui = udata;
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  const char    *ratingdisp;
+  rating_t      *ratings;
 
   if (gui->inchange) {
     return UIENTRY_OK;
   }
 
-  /* must update the data here in case of a scroll */
-  confuiRatingUpdateData (gui);
-
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  ratingdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_RATING_COL_RATING);
+  ratingSetRating (ratings, rownum, ratingdisp);
   gui->tables [CONFUI_ID_RATINGS].changed = true;
   return UIENTRY_OK;
 }
@@ -216,7 +227,6 @@ confuiRatingAdd (confuigui_t *gui)
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
 
-  confuiRatingUpdateData (gui);
   count = ratingGetCount (ratings);
   /* CONTEXT: configuration: rating name that is set when adding a new rating */
   ratingSetRating (ratings, count, _("New Rating"));
@@ -238,8 +248,6 @@ confuiRatingRemove (confuigui_t *gui, ilistidx_t delidx)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
-  /* update with any changes */
-  confuiRatingUpdateData (gui);
   count = ratingGetCount (ratings);
 
   for (int idx = 0; idx < count - 1; ++idx) {
@@ -265,32 +273,6 @@ confuiRatingRemove (confuigui_t *gui, ilistidx_t delidx)
 }
 
 static void
-confuiRatingUpdateData (confuigui_t *gui)
-{
-  rating_t      *ratings;
-  uivirtlist_t  *uivl;
-  ilistidx_t    count;
-  int32_t       rowiter;
-  int32_t       rownum;
-
-  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
-
-  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
-  count = ratingGetCount (ratings);
-
-  uivlStartRowDispIterator (uivl, &rowiter);
-  while ((rownum = uivlIterateRowDisp (uivl, &rowiter)) >= 0) {
-    const char  *ratingdisp;
-    int         weight;
-
-    ratingdisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_RATING_COL_RATING);
-    weight = uivlGetRowColumnNum (uivl, rownum, CONFUI_RATING_COL_WEIGHT);
-    ratingSetRating (ratings, rownum, ratingdisp);
-    ratingSetWeight (ratings, rownum, weight);
-  }
-}
-
-static void
 confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
 {
   rating_t      *ratings;
@@ -301,7 +283,6 @@ confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
-  confuiRatingUpdateData (gui);
 
   toidx = idx;
   if (dir == CONFUI_MOVE_PREV) {
