@@ -143,7 +143,7 @@ managePlaylistFree (managepl_t *managepl)
     uinbutilIDFree (managepl->tabids);
     dataFree (managepl->ploldname);
     if (managepl->mpldnc != NULL) {
-      managePLDanceFree (managepl->mpldnc);
+      manageplDanceFree (managepl->mpldnc);
     }
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
@@ -454,8 +454,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 
-  managepl->mpldnc = managePLDanceAlloc (managepl->minfo->errorMsg);
-  manageBuildUIPlaylistTree (managepl->mpldnc, vbox);
+  managepl->mpldnc = manageplDanceAlloc (managepl->minfo->errorMsg);
+  manageplDanceBuildUI (managepl->mpldnc, vbox);
   managePlaylistNew (managepl, MANAGE_STD);
   manageResetChanged (managepl);
 
@@ -727,8 +727,7 @@ managePlaylistUpdateData (managepl_t *managepl)
   pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
-  managePLDancePrePopulate (managepl->mpldnc, pl);
-  managePLDancePopulate (managepl->mpldnc, pl);
+  manageplDanceSetPlaylist (managepl->mpldnc, pl);
 
   if (pltype == PLTYPE_SONGLIST) {
     uiWidgetHide (managepl->wcont [MPL_W_RATING_ITEM]);
@@ -900,7 +899,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   logProcBegin ();
   pl = managepl->playlist;
 
-  managePLDanceUpdatePlaylist (managepl->mpldnc);
+  manageplDanceSetPlaylist (managepl->mpldnc, pl);
 
   tval = uiSpinboxGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
@@ -948,7 +947,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
   double        dval;
 
   logProcBegin ();
-  if (managePLDanceIsChanged (managepl->mpldnc)) {
+  if (manageplDanceIsChanged (managepl->mpldnc)) {
     managepl->changed = true;
   }
 

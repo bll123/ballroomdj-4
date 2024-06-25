@@ -51,13 +51,11 @@ bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 /* managepldance.c */
 typedef struct mpldance mpldance_t;
 
-mpldance_t *managePLDanceAlloc (uiwcont_t *errorMsg);
-void managePLDanceFree (mpldance_t *managepltree);
-void manageBuildUIPlaylistTree (mpldance_t *managepltree, uiwcont_t *vboxp);
-void managePLDancePrePopulate (mpldance_t *managepltree, playlist_t *pl);
-void managePLDancePopulate (mpldance_t *managepltree, playlist_t *pl);
-bool managePLDanceIsChanged (mpldance_t *managepltree);
-void managePLDanceUpdatePlaylist (mpldance_t *managepltree);
+mpldance_t *manageplDanceAlloc (uiwcont_t *errorMsg);
+void manageplDanceFree (mpldance_t *mpldnc);
+void manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp);
+void manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl);
+bool manageplDanceIsChanged (mpldance_t *mpldnc);
 
 /* manageseq.c */
 typedef struct manageseq manageseq_t;

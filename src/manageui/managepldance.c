@@ -51,22 +51,24 @@ typedef struct mpldance {
   uiwcont_t         *uihideunsel;
   callback_t        *callbacks [MPLDNC_CB_MAX];
   playlist_t        *playlist;
+  nlist_t           *currlist;
   int               currcount;
   bool              changed : 1;
   bool              hideunselected : 1;
-  bool              inprepop : 1;
+  bool              inchange : 1;
 } mpldance_t;
 
-static void managePLDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype);
-static bool managePLDanceChanged (void *udata);
-static void managePLDanceCreate (mpldance_t *mpldnc);
-static bool managePLDanceHideUnselectedCallback (void *udata);
-static int  managePLDanceBPMDisplay (ilistidx_t dkey, int bpm);
-static void managePLDanceColumnHeading (char *tbuff, size_t sz, const char *disp, const char *bpmstr);
-static void managePLDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void manageplDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype);
+static bool manageplDanceChanged (void *udata);
+static bool manageplDanceHideUnselectedCB (void *udata);
+static int  manageplDanceBPMDisplay (ilistidx_t dkey, int bpm);
+static void manageplDanceColumnHeading (char *tbuff, size_t sz, const char *disp, const char *bpmstr);
+static void manageplDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void manageplDanceRebuildCurrList (mpldance_t *mpldnc);
+static void manageplDancePopulate (mpldance_t *mpldnc);
 
 mpldance_t *
-managePLDanceAlloc (uiwcont_t *errorMsg)
+manageplDanceAlloc (uiwcont_t *errorMsg)
 {
   mpldance_t     *mpldnc;
 
@@ -75,11 +77,12 @@ managePLDanceAlloc (uiwcont_t *errorMsg)
   mpldnc->uivl = NULL;
   mpldnc->errorMsg = errorMsg;
   mpldnc->playlist = NULL;
+  mpldnc->currlist = NULL;
   mpldnc->currcount = 0;
   mpldnc->changed = false;
   mpldnc->uihideunsel = NULL;
   mpldnc->hideunselected = false;
-  mpldnc->inprepop = false;
+  mpldnc->inchange = false;
   for (int i = 0; i < MPLDNC_CB_MAX; ++i) {
     mpldnc->callbacks [i] = NULL;
   }
@@ -88,7 +91,7 @@ managePLDanceAlloc (uiwcont_t *errorMsg)
 }
 
 void
-managePLDanceFree (mpldance_t *mpldnc)
+manageplDanceFree (mpldance_t *mpldnc)
 {
   if (mpldnc == NULL) {
     return;
@@ -96,6 +99,7 @@ managePLDanceFree (mpldance_t *mpldnc)
 
   uiwcontFree (mpldnc->uihideunsel);
   uiwcontFree (mpldnc->uitree);
+  nlistFree (mpldnc->currlist);
   uivlFree (mpldnc->uivl);
   for (int i = 0; i < MPLDNC_CB_MAX; ++i) {
     callbackFree (mpldnc->callbacks [i]);
@@ -104,7 +108,7 @@ managePLDanceFree (mpldance_t *mpldnc)
 }
 
 void
-manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
+manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
 {
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
@@ -119,7 +123,7 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
   /* CONTEXT: playlist management: hide unselected dances */
   uiwidgetp = uiCreateCheckButton (_("Hide Unselected"), 0);
   mpldnc->callbacks [MPLDNC_CB_UNSEL] = callbackInit (
-      managePLDanceHideUnselectedCallback, mpldnc, NULL);
+      manageplDanceHideUnselectedCB, mpldnc, NULL);
   uiToggleButtonSetCallback (uiwidgetp, mpldnc->callbacks [MPLDNC_CB_UNSEL]);
   uiBoxPackStart (hbox, uiwidgetp);
   mpldnc->uihideunsel = uiwidgetp;
@@ -146,43 +150,43 @@ manageBuildUIPlaylistTree (mpldance_t *mpldnc, uiwcont_t *vboxp)
   /* CONTEXT: playlist management: max play time column header (keep short) */
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_MAXPLAYTIME, _("Maximum\nPlay Time"));
   /* CONTEXT: playlist management: low bpm/mpm column header */
-  managePLDanceColumnHeading (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
+  manageplDanceColumnHeading (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_LOWMPM, tbuff);
   /* CONTEXT: playlist management: high bpm/mpm column header */
-  managePLDanceColumnHeading (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
+  manageplDanceColumnHeading (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_HIGHMPM, tbuff);
 
   mpldnc->callbacks [MPLDNC_CB_CHANGED] = callbackInit (
-      managePLDanceChanged, mpldnc, NULL);
+      manageplDanceChanged, mpldnc, NULL);
 
   uivlSetCheckboxChangeCallback (mpldnc->uivl, MPLDNC_COL_DANCE_SELECT,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
   uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_COUNT,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
-  uivlSetSpinboxTimeChangeCallback (mpldnc->uivl, MPLDNC_COL_LOWMPM,
+  uivlSetSpinboxTimeChangeCallback (mpldnc->uivl, MPLDNC_COL_MAXPLAYTIME,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
   uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_LOWMPM,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
   uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_HIGHMPM,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
 
-  uivlSetRowFillCallback (mpldnc->uivl, managePLDanceFillRow, mpldnc);
+  uivlSetRowFillCallback (mpldnc->uivl, manageplDanceFillRow, mpldnc);
 
   uiwcontFree (hbox);
 
-  managePLDanceCreate (mpldnc);
+  manageplDanceRebuildCurrList (mpldnc);
   uivlDisplay (mpldnc->uivl);
 }
 
 void
-managePLDancePrePopulate (mpldance_t *mpldnc, playlist_t *pl)
+manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl)
 {
   int     pltype;
   int     hideunselstate = UI_TOGGLE_BUTTON_OFF;
   int     widgetstate = UIWIDGET_DISABLE;
 
   mpldnc->playlist = pl;
-  mpldnc->inprepop = true;
+  mpldnc->inchange = true;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   if (pltype == PLTYPE_SONGLIST) {
@@ -198,57 +202,28 @@ managePLDancePrePopulate (mpldance_t *mpldnc, playlist_t *pl)
   if (pltype == PLTYPE_AUTO) {
     widgetstate = UIWIDGET_ENABLE;
   }
+
+  if (hideunselstate == UI_TOGGLE_BUTTON_OFF) {
+    mpldnc->hideunselected = false;
+  } else {
+    mpldnc->hideunselected = true;
+  }
+
   uiWidgetSetState (mpldnc->uihideunsel, widgetstate);
   uiToggleButtonSetState (mpldnc->uihideunsel, hideunselstate);
-  mpldnc->inprepop = false;
+
+  manageplDanceRebuildCurrList (mpldnc);
+
+  mpldnc->inchange = false;
+
+  manageplDancePopulate (mpldnc);
 }
-
-void
-managePLDancePopulate (mpldance_t *mpldnc, playlist_t *pl)
-{
-  int           pltype;
-
-  mpldnc->playlist = pl;
-  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-
-  managePLDanceSetColumnVisibility (mpldnc, pltype);
-
-  uivlPopulate (mpldnc->uivl);
-  mpldnc->changed = false;
-
-#if 0
-    dcount = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
-    if (dcount < 0) { dcount = 0; }
-    mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
-    if (mpt < 0) { mpt = 0; }
-    tmutilToMS (mpt, mptdisp, sizeof (mptdisp));
-#endif
-}
-
 
 bool
-managePLDanceIsChanged (mpldance_t *mpldnc)
+manageplDanceIsChanged (mpldance_t *mpldnc)
 {
   return mpldnc->changed;
 }
-
-void
-managePLDanceUpdatePlaylist (mpldance_t *mpldnc)
-{
-  playlist_t      *pl;
-//  long            tval;
-//  char            *tstr = NULL;
-//  ilistidx_t      dkey;
-//  int             count;
-
-  if (! mpldnc->changed) {
-    return;
-  }
-
-  pl = mpldnc->playlist;
-
-  /* hide unselected may be on, and only the displayed dances will */
-  /* be updated */
 
 #if 0
   uiTreeViewSelectSave (mpldnc->uitree);
@@ -280,12 +255,11 @@ managePLDanceUpdatePlaylist (mpldance_t *mpldnc)
 
   uiTreeViewSelectRestore (mpldnc->uitree);
 #endif
-}
 
 /* internal routines */
 
 static void
-managePLDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype)
+manageplDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype)
 {
   switch (pltype) {
     case PLTYPE_SONGLIST: {
@@ -313,14 +287,17 @@ managePLDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype)
 }
 
 static bool
-managePLDanceChanged (void *udata)
+manageplDanceChanged (void *udata)
 {
   mpldance_t      *mpldnc = udata;
-  bool            rc = UICB_CONT;
   playlist_t      *pl;
   ilistidx_t      dkey;
   int32_t         rownum;
   int32_t         val;
+
+  if (mpldnc->inchange) {
+    return UICB_CONT;
+  }
 
   rownum = uivlGetCurrSelection (mpldnc->uivl);
   dkey = uivlGetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_KEY);
@@ -369,64 +346,32 @@ managePLDanceChanged (void *udata)
   }
 #endif
 
-  return rc;
-}
-
-static void
-managePLDanceCreate (mpldance_t *mpldnc)
-{
-  dance_t       *dances;
-  slist_t       *dancelist;
-  slistidx_t    iteridx;
-  ilistidx_t    key;
-  int           count;
-
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dancelist = danceGetDanceList (dances);
-
-  count = danceGetCount (dances);
-  slistStartIterator (dancelist, &iteridx);
-  while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    if (mpldnc->hideunselected &&
-        mpldnc->playlist != NULL) {
-      int     sel;
-
-      sel = playlistGetDanceNum (mpldnc->playlist, key, PLDANCE_SELECTED);
-      if (! sel) {
-        --count;
-      }
-    }
-  }
-
-  uivlSetNumRows (mpldnc->uivl, count);
+  return UICB_CONT;
 }
 
 static bool
-managePLDanceHideUnselectedCallback (void *udata)
+manageplDanceHideUnselectedCB (void *udata)
 {
   mpldance_t      *mpldnc = udata;
   bool            tchg;
 
+  if (mpldnc->inchange) {
+    return UICB_STOP;
+  }
+
   tchg = mpldnc->changed;
-  if (mpldnc->inprepop) {
-    mpldnc->hideunselected =
-        uiToggleButtonIsActive (mpldnc->uihideunsel);
-  }
-  if (! mpldnc->inprepop) {
-    mpldnc->hideunselected = ! mpldnc->hideunselected;
-  }
-  managePLDanceUpdatePlaylist (mpldnc);
-  managePLDanceCreate (mpldnc);
-  managePLDancePopulate (mpldnc, mpldnc->playlist);
+  mpldnc->hideunselected = ! mpldnc->hideunselected;
+  manageplDanceRebuildCurrList (mpldnc);
+  manageplDancePopulate (mpldnc);
   mpldnc->changed = tchg;
   return UICB_CONT;
 }
 
 static int
-managePLDanceBPMDisplay (ilistidx_t dkey, int bpm)
+manageplDanceBPMDisplay (ilistidx_t dkey, int bpm)
 {
   if (bpm < 0) {
-    bpm = 0;
+    bpm = 10;
   }
 
   bpm = danceConvertMPMtoBPM (dkey, bpm);
@@ -435,7 +380,7 @@ managePLDanceBPMDisplay (ilistidx_t dkey, int bpm)
 
 /* modify long column headers (for low bpm/high bpm) */
 static void
-managePLDanceColumnHeading (char *tbuff, size_t sz, const char *disp,
+manageplDanceColumnHeading (char *tbuff, size_t sz, const char *disp,
     const char *bpmstr)
 {
   snprintf (tbuff, sz, disp, bpmstr);
@@ -450,59 +395,111 @@ managePLDanceColumnHeading (char *tbuff, size_t sz, const char *disp,
 }
 
 static void
-managePLDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+manageplDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
   mpldance_t  *mpldnc = udata;
-  playlist_t  *pl;
   dance_t     *dances;
-  slist_t     *dancelist;
-  int         count;
-  slistidx_t  iteridx;
+  playlist_t  *pl;
   ilistidx_t  dkey;
+  const char  *dancedisp;
+  int32_t     val;
+
+  dkey = nlistGetNum (mpldnc->currlist, rownum);
+  if (dkey < 0) {
+    return;
+  }
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  pl = mpldnc->playlist;
+
+  mpldnc->inchange = true;
+
+  dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
+  uivlSetRowColumnValue (mpldnc->uivl, rownum, MPLDNC_COL_DANCE, dancedisp);
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_KEY, dkey);
+
+  val = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
+  if (val == LIST_VALUE_INVALID) { val = 0; }
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_COUNT, val);
+
+  val = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
+  if (val == LIST_VALUE_INVALID) { val = 0; }
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_SELECT, val);
+
+  val = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
+  if (val == LIST_VALUE_INVALID) { val = 0; }
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_MAXPLAYTIME, val);
+
+  val = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_LOW);
+  val = manageplDanceBPMDisplay (dkey, val);
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_LOWMPM, val);
+
+  val = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_HIGH);
+  val = manageplDanceBPMDisplay (dkey, val);
+  uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM, val);
+
+  mpldnc->inchange = false;
+}
+
+/* create a row-number to dance mapping */
+static void
+manageplDanceRebuildCurrList (mpldance_t *mpldnc)
+{
+  dance_t       *dances;
+  slist_t       *dancelist;
+  slistidx_t    iteridx;
+  ilistidx_t    dcount;
+  ilistidx_t    ccount;
+  ilistidx_t    dkey;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
-  pl = mpldnc->playlist;
+  dcount = danceGetCount (dances);
+  ccount = 0;
 
-  /* since some of the dances may be hidden, traverse through the */
-  /* list to find the correct dance to display */
-  count = 0;
+  nlistFree (mpldnc->currlist);
+  mpldnc->currlist = nlistAlloc ("mpldnc-curr", LIST_UNORDERED, NULL);
+  nlistSetSize (mpldnc->currlist, dcount);
   slistStartIterator (dancelist, &iteridx);
   while ((dkey = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
-    int32_t     val;
+    if (mpldnc->hideunselected && mpldnc->playlist != NULL) {
+      int     sel;
 
-    val = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
-    if (mpldnc->hideunselected && pl != NULL) {
-      if (! val) {
+      sel = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_SELECTED);
+      if (! sel) {
         continue;
       }
     }
 
-    if (count == rownum) {
-      const char  *dancedisp;
-
-      val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_SELECTED);
-      if (val == LIST_VALUE_INVALID) { val = 0; }
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_SELECT, val);
-
-      dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
-      uivlSetRowColumnValue (mpldnc->uivl, rownum, MPLDNC_COL_DANCE, dancedisp);
-
-      val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MAXPLAYTIME);
-      if (val == LIST_VALUE_INVALID) { val = 0; }
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_MAXPLAYTIME, val);
-
-      val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MPM_LOW);
-      val = managePLDanceBPMDisplay (dkey, val);
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_LOWMPM, val);
-
-      val = playlistGetDanceNum (mpldnc->playlist, dkey, PLDANCE_MPM_HIGH);
-      val = managePLDanceBPMDisplay (dkey, val);
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM, val);
-
-      uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_KEY, dkey);
-      break;
-    }
-    ++count;
+    nlistSetNum (mpldnc->currlist, ccount, dkey);
+    ++ccount;
   }
+  nlistSort (mpldnc->currlist);
+
+  uivlSetNumRows (mpldnc->uivl, ccount);
 }
+
+static void
+manageplDancePopulate (mpldance_t *mpldnc)
+{
+  playlist_t    *pl;
+  int           pltype;
+
+  pl = mpldnc->playlist;
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+
+  manageplDanceSetColumnVisibility (mpldnc, pltype);
+
+  uivlPopulate (mpldnc->uivl);
+  mpldnc->changed = false;
+
+#if 0
+    dcount = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
+    if (dcount < 0) { dcount = 0; }
+    mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
+    if (mpt < 0) { mpt = 0; }
+    tmutilToMS (mpt, mptdisp, sizeof (mptdisp));
+#endif
+}
+
+
