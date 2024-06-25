@@ -401,14 +401,24 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
   if (vl->initialized >= VL_INIT_ROWS) {
+
+    /* if the number of rows has changed, and the selection is no longer */
+    /* valid, move it up */
+    /* check this: this may be handled elsewhere */
     if (numrows <= vl->currSelection) {
       uivlMoveSelection (vl, VL_DIR_PREV);
     }
+
+    /* if the number of data rows is less than the display size, */
+    /* the extra rows must have their display cleared */
     if (numrows < vl->dispsize) {
       for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
     }
+
+    /* if a row has been removed, but there are enough rows to fill the */
+    /* display, change the row-offset so that the display is filled */
     if (vl->dispsize + vl->rowoffset > vl->numrows &&
         vl->dispsize < vl->numrows) {
       int32_t   diff;
@@ -1866,6 +1876,8 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
         vl->dispalloc = calcrows;
       }
 
+      /* if the number of display rows has decreased, */
+      /* clear the row display, make sure these widgets are not displayed */
       if (calcrows < vl->dispsize) {
         for (int dispidx = calcrows; dispidx < vl->dispsize; ++dispidx) {
           uivlClearRowDisp (vl, dispidx);
@@ -1874,6 +1886,11 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
       vl->dispsize = calcrows;
 
+      /* if the vertical size changes, and there are enough rows */
+      /* to fill the display, change the row-offset so that the display */
+      /* is filled. */
+      /* this happens when the vertical size is increased, and the display */
+      /* is scrolled to the bottom */
       if (vl->dispsize + vl->rowoffset > vl->numrows) {
         int32_t   diff;
 
@@ -1882,6 +1899,10 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
         vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
       }
 
+      /* if the display size is increased, make sure any newly allocated */
+      /* rows are cleared. */
+      /* this is necessary when the number of rows is less than the */
+      /* display size. this must be forced. */
       for (int dispidx = odispsize; dispidx < calcrows; ++dispidx) {
         uivlrow_t *row;
 
@@ -1891,6 +1912,8 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
         uivlClearRowDisp (vl, dispidx);
       }
 
+      /* if the display size is greater than the number of rows, */
+      /* clear any extra rows. */
       if (vl->dispsize > vl->numrows) {
         for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
           uivlrow_t *row;
