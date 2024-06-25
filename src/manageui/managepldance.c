@@ -225,37 +225,6 @@ manageplDanceIsChanged (mpldance_t *mpldnc)
   return mpldnc->changed;
 }
 
-#if 0
-  uiTreeViewSelectSave (mpldnc->uitree);
-
-  for (count = 0; count < mpldnc->currcount; ++count) {
-    uiTreeViewSelectSet (mpldnc->uitree, count);
-
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_KEY);
-    dkey = tval;
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_SELECT);
-    playlistSetDanceNum (pl, dkey, PLDANCE_SELECTED, tval);
-
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_COUNT);
-    playlistSetDanceNum (pl, dkey, PLDANCE_COUNT, tval);
-
-    tstr = uiTreeViewGetValueStr (mpldnc->uitree, MPLDNC_COL_MAXPLAYTIME);
-    tval = tmutilStrToMS (tstr);
-    dataFree (tstr);
-    playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
-
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_LOWMPM);
-    tval = danceConvertBPMtoMPM (dkey, tval, DANCE_NO_FORCE);
-    playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, tval);
-
-    tval = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_HIGHMPM);
-    tval = danceConvertBPMtoMPM (dkey, tval, DANCE_NO_FORCE);
-    playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, tval);
-  }
-
-  uiTreeViewSelectRestore (mpldnc->uitree);
-#endif
-
 /* internal routines */
 
 static void
@@ -313,38 +282,6 @@ manageplDanceChanged (void *udata)
   playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, val);
   val = uivlGetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM);
   playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, val);
-
-#if 0
-  uiTreeViewSelectCurrent (mpldnc->uitree);
-
-  uiLabelSetText (mpldnc->errorMsg, "");
-  mpldnc->changed = true;
-
-  if (col == MPLDNC_COL_MAXPLAYTIME) {
-    char        tbuff [200];
-    char        *str;
-    bool        val;
-
-    str = uiTreeViewGetValueStr (mpldnc->uitree, MPLDNC_COL_MAXPLAYTIME);
-    /* CONTEXT: playlist management: validation: max play time */
-    val = validate (tbuff, sizeof (tbuff), _("Maximum Play Time"), str, VAL_HMS);
-    if (val == false) {
-      uiLabelSetText (mpldnc->errorMsg, tbuff);
-      mpldnc->changed = false;
-      rc = UICB_STOP;
-    }
-    dataFree (str);
-  }
-
-  if (col == MPLDNC_COL_DANCE_SELECT) {
-    int         val;
-    ilistidx_t  dkey;
-
-    val = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_SELECT);
-    dkey = uiTreeViewGetValue (mpldnc->uitree, MPLDNC_COL_DANCE_KEY);
-    playlistSetDanceNum (mpldnc->playlist, dkey, PLDANCE_SELECTED, val);
-  }
-#endif
 
   return UICB_CONT;
 }
@@ -492,14 +429,6 @@ manageplDancePopulate (mpldance_t *mpldnc)
 
   uivlPopulate (mpldnc->uivl);
   mpldnc->changed = false;
-
-#if 0
-    dcount = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
-    if (dcount < 0) { dcount = 0; }
-    mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
-    if (mpt < 0) { mpt = 0; }
-    tmutilToMS (mpt, mptdisp, sizeof (mptdisp));
-#endif
 }
 
 

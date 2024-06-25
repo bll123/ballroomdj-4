@@ -51,6 +51,7 @@ void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 void  uivlSetDarkBackground (uivirtlist_t *vl);
 void  uivlSetUseListingFont (uivirtlist_t *vl);
 void  uivlSetAllowMultiple (uivirtlist_t *vl);
+void  uivlSetAllowDoubleClick (uivirtlist_t *vl);
 
 /* make columns */
 void  uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t type);

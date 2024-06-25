@@ -36,7 +36,7 @@ enum {
   VL_MIN_WIDTH_ANY = -755,
   VL_SCROLL_NORM = false,
   VL_SCROLL_FORCE = true,
-  VL_DOUBLE_CLICK_TIME = 200,   // milliseconds
+  VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
 };
 
 enum {
@@ -190,6 +190,7 @@ typedef struct uivirtlist {
   bool          darkbg : 1;
   bool          uselistingfont : 1;
   bool          allowmultiple : 1;
+  bool          allowdblclick : 1;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -243,6 +244,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
     vl->dispheading = false;
   }
   vl->allowmultiple = false;
+  vl->allowdblclick = false;
   vl->darkbg = false;
   vl->uselistingfont = false;
   vl->vboxheight = -1;
@@ -506,6 +508,16 @@ uivlSetAllowMultiple (uivirtlist_t *vl)
   }
 
   vl->allowmultiple = true;
+}
+
+void
+uivlSetAllowDoubleClick (uivirtlist_t *vl)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+
+  vl->allowdblclick = true;
 }
 
 /* column set */
@@ -1232,6 +1244,7 @@ uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
     return;
   }
 
+  rownum = uivlRownumLimit (vl, rownum);
   uivlProcessScroll (vl, rownum, VL_SCROLL_NORM);
   uivlUpdateSelections (vl, rownum);
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
@@ -1599,7 +1612,7 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
   int32_t       rownum = -1;
 
   if (vl == NULL || vl->ident != VL_IDENT) {
-    return UICB_CONT;
+    return UICB_STOP;
   }
   if (vl->inscroll) {
     return UICB_CONT;
@@ -1607,6 +1620,13 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 
   if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_KEYH]) &&
       ! uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
+    return UICB_CONT;
+  }
+
+  /* double clicks on entry fields must be ignored, as the */
+  /* row number is incorrect */
+  if (vl->allowdblclick == false &&
+      uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
     return UICB_CONT;
   }
 
@@ -1733,15 +1753,7 @@ uivlClearSelections (uivirtlist_t *vl)
 static void
 uivlAddSelection (uivirtlist_t *vl, uint32_t rownum)
 {
-  uivlrow_t   *row = NULL;
-  int32_t     rowidx;
-
-  rowidx = rownum - vl->rowoffset;
-  if (rowidx >= 0 && rowidx < vl->dispsize) {
-    row = &vl->rows [rowidx];
-  }
   nlistSetNum (vl->selected, rownum, true);
-
   vl->currSelection = rownum;
 }
 
