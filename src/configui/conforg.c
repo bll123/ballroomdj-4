@@ -33,6 +33,7 @@ confuiInitOrganization (confuigui_t *gui)
   slist_t     *tlist;
   slistidx_t  iteridx;
   const char  *disp = NULL;
+  const char  *origpath;
   ilist_t     *ddlist;
   int         count;
 
@@ -41,7 +42,8 @@ confuiInitOrganization (confuigui_t *gui)
   tlist = orgoptGetList (gui->org->orgopt);
 
   /* save the old organization path */
-  bdjoptSetStr (OPT_G_OLDORGPATH, bdjoptGetStr (OPT_G_ORGPATH));
+  origpath = bdjoptGetStr (OPT_G_ORGPATH);
+  bdjoptSetStr (OPT_G_OLDORGPATH, origpath);
 
   gui->uiitem [CONFUI_DD_ORGPATH].displist = tlist;
   ddlist = ilistAlloc ("conforg", LIST_ORDERED);
@@ -52,11 +54,11 @@ confuiInitOrganization (confuigui_t *gui)
     const char  *path;
 
     path = slistGetStr (tlist, disp);
-fprintf (stderr, "%d disp: %s path: %s\n", count, disp, path);
     ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
     ilistSetStr (ddlist, count, DD_LIST_KEY_STR, path);
     ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
-    if (path != NULL && strcmp (path, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
+    if (path != NULL && strcmp (path, origpath) == 0) {
+      /* need this for the initial setup */
       gui->uiitem [CONFUI_DD_ORGPATH].listidx = count;
     }
     ++count;

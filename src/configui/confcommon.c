@@ -544,12 +544,8 @@ int32_t
 confuiOrgPathSelect (void *udata, const char *sval)
 {
   confuigui_t *gui = udata;
-  int         widx;
 
   logProcBegin ();
-  widx = CONFUI_DD_ORGPATH;
-//  sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
-//  gui->uiitem [widx].listidx = idx;
   if (sval != NULL && *sval) {
     bdjoptSetStr (OPT_G_ORGPATH, sval);
   }

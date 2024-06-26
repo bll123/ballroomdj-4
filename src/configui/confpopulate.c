@@ -131,10 +131,9 @@ confuiPopulateOptions (confuigui_t *gui)
         nval = uiToggleButtonIsActive (gui->uiitem [i].uiwidgetp);
         break;
       }
-      case CONFUI_COMBOBOX: {
-        sval = slistGetDataByIdx (gui->uiitem [i].displist,
-            gui->uiitem [i].listidx);
-        outtype = CONFUI_OUT_STR;
+      case CONFUI_DD: {
+        /* org: the listidx is not valid */
+        outtype = CONFUI_OUT_NONE;
         break;
       }
     }

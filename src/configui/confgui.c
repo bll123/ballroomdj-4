@@ -123,8 +123,10 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
 
   logProcBegin ();
-  gui->uiitem [widx].basetype = CONFUI_COMBOBOX;
-  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+  gui->uiitem [widx].basetype = CONFUI_DD;
+  /* the selection handler sets bdjopt to the appropriate value */
+  /* and also listidx is not set */
+  gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
 
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -134,6 +136,7 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
       gui->window, hbox, DD_PACK_START,
       gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
       txt, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
+  /* this is the only time the index is used */
   uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);
   uiBoxPackStart (boxp, hbox);
 

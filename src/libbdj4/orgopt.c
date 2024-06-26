@@ -84,7 +84,6 @@ orgoptAlloc (void)
     }
 
     pathDisplayPath (dispstr, sizeof (dispstr));
-fprintf (stderr, "orgopt: set %s %s\n", dispstr, value);
     slistSetStr (list, dispstr, value);
     orgFree (org);
   }
