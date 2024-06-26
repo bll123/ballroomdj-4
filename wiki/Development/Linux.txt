@@ -21,6 +21,7 @@ apt install libpulse-dev libpipewire-0.3-dev libgcrypt-dev
 apt install libogg-dev libopus-dev libopusfile-dev libvorbis-dev libflac-dev
 apt install libavformat-dev libavutil-dev
 apt install libxml2-dev libjson-c-dev libcurl4-openssl-dev
+apt install libgstreamer1.0-dev
 usermod -a -G vboxsf <user>
 ~~~
 
@@ -46,7 +47,7 @@ dnf install ffmpeg-free-devel libavformat-free-devel
 dnf install pulseaudio-libs-devel openssl-devel libgcrypt-devel
 dnf install libogg-devel opus-devel opusfile-devel flac-devel
 dnf install libvorbis-devel
-dnf install check-devel json-c-devel
+dnf install check-devel json-c-devel gstreamer-devel
 ~~~
 
 Other notes

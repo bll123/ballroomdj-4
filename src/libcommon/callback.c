@@ -4,9 +4,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 
 #include "callback.h"
@@ -275,7 +276,7 @@ callbackValidate (callback_t *cb, int64_t wantident)
     return rc;
   }
   if (cb->ident != wantident) {
-    fprintf (stderr, "ERR: callback: mismatch type: %s (%s)\n", (char *) &cb->ident, (char *) &wantident);
+    fprintf (stderr, "ERR: callback: mismatch type: % " PRId64 " (%" PRId64 ")\n", cb->ident, wantident);
     return rc;
   }
 

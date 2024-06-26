@@ -21,9 +21,11 @@
 #include "localeutil.h"
 #include "mdebug.h"
 #include "osuiutils.h"
+#include "nlist.h"
 #include "pathbld.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uidd.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
 #include "uiwcont.h"
@@ -52,6 +54,8 @@ enum {
   UITEST_CB_B,
   UITEST_CB_B_IMG_A,
   UITEST_CB_B_IMG_B,
+  UITEST_CB_DD_STR,
+  UITEST_CB_DD_NUM,
   UITEST_CB_MAX,
 };
 
@@ -65,12 +69,25 @@ enum {
   UITEST_I_MAX,
 };
 
+enum {
+  UITEST_DD_A,
+  UITEST_DD_B,
+  UITEST_DD_C,
+  UITEST_DD_D,
+  UITEST_DD_E,
+  UITEST_DD_MAX,
+};
+
 typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
   uivirtlist_t  *vl;
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
   callback_t    *chgcb;
+  nlist_t       *keyliststr;
+  nlist_t       *keylistnum;
+  nlist_t       *keylistshort;
+  nlist_t       *displist;
   long          counter;
   bool          stop : 1;
 } uitest_t;
@@ -91,7 +108,7 @@ static void uitestMainLoop (uitest_t *uitest);
 static void uitestBuildUI (uitest_t *uitest);
 static void uitestUIButtons (uitest_t *uitest);
 static void uitestUIChgInd (uitest_t *uitest);
-static void uitestUIDropdowns (uitest_t *uitest);
+static void uitestUIDropdown (uitest_t *uitest);
 static void uitestUIEntry (uitest_t *uitest);
 static void uitestUIImage (uitest_t *uitest);
 static void uitestUILabels (uitest_t *uitest);
@@ -115,6 +132,9 @@ static void uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static int uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata);
 static bool uitestVLChangeCB (void *udata);
+
+static int32_t uitestDDStr (void *udata, const char *str);
+static bool uitestDDNum (void *udata, int32_t val);
 
 int
 main (int argc, char *argv[])
@@ -174,6 +194,29 @@ main (int argc, char *argv[])
   uitest.vl = NULL;
   uitest.stop = false;
   uitest.counter = 1;
+
+  uitest.keyliststr = nlistAlloc ("kl-str", LIST_ORDERED, NULL);
+  uitest.keylistnum = nlistAlloc ("kl-num", LIST_ORDERED, NULL);
+  uitest.keylistshort = nlistAlloc ("kl-short", LIST_ORDERED, NULL);
+  uitest.displist = nlistAlloc ("displist", LIST_ORDERED, NULL);
+  for (int i = 0; i < 3; ++i) {
+    nlistSetNum (uitest.keylistshort, i, 3 - i);
+  }
+
+  for (int i = 0; i < 20; ++i) {
+    char    tbuff [200];
+    char    dbuff [200];
+
+    if (i == 19) {
+      snprintf (tbuff, sizeof (tbuff), "Long Item Number %d", i);
+    } else {
+      snprintf (tbuff, sizeof (tbuff), "Item %d", i);
+    }
+    snprintf (dbuff, sizeof (dbuff), "data-%d", i);
+    nlistSetStr (uitest.keyliststr, i, dbuff);
+    nlistSetNum (uitest.keylistnum, i, 20 - i);
+    nlistSetStr (uitest.displist, i, tbuff);
+  }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ);
@@ -261,7 +304,7 @@ uitestBuildUI (uitest_t *uitest)
 
   uitestUIButtons (uitest);
   uitestUIChgInd (uitest);
-  uitestUIDropdowns (uitest);
+  uitestUIDropdown (uitest);
   uitestUIEntry (uitest);
   uitestUIImage (uitest);
   uitestUILabels (uitest);
@@ -504,10 +547,11 @@ uitestUIChgInd (uitest_t *uitest)
 }
 
 void
-uitestUIDropdowns (uitest_t *uitest)
+uitestUIDropdown (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *uiwidgetp;
+  uidd_t      *uidd [UITEST_DD_MAX];
 
   /* drop-downs */
 
@@ -517,6 +561,39 @@ uitestUIDropdowns (uitest_t *uitest)
   uiwidgetp = uiCreateLabel ("Drop-Down");
   uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  uitest->callbacks [UITEST_CB_DD_STR] = callbackInitS (uitestDDStr, uitest);
+  uitest->callbacks [UITEST_CB_DD_NUM] = callbackInitI (uitestDDNum, uitest);
+
+  uidd [UITEST_DD_A] = uiddCreate ("dd-a", uitest->wcont [UITEST_W_WINDOW],
+      vbox, uitest->keyliststr, uitest->displist, DD_LIST_TYPE_STR,
+      "Title A", DD_KEEP_TITLE,
+      uitest->callbacks [UITEST_CB_DD_STR]);
+  uiddSetSelection (uidd [UITEST_DD_A], 2);
+
+  uidd [UITEST_DD_B] = uiddCreate ("dd-b", uitest->wcont [UITEST_W_WINDOW],
+      vbox, uitest->keyliststr, uitest->displist, DD_LIST_TYPE_STR,
+      "Item 6", DD_REPLACE_TITLE,
+      uitest->callbacks [UITEST_CB_DD_STR]);
+  uiddSetSelection (uidd [UITEST_DD_B], 5);
+
+  uidd [UITEST_DD_C] = uiddCreate ("dd-c", uitest->wcont [UITEST_W_WINDOW],
+      vbox, uitest->keylistnum, uitest->displist, DD_LIST_TYPE_NUM,
+      "Title C", DD_KEEP_TITLE,
+      uitest->callbacks [UITEST_CB_DD_NUM]);
+  uiddSetSelection (uidd [UITEST_DD_C], 4);
+
+  uidd [UITEST_DD_D] = uiddCreate ("dd-d", uitest->wcont [UITEST_W_WINDOW],
+      vbox, uitest->keylistnum, uitest->displist, DD_LIST_TYPE_NUM,
+      "Item 4", DD_REPLACE_TITLE,
+      uitest->callbacks [UITEST_CB_DD_NUM]);
+  uiddSetSelection (uidd [UITEST_DD_D], 3);
+
+  uidd [UITEST_DD_E] = uiddCreate ("dd-e", uitest->wcont [UITEST_W_WINDOW],
+      vbox, uitest->keylistshort, uitest->displist, DD_LIST_TYPE_NUM,
+      "Item 1", DD_REPLACE_TITLE,
+      uitest->callbacks [UITEST_CB_DD_NUM]);
+  uiddSetSelection (uidd [UITEST_DD_E], 1);
 
   uiwcontFree (vbox);
 }
@@ -1255,3 +1332,19 @@ uitestVLChangeCB (void *udata)
 {
   return UICB_CONT;
 }
+
+
+static int32_t
+uitestDDStr (void *udata, const char *key)
+{
+fprintf (stderr, "dd-str %s\n", key);
+  return UICB_CONT;
+}
+
+static bool
+uitestDDNum (void *udata, int32_t key)
+{
+fprintf (stderr, "dd-num %d\n", key);
+  return UICB_CONT;
+}
+

@@ -288,6 +288,7 @@ confuiCreateDanceTable (confuigui_t *gui)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
   uivlMakeColumn (uivl, "dance", CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumn (uivl, "dkey", CONFUI_DANCE_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
