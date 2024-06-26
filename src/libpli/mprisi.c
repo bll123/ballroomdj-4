@@ -383,7 +383,7 @@ mprisFree (mpris_t *mpris)
     return;
   }
 
-  mpris->ident = 0;
+  mpris->ident = BDJ4_IDENT_FREE;
   mpris->mpbus = NULL;
   dbusConnClose (mpris->dbus);
   mpris->dbus = NULL;

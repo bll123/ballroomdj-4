@@ -73,7 +73,7 @@ songdbFree (songdb_t *songdb)
     return;
   }
 
-  songdb->ident = 0;
+  songdb->ident = BDJ4_IDENT_FREE;
   orgFree (songdb->org);
   songdb->org = NULL;
   orgFree (songdb->orgold);

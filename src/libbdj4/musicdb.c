@@ -97,7 +97,7 @@ dbClose (musicdb_t *musicdb)
   nlistFree (musicdb->danceCounts);
   dataFree (musicdb->fn);
   nlistFree (musicdb->tempSongs);
-  musicdb->ident = 0;
+  musicdb->ident = BDJ4_IDENT_FREE;
   mdfree (musicdb);
 }
 

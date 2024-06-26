@@ -144,7 +144,7 @@ songFree (void *tsong)
   }
 
   nlistFree (song->songInfo);
-  song->ident = 0;
+  song->ident = BDJ4_IDENT_FREE;
   mdfree (song);
 
   --gsonginit.songcount;

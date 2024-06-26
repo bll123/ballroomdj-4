@@ -104,8 +104,7 @@ zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 zypper install libpulse-devel libopenssl-devel libgcrypt-devel
 zypper install libogg-devel libopus-devel opusfile-devel libvorbis-devel
 zypper install flac-devel check-devel libxml2-devel
-zypper install libjson-c-devel
-zypper remove gcc7
+zypper install libjson-c-devel gstreamer-devel
 zypper refresh
 zypper update
 ~~~

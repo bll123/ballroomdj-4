@@ -127,7 +127,7 @@ playlistFree (void *tpl)
   nlistFree (pl->countList);
   dataFree (pl->name);
   pl->name = NULL;
-  pl->ident = 0;
+  pl->ident = BDJ4_IDENT_FREE;
   mdfree (pl);
 }
 

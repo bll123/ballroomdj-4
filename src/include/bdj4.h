@@ -39,6 +39,10 @@ enum {
   BDJ4_MAX_ALT = 10,
 };
 
+enum {
+  BDJ4_IDENT_FREE = 0x667265656400aacc,
+};
+
 #define BDJ4_LONG_NAME    "BallroomDJ 4"
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"

@@ -93,7 +93,7 @@ songlistFree (songlist_t *sl)
   datafileFree (sl->df);
   dataFree (sl->fname);
   dataFree (sl->path);
-  sl->ident = 0;
+  sl->ident = BDJ4_IDENT_FREE;
   mdfree (sl);
 }
 

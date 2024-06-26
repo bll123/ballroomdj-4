@@ -139,7 +139,7 @@ gstiFree (gsti_t *gsti)
     return;
   }
 
-  gsti->ident = 0;
+  gsti->ident = BDJ4_IDENT_FREE;
 
   gstiRunOnce (gsti);
 

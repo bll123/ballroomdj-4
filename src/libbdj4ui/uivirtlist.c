@@ -386,7 +386,7 @@ uivlFree (uivirtlist_t *vl)
     uiwcontFree (vl->wcont [i]);
   }
 
-  vl->ident = 0;
+  vl->ident = BDJ4_IDENT_FREE;
   mdfree (vl);
 }
 

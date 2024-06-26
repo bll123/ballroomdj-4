@@ -7,6 +7,27 @@
 Supported Platforms as of 2023-3-15: Windows&nbsp;10&nbsp;(64-bit),
 Windows&nbsp;11&nbsp;(64-bit).
 
+##### Windows and Anti-Virus Programs
+
+BallroomDJ 4 does not have any viruses in it.
+
+MicroSoft's Windows Defender's online anti-virus check will mark
+novel, small programs as a virus.  In BDJ4, this includes the
+installation extractor and the BDJ4 launcher.  Other anti-virus
+programs will probably have similar issues.
+
+I can submit false positives to MicroSoft, and they will fix their
+database.   But many other anti-virus companies do not have a method
+where false positives can be submitted.  And there are far too many
+anti-virus products for me to do so.
+
+If you have a false positive for BDJ4, and use Windows Defender,
+[let&nbsp;me&nbsp;know](en-Getting%20Help), and I can get the false
+positive cleared.
+
+For other anti-virus products you will need to submit the
+false positive yourself, or mark BDJ4 as safe on your computer.
+
 ##### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the
