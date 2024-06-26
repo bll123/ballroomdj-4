@@ -160,6 +160,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].bdjoptIdx = -1;
     confui.gui.uiitem [i].listidx = 0;
     confui.gui.uiitem [i].debuglvl = 0;
+    confui.gui.uiitem [i].ddlist = NULL;
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
@@ -167,6 +168,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
+    confui.gui.uiitem [i].uidd = NULL;
     confui.gui.uiitem [i].uri = NULL;
     confui.gui.uiitem [i].changed = false;
     confui.gui.uiitem [i].entrysz = 20;
@@ -354,9 +356,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   uiwcontFree (confui->gui.window);
 
-  for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
-    /* the button is freed by dropdown-free */
-    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
+  for (int i = CONFUI_DD_BEGIN + 1; i < CONFUI_DD_MAX; ++i) {
+    uiddFree (confui->gui.uiitem [i].uidd);
+    ilistFree (confui->gui.uiitem [i].ddlist);
   }
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);

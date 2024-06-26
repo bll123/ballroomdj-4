@@ -540,17 +540,16 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
   logProcEnd ("");
 }
 
-bool
-confuiOrgPathSelect (void *udata, int32_t idx)
+int32_t
+confuiOrgPathSelect (void *udata, const char *sval)
 {
   confuigui_t *gui = udata;
-  char        *sval = NULL;
   int         widx;
 
   logProcBegin ();
-  widx = CONFUI_COMBOBOX_ORGPATH;
-  sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
-  gui->uiitem [widx].listidx = idx;
+  widx = CONFUI_DD_ORGPATH;
+//  sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
+//  gui->uiitem [widx].listidx = idx;
   if (sval != NULL && *sval) {
     bdjoptSetStr (OPT_G_ORGPATH, sval);
   }

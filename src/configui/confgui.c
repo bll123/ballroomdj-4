@@ -17,13 +17,14 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "configui.h"
 #include "istring.h"
 #include "log.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
+#include "uidd.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "validate.h"
@@ -115,12 +116,11 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 }
 
 void
-confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
-    const char *txt, int widx, int bdjoptIdx, callbackFuncI ddcb,
+confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
+    const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb,
     const char *value)
 {
   uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
 
   logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_COMBOBOX;
@@ -129,19 +129,14 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  gui->uiitem [widx].callback = callbackInitI (ddcb, gui);
-  gui->uiitem [widx].uiwidgetp = uiDropDownInit ();
-  uiwidgetp = uiComboboxCreate (gui->uiitem [widx].uiwidgetp,
-      gui->window, txt, gui->uiitem [widx].callback, gui);
-
-  uiDropDownSetList (gui->uiitem [widx].uiwidgetp,
-      gui->uiitem [widx].displist, NULL);
-  uiDropDownSelectionSetStr (gui->uiitem [widx].uiwidgetp, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
-  uiBoxPackStart (hbox, uiwidgetp);
+  gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  gui->uiitem [widx].uidd = uiddCreate ("confgui",
+      gui->window, hbox, DD_PACK_START,
+      gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
+      txt, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
+  uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);
   uiBoxPackStart (boxp, hbox);
 
-  gui->uiitem [widx].uibutton = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
   logProcEnd ("");

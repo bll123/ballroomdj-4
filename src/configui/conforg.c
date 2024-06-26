@@ -32,7 +32,8 @@ confuiInitOrganization (confuigui_t *gui)
 {
   slist_t     *tlist;
   slistidx_t  iteridx;
-  char        *p = NULL;
+  const char  *disp = NULL;
+  ilist_t     *ddlist;
   int         count;
 
   gui->org = mdmalloc (sizeof (conforg_t));
@@ -42,17 +43,26 @@ confuiInitOrganization (confuigui_t *gui)
   /* save the old organization path */
   bdjoptSetStr (OPT_G_OLDORGPATH, bdjoptGetStr (OPT_G_ORGPATH));
 
-  gui->uiitem [CONFUI_COMBOBOX_ORGPATH].displist = tlist;
+  gui->uiitem [CONFUI_DD_ORGPATH].displist = tlist;
+  ddlist = ilistAlloc ("conforg", LIST_ORDERED);
   slistStartIterator (tlist, &iteridx);
-  gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = 0;
+  gui->uiitem [CONFUI_DD_ORGPATH].listidx = 0;
   count = 0;
-  while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (p != NULL && strcmp (p, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
-      gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = count;
-      break;
+  while ((disp = slistIterateKey (tlist, &iteridx)) != NULL) {
+    const char  *path;
+
+    path = slistGetStr (tlist, disp);
+fprintf (stderr, "%d disp: %s path: %s\n", count, disp, path);
+    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, path);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
+    if (path != NULL && strcmp (path, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
+      gui->uiitem [CONFUI_DD_ORGPATH].listidx = count;
     }
     ++count;
   }
+
+  gui->uiitem [CONFUI_DD_ORGPATH].ddlist = ddlist;
 }
 
 void
@@ -81,8 +91,8 @@ confuiBuildUIOrganization (confuigui_t *gui)
       _("Organisation"), CONFUI_ID_ORGANIZATION);
 
   /* CONTEXT: configuration: the audio file organization path */
-  confuiMakeItemCombobox (gui, vbox, szgrp, _("Organisation Path"),
-      CONFUI_COMBOBOX_ORGPATH, OPT_G_ORGPATH,
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Organisation Path"),
+      CONFUI_DD_ORGPATH, OPT_G_ORGPATH,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_ORGPATH));
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
   confuiMakeItemLabelDisp (gui, vbox, szgrp, _("Examples"),

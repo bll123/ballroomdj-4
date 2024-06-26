@@ -11,6 +11,7 @@
 #include "ilist.h"
 #include "nlist.h"
 #include "orgutil.h"
+#include "uidd.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "uiselectfile.h"
@@ -46,9 +47,9 @@ typedef enum {
 
 enum {
   CONFUI_BEGIN,
-  CONFUI_COMBOBOX_BEGIN,
-  CONFUI_COMBOBOX_ORGPATH,
-  CONFUI_COMBOBOX_MAX,
+  CONFUI_DD_BEGIN,
+  CONFUI_DD_ORGPATH,
+  CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_COMPLETE_MSG,
   CONFUI_ENTRY_DANCE_TAGS,
@@ -234,6 +235,7 @@ typedef struct {
   uiwcont_t         *uibutton;      // for entry chooser
   uisfcb_t          sfcb;           // for entry chooser, combobox
   int               listidx;        // for combobox, spinbox
+  ilist_t           *ddlist;
   nlist_t           *displist;      // indexed by spinbox/combobox index
                                     //    value: display
   nlist_t           *sbkeylist;     // indexed by spinbox index
@@ -243,6 +245,7 @@ typedef struct {
   int               entrymaxsz;
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
+  uidd_t            *uidd;
   char              *uri;
   bool              changed : 1;
 } confuiitem_t;
@@ -441,7 +444,7 @@ void confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath, const char *
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
-bool confuiOrgPathSelect (void *udata, int32_t idx);
+int32_t confuiOrgPathSelect (void *udata, const char *sval);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx);
 
 /* confdance.c */
@@ -474,7 +477,7 @@ void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, 
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncI ddcb, const char *value);
+void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb, const char *value);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
