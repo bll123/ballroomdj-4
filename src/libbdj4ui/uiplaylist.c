@@ -121,11 +121,9 @@ static int32_t
 uiplaylistSelectHandler (void *udata, const char *str)
 {
   uiplaylist_t  *uiplaylist = udata;
-  ilistidx_t    idx;
 
   if (uiplaylist->selectcb != NULL) {
-    idx = slistGetNum (uiplaylist->ddlookup, str);
-    callbackHandlerI (uiplaylist->selectcb, idx);
+    callbackHandlerS (uiplaylist->selectcb, str);
   }
 
   return 0;

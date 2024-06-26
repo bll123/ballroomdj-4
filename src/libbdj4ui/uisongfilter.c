@@ -112,12 +112,12 @@ static void uisfEnableWidgets (uisongfilter_t *uisf);
 static void uisfCreateDialog (uisongfilter_t *uisf);
 static bool uisfResponseHandler (void *udata, int32_t responseid);
 static void uisfUpdate (uisongfilter_t *uisf);
-static bool uisfPlaylistSelectHandler (void *udata, int32_t idx);
+static int32_t uisfPlaylistSelectHandler (void *udata, const char *str);
 static bool uisfSortBySelectHandler (void *udata, int32_t idx);
 static bool uisfGenreSelectHandler (void *udata, int32_t idx);
 static bool uisfDanceSelectHandler (void *udata, int32_t idx, int32_t count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
-static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
+static void uisfPlaylistSelect (uisongfilter_t *uisf, const char *fn);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreateSortByList (uisongfilter_t *uisf);
 static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
@@ -367,14 +367,12 @@ uisfInitDisplay (uisongfilter_t *uisf)
 }
 
 static void
-uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
+uisfPlaylistSelect (uisongfilter_t *uisf, const char *str)
 {
-  const char  *str;
   pltype_t    pltype;
 
   logProcBegin ();
-  if (idx >= 0) {
-    str = uiplaylistGetKey (uisf->uiplaylist);
+  if (str != NULL && *str) {
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, (void *) str);
 
     pltype = playlistGetType (str);
@@ -496,7 +494,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitI (
+  uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitS (
       uisfPlaylistSelectHandler, uisf);
   uisf->uiplaylist = uiplaylistCreate (uisf->wcont [UISF_W_DIALOG], hbox, PL_LIST_ALL);
   uiplaylistSetSelectCallback (uisf->uiplaylist, uisf->callbacks [UISF_CB_PLAYLIST_SEL]);
@@ -886,12 +884,12 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   uiWidgetSetState (uisf->wcont [UISF_W_PLAY_STATUS], UIWIDGET_ENABLE);
 }
 
-static bool
-uisfPlaylistSelectHandler (void *udata, int32_t idx)
+static int32_t
+uisfPlaylistSelectHandler (void *udata, const char *str)
 {
   uisongfilter_t *uisf = udata;
 
-  uisfPlaylistSelect (uisf, idx);
+  uisfPlaylistSelect (uisf, str);
   return UICB_CONT;
 }
 

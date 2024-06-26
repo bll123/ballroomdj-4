@@ -208,6 +208,8 @@ uiddSetState (uidd_t *dd, int state)
   if (dd == NULL || dd->ident != DD_IDENT) {
     return;
   }
+
+  uiWidgetSetState (dd->wcont [DD_W_BUTTON], state);
 }
 
 const char *
