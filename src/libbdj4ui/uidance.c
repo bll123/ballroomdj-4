@@ -165,7 +165,7 @@ uidanceCreateDanceList (uidance_t *uidance)
 
   danceList = danceGetDanceList (uidance->dances);
   count = slistGetCount (danceList);
-  ddlist = ilistAlloc ("uidance", LIST_UNORDERED);
+  ddlist = ilistAlloc ("uidance", LIST_ORDERED);
   ilistSetSize (ddlist, count);
 
   idx = 0;
@@ -179,12 +179,10 @@ uidanceCreateDanceList (uidance_t *uidance)
   slistStartIterator (danceList, &iteridx);
   while ((disp = slistIterateKey (danceList, &iteridx)) != NULL) {
     dkey = slistGetNum (danceList, disp);
-fprintf (stderr, "%d %s\n", dkey, disp);
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, dkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
     ++idx;
   }
-  ilistSort (ddlist);
 
   uidance->ddlist = ddlist;
 }

@@ -126,7 +126,7 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 }
 
 void
-ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
+ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistnum_t val)
 {
   nlist_t *datalist = NULL;
 
@@ -135,7 +135,7 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
   }
 
   datalist = ilistGetDatalist (list, ikey, ILIST_SET);
-  nlistSetNum (datalist, lidx, data);
+  nlistSetNum (datalist, lidx, val);
 }
 
 void
@@ -194,7 +194,7 @@ ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return value;
 }
 
-ilistidx_t
+ilistnum_t
 ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   ilistidx_t      value = LIST_VALUE_INVALID;

@@ -192,6 +192,9 @@ main (int argc, char *argv[])
   uitest.vl = NULL;
   uitest.stop = false;
   uitest.counter = 1;
+  uitest.lista = NULL;
+  uitest.listb = NULL;
+  uitest.chgcb = NULL;
 
   uitest.lista = ilistAlloc ("dd-a", LIST_ORDERED);
   uitest.listb = ilistAlloc ("dd-b", LIST_ORDERED);
@@ -214,7 +217,7 @@ main (int argc, char *argv[])
     }
     snprintf (dbuff, sizeof (dbuff), "data-%d", i);
     ilistSetStr (uitest.lista, i, DD_LIST_KEY_STR, dbuff);
-    ilistSetNum (uitest.lista, i, DD_LIST_KEY_NUM, 3 - i);
+    ilistSetNum (uitest.lista, i, DD_LIST_KEY_NUM, 20 - i);
     ilistSetStr (uitest.lista, i, DD_LIST_DISP, tbuff);
   }
 
@@ -1278,6 +1281,9 @@ uitestCleanup (uitest_t *uitest)
     uiwcontFree (uitest->images [i]);
   }
 
+  ilistFree (uitest->lista);
+  ilistFree (uitest->listb);
+  callbackFree (uitest->chgcb);
   bdjoptCleanup ();
   localeCleanup ();
 }

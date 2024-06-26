@@ -84,8 +84,6 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   nlist_t         *hlist;
   char            tbuff [300];
   int             maxw = 10;
-  nlistidx_t      iteridx;
-  const char      *str;
 
   managedb = mdmalloc (sizeof (managedb_t));
 
@@ -155,15 +153,8 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   managedb->dblist = tlist;
   managedb->dbhelp = hlist;
 
-  nlistStartIterator (tlist, &iteridx);
-  while ((str = nlistIterateValueData (tlist, &iteridx)) != NULL) {
-    int     len;
-
-    len = istrlen (str);
-    if (len > maxw) {
-      maxw = len;
-    }
-  }
+  nlistCalcMaxValueWidth (tlist);
+  maxw = nlistGetMaxValueWidth (tlist);
   managedb->dblistWidth = maxw;
 
   return managedb;

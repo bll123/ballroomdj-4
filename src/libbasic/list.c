@@ -437,13 +437,13 @@ listidx_t
 listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   if (! listCheckIfValid (list, keytype)) {
-    return LIST_LOC_INVALID;
+    return LIST_VALUE_INVALID;
   }
 
   if (idx >= 0 && idx < list->count) {
     return list->data [idx].key.idx;
   }
-  return LIST_LOC_INVALID;
+  return LIST_VALUE_INVALID;
 }
 
 const char *
@@ -916,7 +916,7 @@ listFreeItem (list_t *list, listidx_t idx)
   } /* if the data pointer is not null */
 }
 
-static inline listidx_t
+static listidx_t
 listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
 {
   listidx_t   value = LIST_LOC_INVALID;

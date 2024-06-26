@@ -15,6 +15,7 @@ enum {
 
 typedef list_t      ilist_t;
 typedef listidx_t   ilistidx_t;
+typedef listnum_t   ilistnum_t;
 typedef listorder_t ilistorder_t;
 
 /* keyed by a ilistidx_t */
@@ -32,14 +33,14 @@ void      ilistSetDatalist (ilist_t *list, ilistidx_t ikey, nlist_t *datalist);
 void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, const char *value);
 void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
-void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t value);
+void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ilistnum_t value);
 void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
 
 /* get routines */
 bool      ilistExists (list_t *, ilistidx_t ikey);
 void      *ilistGetData (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 const char *ilistGetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx);
-ilistidx_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
+ilistnum_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 double    ilistGetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 slist_t   *ilistGetList (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 

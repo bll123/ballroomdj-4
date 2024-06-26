@@ -29,7 +29,7 @@ enum {
 
 enum {
   DD_W_BUTTON,
-  DD_W_WINDOW,
+  DD_W_DIALOG_WIN,
   DD_W_MAX,
 };
 
@@ -85,7 +85,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   uidd_t      *dd = NULL;
   uiwcont_t   *uiwidget;
   ilistidx_t  iteridx;
-  ilistidx_t  key;
+  ilistidx_t  idx;
 
   dd = mdmalloc (sizeof (uidd_t));
   dd->ident = DD_IDENT;
@@ -102,11 +102,11 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->ddlist = ddlist;
   dd->dispwidth = 0;
   ilistStartIterator (dd->ddlist, &iteridx);
-  while ((key = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
+  while ((idx = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
     const char  *disp;
     size_t      len;
 
-    disp = ilistGetStr (dd->ddlist, key, DD_LIST_DISP);
+    disp = ilistGetStr (dd->ddlist, idx, DD_LIST_DISP);
     len = istrlen (disp);
     if (len > dd->dispwidth) {
       dd->dispwidth = len;
@@ -149,22 +149,25 @@ uiddFree (uidd_t *dd)
     return;
   }
 
-  dd->open = false;
-  dd->dialogcreated = false;
-
-  for (int i = 0; i < DD_CB_MAX; ++i) {
-    callbackFree (dd->callbacks [i]);
+  if (dd->open) {
+    uiddWinClose (dd);
   }
+
+  uivlFree (dd->uivl);
   for (int i = 0; i < DD_W_MAX; ++i) {
     uiwcontFree (dd->wcont [i]);
   }
+  for (int i = 0; i < DD_CB_MAX; ++i) {
+    callbackFree (dd->callbacks [i]);
+  }
   dataFree (dd->title);
-  uivlFree (dd->uivl);
+  dd->dialogcreated = false;
 
   dd->ident = BDJ4_IDENT_FREE;
   mdfree (dd);
 }
 
+/* needed so that the caller can set a size group */
 uiwcont_t *
 uiddGetButton (uidd_t *dd)
 {
@@ -229,7 +232,6 @@ static void
 uiddCreateDialog (uidd_t *dd)
 {
   uiwcont_t   *vbox;
-  uiwcont_t   *uiwidget;
   int         count;
   int         dispcount;
 
@@ -237,18 +239,11 @@ uiddCreateDialog (uidd_t *dd)
     return;
   }
 
-  dd->wcont [DD_W_WINDOW] = uiCreateDialogWindow (dd->parentwin,
+  dd->wcont [DD_W_DIALOG_WIN] = uiCreateDialogWindow (dd->parentwin,
       dd->wcont [DD_W_BUTTON], dd->callbacks [DD_CB_WIN_CLOSE], "");
 
-  uiwidget = uiCreateVertBox ();
-  uiWindowPackInWindow (dd->wcont [DD_W_WINDOW], uiwidget);
-
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (uiwidget, 4);
-//  uiWidgetExpandHoriz (vbox);
-  uiBoxPackStart (uiwidget, vbox);
-
-  uiwcontFree (uiwidget);
+  uiWindowPackInWindow (dd->wcont [DD_W_DIALOG_WIN], vbox);
 
   count = ilistGetCount (dd->ddlist);
   dispcount = count;
@@ -288,9 +283,10 @@ uiddDisplay (void *udata)
   by = 0;
   uiWindowGetPosition (dd->parentwin, &x, &y, &ws);
   uiWidgetGetPosition (dd->wcont [DD_W_BUTTON], &bx, &by);
-  uiWidgetShowAll (dd->wcont [DD_W_WINDOW]);
-  uiWindowMove (dd->wcont [DD_W_WINDOW], bx + x + 4, by + y + 4 + 30, -1);
-  uiWindowPresent (dd->wcont [DD_W_WINDOW]);
+  uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
+  uivlPopulate (dd->uivl);
+  uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], bx + x + 4, by + y + 4 + 30, -1);
+  uiWindowPresent (dd->wcont [DD_W_DIALOG_WIN]);
   dd->open = true;
 
   return UICB_CONT;
@@ -302,7 +298,7 @@ uiddWinClose (void *udata)
   uidd_t    *dd = udata;
 
   if (dd->open) {
-    uiWidgetHide (dd->wcont [DD_W_WINDOW]);
+    uiWidgetHide (dd->wcont [DD_W_DIALOG_WIN]);
     dd->open = false;
   }
   uiWindowPresent (dd->parentwin);

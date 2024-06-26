@@ -91,7 +91,7 @@ ssize_t
 autoselGetNum (autosel_t *autosel, autoselkey_t idx)
 {
   if (autosel == NULL || autosel->autosel == NULL) {
-    return LIST_LOC_INVALID;
+    return LIST_VALUE_INVALID;
   }
 
   return nlistGetNum (autosel->autosel, idx);

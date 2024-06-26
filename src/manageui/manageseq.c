@@ -90,16 +90,18 @@ manageSequenceAlloc (manageinfo_t *minfo)
 void
 manageSequenceFree (manageseq_t *manageseq)
 {
-  if (manageseq != NULL) {
-    uiwcontFree (manageseq->seqmenu);
-    uiduallistFree (manageseq->seqduallist);
-    dataFree (manageseq->seqoldname);
-    uiwcontFree (manageseq->seqname);
-    for (int i = 0; i < MSEQ_CB_MAX; ++i) {
-      callbackFree (manageseq->callbacks [i]);
-    }
-    mdfree (manageseq);
+  if (manageseq == NULL) {
+    return;
   }
+
+  uiwcontFree (manageseq->seqmenu);
+  uiduallistFree (manageseq->seqduallist);
+  dataFree (manageseq->seqoldname);
+  uiwcontFree (manageseq->seqname);
+  for (int i = 0; i < MSEQ_CB_MAX; ++i) {
+    callbackFree (manageseq->callbacks [i]);
+  }
+  mdfree (manageseq);
 }
 
 void

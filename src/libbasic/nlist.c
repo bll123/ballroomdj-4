@@ -177,7 +177,7 @@ nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
   return listGetDataByIdx (LIST_KEY_NUM, list, idx);
 }
 
-listnum_t
+nlistnum_t
 nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
   return listGetNumByIdx (LIST_KEY_NUM, list, idx);
@@ -207,7 +207,7 @@ nlistGetStr (nlist_t *list, nlistidx_t lkey)
   return listGetStrByIdx (LIST_KEY_NUM, list, idx);
 }
 
-listnum_t
+nlistnum_t
 nlistGetNum (nlist_t *list, nlistidx_t lkey)
 {
   nlistidx_t      idx;
