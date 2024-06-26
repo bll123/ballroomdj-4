@@ -211,7 +211,7 @@ uieibdj4GetPlaylist (uieibdj4_t *uieibdj4)
     return NULL;
   }
 
-  plname = uiplaylistGetValue (uieibdj4->dialog [uieibdj4->currtype].uiplaylist);
+  plname = uiplaylistGetKey (uieibdj4->dialog [uieibdj4->currtype].uiplaylist);
   return plname;
 }
 
@@ -561,7 +561,7 @@ uieibdj4SelectHandler (void *udata, int32_t idx)
   const char  *str;
 
   currtype = uieibdj4->currtype;
-  str = uiplaylistGetValue (uieibdj4->dialog [currtype].uiplaylist);
+  str = uiplaylistGetKey (uieibdj4->dialog [currtype].uiplaylist);
   uiEntrySetValue (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME], str);
   return UICB_CONT;
 }

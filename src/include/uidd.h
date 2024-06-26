@@ -32,6 +32,7 @@ enum {
 
 uidd_t *uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where, ilist_t *keylist, int listtype, const char *title, int titleflag, callback_t *ddcb);
 void uiddFree (uidd_t *dd);
+void uiddSetList (uidd_t *dd, ilist_t *list);
 uiwcont_t *uiddGetButton (uidd_t *dd);
 void uiddSetSelection (uidd_t *dd, nlistidx_t idx);
 void uiddSetState (uidd_t *dd, int state);

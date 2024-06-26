@@ -12,8 +12,8 @@ typedef struct uiplaylist uiplaylist_t;
 uiplaylist_t *uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type);
 void uiplaylistFree (uiplaylist_t *uiplaylist);
 void uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir);
-const char *uiplaylistGetValue (uiplaylist_t *uiplaylist);
-void uiplaylistSetValue (uiplaylist_t *uiplaylist, const char *fn);
+const char *uiplaylistGetKey (uiplaylist_t *uiplaylist);
+void uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn);
 void uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg);
 void uiplaylistSetSelectCallback (uiplaylist_t *uiplaylist, callback_t *cb);
 

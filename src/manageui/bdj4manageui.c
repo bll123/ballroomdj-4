@@ -2679,7 +2679,7 @@ manageCFPLCreate (manageui_t *manage)
 
   manage->musicqupdated = false;
 
-  fn = uiplaylistGetValue (manage->cfpl);
+  fn = uiplaylistGetKey (manage->cfpl);
 
   if (fn == NULL || ! *fn) {
     manage->cfplactive = false;

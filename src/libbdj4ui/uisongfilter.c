@@ -283,7 +283,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *plname)
     return;
   }
 
-  uiplaylistSetValue (uisf->uiplaylist, plname);
+  uiplaylistSetKey (uisf->uiplaylist, plname);
   dataFree (uisf->playlistname);
   uisf->playlistname = mdstrdup (plname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, plname);
@@ -300,7 +300,7 @@ uisfClearPlaylist (uisongfilter_t *uisf)
     return;
   }
 
-  uiplaylistSetValue (uisf->uiplaylist, "");
+  uiplaylistSetKey (uisf->uiplaylist, "");
   dataFree (uisf->playlistname);
   uisf->playlistname = NULL;
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
@@ -349,9 +349,9 @@ uisfInitDisplay (uisongfilter_t *uisf)
   /* all items need to be set, as after a reset, they need to be updated */
   /* sort-by and dance are important, the others can be reset */
 
-  uiplaylistSetValue (uisf->uiplaylist, "");
+  uiplaylistSetKey (uisf->uiplaylist, "");
   if (uisf->playlistname != NULL) {
-    uiplaylistSetValue (uisf->uiplaylist, uisf->playlistname);
+    uiplaylistSetKey (uisf->uiplaylist, uisf->playlistname);
   }
 
   sortby = songfilterGetSort (uisf->songfilter);
@@ -374,7 +374,7 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
 
   logProcBegin ();
   if (idx >= 0) {
-    str = uiplaylistGetValue (uisf->uiplaylist);
+    str = uiplaylistGetKey (uisf->uiplaylist);
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, (void *) str);
 
     pltype = playlistGetType (str);

@@ -76,6 +76,7 @@ static void uiddFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uiddSelected (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void uiddSetSelectionInternal (uidd_t *dd, ilistidx_t idx);
 static void uiddSetButtonText (uidd_t *dd, const char *str);
+static void uiddCalcDisplayWidth (uidd_t *dd);
 
 uidd_t *
 uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
@@ -85,8 +86,6 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 {
   uidd_t      *dd = NULL;
   uiwcont_t   *uiwidget;
-  ilistidx_t  iteridx;
-  ilistidx_t  idx;
 
   dd = mdmalloc (sizeof (uidd_t));
   dd->ident = DD_IDENT;
@@ -109,17 +108,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->open = false;
   dd->uivl = NULL;
 
-  ilistStartIterator (dd->ddlist, &iteridx);
-  while ((idx = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
-    const char  *disp;
-    size_t      len;
-
-    disp = ilistGetStr (dd->ddlist, idx, DD_LIST_DISP);
-    len = istrlen (disp);
-    if (len > dd->dispwidth) {
-      dd->dispwidth = len;
-    }
-  }
+  uiddCalcDisplayWidth (dd);
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
@@ -167,6 +156,19 @@ uiddFree (uidd_t *dd)
 
   dd->ident = BDJ4_IDENT_FREE;
   mdfree (dd);
+}
+
+void
+uiddSetList (uidd_t *dd, ilist_t *list)
+{
+  if (dd == NULL) {
+    return;
+  }
+
+  dd->ddlist = list;
+  uiddCalcDisplayWidth (dd);
+  uivlSetColumnMinWidth (dd->uivl, DD_COL_DISP, dd->dispwidth);
+  uivlSetNumRows (dd->uivl, ilistGetCount (dd->ddlist));
 }
 
 /* needed so that the caller can set a size group */
@@ -362,4 +364,23 @@ uiddSetButtonText (uidd_t *dd, const char *str)
   /* spaces are narrower than most characters, so add some padding */
   snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth + 2), str);
   uiButtonSetText (dd->wcont [DD_W_BUTTON], tbuff);
+}
+
+static void
+uiddCalcDisplayWidth (uidd_t *dd)
+{
+  ilistidx_t    iteridx;
+  ilistidx_t    idx;
+
+  ilistStartIterator (dd->ddlist, &iteridx);
+  while ((idx = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
+    const char  *disp;
+    size_t      len;
+
+    disp = ilistGetStr (dd->ddlist, idx, DD_LIST_DISP);
+    len = istrlen (disp);
+    if (len > dd->dispwidth) {
+      dd->dispwidth = len;
+    }
+  }
 }
