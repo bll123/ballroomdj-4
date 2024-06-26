@@ -14,10 +14,10 @@
 
 #include "bdj4.h"
 #include "callback.h"
+#include "ilist.h"
+#include "istring.h"
 #include "log.h"
 #include "mdebug.h"
-#include "nlist.h"
-#include "slist.h"
 #include "ui.h"
 #include "uidd.h"
 #include "uivirtlist.h"
@@ -59,11 +59,10 @@ typedef struct uidd {
   callback_t    *callbacks [DD_CB_MAX];
   callback_t    *ddcb;
   uivirtlist_t  *uivl;
-  nlist_t       *keylist;
-  nlist_t       *displist;
+  ilist_t       *ddlist;
   int           listtype;
-  int           dispwidth;
-  nlistidx_t    selectedidx;
+  size_t        dispwidth;
+  ilistidx_t    selectedidx;
   bool          dialogcreated : 1;
   bool          inchange : 1;
   bool          open : 1;
@@ -74,17 +73,19 @@ static bool uiddDisplay (void *udata);
 static bool uiddWinClose (void *udata);
 static void uiddFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uiddSelected (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
-static void uiddSetSelectionInternal (uidd_t *dd, nlistidx_t idx);
+static void uiddSetSelectionInternal (uidd_t *dd, ilistidx_t idx);
 static void uiddSetButtonText (uidd_t *dd, const char *str);
 
 uidd_t *
-uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
-    nlist_t *keylist, nlist_t *displist, int listtype,
+uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
+    ilist_t *ddlist, int listtype,
     const char *title, int titleflag,
     callback_t *ddcb)
 {
-  uidd_t    *dd = NULL;
-  uiwcont_t *uiwidget;
+  uidd_t      *dd = NULL;
+  uiwcont_t   *uiwidget;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
 
   dd = mdmalloc (sizeof (uidd_t));
   dd->ident = DD_IDENT;
@@ -98,15 +99,25 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   dd->title = mdstrdup (title);
   dd->titleflag = titleflag;
   dd->ddcb = ddcb;
-  dd->keylist = keylist;
-  dd->displist = displist;
-  nlistCalcMaxValueWidth (dd->displist);
-  dd->dispwidth = nlistGetMaxValueWidth (dd->displist);
+  dd->ddlist = ddlist;
+  dd->dispwidth = 0;
+  ilistStartIterator (dd->ddlist, &iteridx);
+  while ((key = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
+    const char  *disp;
+    size_t      len;
+
+    disp = ilistGetStr (dd->ddlist, key, DD_LIST_DISP);
+    len = istrlen (disp);
+    if (len > dd->dispwidth) {
+      dd->dispwidth = len;
+    }
+  }
   dd->listtype = listtype;
   dd->parentwin = parentwin;
   dd->selectedidx = 0;
   dd->dialogcreated = false;
   dd->open = false;
+  dd->uivl = NULL;
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
@@ -117,7 +128,12 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiWidgetAlignHorizStart (uiwidget);
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
-  uiBoxPackStart (boxp, uiwidget);
+  if (where == DD_PACK_START) {
+    uiBoxPackStart (boxp, uiwidget);
+  }
+  if (where == DD_PACK_END) {
+    uiBoxPackEnd (boxp, uiwidget);
+  }
   dd->wcont [DD_W_BUTTON] = uiwidget;
   uiddSetButtonText (dd, dd->title);
 
@@ -149,20 +165,30 @@ uiddFree (uidd_t *dd)
   mdfree (dd);
 }
 
+uiwcont_t *
+uiddGetButton (uidd_t *dd)
+{
+  if (dd == NULL || dd->ident != DD_IDENT) {
+    return NULL;
+  }
+
+  return dd->wcont [DD_W_BUTTON];
+}
+
 void
-uiddSetSelection (uidd_t *dd, nlistidx_t idx)
+uiddSetSelection (uidd_t *dd, ilistidx_t idx)
 {
   if (dd == NULL || dd->ident != DD_IDENT) {
     return;
   }
 
-  if (idx < 0 || idx >= nlistGetCount (dd->keylist)) {
+  if (idx < 0 || idx >= ilistGetCount (dd->ddlist)) {
     return;
   }
 
   dd->selectedidx = idx;
   if (dd->titleflag == DD_REPLACE_TITLE) {
-    uiddSetButtonText (dd, nlistGetStr (dd->displist, idx));
+    uiddSetButtonText (dd, ilistGetStr (dd->ddlist, idx, DD_LIST_DISP));
   }
   if (dd->dialogcreated) {
     uiddSetSelectionInternal (dd, idx);
@@ -224,7 +250,7 @@ uiddCreateDialog (uidd_t *dd)
 
   uiwcontFree (uiwidget);
 
-  count = nlistGetCount (dd->keylist);
+  count = ilistGetCount (dd->ddlist);
   dispcount = count;
   if (dispcount > DD_MAX_ROWS) {
     dispcount = DD_MAX_ROWS;
@@ -291,7 +317,7 @@ uiddFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
   const char  *str;
 
   dd->inchange = true;
-  str = nlistGetStr (dd->displist, rownum);
+  str = ilistGetStr (dd->ddlist, rownum, DD_LIST_DISP);
   uivlSetRowColumnValue (dd->uivl, rownum, DD_COL_DISP, str);
   dd->inchange = false;
 }
@@ -307,21 +333,23 @@ uiddSelected (void *udata, uivirtlist_t *uivl, int32_t rownum, int colidx)
 
   dd->selectedidx = rownum;
   if (dd->titleflag == DD_REPLACE_TITLE) {
-    uiddSetButtonText (dd, nlistGetStr (dd->displist, rownum));
+    uiddSetButtonText (dd, ilistGetStr (dd->ddlist, rownum, DD_LIST_DISP));
   }
   if (dd->ddcb != NULL) {
     if (dd->listtype == DD_LIST_TYPE_STR) {
-      callbackHandlerS (dd->ddcb, nlistGetStr (dd->keylist, rownum));
+      callbackHandlerS (dd->ddcb,
+          ilistGetStr (dd->ddlist, rownum, DD_LIST_KEY_STR));
     }
     if (dd->listtype == DD_LIST_TYPE_NUM) {
-      callbackHandlerI (dd->ddcb, nlistGetNum (dd->keylist, rownum));
+      callbackHandlerI (dd->ddcb,
+          ilistGetNum (dd->ddlist, rownum, DD_LIST_KEY_NUM));
     }
   }
   uiddWinClose (dd);
 }
 
 static void
-uiddSetSelectionInternal (uidd_t *dd, nlistidx_t idx)
+uiddSetSelectionInternal (uidd_t *dd, ilistidx_t idx)
 {
   dd->inchange = true;
   uivlSetSelection (dd->uivl, idx);
@@ -333,7 +361,7 @@ uiddSetButtonText (uidd_t *dd, const char *str)
 {
   char    tbuff [100];
 
-  /* spaces are narrower than most characters, so add a bunch of padding */
-  snprintf (tbuff, sizeof (tbuff), "%-*s", dd->dispwidth + 15, str);
+  /* spaces are narrower than most characters, so add some padding */
+  snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth + 2), str);
   uiButtonSetText (dd->wcont [DD_W_BUTTON], tbuff);
 }

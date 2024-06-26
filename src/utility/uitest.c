@@ -84,10 +84,8 @@ typedef struct {
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
   callback_t    *chgcb;
-  nlist_t       *keyliststr;
-  nlist_t       *keylistnum;
-  nlist_t       *keylistshort;
-  nlist_t       *displist;
+  ilist_t       *lista;
+  ilist_t       *listb;
   long          counter;
   bool          stop : 1;
 } uitest_t;
@@ -195,12 +193,14 @@ main (int argc, char *argv[])
   uitest.stop = false;
   uitest.counter = 1;
 
-  uitest.keyliststr = nlistAlloc ("kl-str", LIST_ORDERED, NULL);
-  uitest.keylistnum = nlistAlloc ("kl-num", LIST_ORDERED, NULL);
-  uitest.keylistshort = nlistAlloc ("kl-short", LIST_ORDERED, NULL);
-  uitest.displist = nlistAlloc ("displist", LIST_ORDERED, NULL);
+  uitest.lista = ilistAlloc ("dd-a", LIST_ORDERED);
+  uitest.listb = ilistAlloc ("dd-b", LIST_ORDERED);
   for (int i = 0; i < 3; ++i) {
-    nlistSetNum (uitest.keylistshort, i, 3 - i);
+    char    tbuff [200];
+
+    snprintf (tbuff, sizeof (tbuff), "Item %d", i);
+    ilistSetNum (uitest.listb, i, DD_LIST_KEY_NUM, 3 - i);
+    ilistSetStr (uitest.listb, i, DD_LIST_DISP, tbuff);
   }
 
   for (int i = 0; i < 20; ++i) {
@@ -213,9 +213,9 @@ main (int argc, char *argv[])
       snprintf (tbuff, sizeof (tbuff), "Item %d", i);
     }
     snprintf (dbuff, sizeof (dbuff), "data-%d", i);
-    nlistSetStr (uitest.keyliststr, i, dbuff);
-    nlistSetNum (uitest.keylistnum, i, 20 - i);
-    nlistSetStr (uitest.displist, i, tbuff);
+    ilistSetStr (uitest.lista, i, DD_LIST_KEY_STR, dbuff);
+    ilistSetNum (uitest.lista, i, DD_LIST_KEY_NUM, 3 - i);
+    ilistSetStr (uitest.lista, i, DD_LIST_DISP, tbuff);
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
@@ -565,32 +565,37 @@ uitestUIDropdown (uitest_t *uitest)
   uitest->callbacks [UITEST_CB_DD_STR] = callbackInitS (uitestDDStr, uitest);
   uitest->callbacks [UITEST_CB_DD_NUM] = callbackInitI (uitestDDNum, uitest);
 
-  uidd [UITEST_DD_A] = uiddCreate ("dd-a", uitest->wcont [UITEST_W_WINDOW],
-      vbox, uitest->keyliststr, uitest->displist, DD_LIST_TYPE_STR,
+  uidd [UITEST_DD_A] = uiddCreate ("dd-a",
+      uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
+      uitest->lista, DD_LIST_TYPE_STR,
       "Title A", DD_KEEP_TITLE,
       uitest->callbacks [UITEST_CB_DD_STR]);
   uiddSetSelection (uidd [UITEST_DD_A], 2);
 
-  uidd [UITEST_DD_B] = uiddCreate ("dd-b", uitest->wcont [UITEST_W_WINDOW],
-      vbox, uitest->keyliststr, uitest->displist, DD_LIST_TYPE_STR,
+  uidd [UITEST_DD_B] = uiddCreate ("dd-b",
+      uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
+      uitest->lista, DD_LIST_TYPE_STR,
       "Item 6", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_STR]);
   uiddSetSelection (uidd [UITEST_DD_B], 5);
 
-  uidd [UITEST_DD_C] = uiddCreate ("dd-c", uitest->wcont [UITEST_W_WINDOW],
-      vbox, uitest->keylistnum, uitest->displist, DD_LIST_TYPE_NUM,
+  uidd [UITEST_DD_C] = uiddCreate ("dd-c",
+      uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
+      uitest->lista, DD_LIST_TYPE_NUM,
       "Title C", DD_KEEP_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
   uiddSetSelection (uidd [UITEST_DD_C], 4);
 
-  uidd [UITEST_DD_D] = uiddCreate ("dd-d", uitest->wcont [UITEST_W_WINDOW],
-      vbox, uitest->keylistnum, uitest->displist, DD_LIST_TYPE_NUM,
+  uidd [UITEST_DD_D] = uiddCreate ("dd-d",
+      uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
+      uitest->lista, DD_LIST_TYPE_NUM,
       "Item 4", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
   uiddSetSelection (uidd [UITEST_DD_D], 3);
 
-  uidd [UITEST_DD_E] = uiddCreate ("dd-e", uitest->wcont [UITEST_W_WINDOW],
-      vbox, uitest->keylistshort, uitest->displist, DD_LIST_TYPE_NUM,
+  uidd [UITEST_DD_E] = uiddCreate ("dd-e",
+      uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
+      uitest->listb, DD_LIST_TYPE_NUM,
       "Item 1", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
   uiddSetSelection (uidd [UITEST_DD_E], 1);

@@ -29,7 +29,7 @@ typedef enum {
 enum {
   LIST_LOC_INVALID    = -1,
   LIST_VALUE_INVALID  = -65534,
-  LIST_END_LIST       = -1,
+  LIST_END_LIST       = -65533,
   LIST_NO_VERSION     = -1,
 };
 #define LIST_DOUBLE_INVALID -665534.0
