@@ -303,7 +303,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitII (
       uisongselUIDanceSelectCallback, uisongsel);
-  uisongsel->uidance = uidanceDropDownCreate (hbox, parentwin,
+  uisongsel->uidance = uidanceCreate (hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
       UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END, 1);
   uidanceSetCallback (uisongsel->uidance,
@@ -395,7 +395,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: initial", uisongsel->tag);
   uisongselProcessSongFilter (uisongsel);
 
-  uidanceSetValue (uisongsel->uidance, -1);
+  uidanceSetKey (uisongsel->uidance, -1);
 
   ssint->callbacks [SONGSEL_CB_SEL_CHG] = callbackInit (
       uisongselSelectionChgCallback, uisongsel, NULL);
@@ -669,7 +669,7 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 {
   uisongsel_t *uisongsel = udata;
 
-  uidanceSetValue (uisongsel->uidance, danceIdx);
+  uidanceSetKey (uisongsel->uidance, danceIdx);
 
   if (uisongsel->ispeercall) {
     return UICB_CONT;

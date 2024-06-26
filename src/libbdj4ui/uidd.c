@@ -18,6 +18,7 @@
 #include "istring.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "ui.h"
 #include "uidd.h"
 #include "uivirtlist.h"
@@ -101,6 +102,13 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->ddcb = ddcb;
   dd->ddlist = ddlist;
   dd->dispwidth = 0;
+  dd->listtype = listtype;
+  dd->parentwin = parentwin;
+  dd->selectedidx = 0;
+  dd->dialogcreated = false;
+  dd->open = false;
+  dd->uivl = NULL;
+
   ilistStartIterator (dd->ddlist, &iteridx);
   while ((idx = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
     const char  *disp;
@@ -112,12 +120,6 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
       dd->dispwidth = len;
     }
   }
-  dd->listtype = listtype;
-  dd->parentwin = parentwin;
-  dd->selectedidx = 0;
-  dd->dialogcreated = false;
-  dd->open = false;
-  dd->uivl = NULL;
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 

@@ -18,6 +18,7 @@
 #include "dance.h"
 #include "ilist.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "slist.h"
 #include "ui.h"
 #include "callback.h"
@@ -28,10 +29,11 @@ typedef struct uidance {
   dance_t       *dances;
   uiwcont_t     *parentwin;
   uidd_t        *uidd;
-  callback_t    *cb;
+  callback_t    *internalselcb;
   callback_t    *selectcb;
   const char    *label;
   ilist_t       *ddlist;
+  nlist_t       *ddlookup;
   ilistidx_t    selectedidx;
   int           count;
   int           flags;
@@ -41,7 +43,7 @@ static bool uidanceSelectHandler (void *udata, int32_t dkey);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
+uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
     const char *label, int where, int count)
 {
   uidance_t   *uidance;
@@ -54,11 +56,12 @@ uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->flags = flags;
   uidance->selectedidx = 0;
   uidance->parentwin = parentwin;
-  uidance->cb = NULL;
+  uidance->internalselcb = NULL;
   uidance->selectcb = NULL;
   uidance->ddlist = NULL;
+  uidance->ddlookup = NULL;
 
-  uidance->cb = callbackInitI (uidanceSelectHandler, uidance);
+  uidance->internalselcb = callbackInitI (uidanceSelectHandler, uidance);
 
   if (where == UIDANCE_PACK_END) {
     ddwhere = DD_PACK_END;
@@ -70,7 +73,7 @@ uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidanceCreateDanceList (uidance);
   uidance->uidd = uiddCreate ("uidance", parentwin, boxp, ddwhere,
       uidance->ddlist, DD_LIST_TYPE_NUM,
-      label, DD_REPLACE_TITLE, uidance->cb);
+      label, DD_REPLACE_TITLE, uidance->internalselcb);
 
   return uidance;
 }
@@ -82,14 +85,15 @@ uidanceFree (uidance_t *uidance)
     return;
   }
 
-  callbackFree (uidance->cb);
+  callbackFree (uidance->internalselcb);
   uiddFree (uidance->uidd);
   ilistFree (uidance->ddlist);
+  nlistFree (uidance->ddlookup);
   mdfree (uidance);
 }
 
 int
-uidanceGetValue (uidance_t *uidance)
+uidanceGetKey (uidance_t *uidance)
 {
   if (uidance == NULL) {
     return 0;
@@ -99,14 +103,14 @@ uidanceGetValue (uidance_t *uidance)
 }
 
 void
-uidanceSetValue (uidance_t *uidance, int value)
+uidanceSetKey (uidance_t *uidance, ilistidx_t dkey)
 {
   if (uidance == NULL || uidance->uidd == NULL) {
     return;
   }
 
-  uidance->selectedidx = value;
-  uiddSetSelection (uidance->uidd, value);
+  uidance->selectedidx = dkey;
+  uiddSetSelection (uidance->uidd, nlistGetNum (uidance->ddlookup, dkey));
 }
 
 void
@@ -158,6 +162,7 @@ uidanceCreateDanceList (uidance_t *uidance)
   slist_t     *danceList;
   slistidx_t  iteridx;
   ilist_t     *ddlist;
+  nlist_t     *ddlookup;
   const char  *disp;
   int         count;
   ilistidx_t  dkey;
@@ -167,12 +172,15 @@ uidanceCreateDanceList (uidance_t *uidance)
   count = slistGetCount (danceList);
   ddlist = ilistAlloc ("uidance", LIST_ORDERED);
   ilistSetSize (ddlist, count);
+  ddlookup = nlistAlloc ("uidance-lookup", LIST_UNORDERED, NULL);
+  nlistSetSize (ddlookup, count);
 
   idx = 0;
   /* if it is a combobox (UIDANCE_ALL_DANCES, UIDANCE_EMPTY_DANCE) */
   if (uidance->flags != UIDANCE_NONE) {
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, uidance->label);
+    nlistSetNum (ddlookup, DD_NO_SELECTION, idx);
     ++idx;
   }
 
@@ -181,9 +189,13 @@ uidanceCreateDanceList (uidance_t *uidance)
     dkey = slistGetNum (danceList, disp);
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, dkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
+    nlistSetNum (ddlookup, dkey, idx);
     ++idx;
   }
 
+  nlistSort (ddlookup);
+
   uidance->ddlist = ddlist;
+  uidance->ddlookup = ddlookup;
 }
 

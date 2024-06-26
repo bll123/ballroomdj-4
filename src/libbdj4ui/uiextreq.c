@@ -312,7 +312,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitII (
       uiextreqDanceSelectHandler, uiextreq);
-  uiextreq->uidance = uidanceDropDownCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
+  uiextreq->uidance = uidanceCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
       /* CONTEXT: external request: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uiextreq->uidance, uiextreq->callbacks [UIEXTREQ_CB_DANCE]);
@@ -381,7 +381,7 @@ uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn)
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_ARTIST], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_TITLE], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "");
-  uidanceSetValue (uiextreq->uidance, -1);
+  uidanceSetKey (uiextreq->uidance, -1);
 }
 
 static void
@@ -489,7 +489,7 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
           songGetStr (uiextreq->song, TAG_TITLE));
       uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
           songGetStr (uiextreq->song, TAG_MQDISPLAY));
-      uidanceSetValue (uiextreq->uidance,
+      uidanceSetKey (uiextreq->uidance,
           songGetNum (uiextreq->song, TAG_DANCE));
     }
   }

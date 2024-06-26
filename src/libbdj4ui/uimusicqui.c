@@ -340,12 +340,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] = callbackInitII (
             uimusicqQueueDanceCallback, uimusicq);
       }
-      mqint->uidance5 = uidanceDropDownCreate (hbox, parentwin,
+      mqint->uidance5 = uidanceCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button) */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
       uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
 
-      mqint->uidance = uidanceDropDownCreate (hbox, parentwin,
+      mqint->uidance = uidanceCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue */
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
       uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);

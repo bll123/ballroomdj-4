@@ -316,7 +316,7 @@ uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx)
 
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
     uisf->danceIdx = danceIdx;
-    uidanceSetValue (uisf->uidance, danceIdx);
+    uidanceSetKey (uisf->uidance, danceIdx);
 
     if (danceIdx >= 0) {
       songfilterSetNum (uisf->songfilter, SONG_FILTER_DANCE_IDX, danceIdx);
@@ -356,8 +356,8 @@ uisfInitDisplay (uisongfilter_t *uisf)
 
   sortby = songfilterGetSort (uisf->songfilter);
   uiDropDownSelectionSetStr (uisf->wcont [UISF_W_SORT_BY], sortby);
-  uidanceSetValue (uisf->uidance, uisf->danceIdx);
-  uigenreSetValue (uisf->uigenre, -1);
+  uidanceSetKey (uisf->uidance, uisf->danceIdx);
+  uigenreSetKey (uisf->uigenre, -1);
   uiEntrySetValue (uisf->wcont [UISF_W_SEARCH], "");
   uiratingSetValue (uisf->uirating, -1);
   uilevelSetValue (uisf->uilevel, -1);
@@ -574,7 +574,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitII (
         uisfDanceSelectHandler, uisf);
-    uisf->uidance = uidanceDropDownCreate (hbox, uisf->wcont [UISF_W_DIALOG],
+    uisf->uidance = uidanceCreate (hbox, uisf->wcont [UISF_W_DIALOG],
         /* CONTEXT: song selection filter: a filter: all dances are selected */
         UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
     uidanceSetCallback (uisf->uidance, uisf->callbacks [UISF_CB_DANCE_SEL]);
@@ -717,7 +717,7 @@ uisfResponseHandler (void *udata, int32_t responseid)
       playlistFree (uisf->playlist);
       uisf->playlist = NULL;
       uisf->danceIdx = -1;
-      uidanceSetValue (uisf->uidance, uisf->danceIdx);
+      uidanceSetKey (uisf->uidance, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
         callbackHandlerI (uisf->danceselcb, uisf->danceIdx);
       }
