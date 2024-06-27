@@ -276,14 +276,16 @@ orgSetCleanType (org_t *org, int type)
   org->chartype = type;
 }
 
+#if 0 /* UNUSED */
 slist_t *
-orgGetList (org_t *org)
+orgGetList (org_t *org)  /* UNUSED */
 {
   if (org == NULL) {
     return NULL;
   }
   return org->orgparsed;
 }
+#endif
 
 const char *
 orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
