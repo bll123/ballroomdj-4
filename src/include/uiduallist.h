@@ -5,7 +5,7 @@
 #define INC_UIDUALLIST_H
 
 #include "slist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 enum {
   DL_LIST_SOURCE,

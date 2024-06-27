@@ -7,13 +7,14 @@
 #include <stdbool.h>
 
 #include "audioid.h"
+#include "callback.h"
 #include "dispsel.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "song.h"
 #include "tmutil.h"
 #include "uisongsel.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct aid_internal aid_internal_t;
 

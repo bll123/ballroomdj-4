@@ -6,15 +6,15 @@
 
 #include <stdbool.h>
 
-#include "bdj4.h"
+#include "callback.h"
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
-#include "tmutil.h"
-#include "ui.h"
+#include "uiwcont.h"
+#include "ui/uientry.h"
 
 enum {
   UIMUSICQ_SEL_NONE,

@@ -4,7 +4,7 @@
 #ifndef INC_UIUTILS_H
 #define INC_UIUTILS_H
 
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct {
   uiwcont_t   *hbox;

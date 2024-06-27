@@ -5,7 +5,7 @@
 #define INC_UIPLAYLIST_H
 
 #include "callback.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uiplaylist uiplaylist_t;
 

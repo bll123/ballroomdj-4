@@ -12,7 +12,7 @@
 #include "song.h"
 #include "tmutil.h"
 #include "uisongsel.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct se_internal se_internal_t;
 

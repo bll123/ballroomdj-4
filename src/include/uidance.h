@@ -4,8 +4,9 @@
 #ifndef INC_UIDANCE_H
 #define INC_UIDANCE_H
 
+#include "callback.h"
 #include "ilist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 enum {
   UIDANCE_PACK_START,

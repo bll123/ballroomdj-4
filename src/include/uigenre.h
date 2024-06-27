@@ -4,7 +4,9 @@
 #ifndef INC_UIGENRE_H
 #define INC_UIGENRE_H
 
-#include "ui.h"
+#include "callback.h"
+#include "ilist.h"
+#include "uiwcont.h"
 
 typedef struct uigenre uigenre_t;
 

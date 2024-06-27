@@ -11,7 +11,7 @@
 #include "dispsel.h"
 #include "musicdb.h"
 #include "progstate.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uiplayer uiplayer_t;
 

@@ -4,6 +4,7 @@
 #ifndef INC_MANAGEUI_H
 #define INC_MANAGEUI_H
 
+#include "callback.h"
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"

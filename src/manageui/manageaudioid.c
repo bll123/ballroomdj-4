@@ -17,6 +17,7 @@
 #include "manageui.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "ui.h"
 #include "uiaudioid.h"
 #include "uisongsel.h"
 #include "uiwcont.h"

@@ -4,9 +4,10 @@
 #ifndef INC_UIQUICKEDIT_H
 #define INC_UIQUICKEDIT_H
 
+#include "callback.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uiqe uiqe_t;
 

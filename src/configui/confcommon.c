@@ -37,6 +37,7 @@
 #include "pathinfo.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "ui.h"
 #include "webclient.h"
 
 static nlist_t * confuiGetThemeList (void);

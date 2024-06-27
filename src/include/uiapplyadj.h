@@ -4,9 +4,10 @@
 #ifndef INC_UIAPPLYADJ_H
 #define INC_UIAPPLYADJ_H
 
+#include "callback.h"
 #include "nlist.h"
 #include "song.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uiaa uiaa_t;
 

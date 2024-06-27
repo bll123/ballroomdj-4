@@ -24,6 +24,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "vsencdec.h"
+#include "ui.h"
 
 void
 confuiPopulateOptions (confuigui_t *gui)

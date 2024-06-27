@@ -89,8 +89,8 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
   count = slistGetCount (pllist);
   ddlist = ilistAlloc ("uipl", LIST_ORDERED);
   ilistSetSize (ddlist, count);
-  ddlookup = nlistAlloc ("uipl-lookup", LIST_UNORDERED, NULL);
-  nlistSetSize (ddlookup, count);
+  ddlookup = slistAlloc ("uipl-lookup", LIST_UNORDERED, NULL);
+  slistSetSize (ddlookup, count);
 
   idx = 0;
   ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, "");

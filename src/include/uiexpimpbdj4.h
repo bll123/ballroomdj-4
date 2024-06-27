@@ -4,8 +4,9 @@
 #ifndef INC_UIEXPIMPBDJ4_H
 #define INC_UIEXPIMPBDJ4_H
 
+#include "callback.h"
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 enum {
   UIEIBDJ4_EXPORT,

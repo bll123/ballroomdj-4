@@ -5,7 +5,7 @@
 #define INC_UICOPYTAGS_H
 
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uict uict_t;
 

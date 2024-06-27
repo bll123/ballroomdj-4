@@ -4,8 +4,9 @@
 #ifndef INC_UIEXPPL_H
 #define INC_UIEXPPL_H
 
+#include "callback.h"
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 /* import/export types */
 enum {

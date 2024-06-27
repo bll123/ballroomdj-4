@@ -5,7 +5,7 @@
 #define INC_UILEVEL_H
 
 #include "callback.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uilevel uilevel_t;
 
