@@ -14,8 +14,8 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
-#include "bdjopt.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "callback.h"
@@ -36,6 +36,7 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uidance.h"
+#include "uidd.h"
 #include "uifavorite.h"
 #include "uigenre.h"
 #include "uilevel.h"
@@ -69,10 +70,8 @@ enum {
 };
 
 enum {
-  UISF_W_WINDOW,
   UISF_W_DIALOG,
   UISF_W_PLAYLIST,
-  UISF_W_SORT_BY,
   UISF_W_SEARCH,
   UISF_W_PLAY_STATUS,
   UISF_W_KEY_HNDLR,
@@ -86,6 +85,7 @@ typedef struct uisongfilter {
   status_t          *status;
   sortopt_t         *sortopt;
   uiwcont_t         *wcont [UISF_W_MAX];
+  uiwcont_t         *window;
   nlist_t           *options;
   callback_t        *callbacks [UISF_CB_MAX];
   callback_t        *applycb;
@@ -93,6 +93,10 @@ typedef struct uisongfilter {
   songfilter_t      *songfilter;
   playlist_t        *playlist;
   uiplaylist_t      *uiplaylist;
+  uidd_t            *ddsortby;
+  ilist_t           *ddsortbylist;
+  slist_t           *ddlookup;
+  ilistidx_t        sortbyidx;        // for initialization
   uidance_t         *uidance;
   uigenre_t         *uigenre;
   uirating_t        *uirating;
@@ -113,12 +117,12 @@ static void uisfCreateDialog (uisongfilter_t *uisf);
 static bool uisfResponseHandler (void *udata, int32_t responseid);
 static void uisfUpdate (uisongfilter_t *uisf);
 static int32_t uisfPlaylistSelectHandler (void *udata, const char *str);
-static bool uisfSortBySelectHandler (void *udata, int32_t idx);
+static int32_t uisfSortBySelectHandler (void *udata, const char *sval);
 static bool uisfGenreSelectHandler (void *udata, int32_t idx);
 static bool uisfDanceSelectHandler (void *udata, int32_t idx, int32_t count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, const char *fn);
-static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
+static void uisfSortBySelect (uisongfilter_t *uisf, const char *sval);
 static void uisfCreateSortByList (uisongfilter_t *uisf);
 static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf);
@@ -142,9 +146,13 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   for (int i = 0; i < UISF_W_MAX; ++i) {
     uisf->wcont [i] = NULL;
   }
-  uisf->wcont [UISF_W_WINDOW] = windowp;
+  uisf->window = windowp;
   uisf->wcont [UISF_W_KEY_HNDLR] = uiEventAlloc ();
   uisf->options = options;
+  uisf->ddsortby = NULL;
+  uisf->ddsortbylist = NULL;
+  uisf->ddlookup = NULL;
+  uisf->sortbyidx = 0;
   uisf->songfilter = songfilterAlloc ();
   songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
@@ -178,9 +186,6 @@ uisfFree (uisongfilter_t *uisf)
 
   dataFree (uisf->playlistname);
   for (int i = 0; i < UISF_W_MAX; ++i) {
-    if (i == UISF_W_WINDOW) {
-      continue;
-    }
     uiwcontFree (uisf->wcont [i]);
   }
   uiplaylistFree (uisf->uiplaylist);
@@ -193,6 +198,9 @@ uisfFree (uisongfilter_t *uisf)
   sortoptFree (uisf->sortopt);
   songfilterFree (uisf->songfilter);
   playlistFree (uisf->playlist);
+  uiddFree (uisf->ddsortby);
+  ilistFree (uisf->ddsortbylist);
+  slistFree (uisf->ddlookup);
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiwcontFree (uisf->labels [i]);
   }
@@ -355,7 +363,7 @@ uisfInitDisplay (uisongfilter_t *uisf)
   }
 
   sortby = songfilterGetSort (uisf->songfilter);
-  uiDropDownSelectionSetStr (uisf->wcont [UISF_W_SORT_BY], sortby);
+  uiddSetSelection (uisf->ddsortby, uisf->sortbyidx);
   uidanceSetKey (uisf->uidance, uisf->danceIdx);
   uigenreSetKey (uisf->uigenre, -1);
   uiEntrySetValue (uisf->wcont [UISF_W_SEARCH], "");
@@ -392,27 +400,49 @@ uisfPlaylistSelect (uisongfilter_t *uisf, const char *str)
 }
 
 static void
-uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx)
+uisfSortBySelect (uisongfilter_t *uisf, const char *sval)
 {
-  logProcBegin ();
-  if (idx >= 0) {
-    songfilterSetSort (uisf->songfilter,
-        uiDropDownGetString (uisf->wcont [UISF_W_SORT_BY]));
-    nlistSetStr (uisf->options, SONGSEL_SORT_BY,
-        uiDropDownGetString (uisf->wcont [UISF_W_SORT_BY]));
-  }
-  logProcEnd ("");
+  songfilterSetSort (uisf->songfilter, sval);
+  nlistSetStr (uisf->options, SONGSEL_SORT_BY, sval);
+  uisf->sortbyidx = slistGetNum (uisf->ddlookup, sval);
 }
 
 static void
 uisfCreateSortByList (uisongfilter_t *uisf)
 {
-  slist_t           *sortoptlist;
+  slist_t     *sortoptlist;
+  ilist_t     *ddlist;
+  slist_t     *ddlookup;
+  slistidx_t  iteridx;
+  int         count;
+  const char  *disp;
+  const char  *sortby;
 
   logProcBegin ();
 
+  sortby = songfilterGetSort (uisf->songfilter);
   sortoptlist = sortoptGetList (uisf->sortopt);
-  uiDropDownSetList (uisf->wcont [UISF_W_SORT_BY], sortoptlist, NULL);
+  ddlist = ilistAlloc ("sf-sortby-i", LIST_ORDERED);
+  ilistSetSize (ddlist, slistGetCount (sortoptlist));
+  ddlookup = slistAlloc ("sf-sortby-s", LIST_ORDERED, NULL);
+  slistSetSize (ddlist, slistGetCount (sortoptlist));
+
+  count = 0;
+  slistStartIterator (sortoptlist, &iteridx);
+  while ((disp = slistIterateKey (sortoptlist, &iteridx)) != NULL) {
+    const char    *sortkey;
+
+    sortkey = slistGetStr (sortoptlist, disp);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, sortkey);
+    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
+    slistSetNum (ddlookup, sortkey, count);
+    if (strcmp (sortby, sortkey) == 0) {
+      uisf->sortbyidx = count;
+    }
+    ++count;
+  }
+  uisf->ddsortbylist = ddlist;
+  uisf->ddlookup = ddlookup;
   logProcEnd ("");
 }
 
@@ -455,7 +485,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_FILTER] = callbackInitI (
       uisfResponseHandler, uisf);
-  uisf->wcont [UISF_W_DIALOG] = uiCreateDialog (uisf->wcont [UISF_W_WINDOW],
+  uisf->wcont [UISF_W_DIALOG] = uiCreateDialog (uisf->window,
       uisf->callbacks [UISF_CB_FILTER],
       /* CONTEXT: song selection filter: title for the filter dialog */
       _("Filter Songs"),
@@ -513,16 +543,17 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_SORTBY] = uiwidgetp;
 
-  uisf->wcont [UISF_W_SORT_BY] = uiDropDownInit ();
-  uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitI (
-      uisfSortBySelectHandler, uisf);
-  uiwidgetp = uiComboboxCreate (uisf->wcont [UISF_W_SORT_BY],
-      uisf->wcont [UISF_W_DIALOG], "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
   uisfCreateSortByList (uisf);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitS (
+      uisfSortBySelectHandler, uisf);
   /* looks bad if added to the size group */
+  uisf->ddsortby = uiddCreate ("sf-sort-by",
+      uisf->wcont [UISF_W_DIALOG], hbox, DD_PACK_START,
+      uisf->ddsortbylist, DD_LIST_TYPE_STR,
+      "", DD_REPLACE_TITLE, uisf->callbacks [UISF_CB_SORT_BY_SEL]);
 
   uiwcontFree (hbox);
+
   /* begin line */
 
   /* search : always available */
@@ -852,7 +883,7 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetSetState (uisf->labels [i], UIWIDGET_DISABLE);
   }
-  uiDropDownSetState (uisf->wcont [UISF_W_SORT_BY], UIWIDGET_DISABLE);
+  uiddSetState (uisf->ddsortby, UIWIDGET_DISABLE);
   uiEntrySetState (uisf->wcont [UISF_W_SEARCH], UIWIDGET_DISABLE);
   uidanceSetState (uisf->uidance, UIWIDGET_DISABLE);
   uigenreSetState (uisf->uigenre, UIWIDGET_DISABLE);
@@ -873,7 +904,7 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetSetState (uisf->labels [i], UIWIDGET_ENABLE);
   }
-  uiDropDownSetState (uisf->wcont [UISF_W_SORT_BY], UIWIDGET_ENABLE);
+  uiddSetState (uisf->ddsortby, UIWIDGET_ENABLE);
   uiEntrySetState (uisf->wcont [UISF_W_SEARCH], UIWIDGET_ENABLE);
   uidanceSetState (uisf->uidance, UIWIDGET_ENABLE);
   uigenreSetState (uisf->uigenre, UIWIDGET_ENABLE);
@@ -893,12 +924,12 @@ uisfPlaylistSelectHandler (void *udata, const char *str)
   return UICB_CONT;
 }
 
-static bool
-uisfSortBySelectHandler (void *udata, int32_t idx)
+static int32_t
+uisfSortBySelectHandler (void *udata, const char *sval)
 {
   uisongfilter_t *uisf = udata;
 
-  uisfSortBySelect (uisf, idx);
+  uisfSortBySelect (uisf, sval);
   return UICB_CONT;
 }
 

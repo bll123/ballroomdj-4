@@ -363,8 +363,7 @@ uiddSetButtonText (uidd_t *dd, const char *str)
 {
   char    tbuff [100];
 
-  /* spaces are narrower than most characters, so add some padding */
-  snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth + 2), str);
+  snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth), str);
   uiButtonSetText (dd->wcont [DD_W_BUTTON], tbuff);
 }
 
