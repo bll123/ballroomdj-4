@@ -81,6 +81,7 @@ static const char * const VL_SELECTED_CLASS = "bdj-selected";
 static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 static const char * const VL_DARKBG_CLASS = "bdj-dark-bg";
+static const char * const VL_NORMBG_CLASS = "bdj-norm-bg";
 
 typedef struct uivlcol uivlcol_t;
 
@@ -511,6 +512,16 @@ uivlSetDarkBackground (uivirtlist_t *vl)
   if (vl->dispheading) {
     uiWidgetAddClass (vl->wcont [VL_W_HEADBOX], VL_DARKBG_CLASS);
   }
+}
+
+void
+uivlSetDropdownBackground (uivirtlist_t *vl)
+{
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    return;
+  }
+
+  uiWidgetAddClass (vl->wcont [VL_W_MAIN_VBOX], VL_NORMBG_CLASS);
 }
 
 void
@@ -1625,10 +1636,17 @@ uivlKeyEvent (void *udata)
       nsel = uivlRownumLimit (vl, nsel);
       uivlProcessScroll (vl, nsel, VL_SCROLL_NORM);
       uivlUpdateSelections (vl, nsel);
-      uivlSelectionHandler (vl, nsel, VL_COL_UNKNOWN);
+      /* do not call the selection handler when using key movement */
+      /* this allows selections to be made in drop-down lists */
     }
 
     /* movement keys are handled internally */
+    return UICB_STOP;
+  }
+
+  if (uiEventIsEnterKey (vl->wcont [VL_W_EVENTH]) &&
+      uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
+    uivlSelectionHandler (vl, vl->currSelection, VL_COL_UNKNOWN);
     return UICB_STOP;
   }
 

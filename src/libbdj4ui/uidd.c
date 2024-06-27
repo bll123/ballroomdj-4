@@ -69,6 +69,8 @@ typedef struct uidd {
   bool          open : 1;
 } uidd_t;
 
+static const char * const DD_DARKBG_CLASS = "bdj-dark-bg";
+
 static void uiddCreateDialog (uidd_t *dd);
 static bool uiddDisplay (void *udata);
 static bool uiddWinClose (void *udata);
@@ -249,8 +251,10 @@ uiddCreateDialog (uidd_t *dd)
 
   dd->wcont [DD_W_DIALOG_WIN] = uiCreateDialogWindow (dd->parentwin,
       dd->wcont [DD_W_BUTTON], dd->callbacks [DD_CB_WIN_CLOSE], "");
+  uiWidgetAddClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
 
   vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 4);
   uiWindowPackInWindow (dd->wcont [DD_W_DIALOG_WIN], vbox);
 
   count = ilistGetCount (dd->ddlist);
@@ -260,7 +264,7 @@ uiddCreateDialog (uidd_t *dd)
   }
   dd->uivl = uivlCreate (dd->tag, vbox, dispcount, VL_NO_WIDTH,
       VL_NO_HEADING | VL_ENABLE_KEYS);
-  uivlSetDarkBackground (dd->uivl);
+  uivlSetDropdownBackground (dd->uivl);
   uivlSetNumColumns (dd->uivl, DD_COL_MAX);
   uivlMakeColumn (dd->uivl, "disp", DD_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnMinWidth (dd->uivl, DD_COL_DISP, dd->dispwidth);

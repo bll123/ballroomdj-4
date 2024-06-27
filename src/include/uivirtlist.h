@@ -53,6 +53,7 @@ void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
 void  uivlSetDarkBackground (uivirtlist_t *vl);
+void  uivlSetDropdownBackground (uivirtlist_t *vl);
 void  uivlSetUseListingFont (uivirtlist_t *vl);
 void  uivlSetAllowMultiple (uivirtlist_t *vl);
 void  uivlSetAllowDoubleClick (uivirtlist_t *vl);

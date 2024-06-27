@@ -1,4 +1,4 @@
-/* 2024-6-18 */
+/* 2024-6-27 */
 /* version 6 */
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
@@ -49,6 +49,11 @@ progressbar > trough progress {
 
 .bdj-dark-bg {
   background-color: shade(@theme_base_color,0.8);
+}
+/* used by drop-downs */
+.bdj-norm-bg {
+  background-color: @theme_base_color;
+  margin-right: 4pt;
 }
 label.bdj-selected {
   color: @theme_selected_fg_color;
