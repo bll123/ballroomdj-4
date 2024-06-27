@@ -33,9 +33,10 @@
 #include "slist.h"
 #include "templateutil.h"
 
+#define DANCESEL_DEBUG 0
+
 enum {
   TM_MAX_DANCE = 20,        // normally 14 or so in the standard template.
-  DANCESEL_DEBUG = 0,
 };
 
 static char *dbfn = "data/musicdb.dat";
@@ -84,9 +85,9 @@ START_TEST(dancesel_alloc)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_alloc");
   mdebugSubTag ("dancesel_alloc");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "--chk-- dancesel_alloc\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -111,9 +112,9 @@ START_TEST(dancesel_choose_single_no_hist)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_single_no_hist");
   mdebugSubTag ("dancesel_choose_single_no_hist");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_single_no_hist\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -146,9 +147,9 @@ START_TEST(dancesel_choose_three_no_hist)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_three_no_hist");
   mdebugSubTag ("dancesel_choose_three_no_hist");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_three_no_hist\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -194,9 +195,9 @@ START_TEST(dancesel_choose_two_hist_s)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_s");
   mdebugSubTag ("dancesel_choose_two_hist_s");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_two_hist_s\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -249,9 +250,9 @@ START_TEST(dancesel_choose_two_hist_a)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_a");
   mdebugSubTag ("dancesel_choose_two_hist_a");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_two_hist_a\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -306,9 +307,9 @@ START_TEST(dancesel_choose_multi_count)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_count");
   mdebugSubTag ("dancesel_choose_multi_count");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_multi_count\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -369,9 +370,9 @@ START_TEST(dancesel_choose_multi_tag)
   /* it is difficult to ascertain whether the tag match count is low enough */
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_tag");
   mdebugSubTag ("dancesel_choose_multi_tag");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_multi_tag\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -439,9 +440,9 @@ START_TEST(dancesel_choose_fast)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
   mdebugSubTag ("dancesel_choose_fast");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_fast\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -518,9 +519,9 @@ START_TEST(dancesel_mix)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
   mdebugSubTag ("dancesel_choose_fast");
-  if (DANCESEL_DEBUG) {
+#if DANCESEL_DEBUG
     fprintf (stderr, "-- dancesel_choose_fast\n");
-  }
+#endif
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);

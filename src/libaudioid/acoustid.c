@@ -30,11 +30,12 @@
 #include "vsencdec.h"
 #include "webclient.h"
 
+/* for debugging only */
+/* this is useful, saves time and queries against the server */
+/* note that a valid out-acoustid.xml file must be downloaded first */
+#define ACOUSTID_REUSE 0
+
 enum {
-  /* for debugging only */
-  /* this is useful, saves time and queries against the server */
-  /* note that a valid out-acoustid.xml file must be downloaded first */
-  ACOUSTID_REUSE = 0,
   ACOUSTID_BUFF_SZ = 16384,
 };
 
@@ -251,7 +252,8 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       (int) retsz, fpdata
       );
 
-  if (ACOUSTID_REUSE == 1 && fileopFileExists (ACOUSTID_TEMP_FN)) {
+#if ACOUSTID_REUSE
+  if (fileopFileExists (ACOUSTID_TEMP_FN)) {
     FILE    *ifh;
     size_t  tsize;
     char    *tstr;
@@ -268,7 +270,9 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     tstr [tsize] = '\0';
     acoustid->webresponse = tstr;
     fclose (ifh);
-  } else {
+  } else
+#endif
+  {
     int           webrc;
 
     mstimestart (&starttm);
