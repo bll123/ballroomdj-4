@@ -15,8 +15,9 @@
 #include "log.h"
 #include "musicdb.h"
 #include "playlist.h"
-#include "tmutil.h"
+//#include "tmutil.h"
 #include "uimusicq.h"
+#include "uiplaylist.h"
 #include "ui.h"
 
 void
@@ -42,18 +43,17 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
 }
 
 void
-uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx)
+uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, const char *fn)
 {
   int           ci;
-  char          tbuff [200];
+  char          tbuff [300];
 
   logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
-  if (idx >= 0) {
-    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), ci,
-        uiDropDownGetString (uimusicq->ui [ci].playlistsel), EDIT_FALSE);
+  if (fn != NULL) {
+    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), ci, fn, EDIT_FALSE);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
   logProcEnd ("");
@@ -130,23 +130,6 @@ uimusicqSwap (uimusicq_t *uimusicq, int mqidx)
       MSG_ARGS_RS, uimusicq->ui [mqidx].prevSelection + 1,
       MSG_ARGS_RS, uimusicq->ui [mqidx].currSelection + 1);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_SWAP, tbuff);
-}
-
-void
-uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
-{
-  int               ci;
-  slist_t           *plList;
-
-
-  logProcBegin ();
-
-  ci = uimusicq->musicqManageIdx;
-
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
-  uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
-  slistFree (plList);
-  logProcEnd ("");
 }
 
 void

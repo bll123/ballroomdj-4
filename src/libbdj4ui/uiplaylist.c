@@ -34,9 +34,12 @@ typedef struct uiplaylist {
 static int32_t uiplaylistSelectHandler (void *udata, const char *key);
 
 uiplaylist_t *
-uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
+uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
+    const char *label, int where)
 {
-  uiplaylist_t    *uiplaylist;
+  uiplaylist_t  *uiplaylist;
+  int           titleflag = DD_REPLACE_TITLE;
+  int           dwhere = DD_PACK_START;
 
   uiplaylist = mdmalloc (sizeof (uiplaylist_t));
   uiplaylist->uidd = NULL;
@@ -48,10 +51,22 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
   uiplaylistSetList (uiplaylist, type, NULL);
   uiplaylist->internalselcb =
       callbackInitS (uiplaylistSelectHandler, uiplaylist);
+  if (label != NULL) {
+    titleflag = DD_KEEP_TITLE;
+  }
+  if (label == NULL) {
+    label = "";
+  }
+  if (where == PL_PACK_START) {
+    dwhere = DD_PACK_START;
+  }
+  if (where == PL_PACK_END) {
+    dwhere = DD_PACK_END;
+  }
   uiplaylist->uidd = uiddCreate ("uipl",
-      parentwin, hbox, DD_PACK_START,
+      parentwin, hbox, dwhere,
       uiplaylist->ddlist, DD_LIST_TYPE_STR,
-      "", DD_REPLACE_TITLE, uiplaylist->internalselcb);
+      label, titleflag, uiplaylist->internalselcb);
 
   return uiplaylist;
 }

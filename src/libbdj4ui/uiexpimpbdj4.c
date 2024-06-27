@@ -383,7 +383,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
     uieibdj4->dialog [currtype].uiplaylist = uiplaylistCreate (
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG],
-        hbox, PL_LIST_NORMAL);
+        hbox, PL_LIST_NORMAL, NULL, PL_PACK_START);
     uiplaylistSetSelectCallback (uieibdj4->dialog [currtype].uiplaylist,
         uieibdj4->callbacks [UIEIBDJ4_CB_SEL]);
 

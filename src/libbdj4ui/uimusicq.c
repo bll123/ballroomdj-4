@@ -132,7 +132,7 @@ uimusicqFree (uimusicq_t *uimusicq)
   }
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiwcontFree (uimusicq->ui [i].mainbox);
-    uiwcontFree (uimusicq->ui [i].playlistsel);
+    uiplaylistFree (uimusicq->ui [i].playlistsel);
     uiwcontFree (uimusicq->ui [i].slname);
   }
   uimusicqUIFree (uimusicq);

@@ -4,8 +4,9 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -19,10 +20,12 @@
 #include "mdebug.h"
 #include "msgparse.h"
 #include "musicdb.h"
+#include "playlist.h"
 #include "ui.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uimusicq.h"
+#include "uiplaylist.h"
 #include "uisong.h"
 #include "uitreedisp.h"
 
@@ -83,7 +86,7 @@ typedef struct mq_internal {
 } mq_internal_t;
 
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
-static bool   uimusicqQueuePlaylistCallback (void *udata, int32_t idx);
+static int32_t  uimusicqQueuePlaylistCallback (void *udata, const char *sval);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, song_t *song, int ci);
@@ -323,17 +326,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] == NULL) {
-      uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] = callbackInitI (
+      uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] = callbackInitS (
           uimusicqQueuePlaylistCallback, uimusicq);
     }
-    uiwidgetp = uiDropDownInit ();
-    uimusicq->ui [ci].playlistsel = uiwidgetp;
-
-    uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
+    uimusicq->ui [ci].playlistsel = uiplaylistCreate (parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
-        _("Queue Playlist"), uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST], uimusicq);
-    uiBoxPackEnd (hbox, uiwidgetp);
-    uimusicqCreatePlaylistList (uimusicq);
+        hbox, PL_LIST_NORMAL, _("Queue Playlist"), PL_PACK_END);
+    uiplaylistSetSelectCallback (uimusicq->ui [ci].playlistsel,
+        uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST]);
 
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
       if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] == NULL) {
@@ -696,12 +696,12 @@ uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count)
   return UICB_CONT;
 }
 
-static bool
-uimusicqQueuePlaylistCallback (void *udata, int32_t idx)
+static int32_t
+uimusicqQueuePlaylistCallback (void *udata, const char *sval)
 {
   uimusicq_t    *uimusicq = udata;
 
-  uimusicqQueuePlaylistProcess (uimusicq, idx);
+  uimusicqQueuePlaylistProcess (uimusicq, sval);
   return UICB_CONT;
 }
 

@@ -13,6 +13,7 @@
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "uiplaylist.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 
@@ -59,7 +60,8 @@ typedef struct {
   nlistidx_t    currSelection;
   /* music queue tab */
   uiwcont_t     *mainbox;
-  uiwcont_t     *playlistsel;
+  uiplaylist_t  *playlistsel;
+//  uiwcont_t     *playlistsel;
   uiwcont_t     *slname;
   /* widget data */
   mq_internal_t *mqInternalData;
@@ -138,7 +140,7 @@ nlist_t * uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx);
 
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count);
-void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx);
+void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, const char *fn);
 void  uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
 void  uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
 void  uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
