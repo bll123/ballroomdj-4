@@ -28,10 +28,14 @@ enum {
   VL_COL_WIDTH_GROW,
   VL_SEL_DISP_NORM,
   VL_SEL_DISP_WIDGET,
-  VL_NO_HEADING,
-  VL_SHOW_HEADING,
   VL_DIR_PREV,
   VL_DIR_NEXT,
+};
+
+enum {
+  VL_FLAGS_NONE     = 0x0000,  /* default: show-heading */
+  VL_NO_HEADING     = 0x0001,
+  VL_ENABLE_KEYS    = 0x0002,
 };
 
 enum {
@@ -44,7 +48,7 @@ typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* basic */
-uivirtlist_t *uiCreateVirtList (const char *tag, uiwcont_t *boxp, int initialdisprows, int headingflag, int minwidth);
+uivirtlist_t *uivlCreate (const char *tag, uiwcont_t *boxp, int initialdisprows, int minwidth, int flags);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);

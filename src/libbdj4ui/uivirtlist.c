@@ -49,7 +49,7 @@ enum {
   VL_W_SB,
   VL_W_SB_SZGRP,
   VL_W_HEAD_FILLER,
-  VL_W_KEYH,
+  VL_W_EVENTH,
   VL_W_MAX,
 };
 
@@ -186,12 +186,13 @@ typedef struct uivirtlist {
   uivlselcb_t   dclickcb;
   void          *dclickudata;
   /* flags */
-  bool          inscroll : 1;
-  bool          dispheading : 1;
-  bool          darkbg : 1;
-  bool          uselistingfont : 1;
-  bool          allowmultiple : 1;
   bool          allowdblclick : 1;
+  bool          allowmultiple : 1;
+  bool          darkbg : 1;
+  bool          dispheading : 1;
+  bool          inscroll : 1;
+  bool          keyhandling : 1;
+  bool          uselistingfont : 1;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -225,8 +226,8 @@ static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rown
 static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
 
 uivirtlist_t *
-uiCreateVirtList (const char *tag, uiwcont_t *boxp,
-    int dispsize, int headingflag, int minwidth)
+uivlCreate (const char *tag, uiwcont_t *boxp,
+    int dispsize, int minwidth, int vlflags)
 {
   uivirtlist_t  *vl;
 
@@ -241,8 +242,12 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   vl->dclickudata = NULL;
   vl->inscroll = false;
   vl->dispheading = true;
-  if (headingflag == VL_NO_HEADING) {
+  if ((vlflags & VL_NO_HEADING) == VL_NO_HEADING) {
     vl->dispheading = false;
+  }
+  vl->keyhandling = false;
+  if ((vlflags & VL_ENABLE_KEYS) == VL_ENABLE_KEYS) {
+    vl->keyhandling = true;
   }
   vl->allowmultiple = false;
   vl->allowdblclick = false;
@@ -262,7 +267,7 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
     vl->usercb [i] = NULL;
   }
 
-  vl->wcont [VL_W_KEYH] = uiEventAlloc ();
+  vl->wcont [VL_W_EVENTH] = uiEventAlloc ();
   vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
@@ -294,7 +299,10 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
-  uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);    // for mouse events
+  if (vl->keyhandling) {
+    /* in order to handle key events */
+    uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);
+  }
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
@@ -344,15 +352,17 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
 
   uivlRowBasicInit (vl, &vl->headingrow, VL_ROW_HEADING);
 
-  uiEventSetKeyCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
-      vl->callbacks [VL_CB_KEY]);
-  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
+  if (vl->keyhandling) {
+    uiEventSetKeyCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
+        vl->callbacks [VL_CB_KEY]);
+  }
+  uiEventSetButtonCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_MBUTTON]);
-  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_EVENT_BOX],
+  uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_SCROLL]);
-  uiEventSetButtonCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
+  uiEventSetButtonCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
       vl->callbacks [VL_CB_MBUTTON]);
-  uiEventSetScrollCallback (vl->wcont [VL_W_KEYH], vl->wcont [VL_W_MAIN_VBOX],
+  uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
       vl->callbacks [VL_CB_SCROLL]);
 
   return vl;
@@ -1593,19 +1603,19 @@ uivlKeyEvent (void *udata)
     return UICB_CONT;
   }
 
-  if (uiEventIsKeyReleaseEvent (vl->wcont [VL_W_KEYH])) {
+  if (uiEventIsKeyReleaseEvent (vl->wcont [VL_W_EVENTH])) {
     return UICB_CONT;
   }
 
-  if (uiEventIsMovementKey (vl->wcont [VL_W_KEYH])) {
+  if (uiEventIsMovementKey (vl->wcont [VL_W_EVENTH])) {
     int32_t     dir = 1;
     int32_t     nsel;
 
-    if (uiEventIsKeyPressEvent (vl->wcont [VL_W_KEYH])) {
-      if (uiEventIsPageUpDownKey (vl->wcont [VL_W_KEYH])) {
+    if (uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
+      if (uiEventIsPageUpDownKey (vl->wcont [VL_W_EVENTH])) {
         dir = vl->dispsize;
       }
-      if (uiEventIsUpKey (vl->wcont [VL_W_KEYH])) {
+      if (uiEventIsUpKey (vl->wcont [VL_W_EVENTH])) {
         dir = - dir;
       }
     }
@@ -1639,20 +1649,20 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_KEYH]) &&
-      ! uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
+  if (! uiEventIsButtonPressEvent (vl->wcont [VL_W_EVENTH]) &&
+      ! uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     return UICB_CONT;
   }
 
   /* double clicks on entry fields must be ignored, as the */
   /* row number is incorrect */
   if (vl->allowdblclick == false &&
-      uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
+      uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     return UICB_CONT;
   }
 
   uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
-  button = uiEventButtonPressed (vl->wcont [VL_W_KEYH]);
+  button = uiEventButtonPressed (vl->wcont [VL_W_EVENTH]);
 
   /* button 4 and 5 cause a single scroll event */
   if (button == UIEVENT_BUTTON_4 || button == UIEVENT_BUTTON_5) {
@@ -1685,7 +1695,7 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
   uivlUpdateSelections (vl, rownum);
   /* call the selection handler before the double-click handler */
   uivlSelectionHandler (vl, rownum, colidx);
-  if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_KEYH])) {
+  if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     uivlDoubleClickHandler (vl, rownum, colidx);
   }
 
@@ -2028,15 +2038,15 @@ uivlFocusCallback (void *udata)
 static void
 uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
 {
-  if (vl->wcont [VL_W_KEYH] != NULL) {
+  if (vl->wcont [VL_W_EVENTH] != NULL) {
     if (vl->allowmultiple == false ||
-        ! uiEventIsControlPressed (vl->wcont [VL_W_KEYH])) {
+        ! uiEventIsControlPressed (vl->wcont [VL_W_EVENTH])) {
       uivlClearSelections (vl);
       uivlClearDisplaySelections (vl);
     }
   }
   if (vl->allowmultiple == true &&
-      uiEventIsShiftPressed (vl->wcont [VL_W_KEYH])) {
+      uiEventIsShiftPressed (vl->wcont [VL_W_EVENTH])) {
     int32_t   min = rownum;
     int32_t   max = rownum;
 

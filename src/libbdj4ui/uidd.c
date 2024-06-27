@@ -258,7 +258,8 @@ uiddCreateDialog (uidd_t *dd)
   if (dispcount > DD_MAX_ROWS) {
     dispcount = DD_MAX_ROWS;
   }
-  dd->uivl = uiCreateVirtList (dd->tag, vbox, dispcount, VL_NO_HEADING, VL_NO_WIDTH);
+  dd->uivl = uivlCreate (dd->tag, vbox, dispcount, VL_NO_WIDTH,
+      VL_NO_HEADING | VL_ENABLE_KEYS);
   uivlSetDarkBackground (dd->uivl);
   uivlSetNumColumns (dd->uivl, DD_COL_MAX);
   uivlMakeColumn (dd->uivl, "disp", DD_COL_DISP, VL_TYPE_LABEL);

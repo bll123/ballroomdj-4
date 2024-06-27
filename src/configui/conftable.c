@@ -40,7 +40,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiwcont_t     *uiwidgetp = NULL;
   uivirtlist_t  *uivl = NULL;
   const char    *tag = "conf";
-  int           heading = VL_SHOW_HEADING;
+  int           vlflags = VL_FLAGS_NONE;
 
   logProcBegin ();
 
@@ -56,13 +56,13 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   gui->tables [id].flags = flags;
 
   if (id == CONFUI_ID_DANCE) {
-    heading = VL_NO_HEADING;
+    vlflags = VL_NO_HEADING;
   }
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 1);
   uiWidgetAlignHorizStart (vbox);
   uiBoxPackStart (boxp, vbox);
-  uivl = uiCreateVirtList (tag, vbox, 5, heading, 100);
+  uivl = uivlCreate (tag, vbox, 5, 100, vlflags);
   gui->tables [id].uivl = uivl;
   uiwcontFree (vbox);
 

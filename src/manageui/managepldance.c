@@ -128,7 +128,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   mpldnc->uihideunsel = uiwidgetp;
 
-  mpldnc->uivl = uiCreateVirtList ("mpl-dance", vboxp, 15, VL_SHOW_HEADING, 300);
+  mpldnc->uivl = uivlCreate ("mpl-dance", vboxp, 15, 300, VL_FLAGS_NONE);
   uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
   uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);
