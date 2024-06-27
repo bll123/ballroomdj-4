@@ -222,8 +222,9 @@ uiddGetSelectionStr (uidd_t *dd)
   return NULL;
 }
 
+#if 0 /* UNUSED */
 int
-uiddGetSelectionNum (uidd_t *dd)
+uiddGetSelectionNum (uidd_t *dd)  /* UNUSED */
 {
   if (dd == NULL || dd->ident != DD_IDENT) {
     return DD_NO_SELECTION;
@@ -231,6 +232,7 @@ uiddGetSelectionNum (uidd_t *dd)
 
   return DD_NO_SELECTION;
 }
+#endif
 
 /* internal routines */
 

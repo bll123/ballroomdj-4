@@ -20,14 +20,16 @@
 
 static uiwcont_t * uiPanedWindowCreate (int orientation);
 
+#if 0 /* UNUSED */
 uiwcont_t *
-uiPanedWindowCreateHoriz (void)
+uiPanedWindowCreateHoriz (void)  /* UNUSED */
 {
   uiwcont_t *uiwidget;
 
   uiwidget = uiPanedWindowCreate (GTK_ORIENTATION_HORIZONTAL);
   return uiwidget;
 }
+#endif
 
 uiwcont_t *
 uiPanedWindowCreateVert (void)

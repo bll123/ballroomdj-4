@@ -324,8 +324,9 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
   return rc;
 }
 
+#if 0 /* UNUSED */
 bool
-gstiSetVolume (gsti_t *gsti, double vol)
+gstiSetVolume (gsti_t *gsti, double vol) /* UNUSED */
 {
   if (gsti == NULL || gsti->ident != GSTI_IDENT || gsti->mainctx == NULL) {
     return false;
@@ -334,6 +335,7 @@ gstiSetVolume (gsti_t *gsti, double vol)
   gstiRunOnce (gsti);
   return false;
 }
+#endif
 
 bool
 gstiSetRate (gsti_t *gsti, double rate)

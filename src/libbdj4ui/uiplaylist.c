@@ -149,17 +149,20 @@ uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn)
     return;
   }
 
+// ### FIX
 //  uiDropDownSelectionSetStr (uiplaylist->uidd, fn);
 }
 
+#if 0 /* UNUSED */
 void
-uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg)
+uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg)  /* UNUSED */
 {
   if (uiplaylist == NULL) {
     return;
   }
   uiSizeGroupAdd (sg, uiddGetButton (uiplaylist->uidd));
 }
+#endif
 
 void
 uiplaylistSetSelectCallback (uiplaylist_t *uiplaylist, callback_t *cb)

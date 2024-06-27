@@ -296,8 +296,9 @@ listGetVersion (keytype_t keytype, list_t *list)
 
 /* iterators */
 
+#if 0 /* UNUSED */
 void
-listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
+listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx) /* UNUSED */
 {
   if (! listCheckIfValid (list, keytype)) {
     return;
@@ -305,6 +306,7 @@ listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
 
   *iteridx = LIST_END_LIST;
 }
+#endif
 
 listidx_t
 listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)

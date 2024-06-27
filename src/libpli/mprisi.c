@@ -541,8 +541,9 @@ mprisStop (mpris_t *mpris)
   mpris->state = PLI_STATE_STOPPED;
 }
 
+#if 0 /* UNUSED */
 bool
-mprisSetVolume (mpris_t *mpris, double vol)
+mprisSetVolume (mpris_t *mpris, double vol) /* UNUSED */
 {
   bool    rc;
 
@@ -554,6 +555,7 @@ mprisSetVolume (mpris_t *mpris, double vol)
       propname [MPRIS_PROPNM_VOLUME], vol);
   return rc;
 }
+#endif
 
 bool
 mprisSetPosition (mpris_t *mpris, int64_t pos)

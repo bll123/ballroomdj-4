@@ -313,8 +313,9 @@ uiWidgetIsMapped (uiwcont_t *uiwidget)
   return rc;
 }
 
+#if 0 /* UNUSED */
 bool
-uiWidgetIsValid (uiwcont_t *uiwidget)
+uiWidgetIsValid (uiwcont_t *uiwidget)  /* UNUSED */
 {
   bool    rc = false;
   if (uiwidget != NULL && uiwidget->uidata.widget != NULL) {
@@ -322,6 +323,7 @@ uiWidgetIsValid (uiwcont_t *uiwidget)
   }
   return rc;
 }
+#endif
 
 void
 uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
@@ -340,8 +342,9 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
   *y = alloc.y;
 }
 
+#if 0 /* UNUSED */
 void
-uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height)
+uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height)  /* UNUSED */
 {
   GtkAllocation alloc;
 
@@ -356,6 +359,7 @@ uiWidgetGetSize (uiwcont_t *uiwidget, int *width, int *height)
   *width = alloc.width;
   *height = alloc.height;
 }
+#endif
 
 void
 uiWidgetAddClass (uiwcont_t *uiwidget, const char *class)

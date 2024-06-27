@@ -395,8 +395,9 @@ datafileGetList (datafile_t *df)
   return NULL;
 }
 
+#if 0 /* UNUSED */
 void
-datafileSetData (datafile_t *df, void *data)
+datafileSetData (datafile_t *df, void *data)  /* UNUSED */
 {
   if (df != NULL) {
     return;
@@ -404,6 +405,7 @@ datafileSetData (datafile_t *df, void *data)
   df->data = data;
   return;
 }
+#endif
 
 void
 datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
@@ -461,18 +463,21 @@ datafileReadDistVersion (const char *fname)
 
 /* debug / informational */
 
+/* for testing */
 datafiletype_t
 datafileGetType (datafile_t *df)
 {
   return df->dftype;
 }
 
+/* for testing */
 char *
 datafileGetFname (datafile_t *df)
 {
   return df->fname;
 }
 
+/* for testing */
 list_t *
 datafileGetData (datafile_t *df)
 {

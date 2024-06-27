@@ -122,14 +122,16 @@ uidanceSetState (uidance_t *uidance, int state)
   uiddSetState (uidance->uidd, state);
 }
 
+#if 0 /* UNUSED */
 void
-uidanceSizeGroupAdd (uidance_t *uidance, uiwcont_t *sg)
+uidanceSizeGroupAdd (uidance_t *uidance, uiwcont_t *sg)  /* UNUSED */
 {
   if (uidance == NULL || uidance->uidd == NULL) {
     return;
   }
   uiSizeGroupAdd (sg, uiddGetButton (uidance->uidd));
 }
+#endif
 
 void
 uidanceSetCallback (uidance_t *uidance, callback_t *cb)

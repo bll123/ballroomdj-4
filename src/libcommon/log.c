@@ -286,15 +286,18 @@ enum {
   LOG_BACKTRACE_SIZE = 30,
 };
 
+#if 0 /* for debugging */
 void
-logBacktraceHandler (int sig)
+logBacktraceHandler (int sig)     /* KEEP */
 {
   logBacktrace ();
   exit (1);
 }
+#endif
 
+#if 0 /* for debugging */
 void
-logBacktrace (void)
+logBacktrace (void) /* KEEP */
 {
 #if _lib_backtrace
   void    *array [LOG_BACKTRACE_SIZE];
@@ -314,9 +317,10 @@ logBacktrace (void)
   mdfree (out);
 #endif
 }
+#endif
 
 void
-logBasic (const char *fmt, ...)
+logBasic (const char *fmt, ...)    /* KEEP */
 {
   char      ttm [40];
   FILE      *fh;
@@ -333,7 +337,7 @@ logBasic (const char *fmt, ...)
 }
 
 void
-logStderr (const char *fmt, ...)
+logStderr (const char *fmt, ...)      /* KEEP */
 {
   char      ttm [40];
   va_list   args;

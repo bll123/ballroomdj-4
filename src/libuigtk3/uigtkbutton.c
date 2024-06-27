@@ -125,8 +125,9 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
       GTK_POS_RIGHT);
 }
 
+#if 0 /* UNUSED */
 void
-uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,
+uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,  /* UNUSED */
     const char *tooltip)
 {
   GtkWidget   *image;
@@ -149,6 +150,7 @@ uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,
     gtk_widget_set_tooltip_text (uiwidget->uidata.widget, tooltip);
   }
 }
+#endif
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)

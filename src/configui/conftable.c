@@ -152,14 +152,16 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
   logProcEnd ("");
 }
 
+#if 0  /* UNUSED */
 bool
-confuiTableChanged (void *udata, int32_t col)
+confuiTableChanged (void *udata, int32_t col)  /* UNUSED */
 {
   confuigui_t   *gui = udata;
 
   gui->tables [gui->tablecurr].changed = true;
   return UICB_CONT;
 }
+#endif
 
 bool
 confuiSwitchTable (void *udata, int32_t pagenum)

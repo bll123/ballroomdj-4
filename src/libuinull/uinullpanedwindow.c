@@ -18,14 +18,16 @@
 
 static uiwcont_t * uiPanedWindowCreate (int orientation);
 
+#if 0 /* UNUSED */
 uiwcont_t *
-uiPanedWindowCreateHoriz (void)
+uiPanedWindowCreateHoriz (void)  /* UNUSED */
 {
   uiwcont_t *uiwidget;
 
   uiwidget = uiPanedWindowCreate (1);
   return NULL;
 }
+#endif
 
 uiwcont_t *
 uiPanedWindowCreateVert (void)

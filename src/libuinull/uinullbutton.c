@@ -39,12 +39,14 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
   return;
 }
 
+#if 0 /* UNUSED */
 void
-uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,
+uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,  /* UNUSED */
     const char *tooltip)
 {
   return;
 }
+#endif
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)

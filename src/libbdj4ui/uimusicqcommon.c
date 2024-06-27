@@ -170,13 +170,15 @@ uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
 }
 
+#if 0 /* UNUSED */
 void
-uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
+uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)  /* UNUSED */
 {
   if (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] != NULL) {
     callbackHandlerII (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx, mqidx);
   }
 }
+#endif
 
 void
 uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)

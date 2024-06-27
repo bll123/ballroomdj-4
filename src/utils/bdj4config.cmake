@@ -173,6 +173,7 @@ add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
 add_compile_options (-Werror=return-type)
 add_compile_options (-Wdeprecated-declarations)
+add_compile_options (-Wunreachable-code)
 
 #### compiler-specific compile options
 

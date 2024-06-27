@@ -108,14 +108,16 @@ uigenreSetState (uigenre_t *uigenre, int state)
   uiddSetState (uigenre->uidd, state);
 }
 
+#if 0 /* UNUSED */
 void
-uigenreSizeGroupAdd (uigenre_t *uigenre, uiwcont_t *sg)
+uigenreSizeGroupAdd (uigenre_t *uigenre, uiwcont_t *sg)  /* UNUSED */
 {
   if (uigenre == NULL || uigenre->uidd == NULL) {
     return;
   }
   uiSizeGroupAdd (sg, uiddGetButton (uigenre->uidd));
 }
+#endif
 
 void
 uigenreSetCallback (uigenre_t *uigenre, callback_t *cb)

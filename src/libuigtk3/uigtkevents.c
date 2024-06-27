@@ -190,8 +190,9 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
 }
 
+#if 0 /* UNUSED */
 void
-uiEventSetEnterLeaveCallback (uiwcont_t *uieventwidget,
+uiEventSetEnterLeaveCallback (uiwcont_t *uieventwidget,  /* UNUSED */
     uiwcont_t *uiwidgetp, callback_t *uicb)
 {
   uievent_t   *uievent;
@@ -210,6 +211,7 @@ uiEventSetEnterLeaveCallback (uiwcont_t *uieventwidget,
   g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
       G_CALLBACK (uiEventEnterLeaveHandler), uieventwidget);
 }
+#endif
 
 bool
 uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
@@ -272,7 +274,7 @@ uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
 }
 
 bool
-uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)
+uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)   /* KEEP */
 {
   uievent_t   *uievent;
   bool      rc = false;
@@ -582,7 +584,7 @@ uiEventIsMaskedKey (uiwcont_t *uiwidget)
 }
 
 bool
-uiEventIsAltPressed (uiwcont_t *uiwidget)
+uiEventIsAltPressed (uiwcont_t *uiwidget)     /* KEEP */
 {
   uievent_t   *uievent;
 
@@ -641,8 +643,9 @@ uiEventButtonPressed (uiwcont_t *uiwidget)
   return rc;
 }
 
+#if 0 /* UNUSED */
 bool
-uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)
+uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)  /* UNUSED */
 {
   uievent_t   *uievent;
   bool      rc = false;
@@ -662,6 +665,7 @@ uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)
 
   return rc;
 }
+#endif
 
 /* internal routines */
 

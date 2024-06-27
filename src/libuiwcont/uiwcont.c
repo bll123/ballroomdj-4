@@ -89,7 +89,7 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
 
 /* for debugging */
 const char *
-uiwcontDesc (int wtype)
+uiwcontDesc (int wtype)   /* KEEP */
 {
   if (wtype < 0 || wtype >= WCONT_T_MAX) {
     return "invalid";

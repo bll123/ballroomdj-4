@@ -17,17 +17,85 @@ fi
 INCTC=inctest.c
 INCTO=inctest.o
 INCTOUT=inctest.log
-TIN=dep-in.txt
-TSORT=dep-sort.txt
+TIIN=dep-inc-in.txt
+TISORT=dep-inc-sort.txt
+TOIN=dep-obj-in.txt
+TOSORT=dep-obj-sort.txt
+TUFUNC=dep-ufunc.txt
+TUFUNCOUT=dep-unused.txt
 DEPCOMMON=dep-libcommon.txt
 DEPBASIC=dep-libbasic.txt
 DEPBDJ4=dep-libbdj4.txt
 grc=0
 
+# check for unused functions
+echo "## checking for unused functions"
+grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
+  grep -E -v '(:main|:fprintf|uinull|KEEP|UNUSED)' |
+  grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
+  sed -e 's, (.*,,' -e 's,.*:,,' |
+  sort > ${TUFUNC}
+> ${TUFUNCOUT}
+for pat in $(cat ${TUFUNC}); do
+  #  <sp>func<sp>(
+  #  ->func<sp>(
+  #  <sp>func,
+  #  (func,
+  #  (func)
+  #  "func"
+  grep -E "([ >\(]${pat} \(|[ \(]${pat}[,)]|\"${pat}\")" \
+      */*.c */*/*.c */*.cpp */*.m > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo $pat >> ${TUFUNCOUT}
+    echo "unused function $pat"
+  fi
+done
+
+# check for missing copyrights
+echo "## checking for missing copyright"
+
+for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
+    */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
+    po/Makefile* */*.awk config.h.in */*.cmake; do
+  case $fn in
+    build/*)
+      continue
+      ;;
+    *potemplates.c)
+      # temporary file
+      continue
+      ;;
+    ../dev/*)
+      continue
+      ;;
+    libcont/*)
+      # ignore for now
+      continue
+      ;;
+    utils/dumpvars.cmake)
+      continue
+      ;;
+    utils/*.sh)
+      # most of this can be skipped
+      continue
+      ;;
+  esac
+  grep 'Copyright' $fn > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "$fn : missing Copyright"
+    grc=$rc
+  fi
+done
+if [[ $grc != 0 ]]; then
+  exit $grc
+fi
+
 # check to make sure the include files do not have any duplicate exclusions
 echo "## checking include file protections"
 
-lc=$(grep '^#ifndef INC_' include/*.h include/ui/*.h |
+lc=$(grep '^#ifndef INC_' include/*.h include/ui/*.h config.h.in |
   sort |
   uniq -d |
   wc -l)
@@ -39,9 +107,9 @@ if [[ $rc -ne 0 ]]; then
   grc=$rc
   exit $grc
 fi
-for fn in include/*.h include/ui/*.h; do
-  inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g')
-  tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g')
+for fn in include/*.h include/ui/*.h config.h.in; do
+  inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g' -e 's/\.in//')
+  tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g' -e 's/\.in//')
   if [[ $tnm != ${inc@L} ]]; then
     echo "$fn : mismatched protection name $tnm ${inc@L}"
     grc=1
@@ -93,55 +161,21 @@ if [[ $grc -ne 0 ]]; then
 fi
 rm -f $INCTOUT
 
-# check for missing copyrights
-echo "## checking for missing copyright"
-
-for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
-    */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
-    po/Makefile* */*.awk; do
-  case $fn in
-    *potemplates.c)
-      # temporary file
-      continue
-      ;;
-    ../dev/*)
-      continue
-      ;;
-    libcont/*)
-      # ignore for now
-      continue
-      ;;
-    utils/*.sh)
-      # most of this can be skipped
-      continue
-      ;;
-  esac
-  grep 'Copyright' $fn > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "$fn : missing Copyright"
-    grc=$rc
-  fi
-done
-if [[ $grc != 0 ]]; then
-  exit $grc
-fi
-
 # check the include file hierarchy for problems.
 echo "## checking include file hierarchy"
-> $TIN
+> $TIIN
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h build/config.h; do
-  echo $fn $fn >> $TIN
+  echo $fn $fn >> $TIIN
   grep -E '^# *include "' $fn |
       sed -e 's,^# *include ",,' \
       -e 's,".*$,,' \
-      -e "s,^,$fn include/," >> $TIN
+      -e "s,^,$fn include/," >> $TIIN
 done
-tsort < $TIN > $TSORT
+tsort < $TIIN > $TISORT
 rc=$?
 
 if [[ $keep == F ]]; then
-  rm -f $TIN $TSORT > /dev/null 2>&1
+  rm -f $TIIN $TISORT > /dev/null 2>&1
 fi
 if [[ $rc -ne 0 ]]; then
   grc=$rc
@@ -151,23 +185,24 @@ fi
 # check the object file hierarchy for problems.
 echo "## checking object file hierarchy"
 #
-./utils/lorder $(find ./build -name '*.o') > $TIN
-tsort < $TIN > $TSORT
+./utils/lorder $(find ./build -name '*.o') > $TOIN
+tsort < $TOIN > $TOSORT
 rc=$?
 if [[ $rc -ne 0 ]]; then
   grc=$rc
 fi
 
 if [[ $keep == T ]]; then
-  grep -E '/(libbdj4common|objosutils|objlauncher|objosenv|objdirutil|objfileop|objosprocess|objstring|objtmutil).dir/' $TSORT |
+  grep -E '/(libbdj4common|objosutils|objlauncher|objosenv|objdirutil|objfileop|objosprocess|objstring|objtmutil).dir/' $TOSORT |
       sed -e 's,.*/,,' > $DEPCOMMON
-  grep -E '/(libbdj4basic).dir/' $TSORT |
+  grep -E '/(libbdj4basic).dir/' $TOSORT |
       sed -e 's,.*/,,' > $DEPBASIC
-  grep -E '/(libbdj4).dir/' $TSORT |
+  grep -E '/(libbdj4).dir/' $TOSORT |
       sed -e 's,.*/,,' > $DEPBDJ4
 fi
 if [[ $keep == F ]]; then
-  rm -f $TIN $TSORT $DEPCOMMON $DEPBASIC $DEPBDJ4 > /dev/null 2>&1
+  rm -f $TIIN $TISORT $TOIN $TOSORT $TUFUNC \
+      $DEPCOMMON $DEPBASIC $DEPBDJ4 > /dev/null 2>&1
 fi
 rm -f $INCCT $INCTO $INCTOUT
 

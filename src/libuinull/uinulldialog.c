@@ -48,11 +48,13 @@ uiSelectFileDialog (uiselect_t *selectdata)
   return NULL;
 }
 
+#if 0 /* UNUSED */
 char *
-uiSaveFileDialog (uiselect_t *selectdata)
+uiSaveFileDialog (uiselect_t *selectdata)  /* UNUSED */
 {
   return NULL;
 }
+#endif
 
 uiwcont_t *
 uiCreateDialog (uiwcont_t *window,

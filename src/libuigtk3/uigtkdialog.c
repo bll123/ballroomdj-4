@@ -143,8 +143,9 @@ uiSelectFileDialog (uiselect_t *selectdata)
   return fn;
 }
 
+#if 0 /* UNUSED */
 char *
-uiSaveFileDialog (uiselect_t *selectdata)
+uiSaveFileDialog (uiselect_t *selectdata)  /* UNUSED */
 {
   GtkFileChooserNative *widget = NULL;
   gint      res;
@@ -178,6 +179,7 @@ uiSaveFileDialog (uiselect_t *selectdata)
   g_object_unref (widget);
   return fn;
 }
+#endif
 
 uiwcont_t *
 uiCreateDialog (uiwcont_t *window,

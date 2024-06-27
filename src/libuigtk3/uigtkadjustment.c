@@ -17,8 +17,9 @@
 
 #include "ui/uiadjustment.h"
 
+#if 0 /* UNUSED */
 uiwcont_t *
-uiCreateAdjustment (double value, double start, double end,
+uiCreateAdjustment (double value, double start, double end,  /* UNUSED */
     double stepinc, double pageinc, double pagesz)
 {
   uiwcont_t       *uiadj;
@@ -33,9 +34,11 @@ uiCreateAdjustment (double value, double start, double end,
   uiadj->uidata.adjustment = adjustment;
   return uiadj;
 }
+#endif
 
+#if 0 /* UNUSED */
 void *
-uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
+uiAdjustmentGetAdjustment (uiwcont_t *uiadj)  /* UNUSED */
 {
   if (! uiwcontValid (uiadj, WCONT_T_ADJUSTMENT, "adj-get")) {
     return NULL;
@@ -43,3 +46,4 @@ uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
 
   return uiadj->uidata.adjustment;
 }
+#endif

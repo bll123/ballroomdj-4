@@ -105,6 +105,7 @@ orgoptFree (orgopt_t *orgopt)
   }
 }
 
+/* for testing */
 slist_t *
 orgoptGetList (orgopt_t *orgopt)
 {

@@ -62,8 +62,10 @@ uiScaleSetRange (uiwcont_t *uiscale, double start, double end)
   return;
 }
 
+#if 0 /* UNUSED */
 void
-uiScaleSetState (uiwcont_t *uiscale, int state)
+uiScaleSetState (uiwcont_t *uiscale, int state)  /* UNUSED */
 {
   return;
 }
+#endif

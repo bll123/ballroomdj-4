@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "callback.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -110,6 +111,12 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 }
 
 void
+uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
 uiWidgetDisableFocus (uiwcont_t *uiwidget)
 {
   return;
@@ -152,11 +159,13 @@ uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
   return;
 }
 
+#if 0 /* UNUSED */
 bool
-uiWidgetIsValid (uiwcont_t *uiwidget)
+uiWidgetIsValid (uiwcont_t *uiwidget)  /* UNUSED */
 {
   return true;
 }
+#endif
 
 void
 uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
@@ -181,3 +190,28 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
 {
   return;
 }
+
+void
+uiWidgetEnableFocus (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiWidgetGrabFocus (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+bool
+uiWidgetIsMapped (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+void
+uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  return;
+}
+

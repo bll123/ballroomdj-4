@@ -67,18 +67,22 @@ uiDropDownSetList (uiwcont_t *uiwidget, slist_t *list,
   return;
 }
 
+#if 0 /* UNUSED */
 void
-uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,
+uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,  /* UNUSED */
     const char *selectLabel)
 {
   return;
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)
+uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)  /* UNUSED */
 {
   return;
 }
+#endif
 
 void
 uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
@@ -86,11 +90,13 @@ uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
   return;
 }
 
+#if 0 /* UNUSED */
 void
-uiDropDownSetState (uiwcont_t *uiwidget, int state)
+uiDropDownSetState (uiwcont_t *uiwidget, int state)  /* UNUSED */
 {
   return;
 }
+#endif
 
 char *
 uiDropDownGetString (uiwcont_t *uiwidget)

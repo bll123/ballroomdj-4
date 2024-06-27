@@ -82,3 +82,8 @@ uiLabelAlignEnd (uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiLabelSetMinWidth (uiwcont_t *uiwidget, int width)
+{
+  return;
+}

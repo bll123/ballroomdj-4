@@ -25,11 +25,11 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-typedef struct {
+typedef struct uitree {
   int         junk;
 } uitree_t;
 
-uitree_t *
+uiwcont_t *
 uiCreateTreeView (void)
 {
   return NULL;
@@ -344,3 +344,8 @@ uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
   return;
 }
 
+void
+uiTreeViewSetButton3Callback (uiwcont_t *uiwidget, callback_t *cb)
+{
+  return;
+}

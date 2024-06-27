@@ -524,14 +524,16 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   return retval;
 }
 
+#if 0 /* UNUSED */
 bool
-orgHaveDance (org_t *org)
+orgHaveDance (org_t *org) /* UNUSED */
 {
   if (org == NULL) {
     return false;
   }
   return org->havedance;
 }
+#endif
 
 void
 orgStartIterator (org_t *org, slistidx_t *iteridx)

@@ -51,11 +51,13 @@ uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
   return;
 }
 
+#if 0 /* UNUSED */
 int
-uiSpinboxTextGetIdx (uiwcont_t *uiwidget)
+uiSpinboxTextGetIdx (uiwcont_t *uiwidget)  /* UNUSED */
 {
   return 0;
 }
+#endif
 
 int
 uiSpinboxTextGetValue (uiwcont_t *uiwidget)
@@ -82,14 +84,14 @@ uiSpinboxTimeCreate (int sbtype, void *udata,
   return NULL;
 }
 
-ssize_t
+int32_t
 uiSpinboxTimeGetValue (uiwcont_t *uiwidget)
 {
   return 0;
 }
 
 void
-uiSpinboxTimeSetValue (uiwcont_t *uiwidget, ssize_t value)
+uiSpinboxTimeSetValue (uiwcont_t *uiwidget, int32_t value)
 {
   return;
 }
@@ -178,14 +180,22 @@ uiSpinboxResetChanged (uiwcont_t *uiwidget)
   return;
 }
 
+#if 0 /* UNUSED */
 void
-uiSpinboxAlignRight (uiwcont_t *uiwidget)
+uiSpinboxAlignRight (uiwcont_t *uiwidget)  /* UNUSED */
+{
+  return;
+}
+#endif
+
+void
+uiSpinboxAddClass (const char *classnm, const char *color)
 {
   return;
 }
 
 void
-uiSpinboxAddClass (const char *classnm, const char *color)
+uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }

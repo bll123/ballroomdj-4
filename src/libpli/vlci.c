@@ -249,7 +249,7 @@ vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plidevtype)
 }
 
 const char *
-vlcVersion (vlcdata_t *vlcdata)
+vlcVersion (vlcdata_t *vlcdata)   /* KEEP */
 {
   return vlcdata->version;
 }
@@ -431,11 +431,13 @@ vlcClose (vlcdata_t *vlcdata)
   }
 }
 
+#if 0 /* UNUSED */
 void
-vlcRelease (vlcdata_t *vlcdata)
+vlcRelease (vlcdata_t *vlcdata)  /* UNUSED */
 {
   vlcClose (vlcdata);
 }
+#endif
 
 /* internal routines */
 

@@ -141,41 +141,6 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
   return;
 }
 
-int
-atibdj4WriteRIFFTags (atidata_t *atidata, const char *ffn,
-    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
-{
-  return -1;
-}
-
-atisaved_t *
-atibdj4SaveRIFFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return NULL;
-}
-
-void
-atibdj4FreeSavedRIFFTags (atisaved_t *atisaved, int tagtype, int filetype)
-{
-  return;
-}
-
-int
-atibdj4RestoreRIFFTags (atidata_t *atidata,
-    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
-{
-  return -1;
-}
-
-void
-atibdj4CleanRIFFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return;
-}
-
 /* internal routines */
 
 static int

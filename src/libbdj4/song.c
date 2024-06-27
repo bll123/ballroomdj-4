@@ -613,9 +613,9 @@ songCleanup (void)
   gsonginit.initialized = false;
 }
 
-#if 0
+#if 0 /* for debugging */
 void
-songDump (song_t *song)
+songDump (song_t *song)   /* KEEP */
 {
   if (song == NULL) {
     return;

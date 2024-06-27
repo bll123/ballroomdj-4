@@ -1177,8 +1177,9 @@ uivlPopulate (uivirtlist_t *vl)
   uivlSetDisplaySelections (vl);
 }
 
+#if 0 /* UNUSED */
 void
-uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)
+uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1186,9 +1187,11 @@ uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)
 
   *rowiter = vl->rowoffset - 1;
 }
+#endif
 
+#if 0 /* UNUSED */
 int32_t
-uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)
+uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return LIST_LOC_INVALID;
@@ -1203,9 +1206,11 @@ uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)
   }
   return *rowiter;
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
+uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1213,9 +1218,11 @@ uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
 
   nlistStartIterator (vl->selected, iteridx);
 }
+#endif
 
+#if 0 /* UNUSED */
 int32_t
-uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
+uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
 {
   nlistidx_t    key = -1;
 
@@ -1226,6 +1233,7 @@ uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
   key = nlistIterateKey (vl->selected, iteridx);
   return key;
 }
+#endif
 
 int32_t
 uivlSelectionCount (uivirtlist_t *vl)

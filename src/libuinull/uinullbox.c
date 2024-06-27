@@ -53,3 +53,8 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
+{
+  return;
+}

@@ -15,15 +15,19 @@
 
 #include "ui/uiadjustment.h"
 
+#if 0 /* UNUSED */
 uiwcont_t *
-uiCreateAdjustment (double value, double start, double end,
+uiCreateAdjustment (double value, double start, double end,  /* UNUSED */
     double stepinc, double pageinc, double pagesz)
 {
   return NULL;
 }
+#endif
 
+#if 0 /* UNUSED */
 void *
-uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
+uiAdjustmentGetAdjustment (uiwcont_t *uiadj)  /* UNUSED */
 {
   return NULL;
 }
+#endif

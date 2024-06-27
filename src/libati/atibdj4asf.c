@@ -90,41 +90,6 @@ atibdj4ParseASFTags (atidata_t *atidata, slist_t *tagdata,
   return;
 }
 
-int
-atibdj4WriteASFTags (atidata_t *atidata, const char *ffn,
-    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
-{
-  return -1;
-}
-
-atisaved_t *
-atibdj4SaveASFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return NULL;
-}
-
-void
-atibdj4FreeSavedASFTags (atisaved_t *atisaved, int tagtype, int filetype)
-{
-  return;
-}
-
-int
-atibdj4RestoreASFTags (atidata_t *atidata,
-    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
-{
-  return -1;
-}
-
-void
-atibdj4CleanASFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return;
-}
-
 /* internal routines */
 
 static int

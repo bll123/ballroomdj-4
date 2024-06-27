@@ -261,8 +261,9 @@ localeCleanup (void)
   }
 }
 
+#if 0   /* for debugging */
 void
-localeDebug (const char *tag)
+localeDebug (const char *tag)   /* KEEP */
 {
   char    tbuff [200];
 
@@ -284,6 +285,7 @@ localeDebug (const char *tag)
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }
+#endif
 
 /* internal routines */
 

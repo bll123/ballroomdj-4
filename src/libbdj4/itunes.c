@@ -390,8 +390,9 @@ itunesGetSongDataByName (itunes_t *itunes, const char *skey)
   return itunesGetSongData (itunes, idx);
 }
 
+#if 0 /* UNUSED */
 void
-itunesStartIterateSongs (itunes_t *itunes)
+itunesStartIterateSongs (itunes_t *itunes) /* UNUSED */
 {
   if (itunes == NULL || itunes->songbyidx == NULL) {
     return;
@@ -399,9 +400,11 @@ itunesStartIterateSongs (itunes_t *itunes)
 
   nlistStartIterator (itunes->songbyidx, &itunes->songiteridx);
 }
+#endif
 
+#if 0 /* UNUSED */
 nlist_t *
-itunesIterateSongs (itunes_t *itunes)
+itunesIterateSongs (itunes_t *itunes) /* UNUSED */
 {
   nlist_t       *entry;
   nlistidx_t    nkey;
@@ -414,6 +417,7 @@ itunesIterateSongs (itunes_t *itunes)
   entry = nlistGetList (itunes->songbyidx, nkey);
   return entry;
 }
+#endif
 
 
 slist_t *

@@ -188,8 +188,9 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   return UICB_CONT;
 }
 
+#if 0 /* UNUSED */
 void
-uiexpplDialogClear (uiexppl_t *uiexppl)
+uiexpplDialogClear (uiexppl_t *uiexppl)  /* UNUSED */
 {
   if (uiexppl == NULL) {
     return;
@@ -197,6 +198,7 @@ uiexpplDialogClear (uiexppl_t *uiexppl)
 
   uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
 }
+#endif
 
 /* delayed entry validation for the audio file needs to be run */
 void

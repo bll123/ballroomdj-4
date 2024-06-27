@@ -152,6 +152,7 @@ genreDeleteLast (genre_t *genres)
   ilistDelete (genres->genre, count - 1);
 }
 
+/* for testing */
 void
 genreStartIterator (genre_t *genres, ilistidx_t *iteridx)
 {
@@ -162,6 +163,7 @@ genreStartIterator (genre_t *genres, ilistidx_t *iteridx)
   ilistStartIterator (genres->genre, iteridx);
 }
 
+/* for testing */
 ilistidx_t
 genreIterate (genre_t *genres, ilistidx_t *iteridx)
 {

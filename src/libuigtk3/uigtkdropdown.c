@@ -245,8 +245,9 @@ uiDropDownSetList (uiwcont_t *uiwidget, slist_t *list,
   g_object_unref (store);
 }
 
+#if 0 /* UNUSED */
 void
-uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,
+uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,  /* UNUSED */
     const char *selectLabel)
 {
   uidropdown_t      *dropdown;
@@ -315,9 +316,11 @@ uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,
       GTK_TREE_MODEL (store));
   g_object_unref (store);
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)
+uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)  /* UNUSED */
 {
   uidropdown_t  *dropdown;
   nlistidx_t    internalidx;
@@ -335,6 +338,7 @@ uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)
   }
   uiDropDownSelectionSet (uiwidget, internalidx);
 }
+#endif
 
 void
 uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
@@ -359,8 +363,9 @@ uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
   uiDropDownSelectionSet (uiwidget, internalidx);
 }
 
+#if 0 /* UNUSED */
 void
-uiDropDownSetState (uiwcont_t *uiwidget, int state)
+uiDropDownSetState (uiwcont_t *uiwidget, int state)  /* UNUSED */
 {
   uidropdown_t    *dropdown;
 
@@ -371,6 +376,7 @@ uiDropDownSetState (uiwcont_t *uiwidget, int state)
   dropdown = uiwidget->uiint.uidropdown;
   uiWidgetSetState (dropdown->button, state);
 }
+#endif
 
 char *
 uiDropDownGetString (uiwcont_t *uiwidget)

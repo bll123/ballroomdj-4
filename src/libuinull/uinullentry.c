@@ -93,3 +93,15 @@ uiEntrySetState (uiwcont_t *uientry, int state)
 {
   return;
 }
+
+void
+uiEntryValidateClear (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  return;
+}

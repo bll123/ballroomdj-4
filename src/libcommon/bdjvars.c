@@ -84,7 +84,7 @@ bdjvarsGetNum (bdjvarkeyl_t idx)
 }
 
 void
-bdjvarsSetNum (bdjvarkeyl_t idx, int64_t value)
+bdjvarsSetNum (bdjvarkeyl_t idx, int64_t value)   /* KEEP */
 {
   if (idx >= BDJVL_MAX) {
     return;

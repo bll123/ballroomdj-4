@@ -58,8 +58,9 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
   uiWidgetAddClass (uiwidget, CHGIND_NORMAL_CLASS);
 }
 
+#if 0 /* UNUSED */
 void
-uichgindMarkError (uiwcont_t *uiwidget)
+uichgindMarkError (uiwcont_t *uiwidget)  /* UNUSED */
 {
   if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-err")) {
     return;
@@ -69,6 +70,7 @@ uichgindMarkError (uiwcont_t *uiwidget)
   uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
   uiWidgetAddClass (uiwidget, CHGIND_ERROR_CLASS);
 }
+#endif
 
 void
 uichgindMarkChanged (uiwcont_t *uiwidget)

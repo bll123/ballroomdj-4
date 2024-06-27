@@ -194,8 +194,9 @@ uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
   gtk_text_buffer_delete_mark (tb->buffer->uidata.buffer, mark);
 }
 
+#if 0 /* UNUSED */
 void
-uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)
+uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)  /* UNUSED */
 {
   GtkTextIter siter;
   GtkTextIter eiter;
@@ -213,6 +214,7 @@ uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)
   gtk_text_buffer_get_end_iter (tb->buffer->uidata.buffer, &eiter);
   gtk_text_buffer_insert (tb->buffer->uidata.buffer, &eiter, str, -1);
 }
+#endif
 
 /* this does not handle any selected text */
 
