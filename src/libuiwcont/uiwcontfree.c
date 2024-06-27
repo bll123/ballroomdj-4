@@ -16,7 +16,6 @@
 
 /* the includes are needed to get the declaration of ...Free() */
 #include "ui/uibutton.h"
-#include "ui/uidropdown.h"
 #include "ui/uientry.h"
 #include "ui/uievents.h"
 #include "ui/uimenu.h"
@@ -40,10 +39,6 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_BUTTON: {
       uiButtonFree (uiwidget);
-      break;
-    }
-    case WCONT_T_DROPDOWN: {
-      uiDropDownFree (uiwidget);
       break;
     }
     case WCONT_T_ENTRY: {

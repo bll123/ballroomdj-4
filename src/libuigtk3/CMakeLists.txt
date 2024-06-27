@@ -12,7 +12,6 @@ add_library (libuigtk3 SHARED
   uigtkclipboard.c
   uigtkdialog.c
   uigtkdragdrop.c
-  uigtkdropdown.c
   uigtkentry.c
   uigtkevents.c
   uigtkimage.c

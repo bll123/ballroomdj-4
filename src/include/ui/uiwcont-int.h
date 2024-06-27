@@ -23,7 +23,6 @@ typedef enum {
   WCONT_T_CHGIND,
   WCONT_T_COLOR_BUTTON,
   WCONT_T_DIALOG_WINDOW,
-  WCONT_T_DROPDOWN,
   WCONT_T_ENTRY,
   WCONT_T_FONT_BUTTON,
   WCONT_T_IMAGE,
@@ -74,7 +73,6 @@ enum {
 };
 
 typedef struct uibutton uibutton_t;
-typedef struct uidropdown uidropdown_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
 typedef struct uimenu uimenu_t;
@@ -88,7 +86,6 @@ typedef struct uivirtlist uivirtlist_t;
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;
-    uidropdown_t  *uidropdown;
     uientry_t     *uientry;
     uievent_t       *uievent;
     uimenu_t      *uimenu;
