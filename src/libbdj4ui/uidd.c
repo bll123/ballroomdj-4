@@ -219,7 +219,7 @@ uiddGetSelectionStr (uidd_t *dd)
     return NULL;
   }
 
-  return NULL;
+  return ilistGetStr (dd->ddlist, dd->selectedidx, DD_LIST_KEY_STR);
 }
 
 #if 0 /* UNUSED */

@@ -278,9 +278,9 @@ uiCreateVirtList (const char *tag, uiwcont_t *boxp,
   }
 
   /* a scrolled window is necessary to allow the window to shrink */
-  /* keep the minimum height small so that drop-downs do not get */
+  /* keep the minimum height very small so that drop-downs do not get */
   /* created with extra space */
-  vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (100);
+  vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
   uiWidgetExpandVert (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);

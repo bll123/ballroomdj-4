@@ -277,7 +277,16 @@ callbackValidate (callback_t *cb, int64_t wantident)
     return rc;
   }
   if (cb->ident != wantident) {
-    fprintf (stderr, "ERR: callback: mismatch type: %" PRIx64 " (%" PRIx64 ")\n", cb->ident, wantident);
+    char    tbuffa [sizeof (int64_t) + 1];
+    char    tbuffb [sizeof (int64_t) + 1];
+
+    for (size_t i = 0; i < sizeof (int64_t); ++i) {
+      tbuffa [i] = ((char *) &cb->ident)[sizeof (int64_t) - i - 1];
+      tbuffb [i] = ((char *) &wantident)[sizeof (int64_t) - i - 1];
+    }
+    tbuffa [sizeof (int64_t)] = '\0';
+    tbuffb [sizeof (int64_t)] = '\0';
+    fprintf (stderr, "ERR: callback: mismatch type: %s want: %s\n", tbuffa, tbuffb);
     return rc;
   }
 

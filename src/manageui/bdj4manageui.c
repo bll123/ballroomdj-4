@@ -64,6 +64,7 @@
 #include "ui.h"
 #include "uiapplyadj.h"
 #include "uicopytags.h"
+#include "uidd.h"
 #include "uiexppl.h"
 #include "uiexpimpbdj4.h"
 #include "uimusicq.h"
@@ -151,7 +152,6 @@ enum {
   MANAGE_CB_SAVE,
   MANAGE_CB_CFPL_DIALOG,
   MANAGE_CB_ITUNES_DIALOG,
-  MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_APPLY_ADJ,
   MANAGE_CB_SL_SEL_FILE,
   MANAGE_CB_BDJ4_EXP,
@@ -195,7 +195,7 @@ enum {
   MANAGE_W_STATUS_MSG,
   MANAGE_W_WINDOW,
   MANAGE_W_SELECT_BUTTON,
-  MANAGE_W_ITUNES_SEL,
+//  MANAGE_W_ITUNES_SEL,
   MANAGE_W_CFPL_TM_LIMIT,
   MANAGE_W_MAX,
 };
@@ -234,6 +234,8 @@ typedef struct {
   uisongsel_t       *slsbssongsel;
   char              *sloldname;
   itunes_t          *itunes;
+  uidd_t            *itunesdd;
+  ilist_t           *itunesddlist;
   /* prior name is used by create-from-playlist */
   uisongfilter_t    *uisongfilter;
   uiplaylist_t      *cfpl;
@@ -364,7 +366,6 @@ static void     manageReloadSongEdit (manageui_t *manage);
 static bool     managePlaylistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
 static void     manageiTunesDialogCreateList (manageui_t *manage);
-static bool     manageiTunesDialogSelectHandler (void *udata, int32_t idx);
 static bool     manageiTunesDialogResponseHandler (void *udata, int32_t responseid);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
@@ -485,6 +486,8 @@ main (int argc, char *argv[])
   manage.slpriorname = NULL;
   manage.cfplfn = NULL;
   manage.itunes = NULL;
+  manage.itunesdd = NULL;
+  manage.itunesddlist = NULL;
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
   manage.inload = false;
@@ -689,6 +692,8 @@ manageClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (manage->wcont [i]);
   }
   itunesFree (manage->itunes);
+  uiddFree (manage->itunesdd);
+  ilistFree (manage->itunesddlist);
   samesongFree (manage->samesong);
   uicopytagsFree (manage->uict);
   uiaaFree (manage->uiaa);
@@ -917,8 +922,6 @@ manageInitializeUI (manageui_t *manage)
       manageCFPLResponseHandler, manage);
   manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitI (
       manageiTunesDialogResponseHandler, manage);
-  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitI (
-      manageiTunesDialogSelectHandler, manage);
 
   manage->samesong = samesongAlloc (manage->musicdb);
   manage->uisongfilter = uisfInit (manage->minfo.window, manage->minfo.options,
@@ -2028,12 +2031,11 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiwcontFree (uiwidgetp);
 
   /* returns the button */
-  manage->wcont [MANAGE_W_ITUNES_SEL] = uiDropDownInit ();
-  uiwidgetp = uiComboboxCreate (manage->wcont [MANAGE_W_ITUNES_SEL],
-      manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], "",
-      manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);
   manageiTunesDialogCreateList (manage);
-  uiBoxPackStart (hbox, uiwidgetp);
+  manage->itunesdd = uiddCreate ("mui-itunes-sel",
+      manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], hbox, DD_PACK_START,
+      manage->itunesddlist, DD_LIST_TYPE_STR,
+      "", DD_REPLACE_TITLE, NULL);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -2048,27 +2050,23 @@ manageiTunesCreateDialog (manageui_t *manage)
 static void
 manageiTunesDialogCreateList (manageui_t *manage)
 {
-  slist_t     *pllist;
   const char  *skey;
+  ilist_t     *pllist;
+  ilistidx_t  idx;
 
   logProcBegin ();
 
-  pllist = slistAlloc ("itunes-pl-sel", LIST_ORDERED, NULL);
+  pllist = ilistAlloc ("itunes-pl-sel", LIST_ORDERED);
+
+  idx = 0;
   itunesStartIteratePlaylists (manage->itunes);
   while ((skey = itunesIteratePlaylists (manage->itunes)) != NULL) {
-    slistSetStr (pllist, skey, skey);
+    ilistSetStr (pllist, idx, DD_LIST_DISP, skey);
+    ilistSetStr (pllist, idx, DD_LIST_KEY_STR, skey);
+    ++idx;
   }
-  slistCalcMaxKeyWidth (pllist);
-  /* what text is best to use for 'no selection'? */
-  uiDropDownSetList (manage->wcont [MANAGE_W_ITUNES_SEL], pllist, "");
-  slistFree (pllist);
+  manage->itunesddlist = pllist;
   logProcEnd ("");
-}
-
-static bool
-manageiTunesDialogSelectHandler (void *udata, int32_t idx)
-{
-  return UICB_CONT;
 }
 
 static bool
@@ -2104,7 +2102,7 @@ manageiTunesDialogResponseHandler (void *udata, int32_t responseid)
       char        tbuff [200];
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: import");
-      plname = uiDropDownGetString (manage->wcont [MANAGE_W_ITUNES_SEL]);
+      plname = uiddGetSelectionStr (manage->itunesdd);
       ids = itunesGetPlaylistData (manage->itunes, plname);
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
