@@ -151,20 +151,6 @@ uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
   uiSpinboxSet (uiwidget, (double) min, (double) (count - 1));
 }
 
-#if 0 /* UNUSED */
-int
-uiSpinboxTextGetIdx (uiwcont_t *uiwidget)  /* UNUSED */
-{
-  int val;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TEXT, "spinbox-text-get-idx")) {
-    return -1;
-  }
-
-  val = (int) uiSpinboxGetValue (uiwidget);
-  return val;
-}
-#endif
 
 int
 uiSpinboxTextGetValue (uiwcont_t *uiwidget)
@@ -513,17 +499,6 @@ uiSpinboxResetChanged (uiwcont_t *uiwidget)
   }
 }
 
-#if 0 /* UNUSED */
-void
-uiSpinboxAlignRight (uiwcont_t *uiwidget)  /* UNUSED */
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX, "spinbox-align-right")) {
-    return;
-  }
-
-  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->uidata.widget), 1.0);
-}
-#endif
 
 void
 uiSpinboxAddClass (const char *classnm, const char *color)

@@ -125,32 +125,6 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
       GTK_POS_RIGHT);
 }
 
-#if 0 /* UNUSED */
-void
-uiButtonSetImage (uiwcont_t *uiwidget, const char *imagenm,  /* UNUSED */
-    const char *tooltip)
-{
-  GtkWidget   *image;
-  char        tbuff [MAXPATHLEN];
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
-    return;
-  }
-
-  gtk_button_set_label (GTK_BUTTON (uiwidget->uidata.widget), "");
-  /* relative path */
-  pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (uiwidget->uidata.widget), image);
-  /* macos needs this */
-  gtk_button_set_always_show_image (
-      GTK_BUTTON (uiwidget->uidata.widget), TRUE);
-  if (tooltip != NULL) {
-    gtk_widget_set_tooltip_text (uiwidget->uidata.widget, tooltip);
-  }
-}
-#endif
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)

@@ -173,8 +173,9 @@ uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->uidata.widget), FALSE);
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewDarkBackground (uiwcont_t *uiwidget)
+uiTreeViewDarkBackground (uiwcont_t *uiwidget)  /* UNUSED */
 {
   if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-dark-bg")) {
     return;
@@ -182,6 +183,7 @@ uiTreeViewDarkBackground (uiwcont_t *uiwidget)
 
   uiWidgetAddClass (uiwidget, TREEVIEW_DARK_CLASS);
 }
+#endif
 
 void
 uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
@@ -282,8 +284,9 @@ uiTreeViewSetRowActivatedCallback (uiwcont_t *uiwidget, callback_t *cb)
       G_CALLBACK (uiTreeViewClickHandler), uiwidget);
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb)
+uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb)  /* UNUSED */
 {
   uitree_t  *uitree;
 
@@ -295,6 +298,7 @@ uiTreeViewSetEditedCallback (uiwcont_t *uiwidget, callback_t *cb)
 
   uitree->callbacks [TV_CB_EDITED] = cb;
 }
+#endif
 
 void
 uiTreeViewSetButton3Callback (uiwcont_t *uiwidget, callback_t *cb)
@@ -310,8 +314,9 @@ uiTreeViewSetButton3Callback (uiwcont_t *uiwidget, callback_t *cb)
   uitree->callbacks [TV_CB_BUTTON_3] = cb;
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row)
+uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row)  /* UNUSED */
 {
   uitree_t  *uitree;
 
@@ -323,6 +328,7 @@ uiTreeViewRadioSetRow (uiwcont_t *uiwidget, int row)
 
   uitree->radiorow = row;
 }
+#endif
 
 
 void
@@ -546,8 +552,9 @@ uiTreeViewAppendColumn (uiwcont_t *uiwidget, int activecol, int widgettype,
   }
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
+uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)  /* UNUSED */
 {
   GtkTreeViewColumn   *column = NULL;
 
@@ -568,6 +575,7 @@ uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)
     gtk_tree_view_column_set_visible (column, val);
   }
 }
+#endif
 
 void
 uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
@@ -674,8 +682,9 @@ uiTreeViewValueAppend (uiwcont_t *uiwidget)
   ++uitree->valueRowCount;
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewValueInsertBefore (uiwcont_t *uiwidget)
+uiTreeViewValueInsertBefore (uiwcont_t *uiwidget)  /* UNUSED */
 {
   GtkListStore  *store = NULL;
   GtkTreeIter   titer;
@@ -706,9 +715,11 @@ uiTreeViewValueInsertBefore (uiwcont_t *uiwidget)
   uitree->selectset = true;
   ++uitree->valueRowCount;
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uiTreeViewValueInsertAfter (uiwcont_t *uiwidget)
+uiTreeViewValueInsertAfter (uiwcont_t *uiwidget)  /* UNUSED */
 {
   GtkListStore  *store = NULL;
   GtkTreeIter   titer;
@@ -739,9 +750,11 @@ uiTreeViewValueInsertAfter (uiwcont_t *uiwidget)
   uitree->selectset = true;
   ++uitree->valueRowCount;
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uiTreeViewValueRemove (uiwcont_t *uiwidget)
+uiTreeViewValueRemove (uiwcont_t *uiwidget)  /* UNUSED */
 {
   int     count = 0;
   int     idx;
@@ -780,6 +793,7 @@ uiTreeViewValueRemove (uiwcont_t *uiwidget)
     uiTreeViewSelectSet (uiwidget, idx);
   }
 }
+#endif
 
 void
 uiTreeViewValueClear (uiwcont_t *uiwidget, int startrow)
@@ -1055,8 +1069,9 @@ uiTreeViewSelectPrevious (uiwcont_t *uiwidget)
   return valid;
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewSelectDefault (uiwcont_t *uiwidget)
+uiTreeViewSelectDefault (uiwcont_t *uiwidget)  /* UNUSED */
 {
   int       count = 0;
   uitree_t  *uitree;
@@ -1076,6 +1091,7 @@ uiTreeViewSelectDefault (uiwcont_t *uiwidget)
     uiTreeViewSelectSet (uiwidget, 0);
   }
 }
+#endif
 
 void
 uiTreeViewSelectSave (uiwcont_t *uiwidget)
@@ -1181,8 +1197,9 @@ uiTreeViewSelectForeach (uiwcont_t *uiwidget, callback_t *cb)
       uiTreeViewSelectForeachHandler, uiwidget);
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewMoveBefore (uiwcont_t *uiwidget)
+uiTreeViewMoveBefore (uiwcont_t *uiwidget)  /* UNUSED */
 {
   GtkTreeIter   citer;
   bool          valid = false;
@@ -1206,9 +1223,11 @@ uiTreeViewMoveBefore (uiwcont_t *uiwidget)
     uitree->selectset = true;
   }
 }
+#endif
 
+#if 0 /* UNUSED */
 void
-uiTreeViewMoveAfter (uiwcont_t *uiwidget)
+uiTreeViewMoveAfter (uiwcont_t *uiwidget)  /* UNUSED */
 {
   GtkTreeIter   citer;
   bool          valid = false;
@@ -1232,6 +1251,7 @@ uiTreeViewMoveAfter (uiwcont_t *uiwidget)
     uitree->selectset = true;
   }
 }
+#endif
 
 /* gets the value for the selected row */
 long

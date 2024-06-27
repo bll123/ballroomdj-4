@@ -28,7 +28,6 @@ void  uiSpinboxFree (uiwcont_t *uiwidget);
 uiwcont_t *uiSpinboxTextCreate (void *udata);
 void  uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
-int   uiSpinboxTextGetIdx (uiwcont_t *uiwidget);
 int   uiSpinboxTextGetValue (uiwcont_t *uiwidget);
 void  uiSpinboxTextSetValue (uiwcont_t *uiwidget, int ivalue);
 void uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
@@ -54,7 +53,6 @@ double uiSpinboxGetValue (uiwcont_t *uiwidget);
 void uiSpinboxSetValue (uiwcont_t *uiwidget, double ivalue);
 bool uiSpinboxIsChanged (uiwcont_t *uiwidget);
 void uiSpinboxResetChanged (uiwcont_t *uiwidget);
-void uiSpinboxAlignRight (uiwcont_t *uiwidget);
 void uiSpinboxAddClass (const char *classnm, const char *color);
 
 #if defined (__cplusplus) || defined (c_plusplus)

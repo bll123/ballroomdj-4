@@ -542,7 +542,6 @@ void confuiCreateStatusTable (confuigui_t *gui);
 void confuiMakeItemTable (confuigui_t *gui, uiwcont_t *box, confuiident_t id, int flags);
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
-bool confuiTableChanged (void *udata, int32_t col);
 bool confuiSwitchTable (void *udata, int32_t pagenum);
 bool confuiTableAdd (void *udata);
 

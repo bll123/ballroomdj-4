@@ -14,7 +14,6 @@
 # include "ui-null.h"
 #endif
 
-#include "ui/uiadjustment.h"
 #include "ui/uibox.h"
 #include "ui/uibutton.h"
 #include "ui/uichgind.h"

@@ -127,18 +127,6 @@ pliFree (pli_t *pli)
   }
 }
 
-#if 0 /* UNUSED */
-void
-pliCleanup (dlhandle_t *dlHandle)  /* UNUSED */
-{
-  void (*pliiCleanup) (void);
-
-  pliiCleanup = dylibLookup (dlHandle, "pliiCleanup");
-  if (pliiCleanup != NULL) {
-    pliiCleanup ();
-  }
-}
-#endif
 
 void
 pliMediaSetup (pli_t *pli, const char *mediaPath,

@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libuigtk3 SHARED
-  uigtkadjustment.c
   uigtkbox.c
   uigtkbutton.c
   uigtkchgind.c

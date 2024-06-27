@@ -542,21 +542,6 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
   return;
 }
 
-#if 0 /* UNUSED */
-void
-uisongselSetSelection (uisongsel_t *uisongsel, dbidx_t idx)  /* UNUSED */
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-
-  if (idx < 0) {
-    return;
-  }
-
-  uiTreeViewSelectSet (ssint->wcont [SONGSEL_W_TREE], idx);
-}
-#endif
 
 void
 uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx)

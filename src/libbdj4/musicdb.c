@@ -421,17 +421,6 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
   return song;
 }
 
-#if 0 /* UNUSED */
-nlist_t *
-dbGetDanceCounts (musicdb_t *musicdb)  /* UNUSED */
-{
-  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
-    return NULL;
-  }
-
-  return musicdb->danceCounts;
-}
-#endif
 
 void
 dbBackup (void)

@@ -109,16 +109,6 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   return 0;
 }
 
-#if 0 /* UNUSED */
-void
-uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)  /* UNUSED */
-{
-  song_t      *song;
-
-  song = dbGetByIdx (uisongedit->musicdb, dbidx);
-  uisongeditLoadData (uisongedit, song, dbidx, UISONGEDIT_ALL);
-}
-#endif
 
 void
 uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb)

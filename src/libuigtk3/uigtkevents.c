@@ -48,7 +48,6 @@ typedef struct uievent {
 static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata);
 static gboolean uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata);
-static gboolean uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
 
 uiwcont_t *
 uiEventAlloc (void)
@@ -190,28 +189,6 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
 }
 
-#if 0 /* UNUSED */
-void
-uiEventSetEnterLeaveCallback (uiwcont_t *uieventwidget,  /* UNUSED */
-    uiwcont_t *uiwidgetp, callback_t *uicb)
-{
-  uievent_t   *uievent;
-
-  if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-scroll-cb")) {
-    return;
-  }
-
-  uievent = uieventwidget->uiint.uievent;
-
-  uievent->elcb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget,
-       GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "enter-notify-event",
-      G_CALLBACK (uiEventEnterLeaveHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
-      G_CALLBACK (uiEventEnterLeaveHandler), uieventwidget);
-}
-#endif
 
 bool
 uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
@@ -643,29 +620,6 @@ uiEventButtonPressed (uiwcont_t *uiwidget)
   return rc;
 }
 
-#if 0 /* UNUSED */
-bool
-uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget)  /* UNUSED */
-{
-  uievent_t   *uievent;
-  bool      rc = false;
-
-  if (! uiwcontValid (keywcont, WCONT_T_KEY, "key-button-pressed")) {
-    return false;
-  }
-
-  uievent = keywcont->uiint.uievent;
-  if (! uievent->buttonpressed && ! uievent->buttonreleased) {
-    return rc;
-  }
-
-  if (uiwidget->uidata.widget == uievent->savewidget) {
-    rc = true;
-  }
-
-  return rc;
-}
-#endif
 
 /* internal routines */
 
@@ -948,35 +902,4 @@ uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
   return rc;
 }
 
-static gboolean
-uiEventEnterLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
-{
-  uiwcont_t *uiwidget = udata;
-  uievent_t   *uievent;
-  guint     ttype;
-  int       rc = UICB_CONT;
-
-  uievent = uiwidget->uiint.uievent;
-
-  uievent->eventtype = UIEVENT_EV_NONE;
-  ttype = gdk_event_get_event_type ((GdkEvent *) event);
-  if (ttype == GDK_ENTER_NOTIFY) {
-    uievent->eventtype = UIEVENT_EV_ENTER;
-  }
-  if (ttype == GDK_LEAVE_NOTIFY) {
-    uievent->eventtype = UIEVENT_EV_LEAVE;
-  }
-
-  if (uievent->eventtype == UIEVENT_EV_NONE) {
-    return rc;
-  }
-
-  if ((ttype == GDK_ENTER_NOTIFY ||
-      ttype == GDK_LEAVE_NOTIFY) &&
-      uievent->elcb != NULL) {
-    rc = callbackHandlerI (uievent->elcb, uievent->eventtype);
-  }
-
-  return rc;
-}
 

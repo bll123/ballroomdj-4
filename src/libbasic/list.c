@@ -296,18 +296,6 @@ listGetVersion (keytype_t keytype, list_t *list)
 
 /* iterators */
 
-#if 0 /* UNUSED */
-void
-listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx) /* UNUSED */
-{
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  *iteridx = LIST_END_LIST;
-}
-#endif
-
 listidx_t
 listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 {
@@ -612,21 +600,6 @@ listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val)
   item.key.strkey = mdstrdup (key);
   item.valuetype = VALUE_NUM;
   item.value.num = val;
-  listSet (list, &item);
-}
-
-void
-listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval)
-{
-  listitem_t    item;
-
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  item.key.strkey = mdstrdup (key);
-  item.valuetype = VALUE_DOUBLE;
-  item.value.dval = dval;
   listSet (list, &item);
 }
 

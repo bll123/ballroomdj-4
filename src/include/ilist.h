@@ -34,7 +34,6 @@ void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, const char *v
 void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ilistnum_t value);
-void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
 
 /* get routines */
 bool      ilistExists (list_t *, ilistidx_t ikey);

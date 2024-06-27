@@ -30,20 +30,6 @@ static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list 
 static void atibdj4LogVersion (void);
 static bool gversionlogged = false;
 
-void
-atiiDesc (char **ret, int max)
-{
-  int   c = 0;
-
-  if (max < 2) {
-    return;
-  }
-
-  /* CONTEXT: Name of the BDJ4 internal audio tagging interface */
-  ret [c++] = _("BDJ4 Internal");
-  ret [c++] = NULL;
-}
-
 atidata_t *
 atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,

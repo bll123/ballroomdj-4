@@ -143,43 +143,6 @@ uiSelectFileDialog (uiselect_t *selectdata)
   return fn;
 }
 
-#if 0 /* UNUSED */
-char *
-uiSaveFileDialog (uiselect_t *selectdata)  /* UNUSED */
-{
-  GtkFileChooserNative *widget = NULL;
-  gint      res;
-  char      *fn = NULL;
-
-  widget = gtk_file_chooser_native_new (
-      selectdata->label,
-      GTK_WINDOW (selectdata->window->uidata.widget),
-      GTK_FILE_CHOOSER_ACTION_SAVE,
-      /* CONTEXT: save file dialog: save */
-      _("Save"),
-      /* CONTEXT: save file dialog: close */
-      _("Close"));
-
-  if (selectdata->startpath != NULL) {
-    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
-        selectdata->startpath);
-  }
-  if (selectdata->dfltname != NULL) {
-    gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (widget),
-        selectdata->dfltname);
-  }
-  uiSelectCreateFilter (widget, selectdata);
-
-  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
-  if (res == GTK_RESPONSE_ACCEPT) {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-    mdextalloc (fn);
-  }
-
-  g_object_unref (widget);
-  return fn;
-}
-#endif
 
 uiwcont_t *
 uiCreateDialog (uiwcont_t *window,

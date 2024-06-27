@@ -135,17 +135,6 @@ uiScaleSetRange (uiwcont_t *uiscale, double start, double end)
   gtk_range_set_range (GTK_RANGE (uiscale->uidata.widget), start, end);
 }
 
-#if 0 /* UNUSED */
-void
-uiScaleSetState (uiwcont_t *uiscale, int state)  /* UNUSED */
-{
-  if (! uiwcontValid (uiscale, WCONT_T_SCALE, "scale-set-state")) {
-    return;
-  }
-
-  uiWidgetSetState (uiscale, state);
-}
-#endif
 
 /* internal routines */
 

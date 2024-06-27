@@ -82,13 +82,6 @@ slistSetNum (slist_t *list, const char *sidx, listnum_t data)
   listSetStrNum (LIST_KEY_STR, list, sidx, data);
 }
 
-#if 0 /* UNUSED */
-void
-slistSetDouble (slist_t *list, const char *sidx, double data)  /* UNUSED */
-{
-  listSetStrDouble (LIST_KEY_STR, list, sidx, data);
-}
-#endif
 
 void
 slistSetList (slist_t *list, const char *sidx, slist_t *data)
@@ -171,19 +164,6 @@ slistGetNum (slist_t *list, const char *sidx)
   value = listGetNumByIdx (LIST_KEY_STR, list, idx);
   return value;
 }
-
-#if 0 /* UNUSED */
-double
-slistGetDouble (slist_t *list, const char *sidx)  /* UNUSED */
-{
-  double          value = LIST_DOUBLE_INVALID;
-  slistidx_t      idx;
-
-  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
-  value = listGetDoubleByIdx (LIST_KEY_STR, list, idx);
-  return value;
-}
-#endif
 
 slist_t *
 slistGetList (slist_t *list, const char *sidx)

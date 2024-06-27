@@ -194,27 +194,6 @@ uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
   gtk_text_buffer_delete_mark (tb->buffer->uidata.buffer, mark);
 }
 
-#if 0 /* UNUSED */
-void
-uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)  /* UNUSED */
-{
-  GtkTextIter siter;
-  GtkTextIter eiter;
-  uitextbox_t *tb;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_TEXT_BOX, "textbox-set-value")) {
-    return;
-  }
-
-  tb = uiwidget->uiint.uitextbox;
-
-  gtk_text_buffer_get_start_iter (tb->buffer->uidata.buffer, &siter);
-  gtk_text_buffer_get_end_iter (tb->buffer->uidata.buffer, &eiter);
-  gtk_text_buffer_delete (tb->buffer->uidata.buffer, &siter, &eiter);
-  gtk_text_buffer_get_end_iter (tb->buffer->uidata.buffer, &eiter);
-  gtk_text_buffer_insert (tb->buffer->uidata.buffer, &eiter, str, -1);
-}
-#endif
 
 /* this does not handle any selected text */
 

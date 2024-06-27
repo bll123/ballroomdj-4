@@ -138,21 +138,6 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistnum_t val)
   nlistSetNum (datalist, lidx, val);
 }
 
-#if 0 /* UNUSED */
-void
-ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data) /* UNUSED */
-{
-  nlist_t     *datalist = NULL;
-
-  if (list == NULL) {
-    return;
-  }
-
-  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
-  nlistSetDouble (datalist, lidx, data);
-}
-#endif
-
 bool
 ilistExists (list_t *list, ilistidx_t ikey)
 {

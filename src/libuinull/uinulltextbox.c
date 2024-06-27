@@ -75,14 +75,6 @@ uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
   return;
 }
 
-#if 0 /* UNUSED */
-void
-uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str)  /* UNUSED */
-{
-  return;
-}
-#endif
-
 /* this does not handle any selected text */
 
 void

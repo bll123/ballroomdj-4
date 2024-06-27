@@ -51,14 +51,6 @@ uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
   return;
 }
 
-#if 0 /* UNUSED */
-int
-uiSpinboxTextGetIdx (uiwcont_t *uiwidget)  /* UNUSED */
-{
-  return 0;
-}
-#endif
-
 int
 uiSpinboxTextGetValue (uiwcont_t *uiwidget)
 {
@@ -179,14 +171,6 @@ uiSpinboxResetChanged (uiwcont_t *uiwidget)
 {
   return;
 }
-
-#if 0 /* UNUSED */
-void
-uiSpinboxAlignRight (uiwcont_t *uiwidget)  /* UNUSED */
-{
-  return;
-}
-#endif
 
 void
 uiSpinboxAddClass (const char *classnm, const char *color)

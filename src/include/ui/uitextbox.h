@@ -18,7 +18,6 @@ void  uiTextBoxScrollToEnd (uiwcont_t *uiwidget);
 void  uiTextBoxAppendStr (uiwcont_t *uiwidget, const char *str);
 void  uiTextBoxAppendBoldStr (uiwcont_t *uiwidget, const char *str);
 void  uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str);
-void  uiTextBoxSetValue (uiwcont_t *uiwidget, const char *str);
 void  uiTextBoxDarken (uiwcont_t *uiwidget);
 void  uiTextBoxHorizExpand (uiwcont_t *uiwidget);
 void  uiTextBoxVertExpand (uiwcont_t *uiwidget);

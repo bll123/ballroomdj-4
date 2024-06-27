@@ -431,13 +431,6 @@ vlcClose (vlcdata_t *vlcdata)
   }
 }
 
-#if 0 /* UNUSED */
-void
-vlcRelease (vlcdata_t *vlcdata)  /* UNUSED */
-{
-  vlcClose (vlcdata);
-}
-#endif
 
 /* internal routines */
 

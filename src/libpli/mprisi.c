@@ -541,21 +541,6 @@ mprisStop (mpris_t *mpris)
   mpris->state = PLI_STATE_STOPPED;
 }
 
-#if 0 /* UNUSED */
-bool
-mprisSetVolume (mpris_t *mpris, double vol) /* UNUSED */
-{
-  bool    rc;
-
-  if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
-    return false;
-  }
-
-  rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
-      propname [MPRIS_PROPNM_VOLUME], vol);
-  return rc;
-}
-#endif
 
 bool
 mprisSetPosition (mpris_t *mpris, int64_t pos)

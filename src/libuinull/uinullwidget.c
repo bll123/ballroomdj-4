@@ -159,14 +159,6 @@ uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
   return;
 }
 
-#if 0 /* UNUSED */
-bool
-uiWidgetIsValid (uiwcont_t *uiwidget)  /* UNUSED */
-{
-  return true;
-}
-#endif
-
 void
 uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 {

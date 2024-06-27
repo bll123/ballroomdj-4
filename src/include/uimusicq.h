@@ -148,7 +148,6 @@ void  uimusicqSwap (uimusicq_t *uimusicq, int mqidx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
-void  uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
 bool  uimusicqSaveListCallback (void *udata, int32_t dbidx);
 

@@ -32,7 +32,6 @@ void        listSetVersion (keytype_t keytype, list_t *list, int version);
 int         listGetVersion (keytype_t keytype, list_t *list);
 
 /* iterators */
-void        listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
 const char  *listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx);
@@ -55,7 +54,6 @@ void        listSetStrData (keytype_t keytype, list_t *list, const char *key, vo
 void        listSetStrList (keytype_t keytype, list_t *list, const char *key, void *data);
 void        listSetStrStr (keytype_t keytype, list_t *list, const char *key, const char *str);
 void        listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val);
-void        listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval);
 void        listSetNumData (keytype_t keytype, list_t *list, listidx_t key, void *data);
 void        listSetNumList (keytype_t keytype, list_t *list, listidx_t key, void *data);
 void        listSetNumStr (keytype_t keytype, list_t *list, listidx_t key, const char *str);

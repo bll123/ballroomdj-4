@@ -245,100 +245,7 @@ uiDropDownSetList (uiwcont_t *uiwidget, slist_t *list,
   g_object_unref (store);
 }
 
-#if 0 /* UNUSED */
-void
-uiDropDownSetNumList (uiwcont_t *uiwidget, slist_t *list,  /* UNUSED */
-    const char *selectLabel)
-{
-  uidropdown_t      *dropdown;
-  const char        *dispval;
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
-  char              tbuff [200];
-  ilistidx_t        iteridx;
-  nlistidx_t        internalidx;
-  nlistidx_t        idx;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-set-num-list")) {
-    return;
-  }
-  if (list == NULL) {
-    return;
-  }
-
-  dropdown = uiwidget->uiint.uidropdown;
-
-  store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
-      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-
-  dropdown->keylist = nlistAlloc ("uiutils-keylist", LIST_ORDERED, NULL);
-  internalidx = 0;
-
-  dropdown->maxwidth = slistGetMaxKeyWidth (list);
-
-  snprintf (tbuff, sizeof (tbuff), "%-*s",
-      dropdown->maxwidth, dropdown->title);
-  uiButtonSetText (dropdown->button, tbuff);
-
-  if (dropdown->iscombobox && selectLabel != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, selectLabel);
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        UIUTILS_DROPDOWN_COL_IDX, (glong) -1,
-        UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
-        -1);
-    nlistSetNum (dropdown->keylist, -1, internalidx);
-    ++internalidx;
-  }
-
-  slistStartIterator (list, &iteridx);
-
-  while ((dispval = slistIterateKey (list, &iteridx)) != NULL) {
-    idx = slistGetNum (list, dispval);
-    nlistSetNum (dropdown->keylist, idx, internalidx);
-
-    gtk_list_store_append (store, &iter);
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, dispval);
-    gtk_list_store_set (store, &iter,
-        UIUTILS_DROPDOWN_COL_IDX, (glong) idx,
-        UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
-        -1);
-    ++internalidx;
-  }
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->uitree->uidata.widget),
-      GTK_TREE_MODEL (store));
-  g_object_unref (store);
-}
-#endif
-
-#if 0 /* UNUSED */
-void
-uiDropDownSelectionSetNum (uiwcont_t *uiwidget, nlistidx_t idx)  /* UNUSED */
-{
-  uidropdown_t  *dropdown;
-  nlistidx_t    internalidx;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-sel-set-num")) {
-    return;
-  }
-
-  dropdown = uiwidget->uiint.uidropdown;
-
-  if (dropdown->keylist == NULL) {
-    internalidx = 0;
-  } else {
-    internalidx = nlistGetNum (dropdown->keylist, idx);
-  }
-  uiDropDownSelectionSet (uiwidget, internalidx);
-}
-#endif
 
 void
 uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
@@ -363,20 +270,6 @@ uiDropDownSelectionSetStr (uiwcont_t *uiwidget, const char *stridx)
   uiDropDownSelectionSet (uiwidget, internalidx);
 }
 
-#if 0 /* UNUSED */
-void
-uiDropDownSetState (uiwcont_t *uiwidget, int state)  /* UNUSED */
-{
-  uidropdown_t    *dropdown;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_DROPDOWN, "dropdown-set-state")) {
-    return;
-  }
-
-  dropdown = uiwidget->uiint.uidropdown;
-  uiWidgetSetState (dropdown->button, state);
-}
-#endif
 
 char *
 uiDropDownGetString (uiwcont_t *uiwidget)

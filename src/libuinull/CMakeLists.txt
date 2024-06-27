@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libuinull SHARED
-  uinulladjustment.c
   uinullbox.c
   uinullbutton.c
   uinullchgind.c

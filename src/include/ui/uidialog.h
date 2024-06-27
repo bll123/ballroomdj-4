@@ -26,7 +26,6 @@ uiselect_t *uiSelectInit (uiwcont_t *window, const char *label, const char *star
 void  uiSelectFree (uiselect_t *selectdata);
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
-char  *uiSaveFileDialog (uiselect_t *selectdata);
 
 uiwcont_t *uiCreateDialog (uiwcont_t *window, callback_t *uicb, const char *title, ...);
 void  uiDialogShow (uiwcont_t *uiwidgetp);

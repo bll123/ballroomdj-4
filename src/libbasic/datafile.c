@@ -395,18 +395,6 @@ datafileGetList (datafile_t *df)
   return NULL;
 }
 
-#if 0 /* UNUSED */
-void
-datafileSetData (datafile_t *df, void *data)  /* UNUSED */
-{
-  if (df != NULL) {
-    return;
-  }
-  df->data = data;
-  return;
-}
-#endif
-
 void
 datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
     int dfkeycount, nlist_t *list, int offset)

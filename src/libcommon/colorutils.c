@@ -25,9 +25,9 @@ createRandomColor (char *tbuff, size_t sz)
   return tbuff;
 }
 
-#if 0 /* UNUSED */
+#if 0
 double
-colorLuminance (const char *color)  /* UNUSED */
+colorLuminance (const char *color)  /* KEEP */
 {
   int     r, g, b;
   double  dr, dg, db;
