@@ -214,7 +214,6 @@ confuiTableAdd (void *udata)
   uivirtlist_t    *uivl = NULL;
   int             count = 0;
   addfunc_t       addfunc = NULL;
-  int             flags;
 
   logProcBegin ();
 
@@ -229,7 +228,6 @@ confuiTableAdd (void *udata)
     return UICB_STOP;
   }
 
-  flags = gui->tables [gui->tablecurr].flags;
   count = uivlSelectionCount (uivl);
   if (count != 1) {
     return UICB_STOP;

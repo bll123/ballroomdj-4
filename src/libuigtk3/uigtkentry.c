@@ -325,13 +325,9 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 void
 uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  uientry_t   *uientry;
-
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
     return;
   }
-
-  uientry = uiwidget->uiint.uientry;
 
   g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiEntryFocusHandler), uicb);

@@ -116,7 +116,6 @@ confuiLevelSave (confuigui_t *gui)
 {
   level_t       *levels;
   ilist_t       *levellist;
-  uivirtlist_t  *uivl;
   ilistidx_t    count;
 
   logProcBegin ();
@@ -127,7 +126,6 @@ confuiLevelSave (confuigui_t *gui)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
   levellist = ilistAlloc ("level-save", LIST_ORDERED);
   count = levelGetCount (levels);
   for (int rowidx = 0; rowidx < count; ++rowidx) {

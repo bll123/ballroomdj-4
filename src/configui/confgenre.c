@@ -105,7 +105,6 @@ confuiGenreSave (confuigui_t *gui)
 {
   genre_t       *genres;
   ilist_t       *genrelist;
-  uivirtlist_t  *uivl;
   ilistidx_t    count;
 
   logProcBegin ();
@@ -116,7 +115,6 @@ confuiGenreSave (confuigui_t *gui)
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
   genrelist = ilistAlloc ("genre-save", LIST_ORDERED);
   count = genreGetCount (genres);
   for (int rowidx = 0; rowidx < count; ++rowidx) {

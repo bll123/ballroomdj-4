@@ -449,7 +449,6 @@ uiduallistDispRemove (void *udata)
       queueGetCount (duallist->dispq [DL_LIST_TARGET]));
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
-    int32_t     currsel;
     listnum_t   val;
 
     val = slistGetNum (duallist->displist [DL_LIST_TARGET], keystr);
@@ -468,7 +467,6 @@ uiduallistDispRemove (void *udata)
     }
     uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],
         queueGetCount (duallist->dispq [DL_LIST_SOURCE]));
-    currsel = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
     uivlSetSelection (duallist->uivl [DL_LIST_SOURCE], toidx + 1);
   }
 

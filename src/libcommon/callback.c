@@ -277,7 +277,7 @@ callbackValidate (callback_t *cb, int64_t wantident)
     return rc;
   }
   if (cb->ident != wantident) {
-    fprintf (stderr, "ERR: callback: mismatch type: % " PRIx64 " (%" PRIx64 ")\n", cb->ident, wantident);
+    fprintf (stderr, "ERR: callback: mismatch type: %" PRIx64 " (%" PRIx64 ")\n", cb->ident, wantident);
     return rc;
   }
 

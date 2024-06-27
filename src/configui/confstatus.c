@@ -106,7 +106,6 @@ confuiStatusSave (confuigui_t *gui)
 {
   status_t      *status;
   ilist_t       *statuslist;
-  uivirtlist_t  *uivl;
   ilistidx_t    count;
 
   logProcBegin ();
@@ -117,7 +116,6 @@ confuiStatusSave (confuigui_t *gui)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
-  uivl = gui->tables [CONFUI_ID_STATUS].uivl;
   statuslist = ilistAlloc ("status-save", LIST_ORDERED);
   count = statusGetCount (status);
   for (int rowidx = 0; rowidx < count; ++rowidx) {

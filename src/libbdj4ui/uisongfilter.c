@@ -348,8 +348,6 @@ uisfGetSongFilter (uisongfilter_t *uisf)
 static void
 uisfInitDisplay (uisongfilter_t *uisf)
 {
-  char        *sortby;
-
   logProcBegin ();
 
   /* this is run when the filter dialog is first started, */
@@ -362,7 +360,6 @@ uisfInitDisplay (uisongfilter_t *uisf)
     uiplaylistSetKey (uisf->uiplaylist, uisf->playlistname);
   }
 
-  sortby = songfilterGetSort (uisf->songfilter);
   uiddSetSelection (uisf->ddsortby, uisf->sortbyidx);
   uidanceSetKey (uisf->uidance, uisf->danceIdx);
   uigenreSetKey (uisf->uigenre, -1);

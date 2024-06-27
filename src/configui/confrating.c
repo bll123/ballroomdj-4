@@ -111,7 +111,6 @@ confuiRatingSave (confuigui_t *gui)
 {
   rating_t      *ratings;
   ilist_t       *ratinglist;
-  uivirtlist_t  *uivl;
   ilistidx_t    count;
 
   logProcBegin ();
@@ -122,7 +121,6 @@ confuiRatingSave (confuigui_t *gui)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
-  uivl = gui->tables [CONFUI_ID_RATINGS].uivl;
   ratinglist = ilistAlloc ("rating-save", LIST_ORDERED);
   count = ratingGetCount (ratings);
   for (int rowidx = 0; rowidx < count; ++rowidx) {
