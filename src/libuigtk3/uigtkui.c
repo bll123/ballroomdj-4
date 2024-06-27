@@ -15,6 +15,7 @@
 #include <hb.h>
 #include <hb-glib.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "colorutils.h"
 #include "filedata.h"

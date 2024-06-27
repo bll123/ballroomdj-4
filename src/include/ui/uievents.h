@@ -1,8 +1,8 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIKEYS_H
-#define INC_UIKEYS_H
+#ifndef INC_UIEVENTS_H
+#define INC_UIEVENTS_H
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -71,4 +71,4 @@ bool    uiEventCheckWidget (uiwcont_t *keywcont, uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UIKEYS_H */
+#endif /* INC_UIEVENTS_H */

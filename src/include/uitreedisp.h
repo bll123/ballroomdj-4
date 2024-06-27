@@ -1,5 +1,8 @@
-#ifndef INC_UITREEDDISP_H
-#define INC_UITREEDDISP_H
+/*
+ * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ */
+#ifndef INC_UITREEDISP_H
+#define INC_UITREEDISP_H
 
 #include "callback.h"
 #include "slist.h"
@@ -12,4 +15,4 @@ enum {
 void uitreedispAddDisplayColumns (uiwcont_t *uiwidget, slist_t *sellist, int col, int fontcol, int ellipsizeColumn, int colorcol, int colorsetcol);
 void uitreedispSetDisplayColumn (uiwcont_t *uiwidget, int col, long num, const char *str);
 
-#endif /* INC_UITREEDDISP_H */
+#endif /* INC_UITREEDISP_H */

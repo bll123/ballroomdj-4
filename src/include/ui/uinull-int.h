@@ -1,5 +1,8 @@
-#ifndef INC_UI_UINULL_INT_H
-#define INC_UI_UINULL_INT_H
+/*
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
+ */
+#ifndef INC_UINULL_INT_H
+#define INC_UINULL_INT_H
 
 /* the structure must contain a member named widget */
 /* and a member named packwidget */
@@ -10,4 +13,4 @@ typedef struct uispecific {
   };
 } uispecific_t;
 
-#endif /* INC_UI_UINULL_INT_H */
+#endif /* INC_UINULL_INT_H */

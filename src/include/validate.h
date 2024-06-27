@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VALIDATION_H
-#define INC_VALIDATION_H
+#ifndef INC_VALIDATE_H
+#define INC_VALIDATE_H
 
 enum {
   VAL_NONE          = 0,
@@ -20,4 +20,4 @@ enum {
 
 bool validate (char *buff, size_t sz, const char *label, const char *str, int flags);
 
-#endif /* INC_VALIDATION_H */
+#endif /* INC_VALIDATE_H */

@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJSTRING
-#define INC_BDJSTRING
+#ifndef INC_BDJSTRING_H
+#define INC_BDJSTRING_H
 
 #include "config.h"
 
@@ -28,4 +28,4 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 # define snprintf(s,ssz,fmt,...) _sprintf_p (s, ssz, fmt __VA_OPT__(,) __VA_ARGS__)
 #endif
 
-#endif /* INC_BDJSTRING */
+#endif /* INC_BDJSTRING_H */

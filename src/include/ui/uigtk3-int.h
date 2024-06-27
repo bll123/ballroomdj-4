@@ -1,5 +1,8 @@
-#ifndef INC_UI_UIGTK3_INT_H
-#define INC_UI_UIGTK3_INT_H
+/*
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
+ */
+#ifndef INC_UIGTK3_INT_H
+#define INC_UIGTK3_INT_H
 
 #include <gtk/gtk.h>
 
@@ -14,4 +17,4 @@ typedef struct uispecific {
   };
 } uispecific_t;
 
-#endif /* INC_UI_UIGTK3_INT_H */
+#endif /* INC_UIGTK3_INT_H */

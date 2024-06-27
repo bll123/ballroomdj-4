@@ -1,5 +1,7 @@
 #!/usr/bin/make
 #
+# Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+#
 
 MAKEFLAGS += --no-print-directory
 

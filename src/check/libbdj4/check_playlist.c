@@ -17,6 +17,7 @@
 
 #include <check.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"

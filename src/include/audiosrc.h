@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ */
 #ifndef INC_AUDIOSRC_H
 #define INC_AUDIOSRC_H
 

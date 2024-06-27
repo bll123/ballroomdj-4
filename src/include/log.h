@@ -1,14 +1,13 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJLOG_H
-#define INC_BDJLOG_H
+#ifndef INC_LOG_H
+#define INC_LOG_H
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "bdj4.h"
 #include "player.h"
 
 /*
@@ -133,4 +132,4 @@ void rlogError (const char *msg, int err, const char *fn, int line, const char *
 void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *func, const char *fmt, ...)
     __attribute__ ((format (printf, 6, 7)));
 
-#endif /* INC_BDJLOG_H */
+#endif /* INC_LOG_H */

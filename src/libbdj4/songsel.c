@@ -9,6 +9,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "bdj4.h"
 #include "autosel.h"
 #include "bdjvarsdf.h"
 #include "dance.h"    // for debugging

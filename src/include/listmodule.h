@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef LIST_MODULE_H
-#define LIST_MODULE_H
+#ifndef INC_LISTMODULE_H
+#define INC_LISTMODULE_H
 
 #include "list.h"
 
@@ -71,4 +71,4 @@ void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 int         listGetOrdering (keytype_t keytype, list_t *list);
 
-#endif /* LIST_MODULE_H */
+#endif /* INC_LISTMODULE_H */

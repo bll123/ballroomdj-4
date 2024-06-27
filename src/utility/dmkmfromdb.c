@@ -13,6 +13,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"

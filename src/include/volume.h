@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VOLUME
-#define INC_VOLUME
+#ifndef INC_VOLUME_H
+#define INC_VOLUME_H
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -45,4 +45,4 @@ void  voliCleanup (void **udata);
 } /* extern C */
 #endif
 
-#endif /* INC_VOLUME */
+#endif /* INC_VOLUME_H */

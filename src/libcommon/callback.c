@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include "bdj4.h"
 #include "callback.h"
 #include "log.h"
 #include "mdebug.h"

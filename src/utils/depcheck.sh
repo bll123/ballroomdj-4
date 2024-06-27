@@ -39,6 +39,17 @@ if [[ $rc -ne 0 ]]; then
   grc=$rc
   exit $grc
 fi
+for fn in include/*.h include/ui/*.h; do
+  inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g')
+  tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g')
+  if [[ $tnm != ${inc@L} ]]; then
+    echo "$fn : mismatched protection name $tnm ${inc@L}"
+    grc=1
+  fi
+done
+if [[ $grc -ne 0 ]]; then
+  exit $grc
+fi
 
 # check to make sure the include files can be compiled w/o dependencies
 echo "## checking include file compilation"
@@ -81,6 +92,40 @@ if [[ $grc -ne 0 ]]; then
   exit $grc
 fi
 rm -f $INCTOUT
+
+# check for missing copyrights
+echo "## checking for missing copyright"
+
+for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
+    */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
+    po/Makefile* */*.awk; do
+  case $fn in
+    *potemplates.c)
+      # temporary file
+      continue
+      ;;
+    ../dev/*)
+      continue
+      ;;
+    libcont/*)
+      # ignore for now
+      continue
+      ;;
+    utils/*.sh)
+      # most of this can be skipped
+      continue
+      ;;
+  esac
+  grep 'Copyright' $fn > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "$fn : missing Copyright"
+    grc=$rc
+  fi
+done
+if [[ $grc != 0 ]]; then
+  exit $grc
+fi
 
 # check the include file hierarchy for problems.
 echo "## checking include file hierarchy"

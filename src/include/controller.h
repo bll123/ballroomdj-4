@@ -1,3 +1,6 @@
+/*
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
+ */
 #ifndef INC_CONTROLLER_H
 #define INC_CONTROLLER_H
 

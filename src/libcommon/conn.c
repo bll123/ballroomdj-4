@@ -17,6 +17,7 @@
 # include <winsock2.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"

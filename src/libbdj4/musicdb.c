@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <time.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"

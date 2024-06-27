@@ -1,4 +1,7 @@
 #!/usr/bin/gawk -f
+#
+# Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+#
 
 function points(type) {
   tag = "M";

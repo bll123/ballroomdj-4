@@ -1,8 +1,8 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGTK_H
-#define INC_UIGTK_H
+#ifndef INC_UI_GTK3_H
+#define INC_UI_GTK3_H
 
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
@@ -24,4 +24,4 @@ enum {
   UI_FOREACH_CONT = false,
 };
 
-#endif /* INC_UIGTK_H */
+#endif /* INC_UI_GTK3_H */

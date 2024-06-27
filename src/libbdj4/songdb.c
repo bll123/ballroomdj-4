@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <errno.h>
 
+#include "bdj4.h"
 #include "audiofile.h"
 #include "audiosrc.h"
 #include "audiotag.h"

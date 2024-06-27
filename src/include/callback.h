@@ -1,5 +1,9 @@
-#ifndef INC_UICALLBACK_H
-#define INC_UICALLBACK_H
+/*
+ * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ */
+
+#ifndef INC_CALLBACK_H
+#define INC_CALLBACK_H
 
 #include <stdint.h>
 
@@ -33,4 +37,4 @@ callback_t *callbackInitS (callbackFuncS cb, void *udata);
 callback_t *callbackInitSS (callbackFuncSS cb, void *udata);
 callback_t *callbackInitSI (callbackFuncSI cb, void *udata);
 
-#endif /* INC_UICALLBACK_H */
+#endif /* INC_CALLBACK_H */
