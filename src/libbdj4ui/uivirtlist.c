@@ -143,6 +143,9 @@ typedef struct {
   uiwcont_t     *hbox;
   uivlcol_t     *cols;
   uivlrowcb_t   *rowcb;             // must have a stable address
+  /* applied to every column in the row */
+  char          *oldclass;
+  char          *class;
   int           dispidx;
   /* cleared: row is on-screen, no display */
   /* all widgets are hidden */
@@ -560,6 +563,29 @@ uivlSetAllowDoubleClick (uivirtlist_t *vl)
   vl->allowdblclick = true;
 }
 
+/* row set */
+
+/* though a rownum is passed in, the class applies to the display index */
+void
+uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class)
+{
+  uivlrow_t   *row;
+
+  if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, 0, __func__)) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  dataFree (row->oldclass);
+  row->oldclass = row->class;
+  dataFree (row->class);
+  row->class = mdstrdup (class);
+}
+
 /* column set */
 
 void
@@ -673,12 +699,12 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
       minwidth = 15;
     }
     if (tagdefs [tagidx].ellipsize) {
-fprintf (stderr, "%s col:%d tag:%d/%s minwidth: %d\n", vl->tag, col, tagidx, tagdefs [tagidx].tag, minwidth);
       uivlSetColumnMinWidth (vl, col, minwidth);
       uivlSetColumnEllipsizeOn (vl, col);
     }
 
     uivlMakeColumn (vl, tagdefs [tagidx].tag, col, VL_TYPE_LABEL);
+    uivlSetColumnHeading (vl, col, title);
     if (tagidx == TAG_FAVORITE) {
       uivlSetColumnClass (vl, col, VL_FAV_CLASS);
     }
@@ -1239,6 +1265,18 @@ uivlPopulate (uivirtlist_t *vl)
         dataFree (col->class);
         col->class = NULL;
       }
+
+      if (row->class != NULL &&
+          vl->coldata [colidx].type == VL_TYPE_LABEL) {
+        if (row->oldclass != NULL) {
+          uiWidgetRemoveClass (col->uiwidget, row->oldclass);
+          dataFree (row->oldclass);
+          row->oldclass = NULL;
+        }
+        if (row->class != NULL) {
+          uiWidgetAddClass (col->uiwidget, row->class);
+        }
+      }
     }
   }
 
@@ -1403,6 +1441,8 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
   }
   uiwcontFree (row->hbox);
   dataFree (row->cols);
+  dataFree (row->oldclass);
+  dataFree (row->class);
   row->ident = 0;
 }
 
@@ -2018,6 +2058,8 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->rowcb = NULL;
   row->dispidx = dispidx;
   row->initialized = true;
+  row->oldclass = NULL;
+  row->class = NULL;
 
   if (dispidx != VL_ROW_HEADING) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
