@@ -350,6 +350,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->initialized = VL_INIT_NONE;
 
   vl->dispsize = dispsize;
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s init-disp-size: %d", vl->tag, dispsize);
   vl->dispalloc = dispsize;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->dispalloc);
   for (int dispidx = 0; dispidx < vl->dispalloc; ++dispidx) {
@@ -587,6 +588,7 @@ uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t type)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d %d %s", vl->tag, colidx, type, tag);
   vl->coldata [colidx].type = type;
   vl->coldata [colidx].tag = tag;
 }
@@ -598,6 +600,7 @@ uivlMakeColumnEntry (uivirtlist_t *vl, const char *tag, int colidx, int sz, int 
     return;
   }
 
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d entry %s", vl->tag, colidx, tag);
   vl->coldata [colidx].type = VL_TYPE_ENTRY;
   vl->coldata [colidx].entrySz = sz;
   vl->coldata [colidx].entryMaxSz = maxsz;
@@ -612,6 +615,7 @@ uivlMakeColumnSpinboxTime (uivirtlist_t *vl, const char *tag, int colidx,
     return;
   }
 
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d sbtime %s", vl->tag, colidx, tag);
   vl->coldata [colidx].type = VL_TYPE_SPINBOX_TIME;
   vl->coldata [colidx].sbtype = sbtype;
   vl->coldata [colidx].sbcb = uicb;
@@ -626,6 +630,7 @@ uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx,
     return;
   }
 
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d sbnum %s", vl->tag, colidx, tag);
   vl->coldata [colidx].type = VL_TYPE_SPINBOX_NUM;
   vl->coldata [colidx].sbmin = min;
   vl->coldata [colidx].sbmax = max;
@@ -641,7 +646,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
   int         tagidx;
   int         col;
 
-  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
   }
 
@@ -668,7 +673,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
       minwidth = 15;
     }
     if (tagdefs [tagidx].ellipsize) {
-fprintf (stderr, "%s col:%d tagidx:%d minwidth: %d\n", vl->tag, col, tagidx, minwidth);
+fprintf (stderr, "%s col:%d tag:%d/%s minwidth: %d\n", vl->tag, col, tagidx, tagdefs [tagidx].tag, minwidth);
       uivlSetColumnMinWidth (vl, col, minwidth);
       uivlSetColumnEllipsizeOn (vl, col);
     }
@@ -2253,12 +2258,14 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* if the number of display rows has decreased, */
   /* clear the row display, make sure these widgets are not displayed */
   if (newdispsize < vl->dispsize) {
+    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {
       uivlClearRowDisp (vl, dispidx);
     }
   }
 
   vl->dispsize = newdispsize;
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size: %d", vl->tag, newdispsize);
 
   /* if the vertical size changes, and there are enough rows */
   /* to fill the display, change the row-offset so that the display */
@@ -2277,6 +2284,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* rows are cleared. */
   /* this is necessary when the number of rows is less than the */
   /* display size. this must be forced. */
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-increase %d-%d", vl->tag, odispsize, newdispsize);
   for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
     uivlrow_t *row;
 
@@ -2289,6 +2297,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* if the display size is greater than the number of rows, */
   /* clear any extra rows. */
   if (vl->dispsize > vl->numrows) {
+    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-limit %d > %d", vl->tag, vl->dispsize, vl->numrows);
     for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t *row;
 

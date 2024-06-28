@@ -4,9 +4,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
@@ -17,8 +18,50 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uisong.h"
+#include "uivirtlist.h"
 
 static valuetype_t uisongDetermineValueType (int tagidx);
+
+nlist_t *
+uisongGetDisplayList (slist_t *sellist, song_t *song)
+{
+  slistidx_t    seliteridx;
+  int           tagidx;
+  char          *str = NULL;
+  nlist_t       *dlist;
+  int           col;
+  int32_t       num;
+  double        dval;
+
+  dlist = nlistAlloc ("song-disp", LIST_UNORDERED, NULL);
+
+  col = 0;
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    if (tagidx == TAG_AUDIOID_IDENT || tagidx == TAG_AUDIOID_SCORE) {
+      nlistSetStr (dlist, col, "");
+      col += 1;
+      continue;
+    }
+    if (song != NULL) {
+      str = uisongGetDisplay (song, tagidx, &num, &dval);
+    } else {
+      str = "";
+      num = LIST_VALUE_INVALID;
+    }
+    if (str != NULL) {
+      nlistSetStr (dlist, col, str);
+    } else {
+      char  tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%" PRId32, num);
+      nlistSetStr (dlist, col, tmp);
+    }
+    col += 1;
+  } /* for each tagidx in the display selection list */
+
+  return dlist;
+}
 
 void
 uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
@@ -27,7 +70,7 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
   slistidx_t    seliteridx;
   int           tagidx;
   char          *str = NULL;
-  long          num;
+  int32_t       num;
   double        dval;
 
   slistStartIterator (sellist, &seliteridx);
@@ -53,7 +96,7 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
 }
 
 char *
-uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
+uisongGetDisplay (song_t *song, int tagidx, int32_t *num, double *dval)
 {
   char          *str;
 
@@ -72,7 +115,7 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
 }
 
 char *
-uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
+uisongGetValue (song_t *song, int tagidx, int32_t *num, double *dval)
 {
   valuetype_t   vt;
   char          *str = NULL;
@@ -101,8 +144,7 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
   } else if (vt == VALUE_DOUBLE) {
     *dval = songGetDouble (song, tagidx);
     /* the only double that is displayed is the score, and that value */
-    /* is never store in the song */
-    str = mdstrdup ("");
+    /* is never stored in the song */
   }
 
   return str;

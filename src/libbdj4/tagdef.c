@@ -167,7 +167,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* vorbis multi         */
   },
   [TAG_AUDIOID_SCORE] =
-  { "SCORE",                      /* tag */
+  { "AUDIOID_SCORE",              /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL },

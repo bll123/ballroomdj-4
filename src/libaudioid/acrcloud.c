@@ -52,7 +52,7 @@ typedef struct audioidacr {
 /* for debugging only */
 /* this is useful, as the free ACRCloud only allows 100 queries/month */
 /* note that a valid out-acr.json file must be downloaded first */
-#define ACRCLOUD_REUSE 0
+#define ACRCLOUD_REUSE 1
 enum {
   FREE_LIMIT = 100,
   QPS_LIMIT = 1000 / 2 + 1,

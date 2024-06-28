@@ -116,21 +116,21 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
-grep 'ACRCLOUD_REUSE = 0,' src/libaudioid/acrcloud.c > /dev/null 2>&1
+grep 'ACRCLOUD_REUSE 0' src/libaudioid/acrcloud.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "acrcloud debugging is on"
   grc=1
 fi
 
-grep 'ACOUSTID_REUSE = 0,' src/libaudioid/acoustid.c > /dev/null 2>&1
+grep 'ACOUSTID_REUSE 0' src/libaudioid/acoustid.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "acoustid debugging is on"
   grc=1
 fi
 
-grep 'MUSICBRAINZ_REUSE = 0,' src/libaudioid/musicbrainz.c > /dev/null 2>&1
+grep 'MUSICBRAINZ_REUSE 0' src/libaudioid/musicbrainz.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "musicbrainz debugging is on"
