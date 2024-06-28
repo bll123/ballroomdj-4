@@ -225,6 +225,7 @@ static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, const char *func);
 static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int colidx, const char *func);
 static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
+static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
 
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *boxp,
@@ -269,7 +270,9 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   }
 
   vl->wcont [VL_W_EVENTH] = uiEventAlloc ();
-  vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
+  if (vl->keyhandling) {
+    vl->callbacks [VL_CB_KEY] = callbackInit (uivlKeyEvent, vl, NULL);
+  }
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
   vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVertSizeChg, vl);
@@ -1886,88 +1889,11 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   vl->vboxheight = height;
 
   if (vl->vboxheight > 0 && vl->rowheight > 0) {
-    int   odispsize = vl->dispsize;
-
     theight = vl->vboxheight;
     calcrows = theight / vl->rowheight;
 
     if (calcrows != vl->dispsize) {
-
-      /* only if the number of rows has increased */
-      if (vl->dispalloc < calcrows) {
-        vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * calcrows);
-
-        for (int dispidx = vl->dispsize; dispidx < calcrows; ++dispidx) {
-          uivlrow_t *row;
-
-          row = &vl->rows [dispidx];
-          uivlRowBasicInit (vl, row, dispidx);
-          uivlCreateRow (vl, row, dispidx, false);
-
-          uivlPackRow (vl, row);
-          /* rows packed after the initial display need */
-          /* to have their contents shown */
-          if (row->offscreen == false) {
-            uiWidgetShowAll (row->hbox);
-          }
-        }
-
-        vl->dispalloc = calcrows;
-      }
-
-      /* if the number of display rows has decreased, */
-      /* clear the row display, make sure these widgets are not displayed */
-      if (calcrows < vl->dispsize) {
-        for (int dispidx = calcrows; dispidx < vl->dispsize; ++dispidx) {
-          uivlClearRowDisp (vl, dispidx);
-        }
-      }
-
-      vl->dispsize = calcrows;
-
-      /* if the vertical size changes, and there are enough rows */
-      /* to fill the display, change the row-offset so that the display */
-      /* is filled. */
-      /* this happens when the vertical size is increased, and the display */
-      /* is scrolled to the bottom */
-      if (vl->dispsize + vl->rowoffset > vl->numrows) {
-        int32_t   diff;
-
-        diff = vl->numrows - (vl->dispsize + vl->rowoffset);
-        vl->rowoffset += diff;
-        vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
-      }
-
-      /* if the display size is increased, make sure any newly allocated */
-      /* rows are cleared. */
-      /* this is necessary when the number of rows is less than the */
-      /* display size. this must be forced. */
-      for (int dispidx = odispsize; dispidx < calcrows; ++dispidx) {
-        uivlrow_t *row;
-
-        /* force a reset as a show-all was done, the rows must be cleared */
-        row = &vl->rows [dispidx];
-        row->cleared = false;
-        uivlClearRowDisp (vl, dispidx);
-      }
-
-      /* if the display size is greater than the number of rows, */
-      /* clear any extra rows. */
-      if (vl->dispsize > vl->numrows) {
-        for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
-          uivlrow_t *row;
-
-          row = &vl->rows [dispidx];
-          if (! row->cleared) {
-            uivlClearRowDisp (vl, dispidx);
-          }
-        }
-      }
-
-      uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
-          (double) (vl->dispsize / 2));
-      uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
-      uivlPopulate (vl);
+      uivlChangeDisplaySize (vl, calcrows);
     }
   }
 
@@ -2235,4 +2161,87 @@ uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
       }
     }
   }
+}
+
+
+static void
+uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
+{
+  int     odispsize = vl->dispsize;
+
+  /* only if the number of rows has increased */
+  if (vl->dispalloc < newdispsize) {
+    vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
+
+    for (int dispidx = vl->dispsize; dispidx < newdispsize; ++dispidx) {
+      uivlrow_t *row;
+
+      row = &vl->rows [dispidx];
+      uivlRowBasicInit (vl, row, dispidx);
+      uivlCreateRow (vl, row, dispidx, false);
+
+      uivlPackRow (vl, row);
+      /* rows packed after the initial display need */
+      /* to have their contents shown */
+      if (row->offscreen == false) {
+        uiWidgetShowAll (row->hbox);
+      }
+    }
+
+    vl->dispalloc = newdispsize;
+  }
+
+  /* if the number of display rows has decreased, */
+  /* clear the row display, make sure these widgets are not displayed */
+  if (newdispsize < vl->dispsize) {
+    for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {
+      uivlClearRowDisp (vl, dispidx);
+    }
+  }
+
+  vl->dispsize = newdispsize;
+
+  /* if the vertical size changes, and there are enough rows */
+  /* to fill the display, change the row-offset so that the display */
+  /* is filled. */
+  /* this happens when the vertical size is increased, and the display */
+  /* is scrolled to the bottom */
+  if (vl->dispsize + vl->rowoffset > vl->numrows) {
+    int32_t   diff;
+
+    diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+    vl->rowoffset += diff;
+    vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+  }
+
+  /* if the display size is increased, make sure any newly allocated */
+  /* rows are cleared. */
+  /* this is necessary when the number of rows is less than the */
+  /* display size. this must be forced. */
+  for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
+    uivlrow_t *row;
+
+    /* force a reset as a show-all was done, the rows must be cleared */
+    row = &vl->rows [dispidx];
+    row->cleared = false;
+    uivlClearRowDisp (vl, dispidx);
+  }
+
+  /* if the display size is greater than the number of rows, */
+  /* clear any extra rows. */
+  if (vl->dispsize > vl->numrows) {
+    for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
+      uivlrow_t *row;
+
+      row = &vl->rows [dispidx];
+      if (! row->cleared) {
+        uivlClearRowDisp (vl, dispidx);
+      }
+    }
+  }
+
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
+      (double) (vl->dispsize / 2));
+  uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
+  uivlPopulate (vl);
 }

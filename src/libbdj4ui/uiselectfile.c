@@ -21,28 +21,34 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiselectfile.h"
+#include "uivirtlist.h"
 
 enum {
   SELFILE_COL_DISP,
-  SELFILE_COL_SB_PAD,
   SELFILE_COL_MAX,
 };
 
+enum {
+  SELFILE_MAX_DISP = 10,
+};
+
 typedef struct uiselectfile {
-  uiwcont_t        *parentwinp;
+  uiwcont_t         *parentwinp;
   uiwcont_t         *selfileDialog;
-  uiwcont_t         *selfiletree;
-  callback_t        *rowactivecb;
+  uivirtlist_t      *uivl;
   callback_t        *respcb;
   callback_t        *selfilecb;
   nlist_t           *options;
+  slist_t           *filelist;
+  bool              inchange : 1;
 } uiselectfile_t;
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb);
-static bool selectFileSelect (void *udata, int32_t col);
 static bool selectFileResponseHandler (void *udata, int32_t responseid);
 static bool selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype);
+static void selectfileFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum);
+static void selectfileSelected (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 void
 selectInitCallback (uisfcb_t *uisfcb)
@@ -66,11 +72,13 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
   selectfile = mdmalloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
   selectfile->selfileDialog = NULL;
-  selectfile->selfiletree = NULL;
-  selectfile->rowactivecb = NULL;
+  selectfile->uivl = NULL;
   selectfile->respcb = NULL;
   selectfile->selfilecb = NULL;
   selectfile->options = options;
+  selectfile->filelist = NULL;
+  selectfile->inchange = false;
+
   selectfile->respcb = callbackInitI (
       selectFileResponseHandler, selectfile);
 
@@ -99,6 +107,8 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
 
   if (cb != NULL) {
     filelist = playlistGetPlaylistList (playlistSel, NULL);
+    slistFree (selectfile->filelist);
+    selectfile->filelist = filelist;
 
     selectFileCreateDialog (selectfile, filelist, title, cb);
     uiDialogShow (selectfile->selfileDialog);
@@ -106,21 +116,22 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
     uiWindowMove (selectfile->selfileDialog, x, y, -1);
-
-    slistFree (filelist);
   }
 }
 
 void
 selectFileFree (uiselectfile_t *selectfile)
 {
-  if (selectfile != NULL) {
-    uiwcontFree (selectfile->selfileDialog);
-    callbackFree (selectfile->respcb);
-    callbackFree (selectfile->rowactivecb);
-    uiwcontFree (selectfile->selfiletree);
-    mdfree (selectfile);
+  if (selectfile == NULL) {
+    return;
   }
+
+  uiwcontFree (selectfile->selfileDialog);
+  callbackFree (selectfile->respcb);
+  uivlFree (selectfile->uivl);
+  slistFree (selectfile->filelist);
+  selectfile->filelist = NULL;
+  mdfree (selectfile);
 }
 
 bool
@@ -154,10 +165,10 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *scwindow;
   char          tbuff [200];
-  slistidx_t    fliteridx;
-  const char    *disp;
+  uivirtlist_t  *uivl;
+  int           dispsize;
+  slistidx_t    count;
 
 
   selectfile->selfilecb = cb;
@@ -172,47 +183,31 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
       _("Select"), RESPONSE_APPLY,
       NULL
       );
+  uiWindowSetNoMaximize (selectfile->selfileDialog);
 
   vbox = uiCreateVertBox ();
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (selectfile->selfileDialog, vbox);
 
-  scwindow = uiCreateScrolledWindow (200);
-  uiWidgetExpandHoriz (scwindow);
-  uiWidgetExpandVert (scwindow);
-  uiBoxPackStartExpand (vbox, scwindow);
-
-  selectfile->selfiletree = uiCreateTreeView ();
-  uiTreeViewDisableSingleClick (selectfile->selfiletree);
-  uiWidgetAlignHorizFill (selectfile->selfiletree);
-  uiWidgetAlignVertFill (selectfile->selfiletree);
-  uiWindowPackInWindow (scwindow, selectfile->selfiletree);
-
-  uiwcontFree (scwindow);
-
-  uiTreeViewCreateValueStore (selectfile->selfiletree, SELFILE_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_END);
-
-  slistStartIterator (filelist, &fliteridx);
-  while ((disp = slistIterateKey (filelist, &fliteridx)) != NULL) {
-    uiTreeViewValueAppend (selectfile->selfiletree);
-    uiTreeViewSetValues (selectfile->selfiletree,
-        SELFILE_COL_DISP, disp,
-        SELFILE_COL_SB_PAD, "  ",
-        TREE_VALUE_END);
+  count = slistGetCount (filelist);
+  dispsize = count;
+  if (dispsize > SELFILE_MAX_DISP) {
+    dispsize = SELFILE_MAX_DISP;
   }
 
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, SELFILE_COL_DISP, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_TYPE_END);
+  uivl = uivlCreate ("selectfile", vbox, dispsize, VL_NO_WIDTH,
+      VL_NO_HEADING | VL_ENABLE_KEYS);
+  selectfile->uivl = uivl;
 
-  selectfile->rowactivecb = callbackInitI (selectFileSelect, selectfile);
-  uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);
+  uivlSetNumColumns (uivl, SELFILE_COL_MAX);
+  uivlMakeColumn (uivl, "disp", SELFILE_COL_DISP, VL_TYPE_LABEL);
+  uivlSetColumnMinWidth (uivl, SELFILE_COL_DISP, 10);
+  uivlSetNumRows (uivl, count);
+  uivlSetRowFillCallback (uivl, selectfileFillRow, selectfile);
+  uivlSetAllowDoubleClick (uivl);
+  uivlSetDoubleClickCallback (uivl, selectfileSelected, selectfile);
+
+  uivlDisplay (uivl);
 
   /* the dialog doesn't have any space above the buttons */
   hbox = uiCreateHorizBox ();
@@ -227,21 +222,12 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 }
 
 static bool
-selectFileSelect (void *udata, int32_t col)
-{
-  uiselectfile_t  *selectfile = udata;
-
-  selectFileResponseHandler (selectfile, RESPONSE_APPLY);
-  return UICB_CONT;
-}
-
-static bool
 selectFileResponseHandler (void *udata, int32_t responseid)
 {
   uiselectfile_t  *selectfile = udata;
-  int           x, y, ws;
-  char          *str;
-  int           count;
+  int             x, y, ws;
+  char            *str = NULL;
+  int             count;
 
   uiWindowGetPosition (selectfile->selfileDialog, &x, &y, &ws);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_X, x);
@@ -262,19 +248,21 @@ selectFileResponseHandler (void *udata, int32_t responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      count = uiTreeViewSelectGetCount (selectfile->selfiletree);
+      int32_t     sel;
+
+      count = uivlSelectionCount (selectfile->uivl);
       if (count != 1) {
         break;
       }
 
-      str = uiTreeViewGetValueStr (selectfile->selfiletree, SELFILE_COL_DISP);
+      sel = uivlGetCurrSelection (selectfile->uivl);
+      str = slistGetDataByIdx (selectfile->filelist, sel);
       uiDialogDestroy (selectfile->selfileDialog);
       uiwcontFree (selectfile->selfileDialog);
       selectfile->selfileDialog = NULL;
       if (selectfile->selfilecb != NULL) {
         callbackHandlerS (selectfile->selfilecb, str);
       }
-      dataFree (str);
       selectfile->selfilecb = NULL;
       break;
     }
@@ -283,8 +271,6 @@ selectFileResponseHandler (void *udata, int32_t responseid)
   selectFileFree (selectfile);
   return UICB_CONT;
 }
-
-
 
 static bool
 selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
@@ -317,3 +303,26 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
   return UICB_CONT;
 }
 
+static void
+selectfileFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
+{
+  uiselectfile_t  *selectfile = udata;
+  const char      *str;
+
+  selectfile->inchange = true;
+  str = slistGetDataByIdx (selectfile->filelist, rownum);
+  uivlSetRowColumnValue (selectfile->uivl, rownum, SELFILE_COL_DISP, str);
+  selectfile->inchange = false;
+}
+
+static void
+selectfileSelected (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
+{
+  uiselectfile_t  *selectfile = udata;
+
+  if (selectfile->inchange) {
+    return;
+  }
+
+  selectFileResponseHandler (selectfile, RESPONSE_APPLY);
+}

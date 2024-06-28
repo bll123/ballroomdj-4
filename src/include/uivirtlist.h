@@ -97,10 +97,10 @@ void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
 void  uivlPopulate (uivirtlist_t *vl);
-void uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter);
-int32_t uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter);
-void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
-int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
+//void uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter);
+//int32_t uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter);
+//void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
+//int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);
