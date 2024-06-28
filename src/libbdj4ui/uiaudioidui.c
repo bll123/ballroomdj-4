@@ -122,7 +122,7 @@ typedef struct aid_internal {
 } aid_internal_t;
 
 static void uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);
-static void uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx);
+static void uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx);
 static bool uiaudioidSaveCallback (void *udata);
 static bool uiaudioidFirstSelection (void *udata);
 static bool uiaudioidPreviousSelection (void *udata);
@@ -133,7 +133,6 @@ static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayTypeCallback (int type, void *udata);
 static void uiaudioidSetSongDataCallback (int col, long num, const char *str, void *udata);
 static void uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song);
-static void uiaudioidBlankDisplayList (uiaudioid_t *uiaudioid);
 static void uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum);
 
 void
@@ -367,8 +366,11 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uivlSetNumColumns (uivl, audioidint->colcount);
   uivlAddDisplayColumns (uivl, audioidint->listsellist);
   uivlSetRowFillCallback (uivl, uiaudioidFillRow, audioidint);
+  uivlSetNumRows (audioidint->uivl, 0);
 
   uiwcontFree (vbox);
+
+  uivlDisplay (audioidint->uivl);
 
 //  audioidint->wcont [UIAUDID_W_TREE] = uiCreateTreeView ();
 
@@ -404,8 +406,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* the items must all be alloc'd beforehand so that the callback */
   /* pointer is static */
-  audioidint->items = mdmalloc (sizeof (uiaudioiditem_t) * audioidint->colcount);
-  for (int i = 0; i < audioidint->colcount; ++i) {
+  audioidint->itemcount = slistGetCount (audioidint->sellist);
+  audioidint->items = mdmalloc (sizeof (uiaudioiditem_t) * audioidint->itemcount);
+  for (int i = 0; i < audioidint->itemcount; ++i) {
     audioidint->items [i].tagidx = 0;
     audioidint->items [i].currrb = NULL;
     audioidint->items [i].selrb = NULL;
@@ -620,12 +623,10 @@ uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
     uiToggleButtonSetText (audioidint->items [count].selrb, "");
   }
 
-  /* this makes the ui look nice when the next/previous song button */
-  /* is selected */
-  uiaudioidBlankDisplayList (uiaudioid);
-
   audioidint->selectedrow = -1;
   audioidint->fillrow = 0;
+fprintf (stderr, "reset\n");
+  uivlSetNumRows (audioidint->uivl, 0);
 }
 
 void
@@ -644,6 +645,7 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
 
   audioidint = uiaudioid->audioidInternalData;
 
+fprintf (stderr, "set-display-list %d\n", audioidint->fillrow);
   ndlist = nlistAlloc ("uiaudio-ndlist", LIST_UNORDERED, NULL);
   nlistSetSize (ndlist, nlistGetCount (dlist));
 
@@ -677,6 +679,7 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
 
   nlistSort (audioidint->displaylist);
   audioidint->rowcount = audioidint->fillrow + 1;
+fprintf (stderr, "finish-display-list %d\n", audioidint->rowcount);
   uivlSetNumRows (audioidint->uivl, audioidint->rowcount);
 
 //  audioidint->selectedrow = -1;
@@ -744,10 +747,12 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
   slistidx_t      dsiteridx;
   aid_internal_t  *audioidint;
   int             tagidx;
+  int             count;
 
   logProcBegin ();
   audioidint = uiaudioid->audioidInternalData;
 
+  count = 0;
   slistStartIterator (audioidint->sellist, &dsiteridx);
   while ((tagidx = slistIterateValueNum (audioidint->sellist, &dsiteridx)) >= 0) {
     uiwcont_t   *hbox;
@@ -763,9 +768,9 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (col, hbox);
 
-    uiaudioidAddItem (uiaudioid, hbox, tagidx);
-    audioidint->items [audioidint->itemcount].tagidx = tagidx;
-    ++audioidint->itemcount;
+    uiaudioidAddItem (uiaudioid, hbox, tagidx, count);
+    audioidint->items [count].tagidx = tagidx;
+    ++count;
 
     uiwcontFree (hbox);
   }
@@ -774,7 +779,7 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
 }
 
 static void
-uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
+uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
 {
   uiwcont_t       *uiwidgetp;
   uiwcont_t       *rb;
@@ -795,13 +800,13 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx)
   /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, rb);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_A], rb);
-  audioidint->items [audioidint->itemcount].currrb = rb;
+  audioidint->items [idx].currrb = rb;
 
   uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
   /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_B], uiwidgetp);
-  audioidint->items [audioidint->itemcount].selrb = uiwidgetp;
+  audioidint->items [idx].selrb = uiwidgetp;
 
   logProcEnd ("");
 }
@@ -1073,53 +1078,27 @@ uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song)
   }
 }
 
-static void
-uiaudioidBlankDisplayList (uiaudioid_t *uiaudioid)
-{
-  aid_internal_t  *audioidint;
-
-  if (uiaudioid == NULL) {
-    return;
-  }
-
-  audioidint = uiaudioid->audioidInternalData;
-
-  for (int i = 1; i < audioidint->rowcount; ++i) {
-    ilistidx_t    seliteridx;
-    int           tagidx;
-    int           col;
-
-//    uiTreeViewSelectSet (audioidint->wcont [UIAUDID_W_TREE], i);
-
-//    col = UIAUDID_COL_MAX;
-    col = 0;
-    slistStartIterator (audioidint->listsellist, &seliteridx);
-    while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
-//      uitreedispSetDisplayColumn (audioidint->wcont [UIAUDID_W_TREE],
-//          col, 0, "");
-      ++col;
-    }
-  }
-}
 
 static void
 uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 {
   aid_internal_t  *audioidint = udata;
   nlist_t         *dlist;
-//  nlist_t         *ndlist;
   slist_t         *sellist;
   int             colcount;
 
+fprintf (stderr, "fill-row: %d\n", rownum);
   if (audioidint->displaylist == NULL) {
+fprintf (stderr, "   null displaylist\n");
     return;
   }
   dlist = nlistGetList (audioidint->displaylist, rownum);
   if (dlist == NULL) {
+fprintf (stderr, "   null dlist\n");
     return;
   }
   sellist = audioidint->listsellist;
-  colcount = slistGetCount (sellist);
+  colcount = audioidint->colcount;
 
   for (int col = 0; col < colcount; ++col) {
     int   tagidx;

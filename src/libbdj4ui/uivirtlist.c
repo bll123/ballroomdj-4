@@ -668,6 +668,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
       minwidth = 15;
     }
     if (tagdefs [tagidx].ellipsize) {
+fprintf (stderr, "%s col:%d tagidx:%d minwidth: %d\n", vl->tag, col, tagidx, minwidth);
       uivlSetColumnMinWidth (vl, col, minwidth);
       uivlSetColumnEllipsizeOn (vl, col);
     }
