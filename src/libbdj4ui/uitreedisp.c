@@ -45,7 +45,7 @@ uitreedispAddDisplayColumns (uiwcont_t *uiwidget,
     const char  *title;
 
     alignment = TREE_ALIGN_NORM;
-    if (tagdefs [tagidx].alignRight) {
+    if (tagdefs [tagidx].alignend) {
       alignment = TREE_ALIGN_RIGHT;
     }
 

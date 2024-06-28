@@ -51,7 +51,7 @@ typedef struct {
   /* in the song editor */
   bool                secondaryDisplay : 1;
   bool                ellipsize : 1;
-  bool                alignRight : 1;
+  bool                alignend : 1;
   bool                isBDJTag : 1;
   bool                isNormTag : 1;
   bool                allEdit : 1;

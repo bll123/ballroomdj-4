@@ -63,6 +63,7 @@ void  uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t ty
 void  uivlMakeColumnEntry (uivirtlist_t *vl, const char *tag, int colidx, int sz, int maxsz);
 void  uivlMakeColumnSpinboxTime (uivirtlist_t *vl, const char *tag, int colidx, int sbtype, callback_t *uicb);
 void  uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx, double min, double max, double incr, double pageincr);
+void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist);
 
 /* column set */
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);

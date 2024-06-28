@@ -17,6 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
 #include "uivirtlist.h"
@@ -82,6 +83,7 @@ static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 static const char * const VL_DARKBG_CLASS = "bdj-dark-bg";
 static const char * const VL_NORMBG_CLASS = "bdj-norm-bg";
+static const char * const VL_FAV_CLASS = "bdj-list-fav";
 
 typedef struct uivlcol uivlcol_t;
 
@@ -631,6 +633,61 @@ uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx,
   vl->coldata [colidx].sbpageincr = pageincr;
   vl->coldata [colidx].tag = tag;
 }
+
+void
+uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
+{
+  slistidx_t  seliteridx;
+  int         tagidx;
+  int         col;
+
+  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
+    return;
+  }
+
+  col = 0;
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    int         minwidth = 10;
+    const char  *title;
+
+    if (tagdefs [tagidx].shortdisplayname != NULL) {
+      title = tagdefs [tagidx].shortdisplayname;
+    } else {
+      title = tagdefs [tagidx].displayname;
+    }
+
+    if (tagdefs [tagidx].ellipsize) {
+      minwidth = 10;
+    }
+    if (tagidx == TAG_TITLE || tagidx == TAG_NOTES) {
+      minwidth = 20;
+    }
+    if (tagidx == TAG_ARTIST || tagidx == TAG_ALBUMARTIST ||
+        tagidx == TAG_TAGS) {
+      minwidth = 15;
+    }
+    if (tagdefs [tagidx].ellipsize) {
+      uivlSetColumnMinWidth (vl, col, minwidth);
+      uivlSetColumnEllipsizeOn (vl, col);
+    }
+
+    uivlMakeColumn (vl, tagdefs [tagidx].tag, col, VL_TYPE_LABEL);
+    if (tagidx == TAG_FAVORITE) {
+      uivlSetColumnClass (vl, col, VL_FAV_CLASS);
+    }
+
+    if (tagdefs [tagidx].alignend) {
+      uivlSetColumnAlignEnd (vl, col);
+    }
+
+    ++col;
+  }
+
+  return;
+}
+
+/* column set */
 
 void
 uivlSetColumnMinWidth (uivirtlist_t *vl, int colidx, int minwidth)
@@ -1317,6 +1374,7 @@ uivlMoveSelection (uivirtlist_t *vl, int dir)
 
   return rownum;
 }
+
 
 /* internal routines */
 
