@@ -9,7 +9,7 @@ done
 cd src
 cwd=$(pwd)
 
-rm -f po/*~ po/po/*~ po/web/*~ po/old/*~ > /dev/null 2>&1
+rm -f po/*~ po/po/*~ po/web/*~ > /dev/null 2>&1
 export POTFILE=bdj4.pot
 
 . ../VERSION.txt

@@ -62,7 +62,7 @@ function mkpo {
       ${out}
     sed -n '/^$/,$ p' bdj4.pot >> ${out}
 
-    # echo "-- $(date +%T) updating translations from old .po files"
+    # echo "-- $(date +%T) updating translations from older .po files"
     ./lang-lookup.sh ${out}
   else
     # new file; $out does not exist or this is the en-gb locale

@@ -4,14 +4,18 @@
 #   english name (no spaces)
 #   descriptive name (to end of line)
 #
+cs_CZ czech čeština
+de_DE german Deutsch
 en_GB english/gb English (GB)
 en_US english/us English (US)
-de_DE german Deutsch
 es_ES spanish Español
 fi_FI finnish Suomi
 fr_FR french Français
 it_IT italian Italiano
 ja_JP japanese 日本語
+ko_KR korean 한국어‬
 nl_BE dutch Nederlands
 pl_PL polish Polski
 ru_RU russian Русский‬
+sv_SE swedish Svenska‬
+zh_CN chinese/cn 简体中文‬

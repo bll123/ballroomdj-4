@@ -17,4 +17,6 @@ all: $(LOCALEDIR)/$(LOCALE)/LC_MESSAGES/bdj4.mo
 
 $(LOCALEDIR)/$(LOCALE)/LC_MESSAGES/bdj4.mo: $(PODIR)/$(LOCALE).po
 	@echo "-- $(date +%T) update $(SLOCALE)"
+	@test -d $(LOCALEDIR)/$(LOCALE)/LC_MESSAGES || \
+		mkdir -p $(LOCALEDIR)/$(LOCALE)/LC_MESSAGES 
 	@msgfmt -c -o $@ $<

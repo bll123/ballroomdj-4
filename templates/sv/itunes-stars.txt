@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Dålig
+20
+..Dålig
+30
+..Dålig
+40
+..Dålig
+50
+..Dålig
+60
+..Bra
+70
+..Bra
+80
+..Bra
+90
+..Bra
+100
+..Bra

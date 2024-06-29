@@ -1,0 +1,2237 @@
+# == 简体中文‬
+# -- chinese/cn
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-06-29\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: en_GB.po\n"
+"X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s 必须大于 %2$s"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr "%s 应用程序接口主机"
+
+#. CONTEXT: configuration: the ACRCloud API Key
+#, c-format
+msgid "%s API Key"
+msgstr "%s API 密钥"
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr "%s API 密钥"
+
+#. CONTEXT: configuration: configuration user interface window title
+#, c-format
+msgid "%s Configuration"
+msgstr "%s 配置"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%s 下载"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%s 论坛"
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
+#, c-format
+msgid "%s Helper"
+msgstr "%s 助手"
+
+#. CONTEXT: alternate installation: window title
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr "%s 安装人员"
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr "%s 地点"
+
+#. CONTEXT: managementui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%s 管理层"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
+msgstr "%s 媒体文件夹"
+
+#. CONTEXT: playerui: main window title
+#, c-format
+msgid "%s Player"
+msgstr "%s 球员"
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr "%s 玩家处于活动状态"
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%s 播放列表"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%s 支持票务"
+
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr "%s 版本"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%s 维基"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%s XML 文件"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr "%s 数据将被转换。"
+
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s 找到的文件"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "%s installed."
+msgstr "%s 已安装。"
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is installed"
+msgstr "%s 已安装"
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%s 未配置。"
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
+msgstr "%s 尚未被安装"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s 不得超过歌曲长度"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s:不允许使用 *'\":|<>^ 字符。"
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s时间无效 (%s)。"
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s必须是数字。"
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s必须设置。"
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s不允许使用斜线。"
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s不允许空格。"
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "点缀色"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "行动"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "行动失败"
+
+#. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
+#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "操作"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "活跃"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "新增"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "调整速度、歌曲开始和歌曲结束"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "高级设置"
+
+#. CONTEXT: label: album
+msgid "Album"
+msgstr "专辑"
+
+#. CONTEXT: label: album artist
+msgid "Album Artist"
+msgstr "专辑艺人"
+
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "专辑艺术家排序"
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr "相册排序"
+
+#. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
+msgid "All Dances"
+msgstr "所有舞蹈"
+
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "所有类型"
+
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "所有级别"
+
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "所有评级"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "所有标签"
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "允许关键词："
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr "已经存在"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "公告："
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "任何状态"
+
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "申请"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "应用调整"
+
+#. CONTEXT: managementui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "应用 编辑全部"
+
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "阿根廷探戈 "
+
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "歌手"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr "艺术家排序"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "附加数据文件"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "附加数据库"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "音频"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "音频文件"
+
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "音频文件"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: managementui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "音频 ID"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "音频 ID 匹配列表"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "音频输出："
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "自动整理"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "自动"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+msgid "BDJ Tags Only"
+msgstr "仅限 BDJ 标签 "
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "BDJ3 数据库版本太旧。"
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "BPM 计数器"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "交谊舞 "
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "舞厅音乐播放器 "
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "节拍"
+
+#. CONTEXT: managementui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "取消 编辑全部"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
+msgstr "无法重命名"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "Cha Cha"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "检查新"
+
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "检查是否有新的音频文件。"
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "古典"
+
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "古典音乐？"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "清除和播放"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "清除队列"
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "清除同一首歌标记"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "随着节拍在蓝色方框内点击鼠标。"
+
+#. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
+#. CONTEXT: create from playlist: closes the dialog
+#. CONTEXT: playerui: marquee font size dialog: action button
+#. CONTEXT: helperui: close the helper window
+#. CONTEXT: starterui: support dialog: closes the dialog
+#. CONTEXT: starterui: support message dialog: closes the dialog
+msgid "Close"
+msgstr "关闭"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "紧凑型"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "压缩数据库。  在删除音频文件后使用。"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "完整"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "完成信息"
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "作曲家"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "作曲家排序"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "音乐指挥"
+
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "配置"
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "转换完成。"
+
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
+msgstr "转换 %s"
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: managementui: song editor menu: copy audio tags
+msgid "Copy Audio Tags"
+msgstr "复制音频标签"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "副本已存在。"
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "复制完毕。"
+
+#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "%s"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "复制文件"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "复制模板文件。"
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "计数"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "创建"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "创建副本"
+
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "创建简介"
+
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "为简介创建快捷方式"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "从播放列表创建"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "创建文件夹结构"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "创建快捷方式。"
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "当前"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "当前歌曲"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "舞曲"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "舞蹈水平"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "舞蹈评分"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "舞蹈"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "数据库从流派加载舞蹈"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "日期"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "日期已添加"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "调试"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "默认值"
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "默认音量："
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "删除"
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "删除简介"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "对话框"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "唱片"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "显示屏"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "显示屏设置"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "不写入"
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "下载最新版本"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "%s 下载失败。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "下载 %s。"
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "持续时间"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "电子邮件地址"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "简单"
+
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "编辑"
+
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: managementui: song editor menu: edit all
+msgid "Edit All"
+msgstr "编辑全部"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "编辑舞蹈"
+
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "编辑流派"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "编辑级别"
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "编辑评级"
+
+#. CONTEXT: managementui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "编辑序列"
+
+#. CONTEXT: managementui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "编辑歌曲列表"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "编辑状态"
+
+#. CONTEXT: configuration: enable mobile marquee
+msgid "Enable Mobile Marquee"
+msgstr "启用移动字幕"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "启用远程控制"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "输入安装 BDJ4 的目标文件夹。"
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "输入 %s 的安装文件夹。"
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "输入新安装的名称。"
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "错误：文件夹已存在。"
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "错误：无法设置工作文件夹。"
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "实例"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "退出"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "退出 %s 并重新启动。"
+
+#. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
+#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
+msgid "Export"
+msgstr "出口"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr "导出播放列表"
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr "出口类型"
+
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "导出为 %s"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "导出至 %s"
+
+#. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
+msgid "Export to"
+msgstr "出口到"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "外部要求"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "褪色"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "消逝的时光"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "淡出时间"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "最爱"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "要导入的字段"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "文件"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+msgid "Filter Songs"
+msgstr "筛选歌曲"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "第一"
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "文件夹"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "字体"
+
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "字体大小"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "狐步舞"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "歌曲之间的空白"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "一般情况"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "类型"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "良好"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "伟大"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "HTML 模板"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "HTTP 代码"
+
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "隐藏未选择"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "高 %s"
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "高级舞蹈水平"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+msgid "History"
+msgstr "历史"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "如果没有安装 BallroomDJ 3，则留空。"
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: managementui: menu selection: import actions for song list
+msgid "Import"
+msgstr "进口"
+
+#. CONTEXT: managementui: menu selection: song list: import
+#. CONTEXT: managementui: song list import: title of dialog
+msgid "Import Playlist"
+msgstr "导入播放列表"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "进口自"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "从 %s导入"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "初始设置。"
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "安装"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "安装位置"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "安装中止。"
+
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "安装完毕。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "安装 %s."
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "无效文件夹"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "无效名称"
+
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "无效选择"
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "爵士乐"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "Jive"
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "关键词"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "最后更新"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "最新版本"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "级别"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "列表字体"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: load
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
+msgid "Load"
+msgstr "载荷"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "从数据库加载"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "地点"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "位于 \"tclsh\"。"
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "低 %s"
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
+msgstr "低舞蹈水平"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "管理"
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "标记为同一首歌"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "帐篷"
+
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "帐篷展示"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "Marquee 字体"
+
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "字幕字体大小"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "帐篷主题"
+
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid ""
+"Maximum\n"
+"Play Time"
+msgstr "最长播放时间"
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "最长播放时间"
+
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "留言"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "最小化"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "混合"
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "移动帐篷"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "移动遥控器"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: side-by-side list: button: move the selected field down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+msgid "Move Down"
+msgstr "向下移动"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: side-by-side list: button: move the selected field up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+msgid "Move Up"
+msgstr "向上移动"
+
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "移至顶部"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "音乐文件夹"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: managementui: name of music manager notebook tab
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "音乐经理"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "音乐队列"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "音乐队列"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "静音"
+
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "名称"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "新"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "新安装 %s。"
+
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "新的自动播放列表"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "新舞蹈"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "新文件"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "新流派"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "新等级"
+
+#. CONTEXT: playlist management: default name for a new playlist
+#, c-format
+msgid "New Playlist"
+msgstr "新播放列表"
+
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "新简介 %d"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "新评级"
+
+#. CONTEXT: sequence editor: default name for a new sequence
+#, c-format
+msgid "New Sequence"
+msgstr "新序列"
+
+#. CONTEXT: managementui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "新歌列表"
+
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "新歌单名称"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "新状态"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "下一页"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "下一首歌"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "未指定文件夹。"
+
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "无网络连接"
+
+#. CONTEXT: configuration file: genre
+msgid "None"
+msgstr "无"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "正常"
+
+#. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
+msgid "Not Playing"
+msgstr "未播放"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
+msgstr "不是有效的 %s 文件夹。"
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "说明"
+
+#. CONTEXT: configuration: show-marquee: off
+msgid "Off"
+msgstr "关闭"
+
+#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "选项"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "顺序从最简单到最先进。"
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "从最低评分到最高评分排序。"
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "组织结构"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "组织路径"
+
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "其他文件"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "双人舞"
+
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "密码"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Pause"
+msgstr "暂停"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "暂停每首歌"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "结束时暂停"
+
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song editor : play song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+msgid "Play"
+msgstr "游戏"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "播放/暂停"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "播放公告"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "排队时播放"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "玩？"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "可播放状态"
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "球员"
+
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "播放列表"
+
+#. CONTEXT: managementui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "播放列表管理"
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "播放列表类型"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: managementui: song list import: name of file import type
+msgid "Playlists"
+msgstr "播放列表"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+msgid "Please wait…"
+msgstr "请稍候…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "请等待… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "贫穷"
+
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "港口"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "职位"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "防止重命名"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "上一页"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "进程中止。"
+
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "简介"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "轮廓颜色"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "简介名称"
+
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "使用中的轮廓"
+
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "不得删除个人资料。"
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "QR 码"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) external request dialog: queue the selected file
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+msgid "Queue"
+msgstr "排队"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "队列 5"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "队列 B"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "队列 C"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "队列 D"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "队列舞蹈"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "队列 E"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "队列长度"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "队列名称"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "队列播放列表"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "队列舞蹈"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "队列名词"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "快速编辑"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "快速编辑：当前"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "快速编辑：已选择"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "快步舞"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "评级"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "重新安装"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "重新安装 %s。  覆盖现有配置。"
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "重建数据库"
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr "恢复 Marquee"
+
+#. CONTEXT: player-ui: error message
+msgid "Recovered from crash."
+msgstr "从坠机事故中恢复。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "注册 %s."
+
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "重新加载"
+
+#. CONTEXT: side-by-side list: button: remove the selected field
+#. CONTEXT: music queue: button: remove the song from the queue
+msgid "Remove"
+msgstr "移除"
+
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "删除歌曲"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "重新命名"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "根据组织设置重命名音频文件。"
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "重组"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "重复"
+
+#. CONTEXT: database update: rebuild: help text
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr "替换整个 BallroomDJ 数据库。对数据库的所有更改都将丢失。"
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "要求"
+
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "重置"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "恢复原状"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "返回歌曲开头"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "岩石"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "伦巴"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "运行转换脚本： %s."
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "萨尔萨"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "桑巴"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: song editor : save data
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "节省"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "保存安装位置。"
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "规模"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "得分"
+
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "搜索"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "秒数"
+
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: managementui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "选择"
+
+#. CONTEXT: select file: title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr "选择 %s"
+
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
+#, c-format
+msgid "Select %s Location"
+msgstr "选择 %s 位置"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "选择 %s 媒体位置"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "选择 %s XML 文件"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "选择音频文件"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "选择舞蹈"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "选择文件"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "选择文件夹"
+
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
+#, c-format
+msgid "Select Music Folder Location"
+msgstr "选择音乐文件夹位置"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "精选"
+
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "发送支持信息"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr "发送 %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
+msgstr "发送 %s 信息"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
+msgstr "发送诊断程序"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr "发送支持信息"
+
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "序列"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "设置播放队列"
+
+#. CONTEXT: starterui: menu item: install in alternate folder
+#, c-format
+msgid "Set Up Alternate Folder"
+msgstr "设置备用文件夹"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "设置"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "设置完成。"
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "显示额外队列按钮"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "显示额外队列"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "展示帐篷"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "显示歌曲信息"
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "显示速度重置"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "关机脚本"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "并排歌曲列表"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "并排选择歌曲"
+
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "并排视图"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "跳过转换。"
+
+#. CONTEXT: managementui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "歌曲编辑"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "歌曲编辑 - 专栏 %d"
+
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "歌曲结束"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: managementui: name of side-by-side view tab
+#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "歌曲列表"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "歌曲选择"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "歌曲开始"
+
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "歌曲"
+
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "排序方式"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "资料来源"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "速度"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "速度调节"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "开始"
+
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "开始新序列"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "开始新歌单"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "开始转换过程"
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "启动脚本"
+
+#. CONTEXT: managementui: name of statistics tab
+msgid "Statistics"
+msgstr "统计资料"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "现状"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "停止"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "停止后"
+
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
+#, c-format
+msgid "Stop All %s Processes"
+msgstr "停止所有 %s 进程"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "停在"
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "被用户阻止"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
+msgstr "主题"
+
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "支持"
+
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "支持信息"
+
+#. CONTEXT: starterui: basic support dialog, list of support options
+msgid "Support options"
+msgstr "支持选项"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "交换"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "空时切换队列"
+
+#. CONTEXT: configuration: dances: tags associated with the dance
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "标签"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "探戈"
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "目标"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "感谢舞蹈家"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "转换过程将不会运行。"
+
+#. CONTEXT: installer: instructions
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
+msgstr "转换过程只会在新安装和重新安装时运行。"
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "主题"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "时间限制"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "时间签名"
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+msgid "Title"
+msgstr "标题"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "标题排序"
+
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "切换暂停"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "切换重复"
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "光盘总数"
+
+#. CONTEXT: database update: status message: total number of files found
+msgid "Total Files"
+msgstr "文件总数"
+
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "总时间"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "轨道总数"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "轨道"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
+msgstr "修剪静音"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "截断"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgid "Type"
+msgstr "类型"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "无法确定 %s 版本。"
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "无法找到 %s。"
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "无法找到 BDJ3 数据库。"
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "撤销歌曲删除"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "未评级"
+
+#. CONTEXT: managementui: notebook tab title: update database
+msgid "Update Database"
+msgstr "更新数据库"
+
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr "来自 %s的最新消息"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "音频文件标签的更新"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "已更新"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "从 %s 数据库更新 BallroomDJ 数据库中的信息。"
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "根据音频文件标签更新 BallroomDJ 数据库中的信息。"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "更新 %s."
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "更新现有的 %s 安装。"
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "用户 ID"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "用户界面"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "验证完成。"
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "验证失败。"
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "验证安装。"
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "维也纳华尔兹"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "可见"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "卷数"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "音量调节"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "圆舞曲"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "重量"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "西海岸摇摆舞"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "当 BPM 值稳定后，选择保存按钮。"
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "写入音频文件标签"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "将标签写入音频文件"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
+msgstr "使用 BallroomDJ 数据库中的信息写入音频文件标签。"
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "XML 文件"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "俱乐部"
+
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "删去"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "快"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "拉丁文"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "正常"
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "原创"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "慢"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "标准"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "标准件"
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr "如何获得支持"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr "检查每首歌曲的舞蹈"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr "Helptext_check_dance"
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr "首次建立数据库"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr "In order to function, BallroomDJ 4 maintains a database of all of your Songs. This database must be built for the first time. => Select the 'Manage' button.  => In the 'BDJ4 Management' window, select the 'Update Database' section on the left side of the window. The default selection 'Check for New' is used when you add or remove songs from your music collection. => Change the selection to 'Rebuild Database'. => Select the 'Start' button. => Wait for the database rebuild to finish. => Leave the 'BDJ4 Management' window open."
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr "创建播放列表示例"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr "=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window. On the right side of the lower section of the window is a list of your songs. => Select a song by clicking on it. => Now select the left arrow button in the middle of the lower section. This will add the song you selected to the song list that is being created. => Select a few songs and add each of them to the song list. Above the song list is an editable box with the name 'New Song List' in it. => Click in the box and change the name of the song list. => Close the 'BDJ4 Management' window. The song list is automatically saved."
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr "设置音乐文件夹的位置"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr "The first step is to configure the location of the music folder. => Select the 'Configure' button. In the 'BDJ4 Configuration' window, the 'General Options' section is displayed. The first item in 'General Options' is the 'Music Folder'. => Change the 'Music Folder' to the location of your music. => Leave the 'BDJ4 Configuration' window open."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr "验证配置的舞步"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr "帮助文本_配置舞蹈"
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr "简介/入门"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr "This utility will walk you through a few steps to help you get started. => Select the 'Next' button to continue on to the next step."
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr "播放播放列表"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr "Now you will play the playlist that was just created. => Select the 'Player' button. => In the player window, select the 'Queue Playlist' drop-down. => Select the name of the playlist that you entered previously."
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr "如何组织音乐"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr "Setting the organisation method is important so that BallroomDJ 4 can determine the information about your songs when the database is built. => Select 'Organisation' on the left side of the 'BDJ4 Configuration' window. Many people have their music organised by putting each dance into a separate folder.  This is the default organisation: 'Dance/Title'. => Select the organisation method you use for your songs in the 'Organisation Path' drop-down. => Close the 'BDJ4 Organisation' window."
+

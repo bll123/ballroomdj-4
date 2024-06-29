@@ -1069,7 +1069,7 @@ msgstr "Motyw Marquee"
 msgid ""
 "Maximum\n"
 "Play Time"
-msgstr "Maksymalny\\nczas gry"
+msgstr "Maksymalny\nczas gry"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time

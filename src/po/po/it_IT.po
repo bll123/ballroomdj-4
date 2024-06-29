@@ -1069,7 +1069,7 @@ msgstr "Tema del tendone"
 msgid ""
 "Maximum\n"
 "Play Time"
-msgstr "Tempo Massimo\\nDi Gioco"
+msgstr "Tempo Massimo\nDi Gioco"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time

@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Poor
+20
+..Poor
+30
+..Poor
+40
+..Poor
+50
+..Poor
+60
+..Good
+70
+..Good
+80
+..Great
+90
+..Great
+100
+..Great

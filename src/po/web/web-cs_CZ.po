@@ -1,0 +1,113 @@
+# == English (GB)
+# -- english/gb
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-06-29 14:33\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Czech\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "Všichni uživatelé BallroomDJ jsou vyzváni, aby přešli na BallroomDJ 4."
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - Přehrávač taneční hudby"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4 (BDJ4) je hudební přehrávač určený pro stolní počítače a notebooky (funguje i na některých tabletech). Je navržen tak, aby dokázal přehrávat hudbu po celý večer bez jakéhokoli zásahu."
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - Přehrávač hudby pro taneční sály"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "BallroomDJ na adrese pro-linux.de"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJ byl předchozím přehrávačem taneční hudby. Ten již není podporován."
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 na freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "Vlastnosti BDJ4"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "BDJ4 Fórum"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4 je vysoce přizpůsobitelný a poskytuje možnosti organizace hudby pro společenský tanec a vytváření seznamů skladeb, automatických playlistů a sekvenčních playlistů."
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4 běží v systémech Windows, MacOS a Linux."
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 Wiki"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "Záznam o změnách"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "Darovat"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "Přispějte na softwarové projekty, které BDJ4 používá:"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "Stáhnout BallroomDJ 3"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "Stáhnout BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "Nápověda Přeložit BallroomDJ 4"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "nejnovější verze"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "Nabídka"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "Další stránky, kde lze najít oznámení o vydání BallroomDJ 4:"
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (darovací tlačítko úplně nahoře)"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "Přispějte na BDJ4"
+

@@ -12,15 +12,6 @@ for pofile in "$@"; do
     ;;
   esac
 
-  bdj3pofile=old/$pofile
-  if [[ ! -f $bdj3pofile ]]; then
-    pfx=$(echo $pofile | sed 's/\(..\).*/\1/')
-    tmppo=$(echo old/$pfx*)
-    if [[ -f $tmppo ]]; then
-      bdj3pofile=$tmppo
-    fi
-  fi
-
   NPOFILE=$pofile.n
   TMPPOFILE=$pofile.tmp
   CURRPOFILE=$pofile.current
@@ -29,7 +20,7 @@ for pofile in "$@"; do
   test -f $NPOFILE && rm -f $NPOFILE
   test -f $DBGPOFILE && rm -f $DBGPOFILE
 
-  for oldpo in $CURRPOFILE $bdj3pofile; do
+  for oldpo in $CURRPOFILE;  do
     if [[ ! -f $oldpo ]]; then
       continue
     fi
