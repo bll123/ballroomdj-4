@@ -122,7 +122,7 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
       /* stay in the start state and wait for repeat to go off */
       if (! uiaudioidIsRepeating (maudioid->uiaudioid)) {
         maudioid->state = BDJ4_STATE_WAIT;
-        uiaudioidResetDisplayList (maudioid->uiaudioid);
+        uiaudioidResetItemDisplay (maudioid->uiaudioid);
       }
       break;
     }
@@ -140,9 +140,9 @@ manageAudioIdMainLoop (manageaudioid_t *maudioid)
         nlist_t   *dlist;
 
         dlist = audioidGetList (maudioid->audioid, key);
-        uiaudioidSetDisplayList (maudioid->uiaudioid, dlist);
+        uiaudioidSetItemDisplay (maudioid->uiaudioid, dlist);
       }
-      uiaudioidFinishDisplayList (maudioid->uiaudioid);
+      uiaudioidFinishItemDisplay (maudioid->uiaudioid);
       maudioid->state = BDJ4_STATE_FINISH;
       break;
     }

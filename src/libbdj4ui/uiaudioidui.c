@@ -85,7 +85,6 @@ enum {
   UIAUDID_W_PANED_WINDOW,
   UIAUDID_W_KEY_HNDLR,
   UIAUDID_W_MB_LOGO,
-//  UIAUDID_W_TREE,
   UIAUDID_W_MAX,
 };
 
@@ -104,9 +103,9 @@ typedef struct aid_internal {
   song_t              *song;
   uiaudioiditem_t     *items;
   nlist_t             *currlist;
-  slist_t             *listsellist;
-  slist_t             *sellist;
-  nlist_t             *displaylist;
+  slist_t             *dlsellist;     // display-list
+  slist_t             *itemsellist;
+  nlist_t             *datalist;
   dbidx_t             dbidx;
   int                 itemcount;
   int                 colcount;
@@ -122,7 +121,7 @@ typedef struct aid_internal {
   bool                inchange : 1;
 } aid_internal_t;
 
-static void uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);
+static void uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);
 static void uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx);
 static bool uiaudioidSaveCallback (void *udata);
 static bool uiaudioidFirstSelection (void *udata);
@@ -133,6 +132,7 @@ static bool uiaudioidRowSelect (void *udata);
 static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song, nlist_t *tdlist);
 static void uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum);
+static void uiaudioidCopyData (nlist_t *dlist, nlist_t *ndlist, tagdefkey_t tagidx);
 
 void
 uiaudioidUIInit (uiaudioid_t *uiaudioid)
@@ -150,7 +150,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->items = NULL;
   audioidint->currlist = nlistAlloc ("curr-list", LIST_ORDERED, NULL);
   audioidint->dbidx = -1;
-  audioidint->displaylist = NULL;
+  audioidint->datalist = NULL;
   audioidint->colcount = 0;
   audioidint->rowcount = 0;
   audioidint->selectedrow = -1;
@@ -159,15 +159,15 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->insave = false;
   audioidint->inchange = false;
 
-  audioidint->listsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
-  audioidint->sellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
+  audioidint->dlsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID_LIST);
+  audioidint->itemsellist = dispselGetList (uiaudioid->dispsel, DISP_SEL_AUDIOID);
   audioidint->paneposition = nlistGetNum (uiaudioid->options, MANAGE_AUDIOID_PANE_POSITION);
-  audioidint->colcount = slistGetCount (audioidint->listsellist);
+  audioidint->colcount = slistGetCount (audioidint->dlsellist);
 
   audioidint->durationcol = -1;
   col = 0;
-  slistStartIterator (audioidint->listsellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (audioidint->listsellist, &seliteridx)) >= 0) {
+  slistStartIterator (audioidint->dlsellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (audioidint->dlsellist, &seliteridx)) >= 0) {
     if (tagidx == TAG_DURATION) {
       audioidint->durationcol = col;
       break;
@@ -227,7 +227,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
       callbackFree (audioidint->callbacks [i]);
     }
 
-    nlistFree (audioidint->displaylist);
+    nlistFree (audioidint->datalist);
     dataFree (audioidint->items);
     mdfree (audioidint);
     uiaudioid->audioidInternalData = NULL;
@@ -363,16 +363,21 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   /* match listing */
 
   uivl = uivlCreate ("audioid", vbox, UIAUDID_INIT_DISP_SZ,
-      VL_NO_WIDTH, VL_FLAGS_NONE);
+      VL_NO_WIDTH, VL_ENABLE_KEYS);
   audioidint->uivl = uivl;
 
   uivlSetUseListingFont (uivl);
   uivlSetNumColumns (uivl, audioidint->colcount);
-  uivlAddDisplayColumns (uivl, audioidint->listsellist);
+  uivlAddDisplayColumns (uivl, audioidint->dlsellist);
   uivlSetRowFillCallback (uivl, uiaudioidFillRow, audioidint);
-  uivlSetNumRows (audioidint->uivl, 0);
+  /* set the number of rows to 1 initially, */
+  /* so that the row-class and row-lock can be set */
+  uivlSetNumRows (audioidint->uivl, 1);
+
   /* the first row is highlighted, it always displays the current song data */
   uivlSetRowClass (audioidint->uivl, 0, ACCENT_CLASS);
+  /* lock the first row display */
+  uivlSetRowLock (audioidint->uivl, 0);;
 
   uiwcontFree (vbox);
 
@@ -399,7 +404,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* the items must all be alloc'd beforehand so that the callback */
   /* pointer is static */
-  audioidint->itemcount = slistGetCount (audioidint->sellist);
+  audioidint->itemcount = slistGetCount (audioidint->itemsellist);
   audioidint->items = mdmalloc (sizeof (uiaudioiditem_t) * audioidint->itemcount);
   for (int i = 0; i < audioidint->itemcount; ++i) {
     audioidint->items [i].tagidx = 0;
@@ -453,7 +458,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (uiwidgetp);
   uiwcontFree (hbox);
 
-  uiaudioidAddDisplay (uiaudioid, col);
+  uiaudioidAddItemDisplay (uiaudioid, col);
 
   uiwcontFree (col);
 
@@ -558,7 +563,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
 }
 
 void
-uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
+uiaudioidResetItemDisplay (uiaudioid_t *uiaudioid)
 {
   aid_internal_t  *audioidint;
 
@@ -568,8 +573,8 @@ uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
 
   audioidint = uiaudioid->audioidInternalData;
 
-  nlistFree (audioidint->displaylist);
-  audioidint->displaylist = nlistAlloc ("uiaudioid-disp", LIST_UNORDERED, NULL);
+  nlistFree (audioidint->datalist);
+  audioidint->datalist = nlistAlloc ("uiaudioid-disp", LIST_UNORDERED, NULL);
 
   /* blank the field selection */
   for (int count = 0; count < audioidint->itemcount; ++count) {
@@ -577,19 +582,19 @@ uiaudioidResetDisplayList (uiaudioid_t *uiaudioid)
   }
 
   audioidint->selectedrow = -1;
+  /* leave the first row (0) available for the original song display */
+  /* if any data is returned, the first row will be populated */
   audioidint->fillrow = 1;
   uivlSetNumRows (audioidint->uivl, 0);
 }
 
 void
-uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
+uiaudioidSetItemDisplay (uiaudioid_t *uiaudioid, nlist_t *dlist)
 {
   aid_internal_t  *audioidint;
   int             tagidx;
   slistidx_t      seliteridx;
   nlist_t         *ndlist;
-  const char      *str;
-
 
   if (uiaudioid == NULL) {
     return;
@@ -600,29 +605,20 @@ uiaudioidSetDisplayList (uiaudioid_t *uiaudioid, nlist_t *dlist)
   ndlist = nlistAlloc ("uiaudio-ndlist", LIST_UNORDERED, NULL);
   nlistSetSize (ndlist, nlistGetCount (dlist));
 
-  /* all data use in the display must be cloned */
-  slistStartIterator (audioidint->sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (audioidint->sellist, &seliteridx)) >= 0) {
-    str = nlistGetStr (dlist, tagidx);
-    nlistSetStr (ndlist, tagidx, str);
+  /* all data must be cloned, the input data-list is temporary */
+  nlistStartIterator (dlist, &seliteridx);
+  while ((tagidx = nlistIterateKey (dlist, &seliteridx)) >= 0) {
+    uiaudioidCopyData (dlist, ndlist, tagidx);
   }
-
-  /* also save the recording id and work id */
-  str = nlistGetStr (dlist, TAG_RECORDING_ID);
-  nlistSetStr (ndlist, TAG_RECORDING_ID, str);
-  str = nlistGetStr (dlist, TAG_WORK_ID);
-  nlistSetStr (ndlist, TAG_WORK_ID, str);
-
   nlistSort (ndlist);
-  nlistSetList (audioidint->displaylist, audioidint->fillrow, ndlist);
 
+  nlistSetList (audioidint->datalist, audioidint->fillrow, ndlist);
   audioidint->fillrow += 1;
-
   logProcEnd ("");
 }
 
 void
-uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
+uiaudioidFinishItemDisplay (uiaudioid_t *uiaudioid)
 {
   aid_internal_t  *audioidint;
   nlist_t         *tdlist;
@@ -633,12 +629,13 @@ uiaudioidFinishDisplayList (uiaudioid_t *uiaudioid)
     audioidint->rowcount = 0;
   } else {
     audioidint->rowcount = audioidint->fillrow;
-    tdlist = uisongGetDisplayList (audioidint->listsellist, audioidint->song);
-    nlistSetList (audioidint->displaylist, 0, tdlist);
+    tdlist = uisongGetDisplayList (audioidint->itemsellist,
+        audioidint->dlsellist, audioidint->song);
+    nlistSetList (audioidint->datalist, 0, tdlist);
     uiaudioidDisplayDuration (uiaudioid, audioidint->song, tdlist);
   }
 
-  nlistSort (audioidint->displaylist);
+  nlistSort (audioidint->datalist);
   uivlSetNumRows (audioidint->uivl, audioidint->rowcount);
 }
 
@@ -693,7 +690,7 @@ uiaudioidInSave (uiaudioid_t *uiaudioid)
 /* internal routines */
 
 static void
-uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
+uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
 {
   slistidx_t      dsiteridx;
   aid_internal_t  *audioidint;
@@ -704,8 +701,8 @@ uiaudioidAddDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
   audioidint = uiaudioid->audioidInternalData;
 
   count = 0;
-  slistStartIterator (audioidint->sellist, &dsiteridx);
-  while ((tagidx = slistIterateValueNum (audioidint->sellist, &dsiteridx)) >= 0) {
+  slistStartIterator (audioidint->itemsellist, &dsiteridx);
+  while ((tagidx = slistIterateValueNum (audioidint->itemsellist, &dsiteridx)) >= 0) {
     uiwcont_t   *hbox;
 
     if (tagidx < 0 || tagidx >= TAG_KEY_MAX) {
@@ -780,7 +777,7 @@ uiaudioidSaveCallback (void *udata)
     return UICB_CONT;
   }
 
-  dlist = nlistGetList (audioidint->displaylist, audioidint->selectedrow);
+  dlist = nlistGetList (audioidint->datalist, audioidint->selectedrow);
   for (int count = 0; count < audioidint->itemcount; ++count) {
     int     tagidx;
 
@@ -925,7 +922,7 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
   nlist_t         *dlist = NULL;
 
   audioidint = uiaudioid->audioidInternalData;
-  if (audioidint->displaylist == NULL) {
+  if (audioidint->datalist == NULL) {
     return;
   }
 
@@ -933,7 +930,7 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
     return;
   }
 
-  dlist = nlistGetList (audioidint->displaylist, idx);
+  dlist = nlistGetList (audioidint->datalist, idx);
 
   for (int count = 0; count < audioidint->itemcount; ++count) {
     int         tagidx = audioidint->items [count].tagidx;
@@ -998,25 +995,25 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 {
   aid_internal_t  *audioidint = udata;
   nlist_t         *dlist;
-  slist_t         *listsellist;
+  slist_t         *dlsellist;
   slistidx_t      seliteridx;
   int             colcount;
 
-  if (audioidint->displaylist == NULL) {
+  if (audioidint->datalist == NULL) {
     return;
   }
-  dlist = nlistGetList (audioidint->displaylist, rownum);
+  dlist = nlistGetList (audioidint->datalist, rownum);
   if (dlist == NULL) {
     return;
   }
-  listsellist = audioidint->listsellist;
+  dlsellist = audioidint->dlsellist;
   colcount = audioidint->colcount;
 
-  slistStartIterator (listsellist, &seliteridx);
+  slistStartIterator (dlsellist, &seliteridx);
   for (int col = 0; col < colcount; ++col) {
     int   tagidx;
 
-    tagidx = slistIterateValueNum (listsellist, &seliteridx);
+    tagidx = slistIterateValueNum (dlsellist, &seliteridx);
 
     if (tagidx == TAG_AUDIOID_IDENT) {
       int         val;
@@ -1048,7 +1045,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 
       dval = nlistGetDouble (dlist, tagidx);
       tmp [0] = '\0';
-      if (dval > 0.0) {
+      if (dval > 0.01) {
         snprintf (tmp, sizeof (tmp), "%.1f", dval);
       }
       uivlSetRowColumnValue (audioidint->uivl, rownum, col, tmp);
@@ -1076,3 +1073,29 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
   }
 }
 
+static void
+uiaudioidCopyData (nlist_t *dlist, nlist_t *ndlist, tagdefkey_t tagidx)
+{
+  if (tagidx >= TAG_KEY_MAX) {
+    /* the data-list returned from audio identification has some */
+    /* specialized tag indices that are greater than tag-key-max */
+    return;
+  }
+
+  if (tagidx == TAG_AUDIOID_IDENT) {
+    int   val;
+
+    val = nlistGetNum (dlist, tagidx);
+    nlistSetNum (ndlist, tagidx, val);
+  } else if (tagidx == TAG_AUDIOID_SCORE) {
+    double  dval;
+
+    dval = nlistGetDouble (dlist, tagidx);
+    nlistSetDouble (ndlist, tagidx, dval);
+  } else {
+    const char  *str;
+
+    str = nlistGetStr (dlist, tagidx);
+    nlistSetStr (ndlist, tagidx, str);
+  }
+}

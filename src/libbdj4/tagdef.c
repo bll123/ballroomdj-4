@@ -43,7 +43,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -71,7 +71,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -99,7 +99,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -127,7 +127,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -155,7 +155,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -183,7 +183,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -211,7 +211,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -239,7 +239,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     true,                         /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -267,7 +267,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -295,7 +295,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -323,7 +323,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -351,7 +351,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -379,7 +379,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -407,7 +407,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -435,7 +435,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -463,7 +463,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -491,7 +491,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -519,7 +519,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -548,7 +548,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -576,7 +576,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -604,7 +604,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -632,7 +632,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -660,7 +660,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -688,7 +688,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -716,7 +716,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -744,7 +744,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -772,7 +772,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -800,7 +800,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -828,7 +828,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -856,7 +856,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -884,7 +884,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -912,7 +912,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -940,7 +940,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -968,7 +968,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -996,7 +996,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -1024,7 +1024,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1052,7 +1052,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -1080,7 +1080,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -1108,7 +1108,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     true,                         /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -1136,7 +1136,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
@@ -1164,7 +1164,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    true,                         /* align right          */
+    true,                         /* align end            */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     true,                         /* edit-all             */
@@ -1192,7 +1192,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1220,7 +1220,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1248,7 +1248,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1276,7 +1276,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1304,7 +1304,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
@@ -1332,7 +1332,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */
@@ -1360,7 +1360,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* listing display      */
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
-    false,                        /* align right          */
+    false,                        /* align end            */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
     false,                        /* edit-all             */

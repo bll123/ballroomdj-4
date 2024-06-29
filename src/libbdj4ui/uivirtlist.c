@@ -39,7 +39,9 @@ enum {
   VL_SCROLL_NORM = false,
   VL_SCROLL_FORCE = true,
   VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
+  VL_ROW_NO_LOCK = -1,
 };
+
 
 enum {
   VL_W_SCROLL_WIN,
@@ -148,6 +150,7 @@ typedef struct {
   char          *currclass;
   char          *newclass;
   int           dispidx;
+  int32_t       lockrownum;
   /* cleared: row is on-screen, no display */
   /* all widgets are hidden */
   bool          cleared : 1;
@@ -184,6 +187,7 @@ typedef struct uivirtlist {
   int32_t       lastSelection;    // used for shift-click
   int32_t       currSelection;
   nlist_t       *selected;
+  int           lockcount;
   int           initialized;
   /* user callbacks */
   uivlfillcb_t  fillcb;
@@ -264,6 +268,19 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->vboxheight = -1;
   vl->vboxwidth = -1;
   vl->rowheight = -1;
+  vl->lockcount = 0;
+  vl->coldata = NULL;
+  vl->rows = NULL;
+  vl->numcols = 0;
+  vl->numrows = 0;
+  vl->rowoffset = 0;
+  vl->currSelection = 0;
+  vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
+  /* default selection */
+  nlistSetNum (vl->selected, 0, true);
+  vl->initialized = VL_INIT_NONE;
+  vl->dispalloc = 0;
+  vl->dispsize = dispsize;
 
   for (int i = 0; i < VL_W_MAX; ++i) {
     vl->wcont [i] = NULL;
@@ -342,18 +359,6 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
     uiBoxPackEnd (vl->wcont [VL_W_HEADBOX], vl->wcont [VL_W_HEAD_FILLER]);
   }
 
-  vl->coldata = NULL;
-  vl->rows = NULL;
-  vl->numcols = 0;
-  vl->numrows = 0;
-  vl->rowoffset = 0;
-  vl->currSelection = 0;
-  vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
-  /* default selection */
-  nlistSetNum (vl->selected, 0, true);
-  vl->initialized = VL_INIT_NONE;
-
-  vl->dispsize = dispsize;
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s init-disp-size: %d", vl->tag, dispsize);
   vl->dispalloc = dispsize;
   vl->rows = mdmalloc (sizeof (uivlrow_t) * vl->dispalloc);
@@ -585,6 +590,32 @@ uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class)
   row->oldclass = row->currclass;
   row->currclass = NULL;
   row->newclass = mdstrdup (class);
+}
+
+/* a rownum is passed in, the lock applies to the display idx associated */
+/* with the rownum */
+void
+uivlSetRowLock (uivirtlist_t *vl, int32_t rownum)
+{
+  uivlrow_t   *row;
+
+  if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, 0, __func__)) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  if (row->lockrownum == VL_ROW_NO_LOCK) {
+    vl->lockcount += 1;
+  }
+  row->lockrownum = rownum;
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
+      (double) ((vl->dispsize - vl->lockcount) / 2));
+  uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
+      (double) (vl->dispsize - vl->lockcount));
 }
 
 /* column set */
@@ -1271,29 +1302,38 @@ uivlPopulate (uivirtlist_t *vl)
           vl->coldata [colidx].type == VL_TYPE_LABEL) {
         if (row->oldclass != NULL) {
           uiWidgetRemoveClass (col->uiwidget, row->oldclass);
-          dataFree (row->oldclass);
-          row->oldclass = NULL;
         }
 
         uiWidgetAddClass (col->uiwidget, row->newclass);
-        row->currclass = row->newclass;
-        row->newclass = NULL;
       }
+    }
+
+    if (row->newclass != NULL) {
+      dataFree (row->oldclass);
+      row->oldclass = NULL;
+      row->currclass = row->newclass;
+      row->newclass = NULL;
     }
   }
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
+    int32_t     rownum;
 
-    if (dispidx + vl->rowoffset >= vl->numrows) {
+    rownum = dispidx + vl->rowoffset;
+    if (rownum >= vl->numrows) {
       break;
     }
 
-    if (vl->fillcb != NULL) {
-      vl->fillcb (vl->filludata, vl, dispidx + vl->rowoffset);
+    row = &vl->rows [dispidx];
+    if (row->lockrownum != VL_ROW_NO_LOCK) {
+      rownum = row->lockrownum;
     }
 
-    row = &vl->rows [dispidx];
+    if (vl->fillcb != NULL) {
+      vl->fillcb (vl->filludata, vl, rownum);
+    }
+
     if (row->offscreen) {
       row->offscreen = false;
       uiWidgetShowAll (row->hbox);
@@ -1610,7 +1650,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     uiWidgetSetAllMargins (col->box, 0);
 
     uiWidgetAlignHorizFill (col->uiwidget);
-    uiBoxPackStart (col->box, col->uiwidget);
+    if (coldata->alignend) {
+      uiBoxPackEnd (col->box, col->uiwidget);
+    } else {
+      uiBoxPackStart (col->box, col->uiwidget);
+    }
     uiWidgetSetAllMargins (col->uiwidget, 0);
     if (isheading) {
       uiWidgetAlignVertEnd (col->uiwidget);
@@ -1651,9 +1695,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
       if (! isheading && coldata->ellipsize) {
         uiLabelEllipsizeOn (col->uiwidget);
-      }
-      if (coldata->alignend) {
-        uiLabelAlignEnd (col->uiwidget);
       }
     }
 
@@ -1734,7 +1775,7 @@ uivlKeyEvent (void *udata)
 
     if (uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
       if (uiEventIsPageUpDownKey (vl->wcont [VL_W_EVENTH])) {
-        dir = vl->dispsize;
+        dir = vl->dispsize - vl->lockcount;
       }
       if (uiEventIsUpKey (vl->wcont [VL_W_EVENTH])) {
         dir = - dir;
@@ -2064,6 +2105,7 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->oldclass = NULL;
   row->currclass = NULL;
   row->newclass = NULL;
+  row->lockrownum = VL_ROW_NO_LOCK;
 
   if (dispidx != VL_ROW_HEADING) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
@@ -2355,7 +2397,8 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   }
 
   uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
-      (double) (vl->dispsize / 2));
-  uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) vl->dispsize);
+      (double) ((vl->dispsize - vl->lockcount) / 2));
+  uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
+      (double) (vl->dispsize - vl->lockcount));
   uivlPopulate (vl);
 }

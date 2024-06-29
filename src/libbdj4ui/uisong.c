@@ -23,24 +23,22 @@
 static valuetype_t uisongDetermineValueType (int tagidx);
 
 nlist_t *
-uisongGetDisplayList (slist_t *sellist, song_t *song)
+uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
 {
   slistidx_t    seliteridx;
   int           tagidx;
   char          *str = NULL;
   nlist_t       *dlist;
-  int           col;
   int32_t       num;
   double        dval;
 
   dlist = nlistAlloc ("song-disp", LIST_UNORDERED, NULL);
+  nlistSetSize (dlist, slistGetCount (sellistB));
 
-  col = 0;
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+  slistStartIterator (sellistA, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellistA, &seliteridx)) >= 0) {
     if (tagidx == TAG_AUDIOID_IDENT || tagidx == TAG_AUDIOID_SCORE) {
-      nlistSetStr (dlist, col, "");
-      col += 1;
+      nlistSetStr (dlist, tagidx, "");
       continue;
     }
     if (song != NULL) {
@@ -50,15 +48,38 @@ uisongGetDisplayList (slist_t *sellist, song_t *song)
       num = LIST_VALUE_INVALID;
     }
     if (str != NULL) {
-      nlistSetStr (dlist, col, str);
+      nlistSetStr (dlist, tagidx, str);
     } else {
       char  tmp [40];
 
       snprintf (tmp, sizeof (tmp), "%" PRId32, num);
-      nlistSetStr (dlist, col, tmp);
+      nlistSetStr (dlist, tagidx, tmp);
     }
-    col += 1;
   } /* for each tagidx in the display selection list */
+
+  nlistSort (dlist);
+
+  if (sellistB != NULL) {
+    /* and also any data needed to display in the item display */
+    /* this is a bit inefficient, as there are many duplicates */
+    slistStartIterator (sellistB, &seliteridx);
+    while ((tagidx = slistIterateValueNum (sellistB, &seliteridx)) >= 0) {
+      if (song != NULL) {
+        str = uisongGetDisplay (song, tagidx, &num, &dval);
+      } else {
+        str = "";
+        num = LIST_VALUE_INVALID;
+      }
+      if (str != NULL) {
+        nlistSetStr (dlist, tagidx, str);
+      } else {
+        char  tmp [40];
+
+        snprintf (tmp, sizeof (tmp), "%" PRId32, num);
+        nlistSetStr (dlist, tagidx, tmp);
+      }
+    }
+  }
 
   return dlist;
 }

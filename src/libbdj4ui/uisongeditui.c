@@ -514,7 +514,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   se_internal_t   *seint;
   char            *tval;
   const char      *data;
-  long            val;
+  int32_t         val;
   double          dval;
   int             bpmdispidx = UISE_NOT_DISPLAYED;
 
@@ -874,8 +874,8 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
   se_internal_t   *seint;
   double          dval;
   double          ndval = LIST_DOUBLE_INVALID;
-  long            val = LIST_VALUE_INVALID;
-  long            nval = LIST_VALUE_INVALID;
+  int32_t         val = LIST_VALUE_INVALID;
+  int32_t         nval = LIST_VALUE_INVALID;
   char            *songdata = NULL;
   const char      *ndata = NULL;
   int             bpmdispidx = UISE_NOT_DISPLAYED;

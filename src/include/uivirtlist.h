@@ -67,6 +67,7 @@ void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist);
 
 /* row set */
 void uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class);
+void uivlSetRowLock (uivirtlist_t *vl, int32_t rownum);
 
 /* column set */
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);
