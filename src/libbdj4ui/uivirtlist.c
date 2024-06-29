@@ -145,7 +145,8 @@ typedef struct {
   uivlrowcb_t   *rowcb;             // must have a stable address
   /* applied to every column in the row */
   char          *oldclass;
-  char          *class;
+  char          *currclass;
+  char          *newclass;
   int           dispidx;
   /* cleared: row is on-screen, no display */
   /* all widgets are hidden */
@@ -581,9 +582,9 @@ uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class)
   }
 
   dataFree (row->oldclass);
-  row->oldclass = row->class;
-  dataFree (row->class);
-  row->class = mdstrdup (class);
+  row->oldclass = row->currclass;
+  row->currclass = NULL;
+  row->newclass = mdstrdup (class);
 }
 
 /* column set */
@@ -1266,16 +1267,17 @@ uivlPopulate (uivirtlist_t *vl)
         col->class = NULL;
       }
 
-      if (row->class != NULL &&
+      if (row->newclass != NULL &&
           vl->coldata [colidx].type == VL_TYPE_LABEL) {
         if (row->oldclass != NULL) {
           uiWidgetRemoveClass (col->uiwidget, row->oldclass);
           dataFree (row->oldclass);
           row->oldclass = NULL;
         }
-        if (row->class != NULL) {
-          uiWidgetAddClass (col->uiwidget, row->class);
-        }
+
+        uiWidgetAddClass (col->uiwidget, row->newclass);
+        row->currclass = row->newclass;
+        row->newclass = NULL;
       }
     }
   }
@@ -1442,7 +1444,8 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
   uiwcontFree (row->hbox);
   dataFree (row->cols);
   dataFree (row->oldclass);
-  dataFree (row->class);
+  dataFree (row->currclass);
+  dataFree (row->newclass);
   row->ident = 0;
 }
 
@@ -2059,7 +2062,8 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->dispidx = dispidx;
   row->initialized = true;
   row->oldclass = NULL;
-  row->class = NULL;
+  row->currclass = NULL;
+  row->newclass = NULL;
 
   if (dispidx != VL_ROW_HEADING) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
