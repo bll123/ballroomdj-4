@@ -62,7 +62,12 @@ if [[ $slocale == pl ]]; then
   # in case the script is run manually.
   slocale=po
 fi
-nfn=${WEBDIR}/${BASEFN}.${slocale}
+
+if [[ -f ${WEBDIR}/${BASEFN}.${locale} ]]; then
+  nfn=${WEBDIR}/${BASEFN}.${locale}
+else
+  nfn=${WEBDIR}/${BASEFN}.${slocale}
+fi
 nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
 nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')
 printf "%s" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn

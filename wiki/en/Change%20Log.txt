@@ -11,6 +11,8 @@
 * Changes:
     * Configuration: New interface for Rating / Level / Status / Genre.
     * Playlist Management: New interface for dances table.
+* Translations:
+    * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬).  All poor quality.
 * Internal:
     * Re-work of all table handling.
     * Code cleanup.

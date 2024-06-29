@@ -110,6 +110,7 @@
         </div>
         <div class="tleft dlang">
           <ul>
+            <li><a href="index.html.cs">čeština</a></li>
             <li><a href="index.html.de">Deutsch</a></li>
             <li><a href="index.html.en">English</a></li>
             <li><a href="index.html.es">Español</a></li>
@@ -117,9 +118,11 @@
             <li><a href="index.html.fr">Français</a></li>
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>
+            <li><a href="index.html.ko">한국어‬</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
             <li><a href="index.html.po">Polski</a></li>
-            <li><a href="index.html.ru">Русский</a></li>
+            <li><a href="index.html.sv">Svenska‬</a></li>
+            <li><a href="index.html.zh_CN">简体中文‬</a></li>
           </ul>
         </div>
       </div>
