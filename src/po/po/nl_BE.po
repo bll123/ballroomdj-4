@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-06-17\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-06-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -370,10 +370,6 @@ msgstr "Enkel BDJ Tags"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3 database versie is te oud."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 intern"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -451,7 +447,6 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -655,13 +650,6 @@ msgstr "Weergave-instellingen"
 msgid "Don't Write"
 msgstr "Niet wegschrijven"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Dubbelklik op een veld om te bewerken."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr ""
@@ -709,7 +697,7 @@ msgstr "Bewerk Dansen"
 msgid "Edit Genres"
 msgstr "Bewerk Genres"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Bewerk Niveaus"
 
@@ -1086,7 +1074,6 @@ msgstr "Maximale\n"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
-#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Maximale afspeeltijd"
 
@@ -1614,7 +1601,6 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Bewaren"

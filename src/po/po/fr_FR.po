@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-06-17\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-06-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -154,7 +154,7 @@ msgstr "%s ne doit pas dépasser la durée de la chanson"
 #. CONTEXT: validation: characters not allowed
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr ""
+msgstr "%s: *'\":|<>^ ne sont pas autorisés."
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
@@ -248,11 +248,11 @@ msgstr "Artiste de l'album"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr ""
+msgstr "Album Artiste Ordre de tri"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr ""
+msgstr "Ordre de tri des albums"
 
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
@@ -318,7 +318,7 @@ msgstr "Artiste"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr ""
+msgstr "Ordre de tri des artistes"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
@@ -370,10 +370,6 @@ msgstr "Balises BDJ uniquement"
 msgid "BDJ3 database version is too old."
 msgstr "La version de la base de données BDJ3 est trop ancienne."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 Interne"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -402,7 +398,7 @@ msgstr "Annuler Modifier Tout"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr ""
+msgstr "Impossible de renommer"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -451,7 +447,6 @@ msgstr "Cliquez sur la boîte bleue avec la souris en suivant le rythme."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -486,7 +481,7 @@ msgstr "Compositeur"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr ""
+msgstr "Ordre de tri des compositeurs"
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
@@ -579,7 +574,7 @@ msgstr "Actuel"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
-msgstr ""
+msgstr "Chanson actuelle"
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -636,7 +631,7 @@ msgstr "Supprimer le profil"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
-msgstr ""
+msgstr "Dialogues"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -655,16 +650,9 @@ msgstr "Paramètres d'affichage"
 msgid "Don't Write"
 msgstr "Ne pas écrire"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Double-cliquez sur un champ à modifier."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
-msgstr ""
+msgstr "Télécharger la dernière version"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -709,7 +697,7 @@ msgstr "Editer les danses"
 msgid "Edit Genres"
 msgstr "Modifier les genres"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Modifier les niveaux"
 
@@ -748,7 +736,7 @@ msgstr "Saisissez le dossier dans lequel %s est installé."
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr ""
+msgstr "Saisissez le nom de la nouvelle installation."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -787,11 +775,11 @@ msgstr "Exportation"
 #. CONTEXT: managementui: export playlist: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exporter la liste"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr ""
+msgstr "Type d'exportation"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
@@ -930,7 +918,7 @@ msgstr "Importation"
 #. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importer la liste"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
@@ -979,7 +967,7 @@ msgstr "Dossier non valide"
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
-msgstr ""
+msgstr "Nom invalide"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
@@ -1085,7 +1073,6 @@ msgstr "Temps de jeu\\nmaximum"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
-#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Durée maximale de jeu"
 
@@ -1362,7 +1349,7 @@ msgstr "Type de liste de lecture"
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: managementui: song list import: name of file import type
 msgid "Playlists"
-msgstr ""
+msgstr "Listes"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1393,7 +1380,7 @@ msgstr "Position"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
-msgstr ""
+msgstr "Empêcher le renommage"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
@@ -1516,7 +1503,7 @@ msgstr "Réinstallation"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr ""
+msgstr "Réinstaller %s.  Écrase la configuration existante."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1537,7 +1524,7 @@ msgstr "Enregistrement de %s."
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
-msgstr ""
+msgstr "Recharge"
 
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
@@ -1546,11 +1533,11 @@ msgstr "Retirer"
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr ""
+msgstr "Supprimer la chanson"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr ""
+msgstr "Renommé"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
@@ -1613,7 +1600,6 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Économiser"
@@ -1763,7 +1749,7 @@ msgstr "Informations sur les chansons"
 
 #. CONTEXT: configuration: whether or not to show the speed reset button
 msgid "Show Speed Reset"
-msgstr ""
+msgstr "Afficher la réinitialisation de la vitesse"
 
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
@@ -1963,7 +1949,7 @@ msgstr "Titre"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr ""
+msgstr "Titre Ordre de tri"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
@@ -2021,7 +2007,7 @@ msgstr "Impossible de localiser la base de données BDJ3."
 
 #. CONTEXT: managementui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
-msgstr ""
+msgstr "Annuler la suppression d'un morceau"
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
