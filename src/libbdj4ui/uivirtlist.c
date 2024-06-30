@@ -241,6 +241,8 @@ static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rown
 static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
 static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
 static void uivlConfigureScrollbar (uivirtlist_t *vl);
+static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
+static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
 
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *boxp,
@@ -445,6 +447,8 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if a row has been removed, but there are enough rows to fill the */
     /* display, change the row-offset so that the display is filled */
+    /* note that the gtk scrollbar does not update properly when this */
+    /* is done. */
     if ((vl->dispsize - vl->dispoffset) + vl->rowoffset > vl->numrows &&
         (vl->dispsize - vl->dispoffset) < vl->numrows) {
       int32_t   diff;
@@ -1316,7 +1320,7 @@ uivlPopulate (uivirtlist_t *vl)
     uivlrow_t   *row;
     int32_t     rownum;
 
-    rownum = (dispidx - vl->dispoffset) + vl->rowoffset;
+    rownum = uivlCalcRownum (vl, dispidx);
     if (rownum >= vl->numrows) {
       break;
     }
@@ -1718,7 +1722,7 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
   } else {
     int32_t   dispidx;
 
-    dispidx = rownum - vl->rowoffset + vl->dispoffset;
+    dispidx = uivlCalcDispidx (vl, rownum);
     if (dispidx >= vl->dispoffset && dispidx < vl->dispsize) {
       row = &vl->rows [dispidx];
       if (row->ident != VL_IDENT_ROW) {
@@ -1855,14 +1859,19 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
+// ### need to handle right-click
+
   /* all other buttons (1-3) cause a selection */
 
   if (dispidx >= 0) {
-    rownum = dispidx + vl->rowoffset;
+    rownum = uivlCalcRownum (vl, dispidx);
+  }
+  if (dispidx == 0 && vl->dispheading) {
+    return UICB_CONT;
   }
 
-  if (rownum < 0) {
-    /* not found */
+  if (rownum < 0 || rownum >= vl->numrows) {
+    /* not found or past limit */
     return UICB_CONT;
   }
 
@@ -1930,19 +1939,18 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
 
   nlistStartIterator (vl->selected, &iter);
   while ((rownum = nlistIterateKey (vl->selected, &iter)) >= 0) {
-    int32_t     trownum;
+    uivlrow_t   *row;
 
-    trownum = rownum - vl->rowoffset;
-    if (trownum >= 0 && trownum < vl->dispsize) {
-      uivlrow_t   *row;
+    row = uivlGetRow (vl, rownum);
+    if (row == NULL) {
+      continue;
+    }
 
-      row = uivlGetRow (vl, rownum);
-      uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
-      row->selected = true;
-      for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-        if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-          uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
-        }
+    uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
+    row->selected = true;
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
       }
     }
   }
@@ -2116,7 +2124,7 @@ uivlFocusCallback (void *udata)
   uivirtlist_t  *vl = rowcb->vl;
   int32_t       rownum;
 
-  rownum = rowcb->dispidx + vl->rowoffset;
+  rownum = uivlCalcRownum (vl, rowcb->dispidx);
 
   uivlUpdateSelections (vl, rownum);
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
@@ -2399,4 +2407,22 @@ uivlConfigureScrollbar (uivirtlist_t *vl)
       (double) ((vl->dispsize - vl->dispoffset) - vl->lockcount) / 2);
   uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
       (double) ((vl->dispsize - vl->dispoffset) - vl->lockcount));
+}
+
+static int
+uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum)
+{
+  int   dispidx;
+
+  dispidx = rownum - vl->rowoffset + vl->dispoffset;
+  return dispidx;
+}
+
+static int32_t
+uivlCalcRownum (uivirtlist_t *vl, int dispidx)
+{
+  int32_t   rownum;
+
+  rownum = (dispidx - vl->dispoffset) + vl->rowoffset;
+  return rownum;
 }
