@@ -421,5 +421,4 @@ danceCreateDanceList (dance_t *dances)
     }
   }
   slistSort (dances->danceList);
-  slistCalcMaxKeyWidth (dances->danceList);
 }

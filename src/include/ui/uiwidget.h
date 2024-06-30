@@ -38,7 +38,6 @@ void  uiWidgetShowAll (uiwcont_t *uiwidget);
 void  uiWidgetMakePersistent (uiwcont_t *uiuiwidget);
 void  uiWidgetClearPersistent (uiwcont_t *uiuiwidget);
 void  uiWidgetSetSizeRequest (uiwcont_t *uiuiwidget, int width, int height);
-void  uiWidgetSetAllocation (uiwcont_t *uiuiwidget, int width, int height);
 bool  uiWidgetIsMapped (uiwcont_t *uiuiwidget);
 void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
 void  uiWidgetAddClass (uiwcont_t *uiwidget, const char *class);

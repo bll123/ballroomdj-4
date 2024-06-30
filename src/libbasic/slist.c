@@ -59,12 +59,6 @@ slistSetSize (slist_t *list, listidx_t siz)
 }
 
 void
-slistCalcMaxKeyWidth (slist_t *list)
-{
-  listCalcMaxKeyWidth (LIST_KEY_STR, list);
-}
-
-void
 slistSetData (slist_t *list, const char *sidx, void *data)
 {
   listSetStrData (LIST_KEY_STR, list, sidx, data);
@@ -169,19 +163,6 @@ slist_t *
 slistGetList (slist_t *list, const char *sidx)
 {
   return slistGetData (list, sidx);
-}
-
-int
-slistGetMaxKeyWidth (slist_t *list)
-{
-  int     value;
-
-  if (list == NULL) {
-    return 0;
-  }
-
-  value = listGetMaxKeyWidth (LIST_KEY_STR, list);
-  return value;
 }
 
 slistidx_t

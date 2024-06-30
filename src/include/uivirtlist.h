@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "callback.h"
+#include "slist.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 

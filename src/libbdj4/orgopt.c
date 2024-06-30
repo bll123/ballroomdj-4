@@ -89,7 +89,6 @@ orgoptAlloc (void)
   }
 
   slistSort (list);
-  slistCalcMaxKeyWidth (list);
   orgopt->orgList = list;
 
   return orgopt;

@@ -17,14 +17,12 @@ void        listFree (keytype_t keytype, void *list);
 /* list management */
 void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);
 void        listSort (keytype_t keytype, list_t *list);
-void        listCalcMaxKeyWidth (keytype_t keytype, list_t *list);
 void        listCalcMaxValueWidth (keytype_t keytype, list_t *list);
 const char  *listGetName (keytype_t keytype, list_t *list);
 void        listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook);
 
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
-int         listGetMaxKeyWidth (keytype_t keytype, list_t *list);
 int         listGetMaxValueWidth (keytype_t keytype, list_t *list);
 
 /* version */

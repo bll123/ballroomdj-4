@@ -297,28 +297,6 @@ uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
   gtk_widget_set_size_request (uiwidget->uidata.widget, width, height);
 }
 
-void
-uiWidgetSetAllocation (uiwcont_t *uiwidget, int width, int height)
-{
-  GtkAllocation   alloc;
-
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->uidata.widget == NULL) {
-    return;
-  }
-
-  gtk_widget_get_allocation (uiwidget->uidata.widget, &alloc);
-  if (width != -1) {
-    alloc.width = width;
-  }
-  if (height != -1) {
-    alloc.height = height;
-  }
-  gtk_widget_set_allocation (uiwidget->uidata.widget, &alloc);
-}
-
 bool
 uiWidgetIsMapped (uiwcont_t *uiwidget)
 {
