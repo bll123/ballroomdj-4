@@ -78,9 +78,22 @@ enum {
   UITEST_DD_MAX,
 };
 
+enum {
+  UITEST_VL_A,
+  UITEST_VL_B,
+  UITEST_VL_C,
+  UITEST_VL_MAX,
+};
+
+enum {
+  UITEST_VL_COL_MAX = 6,
+  UITEST_VL_DISPROWS = 10,
+  UITEST_VL_MAXROWS = 100,
+};
+
 typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
-  uivirtlist_t  *vl;
+  uivirtlist_t  *vl [UITEST_VL_MAX];
   callback_t    *callbacks [UITEST_CB_MAX];
   uiwcont_t     *images [UITEST_I_MAX];
   callback_t    *chgcb;
@@ -90,17 +103,23 @@ typedef struct {
   bool          stop : 1;
 } uitest_t;
 
-enum {
-  UITEST_VL_COLS = 12,
-  UITEST_VL_DISPROWS = 10,
-  UITEST_VL_MAXROWS = 100,
-};
+typedef struct {
+  int           idx;
+  uitest_t      *uitest;
+} uitestvl_t;
 
-static const char *vllabs [] = {
-  "One", "Two", "Three", "Four", "Five", "☆",
-  "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", "Thirteen",
-  "Fourteen", "Fifteen",
+static const int vlcols [UITEST_VL_MAX] = {
+  3, 6, 2,
 };
+static const int vlmaxrows [UITEST_VL_MAX] = {
+  5, 40, 20,
+};
+static const char * vllabs [UITEST_VL_MAX][UITEST_VL_COL_MAX] = {
+  { "One", "Two", "☆", NULL, NULL, NULL },
+  { "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", },
+  { "Three", "Four", NULL, NULL, NULL, NULL },
+};
+static uitestvl_t vlcb [UITEST_VL_MAX];
 
 static void uitestMainLoop (uitest_t *uitest);
 static void uitestBuildUI (uitest_t *uitest);
@@ -189,7 +208,11 @@ main (int argc, char *argv[])
   for (int i = 0; i < UITEST_I_MAX; ++i) {
     uitest.images [i] = NULL;
   }
-  uitest.vl = NULL;
+  for (int i = 0; i < UITEST_VL_MAX; ++i) {
+    uitest.vl [i] = NULL;
+    vlcb [i].idx = i;
+    vlcb [i].uitest = &uitest;
+  }
   uitest.stop = false;
   uitest.counter = 1;
   uitest.lista = NULL;
@@ -1153,66 +1176,64 @@ uitestUITextBox (uitest_t *uitest)
 void
 uitestUIVirtList (uitest_t *uitest)
 {
-  uiwcont_t   *vbox;
+  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
   /* tree view */
 
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
-  uiWidgetExpandVert (vbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 4);
+//  uiWidgetExpandHoriz (hbox);
+//  uiWidgetExpandVert (hbox);
 
   uiwidgetp = uiCreateLabel ("Virtual List");
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], vbox, uiwidgetp);
+  uiNotebookAppendPage (uitest->wcont [UITEST_W_MAIN_NB], hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uitest->vl = uivlCreate ("uitest", vbox, UITEST_VL_DISPROWS,
-      VL_NO_WIDTH, VL_FLAGS_NONE);
-  uivlSetUseListingFont (uitest->vl);
-  uivlSetAllowMultiple (uitest->vl);
-  uivlSetNumColumns (uitest->vl, UITEST_VL_COLS);
-  uivlSetNumRows (uitest->vl, UITEST_VL_MAXROWS);
-  for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    if (j == 6) {
-      uivlMakeColumnEntry (uitest->vl, "entry", j, 10, 100);
-    } else if (j == 7) {
-      uivlMakeColumn (uitest->vl, "rb", j, VL_TYPE_RADIO_BUTTON);
-    } else if (j == 8) {
-      uivlMakeColumn (uitest->vl, "cb", j, VL_TYPE_CHECK_BUTTON);
-    } else if (j == 9) {
-      uivlMakeColumn (uitest->vl, "img", j, VL_TYPE_IMAGE);
-    } else if (j == 10) {
-      uivlMakeColumnSpinboxTime (uitest->vl, "sb-time", j, SB_TIME_BASIC, NULL);
-    } else if (j == 11) {
-      uivlMakeColumnSpinboxNum (uitest->vl, "sb-num", j, 0.0, 20.0, 1.0, 5.0);
+  for (int i = 0; i < UITEST_VL_MAX; ++i) {
+    uitest->vl [i] = uivlCreate ("uitest", hbox, UITEST_VL_DISPROWS,
+        VL_NO_WIDTH, VL_FLAGS_NONE);
+    uivlSetUseListingFont (uitest->vl [i]);
+    uivlSetAllowMultiple (uitest->vl [i]);
+    uivlSetNumColumns (uitest->vl [i], vlcols [i]);
+    uivlSetNumRows (uitest->vl [i], vlmaxrows [i]);
+    if (i == 1) {
+      uivlMakeColumnEntry (uitest->vl [i], "entry", 0, 10, 100);
+      uivlSetColumnGrow (uitest->vl [i], 0, VL_COL_WIDTH_GROW_SHRINK);
+      uivlSetColumnMinWidth (uitest->vl [i], 0, 15);
+      uivlMakeColumn (uitest->vl [i], "rb", 1, VL_TYPE_RADIO_BUTTON);
+      uivlMakeColumn (uitest->vl [i], "cb", 2, VL_TYPE_CHECK_BUTTON);
+      uivlMakeColumn (uitest->vl [i], "img", 3, VL_TYPE_IMAGE);
+      uivlMakeColumnSpinboxTime (uitest->vl [i], "sb-time", 4, SB_TIME_BASIC, NULL);
+      uivlMakeColumnSpinboxNum (uitest->vl [i], "sb-num", 5, 0.0, 20.0, 1.0, 5.0);
+
+      uivlSetEntryValidation (uitest->vl [i], 0, uitestVLEntryValidateCB, uitest);
+      uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
+      uivlSetRadioChangeCallback (uitest->vl [i], 1, uitest->chgcb);
+      uivlSetCheckboxChangeCallback (uitest->vl [i], 2, uitest->chgcb);
+      uivlSetSpinboxTimeChangeCallback (uitest->vl [i], 4, uitest->chgcb);
+      uivlSetSpinboxChangeCallback (uitest->vl [i], 5, uitest->chgcb);
     } else {
-      uivlMakeColumn (uitest->vl, "label", j, VL_TYPE_LABEL);
+      for (int j = 0; j < vlcols [i]; ++j) {
+        uivlMakeColumn (uitest->vl [i], "label", j, VL_TYPE_LABEL);
+        if (j == 0) {
+          uivlSetColumnEllipsizeOn (uitest->vl [i], j);
+        }
+      }
     }
+    if (i == 0) {
+      uivlSetColumnClass (uitest->vl [i], 2, "bdj-list-fav");
+    }
+    for (int j = 0; j < vlcols [i]; ++j) {
+      uivlSetColumnHeading (uitest->vl [i], j, vllabs [i][j]);
+    }
+    uivlSetRowFillCallback (uitest->vl [i], uitestVLFillCB, &vlcb [i]);
+    uivlSetSelectionCallback (uitest->vl [i], uitestVLSelectCB, &vlcb [i]);
+    uivlSetDoubleClickCallback (uitest->vl [i], uitestVLSelectCB, &vlcb [i]);
+    uivlDisplay (uitest->vl [i]);
   }
 
-  uivlSetColumnMinWidth (uitest->vl, 1, 15);
-  uivlSetColumnEllipsizeOn (uitest->vl, 1);
-  uivlSetColumnGrow (uitest->vl, 0, VL_COL_WIDTH_GROW);
-  uivlSetColumnGrow (uitest->vl, 1, VL_COL_WIDTH_GROW);
-  uivlSetColumnAlignEnd (uitest->vl, 2);
-  uivlSetColumnClass (uitest->vl, 5, "bdj-list-fav");
-  uivlSetRowFillCallback (uitest->vl, uitestVLFillCB, uitest);
-  uivlSetSelectionCallback (uitest->vl, uitestVLSelectCB, uitest);
-  uivlSetDoubleClickCallback (uitest->vl, uitestVLSelectCB, uitest);
-  uivlSetEntryValidation (uitest->vl, 6, uitestVLEntryValidateCB, uitest);
-  uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
-  uivlSetRadioChangeCallback (uitest->vl, 7, uitest->chgcb);
-  uivlSetCheckboxChangeCallback (uitest->vl, 8, uitest->chgcb);
-  uivlSetSpinboxTimeChangeCallback (uitest->vl, 10, uitest->chgcb);
-  uivlSetSpinboxChangeCallback (uitest->vl, 11, uitest->chgcb);
-
-  for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    uivlSetColumnHeading (uitest->vl, j, vllabs [j]);
-  }
-
-  uivlDisplay (uitest->vl);
-
-  uiwcontFree (vbox);
+  uiwcontFree (hbox);
 }
 
 static bool
@@ -1267,7 +1288,9 @@ uitestCleanup (uitest_t *uitest)
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
 
-  uivlFree (uitest->vl);
+  for (int i = 0; i < UITEST_VL_MAX; ++i) {
+    uivlFree (uitest->vl [i]);
+  }
 
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uiwcontFree (uitest->wcont [i]);
@@ -1291,36 +1314,39 @@ uitestCleanup (uitest_t *uitest)
 static void
 uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  uitest_t  *uitest = udata;
-  char      tbuff [40];
+  uitestvl_t    *uitestvl = udata;
+  int           vlidx = uitestvl->idx;
+  uitest_t      *uitest = uitestvl->uitest;
+  char          tbuff [40];
 
-  for (int j = 0; j < UITEST_VL_COLS; ++j) {
-    if (j == 5) {
+  for (int j = 0; j < vlcols [vlidx]; ++j) {
+    if (vlidx == 0 && j == 2) {
       snprintf (tbuff, sizeof (tbuff), "★");
     } else {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
     }
-    if (rownum % 5 == 0 && (j == 1 || j == 0)) {
+    if (rownum % 5 == 0 && j == 0) {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
     }
     if (rownum % 7 == 0 && j == 2) {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
     }
-    if (j == 7 || j == 8) {
-      uivlSetRowColumnNum (uitest->vl, rownum, j, 0);
-    } else if (j == 10) {
-      uivlSetRowColumnNum (uitest->vl, rownum, j, 90000);
-    } else if (j == 11) {
-      uivlSetRowColumnNum (uitest->vl, rownum, j, 5);
-    } else {
-      uivlSetRowColumnValue (uitest->vl, rownum, j, tbuff);
+    if (vlidx == 1) {
+      if (j == 1) {
+        uivlSetRowColumnNum (vl, rownum, j, 90000);
+      }
+      if (j == 1 || j == 2 || j == 5) {
+        uivlSetRowColumnNum (vl, rownum, j, 0);
+      }
     }
-    if (rownum % 9 == 0 && j == 0) {
-      uivlSetRowColumnClass (uitest->vl, rownum, j, ACCENT_CLASS);
+    if (vlidx != 1 || j == 0) {
+      uivlSetRowColumnValue (vl, rownum, j, tbuff);
+    }
+    if (vlidx != 1 && rownum % 9 == 0 && j == 0) {
+      uivlSetRowColumnClass (vl, rownum, j, ACCENT_CLASS);
     }
   }
 }
-
 
 static void
 uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)

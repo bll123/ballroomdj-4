@@ -131,7 +131,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
   uivlMakeColumn (uivl, "src", DL_COL_DISP, VL_TYPE_LABEL);
-  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
+  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
   uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
   dvbox = uiCreateVertBox ();
@@ -171,7 +171,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, DL_COL_MAX);
   uivlMakeColumn (uivl, "tgt", DL_COL_DISP, VL_TYPE_LABEL);
-  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW);
+  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
   uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 
   uiwcontFree (dvbox);

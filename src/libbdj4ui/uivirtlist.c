@@ -44,14 +44,15 @@ enum {
 
 
 enum {
-  VL_W_SCROLL_WIN,
-  VL_W_HEADBOX,
-  VL_W_EVENT_BOX,
-  VL_W_MAIN_HBOX,
-  VL_W_MAIN_VBOX,
+  VL_W_VBOX,            // contains headbox, scroll-win
+  VL_W_HEADBOX,         // contains heading row and head-filler
+  VL_W_HEAD_FILLER,
+  VL_W_SCROLL_WIN,      // contains hbox-cont
+  VL_W_HBOX_CONT,       // contains event-box and scrollbar
+  VL_W_EVENT_BOX,       // contains main-vbox
+  VL_W_MAIN_VBOX,       // has all the rows
   VL_W_SB,
   VL_W_SB_SZGRP,
-  VL_W_HEAD_FILLER,
   VL_W_EVENTH,
   VL_W_MAX,
 };
@@ -88,6 +89,8 @@ static const char * const VL_NORMBG_CLASS = "bdj-norm-bg";
 static const char * const VL_FAV_CLASS = "bdj-list-fav";
 
 typedef struct uivlcol uivlcol_t;
+typedef struct uivlcoldata uivlcoldata_t;
+typedef struct uivlrow uivlrow_t;
 
 typedef struct {
   uivirtlist_t    *vl;
@@ -95,38 +98,39 @@ typedef struct {
   callback_t      *focuscb;
 } uivlrowcb_t;
 
-typedef struct {
-  uint64_t    ident;
-  uiwcont_t   *szgrp;
+typedef struct uivlcoldata {
+  uint64_t      ident;
+  uivirtlist_t  *vl;
+  uiwcont_t     *szgrp;
   /* the following data is specific to a column */
-  vltype_t    type;
+  vltype_t      type;
   /* the baseclass is always applied */
   uientryval_t  entrycb;
-  void        *entryudata;
-  callback_t  *togglecb;      // radio buttons and check buttons
-  callback_t  *spinboxcb;
-  callback_t  *spinboxtimecb;
-  callback_t  *colszcb;
-  uivlcol_t   *col0;
-  const char  *tag;
-  char        *baseclass;
-  int         minwidth;
-  int         entrySz;
-  int         entryMaxSz;
-  int         sbtype;
-  int         colidx;
-  int         colwidth;
-  callback_t  *sbcb;
-  double      sbmin;
-  double      sbmax;
-  double      sbincr;
-  double      sbpageincr;
-  int         grow;
+  void          *entryudata;
+  callback_t    *togglecb;      // radio buttons and check buttons
+  callback_t    *spinboxcb;
+  callback_t    *spinboxtimecb;
+  callback_t    *colszcb;
+  uivlcol_t     *col0;
+  const char    *tag;
+  char          *baseclass;
+  int           minwidth;
+  int           entrySz;
+  int           entryMaxSz;
+  int           sbtype;
+  int           colidx;
+  int           colwidth;
+  callback_t    *sbcb;
+  double        sbmin;
+  double        sbmax;
+  double        sbincr;
+  double        sbpageincr;
+  int           grow;
   /* is the entire column hidden? */
   /* note that this is not a true/false value */
-  int         hidden;
-  bool        alignend: 1;
-  bool        ellipsize : 1;
+  int           hidden;
+  bool          alignend: 1;
+  bool          ellipsize : 1;
 } uivlcoldata_t;
 
 typedef struct uivlcol {
@@ -139,7 +143,7 @@ typedef struct uivlcol {
   int32_t   value;        // internal numeric value
 } uivlcol_t;
 
-typedef struct {
+typedef struct uivlrow {
   uint64_t      ident;
   uivirtlist_t  *vl;
   uiwcont_t     *hbox;
@@ -222,7 +226,7 @@ static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVertSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
-static bool uivlColSizeChg (void *udata, int32_t width, int32_t height);
+static bool uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
 static bool uivlFocusCallback (void *udata);
 static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
@@ -301,12 +305,15 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVertSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
+  vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
+  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
+
   if (vl->dispheading) {
     vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
     uiWidgetAlignHorizStart (vl->wcont [VL_W_HEADBOX]);
     uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
     uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
-    uiBoxPackStart (boxp, vl->wcont [VL_W_HEADBOX]);
+    uiBoxPackStart (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_HEADBOX]);
   }
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -315,13 +322,13 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
   uiWidgetExpandVert (vl->wcont [VL_W_SCROLL_WIN]);
-  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);
+  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
 
-  vl->wcont [VL_W_MAIN_HBOX] = uiCreateHorizBox ();
-  uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_MAIN_HBOX]);
+  vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
+  uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
   /* need a minimum width so it looks nice */
   if (minwidth != VL_NO_WIDTH) {
-    uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_HBOX], minwidth, -1);
+    uiWidgetSetSizeRequest (vl->wcont [VL_W_HBOX_CONT], minwidth, -1);
   }
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
@@ -334,7 +341,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_EVENT_BOX]);
+  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
 
   /* the size change callback must be set on the scroll-window */
   /* as the child windows within it only grow */
@@ -343,7 +350,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
   uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_SB]);
-  uiBoxPackEnd (vl->wcont [VL_W_MAIN_HBOX], vl->wcont [VL_W_SB]);
+  uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], (double) (dispsize / 2));
@@ -483,6 +490,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
   for (int colidx = 0; colidx < numcols; ++colidx) {
     uivlcoldata_t *coldata = &vl->coldata [colidx];
 
+    coldata->vl = vl;
     coldata->szgrp = uiCreateSizeGroupHoriz ();
     coldata->ident = VL_IDENT_COLDATA;
     coldata->tag = "unk";
@@ -523,7 +531,7 @@ uivlSetDarkBackground (uivirtlist_t *vl)
   }
 
   vl->darkbg = true;
-  uiWidgetAddClass (vl->wcont [VL_W_MAIN_HBOX], VL_DARKBG_CLASS);
+  uiWidgetAddClass (vl->wcont [VL_W_HBOX_CONT], VL_DARKBG_CLASS);
   if (vl->dispheading) {
     uiWidgetAddClass (vl->wcont [VL_W_HEADBOX], VL_DARKBG_CLASS);
   }
@@ -771,7 +779,7 @@ uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colidx)
   }
 
   vl->coldata [colidx].ellipsize = true;
-  vl->coldata [colidx].grow = VL_COL_WIDTH_GROW;
+  vl->coldata [colidx].grow = VL_COL_WIDTH_GROW_SHRINK;
 }
 
 void
@@ -1530,12 +1538,10 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   row->selected = false;
   row->created = true;
   row->cleared = true;
-
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
   /* create a label so that cleared rows with only widgets will still */
-  /* have a height */
-  /* hair-space */
+  /* have a height (hair space) */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
   if (vl->uselistingfont) {
@@ -1545,6 +1551,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   uiwcontFree (uiwidget);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    vltype_t      origtype;
     vltype_t      type;
     uivlcol_t     *col;
     uivlcoldata_t *coldata;
@@ -1559,7 +1566,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     col->colidx = colidx;
     col->value = LIST_VALUE_INVALID;
 
-    type = coldata->type;
+    origtype = coldata->type;
+    type = origtype;
     if (isheading) {
       type = VL_TYPE_LABEL;
     }
@@ -1653,22 +1661,33 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     if (coldata->alignend) {
       uiBoxPackEnd (col->box, col->uiwidget);
     } else {
-      uiBoxPackStart (col->box, col->uiwidget);
+      if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
+          origtype == VL_TYPE_ENTRY) {
+        uiWidgetAlignHorizFill (col->uiwidget);
+        uiWidgetExpandHoriz (col->uiwidget);
+      }
+      if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK ||
+          coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
+        uiBoxPackStartExpand (col->box, col->uiwidget);
+      } else {
+        uiBoxPackStart (col->box, col->uiwidget);
+      }
     }
     uiWidgetSetAllMargins (col->uiwidget, 0);
     if (isheading) {
       uiWidgetAlignVertEnd (col->uiwidget);
     }
 
-    if (row->dispidx == 0 &&
-        col->uiwidget != NULL &&
-        (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
-      /* set up the size change callback so that the columns */
+    if (row->dispidx == 0 && col->uiwidget != NULL) {
+      /* set up the size change callback so that grow-only columns */
       /* can be made to only grow, and never shrink on their own */
       /* only need this on labels and images. */
-      coldata->colszcb = callbackInitII (uivlColSizeChg, coldata);
-      coldata->col0 = col;
-      uiBoxSetSizeChgCallback (col->box, coldata->colszcb);
+      if (coldata->grow == VL_COL_WIDTH_GROW_ONLY &&
+          (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
+        coldata->colszcb = callbackInitII (uivlColGrowOnlyChg, coldata);
+        coldata->col0 = col;
+        uiBoxSetSizeChgCallback (col->box, coldata->colszcb);
+      }
     }
 
     uiWidgetSetMarginEnd (col->uiwidget, 3);
@@ -1679,7 +1698,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (coldata->grow == VL_COL_WIDTH_GROW) {
+    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK ||
+        coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
       uiBoxPackStartExpand (row->hbox, col->box);
     } else {
       uiBoxPackStart (row->hbox, col->box);
@@ -2011,9 +2031,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   int           calcrows;
   int           theight;
 
-  /* see the comments in colsizechg */
-
-  if (width < vl->vboxwidth - 5) {
+  if (width < vl->vboxwidth) {
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       uivlrow_t   *row;
       uivlcol_t   *col;
@@ -2063,26 +2081,16 @@ uivlRowSizeChg (void *udata, int32_t width, int32_t height)
   return UICB_CONT;
 }
 
+/* the intention of the column size change is to prevent */
+/* grow-only columns from shrinking */
 static bool
-uivlColSizeChg (void *udata, int32_t width, int32_t height)
+uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height)
 {
   uivlcoldata_t   *coldata = udata;
 
-  /* gtk seems to resize the box some number of pixels */
-  /* greater than requested */
-  /* just need a stable number */
-  /* a smaller size allows user-shrinking */
   if (width > 0 && width > coldata->colwidth) {
     if (uiWidgetIsMapped (coldata->col0->box)) {
       coldata->colwidth = width;
-
-      /* if the size is set to the actual size, it can no longer shrink. */
-      /* if the size is set to the actual size, in gtk, and the vbox size */
-      /* change test is not modified, the vbox will keep growing. */
-      /* the vbox size change test is modified to ignore minor changes */
-      /* so that it does not think the window is changing. */
-      /* because of this, columns can still bounce their width by 5 pixels */
-      width -= 5;
       uiWidgetSetSizeRequest (coldata->col0->box, width, -1);
     }
   }
@@ -2402,3 +2410,4 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       (double) (vl->dispsize - vl->lockcount));
   uivlPopulate (vl);
 }
+
