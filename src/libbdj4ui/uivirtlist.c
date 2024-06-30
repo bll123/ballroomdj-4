@@ -34,8 +34,9 @@ enum {
 
 enum {
   VL_ROW_UNKNOWN = -753,
-  VL_ROW_HEADING = -754,      // some weird number
   VL_MIN_WIDTH_ANY = -755,
+  VL_ROW_HEADING = -754,
+  VL_ROW_HEADING_IDX = 0,
   VL_SCROLL_NORM = false,
   VL_SCROLL_FORCE = true,
   VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
@@ -44,15 +45,13 @@ enum {
 
 
 enum {
-  VL_W_VBOX,            // contains headbox, scroll-win
-  VL_W_HEADBOX,         // contains heading row and head-filler
-  VL_W_HEAD_FILLER,
+  VL_W_VBOX,            // contains scroll-win
   VL_W_SCROLL_WIN,      // contains hbox-cont
   VL_W_HBOX_CONT,       // contains event-box and scrollbar
   VL_W_EVENT_BOX,       // contains main-vbox
   VL_W_MAIN_VBOX,       // has all the rows
+  VL_W_SB_VBOX,         // contains possibly head-filler, scrollbar
   VL_W_SB,
-  VL_W_SB_SZGRP,
   VL_W_EVENTH,
   VL_W_MAX,
 };
@@ -180,9 +179,10 @@ typedef struct uivirtlist {
   int           numcols;
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
-  uivlrow_t     headingrow;
+  /* the actual number of rows that can be displayed */
   int           dispsize;
   int           dispalloc;
+  int           dispoffset;
   int           vboxheight;
   int           vboxwidth;
   int           rowheight;
@@ -240,6 +240,7 @@ static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, con
 static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int colidx, const char *func);
 static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
 static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
+static void uivlConfigureScrollbar (uivirtlist_t *vl);
 
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *boxp,
@@ -258,9 +259,18 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->dclickudata = NULL;
   vl->inscroll = false;
   vl->dispheading = true;
+
+  vl->dispalloc = 0;
+  /* display size is set to the number of rows that can be displayed */
+  /* it includes the heading row if headings are on */
+  vl->dispsize = dispsize;
+  /* display offset excludes the heading rows */
+  vl->dispoffset = 1;
   if ((vlflags & VL_NO_HEADING) == VL_NO_HEADING) {
     vl->dispheading = false;
+    vl->dispoffset = 0;
   }
+
   vl->keyhandling = false;
   if ((vlflags & VL_ENABLE_KEYS) == VL_ENABLE_KEYS) {
     vl->keyhandling = true;
@@ -283,8 +293,6 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   /* default selection */
   nlistSetNum (vl->selected, 0, true);
   vl->initialized = VL_INIT_NONE;
-  vl->dispalloc = 0;
-  vl->dispsize = dispsize;
 
   for (int i = 0; i < VL_W_MAX; ++i) {
     vl->wcont [i] = NULL;
@@ -307,14 +315,6 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
-
-  if (vl->dispheading) {
-    vl->wcont [VL_W_HEADBOX] = uiCreateHorizBox ();
-    uiWidgetAlignHorizStart (vl->wcont [VL_W_HEADBOX]);
-    uiWidgetAlignVertStart (vl->wcont [VL_W_HEADBOX]);
-    uiWidgetExpandHoriz (vl->wcont [VL_W_HEADBOX]);
-    uiBoxPackStart (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_HEADBOX]);
-  }
 
   /* a scrolled window is necessary to allow the window to shrink */
   /* keep the minimum height very small so that drop-downs do not get */
@@ -347,24 +347,18 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   /* as the child windows within it only grow */
   uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
-  vl->wcont [VL_W_SB_SZGRP] = uiCreateSizeGroupHoriz ();
+  vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
+  uiBoxPackEndExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
+
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
-  uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_SB]);
-  uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB]);
+  uiBoxPackEndExpand (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
-  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB], (double) (dispsize / 2));
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
-  uiScrollbarSetPageSize (vl->wcont [VL_W_SB], (double) dispsize);
+  uivlConfigureScrollbar (vl);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
-
-  if (vl->dispheading) {
-    vl->wcont [VL_W_HEAD_FILLER] = uiCreateLabel ("");
-    uiSizeGroupAdd (vl->wcont [VL_W_SB_SZGRP], vl->wcont [VL_W_HEAD_FILLER]);
-    uiBoxPackEnd (vl->wcont [VL_W_HEADBOX], vl->wcont [VL_W_HEAD_FILLER]);
-  }
 
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s init-disp-size: %d", vl->tag, dispsize);
   vl->dispalloc = dispsize;
@@ -372,8 +366,6 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   for (int dispidx = 0; dispidx < vl->dispalloc; ++dispidx) {
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
-
-  uivlRowBasicInit (vl, &vl->headingrow, VL_ROW_HEADING);
 
   if (vl->keyhandling) {
     uiEventSetKeyCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
@@ -401,8 +393,6 @@ uivlFree (uivirtlist_t *vl)
   for (int i = 0; i < VL_CB_MAX; ++i) {
     callbackFree (vl->callbacks [i]);
   }
-
-  uivlFreeRow (vl, &vl->headingrow);
 
   for (int dispidx = 0; dispidx < vl->dispalloc; ++dispidx) {
     uivlFreeRow (vl, &vl->rows [dispidx]);
@@ -447,27 +437,27 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if the number of data rows is less than the display size, */
     /* the extra rows must have their display cleared */
-    if (numrows < vl->dispsize) {
-      for (int dispidx = numrows; dispidx < vl->dispsize; ++dispidx) {
+    if (numrows < (vl->dispsize - vl->dispoffset)) {
+      for (int dispidx = numrows + vl->dispoffset; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
     }
 
     /* if a row has been removed, but there are enough rows to fill the */
     /* display, change the row-offset so that the display is filled */
-    if (vl->dispsize + vl->rowoffset > vl->numrows &&
-        vl->dispsize < vl->numrows) {
+    if ((vl->dispsize - vl->dispoffset) + vl->rowoffset > vl->numrows &&
+        (vl->dispsize - vl->dispoffset) < vl->numrows) {
       int32_t   diff;
 
       /* usually this happens due to a removal of a row, */
       /* and diff will be -1 */
-      diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+      diff = vl->numrows - ((vl->dispsize - vl->dispoffset) + vl->rowoffset);
       vl->rowoffset += diff;
       vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
     }
   }
 
-  if (numrows <= vl->dispsize) {
+  if (numrows <= (vl->dispsize - vl->dispoffset)) {
     uiWidgetHide (vl->wcont [VL_W_SB]);
   } else {
     uiWidgetShow (vl->wcont [VL_W_SB]);
@@ -532,9 +522,6 @@ uivlSetDarkBackground (uivirtlist_t *vl)
 
   vl->darkbg = true;
   uiWidgetAddClass (vl->wcont [VL_W_HBOX_CONT], VL_DARKBG_CLASS);
-  if (vl->dispheading) {
-    uiWidgetAddClass (vl->wcont [VL_W_HEADBOX], VL_DARKBG_CLASS);
-  }
 }
 
 void
@@ -620,10 +607,7 @@ uivlSetRowLock (uivirtlist_t *vl, int32_t rownum)
     vl->lockcount += 1;
   }
   row->lockrownum = rownum;
-  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
-      (double) ((vl->dispsize - vl->lockcount) / 2));
-  uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
-      (double) (vl->dispsize - vl->lockcount));
+  uivlConfigureScrollbar (vl);
 }
 
 /* column set */
@@ -639,7 +623,17 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
   }
 
   if (vl->initialized < VL_INIT_HEADING) {
-    uivlCreateRow (vl, &vl->headingrow, VL_ROW_HEADING, true);
+    uiwcont_t   *uiwidget;
+
+    uivlCreateRow (vl, &vl->rows [VL_ROW_HEADING_IDX], 0, true);
+
+    uiwidget = uiCreateLabel ("");
+    if (vl->uselistingfont) {
+      uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
+    }
+    uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
+    uiwcontFree (uiwidget);
+
     vl->initialized = VL_INIT_HEADING;
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-heading]", vl->tag);
   }
@@ -821,10 +815,10 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
   if (washidden != hidden) {
     if (vl->dispheading) {
       if (hidden == VL_COL_HIDE) {
-        uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
+        uiWidgetHide (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget);
       }
       if (hidden == VL_COL_SHOW) {
-        uiWidgetShow (vl->headingrow.cols [colidx].uiwidget);
+        uiWidgetShow (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget);
       }
     }
     for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
@@ -862,9 +856,6 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
   uivlrow_t   *row;
 
   if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, colidx, __func__)) {
-    return;
-  }
-  if (rownum == VL_ROW_HEADING) {
     return;
   }
 
@@ -1250,15 +1241,12 @@ uivlDisplay (uivirtlist_t *vl)
   vl->initialized = VL_INIT_ROWS;
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-rows]", vl->tag);
 
-  if (vl->dispheading) {
-    uiBoxPackStart (vl->wcont [VL_W_HEADBOX], vl->headingrow.hbox);
-  }
-
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
     uivlPackRow (vl, row);
     row->cleared = false;
-    if (dispidx == 0) {
+    /* the size change callback is based on the first data row */
+    if (dispidx == vl->dispoffset) {
       uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
     }
   }
@@ -1285,11 +1273,11 @@ uivlPopulate (uivirtlist_t *vl)
     uiWidgetHide (vl->rows [dispidx].hbox);
   }
 
-  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
+  for (int dispidx = vl->dispoffset; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
     uivlcol_t   *col;
 
-    if (dispidx + vl->rowoffset >= vl->numrows) {
+    if ((dispidx - vl->dispoffset) + vl->rowoffset >= vl->numrows) {
       break;
     }
 
@@ -1324,11 +1312,11 @@ uivlPopulate (uivirtlist_t *vl)
     }
   }
 
-  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
+  for (int dispidx = vl->dispoffset; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
     int32_t     rownum;
 
-    rownum = dispidx + vl->rowoffset;
+    rownum = (dispidx - vl->dispoffset) + vl->rowoffset;
     if (rownum >= vl->numrows) {
       break;
     }
@@ -1434,9 +1422,6 @@ void
 uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
 {
   if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
-    return;
-  }
-  if (rownum == VL_ROW_HEADING) {
     return;
   }
 
@@ -1599,7 +1584,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         } else {
           uivlrow_t   *trow;
 
-          trow = &vl->rows [0];
+          trow = &vl->rows [vl->dispoffset];
           col->uiwidget =
               uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
         }
@@ -1729,15 +1714,15 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
   uivlrow_t   *row = NULL;
 
   if (rownum == VL_ROW_HEADING) {
-    row = &vl->headingrow;
+    row = &vl->rows [VL_ROW_HEADING_IDX];
   } else {
-    int32_t   rowidx;
+    int32_t   dispidx;
 
-    rowidx = rownum - vl->rowoffset;
-    if (rowidx >= 0 && rowidx < vl->dispsize) {
-      row = &vl->rows [rowidx];
+    dispidx = rownum - vl->rowoffset + vl->dispoffset;
+    if (dispidx >= vl->dispoffset && dispidx < vl->dispsize) {
+      row = &vl->rows [dispidx];
       if (row->ident != VL_IDENT_ROW) {
-        fprintf (stderr, "ERR: invalid row: rownum %" PRId32 " rowoffset: %" PRId32 " rowidx: %" PRId32, rownum, vl->rowoffset, rowidx);
+        fprintf (stderr, "ERR: invalid row: rownum %" PRId32 " rowoffset: %" PRId32 " dispidx: %" PRId32, rownum, vl->rowoffset, dispidx);
       }
     }
   }
@@ -1795,7 +1780,7 @@ uivlKeyEvent (void *udata)
 
     if (uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
       if (uiEventIsPageUpDownKey (vl->wcont [VL_W_EVENTH])) {
-        dir = vl->dispsize - vl->lockcount;
+        dir = vl->dispsize - vl->dispoffset - vl->lockcount;
       }
       if (uiEventIsUpKey (vl->wcont [VL_W_EVENTH])) {
         dir = - dir;
@@ -1921,7 +1906,7 @@ uivlScrollEvent (void *udata, int32_t dir)
 static void
 uivlClearDisplaySelections (uivirtlist_t *vl)
 {
-  for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
+  for (int dispidx = vl->dispoffset; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
@@ -1941,17 +1926,17 @@ static void
 uivlSetDisplaySelections (uivirtlist_t *vl)
 {
   nlistidx_t    iter;
-  nlistidx_t    val;
+  nlistidx_t    rownum;
 
   nlistStartIterator (vl->selected, &iter);
-  while ((val = nlistIterateKey (vl->selected, &iter)) >= 0) {
-    int32_t     tval;
+  while ((rownum = nlistIterateKey (vl->selected, &iter)) >= 0) {
+    int32_t     trownum;
 
-    tval = val - vl->rowoffset;
-    if (tval >= 0 && tval < vl->dispsize) {
+    trownum = rownum - vl->rowoffset;
+    if (trownum >= 0 && trownum < vl->dispsize) {
       uivlrow_t   *row;
 
-      row = uivlGetRow (vl, val);
+      row = uivlGetRow (vl, rownum);
       uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
       row->selected = true;
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -1994,7 +1979,7 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
       wantrow < vl->rowoffset + vl->dispsize) {
     if (wantrow < vl->currSelection) {
       /* selection up */
-      if (wantrow < vl->rowoffset + vl->dispsize / 2 - 1) {
+      if (wantrow < vl->rowoffset + (vl->dispsize - vl->dispoffset) / 2 - 1) {
         start = vl->rowoffset - 1;
       } else {
         vl->inscroll = false;
@@ -2002,7 +1987,7 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
       }
     } else {
       /* selection down */
-      if (wantrow >= vl->rowoffset + vl->dispsize / 2) {
+      if (wantrow >= vl->rowoffset + (vl->dispsize - vl->dispoffset) / 2) {
         start = vl->rowoffset + 1;
       } else {
         vl->inscroll = false;
@@ -2036,7 +2021,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
       uivlrow_t   *row;
       uivlcol_t   *col;
 
-      row = &vl->rows [0];
+      row = &vl->rows [vl->dispoffset];
       if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
         vl->coldata [colidx].colwidth = -1;
         col = &row->cols [colidx];
@@ -2063,7 +2048,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
     }
   }
 
-  if (vl->numrows <= vl->dispsize) {
+  if (vl->numrows <= (vl->dispsize - vl->dispoffset)) {
     uiWidgetHide (vl->wcont [VL_W_SB]);
   } else {
     uiWidgetShow (vl->wcont [VL_W_SB]);
@@ -2115,7 +2100,7 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
   row->newclass = NULL;
   row->lockrownum = VL_ROW_NO_LOCK;
 
-  if (dispidx != VL_ROW_HEADING) {
+  if (dispidx != VL_ROW_HEADING_IDX) {
     row->rowcb = mdmalloc (sizeof (uivlrowcb_t));
     row->rowcb->vl = vl;
     row->rowcb->dispidx = dispidx;
@@ -2161,8 +2146,8 @@ uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
       min = rownum;
       max = vl->lastSelection;
     }
-    for (int32_t rowidx = min; rowidx <= max; ++rowidx) {
-      uivlAddSelection (vl, rowidx);
+    for (int32_t trownum = min; trownum <= max; ++trownum) {
+      uivlAddSelection (vl, trownum);
     }
   }
   uivlAddSelection (vl, rownum);
@@ -2183,8 +2168,8 @@ uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset)
   }
 
   /* the number of rows may be less than the available display size */
-  tdispsize = vl->dispsize;
-  if (vl->numrows < vl->dispsize) {
+  tdispsize = vl->dispsize - vl->dispoffset;
+  if (vl->numrows < tdispsize) {
     tdispsize = vl->numrows;
   }
   if (rowoffset > vl->numrows - tdispsize) {
@@ -2314,7 +2299,6 @@ uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
       continue;
     }
     if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-      uiWidgetHide (vl->headingrow.cols [colidx].uiwidget);
       for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
         row = &vl->rows [dispidx];
         uiWidgetHide (row->cols [colidx].uiwidget);
@@ -2366,12 +2350,12 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* if the vertical size changes, and there are enough rows */
   /* to fill the display, change the row-offset so that the display */
   /* is filled. */
-  /* this happens when the vertical size is increased, and the display */
-  /* is scrolled to the bottom */
-  if (vl->dispsize + vl->rowoffset > vl->numrows) {
+  /* this happens when the vertical size is increased, */
+  /* and the display is scrolled to the bottom */
+  if ((vl->dispsize - vl->dispoffset) + vl->rowoffset > vl->numrows) {
     int32_t   diff;
 
-    diff = vl->numrows - (vl->dispsize + vl->rowoffset);
+    diff = vl->numrows - ((vl->dispsize - vl->dispoffset) + vl->rowoffset);
     vl->rowoffset += diff;
     vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
   }
@@ -2392,9 +2376,9 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 
   /* if the display size is greater than the number of rows, */
   /* clear any extra rows. */
-  if (vl->dispsize > vl->numrows) {
+  if ((vl->dispsize - vl->dispoffset) > vl->numrows) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-limit %d > %d", vl->tag, vl->dispsize, vl->numrows);
-    for (int dispidx = vl->numrows; dispidx < vl->dispsize; ++dispidx) {
+    for (int dispidx = vl->numrows + vl->dispoffset; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t *row;
 
       row = &vl->rows [dispidx];
@@ -2404,10 +2388,15 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
     }
   }
 
-  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
-      (double) ((vl->dispsize - vl->lockcount) / 2));
-  uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
-      (double) (vl->dispsize - vl->lockcount));
+  uivlConfigureScrollbar (vl);
   uivlPopulate (vl);
 }
 
+static void
+uivlConfigureScrollbar (uivirtlist_t *vl)
+{
+  uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
+      (double) ((vl->dispsize - vl->dispoffset) - vl->lockcount) / 2);
+  uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
+      (double) ((vl->dispsize - vl->dispoffset) - vl->lockcount));
+}

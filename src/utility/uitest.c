@@ -112,7 +112,7 @@ static const int vlcols [UITEST_VL_MAX] = {
   3, 6, 2,
 };
 static const int vlmaxrows [UITEST_VL_MAX] = {
-  5, 40, 20,
+  5, 40, 25,
 };
 static const char * vllabs [UITEST_VL_MAX][UITEST_VL_COL_MAX] = {
   { "One", "Two", "☆", NULL, NULL, NULL },
@@ -1316,7 +1316,6 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
   uitestvl_t    *uitestvl = udata;
   int           vlidx = uitestvl->idx;
-  uitest_t      *uitest = uitestvl->uitest;
   char          tbuff [40];
 
   for (int j = 0; j < vlcols [vlidx]; ++j) {
@@ -1324,12 +1323,12 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
       snprintf (tbuff, sizeof (tbuff), "★");
     } else {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
-    }
-    if (rownum % 5 == 0 && j == 0) {
-      snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
-    }
-    if (rownum % 7 == 0 && j == 2) {
-      snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
+      if (rownum % 5 == 0 && j == 0) {
+        snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
+      }
+      if (rownum % 7 == 0 && j == 2) {
+        snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
+      }
     }
     if (vlidx == 1) {
       if (j == 1) {
