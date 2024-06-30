@@ -50,7 +50,7 @@ enum {
   VL_W_HBOX_CONT,       // contains event-box and scrollbar
   VL_W_EVENT_BOX,       // contains main-vbox
   VL_W_MAIN_VBOX,       // has all the rows
-  VL_W_SB_VBOX,         // contains possibly head-filler, scrollbar
+  VL_W_SB_VBOX,         // contains optional head-filler, scrollbar
   VL_W_SB,
   VL_W_EVENTH,
   VL_W_MAX,
@@ -316,6 +316,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
+  uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -350,7 +351,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
-  uiBoxPackEndExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
+  uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
   uiBoxPackEndExpand (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB]);
@@ -631,7 +632,7 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
 
     uivlCreateRow (vl, &vl->rows [VL_ROW_HEADING_IDX], 0, true);
 
-    uiwidget = uiCreateLabel ("");
+    uiwidget = uiCreateLabel (" ");
     if (vl->uselistingfont) {
       uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
     }
@@ -1655,8 +1656,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         uiWidgetAlignHorizFill (col->uiwidget);
         uiWidgetExpandHoriz (col->uiwidget);
       }
-      if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK ||
-          coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
+      if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
+//          coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
         uiBoxPackStartExpand (col->box, col->uiwidget);
       } else {
         uiBoxPackStart (col->box, col->uiwidget);
@@ -1687,8 +1688,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK ||
-        coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
+    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
+//        coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
       uiBoxPackStartExpand (row->hbox, col->box);
     } else {
       uiBoxPackStart (row->hbox, col->box);
@@ -2084,6 +2085,7 @@ uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height)
   if (width > 0 && width > coldata->colwidth) {
     if (uiWidgetIsMapped (coldata->col0->box)) {
       coldata->colwidth = width;
+      width -= 1;
       uiWidgetSetSizeRequest (coldata->col0->box, width, -1);
     }
   }

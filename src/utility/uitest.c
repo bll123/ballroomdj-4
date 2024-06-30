@@ -109,14 +109,14 @@ typedef struct {
 } uitestvl_t;
 
 static const int vlcols [UITEST_VL_MAX] = {
-  3, 6, 2,
+  3, 2, 2,
 };
 static const int vlmaxrows [UITEST_VL_MAX] = {
   5, 40, 25,
 };
 static const char * vllabs [UITEST_VL_MAX][UITEST_VL_COL_MAX] = {
   { "One", "Two", "☆", NULL, NULL, NULL },
-  { "Entry", "RB", "CB", "Image", "SB-Time", "Spinbox", },
+  { "A", "B", NULL, NULL, NULL, NULL },
   { "Three", "Four", NULL, NULL, NULL, NULL },
 };
 static uitestvl_t vlcb [UITEST_VL_MAX];
@@ -147,8 +147,6 @@ static void uitestCleanup (uitest_t *uitest);
 
 static void uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
-static int uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata);
-static bool uitestVLChangeCB (void *udata);
 
 static int32_t uitestDDStr (void *udata, const char *str);
 static bool uitestDDNum (void *udata, int32_t val);
@@ -1192,33 +1190,18 @@ uitestUIVirtList (uitest_t *uitest)
 
   for (int i = 0; i < UITEST_VL_MAX; ++i) {
     uitest->vl [i] = uivlCreate ("uitest", hbox, UITEST_VL_DISPROWS,
-        VL_NO_WIDTH, VL_FLAGS_NONE);
+        VL_NO_WIDTH, VL_ENABLE_KEYS);
     uivlSetUseListingFont (uitest->vl [i]);
     uivlSetAllowMultiple (uitest->vl [i]);
     uivlSetNumColumns (uitest->vl [i], vlcols [i]);
     uivlSetNumRows (uitest->vl [i], vlmaxrows [i]);
-    if (i == 1) {
-      uivlMakeColumnEntry (uitest->vl [i], "entry", 0, 10, 100);
-      uivlSetColumnGrow (uitest->vl [i], 0, VL_COL_WIDTH_GROW_SHRINK);
-      uivlSetColumnMinWidth (uitest->vl [i], 0, 15);
-      uivlMakeColumn (uitest->vl [i], "rb", 1, VL_TYPE_RADIO_BUTTON);
-      uivlMakeColumn (uitest->vl [i], "cb", 2, VL_TYPE_CHECK_BUTTON);
-      uivlMakeColumn (uitest->vl [i], "img", 3, VL_TYPE_IMAGE);
-      uivlMakeColumnSpinboxTime (uitest->vl [i], "sb-time", 4, SB_TIME_BASIC, NULL);
-      uivlMakeColumnSpinboxNum (uitest->vl [i], "sb-num", 5, 0.0, 20.0, 1.0, 5.0);
-
-      uivlSetEntryValidation (uitest->vl [i], 0, uitestVLEntryValidateCB, uitest);
-      uitest->chgcb = callbackInit (uitestVLChangeCB, uitest, NULL);
-      uivlSetRadioChangeCallback (uitest->vl [i], 1, uitest->chgcb);
-      uivlSetCheckboxChangeCallback (uitest->vl [i], 2, uitest->chgcb);
-      uivlSetSpinboxTimeChangeCallback (uitest->vl [i], 4, uitest->chgcb);
-      uivlSetSpinboxChangeCallback (uitest->vl [i], 5, uitest->chgcb);
-    } else {
-      for (int j = 0; j < vlcols [i]; ++j) {
-        uivlMakeColumn (uitest->vl [i], "label", j, VL_TYPE_LABEL);
-        if (j == 0) {
-          uivlSetColumnEllipsizeOn (uitest->vl [i], j);
-        }
+    for (int j = 0; j < vlcols [i]; ++j) {
+      uivlMakeColumn (uitest->vl [i], "label", j, VL_TYPE_LABEL);
+      if (i != 1 && j == 0) {
+        uivlSetColumnEllipsizeOn (uitest->vl [i], j);
+      }
+      if (i == 1 && j == 0) {
+        uivlSetColumnGrow (uitest->vl [i], j, VL_COL_WIDTH_GROW_ONLY);
       }
     }
     if (i == 0) {
@@ -1323,25 +1306,18 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
       snprintf (tbuff, sizeof (tbuff), "★");
     } else {
       snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
-      if (rownum % 5 == 0 && j == 0) {
+      if (vlidx != 1 && rownum % 5 == 0 && j == 0) {
+        snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
+      }
+      if (vlidx == 1 && rownum == 35 && j == 0) {
         snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
       }
       if (rownum % 7 == 0 && j == 2) {
         snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
       }
     }
-    if (vlidx == 1) {
-      if (j == 1) {
-        uivlSetRowColumnNum (vl, rownum, j, 90000);
-      }
-      if (j == 1 || j == 2 || j == 5) {
-        uivlSetRowColumnNum (vl, rownum, j, 0);
-      }
-    }
-    if (vlidx != 1 || j == 0) {
-      uivlSetRowColumnValue (vl, rownum, j, tbuff);
-    }
-    if (vlidx != 1 && rownum % 9 == 0 && j == 0) {
+    uivlSetRowColumnValue (vl, rownum, j, tbuff);
+    if (rownum % 9 == 0 && j == 0) {
       uivlSetRowColumnClass (vl, rownum, j, ACCENT_CLASS);
     }
   }
@@ -1354,21 +1330,6 @@ uitestVLSelectCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 
   return;
 }
-
-static int
-uitestVLEntryValidateCB (uiwcont_t *w, const char *label, void *udata)
-{
-//  uitest_t  *uitest = udata;
-
-  return UIENTRY_OK;
-}
-
-static bool
-uitestVLChangeCB (void *udata)
-{
-  return UICB_CONT;
-}
-
 
 static int32_t
 uitestDDStr (void *udata, const char *key)
