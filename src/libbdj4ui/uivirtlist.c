@@ -109,7 +109,7 @@ typedef struct uivlcoldata {
   callback_t    *togglecb;      // radio buttons and check buttons
   callback_t    *spinboxcb;
   callback_t    *spinboxtimecb;
-  callback_t    *colszcb;
+  callback_t    *colgrowonlycb;
   uivlcol_t     *col0;
   const char    *tag;
   char          *baseclass;
@@ -404,7 +404,7 @@ uivlFree (uivirtlist_t *vl)
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     dataFree (vl->coldata [colidx].baseclass);
-    callbackFree (vl->coldata [colidx].colszcb);
+    callbackFree (vl->coldata [colidx].colgrowonlycb);
     uiwcontFree (vl->coldata [colidx].szgrp);
   }
   dataFree (vl->coldata);
@@ -495,7 +495,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->togglecb = NULL;
     coldata->spinboxcb = NULL;
     coldata->spinboxtimecb = NULL;
-    coldata->colszcb = NULL;
+    coldata->colgrowonlycb = NULL;
     coldata->colidx = colidx;
     coldata->colwidth = -1;
     coldata->baseclass = NULL;
@@ -1668,15 +1668,15 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       uiWidgetAlignVertEnd (col->uiwidget);
     }
 
-    if (row->dispidx == 0 && col->uiwidget != NULL) {
+    if (row->dispidx == vl->dispoffset && col->uiwidget != NULL) {
       /* set up the size change callback so that grow-only columns */
       /* can be made to only grow, and never shrink on their own */
       /* only need this on labels and images. */
+      coldata->col0 = col;
       if (coldata->grow == VL_COL_WIDTH_GROW_ONLY &&
           (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
-        coldata->colszcb = callbackInitII (uivlColGrowOnlyChg, coldata);
-        coldata->col0 = col;
-        uiBoxSetSizeChgCallback (col->box, coldata->colszcb);
+        coldata->colgrowonlycb = callbackInitII (uivlColGrowOnlyChg, coldata);
+        uiBoxSetSizeChgCallback (col->box, coldata->colgrowonlycb);
       }
     }
 
@@ -1687,6 +1687,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         uiWidgetAddClass (col->uiwidget, VL_HEAD_CLASS);
       }
     }
+    uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
 //        coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
@@ -1694,7 +1695,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     } else {
       uiBoxPackStart (row->hbox, col->box);
     }
-    uiSizeGroupAdd (coldata->szgrp, col->box);
 
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);

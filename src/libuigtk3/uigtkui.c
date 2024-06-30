@@ -179,7 +179,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
     if (lsz > 0) {
       int   fsz = lsz + 2;
-      int   hsz = lsz + 3;
+      int   hsz = lsz + 1;
 
       if (fsz > sz) {
         fsz = sz;
