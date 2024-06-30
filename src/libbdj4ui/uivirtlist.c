@@ -184,7 +184,6 @@ typedef struct uivirtlist {
   int           dispalloc;
   int           dispoffset;
   int           vboxheight;
-  int           vboxwidth;
   int           rowheight;
   int32_t       numrows;
   int32_t       rowoffset;
@@ -282,7 +281,6 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->darkbg = false;
   vl->uselistingfont = false;
   vl->vboxheight = -1;
-  vl->vboxwidth = -1;
   vl->rowheight = -1;
   vl->lockcount = 0;
   vl->coldata = NULL;
@@ -1657,7 +1655,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         uiWidgetExpandHoriz (col->uiwidget);
       }
       if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-//          coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
         uiBoxPackStartExpand (col->box, col->uiwidget);
       } else {
         uiBoxPackStart (col->box, col->uiwidget);
@@ -1690,7 +1687,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-//        coldata->grow == VL_COL_WIDTH_GROW_ONLY) {
       uiBoxPackStartExpand (row->hbox, col->box);
     } else {
       uiBoxPackStart (row->hbox, col->box);
@@ -2024,22 +2020,6 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   uivirtlist_t  *vl = udata;
   int           calcrows;
   int           theight;
-
-  if (width < vl->vboxwidth) {
-    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-      uivlrow_t   *row;
-      uivlcol_t   *col;
-
-      row = &vl->rows [vl->dispoffset];
-      if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-        vl->coldata [colidx].colwidth = -1;
-        col = &row->cols [colidx];
-        uiWidgetSetSizeRequest (col->box, -1, -1);
-      }
-    }
-  }
-
-  vl->vboxwidth = width;
 
   if (uiWidgetIsMapped (vl->wcont [VL_W_MAIN_VBOX]) &&
       vl->vboxheight == height) {
