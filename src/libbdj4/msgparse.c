@@ -91,11 +91,13 @@ msgparseMusicQueueData (char *data)
 void
 msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate)
 {
-  if (musicqupdate != NULL) {
-    nlistFree (musicqupdate->dispList);
-    musicqupdate->dispList = NULL;
-    mdfree (musicqupdate);
+  if (musicqupdate == NULL) {
+    return;
   }
+
+  nlistFree (musicqupdate->dispList);
+  musicqupdate->dispList = NULL;
+  mdfree (musicqupdate);
 }
 
 mp_songselect_t *

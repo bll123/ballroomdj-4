@@ -39,6 +39,7 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uivirtlist.h"
+#include "uivlutil.h"
 
 enum {
   UIAUDID_SEL_CURR,
@@ -1029,7 +1030,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
           break;
         }
       }
-      uivlSetRowColumnValue (audioidint->uivl, rownum, col, idstr);
+      uivlSetRowColumnStr (audioidint->uivl, rownum, col, idstr);
     } else if (tagidx == TAG_AUDIOID_SCORE) {
       char    tmp [40];
       double  dval;
@@ -1039,7 +1040,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
       if (dval > 0.01) {
         snprintf (tmp, sizeof (tmp), "%.1f", dval);
       }
-      uivlSetRowColumnValue (audioidint->uivl, rownum, col, tmp);
+      uivlSetRowColumnStr (audioidint->uivl, rownum, col, tmp);
     } else if (tagidx == TAG_DURATION) {
       const char  *str;
       char        tmp [40];
@@ -1051,7 +1052,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
         dur = atol (str);
       }
       tmutilToMSD (dur, tmp, sizeof (tmp), 1);
-      uivlSetRowColumnValue (audioidint->uivl, rownum, col, tmp);
+      uivlSetRowColumnStr (audioidint->uivl, rownum, col, tmp);
     } else {
       const char  *str;
 
@@ -1059,7 +1060,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
       if (str == NULL) {
         str = "";
       }
-      uivlSetRowColumnValue (audioidint->uivl, rownum, col, str);
+      uivlSetRowColumnStr (audioidint->uivl, rownum, col, str);
     }
   }
 }

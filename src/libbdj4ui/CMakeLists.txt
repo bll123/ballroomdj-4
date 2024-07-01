@@ -45,6 +45,7 @@ add_library (libbdj4ui SHARED
   uitreedisp.c
   uiutils.c
   uivirtlist.c
+  uivlutil.c
 )
 target_include_directories (libbdj4ui
   PRIVATE ${GTK_INCLUDE_DIRS}

@@ -17,7 +17,6 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
-#include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
 #include "uivirtlist.h"
@@ -86,7 +85,6 @@ static const char * const VL_LIST_CLASS = "bdj-listing";
 static const char * const VL_HEAD_CLASS = "bdj-heading";
 static const char * const VL_DARKBG_CLASS = "bdj-dark-bg";
 static const char * const VL_NORMBG_CLASS = "bdj-norm-bg";
-static const char * const VL_FAV_CLASS = "bdj-list-fav";
 
 typedef struct uivlcol uivlcol_t;
 typedef struct uivlcoldata uivlcoldata_t;
@@ -664,7 +662,7 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-heading]", vl->tag);
   }
 
-  uivlSetRowColumnValue (vl, VL_ROW_HEADING, colidx, heading);
+  uivlSetRowColumnStr (vl, VL_ROW_HEADING, colidx, heading);
 }
 
 void
@@ -723,63 +721,6 @@ uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx,
   vl->coldata [colidx].sbincr = incr;
   vl->coldata [colidx].sbpageincr = pageincr;
   vl->coldata [colidx].tag = tag;
-}
-
-void
-uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
-{
-  slistidx_t  seliteridx;
-  int         tagidx;
-  int         col;
-
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return;
-  }
-
-  col = 0;
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    int         minwidth = 10;
-    const char  *title;
-
-    if (tagdefs [tagidx].shortdisplayname != NULL) {
-      title = tagdefs [tagidx].shortdisplayname;
-    } else {
-      title = tagdefs [tagidx].displayname;
-    }
-
-    if (tagdefs [tagidx].ellipsize) {
-      minwidth = 10;
-    }
-    if (tagidx == TAG_TITLE || tagidx == TAG_NOTES) {
-      minwidth = 20;
-    }
-    if (tagidx == TAG_ARTIST || tagidx == TAG_ALBUMARTIST ||
-        tagidx == TAG_TAGS) {
-      minwidth = 15;
-    }
-    if (tagdefs [tagidx].ellipsize) {
-      uivlSetColumnMinWidth (vl, col, minwidth);
-      uivlSetColumnEllipsizeOn (vl, col);
-    }
-    if (tagidx == TAG_AUDIOID_IDENT) {
-      uivlSetColumnGrow (vl, col, VL_COL_WIDTH_GROW_ONLY);
-    }
-
-    uivlMakeColumn (vl, tagdefs [tagidx].tag, col, VL_TYPE_LABEL);
-    uivlSetColumnHeading (vl, col, title);
-    if (tagidx == TAG_FAVORITE) {
-      uivlSetColumnClass (vl, col, VL_FAV_CLASS);
-    }
-
-    if (tagdefs [tagidx].alignend) {
-      uivlSetColumnAlignEnd (vl, col);
-    }
-
-    ++col;
-  }
-
-  return;
 }
 
 /* column set */
@@ -955,7 +896,7 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
 }
 
 void
-uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
+uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
 {
   uivlrow_t   *row = NULL;
   vltype_t    type;
@@ -988,6 +929,7 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
     type = VL_TYPE_LABEL;
   }
 
+fprintf (stderr, "%s set %d %s\n", vl->tag, colidx, value);
   switch (type) {
     case VL_TYPE_LABEL: {
       uiLabelSetText (row->cols [colidx].uiwidget, value);
@@ -997,8 +939,10 @@ uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
       uiEntrySetValue (row->cols [colidx].uiwidget, value);
       break;
     }
+    case VL_TYPE_IMAGE: {
+      break;
+    }
     case VL_TYPE_CHECK_BUTTON:
-    case VL_TYPE_IMAGE:
     case VL_TYPE_INTERNAL_NUMERIC:
     case VL_TYPE_RADIO_BUTTON:
     case VL_TYPE_SPINBOX_NUM:
@@ -1029,6 +973,7 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
     return;
   }
 
+fprintf (stderr, "%s set img %d %d\n", vl->tag, colidx, width);
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_IMAGE: {
       uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
@@ -1061,6 +1006,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
     return;
   }
 
+fprintf (stderr, "%s set num %d %d\n", vl->tag, colidx, val);
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_ENTRY:
     case VL_TYPE_IMAGE:
@@ -1393,9 +1339,8 @@ uivlPopulate (uivirtlist_t *vl)
   uivlSetDisplaySelections (vl);
 }
 
-#if 0 /* UNUSED */
 void
-uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
+uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1403,11 +1348,9 @@ uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
 
   *rowiter = vl->rowoffset - 1;
 }
-#endif
 
-#if 0 /* UNUSED */
 int32_t
-uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
+uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return LIST_LOC_INVALID;
@@ -1422,11 +1365,9 @@ uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)  /* UNUSED */
   }
   return *rowiter;
 }
-#endif
 
-#if 0 /* UNUSED */
 void
-uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
+uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1434,11 +1375,9 @@ uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
 
   nlistStartIterator (vl->selected, iteridx);
 }
-#endif
 
-#if 0 /* UNUSED */
 int32_t
-uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
+uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
 {
   nlistidx_t    key = -1;
 
@@ -1449,7 +1388,6 @@ uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)  /* UNUSED */
   key = nlistIterateKey (vl->selected, iteridx);
   return key;
 }
-#endif
 
 int32_t
 uivlSelectionCount (uivirtlist_t *vl)

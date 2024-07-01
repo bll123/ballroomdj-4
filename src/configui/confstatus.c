@@ -156,7 +156,7 @@ confuiStatusFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   statusdisp = statusGetStatus (status, rownum);
   playflag = statusGetPlayFlag (status, rownum);
-  uivlSetRowColumnValue (uivl, rownum, CONFUI_STATUS_COL_STATUS, statusdisp);
+  uivlSetRowColumnStr (uivl, rownum, CONFUI_STATUS_COL_STATUS, statusdisp);
   uivlSetRowColumnNum (uivl, rownum, CONFUI_STATUS_COL_PLAY_FLAG, playflag);
   if (rownum == 0 || rownum == count - 1) {
     /* the first entry field, if displayed is read-only */

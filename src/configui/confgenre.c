@@ -150,7 +150,7 @@ confuiGenreFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   genredisp = genreGetGenre (genres, rownum);
   clflag = genreGetClassicalFlag (genres, rownum);
-  uivlSetRowColumnValue (gui->tables [CONFUI_ID_GENRES].uivl, rownum,
+  uivlSetRowColumnStr (gui->tables [CONFUI_ID_GENRES].uivl, rownum,
       CONFUI_GENRE_COL_GENRE, genredisp);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_GENRES].uivl, rownum,
       CONFUI_GENRE_COL_CLASSICAL, clflag);

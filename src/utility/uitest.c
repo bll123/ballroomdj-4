@@ -1316,7 +1316,7 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
         snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
       }
     }
-    uivlSetRowColumnValue (vl, rownum, j, tbuff);
+    uivlSetRowColumnStr (vl, rownum, j, tbuff);
     if (rownum % 9 == 0 && j == 0) {
       uivlSetRowColumnClass (vl, rownum, j, ACCENT_CLASS);
     }

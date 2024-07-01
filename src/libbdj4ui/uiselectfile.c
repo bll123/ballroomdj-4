@@ -311,7 +311,7 @@ selectfileFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 
   selectfile->inchange = true;
   str = slistGetDataByIdx (selectfile->filelist, rownum);
-  uivlSetRowColumnValue (selectfile->uivl, rownum, SELFILE_COL_DISP, str);
+  uivlSetRowColumnStr (selectfile->uivl, rownum, SELFILE_COL_DISP, str);
   selectfile->inchange = false;
 }
 

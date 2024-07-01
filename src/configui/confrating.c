@@ -158,7 +158,7 @@ confuiRatingFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   ratingdisp = ratingGetRating (ratings, rownum);
   weight = ratingGetWeight (ratings, rownum);
-  uivlSetRowColumnValue (uivl, rownum, CONFUI_RATING_COL_RATING, ratingdisp);
+  uivlSetRowColumnStr (uivl, rownum, CONFUI_RATING_COL_RATING, ratingdisp);
   uivlSetRowColumnNum (uivl, rownum, CONFUI_RATING_COL_WEIGHT, weight);
   if (rownum == 0) {
     /* the first entry field, if displayed, is read-only */

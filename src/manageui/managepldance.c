@@ -350,7 +350,7 @@ manageplDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   mpldnc->inchange = true;
 
   dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
-  uivlSetRowColumnValue (mpldnc->uivl, rownum, MPLDNC_COL_DANCE, dancedisp);
+  uivlSetRowColumnStr (mpldnc->uivl, rownum, MPLDNC_COL_DANCE, dancedisp);
   uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_DANCE_KEY, dkey);
 
   val = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);

@@ -377,8 +377,6 @@ songAudioSourceExists (song_t *song)
 
 /* Used by the song editor via uisong to get the display strings. */
 /* Used for tags that have a conversion set and also for strings. */
-/* Favorite returns the span-display string used by gtk */
-/*     <span color="...">X</span> */
 char *
 songDisplayString (song_t *song, int tagidx, int flag)
 {
@@ -393,11 +391,15 @@ songDisplayString (song_t *song, int tagidx, int flag)
   }
 
   if (tagidx == TAG_FAVORITE) {
-    ilistidx_t  favidx;
+    ilistidx_t  favkey;
     const char  *tstr;
 
-    favidx = songGetNum (song, tagidx);
-    tstr = songFavoriteGetSpanStr (gsonginit.songfav, favidx);
+    favkey = songGetNum (song, tagidx);
+    if (favkey < 0) {
+      /* get the not-set display */
+      favkey = 0;
+    }
+    tstr = songFavoriteGetStr (gsonginit.songfav, favkey, SONGFAV_DISPLAY);
     str = mdstrdup (tstr);
     return str;
   }

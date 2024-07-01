@@ -327,7 +327,7 @@ uiddFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 
   dd->inchange = true;
   str = ilistGetStr (dd->ddlist, rownum, DD_LIST_DISP);
-  uivlSetRowColumnValue (dd->uivl, rownum, DD_COL_DISP, str);
+  uivlSetRowColumnStr (dd->uivl, rownum, DD_COL_DISP, str);
   dd->inchange = false;
 }
 

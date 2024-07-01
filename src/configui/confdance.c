@@ -589,7 +589,7 @@ confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
 
   dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
-  uivlSetRowColumnValue (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
+  uivlSetRowColumnStr (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
       CONFUI_DANCE_COL_DANCE, dancedisp);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_DANCE].uivl, rownum,
       CONFUI_DANCE_COL_DANCE_KEY, dkey);

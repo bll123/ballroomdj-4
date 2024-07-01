@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "callback.h"
-#include "slist.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 
@@ -65,7 +64,6 @@ void  uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t ty
 void  uivlMakeColumnEntry (uivirtlist_t *vl, const char *tag, int colidx, int sz, int maxsz);
 void  uivlMakeColumnSpinboxTime (uivirtlist_t *vl, const char *tag, int colidx, int sbtype, callback_t *uicb);
 void  uivlMakeColumnSpinboxNum (uivirtlist_t *vl, const char *tag, int colidx, double min, double max, double incr, double pageincr);
-void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist);
 
 /* row set */
 void uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class);
@@ -85,7 +83,7 @@ void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);
 void  uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int state);
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
 void  uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx, uiwcont_t *img, int width);
-void  uivlSetRowColumnValue (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);
+void  uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);
 void  uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val);
 
 /* column get specific to a row */
@@ -106,10 +104,10 @@ void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
 void  uivlPopulate (uivirtlist_t *vl);
-//void uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter);
-//int32_t uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter);
-//void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
-//int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
+void uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter);
+int32_t uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter);
+void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
+int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);

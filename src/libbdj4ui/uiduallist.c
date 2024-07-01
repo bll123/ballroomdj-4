@@ -511,7 +511,7 @@ uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, in
   }
 
   keystr = queueGetByIdx (duallist->dispq [which], rownum);
-  uivlSetRowColumnValue (duallist->uivl [which], rownum,
+  uivlSetRowColumnStr (duallist->uivl [which], rownum,
       DL_COL_DISP, keystr);
 }
 

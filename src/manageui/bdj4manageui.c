@@ -250,6 +250,7 @@ typedef struct {
   int               dbchangecount;
   int               editmode;
   int               lastinsertlocation;
+  mp_musicqupdate_t *musicqupdate [MUSICQ_MAX];
   /* sequence */
   manageseq_t       *manageseq;
   /* playlist management */
@@ -279,24 +280,24 @@ typedef struct {
   /* remove song */
   nlist_t           *removelist;
   /* various flags */
-  bool              slbackupcreated : 1;
-  bool              selusesonglist : 1;
-  bool              inload : 1;
   bool              bpmcounterstarted : 1;
-  bool              pluiActive : 1;
-  bool              selbypass : 1;
   bool              cfplactive : 1;
   bool              cfplpostprocess : 1;
-  bool              musicqupdated : 1;
-  bool              importitunesactive : 1;
-  bool              exportactive : 1;
-  bool              importactive : 1;
-  bool              exportbdj4active : 1;
-  bool              importbdj4active : 1;
   bool              enablerestoreorig : 1;
+  bool              exportactive : 1;
+  bool              exportbdj4active : 1;
+  bool              importactive : 1;
+  bool              importbdj4active : 1;
+  bool              importitunesactive : 1;
   bool              ineditall : 1;
-  bool              optionsalloc : 1;
+  bool              inload : 1;
   bool              musicqueueprocessflag : 1;
+  bool              musicqupdated : 1;
+  bool              optionsalloc : 1;
+  bool              pluiActive : 1;
+  bool              selbypass : 1;
+  bool              selusesonglist : 1;
+  bool              slbackupcreated : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -503,22 +504,22 @@ main (int argc, char *argv[])
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
   manage.manageaudioid = NULL;
-  manage.bpmcounterstarted = false;
   manage.currtimesig = DANCE_TIMESIG_44;
   manage.cfpl = NULL;
-  manage.pluiActive = false;
   manage.lastinsertlocation = QUEUE_LOC_LAST;
+  manage.bpmcounterstarted = false;
   manage.cfplactive = false;
   manage.cfplpostprocess = false;
-  manage.musicqupdated = false;
-  manage.importitunesactive = false;
-  manage.exportactive = false;
-  manage.importactive = false;
-  manage.exportbdj4active = false;
-  manage.importbdj4active = false;
   manage.enablerestoreorig = false;
+  manage.exportactive = false;
+  manage.exportbdj4active = false;
+  manage.importactive = false;
+  manage.importbdj4active = false;
+  manage.importitunesactive = false;
   manage.ineditall = false;
   manage.musicqueueprocessflag = false;
+  manage.musicqupdated = false;
+  manage.pluiActive = false;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uict = NULL;
@@ -526,6 +527,9 @@ main (int argc, char *argv[])
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
+  }
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    manage.musicqupdate [i] = NULL;
   }
   manage.removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
 
@@ -684,6 +688,9 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   manageDbClose (manage->managedb);
 
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    msgparseMusicQueueDataFree (manage->musicqupdate [i]);
+  }
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     if (i == MANAGE_W_SL_MUSICQ_TAB ||
         i == MANAGE_W_SONGSEL_TAB) {
@@ -1474,6 +1481,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (targs);
+          msgparseMusicQueueDataFree (manage->musicqupdate [musicqupdate->mqidx]);
+          manage->musicqupdate [musicqupdate->mqidx] = musicqupdate;
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
             uimusicqProcessMusicQueueData (manage->slsbsmusicq, musicqupdate);
@@ -1486,7 +1495,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
             uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
           }
-          msgparseMusicQueueDataFree (musicqupdate);
+//          msgparseMusicQueueDataFree (musicqupdate);
           if (uimusicqGetCount (manage->slmusicq) > 0) {
             manage->musicqupdated = true;
           }

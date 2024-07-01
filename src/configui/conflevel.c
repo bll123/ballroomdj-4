@@ -166,7 +166,7 @@ confuiLevelFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   leveldisp = levelGetLevel (levels, rownum);
   weight = levelGetWeight (levels, rownum);
   defflag = levelGetDefault (levels, rownum);
-  uivlSetRowColumnValue (gui->tables [CONFUI_ID_LEVELS].uivl, rownum,
+  uivlSetRowColumnStr (gui->tables [CONFUI_ID_LEVELS].uivl, rownum,
       CONFUI_LEVEL_COL_LEVEL, leveldisp);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_LEVELS].uivl, rownum,
       CONFUI_LEVEL_COL_WEIGHT, weight);
