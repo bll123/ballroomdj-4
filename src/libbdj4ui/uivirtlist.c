@@ -194,7 +194,7 @@ typedef struct uivirtlist {
   int           vboxheight;
   int           headingheight;
   int           rowheight;
-  int           lastselidx;
+  int           lastselidx;       // used to know when to clear the focus
   int32_t       numrows;
   int32_t       rowoffset;
   int32_t       lastSelection;    // used for shift-click
@@ -207,8 +207,10 @@ typedef struct uivirtlist {
   void          *filludata;
   uivlselcb_t   selcb;
   void          *seludata;
-  uivlselcb_t   dclickcb;
-  void          *dclickudata;
+  uivlselcb_t   dblclickcb;
+  void          *dblclickudata;
+  uivlselcb_t   rightclickcb;
+  void          *rightclickudata;
   /* flags */
   bool          allowdblclick : 1;
   bool          allowmultiple : 1;
@@ -244,6 +246,7 @@ int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
 int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
 static void uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlRightClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, const char *func);
@@ -254,6 +257,8 @@ static void uivlConfigureScrollbar (uivirtlist_t *vl);
 static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
 static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
 
+/* listings with focusable widgets should pass in the parent window */
+/* parameter.  otherwise, it can be null */
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     int dispsize, int minwidth, int vlflags)
@@ -268,8 +273,10 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->filludata = NULL;
   vl->selcb = NULL;
   vl->seludata = NULL;
-  vl->dclickcb = NULL;
-  vl->dclickudata = NULL;
+  vl->dblclickcb = NULL;
+  vl->dblclickudata = NULL;
+  vl->rightclickcb = NULL;
+  vl->rightclickudata = NULL;
   vl->inscroll = false;
   vl->dispheading = true;
 
@@ -1180,8 +1187,19 @@ uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
     return;
   }
 
-  vl->dclickcb = cb;
-  vl->dclickudata = udata;
+  vl->dblclickcb = cb;
+  vl->dblclickudata = udata;
+}
+
+void
+uivlSetRightClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return;
+  }
+
+  vl->rightclickcb = cb;
+  vl->rightclickudata = udata;
 }
 
 void
@@ -1911,8 +1929,6 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-// ### need to handle right-click
-
   /* all other buttons (1-3) cause a selection */
 
   if (dispidx >= 0) {
@@ -1933,6 +1949,10 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
   if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     uivlDoubleClickHandler (vl, rownum, colidx);
   }
+  if (button == UIEVENT_BUTTON_3) {
+    uivlRightClickHandler (vl, rownum, colidx);
+  }
+
 
   return UICB_CONT;
 }
@@ -2275,8 +2295,16 @@ uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 static void
 uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 {
-  if (vl->dclickcb != NULL) {
-    vl->dclickcb (vl->dclickudata, vl, rownum, colidx);
+  if (vl->dblclickcb != NULL) {
+    vl->dblclickcb (vl->dblclickudata, vl, rownum, colidx);
+  }
+}
+
+static void
+uivlRightClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
+{
+  if (vl->rightclickcb != NULL) {
+    vl->rightclickcb (vl->rightclickudata, vl, rownum, colidx);
   }
 }
 

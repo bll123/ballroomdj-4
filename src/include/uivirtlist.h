@@ -95,6 +95,7 @@ int32_t uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx);
 /* callbacks */
 void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
+void  uivlSetRightClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);
 void  uivlSetEntryValidation (uivirtlist_t *vl, int colidx, uientryval_t cb, void *udata);
 void  uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);

@@ -5,10 +5,18 @@
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.
 #   The names must be unique.
-#   The display string should be a single character that can take a color.
+#   The display string should be a single glyph that can take a color.
 #   USERSEL is true if the symbol is selectable by the user.
 #     all of the false USERSEL entries should be placed after the
 #     true USERSEL entries.
+#
+# Other possibilities if people want more variety.
+#   flag ⚑
+#   checkmark ✔
+#   xmark ✘
+#   circle ●
+#   diamond ◆
+#   four-point star 🟆
 #
 version
 ..1

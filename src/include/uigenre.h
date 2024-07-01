@@ -16,7 +16,6 @@ void uigenreFree (uigenre_t *uigenre);
 ilistidx_t uigenreGetKey (uigenre_t *uigenre);
 void uigenreSetKey (uigenre_t *uigenre, ilistidx_t gkey);
 void uigenreSetState (uigenre_t *uigenre, int state);
-void uigenreSizeGroupAdd (uigenre_t *uigenre, uiwcont_t *sg);
 void uigenreSetCallback (uigenre_t *uigenre, callback_t *cb);
 
 #endif /* INC_UIGENRE_H */

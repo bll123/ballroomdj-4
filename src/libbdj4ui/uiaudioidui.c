@@ -128,7 +128,7 @@ static bool uiaudioidFirstSelection (void *udata);
 static bool uiaudioidPreviousSelection (void *udata);
 static bool uiaudioidNextSelection (void *udata);
 static bool uiaudioidKeyEvent (void *udata);
-static bool uiaudioidRowSelect (void *udata);
+static void uiaudioidRowSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx);
 static void uiaudioidDisplayDuration (uiaudioid_t *uiaudioid, song_t *song, nlist_t *tdlist);
 static void uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum);
@@ -382,11 +382,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (vbox);
 
   uivlDisplay (audioidint->uivl);
-
-//  audioidint->callbacks [UIAUDID_CB_ROW_SELECT] = callbackInit (
-//        uiaudioidRowSelect, uiaudioid, NULL);
-//  uiTreeViewSetSelectChangedCallback (audioidint->wcont [UIAUDID_W_TREE],
-//        audioidint->callbacks [UIAUDID_CB_ROW_SELECT]);
+  uivlSetSelectionCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
 
   /* current/selected box */
 
@@ -555,8 +551,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   if (audioidint->selectedrow > 0 &&
       audioidint->selectedrow < audioidint->rowcount) {
     /* reset the selection in case this is a save/reload */
-//    uiTreeViewSelectSet (audioidint->wcont [UIAUDID_W_TREE],
-//        audioidint->selectedrow);
+    uivlSetSelection (audioidint->uivl, audioidint->selectedrow);
   }
 
   logProcEnd ("");
@@ -893,26 +888,22 @@ uiaudioidKeyEvent (void *udata)
   return UICB_CONT;
 }
 
-static bool
-uiaudioidRowSelect (void *udata)
+static void
+uiaudioidRowSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   uiaudioid_t     * uiaudioid = udata;
   aid_internal_t  * audioidint;
-  int             idx;
 
   audioidint = uiaudioid->audioidInternalData;
 
   if (audioidint->inchange) {
-    return UICB_CONT;
+    return;
   }
 
-//  uiTreeViewSelectCurrent (audioidint->wcont [UIAUDID_W_TREE]);
-//  idx = uiTreeViewGetValue (audioidint->wcont [UIAUDID_W_TREE],
-//      UIAUDID_COL_IDX);
-  audioidint->selectedrow = idx;
-  uiaudioidPopulateSelected (uiaudioid, idx);
+  audioidint->selectedrow = rownum;
+  uiaudioidPopulateSelected (uiaudioid, rownum);
 
-  return UICB_CONT;
+  return;
 }
 
 static void
