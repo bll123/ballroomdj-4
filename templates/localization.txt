@@ -146,6 +146,18 @@ QDANCE
 KEY
 ..12
 LONG
+..pt_PT
+SHORT
+..pt
+DISPLAY
+..Português
+STDROUNDS
+..standardrounds
+QDANCE
+..QueueDance
+KEY
+..13
+LONG
 ..ru_RU
 SHORT
 ..ru
@@ -156,7 +168,7 @@ STDROUNDS
 QDANCE
 ..Танец в очередь
 KEY
-..13
+..14
 LONG
 ..sv_SE
 SHORT
@@ -168,7 +180,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..14
+..15
 LONG
 ..zh_CN
 SHORT

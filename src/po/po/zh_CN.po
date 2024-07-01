@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29\n"
+"PO-Revision-Date: 2024-07-01 19:46\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -370,6 +370,10 @@ msgstr "仅限 BDJ 标签 "
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3 数据库版本太旧。"
 
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
+msgstr "BDJ4 内部"
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -447,6 +451,7 @@ msgstr "随着节拍在蓝色方框内点击鼠标。"
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -650,6 +655,13 @@ msgstr "显示屏设置"
 msgid "Don't Write"
 msgstr "不写入"
 
+#. CONTEXT: configuration: genres: information on how to edit a genre entry
+#. CONTEXT: configuration: dance levels: information on how to edit a level entry
+#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
+#. CONTEXT: configuration: status: information on how to edit a status entry
+msgid "Double click on a field to edit."
+msgstr "双击要编辑的字段。"
+
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "下载最新版本"
@@ -697,7 +709,7 @@ msgstr "编辑舞蹈"
 msgid "Edit Genres"
 msgstr "编辑流派"
 
-#. CONTEXT: configuration: edit the dance levels table
+#. CONTEXT: configuration: edit dance levels table
 msgid "Edit Levels"
 msgstr "编辑级别"
 
@@ -1066,13 +1078,13 @@ msgid "Marquee Theme"
 msgstr "帐篷主题"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "最长播放时间"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "最长播放时间"
 
@@ -1552,9 +1564,7 @@ msgid "Repeat"
 msgstr "重复"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "替换整个 BallroomDJ 数据库。对数据库的所有更改都将丢失。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1600,6 +1610,7 @@ msgstr "桑巴"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "节省"
@@ -1925,9 +1936,7 @@ msgid "The conversion process will not be run."
 msgstr "转换过程将不会运行。"
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "转换过程只会在新安装和重新安装时运行。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2033,13 +2042,11 @@ msgstr "已更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "从 %s 数据库更新 BallroomDJ 数据库中的信息。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "根据音频文件标签更新 BallroomDJ 数据库中的信息。"
 
 #. CONTEXT: alternate installation: status message
@@ -2118,9 +2125,7 @@ msgid "Write Tags to Audio Files"
 msgstr "将标签写入音频文件"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "使用 BallroomDJ 数据库中的信息写入音频文件标签。"
 
 #. CONTEXT: configuration: dialog: XML file types

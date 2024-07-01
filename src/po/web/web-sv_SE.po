@@ -1,5 +1,5 @@
-# == English (GB)
-# -- english/gb
+# == Svenska‬
+# -- swedish
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"

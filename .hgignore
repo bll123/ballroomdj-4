@@ -39,6 +39,8 @@ syntax: regexp
 ^locale/nl_BE/
 ^locale/pl
 ^locale/pl_PL/
+^locale/pt
+^locale/pt_PT/
 ^locale/sv
 ^locale/sv_SE/
 ^locale/ru

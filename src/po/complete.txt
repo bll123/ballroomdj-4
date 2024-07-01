@@ -16,6 +16,7 @@ ja_JP japanese 日本語
 ko_KR korean 한국어‬
 nl_BE dutch Nederlands
 pl_PL polish Polski
+pt_PT portuguese Português
 ru_RU russian Русский‬
 sv_SE swedish Svenska‬
 zh_CN chinese/cn 简体中文‬

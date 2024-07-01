@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29\n"
+"PO-Revision-Date: 2024-06-29 14:16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -370,6 +370,10 @@ msgstr "Sólo etiquetas BDJ"
 msgid "BDJ3 database version is too old."
 msgstr "La versión de la base de datos BDJ3 es demasiado antigua."
 
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
+msgstr "BDJ4 Interno"
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -447,6 +451,7 @@ msgstr "Haz clic con el ratón en el recuadro azul siguiendo el ritmo."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -650,6 +655,13 @@ msgstr "Ajustes de pantalla"
 msgid "Don't Write"
 msgstr "No escriba"
 
+#. CONTEXT: configuration: genres: information on how to edit a genre entry
+#. CONTEXT: configuration: dance levels: information on how to edit a level entry
+#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
+#. CONTEXT: configuration: status: information on how to edit a status entry
+msgid "Double click on a field to edit."
+msgstr "Haga doble clic en un campo para editarlo."
+
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "Descargar la versión más reciente"
@@ -697,7 +709,7 @@ msgstr "Editar bailes"
 msgid "Edit Genres"
 msgstr "Editar géneros"
 
-#. CONTEXT: configuration: edit the dance levels table
+#. CONTEXT: configuration: edit dance levels table
 msgid "Edit Levels"
 msgstr "Editar niveles"
 
@@ -1066,14 +1078,14 @@ msgid "Marquee Theme"
 msgstr "Tema Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Tiempo\n"
 "máximo"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Tiempo máximo"
 
@@ -1553,9 +1565,7 @@ msgid "Repeat"
 msgstr "Repita"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Sustituye la base de datos BallroomDJ en su totalidad. Se perderán todos los cambios realizados en la base de datos."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1601,6 +1611,7 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Guardar"
@@ -1926,9 +1937,7 @@ msgid "The conversion process will not be run."
 msgstr "El proceso de conversión no se ejecutará."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "El proceso de conversión sólo se ejecutará para las nuevas instalaciones y para las reinstalaciones."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2034,13 +2043,11 @@ msgstr "Actualizado"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Actualiza la información de la base de datos BallroomDJ a partir de la base de datos %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Actualiza la información de la base de datos BallroomDJ a partir de las etiquetas de los archivos de audio."
 
 #. CONTEXT: alternate installation: status message
@@ -2119,9 +2126,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Escribir etiquetas en archivos de audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Escribe las etiquetas del archivo de audio utilizando la información de la base de datos BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

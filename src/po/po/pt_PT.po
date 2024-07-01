@@ -1,109 +1,109 @@
-# == 한국어‬
-# -- korean
+# == Português
+# -- portuguese/pt
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:33\n"
+"PO-Revision-Date: 2024-06-29 14:50\n"
 "Last-Translator: Automatically generated\n"
-"Language-Team: Korean\n"
-"Language: ko\n"
+"Language-Team: Portuguese\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: ballroomdj-4\n"
 "X-Crowdin-Project-ID: 518374\n"
-"X-Crowdin-Language: ko\n"
+"X-Crowdin-Language: pt-PT\n"
 "X-Crowdin-File: en_GB.po\n"
 "X-Crowdin-File-ID: 126\n"
 
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
 msgid "%1$s must be greater than %2$s"
-msgstr "%1$s 보다 커야 합니다 %2$s"
+msgstr "%1$s deve ser superior a %2$s"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr "%s API 호스트"
+msgstr "%s Anfitrião da API"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr "%s API 키"
+msgstr "%s Chave API"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr "%s API 비밀 키"
+msgstr "%s Chave secreta da API"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr "%s 구성"
+msgstr "%s Configuração"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr "%s 다운로드"
+msgstr "%s Descarregar"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
-msgstr "%s 포럼"
+msgstr "%s Fóruns"
 
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr "%s 도우미"
+msgstr "%s Ajudante"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s 설치 관리자"
+msgstr "%s Instalador"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
-msgstr "%s 위치"
+msgstr "%s Localização"
 
 #. CONTEXT: managementui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr "%s 관리"
+msgstr "%s Gestão"
 
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr "%s 미디어 폴더"
+msgstr "%s Pasta multimédia"
 
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
-msgstr "%s 플레이어"
+msgstr "%s Jogador"
 
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr "%s 플레이어가 활성 상태입니다."
+msgstr "%s O jogador está ativo"
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr "%s 재생 목록"
+msgstr "%s Lista de reprodução"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
-msgstr "%s 지원 티켓"
+msgstr "%s Bilhetes de apoio"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr "%s 버전"
+msgstr "%s Versão"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
@@ -113,48 +113,48 @@ msgstr "%s Wiki"
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr "%s XML 파일"
+msgstr "%s Ficheiro XML"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr "%s 데이터가 변환됩니다."
+msgstr "%s os dados serão convertidos."
 
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%s files found"
-msgstr "%s 파일 발견"
+msgstr "%s ficheiros encontrados"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
-msgstr "%s 설치되었습니다."
+msgstr "%s instalado."
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr "%s 가 설치되어 있습니다."
+msgstr "%s está instalado"
 
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s 가 구성되지 않았습니다."
+msgstr "%s não está configurado."
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
-msgstr "%s 가 설치되지 않았습니다."
+msgstr "%s não está instalado"
 
 #. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
 #. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
 #, c-format
 msgid "%s may not exceed the song duration"
-msgstr "%s 노래 길이를 초과할 수 없습니다."
+msgstr "%s não pode exceder a duração da canção"
 
 #. CONTEXT: validation: characters not allowed
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr "%s: *'\":|<>^ 문자는 허용되지 않습니다."
+msgstr "%s: Não são permitidos caracteres *'\":|<>^."
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
@@ -162,28 +162,28 @@ msgstr "%s: *'\":|<>^ 문자는 허용되지 않습니다."
 #. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
 msgid "%s: Invalid time (%s)."
-msgstr "%s: 유효하지 않은 시간 (%s)."
+msgstr "%sHora inválida (%s)."
 
 #. CONTEXT: validation: must be numeric
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s: Must be numeric."
-msgstr "%s: 숫자여야 합니다."
+msgstr "%sDeve ser numérico."
 
 #. CONTEXT: validation: a value must be set
 #, c-format
 msgid "%s: Must be set."
-msgstr "%s: 설정해야 합니다."
+msgstr "%sDeve ser definido."
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
 msgid "%s: Slashes are not allowed."
-msgstr "%s슬래시는 허용되지 않습니다."
+msgstr "%s: Não são permitidas barras oblíquas."
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
-msgstr "%s: 공백은 허용되지 않습니다."
+msgstr "%sNão são permitidos espaços."
 
 #. CONTEXT: playerui: button: reset speed to 100%
 msgid "100%"
@@ -204,15 +204,15 @@ msgstr "4/4"
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
-msgstr "강조 색상"
+msgstr "Cor de destaque"
 
 #. CONTEXT: update database: select database update action
 msgid "Action"
-msgstr "액션"
+msgstr "Ação"
 
 #. CONTEXT: the 'Mix' action failed
 msgid "Action failed"
-msgstr "작업 실패"
+msgstr "Ação falhada"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
 #. CONTEXT: managementui: menu selection: actions for music manager
@@ -220,159 +220,159 @@ msgstr "작업 실패"
 #. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
-msgstr "작업"
+msgstr "Acções"
 
 #. CONTEXT: configuration: queue: whether the queue is active
 msgid "Active"
-msgstr "활성"
+msgstr "Ativo"
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
-msgstr "신규 추가"
+msgstr "Adicionar novo"
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
-msgstr "속도, 노래 시작 및 노래 종료 조정"
+msgstr "Ajustar a velocidade, o início e o fim da canção"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
-msgstr "고급"
+msgstr "Avançado"
 
 #. CONTEXT: label: album
 msgid "Album"
-msgstr "앨범"
+msgstr "Álbum"
 
 #. CONTEXT: label: album artist
 msgid "Album Artist"
-msgstr "앨범 아티스트"
+msgstr "Artista do álbum"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr "앨범 아티스트 정렬 순서"
+msgstr "Álbum Artista Ordem de classificação"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr "앨범 정렬 순서"
+msgstr "Ordem de classificação dos álbuns"
 
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
-msgstr "모든 댄스"
+msgstr "Todas as danças"
 
 #. CONTEXT: genre: a filter: all genres are displayed in the song selection
 msgid "All Genres"
-msgstr "모든 장르"
+msgstr "Todos os géneros"
 
 #. CONTEXT: level: a filter: all dance levels will be listed
 #. CONTEXT: level: a filter: all dance levels are displayed in the song selection
 msgid "All Levels"
-msgstr "모든 레벨"
+msgstr "Todos os níveis"
 
 #. CONTEXT: rating: a filter: all dance ratings will be listed
 #. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
 msgid "All Ratings"
-msgstr "모든 평가"
+msgstr "Todas as classificações"
 
 #. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
-msgstr "모든 태그"
+msgstr "Todas as etiquetas"
 
 #. CONTEXT: playlist management: allowed keywords
 msgid "Allowed Keywords"
-msgstr "허용된 키워드"
+msgstr "Palavras-chave permitidas"
 
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 msgid "Already Exists"
-msgstr "이미 존재"
+msgstr "Já existe"
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
-msgstr "공지 사항"
+msgstr "Anúncio"
 
 #. CONTEXT: status: a filter: all dance status will be listed
 #. CONTEXT: status: a filter: all dance status are displayed in the song selection
 msgid "Any Status"
-msgstr "모든 상태"
+msgstr "Qualquer estatuto"
 
 #. CONTEXT: song selection filter: filter dialog: applies the selections
 msgid "Apply"
-msgstr "신청하기"
+msgstr "Aplicar"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
 #. CONTEXT: managementui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
-msgstr "조정 적용"
+msgstr "Aplicar ajustes"
 
 #. CONTEXT: managementui: song editor menu: apply edit all
 msgid "Apply Edit All"
-msgstr "모두 편집 적용"
+msgstr "Aplicar Editar tudo"
 
 #. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
-msgstr "아르헨티나 탱고"
+msgstr "Tango argentino"
 
 #. CONTEXT: label: artist
 msgid "Artist"
-msgstr "아티스트"
+msgstr "Artista"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr "아티스트 정렬 순서"
+msgstr "Artista Ordem de classificação"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
-msgstr "데이터 파일 첨부"
+msgstr "Anexar ficheiros de dados"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send database
 msgid "Attach Database"
-msgstr "데이터베이스 첨부"
+msgstr "Anexar base de dados"
 
 #. CONTEXT: configuration: which audio interface to use
 msgid "Audio"
-msgstr "오디오"
+msgstr "Áudio"
 
 #. CONTEXT: external request: enter the audio file location
 msgid "Audio File"
-msgstr "오디오 파일"
+msgstr "Ficheiro áudio"
 
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
-msgstr "오디오 파일"
+msgstr "Ficheiros áudio"
 
 #. CONTEXT: configuration: display settings for: Audio Identification
 #. CONTEXT: managementui: name of audio identification notebook tab
 msgid "Audio ID"
-msgstr "오디오 ID"
+msgstr "ID áudio"
 
 #. CONTEXT: configuration: display settings for: Audio ID match listing
 msgid "Audio ID Match List"
-msgstr "오디오 ID 일치 목록"
+msgstr "Lista de correspondência de ID de áudio"
 
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
-msgstr "오디오 출력"
+msgstr "Saída de áudio"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
-msgstr "자동 구성"
+msgstr "Organização automática"
 
 #. CONTEXT: playlist management: default playlist type
 #. CONTEXT: playlist management: type of playlist
 msgid "Automatic"
-msgstr "자동"
+msgstr "Automático"
 
 #. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
 msgid "BDJ Tags Only"
-msgstr "BDJ 태그만 해당"
+msgstr "Apenas etiquetas BDJ"
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
-msgstr "BDJ3 데이터베이스 버전이 너무 오래되었습니다."
+msgstr "A versão da base de dados BDJ3 é demasiado antiga."
 
 #. CONTEXT: Name of the BDJ4 internal audio tagging interface
 msgid "BDJ4 Internal"
-msgstr "BDJ4 내부"
+msgstr "BDJ4 Interno"
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
@@ -382,64 +382,64 @@ msgstr "BPM"
 
 #. CONTEXT: bpm counter: title of window
 msgid "BPM Counter"
-msgstr "BPM 카운터"
+msgstr "Contador de BPM"
 
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
-msgstr "볼룸 댄스"
+msgstr "Dança de salão"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
-msgstr "볼룸 음악 플레이어"
+msgstr "Leitor de música de salão"
 
 #. CONTEXT: bpm counter: number of beats
 msgid "Beats"
-msgstr "Beats"
+msgstr "Batimentos"
 
 #. CONTEXT: managementui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
-msgstr "모두 편집 취소"
+msgstr "Cancelar Editar tudo"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr "이름을 바꿀 수 없습니다."
+msgstr "Não é possível mudar o nome"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
-msgstr "차차"
+msgstr "Chá Chá Chá"
 
 #. CONTEXT: database update: check for new audio files
 msgid "Check For New"
-msgstr "새 소식 확인"
+msgstr "Verificar se há novidades"
 
 #. CONTEXT: database update: check for new: help text
 msgid "Checks for new audio files."
-msgstr "새 오디오 파일을 확인합니다."
+msgstr "Verifica a existência de novos ficheiros de áudio."
 
 #. CONTEXT: configuration file: genre
 msgid "Classical"
-msgstr "클래식"
+msgstr "Clássico"
 
 #. CONTEXT: configuration: genre: title of the classical setting column
 msgid "Classical?"
-msgstr "클래식?"
+msgstr "Clássico?"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Clear & Play"
-msgstr "클리어 & 플레이"
+msgstr "Limpar e jogar"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
-msgstr "대기열 지우기"
+msgstr "Limpar fila de espera"
 
 #. CONTEXT: managementui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
-msgstr "동일한 노래 마크 지우기"
+msgstr "Limpar a marca da mesma canção"
 
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
-msgstr "박자에 맞춰 파란색 상자에서 마우스를 클릭합니다."
+msgstr "Clique com o rato na caixa azul ao mesmo tempo que a batida."
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
@@ -460,233 +460,233 @@ msgstr "박자에 맞춰 파란색 상자에서 마우스를 클릭합니다."
 #. CONTEXT: starterui: support dialog: closes the dialog
 #. CONTEXT: starterui: support message dialog: closes the dialog
 msgid "Close"
-msgstr "닫기"
+msgstr "Fechar"
 
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
-msgstr "컴팩트"
+msgstr "Compacto"
 
 #. CONTEXT: database update: compact: help text
 msgid "Compact the database.  Use after audio files have been deleted."
-msgstr "데이터베이스를 압축합니다.  오디오 파일을 삭제한 후에 사용하세요."
+msgstr "Compacta a base de dados.  Utilizar depois de os ficheiros de áudio terem sido eliminados."
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: copy audio tags: copy of audio tags completed
 #. CONTEXT: database update: status message
 msgid "Complete"
-msgstr "완료"
+msgstr "Completo"
 
 #. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
 msgid "Completion Message"
-msgstr "완료 메시지"
+msgstr "Mensagem de conclusão"
 
 #. CONTEXT: label: composer
 msgid "Composer"
-msgstr "작곡가"
+msgstr "Compositor"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr "작곡가 정렬 순서"
+msgstr "Compositor Ordem de classificação"
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
-msgstr "지휘자"
+msgstr "Condutor"
 
 #. CONTEXT: starterui: button: starts the configuration user interface
 msgid "Configure"
-msgstr "구성"
+msgstr "Configurar"
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
-msgstr "전환 완료."
+msgstr "Conversão concluída."
 
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
-msgstr "변환 %s"
+msgstr "Converter %s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
 #. CONTEXT: managementui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
-msgstr "오디오 태그 복사"
+msgstr "Etiquetas Copy Audio"
 
 #. CONTEXT: manageui: failure status message
 #, c-format
 msgid "Copy already exists."
-msgstr "복사본이 이미 존재합니다."
+msgstr "A cópia já existe."
 
 #. CONTEXT: installer: status message
 msgid "Copy finished."
-msgstr "복사가 완료되었습니다."
+msgstr "Cópia concluída."
 
 #. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
 msgid "Copy of %s"
-msgstr "%s복사본"
+msgstr "Cópia de %s"
 
 #. CONTEXT: installer: status message
 msgid "Copying files."
-msgstr "파일 복사하기."
+msgstr "Copiar ficheiros."
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Copying template files."
-msgstr "템플릿 파일 복사하기."
+msgstr "Cópia de ficheiros de modelos."
 
 #. CONTEXT: playlist management: count column header
 msgid "Count"
-msgstr "Count"
+msgstr "Contagem"
 
 #. CONTEXT: create from playlist: creates the new songlist
 msgid "Create"
-msgstr "만들기"
+msgstr "Criar"
 
 #. CONTEXT: managementui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
-msgstr "복사본 만들기"
+msgstr "Criar cópia"
 
 #. CONTEXT: starterui: selection to create a new profile
 msgid "Create Profile"
-msgstr "프로필 만들기"
+msgstr "Criar perfil"
 
 #. CONTEXT: starterui: menu item: create shortcut for profile
 msgid "Create Shortcut for Profile"
-msgstr "프로필 바로 가기 만들기"
+msgstr "Criar atalho para o perfil"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
-msgstr "재생목록에서 만들기"
+msgstr "Criar a partir da lista de reprodução"
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating folder structure."
-msgstr "폴더 구조 만들기."
+msgstr "Criar uma estrutura de pastas."
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
-msgstr "바로 가기 만들기."
+msgstr "Criar atalho."
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
-msgstr "현재"
+msgstr "Atual"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
-msgstr "현재 노래"
+msgstr "Canção atual"
 
 #. CONTEXT: label: dance
 msgid "Dance"
-msgstr "댄스"
+msgstr "Dança"
 
 #. CONTEXT: label: dance level
 msgid "Dance Level"
-msgstr "댄스 레벨"
+msgstr "Nível de dança"
 
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
-msgstr "댄스 등급"
+msgstr "Classificação da dança"
 
 #. CONTEXT: playlist management: notebook tab title: dances
 msgid "Dances"
-msgstr "댄스"
+msgstr "Danças"
 
 #. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
 msgid "Database Loads Dance From Genre"
-msgstr "데이터베이스가 장르에서 댄스를 로드합니다."
+msgstr "A base de dados carrega a dança a partir do género"
 
 #. CONTEXT: label: date
 msgid "Date"
-msgstr "날짜"
+msgstr "Data"
 
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
-msgstr "추가된 날짜"
+msgstr "Data de adição"
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
-msgstr "Debug"
+msgstr "Depurar"
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
 #. CONTEXT: user interface: default setting display
 msgid "Default"
-msgstr "기본값"
+msgstr "Predefinição"
 
 #. CONTEXT: configuration: the volume used when starting the player
 msgid "Default Volume"
-msgstr "기본 볼륨"
+msgstr "Volume predefinido"
 
 #. CONTEXT: configuration: table edit: button: delete selection
 #. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
-msgstr "삭제"
+msgstr "Eliminar"
 
 #. CONTEXT: starterui: menu item: delete profile
 msgid "Delete Profile"
-msgstr "프로필 삭제"
+msgstr "Eliminar perfil"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
-msgstr "대화 상자"
+msgstr "Diálogos"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
-msgstr "디스크"
+msgstr "Disco"
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
 #. CONTEXT: configuration: queue: whether to display the queue
 msgid "Display"
-msgstr "디스플레이"
+msgstr "Ecrã"
 
 #. CONTEXT: configuration: change which fields are displayed in different contexts
 msgid "Display Settings"
-msgstr "디스플레이 설정"
+msgstr "Definições do ecrã"
 
 #. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
 msgid "Don't Write"
-msgstr "쓰지 않기"
+msgstr "Não escrever"
 
 #. CONTEXT: configuration: genres: information on how to edit a genre entry
 #. CONTEXT: configuration: dance levels: information on how to edit a level entry
 #. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
 #. CONTEXT: configuration: status: information on how to edit a status entry
 msgid "Double click on a field to edit."
-msgstr "편집할 필드를 두 번 클릭합니다."
+msgstr "Faça duplo clique num campo para o editar."
 
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
-msgstr "최신 버전 다운로드"
+msgstr "Descarregar a versão mais recente"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Download of %s failed."
-msgstr "%s 다운로드에 실패했습니다."
+msgstr "A transferência de %s falhou."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Downloading %s."
-msgstr "%s다운로드하기 ."
+msgstr "Descarregamento de %s."
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
-msgstr "기간"
+msgstr "Duração"
 
 #. CONTEXT: starterui: sending support message: user's e-mail address
 msgid "E-Mail Address"
-msgstr "이메일 주소"
+msgstr "Endereço eletrónico"
 
 #. CONTEXT: configuration file: dance level
 msgid "Easy"
-msgstr "쉬운"
+msgstr "Fácil"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
@@ -694,247 +694,247 @@ msgstr "쉬운"
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
-msgstr "편집"
+msgstr "Editar"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
 #. CONTEXT: managementui: song editor menu: edit all
 msgid "Edit All"
-msgstr "모두 편집"
+msgstr "Editar tudo"
 
 #. CONTEXT: configuration: edit the dance table
 msgid "Edit Dances"
-msgstr "춤 편집"
+msgstr "Editar danças"
 
 #. CONTEXT: configuration: edit genres table
 msgid "Edit Genres"
-msgstr "장르 편집"
+msgstr "Editar géneros"
 
 #. CONTEXT: configuration: edit dance levels table
 msgid "Edit Levels"
-msgstr "레벨 편집"
+msgstr "Editar níveis"
 
 #. CONTEXT: configuration: edit the dance ratings table
 msgid "Edit Ratings"
-msgstr "평점 편집"
+msgstr "Editar classificações"
 
 #. CONTEXT: managementui: notebook tab title: edit sequences
 msgid "Edit Sequences"
-msgstr "시퀀스 편집"
+msgstr "Editar sequências"
 
 #. CONTEXT: managementui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
-msgstr "노래 목록 편집"
+msgstr "Editar listas de músicas"
 
 #. CONTEXT: configuration: edit status table
 msgid "Edit Status"
-msgstr "상태 수정"
+msgstr "Editar estado"
 
 #. CONTEXT: configuration: enable mobile marquee
 msgid "Enable Mobile Marquee"
-msgstr "모바일 마키 활성화"
+msgstr "Ativar o Mobile Marquee"
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
-msgstr "원격 제어 사용"
+msgstr "Ativar o controlo remoto"
 
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
-msgstr "BDJ4를 설치할 대상 폴더를 입력합니다."
+msgstr "Introduza a pasta de destino onde o BDJ4 será instalado."
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
-msgstr "%s 이 설치된 폴더를 입력합니다."
+msgstr "Introduza a pasta onde o %s está instalado."
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr "새 설치의 이름을 입력합니다."
+msgstr "Introduza o nome da nova instalação."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: status message
 msgid "Error: Folder already exists."
-msgstr "오류입니다: 폴더가 이미 존재합니다."
+msgstr "Erro: A pasta já existe."
 
 #. CONTEXT: alternate installation: failure message
 #. CONTEXT: installer: failure message
 msgid "Error: Unable to set working folder."
-msgstr "오류입니다: 작업 폴더를 설정할 수 없습니다."
+msgstr "Erro: Não foi possível definir a pasta de trabalho."
 
 #. CONTEXT: configuration: examples displayed for the audio file organization path
 msgid "Examples"
-msgstr "예제"
+msgstr "Exemplos"
 
 #. CONTEXT: alternate installation: exits the alternate installer
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
-msgstr "종료"
+msgstr "Sair"
 
 #. CONTEXT: update database: exit BDJ4 and restart
 #, c-format
 msgid "Exit %s and restart."
-msgstr "%s 을 종료하고 다시 시작합니다."
+msgstr "Sair de %s e reiniciar."
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
-msgstr "내보내기"
+msgstr "Exportação"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export
 msgid "Export Playlist"
-msgstr "재생목록 내보내기"
+msgstr "Exportar lista de reprodução"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr "내보내기 유형"
+msgstr "Tipo de exportação"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
-msgstr "%s으로 내보내기"
+msgstr "Exportar como %s"
 
 #. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
-msgstr "%s으로 내보내기"
+msgstr "Exportar para %s"
 
 #. CONTEXT: export/import bdj4: export folder location
 #. CONTEXT: export playlist: export folder location
 msgid "Export to"
-msgstr "내보내기 대상"
+msgstr "Exportar para"
 
 #. CONTEXT: external request dialog: title for the dialog
 #. CONTEXT: playerui: menu selection: action: external request
 msgid "External Request"
-msgstr "외부 요청"
+msgstr "Pedido externo"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
 msgid "Fade"
-msgstr "페이드"
+msgstr "Desvanecer"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
-msgstr "페이드 인 타임"
+msgstr "Desaparecer no tempo"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
-msgstr "페이드 아웃 시간"
+msgstr "Tempo de desvanecimento"
 
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
-msgstr "즐겨 찾기"
+msgstr "Favorito"
 
 #. CONTEXT: configuration: itunes: which fields should be imported from itunes
 msgid "Fields to Import"
-msgstr "가져올 필드"
+msgstr "Campos a importar"
 
 #. CONTEXT: audio identification: label for displaying the audio file path
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
-msgstr "파일"
+msgstr "Ficheiro"
 
 #. CONTEXT: configuration: filter display: song selection filters
 #. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
-msgstr "노래 필터링"
+msgstr "Filtrar canções"
 
 #. CONTEXT: audio identification: first song
 #. CONTEXT: song editor : first song
 msgid "First"
-msgstr "먼저"
+msgstr "Primeiro"
 
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
-msgstr "폴더"
+msgstr "Pasta"
 
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
-msgstr "글꼴"
+msgstr "Tipo de letra"
 
 #. CONTEXT: playerui: menu selection: marquee: change the marquee font size
 #. CONTEXT: playerui: marquee font size dialog: the font size selector
 msgid "Font Size"
-msgstr "글꼴 크기"
+msgstr "Tamanho da letra"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
-msgstr "폭스트롯"
+msgstr "Foxtrot"
 
 #. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
 #. CONTEXT: playlist management: Gap between songs
 msgid "Gap Between Songs"
-msgstr "노래 사이의 간격"
+msgstr "Intervalo entre canções"
 
 #. CONTEXT: configuration: general options that apply to everything
 msgid "General"
-msgstr "일반"
+msgstr "Geral"
 
 #. CONTEXT: label: genre
 msgid "Genre"
-msgstr "장르"
+msgstr "Género"
 
 #. CONTEXT: configuration file: rating
 msgid "Good"
-msgstr "Good"
+msgstr "Bom"
 
 #. CONTEXT: configuration file: rating
 msgid "Great"
-msgstr "Great"
+msgstr "Ótimo"
 
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
-msgstr "HTML 템플릿"
+msgstr "Modelo HTML"
 
 #. CONTEXT: HTTP response code (error)
 msgid "HTTP Code"
-msgstr "HTTP 코드"
+msgstr "Código HTTP"
 
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
-msgstr "선택되지 않음 숨기기"
+msgstr "Ocultar não selecionado"
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
 #. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
-msgstr "High %s"
+msgstr "Alta %s"
 
 #. CONTEXT: playlist management: High Dance Level
 msgid "High Dance Level"
-msgstr "높은 댄스 레벨"
+msgstr "Nível de dança elevado"
 
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 msgid "History"
-msgstr "역사"
+msgstr "História"
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
-msgstr "BallroomDJ 3가 설치되어 있지 않은 경우 입력란을 비워둡니다."
+msgstr "Se não existir uma instalação do BallroomDJ 3, deixe a entrada em branco."
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: managementui: menu selection: import actions for song list
 msgid "Import"
-msgstr "가져오기"
+msgstr "Importação"
 
 #. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
 msgid "Import Playlist"
-msgstr "재생 목록 가져오기"
+msgstr "Importar lista de reprodução"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
-msgstr "다음에서 가져오기"
+msgstr "Importar de"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
@@ -942,48 +942,48 @@ msgstr "다음에서 가져오기"
 #. CONTEXT: managementui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
-msgstr "%s에서 가져오기"
+msgstr "Importar de %s"
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
-msgstr "초기 설정."
+msgstr "Configuração inicial."
 
 #. CONTEXT: alternate installation: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
-msgstr "설치"
+msgstr "Instalar"
 
 #. CONTEXT: alternate installation: dialog title for selecting location
 #. CONTEXT: installer: dialog title for selecting install location
 msgid "Install Location"
-msgstr "설치 위치"
+msgstr "Local de instalação"
 
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
-msgstr "설치가 중단되었습니다."
+msgstr "A instalação foi cancelada."
 
 #. CONTEXT: installer: status message
 msgid "Installation complete."
-msgstr "설치가 완료되었습니다."
+msgstr "Instalação concluída."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
-msgstr "%s설치하기 ."
+msgstr "Instalar %s."
 
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
-msgstr "잘못된 폴더"
+msgstr "Pasta inválida"
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
-msgstr "잘못된 이름"
+msgstr "Nome inválido"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
-msgstr "잘못된 선택"
+msgstr "Selecções inválidas"
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -995,51 +995,51 @@ msgstr "Jive"
 
 #. CONTEXT: label: keyword (used to filter out songs)
 msgid "Keyword"
-msgstr "키워드"
+msgstr "Palavra-chave"
 
 #. CONTEXT: label: when the database entry was last updated
 msgid "Last Updated"
-msgstr "마지막 업데이트"
+msgstr "Última atualização"
 
 #. CONTEXT: starterui: basic support dialog, latest version display
 msgid "Latest Version"
-msgstr "최신 버전"
+msgstr "Versão mais recente"
 
 #. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
-msgstr "레벨"
+msgstr "Nível"
 
 #. CONTEXT: configuration: the font to use for the queues and song lists
 msgid "Listing Font"
-msgstr "목록 글꼴"
+msgstr "Fonte de listagem"
 
 #. CONTEXT: managementui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
 msgid "Load"
-msgstr "로드"
+msgstr "Carga"
 
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
-msgstr "데이터베이스에서 로드"
+msgstr "Carregado da base de dados"
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
 msgid "Locale"
-msgstr "로캘"
+msgstr "Localidade"
 
 #. CONTEXT: installer: status message
 msgid "Located 'tclsh'."
-msgstr "'tclsh'에 위치합니다."
+msgstr "Localizado \"tclsh\"."
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "낮음 %s"
+msgstr "Baixo %s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
-msgstr "낮은 댄스 레벨"
+msgstr "Nível de dança baixo"
 
 #. CONTEXT: label: measures per minute
 #. CONTEXT: bpm counter: MPM
@@ -1048,321 +1048,320 @@ msgstr "MPM"
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"
-msgstr "관리"
+msgstr "Gerir"
 
 #. CONTEXT: managementui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
-msgstr "같은 곡으로 표시"
+msgstr "Marcar como Same Song"
 
 #. CONTEXT: configuration: display settings for: Marquee (song display screen)
 #. CONTEXT: configuration: options associated with the marquee (suggested: song display)
 #. CONTEXT: marquee: marquee window title (suggested: song display)
 #. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
 msgid "Marquee"
-msgstr "마키"
+msgstr "Tenda"
 
 #. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
 msgid "Marquee Display"
-msgstr "마키 디스플레이"
+msgstr "Ecrã de marquise"
 
 #. CONTEXT: configuration: The font to use for the marquee display
 msgid "Marquee Font"
-msgstr "마키 글꼴"
+msgstr "Marquee Tipo de letra"
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr "마키 글꼴 크기"
+msgstr "Tamanho de letra do letreiro"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
-msgstr "마키 테마"
+msgstr "Tema Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
 msgid "Maximum\n"
 "Play Time"
-msgstr "최대\n"
-"재생 시간"
+msgstr ""
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
 #. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
-msgstr "최대 플레이 시간"
+msgstr "Tempo máximo de jogo"
 
 #. CONTEXT: starterui: sending support message: message text
 msgid "Message"
-msgstr "메시지"
+msgstr "Mensagem"
 
 #. CONTEXT: configuration: show-marquee: minimize
 msgid "Minimised"
-msgstr "최소화"
+msgstr "Minimizado"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr "믹스"
+msgstr "Mistura"
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
 msgid "Mobile Marquee"
-msgstr "모바일 천막"
+msgstr "Tenda móvel"
 
 #. CONTEXT: configuration: qr code: title display for mobile remote control
 #. CONTEXT: configuration: options associated with mobile remote control
 msgid "Mobile Remote Control"
-msgstr "모바일 원격 제어"
+msgstr "Controlo remoto móvel"
 
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: side-by-side list: button: move the selected field down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 msgid "Move Down"
-msgstr "아래로 이동"
+msgstr "Mover para baixo"
 
 #. CONTEXT: configuration: table edit: button: move selection up
 #. CONTEXT: side-by-side list: button: move the selected field up
 #. CONTEXT: music queue: button: move the selected song up in the queue
 msgid "Move Up"
-msgstr "위로 이동"
+msgstr "Mover para cima"
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
-msgstr "맨 위로 이동"
+msgstr "Ir para o topo"
 
 #. CONTEXT: configuration: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
 msgid "Music Folder"
-msgstr "음악 폴더"
+msgstr "Pasta de música"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: managementui: name of music manager notebook tab
 #. CONTEXT: managementui: name of song selection notebook tab
 msgid "Music Manager"
-msgstr "음악 관리자"
+msgstr "Gestor musical"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 #. CONTEXT: configuration: display settings for: music queue
 msgid "Music Queue"
-msgstr "음악 대기열"
+msgstr "Fila de música"
 
 #. CONTEXT: configuration: music queue configuration
 msgid "Music Queues"
-msgstr "음악 대기열"
+msgstr "Filas de espera de música"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Mute"
-msgstr "음소거"
+msgstr "Sem som"
 
 #. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
-msgstr "이름"
+msgstr "Nome"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: status: default status (new) when status is not set
 msgid "New"
-msgstr "신규"
+msgstr "Novo"
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
-msgstr "새로운 %s 설치."
+msgstr "Novo %s instalação."
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
-msgstr "새로운 자동 재생 목록"
+msgstr "Nova lista de reprodução automática"
 
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
-msgstr "새로운 댄스"
+msgstr "Nova dança"
 
 #. CONTEXT: database update: status message: new files saved to the database
 msgid "New Files"
-msgstr "새 파일"
+msgstr "Novos ficheiros"
 
 #. CONTEXT: configuration: genre name that is set when adding a new genre
 msgid "New Genre"
-msgstr "새로운 장르"
+msgstr "Novo género"
 
 #. CONTEXT: configuration: level name that is set when adding a new level
 msgid "New Level"
-msgstr "새로운 레벨"
+msgstr "Novo nível"
 
 #. CONTEXT: playlist management: default name for a new playlist
 #, c-format
 msgid "New Playlist"
-msgstr "새 재생 목록"
+msgstr "Nova lista de reprodução"
 
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
 msgid "New Profile %d"
-msgstr "새 프로필 %d"
+msgstr "Novo perfil %d"
 
 #. CONTEXT: configuration: rating name that is set when adding a new rating
 msgid "New Rating"
-msgstr "새로운 등급"
+msgstr "Nova classificação"
 
 #. CONTEXT: sequence editor: default name for a new sequence
 #, c-format
 msgid "New Sequence"
-msgstr "새 시퀀스"
+msgstr "Nova sequência"
 
 #. CONTEXT: managementui: song list: default name for a new song list
 msgid "New Song List"
-msgstr "신곡 목록"
+msgstr "Nova lista de músicas"
 
 #. CONTEXT: export/import bdj4: new song list name
 msgid "New Song List Name"
-msgstr "새 노래 목록 이름"
+msgstr "Nome da nova lista de músicas"
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
-msgstr "새 상태"
+msgstr "Novo estatuto"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: audio identification: next song
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
 msgid "Next"
-msgstr "다음"
+msgstr "Seguinte"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
-msgstr "다음 곡"
+msgstr "Próxima canção"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
-msgstr "지정한 폴더가 없습니다."
+msgstr "Nenhuma pasta especificada."
 
 #. CONTEXT: starterui: no internet connection
 msgid "No internet connection"
-msgstr "인터넷 연결 없음"
+msgstr "Sem ligação à Internet"
 
 #. CONTEXT: configuration file: genre
 msgid "None"
-msgstr "없음"
+msgstr "Nenhum"
 
 #. CONTEXT: configuration file: dance level
 msgid "Normal"
-msgstr "보통"
+msgstr "Normal"
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
-msgstr "재생 중이 아님"
+msgstr "Não está a jogar"
 
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
-msgstr "올바른 %s 폴더가 아닙니다."
+msgstr "Não é uma pasta %s válida."
 
 #. CONTEXT: label: notes
 msgid "Notes"
-msgstr "참고"
+msgstr "Notas"
 
 #. CONTEXT: configuration: show-marquee: off
 msgid "Off"
-msgstr "꺼짐"
+msgstr "Desligado"
 
 #. CONTEXT: managementui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
-msgstr "옵션"
+msgstr "Opções"
 
 #. CONTEXT: configuration: dance levels: instructions
 msgid "Order from easiest to most advanced."
-msgstr "가장 쉬운 것부터 가장 고급까지 주문하세요."
+msgstr "Ordem do mais fácil para o mais avançado."
 
 #. CONTEXT: configuration: dance ratings: information on how to order the ratings
 msgid "Order from the lowest rating to the highest rating."
-msgstr "가장 낮은 등급부터 가장 높은 등급 순으로 정렬합니다."
+msgstr "Ordenar da classificação mais baixa para a mais alta."
 
 #. CONTEXT: configuration: options associated with how audio files are organized
 msgid "Organisation"
-msgstr "조직"
+msgstr "Organização"
 
 #. CONTEXT: configuration: the audio file organization path
 msgid "Organisation Path"
-msgstr "조직 경로"
+msgstr "Caminho da organização"
 
 #. CONTEXT: database update: status message: other files that cannot be processed
 msgid "Other Files"
-msgstr "기타 파일"
+msgstr "Outros ficheiros"
 
 #. CONTEXT: configuration file: dance
 msgid "Paso Doble"
-msgstr "파소 도블레"
+msgstr "Paso Doble"
 
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
-msgstr "비밀번호"
+msgstr "Palavra-passe"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Pause"
-msgstr "일시 중지"
+msgstr "Pausa"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
-msgstr "각 노래 일시정지"
+msgstr "Pausa em cada música"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: pause at the end of the song (toggle)
 msgid "Pause at End"
-msgstr "끝에서 일시 중지"
+msgstr "Pausa no fim"
 
 #. CONTEXT: music queue: tooltip: play the selected song
 #. CONTEXT: song editor : play song
 #. CONTEXT: song-selection: tooltip: play the selected songs
 msgid "Play"
-msgstr "플레이"
+msgstr "Jogar"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: play or pause the song
 msgid "Play / Pause"
-msgstr "재생/일시 정지"
+msgstr "Reproduzir / Pausa"
 
 #. CONTEXT: configuration: queue: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
-msgstr "플레이 공지사항"
+msgstr "Reproduzir anúncios"
 
 #. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
-msgstr "대기열에서 재생"
+msgstr "Reproduzir quando em fila de espera"
 
 #. CONTEXT: configuration: status: title of the "playable" column
 msgid "Play?"
-msgstr "플레이?"
+msgstr "Jogar?"
 
 #. CONTEXT: configuration: filter display: checkbox: status is playable
 #. CONTEXT: song selection filter: a filter: the song status is marked as playable
 msgid "Playable Status"
-msgstr "플레이 가능 상태"
+msgstr "Estado jogável"
 
 #. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
-msgstr "플레이어"
+msgstr "Jogador"
 
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
-msgstr "재생 목록"
+msgstr "Lista de reprodução"
 
 #. CONTEXT: managementui: notebook tab title: playlist management
 msgid "Playlist Management"
-msgstr "재생 목록 관리"
+msgstr "Gestão de listas de reprodução"
 
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist Type"
-msgstr "재생 목록 유형"
+msgstr "Tipo de lista de reprodução"
 
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: managementui: song list import: name of file import type
 msgid "Playlists"
-msgstr "재생 목록"
+msgstr "Listas de reprodução"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1371,242 +1370,242 @@ msgstr "재생 목록"
 #. CONTEXT: export as mp3: please wait... status message
 #. CONTEXT: starter ui: please wait... status message
 msgid "Please wait…"
-msgstr "잠시만 기다려 주세요…"
+msgstr "Aguarde…"
 
 #. CONTEXT: please wait... (count/total) status message
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
-msgstr "잠시만 기다려주세요… (%1$d/%2$d)"
+msgstr "Aguarde… (%1$d/%2$d)"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
-msgstr "Poor"
+msgstr "Pobres"
 
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
-msgstr "포트"
+msgstr "Porto"
 
 #. CONTEXT: playerui: the current position of the song during song playback
 msgid "Position"
-msgstr "위치"
+msgstr "Posição"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
-msgstr "이름 바꾸기 방지"
+msgstr "Impedir renomeação"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
-msgstr "이전 게시물"
+msgstr "Anterior"
 
 #. CONTEXT: alternate installation: status message
 msgid "Process aborted."
-msgstr "프로세스가 중단되었습니다."
+msgstr "Processo abortado."
 
 #. CONTEXT: starterui: profile to be used when starting BDJ4
 msgid "Profile"
-msgstr "프로필"
+msgstr "Perfil"
 
 #. CONTEXT: configuration: the profile accent color (identifies profile)
 msgid "Profile Colour"
-msgstr "프로필 색상"
+msgstr "Cor do perfil"
 
 #. CONTEXT: configuration: the name of this profile
 msgid "Profile Name"
-msgstr "프로필 이름"
+msgstr "Nome do perfil"
 
 #. CONTEXT: starterui: profile is already in use
 msgid "Profile in use"
-msgstr "사용 중인 프로필"
+msgstr "Perfil em utilização"
 
 #. CONTEXT: starter: status message
 msgid "Profile may not be deleted."
-msgstr "프로필은 삭제할 수 없습니다."
+msgstr "O perfil não pode ser apagado."
 
 #. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 msgid "QR Code"
-msgstr "QR 코드"
+msgstr "Código QR"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
-msgstr "대기열"
+msgstr "Fila de espera"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
 msgid "Queue 5"
-msgstr "대기열 5"
+msgstr "Fila de espera 5"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue B"
-msgstr "대기열 B"
+msgstr "Fila B"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue C"
-msgstr "대기열 C"
+msgstr "Fila C"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue D"
-msgstr "대기열 D"
+msgstr "Fila D"
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
-msgstr "대기열 댄스"
+msgstr "Dança em fila"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue E"
-msgstr "대기열 E"
+msgstr "Fila E"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
 msgid "Queue Length"
-msgstr "대기열 길이"
+msgstr "Comprimento da fila"
 
 #. CONTEXT: (noun) configuration: queue: the name of the music queue
 msgid "Queue Name"
-msgstr "대기열 이름"
+msgstr "Nome da fila"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
-msgstr "대기열 재생 목록"
+msgstr "Lista de reprodução em fila"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "큐댄스"
+msgstr "QueueDance"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "대기열_명사"
+msgstr "Substantivo_de_fila"
 
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
 msgid "Quick Edit"
-msgstr "빠른 편집"
+msgstr "Edição rápida"
 
 #. CONTEXT: playerui: menu selection: action: quick edit current song
 msgid "Quick Edit: Current"
-msgstr "빠른 편집: 현재"
+msgstr "Edição rápida: Atual"
 
 #. CONTEXT: playerui: menu selection: action: quick edit selected song
 msgid "Quick Edit: Selected"
-msgstr "빠른 편집: 선택됨"
+msgstr "Edição rápida: Selecionado"
 
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"
-msgstr "퀵스텝"
+msgstr "Passo rápido"
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: label: dance rating (short name for listing)
 msgid "Rating"
-msgstr "평가"
+msgstr "Classificação"
 
 #. CONTEXT: alternate installation: checkbox: re-install
 #. CONTEXT: installer: checkbox: re-install BDJ4
 msgid "Re-Install"
-msgstr "다시 설치"
+msgstr "Re-instalar"
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr "%s을 다시 설치합니다.  기존 구성을 덮어씁니다."
+msgstr "Reinstalar %s.  Substitui a configuração existente."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
-msgstr "데이터베이스 재구축"
+msgstr "Reconstruir a base de dados"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
-msgstr "마키 복구"
+msgstr "Recuperar tenda"
 
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
-msgstr "충돌에서 복구되었습니다."
+msgstr "Recuperado do acidente."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
-msgstr "등록하기 %s."
+msgstr "Registo em %s."
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
-msgstr "다시 로드"
+msgstr "Recarregar"
 
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
 msgid "Remove"
-msgstr "제거"
+msgstr "Remover"
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr "노래 제거"
+msgstr "Remover música"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr "이름 변경"
+msgstr "Renomeado"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
-msgstr "조직 설정에 따라 오디오 파일의 이름을 변경합니다."
+msgstr "Renomeia os ficheiros de áudio com base nas definições de organização."
 
 #. CONTEXT: database update: reorganize : renames audio files based on organization settings
 msgid "Reorganise"
-msgstr "재구성"
+msgstr "Reorganizar"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Repeat"
-msgstr "반복"
+msgstr "Repetir"
 
 #. CONTEXT: database update: rebuild: help text
 msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
-msgstr "BallroomDJ 데이터베이스를 전체적으로 교체합니다. 데이터베이스에 대한 모든 변경 사항은 손실됩니다."
+msgstr "Substitui a base de dados BallroomDJ na sua totalidade. Todas as alterações à base de dados serão perdidas."
 
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
 msgid "Request"
-msgstr "요청"
+msgstr "Pedido"
 
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
-msgstr "초기화"
+msgstr "Reiniciar"
 
 #. CONTEXT: apply adjustment dialog: restore original file
 #. CONTEXT: managementui: song editor menu: restore original
 msgid "Restore Original"
-msgstr "원본 복원"
+msgstr "Restaurar o original"
 
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
-msgstr "노래 시작 부분으로 돌아가기"
+msgstr "Regressar ao início da canção"
 
 #. CONTEXT: configuration file: genre
 msgid "Rock"
-msgstr "Rock"
+msgstr "Pedra"
 
 #. CONTEXT: configuration file: dance
 msgid "Rumba"
-msgstr "룸바"
+msgstr "Rumba"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Running conversion script: %s."
-msgstr "변환 스크립트 실행: %s."
+msgstr "A executar o script de conversão: %s."
 
 #. CONTEXT: configuration file: dance
 msgid "Salsa"
-msgstr "살사"
+msgstr "Salsa"
 
 #. CONTEXT: configuration file: dance
 msgid "Samba"
-msgstr "삼바"
+msgstr "Samba"
 
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
@@ -1614,28 +1613,28 @@ msgstr "삼바"
 #. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
-msgstr "저장"
+msgstr "Guardar"
 
 #. CONTEXT: alternate installer: status message
 #. CONTEXT: installer: status message
 msgid "Saving install location."
-msgstr "설치 위치 저장."
+msgstr "Guardar a localização da instalação."
 
 #. CONTEXT: configuration: scaling factor for the user interface
 msgid "Scale"
-msgstr "규모"
+msgstr "Escala"
 
 #. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
-msgstr "점수"
+msgstr "Pontuação"
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
-msgstr "검색"
+msgstr "Pesquisar"
 
 #. CONTEXT: bpm counter: number of seconds
 msgid "Seconds"
-msgstr "초"
+msgstr "Segundos"
 
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
@@ -1644,79 +1643,79 @@ msgstr "초"
 #. CONTEXT: select file dialog: select file
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
-msgstr "선택"
+msgstr "Selecionar"
 
 #. CONTEXT: select file: title of window: select <file-type>
 #, c-format
 msgid "Select %s"
-msgstr "%s"
+msgstr "Selecionar %s"
 
 #. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
 msgid "Select %s Location"
-msgstr "%s 위치 선택"
+msgstr "Selecionar %s Localização"
 
 #. CONTEXT: configuration: itunes media folder selection dialog: window title
 #, c-format
 msgid "Select %s Media Location"
-msgstr "%s 미디어 위치 선택"
+msgstr "Selecionar %s Media Location"
 
 #. CONTEXT: configuration: itunes xml file selection dialog: window title
 #, c-format
 msgid "Select %s XML File"
-msgstr "%s XML 파일 선택"
+msgstr "Selecionar %s Ficheiro XML"
 
 #. CONTEXT: select audio file: dialog title for selecting audio files
 #, c-format
 msgid "Select Audio File"
-msgstr "오디오 파일 선택"
+msgstr "Selecionar ficheiro de áudio"
 
 #. CONTEXT: external request: dance drop-down
 msgid "Select Dance"
-msgstr "댄스 선택"
+msgstr "Selecionar dança"
 
 #. CONTEXT: configuration: file selection dialog: window title
 msgid "Select File"
-msgstr "파일 선택"
+msgstr "Selecionar ficheiro"
 
 #. CONTEXT: export/import bdj4 folder selection dialog: window title
 msgid "Select Folder"
-msgstr "폴더 선택"
+msgstr "Selecionar pasta"
 
 #. CONTEXT: configuration: folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
 msgid "Select Music Folder Location"
-msgstr "음악 폴더 위치 선택"
+msgstr "Selecionar a localização da pasta de música"
 
 #. CONTEXT: audio identification: the data for the selected matched song
 msgid "Selected"
-msgstr "선택됨"
+msgstr "Selecionado"
 
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
 msgid "Send Support Message"
-msgstr "지원 메시지 보내기"
+msgstr "Enviar mensagem de suporte"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s"
-msgstr "%s보내기"
+msgstr "Envio de %s"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s Information"
-msgstr "%s 정보 보내기"
+msgstr "Envio de informações para %s"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Diagnostics"
-msgstr "진단 보내기"
+msgstr "Envio de diagnósticos"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Support Message"
-msgstr "지원 메시지 보내기"
+msgstr "Envio de mensagem de suporte"
 
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
@@ -1724,77 +1723,77 @@ msgstr "지원 메시지 보내기"
 #. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
-msgstr "시퀀스"
+msgstr "Sequência"
 
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
-msgstr "재생 대기열 설정"
+msgstr "Definir fila de espera para reprodução"
 
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
 msgid "Set Up Alternate Folder"
-msgstr "대체 폴더 설정"
+msgstr "Configurar pasta alternativa"
 
 #. CONTEXT: playlist management: notebook tab title: settings
 msgid "Settings"
-msgstr "설정"
+msgstr "Definições"
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
-msgstr "설정 완료."
+msgstr "Configuração concluída."
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
-msgstr "추가 대기열 표시 버튼"
+msgstr "Mostrar botões de fila extra"
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
-msgstr "추가 대기열 표시"
+msgstr "Mostrar filas de espera adicionais"
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr "마키 표시"
+msgstr "Mostrar marquise"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
-msgstr "곡 정보 보기"
+msgstr "Mostrar informações sobre a canção"
 
 #. CONTEXT: configuration: whether or not to show the speed reset button
 msgid "Show Speed Reset"
-msgstr "속도 초기화 표시"
+msgstr "Mostrar reposição de velocidade"
 
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
-msgstr "종료 스크립트"
+msgstr "Script de encerramento"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "나란히 배치된 노래 목록"
+msgstr "Lista de canções lado a lado"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "나란히 노래 선택"
+msgstr "Seleção de canções lado a lado"
 
 #. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
-msgstr "나란히 보기"
+msgstr "Vista lado a lado"
 
 #. CONTEXT: installer: status message
 msgid "Skipping conversion."
-msgstr "변환 건너뛰기."
+msgstr "Saltar a conversão."
 
 #. CONTEXT: managementui: name of song editor notebook tab
 msgid "Song Editor"
-msgstr "노래 편집기"
+msgstr "Editor de canções"
 
 #. CONTEXT: configuration: display settings for: song editor column N
 #, c-format
 msgid "Song Editor - Column %d"
-msgstr "송 에디터 - 칼럼 %d"
+msgstr "Editor de música - Coluna %d"
 
 #. CONTEXT: label: time to end the song
 msgid "Song End"
-msgstr "노래 끝"
+msgstr "Fim da canção"
 
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
@@ -1804,440 +1803,440 @@ msgstr "노래 끝"
 #. CONTEXT: managementui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
-msgstr "노래 목록"
+msgstr "Lista de canções"
 
 #. CONTEXT: configuration: display settings for: song selection
 #. CONTEXT: managementui: name of song selection notebook tab
 msgid "Song Selection"
-msgstr "노래 선택"
+msgstr "Seleção de canções"
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
-msgstr "노래 시작"
+msgstr "Início da canção"
 
 #. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
-msgstr "노래"
+msgstr "Canções"
 
 #. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
 msgid "Sort by"
-msgstr "정렬 기준"
+msgstr "Ordenar por"
 
 #. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
-msgstr "출처"
+msgstr "Fonte"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
 #. CONTEXT: playerui: the current speed for song playback
 msgid "Speed"
-msgstr "속도"
+msgstr "Velocidade"
 
 #. CONTEXT: label: speed adjustment for playback
 msgid "Speed Adjustment"
-msgstr "속도 조정"
+msgstr "Ajuste da velocidade"
 
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr "시작"
+msgstr "Início"
 
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
-msgstr "새 시퀀스 시작"
+msgstr "Iniciar nova sequência"
 
 #. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
-msgstr "새 노래 목록 시작"
+msgstr "Iniciar nova lista de músicas"
 
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."
-msgstr "전환 프로세스 시작."
+msgstr "Início do processo de conversão."
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
-msgstr "시작 스크립트"
+msgstr "Script de arranque"
 
 #. CONTEXT: managementui: name of statistics tab
 msgid "Statistics"
-msgstr "통계"
+msgstr "Estatísticas"
 
 #. CONTEXT: label: status
 msgid "Status"
-msgstr "상태"
+msgstr "Estado"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: update database: button to stop the database update process
 msgid "Stop"
-msgstr "중지"
+msgstr "Parar"
 
 #. CONTEXT: playlist management: stop after
 msgid "Stop After"
-msgstr "이후 중지"
+msgstr "Parar depois"
 
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
 msgid "Stop All %s Processes"
-msgstr "모든 %s 프로세스 중지"
+msgstr "Parar todos os processos %s"
 
 #. CONTEXT: configuration: queue: the time when playback will stop
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
-msgstr "다음에서 중지"
+msgstr "Parar em"
 
 #. CONTEXT: database update: status message
 msgid "Stopped by User"
-msgstr "사용자에 의해 중지됨"
+msgstr "Interrompido pelo utilizador"
 
 #. CONTEXT: starterui: sending support message: subject of message
 msgid "Subject"
-msgstr "제목"
+msgstr "Assunto"
 
 #. CONTEXT: starterui: button: support : support information
 #. CONTEXT: starterui: title for the support dialog
 msgid "Support"
-msgstr "지원"
+msgstr "Apoio"
 
 #. CONTEXT: starterui: title for the support message dialog
 msgid "Support Message"
-msgstr "지원 메시지"
+msgstr "Mensagem de apoio"
 
 #. CONTEXT: starterui: basic support dialog, list of support options
 msgid "Support options"
-msgstr "지원 옵션"
+msgstr "Opções de suporte"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
-msgstr "스왑"
+msgstr "Troca"
 
 #. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"
-msgstr "비어있을 때 대기열 전환"
+msgstr "Mudar de fila quando vazia"
 
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
 msgid "Tags"
-msgstr "태그"
+msgstr "Etiquetas"
 
 #. CONTEXT: configuration file: dance
 msgid "Tango"
-msgstr "탱고"
+msgstr "Tango"
 
 #. CONTEXT: song editor: copy tags: target file
 msgid "Target"
-msgstr "Target"
+msgstr "Objetivo"
 
 #. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
 msgid "Thank You Dancers"
-msgstr "땡큐 댄서"
+msgstr "Obrigado Dançarinos"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "The conversion process will not be run."
-msgstr "변환 프로세스가 실행되지 않습니다."
+msgstr "O processo de conversão não será executado."
 
 #. CONTEXT: installer: instructions
 msgid "The conversion process will only run for new installations and for re-installations."
-msgstr "변환 프로세스는 신규 설치와 재설치에 대해서만 실행됩니다."
+msgstr "O processo de conversão só será executado para novas instalações e para reinstalações."
 
 #. CONTEXT: configuration: the theme to use for the user interface
 msgid "Theme"
-msgstr "테마"
+msgstr "Tema"
 
 #. CONTEXT: create from playlist: set the maximum time for the song list
 msgid "Time Limit"
-msgstr "시간 제한"
+msgstr "Limite de tempo"
 
 #. CONTEXT: configuration: dances: time signature for the dance
 msgid "Time Signature"
-msgstr "시간 서명"
+msgstr "Assinatura de tempo"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
 msgid "Title"
-msgstr "제목"
+msgstr "Título"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr "제목 정렬 순서"
+msgstr "Título Ordem de ordenação"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
-msgstr "일시 중지 토글"
+msgstr "Alternar pausa"
 
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
-msgstr "반복 토글"
+msgstr "Alternar repetição"
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
-msgstr "총 디스크 수"
+msgstr "Total de discos"
 
 #. CONTEXT: database update: status message: total number of files found
 msgid "Total Files"
-msgstr "총 파일 수"
+msgstr "Total de ficheiros"
 
 #. CONTEXT: statistics: Label for total song list duration
 msgid "Total Time"
-msgstr "총 시간"
+msgstr "Tempo total"
 
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
-msgstr "총 트랙 수"
+msgstr "Total de faixas"
 
 #. CONTEXT: label: track number
 msgid "Track"
-msgstr "트랙"
+msgstr "Pista"
 
 #. CONTEXT: apply adjustments: trim silence checkbox
 msgid "Trim Silence"
-msgstr "트림 침묵"
+msgstr "Silêncio de corte"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
-msgstr "잘라내기"
+msgstr "Truncar"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 msgid "Type"
-msgstr "유형"
+msgstr "Tipo"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Unable to determine %s version."
-msgstr "%s 버전을 확인할 수 없습니다."
+msgstr "Não é possível determinar a versão de %s ."
 
 #. CONTEXT: installer: failure message
 #, c-format
 msgid "Unable to locate %s."
-msgstr "%s을 찾을 수 없습니다."
+msgstr "Não foi possível localizar %s."
 
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
-msgstr "BDJ3 데이터베이스를 찾을 수 없습니다."
+msgstr "Não foi possível localizar a base de dados BDJ3."
 
 #. CONTEXT: managementui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
-msgstr "노래 제거 실행 취소"
+msgstr "Anular a remoção da música"
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
-msgstr "평가 없음"
+msgstr "Sem classificação"
 
 #. CONTEXT: managementui: notebook tab title: update database
 msgid "Update Database"
-msgstr "데이터베이스 업데이트"
+msgstr "Atualizar a base de dados"
 
 #. CONTEXT: database update: update from itunes
 #, c-format
 msgid "Update from %s"
-msgstr "%s에서 업데이트"
+msgstr "Atualização de %s"
 
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
-msgstr "오디오 파일 태그에서 업데이트"
+msgstr "Atualização das etiquetas de ficheiros áudio"
 
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated
 msgid "Updated"
-msgstr "업데이트"
+msgstr "Atualizado"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
 msgid "Updates the information in the BallroomDJ database from the %s database."
-msgstr "%s 데이터베이스에서 BallroomDJ 데이터베이스의 정보를 업데이트합니다."
+msgstr "Actualiza as informações na base de dados BallroomDJ a partir da base de dados %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
 msgid "Updates the information in the BallroomDJ database from the audio file tags."
-msgstr "오디오 파일 태그에서 BallroomDJ 데이터베이스의 정보를 업데이트합니다."
+msgstr "Actualiza a informação na base de dados do BallroomDJ a partir das etiquetas dos ficheiros áudio."
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
-msgstr "업데이트 중 %s."
+msgstr "Atualização de %s."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Updating existing %s installation."
-msgstr "기존 %s 설치 업데이트하기."
+msgstr "Atualização da instalação existente do %s ."
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
-msgstr "사용자 ID"
+msgstr "ID do utilizador"
 
 #. CONTEXT: configuration: options associated with the user interface
 msgid "User Interface"
-msgstr "사용자 인터페이스"
+msgstr "Interface do utilizador"
 
 #. CONTEXT: installer: status message
 msgid "Verification complete."
-msgstr "인증 완료."
+msgstr "Verificação completa."
 
 #. CONTEXT: installer: status message
 msgid "Verification failed."
-msgstr "인증에 실패했습니다."
+msgstr "A verificação falhou."
 
 #. CONTEXT: installer: status message
 msgid "Verifying installation."
-msgstr "설치 확인."
+msgstr "Verificar a instalação."
 
 #. CONTEXT: configuration file: dance
 msgid "Viennese Waltz"
-msgstr "비엔나 왈츠"
+msgstr "Valsa Vienense"
 
 #. CONTEXT: configuration: show-marquee: visible
 msgid "Visible"
-msgstr "가시성"
+msgstr "Visível"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: The current volume of the song
 msgid "Volume"
-msgstr "볼륨"
+msgstr "Volume"
 
 #. CONTEXT: label: volume adjustment for playback
 msgid "Volume Adjustment"
-msgstr "볼륨 조정"
+msgstr "Ajuste do volume"
 
 #. CONTEXT: configuration file: dance
 msgid "Waltz"
-msgstr "왈츠"
+msgstr "Valsa"
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
 #. CONTEXT: playlist management: tag weight
 msgid "Weight"
-msgstr "무게"
+msgstr "Peso"
 
 #. CONTEXT: configuration file: dance
 msgid "West Coast Swing"
-msgstr "웨스트 코스트 스윙"
+msgstr "Swing da Costa Oeste"
 
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
-msgstr "BPM 값이 안정되면 저장 버튼을 선택합니다."
+msgstr "Quando o valor de BPM estiver estável, seleccione o botão Guardar."
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
-msgstr "오디오 파일 태그 작성"
+msgstr "Etiquetas de ficheiros de áudio"
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"
-msgstr "오디오 파일에 태그 쓰기"
+msgstr "Escrever etiquetas em ficheiros de áudio"
 
 #. CONTEXT: database update: write tags to audio files: help text
 msgid "Writes the audio file tags using the information from the BallroomDJ database."
-msgstr "BallroomDJ 데이터베이스의 정보를 사용하여 오디오 파일 태그를 작성합니다."
+msgstr "Escreve as etiquetas do ficheiro áudio utilizando a informação da base de dados BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
-msgstr "XML 파일"
+msgstr "Ficheiros XML"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"
-msgstr "클럽"
+msgstr "clube"
 
 #. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
 msgid "delete"
-msgstr "삭제"
+msgstr "apagar"
 
 #. CONTEXT: configuration: dance speed
 msgid "fast"
-msgstr "빠른"
+msgstr "rápido"
 
 #. CONTEXT: configuration file: dance type
 msgid "latin"
-msgstr "라틴어"
+msgstr "latino"
 
 #. CONTEXT: configuration: dance speed
 msgid "normal"
-msgstr "정상"
+msgstr "normal"
 
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
-msgstr "원본"
+msgstr "original"
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"
-msgstr "slow"
+msgstr "lento"
 
 #. CONTEXT: configuration file: dance type
 msgid "standard"
-msgstr "표준"
+msgstr "padrão"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
 msgid "standardrounds"
-msgstr "표준 라운드"
+msgstr "standardrounds"
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"
-msgstr "지원을 받는 방법"
+msgstr "Como obter apoio"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "헬프 텍스트 가져오기_지원"
+msgstr "helptext_get_support"
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
-msgstr "각 곡의 댄스 확인"
+msgstr "Verificar a dança para cada canção"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "헬프텍스트_체크_댄스"
+msgstr "helptext_check_dance"
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
-msgstr "처음으로 데이터베이스 구축"
+msgstr "Criar a base de dados pela primeira vez"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "헬프텍스트_구축_DB"
+msgstr "helptext_build_db"
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
-msgstr "재생 목록 예시 만들기"
+msgstr "Criar uma lista de reprodução de exemplo"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "헬프텍스트_재생 목록 만들기"
+msgstr "helptext_create_playlist"
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
-msgstr "음악 폴더의 위치 설정"
+msgstr "Definir a localização da pasta de música"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "헬프텍스트_음악_위치"
+msgstr "helptext_music_location"
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
-msgstr "구성된 댄스 확인"
+msgstr "Verificar as danças configuradas"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "헬프텍스트_구성_댄스"
+msgstr "helptext_configurar_danças"
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
-msgstr "소개 / 시작하기"
+msgstr "Introdução / Introdução"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "헬프텍스트_소개"
+msgstr "texto de ajuda_intro"
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
-msgstr "재생 목록 재생"
+msgstr "Reproduzir uma lista de reprodução"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "헬프텍스트_재생 목록"
+msgstr "helptext_play_playlist"
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
-msgstr "음악은 어떻게 구성되나요?"
+msgstr "Como é organizada a música"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "헬프텍스트_음악_조직"
+msgstr "helptext_music_org"
 
