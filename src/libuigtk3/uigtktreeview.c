@@ -163,8 +163,9 @@ uiTreeViewEnableHeaders (uiwcont_t *uiwidget)
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->uidata.widget), TRUE);
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
+uiTreeViewDisableHeaders (uiwcont_t *uiwidget) /* UNUSED */
 {
   if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-disable-headers")) {
     return;
@@ -172,6 +173,7 @@ uiTreeViewDisableHeaders (uiwcont_t *uiwidget)
 
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiwidget->uidata.widget), FALSE);
 }
+#endif
 
 #if 0 /* UNUSED */
 void
@@ -185,8 +187,9 @@ uiTreeViewDarkBackground (uiwcont_t *uiwidget)  /* UNUSED */
 }
 #endif
 
+#if 0 /* UNUSED */
 void
-uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
+uiTreeViewDisableSingleClick (uiwcont_t *uiwidget) /* UNUSED */
 {
   if (! uiwcontValid (uiwidget, WCONT_T_TREE, "tree-disable-single-click")) {
     return;
@@ -194,6 +197,7 @@ uiTreeViewDisableSingleClick (uiwcont_t *uiwidget)
 
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uiwidget->uidata.widget), FALSE);
 }
+#endif
 
 void
 uiTreeViewSelectSetMode (uiwcont_t *uiwidget, int mode)
@@ -577,8 +581,9 @@ uiTreeViewColumnSetVisible (uiwcont_t *uiwidget, int col, int flag)  /* UNUSED *
 }
 #endif
 
+#if 0 /* UNUSED */
 void
-uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
+uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...) /* UNUSED */
 {
   GtkListStore  *store = NULL;
   GType         *types;
@@ -624,6 +629,7 @@ uiTreeViewCreateValueStore (uiwcont_t *uiwidget, int colmax, ...)
 
   uitree->valueRowCount = 0;
 }
+#endif
 
 void
 uiTreeViewCreateValueStoreFromList (uiwcont_t *uiwidget, int colmax, int *typelist)
@@ -1285,9 +1291,10 @@ uiTreeViewGetValue (uiwcont_t *uiwidget, int col)
   return val;
 }
 
+#if 0 /* UNUSED */
 /* gets the string value for the selected row */
 char *
-uiTreeViewGetValueStr (uiwcont_t *uiwidget, int col)
+uiTreeViewGetValueStr (uiwcont_t *uiwidget, int col) /* UNUSED */
 {
   char      *str;
   uitree_t  *uitree;
@@ -1309,6 +1316,7 @@ uiTreeViewGetValueStr (uiwcont_t *uiwidget, int col)
   mdextalloc (str);
   return str;
 }
+#endif
 
 /* gets the value for the row just processed by select-foreach */
 long
