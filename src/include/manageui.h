@@ -52,7 +52,7 @@ bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 /* managepldance.c */
 typedef struct mpldance mpldance_t;
 
-mpldance_t *manageplDanceAlloc (uiwcont_t *errorMsg);
+mpldance_t *manageplDanceAlloc (manageinfo_t *minfo);
 void manageplDanceFree (mpldance_t *mpldnc);
 void manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp);
 void manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl);

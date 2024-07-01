@@ -83,6 +83,7 @@ confuiCreateStatusTable (confuigui_t *gui)
       tagdefs [TAG_STATUS].displayname);
   /* CONTEXT: configuration: status: title of the "playable" column */
   uivlSetColumnHeading (uivl, CONFUI_STATUS_COL_PLAY_FLAG, _("Play?"));
+  uivlSetColumnAlignCenter (uivl, CONFUI_STATUS_COL_PLAY_FLAG);
   uivlSetNumRows (uivl, statusGetCount (status));
   gui->tables [CONFUI_ID_STATUS].currcount = statusGetCount (status);
 

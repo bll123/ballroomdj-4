@@ -45,9 +45,8 @@ enum {
 };
 
 typedef struct mpldance {
-  uiwcont_t         *uitree;
+  manageinfo_t      *minfo;
   uivirtlist_t      *uivl;
-  uiwcont_t         *errorMsg;
   uiwcont_t         *uihideunsel;
   callback_t        *callbacks [MPLDNC_CB_MAX];
   playlist_t        *playlist;
@@ -68,14 +67,13 @@ static void manageplDanceRebuildCurrList (mpldance_t *mpldnc);
 static void manageplDancePopulate (mpldance_t *mpldnc);
 
 mpldance_t *
-manageplDanceAlloc (uiwcont_t *errorMsg)
+manageplDanceAlloc (manageinfo_t *minfo)
 {
   mpldance_t     *mpldnc;
 
   mpldnc = mdmalloc (sizeof (mpldance_t));
-  mpldnc->uitree = NULL;
+  mpldnc->minfo = minfo;
   mpldnc->uivl = NULL;
-  mpldnc->errorMsg = errorMsg;
   mpldnc->playlist = NULL;
   mpldnc->currlist = NULL;
   mpldnc->currcount = 0;
@@ -98,7 +96,6 @@ manageplDanceFree (mpldance_t *mpldnc)
   }
 
   uiwcontFree (mpldnc->uihideunsel);
-  uiwcontFree (mpldnc->uitree);
   nlistFree (mpldnc->currlist);
   uivlFree (mpldnc->uivl);
   for (int i = 0; i < MPLDNC_CB_MAX; ++i) {
@@ -128,7 +125,8 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   mpldnc->uihideunsel = uiwidgetp;
 
-  mpldnc->uivl = uivlCreate ("mpl-dance", vboxp, 15, 300, VL_FLAGS_NONE);
+  mpldnc->uivl = uivlCreate ("mpl-dance", mpldnc->minfo->window, vboxp,
+      15, 300, VL_FLAGS_NONE);
   uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
   uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);

@@ -454,7 +454,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 
-  managepl->mpldnc = manageplDanceAlloc (managepl->minfo->errorMsg);
+  managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);
   managePlaylistNew (managepl, MANAGE_STD);
   manageResetChanged (managepl);

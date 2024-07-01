@@ -91,6 +91,7 @@ confuiCreateLevelTable (confuigui_t *gui)
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_WEIGHT, _("Weight"));
   /* CONTEXT: configuration: level: title of the default selection column */
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_DEFAULT, _("Default"));
+  uivlSetColumnAlignCenter (uivl, CONFUI_LEVEL_COL_DEFAULT);
   uivlSetNumRows (uivl, levelGetCount (levels));
   gui->tables [CONFUI_ID_LEVELS].currcount = levelGetCount (levels);
 

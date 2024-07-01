@@ -441,6 +441,16 @@ uiWindowSetNoMaximize (uiwcont_t *uiwidget)
   gtk_window_set_resizable (GTK_WINDOW (uiwidget->uidata.widget), false);
 }
 
+void
+uiWindowClearFocus (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "window-clear-focus")) {
+    return;
+  }
+
+  gtk_window_set_focus (GTK_WINDOW (uiwidget->uidata.widget), NULL);
+}
+
 /* internal routines */
 
 static gboolean

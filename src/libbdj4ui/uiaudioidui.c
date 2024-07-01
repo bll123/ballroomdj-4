@@ -362,7 +362,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* match listing */
 
-  uivl = uivlCreate ("audioid", vbox, UIAUDID_INIT_DISP_SZ,
+  uivl = uivlCreate ("audioid", NULL, vbox, UIAUDID_INIT_DISP_SZ,
       VL_NO_WIDTH, VL_ENABLE_KEYS);
   audioidint->uivl = uivl;
 

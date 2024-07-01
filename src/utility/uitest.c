@@ -1189,8 +1189,8 @@ uitestUIVirtList (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   for (int i = 0; i < UITEST_VL_MAX; ++i) {
-    uitest->vl [i] = uivlCreate ("uitest", hbox, UITEST_VL_DISPROWS,
-        VL_NO_WIDTH, VL_ENABLE_KEYS);
+    uitest->vl [i] = uivlCreate ("uitest", NULL, hbox,
+        UITEST_VL_DISPROWS, VL_NO_WIDTH, VL_ENABLE_KEYS);
     uivlSetUseListingFont (uitest->vl [i]);
     uivlSetAllowMultiple (uitest->vl [i]);
     uivlSetNumColumns (uitest->vl [i], vlcols [i]);

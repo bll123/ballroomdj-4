@@ -131,6 +131,7 @@ typedef struct uivlcoldata {
   /* note that this is not a true/false value */
   int           hidden;
   bool          alignend: 1;
+  bool          aligncenter: 1;
   bool          ellipsize : 1;
 } uivlcoldata_t;
 
@@ -178,6 +179,7 @@ typedef struct {
 typedef struct uivirtlist {
   uint64_t      ident;
   const char    *tag;
+  uiwcont_t     *parentwin;
   uiwcont_t     *wcont [VL_W_MAX];
   callback_t    *callbacks [VL_CB_MAX];
   callback_t    *usercb [VL_USER_CB_MAX];
@@ -192,6 +194,7 @@ typedef struct uivirtlist {
   int           vboxheight;
   int           headingheight;
   int           rowheight;
+  int           lastselidx;
   int32_t       numrows;
   int32_t       rowoffset;
   int32_t       lastSelection;    // used for shift-click
@@ -252,7 +255,7 @@ static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
 static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
 
 uivirtlist_t *
-uivlCreate (const char *tag, uiwcont_t *boxp,
+uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     int dispsize, int minwidth, int vlflags)
 {
   uivirtlist_t  *vl;
@@ -260,6 +263,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl = mdmalloc (sizeof (uivirtlist_t));
   vl->ident = VL_IDENT;
   vl->tag = tag;
+  vl->parentwin = parentwin;
   vl->fillcb = NULL;
   vl->filludata = NULL;
   vl->selcb = NULL;
@@ -291,6 +295,7 @@ uivlCreate (const char *tag, uiwcont_t *boxp,
   vl->vboxheight = 0;
   vl->headingheight = 0;
   vl->rowheight = 0;
+  vl->lastselidx = 0;
   vl->lockcount = 0;
   vl->coldata = NULL;
   vl->rows = NULL;
@@ -439,7 +444,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
   if (vl->initialized >= VL_INIT_ROWS) {
-
     /* if the number of rows has changed, and the selection is no longer */
     /* valid, move it up */
     /* check this: this may be handled elsewhere */
@@ -457,10 +461,9 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if a row has been removed, but there are enough rows to fill the */
     /* display, change the row-offset so that the display is filled */
-    /* note that the gtk scrollbar does not update properly when this */
-    /* is done. */
-    if ((vl->dispsize - vl->headingoffset) + vl->rowoffset > vl->numrows &&
-        (vl->dispsize - vl->headingoffset) < vl->numrows) {
+    /* note that the gtk scrollbar does not always update properly */
+    /* when this is done. */
+    if ((vl->dispsize - vl->headingoffset) + vl->rowoffset > vl->numrows) {
       int32_t   diff;
 
       /* usually this happens due to a removal of a row, */
@@ -519,6 +522,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->sbincr = 1;
     coldata->sbpageincr = 5;
     coldata->alignend = false;
+    coldata->aligncenter = false;
     coldata->ellipsize = false;
     coldata->grow = VL_COL_WIDTH_FIXED;
     coldata->hidden = VL_COL_SHOW;
@@ -802,6 +806,16 @@ uivlSetColumnAlignEnd (uivirtlist_t *vl, int colidx)
   }
 
   vl->coldata [colidx].alignend = true;
+}
+
+void
+uivlSetColumnAlignCenter (uivirtlist_t *vl, int colidx)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
+    return;
+  }
+
+  vl->coldata [colidx].aligncenter = true;
 }
 
 void
@@ -1685,6 +1699,10 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     if (coldata->alignend) {
       uiLabelAlignEnd (col->uiwidget);
     }
+    if (coldata->aligncenter) {
+      uiWidgetAlignHorizCenter (col->uiwidget);
+      uiWidgetExpandHoriz (col->uiwidget);
+    }
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
         origtype == VL_TYPE_ENTRY) {
@@ -1980,6 +1998,16 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       continue;
     }
 
+    if (vl->parentwin != NULL &&
+        row->dispidx != vl->lastselidx) {
+      /* if the actual row selection has changed, any focus that is set */
+      /* needs to be cleared. */
+      /* the focus callback sets lastselidx, so that the focus does not */
+      /* get cleared inadverdently. */
+      uiWindowClearFocus (vl->parentwin);
+    }
+    vl->lastselidx = row->dispidx;
+
     uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
     row->selected = true;
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -2160,6 +2188,7 @@ uivlFocusCallback (void *udata)
   int32_t       rownum;
 
   rownum = uivlCalcRownum (vl, rowcb->dispidx);
+  vl->lastselidx = rowcb->dispidx;
 
   uivlUpdateSelections (vl, rownum);
   uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);

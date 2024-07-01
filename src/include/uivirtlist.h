@@ -50,7 +50,7 @@ typedef void (*uivlfillcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum);
 typedef void (*uivlselcb_t) (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* basic */
-uivirtlist_t *uivlCreate (const char *tag, uiwcont_t *boxp, int initialdisprows, int minwidth, int flags);
+uivirtlist_t *uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int initialdisprows, int minwidth, int flags);
 void  uivlFree (uivirtlist_t *vl);
 void  uivlSetNumRows (uivirtlist_t *vl, int32_t numrows);
 void  uivlSetNumColumns (uivirtlist_t *vl, int numcols);
@@ -76,6 +76,7 @@ void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);
 void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colidx, int minwidth);
 void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
 void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
+void  uivlSetColumnAlignCenter (uivirtlist_t *vl, int col);
 void  uivlSetColumnGrow (uivirtlist_t *vl, int col, int grow);
 void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
 void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);

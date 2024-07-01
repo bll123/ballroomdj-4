@@ -195,7 +195,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
     dispsize = SELFILE_MAX_DISP;
   }
 
-  uivl = uivlCreate ("selectfile", vbox, dispsize, VL_NO_WIDTH,
+  uivl = uivlCreate ("selectfile", NULL, vbox, dispsize, VL_NO_WIDTH,
       VL_NO_HEADING | VL_ENABLE_KEYS);
   selectfile->uivl = uivl;
 
