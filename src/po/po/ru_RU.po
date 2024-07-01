@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:16\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -2224,7 +2224,7 @@ msgstr "Введение / Начало "
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "Эта утилита проведет вас через несколько шагов, чтобы помочь вам начать работу.=> Выберите кнопку \"Следующее\", чтобы перейти к следующему шагу"
+msgstr "Эта утилита проведет вас через несколько шагов, чтобы помочь вам начать работу.=> Выберите кнопку \"Следующее\", чтобы перейти к следующему шагу."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"

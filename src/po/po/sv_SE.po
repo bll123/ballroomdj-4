@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:33\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -2174,7 +2174,7 @@ msgstr "Hur du får support"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "hjälptext_hämta_support"
+msgstr "För att få support, välj \"Support\"-knappen. Det finns länkar till wiki, forum och problem biljettsystem. Eller använd knappen 'Skicka supportmeddelande' för att skicka ett meddelande."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2182,7 +2182,7 @@ msgstr "Kontrollera dansen för varje låt"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "hjälptext_kontroll_dans"
+msgstr "=> Välj 'Music Manager' till vänster i fönstret 'BDJ4 Management'.<br>Bläddra igenom listan över låtar och kontrollera att dansen är inställd för varje låt.<br>För att ställa in dansen för en låt: => Välj låten. => Välj fliken 'Sångredigerare' (under spelaren, ovanför listan med låtar). => Bredvid etiketten 'Dance', använd rullgardinsmenyn för dans och välj dansen för låten. => I det övre högra hörnet på fliken 'Sångredigerare' väljer du knappen 'Spara'.<br>Du kan växla tillbaka till fliken 'Musikhanteraren' och leta efter andra låtar som måste ha dansen inställd. => Lämna fönstret 'BDJ4 Management' öppet."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2190,7 +2190,7 @@ msgstr "Bygg upp databasen för första gången"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "hjälptext_bygga_db"
+msgstr "För att fungera har BallroomDJ 4 en databas med alla dina låtar. Denna databas måste byggas för första gången. => Välj knappen 'Hantera'. => I fönstret 'BDJ4 Management' väljer du avsnittet 'Uppdatera databas' till vänster i fönstret.<br>Standardvalet 'Check for New' används när du lägger till eller tar bort låtar från din musiksamling. => Ändra valet till 'Rebuild Database'. => Välj 'Start'-knappen. => Vänta tills ombyggnaden av databasen är klar. => Lämna fönstret 'BDJ4 Management' öppet."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2198,7 +2198,7 @@ msgstr "Skapa en exempel-spellista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "hjälptext_skapa_spellista"
+msgstr "=> Välj 'Redigera låtlistor' till vänster i fönstret 'BDJ4 Management'.<br>På höger sida av den nedre delen av fönstret finns en lista över dina låtar. => Välj en låt genom att klicka på den. => Välj nu vänsterpilen i mitten av den nedre delen.<br>Detta kommer att lägga till låten du valde till låtlistan som skapas. => Välj några låtar och lägg till var och en av dem i låtlistan.<br>Ovanför låtlistan finns en inmatningsruta med namnet 'Ny låtlista'. => Klicka i rutan och ändra namnet på låtlistan. => Stäng fönstret 'BDJ4 Management'. Låtlistan sparas automatiskt."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2206,7 +2206,7 @@ msgstr "Ange platsen för musikmappen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "hjälptext_musik_placering"
+msgstr "Det första steget är att konfigurera platsen för din musikmapp. => Välj knappen \"Configure\".<br> I fönstret \"BDJ4 Configuration\" visas avsnittet \"General\". Det första objektet i \"General\" är \"Music Folder\" => Ändra \"Music Folder\" till den plats där din musik finns => Lämna fönstret \"BDJ4 Configuration\" öppet."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2214,7 +2214,7 @@ msgstr "Verifiera de konfigurerade danserna"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "hjälptext_konfigurera_danser"
+msgstr "Namnen på danserna måste stämma överens med det du använder. => Välj 'Redigera danser' till vänster i fönstret 'BDJ4 Configuration'.<br>Granska listan över danser. Om en dans har ett annat namn än det du använder, välj dansen och ändra namnet. Om en dans du använder saknas, välj knappen \"Lägg till\" och lägg till dansen. Om det finns danser du aldrig kommer att använda, välj dansen och välj sedan knappen \"Ta bort\". => Stäng fönstret 'BDJ4 Configuration'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2222,7 +2222,7 @@ msgstr "Introduktion / Komma igång"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "hjälptext_intro"
+msgstr "Detta verktyg kommer att leda dig genom några steg för att hjälpa dig att komma igång. => Välj knappen \"Nästa\" för att gå vidare till nästa steg."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2230,7 +2230,7 @@ msgstr "Spela upp en spellista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "hjälptext_spela_spellista"
+msgstr "Nu kommer du att spela spellistan som just skapades. => Välj knappen 'Spelare'. => I spelarfönstret väljer du rullgardinsmenyn 'Köspellista'. => Välj namnet på spellistan som du skrev in tidigare."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2238,5 +2238,5 @@ msgstr "Hur är musiken organiserad?"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "hjälptext_music_org"
+msgstr "Att ställa in organisationsmetoden är viktigt så att BallroomDJ 4 kan fastställa informationen om dina låtar när databasen byggs. => Välj 'Organisation' till vänster i fönstret 'BDJ4 Configuration'.<br>Många har sin musik organiserad genom att lägga varje dans i en separat mapp.<br>Standardorganisationen är 'Dans/Titel'. Om du har iTunes installerat kommer organisationssökvägen att ställas in på 'Album Artist/Album/Disc - Track0 Title'. => Välj den organisationsmetod du använder för dina låtar i rullgardinsmenyn 'Organisation Path'.<br>Om organisationssökvägen du behöver inte finns, välj knappen 'support' i startfönstret och skicka ett supportmeddelande. Nästan vilken organisationsväg som helst kan konfigureras.<br>Om dina ljudfiler har dansen lagrad i genrens ljudtagg, aktivera \"Databas laddar dans från genre\". => Lämna fönstret 'BDJ4 Configuration' öppet."
 

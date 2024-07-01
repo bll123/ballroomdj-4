@@ -21,6 +21,6 @@ while read line ; do
       ctx=F
       ;;
   esac
-done < src/po/en_GB.po
+done < src/po/po/en_GB.po
 
 exit 0

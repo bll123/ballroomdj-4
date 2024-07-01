@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:16\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -2175,7 +2175,7 @@ msgstr "Cómo obtener ayuda"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "helptext_get_support"
+msgstr "Para obtener soporte, seleccione el botón \"Soporte\". Hay enlaces a la wiki, foros y al sistema de tickets de problemas. O utilice el botón 'Enviar mensaje de soporte' para enviar un mensaje."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2183,7 +2183,7 @@ msgstr "Compruebe el baile de cada canción"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "helptext_check_dance"
+msgstr "=> Seleccione 'Administrador de música' en el lado izquierdo de la ventana 'Administración de BDJ4'.<br>Desplácese por la lista de canciones y verifique que el baile esté configurado para cada canción.<br>Para configurar el baile para una canción: => Selecciona la canción. => Seleccione la pestaña 'Editor de canciones' (debajo del reproductor, encima de la lista de canciones). => Junto a la etiqueta 'Baile', use la selección desplegable de baile y seleccione el baile de la canción. => En la parte superior derecha de la pestaña 'Editor de canciones', selecciona el botón 'Guardar'.<br>Puedes volver a la pestaña 'Administrador de música' y buscar otras canciones que necesiten tener el set de baile. => Deje abierta la ventana 'Gestión de BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2191,7 +2191,7 @@ msgstr "Crear la base de datos por primera vez"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "helptext_build_db"
+msgstr "Para funcionar, BallroomDJ 4 mantiene una base de datos de todas tus canciones. Esta base de datos debe construirse por primera vez. => Seleccione el botón 'Administrar'. => En la ventana 'Administración de BDJ4', seleccione la sección 'Actualizar base de datos' en el lado izquierdo de la ventana.<br>La selección predeterminada 'Buscar nuevo' se utiliza cuando agrega o elimina canciones de su colección de música. => Cambie la selección a 'Reconstruir base de datos'. => Seleccione el botón 'Inicio'. => Espere a que finalice la reconstrucción de la base de datos. => Deje abierta la ventana 'Gestión de BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2199,7 +2199,7 @@ msgstr "Crear una lista de reproducción de ejemplo"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "helptext_create_playlist"
+msgstr "=> Seleccione 'Editar listas de canciones' en el lado izquierdo de la ventana 'Administración de BDJ4'.<br>En el lado derecho de la sección inferior de la ventana hay una lista de sus canciones. => Seleccione una canción haciendo clic en ella. => Ahora seleccione el botón de flecha izquierda en el medio de la sección inferior.<br>Esto agregará la canción que seleccionó a la lista de canciones que se está creando. => Seleccione algunas canciones y agréguelas a la lista de canciones.<br>Encima de la lista de canciones hay un cuadro de entrada con el nombre 'Nueva lista de canciones'. => Haga clic en el cuadro y cambie el nombre de la lista de canciones. => Cierre la ventana 'Gestión de BDJ4'. La lista de canciones se guarda automáticamente."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2207,7 +2207,7 @@ msgstr "Establecer la ubicación de la carpeta de música"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "helptext_music_location"
+msgstr "El primer paso es configurar la ubicación de su carpeta de música. => Seleccione el botón 'Configurar'.<br>En la ventana 'Configuración BDJ4', se muestra la sección 'General'. El primer elemento de 'General' es la 'Carpeta de música'. => Cambia la 'Carpeta de música' por la ubicación de tu música. => Deja abierta la ventana 'Configuración BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2215,7 +2215,7 @@ msgstr "Verificar los bailes configurados"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "helptext_configure_dances"
+msgstr "Los nombres de los bailes deben coincidir con lo que usas. => Seleccione 'Editar bailes' en el lado izquierdo de la ventana 'Configuración de BDJ4'.<br>Revise la lista de bailes. Si un baile tiene un nombre diferente al que usas, selecciona el baile y cambia el nombre. Si falta un baile que usas, selecciona el botón 'Agregar' y agrega el baile. Si hay bailes que nunca usarás, selecciona el baile y luego selecciona el botón \"Eliminar\". => Cierre la ventana 'Configuración BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2223,7 +2223,7 @@ msgstr "Introducción / Primeros pasos"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "helptext_intro"
+msgstr "Esta utilidad le guiará a través de unos pasos para ayudarle a empezar. => Seleccione el botón 'Siguiente' para continuar con el siguiente paso."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2231,7 +2231,7 @@ msgstr "Reproducir una lista de reproducción"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "helptext_play_playlist"
+msgstr "Ahora reproducirás la lista de reproducción que acabas de crear. => Seleccione el botón 'Reproductor'. => En la ventana del reproductor, seleccione el menú desplegable 'Lista de reproducción en cola'. => Seleccione el nombre de la lista de reproducción que ingresó anteriormente."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2239,5 +2239,5 @@ msgstr "Cómo se organiza la música"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "helptext_music_org"
+msgstr "Configurar el método de organización es importante para que BallroomDJ 4 pueda determinar la información sobre sus canciones cuando se crea la base de datos. => Seleccione 'Organización' en el lado izquierdo de la ventana 'Configuración de BDJ4'.<br>Muchas personas organizan su música poniendo cada baile en una carpeta separada.<br>La organización predeterminada es 'Danza/Título'. Si tiene iTunes instalado, la ruta de la organización se establecerá en 'Artista del álbum/Álbum/Disco - Título de la pista0'. => Seleccione el método de organización que utiliza para sus canciones en el menú desplegable 'Ruta de organización'.<br>Si la ruta de organización que necesita no está presente, seleccione el botón 'soporte' en la ventana de inicio y envíe un mensaje de soporte. Se puede configurar casi cualquier ruta de organización.<br>Si sus archivos de audio tienen el baile almacenado en la etiqueta de audio del género, active \"La base de datos carga baile desde el género\". => Deje abierta la ventana 'Configuración BDJ4'."
 

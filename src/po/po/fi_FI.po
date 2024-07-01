@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:16\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -2175,7 +2175,7 @@ msgstr "Kuinka saada tukea"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "Saat tukea valitsemalla Tuki-painikkeen. Siellä on linkkejä wikiin, foorumeihin ja ongelmalippujärjestelmään. Tai käytä \"Lähetä tukiviesti\" -painiketta lähettääksesi viestin."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2183,7 +2183,7 @@ msgstr "Tarkista kunkin kappaleen tanssi"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Valitse 'Music Manager' 'BDJ4 Management' -ikkunan vasemmasta reunasta.<br>Selaa kappaleluetteloa ja varmista, että jokaiselle kappaleelle on asetettu tanssi.<br>Tanssin asettaminen kappale: => Valitse kappale. => Valitse 'Song Editor'-välilehti (soittimen alapuolella, kappaleluettelon yläpuolella). => Käytä Dance-tunnisteen vieressä olevaa tanssi-pudotusvalikkoa ja valitse kappaleen tanssi. => Valitse \"Song Editor\" -välilehden oikeasta yläkulmasta \"Tallenna\"-painike.<br>Voit vaihtaa takaisin \"Music Manager\" -välilehteen ja tarkistaa, onko muita kappaleita, jotka tarvitsevat tanssin. => Jätä 'BDJ4 Management' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2191,7 +2191,7 @@ msgstr "Rakenna tietokanta ensimmäistä kertaa"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "Toimiakseen BallroomDJ 4 ylläpitää tietokantaa kaikista kappaleistasi. Tämä tietokanta on rakennettava ensimmäistä kertaa. => Valitse 'Hallitse'-painike. => Valitse 'BDJ4 Management' -ikkunassa 'Update Database' -osio ikkunan vasemmasta reunasta.<br>Oletusvalintaa 'Check for New' käytetään, kun lisäät tai poistat kappaleita musiikkikokoelmastasi. => Muuta valinnaksi \"Rebuild Database\". => Valitse 'Käynnistä'-painike. => Odota tietokannan uudelleenmuodostuksen valmistumista. => Jätä 'BDJ4 Management' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2199,7 +2199,7 @@ msgstr "Luo esimerkkisoittolista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Valitse 'Muokkaa kappalelistoja' 'BDJ4 Management' -ikkunan vasemmasta reunasta.<br>Ikkunan alaosan oikealla puolella on luettelo kappaleistasi. => Valitse kappale napsauttamalla sitä. => Valitse nyt vasen nuolipainike alaosan keskellä.<br>Tämä lisää valitsemasi kappaleen luotavaan kappaleluetteloon. => Valitse muutama kappale ja lisää jokainen niistä kappaleluetteloon.<br>Kappaleluettelon yläpuolella on syöttöruutu, jossa on nimi \"New Song List\". => Napsauta ruutua ja muuta kappaleluettelon nimi. => Sulje 'BDJ4 Management' -ikkuna. Kappaleluettelo tallennetaan automaattisesti."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2207,7 +2207,7 @@ msgstr "Musiikkikansion sijainnin määrittäminen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Ensimmäinen vaihe on määrittää musiikkikansiosi sijainti. => Valitse 'Configure' -painike.<br>BDJ4 Configuration -ikkunassa näkyy 'General' -osio. Ensimmäinen kohta 'General' -kohdassa on 'Music Folder' (musiikkikansio). => Muuta 'Music Folder' (musiikkikansio) musiikkisi sijaintiin. => Jätä 'BDJ4 Configuration' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2215,7 +2215,7 @@ msgstr "Tarkista määritetyt tanssit"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "Tanssien nimien tulee vastata käyttämääsi. => Valitse 'Muokkaa tansseja' 'BDJ4 Configuration' -ikkunan vasemmasta reunasta.<br>Tarkista tanssiluettelo. Jos tanssilla on eri nimi kuin käytät, valitse tanssi ja vaihda nimi. Jos käyttämäsi tanssi puuttuu, valitse Lisää-painike ja lisää tanssi. Jos on tansseja, joita et koskaan käytä, valitse tanssi ja napsauta sitten Poista-painiketta. => Sulje 'BDJ4 Configuration' -ikkuna."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2223,7 +2223,7 @@ msgstr "Johdanto / Aloittaminen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started.=> Select the 'Next' button to continue on to the next step."
+msgstr "Tämä apuohjelma ohjaa sinut muutaman vaiheen läpi, jotta pääset alkuun. => Jatka seuraavaan vaiheeseen valitsemalla Seuraava-painike."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2231,7 +2231,7 @@ msgstr "Toista soittolista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created.=> Select the 'Player' button.=> In the player window, select the 'Queue Playlist' drop-down.=> Select the name of the playlist that you entered previously."
+msgstr "Nyt toistat juuri luodun soittolistan. => Valitse 'Player'-painike. => Valitse soitinikkunassa 'Jonon soittolista' -pudotusvalikko. => Valitse aiemmin antamasi soittolistan nimi."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2239,5 +2239,5 @@ msgstr "Miten musiikki on järjestetty"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Järjestämismenetelmän asettaminen on tärkeää, jotta BallroomDJ 4 voi määrittää kappaleihisi liittyvät tiedot tietokantaa rakennettaessa. => Valitse Organisation 'BDJ4 Configuration' -ikkunan vasemmasta reunasta.<br>Monet ihmiset järjestävät musiikkinsa laittamalla jokaisen tanssin erilliseen kansioon.<br>Oletusorganisaatio on Dance/Title. Jos iTunes on asennettuna, organisaatiopoluksi asetetaan \"Albumin esittäjä/albumi/levy - kappaleen0 nimi\". => Valitse organisointitapa, jota käytät kappaleissasi \"Organisation Path\" -pudotusvalikosta.<br>Jos tarvitsemaasi organisaatiopolkua ei löydy, valitse aloitusikkunassa tukipainike ja lähetä tukiviesti. Melkein mikä tahansa organisaatiopolku voidaan määrittää.<br>Jos äänitiedostojesi tanssi on tallennettu genren äänitunnisteeseen, ota käyttöön \"Database Loads Dance from Genre\". => Jätä 'BDJ4 Configuration' -ikkuna auki."
 

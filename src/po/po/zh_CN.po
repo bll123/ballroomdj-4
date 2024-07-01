@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-01 19:46\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -2174,7 +2174,7 @@ msgstr "如何获得支持"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "要获得支持，请选择“支持”按钮。有指向 wiki、论坛和问题票务系统的链接。或者使用“发送支持消息”按钮发送消息。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2182,7 +2182,7 @@ msgstr "检查每首歌曲的舞蹈"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "Helptext_check_dance"
+msgstr "=> 在“BDJ4 管理”窗口左侧选择“音乐管理器”。<br>滚动歌曲列表并检查以确保每首歌曲都设置了舞蹈。<br>要为歌曲设置舞蹈：=> 选择歌曲。=> 选择“歌曲编辑器”选项卡（播放器下方，歌曲列表上方）。=> 在“舞蹈”标签旁边，使用舞蹈下拉选项并选择歌曲的舞蹈。=> 在“歌曲编辑器”选项卡的右上角，选择“保存”按钮。<br>您可以切换回“音乐管理器”选项卡并检查需要设置舞蹈的其他歌曲。=> 保持“BDJ4 管理”窗口打开。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2190,7 +2190,7 @@ msgstr "首次建立数据库"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your Songs. This database must be built for the first time. => Select the 'Manage' button.  => In the 'BDJ4 Management' window, select the 'Update Database' section on the left side of the window. The default selection 'Check for New' is used when you add or remove songs from your music collection. => Change the selection to 'Rebuild Database'. => Select the 'Start' button. => Wait for the database rebuild to finish. => Leave the 'BDJ4 Management' window open."
+msgstr "为了正常运行，BallroomDJ 4 会维护您所有歌曲的数据库。必须首次构建此数据库。=> 选择“管理”按钮。=> 在“BDJ4 管理”窗口中，选择窗口左侧的“更新数据库”部分。<br>当您从音乐收藏中添加或删除歌曲时，将使用默认选择“检查新歌曲”。=> 将选择更改为“重建数据库”。=> 选择“开始”按钮。=> 等待数据库重建完成。=> 保持“BDJ4 管理”窗口打开。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2198,7 +2198,7 @@ msgstr "创建播放列表示例"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window. On the right side of the lower section of the window is a list of your songs. => Select a song by clicking on it. => Now select the left arrow button in the middle of the lower section. This will add the song you selected to the song list that is being created. => Select a few songs and add each of them to the song list. Above the song list is an editable box with the name 'New Song List' in it. => Click in the box and change the name of the song list. => Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> 在“BDJ4 管理”窗口左侧选择“编辑歌曲列表”。<br>窗口下半部分的右侧是您的歌曲列表。 => 单击选择一首歌曲。 => 现在选择下半部分中间的左箭头按钮。<br>这会将您选择的歌曲添加到正在创建的歌曲列表中。 => 选择几首歌曲，并将它们每首添加到歌曲列表中。<br>歌曲列表上方是一个输入框，其中有“新歌曲列表”名称。 => 单击框并更改歌曲列表的名称。 => 关闭“BDJ4 管理”窗口。歌曲列表将自动保存。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2206,7 +2206,7 @@ msgstr "设置音乐文件夹的位置"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of the music folder. => Select the 'Configure' button. In the 'BDJ4 Configuration' window, the 'General Options' section is displayed. The first item in 'General Options' is the 'Music Folder'. => Change the 'Music Folder' to the location of your music. => Leave the 'BDJ4 Configuration' window open."
+msgstr "第一步是配置音乐文件夹的位置。=> 选择“配置”按钮。在“BDJ4 配置”窗口中，将显示“常规选项”部分。“常规选项”中的第一个项目是“音乐文件夹”。=> 将“音乐文件夹”更改为音乐的位置。=> 保持“BDJ4 配置”窗口打开。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2214,7 +2214,7 @@ msgstr "验证配置的舞步"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "帮助文本_配置舞蹈"
+msgstr "舞蹈的名称需要与您使用的舞蹈相匹配。=> 在“BDJ4 配置”窗口左侧选择“编辑舞蹈”。<br>查看舞蹈列表。如果舞蹈的名称与您使用的舞蹈不同，请选择该舞蹈并更改名称。如果您使用的舞蹈缺失，请选择“添加”按钮并添加该舞蹈。如果有您永远不会使用的舞蹈，请选择该舞蹈，然后选择“删除”按钮。=> 关闭“BDJ4 配置”窗口。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2222,7 +2222,7 @@ msgstr "简介/入门"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started. => Select the 'Next' button to continue on to the next step."
+msgstr "该实用程序将通过几个步骤帮助您开始操作。 => 选择 \"下一步 \"按钮继续下一步。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2230,7 +2230,7 @@ msgstr "播放播放列表"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created. => Select the 'Player' button. => In the player window, select the 'Queue Playlist' drop-down. => Select the name of the playlist that you entered previously."
+msgstr "现在您将播放刚刚创建的播放列表。=> 选择“播放器”按钮。=> 在播放器窗口中，选择“队列播放列表”下拉菜单。=> 选择您之前输入的播放列表的名称。"
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2238,5 +2238,5 @@ msgstr "如何组织音乐"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4 can determine the information about your songs when the database is built. => Select 'Organisation' on the left side of the 'BDJ4 Configuration' window. Many people have their music organised by putting each dance into a separate folder.  This is the default organisation: 'Dance/Title'. => Select the organisation method you use for your songs in the 'Organisation Path' drop-down. => Close the 'BDJ4 Organisation' window."
+msgstr "设置组织方式非常重要，这样BallroomDJ 4就能在建立数据库时确定歌曲的信息。 => 在 \"BDJ4配置 \"窗口左侧选择 \"组织\"。<br>许多人将他们的音乐组织起来，把每支舞放到一个单独的文件夹中。如果你安装了 iTunes，组织路径将被设置为 \"Album Artist/Album/Disc - Track0 Title\"。 =>在 \"组织路径 \"下拉菜单中选择你用于歌曲的组织方法。<br>如果你需要的组织路径不存在，请选择启动器窗口中的 \"支持 \"按钮并发送支持消息。几乎任何组织路径都可以配置。<br>如果你的音频文件在流派音频标签中存储了舞蹈，请打开 \"数据库从流派加载舞蹈\"。 => 打开 \"BDJ4 配置 \"窗口。"
 

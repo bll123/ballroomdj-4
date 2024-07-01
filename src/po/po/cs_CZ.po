@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-06-29 14:33\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -2174,7 +2174,7 @@ msgstr "Jak získat podporu"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "helptext_get_support"
+msgstr "Chcete-li získat podporu, vyberte tlačítko „Podpora“. Jsou zde odkazy na wiki, fóra a systém problémových vstupenek. Nebo použijte tlačítko 'Odeslat zprávu podpory' k odeslání zprávy."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2182,7 +2182,7 @@ msgstr "Zkontrolujte tanec pro každou píseň"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "helptext_check_dance"
+msgstr "=> Vyberte 'Music Manager' v levé části okna 'BDJ4 Management'.<br>Procházejte seznamem skladeb a zkontrolujte, zda je tanec nastaven pro každou skladbu.<br>Chcete-li nastavit tanec pro skladba: => Vyberte skladbu. => Vyberte záložku 'Song Editor' (pod přehrávačem, nad seznamem skladeb). => Vedle štítku 'Dance' použijte rozbalovací nabídku tanec a vyberte tanec pro skladbu. => V pravém horním rohu záložky 'Song Editor' vyberte tlačítko 'Save'.<br>Můžete se přepnout zpět na kartu 'Music Manager' a vyhledat další skladby, které potřebují mít taneční sadu. => Nechte okno 'BDJ4 Management' otevřené."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2190,7 +2190,7 @@ msgstr "Vytvoření první databáze"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "helptext_build_db"
+msgstr "Aby BallroomDJ 4 fungoval, udržuje databázi všech vašich skladeb. Tato databáze musí být vytvořena poprvé. => Vyberte tlačítko 'Spravovat'. => V okně 'BDJ4 Management' vyberte sekci 'Update Database' na levé straně okna.<br>Výchozí volba 'Check for New' se používá, když přidáváte nebo odebíráte skladby z vaší hudební sbírky. => Změňte výběr na 'Rebuild Database'. => Vyberte tlačítko 'Start'. => Počkejte na dokončení přestavby databáze. => Nechte okno 'BDJ4 Management' otevřené."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2198,7 +2198,7 @@ msgstr "Vytvoření příkladu seznamu skladeb"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "helptext_create_playlist"
+msgstr "=> Vyberte 'Edit Song Lists' v levé části okna 'BDJ4 Management'.<br>Na pravé straně spodní části okna je seznam vašich skladeb. => Vyberte skladbu kliknutím na ni. => Nyní vyberte tlačítko se šipkou vlevo uprostřed spodní části.<br>Tím přidáte skladbu, kterou jste vybrali, do seznamu skladeb, který se vytváří. => Vyberte několik skladeb a přidejte každou z nich do seznamu skladeb.<br>Nad seznamem skladeb je vstupní pole s názvem 'New Song List'. => Klikněte do pole a změňte název seznamu skladeb. => Zavřete okno 'BDJ4 Management'. Seznam skladeb se automaticky uloží."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2206,7 +2206,7 @@ msgstr "Nastavení umístění složky s hudbou"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "helptext_music_location"
+msgstr "Prvním krokem je konfigurace umístění hudební složky. => Vyberte tlačítko 'Configure' (Konfigurace).<br>V okně 'BDJ4 Configuration' (Konfigurace BDJ4) se zobrazí část 'General' (Obecné). První položkou v části 'General' je 'Music Folder' (Hudební složka). => Změňte položku 'Music Folder' (Hudební složka) na umístění vaší hudby. => Nechte okno 'BDJ4 Configuration' (Konfigurace BDJ4) otevřené."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2214,7 +2214,7 @@ msgstr "Ověření nakonfigurovaných tanců"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "helptext_configure_dances"
+msgstr "Názvy tanců musí odpovídat tomu, co používáte. => Vyberte 'Edit Dances' v levé části okna 'BDJ4 Configuration'.<br>Prohlédněte si seznam tanců. Pokud má tanec jiný název, než jaký používáte, vyberte tanec a změňte název. Pokud tanec, který používáte, chybí, vyberte tlačítko 'Přidat' a přidejte tanec. Pokud existují tance, které nikdy nepoužijete, vyberte tanec a poté stiskněte tlačítko 'Odebrat'. => Zavřete okno 'BDJ4 Configuration'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2222,7 +2222,7 @@ msgstr "Úvod / Začínáme"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "helptext_intro"
+msgstr "Tento nástroj vás provede několika kroky, které vám pomohou začít. => Výběrem tlačítka \"Další\" pokračujte na další krok."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2230,7 +2230,7 @@ msgstr "Přehrát seznam skladeb"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "helptext_play_playlist"
+msgstr "Nyní přehrajete seznam skladeb, který byl právě vytvořen. => Vyberte tlačítko 'Přehrávač'. => V okně přehrávače vyberte rozevírací seznam 'Seznam skladeb do fronty'. => Vyberte název seznamu skladeb, který jste zadali dříve."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2238,5 +2238,5 @@ msgstr "Jak je hudba organizována"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "helptext_music_org"
+msgstr "Nastavení způsobu organizace je důležité, aby BallroomDJ 4 mohl určit informace o vašich skladbách při vytváření databáze. => Vyberte 'Organizace' v levé části okna 'BDJ4 Configuration'.<br>Mnoho lidí má hudbu organizovanou tak, že každý tanec umístí do samostatné složky.<br>Výchozí organizace je 'Dance/Title'. Pokud máte nainstalovaný iTunes, cesta organizace bude nastavena na 'Album Artist/Album/Disc – Track0 Title'. => V rozevíracím seznamu 'Cesta organizace' vyberte metodu organizace, kterou používáte pro své skladby.<br>Pokud požadovaná cesta organizace není k dispozici, vyberte v úvodním okně tlačítko 'podpora' a odešlete zprávu podpory. Lze nakonfigurovat téměř libovolnou organizační cestu.<br>Pokud mají vaše zvukové soubory tanec uložený v tagu žánru audio, zapněte „Databáze načítá tanec z žánru“. => Nechte okno 'BDJ4 Configuration' otevřené."
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-01 19:44\n"
+"PO-Revision-Date: 2024-07-01 20:51\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -2183,7 +2183,7 @@ msgstr "Vérifier la danse pour chaque chanson"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Sélectionnez « Music Manager » dans le côté gauche de la fenêtre « Gestion BDJ4 ».<br>Faites défiler la liste des chansons et vérifiez que la danse est définie pour chaque chanson.<br>Pour définir la danse d'un chanson : => Sélectionnez la chanson. => Sélectionnez l'onglet 'Song Editor' (sous le lecteur, au dessus de la liste des chansons). => À côté du label « Danse », utilisez la sélection déroulante Danse et sélectionnez la danse de la chanson. => Dans le coin supérieur droit de l'onglet \"Éditeur de chansons\", sélectionnez le bouton \"Enregistrer\".<br>Vous pouvez revenir à l'onglet \"Music Manager\" et rechercher d'autres chansons nécessitant un jeu de danse. => Laissez la fenêtre 'Gestion BDJ4' ouverte."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2191,7 +2191,7 @@ msgstr "Construire la base de données pour la première fois"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "Pour fonctionner, BallroomDJ 4 maintient une base de données de toutes vos chansons. Cette base de données doit être construite pour la première fois. => Sélectionnez le bouton 'Gérer'. => Dans la fenêtre « Gestion BDJ4 », sélectionnez la section « Mettre à jour la base de données » dans le côté gauche de la fenêtre.<br>La sélection par défaut « Rechercher de nouveaux » est utilisée lorsque vous ajoutez ou supprimez des chansons de votre collection musicale. => Changez la sélection en 'Reconstruire la base de données'. => Sélectionnez le bouton 'Démarrer'. => Attendez la fin de la reconstruction de la base de données. => Laissez la fenêtre 'Gestion BDJ4' ouverte."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2199,7 +2199,7 @@ msgstr "Créer une liste de lecture"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Sélectionnez « Modifier les listes de chansons » dans le côté gauche de la fenêtre « Gestion BDJ4 ».<br>Sur le côté droit de la section inférieure de la fenêtre se trouve une liste de vos chansons. => Sélectionnez une chanson en cliquant dessus. => Sélectionnez maintenant le bouton fléché vers la gauche au milieu de la section inférieure.<br>Cela ajoutera la chanson que vous avez sélectionnée à la liste de chansons en cours de création. => Sélectionnez quelques chansons et ajoutez chacune d'elles à la liste des chansons.<br>Au-dessus de la liste des chansons se trouve une zone de saisie avec le nom « Nouvelle liste de chansons ». => Cliquez dans la case et changez le nom de la liste des chansons. => Fermez la fenêtre 'Gestion BDJ4'. La liste des chansons est automatiquement enregistrée."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2207,7 +2207,7 @@ msgstr "Définir l'emplacement du dossier musical"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "La première étape consiste à configurer l'emplacement de votre dossier musical => Sélectionnez le bouton 'Configurer'.<br>Dans la fenêtre 'BDJ4 Configuration', la section 'Général' est affichée. Le premier élément de la section 'Général' est le 'Dossier musical' => Changez le 'Dossier musical' pour l'emplacement de votre musique => Laissez la fenêtre 'BDJ4 Configuration' ouverte."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2215,7 +2215,7 @@ msgstr "Vérifier les danses configurées"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "Les noms des danses doivent correspondre à ce que vous utilisez. => Sélectionnez 'Modifier les danses' dans le côté gauche de la fenêtre 'Configuration BDJ4'.<br>Consultez la liste des danses. Si une danse porte un nom différent de celui que vous utilisez, sélectionnez la danse et modifiez le nom. Si une danse que vous utilisez est manquante, sélectionnez le bouton « Ajouter » et ajoutez la danse. S'il y a des danses que vous n'utiliserez jamais, sélectionnez la danse, puis sélectionnez le bouton « Supprimer ». => Fermez la fenêtre 'Configuration BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2231,7 +2231,7 @@ msgstr "Jouer une liste de lecture"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Dans la fenêtre du lecteur, sélectionnez la liste déroulante \"Queue Playlist\" => Sélectionnez le nom de la liste de lecture que vous avez saisi précédemment."
+msgstr "Vous allez maintenant lire la playlist qui vient d'être créée. => Sélectionnez le bouton 'Joueur'. => Dans la fenêtre du lecteur, sélectionnez le menu déroulant « Queue Playlist ». => Sélectionnez le nom de la playlist que vous avez saisi précédemment."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2239,5 +2239,5 @@ msgstr "Comment la musique est-elle organisée ?"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "La définition de la méthode d'organisation est importante afin que BallroomDJ 4 puisse déterminer les informations sur vos chansons lors de la création de la base de données. => Sélectionnez 'Organisation' dans la partie gauche de la fenêtre 'Configuration BDJ4'.<br>De nombreuses personnes organisent leur musique en plaçant chaque danse dans un dossier séparé.<br>L'organisation par défaut est 'Danse/Titre'. Si iTunes est installé, le chemin d'accès à l'organisation sera défini sur « Artiste de l'album/Album/Disque - Titre de la piste 0 ». => Sélectionnez la méthode d'organisation que vous utilisez pour vos chansons dans la liste déroulante « Chemin d'organisation ».<br>Si le chemin d'organisation dont vous avez besoin n'est pas présent, sélectionnez le bouton « Support » dans la fenêtre de démarrage et envoyez un message d'assistance. Presque tous les chemins d'organisation peuvent être configurés.<br>Si vos fichiers audio contiennent la danse stockée dans la balise audio de genre, activez « La base de données charge la danse à partir du genre ». => Laissez la fenêtre 'Configuration BDJ4' ouverte."
 
