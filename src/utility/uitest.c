@@ -109,7 +109,7 @@ typedef struct {
 } uitestvl_t;
 
 static const int vlcols [UITEST_VL_MAX] = {
-  3, 2, 2,
+  3, 2, 3,
 };
 static const int vlmaxrows [UITEST_VL_MAX] = {
   5, 40, 25,
@@ -117,7 +117,7 @@ static const int vlmaxrows [UITEST_VL_MAX] = {
 static const char * vllabs [UITEST_VL_MAX][UITEST_VL_COL_MAX] = {
   { "One", "Two", "☆", NULL, NULL, NULL },
   { "A", "B", NULL, NULL, NULL, NULL },
-  { "Three", "Four", NULL, NULL, NULL, NULL },
+  { "Hidden", "Three", "Four", NULL, NULL, NULL },
 };
 static uitestvl_t vlcb [UITEST_VL_MAX];
 
@@ -1196,7 +1196,11 @@ uitestUIVirtList (uitest_t *uitest)
     uivlSetNumColumns (uitest->vl [i], vlcols [i]);
     uivlSetNumRows (uitest->vl [i], vlmaxrows [i]);
     for (int j = 0; j < vlcols [i]; ++j) {
-      uivlMakeColumn (uitest->vl [i], "label", j, VL_TYPE_LABEL);
+      if (i == 2 && j == 0) {
+        uivlMakeColumn (uitest->vl [i], "hidden", j, VL_TYPE_INTERNAL_NUMERIC);
+      } else {
+        uivlMakeColumn (uitest->vl [i], "label", j, VL_TYPE_LABEL);
+      }
       if (i != 1 && j == 0) {
         uivlSetColumnEllipsizeOn (uitest->vl [i], j);
       }
@@ -1305,19 +1309,24 @@ uitestVLFillCB (void *udata, uivirtlist_t *vl, int32_t rownum)
     if (vlidx == 0 && j == 2) {
       snprintf (tbuff, sizeof (tbuff), "★");
     } else {
-      snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d", rownum, j);
+      snprintf (tbuff, sizeof (tbuff), "%d-%" PRIu32 "-%d", vlidx, rownum, j);
       if (vlidx != 1 && rownum % 5 == 0 && j == 0) {
-        snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
+        snprintf (tbuff, sizeof (tbuff), "%d-%" PRIu32 "-%d stuff stuff stuff stuff", vlidx, rownum, j);
       }
       if (vlidx == 1 && rownum == 35 && j == 0) {
-        snprintf (tbuff, sizeof (tbuff), "%" PRIu32 " / %d stuff stuff stuff stuff", rownum, j);
+        snprintf (tbuff, sizeof (tbuff), "%-d%" PRIu32 "-%d stuff stuff stuff stuff", vlidx, rownum, j);
       }
       if (rownum % 7 == 0 && j == 2) {
-        snprintf (tbuff, sizeof (tbuff), "%" PRIu32, rownum);
+        snprintf (tbuff, sizeof (tbuff), "%d-%" PRIu32, vlidx, rownum);
       }
     }
-    uivlSetRowColumnStr (vl, rownum, j, tbuff);
-    if (rownum % 9 == 0 && j == 0) {
+
+    if (vlidx == 2 && j == 0) {
+      uivlSetRowColumnNum (vl, rownum, j, rownum);
+    } else {
+      uivlSetRowColumnStr (vl, rownum, j, tbuff);
+    }
+    if (rownum % 9 == 0 && vlidx != 2 && j == 0) {
       uivlSetRowColumnClass (vl, rownum, j, ACCENT_CLASS);
     }
   }

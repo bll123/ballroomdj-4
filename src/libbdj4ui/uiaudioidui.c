@@ -369,7 +369,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uivlSetUseListingFont (uivl);
   uivlSetNumColumns (uivl, audioidint->colcount);
-  uivlAddDisplayColumns (uivl, audioidint->dlsellist);
+  uivlAddDisplayColumns (uivl, audioidint->dlsellist, 0);
   uivlSetRowFillCallback (uivl, uiaudioidFillRow, audioidint);
   /* set the number of rows to 1 initially, */
   /* so that the row-class and row-lock can be set */

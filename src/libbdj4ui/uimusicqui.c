@@ -170,6 +170,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwcont_t *errorMsg, uiwcont_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
+  int               startcol = 0;
   uiwcont_t         *hbox;
 //  uiwcont_t         *scwin;
   uiwcont_t         *uiwidgetp;
@@ -385,11 +386,13 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   mqint->sellist = sellist;
-  mqint->colcount = UIMUSICQ_COL_MAX + slistGetCount (mqint->sellist);
   uivl = uivlCreate (mqint->tag, NULL, uimusicq->ui [ci].mainbox,
       15, 400, VL_ENABLE_KEYS);
   mqint->uivl = uivl;
   uivlSetUseListingFont (uivl);
+
+  startcol = UIMUSICQ_COL_MAX;
+  mqint->colcount = UIMUSICQ_COL_MAX + slistGetCount (sellist);
   uivlSetNumColumns (uivl, mqint->colcount);
 
   uivlMakeColumn (uivl, "uniqueidx", UIMUSICQ_COL_UNIQUE_IDX, VL_TYPE_INTERNAL_NUMERIC);
@@ -397,13 +400,22 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uivlMakeColumn (uivl, "dispidx", UIMUSICQ_COL_DISP_IDX, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_DISP_IDX, VL_COL_WIDTH_GROW_ONLY);
   uivlSetColumnAlignEnd (uivl, UIMUSICQ_COL_DISP_IDX);
+
+  /* always create the pause-indicator column */
   uivlMakeColumn (uivl, "pauseind", UIMUSICQ_COL_PAUSEIND, VL_TYPE_IMAGE);
+  /* but if it is not meant to be shown, hide it */
+  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
+    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_HIDE);
+  }
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_WIDTH_GROW_ONLY);
-  uivlAddDisplayColumns (uivl, sellist);
+
+  uivlAddDisplayColumns (uivl, sellist, startcol);
+
   uivlSetRowFillCallback (uivl, uimusicqFillRow, mqint);
   uivlSetNumRows (mqint->uivl, 0);
 
   uivlDisplay (mqint->uivl);
+
 //  uivlSetSelectionCallback (mqint->uivl, uimusicqRowSelect, mqint);
 //  uivlSetDoubleClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
 //  uivlSetRightClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
@@ -1382,10 +1394,8 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   if (mqint == NULL || mqint->musicqupdate == NULL) {
     return;
   }
-fprintf (stderr, "%d fill-row %d\n", mqint->mqidx, rownum);
   musicqupditem = nlistGetData (mqint->musicqupdate->dispList, rownum + 1);
   if (musicqupditem == NULL) {
-fprintf (stderr, "   null-item\n");
     return;
   }
 

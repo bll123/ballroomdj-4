@@ -249,11 +249,11 @@ static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_
 static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
 static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, const char *func);
 static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int colidx, const char *func);
-static void uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row);
 static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
 static void uivlConfigureScrollbar (uivirtlist_t *vl);
 static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
 static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
+static void uivlRowShow (uivirtlist_t *vl, uivlrow_t *row);
 
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
@@ -342,7 +342,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* created with extra space */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  uiWidgetExpandVert (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
@@ -361,7 +360,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
-  uiWidgetExpandHoriz (vl->wcont [VL_W_EVENT_BOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
 
   /* the size change callback must be set on the scroll-window */
@@ -662,7 +660,9 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-heading]", vl->tag);
   }
 
-  uivlSetRowColumnStr (vl, VL_ROW_HEADING, colidx, heading);
+  /* don't call uivlSetRowColumnStr(), as it is meant to be used after */
+  /* the display has been initialized */
+  uiLabelSetText (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget, heading);
 }
 
 void
@@ -672,6 +672,7 @@ uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t type)
     return;
   }
 
+fprintf (stderr, "%s mkcol %d %d %s\n", vl->tag, colidx, type, tag);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d %d %s", vl->tag, colidx, type, tag);
   vl->coldata [colidx].type = type;
   vl->coldata [colidx].tag = tag;
@@ -792,15 +793,7 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
   washidden = vl->coldata [colidx].hidden;
   vl->coldata [colidx].hidden = hidden;
 
-  if (washidden != hidden) {
-    if (vl->dispheading) {
-      if (hidden == VL_COL_HIDE) {
-        uiWidgetHide (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget);
-      }
-      if (hidden == VL_COL_SHOW) {
-        uiWidgetShow (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget);
-      }
-    }
+  if (vl->initialized >= VL_INIT_ROWS && washidden != hidden) {
     for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t   *row;
 
@@ -809,12 +802,7 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
         continue;
       }
 
-      if (hidden == VL_COL_HIDE) {
-        uiWidgetHide (row->cols [colidx].uiwidget);
-      }
-      if (hidden == VL_COL_SHOW) {
-        uiWidgetShow (row->cols [colidx].uiwidget);
-      }
+      uivlRowShow (vl, row);
     }
   }
 }
@@ -899,23 +887,18 @@ void
 uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
 {
   uivlrow_t   *row = NULL;
-  vltype_t    type;
 
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
-  if (rownum == VL_ROW_HEADING && vl->initialized < VL_INIT_HEADING) {
-    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s not-init (%d<%d)", vl->tag, vl->initialized, VL_INIT_HEADING);
-    return;
-  }
-  if (rownum != VL_ROW_HEADING && vl->initialized < VL_INIT_ROWS) {
+  if (vl->initialized < VL_INIT_ROWS) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s not-init (%d<%d)", vl->tag, vl->initialized, VL_INIT_ROWS);
     return;
   }
   if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
-  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+  if (rownum < 0 || rownum >= vl->numrows) {
     return;
   }
 
@@ -924,13 +907,7 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
     return;
   }
 
-  type = vl->coldata [colidx].type;
-  if (rownum == VL_ROW_HEADING) {
-    type = VL_TYPE_LABEL;
-  }
-
-fprintf (stderr, "%s set %d %s\n", vl->tag, colidx, value);
-  switch (type) {
+  switch (vl->coldata [colidx].type) {
     case VL_TYPE_LABEL: {
       uiLabelSetText (row->cols [colidx].uiwidget, value);
       break;
@@ -953,7 +930,7 @@ fprintf (stderr, "%s set %d %s\n", vl->tag, colidx, value);
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowDisplay (vl, row);
+    uivlRowShow (vl, row);
   }
   row->cleared = false;
 }
@@ -973,7 +950,6 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
     return;
   }
 
-fprintf (stderr, "%s set img %d %d\n", vl->tag, colidx, width);
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_IMAGE: {
       uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
@@ -987,7 +963,7 @@ fprintf (stderr, "%s set img %d %d\n", vl->tag, colidx, width);
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowDisplay (vl, row);
+    uivlRowShow (vl, row);
   }
   row->cleared = false;
 }
@@ -1006,7 +982,6 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
     return;
   }
 
-fprintf (stderr, "%s set num %d %d\n", vl->tag, colidx, val);
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_ENTRY:
     case VL_TYPE_IMAGE:
@@ -1039,7 +1014,7 @@ fprintf (stderr, "%s set num %d %d\n", vl->tag, colidx, val);
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowDisplay (vl, row);
+    uivlRowShow (vl, row);
   }
   row->cleared = false;
 }
@@ -1283,9 +1258,6 @@ uivlPopulate (uivirtlist_t *vl)
     row = &vl->rows [dispidx];
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-      if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-        continue;
-      }
       col = &row->cols [colidx];
       if (col->class != NULL) {
         uiWidgetRemoveClass (col->uiwidget, col->class);
@@ -1331,7 +1303,7 @@ uivlPopulate (uivirtlist_t *vl)
 
     if (row->offscreen) {
       row->offscreen = false;
-      uiWidgetShowAll (row->hbox);
+      uivlRowShow (vl, row);
     }
   }
 
@@ -1514,7 +1486,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
   found = false;
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-    if (! isheading && vl->coldata [colidx].ellipsize) {
+    if (vl->coldata [colidx].ellipsize) {
       found = true;
       break;
     }
@@ -1638,7 +1610,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (coldata->hidden == VL_COL_HIDE) {
+    if (origtype == VL_TYPE_INTERNAL_NUMERIC) {
       continue;
     }
 
@@ -1652,6 +1624,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     if (isheading) {
       uiWidgetAlignVertEnd (col->uiwidget);
     }
+
+    uiWidgetAlignHorizStart (col->uiwidget);
     if (coldata->alignend) {
       uiLabelAlignEnd (col->uiwidget);
     }
@@ -1662,12 +1636,12 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
         origtype == VL_TYPE_ENTRY) {
-      uiWidgetAlignHorizFill (col->uiwidget);
+      uiWidgetAlignHorizStart (col->uiwidget);
       uiWidgetExpandHoriz (col->uiwidget);
     }
-    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK ||
-        coldata->alignend) {
-      uiBoxPackStartExpand (col->box, col->uiwidget);
+    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
+      uiWidgetExpandHoriz (col->box);
+      uiBoxPackStart (col->box, col->uiwidget);
     } else {
       uiBoxPackStart (col->box, col->uiwidget);
     }
@@ -1700,7 +1674,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     uiSizeGroupAdd (coldata->szgrpBox, col->box);
-//    uiSizeGroupAdd (coldata->szgrpWidget, col->uiwidget);
+    uiSizeGroupAdd (coldata->szgrpWidget, col->uiwidget);
 
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
@@ -1709,9 +1683,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       if (coldata->minwidth != VL_MIN_WIDTH_ANY) {
         uiLabelSetMinWidth (col->uiwidget, coldata->minwidth);
       }
-      if (! isheading && coldata->ellipsize) {
+      if (coldata->ellipsize) {
         uiLabelEllipsizeOn (col->uiwidget);
-        uiSizeGroupAdd (row->szgrp, col->uiwidget);
+        uiSizeGroupAdd (row->szgrp, col->box);
       }
     }
 
@@ -2287,12 +2261,11 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
+      /* already hidden */
       continue;
     }
 
-    if (vl->coldata [colidx].type != VL_TYPE_INTERNAL_NUMERIC) {
-      uiWidgetHide (row->cols [colidx].uiwidget);
-    }
+    uiWidgetHide (row->cols [colidx].box);
   }
 }
 
@@ -2325,26 +2298,6 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
 
   return rc;
 }
-
-static void
-uivlRowDisplay (uivirtlist_t *vl, uivlrow_t *row)
-{
-  uiWidgetShowAll (row->hbox);
-
-  /* re-hide any colums that should be hidden */
-  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-    if (vl->coldata [colidx].type == VL_TYPE_INTERNAL_NUMERIC) {
-      continue;
-    }
-    if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-      for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
-        row = &vl->rows [dispidx];
-        uiWidgetHide (row->cols [colidx].uiwidget);
-      }
-    }
-  }
-}
-
 
 static void
 uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
@@ -2455,4 +2408,18 @@ uivlCalcRownum (uivirtlist_t *vl, int dispidx)
 
   rownum = (dispidx - vl->headingoffset) + vl->rowoffset;
   return rownum;
+}
+
+static void
+uivlRowShow (uivirtlist_t *vl, uivlrow_t *row)
+{
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
+      uiWidgetHide (row->cols [colidx].box);
+    }
+    if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+      uiWidgetShowAll (row->cols [colidx].box);
+    }
+  }
+  uiWidgetShow (row->hbox);
 }

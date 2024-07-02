@@ -25,7 +25,7 @@
 static const char * const VL_FAV_CLASS = "bdj-list-fav";
 
 void
-uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
+uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
 {
   slistidx_t  seliteridx;
   int         tagidx;
@@ -35,12 +35,15 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist)
     return;
   }
 
-  col = 0;
+  col = startcol;
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
     int         minwidth = 10;
     const char  *title;
 
+    if (tagidx == TAG_ALBUM) {
+      title = "Album";
+    } else
     if (tagidx == TAG_FAVORITE) {
       songfav_t   *songfav;
 

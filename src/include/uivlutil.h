@@ -7,6 +7,6 @@
 #include "slist.h"
 #include "uivirtlist.h"
 
-void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist);
+void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist, int startcol);
 
 #endif /* INC_UIVLUTIL_H */
