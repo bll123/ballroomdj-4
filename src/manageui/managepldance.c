@@ -128,7 +128,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   mpldnc->uivl = uivlCreate ("mpl-dance", mpldnc->minfo->window, vboxp,
       15, 300, VL_FLAGS_NONE);
   uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
-  uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECKBOX);
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, "count", MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
   uivlMakeColumnSpinboxTime (mpldnc->uivl, "mpt", MPLDNC_COL_MAXPLAYTIME, SB_TIME_BASIC, NULL);

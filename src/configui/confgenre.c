@@ -81,7 +81,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_GENRE,
       tagdefs [TAG_GENRE].displayname);
 
-  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECKBOX);
   /* CONTEXT: configuration: genre: title of the classical setting column */
   uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_CLASSICAL, _("Classical?"));
   uivlSetColumnAlignCenter (uivl, CONFUI_GENRE_COL_CLASSICAL);

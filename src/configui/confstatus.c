@@ -81,7 +81,7 @@ confuiCreateStatusTable (confuigui_t *gui)
   uivlSetColumnHeading (uivl, CONFUI_STATUS_COL_STATUS,
       tagdefs [TAG_STATUS].displayname);
 
-  uivlMakeColumn (uivl, "pf", CONFUI_STATUS_COL_PLAY_FLAG, VL_TYPE_CHECK_BUTTON);
+  uivlMakeColumn (uivl, "pf", CONFUI_STATUS_COL_PLAY_FLAG, VL_TYPE_CHECKBOX);
   /* CONTEXT: configuration: status: title of the "playable" column */
   uivlSetColumnHeading (uivl, CONFUI_STATUS_COL_PLAY_FLAG, _("Play?"));
   uivlSetColumnAlignCenter (uivl, CONFUI_STATUS_COL_PLAY_FLAG);

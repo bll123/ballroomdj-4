@@ -291,6 +291,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   uivlSetDarkBackground (uivl);
   uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
   uivlMakeColumn (uivl, "dance", CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
+  uivlSetColumnGrow (uivl, CONFUI_DANCE_COL_DANCE, VL_COL_WIDTH_GROW_ONLY);
   uivlMakeColumn (uivl, "dkey", CONFUI_DANCE_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
   count = danceGetCount (dances);
   uivlSetNumRows (uivl, count);

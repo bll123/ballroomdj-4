@@ -398,6 +398,9 @@ uiduallistDispSelect (void *udata)
   if (count != 1) {
     return UICB_CONT;
   }
+  if (queueGetCount (duallist->dispq [DL_LIST_SOURCE]) == 0) {
+    return UICB_CONT;
+  }
 
   idx = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
   toidx = uivlGetCurrSelection (duallist->uivl [DL_LIST_TARGET]);
@@ -443,6 +446,9 @@ uiduallistDispRemove (void *udata)
 
   count = uivlSelectionCount (duallist->uivl [DL_LIST_TARGET]);
   if (count != 1) {
+    return UICB_CONT;
+  }
+  if (queueGetCount (duallist->dispq [DL_LIST_TARGET]) == 0) {
     return UICB_CONT;
   }
 

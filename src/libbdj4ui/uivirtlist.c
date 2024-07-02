@@ -762,6 +762,8 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow)
   vl->coldata [colidx].grow = grow;
 }
 
+/* this only works well if the display has already been generated */
+/* with all columns */
 void
 uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 {
@@ -831,7 +833,7 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
       uiSpinboxSetState (row->cols [colidx].uiwidget, state);
       break;
     }
-    case VL_TYPE_CHECK_BUTTON:
+    case VL_TYPE_CHECKBOX:
     case VL_TYPE_RADIO_BUTTON: {
       uiToggleButtonSetState (row->cols [colidx].uiwidget, state);
       break;
@@ -920,7 +922,7 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
     case VL_TYPE_IMAGE: {
       break;
     }
-    case VL_TYPE_CHECK_BUTTON:
+    case VL_TYPE_CHECKBOX:
     case VL_TYPE_INTERNAL_NUMERIC:
     case VL_TYPE_RADIO_BUTTON:
     case VL_TYPE_SPINBOX_NUM:
@@ -993,7 +995,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
       row->cols [colidx].value = val;
       break;
     }
-    case VL_TYPE_CHECK_BUTTON:
+    case VL_TYPE_CHECKBOX:
     case VL_TYPE_RADIO_BUTTON: {
       int   nstate = UI_TOGGLE_BUTTON_OFF;
 
@@ -1064,7 +1066,7 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
       value = row->cols [colidx].value;
       break;
     }
-    case VL_TYPE_CHECK_BUTTON:
+    case VL_TYPE_CHECKBOX:
     case VL_TYPE_RADIO_BUTTON: {
       int   tval;
 
@@ -1247,6 +1249,7 @@ uivlDisplay (uivirtlist_t *vl)
       if (vl->coldata [colidx].heading == NULL) {
         continue;
       }
+      /* set-row-col-str will call show-row */
       uivlSetRowColumnStr (vl, VL_ROW_HEADING, colidx,
           vl->coldata [colidx].heading);
     }
@@ -1568,7 +1571,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       case VL_TYPE_IMAGE: {
         col->uiwidget = uiImageNew ();
         uiImageClear (col->uiwidget);
-        uiWidgetSetMarginStart (col->uiwidget, 1);
         break;
       }
       case VL_TYPE_ENTRY: {
@@ -1589,7 +1591,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
           trow = &vl->rows [vl->headingoffset];
           col->uiwidget =
-              uiCreateRadioButton (trow->cols [colidx].uiwidget, NULL, 0);
+              uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
         }
         uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
@@ -1598,8 +1600,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         }
         break;
       }
-      case VL_TYPE_CHECK_BUTTON: {
-        col->uiwidget = uiCreateCheckButton (NULL, 0);
+      case VL_TYPE_CHECKBOX: {
+        col->uiwidget = uiCreateCheckButton ("", 0);
         uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
         if (coldata->togglecb != NULL) {
@@ -1643,12 +1645,18 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     if (isheading) {
       uiWidgetAlignVertEnd (col->uiwidget);
     }
+    uiWidgetSetMarginEnd (col->uiwidget, 3);
+    if (type == VL_TYPE_IMAGE) {
+      uiWidgetSetMarginStart (col->uiwidget, 1);
+    }
 
     if (coldata->alignend) {
       uiLabelAlignEnd (col->uiwidget);
     } else if (coldata->aligncenter) {
-// ### not working.
+      /* this works if the widget is set to expand-horiz, and */
+      /* it is not part of a size group */
       uiWidgetAlignHorizCenter (col->uiwidget);
+      uiWidgetExpandHoriz (col->uiwidget);
     } else {
       uiWidgetAlignHorizStart (col->uiwidget);
     }
@@ -1677,7 +1685,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    uiWidgetSetMarginEnd (col->uiwidget, 3);
     if (vl->uselistingfont) {
       uiWidgetAddClass (col->uiwidget, VL_LIST_CLASS);
       if (isheading) {
@@ -1685,7 +1692,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
+    if (! coldata->aligncenter) {
+      uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
+    }
 
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
@@ -2041,7 +2050,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
     theight = vl->vboxheight - vl->headingheight;
     calcrows = theight / vl->rowheight;
     if (vl->dispheading) {
-      /* must include the heading */
+      /* must include the heading as a row */
       calcrows += 1;
     }
 
@@ -2242,7 +2251,7 @@ uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
     return;
   }
   if (vl->coldata [colidx].type != VL_TYPE_RADIO_BUTTON &&
-     vl->coldata [colidx].type != VL_TYPE_CHECK_BUTTON) {
+     vl->coldata [colidx].type != VL_TYPE_CHECKBOX) {
     return;
   }
 
@@ -2330,6 +2339,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlPackRow (vl, row);
       /* rows packed after the initial display need */
       /* to have their contents shown */
+      uiWidgetShowAll (row->hbox);
       uivlShowRow (vl, row);
     }
 
