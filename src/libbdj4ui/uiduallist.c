@@ -74,6 +74,7 @@ static bool uiduallistDispRemove (void *udata);
 static void uiduallistVLFillSourceCB (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uiduallistVLFillTargetCB (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, int which);
+static void uiduallistFreeQKey (void *data);
 
 uiduallist_t *
 uiCreateDualList (uiwcont_t *mainvbox, int flags,
@@ -89,7 +90,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DL_LIST_MAX; ++i) {
     duallist->uivl [i] = NULL;
-    duallist->dispq [i] = queueAlloc ("duallist-q", free);
+    duallist->dispq [i] = queueAlloc ("duallist-q", uiduallistFreeQKey);
     duallist->displist [i] = slistAlloc ("duallist-list", LIST_ORDERED, NULL);
   }
   duallist->flags = flags;
@@ -515,3 +516,8 @@ uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, in
       DL_COL_DISP, keystr);
 }
 
+static void
+uiduallistFreeQKey (void *data)
+{
+  dataFree (data);
+}

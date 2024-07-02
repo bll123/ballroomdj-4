@@ -78,7 +78,7 @@ enum {
 };
 
 typedef struct mq_internal {
-  char              tag [20];
+  char              tag [100];
   uimusicq_t        *uimusicq;
   uidance_t         *uidance;
   uidance_t         *uidance5;
@@ -140,7 +140,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     mqint->uivl = NULL;
     mqint->musicqupdate = NULL;
     mqint->sellist = NULL;
-    snprintf (mqint->tag, sizeof (mqint->tag), "mq-%d", i);
+    snprintf (mqint->tag, sizeof (mqint->tag), "%s-mq-%d", uimusicq->tag, i);
   }
 }
 
@@ -152,6 +152,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mqint = uimusicq->ui [i].mqInternalData;
     if (mqint != NULL) {
+      uivlFree (mqint->uivl);
       for (int j = 0; j < MQINT_CB_MAX; ++j) {
         callbackFree (mqint->callbacks [j]);
       }
@@ -403,11 +404,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   /* always create the pause-indicator column */
   uivlMakeColumn (uivl, "pauseind", UIMUSICQ_COL_PAUSEIND, VL_TYPE_IMAGE);
-  /* but if it is not meant to be shown, hide it */
-  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
-    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_HIDE);
-  }
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_WIDTH_GROW_ONLY);
+  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
+    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_DISABLE);
+  }
 
   uivlAddDisplayColumns (uivl, sellist, startcol);
 

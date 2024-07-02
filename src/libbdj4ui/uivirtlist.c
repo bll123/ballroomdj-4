@@ -26,7 +26,6 @@
 enum {
   VL_INIT_NONE,
   VL_INIT_BASIC,
-  VL_INIT_HEADING,      // may be skipped
   VL_INIT_ROWS,
   VL_INIT_DISP,
 };
@@ -63,6 +62,7 @@ enum {
   VL_CB_VERT_SZ_CHG,
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
+  VL_CB_MAP_WIDGET,
   VL_CB_MAX,
 };
 
@@ -99,8 +99,7 @@ typedef struct {
 typedef struct uivlcoldata {
   uint64_t      ident;
   uivirtlist_t  *vl;
-  uiwcont_t     *szgrpBox;
-  uiwcont_t     *szgrpWidget;
+  uiwcont_t     *szgrp;
   /* the following data is specific to a column */
   vltype_t      type;
   /* the baseclass is always applied */
@@ -112,6 +111,7 @@ typedef struct uivlcoldata {
   callback_t    *colgrowonlycb;
   uivlcol_t     *col0;
   const char    *tag;
+  char          *heading;
   char          *baseclass;
   int           minwidth;
   int           entrySz;
@@ -134,13 +134,12 @@ typedef struct uivlcoldata {
 } uivlcoldata_t;
 
 typedef struct uivlcol {
-  uint64_t  ident;
-  uiwcont_t *box;
-  uiwcont_t *uiwidget;
+  uint64_t    ident;
+  uiwcont_t   *uiwidget;
   /* class needs to be held temporarily so it can be removed */
-  char      *class;
-  int       colidx;
-  int32_t   value;        // internal numeric value
+  char        *class;
+  int         colidx;
+  int32_t     value;        // internal numeric value
 } uivlcol_t;
 
 typedef struct uivlrow {
@@ -160,10 +159,10 @@ typedef struct uivlrow {
   int           dispidx;
   int32_t       lockrownum;
   /* cleared: row is on-screen, no display */
-  /* all widgets are hidden */
+  /* all column widgets are hidden */
   bool          cleared : 1;
   bool          created : 1;
-  /* offscreen: row is off-screen, entire row is hidden */
+  /* offscreen: row is off-screen, entire row-box is hidden */
   bool          offscreen : 1;
   bool          initialized : 1;
   bool          selected : 1;       // a temporary flag to ease processing
@@ -253,7 +252,7 @@ static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
 static void uivlConfigureScrollbar (uivirtlist_t *vl);
 static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
 static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
-static void uivlRowShow (uivirtlist_t *vl, uivlrow_t *row);
+static void uivlShowRow (uivirtlist_t *vl, uivlrow_t *row);
 
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
@@ -420,9 +419,9 @@ uivlFree (uivirtlist_t *vl)
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     dataFree (vl->coldata [colidx].baseclass);
+    dataFree (vl->coldata [colidx].heading);
     callbackFree (vl->coldata [colidx].colgrowonlycb);
-    uiwcontFree (vl->coldata [colidx].szgrpBox);
-    uiwcontFree (vl->coldata [colidx].szgrpWidget);
+    uiwcontFree (vl->coldata [colidx].szgrp);
   }
   dataFree (vl->coldata);
 
@@ -501,11 +500,11 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     uivlcoldata_t *coldata = &vl->coldata [colidx];
 
     coldata->vl = vl;
-    coldata->szgrpBox = uiCreateSizeGroupHoriz ();
-    coldata->szgrpWidget = uiCreateSizeGroupHoriz ();
+    coldata->szgrp = uiCreateSizeGroupHoriz ();
     coldata->ident = VL_IDENT_COLDATA;
     coldata->tag = "unk";
-    coldata->type = VL_TYPE_LABEL;
+    coldata->heading = NULL;
+    coldata->type = VL_TYPE_NONE;
     coldata->entrycb = NULL;
     coldata->entryudata = NULL;
     coldata->togglecb = NULL;
@@ -644,25 +643,9 @@ uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading)
     return;
   }
 
-  if (vl->initialized < VL_INIT_HEADING) {
-    uiwcont_t   *uiwidget;
-
-    uivlCreateRow (vl, &vl->rows [VL_ROW_HEADING_IDX], 0, true);
-
-    uiwidget = uiCreateLabel (" ");
-    if (vl->uselistingfont) {
-      uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
-    }
-    uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
-    uiwcontFree (uiwidget);
-
-    vl->initialized = VL_INIT_HEADING;
-    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-heading]", vl->tag);
+  if (heading != NULL) {
+    vl->coldata [colidx].heading = mdstrdup (heading);
   }
-
-  /* don't call uivlSetRowColumnStr(), as it is meant to be used after */
-  /* the display has been initialized */
-  uiLabelSetText (vl->rows [VL_ROW_HEADING_IDX].cols [colidx].uiwidget, heading);
 }
 
 void
@@ -672,10 +655,12 @@ uivlMakeColumn (uivirtlist_t *vl, const char *tag, int colidx, vltype_t type)
     return;
   }
 
-fprintf (stderr, "%s mkcol %d %d %s\n", vl->tag, colidx, type, tag);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s mkcol %d %d %s", vl->tag, colidx, type, tag);
   vl->coldata [colidx].type = type;
   vl->coldata [colidx].tag = tag;
+  if (type == VL_TYPE_INTERNAL_NUMERIC) {
+    vl->coldata [colidx].hidden = VL_COL_DISABLE;
+  }
 }
 
 void
@@ -792,6 +777,9 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 
   washidden = vl->coldata [colidx].hidden;
   vl->coldata [colidx].hidden = hidden;
+  if (hidden == VL_COL_DISABLE) {
+    vl->coldata [colidx].type = VL_TYPE_NONE;
+  }
 
   if (vl->initialized >= VL_INIT_ROWS && washidden != hidden) {
     for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
@@ -802,7 +790,7 @@ uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
         continue;
       }
 
-      uivlRowShow (vl, row);
+      uivlShowRow (vl, row);
     }
   }
 }
@@ -848,6 +836,7 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
       uiToggleButtonSetState (row->cols [colidx].uiwidget, state);
       break;
     }
+    case VL_TYPE_NONE:
     case VL_TYPE_IMAGE:
     case VL_TYPE_INTERNAL_NUMERIC:
     case VL_TYPE_LABEL: {
@@ -887,6 +876,7 @@ void
 uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
 {
   uivlrow_t   *row = NULL;
+  int         type;
 
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
@@ -898,7 +888,7 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
   if (colidx < 0 || colidx >= vl->numcols) {
     return;
   }
-  if (rownum < 0 || rownum >= vl->numrows) {
+  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
     return;
   }
 
@@ -907,7 +897,18 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
     return;
   }
 
-  switch (vl->coldata [colidx].type) {
+  type = vl->coldata [colidx].type;
+  if (vl->coldata [colidx].hidden == VL_COL_DISABLE) {
+    type = VL_TYPE_NONE;
+  }
+  if (rownum == VL_ROW_HEADING && type != VL_TYPE_NONE) {
+    type = VL_TYPE_LABEL;
+  }
+
+  switch (type) {
+    case VL_TYPE_NONE: {
+      break;
+    }
     case VL_TYPE_LABEL: {
       uiLabelSetText (row->cols [colidx].uiwidget, value);
       break;
@@ -930,9 +931,8 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowShow (vl, row);
+    uivlShowRow (vl, row);
   }
-  row->cleared = false;
 }
 
 void
@@ -963,9 +963,8 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowShow (vl, row);
+    uivlShowRow (vl, row);
   }
-  row->cleared = false;
 }
 
 void
@@ -983,6 +982,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
   }
 
   switch (vl->coldata [colidx].type) {
+    case VL_TYPE_NONE:
     case VL_TYPE_ENTRY:
     case VL_TYPE_IMAGE:
     case VL_TYPE_LABEL: {
@@ -1014,9 +1014,8 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
   }
 
   if (row->offscreen == false && row->cleared) {
-    uivlRowShow (vl, row);
+    uivlShowRow (vl, row);
   }
-  row->cleared = false;
 }
 
 const char *
@@ -1054,6 +1053,7 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
   }
 
   switch (vl->coldata [colidx].type) {
+    case VL_TYPE_NONE:
     case VL_TYPE_ENTRY:
     case VL_TYPE_IMAGE:
     case VL_TYPE_LABEL: {
@@ -1205,17 +1205,24 @@ uivlDisplay (uivirtlist_t *vl)
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t *row;
+    bool      isheading = false;
 
     row = &vl->rows [dispidx];
-    uivlCreateRow (vl, row, dispidx, false);
+    if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
+      isheading = true;
+    }
+    uivlCreateRow (vl, row, dispidx, isheading);
   }
   vl->initialized = VL_INIT_ROWS;
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-rows]", vl->tag);
 
+  vl->initialized = VL_INIT_DISP;
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-disp]", vl->tag);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
+
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
     uivlPackRow (vl, row);
-    row->cleared = false;
     /* the size change callback is based on the first data row */
     if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
       uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_HEADING_SZ_CHG]);
@@ -1225,10 +1232,29 @@ uivlDisplay (uivirtlist_t *vl)
     }
   }
 
-  vl->initialized = VL_INIT_DISP;
-  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s [init-disp]", vl->tag);
-  uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
+  /* load the headings */
+  if (vl->dispheading) {
+    uiwcont_t   *uiwidget;
+
+    uiwidget = uiCreateLabel (" ");
+    if (vl->uselistingfont) {
+      uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
+    }
+    uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
+    uiwcontFree (uiwidget);
+
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      if (vl->coldata [colidx].heading == NULL) {
+        continue;
+      }
+      uivlSetRowColumnStr (vl, VL_ROW_HEADING, colidx,
+          vl->coldata [colidx].heading);
+    }
+  }
+
   uivlPopulate (vl);
+
+  /* at this point, the heading row is not yet mapped */
 }
 
 /* display after a change */
@@ -1302,8 +1328,7 @@ uivlPopulate (uivirtlist_t *vl)
     }
 
     if (row->offscreen) {
-      row->offscreen = false;
-      uivlRowShow (vl, row);
+      uivlShowRow (vl, row);
     }
   }
 
@@ -1432,14 +1457,16 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
     dataFree (row->rowcb);
   }
 
+  uiwcontFree (row->hbox);
+  uiwcontFree (row->szgrp);
+
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols != NULL) {
       uivlFreeCol (&row->cols [colidx]);
     }
   }
-  uiwcontFree (row->hbox);
-  uiwcontFree (row->szgrp);
   dataFree (row->cols);
+
   dataFree (row->oldclass);
   dataFree (row->currclass);
   dataFree (row->newclass);
@@ -1455,10 +1482,7 @@ uivlFreeCol (uivlcol_t *col)
 
   dataFree (col->class);
   col->class = NULL;
-  uiwcontFree (col->box);
   uiwcontFree (col->uiwidget);
-  col->box = NULL;
-  col->uiwidget = NULL;
   col->ident = 0;
 }
 
@@ -1522,7 +1546,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     coldata = &vl->coldata [colidx];
 
     col->ident = VL_IDENT_COL;
-    col->box = NULL;
     col->uiwidget = NULL;
     col->class = NULL;
     col->colidx = colidx;
@@ -1530,11 +1553,14 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     origtype = coldata->type;
     type = origtype;
-    if (isheading) {
+    if (isheading && coldata->hidden != VL_COL_DISABLE) {
       type = VL_TYPE_LABEL;
     }
 
     switch (type) {
+      case VL_TYPE_NONE: {
+        break;
+      }
       case VL_TYPE_LABEL: {
         col->uiwidget = uiCreateLabel ("");
         break;
@@ -1563,7 +1589,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
           trow = &vl->rows [vl->headingoffset];
           col->uiwidget =
-              uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
+              uiCreateRadioButton (trow->cols [colidx].uiwidget, NULL, 0);
         }
         uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
@@ -1573,7 +1599,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
       case VL_TYPE_CHECK_BUTTON: {
-        col->uiwidget = uiCreateCheckButton ("", 0);
+        col->uiwidget = uiCreateCheckButton (NULL, 0);
         uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
         if (coldata->togglecb != NULL) {
@@ -1603,47 +1629,39 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
       case VL_TYPE_INTERNAL_NUMERIC: {
-        /* an internal numeric type will always be hidden */
+        /* an internal numeric type will always be disabled */
         /* used to associate values with the row */
-        coldata->hidden = VL_COL_HIDE;
         break;
       }
     }
 
-    if (origtype == VL_TYPE_INTERNAL_NUMERIC) {
+    if (coldata->hidden == VL_COL_DISABLE) {
       continue;
     }
 
-    /* need a box for the size change callback */
-    col->box = uiCreateHorizBox ();
-    uiWidgetAlignHorizFill (col->box);
-    uiWidgetSetAllMargins (col->box, 0);
-
     uiWidgetSetAllMargins (col->uiwidget, 0);
-    uiWidgetAlignHorizFill (col->uiwidget);
     if (isheading) {
       uiWidgetAlignVertEnd (col->uiwidget);
     }
 
-    uiWidgetAlignHorizStart (col->uiwidget);
     if (coldata->alignend) {
       uiLabelAlignEnd (col->uiwidget);
-    }
-    if (coldata->aligncenter) {
+    } else if (coldata->aligncenter) {
+// ### not working.
       uiWidgetAlignHorizCenter (col->uiwidget);
-      uiWidgetExpandHoriz (col->uiwidget);
+    } else {
+      uiWidgetAlignHorizStart (col->uiwidget);
     }
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
         origtype == VL_TYPE_ENTRY) {
-      uiWidgetAlignHorizStart (col->uiwidget);
       uiWidgetExpandHoriz (col->uiwidget);
     }
+
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      uiWidgetExpandHoriz (col->box);
-      uiBoxPackStart (col->box, col->uiwidget);
+      uiBoxPackStartExpand (row->hbox, col->uiwidget);
     } else {
-      uiBoxPackStart (col->box, col->uiwidget);
+      uiBoxPackStart (row->hbox, col->uiwidget);
     }
 
     if (row->dispidx == vl->headingoffset &&
@@ -1655,7 +1673,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       if (coldata->grow == VL_COL_WIDTH_GROW_ONLY &&
           (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
         coldata->colgrowonlycb = callbackInitII (uivlColGrowOnlyChg, coldata);
-        uiBoxSetSizeChgCallback (col->box, coldata->colgrowonlycb);
+        uiWidgetSetSizeChgCallback (col->uiwidget, coldata->colgrowonlycb);
       }
     }
 
@@ -1667,14 +1685,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      uiBoxPackStartExpand (row->hbox, col->box);
-    } else {
-      uiBoxPackStart (row->hbox, col->box);
-    }
-
-    uiSizeGroupAdd (coldata->szgrpBox, col->box);
-    uiSizeGroupAdd (coldata->szgrpWidget, col->uiwidget);
+    uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
 
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
@@ -1685,7 +1696,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
       if (coldata->ellipsize) {
         uiLabelEllipsizeOn (col->uiwidget);
-        uiSizeGroupAdd (row->szgrp, col->box);
+        uiSizeGroupAdd (row->szgrp, col->uiwidget);
       }
     }
 
@@ -1724,7 +1735,8 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
-  row->offscreen = false;
+  /* any initial pack should be cleared */
+  uivlClearRowDisp (vl, row->dispidx);
 }
 
 static bool
@@ -2073,11 +2085,11 @@ uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height)
   uivlcoldata_t   *coldata = udata;
 
   if (width > 0 && width > coldata->colwidth) {
-    if (uiWidgetIsMapped (coldata->col0->box)) {
+    if (uiWidgetIsMapped (coldata->col0->uiwidget)) {
       coldata->colwidth = width;
       width -= 1;
       if (width > 5) {
-        uiWidgetSetSizeRequest (coldata->col0->box, width, -1);
+        uiWidgetSetSizeRequest (coldata->col0->uiwidget, width, -1);
       }
     }
   }
@@ -2265,7 +2277,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
       continue;
     }
 
-    uiWidgetHide (row->cols [colidx].box);
+    uiWidgetHide (row->cols [colidx].uiwidget);
   }
 }
 
@@ -2318,9 +2330,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlPackRow (vl, row);
       /* rows packed after the initial display need */
       /* to have their contents shown */
-      if (row->offscreen == false) {
-        uiWidgetShowAll (row->hbox);
-      }
+      uivlShowRow (vl, row);
     }
 
     vl->dispalloc = newdispsize;
@@ -2411,15 +2421,25 @@ uivlCalcRownum (uivirtlist_t *vl, int dispidx)
 }
 
 static void
-uivlRowShow (uivirtlist_t *vl, uivlrow_t *row)
+uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
 {
+  if (row->offscreen) {
+    uiWidgetShow (row->hbox);
+    row->offscreen = false;
+  }
+
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    if (row->cols [colidx].uiwidget == NULL) {
+      continue;
+    }
+
     if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-      uiWidgetHide (row->cols [colidx].box);
+      uiWidgetHide (row->cols [colidx].uiwidget);
     }
     if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-      uiWidgetShowAll (row->cols [colidx].box);
+      uiWidgetShow (row->cols [colidx].uiwidget);
     }
   }
-  uiWidgetShow (row->hbox);
+  row->cleared = false;
 }
+

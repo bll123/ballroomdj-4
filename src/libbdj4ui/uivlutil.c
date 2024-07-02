@@ -29,21 +29,18 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
 {
   slistidx_t  seliteridx;
   int         tagidx;
-  int         col;
+  int         colidx;
 
   if (vl == NULL) {
     return;
   }
 
-  col = startcol;
+  colidx = startcol;
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
     int         minwidth = 10;
     const char  *title;
 
-    if (tagidx == TAG_ALBUM) {
-      title = "Album";
-    } else
     if (tagidx == TAG_FAVORITE) {
       songfav_t   *songfav;
 
@@ -66,25 +63,25 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
       minwidth = 15;
     }
     if (tagdefs [tagidx].ellipsize) {
-      uivlSetColumnMinWidth (vl, col, minwidth);
-      uivlSetColumnEllipsizeOn (vl, col);
+      uivlSetColumnMinWidth (vl, colidx, minwidth);
+      uivlSetColumnEllipsizeOn (vl, colidx);
     }
     if (tagidx == TAG_AUDIOID_IDENT) {
-      uivlSetColumnGrow (vl, col, VL_COL_WIDTH_GROW_ONLY);
+      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
 
-    uivlMakeColumn (vl, tagdefs [tagidx].tag, col, VL_TYPE_LABEL);
-    uivlSetColumnHeading (vl, col, title);
+    uivlMakeColumn (vl, tagdefs [tagidx].tag, colidx, VL_TYPE_LABEL);
+    uivlSetColumnHeading (vl, colidx, title);
     if (tagidx == TAG_FAVORITE) {
-      uivlSetColumnClass (vl, col, VL_FAV_CLASS);
-      uivlSetColumnAlignCenter (vl, col);
+      uivlSetColumnClass (vl, colidx, VL_FAV_CLASS);
+      uivlSetColumnAlignCenter (vl, colidx);
     }
 
     if (tagdefs [tagidx].alignend) {
-      uivlSetColumnAlignEnd (vl, col);
+      uivlSetColumnAlignEnd (vl, colidx);
     }
 
-    ++col;
+    ++colidx;
   }
 
   return;

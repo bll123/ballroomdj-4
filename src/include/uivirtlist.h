@@ -11,6 +11,7 @@
 #include "ui/uientry.h"
 
 typedef enum {
+  VL_TYPE_NONE,
   VL_TYPE_CHECK_BUTTON,
   VL_TYPE_ENTRY,
   VL_TYPE_IMAGE,
@@ -23,6 +24,7 @@ typedef enum {
 
 enum {
   VL_COL_HIDE,
+  VL_COL_DISABLE,
   VL_COL_SHOW,
   VL_COL_WIDTH_FIXED,
   VL_COL_WIDTH_GROW_ONLY,

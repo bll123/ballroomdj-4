@@ -678,6 +678,13 @@ uitestUILabels (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
+  uiLabelAddClass ("ra", "#cc0000");
+  uiLabelAddClass ("ga", "#00cc00");
+  uiLabelAddClass ("ba", "#0000cc");
+  uiLabelAddClass ("rb", "#cc2222");
+  uiLabelAddClass ("gb", "#22cc22");
+  uiLabelAddClass ("bb", "#2222cc");
+
   /* labels */
 
   vbox = uiCreateVertBox ();
@@ -694,16 +701,106 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("pack-start");
+  uiwidgetp = uiCreateLabel ("ps");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("a");
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start / expand horiz */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("ps-eh");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start / expand horiz */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("ps-eh-ac");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start / expand horiz */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("ps-eh-as");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -715,16 +812,19 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("pack-end");
+  uiwidgetp = uiCreateLabel ("pe");
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -736,16 +836,46 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("pack-start-expand");
+  uiwidgetp = uiCreateLabel ("pse");
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start expand / expand-horiz */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("pse-eh");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("a");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -757,19 +887,22 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("s-e-align-end");
+  uiwidgetp = uiCreateLabel ("pse-ae");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -781,19 +914,52 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("s-e-align-center");
+  uiwidgetp = uiCreateLabel ("pse-ac");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start expand / expand horiz / align center */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("pse-eh-ac");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("a");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("b");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -805,42 +971,21 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("s-e-ellipsize-max ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize");
+  uiwidgetp = uiCreateLabel ("pse-el ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
   uiLabelSetMaxWidth (uiwidgetp, 20);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (hbox);
-
-  /* label: pack start expand / ellipsize */
-
-  hbox = uiCreateHorizBox ();
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateLabel ("s-e-ellipsize-max-fill ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiLabelEllipsizeOn (uiwidgetp);
-  uiLabelSetMaxWidth (uiwidgetp, 20);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("a");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("b");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -852,16 +997,19 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("pack-end-expand");
+  uiwidgetp = uiCreateLabel ("pee");
   uiBoxPackEndExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ga");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackEndExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ba");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackEndExpand (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "ra");
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);

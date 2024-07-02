@@ -76,13 +76,16 @@ confuiCreateGenreTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_GENRES].uivl;
   uivlSetNumColumns (uivl, CONFUI_GENRE_COL_MAX);
+
   uivlMakeColumnEntry (uivl, "genre", CONFUI_GENRE_COL_GENRE, 15, 30);
-  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECK_BUTTON);
   uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_GENRE,
       tagdefs [TAG_GENRE].displayname);
+
+  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECK_BUTTON);
   /* CONTEXT: configuration: genre: title of the classical setting column */
   uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_CLASSICAL, _("Classical?"));
   uivlSetColumnAlignCenter (uivl, CONFUI_GENRE_COL_CLASSICAL);
+
   uivlSetNumRows (uivl, genreGetCount (genres));
   gui->tables [CONFUI_ID_GENRES].currcount = genreGetCount (genres);
 

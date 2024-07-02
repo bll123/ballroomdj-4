@@ -1049,6 +1049,9 @@ mainSendMarqueeData (maindata_t *mainData)
     if (marqueeactive) {
       mainSendFinished (mainData);
     }
+    if (mobmarqueeactive) {
+      dataFree (jbuff);
+    }
     return;
   }
 
@@ -2368,7 +2371,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcat (timerbuff, tbuff, BDJMSG_MAX);
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
-    mdfree (timerbuff);
+    dataFree (timerbuff);
   }
 
   if (! jsonflag) {
@@ -2692,10 +2695,8 @@ mainPlaylistItemFree (void *tplitem)
 {
   playlistitem_t *plitem = tplitem;
 
-  if (plitem != NULL) {
-    /* the playlist data is owned by the playlistCache and is freed by it */
-    mdfree (plitem);
-  }
+  /* the playlist data is owned by the playlistCache and is freed by it */
+  dataFree (plitem);
 }
 
 static void

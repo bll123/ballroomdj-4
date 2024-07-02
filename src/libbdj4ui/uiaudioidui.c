@@ -205,6 +205,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
   audioidint = uiaudioid->audioidInternalData;
 
   if (audioidint != NULL) {
+    uivlFree (audioidint->uivl);
     nlistFree (audioidint->currlist);
 
     uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);

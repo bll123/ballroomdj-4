@@ -395,6 +395,7 @@ uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata)
   callback_t  *uicb = udata;
   bool        rc = false;
 
+fprintf (stderr, "mapped-handler\n");
   if (uicb != NULL) {
     rc = callbackHandler (uicb);
   }

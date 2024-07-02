@@ -82,21 +82,26 @@ confuiCreateLevelTable (confuigui_t *gui)
 
   uivl = gui->tables [CONFUI_ID_LEVELS].uivl;
   uivlSetNumColumns (uivl, CONFUI_LEVEL_COL_MAX);
+
   uivlMakeColumnEntry (uivl, "level", CONFUI_LEVEL_COL_LEVEL, 15, 30);
-  uivlMakeColumnSpinboxNum (uivl, "lweight", CONFUI_LEVEL_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
-  uivlMakeColumn (uivl, "ldflt", CONFUI_LEVEL_COL_DEFAULT, VL_TYPE_RADIO_BUTTON);
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_LEVEL,
       tagdefs [TAG_DANCELEVEL].shortdisplayname);
+
+  uivlMakeColumnSpinboxNum (uivl, "lweight", CONFUI_LEVEL_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
   /* CONTEXT: configuration: level: title of the weight column */
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_WEIGHT, _("Weight"));
+
+  uivlMakeColumn (uivl, "ldflt", CONFUI_LEVEL_COL_DEFAULT, VL_TYPE_RADIO_BUTTON);
   /* CONTEXT: configuration: level: title of the default selection column */
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_DEFAULT, _("Default"));
   uivlSetColumnAlignCenter (uivl, CONFUI_LEVEL_COL_DEFAULT);
-  uivlSetNumRows (uivl, levelGetCount (levels));
-  gui->tables [CONFUI_ID_LEVELS].currcount = levelGetCount (levels);
 
+  uivlSetNumRows (uivl, levelGetCount (levels));
+
+  gui->tables [CONFUI_ID_LEVELS].currcount = levelGetCount (levels);
   gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_LEVEL_CB] =
       callbackInit (confuiLevelChangeCB, gui, NULL);
+
   uivlSetEntryValidation (uivl, CONFUI_LEVEL_COL_LEVEL,
       confuiLevelEntryChangeCB, gui);
   uivlSetSpinboxChangeCallback (uivl, CONFUI_LEVEL_COL_WEIGHT,

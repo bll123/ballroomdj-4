@@ -25,7 +25,6 @@ enum {
 };
 
 void  sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc, sockhProcessFunc_t processFunc, void *userData);
-sockserver_t  * sockhStartServer (uint16_t listenPort);
 int   sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args);
 
 #endif /* INC_SOCKH_H */
