@@ -67,19 +67,15 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
     }
     if (! tagdefs [tagidx].ellipsize) {
       /* pure fixed width columns are rare */
-      if (tagidx != TAG_FAVORITE) {
-        uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
-      }
+      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
 
     uivlMakeColumn (vl, tagdefs [tagidx].tag, colidx, VL_TYPE_LABEL);
     uivlSetColumnHeading (vl, colidx, title);
-    if (tagidx == TAG_DANCE) {
-      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
-    }
     if (tagidx == TAG_FAVORITE) {
       uivlSetColumnClass (vl, colidx, LIST_FAV_CLASS);
       uivlSetColumnAlignCenter (vl, colidx);
+      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_FIXED);
     }
 
     if (tagdefs [tagidx].alignend) {

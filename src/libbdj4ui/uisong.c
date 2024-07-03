@@ -33,7 +33,7 @@ uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
   double        dval;
 
   dlist = nlistAlloc ("song-disp", LIST_UNORDERED, NULL);
-  nlistSetSize (dlist, slistGetCount (sellistB));
+  nlistSetSize (dlist, slistGetCount (sellistA));
 
   slistStartIterator (sellistA, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellistA, &seliteridx)) >= 0) {
@@ -44,12 +44,14 @@ uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
     if (song != NULL) {
       str = uisongGetDisplay (song, tagidx, &num, &dval);
     } else {
-      str = "";
+      nlistSetStr (dlist, tagidx, "");
       num = LIST_VALUE_INVALID;
     }
+
     if (str != NULL) {
       nlistSetStr (dlist, tagidx, str);
-    } else {
+      mdfree (str);
+    } else if (num != LIST_VALUE_INVALID) {
       char  tmp [40];
 
       snprintf (tmp, sizeof (tmp), "%" PRId32, num);
@@ -67,12 +69,14 @@ uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
       if (song != NULL) {
         str = uisongGetDisplay (song, tagidx, &num, &dval);
       } else {
-        str = "";
+        nlistSetStr (dlist, tagidx, "");
         num = LIST_VALUE_INVALID;
       }
+
       if (str != NULL) {
         nlistSetStr (dlist, tagidx, str);
-      } else {
+        mdfree (str);
+      } else if (num != LIST_VALUE_INVALID) {
         char  tmp [40];
 
         snprintf (tmp, sizeof (tmp), "%" PRId32, num);

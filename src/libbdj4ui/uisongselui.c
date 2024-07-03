@@ -38,14 +38,8 @@
 #include "uivlutil.h"
 
 enum {
-//  SONGSEL_COL_ELLIPSIZE,
-//  SONGSEL_COL_FONT,
-//  SONGSEL_COL_IDX,
-//  SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
   SONGSEL_COL_MARK,
-//  SONGSEL_COL_MARK_MARKUP,
-//  SONGSEL_COL_SAMESONG_MARKUP,
   SONGSEL_COL_MAX,
 };
 
@@ -54,20 +48,10 @@ enum {
   UISONGSEL_NEXT,
   UISONGSEL_PREVIOUS,
   UISONGSEL_DIR_NONE,
-//  UISONGSEL_MOVE_KEY,
   UISONGSEL_MOVE_SE,
   UISONGSEL_PLAY,
   UISONGSEL_QUEUE,
-  UISONGSEL_SCROLL_NORMAL,
-  UISONGSEL_SCROLL_FORCE,
 };
-
-//enum {
-//  /* how many rows in the tree storage display */
-//  /* this needs to be enough to handle an expansion of the display */
-//  STORE_ROWS = 60,
-//  TREE_DOUBLE_CLICK_TIME = 250,
-//};
 
 /* for callbacks */
 enum {
@@ -78,13 +62,10 @@ enum {
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
-//  SONGSEL_CB_SCROLL_CHG,
   SONGSEL_CB_SEL_CHG,
   SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_ROW_CLICK,
   SONGSEL_CB_RIGHT_CLICK,
-//  SONGSEL_CB_SZ_CHG,
-//  SONGSEL_CB_SCROLL_EVENT,
   SONGSEL_CB_MAX,
 };
 
@@ -98,7 +79,6 @@ enum {
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
   SONGSEL_W_SCROLLBAR,
-  SONGSEL_W_TREE,
   SONGSEL_W_MAX,
 };
 
@@ -118,7 +98,6 @@ typedef struct ss_internal {
   nlistidx_t          selectListKey;
 //  int                 *typelist;
   int                 colcount;
-  const char          *markcolor;
   const char          *marktext;
   /* for shift-click */
   nlistidx_t          shiftfirstidx;
@@ -182,12 +161,10 @@ uisongselUIInit (uisongsel_t *uisongsel)
   for (int i = 0; i < SONGSEL_W_MAX; ++i) {
     ssint->wcont [i] = NULL;
   }
-  ssint->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
   ssint->marktext = bdjoptGetStr (OPT_P_UI_MARK_TEXT);
 //  ssint->lastRowDBIdx = -1;
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-//  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
 //  ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
 //      uisongselKeyEvent, uisongsel, NULL);
   ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitI (
@@ -199,24 +176,26 @@ uisongselUIInit (uisongsel_t *uisongsel)
 void
 uisongselUIFree (uisongsel_t *uisongsel)
 {
-  if (uisongsel->ssInternalData != NULL) {
-    ss_internal_t    *ssint;
+  ss_internal_t    *ssint;
 
-    ssint = uisongsel->ssInternalData;
-
-    nlistFree (ssint->selectedBackup);
-    nlistFree (ssint->selectedList);
-    slistFree (ssint->sscolorlist);
-    for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
-      callbackFree (ssint->callbacks [i]);
-    }
-    for (int i = 0; i < SONGSEL_W_MAX; ++i) {
-      uiwcontFree (ssint->wcont [i]);
-    }
-    uivlFree (ssint->uivl);
-    mdfree (ssint);
-    uisongsel->ssInternalData = NULL;
+  if (uisongsel->ssInternalData == NULL) {
+    return;
   }
+
+  ssint = uisongsel->ssInternalData;
+
+  nlistFree (ssint->selectedBackup);
+  nlistFree (ssint->selectedList);
+  slistFree (ssint->sscolorlist);
+  for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
+    callbackFree (ssint->callbacks [i]);
+  }
+  for (int i = 0; i < SONGSEL_W_MAX; ++i) {
+    uiwcontFree (ssint->wcont [i]);
+  }
+  uivlFree (ssint->uivl);
+  mdfree (ssint);
+  uisongsel->ssInternalData = NULL;
 }
 
 uiwcont_t *
@@ -368,7 +347,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 //        uisongselScrollEvent, uisongsel);
 //  uiTreeViewSetScrollEventCallback (uiwidgetp,
 //        ssint->callbacks [SONGSEL_CB_SCROLL_EVENT]);
-  ssint->wcont [SONGSEL_W_TREE] = uiwidgetp;
 
   uisongselProcessSongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
@@ -954,7 +932,7 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   song_t              *song;
   nlist_t             *tdlist;
   slistidx_t          seliteridx;
-  char                markstr [40];
+  const char          *markstr;
   const char          *sscolor = NULL;
   dbidx_t             dbidx;
 
@@ -965,33 +943,35 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
 
-  *markstr = '\0';
+  markstr = "";
 
   if (song != NULL) {
     if (uisongsel->dispselType != DISP_SEL_MM &&
         uisongsel->songlistdbidxlist != NULL) {
       /* check and see if the song is in the song list */
       if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-        strlcpy (markstr, ssint->marktext, sizeof (markstr));
-        sscolor = ssint->markcolor;
+        markstr = ssint->marktext;
+        sscolor = MARK_CLASS;
       }
     }
 
     if (uisongsel->dispselType == DISP_SEL_MM) {
       sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
       if (sscolor != NULL) {
-        strlcpy (markstr, ssint->marktext, sizeof (markstr));
+        if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
+          slistSetNum (ssint->sscolorlist, sscolor, 1);
+          uiLabelAddClass (sscolor + 1, sscolor);
+        }
+        markstr = ssint->marktext;
+        /* skip the leading # for the class name */
+        sscolor = sscolor + 1;
       }
     }
   }
 
   uivlSetRowColumnStr (ssint->uivl, rownum, SONGSEL_COL_MARK, markstr);
   if (sscolor != NULL) {
-    if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
-      slistSetNum (ssint->sscolorlist, sscolor, 1);
-      uiLabelAddClass (sscolor + 1, sscolor);
-    }
-    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, sscolor + 1);
+    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, sscolor);
   }
 
   tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);
@@ -1011,12 +991,10 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       songfav_t   *songfav;
       int         favidx;
       const char  *name;
-      char        tbuff [80];
 
       songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
       favidx = songGetNum (song, TAG_FAVORITE);
       name = songFavoriteGetStr (songfav, favidx, SONGFAV_NAME);
-      snprintf (tbuff, sizeof (tbuff), "label.%s", name);
       uivlSetRowColumnClass (ssint->uivl, rownum, colidx, name);
     }
   }
