@@ -19,13 +19,10 @@
 #include "nlist.h"
 #include "songfav.h"
 #include "tagdef.h"
-#include "ui.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
 static const char * const VL_FAV_CLASS = "bdj-list-fav";
-
-static bool favclassinit = false;
 
 void
 uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
@@ -75,6 +72,9 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
 
     uivlMakeColumn (vl, tagdefs [tagidx].tag, colidx, VL_TYPE_LABEL);
     uivlSetColumnHeading (vl, colidx, title);
+    if (tagidx == TAG_DANCE) {
+      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
+    }
     if (tagidx == TAG_FAVORITE) {
       uivlSetColumnClass (vl, colidx, VL_FAV_CLASS);
       uivlSetColumnAlignCenter (vl, colidx);
@@ -88,31 +88,5 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
   }
 
   return;
-}
-
-void
-uivlAddFavoriteClasses (void)
-{
-  int         count;
-  const char  *name;
-  const char  *color;
-  songfav_t   *songfav;
-
-  if (favclassinit) {
-    return;
-  }
-
-  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  count = songFavoriteGetCount (songfav);
-  for (int idx = 0; idx < count; ++idx) {
-    name = songFavoriteGetStr (songfav, idx, SONGFAV_NAME);
-    color = songFavoriteGetStr (songfav, idx, SONGFAV_COLOR);
-    if (name == NULL || ! *name) {
-      continue;
-    }
-    uiLabelAddClass (name, color);
-  }
-
-  favclassinit = true;
 }
 

@@ -18,5 +18,6 @@ const char * uiutilsGetListingFont (void);
 int uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 void uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
+void uiutilsAddFavoriteClasses (void);
 
 #endif /* INC_UIUTILS_H */

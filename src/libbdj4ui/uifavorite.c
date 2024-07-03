@@ -21,6 +21,7 @@
 #include "songfav.h"
 #include "ui.h"
 #include "uifavorite.h"
+#include "uiutils.h"
 
 typedef struct uifavorite {
   uiwcont_t   *spinbox;
@@ -40,23 +41,7 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxTextCreate (uifavorite);
 
-  if (! initialized) {
-    int         count;
-    const char  *name;
-    const char  *color;
-
-    count = songFavoriteGetCount (uifavorite->songfav);
-    for (int idx = 0; idx < count; ++idx) {
-      name = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_NAME);
-      color = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_COLOR);
-      if (name == NULL || ! *name) {
-        continue;
-      }
-      uiSpinboxAddClass (name, color);
-    }
-
-    initialized = true;
-  }
+  uiutilsAddFavoriteClasses ();
 
   uiSpinboxTextSet (uifavorite->spinbox, 0,
       songFavoriteGetCount (uifavorite->songfav),

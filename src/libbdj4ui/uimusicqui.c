@@ -29,6 +29,7 @@
 #include "uimusicq.h"
 #include "uiplaylist.h"
 #include "uisong.h"
+#include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
@@ -139,7 +140,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     snprintf (mqint->tag, sizeof (mqint->tag), "%s-mq-%d", uimusicq->tag, i);
   }
 
-  uivlAddFavoriteClasses ();
+  uiutilsAddFavoriteClasses ();
 }
 
 void
@@ -696,20 +697,6 @@ uimusicqQueuePlaylistCallback (void *udata, const char *sval)
   uimusicqQueuePlaylistProcess (uimusicq, sval);
   return UICB_CONT;
 }
-
-#if 0  /* DELETE */
-static void
-uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  mq_internal_t *mqint;
-
-  mqint = uimusicq->ui [uimusicq->cbci].mqInternalData;
-  mqint->typelist = mdrealloc (mqint->typelist, sizeof (int) * (mqint->colcount + 1));
-  mqint->typelist [mqint->colcount] = type;
-  ++mqint->colcount;
-}
-#endif
 
 static void
 uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,

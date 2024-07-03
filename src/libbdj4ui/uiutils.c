@@ -16,7 +16,9 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
+#include "bdjvarsdf.h"
 #include "oslocale.h"
+#include "songfav.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"
@@ -25,6 +27,8 @@
 enum {
   PROFILE_BOX_SZ = 26,
 };
+
+static bool favclassinit = false;
 
 /* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
@@ -161,3 +165,31 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
   }
   snprintf (buff, sz, "%s %s %d", fontname, style, newsz);
 }
+
+void
+uiutilsAddFavoriteClasses (void)
+{
+  int         count;
+  const char  *name;
+  const char  *color;
+  songfav_t   *songfav;
+
+  if (favclassinit) {
+    return;
+  }
+
+  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+  count = songFavoriteGetCount (songfav);
+  for (int idx = 0; idx < count; ++idx) {
+    name = songFavoriteGetStr (songfav, idx, SONGFAV_NAME);
+    color = songFavoriteGetStr (songfav, idx, SONGFAV_COLOR);
+    if (name == NULL || ! *name) {
+      continue;
+    }
+    uiSpinboxAddClass (name, color);
+    uiLabelAddClass (name, color);
+  }
+
+  favclassinit = true;
+}
+
