@@ -52,7 +52,7 @@ enum {
 typedef struct mq_internal mq_internal_t;
 
 typedef struct {
-  int           count;          // how many songs displayed in queue
+  int32_t       rowcount;          // how many songs displayed in queue
   dispselsel_t  dispselType;
   nlistidx_t    selectLocation;
   nlistidx_t    lastLocation;
@@ -61,7 +61,6 @@ typedef struct {
   /* music queue tab */
   uiwcont_t     *mainbox;
   uiplaylist_t  *playlistsel;
-//  uiwcont_t     *playlistsel;
   uiwcont_t     *slname;
   /* widget data */
   mq_internal_t *mqInternalData;

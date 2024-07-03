@@ -86,7 +86,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
       uimusicq->ui [i].dispselType = DISP_SEL_HISTORY;
     }
     uimusicq->ui [i].hasui = false;
-    uimusicq->ui [i].count = 0;
+    uimusicq->ui [i].rowcount = 0;
     uimusicq->ui [i].haveselloc = false;
     uimusicq->ui [i].lastLocation = -1;
     uimusicq->ui [i].prevSelection = -1;
@@ -235,7 +235,7 @@ uimusicqGetCount (uimusicq_t *uimusicq)
   }
 
   ci = uimusicq->musicqManageIdx;
-  return uimusicq->ui [ci].count;
+  return uimusicq->ui [ci].rowcount;
 }
 
 void

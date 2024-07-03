@@ -627,7 +627,7 @@ static gboolean
 uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t   *uievent;
+  uievent_t *uievent;
   guint     keyval;
   guint     ttype;
   int       rc = UICB_CONT;
@@ -719,7 +719,7 @@ uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
   }
 
   uievent->ismaskedkey = false;
-  /* do not test for shift */
+  /* do not test for shift, it is not handled as a mask */
   gdk_event_get_state ((GdkEvent *) event, &state);
   if (((state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) ||
       ((state & GDK_META_MASK) == GDK_META_MASK) ||

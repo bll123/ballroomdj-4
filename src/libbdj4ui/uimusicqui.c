@@ -52,6 +52,7 @@ enum {
   MQINT_CB_EDIT_LOCAL,
   MQINT_CB_PLAY,
   MQINT_CB_HIST_QUEUE,
+  MQINT_CB_KEYB,
   MQINT_CB_MAX,
 };
 
@@ -66,7 +67,6 @@ enum {
   UIMUSICQ_W_BUTTON_REMOVE,
   UIMUSICQ_W_BUTTON_TOGGLE_PAUSE,
   UIMUSICQ_W_REQ_QUEUE,
-  UIMUSICQ_W_KEY_HNDLR,
   UIMUSICQ_W_MAX,
 };
 
@@ -86,7 +86,6 @@ typedef struct mq_internal {
   slist_t           *sellist;
   mp_musicqupdate_t *musicqupdate;
   int               colcount;
-  int               rowcount;
   int               favcolumn;
   int               mqidx;
 } mq_internal_t;
@@ -107,6 +106,7 @@ static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
 static void   uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
 static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
 static void   uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
@@ -384,8 +384,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
 // ### should keys be enabled for the other music queues?
 // they were only enabled for songlist and sbs-songlist before
-  uivl = uivlCreate (mqint->tag, NULL, uimusicq->ui [ci].mainbox,
-      5, 400, VL_ENABLE_KEYS);
+  uivl = uivlCreate (mqint->tag, uimusicq->parentwin,
+      uimusicq->ui [ci].mainbox, 5, 400, VL_ENABLE_KEYS);
   mqint->uivl = uivl;
   uivlSetUseListingFont (uivl);
 
@@ -418,14 +418,16 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 //  uivlSetDoubleClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
 //  uivlSetRightClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
 
-  uimusicq->musicqManageIdx = saveci;
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
+      uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
+    mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
+        uimusicqKeyEvent, uimusicq, NULL);
+    uivlSetKeyCallback (mqint->uivl, mqint->callbacks [MQINT_CB_KEYB]);
+  }
 
   uiwcontFree (hbox);
 
-  /* initialize the musicq storage */
-
-  mqint->rowcount = 0;
-
+  uimusicq->musicqManageIdx = saveci;
   uimusicq->cbci = ci;
 
   logProcEnd ("");
@@ -713,8 +715,8 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
 
   mqint->musicqupdate = musicqupdate;
 
-  uimusicq->ui [ci].count = nlistGetCount (musicqupdate->dispList);
-  uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].count);
+  uimusicq->ui [ci].rowcount = nlistGetCount (musicqupdate->dispList);
+  uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].rowcount);
   uivlPopulate (mqint->uivl);
 
   if (uimusicq->ui [ci].haveselloc) {
@@ -725,8 +727,8 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     uimusicqSetSelection (uimusicq, ci);
   }
 
-  /* the selection may have been changed, but the chg processing was */
-  /* purposely bypassed.  Make sure the ui is notified about any change. */
+  /* the selection may have been changed, */
+  /* Make sure the ui is notified about any change. */
   uimusicqSelectionChgProcess (uimusicq);
 
   uimusicq->changed = true;
@@ -1074,13 +1076,13 @@ uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   return;
 }
 
-#if 0
 static bool
 uimusicqKeyEvent (void *udata)
 {
   uimusicq_t      *uimusicq = udata;
   mq_internal_t   *mqint;
   int             ci;
+  uiwcont_t       *keyh;
 
   if (uimusicq == NULL) {
     return UICB_CONT;
@@ -1088,50 +1090,54 @@ uimusicqKeyEvent (void *udata)
 
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
+  keyh = uivlGetEventHandler (mqint->uivl);
 
-  if (uiEventIsKeyPressEvent (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
-    if (uiEventIsAudioPlayKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (keyh)) {
+    if (uiEventIsAudioPlayKey (keyh)) {
       uimusicqPlayCallback (uimusicq);
+      return UICB_STOP;
     }
-    if (uiEventIsKey (mqint->wcont [UIMUSICQ_W_KEY_HNDLR], 'S')) {
+    if (uiEventIsKey (keyh, 'S')) {
       uimusicqSwap (uimusicq, ci);
+      return UICB_STOP;
     }
   }
 
   return UICB_CONT;
 }
-#endif
 
 static void
 uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
 {
   int           ci;
   mq_internal_t *mqint;
+  uimusicqui_t  *mqui;
 
   ci = uimusicq->musicqManageIdx;
+  mqui = &uimusicq->ui [ci];
   if (ci != MUSICQ_SL) {
     /* only the song list queue has the previous selection marked */
     return;
   }
 
-  mqint = uimusicq->ui [ci].mqInternalData;
+  mqint = mqui->mqInternalData;
 
-  if (! uimusicq->ui [ci].hasui) {
+  if (! mqui->hasui) {
     return;
   }
-  if (uimusicq->ui [ci].prevSelection < 0) {
+  if (mqui->prevSelection < 0) {
     return;
   }
-  if (uimusicq->ui [ci].prevSelection >= uimusicq->ui [ci].count) {
+  if (mqui->prevSelection >= mqui->rowcount) {
     return;
   }
 
   if (! disp) {
-    uivlClearRowColumnClass (mqint->uivl, uimusicq->ui [ci].prevSelection,
+    uivlClearRowColumnClass (mqint->uivl, mqui->prevSelection,
         UIMUSICQ_COL_DISP_IDX);
   }
   if (disp) {
-    uivlSetRowColumnClass (mqint->uivl, uimusicq->ui [ci].prevSelection,
+    uivlSetRowColumnClass (mqint->uivl, mqui->prevSelection,
         UIMUSICQ_COL_DISP_IDX, ACCENT_CLASS);
   }
 }

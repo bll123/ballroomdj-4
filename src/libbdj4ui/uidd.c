@@ -262,15 +262,15 @@ uiddCreateDialog (uidd_t *dd)
   if (dispcount > DD_MAX_ROWS) {
     dispcount = DD_MAX_ROWS;
   }
-  dd->uivl = uivlCreate (dd->tag, NULL, vbox, dispcount, VL_NO_WIDTH,
-      VL_NO_HEADING | VL_ENABLE_KEYS);
+  dd->uivl = uivlCreate (dd->tag, dd->parentwin, vbox, dispcount,
+      VL_NO_WIDTH, VL_NO_HEADING | VL_ENABLE_KEYS);
   uivlSetDropdownBackground (dd->uivl);
   uivlSetNumColumns (dd->uivl, DD_COL_MAX);
   uivlMakeColumn (dd->uivl, "disp", DD_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnMinWidth (dd->uivl, DD_COL_DISP, dd->dispwidth);
   uivlSetNumRows (dd->uivl, count);
   uivlSetRowFillCallback (dd->uivl, uiddFillRow, dd);
-  uivlSetSelectChgCallback (dd->uivl, uiddSelected, dd);
+  uivlSetRowClickCallback (dd->uivl, uiddSelected, dd);
 
   uivlDisplay (dd->uivl);
 

@@ -68,6 +68,7 @@ enum {
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
   VL_CB_MAP_WIDGET,
+  VL_CB_USER_KEY,
   VL_CB_MAX,
 };
 
@@ -375,9 +376,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
 
-  /* the size change callback must be set on the scroll-window */
-  /* as the child windows within it only grow */
-  uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
+  uiWidgetSetSizeChgCallback (vl->wcont [VL_W_MAIN_VBOX], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
   uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
@@ -1245,6 +1244,16 @@ uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
   vl->coldata [colidx].spinboxcb = cb;
 }
 
+/* the vl key callback is called for any unhandled keys */
+void
+uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb)
+{
+  if (vl == NULL) {
+    return;
+  }
+
+  vl->callbacks [VL_CB_USER_KEY] = cb;
+}
 
 /* processing */
 
@@ -1515,6 +1524,15 @@ uivlMoveSelection (uivirtlist_t *vl, int dir)
   return rownum;
 }
 
+uiwcont_t *
+uivlGetEventHandler (uivirtlist_t *vl)
+{
+  if (vl == NULL) {
+    return NULL;
+  }
+
+  return vl->wcont [VL_W_EVENTH];
+}
 
 /* internal routines */
 
@@ -1857,13 +1875,11 @@ uivlKeyEvent (void *udata)
     int32_t     dir = 1;
     int32_t     nsel;
 
-    if (uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
-      if (uiEventIsPageUpDownKey (vl->wcont [VL_W_EVENTH])) {
-        dir = vl->dispsize - vl->headingoffset - vl->lockcount;
-      }
-      if (uiEventIsUpKey (vl->wcont [VL_W_EVENTH])) {
-        dir = - dir;
-      }
+    if (uiEventIsPageUpDownKey (vl->wcont [VL_W_EVENTH])) {
+      dir = vl->dispsize - vl->headingoffset - vl->lockcount;
+    }
+    if (uiEventIsUpKey (vl->wcont [VL_W_EVENTH])) {
+      dir = - dir;
     }
 
     if (nlistGetCount (vl->selected) == 1) {
@@ -1872,18 +1888,24 @@ uivlKeyEvent (void *udata)
       /* use the keyboard scroll update mode */
       uivlProcessScroll (vl, nsel, VL_SCROLL_KEY);
       uivlUpdateSelections (vl, nsel);
-      /* do not call the selection handler when using key movement */
-      /* this allows selections to be made in drop-down lists */
+      uivlSelectChgHandler (vl, nsel, VL_COL_UNKNOWN);
     }
 
     /* movement keys are handled internally */
     return UICB_STOP;
   }
 
-  if (uiEventIsEnterKey (vl->wcont [VL_W_EVENTH]) &&
-      uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
+  if (uiEventIsEnterKey (vl->wcont [VL_W_EVENTH])) {
     uivlRowClickHandler (vl, vl->currSelection, VL_COL_UNKNOWN);
     return UICB_STOP;
+  }
+
+  /* any unknown keys can be passed on to any registered user */
+  if (vl->callbacks [VL_CB_USER_KEY] != NULL) {
+    int   rc;
+
+    rc = callbackHandler (vl->callbacks [VL_CB_USER_KEY]);
+    return rc;
   }
 
   return UICB_CONT;

@@ -15,7 +15,6 @@
 #include "log.h"
 #include "musicdb.h"
 #include "playlist.h"
-//#include "tmutil.h"
 #include "uimusicq.h"
 #include "uiplaylist.h"
 #include "ui.h"
@@ -114,20 +113,23 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 void
 uimusicqSwap (uimusicq_t *uimusicq, int mqidx)
 {
-  char        tbuff [100];
+  char          tbuff [100];
+  uimusicqui_t  *mqui;
 
-  if (uimusicq->ui [mqidx].prevSelection < 0 ||
-      uimusicq->ui [mqidx].currSelection < 0 ||
-      uimusicq->ui [mqidx].prevSelection >= uimusicq->ui [mqidx].count ||
-      uimusicq->ui [mqidx].currSelection >= uimusicq->ui [mqidx].count ||
-      uimusicq->ui [mqidx].prevSelection == uimusicq->ui [mqidx].currSelection) {
+  mqui = &uimusicq->ui [mqidx];
+  if (mqui->prevSelection < 0 ||
+      mqui->currSelection < 0 ||
+      mqui->prevSelection >= mqui->rowcount ||
+      mqui->currSelection >= mqui->rowcount ||
+      mqui->prevSelection == mqui->currSelection) {
     return;
   }
 
+fprintf (stderr, "swap: prev: %d curr: %d\n", mqui->prevSelection, mqui->currSelection);
   uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
-      MSG_ARGS_RS, uimusicq->ui [mqidx].prevSelection + 1,
-      MSG_ARGS_RS, uimusicq->ui [mqidx].currSelection + 1);
+      MSG_ARGS_RS, mqui->prevSelection,
+      MSG_ARGS_RS, mqui->currSelection);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_SWAP, tbuff);
 }
 

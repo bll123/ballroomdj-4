@@ -104,6 +104,7 @@ void  uivlSetRadioChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetCheckboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
+void  uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
@@ -116,5 +117,6 @@ int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
+uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 
 #endif /* INC_UIVIRTLIST_H */
