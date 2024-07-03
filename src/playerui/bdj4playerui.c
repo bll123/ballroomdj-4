@@ -249,7 +249,7 @@ static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static bool     pluiDragDropCallback (void *udata, const char *uri);
+static int32_t  pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
 
@@ -2024,7 +2024,7 @@ pluiExportMP3 (void *udata)
   return UICB_CONT;
 }
 
-static bool
+static int32_t
 pluiDragDropCallback (void *udata, const char *uri)
 {
   playerui_t    *plui = udata;

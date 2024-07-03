@@ -8,13 +8,14 @@
 
 * Bug Fixes:
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
+    * Player: Drag & Drop: Fixed issues with encoded filenames.
 * Changes:
     * Configuration: New interface for Rating / Level / Status / Genre.
     * Playlist Management: New interface for dances table.
     * Audio Identification: The Original data row is locked into the view.
 * Translations:
     * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬), Portuguese (Português).  All poor quality.
-    * New install help text has been machine translated where it was missing.
+    * "New Install" help text has been machine translated where it was missing.
 * Internal:
     * Re-work of all table handling.
     * Code cleanup.

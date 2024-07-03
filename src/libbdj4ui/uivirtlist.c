@@ -2511,14 +2511,16 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* rows are cleared. */
   /* this is necessary when the number of rows is less than the */
   /* display size. this must be forced. */
-  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-increase %d-%d", vl->tag, odispsize, newdispsize);
-  for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
-    uivlrow_t *row;
+  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-increase? %d<%d", vl->tag, odispsize, newdispsize);
+  if (vl->numrows < (vl->dispsize - vl->headingoffset)) {
+    for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
+      uivlrow_t *row;
 
-    /* force a reset as a show-all was done, the rows must be cleared */
-    row = &vl->rows [dispidx];
-    row->cleared = false;
-    uivlClearRowDisp (vl, dispidx);
+      /* force a reset as a show-all was done, the rows must be cleared */
+      row = &vl->rows [dispidx];
+      row->cleared = false;
+      uivlClearRowDisp (vl, dispidx);
+    }
   }
 
   /* if the display size is greater than the number of rows, */

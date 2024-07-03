@@ -77,7 +77,7 @@ static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *s
 static void uiTreeViewRadioHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static gboolean uiTreeViewClickHandler (GtkWidget *tv, GdkEventButton *event, gpointer udata);
-static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
+// static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static GType uiTreeViewConvertTreeType (int type);
 static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
@@ -1339,8 +1339,9 @@ uiTreeViewSelectForeachGetValue (uiwcont_t *uiwidget, int col)
   return val;
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewForeach (uiwcont_t *uiwidget, callback_t *cb)
+uiTreeViewForeach (uiwcont_t *uiwidget, callback_t *cb)  /* UNUSED */
 {
   uitree_t  *uitree;
 
@@ -1361,6 +1362,7 @@ uiTreeViewForeach (uiwcont_t *uiwidget, callback_t *cb)
   gtk_tree_model_foreach (uitree->model, uiTreeViewForeachHandler, uiwidget);
   uiTreeViewSelectRestore (uiwidget);
 }
+#endif
 
 void
 uiTreeViewSelectSet (uiwcont_t *uiwidget, int row)
@@ -1448,8 +1450,9 @@ uiTreeViewValueIteratorClear (uiwcont_t *uiwidget)
   uitree->valueiterset = false;
 }
 
+#if 0 /* UNUSED */
 void
-uiTreeViewScrollToCell (uiwcont_t *uiwidget)
+uiTreeViewScrollToCell (uiwcont_t *uiwidget) /* UNUSED */
 {
   GtkTreePath *path = NULL;
   uitree_t    *uitree;
@@ -1477,6 +1480,7 @@ uiTreeViewScrollToCell (uiwcont_t *uiwidget)
     gtk_tree_path_free (path);
   }
 }
+#endif
 
 void
 uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
@@ -1500,8 +1504,9 @@ uiTreeViewAttachScrollController (uiwcont_t *uiwidget, double upper)
   gtk_widget_add_events (uiwidget->uidata.widget, GDK_SCROLL_MASK);
 }
 
+#if 0 /* UNUSED */
 int
-uiTreeViewGetDragDropRow (uiwcont_t *uiwidget, int x, int y)
+uiTreeViewGetDragDropRow (uiwcont_t *uiwidget, int x, int y) /* UNUSED */
 {
   int                     row;
   GtkTreePath             *path;
@@ -1530,6 +1535,7 @@ uiTreeViewGetDragDropRow (uiwcont_t *uiwidget, int x, int y)
 
   return row;
 }
+#endif
 
 /* internal routines */
 
@@ -1753,8 +1759,9 @@ uiTreeViewClickHandler (GtkWidget *tv, GdkEventButton *event, gpointer udata)
   return UICB_CONT;
 }
 
+#if 0 /* UNUSED */
 static gboolean
-uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
+uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, /* UNUSED */
     GtkTreeIter* iter, gpointer udata)
 {
   uiwcont_t   *uiwidget = udata;
@@ -1779,6 +1786,7 @@ uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
 
   return rc;
 }
+#endif
 
 static GType
 uiTreeViewConvertTreeType (int type)

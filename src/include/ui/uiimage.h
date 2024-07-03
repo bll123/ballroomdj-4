@@ -16,7 +16,6 @@ uiwcont_t *uiImageScaledFromFile (const char *fn, int scale);
 void  uiImageClear (uiwcont_t *uiwidget);
 void  uiImageConvertToPixbuf (uiwcont_t *uiwidget);
 void  uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
-void  *uiImageGetPixbuf (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

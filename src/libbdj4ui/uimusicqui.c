@@ -99,7 +99,6 @@ static bool   uimusicqQueueCallback (void *udata);
 static void   uimusicqSelectRowCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
 static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc);
-// static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
 static bool   uimusicqMoveTopCallback (void *udata);
@@ -268,7 +267,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_BUTTON_MOVE_DOWN] = uiwidgetp;
   }
 
-//  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_TOGGLE_PAUSE] = callbackInit (
         uimusicqTogglePauseCallback, uimusicq, "musicq: toggle-pause");
     uiwidgetp = uiCreateButton (
@@ -277,7 +276,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Toggle Pause"), "button_pause");
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_TOGGLE_PAUSE] = uiwidgetp;
-//  }
+  }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
@@ -294,7 +293,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_BUTTON_REMOVE] = uiwidgetp;
   }
 
-//  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_CLEAR_QUEUE] = callbackInit (
         uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
     uiwidgetp = uiCreateButton (
@@ -304,7 +303,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_CLEAR_QUEUE] = uiwidgetp;
-//  }
+  }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
@@ -403,10 +402,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   /* always create the pause-indicator column */
   uivlMakeColumn (uivl, "pauseind", UIMUSICQ_COL_PAUSEIND, VL_TYPE_IMAGE);
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_WIDTH_GROW_ONLY);
-// ### temp.
-//  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
-//    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_DISABLE);
-//  }
+  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
+    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_DISABLE);
+  }
 
   uivlAddDisplayColumns (uivl, sellist, startcol);
 
@@ -768,7 +766,6 @@ uimusicqQueueCallback (void *udata)
   mq_internal_t *mqint;
   musicqidx_t   ci;
   dbidx_t       dbidx;
-//  int           count;
 
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;

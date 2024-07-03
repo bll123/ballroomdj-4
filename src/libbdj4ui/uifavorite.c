@@ -28,8 +28,6 @@ typedef struct uifavorite {
   songfav_t   *songfav;
 } uifavorite_t;
 
-static bool initialized = false;
-
 static const char *uifavoriteFavoriteGet (void *udata, int idx);
 
 uifavorite_t *

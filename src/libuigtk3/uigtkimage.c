@@ -114,19 +114,6 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
   uiwidget->uidata.pixbuf = pixbuf;
 }
 
-void *
-uiImageGetPixbuf (uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_PIXBUF, "image-get-pixbuf")) {
-    return NULL;
-  }
-  if (uiwidget->uidata.pixbuf == NULL) {
-    return NULL;
-  }
-
-  return uiwidget->uidata.pixbuf;
-}
-
 void
 uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
 {
