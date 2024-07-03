@@ -262,7 +262,7 @@ uiddCreateDialog (uidd_t *dd)
   if (dispcount > DD_MAX_ROWS) {
     dispcount = DD_MAX_ROWS;
   }
-  dd->uivl = uivlCreate (dd->tag, dd->parentwin, vbox, dispcount,
+  dd->uivl = uivlCreate (dd->tag, NULL, vbox, dispcount,
       VL_NO_WIDTH, VL_NO_HEADING | VL_ENABLE_KEYS);
   uivlSetDropdownBackground (dd->uivl);
   uivlSetNumColumns (dd->uivl, DD_COL_MAX);

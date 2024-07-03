@@ -98,7 +98,6 @@ enum {
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
   SONGSEL_W_SCROLLBAR,
-  SONGSEL_W_KEY_HNDLR,
   SONGSEL_W_TREE,
   SONGSEL_W_MAX,
 };
@@ -166,7 +165,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
 
   ssint = mdmalloc (sizeof (ss_internal_t));
-  ssint->wcont [SONGSEL_W_TREE] = NULL;
   ssint->uivl = NULL;
   ssint->uisongsel = uisongsel;
   ssint->sscolorlist = slistAlloc ("ss-colors", LIST_ORDERED, NULL);
@@ -189,9 +187,9 @@ uisongselUIInit (uisongsel_t *uisongsel)
 //  ssint->lastRowDBIdx = -1;
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
-  ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
-      uisongselKeyEvent, uisongsel, NULL);
+//  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
+//  ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
+//      uisongselKeyEvent, uisongsel, NULL);
   ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitI (
       uisongselProcessSelection, uisongsel);
 
@@ -336,7 +334,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   ssint->sellist = sellist;
 
-  uivl = uivlCreate (uisongsel->tag, parentwin, hbox, 5, 400, VL_ENABLE_KEYS);
+  uivl = uivlCreate (uisongsel->tag, NULL, hbox, 5, 400, VL_ENABLE_KEYS);
   ssint->uivl = uivl;
   uivlSetUseListingFont (uivl);
   uivlSetAllowMultiple (uivl);
@@ -807,10 +805,10 @@ uisongselKeyEvent (void *udata)
 
   ssint = uisongsel->ssInternalData;
 
-  if (uiEventIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
-      uiEventIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    uisongselPlayCallback (uisongsel);
-  }
+//  if (uiEventIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
+//      uiEventIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+//    uisongselPlayCallback (uisongsel);
+//  }
 
   return UICB_CONT;
 }
@@ -882,24 +880,7 @@ uisongselProcessSelection (void *udata, int32_t row)
 //  idx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
 //      SONGSEL_COL_IDX);
 
-  if (uiEventIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    nlistidx_t    beg = 0;
-    nlistidx_t    end = -1;
-
-    if (idx <= ssint->shiftfirstidx) {
-      beg = idx;
-      end = ssint->shiftfirstidx;
-    }
-    if (idx >= ssint->shiftlastidx) {
-      beg = ssint->shiftlastidx;
-      end = idx;
-    }
-
-    for (nlistidx_t i = beg; i <= end; ++i) {
-      dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-      nlistSetNum (ssint->selectedList, i, dbidx);
-    }
-  } else {
+  {
     dbidx = 0; // ### temp
 //    dbidx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
 //        SONGSEL_COL_DBIDX);
@@ -992,6 +973,7 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       /* check and see if the song is in the song list */
       if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
         strlcpy (markstr, ssint->marktext, sizeof (markstr));
+        sscolor = ssint->markcolor;
       }
     }
 
@@ -1005,14 +987,11 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   uivlSetRowColumnStr (ssint->uivl, rownum, SONGSEL_COL_MARK, markstr);
   if (sscolor != NULL) {
-    char    classnm [40];
-
-    snprintf (classnm, sizeof (classnm), "label.%s", sscolor + 1);
     if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
       slistSetNum (ssint->sscolorlist, sscolor, 1);
       uiLabelAddClass (sscolor + 1, sscolor);
     }
-    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, classnm);
+    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, sscolor + 1);
   }
 
   tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);

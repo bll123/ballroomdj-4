@@ -84,38 +84,6 @@ uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
   return dlist;
 }
 
-void
-uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
-    uisongcb_t cb, void *udata)
-{
-  slistidx_t    seliteridx;
-  int           tagidx;
-  char          *str = NULL;
-  int32_t       num;
-  double        dval;
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    if (tagidx == TAG_AUDIOID_IDENT) {
-      col += 1;
-      continue;
-    }
-    if (song != NULL) {
-      str = uisongGetDisplay (song, tagidx, &num, &dval);
-    } else {
-      str = "";
-      num = LIST_VALUE_INVALID;
-    }
-    if (cb != NULL) {
-      cb (col, num, str, udata);
-    }
-    col += 1;
-    if (song != NULL) {
-      dataFree (str);
-    }
-  } /* for each tagidx in the display selection list */
-}
-
 char *
 uisongGetDisplay (song_t *song, int tagidx, int32_t *num, double *dval)
 {
@@ -171,25 +139,6 @@ uisongGetValue (song_t *song, int tagidx, int32_t *num, double *dval)
   return str;
 }
 
-
-#if 0
-void
-uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
-{
-  slistidx_t    seliteridx;
-  int           tagidx;
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    if (cb != NULL) {
-      int   type = TREE_TYPE_STRING;
-
-      /* gtk doesn't have a method to display a blank numeric afaik */
-      cb (type, udata);
-    }
-  }
-}
-#endif
 
 /* internal routines */
 

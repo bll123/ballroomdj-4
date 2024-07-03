@@ -125,7 +125,6 @@ uimusicqSwap (uimusicq_t *uimusicq, int mqidx)
     return;
   }
 
-fprintf (stderr, "swap: prev: %d curr: %d\n", mqui->prevSelection, mqui->currSelection);
   uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
       MSG_ARGS_RS, mqui->prevSelection,

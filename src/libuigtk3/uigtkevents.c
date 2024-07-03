@@ -444,7 +444,7 @@ uiEventIsUpKey (uiwcont_t *uiwidget)
 
 /* includes page down */
 bool
-uiEventIsDownKey (uiwcont_t *uiwidget)
+uiEventIsDownKey (uiwcont_t *uiwidget)    /* KEEP */
 {
   uievent_t   *uievent;
   bool      rc = false;

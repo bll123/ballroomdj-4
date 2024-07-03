@@ -81,10 +81,10 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
       continue
       ;;
   esac
-  grep 'Copyright' $fn > /dev/null 2>&1
+  grep "Copyright" $fn > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "$fn : missing Copyright"
+    echo "$fn : missing copyright"
     grc=$rc
   fi
 done

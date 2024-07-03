@@ -385,7 +385,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 // ### should keys be enabled for the other music queues?
 // they were only enabled for songlist and sbs-songlist before
 // the keys do not work well.
-  uivl = uivlCreate (mqint->tag, uimusicq->parentwin,
+// trying w/o a parent-win.
+  uivl = uivlCreate (mqint->tag, NULL,
       uimusicq->ui [ci].mainbox, 5, 400, VL_ENABLE_KEYS);
   mqint->uivl = uivl;
   uivlSetUseListingFont (uivl);

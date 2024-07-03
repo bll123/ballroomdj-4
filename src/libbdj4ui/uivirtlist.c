@@ -69,7 +69,6 @@ enum {
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
   VL_CB_MAP_WIDGET,
-  VL_CB_USER_KEY,
   VL_CB_MAX,
 };
 
@@ -77,6 +76,7 @@ enum {
   VL_USER_CB_ENTRY_VAL,
   VL_USER_CB_RB_CHG,
   VL_USER_CB_CB_CHG,
+  VL_USER_CB_KEY,
   VL_USER_CB_MAX,
 };
 
@@ -1247,7 +1247,7 @@ uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb)
     return;
   }
 
-  vl->callbacks [VL_CB_USER_KEY] = cb;
+  vl->usercb [VL_USER_CB_KEY] = cb;
 }
 
 /* processing */
@@ -1896,10 +1896,10 @@ uivlKeyEvent (void *udata)
   }
 
   /* any unknown keys can be passed on to any registered user */
-  if (vl->callbacks [VL_CB_USER_KEY] != NULL) {
+  if (vl->usercb [VL_USER_CB_KEY] != NULL) {
     int   rc;
 
-    rc = callbackHandler (vl->callbacks [VL_CB_USER_KEY]);
+    rc = callbackHandler (vl->usercb [VL_USER_CB_KEY]);
     return rc;
   }
 
