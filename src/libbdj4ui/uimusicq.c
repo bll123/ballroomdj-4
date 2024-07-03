@@ -243,8 +243,6 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 {
   logProcBegin ();
 
-return;
-
   if (! uimusicq->changed) {
     logProcEnd ("not-changed");
     return;

@@ -137,7 +137,7 @@ typedef struct {
   uiqe_t          *uiqe;
   int             resetvolume;
   /* external request */
-  int             extreqRow;
+  int32_t         extreqRow;
   uiextreq_t      *uiextreq;
   /* notebook */
   uinbtabid_t     *nbtabid;
@@ -249,7 +249,7 @@ static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
+static bool     pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
 
@@ -686,7 +686,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (uiwidgetp);
   plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
 
-  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitSI (
+  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitS (
       pluiDragDropCallback, plui);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -2025,16 +2025,20 @@ pluiExportMP3 (void *udata)
 }
 
 static bool
-pluiDragDropCallback (void *udata, const char *uri, int row)
+pluiDragDropCallback (void *udata, const char *uri)
 {
-  playerui_t        *plui = udata;
+  playerui_t    *plui = udata;
+  int           mqidx;
+  int32_t       rownum;
 
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
     return UICB_STOP;
   }
 
   plui->musicqRequestIdx = plui->musicqManageIdx;
-  plui->extreqRow = row;
+  mqidx = plui->musicqManageIdx;
+  rownum = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+  plui->extreqRow = rownum;
 
   uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
   return UICB_CONT;

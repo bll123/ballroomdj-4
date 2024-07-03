@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "callback.h"
@@ -37,13 +38,8 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
     return;
   }
 
-  if (GTK_IS_TREE_VIEW (uiwcont->uidata.widget)) {
-    gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (uiwcont->uidata.widget),
-        NULL, 0, GDK_ACTION_COPY);
-  } else {
-    gtk_drag_dest_set (uiwcont->uidata.widget, GTK_DEST_DEFAULT_ALL,
-        NULL, 0, GDK_ACTION_COPY);
-  }
+  gtk_drag_dest_set (uiwcont->uidata.widget, GTK_DEST_DEFAULT_ALL,
+      NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_uri_targets (uiwcont->uidata.widget);
   g_signal_connect (GTK_WIDGET (uiwcont->uidata.widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
@@ -58,37 +54,33 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
     gpointer udata)
 {
   callback_t    *cb = udata;
-  int           row = -1;
-
-  if (GTK_IS_TREE_VIEW (w)) {
-    uiwcont_t   uiwcont;
-
-    uiwcont.uidata.widget = w;
-    row = uiTreeViewGetDragDropRow (&uiwcont, x, y);
-  }
 
   /* what are the possible formats? why is there no define for it? */
   if (info == 0 &&
       gtk_selection_data_get_length (seldata) >= 0 &&
       gtk_selection_data_get_format (seldata) == 8) {
-    char                **urilist = NULL;
-    int                 rc;
+    char    **urilist = NULL;
+    int     rc;
+    char    *nstr;
 
     urilist = gtk_selection_data_get_uris (seldata);
     mdextalloc (urilist);
 
-    rc = callbackHandlerSI (cb, urilist [0], row);
+    nstr = g_uri_unescape_string (urilist [0], NULL);
+    mdextalloc (nstr);
+    rc = callbackHandlerS (cb, nstr);
     mdextfree (urilist);
     g_strfreev (urilist);
+    mdextfree (nstr);
+    dataFree (nstr);
     gtk_drag_finish (context, rc, FALSE, tm);
   }
 
-  if (info == 1 &&
+  if (info == 1 && cb != NULL &&
       gtk_selection_data_get_length (seldata) == sizeof (int32_t) &&
       gtk_selection_data_get_format (seldata) == 32 ) {
-    int     rc;
+    int     rc = UICB_CONT;
 
-    rc = callbackHandlerI (cb, row);
     gtk_drag_finish (context, rc, FALSE, tm);
   }
 

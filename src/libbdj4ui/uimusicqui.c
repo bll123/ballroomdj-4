@@ -52,7 +52,6 @@ enum {
   MQINT_CB_EDIT_LOCAL,
   MQINT_CB_PLAY,
   MQINT_CB_HIST_QUEUE,
-  MQINT_CB_INT_ITERATE,
   MQINT_CB_MAX,
 };
 
@@ -86,8 +85,8 @@ typedef struct mq_internal {
   uivirtlist_t      *uivl;
   slist_t           *sellist;
   mp_musicqupdate_t *musicqupdate;
-  int               colcount;         // for the display type callback
-  int               rowcount;         // current size of tree view storage
+  int               colcount;
+  int               rowcount;
   int               favcolumn;
   int               mqidx;
 } mq_internal_t;
@@ -95,7 +94,6 @@ typedef struct mq_internal {
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
 static int32_t uimusicqQueuePlaylistCallback (void *udata, const char *sval);
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
-static bool   uimusicqIterateCallback (void *udata);
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
 static void   uimusicqSelectRowCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
@@ -370,7 +368,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
   }
 
-  /* musicq tree view */
+  /* musicq listing display */
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   mqint->sellist = sellist;
@@ -424,9 +422,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uimusicq->musicqManageIdx = saveci;
 
-  mqint->callbacks [MQINT_CB_INT_ITERATE] = callbackInit (
-        uimusicqIterateCallback, uimusicq, NULL);
-
   uiwcontFree (hbox);
 
   /* initialize the musicq storage */
@@ -449,7 +444,7 @@ uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
   }
 
   mqint = uimusicq->ui [ci].mqInternalData;
-//  uiDragDropSetDestURICallback (mqint->wcont [UIMUSICQ_W_TREE], cb);
+  uiDragDropSetDestURICallback (uimusicq->parentwin, cb);
 }
 
 void
@@ -520,7 +515,10 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 nlist_t *
 uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
 {
-  mq_internal_t   *mqint;
+  mq_internal_t       *mqint;
+  nlistidx_t          mqiter;
+  nlistidx_t          key;
+  mp_musicqupditem_t  *musicqupditem;
 
   mqint = uimusicq->ui [mqidx].mqInternalData;
 
@@ -528,10 +526,15 @@ uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
       uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST];
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = nlistAlloc ("savelist", LIST_UNORDERED, NULL);
-//  uiTreeViewValueIteratorSet (mqint->wcont [UIMUSICQ_W_TREE], 0);
-//  uiTreeViewForeach (mqint->wcont [UIMUSICQ_W_TREE],
-//      mqint->callbacks [MQINT_CB_INT_ITERATE]);
-//  uiTreeViewValueIteratorClear (mqint->wcont [UIMUSICQ_W_TREE]);
+
+  nlistStartIterator (mqint->musicqupdate->dispList, &mqiter);
+  while ((key = nlistIterateKey (mqint->musicqupdate->dispList, &mqiter)) >= 0) {
+    musicqupditem = nlistGetData (mqint->musicqupdate->dispList, key);
+    if (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] != NULL) {
+      callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE],
+          musicqupditem->dbidx);
+    }
+  }
 
   return uimusicq->savelist;
 }
@@ -732,31 +735,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   logProcEnd ("");
 }
 
-
-static bool
-uimusicqIterateCallback (void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  mq_internal_t *mqint;
-  int           ci;
-  dbidx_t       dbidx;
-
-  ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
-
-  if (mqint == NULL) {
-    return UICB_CONT;
-  }
-
-
-dbidx = 0;
-//  dbidx = uiTreeViewGetValue (mqint->wcont [UIMUSICQ_W_TREE], UIMUSICQ_COL_DBIDX);
-  if (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] != NULL) {
-    callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE], dbidx);
-  }
-  return UICB_CONT;
-}
-
 /* used by song list editor */
 static bool
 uimusicqPlayCallback (void *udata)
@@ -901,27 +879,6 @@ uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc)
   }
 }
 
-#if 0
-static void
-uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
-{
-  mq_internal_t  *mqint;
-  int             ci;
-  int             count;
-
-  ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
-
-//  count = uiTreeViewSelectGetCount (mqint->wcont [UIMUSICQ_W_TREE]);
-  count =
-  if (uimusicq->ui [ci].count > 0 && count < 1) {
-//    uiTreeViewSelectFirst (mqint->wcont [UIMUSICQ_W_TREE]);
-  }
-
-  return;
-}
-#endif
-
 static void
 uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
 {
@@ -945,12 +902,6 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   }
 
   uivlSetSelection (mqint->uivl, uimusicq->ui [mqidx].selectLocation);
-//  uiTreeViewSelectSet (mqint->wcont [UIMUSICQ_W_TREE],
-//      uimusicq->ui [mqidx].selectLocation);
-
-//  if (uimusicq->ui [mqidx].count > 0) {
-//    uiTreeViewScrollToCell (mqint->wcont [UIMUSICQ_W_TREE]);
-//  }
   logProcEnd ("");
 }
 
