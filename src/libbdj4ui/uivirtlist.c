@@ -19,6 +19,7 @@
 #include "nlist.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiclass.h"
 #include "uivirtlist.h"
 #include "uiwcont.h"
 
@@ -85,12 +86,6 @@ enum {
   VL_IDENT_ROW      = 0x766c726f7700bbcc,
   VL_IDENT          = 0x766c00bbccddeeff,
 };
-
-static const char * const VL_SELECTED_CLASS = "bdj-selected";
-static const char * const VL_LIST_CLASS = "bdj-listing";
-static const char * const VL_HEAD_CLASS = "bdj-heading";
-static const char * const VL_DARKBG_CLASS = "bdj-dark-bg";
-static const char * const VL_NORMBG_CLASS = "bdj-norm-bg";
 
 typedef struct uivlcol uivlcol_t;
 typedef struct uivlcoldata uivlcoldata_t;
@@ -556,7 +551,7 @@ uivlSetDarkBackground (uivirtlist_t *vl)
   }
 
   vl->darkbg = true;
-  uiWidgetAddClass (vl->wcont [VL_W_HBOX_CONT], VL_DARKBG_CLASS);
+  uiWidgetAddClass (vl->wcont [VL_W_HBOX_CONT], DARKBG_CLASS);
 }
 
 void
@@ -566,7 +561,7 @@ uivlSetDropdownBackground (uivirtlist_t *vl)
     return;
   }
 
-  uiWidgetAddClass (vl->wcont [VL_W_MAIN_VBOX], VL_NORMBG_CLASS);
+  uiWidgetAddClass (vl->wcont [VL_W_MAIN_VBOX], NORMBG_CLASS);
 }
 
 void
@@ -1315,7 +1310,7 @@ uivlDisplay (uivirtlist_t *vl)
 
     uiwidget = uiCreateLabel (" ");
     if (vl->uselistingfont) {
-      uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
+      uiWidgetAddClass (uiwidget, LISTING_CLASS);
     }
     uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
     uiwcontFree (uiwidget);
@@ -1624,7 +1619,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
   if (vl->uselistingfont) {
-    uiWidgetAddClass (uiwidget, VL_LIST_CLASS);
+    uiWidgetAddClass (uiwidget, LISTING_CLASS);
   }
   uiWidgetShow (uiwidget);
   uiwcontFree (uiwidget);
@@ -1776,9 +1771,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (vl->uselistingfont) {
-      uiWidgetAddClass (col->uiwidget, VL_LIST_CLASS);
+      uiWidgetAddClass (col->uiwidget, LISTING_CLASS);
       if (isheading) {
-        uiWidgetAddClass (col->uiwidget, VL_HEAD_CLASS);
+        uiWidgetAddClass (col->uiwidget, HEADING_CLASS);
       }
     }
 
@@ -2036,11 +2031,11 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
-      uiWidgetRemoveClass (row->hbox, VL_SELECTED_CLASS);
+      uiWidgetRemoveClass (row->hbox, SELECTED_CLASS);
 
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
         if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-          uiWidgetRemoveClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+          uiWidgetRemoveClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
         }
       }
       row->selected = false;
@@ -2073,11 +2068,11 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     }
     vl->lastselidx = row->dispidx;
 
-    uiWidgetAddClass (row->hbox, VL_SELECTED_CLASS);
+    uiWidgetAddClass (row->hbox, SELECTED_CLASS);
     row->selected = true;
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-        uiWidgetAddClass (row->cols [colidx].uiwidget, VL_SELECTED_CLASS);
+        uiWidgetAddClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
       }
     }
   }

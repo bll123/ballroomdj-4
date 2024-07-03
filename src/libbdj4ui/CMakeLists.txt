@@ -42,7 +42,6 @@ add_library (libbdj4ui SHARED
   uisongselcommon.c
   uisongselui.c
   uistatus.c
-  uitreedisp.c
   uiutils.c
   uivirtlist.c
   uivlutil.c

@@ -116,7 +116,8 @@ uiCleanup (void)
 
 void
 uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *selectColor)
+    const char *accentColor, const char *errorColor,
+    const char *selectColor, const char *markColor)
 {
   char            tbuff [8192];
   char            wbuff [400];
@@ -187,22 +188,20 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       if (headsz > sz) {
         headsz = sz;
       }
+
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-listing { font-family: '%s'; font-size: %dpt; } ",
-          tmp, listingsz);
+          ".%s { font-family: '%s'; font-size: %dpt; } ",
+          LISTING_CLASS, tmp, listingsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
+
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-list-fav { font-size: %dpt; } ", favsz);
+          "label.%s { font-size: %dpt; } ",
+          LIST_FAV_CLASS, favsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
+
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-heading { font-size: %dpt; font-weight: bold; } ", headsz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
-    } else {
-      snprintf (wbuff, sizeof (wbuff),
-          ".bdj-listing { font-family: '%s'; } ", tmp);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
-      snprintf (wbuff, sizeof (wbuff),
-          ".bdj-heading { font-weight: bold; } ");
+          "label.%s { font-size: %dpt; font-weight: bold; } ",
+          HEADING_CLASS, headsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
   }
@@ -239,22 +238,6 @@ uiSetUICSS (const char *uifont, const char *listingfont,
         "label.%s { color: shade(%s,0.7); } ", DARKACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
-    /* the problem with using the standard selected-bg-color with virtlist */
-    /* is it matches the radio button and check button colors and */
-    /* there is no easy way to switch the radio buttons and */
-    /* check buttons to the obverse colors */
-    snprintf (wbuff, sizeof (wbuff),
-        "box.horizontal.%s { background-color: shade(%s,0.4); } ",
-        SELECTED_CLASS, selectColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-    snprintf (wbuff, sizeof (wbuff),
-        "spinbutton.%s, "
-        "spinbutton.%s entry, "
-        "spinbutton.%s button "
-        "{ background-color: shade(%s,0.4); } ",
-        SELECTED_CLASS, SELECTED_CLASS, SELECTED_CLASS, selectColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-
     snprintf (wbuff, sizeof (wbuff),
         "entry.%s { color: %s; } ", ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
@@ -274,9 +257,31 @@ uiSetUICSS (const char *uifont, const char *listingfont,
         ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
+  if (selectColor != NULL) {
+    /* the problem with using the standard selected-bg-color with virtlist */
+    /* is it matches the radio button and check button colors and */
+    /* there is no easy way to switch the radio buttons and */
+    /* check buttons to the obverse colors */
+    snprintf (wbuff, sizeof (wbuff),
+        "box.horizontal.%s { background-color: shade(%s,0.4); } ",
+        SELECTED_CLASS, selectColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    snprintf (wbuff, sizeof (wbuff),
+        "spinbutton.%s, "
+        "spinbutton.%s entry, "
+        "spinbutton.%s button "
+        "{ background-color: shade(%s,0.4); } ",
+        SELECTED_CLASS, SELECTED_CLASS, SELECTED_CLASS, selectColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: %s; } ", ERROR_CLASS, errorColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
+  if (markColor != NULL) {
+    snprintf (wbuff, sizeof (wbuff),
+        "label.%s { color: %s; } ", MARK_CLASS, markColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 

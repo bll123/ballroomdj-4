@@ -38,7 +38,6 @@
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uitoggle.h"
-#include "ui/uitreeview.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"

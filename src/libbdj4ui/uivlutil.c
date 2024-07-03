@@ -19,10 +19,9 @@
 #include "nlist.h"
 #include "songfav.h"
 #include "tagdef.h"
+#include "uiclass.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
-
-static const char * const VL_FAV_CLASS = "bdj-list-fav";
 
 void
 uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
@@ -79,7 +78,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
     if (tagidx == TAG_FAVORITE) {
-      uivlSetColumnClass (vl, colidx, VL_FAV_CLASS);
+      uivlSetColumnClass (vl, colidx, LIST_FAV_CLASS);
       uivlSetColumnAlignCenter (vl, colidx);
     }
 

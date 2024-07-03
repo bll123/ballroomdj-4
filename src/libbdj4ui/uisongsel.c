@@ -59,7 +59,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
-  uisongsel->dfilterCount = (double) dbCount (musicdb);
+  uisongsel->numrows = dbCount (musicdb);
   uisongsel->uidance = NULL;
   uisongsel->peercount = 0;
   uisongsel->ispeercall = false;

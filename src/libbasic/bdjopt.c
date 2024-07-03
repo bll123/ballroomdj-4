@@ -87,6 +87,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, DF_NORM },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, DF_NORM },
+  { "UI_MARK_TEXT",         OPT_P_UI_MARK_TEXT,         VALUE_STR, NULL, DF_NORM },
   { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, DF_NORM },
   { "UI_ROWSEL_COL",        OPT_P_UI_ROWSEL_COL,        VALUE_STR, NULL, DF_NORM },
 };
@@ -280,6 +281,12 @@ bdjoptInit (void)
   /* added 4.10.5, make sure it is set */
   if (nlistGetNum (bdjopt->bdjoptList, OPT_P_SHOW_SPD_CONTROL) < 0) {
     nlistSetNum (bdjopt->bdjoptList, OPT_P_SHOW_SPD_CONTROL, false);
+  }
+
+  /* added 4.11.0, make sure it is set */
+  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT) == NULL) {
+    /* left five-eights block */
+    nlistSetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT, "\xe2\x96\x8B");
   }
 }
 

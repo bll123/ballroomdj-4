@@ -29,16 +29,22 @@ These items are not configurable via the user interface.
     Separator character(s) for the marquee information display.
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
+    Must be specified as '#rrggbb'.
   * MQ_TEXT_COL
     Marquee Text Color.
+    Must be specified as '#rrggbb'.
   * PLAYER_UI_SEP
     Separator character(s) for the player currently-playing display.
   * UI_ERROR_COL
     User Interface Error Color.
     The color of error messages.
+    Must be specified as '#rrggbb'.
   * UI_MARK_COL
     User Interface Mark Color.
     The color for the request list in-queue mark.
+    Must be specified as '#rrggbb'.
+  * UI_MARK_TEXT
+    The character(s) to use to display the mark.
   * UI_ROWSEL_COL
     Row selection color.
 

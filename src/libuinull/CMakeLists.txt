@@ -30,7 +30,6 @@ add_library (libuinull SHARED
   uinullswitch.c
   uinulltextbox.c
   uinulltoggle.c
-  uinulltreeview.c
   uinullui.c
   uinullwidget.c
   uinullwindow.c

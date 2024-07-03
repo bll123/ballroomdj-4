@@ -525,7 +525,7 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 16";
       }
     }
-    uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL, NULL);
+    uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL, NULL, NULL);
   }
 
   if (installer.guienabled) {

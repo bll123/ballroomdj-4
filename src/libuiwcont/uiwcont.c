@@ -81,7 +81,6 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_TEXT_BOX] = "TEXT_BOX",
   [WCONT_T_TEXT_BUFFER] = "TEXT_BUFFER",
   [WCONT_T_TOGGLE_BUTTON] = "TOGGLE_BUTTON",
-  [WCONT_T_TREE] = "TREE",
   [WCONT_T_UNKNOWN] = "unknown",
   [WCONT_T_WINDOW] = "WINDOW",
 };

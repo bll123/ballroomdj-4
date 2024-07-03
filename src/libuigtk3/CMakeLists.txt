@@ -30,7 +30,6 @@ add_library (libuigtk3 SHARED
   uigtkswitch.c
   uigtktextbox.c
   uigtktoggle.c
-  uigtktreeview.c
   uigtkui.c
   uigtkwidget.c
   uigtkwindow.c

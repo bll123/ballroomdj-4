@@ -172,6 +172,7 @@ uisongGetValue (song_t *song, int tagidx, int32_t *num, double *dval)
 }
 
 
+#if 0
 void
 uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
 {
@@ -188,6 +189,7 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
     }
   }
 }
+#endif
 
 /* internal routines */
 

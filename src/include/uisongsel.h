@@ -38,7 +38,7 @@ typedef struct uisongsel {
   musicdb_t         *musicdb;
   samesong_t        *samesong;
   dispselsel_t      dispselType;
-  double            dfilterCount;
+  int32_t           numrows;
   uiwcont_t         *windowp;
   callback_t        *queuecb;
   callback_t        *playcb;
@@ -91,7 +91,7 @@ void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselSelectCallback (void *udata);
-void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
+// void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
 void  uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);

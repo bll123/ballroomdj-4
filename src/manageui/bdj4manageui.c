@@ -595,13 +595,14 @@ main (int argc, char *argv[])
       uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL),
-      bdjoptGetStr (OPT_P_UI_ROWSEL_COL));
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL));
 
   manageBuildUI (&manage);
   osuiFinalize ();
 
   /* will be propagated */
-  uisongselSetDefaultSelection (manage.slsongsel);
+//  uisongselSetDefaultSelection (manage.slsongsel);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -3581,7 +3582,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
         /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
-        uisongselClearAllUISelections (manage->mmsongsel);
+//        uisongselClearAllUISelections (manage->mmsongsel);
         /* must set the selection offset by the idx-start */
         uisongselSetSelectionOffset (manage->mmsongsel, idx);
       }
@@ -3817,7 +3818,7 @@ manageMarkSongRemoved (void *udata)
   /* need to re-filter the songs */
   uisongselApplySongFilter (manage->mmsongsel);
   manageRePopulateData (manage);
-  uisongselSetDefaultSelection (manage->mmsongsel);
+//  uisongselSetDefaultSelection (manage->mmsongsel);
 
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
 

@@ -9,11 +9,10 @@ extern "C" {
 #endif
 
 #include "ui/uidialog.h"
-#include "ui/uitreeview.h"
 
 /* partially in use. */
 /* The widget container will be more generic and */
-/* hold uitree_t, uibutton_t, etc. */
+/* hold uibutton_t, etc. */
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,
@@ -59,7 +58,6 @@ typedef enum {
   WCONT_T_TEXT_BUFFER,      // gtk widget
   /* base type for check-box, radio-button */
   WCONT_T_TOGGLE_BUTTON,
-  WCONT_T_TREE,
   WCONT_T_EVENT_BOX,
   WCONT_T_UNKNOWN,
   /* base type for scroll-window, dialog-window, paned-window */
@@ -80,7 +78,6 @@ typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
-typedef struct uitree uitree_t;
 typedef struct uivirtlist uivirtlist_t;
 
 typedef union {
@@ -93,7 +90,6 @@ typedef union {
     uispinbox_t   *uispinbox;
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;
-    uitree_t      *uitree;
     uivirtlist_t  *uivirtlist;
 } uiwcontint_t;
 
