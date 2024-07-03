@@ -260,6 +260,9 @@ static void uivlShowRow (uivirtlist_t *vl, uivlrow_t *row);
 
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
+/* the initial display size must be smaller than the initial box */
+/* otherwise things get very weird */
+/* is there some way to enforce this? */
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     int dispsize, int minwidth, int vlflags)

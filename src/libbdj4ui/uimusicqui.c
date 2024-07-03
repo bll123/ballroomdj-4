@@ -234,7 +234,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 1);
   uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandVert (hbox);
   uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
+//  uiBoxPackStartExpand (uimusicq->ui [ci].mainbox, hbox);
 
   /* dispseltype can be a music queue, history, */
   /* a song list or side-by-side song list */
@@ -372,8 +374,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   /* musicq tree view */
 
-// ### should keys be enabled for the other music queues?
-// they were only enabled for songlist and sbs-songlist before
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   mqint->sellist = sellist;
 
@@ -382,14 +382,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   while ((tagidx = slistIterateValueNum (sellist, &iteridx)) >= 0) {
     if (tagidx == TAG_FAVORITE) {
       mqint->favcolumn = UIMUSICQ_COL_MAX + colidx;
-fprintf (stderr, "found favcolumn: %d\n", mqint->favcolumn);
       break;
     }
     ++colidx;
   }
 
+// ### should keys be enabled for the other music queues?
+// they were only enabled for songlist and sbs-songlist before
   uivl = uivlCreate (mqint->tag, NULL, uimusicq->ui [ci].mainbox,
-      15, 400, VL_ENABLE_KEYS);
+      5, 400, VL_ENABLE_KEYS);
   mqint->uivl = uivl;
   uivlSetUseListingFont (uivl);
 
@@ -1112,21 +1113,18 @@ uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   logProcBegin ();
 
   if (colidx < 0) {
-fprintf (stderr, "%s row-click bad col %d\n", uimusicq->tag, colidx);
     return;
   }
 
   ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
   if (mqint->favcolumn < 0 || colidx != mqint->favcolumn) {
-fprintf (stderr, "%s row-click not fav %d %d\n", uimusicq->tag, mqint->favcolumn, colidx);
     return;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: musicq: %s: change favorite", uimusicq->tag);
   dbidx = uimusicqGetSelectionDBidx (uimusicq);
   if (dbidx < 0) {
-fprintf (stderr, "%s row-click bad dbidx %d\n", uimusicq->tag, dbidx);
     return;
   }
 fprintf (stderr, "%s row-click dbidx: %d\n", uimusicq->tag, dbidx);
