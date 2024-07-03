@@ -987,8 +987,12 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
 
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_IMAGE: {
-      uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
-      uiImageSetFromPixbuf (row->cols [colidx].uiwidget, img);
+      if (img == NULL) {
+        uiImageClear (row->cols [colidx].uiwidget);
+      } else {
+        uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
+        uiImageSetFromPixbuf (row->cols [colidx].uiwidget, img);
+      }
       break;
     }
     default: {

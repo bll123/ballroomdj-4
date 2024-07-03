@@ -234,9 +234,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 1);
   uiWidgetExpandHoriz (hbox);
-  uiWidgetExpandVert (hbox);
   uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
-//  uiBoxPackStartExpand (uimusicq->ui [ci].mainbox, hbox);
 
   /* dispseltype can be a music queue, history, */
   /* a song list or side-by-side song list */
@@ -1217,7 +1215,7 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   uimusicq_t          *uimusicq = mqint->uimusicq;
   mp_musicqupditem_t  *musicqupditem;
   song_t              *song;
-  void                *pixbuf;
+  uiwcont_t           *pauseimg = NULL;
   nlist_t             *tdlist;
   slistidx_t          seliteridx;
   char                tmp [40];
@@ -1233,11 +1231,6 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
     return;
   }
 
-  pixbuf = NULL;
-  if (musicqupditem->pauseind) {
-    pixbuf = uiImageGetPixbuf (uimusicq->pausePixbuf);
-  }
-
   song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
 
   ci = uimusicq->musicqManageIdx;
@@ -1249,8 +1242,12 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       musicqupditem->dbidx);
   snprintf (tmp, sizeof (tmp), "%d", musicqupditem->dispidx);
   uivlSetRowColumnStr (mqint->uivl, rownum, UIMUSICQ_COL_DISP_IDX, tmp);
+
+  if (musicqupditem->pauseind) {
+    pauseimg = uimusicq->pausePixbuf;
+  }
   uivlSetRowColumnImage (mqint->uivl, rownum, UIMUSICQ_COL_PAUSEIND,
-      pixbuf, 20);
+      pauseimg, 20);
 
   tdlist = uisongGetDisplayList (mqint->sellist, NULL, song);
   slistStartIterator (mqint->sellist, &seliteridx);
