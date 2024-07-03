@@ -126,7 +126,6 @@ typedef struct ss_internal {
   nlistidx_t          shiftlastidx;
   /* for double-click checks */
 //  dbidx_t             lastRowDBIdx;
-//  mstime_t            lastRowCheck;
   bool                inchange : 1;
   bool                inscroll : 1;
   bool                inselectchgprocess : 1;
@@ -189,7 +188,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->marktext = bdjoptGetStr (OPT_P_UI_MARK_TEXT);
 //  ssint->lastRowDBIdx = -1;
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
-//  mstimeset (&ssint->lastRowCheck, 0);
 
   ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiEventAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
@@ -286,6 +284,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiBoxPackStart (hbox, uiwidgetp);
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
+
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
@@ -317,6 +316,20 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->wcont [SONGSEL_W_BUTTON_FILTER] = uiwidgetp;
 
   uiwcontFree (hbox);
+
+  if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+    /* need a filler box to match the musicq */
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
+
+    uiwidgetp = uiCreateLabel (" ");
+    uiWidgetSetMarginBottom (uiwidgetp, 5);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+    uiwcontFree (hbox);
+  }
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
@@ -754,7 +767,6 @@ uisongselRowClickCallback (void *udata, int32_t col)
       uisongselQueueCallback (uisongsel);
     }
   }
-//  mstimeset (&ssint->lastRowCheck, TREE_DOUBLE_CLICK_TIME);
 //  ssint->lastRowDBIdx = uisongsel->lastdbidx;
 
   if (col == VL_COL_UNKNOWN) {
