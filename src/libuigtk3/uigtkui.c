@@ -163,7 +163,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
   if (listingfont != NULL && *listingfont) {
     char  tmp [100];
-    int   lsz = 0;
+    int   listingsz = 0;
 
     strlcpy (tmp, listingfont, sizeof (tmp));
     p = strrchr (tmp, ' ');
@@ -173,29 +173,29 @@ uiSetUICSS (const char *uifont, const char *listingfont,
         --p;
         *p = '\0';
         ++p;
-        lsz = atoi (p);
+        listingsz = atoi (p);
       }
     }
 
-    if (lsz > 0) {
-      int   fsz = lsz + 2;
-      int   hsz = lsz + 1;
+    if (listingsz > 0) {
+      int   favsz = listingsz + 4;
+      int   headsz = listingsz + 1;
 
-      if (fsz > sz) {
-        fsz = sz;
+      if (favsz > sz) {
+        favsz = sz;
       }
-      if (hsz > sz) {
-        hsz = sz;
+      if (headsz > sz) {
+        headsz = sz;
       }
       snprintf (wbuff, sizeof (wbuff),
           ".bdj-listing { font-family: '%s'; font-size: %dpt; } ",
-          tmp, lsz);
+          tmp, listingsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-list-fav { font-size: %dpt; } ", fsz);
+          ".bdj-list-fav { font-size: %dpt; } ", favsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
       snprintf (wbuff, sizeof (wbuff),
-          ".bdj-heading { font-size: %dpt; font-weight: bold; } ", hsz);
+          ".bdj-heading { font-size: %dpt; font-weight: bold; } ", headsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     } else {
       snprintf (wbuff, sizeof (wbuff),

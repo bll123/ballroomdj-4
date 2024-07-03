@@ -43,6 +43,7 @@ enum {
   VL_ROW_HEADING_IDX = 0,
   VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
   VL_ROW_NO_LOCK = -1,
+  VL_REUSE_HEIGHT = -2,
 };
 
 
@@ -2142,25 +2143,36 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
     return UICB_CONT;
   }
 
-  vl->vboxheight = height;
-
-  if (vl->vboxheight > 0 && vl->rowheight > 0) {
-    theight = vl->vboxheight - vl->headingheight;
-    calcrows = theight / vl->rowheight;
-    if (vl->dispheading) {
-      /* must include the heading as a row */
-      calcrows += 1;
-    }
-
-    if (calcrows != vl->dispsize) {
-      uivlChangeDisplaySize (vl, calcrows);
-    }
+  if (height == VL_REUSE_HEIGHT) {
+    height = vl->vboxheight;
   }
 
-  if (vl->numrows <= (vl->dispsize - vl->headingoffset)) {
-    uiWidgetHide (vl->wcont [VL_W_SB]);
-  } else {
-    uiWidgetShow (vl->wcont [VL_W_SB]);
+  vl->vboxheight = height;
+
+  if (vl->rowheight < 2) {
+    /* use the heading height as an estimate */
+    vl->rowheight = vl->headingheight;
+  }
+
+  if (vl->vboxheight < 2 || vl->rowheight < 2) {
+    return UICB_CONT;
+  }
+
+  theight = vl->vboxheight - vl->headingheight;
+  calcrows = theight / vl->rowheight;
+  if (vl->dispheading) {
+    /* must include the heading as a row */
+    calcrows += 1;
+  }
+
+  if (calcrows != vl->dispsize) {
+    uivlChangeDisplaySize (vl, calcrows);
+
+    if (vl->numrows <= (vl->dispsize - vl->headingoffset)) {
+      uiWidgetHide (vl->wcont [VL_W_SB]);
+    } else {
+      uiWidgetShow (vl->wcont [VL_W_SB]);
+    }
   }
 
   return UICB_CONT;
@@ -2170,8 +2182,17 @@ static bool
 uivlHeadingSizeChg (void *udata, int32_t width, int32_t height)
 {
   uivirtlist_t  *vl = udata;
+  bool          force = false;
 
+  /* force a re-calculation */
+  if (vl->headingheight != height) {
+    force = true;
+  }
   vl->headingheight = height;
+  if (force) {
+    vl->vboxheight = -1;
+    uivlVertSizeChg (vl, VL_REUSE_HEIGHT, VL_REUSE_HEIGHT);
+  }
   return UICB_CONT;
 }
 
@@ -2179,8 +2200,17 @@ static bool
 uivlRowSizeChg (void *udata, int32_t width, int32_t height)
 {
   uivirtlist_t  *vl = udata;
+  bool          force = false;
 
+  /* force a re-calculation */
+  if (vl->rowheight != height) {
+    force = true;
+  }
   vl->rowheight = height;
+  if (force) {
+    vl->vboxheight = -1;
+    uivlVertSizeChg (vl, VL_REUSE_HEIGHT, VL_REUSE_HEIGHT);
+  }
   return UICB_CONT;
 }
 
@@ -2467,8 +2497,8 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* if the vertical size changes, and there are enough rows */
   /* to fill the display, change the row-offset so that the display */
   /* is filled. */
-  /* this happens when the vertical size is increased, */
-  /* and the display is scrolled to the bottom */
+  /* this happens when the display is scrolled to the bottom, */
+  /* and the vertical size is increased. */
   if ((vl->dispsize - vl->headingoffset) + vl->rowoffset > vl->numrows) {
     int32_t   diff;
 
