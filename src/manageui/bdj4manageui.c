@@ -1481,6 +1481,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (targs);
+          if (musicqupdate == NULL) {
+            break;
+          }
+
           msgparseMusicQueueDataFree (manage->musicqupdate [musicqupdate->mqidx]);
           manage->musicqupdate [musicqupdate->mqidx] = musicqupdate;
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
@@ -1495,7 +1499,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
             uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
           }
-//          msgparseMusicQueueDataFree (musicqupdate);
           if (uimusicqGetCount (manage->slmusicq) > 0) {
             manage->musicqupdated = true;
           }

@@ -132,6 +132,7 @@ typedef struct {
   int             reloadexpected;
   int             reloadrcvd;
   nlistidx_t      lastLoc [MUSICQ_MAX];
+  mp_musicqupdate_t *musicqupdate [MUSICQ_MAX];
   /* quick edit */
   uiqe_t          *uiqe;
   int             resetvolume;
@@ -313,6 +314,7 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     plui.lastLoc [i] = -1;
+    plui.musicqupdate [i] = NULL;
   }
 
   osSetStandardSignals (pluiSigHandler);
@@ -448,6 +450,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
 
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    msgparseMusicQueueDataFree (plui->musicqupdate [i]);
+  }
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
   }
@@ -1098,6 +1103,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             break;
           }
 
+          msgparseMusicQueueDataFree (plui->musicqupdate [musicqupdate->mqidx]);
+          plui->musicqupdate [musicqupdate->mqidx] = musicqupdate;
+
           if ((int) musicqupdate->mqidx >= MUSICQ_DISP_MAX ||
               ! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
             logMsg (LOG_DBG, LOG_INFO, "ERR: music queue data: mq idx %d not valid", musicqupdate->mqidx);
@@ -1126,8 +1134,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           }
 
           plui->lastLoc [musicqupdate->mqidx] = -1;
-
-          msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
         case MSG_DATABASE_UPDATE: {
@@ -1660,10 +1666,8 @@ pluiQueueProcess (void *udata, int32_t dbidx)
     plui->lastLoc [mqidx] = loc + 1;
   }
 
-  /* increment the location by 1 as the tree-view index is one less than */
-  /* the music queue index */
   snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
-      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
+      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;
 }
@@ -1846,7 +1850,7 @@ pluiReload (void *udata)
     char    msg [200];
     char    tbuff [MAXPATHLEN];
 
-    snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
+    snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
@@ -1892,7 +1896,7 @@ pluiReloadCurrent (playerui_t *plui)
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_PB_A,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 1);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   }
   datafileFree (reloaddf);

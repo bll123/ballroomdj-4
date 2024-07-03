@@ -60,7 +60,7 @@ msgparseMusicQueueData (char *data)
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  idx = 1;
+  idx = 0;
   while (p != NULL) {
     musicqupditem = mdmalloc (sizeof (mp_musicqupditem_t));
     musicqupditem->dispidx = atoi (p);

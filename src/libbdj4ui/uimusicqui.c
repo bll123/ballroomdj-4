@@ -270,7 +270,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_BUTTON_MOVE_DOWN] = uiwidgetp;
   }
 
-  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+//  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_TOGGLE_PAUSE] = callbackInit (
         uimusicqTogglePauseCallback, uimusicq, "musicq: toggle-pause");
     uiwidgetp = uiCreateButton (
@@ -279,7 +279,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Toggle Pause"), "button_pause");
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_TOGGLE_PAUSE] = uiwidgetp;
-  }
+//  }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
@@ -296,7 +296,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_BUTTON_REMOVE] = uiwidgetp;
   }
 
-  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+//  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_CLEAR_QUEUE] = callbackInit (
         uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
     uiwidgetp = uiCreateButton (
@@ -306,7 +306,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_CLEAR_QUEUE] = uiwidgetp;
-  }
+//  }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
@@ -405,9 +405,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   /* always create the pause-indicator column */
   uivlMakeColumn (uivl, "pauseind", UIMUSICQ_COL_PAUSEIND, VL_TYPE_IMAGE);
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_WIDTH_GROW_ONLY);
-  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
-    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_DISABLE);
-  }
+// ### temp.
+//  if (uimusicq->ui [ci].dispselType != DISP_SEL_MUSICQ) {
+//    uivlSetColumnDisplay (uivl, UIMUSICQ_COL_PAUSEIND, VL_COL_DISABLE);
+//  }
 
   uivlAddDisplayColumns (uivl, sellist, startcol);
 
@@ -715,8 +716,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].count);
   uivlPopulate (mqint->uivl);
 
-//  uiTreeViewSelectRestore (mqint->wcont [UIMUSICQ_W_TREE]);
-
   if (uimusicq->ui [ci].haveselloc) {
     uimusicqSetSelection (uimusicq, ci);
     uimusicq->ui [ci].haveselloc = false;
@@ -724,9 +723,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     uimusicq->ui [ci].selectLocation = uimusicqGetSelectLocation (uimusicq, ci);
     uimusicqSetSelection (uimusicq, ci);
   }
-
-// ### probably do not need this
-//  uimusicqSetDefaultSelection (uimusicq);
 
   /* the selection may have been changed, but the chg processing was */
   /* purposely bypassed.  Make sure the ui is notified about any change. */
@@ -843,7 +839,6 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
   }
 
   loc = uimusicqGetSelectLocation (uimusicq, ci);
-fprintf (stderr, "%s sel-chg loc: %d\n", uimusicq->tag, loc);
   if (loc < 0) {
     return;
   }
@@ -995,7 +990,6 @@ uimusicqMoveTopCallback (void *udata)
     logProcEnd ("bad-idx");
     return UICB_STOP;
   }
-  ++idx;
 
   uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_TOP);
   uimusicqMoveTop (uimusicq, ci, idx);
@@ -1019,11 +1013,8 @@ uimusicqMoveUpCallback (void *udata)
     logProcEnd ("bad-idx");
     return UICB_STOP;
   }
-  ++idx;
 
-  if (idx > 1) {
-    uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
-  }
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
   uimusicqMoveUp (uimusicq, ci, idx);
   return UICB_CONT;
 }
@@ -1044,7 +1035,6 @@ uimusicqMoveDownCallback (void *udata)
     logProcEnd ("bad-idx");
     return UICB_STOP;
   }
-  ++idx;
 
   uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_NEXT);
   uimusicqMoveDown (uimusicq, ci, idx);
@@ -1092,7 +1082,6 @@ uimusicqRemoveCallback (void *udata)
     logProcEnd ("bad-idx");
     return UICB_STOP;
   }
-  ++idx;
 
   uimusicqRemove (uimusicq, ci, idx);
   logProcEnd ("");
@@ -1125,7 +1114,6 @@ uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   if (dbidx < 0) {
     return;
   }
-fprintf (stderr, "%s row-click dbidx: %d\n", uimusicq->tag, dbidx);
 
   song = dbGetByIdx (uimusicq->musicdb, dbidx);
   if (song != NULL) {
@@ -1226,7 +1214,7 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
     return;
   }
 
-  musicqupditem = nlistGetData (mqint->musicqupdate->dispList, rownum + 1);
+  musicqupditem = nlistGetData (mqint->musicqupdate->dispList, rownum);
   if (musicqupditem == NULL) {
     return;
   }

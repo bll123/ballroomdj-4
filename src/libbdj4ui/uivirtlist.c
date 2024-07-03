@@ -31,12 +31,16 @@ enum {
 };
 
 enum {
+  VL_SCROLL_NORM,
+  VL_SCROLL_KEY,
+  VL_SCROLL_FORCE,
+};
+
+enum {
   VL_ROW_UNKNOWN = -753,
   VL_MIN_WIDTH_ANY = -755,
   VL_ROW_HEADING = -754,
   VL_ROW_HEADING_IDX = 0,
-  VL_SCROLL_NORM = false,
-  VL_SCROLL_FORCE = true,
   VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
   VL_ROW_NO_LOCK = -1,
 };
@@ -1864,7 +1868,8 @@ uivlKeyEvent (void *udata)
     if (nlistGetCount (vl->selected) == 1) {
       nsel = vl->currSelection + dir;
       nsel = uivlRownumLimit (vl, nsel);
-      uivlProcessScroll (vl, nsel, VL_SCROLL_NORM);
+      /* use the keyboard scroll update mode */
+      uivlProcessScroll (vl, nsel, VL_SCROLL_KEY);
       uivlUpdateSelections (vl, nsel);
       /* do not call the selection handler when using key movement */
       /* this allows selections to be made in drop-down lists */
@@ -2080,10 +2085,10 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
 
   /* if this is a keyboard movement, and there's only one selection */
   /* and the desired row-number is on-screen */
-  if (sctype == VL_SCROLL_NORM &&
+  if (sctype == VL_SCROLL_KEY &&
       nlistGetCount (vl->selected) == 1 &&
       wantrow >= vl->rowoffset &&
-      wantrow < vl->rowoffset + vl->dispsize) {
+      wantrow < vl->rowoffset + (vl->dispsize - vl->headingoffset)) {
     if (wantrow < vl->currSelection) {
       /* selection up */
       if (wantrow < vl->rowoffset + (vl->dispsize - vl->headingoffset) / 2 - 1) {
@@ -2103,6 +2108,15 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
     }
 
     start = uivlRowOffsetLimit (vl, start);
+  }
+
+  /* if this is a normal selection, and there's only one selection */
+  /* and the desired row-number is on-screen */
+  if (sctype == VL_SCROLL_NORM &&
+      nlistGetCount (vl->selected) == 1 &&
+      wantrow >= vl->rowoffset &&
+      wantrow < vl->rowoffset + (vl->dispsize - vl->headingoffset)) {
+    start = vl->rowoffset;
   }
 
   if (start == vl->rowoffset) {

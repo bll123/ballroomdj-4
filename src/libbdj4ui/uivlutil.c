@@ -66,8 +66,11 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
       uivlSetColumnMinWidth (vl, colidx, minwidth);
       uivlSetColumnEllipsizeOn (vl, colidx);
     }
-    if (tagidx == TAG_AUDIOID_IDENT) {
-      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
+    if (! tagdefs [tagidx].ellipsize) {
+      /* pure fixed width columns are rare */
+      if (tagidx != TAG_FAVORITE) {
+        uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
+      }
     }
 
     uivlMakeColumn (vl, tagdefs [tagidx].tag, colidx, VL_TYPE_LABEL);

@@ -66,8 +66,7 @@ uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 
   uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_TOP, tbuff);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_TOP, tbuff);
 }
 
 void

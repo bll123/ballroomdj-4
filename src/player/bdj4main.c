@@ -972,26 +972,29 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       musicqidx, MSG_ARGS_RS, qDuration, MSG_ARGS_RS,
       dbidx, MSG_ARGS_RS);
 
-  for (int i = 1; i <= musicqLen; ++i) {
+  for (int i = 1; i < musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);
-    if (song != NULL) {
-      dispidx = musicqGetDispIdx (mainData->musicQueue, musicqidx, i);
-      snprintf (tbuff, sizeof (tbuff), "%d%c", dispidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-      uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
-      snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", uniqueidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-      snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", dbidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
-      flags = musicqGetFlags (mainData->musicQueue, musicqidx, i);
-      pauseind = false;
-      if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
-        pauseind = true;
-      }
-      snprintf (tbuff, sizeof (tbuff), "%d%c", pauseind, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
+
+    if (song == NULL) {
+      continue;
     }
+
+    dispidx = musicqGetDispIdx (mainData->musicQueue, musicqidx, i);
+    snprintf (tbuff, sizeof (tbuff), "%d%c", dispidx, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", uniqueidx, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", dbidx, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    flags = musicqGetFlags (mainData->musicQueue, musicqidx, i);
+    pauseind = false;
+    if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
+      pauseind = true;
+    }
+    snprintf (tbuff, sizeof (tbuff), "%d%c", pauseind, MSG_ARGS_RS);
+    strlcat (sbuff, tbuff, BDJMSG_MAX);
   }
 
   /* only the displayable queues need to be updated in the playerui */
@@ -1689,6 +1692,7 @@ mainTogglePause (maindata_t *mainData, char *args)
   logProcBegin ();
 
   mi = mainMusicqIndexNumParse (mainData, args, &idx, NULL);
+  ++idx;    /* music-q index 0 is reserved for the current song */
 
   musicqLen = musicqGetLen (mainData->musicQueue, mi);
   if (idx <= 0 || idx > musicqLen) {
@@ -1718,6 +1722,7 @@ mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
 
 
   mi = mainMusicqIndexNumParse (mainData, args, &fromidx, NULL);
+  ++fromidx;   /* music-q index 0 is reserved for the current song */
 
   musicqLen = musicqGetLen (mainData->musicQueue, mi);
 
@@ -1772,7 +1777,8 @@ mainMusicqMoveTop (maindata_t *mainData, char *args)
 
   musicqLen = musicqGetLen (mainData->musicQueue, mi);
 
-  if (fromidx >= musicqLen || fromidx <= 1) {
+  ++fromidx;    /* music-q index 0 is reserved for the current song */
+  if (fromidx < 0 || fromidx >= musicqLen) {
     logProcEnd ("bad-move");
     return;
   }
@@ -1798,6 +1804,7 @@ mainMusicqClear (maindata_t *mainData, char *args)
   logProcBegin ();
 
   mi = mainMusicqIndexNumParse (mainData, args, &idx, NULL);
+  ++idx;    /* music-q index 0 is reserved for the current song */
 
   mainMusicqClearPreppedSongs (mainData, mi, idx);
   musicqClear (mainData->musicQueue, mi, idx);
@@ -1819,6 +1826,7 @@ mainMusicqRemove (maindata_t *mainData, char *args)
   logProcBegin ();
 
   mi = mainMusicqIndexNumParse (mainData, args, &idx, NULL);
+  ++idx;    /* music-q index 0 is reserved for the current song */
 
   mainMusicqClearPrep (mainData, mi, idx);
   musicqRemove (mainData->musicQueue, mi, idx);
@@ -1840,6 +1848,9 @@ mainMusicqSwap (maindata_t *mainData, char *args)
   logProcBegin ();
 
   mi = mainMusicqIndexNumParse (mainData, args, &fromidx, &toidx);
+  ++fromidx;    /* music-q index 0 is reserved for the current song */
+  ++toidx;
+
   if (fromidx >= 1 && toidx >= 1) {
     musicqSwap (mainData->musicQueue, mi, fromidx, toidx);
     mainMusicQueuePrep (mainData, mi);
@@ -1898,8 +1909,9 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     return;
   }
   idx = atol (p);
-  /* want to insert after the selection */
-  idx += 1;
+  ++idx;  /* music-q index 0 is reserved for the current song */
+  ++idx;  /* want to insert after the selection */
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
     logProcEnd ("parse-fail-c");
