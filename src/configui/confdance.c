@@ -177,7 +177,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceitemidx = DANCE_TIMESIG;
 
-  uivlSetSelectionCallback (gui->tables [CONFUI_ID_DANCE].uivl,
+  uivlSetSelectChgCallback (gui->tables [CONFUI_ID_DANCE].uivl,
       confuiDanceSelect, gui);
 
   gui->inchange = false;

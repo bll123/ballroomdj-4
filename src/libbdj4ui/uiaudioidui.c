@@ -384,7 +384,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (vbox);
 
   uivlDisplay (audioidint->uivl);
-  uivlSetSelectionCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
+  uivlSetSelectChgCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
 
   /* current/selected box */
 

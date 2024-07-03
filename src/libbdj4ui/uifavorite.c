@@ -44,7 +44,6 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
     int         count;
     const char  *name;
     const char  *color;
-    char        tbuff [200];
 
     count = songFavoriteGetCount (uifavorite->songfav);
     for (int idx = 0; idx < count; ++idx) {
@@ -54,8 +53,6 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
         continue;
       }
       uiSpinboxAddClass (name, color);
-      snprintf (tbuff, sizeof (tbuff), "label.bdj-%s", name);
-      uiAddColorClass (tbuff, color);
     }
 
     initialized = true;

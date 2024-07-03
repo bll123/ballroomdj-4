@@ -8,5 +8,6 @@
 #include "uivirtlist.h"
 
 void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist, int startcol);
+void uivlAddFavoriteClasses (void);
 
 #endif /* INC_UIVLUTIL_H */

@@ -270,7 +270,7 @@ uiddCreateDialog (uidd_t *dd)
   uivlSetColumnMinWidth (dd->uivl, DD_COL_DISP, dd->dispwidth);
   uivlSetNumRows (dd->uivl, count);
   uivlSetRowFillCallback (dd->uivl, uiddFillRow, dd);
-  uivlSetSelectionCallback (dd->uivl, uiddSelected, dd);
+  uivlSetSelectChgCallback (dd->uivl, uiddSelected, dd);
 
   uivlDisplay (dd->uivl);
 

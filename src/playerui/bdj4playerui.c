@@ -1783,7 +1783,7 @@ pluiQuickEditSelected (void *udata)
   double        vol, speed;
   int           basevol;
 
-  dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
+  dbidx = uimusicqGetSelectionDBidx (plui->uimusicq);
   /* don't need vol and speed */
   uiplayerGetVolumeSpeed (plui->uiplayer, &basevol, &vol, &speed);
   plui->resetvolume = RESET_VOL_NO;

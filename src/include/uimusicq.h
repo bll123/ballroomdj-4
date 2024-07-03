@@ -68,7 +68,7 @@ typedef struct {
   /* flags */
   bool          hasui : 1;
   bool          haveselloc : 1;
-  bool          selchgbypass : 1;
+  bool          inchange : 1;
   bool          newflag : 1;
 } uimusicqui_t;
 
@@ -131,7 +131,7 @@ void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 nlistidx_t uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, nlistidx_t loc);
-dbidx_t   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
+dbidx_t   uimusicqGetSelectionDBidx (uimusicq_t *uimusicq);
 bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);

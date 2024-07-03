@@ -74,16 +74,17 @@ void uivlSetRowLock (uivirtlist_t *vl, int32_t rownum);
 /* column set */
 void  uivlSetColumnHeading (uivirtlist_t *vl, int colidx, const char *heading);
 void  uivlSetColumnMinWidth (uivirtlist_t *vl, int colidx, int minwidth);
-void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int col);
-void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int col);
-void  uivlSetColumnAlignCenter (uivirtlist_t *vl, int col);
-void  uivlSetColumnGrow (uivirtlist_t *vl, int col, int grow);
-void  uivlSetColumnClass (uivirtlist_t *vl, int col, const char *class);
+void  uivlSetColumnEllipsizeOn (uivirtlist_t *vl, int colidx);
+void  uivlSetColumnAlignEnd (uivirtlist_t *vl, int colidx);
+void  uivlSetColumnAlignCenter (uivirtlist_t *vl, int colidx);
+void  uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow);
+void  uivlSetColumnClass (uivirtlist_t *vl, int colidx, const char *class);
 void  uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden);
 
 /* column set specific to a row */
 void  uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int state);
 void  uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char *class);
+void  uivlClearRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx);
 void  uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx, uiwcont_t *img, int width);
 void  uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value);
 void  uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val);
@@ -93,7 +94,8 @@ const char *uivlGetRowColumnEntry (uivirtlist_t *vl, int32_t rownum, int colidx)
 int32_t uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* callbacks */
-void  uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
+void  uivlSetSelectChgCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
+void  uivlSetRowClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetRightClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetRowFillCallback (uivirtlist_t *vl, uivlfillcb_t cb, void *udata);

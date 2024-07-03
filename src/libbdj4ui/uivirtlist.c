@@ -119,6 +119,7 @@ typedef struct uivlcoldata {
   int           sbtype;
   int           colidx;
   int           colwidth;
+  int           clickmap;
   callback_t    *sbcb;
   double        sbmin;
   double        sbmax;
@@ -202,8 +203,10 @@ typedef struct uivirtlist {
   /* user callbacks */
   uivlfillcb_t  fillcb;
   void          *filludata;
-  uivlselcb_t   selcb;
+  uivlselcb_t   selchgcb;
   void          *seludata;
+  uivlselcb_t   rowselcb;
+  void          *rowseludata;
   uivlselcb_t   dblclickcb;
   void          *dblclickudata;
   uivlselcb_t   rightclickcb;
@@ -241,7 +244,8 @@ static bool uivlFocusCallback (void *udata);
 static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
 int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
 int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
-static void uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlSelectChgHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlRowClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlRightClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
@@ -268,8 +272,10 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->parentwin = parentwin;
   vl->fillcb = NULL;
   vl->filludata = NULL;
-  vl->selcb = NULL;
+  vl->selchgcb = NULL;
   vl->seludata = NULL;
+  vl->rowselcb = NULL;
+  vl->rowseludata = NULL;
   vl->dblclickcb = NULL;
   vl->dblclickudata = NULL;
   vl->rightclickcb = NULL;
@@ -528,6 +534,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->ellipsize = false;
     coldata->grow = VL_COL_WIDTH_FIXED;
     coldata->hidden = VL_COL_SHOW;
+    coldata->clickmap = -1;
   }
 
   vl->initialized = VL_INIT_BASIC;
@@ -875,6 +882,29 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
 }
 
 void
+uivlClearRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx)
+{
+  uivlrow_t *row = NULL;
+  uivlcol_t *col = NULL;
+
+  if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, colidx, __func__)) {
+    return;
+  }
+
+  row = uivlGetRow (vl, rownum);
+  if (row == NULL) {
+    return;
+  }
+
+  col = &row->cols [colidx];
+  if (col->class != NULL) {
+    uiWidgetRemoveClass (col->uiwidget, col->class);
+    dataFree (col->class);
+    col->class = NULL;
+  }
+}
+
+void
 uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *value)
 {
   uivlrow_t   *row = NULL;
@@ -1093,14 +1123,25 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
 /* callbacks */
 
 void
-uivlSetSelectionCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
+uivlSetSelectChgCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
   }
 
-  vl->selcb = cb;
+  vl->selchgcb = cb;
   vl->seludata = udata;
+}
+
+void
+uivlSetRowClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return;
+  }
+
+  vl->rowselcb = cb;
+  vl->rowseludata = udata;
 }
 
 void
@@ -1200,6 +1241,7 @@ void
 uivlDisplay (uivirtlist_t *vl)
 {
   uivlrow_t   *row;
+  int         clickmap;
 
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1232,6 +1274,18 @@ uivlDisplay (uivirtlist_t *vl)
     if (dispidx == vl->headingoffset) {
       uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
     }
+  }
+
+  clickmap = 0;
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    int     hidden;
+
+    hidden = vl->coldata [colidx].hidden;
+    if (hidden == VL_COL_HIDE || hidden == VL_COL_DISABLE) {
+      continue;
+    }
+    vl->coldata [colidx].clickmap = clickmap;
+    ++clickmap;
   }
 
   /* load the headings */
@@ -1406,6 +1460,10 @@ uivlGetCurrSelection (uivirtlist_t *vl)
     return 0;
   }
 
+  if (nlistGetCount (vl->selected) == 0) {
+    return -1;
+  }
+
   return vl->currSelection;
 }
 
@@ -1419,7 +1477,7 @@ uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
   rownum = uivlRownumLimit (vl, rownum);
   uivlProcessScroll (vl, rownum, VL_SCROLL_NORM);
   uivlUpdateSelections (vl, rownum);
-  uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
+  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
 }
 
 int32_t
@@ -1531,6 +1589,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
   /* create a label so that cleared rows with only widgets will still */
   /* have a height (hair space) */
+  /* note that this changes the mouse-button column return */
+  /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
   if (vl->uselistingfont) {
@@ -1809,7 +1869,7 @@ uivlKeyEvent (void *udata)
 
   if (uiEventIsEnterKey (vl->wcont [VL_W_EVENTH]) &&
       uiEventIsKeyPressEvent (vl->wcont [VL_W_EVENTH])) {
-    uivlSelectionHandler (vl, vl->currSelection, VL_COL_UNKNOWN);
+    uivlRowClickHandler (vl, vl->currSelection, VL_COL_UNKNOWN);
     return UICB_STOP;
   }
 
@@ -1876,9 +1936,26 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
+  /* the mouse button event handler returns the real column that */
+  /* is displayed, search the column data to find the correct */
+  /* column index */
+  if (colidx >= 0) {
+    /* adjust for the hair space label that is display within the row */
+    --colidx;
+    for (int tcolidx = 0; tcolidx < vl->numcols; ++tcolidx) {
+      if (vl->coldata [tcolidx].clickmap == colidx) {
+        colidx = tcolidx;
+        break;
+      }
+    }
+  }
+
   uivlUpdateSelections (vl, rownum);
   /* call the selection handler before the double-click handler */
-  uivlSelectionHandler (vl, rownum, colidx);
+  uivlSelectChgHandler (vl, rownum, colidx);
+  if (uiEventIsButtonPressEvent (vl->wcont [VL_W_EVENTH])) {
+    uivlRowClickHandler (vl, rownum, colidx);
+  }
   if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     uivlDoubleClickHandler (vl, rownum, colidx);
   }
@@ -2144,7 +2221,7 @@ uivlFocusCallback (void *udata)
   vl->lastselidx = rowcb->dispidx;
 
   uivlUpdateSelections (vl, rownum);
-  uivlSelectionHandler (vl, rownum, VL_COL_UNKNOWN);
+  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
 
   return UICB_CONT;
 }
@@ -2218,10 +2295,18 @@ uivlRownumLimit (uivirtlist_t *vl, int32_t rownum)
 }
 
 static void
-uivlSelectionHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
+uivlSelectChgHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 {
-  if (vl->selcb != NULL) {
-    vl->selcb (vl->seludata, vl, rownum, colidx);
+  if (vl->selchgcb != NULL) {
+    vl->selchgcb (vl->seludata, vl, rownum, colidx);
+  }
+}
+
+static void
+uivlRowClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
+{
+  if (vl->rowselcb != NULL) {
+    vl->rowselcb (vl->rowseludata, vl, rownum, colidx);
   }
 }
 

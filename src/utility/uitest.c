@@ -1363,7 +1363,7 @@ uitestUIVirtList (uitest_t *uitest)
       uivlSetColumnHeading (uitest->vl [i], j, vllabs [i][j]);
     }
     uivlSetRowFillCallback (uitest->vl [i], uitestVLFillCB, &vlcb [i]);
-    uivlSetSelectionCallback (uitest->vl [i], uitestVLSelectCB, &vlcb [i]);
+    uivlSetSelectChgCallback (uitest->vl [i], uitestVLSelectCB, &vlcb [i]);
     uivlSetDoubleClickCallback (uitest->vl [i], uitestVLSelectCB, &vlcb [i]);
     uivlDisplay (uitest->vl [i]);
   }
