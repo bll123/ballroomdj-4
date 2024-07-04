@@ -95,12 +95,9 @@ nlistidx_t uisongselGetSelectLocation (uisongsel_t *uisongsel);
 bool  uisongselApplySongFilter (void *udata);
 void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t idx);
 bool  uisongselDanceSelectCallback (void *udata, int32_t danceIdx);
-// void  uisongselSaveSelections (uisongsel_t *uisongsel);
-// void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 bool uisongselPlayCallback (void *udata);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
-// void uisongselClearAllUISelections (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
 void uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx);
 

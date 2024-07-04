@@ -65,8 +65,15 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
       uivlSetColumnMinWidth (vl, colidx, minwidth);
       uivlSetColumnEllipsizeOn (vl, colidx);
     }
-    if (! tagdefs [tagidx].ellipsize) {
+    if (! tagdefs [tagidx].ellipsize &&
+        tagdefs [tagidx].valueType == VALUE_STR) {
       /* pure fixed width columns are rare */
+      /* most of the numeric columns have a heading that is wider */
+      /* than their width potential */
+      uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
+    }
+    if (tagidx == TAG_DANCE || tagidx == TAG_DANCERATING ||
+        tagidx == TAG_DANCELEVEL || tagidx == TAG_GENRE) {
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
 

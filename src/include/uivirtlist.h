@@ -106,9 +106,7 @@ void  uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t
 void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
 void  uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb);
 
-/* processing */
-void  uivlDisplay (uivirtlist_t *vl);
-void  uivlPopulate (uivirtlist_t *vl);
+/* selection handling */
 void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
 int32_t uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx);
@@ -117,7 +115,11 @@ int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 void uivlAppendSelection (uivirtlist_t *vl, int32_t rownum);
-uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 void uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
+
+/* processing */
+void  uivlDisplay (uivirtlist_t *vl);
+void  uivlPopulate (uivirtlist_t *vl);
+uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 
 #endif /* INC_UIVIRTLIST_H */

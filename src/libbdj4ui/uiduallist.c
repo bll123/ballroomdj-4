@@ -166,7 +166,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uivlCreate ("dl-target", NULL, vbox, 15, DL_MIN_WIDTH,
+  uivl = uivlCreate ("dl-target", NULL, vbox, 10, DL_MIN_WIDTH,
       VL_NO_HEADING | VL_ENABLE_KEYS);
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);

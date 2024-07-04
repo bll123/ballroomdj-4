@@ -1436,6 +1436,8 @@ tagdefInit (void)
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
   /* CONTEXT: label: total disc count */
   tagdefs [TAG_DISCTOTAL].displayname = _("Total Discs");
+  /* CONTEXT: label: total disc count (short name for listing) */
+  tagdefs [TAG_DISCTOTAL].shortdisplayname = _("Tot. Discs");
   /* CONTEXT: label: duration of the song */
   tagdefs [TAG_DURATION].displayname = _("Duration");
   /* CONTEXT: label: favorite marker */
@@ -1456,6 +1458,8 @@ tagdefInit (void)
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   /* CONTEXT: label: total track count */
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
+  /* CONTEXT: label: total track count (short name for listing) */
+  tagdefs [TAG_TRACKTOTAL].displayname = _("Tot. Tracks");
 
 
   /* CONTEXT: label: title sort order */

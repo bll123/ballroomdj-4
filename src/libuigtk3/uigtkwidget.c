@@ -376,6 +376,17 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
 void
 uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  GdkWindow     *gdkwin;
+  GdkEventMask  mask;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  /* this only works for regular windows, apparently */
   g_signal_connect (uiwidget->uidata.widget, "map-event",
       G_CALLBACK (uiWidgetMappedHandler), uicb);
 }
@@ -383,6 +394,13 @@ uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
   g_signal_connect (uiwidget->uidata.widget, "size-allocate",
       G_CALLBACK (uiWidgetSizeChgHandler), uicb);
 }

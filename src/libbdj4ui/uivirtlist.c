@@ -68,7 +68,6 @@ enum {
   VL_CB_VERT_SZ_CHG,
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
-  VL_CB_MAP_WIDGET,
   VL_CB_MAX,
 };
 
@@ -463,7 +462,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if the number of data rows is less than the display size, */
     /* the extra rows must have their display cleared */
-    if (numrows < (vl->dispsize - vl->headingoffset)) {
+    if ((vl->dispsize - vl->headingoffset) > numrows) {
       for (int dispidx = numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
@@ -1250,6 +1249,140 @@ uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb)
   vl->usercb [VL_USER_CB_KEY] = cb;
 }
 
+/* selection handling */
+
+void
+uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return;
+  }
+
+  nlistStartIterator (vl->selected, iteridx);
+}
+
+int32_t
+uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
+{
+  nlistidx_t    key = -1;
+
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return key;
+  }
+
+  key = nlistIterateKey (vl->selected, iteridx);
+  return key;
+}
+
+int32_t
+uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx)
+{
+  nlistidx_t    key = -1;
+
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return key;
+  }
+
+  key = nlistIterateKeyPrevious (vl->selected, iteridx);
+  return key;
+}
+
+int32_t
+uivlSelectionCount (uivirtlist_t *vl)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return 0;
+  }
+
+  return nlistGetCount (vl->selected);
+}
+
+int32_t
+uivlGetCurrSelection (uivirtlist_t *vl)
+{
+  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
+    return 0;
+  }
+
+  if (nlistGetCount (vl->selected) == 0) {
+    return -1;
+  }
+
+  return vl->currSelection;
+}
+
+void
+uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
+{
+  if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
+    return;
+  }
+
+  rownum = uivlRownumLimit (vl, rownum);
+  uivlProcessScroll (vl, rownum, VL_SCROLL_NORM);
+  uivlUpdateSelections (vl, rownum);
+  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
+}
+
+void
+uivlAppendSelection (uivirtlist_t *vl, int32_t rownum)
+{
+  if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
+    return;
+  }
+
+  rownum = uivlRownumLimit (vl, rownum);
+  uivlAddSelection (vl, rownum);
+  uivlSetDisplaySelections (vl);
+  if (nlistGetCount (vl->selected) == 1) {
+    vl->lastSelection = vl->currSelection;
+  }
+}
+
+int32_t
+uivlMoveSelection (uivirtlist_t *vl, int dir)
+{
+  int32_t     rownum;
+
+  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
+    return 0;
+  }
+
+  rownum = vl->currSelection;
+  if (dir == VL_DIR_PREV) {
+    rownum -= 1;
+  }
+  if (dir == VL_DIR_NEXT) {
+    rownum += 1;
+  }
+  rownum = uivlRownumLimit (vl, rownum);
+
+  uivlSetSelection (vl, rownum);
+
+  return rownum;
+}
+
+void
+uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
+{
+  nlistidx_t    iter_a;
+  int32_t       rowidx;
+  int32_t       lastrowidx = 0;
+
+  /* copy the selected list to vl_b */
+  /* do not call the selection change callback for vl_b */
+  uivlClearSelections (vl_b);
+  nlistStartIterator (vl_a->selected, &iter_a);
+  while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
+    uivlAddSelection (vl_b, rowidx);
+    lastrowidx = rowidx;
+  }
+  uivlClearDisplaySelections (vl_b);
+  uivlSetDisplaySelections (vl_b);
+  /* try to position the scroll in the same place */
+  uivlProcessScroll (vl_b, vl_a->rowoffset, VL_SCROLL_FORCE);
+}
+
 /* processing */
 
 /* the initial display */
@@ -1407,117 +1540,8 @@ uivlPopulate (uivirtlist_t *vl)
 
   uivlClearDisplaySelections (vl);
   uivlSetDisplaySelections (vl);
-}
 
-void
-uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
-{
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return;
-  }
-
-  nlistStartIterator (vl->selected, iteridx);
-}
-
-int32_t
-uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
-{
-  nlistidx_t    key = -1;
-
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return key;
-  }
-
-  key = nlistIterateKey (vl->selected, iteridx);
-  return key;
-}
-
-int32_t
-uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx)
-{
-  nlistidx_t    key = -1;
-
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return key;
-  }
-
-  key = nlistIterateKeyPrevious (vl->selected, iteridx);
-  return key;
-}
-
-int32_t
-uivlSelectionCount (uivirtlist_t *vl)
-{
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return 0;
-  }
-
-  return nlistGetCount (vl->selected);
-}
-
-int32_t
-uivlGetCurrSelection (uivirtlist_t *vl)
-{
-  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
-    return 0;
-  }
-
-  if (nlistGetCount (vl->selected) == 0) {
-    return -1;
-  }
-
-  return vl->currSelection;
-}
-
-void
-uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
-{
-  if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
-    return;
-  }
-
-  rownum = uivlRownumLimit (vl, rownum);
-  uivlProcessScroll (vl, rownum, VL_SCROLL_NORM);
-  uivlUpdateSelections (vl, rownum);
-  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
-}
-
-void
-uivlAppendSelection (uivirtlist_t *vl, int32_t rownum)
-{
-  if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
-    return;
-  }
-
-  rownum = uivlRownumLimit (vl, rownum);
-  uivlAddSelection (vl, rownum);
-  uivlSetDisplaySelections (vl);
-  if (nlistGetCount (vl->selected) == 1) {
-    vl->lastSelection = vl->currSelection;
-  }
-}
-
-int32_t
-uivlMoveSelection (uivirtlist_t *vl, int dir)
-{
-  int32_t     rownum;
-
-  if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
-    return 0;
-  }
-
-  rownum = vl->currSelection;
-  if (dir == VL_DIR_PREV) {
-    rownum -= 1;
-  }
-  if (dir == VL_DIR_NEXT) {
-    rownum += 1;
-  }
-  rownum = uivlRownumLimit (vl, rownum);
-
-  uivlSetSelection (vl, rownum);
-
-  return rownum;
+  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
 }
 
 uiwcont_t *
@@ -1528,25 +1552,6 @@ uivlGetEventHandler (uivirtlist_t *vl)
   }
 
   return vl->wcont [VL_W_EVENTH];
-}
-
-void
-uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
-{
-  nlistidx_t    iter_a;
-  int32_t       rowidx;
-  int32_t       lastrowidx = 0;
-
-  /* copy the selected list to vl_b */
-  /* do not call the selection change callback for vl_b */
-  uivlClearSelections (vl_b);
-  nlistStartIterator (vl_a->selected, &iter_a);
-  while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
-    uivlAddSelection (vl_b, rowidx);
-    lastrowidx = rowidx;
-  }
-  uivlSetDisplaySelections (vl_b);
-  uivlProcessScroll (vl_b, lastrowidx, VL_SCROLL_NORM);
 }
 
 /* internal routines */
@@ -2179,6 +2184,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
   if (uiWidgetIsMapped (vl->wcont [VL_W_MAIN_VBOX]) &&
       vl->vboxheight == height) {
+    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
     return UICB_CONT;
   }
 
@@ -2187,11 +2193,6 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   vl->vboxheight = height;
-
-  if (vl->rowheight < 2) {
-    /* use the heading height as an estimate */
-    vl->rowheight = vl->headingheight;
-  }
 
   if (vl->vboxheight < 2 || vl->rowheight < 2) {
     return UICB_CONT;
@@ -2205,7 +2206,9 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   if (calcrows != vl->dispsize) {
+    uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
+    uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, -1);
 
     if (vl->numrows <= (vl->dispsize - vl->headingoffset)) {
       uiWidgetHide (vl->wcont [VL_W_SB]);
@@ -2224,7 +2227,7 @@ uivlHeadingSizeChg (void *udata, int32_t width, int32_t height)
   bool          force = false;
 
   /* force a re-calculation */
-  if (vl->headingheight != height) {
+  if (vl->headingheight != height && vl->vboxheight > 2) {
     force = true;
   }
   vl->headingheight = height;
@@ -2242,7 +2245,7 @@ uivlRowSizeChg (void *udata, int32_t width, int32_t height)
   bool          force = false;
 
   /* force a re-calculation */
-  if (vl->rowheight != height) {
+  if (vl->rowheight != height && vl->vboxheight > 2) {
     force = true;
   }
   vl->rowheight = height;
@@ -2514,6 +2517,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlPackRow (vl, row);
       /* rows packed after the initial display need */
       /* to have their contents shown */
+uiWidgetShowAll (vl->wcont [VL_W_MAIN_VBOX]);
       uiWidgetShowAll (row->hbox);
       uivlShowRow (vl, row);
     }
@@ -2551,7 +2555,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* this is necessary when the number of rows is less than the */
   /* display size. this must be forced. */
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-increase? %d<%d", vl->tag, odispsize, newdispsize);
-  if (vl->numrows < (vl->dispsize - vl->headingoffset)) {
+  if (vl->numrows > 0 && (vl->dispsize - vl->headingoffset) > vl->numrows) {
     for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
       uivlrow_t *row;
 
@@ -2564,7 +2568,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 
   /* if the display size is greater than the number of rows, */
   /* clear any extra rows. */
-  if ((vl->dispsize - vl->headingoffset) > vl->numrows) {
+  if (vl->numrows > 0 && (vl->dispsize - vl->headingoffset) > vl->numrows) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-limit %d > %d", vl->tag, vl->dispsize, vl->numrows);
     for (int dispidx = vl->numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t *row;
