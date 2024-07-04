@@ -462,7 +462,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if the number of data rows is less than the display size, */
     /* the extra rows must have their display cleared */
-    if ((vl->dispsize - vl->headingoffset) > numrows) {
+    if (numrows > 0 && (vl->dispsize - vl->headingoffset) > numrows) {
       for (int dispidx = numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
@@ -1543,8 +1543,6 @@ uivlPopulate (uivirtlist_t *vl)
 
   uivlClearDisplaySelections (vl);
   uivlSetDisplaySelections (vl);
-
-  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
 }
 
 uiwcont_t *
@@ -2187,7 +2185,6 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
   if (uiWidgetIsMapped (vl->wcont [VL_W_MAIN_VBOX]) &&
       vl->vboxheight == height) {
-    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
     return UICB_CONT;
   }
 
@@ -2203,11 +2200,13 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
   theight = vl->vboxheight - vl->headingheight;
   calcrows = theight / vl->rowheight;
+fprintf (stderr, "%s vl-sz-chg: h:%d th:%d\n", vl->tag, height, theight);
   if (vl->dispheading) {
     /* must include the heading as a row */
     calcrows += 1;
   }
 
+fprintf (stderr, "%s vl-sz-chg: %d\n", vl->tag, calcrows);
   if (calcrows != vl->dispsize) {
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
@@ -2529,6 +2528,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 
   /* if the number of display rows has decreased, */
   /* clear the row display, make sure these widgets are not displayed */
+fprintf (stderr, "%s vl: ds: %d nds: %d\n", vl->tag, vl->dispsize, newdispsize);
   if (newdispsize < vl->dispsize) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {

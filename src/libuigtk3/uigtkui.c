@@ -180,11 +180,11 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     }
 
     if (listingsz > 0) {
-      int   favsz = listingsz + 4;
+      int   favsz = listingsz + 3;
       int   headsz = listingsz + 1;
 
-      if (favsz > sz + 2) {
-        favsz = sz + 2;
+      if (favsz > sz) {
+        favsz = sz;
       }
       if (headsz > sz) {
         headsz = sz;
