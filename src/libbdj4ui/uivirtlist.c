@@ -370,7 +370,10 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
 
-  uiWidgetSetSizeChgCallback (vl->wcont [VL_W_MAIN_VBOX], vl->callbacks [VL_CB_VERT_SZ_CHG]);
+  /* important */
+  /* the size change callback must be set on the scroll-window */
+  /* as the child windows within it only grow */
+  uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
   uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
@@ -2200,13 +2203,11 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
   theight = vl->vboxheight - vl->headingheight;
   calcrows = theight / vl->rowheight;
-fprintf (stderr, "%s vl-sz-chg: h:%d th:%d\n", vl->tag, height, theight);
   if (vl->dispheading) {
     /* must include the heading as a row */
     calcrows += 1;
   }
 
-fprintf (stderr, "%s vl-sz-chg: %d\n", vl->tag, calcrows);
   if (calcrows != vl->dispsize) {
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
@@ -2528,7 +2529,6 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 
   /* if the number of display rows has decreased, */
   /* clear the row display, make sure these widgets are not displayed */
-fprintf (stderr, "%s vl: ds: %d nds: %d\n", vl->tag, vl->dispsize, newdispsize);
   if (newdispsize < vl->dispsize) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {

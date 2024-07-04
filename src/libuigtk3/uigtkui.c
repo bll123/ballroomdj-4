@@ -180,11 +180,15 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     }
 
     if (listingsz > 0) {
-      int   favsz = listingsz + 3;
+      int   favsz = listingsz;
       int   headsz = listingsz + 1;
 
-      if (favsz > sz) {
-        favsz = sz;
+      /* having a different font size within the row */
+      /* messes with the gtk calculations of what fits in a window */
+      /* since the user experience is so bad, don't try to increase */
+      /* the favorite size */
+      if (favsz > listingsz) {
+        favsz = listingsz;
       }
       if (headsz > sz) {
         headsz = sz;
@@ -196,7 +200,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       strlcat (tbuff, wbuff, sizeof (tbuff));
 
       snprintf (wbuff, sizeof (wbuff),
-          "label.%s { font-size: %dpt; } ",
+          "label.%s { font-size: %dpt; font-weight: bold; } ",
           LIST_FAV_CLASS, favsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
 
