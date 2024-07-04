@@ -3583,8 +3583,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
         /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
 //        uisongselClearAllUISelections (manage->mmsongsel);
-        /* must set the selection offset by the idx-start */
-        uisongselSetSelectionOffset (manage->mmsongsel, idx);
+//        /* must set the selection offset by the idx-start */
+//        uisongselSetSelectionOffset (manage->mmsongsel, idx);
       }
       manage->selbypass = false;
     }

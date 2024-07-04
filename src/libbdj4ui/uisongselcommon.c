@@ -40,18 +40,3 @@ uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val)
   uisongsel->ispeercall = val;
 }
 
-void
-uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
-{
-  song_t    *song;
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: chg favorite");
-  song = dbGetByIdx (uisongsel->musicdb, dbidx);
-  if (song != NULL) {
-    songChangeFavorite (song);
-    if (uisongsel->songsavecb != NULL) {
-      callbackHandlerI (uisongsel->songsavecb, dbidx);
-    }
-  }
-}
-
