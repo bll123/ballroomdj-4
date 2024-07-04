@@ -22,6 +22,7 @@ enum {
 };
 
 enum {
+  /* these must match what gtk returns */
   UIEVENT_BUTTON_1 = 1,
   UIEVENT_BUTTON_2 = 2,
   UIEVENT_BUTTON_3 = 3,
@@ -61,7 +62,7 @@ bool    uiEventIsMaskedKey (uiwcont_t *uiwidget);
 bool    uiEventIsAltPressed (uiwcont_t *uiwidget);
 bool    uiEventIsControlPressed (uiwcont_t *uiwidget);
 bool    uiEventIsShiftPressed (uiwcont_t *uiwidget);
-int     uiEventButtonPressed (uiwcont_t *uiwidget);
+int     uiEventGetButton (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

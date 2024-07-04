@@ -195,7 +195,6 @@ enum {
   MANAGE_W_STATUS_MSG,
   MANAGE_W_WINDOW,
   MANAGE_W_SELECT_BUTTON,
-//  MANAGE_W_ITUNES_SEL,
   MANAGE_W_CFPL_TM_LIMIT,
   MANAGE_W_MAX,
 };
@@ -600,9 +599,6 @@ main (int argc, char *argv[])
 
   manageBuildUI (&manage);
   osuiFinalize ();
-
-  /* will be propagated */
-//  uisongselSetDefaultSelection (manage.slsongsel);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -3536,7 +3532,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
-      uisongselRestoreSelections (manage->mmsongsel);
+//      uisongselRestoreSelections (manage->mmsongsel);
       if (manage->selusesonglist) {
         uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
       }
@@ -3562,7 +3558,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     if (manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_SEL) {
-      uisongselSaveSelections (manage->mmsongsel);
+// ### all selections are automatically copied to the peers.
+//      uisongselSaveSelections (manage->mmsongsel);
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
@@ -3582,9 +3579,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
         /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
-//        uisongselClearAllUISelections (manage->mmsongsel);
-//        /* must set the selection offset by the idx-start */
-//        uisongselSetSelectionOffset (manage->mmsongsel, idx);
+        uisongselSetSelection (manage->mmsongsel, idx);
       }
       manage->selbypass = false;
     }
@@ -3818,7 +3813,6 @@ manageMarkSongRemoved (void *udata)
   /* need to re-filter the songs */
   uisongselApplySongFilter (manage->mmsongsel);
   manageRePopulateData (manage);
-//  uisongselSetDefaultSelection (manage->mmsongsel);
 
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
 

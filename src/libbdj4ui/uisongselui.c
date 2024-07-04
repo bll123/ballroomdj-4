@@ -62,8 +62,6 @@ enum {
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
-  SONGSEL_CB_SEL_CHG,
-  SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_MAX,
 };
 
@@ -90,8 +88,7 @@ typedef struct ss_internal {
   slist_t             *sscolorlist;
   /* other data */
   nlist_t             *selectedBackup;
-  nlist_t             *selectedList;
-  nlistidx_t          selectListIter;
+  nlistidx_t          vlSelectIter;
   nlistidx_t          selectListKey;
   int                 colcount;
   int                 favcolumn;
@@ -100,9 +97,7 @@ typedef struct ss_internal {
   nlistidx_t          shiftfirstidx;
   nlistidx_t          shiftlastidx;
   bool                inchange : 1;
-  bool                inscroll : 1;
   bool                inselectchgprocess : 1;
-  bool                rightclick : 1;
 } ss_internal_t;
 
 static bool uisongselQueueCallback (void *udata);
@@ -114,14 +109,14 @@ static void uisongselRowClickCallback (void *udata, uivirtlist_t *vl, int32_t ro
 static void uisongselRightClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
 static bool uisongselKeyEvent (void *udata);
-static bool uisongselSelectionChgCallback (void *udata);
-static bool uisongselProcessSelection (void *udata, int32_t row);
+static void uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
-// static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
+static void uisongselMoveSelection (void *udata, int where);
 
 static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -133,12 +128,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->uisongsel = uisongsel;
   ssint->sscolorlist = slistAlloc ("ss-colors", LIST_ORDERED, NULL);
   ssint->inchange = false;
-  ssint->inscroll = false;
   ssint->inselectchgprocess = false;
-  ssint->rightclick = false;
   ssint->selectedBackup = NULL;
-  ssint->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
   ssint->selectListKey = -1;
   ssint->favcolumn = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
@@ -150,10 +141,9 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->marktext = bdjoptGetStr (OPT_P_UI_MARK_TEXT);
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-//  ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
-//      uisongselKeyEvent, uisongsel, NULL);
-  ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitI (
-      uisongselProcessSelection, uisongsel);
+  ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
+      uisongselKeyEvent, uisongsel, NULL);
+  uivlSetKeyCallback (ssint->uivl, ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uisongsel->ssInternalData = ssint;
 }
@@ -170,7 +160,6 @@ uisongselUIFree (uisongsel_t *uisongsel)
   ssint = uisongsel->ssInternalData;
 
   nlistFree (ssint->selectedBackup);
-  nlistFree (ssint->selectedList);
   slistFree (ssint->sscolorlist);
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
     callbackFree (ssint->callbacks [i]);
@@ -334,14 +323,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uivlSetDoubleClickCallback (ssint->uivl, uisongselDoubleClickCallback, uisongsel);
   uivlSetRowClickCallback (ssint->uivl, uisongselRowClickCallback, uisongsel);
   uivlSetRightClickCallback (ssint->uivl, uisongselRightClickCallback, uisongsel);
+  uivlSetSelectChgCallback (ssint->uivl, uisongselProcessSelectChg, uisongsel);
 
   uisongselProcessSongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
-
-  ssint->callbacks [SONGSEL_CB_SEL_CHG] = callbackInit (
-      uisongselSelectionChgCallback, uisongsel, NULL);
-//  uiTreeViewSetSelectChangedCallback (ssint->wcont [SONGSEL_W_TREE],
-//      ssint->callbacks [SONGSEL_CB_SEL_CHG]);
 
   uiwcontFree (hbox);
 
@@ -385,21 +370,21 @@ uisongselSelectCallback (void *udata)
 bool
 uisongselNextSelection (void *udata)
 {
-//  uisongselMoveSelection (udata, UISONGSEL_NEXT, 1, UISONGSEL_MOVE_SE);
+  uisongselMoveSelection (udata, UISONGSEL_NEXT);
   return UICB_CONT;
 }
 
 bool
 uisongselPreviousSelection (void *udata)
 {
-//  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS, 1, UISONGSEL_MOVE_SE);
+  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS);
   return UICB_CONT;
 }
 
 bool
 uisongselFirstSelection (void *udata)
 {
-//  uisongselMoveSelection (udata, UISONGSEL_FIRST, 0, UISONGSEL_MOVE_SE);
+  uisongselMoveSelection (udata, UISONGSEL_FIRST);
   return UICB_CONT;
 }
 
@@ -409,17 +394,15 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   ss_internal_t   *ssint;
   int             count;
   nlistidx_t      nidx = -1;
-  nlistidx_t      iteridx;
 
   ssint = uisongsel->ssInternalData;
-  count = nlistGetCount (ssint->selectedList);
+  count = uivlSelectionCount (ssint->uivl);
   if (count != 1) {
     return -1;
   }
 
-  /* get the select location from the selected list, not from on-screen */
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  nidx = nlistIterateKey (ssint->selectedList, &iteridx);
+  uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+  nidx = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
   return nidx;
 }
 
@@ -428,14 +411,12 @@ uisongselApplySongFilter (void *udata)
 {
   uisongsel_t *uisongsel = udata;
 
-  uisongsel->numrows = (double) songfilterProcess (
+  uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
 
   /* the call to cleardata() will remove any selections */
   /* afterwards, make sure something is selected */
-//  uisongselClearData (uisongsel);
-//  uisongselClearSelections (uisongsel);
   uisongselPopulateData (uisongsel);
 
   /* the song filter has been processed, the peers need to be populated */
@@ -446,14 +427,8 @@ uisongselApplySongFilter (void *udata)
     if (uisongsel->peers [i] == NULL) {
       continue;
     }
-//    uisongselClearData (uisongsel->peers [i]);
-//    uisongselClearSelections (uisongsel->peers [i]);
     uisongselPopulateData (uisongsel->peers [i]);
   }
-
-  /* set the selection after the populate is done */
-
-//  uisongselSetDefaultSelection (uisongsel);
 
   return UICB_CONT;
 }
@@ -489,12 +464,14 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
       continue;
     }
     uisongselSetPeerFlag (uisongsel->peers [i], true);
+    /* sets the dance drop-down for the peer */
     uisongselDanceSelectCallback (uisongsel->peers [i], danceIdx);
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
   return UICB_CONT;
 }
 
+#if 0
 void
 uisongselSaveSelections (uisongsel_t *uisongsel)
 {
@@ -505,8 +482,8 @@ uisongselSaveSelections (uisongsel_t *uisongsel)
     return;
   }
 
-  ssint->selectedBackup = ssint->selectedList;
-  ssint->selectedList = nlistAlloc ("selected-list-save", LIST_ORDERED, NULL);
+//  ssint->selectedBackup = ssint->selectedList;
+//  ssint->selectedList = nlistAlloc ("selected-list-save", LIST_ORDERED, NULL);
 
   if (uisongsel->ispeercall) {
     return;
@@ -521,7 +498,9 @@ uisongselSaveSelections (uisongsel_t *uisongsel)
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
+#endif
 
+#if 0
 void
 uisongselRestoreSelections (uisongsel_t *uisongsel)
 {
@@ -535,7 +514,6 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
   nlistFree (ssint->selectedList);
   ssint->selectedList = ssint->selectedBackup;
   ssint->selectedBackup = NULL;
-//  uisongselScrollSelection (uisongsel, uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
 
   if (uisongsel->ispeercall) {
     return;
@@ -550,6 +528,7 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
+#endif
 
 bool
 uisongselPlayCallback (void *udata)
@@ -588,14 +567,16 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
   nlist_t         *tlist;
-  nlistidx_t      iteridx;
+  nlistidx_t      vliteridx;
   dbidx_t         dbidx;
+  int32_t         rowidx;
 
   ssint = uisongsel->ssInternalData;
   tlist = nlistAlloc ("selected-list-dbidx", LIST_UNORDERED, NULL);
-  nlistSetSize (tlist, nlistGetCount (ssint->selectedList));
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
+  nlistSetSize (tlist, uivlSelectionCount (ssint->uivl));
+  uivlStartSelectionIterator (ssint->uivl, &vliteridx);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
     nlistSetNum (tlist, dbidx, 0);
   }
   nlistSort (tlist);
@@ -626,7 +607,85 @@ uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
   uiLabelSetText (ssint->wcont [SONGSEL_W_REQ_QUEUE], txt);
 }
 
+void
+uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx)
+{
+  ss_internal_t   *ssint;
+
+  ssint = uisongsel->ssInternalData;
+  uivlSetSelection (ssint->uivl, idx);
+}
+
 /* internal routines */
+
+static void
+uisongselMoveSelection (void *udata, int direction)
+{
+  uisongsel_t     *uisongsel = udata;
+  ss_internal_t   *ssint;
+  int             count;
+
+  ssint = uisongsel->ssInternalData;
+
+  count = uivlSelectionCount (ssint->uivl);
+  if (count == 0) {
+    return;
+  }
+
+  if (count > 1) {
+    /* need to be able to move forwards and backwards within the select-list */
+    /* do not change the virtual-list selection */
+
+    if (direction == UISONGSEL_FIRST) {
+      uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+      ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+    }
+    if (direction == UISONGSEL_NEXT) {
+      nlistidx_t  pkey;
+      nlistidx_t  piter;
+
+      pkey = ssint->selectListKey;
+      piter = ssint->vlSelectIter;
+
+      ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+      if (ssint->selectListKey < 0) {
+        /* remain on the current selection, keep the iterator intact */
+        ssint->selectListKey = pkey;
+        ssint->vlSelectIter = piter;
+      }
+    }
+    if (direction == UISONGSEL_PREVIOUS) {
+      ssint->selectListKey = uivlIterateSelectionPrevious (ssint->uivl, &ssint->vlSelectIter);
+      if (ssint->selectListKey < 0) {
+        /* reset to the beginning */
+        uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+        ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+      }
+    }
+
+    if (uisongsel->newselcb != NULL) {
+      dbidx_t   dbidx;
+
+      dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+      if (dbidx >= 0) {
+        callbackHandlerI (uisongsel->newselcb, dbidx);
+      }
+    }
+  }
+
+  /* if there is only a single selection, move the virtual-list selection */
+  if (count == 1) {
+    if (direction == UISONGSEL_FIRST) {
+      uivlSetSelection (ssint->uivl, 0);
+    }
+    if (direction == UISONGSEL_NEXT) {
+      uivlMoveSelection (ssint->uivl, VL_DIR_NEXT);
+    }
+    if (direction == UISONGSEL_PREVIOUS) {
+      uivlMoveSelection (ssint->uivl, VL_DIR_PREV);
+    }
+  }
+}
 
 
 static bool
@@ -643,15 +702,16 @@ static void
 uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 {
   ss_internal_t   * ssint;
-  nlistidx_t      iteridx;
+  nlistidx_t      vliteridx;
+  int32_t         rowidx;
   dbidx_t         dbidx;
 
   logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
-
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
+  uivlStartSelectionIterator (ssint->uivl, &vliteridx);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
     if (action == UISONGSEL_QUEUE) {
       uisongselQueueProcess (uisongsel, dbidx);
     }
@@ -680,7 +740,7 @@ static void
 uisongselProcessSongFilter (uisongsel_t *uisongsel)
 {
   /* initial song filter process */
-  uisongsel->numrows = (double) songfilterProcess (
+  uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
 }
 
@@ -751,11 +811,55 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
+  nlistidx_t    vlseliter;
+  int32_t       rowidx;
+  dbidx_t       dbidx;
 
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
-  ssint->rightclick = true;
+
+  uivlStartSelectionIterator (ssint->uivl, &vlseliter);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vlseliter)) >= 0) {
+    song_t      *song;
+    nlistidx_t  genreidx;
+    bool        clflag;
+
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+
+    song = dbGetByIdx (uisongsel->musicdb, dbidx);
+    genreidx = songGetNum (song, TAG_GENRE);
+    clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+    if (clflag) {
+      char        work [200];
+      nlistidx_t  end;
+
+      songGetClassicalWork (song, work, sizeof (work));
+      if (*work) {
+        char    twork [200];
+
+        end = uisongsel->numrows;
+        for (nlistidx_t i = rowidx + 1; i < end; ++i) {
+          dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
+          song = dbGetByIdx (uisongsel->musicdb, dbidx);
+          genreidx = songGetNum (song, TAG_GENRE);
+          clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+          if (! clflag) {
+            break;
+          }
+
+          songGetClassicalWork (song, twork, sizeof (twork));
+          if (*twork && strcmp (work, twork) == 0) {
+            uivlAppendSelection (ssint->uivl, i);
+          } else {
+            break;
+          }
+        }  /* check each following song for a matching classical work */
+      } /* if the classical song has a 'work' */
+    } /* if the song is classical */
+  } /* for each selection in the virtual list */
+
+  uisongselProcessSelectChg (uisongsel, ssint->uivl, rownum, colidx);
 
   logProcEnd ("");
   return;
@@ -765,48 +869,34 @@ static bool
 uisongselKeyEvent (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
-  ss_internal_t  *ssint;
+  ss_internal_t   *ssint;
+  uiwcont_t       *keyh;
 
   if (uisongsel == NULL) {
     return UICB_CONT;
   }
 
   ssint = uisongsel->ssInternalData;
+  keyh = uivlGetEventHandler (ssint->uivl);
 
-//  if (uiEventIsKeyPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
-//      uiEventIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-//    uisongselPlayCallback (uisongsel);
-//  }
+  if (uiEventIsKeyPressEvent (keyh) &&
+      uiEventIsAudioPlayKey (keyh)) {
+    uisongselPlayCallback (uisongsel);
+  }
 
   return UICB_CONT;
 }
 
-static bool
-uisongselSelectionChgCallback (void *udata)
+static void
+uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
-//  nlist_t           *tlist;
-//  nlistidx_t        idx;
-//  nlistidx_t        iteridx;
+  dbidx_t           dbidx = -1;
 
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->inscroll) {
-    return UICB_CONT;
-  }
-  if (ssint->inselectchgprocess) {
-    return UICB_CONT;
-  }
-
-  if (ssint->selectedBackup != NULL &&
-      uisongsel->dispselType != DISP_SEL_MM) {
-    /* if the music manager is currently using the song list */
-    /* do not update the selection list for the music manager */
-    return UICB_CONT;
-  }
-
-  ssint->inselectchgprocess = true;
+  uisongsel->lastdbidx = dbidx;
 
   /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall) {
@@ -815,7 +905,7 @@ uisongselSelectionChgCallback (void *udata)
         continue;
       }
       uisongselSetPeerFlag (uisongsel->peers [i], true);
-//      uisongselScroll (uisongsel->peers [i], (double) uisongsel->idxStart);
+      uisongselCopySelectList (uisongsel, uisongsel->peers [i]);
       uisongselSetPeerFlag (uisongsel->peers [i], false);
     }
   }
@@ -824,76 +914,13 @@ uisongselSelectionChgCallback (void *udata)
     dbidx_t   dbidx;
 
     /* the song editor points to the first selected */
-    dbidx = nlistGetNum (ssint->selectedList, ssint->selectListKey);
+    dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);
     }
   }
 
-  ssint->inselectchgprocess = false;
-  ssint->rightclick = false;
-  return UICB_CONT;
-}
-
-static bool
-uisongselProcessSelection (void *udata, int32_t row)
-{
-  uisongsel_t       *uisongsel = udata;
-  ss_internal_t     *ssint;
-  nlistidx_t        idx = 0;
-  dbidx_t           dbidx = -1;
-
-  ssint = uisongsel->ssInternalData;
-
-//  idx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
-//      SONGSEL_COL_IDX);
-
-  {
-    dbidx = 0; // ### temp
-//    dbidx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
-//        SONGSEL_COL_DBIDX);
-    nlistSetNum (ssint->selectedList, idx, dbidx);
-    if (ssint->rightclick) {
-      song_t      *song;
-      nlistidx_t  genreidx;
-      bool        clflag;
-
-      song = dbGetByIdx (uisongsel->musicdb, dbidx);
-      genreidx = songGetNum (song, TAG_GENRE);
-      clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-      if (clflag) {
-        char        work [200];
-        nlistidx_t  end;
-
-        songGetClassicalWork (song, work, sizeof (work));
-        if (*work) {
-          char    twork [200];
-
-          end = (nlistidx_t) uisongsel->numrows;
-          for (nlistidx_t i = idx + 1; i < end; ++i) {
-            dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-            song = dbGetByIdx (uisongsel->musicdb, dbidx);
-            genreidx = songGetNum (song, TAG_GENRE);
-            clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-            if (! clflag) {
-              break;
-            }
-
-            songGetClassicalWork (song, twork, sizeof (twork));
-            if (*twork && strcmp (work, twork) == 0) {
-              nlistSetNum (ssint->selectedList, i, dbidx);
-            } else {
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  uisongsel->lastdbidx = dbidx;
-
-  return UICB_CONT;
+  return;
 }
 
 /* have to handle the case where the user switches tabs back to the */
@@ -991,4 +1018,19 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   nlistFree (tdlist);
 
   ssint->inchange = false;
+}
+
+static void
+uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
+{
+  ss_internal_t   *ssint;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
+
+  ssint = uisongsel->ssInternalData;
+  vl_a = ssint->uivl;
+  ssint = peer->ssInternalData;
+  vl_b = ssint->uivl;
+  ssint = NULL;
+  uivlCopySelectList (vl_a, vl_b);
 }

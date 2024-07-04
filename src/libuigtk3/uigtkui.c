@@ -34,10 +34,11 @@
 static char **cssdata = NULL;
 static int  csscount = 0;
 static bool initialized = false;
+static const char *currcss = NULL;
 
-static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
-    const GLogField* fields, gsize n_fields, gpointer udata);
+static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel, const GLogField* fields, gsize n_fields, gpointer udata);
 static void uiAddScreenCSS (const char *css);
+static void uicssParseError (GtkCssProvider* self, GtkCssSection* section, GError* error, gpointer udata);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
@@ -363,6 +364,9 @@ uiAddScreenCSS (const char *css)
   cssdata [csscount-1] = p;
 
   tcss = gtk_css_provider_new ();
+  currcss = p;
+  g_signal_connect (G_OBJECT (tcss), "parsing-error",
+      G_CALLBACK (uicssParseError), NULL);
   gtk_css_provider_load_from_data (tcss, p, -1, NULL);
   screen = gdk_screen_get_default ();
   if (screen != NULL) {
@@ -372,3 +376,19 @@ uiAddScreenCSS (const char *css)
   }
 }
 
+/* internal routines */
+
+static void
+uicssParseError (GtkCssProvider* self, GtkCssSection* section,
+    GError* error, gpointer udata)
+{
+  int                 s, sp, e, ep;
+  GtkCssSectionType   t;
+
+  s = gtk_css_section_get_start_line (section);
+  sp = gtk_css_section_get_start_position (section);
+  e = gtk_css_section_get_end_line (section);
+  ep = gtk_css_section_get_end_position (section);
+  t = gtk_css_section_get_section_type (section);
+  fprintf (stderr, "ERR: CSS parse: %s from %d/%d to %d/%d type: %d\n", currcss, s, sp, e, ep, t);
+}

@@ -600,7 +600,7 @@ uiEventIsShiftPressed (uiwcont_t *uiwidget)
 }
 
 int
-uiEventButtonPressed (uiwcont_t *uiwidget)
+uiEventGetButton (uiwcont_t *uiwidget)
 {
   uievent_t   *uievent;
   int       rc = -1;

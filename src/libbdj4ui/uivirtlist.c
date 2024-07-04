@@ -1410,33 +1410,6 @@ uivlPopulate (uivirtlist_t *vl)
 }
 
 void
-uivlStartRowDispIterator (uivirtlist_t *vl, int32_t *rowiter)
-{
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return;
-  }
-
-  *rowiter = vl->rowoffset - 1;
-}
-
-int32_t
-uivlIterateRowDisp (uivirtlist_t *vl, int32_t *rowiter)
-{
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
-    return LIST_LOC_INVALID;
-  }
-
-  ++(*rowiter);
-  if (*rowiter >= vl->numrows) {
-    return LIST_LOC_INVALID;
-  }
-  if (*rowiter - vl->rowoffset >= vl->dispsize) {
-    return LIST_LOC_INVALID;
-  }
-  return *rowiter;
-}
-
-void
 uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
@@ -1456,6 +1429,19 @@ uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
   }
 
   key = nlistIterateKey (vl->selected, iteridx);
+  return key;
+}
+
+int32_t
+uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx)
+{
+  nlistidx_t    key = -1;
+
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
+    return key;
+  }
+
+  key = nlistIterateKeyPrevious (vl->selected, iteridx);
   return key;
 }
 
@@ -1496,6 +1482,21 @@ uivlSetSelection (uivirtlist_t *vl, int32_t rownum)
   uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
 }
 
+void
+uivlAppendSelection (uivirtlist_t *vl, int32_t rownum)
+{
+  if (! uivlValidateRowColumn (vl, VL_INIT_DISP, rownum, 0, __func__)) {
+    return;
+  }
+
+  rownum = uivlRownumLimit (vl, rownum);
+  uivlAddSelection (vl, rownum);
+  uivlSetDisplaySelections (vl);
+  if (nlistGetCount (vl->selected) == 1) {
+    vl->lastSelection = vl->currSelection;
+  }
+}
+
 int32_t
 uivlMoveSelection (uivirtlist_t *vl, int dir)
 {
@@ -1527,6 +1528,25 @@ uivlGetEventHandler (uivirtlist_t *vl)
   }
 
   return vl->wcont [VL_W_EVENTH];
+}
+
+void
+uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
+{
+  nlistidx_t    iter_a;
+  int32_t       rowidx;
+  int32_t       lastrowidx = 0;
+
+  /* copy the selected list to vl_b */
+  /* do not call the selection change callback for vl_b */
+  uivlClearSelections (vl_b);
+  nlistStartIterator (vl_a->selected, &iter_a);
+  while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
+    uivlAddSelection (vl_b, rowidx);
+    lastrowidx = rowidx;
+  }
+  uivlSetDisplaySelections (vl_b);
+  uivlProcessScroll (vl_b, lastrowidx, VL_SCROLL_NORM);
 }
 
 /* internal routines */
@@ -1933,7 +1953,7 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
   }
 
   uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
-  button = uiEventButtonPressed (vl->wcont [VL_W_EVENTH]);
+  button = uiEventGetButton (vl->wcont [VL_W_EVENTH]);
 
   /* button 4 and 5 cause a single scroll event */
   if (button == UIEVENT_BUTTON_4 || button == UIEVENT_BUTTON_5) {
@@ -1968,9 +1988,10 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 
   /* the mouse button event handler returns the real column that */
   /* is displayed, search the column data to find the correct */
-  /* column index */
-  if (colidx >= 0) {
-    /* adjust for the hair space label that is display within the row */
+  /* column index. the hair space label is at index 0. */
+  if (colidx >= 1) {
+    /* adjust for the hair space label that is displayed */
+    /* at the beginning of the row */
     --colidx;
     for (int tcolidx = 0; tcolidx < vl->numcols; ++tcolidx) {
       if (vl->coldata [tcolidx].clickmap == colidx) {
@@ -1982,17 +2003,18 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 
   uivlUpdateSelections (vl, rownum);
   /* call the selection handler before the double-click handler */
+  /* selection change */
   uivlSelectChgHandler (vl, rownum, colidx);
   if (uiEventIsButtonPressEvent (vl->wcont [VL_W_EVENTH])) {
-    uivlRowClickHandler (vl, rownum, colidx);
+    if (button == UIEVENT_BUTTON_3) {
+      uivlRightClickHandler (vl, rownum, colidx);
+    } else {
+      uivlRowClickHandler (vl, rownum, colidx);
+    }
   }
   if (uiEventIsButtonDoublePressEvent (vl->wcont [VL_W_EVENTH])) {
     uivlDoubleClickHandler (vl, rownum, colidx);
   }
-  if (button == UIEVENT_BUTTON_3) {
-    uivlRightClickHandler (vl, rownum, colidx);
-  }
-
 
   return UICB_CONT;
 }

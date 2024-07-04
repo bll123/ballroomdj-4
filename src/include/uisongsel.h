@@ -86,13 +86,8 @@ void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t 
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
 uiwcont_t   * uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin);
-bool  uisongselPlayCallback (void *udata);
-void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
-void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselSelectCallback (void *udata);
-// void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
-void  uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
@@ -100,12 +95,14 @@ nlistidx_t uisongselGetSelectLocation (uisongsel_t *uisongsel);
 bool  uisongselApplySongFilter (void *udata);
 void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t idx);
 bool  uisongselDanceSelectCallback (void *udata, int32_t danceIdx);
-void  uisongselSaveSelections (uisongsel_t *uisongsel);
-void  uisongselRestoreSelections (uisongsel_t *uisongsel);
+// void  uisongselSaveSelections (uisongsel_t *uisongsel);
+// void  uisongselRestoreSelections (uisongsel_t *uisongsel);
+bool uisongselPlayCallback (void *udata);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
-void uisongselClearAllUISelections (uisongsel_t *uisongsel);
+// void uisongselClearAllUISelections (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
+void uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);

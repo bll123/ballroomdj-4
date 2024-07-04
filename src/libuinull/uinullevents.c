@@ -178,7 +178,7 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
 }
 
 int
-uiEventButtonPressed (uiwcont_t *uiwidget)
+uiEventGetButton (uiwcont_t *uiwidget)
 {
-  return -1;
+  return 1;
 }
