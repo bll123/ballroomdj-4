@@ -944,6 +944,9 @@ uivlSetRowColumnStr (uivirtlist_t *vl, int32_t rownum, int colidx, const char *v
     }
     case VL_TYPE_LABEL: {
       uiLabelSetText (row->cols [colidx].uiwidget, value);
+      if (vl->coldata [colidx].ellipsize) {
+        uiLabelSetTooltip (row->cols [colidx].uiwidget, value);
+      }
       break;
     }
     case VL_TYPE_ENTRY: {

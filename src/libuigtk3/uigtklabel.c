@@ -67,6 +67,16 @@ uiLabelAddClass (const char *classnm, const char *color)
 }
 
 void
+uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
+    return;
+  }
+
+  gtk_widget_set_tooltip_text (uiwidget->uidata.widget, txt);
+}
+
+void
 uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 {
   PangoFontDescription  *font_desc;
