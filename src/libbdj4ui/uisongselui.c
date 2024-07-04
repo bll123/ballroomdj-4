@@ -749,11 +749,8 @@ uisongselDoubleClickCallback (void *udata, uivirtlist_t *vl,
     int32_t rownum, int colidx)
 {
   uisongsel_t   * uisongsel = udata;
-  ss_internal_t * ssint;
 
   logProcBegin ();
-
-  ssint = uisongsel->ssInternalData;
 
   /* double-click in the song selection or side-by-side */
   /* song selection adds the song to the song list */
@@ -893,12 +890,10 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
   dbidx_t           dbidx = -1;
-  int               count;
 
   ssint = uisongsel->ssInternalData;
 
   uisongsel->lastdbidx = dbidx;
-  count = uivlSelectionCount (ssint->uivl);
 
   /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall) {

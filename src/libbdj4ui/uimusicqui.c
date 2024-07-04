@@ -435,13 +435,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 void
 uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
 {
-  mq_internal_t     *mqint;
-
   if (ci < 0 || ci >= MUSICQ_DISP_MAX) {
     return;
   }
 
-  mqint = uimusicq->ui [ci].mqInternalData;
   uiDragDropSetDestURICallback (uimusicq->parentwin, cb);
 }
 
@@ -763,12 +760,7 @@ static bool
 uimusicqQueueCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
-  mq_internal_t *mqint;
-  musicqidx_t   ci;
   dbidx_t       dbidx;
-
-  ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
 
   dbidx = uimusicqGetSelectionDBidx (uimusicq);
   if (dbidx < 0) {

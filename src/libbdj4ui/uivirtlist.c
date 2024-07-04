@@ -1373,7 +1373,6 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
 {
   nlistidx_t    iter_a;
   int32_t       rowidx;
-  int32_t       lastrowidx = 0;
 
   /* copy the selected list to vl_b */
   /* do not call the selection change callback for vl_b */
@@ -1381,7 +1380,6 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   nlistStartIterator (vl_a->selected, &iter_a);
   while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
     uivlAddSelection (vl_b, rowidx);
-    lastrowidx = rowidx;
   }
   uivlClearDisplaySelections (vl_b);
   uivlSetDisplaySelections (vl_b);

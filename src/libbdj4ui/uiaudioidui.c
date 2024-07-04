@@ -488,9 +488,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   char            *tval;
   int32_t         val;
   double          dval;
-  const char      *listingFont;
   const char      *data;
-  int             row;
 
   logProcBegin ();
 
@@ -501,7 +499,6 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   audioidint = uiaudioid->audioidInternalData;
   audioidint->song = song;
   audioidint->dbidx = dbidx;
-  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   tval = uisongGetDisplay (song, TAG_URI, &val, &dval);
   uiLabelSetText (audioidint->wcont [UIAUDID_W_FILE_DISP], tval);
@@ -547,8 +544,6 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
     dataFree (tval);
     tval = NULL;
   }
-
-  row = 0;
 
   if (audioidint->selectedrow > 0 &&
       audioidint->selectedrow < audioidint->rowcount) {
