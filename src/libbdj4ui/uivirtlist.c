@@ -2517,7 +2517,6 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlPackRow (vl, row);
       /* rows packed after the initial display need */
       /* to have their contents shown */
-uiWidgetShowAll (vl->wcont [VL_W_MAIN_VBOX]);
       uiWidgetShowAll (row->hbox);
       uivlShowRow (vl, row);
     }

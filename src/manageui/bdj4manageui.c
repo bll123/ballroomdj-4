@@ -1041,7 +1041,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwcont_t   *hbox;
   uiwcont_t   *mainhbox;
 
-  /* song list editor */
+  /* management */
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
@@ -1052,14 +1052,14 @@ manageBuildUISongListEditor (manageui_t *manage)
   uinbutilIDAdd (manage->upddbnbtabid, MANAGE_TAB_MAIN_SL);
   uiwcontFree (uiwidgetp);
 
-  /* song list editor: player */
+  /* management: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (vbox, uiwidgetp);
 
   manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_SONGLIST_NB]);
 
-  /* song list editor: side-by-side view tab */
+  /* management: side-by-side view tab */
   mainhbox = uiCreateHorizBox ();
 
   /* CONTEXT: managementui: name of side-by-side view tab */
@@ -1077,6 +1077,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
+
   vbox = uiCreateVertBox ();
 
   uiWidgetSetAllMargins (vbox, 4);

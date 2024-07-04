@@ -37,7 +37,6 @@ enum {
 enum {
   DD_CB_BUTTON,
   DD_CB_WIN_CLOSE,
-  DD_CB_LEAVE,
   DD_CB_MAX,
 };
 

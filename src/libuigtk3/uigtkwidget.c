@@ -376,9 +376,6 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
 void
 uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  GdkWindow     *gdkwin;
-  GdkEventMask  mask;
-
   if (uiwidget == NULL) {
     return;
   }
