@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "callback.h"
+#include "nlist.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 
@@ -107,9 +108,9 @@ void  uivlSetSpinboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb
 void  uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb);
 
 /* selection handling */
-void  uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx);
-int32_t uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx);
-int32_t uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx);
+void  uivlStartSelectionIterator (uivirtlist_t *vl, nlistidx_t *iteridx);
+int32_t uivlIterateSelection (uivirtlist_t *vl, nlistidx_t *iteridx);
+int32_t uivlIterateSelectionPrevious (uivirtlist_t *vl, nlistidx_t *iteridx);
 int32_t uivlSelectionCount (uivirtlist_t *vl);
 int32_t uivlGetCurrSelection (uivirtlist_t *vl);
 int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);

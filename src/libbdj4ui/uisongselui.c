@@ -893,10 +893,12 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
   dbidx_t           dbidx = -1;
+  int               count;
 
   ssint = uisongsel->ssInternalData;
 
   uisongsel->lastdbidx = dbidx;
+  count = uivlSelectionCount (ssint->uivl);
 
   /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall) {
@@ -909,6 +911,11 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
       uisongselSetPeerFlag (uisongsel->peers [i], false);
     }
   }
+
+  /* the selection has changed, reset the iterator and set the select key */
+  /* always set to the first in the list */
+  uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+  ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
 
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;

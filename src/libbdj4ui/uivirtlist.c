@@ -1252,7 +1252,7 @@ uivlSetKeyCallback (uivirtlist_t *vl, callback_t *cb)
 /* selection handling */
 
 void
-uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
+uivlStartSelectionIterator (uivirtlist_t *vl, nlistidx_t *iteridx)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     return;
@@ -1262,7 +1262,7 @@ uivlStartSelectionIterator (uivirtlist_t *vl, int32_t *iteridx)
 }
 
 int32_t
-uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
+uivlIterateSelection (uivirtlist_t *vl, nlistidx_t *iteridx)
 {
   nlistidx_t    key = -1;
 
@@ -1275,7 +1275,7 @@ uivlIterateSelection (uivirtlist_t *vl, int32_t *iteridx)
 }
 
 int32_t
-uivlIterateSelectionPrevious (uivirtlist_t *vl, int32_t *iteridx)
+uivlIterateSelectionPrevious (uivirtlist_t *vl, nlistidx_t *iteridx)
 {
   nlistidx_t    key = -1;
 
