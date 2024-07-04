@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-01 20:51\n"
+"PO-Revision-Date: 2024-07-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -370,10 +370,6 @@ msgstr "BDJ 태그만 해당"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3 데이터베이스 버전이 너무 오래되었습니다."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 내부"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -451,7 +447,6 @@ msgstr "박자에 맞춰 파란색 상자에서 마우스를 클릭합니다."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -655,13 +650,6 @@ msgstr "디스플레이 설정"
 msgid "Don't Write"
 msgstr "쓰지 않기"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "편집할 필드를 두 번 클릭합니다."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "최신 버전 다운로드"
@@ -709,7 +697,7 @@ msgstr "춤 편집"
 msgid "Edit Genres"
 msgstr "장르 편집"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "레벨 편집"
 
@@ -1078,14 +1066,14 @@ msgid "Marquee Theme"
 msgstr "마키 테마"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "최대\n"
 "재생 시간"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
-#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "최대 플레이 시간"
 
@@ -1565,7 +1553,9 @@ msgid "Repeat"
 msgstr "반복"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "BallroomDJ 데이터베이스를 전체적으로 교체합니다. 데이터베이스에 대한 모든 변경 사항은 손실됩니다."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1611,7 +1601,6 @@ msgstr "삼바"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "저장"
@@ -1937,7 +1926,9 @@ msgid "The conversion process will not be run."
 msgstr "변환 프로세스가 실행되지 않습니다."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "변환 프로세스는 신규 설치와 재설치에 대해서만 실행됩니다."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1968,6 +1959,14 @@ msgstr "일시 중지 토글"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "반복 토글"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "총 디스크 수"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "총 트랙 수"
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2043,11 +2042,13 @@ msgstr "업데이트"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "%s 데이터베이스에서 BallroomDJ 데이터베이스의 정보를 업데이트합니다."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "오디오 파일 태그에서 BallroomDJ 데이터베이스의 정보를 업데이트합니다."
 
 #. CONTEXT: alternate installation: status message
@@ -2126,7 +2127,9 @@ msgid "Write Tags to Audio Files"
 msgstr "오디오 파일에 태그 쓰기"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "BallroomDJ 데이터베이스의 정보를 사용하여 오디오 파일 태그를 작성합니다."
 
 #. CONTEXT: configuration: dialog: XML file types

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-01 20:51\n"
+"PO-Revision-Date: 2024-07-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -370,10 +370,6 @@ msgstr "Pouze štítky BDJ"
 msgid "BDJ3 database version is too old."
 msgstr "Verze databáze BDJ3 je příliš stará."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 Interní"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -451,7 +447,6 @@ msgstr "Klikněte myší do modrého pole v rytmu rytmu."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -655,13 +650,6 @@ msgstr "Nastavení displeje"
 msgid "Don't Write"
 msgstr "Nepište"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Dvakrát klikněte na pole, které chcete upravit."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "Stáhnout nejnovější verzi"
@@ -709,7 +697,7 @@ msgstr "Upravit tance"
 msgid "Edit Genres"
 msgstr "Upravit žánry"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Úrovně úprav"
 
@@ -1078,13 +1066,9 @@ msgid "Marquee Theme"
 msgstr "Téma Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
-"Play Time"
-msgstr ""
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
-#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Maximální doba přehrávání"
 
@@ -1564,7 +1548,9 @@ msgid "Repeat"
 msgstr "Opakování"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Nahrazuje celou databázi BallroomDJ. Všechny změny v databázi budou ztraceny."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1610,7 +1596,6 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Uložit"
@@ -1825,7 +1810,7 @@ msgstr "Seřadit podle"
 #. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
-msgstr "Zdroj:"
+msgstr "Zdroj"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
@@ -1936,7 +1921,9 @@ msgid "The conversion process will not be run."
 msgstr "Proces konverze se nespustí."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Proces převodu se spustí pouze u nových instalací a u přeinstalací."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1967,6 +1954,14 @@ msgstr "Přepínání pauzy"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "Přepínání opakování"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "Celkový počet disků"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "Celkový počet stop"
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2042,11 +2037,13 @@ msgstr "Aktualizováno"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aktualizuje informace v databázi BallroomDJ z databáze %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aktualizuje informace v databázi BallroomDJ ze značek zvukových souborů."
 
 #. CONTEXT: alternate installation: status message
@@ -2125,7 +2122,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Zápis značek do zvukových souborů"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Zapíše značky zvukových souborů pomocí informací z databáze BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

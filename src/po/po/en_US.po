@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.11.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-07-01\n"
-"PO-Revision-Date: 2024-07-01\n"
+"POT-Creation-Date: 2024-07-04\n"
+"PO-Revision-Date: 2024-07-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1951,6 +1951,14 @@ msgstr ""
 
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
+msgstr ""
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
 msgstr ""
 
 #. CONTEXT: label: total disc count
