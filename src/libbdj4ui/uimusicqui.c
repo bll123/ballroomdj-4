@@ -34,7 +34,6 @@
 #include "uivlutil.h"
 
 enum {
-  UIMUSICQ_COL_UNIQUE_IDX,
   UIMUSICQ_COL_DBIDX,
   UIMUSICQ_COL_DISP_IDX,
   UIMUSICQ_COL_PAUSEIND,
@@ -391,7 +390,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   mqint->colcount = UIMUSICQ_COL_MAX + slistGetCount (sellist);
   uivlSetNumColumns (uivl, mqint->colcount);
 
-  uivlMakeColumn (uivl, "uniqueidx", UIMUSICQ_COL_UNIQUE_IDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "dbidx", UIMUSICQ_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "dispidx", UIMUSICQ_COL_DISP_IDX, VL_TYPE_LABEL);
   uivlSetColumnGrow (uivl, UIMUSICQ_COL_DISP_IDX, VL_COL_WIDTH_GROW_ONLY);
@@ -413,8 +411,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uivlSetSelectChgCallback (mqint->uivl, uimusicqSelectRowCB, uimusicq);
   uivlSetRowClickCallback (mqint->uivl, uimusicqRowClickCB, uimusicq);
-//  uivlSetDoubleClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
-//  uivlSetRightClickCallback (mqint->uivl, uimusicqRowSelect, mqint);
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
@@ -1168,8 +1164,6 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   ci = uimusicq->musicqManageIdx;
   uimusicq->ui [ci].inchange = true;
 
-  uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_UNIQUE_IDX,
-      musicqupditem->uniqueidx);
   uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_DBIDX,
       musicqupditem->dbidx);
   snprintf (tmp, sizeof (tmp), "%d", musicqupditem->dispidx);

@@ -471,6 +471,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
     /* the extra rows must have their display cleared */
     if ((vl->dispsize - vl->headingoffset) > numrows) {
       for (int dispidx = numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
+fprintf (stderr, "%s snr ds>nr clear %d\n", vl->tag, dispidx);
         uivlClearRowDisp (vl, dispidx);
       }
     }
@@ -778,8 +779,6 @@ uivlSetColumnGrow (uivirtlist_t *vl, int colidx, int grow)
   vl->coldata [colidx].grow = grow;
 }
 
-/* this only works well if the display has already been generated */
-/* with all columns */
 void
 uivlSetColumnDisplay (uivirtlist_t *vl, int colidx, int hidden)
 {
@@ -1424,6 +1423,7 @@ uivlDisplay (uivirtlist_t *vl)
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
+fprintf (stderr, "%s init-pack %d\n", vl->tag, dispidx);
     uivlPackRow (vl, row);
     /* the size change callback is based on the first data row */
     if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
@@ -1485,6 +1485,7 @@ uivlPopulate (uivirtlist_t *vl)
       continue;
     }
     vl->rows [dispidx].offscreen = true;
+fprintf (stderr, "%s set %d as offscreen\n", vl->tag, dispidx);
     uiWidgetHide (vl->rows [dispidx].hbox);
   }
 
@@ -1525,7 +1526,7 @@ uivlPopulate (uivirtlist_t *vl)
   }
 
   for (int dispidx = vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
-    uivlrow_t   *row;
+    uivlrow_t   *row = NULL;
     int32_t     rownum;
 
     rownum = uivlCalcRownum (vl, dispidx);
@@ -1538,11 +1539,13 @@ uivlPopulate (uivirtlist_t *vl)
       rownum = row->lockrownum;
     }
 
+fprintf (stderr, "%s pop %d %d\n", vl->tag, row->dispidx, rownum);
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->filludata, vl, rownum);
     }
 
     if (row->offscreen) {
+fprintf (stderr, "%s pop was-off %d\n", vl->tag, row->dispidx);
       uivlShowRow (vl, row);
     }
   }
@@ -2508,14 +2511,16 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   if (vl->dispalloc < newdispsize) {
     vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
 
-    for (int dispidx = vl->dispsize; dispidx < newdispsize; ++dispidx) {
+    for (int dispidx = vl->dispalloc; dispidx < newdispsize; ++dispidx) {
       uivlrow_t *row;
 
       row = &vl->rows [dispidx];
       uivlRowBasicInit (vl, row, dispidx);
       uivlCreateRow (vl, row, dispidx, false);
 
+fprintf (stderr, "%s new-pack %d\n", vl->tag, dispidx);
       uivlPackRow (vl, row);
+mssleep (1);
       /* rows packed after the initial display need */
       /* to have their contents shown */
       uiWidgetShowAll (row->hbox);
@@ -2530,6 +2535,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   if (newdispsize < vl->dispsize) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {
+fprintf (stderr, "%s nds<ds clear %d\n", vl->tag, dispidx);
       uivlClearRowDisp (vl, dispidx);
     }
   }
@@ -2563,6 +2569,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       /* and the rows must be cleared. */
       row = &vl->rows [dispidx];
       row->cleared = false;
+fprintf (stderr, "%s ds>nr f-clear %d\n", vl->tag, dispidx);
       uivlClearRowDisp (vl, dispidx);
     }
   }
@@ -2610,6 +2617,9 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
   /* there may be some sort of race condition somewhere. */
   /* without the sleep, "cleared" rows appear in the middle */
   /* of the listing. */
+  /* since there are usually about 10-15 rows, and probably less than 30, */
+  /* the maximum sleep would be about 60ms + overhead. */
+  /* and this usually happens during the build of the ui, and on re-sizes. */
   mssleep (1);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {

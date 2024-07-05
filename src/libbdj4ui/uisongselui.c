@@ -882,10 +882,6 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
 
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->inchange) {
-    return;
-  }
-
   uisongsel->lastdbidx = dbidx;
 
   /* process the peers after the selections have been made */
