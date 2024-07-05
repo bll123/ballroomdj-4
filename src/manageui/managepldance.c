@@ -126,7 +126,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   mpldnc->uihideunsel = uiwidgetp;
 
   mpldnc->uivl = uivlCreate ("mpl-dance", mpldnc->minfo->window, vboxp,
-      15, 300, VL_FLAGS_NONE);
+      10, 300, VL_FLAGS_NONE);
   uivlSetNumColumns (mpldnc->uivl, MPLDNC_COL_MAX);
   uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECKBOX);
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);

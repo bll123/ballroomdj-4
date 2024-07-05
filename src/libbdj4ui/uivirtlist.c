@@ -263,8 +263,7 @@ static bool uivlEnterEvent (void *udata);
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
 /* the initial display size must be smaller than the initial box */
-/* otherwise things get very weird */
-/* is there some way to enforce this? */
+/* otherwise the scrollbar does not get sized properly. */
 uivirtlist_t *
 uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     int dispsize, int minwidth, int vlflags)
@@ -471,7 +470,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
     /* the extra rows must have their display cleared */
     if ((vl->dispsize - vl->headingoffset) > numrows) {
       for (int dispidx = numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
-fprintf (stderr, "%s snr ds>nr clear %d\n", vl->tag, dispidx);
         uivlClearRowDisp (vl, dispidx);
       }
     }
@@ -1423,7 +1421,6 @@ uivlDisplay (uivirtlist_t *vl)
 
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
-fprintf (stderr, "%s init-pack %d\n", vl->tag, dispidx);
     uivlPackRow (vl, row);
     /* the size change callback is based on the first data row */
     if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
@@ -1485,7 +1482,6 @@ uivlPopulate (uivirtlist_t *vl)
       continue;
     }
     vl->rows [dispidx].offscreen = true;
-fprintf (stderr, "%s set %d as offscreen\n", vl->tag, dispidx);
     uiWidgetHide (vl->rows [dispidx].hbox);
   }
 
@@ -1539,13 +1535,11 @@ fprintf (stderr, "%s set %d as offscreen\n", vl->tag, dispidx);
       rownum = row->lockrownum;
     }
 
-fprintf (stderr, "%s pop %d %d\n", vl->tag, row->dispidx, rownum);
     if (vl->fillcb != NULL) {
       vl->fillcb (vl->filludata, vl, rownum);
     }
 
     if (row->offscreen) {
-fprintf (stderr, "%s pop was-off %d\n", vl->tag, row->dispidx);
       uivlShowRow (vl, row);
     }
   }
@@ -1654,7 +1648,10 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
   if (vl->uselistingfont) {
-    uiWidgetAddClass (uiwidget, LISTING_CLASS);
+    /* setting this to list-fav-class allows gtk to calculate the */
+    /* row height better, otherwise there are annoying display glitches */
+    /* when only the favorite (at the end of the row) has this class set. */
+    uiWidgetAddClass (uiwidget, LIST_FAV_CLASS);
   }
   uiWidgetShow (uiwidget);
   uiwcontFree (uiwidget);
@@ -2518,9 +2515,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlRowBasicInit (vl, row, dispidx);
       uivlCreateRow (vl, row, dispidx, false);
 
-fprintf (stderr, "%s new-pack %d\n", vl->tag, dispidx);
       uivlPackRow (vl, row);
-mssleep (1);
       /* rows packed after the initial display need */
       /* to have their contents shown */
       uiWidgetShowAll (row->hbox);
@@ -2535,7 +2530,6 @@ mssleep (1);
   if (newdispsize < vl->dispsize) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {
-fprintf (stderr, "%s nds<ds clear %d\n", vl->tag, dispidx);
       uivlClearRowDisp (vl, dispidx);
     }
   }
@@ -2569,7 +2563,6 @@ fprintf (stderr, "%s nds<ds clear %d\n", vl->tag, dispidx);
       /* and the rows must be cleared. */
       row = &vl->rows [dispidx];
       row->cleared = false;
-fprintf (stderr, "%s ds>nr f-clear %d\n", vl->tag, dispidx);
       uivlClearRowDisp (vl, dispidx);
     }
   }
@@ -2612,15 +2605,6 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
     uiWidgetShow (row->hbox);
     row->offscreen = false;
   }
-
-  /* this sleep gets rid of various evil issues. */
-  /* there may be some sort of race condition somewhere. */
-  /* without the sleep, "cleared" rows appear in the middle */
-  /* of the listing. */
-  /* since there are usually about 10-15 rows, and probably less than 30, */
-  /* the maximum sleep would be about 60ms + overhead. */
-  /* and this usually happens during the build of the ui, and on re-sizes. */
-  mssleep (1);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols [colidx].uiwidget == NULL) {

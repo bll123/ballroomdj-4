@@ -382,7 +382,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   uivl = uivlCreate (mqint->tag, NULL,
-      uimusicq->ui [ci].mainbox, 10, 300, VL_ENABLE_KEYS);
+      uimusicq->ui [ci].mainbox, 7, 300, VL_ENABLE_KEYS);
   mqint->uivl = uivl;
   uivlSetUseListingFont (uivl);
 
