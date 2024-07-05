@@ -11,8 +11,9 @@
     * Player: Drag & Drop: Fixed issues with encoded filenames.
 * Changes:
     * Configuration: New interface for Rating / Level / Status / Genre.
-    * Playlist Management: New interface for dances table.
+    * Playlist Management: New interface for the dances table.
     * Audio Identification: The Original data row is locked into the view.
+    * Song Selection and Music Queue listings: Long values now have tooltips.
 * Translations:
     * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬), Portuguese (Português).  All poor quality.
     * "New Install" help text has been machine translated where it was missing.
