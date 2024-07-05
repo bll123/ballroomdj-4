@@ -180,16 +180,9 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     }
 
     if (listingsz > 0) {
-      int   favsz = listingsz;
+      int   favsz = listingsz + 4;
       int   headsz = listingsz + 1;
 
-      /* having a different font size within the row */
-      /* messes with the gtk calculations of what fits in a window */
-      /* since the user experience is so bad, don't try to increase */
-      /* the favorite size */
-      if (favsz > listingsz) {
-        favsz = listingsz;
-      }
       if (headsz > sz) {
         headsz = sz;
       }

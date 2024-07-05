@@ -97,7 +97,6 @@ typedef struct ss_internal {
   nlistidx_t          shiftfirstidx;
   nlistidx_t          shiftlastidx;
   bool                inchange : 1;
-  bool                inselectchgprocess : 1;
 } ss_internal_t;
 
 static bool uisongselQueueCallback (void *udata);
@@ -127,7 +126,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->uisongsel = uisongsel;
   ssint->sscolorlist = slistAlloc ("ss-colors", LIST_ORDERED, NULL);
   ssint->inchange = false;
-  ssint->inselectchgprocess = false;
   ssint->selectedBackup = NULL;
   ssint->selectListKey = -1;
   ssint->favcolumn = -1;
@@ -299,7 +297,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ++colidx;
   }
 
-  uivl = uivlCreate (uisongsel->tag, NULL, hbox, 8, 300, VL_ENABLE_KEYS);
+  uivl = uivlCreate (uisongsel->tag, NULL, hbox, 10, 300, VL_ENABLE_KEYS);
   ssint->uivl = uivl;
   uivlSetUseListingFont (uivl);
   uivlSetAllowMultiple (uivl);
@@ -883,6 +881,10 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   dbidx_t           dbidx = -1;
 
   ssint = uisongsel->ssInternalData;
+
+  if (ssint->inchange) {
+    return;
+  }
 
   uisongsel->lastdbidx = dbidx;
 

@@ -457,7 +457,6 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   }
 
   vl->numrows = numrows;
-fprintf (stderr, "%s set num-rows: %d\n", vl->tag, numrows);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
   if (vl->initialized >= VL_INIT_ROWS) {
@@ -498,7 +497,6 @@ fprintf (stderr, "%s set num-rows: %d\n", vl->tag, numrows);
   }
 
 
-fprintf (stderr, "%s set-upper: %d\n", vl->tag, numrows);
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uivlPopulate (vl);
@@ -2506,8 +2504,6 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
 static void
 uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 {
-//  int     odispsize = vl->dispsize;
-
   /* only if the number of rows has increased */
   if (vl->dispalloc < newdispsize) {
     vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
@@ -2609,6 +2605,12 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
     uiWidgetShow (row->hbox);
     row->offscreen = false;
   }
+
+  /* this sleep gets rid of various evil issues. */
+  /* there may be some sort of race condition somewhere. */
+  /* without the sleep, "cleared" rows appear in the middle */
+  /* of the listing. */
+  mssleep (1);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols [colidx].uiwidget == NULL) {
