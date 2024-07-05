@@ -1459,7 +1459,7 @@ tagdefInit (void)
   /* CONTEXT: label: total track count */
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
   /* CONTEXT: label: total track count (short name for listing) */
-  tagdefs [TAG_TRACKTOTAL].displayname = _("Tot. Tracks");
+  tagdefs [TAG_TRACKTOTAL].shortdisplayname = _("Tot. Tracks");
 
 
   /* CONTEXT: label: title sort order */

@@ -72,8 +72,10 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
       /* than their width potential */
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
+    /* numeric->text conversions with a max width */
     if (tagidx == TAG_DANCE || tagidx == TAG_DANCERATING ||
-        tagidx == TAG_DANCELEVEL || tagidx == TAG_GENRE) {
+        tagidx == TAG_DANCELEVEL || tagidx == TAG_GENRE ||
+        tagidx == TAG_STATUS) {
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
 

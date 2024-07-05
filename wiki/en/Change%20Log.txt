@@ -9,6 +9,7 @@
 * Bug Fixes:
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
     * Player: Drag & Drop: Fixed issues with encoded filenames.
+    * All text fields in listings that can be long are now displayed with ellipses if necessary.
 * Changes:
     * Configuration: New interface for Rating / Level / Status / Genre.
     * Playlist Management: New interface for the dances table.
