@@ -21,6 +21,7 @@
 
 static gboolean uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata);
 static gboolean uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata);
+static gboolean uiWidgetEnterHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
 
 /* widget interface */
 
@@ -402,6 +403,21 @@ uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
       G_CALLBACK (uiWidgetSizeChgHandler), uicb);
 }
 
+void
+uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  gtk_widget_add_events (uiwidget->uidata.widget, GDK_ENTER_NOTIFY_MASK);
+  g_signal_connect (uiwidget->uidata.widget, "enter-notify-event",
+      G_CALLBACK (uiWidgetEnterHandler), uicb);
+}
+
 /* internal routines */
 
 static gboolean
@@ -424,6 +440,18 @@ uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata)
 
   if (uicb != NULL) {
     rc = callbackHandlerII (uicb, allocation->width, allocation->height);
+  }
+  return rc;
+}
+
+static gboolean
+uiWidgetEnterHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
+{
+  callback_t  *uicb = udata;
+  bool        rc = false;
+
+  if (uicb != NULL) {
+    rc = callbackHandler (uicb);
   }
   return rc;
 }

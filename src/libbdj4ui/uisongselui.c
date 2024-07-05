@@ -102,7 +102,6 @@ typedef struct ss_internal {
 
 static bool uisongselQueueCallback (void *udata);
 static void uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action);
-static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
 static void uisongselDoubleClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void uisongselRowClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
@@ -325,7 +324,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uivlSetRightClickCallback (ssint->uivl, uisongselRightClickCallback, uisongsel);
   uivlSetSelectChgCallback (ssint->uivl, uisongselProcessSelectChg, uisongsel);
 
-  uisongselProcessSongFilter (uisongsel);
+  uisongselApplySongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
 
   uiwcontFree (hbox);
@@ -734,14 +733,6 @@ uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: dance select");
   uisongselDanceSelectHandler (uisongsel, idx);
   return UICB_CONT;
-}
-
-static void
-uisongselProcessSongFilter (uisongsel_t *uisongsel)
-{
-  /* initial song filter process */
-  uisongsel->numrows = songfilterProcess (
-      uisongsel->songfilter, uisongsel->musicdb);
 }
 
 static void

@@ -68,6 +68,7 @@ enum {
   VL_CB_VERT_SZ_CHG,
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
+  VL_CB_ENTER_WIN,
   VL_CB_MAX,
 };
 
@@ -257,6 +258,7 @@ static void uivlConfigureScrollbar (uivirtlist_t *vl);
 static int uivlCalcDispidx (uivirtlist_t *vl, int32_t rownum);
 static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
 static void uivlShowRow (uivirtlist_t *vl, uivlrow_t *row);
+static bool uivlEnterEvent (void *udata);
 
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
@@ -369,6 +371,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
+  vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
+  uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
   /* the size change callback must be set on the scroll-window */
@@ -453,6 +457,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   }
 
   vl->numrows = numrows;
+fprintf (stderr, "%s set num-rows: %d\n", vl->tag, numrows);
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s num-rows: %" PRId32, vl->tag, numrows);
 
   if (vl->initialized >= VL_INIT_ROWS) {
@@ -465,7 +470,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 
     /* if the number of data rows is less than the display size, */
     /* the extra rows must have their display cleared */
-    if (numrows > 0 && (vl->dispsize - vl->headingoffset) > numrows) {
+    if ((vl->dispsize - vl->headingoffset) > numrows) {
       for (int dispidx = numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
         uivlClearRowDisp (vl, dispidx);
       }
@@ -492,8 +497,10 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
     uiWidgetShow (vl->wcont [VL_W_SB]);
   }
 
+
+fprintf (stderr, "%s set-upper: %d\n", vl->tag, numrows);
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
-  uiScrollbarSetPosition (vl->wcont [VL_W_SB], vl->currSelection);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uivlPopulate (vl);
 }
 
@@ -1959,7 +1966,6 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   button = uiEventGetButton (vl->wcont [VL_W_EVENTH]);
 
   /* button 4 and 5 cause a single scroll event */
@@ -2039,8 +2045,6 @@ uivlScrollEvent (void *udata, int32_t dir)
     return UICB_CONT;
   }
 
-  uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
-
   start = vl->rowoffset;
   if (dir == UIEVENT_DIR_PREV || dir == UIEVENT_DIR_LEFT) {
     start -= 1;
@@ -2087,7 +2091,7 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
       continue;
     }
 
-    if (vl->parentwin != NULL &&
+    if (vl->keyhandling == false &&
         row->dispidx != vl->lastselidx) {
       /* if the actual row selection has changed, any focus that is set */
       /* needs to be cleared. */
@@ -2502,7 +2506,7 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
 static void
 uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 {
-  int     odispsize = vl->dispsize;
+//  int     odispsize = vl->dispsize;
 
   /* only if the number of rows has increased */
   if (vl->dispalloc < newdispsize) {
@@ -2553,30 +2557,17 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   /* if the display size is increased, make sure any newly allocated */
   /* rows are cleared. */
   /* this is necessary when the number of rows is less than the */
-  /* display size. this must be forced. */
-  logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-increase? %d<%d", vl->tag, odispsize, newdispsize);
-  if (vl->numrows > 0 && (vl->dispsize - vl->headingoffset) > vl->numrows) {
-    for (int dispidx = odispsize; dispidx < newdispsize; ++dispidx) {
-      uivlrow_t *row;
-
-      /* force a reset as a show-all was done, the rows must be cleared */
-      row = &vl->rows [dispidx];
-      row->cleared = false;
-      uivlClearRowDisp (vl, dispidx);
-    }
-  }
-
-  /* if the display size is greater than the number of rows, */
-  /* clear any extra rows. */
-  if (vl->numrows > 0 && (vl->dispsize - vl->headingoffset) > vl->numrows) {
-    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-limit %d > %d", vl->tag, vl->dispsize, vl->numrows);
+  /* display size. the clear must be forced. */
+  if ((vl->dispsize - vl->headingoffset) > vl->numrows) {
+    logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-limit %d > %d", vl->tag, vl->dispsize - vl->headingoffset, vl->numrows);
     for (int dispidx = vl->numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
       uivlrow_t *row;
 
+      /* force a reset. if the row was newly packed, a show-all was done, */
+      /* and the rows must be cleared. */
       row = &vl->rows [dispidx];
-      if (! row->cleared) {
-        uivlClearRowDisp (vl, dispidx);
-      }
+      row->cleared = false;
+      uivlClearRowDisp (vl, dispidx);
     }
   }
 
@@ -2634,3 +2625,16 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
   row->cleared = false;
 }
 
+static bool
+uivlEnterEvent (void *udata)
+{
+  uivirtlist_t  *vl = udata;
+
+  /* this works very nicely so that after switching to a different */
+  /* listing, the user can continue to work with the selections */
+  /* without resetting them. */
+  if (vl->keyhandling) {
+    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
+  }
+  return UICB_CONT;
+}

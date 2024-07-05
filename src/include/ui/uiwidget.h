@@ -45,6 +45,8 @@ void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
 void  uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void  uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb);
+
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
