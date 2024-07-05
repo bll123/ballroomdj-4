@@ -52,6 +52,7 @@ enum {
   MQINT_CB_PLAY,
   MQINT_CB_HIST_QUEUE,
   MQINT_CB_KEYB,
+  MQINT_CB_DISP_CHG,
   MQINT_CB_MAX,
 };
 
@@ -87,6 +88,8 @@ typedef struct mq_internal {
   int               colcount;
   int               favcolumn;
   int               mqidx;
+  bool              inchange : 1;
+  bool              inprocess : 1;
 } mq_internal_t;
 
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
@@ -95,6 +98,7 @@ static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqu
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
 static void   uimusicqSelectRowCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static bool   uimusicqProcessDisplayChg (void *udata);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
 static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
@@ -109,6 +113,8 @@ static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
 static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
 static void   uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uimusicqCopySelectList (uimusicq_t *uimusicq, uimusicq_t *peer);
+static void uimusicqSetPeerPosition (uimusicq_t *uimusicq, uimusicq_t *peer);
 
 void
 uimusicqUIInit (uimusicq_t *uimusicq)
@@ -133,6 +139,8 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     mqint->musicqupdate = NULL;
     mqint->sellist = NULL;
     mqint->favcolumn = -1;
+    mqint->inchange = false;
+    mqint->inprocess = false;
     snprintf (mqint->tag, sizeof (mqint->tag), "%s-mq-%d", uimusicq->tag, i);
   }
 
@@ -410,6 +418,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uivlDisplay (mqint->uivl);
 
   uivlSetSelectChgCallback (mqint->uivl, uimusicqSelectRowCB, uimusicq);
+  mqint->callbacks [MQINT_CB_DISP_CHG] = callbackInit (
+        uimusicqProcessDisplayChg, uimusicq, NULL);
+  uivlSetDisplayChgCallback (mqint->uivl, mqint->callbacks [MQINT_CB_DISP_CHG]);
   uivlSetRowClickCallback (mqint->uivl, uimusicqRowClickCB, uimusicq);
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
@@ -704,9 +715,11 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   ci = musicqupdate->mqidx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
+  mqint->inprocess = true;
   mqint->musicqupdate = musicqupdate;
 
   uimusicq->ui [ci].rowcount = nlistGetCount (musicqupdate->dispList);
+fprintf (stderr, "%s pmqd: rows: %d\n", uimusicq->tag, uimusicq->ui [ci].rowcount);
   uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].rowcount);
   uivlPopulate (mqint->uivl);
 
@@ -717,6 +730,8 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     uimusicq->ui [ci].selectLocation = uimusicqGetSelectLocation (uimusicq, ci);
     uimusicqSetSelection (uimusicq, ci);
   }
+
+  mqint->inprocess = false;
 
   /* the selection may have been changed, */
   /* Make sure the ui is notified about any change. */
@@ -783,6 +798,7 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
   dbidx_t         dbidx;
   int             ci;
   nlistidx_t      loc;
+  mq_internal_t   *mqint;
 
   if (uimusicq == NULL) {
     return;
@@ -797,7 +813,9 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
     return;
   }
 
-  if (uimusicq->ui [ci].inchange) {
+  mqint = uimusicq->ui [ci].mqInternalData;
+
+  if (mqint->inprocess) {
     return;
   }
 
@@ -827,9 +845,41 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
       continue;
     }
     uimusicqSetPeerFlag (uimusicq->peers [i], true);
-    uimusicqSetSelectLocation (uimusicq->peers [i], ci, loc);
+    uimusicqCopySelectList (uimusicq, uimusicq->peers [i]);
     uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
+}
+
+static bool
+uimusicqProcessDisplayChg (void *udata)
+{
+  uimusicq_t        *uimusicq = udata;
+  mq_internal_t     *mqint;
+  int               ci;
+
+  if (uimusicq->ispeercall) {
+    return UICB_CONT;
+  }
+
+  ci = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+
+  if (mqint->inchange) {
+    return UICB_CONT;
+  }
+
+  if (! uimusicq->ispeercall) {
+    for (int i = 0; i < uimusicq->peercount; ++i) {
+      if (uimusicq->peers [i] == NULL) {
+        continue;
+      }
+      uimusicqSetPeerFlag (uimusicq->peers [i], true);
+      uimusicqSetPeerPosition (uimusicq, uimusicq->peers [i]);
+      uimusicqSetPeerFlag (uimusicq->peers [i], false);
+    }
+  }
+
+  return UICB_CONT;
 }
 
 void
@@ -1162,7 +1212,7 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
 
   ci = uimusicq->musicqManageIdx;
-  uimusicq->ui [ci].inchange = true;
+  mqint->inchange = true;
 
   uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_DBIDX,
       musicqupditem->dbidx);
@@ -1203,5 +1253,55 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
   nlistFree (tdlist);
 
-  uimusicq->ui [ci].inchange = false;
+  mqint->inchange = false;
+}
+
+static void
+uimusicqCopySelectList (uimusicq_t *uimusicq, uimusicq_t *peer)
+{
+  mq_internal_t   *mqint;
+  int             ci;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
+
+  ci = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+  vl_a = mqint->uivl;
+
+  ci = peer->musicqManageIdx;
+  mqint = peer->ui [ci].mqInternalData;
+  vl_b = mqint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    return;
+  }
+
+  mqint = NULL;
+  uivlCopySelectList (vl_a, vl_b);
+}
+
+static void
+uimusicqSetPeerPosition (uimusicq_t *uimusicq, uimusicq_t *peer)
+{
+  mq_internal_t   *mqint;
+  int             ci;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
+
+  ci = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+  vl_a = mqint->uivl;
+
+  ci = peer->musicqManageIdx;
+  mqint = peer->ui [ci].mqInternalData;
+  vl_b = mqint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    return;
+  }
+
+  mqint = NULL;
+  uivlCopyPosition (vl_a, vl_b);
 }

@@ -40,7 +40,7 @@ enum {
 };
 
 enum {
-  BDJ4_IDENT_FREE = 0x667265656400aacc,
+  BDJ4_IDENT_FREE = 0xccaa006465657266,
 };
 
 #define BDJ4_LONG_NAME    "BallroomDJ 4"

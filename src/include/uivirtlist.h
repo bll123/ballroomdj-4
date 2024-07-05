@@ -96,6 +96,7 @@ int32_t uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx);
 
 /* callbacks */
 void  uivlSetSelectChgCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
+void  uivlSetDisplayChgCallback (uivirtlist_t *vl, callback_t *cb);
 void  uivlSetRowClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetDoubleClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
 void  uivlSetRightClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata);
@@ -117,6 +118,7 @@ int32_t uivlMoveSelection (uivirtlist_t *vl, int dir);
 void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 void uivlAppendSelection (uivirtlist_t *vl, int32_t rownum);
 void uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
+void uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);

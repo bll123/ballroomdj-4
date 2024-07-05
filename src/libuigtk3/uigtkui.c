@@ -181,7 +181,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
     if (listingsz > 0) {
       /* the largest size w/o messing up the display too much */
-      int   favsz = listingsz + 2;
+      int   favsz = listingsz + 1;
       int   headsz = listingsz + 1;
 
       if (headsz > sz) {

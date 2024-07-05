@@ -91,7 +91,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].lastLocation = -1;
     uimusicq->ui [i].prevSelection = -1;
     uimusicq->ui [i].currSelection = -1;
-    uimusicq->ui [i].inchange = false;
     uimusicq->ui [i].playlistsel = NULL;
     uimusicq->ui [i].slname = NULL;
   }

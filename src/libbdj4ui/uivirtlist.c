@@ -77,6 +77,7 @@ enum {
   VL_USER_CB_RB_CHG,
   VL_USER_CB_CB_CHG,
   VL_USER_CB_KEY,
+  VL_USER_CB_DISP_CHG,
   VL_USER_CB_MAX,
 };
 
@@ -246,6 +247,7 @@ static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
 int32_t uivlRowOffsetLimit (uivirtlist_t *vl, int32_t rowoffset);
 int32_t uivlRownumLimit (uivirtlist_t *vl, int32_t rownum);
 static void uivlSelectChgHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
+static void uivlDisplayChgHandler (uivirtlist_t *vl);
 static void uivlRowClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlRightClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
@@ -451,6 +453,8 @@ uivlFree (uivirtlist_t *vl)
 void
 uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
 {
+  bool    dispchg = false;
+
   if (vl == NULL || vl->ident != VL_IDENT) {
     return;
   }
@@ -486,6 +490,7 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
       diff = vl->numrows - ((vl->dispsize - vl->headingoffset) + vl->rowoffset);
       vl->rowoffset += diff;
       vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+      dispchg = true;
     }
   }
 
@@ -499,6 +504,10 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uivlPopulate (vl);
+
+  if (dispchg) {
+    uivlDisplayChgHandler (vl);
+  }
 }
 
 void
@@ -1147,6 +1156,16 @@ uivlSetSelectChgCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 }
 
 void
+uivlSetDisplayChgCallback (uivirtlist_t *vl, callback_t *cb)
+{
+  if (vl == NULL) {
+    return;
+  }
+
+  vl->usercb [VL_USER_CB_DISP_CHG] = cb;
+}
+
+void
 uivlSetRowClickCallback (uivirtlist_t *vl, uivlselcb_t cb, void *udata)
 {
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
@@ -1376,6 +1395,10 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   nlistidx_t    iter_a;
   int32_t       rowidx;
 
+  if (vl_a == NULL || vl_b == NULL) {
+    return;
+  }
+
   /* copy the selected list to vl_b */
   /* do not call the selection change callback for vl_b */
   uivlClearSelections (vl_b);
@@ -1385,7 +1408,16 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   }
   uivlClearDisplaySelections (vl_b);
   uivlSetDisplaySelections (vl_b);
-  /* try to position the scroll in the same place */
+  uivlCopyPosition (vl_a, vl_b);
+}
+
+void
+uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
+{
+  if (vl_a == NULL || vl_b == NULL) {
+    return;
+  }
+  /* position the scroll in the same place */
   uivlProcessScroll (vl_b, vl_a->rowoffset, VL_SCROLL_FORCE);
 }
 
@@ -2176,6 +2208,7 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
   vl->rowoffset = start;
   uivlPopulate (vl);
   uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) start);
+  uivlDisplayChgHandler (vl);
   vl->inscroll = false;
 }
 
@@ -2504,6 +2537,8 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
 static void
 uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 {
+  bool    dispchg = false;
+
   /* only if the number of rows has increased */
   if (vl->dispalloc < newdispsize) {
     vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
@@ -2548,6 +2583,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
     diff = vl->numrows - ((vl->dispsize - vl->headingoffset) + vl->rowoffset);
     vl->rowoffset += diff;
     vl->rowoffset = uivlRowOffsetLimit (vl, vl->rowoffset);
+    dispchg = true;
   }
 
   /* if the display size is increased, make sure any newly allocated */
@@ -2569,6 +2605,9 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 
   uivlConfigureScrollbar (vl);
   uivlPopulate (vl);
+  if (dispchg) {
+    uivlDisplayChgHandler (vl);
+  }
 }
 
 static void
@@ -2633,4 +2672,12 @@ uivlEnterEvent (void *udata)
     uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   }
   return UICB_CONT;
+}
+
+static void
+uivlDisplayChgHandler (uivirtlist_t *vl)
+{
+  if (vl->usercb [VL_USER_CB_DISP_CHG] != NULL) {
+    callbackHandler (vl->usercb [VL_USER_CB_DISP_CHG]);
+  }
 }

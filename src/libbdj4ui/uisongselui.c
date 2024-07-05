@@ -62,6 +62,7 @@ enum {
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
+  SONGSEL_CB_DISP_CHG,
   SONGSEL_CB_MAX,
 };
 
@@ -96,6 +97,7 @@ typedef struct ss_internal {
   /* for shift-click */
   nlistidx_t          shiftfirstidx;
   nlistidx_t          shiftlastidx;
+  bool                inapply : 1;
   bool                inchange : 1;
 } ss_internal_t;
 
@@ -108,6 +110,7 @@ static void uisongselRightClickCallback (void *udata, uivirtlist_t *vl, int32_t 
 
 static bool uisongselKeyEvent (void *udata);
 static void uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static bool uisongselProcessDisplayChg (void *udata);
 
 static void uisongselMoveSelection (void *udata, int where);
 
@@ -115,6 +118,7 @@ static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t co
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
+static void uisongselSetPeerPosition (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -125,6 +129,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->uivl = NULL;
   ssint->uisongsel = uisongsel;
   ssint->sscolorlist = slistAlloc ("ss-colors", LIST_ORDERED, NULL);
+  ssint->inapply = false;
   ssint->inchange = false;
   ssint->selectedBackup = NULL;
   ssint->selectListKey = -1;
@@ -321,6 +326,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uivlSetRowClickCallback (ssint->uivl, uisongselRowClickCallback, uisongsel);
   uivlSetRightClickCallback (ssint->uivl, uisongselRightClickCallback, uisongsel);
   uivlSetSelectChgCallback (ssint->uivl, uisongselProcessSelectChg, uisongsel);
+  ssint->callbacks [SONGSEL_CB_DISP_CHG] = callbackInit (
+      uisongselProcessDisplayChg, uisongsel, NULL);
+  uivlSetDisplayChgCallback (ssint->uivl, ssint->callbacks [SONGSEL_CB_DISP_CHG]);
 
   uisongselApplySongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
@@ -406,14 +414,16 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
 bool
 uisongselApplySongFilter (void *udata)
 {
-  uisongsel_t *uisongsel = udata;
+  uisongsel_t     *uisongsel = udata;
+  ss_internal_t   *ssint;
+
+  ssint = uisongsel->ssInternalData;
+  ssint->inapply = true;
 
   uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
 
-  /* the call to cleardata() will remove any selections */
-  /* afterwards, make sure something is selected */
   uisongselPopulateData (uisongsel);
 
   /* the song filter has been processed, the peers need to be populated */
@@ -426,6 +436,11 @@ uisongselApplySongFilter (void *udata)
     }
     uisongselPopulateData (uisongsel->peers [i]);
   }
+
+  ssint->inapply = false;
+
+  /* reset the selection */
+  uivlSetSelection (ssint->uivl, 0);
 
   return UICB_CONT;
 }
@@ -882,6 +897,11 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
 
   ssint = uisongsel->ssInternalData;
 
+  if (ssint->inapply) {
+    /* the apply-song-filter function will set the selection */
+    return;
+  }
+
   uisongsel->lastdbidx = dbidx;
 
   /* process the peers after the selections have been made */
@@ -912,6 +932,37 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   }
 
   return;
+}
+
+static bool
+uisongselProcessDisplayChg (void *udata)
+{
+  uisongsel_t       *uisongsel = udata;
+  ss_internal_t     *ssint;
+
+  if (uisongsel->ispeercall) {
+    return UICB_CONT;
+  }
+
+  ssint = uisongsel->ssInternalData;
+
+  if (ssint->inapply) {
+    /* the apply-song-filter function will set the selection */
+    return UICB_CONT;
+  }
+
+  if (! uisongsel->ispeercall) {
+    for (int i = 0; i < uisongsel->peercount; ++i) {
+      if (uisongsel->peers [i] == NULL) {
+        continue;
+      }
+      uisongselSetPeerFlag (uisongsel->peers [i], true);
+      uisongselSetPeerPosition (uisongsel, uisongsel->peers [i]);
+      uisongselSetPeerFlag (uisongsel->peers [i], false);
+    }
+  }
+
+  return UICB_CONT;
 }
 
 /* have to handle the case where the user switches tabs back to the */
@@ -947,6 +998,7 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   dbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   song = dbGetByIdx (uisongsel->musicdb, dbidx);
+
   ssint->inchange = true;
 
   uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
@@ -1020,8 +1072,37 @@ uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
 
   ssint = uisongsel->ssInternalData;
   vl_a = ssint->uivl;
+
   ssint = peer->ssInternalData;
   vl_b = ssint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    return;
+  }
+
   ssint = NULL;
   uivlCopySelectList (vl_a, vl_b);
+}
+
+static void
+uisongselSetPeerPosition (uisongsel_t *uisongsel, uisongsel_t *peer)
+{
+  ss_internal_t   *ssint;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
+
+  ssint = uisongsel->ssInternalData;
+  vl_a = ssint->uivl;
+
+  ssint = peer->ssInternalData;
+  vl_b = ssint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    return;
+  }
+
+  ssint = NULL;
+  uivlCopyPosition (vl_a, vl_b);
 }

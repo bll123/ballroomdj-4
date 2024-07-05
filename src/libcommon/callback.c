@@ -16,13 +16,13 @@
 #include "mdebug.h"
 
 enum {
-  CB_IDENT_VOID     = 0x4342766f696400aa,
-  CB_IDENT_DOUBLE   = 0x434264626c00aabb,
-  CB_IDENT_INT      = 0x4342696e7400aabb,
-  CB_IDENT_INT_INT  = 0x4342696900aabbcc,
-  CB_IDENT_STR      = 0x434273747200aabb,
-  CB_IDENT_STR_STR  = 0x4342737300aabbcc,
-  CB_IDENT_STR_INT  = 0x4342736900aabbcc,
+  CB_IDENT_VOID     = 0xaa0064696f764243,
+  CB_IDENT_DOUBLE   = 0xbbaa006c62644243,
+  CB_IDENT_INT      = 0xbbaa00746e694243,
+  CB_IDENT_INT_INT  = 0xccbbaa0069694243,
+  CB_IDENT_STR      = 0xbbaa007274734243,
+  CB_IDENT_STR_STR  = 0xccbbaa0073734243,
+  CB_IDENT_STR_INT  = 0xccbbaa0069734243,
 };
 
 typedef struct callback {
@@ -277,16 +277,7 @@ callbackValidate (callback_t *cb, int64_t wantident)
     return rc;
   }
   if (cb->ident != wantident) {
-    char    tbuffa [sizeof (int64_t) + 1];
-    char    tbuffb [sizeof (int64_t) + 1];
-
-    for (size_t i = 0; i < sizeof (int64_t); ++i) {
-      tbuffa [i] = ((char *) &cb->ident)[sizeof (int64_t) - i - 1];
-      tbuffb [i] = ((char *) &wantident)[sizeof (int64_t) - i - 1];
-    }
-    tbuffa [sizeof (int64_t)] = '\0';
-    tbuffb [sizeof (int64_t)] = '\0';
-    fprintf (stderr, "ERR: callback: mismatch type: %s want: %s\n", tbuffa, tbuffb);
+    fprintf (stderr, "ERR: callback: mismatch type: %s want: %s\n", (char *) cb->ident, (char *) wantident);
     return rc;
   }
 

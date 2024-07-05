@@ -67,7 +67,6 @@ typedef struct {
   /* flags */
   bool          hasui : 1;
   bool          haveselloc : 1;
-  bool          inchange : 1;
   bool          newflag : 1;
 } uimusicqui_t;
 

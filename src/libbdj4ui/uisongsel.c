@@ -42,15 +42,9 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->songfilter = uisfGetSongFilter (uisf);
   uisongsel->sfapplycb = NULL;
   uisongsel->sfdanceselcb = NULL;
-
-  uisongsel->sfapplycb = callbackInit (
-      uisongselApplySongFilter, uisongsel, NULL);
-  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
-
-  uisongsel->sfdanceselcb = callbackInitI (
-      uisongselDanceSelectCallback, uisongsel);
-  uisfSetDanceSelectCallback (uisf, uisongsel->sfdanceselcb);
-
+  for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
+    uisongsel->peers [i] = NULL;
+  }
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;
@@ -59,13 +53,9 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
-  uisongsel->numrows = dbCount (musicdb);
   uisongsel->uidance = NULL;
   uisongsel->peercount = 0;
   uisongsel->ispeercall = false;
-  for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
-    uisongsel->peers [i] = NULL;
-  }
   uisongsel->newselcb = NULL;
   uisongsel->queuecb = NULL;
   uisongsel->playcb = NULL;
@@ -75,6 +65,16 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uisongsel->musicqdbidxlist [i] = NULL;
   }
   uisongsel->songlistdbidxlist = NULL;
+
+  uisongsel->numrows = dbCount (musicdb);
+
+  uisongsel->sfapplycb = callbackInit (
+      uisongselApplySongFilter, uisongsel, NULL);
+  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
+
+  uisongsel->sfdanceselcb = callbackInitI (
+      uisongselDanceSelectCallback, uisongsel);
+  uisfSetDanceSelectCallback (uisf, uisongsel->sfdanceselcb);
 
   uisongselUIInit (uisongsel);
 
