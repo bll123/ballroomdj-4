@@ -119,6 +119,8 @@ void uivlSetSelection (uivirtlist_t *vl, int32_t rownum);
 void uivlAppendSelection (uivirtlist_t *vl, int32_t rownum);
 void uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
 void uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
+void uivlSaveSelections (uivirtlist_t *vl);
+void uivlRestoreSelections (uivirtlist_t *vl);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);

@@ -628,6 +628,53 @@ uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx)
   uivlSetSelection (ssint->uivl, idx);
 }
 
+void
+uisongselSaveSelections (uisongsel_t *uisongsel)
+{
+  ss_internal_t   *ssint;
+
+  ssint = uisongsel->ssInternalData;
+
+  if (uisongsel->ispeercall) {
+    return;
+  }
+
+  uivlSaveSelections (ssint->uivl);
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselSaveSelections (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  }
+}
+
+void
+uisongselRestoreSelections (uisongsel_t *uisongsel)
+{
+  ss_internal_t   *ssint;
+
+  ssint = uisongsel->ssInternalData;
+
+  if (uisongsel->ispeercall) {
+    return;
+  }
+
+  uivlRestoreSelections (ssint->uivl);
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselRestoreSelections (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  }
+}
+
+
 /* internal routines */
 
 static void

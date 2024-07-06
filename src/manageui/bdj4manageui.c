@@ -246,9 +246,9 @@ typedef struct {
   uimusicq_t        *mmmusicq;
   uisongsel_t       *mmsongsel;
   uisongedit_t      *mmsongedit;
-  /* lastdisp is the last type of display that was in the mm */
+  /* lastmmdisp is the last type of display that was in the mm */
   /* it may have been a playlist filter or the entire song selection */
-  int               lastdisp;
+  int               lastmmdisp;
   int               dbchangecount;
   int               editmode;
   int               lastinsertlocation;
@@ -494,7 +494,7 @@ main (int argc, char *argv[])
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
   manage.inload = false;
-  manage.lastdisp = MANAGE_DISP_SONG_SEL;
+  manage.lastmmdisp = MANAGE_DISP_SONG_SEL;
   manage.selbypass = true;
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
@@ -3532,7 +3532,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
   logProcBegin ();
   if (id == MANAGE_TAB_MAIN_SL) {
     if (uisfPlaylistInUse (manage->uisongfilter) ||
-        manage->lastdisp == MANAGE_DISP_SONG_LIST) {
+        manage->lastmmdisp == MANAGE_DISP_SONG_LIST) {
       nlistidx_t    nidx;
 
       /* when switching to song-sel, make sure the mm is reset to have */
@@ -3542,10 +3542,11 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
+      uisongselRestoreSelections (manage->mmsongsel);
       if (manage->selusesonglist) {
         uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
       }
-      manage->lastdisp = MANAGE_DISP_SONG_SEL;
+      manage->lastmmdisp = MANAGE_DISP_SONG_SEL;
     }
 
     uisfHidePlaylistDisplay (manage->uisongfilter);
@@ -3566,14 +3567,15 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     uisfShowPlaylistDisplay (manage->uisongfilter);
 
     if (manage->selusesonglist &&
-        manage->lastdisp == MANAGE_DISP_SONG_SEL) {
+        manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
+      uisongselSaveSelections (manage->mmsongsel);
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
       slname = uimusicqGetSonglistName (manage->slmusicq);
       uisfSetPlaylist (manage->uisongfilter, slname);
       mdfree (slname);
-      manage->lastdisp = MANAGE_DISP_SONG_LIST;
+      manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
       redisp = true;
     }
 

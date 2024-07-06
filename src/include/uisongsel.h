@@ -100,6 +100,8 @@ void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
 void uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx);
+void uisongselSaveSelections (uisongsel_t *uisongsel);
+void uisongselRestoreSelections (uisongsel_t *uisongsel);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);

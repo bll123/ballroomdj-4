@@ -200,6 +200,7 @@ typedef struct uivirtlist {
   int32_t       lastSelection;    // used for shift-click
   int32_t       currSelection;
   nlist_t       *selected;
+  nlist_t       *selectedSave;
   int           lockcount;
   int           initialized;
   /* user callbacks */
@@ -320,6 +321,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->rowoffset = 0;
   vl->currSelection = 0;
   vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
+  vl->selectedSave = NULL;
   /* default selection */
   nlistSetNum (vl->selected, 0, true);
   vl->initialized = VL_INIT_NONE;
@@ -1412,6 +1414,63 @@ uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   }
   /* position the scroll in the same place */
   uivlProcessScroll (vl_b, vl_a->rowoffset, VL_SCROLL_FORCE);
+}
+
+void
+uivlSaveSelections (uivirtlist_t *vl)
+{
+  nlistidx_t    iter;
+  int32_t       rowidx;
+
+  if (vl == NULL) {
+    return;
+  }
+
+  nlistFree (vl->selectedSave);
+  vl->selectedSave = nlistAlloc ("vl-sel-save", LIST_UNORDERED, NULL);
+
+  nlistStartIterator (vl->selected, &iter);
+  while ((rowidx = nlistIterateKey (vl->selected, &iter)) >= 0) {
+    nlistSetNum (vl->selectedSave, rowidx, true);
+  }
+
+  nlistSort (vl->selectedSave);
+}
+
+void
+uivlRestoreSelections (uivirtlist_t *vl)
+{
+  nlistidx_t    iter;
+  int32_t       rowidx;
+  int32_t       rownum = -1;
+
+  if (vl == NULL) {
+    return;
+  }
+
+  if (vl->selectedSave == NULL) {
+    return;
+  }
+
+  nlistFree (vl->selected);
+  vl->selected = nlistAlloc ("vl-sel", LIST_UNORDERED, NULL);
+
+  nlistStartIterator (vl->selectedSave, &iter);
+  while ((rowidx = nlistIterateKey (vl->selectedSave, &iter)) >= 0) {
+    if (rownum < 0) {
+      rownum = rowidx;
+    }
+    nlistSetNum (vl->selected, rowidx, true);
+  }
+
+  nlistSort (vl->selected);
+
+  if (rownum < 0) {
+    rownum = 0;
+  }
+  uivlProcessScroll (vl, rownum, VL_SCROLL_NORM);
+  uivlUpdateSelections (vl, rownum);
+  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
 }
 
 /* processing */
