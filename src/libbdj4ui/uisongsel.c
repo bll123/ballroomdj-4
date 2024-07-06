@@ -56,6 +56,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->uidance = NULL;
   uisongsel->peercount = 0;
   uisongsel->ispeercall = false;
+  uisongsel->peerhandling = SONGSEL_ALL_PEERS;
   uisongsel->newselcb = NULL;
   uisongsel->queuecb = NULL;
   uisongsel->playcb = NULL;
@@ -90,6 +91,16 @@ uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer)
   }
   uisongsel->peers [uisongsel->peercount] = peer;
   ++uisongsel->peercount;
+}
+
+void
+uisongselSetPeerHandling (uisongsel_t *uisongsel, int peerhandling)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+
+  uisongsel->peerhandling = peerhandling;
 }
 
 void
@@ -230,3 +241,4 @@ uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
 
   uisongselPopulateData (uisongsel);
 }
+
