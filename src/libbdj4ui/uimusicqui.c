@@ -94,24 +94,26 @@ typedef struct mq_internal {
 
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
 static int32_t uimusicqQueuePlaylistCallback (void *udata, const char *sval);
+
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
+
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
-static void   uimusicqSelectRowCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static void   uimusicqProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static bool   uimusicqProcessDisplayChg (void *udata);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
 static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc);
+static void   uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
+
 static bool   uimusicqMoveTopCallback (void *udata);
 static bool   uimusicqMoveUpCallback (void *udata);
 static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
-static void   uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
-static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
 static void   uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uimusicqCopySelectList (uimusicq_t *uimusicq, uimusicq_t *peer);
 static void uimusicqSetPeerPosition (uimusicq_t *uimusicq, uimusicq_t *peer);
@@ -417,7 +419,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uivlDisplay (mqint->uivl);
 
-  uivlSetSelectChgCallback (mqint->uivl, uimusicqSelectRowCB, uimusicq);
+  uivlSetSelectChgCallback (mqint->uivl, uimusicqProcessSelectChg, uimusicq);
   mqint->callbacks [MQINT_CB_DISP_CHG] = callbackInit (
         uimusicqProcessDisplayChg, uimusicq, NULL);
   uivlSetDisplayChgCallback (mqint->uivl, mqint->callbacks [MQINT_CB_DISP_CHG]);
@@ -524,7 +526,7 @@ uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
 
   mqint = uimusicq->ui [mqidx].mqInternalData;
 
-  uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] =
+  uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE] =
       uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST];
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = nlistAlloc ("savelist", LIST_UNORDERED, NULL);
@@ -532,8 +534,8 @@ uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
   nlistStartIterator (mqint->musicqupdate->dispList, &mqiter);
   while ((key = nlistIterateKey (mqint->musicqupdate->dispList, &mqiter)) >= 0) {
     musicqupditem = nlistGetData (mqint->musicqupdate->dispList, key);
-    if (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] != NULL) {
-      callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE],
+    if (uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE] != NULL) {
+      callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE],
           musicqupditem->dbidx);
     }
   }
@@ -582,8 +584,8 @@ uimusicqTruncateQueueCallback (void *udata)
 
   ci = uimusicq->musicqManageIdx;
 
-  if (uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE] != NULL) {
-    callbackHandler (uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE]);
+  if (uimusicq->usercb [UIMUSICQ_USER_CB_CLEAR_QUEUE] != NULL) {
+    callbackHandler (uimusicq->usercb [UIMUSICQ_USER_CB_CLEAR_QUEUE]);
   }
 
   idx = uimusicqGetSelectLocation (uimusicq, ci);
@@ -719,7 +721,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   mqint->musicqupdate = musicqupdate;
 
   uimusicq->ui [ci].rowcount = nlistGetCount (musicqupdate->dispList);
-fprintf (stderr, "%s pmqd: rows: %d\n", uimusicq->tag, uimusicq->ui [ci].rowcount);
   uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].rowcount);
   uivlPopulate (mqint->uivl);
 
@@ -778,14 +779,14 @@ uimusicqQueueCallback (void *udata)
     return UICB_CONT;
   }
 
-  if (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] != NULL) {
-    callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx);
+  if (uimusicq->usercb [UIMUSICQ_USER_CB_QUEUE] != NULL) {
+    callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_QUEUE], dbidx);
   }
   return UICB_CONT;
 }
 
 static void
-uimusicqSelectRowCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
+uimusicqProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   uimusicq_t      *uimusicq = udata;
 
@@ -832,8 +833,8 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
 
   dbidx = uimusicqGetSelectionDBidx (uimusicq);
   if (dbidx >= 0 &&
-      uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] != NULL) {
-    callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL], dbidx);
+      uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL] != NULL) {
+    callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL], dbidx);
   }
 
   if (loc != QUEUE_LOC_LAST) {
@@ -882,6 +883,7 @@ uimusicqProcessDisplayChg (void *udata)
   return UICB_CONT;
 }
 
+/* saves and marks the previous selection */
 void
 uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc)
 {
@@ -894,8 +896,8 @@ uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc)
     sameprev = true;
   }
 
+  uimusicqMarkPreviousSelection (uimusicq, false);
   if (! sameprev) {
-    uimusicqMarkPreviousSelection (uimusicq, false);
     uimusicq->ui [ci].prevSelection = uimusicq->ui [ci].currSelection;
     uimusicq->ui [ci].currSelection = loc;
   }
@@ -906,9 +908,7 @@ uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, nlistidx_t loc)
       continue;
     }
     uimusicqSetPeerFlag (uimusicq->peers [i], true);
-    if (! sameprev) {
-      uimusicqCopySelections (uimusicq, uimusicq->peers [i], ci);
-    }
+    uimusicqMarkPreviousSelection (uimusicq->peers [i], false);
     uimusicqMarkPreviousSelection (uimusicq->peers [i], true);
     uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
@@ -949,14 +949,14 @@ uimusicqSongEditCallback (void *udata)
   dbidx_t         dbidx;
 
 
-  if (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] != NULL) {
+  if (uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL] != NULL) {
     dbidx = uimusicqGetSelectionDBidx (uimusicq);
     if (dbidx < 0) {
       return UICB_CONT;
     }
-    callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL], dbidx);
+    callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL], dbidx);
   }
-  return callbackHandler (uimusicq->cbcopy [UIMUSICQ_CBC_EDIT]);
+  return callbackHandler (uimusicq->usercb [UIMUSICQ_USER_CB_EDIT]);
 }
 
 static bool
@@ -1104,8 +1104,8 @@ uimusicqRowClickCB (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   song = dbGetByIdx (uimusicq->musicdb, dbidx);
   if (song != NULL) {
     songChangeFavorite (song);
-    if (uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE] != NULL) {
-      callbackHandlerI (uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE], dbidx);
+    if (uimusicq->usercb [UIMUSICQ_USER_CB_SONG_SAVE] != NULL) {
+      callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_SONG_SAVE], dbidx);
     }
   }
 
@@ -1176,14 +1176,6 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
     uivlSetRowColumnClass (mqint->uivl, mqui->prevSelection,
         UIMUSICQ_COL_DISP_IDX, ACCENT_CLASS);
   }
-}
-
-static void
-uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx)
-{
-  uimusicqMarkPreviousSelection (peer, false);
-  peer->ui [mqidx].prevSelection = uimusicq->ui [mqidx].prevSelection;
-  peer->ui [mqidx].currSelection = uimusicq->ui [mqidx].currSelection;
 }
 
 static void

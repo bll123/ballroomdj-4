@@ -40,13 +40,13 @@ enum {
 
 /* these are copies of the callbacks and should not be freed */
 enum {
-  UIMUSICQ_CBC_CLEAR_QUEUE,
-  UIMUSICQ_CBC_EDIT,
-  UIMUSICQ_CBC_ITERATE,        // temporary for save
-  UIMUSICQ_CBC_NEW_SEL,
-  UIMUSICQ_CBC_QUEUE,
-  UIMUSICQ_CBC_SONG_SAVE,
-  UIMUSICQ_CBC_MAX,
+  UIMUSICQ_USER_CB_CLEAR_QUEUE,
+  UIMUSICQ_USER_CB_EDIT,
+  UIMUSICQ_USER_CB_ITERATE,        // temporary for save
+  UIMUSICQ_USER_CB_NEW_SEL,
+  UIMUSICQ_USER_CB_QUEUE,
+  UIMUSICQ_USER_CB_SONG_SAVE,
+  UIMUSICQ_USER_CB_MAX,
 };
 
 typedef struct mq_internal mq_internal_t;
@@ -84,7 +84,7 @@ typedef struct uimusicq {
   uiwcont_t         *errorMsg;
   uiwcont_t         *statusMsg;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
-  callback_t        *cbcopy [UIMUSICQ_CBC_MAX];
+  callback_t        *usercb [UIMUSICQ_USER_CB_MAX];
   uimusicqui_t      ui [MUSICQ_MAX];
   /* peers */
   int               peercount;

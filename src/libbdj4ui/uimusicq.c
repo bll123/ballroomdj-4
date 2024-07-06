@@ -52,8 +52,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
     uimusicq->callbacks [i] = NULL;
   }
-  for (int i = 0; i < UIMUSICQ_CBC_MAX; ++i) {
-    uimusicq->cbcopy [i] = NULL;
+  for (int i = 0; i < UIMUSICQ_USER_CB_MAX; ++i) {
+    uimusicq->usercb [i] = NULL;
   }
   uimusicq->musicqManageIdx = MUSICQ_PB_A;
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
@@ -169,7 +169,7 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, callback_t *uicbdbidx)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] = uicbdbidx;
+  uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL] = uicbdbidx;
 }
 
 void
@@ -178,7 +178,7 @@ uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_SONG_SAVE] = uicb;
 }
 
 void
@@ -187,7 +187,7 @@ uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_CLEAR_QUEUE] = uicb;
 }
 
 void
@@ -262,7 +262,7 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
     return;
   }
 
-  uimusicq->cbcopy [UIMUSICQ_CBC_EDIT] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_EDIT] = uicb;
 }
 
 void
@@ -298,5 +298,5 @@ uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_QUEUE] = uicb;
 }

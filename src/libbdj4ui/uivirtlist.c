@@ -494,15 +494,8 @@ uivlSetNumRows (uivirtlist_t *vl, int32_t numrows)
     }
   }
 
-  if (numrows <= (vl->dispsize - vl->headingoffset)) {
-    uiWidgetHide (vl->wcont [VL_W_SB]);
-  } else {
-    uiWidgetShow (vl->wcont [VL_W_SB]);
-  }
+  uivlConfigureScrollbar (vl);
 
-
-  uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) numrows);
-  uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uivlPopulate (vl);
 
   if (dispchg) {
@@ -2245,12 +2238,6 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, -1);
-
-    if (vl->numrows <= (vl->dispsize - vl->headingoffset)) {
-      uiWidgetHide (vl->wcont [VL_W_SB]);
-    } else {
-      uiWidgetShow (vl->wcont [VL_W_SB]);
-    }
   }
 
   return UICB_CONT;
@@ -2432,6 +2419,14 @@ uivlSelectChgHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 }
 
 static void
+uivlDisplayChgHandler (uivirtlist_t *vl)
+{
+  if (vl->usercb [VL_USER_CB_DISP_CHG] != NULL) {
+    callbackHandler (vl->usercb [VL_USER_CB_DISP_CHG]);
+  }
+}
+
+static void
 uivlRowClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 {
   if (vl->rowselcb != NULL) {
@@ -2495,8 +2490,10 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
   row->cleared = true;
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-    if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
-      /* already hidden */
+    int     hidden;
+
+    hidden = vl->coldata [colidx].hidden;
+    if (hidden == VL_COL_HIDE || hidden == VL_COL_DISABLE) {
       continue;
     }
 
@@ -2613,10 +2610,18 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
 static void
 uivlConfigureScrollbar (uivirtlist_t *vl)
 {
+  uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) vl->numrows);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
       (double) ((vl->dispsize - vl->headingoffset) - vl->lockcount) / 2);
   uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
       (double) ((vl->dispsize - vl->headingoffset) - vl->lockcount));
+
+  if (vl->numrows <= (vl->dispsize - vl->headingoffset)) {
+    uiWidgetHide (vl->wcont [VL_W_SB]);
+  } else {
+    uiWidgetShow (vl->wcont [VL_W_SB]);
+  }
 }
 
 static int
@@ -2646,14 +2651,17 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    int     hidden;
+
     if (row->cols [colidx].uiwidget == NULL) {
       continue;
     }
+    hidden = vl->coldata [colidx].hidden;
 
-    if (vl->coldata [colidx].hidden == VL_COL_HIDE) {
+    if (hidden == VL_COL_HIDE) {
       uiWidgetHide (row->cols [colidx].uiwidget);
     }
-    if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+    if (hidden == VL_COL_SHOW) {
       uiWidgetShow (row->cols [colidx].uiwidget);
     }
   }
@@ -2671,13 +2679,7 @@ uivlEnterEvent (void *udata)
   if (vl->keyhandling) {
     uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   }
+
   return UICB_CONT;
 }
 
-static void
-uivlDisplayChgHandler (uivirtlist_t *vl)
-{
-  if (vl->usercb [VL_USER_CB_DISP_CHG] != NULL) {
-    callbackHandler (vl->usercb [VL_USER_CB_DISP_CHG]);
-  }
-}

@@ -393,8 +393,8 @@ static void     manageSonglistLoadFile (void *udata, const char *fn, int preload
 static int32_t  manageLoadPlaylistCB (void *udata, const char *fn);
 static bool     manageNewPlaylistCB (void *udata);
 static int32_t  manageLoadSonglistSeqCB (void *udata, const char *fn);
-static bool     manageToggleEasySonglist (void *udata);
-static void     manageSetEasySonglist (manageui_t *manage);
+static bool     manageToggleSBSSonglist (void *udata);
+static void     manageSetSBSSonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 static bool     managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t mqidx);
@@ -1398,7 +1398,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_REQ_PROCESS_ACTIVE, tmp);
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
-    manageSetEasySonglist (manage);
+    manageSetSBSSonglist (manage);
     /* CONTEXT: managementui: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
     connSendMessage (manage->conn, ROUTE_PLAYER, MSG_PLAYER_SUPPORT, NULL);
@@ -2423,7 +2423,7 @@ manageSonglistMenu (manageui_t *manage)
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SBS_EDIT,
-      manageToggleEasySonglist);
+      manageToggleSBSSonglist);
   /* CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view) */
   menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
       nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST),
@@ -2911,7 +2911,7 @@ manageLoadSonglistSeqCB (void *udata, const char *fn)
 }
 
 static bool
-manageToggleEasySonglist (void *udata)
+manageToggleSBSSonglist (void *udata)
 {
   manageui_t  *manage = udata;
   int         val;
@@ -2921,27 +2921,27 @@ manageToggleEasySonglist (void *udata)
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   val = ! val;
   nlistSetNum (manage->minfo.options, MANAGE_SBS_SONGLIST, val);
-  manageSetEasySonglist (manage);
+  manageSetSBSSonglist (manage);
   logProcEnd ("");
   return UICB_CONT;
 }
 
 static void
-manageSetEasySonglist (manageui_t *manage)
+manageSetSBSSonglist (manageui_t *manage)
 {
   int     val;
 
   logProcBegin ();
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   if (val) {
-    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
+    uiWidgetShow (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 0);
   } else {
     uiWidgetHide (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
-    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
-    uiWidgetShowAll (manage->wcont [MANAGE_W_SONGSEL_TAB]);
+    uiWidgetShow (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
+    uiWidgetShow (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 1);
   }
   logProcEnd ("");
