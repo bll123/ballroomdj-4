@@ -34,6 +34,7 @@
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
+#include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
@@ -149,6 +150,9 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uivlSetKeyCallback (ssint->uivl, ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uisongsel->ssInternalData = ssint;
+
+  uiutilsAddFavoriteClasses ();
+
   logProcEnd ("");
 }
 
@@ -357,8 +361,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   /* re-fetch the count, as the songfilter process may not have been */
   /* processed by this instance */
   uisongsel->numrows = songfilterGetCount (uisongsel->songfilter);
+  /* set-num-rows calls uivlpopulate */
   uivlSetNumRows (ssint->uivl, uisongsel->numrows);
-  uivlPopulate (ssint->uivl);
 
   logProcEnd ("");
 }

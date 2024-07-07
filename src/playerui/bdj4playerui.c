@@ -1116,7 +1116,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
             /* if displayed */
             if (bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
-              uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
+              uimusicqSetMusicQueueData (plui->uimusicq, musicqupdate);
+              uimusicqProcessMusicQueueData (plui->uimusicq);
               /* the music queue data is used to display the mark */
               /* indicating that the song is already in the song list */
               uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);

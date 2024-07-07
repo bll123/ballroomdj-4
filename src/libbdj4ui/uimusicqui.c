@@ -95,7 +95,7 @@ typedef struct mq_internal {
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
 static int32_t uimusicqQueuePlaylistCallback (void *udata, const char *sval);
 
-static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
+static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq);
 
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
@@ -619,11 +619,13 @@ uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
   }
 }
 
+/* only stores the musicqupdate structure pointer */
 void
-uimusicqProcessMusicQueueData (uimusicq_t *uimusicq,
-    mp_musicqupdate_t *musicqupdate)
+uimusicqSetMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate)
 {
-  int               ci;
+  int            ci;
+  mq_internal_t  *mqint;
+
 
   logProcBegin ();
 
@@ -638,9 +640,33 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq,
     return;
   }
 
-  uimusicqProcessMusicQueueDisplay (uimusicq, musicqupdate);
+  ci = musicqupdate->mqidx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+
+  mqint->musicqupdate = musicqupdate;
 
   logProcEnd ("");
+}
+
+void
+uimusicqProcessMusicQueueData (uimusicq_t *uimusicq)
+{
+  int               ci;
+
+  logProcBegin ();
+
+  ci = uimusicq->musicqManageIdx;
+  if (ci < 0 || ci >= MUSICQ_MAX) {
+    logProcEnd ("bad-mq-idx");
+    return;
+  }
+
+  if (! uimusicq->ui [ci].hasui) {
+    logProcEnd ("no-ui");
+    return;
+  }
+
+  uimusicqProcessMusicQueueDisplay (uimusicq);
 }
 
 void
@@ -706,23 +732,21 @@ uimusicqQueuePlaylistCallback (void *udata, const char *sval)
 }
 
 static void
-uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
-    mp_musicqupdate_t *musicqupdate)
+uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq)
 {
   mq_internal_t *mqint;
   int           ci;
 
   logProcBegin ();
 
-  ci = musicqupdate->mqidx;
+  ci = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
   mqint->inprocess = true;
-  mqint->musicqupdate = musicqupdate;
 
-  uimusicq->ui [ci].rowcount = nlistGetCount (musicqupdate->dispList);
+  uimusicq->ui [ci].rowcount = nlistGetCount (mqint->musicqupdate->dispList);
+  /* set-num-rows calls uivlpopulate */
   uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].rowcount);
-  uivlPopulate (mqint->uivl);
 
   if (uimusicq->ui [ci].haveselloc) {
     uimusicqSetSelection (uimusicq, ci);
@@ -1190,19 +1214,23 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   slistidx_t          seliteridx;
   char                tmp [40];
 
-
-  if (mqint == NULL || mqint->musicqupdate == NULL) {
+  if (mqint == NULL || uimusicq == NULL) {
     return;
   }
 
+  if (mqint->musicqupdate == NULL) {
+    return;
+  }
+
+  mqint->inchange = true;
+
   musicqupditem = nlistGetData (mqint->musicqupdate->dispList, rownum);
   if (musicqupditem == NULL) {
+    mqint->inchange = false;
     return;
   }
 
   song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
-
-  mqint->inchange = true;
 
   uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_DBIDX,
       musicqupditem->dbidx);

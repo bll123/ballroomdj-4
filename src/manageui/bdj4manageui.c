@@ -243,7 +243,6 @@ typedef struct {
   char              *cfplfn;
   /* music manager ui */
   uiplayer_t        *mmplayer;
-  uimusicq_t        *mmmusicq;
   uisongsel_t       *mmsongsel;
   uisongedit_t      *mmsongedit;
   /* lastmmdisp is the last type of display that was in the mm */
@@ -465,7 +464,6 @@ main (int argc, char *argv[])
   manage.slsbsmusicq = NULL;
   manage.slsbssongsel = NULL;
   manage.mmplayer = NULL;
-  manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
   manage.mmsongedit = NULL;
   manage.uieibdj4 = NULL;
@@ -738,7 +736,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->slsbssongsel);
 
   uiplayerFree (manage->mmplayer);
-  uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
 
@@ -971,13 +968,9 @@ manageInitializeUI (manageui_t *manage)
 
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
-  manage->mmmusicq = uimusicqInit ("m-mm-songlist", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
       manage->uisongfilter, DISP_SEL_MM);
-  uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
-  uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
   manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitII (
       managePlayProcessMusicManager, manage);
   uisongselSetPlayCallback (manage->mmsongsel,
@@ -1321,7 +1314,6 @@ manageMainLoop (void *tmanage)
   uisongselMainLoop (manage->slsongsel);
   uimusicqMainLoop (manage->slsbsmusicq);
   uisongselMainLoop (manage->slsbssongsel);
-  uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->mmsongsel);
 
   if (manage->mainlasttab == MANAGE_TAB_MAIN_MM) {
@@ -1489,9 +1481,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           msgparseMusicQueueDataFree (manage->musicqupdate [musicqupdate->mqidx]);
           manage->musicqupdate [musicqupdate->mqidx] = musicqupdate;
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
-            uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
-            uimusicqProcessMusicQueueData (manage->slsbsmusicq, musicqupdate);
-            uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
+            uimusicqSetMusicQueueData (manage->slmusicq, musicqupdate);
+            uimusicqSetMusicQueueData (manage->slsbsmusicq, musicqupdate);
+            uimusicqProcessMusicQueueData (manage->slmusicq);
+            uimusicqProcessMusicQueueData (manage->slsbsmusicq);
             manageStatsProcessData (manage->slstats, musicqupdate);
           }
           /* the music queue data is used to display the mark */
@@ -1512,7 +1505,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           songselect = msgparseSongSelect (targs);
           uimusicqProcessSongSelect (manage->slmusicq, songselect);
           uimusicqProcessSongSelect (manage->slsbsmusicq, songselect);
-          uimusicqProcessSongSelect (manage->mmmusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
         }
@@ -1523,8 +1515,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           val = atoi (targs);
           manage->pluiActive = val;
           uimusicqSetPlayButtonState (manage->slmusicq, val);
-          uisongselSetPlayButtonState (manage->slsongsel, val);
           uimusicqSetPlayButtonState (manage->slsbsmusicq, val);
+          uisongselSetPlayButtonState (manage->slsongsel, val);
           uisongselSetPlayButtonState (manage->slsbssongsel, val);
           uisongselSetPlayButtonState (manage->mmsongsel, val);
           uisongeditSetPlayButtonState (manage->mmsongedit, val);
@@ -3068,9 +3060,6 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
   if (dispsel == DISP_SEL_SBS_SONGLIST) {
     uimusicq = manage->slsbsmusicq;
   }
-  if (dispsel == DISP_SEL_MM) {
-    uimusicq = manage->mmmusicq;
-  }
 
   if (action == MANAGE_QUEUE) {
     /* on a queue action, queue after the current selection */
@@ -3661,7 +3650,6 @@ manageProcessDatabaseUpdate (manageui_t *manage)
   uisongselSetSamesong (manage->mmsongsel, manage->samesong);
   uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
   uimusicqSetDatabase (manage->slsbsmusicq, manage->musicdb);
-  uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
   uisongeditSetDatabase (manage->mmsongedit, manage->musicdb);
   songdbSetMusicDB (manage->songdb, manage->musicdb);
 
