@@ -307,7 +307,7 @@ atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 static void
 atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl)
 {
-//  vfprintf (stderr, fmt, vl);
+  // vfprintf (stderr, fmt, vl);
   return;
 }
 

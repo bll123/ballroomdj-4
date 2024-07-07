@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
   int             mqidx;
-  int             loc;
+  int32_t         loc;
 } mp_songselect_t;
 
 typedef struct {

@@ -1510,9 +1510,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_songselect_t   *songselect;
 
           songselect = msgparseSongSelect (targs);
-// ### this offset needs to be moved to main
-          /* the display is offset by 1, as the 0 index is the current song */
-          --songselect->loc;
           uimusicqProcessSongSelect (manage->slmusicq, songselect);
           uimusicqProcessSongSelect (manage->slsbsmusicq, songselect);
           uimusicqProcessSongSelect (manage->mmmusicq, songselect);

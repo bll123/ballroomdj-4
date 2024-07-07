@@ -8,7 +8,6 @@
 
 #include "aesencdec.h"
 #include "bdjopt.h"
-// #include "log.h"
 #include "osrandom.h"
 #include "sysvars.h"
 

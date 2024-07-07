@@ -172,17 +172,6 @@ uiddSetList (uidd_t *dd, ilist_t *list)
   uivlSetNumRows (dd->uivl, ilistGetCount (dd->ddlist));
 }
 
-/* needed so that the caller can set a size group */
-uiwcont_t *
-uiddGetButton (uidd_t *dd)
-{
-  if (dd == NULL || dd->ident != DD_IDENT) {
-    return NULL;
-  }
-
-  return dd->wcont [DD_W_BUTTON];
-}
-
 void
 uiddSetSelection (uidd_t *dd, ilistidx_t idx)
 {
@@ -222,18 +211,6 @@ uiddGetSelectionStr (uidd_t *dd)
 
   return ilistGetStr (dd->ddlist, dd->selectedidx, DD_LIST_KEY_STR);
 }
-
-#if 0 /* UNUSED */
-int
-uiddGetSelectionNum (uidd_t *dd)  /* UNUSED */
-{
-  if (dd == NULL || dd->ident != DD_IDENT) {
-    return DD_NO_SELECTION;
-  }
-
-  return DD_NO_SELECTION;
-}
-#endif
 
 /* internal routines */
 

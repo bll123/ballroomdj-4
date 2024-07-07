@@ -1910,7 +1910,6 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   }
   idx = atol (p);
   ++idx;  /* music-q index 0 is reserved for the current song */
-  ++idx;  /* want to insert after the selection */
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
@@ -1952,7 +1951,8 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     if (loc > 0) {
       char  tbuff [40];
 
-      snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mi, MSG_ARGS_RS, loc);
+      /* bdj4main is offset by 1 */
+      snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mi, MSG_ARGS_RS, loc - 1);
       connSendMessage (mainData->conn, routefrom, MSG_SONG_SELECT, tbuff);
     }
   }
