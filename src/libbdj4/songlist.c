@@ -23,11 +23,11 @@
 
 enum {
   SONGLIST_VERSION = 1,
-  SONGLIST_IDENT = 0x736f6e676c737400,
+  SONGLIST_IDENT = 0x0074736c676e6f73,
 };
 
 typedef struct songlist {
-  int64_t         ident;
+  uint64_t        ident;
   datafile_t      *df;
   ilist_t         *songlist;
   ilistidx_t      sliteridx;

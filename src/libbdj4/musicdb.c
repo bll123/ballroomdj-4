@@ -32,11 +32,11 @@
 #include "tmutil.h"
 
 enum {
-  MUSICDB_IDENT = 0x6d757369646200cc,
+  MUSICDB_IDENT = 0xcc0062646973756d,
 };
 
 typedef struct musicdb {
-  int64_t       ident;
+  uint64_t      ident;
   dbidx_t       count;
   nlist_t       *songs;
   nlist_t       *danceCounts;  // used by main for automatic playlists

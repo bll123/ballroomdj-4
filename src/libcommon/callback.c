@@ -26,7 +26,7 @@ enum {
 };
 
 typedef struct callback {
-  int64_t         ident;
+  uint64_t        ident;
   union {
     callbackFunc        cbfunc;
     callbackFuncD       doublecbfunc;
@@ -40,7 +40,7 @@ typedef struct callback {
   const char      *actiontext;
 } callback_t;
 
-static bool callbackValidate (callback_t *cb, int64_t wantident);
+static bool callbackValidate (callback_t *cb, uint64_t wantident);
 
 void
 callbackFree (callback_t *cb)
@@ -265,7 +265,7 @@ callbackHandlerSI (callback_t *cb, const char *str, int32_t value)
 /* internal routines */
 
 static bool
-callbackValidate (callback_t *cb, int64_t wantident)
+callbackValidate (callback_t *cb, uint64_t wantident)
 {
   bool    rc = false;
 
@@ -277,7 +277,8 @@ callbackValidate (callback_t *cb, int64_t wantident)
     return rc;
   }
   if (cb->ident != wantident) {
-    fprintf (stderr, "ERR: callback: mismatch type: %s want: %s\n", (char *) cb->ident, (char *) wantident);
+    fprintf (stderr, "ERR: callback: mismatch type: %s want: %s\n",
+        (char *) &cb->ident, (char *) &wantident);
     return rc;
   }
 

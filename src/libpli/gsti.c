@@ -34,7 +34,7 @@
 # include "pli.h"
 
 enum {
-  GSTI_IDENT = 0x6773746900aabbcc,
+  GSTI_IDENT = 0xccbbaa0069747367,
 };
 
 /* gstreamer doesn't define these */
@@ -55,7 +55,7 @@ typedef enum {
 } GstPlayFlags;
 
 typedef struct gsti {
-  int64_t           ident;
+  uint64_t          ident;
   GMainContext      *mainctx;
   GstElement        *pipeline;
   guint             busId;

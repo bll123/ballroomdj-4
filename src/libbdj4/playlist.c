@@ -39,7 +39,7 @@
 #include "tagdef.h"
 
 typedef struct playlist {
-  int64_t       ident;
+  uint64_t      ident;
   char          *name;
   musicdb_t     *musicdb;
   dance_t       *dances;
@@ -62,7 +62,7 @@ typedef struct playlist {
 enum {
   PL_BPM_VERSION = 1,
   PL_DANCE_VERSION = 2,
-  PL_IDENT = 0x706c61796c737400,
+  PL_IDENT = 0x0074736c79616c70,
 };
 
 static playlist_t *playlistAlloc (musicdb_t *musicdb);

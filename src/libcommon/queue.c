@@ -37,7 +37,7 @@ enum {
 };
 
 enum {
-  QUEUE_IDENT = 0x717565756500aabb,
+  QUEUE_IDENT = 0xbbaa006575657571,
 };
 
 typedef struct queuenode {

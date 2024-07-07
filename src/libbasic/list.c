@@ -18,7 +18,7 @@
 #include "tmutil.h"
 
 enum {
-  LIST_IDENT = 0x6c69737400aabbcc,
+  LIST_IDENT = 0xccbbaa007473696c,
 };
 
 typedef union {

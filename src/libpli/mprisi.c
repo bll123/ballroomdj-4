@@ -29,7 +29,7 @@ enum {
 };
 
 enum {
-  MPRIS_IDENT = 0x6d7072697300aabb,
+  MPRIS_IDENT = 0xbbaa00736972706d,
 };
 
 typedef struct {
@@ -38,7 +38,7 @@ typedef struct {
 } mpris_player_t;
 
 typedef struct mpris {
-  int64_t         ident;
+  uint64_t        ident;
   dbus_t          *dbus;
   const char      *mpbus;
   char            trackid [DBUS_MAX_TRACKID];

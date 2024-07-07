@@ -25,7 +25,7 @@
 #include "uiwcont.h"
 
 enum {
-  DD_IDENT = 0x646400aabbccddee,
+  DD_IDENT = 0xeeddccbbaa006464,
 };
 
 enum {
@@ -50,7 +50,7 @@ enum {
 };
 
 typedef struct uidd {
-  int64_t       ident;
+  uint64_t      ident;
   const char    *tag;
   uiwcont_t     *parentwin;
   uiwcont_t     *wcont [DD_W_MAX];

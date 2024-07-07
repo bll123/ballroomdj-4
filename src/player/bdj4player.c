@@ -66,11 +66,11 @@ enum {
 };
 
 enum {
-  PREP_QUEUE_IDENT = 0x707265707100aabb,
+  PREP_QUEUE_IDENT = 0xbbaa007170657270,
 };
 
 typedef struct {
-  int64_t       ident;
+  uint64_t      ident;
   char          *songname;
   char          *tempname;
   int32_t       dur;

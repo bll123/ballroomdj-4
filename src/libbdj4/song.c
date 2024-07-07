@@ -37,7 +37,7 @@
 #include "orgutil.h"
 
 typedef struct song {
-  int64_t     ident;
+  uint64_t    ident;
   nlist_t     *songInfo;
   bool        changed;
   bool        songlistchange;
@@ -45,7 +45,7 @@ typedef struct song {
 
 enum {
   TEMP_TAG_DBADD = TAG_KEY_MAX,
-  SONG_IDENT = 0x736f6e6700aabbcc,
+  SONG_IDENT = 0xccbbaa00676e6f73,
 };
 
 static void songInit (void);

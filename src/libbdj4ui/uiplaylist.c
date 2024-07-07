@@ -160,12 +160,16 @@ uiplaylistGetKey (uiplaylist_t *uiplaylist)
 void
 uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn)
 {
+  slistidx_t      idx;
+
   if (uiplaylist == NULL) {
     return;
   }
 
-// ### FIX
-//  uiDropDownSelectionSetStr (uiplaylist->uidd, fn);
+  idx = slistGetNum (uiplaylist->ddlookup, fn);
+  if (idx >= 0) {
+    uiddSetSelection (uiplaylist->uidd, idx);
+  }
 }
 
 

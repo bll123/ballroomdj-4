@@ -71,11 +71,11 @@ enum {
 };
 
 enum {
-  MQ_IDENT_INT      = 0x6d71696e7400aabb,
+  MQ_IDENT_INT      = 0xbbaa00746e69716d,
 };
 
 typedef struct mq_internal {
-  int64_t           ident;
+  uint64_t          ident;
   char              tag [100];
   uimusicq_t        *uimusicq;
   uidance_t         *uidance;
@@ -1189,7 +1189,6 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   nlist_t             *tdlist;
   slistidx_t          seliteridx;
   char                tmp [40];
-  int                 ci;
 
 
   if (mqint == NULL || mqint->musicqupdate == NULL) {
@@ -1203,7 +1202,6 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 
   song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
 
-  ci = uimusicq->musicqManageIdx;
   mqint->inchange = true;
 
   uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_DBIDX,

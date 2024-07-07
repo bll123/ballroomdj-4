@@ -82,10 +82,10 @@ enum {
 };
 
 enum {
-  VL_IDENT_COLDATA  = 0x766c636f6c647400,
-  VL_IDENT_COL      = 0x766c636f6c00bbcc,
-  VL_IDENT_ROW      = 0x766c726f7700bbcc,
-  VL_IDENT          = 0x766c00bbccddeeff,
+  VL_IDENT_COLDATA  = 0x0074646c6f636c76,
+  VL_IDENT_COL      = 0xccbb006c6f636c76,
+  VL_IDENT_ROW      = 0xccbb00776f726c76,
+  VL_IDENT          = 0xffeeddccbb006c76,
 };
 
 typedef struct uivlcol uivlcol_t;
