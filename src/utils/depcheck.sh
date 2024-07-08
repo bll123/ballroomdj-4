@@ -14,9 +14,9 @@ if [[ $1 == --keep ]]; then
   keep=T
 fi
 
-INCTC=inctest.c
-INCTO=inctest.o
-INCTOUT=inctest.log
+INCTC=dep-inctest.c
+INCTO=dep-inctest.o
+INCTOUT=dep-inctest.log
 TIIN=dep-inc-in.txt
 TISORT=dep-inc-sort.txt
 TOIN=dep-obj-in.txt
@@ -202,7 +202,7 @@ if [[ $keep == T ]]; then
       sed -e 's,.*/,,' > $DEPBDJ4
 fi
 if [[ $keep == F ]]; then
-  rm -f $TIIN $TISORT $TOIN $TOSORT $TUFUNC \
+  rm -f $TIIN $TISORT $TOIN $TOSORT $TUFUNC $TUFUNCOUT \
       $DEPCOMMON $DEPBASIC $DEPBDJ4 > /dev/null 2>&1
 fi
 rm -f $INCCT $INCTO $INCTOUT
