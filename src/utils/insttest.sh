@@ -1118,8 +1118,6 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   waitForInstallDirRemoval
 fi
 
-exit 1
-
 if [[ $readonly == F ]]; then
   # alternate installation
   tname=alt-install

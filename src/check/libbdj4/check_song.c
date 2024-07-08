@@ -25,6 +25,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "istring.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -407,7 +408,6 @@ START_TEST(song_display)
 {
   song_t      *song = NULL;
   char        *data;
-  int         rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_display");
   mdebugSubTag ("song_display");
@@ -456,13 +456,15 @@ START_TEST(song_display)
     mdfree (data);
 
     if (i < 3) {
+      size_t      len;
+
       data = songDisplayString (song, TAG_STATUS, SONG_NORM);
       ck_assert_str_eq (data, "New");
       mdfree (data);
 
       data = songDisplayString (song, TAG_FAVORITE, SONG_NORM);
-      rc = strncmp (data, "<span", 5);
-      ck_assert_int_eq (rc, 0);
+      len = istrlen (data);
+      ck_assert_int_eq (len, 1);
       mdfree (data);
 
       data = songDisplayString (song, TAG_TAGS, SONG_NORM);
