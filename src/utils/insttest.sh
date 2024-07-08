@@ -107,6 +107,9 @@ UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
 LOG="tmp/insttest-log.txt"
 
+fn="templates/ds-audioid-list.txt"
+AUDIOIDLISTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+echo "ds-audioid-list: ${AUDIOIDLISTVER}"
 fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
@@ -162,6 +165,13 @@ function checkUpdaterClean {
   # ds-audioid.txt file should be installed if missing
   fn="$DATADIR/profile00/ds-audioid.txt"
   rm -f "${fn}"
+
+  # ds-audioid-list.txt version number should be updated
+  fn="$DATADIR/profile00/ds-audioid-list.txt"
+echo "ds-audioid-list: reset"
+  sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
+echo "ds-audioid-list: reset: $(grep version $fn)"
 
   # bdjconfig.q4.txt file should be installed if missing
   fn="$DATADIR/profile00/bdjconfig.q4.txt"
@@ -432,6 +442,23 @@ function checkInstallation {
       chk=$(($chk+1))
     else
       echo "  ${fn} should not be present"
+    fi
+
+    res=$(($res+1))  # ds-audioid-list file
+    fn="${DATADIR}/profile00/ds-audioid-list.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      tver=$(grep "version ${AUDIOIDLISTVER}" "${fn}")
+echo "ds-audioid-list: grep $tver"
+      grep "version ${AUDIOIDLISTVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
+echo "ds-audioid-list: grep rc $rc"
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  ds-audioid-list.txt file has wrong version"
+      fi
+    else
+      echo "  no ds-audioid-list.txt file"
     fi
 
     fn=${DATADIR}/profile00/ds-currsong.txt
@@ -1090,6 +1117,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
   waitForInstallDirRemoval
 fi
+
+exit 1
 
 if [[ $readonly == F ]]; then
   # alternate installation

@@ -75,7 +75,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
     /* numeric->text conversions with a max width */
     if (tagidx == TAG_DANCE || tagidx == TAG_DANCERATING ||
         tagidx == TAG_DANCELEVEL || tagidx == TAG_GENRE ||
-        tagidx == TAG_STATUS) {
+        tagidx == TAG_STATUS || tagidx == TAG_AUDIOID_IDENT) {
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_GROW_ONLY);
     }
 

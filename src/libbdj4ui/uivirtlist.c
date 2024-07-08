@@ -601,13 +601,14 @@ uivlSetAllowDoubleClick (uivirtlist_t *vl)
 /* row set */
 
 /* though a rownum is passed in, the class applies to the display index */
+/* do not validate the row-number */
 void
 uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class)
 {
   uivlrow_t   *row;
 
   logProcBegin ();
-  if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, 0, __func__)) {
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     logProcEnd ("not-valid");
     return;
   }
@@ -626,13 +627,14 @@ uivlSetRowClass (uivirtlist_t *vl, int32_t rownum, const char *class)
 
 /* a rownum is passed in, the lock applies to the display idx associated */
 /* with the rownum */
+/* do not validate the row-number */
 void
 uivlSetRowLock (uivirtlist_t *vl, int32_t rownum)
 {
   uivlrow_t   *row;
 
   logProcBegin ();
-  if (! uivlValidateRowColumn (vl, VL_INIT_BASIC, rownum, 0, __func__)) {
+  if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     logProcEnd ("not-valid");
     return;
   }

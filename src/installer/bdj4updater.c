@@ -122,6 +122,7 @@ static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn);
 static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
+static void updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
@@ -535,7 +536,9 @@ main (int argc, char *argv [])
 
   {
     /* 4.4.0 2023-9-12 audio-id data selection */
+    /* 4.11.0 2024-7-8 audio-id tag identifier change */
     updaterCopyProfileIfNotPresent ("ds-audioid-list", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+    updaterCopyProfileVersionCheck ("ds-audioid-list", BDJ4_CONFIG_EXT, 2);
     updaterCopyProfileIfNotPresent ("ds-audioid", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
     /* ez renamed to sbs internally */
     updaterRenameProfileFile ("ds-ezsongsel", "ds-sbssongsel", BDJ4_CONFIG_EXT);
@@ -1102,7 +1105,7 @@ updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
   version = datafileReadDistVersion (tbuff);
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
   if (version < currvers) {
     char  tmp [MAXPATHLEN];
 
@@ -1110,6 +1113,34 @@ updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
     templateFileCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
+}
+
+static void
+updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers)
+{
+  char    tbuff [MAXPATHLEN];
+  int     origprofile;
+  int     version;
+
+  origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
+
+  for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
+    sysvarsSetNum (SVL_PROFILE_IDX, i);
+    if (bdjoptProfileExists ()) {
+      pathbldMakePath (tbuff, sizeof (tbuff), fn, ext,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      version = datafileReadDistVersion (tbuff);
+      logMsg (LOG_INSTALL, LOG_INFO, "version check %d %s%s : %d < %d", i, fn, ext, version, currvers);
+      if (version < currvers) {
+        char  tmp [MAXPATHLEN];
+
+        snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
+        templateProfileCopy (tmp, tmp);
+        logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
+      }
+    } /* if the profile exists */
+  } /* for all profiles */
+  sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
 }
 
 static void
@@ -1138,7 +1169,7 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
     version = 1;
   }
 
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateHttpCopy (tmp, tmp);
@@ -1167,7 +1198,7 @@ updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
     version = 1;
   }
 
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateFileCopy (tmp, tmp);

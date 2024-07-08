@@ -91,8 +91,12 @@ enum {
 
 enum {
   UIAUDID_SZGRP_LABEL,
-  UIAUDID_SZGRP_COL_A,
-  UIAUDID_SZGRP_COL_B,
+  UIAUDID_SZGRP_ITEM_COL_A,
+  UIAUDID_SZGRP_ITEM_COL_B,
+  UIAUDID_SZGRP_ITEM_A,
+  UIAUDID_SZGRP_ITEM_B,
+  UIAUDID_SZGRP_ITEM_C,
+  UIAUDID_SZGRP_ITEM_D,
   UIAUDID_SZGRP_MAX,
 };
 
@@ -165,7 +169,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
   audioidint->paneposition = nlistGetNum (uiaudioid->options, MANAGE_AUDIOID_PANE_POSITION);
   audioidint->colcount = slistGetCount (audioidint->dlsellist);
 
-  audioidint->durationcol = -1;
+  audioidint->durationcol = UIAUDID_NO_DUR;
   col = 0;
   slistStartIterator (audioidint->dlsellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (audioidint->dlsellist, &seliteridx)) >= 0) {
@@ -372,9 +376,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uivlSetNumColumns (uivl, audioidint->colcount);
   uivlAddDisplayColumns (uivl, audioidint->dlsellist, 0);
   uivlSetRowFillCallback (uivl, uiaudioidFillRow, audioidint);
-  /* set the number of rows to 1 initially, */
-  /* so that the row-class and row-lock can be set */
-  uivlSetNumRows (audioidint->uivl, 1);
 
   /* the first row is highlighted, it always displays the current song data */
   uivlSetRowClass (audioidint->uivl, 0, ACCENT_CLASS);
@@ -383,6 +384,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uiwcontFree (vbox);
 
+  uivlSetNumRows (audioidint->uivl, 0);
   uivlDisplay (audioidint->uivl);
   uivlSetSelectChgCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
 
@@ -424,14 +426,12 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (col, hbox);
 
-  uiwidgetp = uiCreateLabel ("");
+  uiwidgetp = uiCreateLabel (" ");
   uiWidgetSetMarginEnd (uiwidgetp, 4);
+//  uiWidgetExpandHoriz (uiwidgetp);
+//  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   snprintf (tbuff, sizeof (tbuff), "%s bold", bdjoptGetStr (OPT_MP_UIFONT));
@@ -440,8 +440,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwidgetp = uiCreateLabel (_("Current"));
   uiLabelSetFont (uiwidgetp, tbuff);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
-  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_A], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel (" ");
@@ -451,8 +451,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   /* CONTEXT: audio identification: the data for the selected matched song */
   uiwidgetp = uiCreateLabel (_("Selected"));
   uiLabelSetFont (uiwidgetp, tbuff);
-  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_B], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
   uiwcontFree (uiwidgetp);
   uiwcontFree (hbox);
 
@@ -577,7 +577,6 @@ uiaudioidResetItemDisplay (uiaudioid_t *uiaudioid)
   /* leave the first row (0) available for the original song display */
   /* if any data is returned, the first row will be populated */
   audioidint->fillrow = 1;
-  uivlSetNumRows (audioidint->uivl, 0);
 }
 
 void
@@ -739,13 +738,23 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
   rb = uiCreateRadioButton (NULL, "", UI_TOGGLE_BUTTON_ON);
   /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, rb);
-  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_A], rb);
+  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], rb);
+  if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
+    uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], rb);
+  }
   audioidint->items [idx].currrb = rb;
+
+  uiwidgetp = uiCreateLabel (" ");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
   /* ellipsize set after text is set */
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_COL_B], uiwidgetp);
+  uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
+  if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
+    uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], uiwidgetp);
+  }
   audioidint->items [idx].selrb = uiwidgetp;
 
   logProcEnd ("");
@@ -990,6 +999,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
   if (audioidint->datalist == NULL) {
     return;
   }
+
   dlist = nlistGetList (audioidint->datalist, rownum);
   if (dlist == NULL) {
     return;
@@ -1042,12 +1052,17 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
       char        tmp [40];
       int32_t     dur = 0;
 
-      /* duration must be converted */
+      /* duration must be converted, except in the case of the original, */
+      /* which has already been converted */
       str = nlistGetStr (dlist, tagidx);
-      if (str != NULL) {
-        dur = atol (str);
+      if (rownum == 0) {
+        strlcpy (tmp, str, sizeof (tmp));
+      } else {
+        if (str != NULL) {
+          dur = atol (str);
+        }
+        tmutilToMSD (dur, tmp, sizeof (tmp), 1);
       }
-      tmutilToMSD (dur, tmp, sizeof (tmp), 1);
       uivlSetRowColumnStr (audioidint->uivl, rownum, col, tmp);
     } else {
       const char  *str;
