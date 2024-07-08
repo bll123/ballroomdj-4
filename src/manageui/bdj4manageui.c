@@ -914,6 +914,9 @@ manageBuildUI (manageui_t *manage)
   uiwcontFree (hbox);
   uiwcontFree (vbox);
 
+  /* set a default selection.  this will also set the song editor dbidx */
+  uisongselSetSelection (manage->mmsongsel, 0);
+
   logProcEnd ("");
 }
 

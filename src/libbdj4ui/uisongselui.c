@@ -224,7 +224,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_MM) {
     ssint->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
     uiwidgetp = uiCreateButton (ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
@@ -465,6 +466,9 @@ uisongselApplySongFilter (void *udata)
     uisongselPopulateData (uisongsel->peers [i]);
   }
 
+  /* set a default selection */
+  uisongselSetSelection (uisongsel, 0);
+
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -595,13 +599,18 @@ uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
 }
 
 void
-uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx)
+uisongselSetSelection (uisongsel_t *uisongsel, int32_t rowidx)
 {
   ss_internal_t   *ssint;
 
   logProcBegin ();
   ssint = uisongsel->ssInternalData;
-  uivlSetSelection (ssint->uivl, idx);
+  uivlSetSelection (ssint->uivl, rowidx);
+
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+  }
+
   logProcEnd ("");
 }
 
@@ -813,13 +822,13 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
-
   uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
 
   if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
     logProcEnd ("not-fav-col");
     return;
   }
+
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   dbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
@@ -938,6 +947,8 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
     return;
   }
 
+  uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+
   /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall &&
       uisongsel->peerhandling == SONGSEL_ALL_PEERS) {
@@ -1015,7 +1026,8 @@ static bool
 uisongselSongEditCallback (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
-  long            dbidx;
+  dbidx_t         dbidx;
+
 
   logProcBegin ();
   if (uisongsel->newselcb != NULL) {

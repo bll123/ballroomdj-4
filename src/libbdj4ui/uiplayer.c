@@ -17,6 +17,7 @@
 #include "bdj4ui.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "conn.h"
 #include "dance.h"
 #include "dispsel.h"
@@ -33,7 +34,6 @@
 #include "song.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiplayer.h"
 
 /* there are all sorts of latency issues making the sliders work nicely */

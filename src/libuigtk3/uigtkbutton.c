@@ -36,6 +36,7 @@ static bool uiButtonPressCallback (void *udata);
 static bool uiButtonReleaseCallback (void *udata);
 
 typedef struct uibutton {
+  GtkWidget   *image;
   mstime_t    repeatTimer;
   int         repeatMS;
   callback_t  *cb;
@@ -53,6 +54,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   GtkWidget   *widget;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
+  uibutton->image = NULL;
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
@@ -74,6 +76,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
     gtk_widget_set_tooltip_text (widget, title);
     gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    uibutton->image = image;
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
@@ -123,6 +126,21 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
 
   gtk_button_set_image_position (GTK_BUTTON (uiwidget->uidata.widget),
       GTK_POS_RIGHT);
+}
+
+void
+uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
+{
+  uibutton_t    *uibutton;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-margin-top")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+  if (uibutton->image != NULL) {
+    gtk_widget_set_margin_top (uibutton->image, uiBaseMarginSz * margin);
+  }
 }
 
 

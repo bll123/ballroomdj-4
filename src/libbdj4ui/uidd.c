@@ -19,6 +19,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "sysvars.h"
 #include "ui.h"
 #include "uidd.h"
 #include "uivirtlist.h"
@@ -115,6 +116,9 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   uiwidget = uiCreateButton (dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
+  if (isMacOS ()) {
+    uiButtonSetImageMarginTop (uiwidget, 4);
+  }
   uiButtonAlignLeft (uiwidget);
   uiButtonSetImagePosRight (uiwidget);
   uiWidgetAlignHorizStart (uiwidget);
