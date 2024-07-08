@@ -162,7 +162,7 @@ ratingDeleteLast (rating_t *ratings)
 }
 
 void
-ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx)
+ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx) /* TESTING */
 {
   if (ratings == NULL) {
     return;
@@ -172,7 +172,7 @@ ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx)
 }
 
 ilistidx_t
-ratingIterate (rating_t *ratings, ilistidx_t *iteridx)
+ratingIterate (rating_t *ratings, ilistidx_t *iteridx) /* TESTING */
 {
   if (ratings == NULL) {
     return LIST_VALUE_INVALID;

@@ -223,7 +223,7 @@ levelDeleteLast (level_t *levels)
 }
 
 void
-levelStartIterator (level_t *levels, ilistidx_t *iteridx)
+levelStartIterator (level_t *levels, ilistidx_t *iteridx) /* TESTING */
 {
   if (levels == NULL) {
     return;
@@ -233,7 +233,7 @@ levelStartIterator (level_t *levels, ilistidx_t *iteridx)
 }
 
 ilistidx_t
-levelIterate (level_t *levels, ilistidx_t *iteridx)
+levelIterate (level_t *levels, ilistidx_t *iteridx)  /* TESTING */
 {
   if (levels == NULL) {
     return LIST_LOC_INVALID;

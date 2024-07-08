@@ -153,7 +153,7 @@ genreDeleteLast (genre_t *genres)
 
 /* for testing */
 void
-genreStartIterator (genre_t *genres, ilistidx_t *iteridx)
+genreStartIterator (genre_t *genres, ilistidx_t *iteridx) /* TESTING */
 {
   if (genres == NULL) {
     return;
@@ -164,7 +164,7 @@ genreStartIterator (genre_t *genres, ilistidx_t *iteridx)
 
 /* for testing */
 ilistidx_t
-genreIterate (genre_t *genres, ilistidx_t *iteridx)
+genreIterate (genre_t *genres, ilistidx_t *iteridx)  /* TESTING */
 {
   if (genres == NULL) {
     return LIST_LOC_INVALID;

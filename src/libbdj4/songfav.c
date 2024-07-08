@@ -32,7 +32,6 @@ typedef struct songfav {
   datafile_t    *df;
   ilist_t       *songfavList;
   slist_t       *songfavLookup;
-  nlist_t       *spanstrList;
   /* count is the number of user selectable favorites */
   int           count;
 } songfav_t;
@@ -60,8 +59,6 @@ songFavoriteAlloc (void)
   /* temporarily, count is the max number of favorites */
   songfav->count = ilistGetCount (songfav->songfavList);
 
-  songfav->spanstrList = nlistAlloc ("songfav-span", LIST_UNORDERED, NULL);
-  nlistSetSize (songfav->spanstrList, songfav->count);
   songfav->songfavLookup = slistAlloc ("songfav-lookup", LIST_UNORDERED, NULL);
   slistSetSize (songfav->songfavLookup, songfav->count);
 
@@ -89,14 +86,12 @@ songFavoriteAlloc (void)
       snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
           color, disp);
     }
-    nlistSetStr (songfav->spanstrList, key, tbuff);
     slistSetNum (songfav->songfavLookup, name, key);
     if (! usersel) {
       --songfav->count;
     }
   }
 
-  nlistSort (songfav->spanstrList);
   slistSort (songfav->songfavLookup);
 
   return songfav;
@@ -107,7 +102,6 @@ songFavoriteFree (songfav_t *songfav)
 {
   if (songfav != NULL) {
     datafileFree (songfav->df);
-    nlistFree (songfav->spanstrList);
     slistFree (songfav->songfavLookup);
     mdfree (songfav);
   }
@@ -148,19 +142,6 @@ songFavoriteGetStr (songfav_t *songfav, ilistidx_t key, int idx)
   }
 
   return ilistGetStr (songfav->songfavList, key, idx);
-}
-
-const char *
-songFavoriteGetSpanStr (songfav_t *songfav, ilistidx_t key)
-{
-  if (songfav == NULL) {
-    return "";
-  }
-
-  if (key < 0) {
-    key = 0;
-  }
-  return nlistGetStr (songfav->spanstrList, key);
 }
 
 void

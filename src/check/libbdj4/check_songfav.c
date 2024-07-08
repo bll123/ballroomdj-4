@@ -133,9 +133,6 @@ START_TEST(songfav_get_str)
   str = songFavoriteGetStr (songfav, 1, SONGFAV_DISPLAY);
   ck_assert_ptr_nonnull (str);
 
-  str = songFavoriteGetSpanStr (songfav, 1);
-  ck_assert_ptr_nonnull (str);
-
   songFavoriteFree (songfav);
 }
 END_TEST

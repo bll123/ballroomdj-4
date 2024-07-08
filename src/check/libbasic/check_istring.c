@@ -149,30 +149,6 @@ START_TEST(istring_tolower)
 }
 END_TEST
 
-START_TEST(istring_toupper)
-{
-  int     rc;
-  char    tbuff [200];
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_toupper");
-  mdebugSubTag ("istring_toupper");
-
-  istringCleanup ();
-  istringInit ("de_DE");
-
-  for (int i = 0; i < tvaluesz; ++i) {
-    strlcpy (tbuff, tvalues [i].l, sizeof (tbuff));
-    istringToUpper (tbuff);
-    rc = strcmp (tbuff, tvalues [i].u);
-    ck_assert_int_eq (rc, 0);
-  }
-
-  istringCleanup ();
-  istringInit (sysvarsGetStr (SV_LOCALE));
-}
-END_TEST
-
-
 Suite *
 istring_suite (void)
 {
@@ -185,7 +161,6 @@ istring_suite (void)
   tcase_add_test (tc, istring_istrlen);
   tcase_add_test (tc, istring_comp);
   tcase_add_test (tc, istring_tolower);
-  tcase_add_test (tc, istring_toupper);
   suite_add_tcase (s, tc);
   return s;
 }

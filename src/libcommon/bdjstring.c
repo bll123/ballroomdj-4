@@ -80,8 +80,9 @@ stringTrimChar (char *s, unsigned char c)
   return;
 }
 
+#if 0
 int
-versionCompare (const char *v1, const char *v2)
+versionCompare (const char *v1, const char *v2) /* UNUSED */
 {
   const char  *tv1, *tv2;
   int         iv1, iv2;
@@ -112,6 +113,7 @@ versionCompare (const char *v1, const char *v2)
 
   return rc;
 }
+#endif
 
 /* a more efficient way of appending strings, the length must be tracked */
 /* used by musicdb.c */

@@ -211,14 +211,14 @@ slistDumpInfo (slist_t *list)
 
 /* for testing */
 slistidx_t
-slistGetAllocCount (slist_t *list)
+slistGetAllocCount (slist_t *list)  /* TESTING */
 {
   return listGetAllocCount (LIST_KEY_STR, list);
 }
 
 /* for testing */
 int
-slistGetOrdering (slist_t *list)
+slistGetOrdering (slist_t *list) /* TESTING */
 {
   return listGetOrdering (LIST_KEY_STR, list);
 }

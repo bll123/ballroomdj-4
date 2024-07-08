@@ -139,7 +139,7 @@ songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
 }
 
 ilistidx_t
-songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx) /* TESTING */
 {
   ilistidx_t    val;
 

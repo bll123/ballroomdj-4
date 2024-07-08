@@ -114,13 +114,6 @@ raGetCount (rafile_t *rafile)
   return rafile->count;
 }
 
-rafileidx_t
-raGetNextRRN (rafile_t *rafile)
-{
-  raLock (rafile);
-  return (rafile->count + 1L);
-}
-
 void
 raStartBatch (rafile_t *rafile)
 {
@@ -189,27 +182,6 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
   logProcEnd ("");
 
   return len;
-}
-
-/* this function is not in use, but keep the code, as it works */
-int
-raClear (rafile_t *rafile, rafileidx_t rrn)
-{
-  logProcBegin ();
-  if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
-    return 1;
-  }
-  raLock (rafile);
-  fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
-  fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
-  if (! rafile->inbatch) {
-    fflush (rafile->fh);
-    fileopSync (rafile->fh);
-  }
-  raUnlock (rafile);
-  logProcEnd ("");
-  return 0;
 }
 
 rafileidx_t
@@ -353,15 +325,43 @@ rrnToOffset (rafileidx_t rrn) {
 
 /* for debugging only */
 
+/* this function is not in use, but keep the code, as it works */
+int
+raClear (rafile_t *rafile, rafileidx_t rrn)   /* TESTING */
+{
+  logProcBegin ();
+  if (rrn < 1L || rrn > rafile->count) {
+    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
+    return 1;
+  }
+  raLock (rafile);
+  fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
+  fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
+  if (! rafile->inbatch) {
+    fflush (rafile->fh);
+    fileopSync (rafile->fh);
+  }
+  raUnlock (rafile);
+  logProcEnd ("");
+  return 0;
+}
+
 rafileidx_t
-raGetSize (rafile_t *rafile)
+raGetSize (rafile_t *rafile) /* TESTING */
 {
   return rafile->size;
 }
 
 rafileidx_t
-raGetVersion (rafile_t *rafile)
+raGetVersion (rafile_t *rafile) /* TESTING */
 {
   return rafile->version;
+}
+
+rafileidx_t
+raGetNextRRN (rafile_t *rafile)  /* TESTING */
+{
+  raLock (rafile);
+  return (rafile->count + 1L);
 }
 

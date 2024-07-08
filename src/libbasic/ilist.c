@@ -256,14 +256,14 @@ ilistDumpInfo (ilist_t *list)
 
 /* for testing */
 ilistidx_t
-ilistGetAllocCount (ilist_t *list)
+ilistGetAllocCount (ilist_t *list)  /* TESTING */
 {
   return listGetAllocCount (LIST_KEY_IND, list);
 }
 
 /* for testing */
 int
-ilistGetOrdering (ilist_t *list)
+ilistGetOrdering (ilist_t *list) /* TESTING */
 {
   return listGetOrdering (LIST_KEY_IND, list);
 }

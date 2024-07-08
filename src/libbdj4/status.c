@@ -139,13 +139,13 @@ statusDeleteLast (status_t *status)
 }
 
 void
-statusStartIterator (status_t *status, ilistidx_t *iteridx)
+statusStartIterator (status_t *status, ilistidx_t *iteridx) /* TESTING */
 {
   ilistStartIterator (status->status, iteridx);
 }
 
 ilistidx_t
-statusIterate (status_t *status, ilistidx_t *iteridx)
+statusIterate (status_t *status, ilistidx_t *iteridx) /* TESTING */
 {
   return ilistIterateKey (status->status, iteridx);
 }

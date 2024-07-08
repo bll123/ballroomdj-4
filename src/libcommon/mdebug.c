@@ -350,25 +350,26 @@ mdebugCleanup (void)
 /* the following routines are for the test suite */
 
 long
-mdebugCount (void)
+mdebugCount (void) /* TESTING */
 {
   return mdebugcounts [MDEBUG_COUNT];
 }
 
 long
-mdebugErrors (void)
+mdebugErrors (void) /* TESTING */
 {
   return mdebugcounts [MDEBUG_ERRORS];
 }
 
 void
-mdebugSetVerbose (void)
+mdebugSetVerbose (void) /* TESTING */
 {
   mdebugverbose = true;
 }
 
+/* for testing */
 void
-mdebugSetNoOutput (void)
+mdebugSetNoOutput (void) /* TESTING */
 {
   mdebugnooutput = true;
 }

@@ -26,7 +26,6 @@ void  songFavoriteFree (songfav_t *songfav);
 int   songFavoriteGetCount (songfav_t *songfav);
 int   songFavoriteGetNextValue (songfav_t *songfav, int value);
 const char * songFavoriteGetStr (songfav_t *songfav, ilistidx_t key, int idx);
-const char * songFavoriteGetSpanStr (songfav_t *songfav, ilistidx_t key);
 void  songFavoriteConv (datafileconv_t *conv);
 
 #endif /* INC_SONGFAV_H */

@@ -31,7 +31,7 @@ grc=0
 # check for unused functions
 echo "## checking for unused functions"
 grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
-  grep -E -v '(:main|:fprintf|uinull|KEEP|UNUSED)' |
+  grep -E -v '(:main|:fprintf|uinull|KEEP|UNUSED|TESTING)' |
   grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
   sed -e 's, (.*,,' -e 's,.*:,,' |
   sort > ${TUFUNC}
@@ -43,8 +43,9 @@ for pat in $(cat ${TUFUNC}); do
   #  (func,
   #  (func)
   #  "func"
+  # do not search the check/*/*.c files
   grep -E "([ >\(]${pat} \(|[ \(]${pat}[,)]|\"${pat}\")" \
-      */*.c */*/*.c */*.cpp */*.m > /dev/null 2>&1
+      */*.c */*.cpp */*.m > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
     echo $pat >> ${TUFUNCOUT}

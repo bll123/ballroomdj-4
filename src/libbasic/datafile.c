@@ -453,27 +453,27 @@ datafileReadDistVersion (const char *fname)
 
 /* for testing */
 datafiletype_t
-datafileGetType (datafile_t *df)
+datafileGetType (datafile_t *df) /* TESTING */
 {
   return df->dftype;
 }
 
 /* for testing */
 char *
-datafileGetFname (datafile_t *df)
+datafileGetFname (datafile_t *df) /* TESTING */
 {
   return df->fname;
 }
 
 /* for testing */
 list_t *
-datafileGetData (datafile_t *df)
+datafileGetData (datafile_t *df) /* TESTING */
 {
   return df->data;
 }
 
 listidx_t
-parseGetAllocCount (parseinfo_t *pi)
+parseGetAllocCount (parseinfo_t *pi)  /* TESTING */
 {
   return pi->allocCount;
 }

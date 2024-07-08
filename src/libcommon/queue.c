@@ -511,8 +511,9 @@ queueIterateRemoveNode (queue_t *q, qidx_t *iteridx)
   return data;
 }
 
+/* for testing/debugging */
 int
-queueDebugSearchDist (queue_t *q)
+queueDebugSearchDist (queue_t *q) /* TESTING */
 {
   if (q == NULL) {
     return -1;
