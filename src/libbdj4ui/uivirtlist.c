@@ -1996,10 +1996,14 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
+    if (isheading) {
+      uiWidgetAddClass (col->uiwidget, HEADING_CLASS);
+    }
     if (vl->uselistingfont) {
-      uiWidgetAddClass (col->uiwidget, LISTING_CLASS);
       if (isheading) {
-        uiWidgetAddClass (col->uiwidget, HEADING_CLASS);
+        uiWidgetAddClass (col->uiwidget, LIST_HEAD_CLASS);
+      } else {
+        uiWidgetAddClass (col->uiwidget, LISTING_CLASS);
       }
     }
 

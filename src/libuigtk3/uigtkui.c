@@ -163,6 +163,10 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
+  snprintf (wbuff, sizeof (wbuff),
+      "label.%s { font-weight: bold; } ", HEADING_CLASS);
+  strlcat (tbuff, wbuff, sizeof (tbuff));
+
   if (listingfont != NULL && *listingfont) {
     char  tmp [100];
     int   listingsz = 0;
@@ -200,7 +204,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
       snprintf (wbuff, sizeof (wbuff),
           "label.%s { font-size: %dpt; font-weight: bold; } ",
-          HEADING_CLASS, headsz);
+          LIST_HEAD_CLASS, headsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
   }
