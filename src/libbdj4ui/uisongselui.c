@@ -814,6 +814,8 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
 
   ssint = uisongsel->ssInternalData;
 
+  uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+
   if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
     logProcEnd ("not-fav-col");
     return;
@@ -926,7 +928,6 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
-  dbidx_t           dbidx = -1;
 
   logProcBegin ();
   ssint = uisongsel->ssInternalData;
@@ -936,8 +937,6 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
     logProcEnd ("in-apply");
     return;
   }
-
-  uisongsel->lastdbidx = dbidx;
 
   /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall &&

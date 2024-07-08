@@ -265,7 +265,7 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     char    tmpselcolor [40];
 
     if (selectColor == accentColor) {
-      snprintf (tmpselcolor, sizeof (tmpselcolor), "shade(%s,0.4)", selectColor);
+      snprintf (tmpselcolor, sizeof (tmpselcolor), "shade(%s,0.55)", selectColor);
     } else {
       strlcpy (tmpselcolor, selectColor, sizeof (tmpselcolor));
     }
