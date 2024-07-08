@@ -132,8 +132,8 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, "count", MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
   uivlMakeColumnSpinboxTime (mpldnc->uivl, "mpt", MPLDNC_COL_MAXPLAYTIME, SB_TIME_BASIC, NULL);
-  uivlMakeColumnSpinboxNum (mpldnc->uivl, "lowmpm", MPLDNC_COL_LOWMPM, 10.0, 500.0, 1.0, 5.0);
-  uivlMakeColumnSpinboxNum (mpldnc->uivl, "himpm", MPLDNC_COL_HIGHMPM, 10.0, 500.0, 1.0, 5.0);
+  uivlMakeColumnSpinboxNum (mpldnc->uivl, "lowmpm", MPLDNC_COL_LOWMPM, 0.0, 500.0, 1.0, 5.0);
+  uivlMakeColumnSpinboxNum (mpldnc->uivl, "himpm", MPLDNC_COL_HIGHMPM, 0.0, 500.0, 1.0, 5.0);
   uivlMakeColumn (mpldnc->uivl, "dkey", MPLDNC_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
 
   bpmstr = tagdefs [TAG_BPM].displayname;
@@ -306,7 +306,7 @@ static int
 manageplDanceBPMDisplay (ilistidx_t dkey, int bpm)
 {
   if (bpm < 0) {
-    bpm = 10;
+    bpm = 0;
   }
 
   bpm = danceConvertMPMtoBPM (dkey, bpm);
