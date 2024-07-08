@@ -78,7 +78,7 @@ uiTextBoxAppendHighlightStr (uiwcont_t *uiwidget, const char *str)
 /* this does not handle any selected text */
 
 void
-uiTextBoxDarken (uiwcont_t *uiwidget)
+uiTextBoxSetDarkBG (uiwcont_t *uiwidget)
 {
   return;
 }

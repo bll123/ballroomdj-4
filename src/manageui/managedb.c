@@ -311,7 +311,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   uiwidgetp = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetReadonly (uiwidgetp);
-  uiTextBoxDarken (uiwidgetp);
+  uiTextBoxSetDarkBG (uiwidgetp);
   uiTextBoxSetHeight (uiwidgetp, 300);
   uiBoxPackStartExpand (vboxp, uiwidgetp);
   managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;

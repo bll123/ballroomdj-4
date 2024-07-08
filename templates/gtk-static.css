@@ -59,15 +59,8 @@ label.bdj-selected {
   color: @theme_selected_fg_color;
 }
 
-textview.bdj-tb-dark text {
+textview.bdj-dark-bg text {
   background-color: shade(@theme_base_color,0.8);
-}
-
-treeview.bdj-tv-dark {
-  background-color: shade(@theme_base_color,0.8);
-}
-treeview.bdj-tv-dark:selected {
-  background-color: @theme_selected_bg_color;
 }
 
 /* gtk: notebook header tabs tab label */

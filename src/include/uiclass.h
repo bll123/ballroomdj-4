@@ -22,7 +22,5 @@
 #define SELECTED_CLASS "bdj-selected"
 #define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
 #define SWITCH_CLASS "bdj-switch"
-#define TEXTBOX_DARK_CLASS "bdj-tb-dark"
-#define TREEVIEW_DARK_CLASS "bdj-tv-dark"
 
 #endif /* INC_UICLASS_H */
