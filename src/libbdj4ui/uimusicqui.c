@@ -747,9 +747,11 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int mqidx)
   uivlSetNumRows (mqint->uivl, uimusicq->ui [mqidx].rowcount);
 
   if (uimusicq->ui [mqidx].haveselloc) {
+    /* this happens on an insert */
     uimusicqSetSelection (uimusicq, mqidx);
     uimusicq->ui [mqidx].haveselloc = false;
   } else {
+    /* want to keep the selected location, not the specific song */
     uimusicq->ui [mqidx].selectLocation = uimusicqGetSelectLocation (uimusicq, mqidx);
     uimusicqSetSelection (uimusicq, mqidx);
   }

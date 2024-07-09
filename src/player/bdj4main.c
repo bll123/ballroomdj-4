@@ -1911,6 +1911,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   }
   idx = atol (p);
   ++idx;  /* music-q index 0 is reserved for the current song */
+  ++idx;  /* want to insert after the current song */
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {

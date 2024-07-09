@@ -2983,6 +2983,11 @@ uivlMotionEvent (void *udata, int32_t dispidx)
 
   row = &vl->rows [dispidx];
   if (row->selected) {
+    /* do not highlight rows that are currently selected */
+    return UICB_CONT;
+  }
+  if (row->cleared || row->offscreen) {
+    /* do not highlight cleared or off-screen rows */
     return UICB_CONT;
   }
 

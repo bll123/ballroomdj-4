@@ -1092,8 +1092,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_songselect_t   *songselect;
 
           songselect = msgparseSongSelect (targs);
-          /* the display is offset by 1, as the 0 index is the current song */
-          --songselect->loc;
           uimusicqProcessSongSelect (plui->uimusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
