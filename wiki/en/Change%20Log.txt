@@ -7,20 +7,21 @@
 **4.11.0 2024-7---**
 
 * Bug Fixes:
+    * All text fields in listings that can be long are now displayed with ellipses if necessary.
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
     * Player: Drag & Drop: Fixed issues with encoded filenames.
-    * All text fields in listings that can be long are now displayed with ellipses if necessary.
 * Changes:
-    * Configuration: New interface for Rating / Level / Status / Genre.
-    * Playlist Management: New interface for the dances table.
     * Audio Identification: The original data row is locked into the view.
+    * Configuration: New interface for Rating / Level / Status / Genre.
+    * Listings: Row selection color and row highlight color can be manually configured.
+    * Playlist Management: New interface for the dances table.
     * Song Selection and Music Queue listings: Long values now have tooltips.
 * Translations:
     * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬), Portuguese (Português).  All poor quality.
     * "New Install" help text has been machine translated where it was missing.
 * Internal:
-    * Re-work of all table handling.
     * Code cleanup.
+    * Re-work of all table handling.
 
 -->
 
