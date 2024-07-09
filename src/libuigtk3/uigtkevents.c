@@ -50,6 +50,7 @@ static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer ud
 static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata);
 static gboolean uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata);
 static gboolean uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata);
+static gboolean uiEventLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
 static void uiEventGetRowColumnIdx (GtkWidget *w, GdkEvent *event, int *rowidx, int *colidx);
 
 uiwcont_t *
@@ -206,9 +207,12 @@ uiEventSetMotionCallback (uiwcont_t *uieventwidget,
   uievent = uieventwidget->uiint.uievent;
 
   uievent->motioncb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_POINTER_MOTION_MASK);
+  gtk_widget_add_events (uiwidgetp->uidata.widget,
+      GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
       G_CALLBACK (uiEventMotionHandler), uieventwidget);
+  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
+      G_CALLBACK (uiEventLeaveHandler), uieventwidget);
 }
 
 
@@ -884,6 +888,21 @@ uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata)
   uiEventGetRowColumnIdx (w, (GdkEvent *) event, &rowidx, NULL);
   if (uievent->motioncb != NULL) {
     rc = callbackHandlerI (uievent->motioncb, rowidx);
+  }
+
+  return rc;
+}
+
+static gboolean
+uiEventLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
+{
+  uiwcont_t *uiwidget = udata;
+  uievent_t *uievent;
+  int       rc = UICB_CONT;
+
+  uievent = uiwidget->uiint.uievent;
+  if (uievent->motioncb != NULL) {
+    rc = callbackHandlerI (uievent->motioncb, -1);
   }
 
   return rc;

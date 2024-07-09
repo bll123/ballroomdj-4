@@ -2962,12 +2962,12 @@ uivlMotionEvent (void *udata, int32_t dispidx)
     return UICB_CONT;
   }
 
+  /* always remove the last highlight */
+  uivlRemoveLastHighlight (vl);
+
   if (dispidx < 0 || dispidx >= vl->dispsize) {
     return UICB_CONT;
   }
-
-  /* always remove the last highlight */
-  uivlRemoveLastHighlight (vl);
 
   if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
     return UICB_CONT;
