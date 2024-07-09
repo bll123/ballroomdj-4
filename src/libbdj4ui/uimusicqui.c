@@ -95,7 +95,7 @@ typedef struct mq_internal {
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);
 static int32_t uimusicqQueuePlaylistCallback (void *udata, const char *sval);
 
-static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq);
+static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int mqidx);
 
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
@@ -649,24 +649,21 @@ uimusicqSetMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate
 }
 
 void
-uimusicqProcessMusicQueueData (uimusicq_t *uimusicq)
+uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, int mqidx)
 {
-  int               ci;
-
   logProcBegin ();
 
-  ci = uimusicq->musicqManageIdx;
-  if (ci < 0 || ci >= MUSICQ_MAX) {
+  if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
     logProcEnd ("bad-mq-idx");
     return;
   }
 
-  if (! uimusicq->ui [ci].hasui) {
+  if (! uimusicq->ui [mqidx].hasui) {
     logProcEnd ("no-ui");
     return;
   }
 
-  uimusicqProcessMusicQueueDisplay (uimusicq);
+  uimusicqProcessMusicQueueDisplay (uimusicq, mqidx);
 }
 
 void
@@ -732,28 +729,29 @@ uimusicqQueuePlaylistCallback (void *udata, const char *sval)
 }
 
 static void
-uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq)
+uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int mqidx)
 {
   mq_internal_t *mqint;
-  int           ci;
 
   logProcBegin ();
 
-  ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
+  mqint = uimusicq->ui [mqidx].mqInternalData;
+  if (mqint->musicqupdate == NULL) {
+    return;
+  }
 
   mqint->inprocess = true;
 
-  uimusicq->ui [ci].rowcount = nlistGetCount (mqint->musicqupdate->dispList);
+  uimusicq->ui [mqidx].rowcount = nlistGetCount (mqint->musicqupdate->dispList);
   /* set-num-rows calls uivlpopulate */
-  uivlSetNumRows (mqint->uivl, uimusicq->ui [ci].rowcount);
+  uivlSetNumRows (mqint->uivl, uimusicq->ui [mqidx].rowcount);
 
-  if (uimusicq->ui [ci].haveselloc) {
-    uimusicqSetSelection (uimusicq, ci);
-    uimusicq->ui [ci].haveselloc = false;
+  if (uimusicq->ui [mqidx].haveselloc) {
+    uimusicqSetSelection (uimusicq, mqidx);
+    uimusicq->ui [mqidx].haveselloc = false;
   } else {
-    uimusicq->ui [ci].selectLocation = uimusicqGetSelectLocation (uimusicq, ci);
-    uimusicqSetSelection (uimusicq, ci);
+    uimusicq->ui [mqidx].selectLocation = uimusicqGetSelectLocation (uimusicq, mqidx);
+    uimusicqSetSelection (uimusicq, mqidx);
   }
 
   mqint->inprocess = false;

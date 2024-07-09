@@ -1487,8 +1487,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uimusicqSetMusicQueueData (manage->slmusicq, musicqupdate);
             uimusicqSetMusicQueueData (manage->slsbsmusicq, musicqupdate);
-            uimusicqProcessMusicQueueData (manage->slmusicq);
-            uimusicqProcessMusicQueueData (manage->slsbsmusicq);
+            uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate->mqidx);
+            uimusicqProcessMusicQueueData (manage->slsbsmusicq, musicqupdate->mqidx);
             manageStatsProcessData (manage->slstats, musicqupdate);
           }
           /* the music queue data is used to display the mark */

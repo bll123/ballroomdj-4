@@ -110,6 +110,10 @@ enum {
   RESET_VOL_CURR,
 };
 
+enum {
+  PLUI_DBG_MSGS = 1,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -1026,8 +1030,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     targs = mdstrdup (args);
   }
 
-  if (msg != MSG_MUSIC_QUEUE_DATA &&
-      msg != MSG_PLAYER_STATUS_DATA) {
+  if (PLUI_DBG_MSGS == 1 ||
+      (msg != MSG_MUSIC_QUEUE_DATA &&
+      msg != MSG_PLAYER_STATUS_DATA)) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
@@ -1118,7 +1123,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             /* if displayed */
             if (bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
               uimusicqSetMusicQueueData (plui->uimusicq, musicqupdate);
-              uimusicqProcessMusicQueueData (plui->uimusicq);
+              uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate->mqidx);
               /* the music queue data is used to display the mark */
               /* indicating that the song is already in the song list */
               uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
@@ -1128,6 +1133,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluiReloadSave (plui, musicqupdate->mqidx);
 
           if (musicqupdate->mqidx == MUSICQ_HISTORY) {
+            /* CONTEXT: playerui: name of the saved history playlist */
             const char  *name = _("History");
 
             uimusicqSetManageIdx (plui->uimusicq, MUSICQ_HISTORY);

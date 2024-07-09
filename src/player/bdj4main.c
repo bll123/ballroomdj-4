@@ -972,6 +972,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       musicqidx, MSG_ARGS_RS, qDuration, MSG_ARGS_RS,
       dbidx, MSG_ARGS_RS);
 
+  /* main keeps the current song in queue position 0 */
   for (int i = 1; i < musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);

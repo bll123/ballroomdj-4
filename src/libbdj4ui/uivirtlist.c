@@ -2341,6 +2341,7 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     }
     vl->lastselidx = row->dispidx;
 
+    uivlRemoveLastHighlight (vl);
     uiWidgetAddClass (row->hbox, SELECTED_CLASS);
     row->selected = true;
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {

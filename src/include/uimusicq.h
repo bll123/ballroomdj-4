@@ -133,7 +133,7 @@ dbidx_t   uimusicqGetSelectionDBidx (uimusicq_t *uimusicq);
 bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 void      uimusicqSetMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
-void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq);
+void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetRequestLabel (uimusicq_t *uimusicq, const char *txt);
 nlist_t * uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx);
 
