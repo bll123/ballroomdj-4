@@ -208,7 +208,7 @@ manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl)
   }
 
   uiWidgetSetState (mpldnc->uihideunsel, widgetstate);
-  uiToggleButtonSetState (mpldnc->uihideunsel, hideunselstate);
+  uiToggleButtonSetValue (mpldnc->uihideunsel, hideunselstate);
 
   manageplDanceRebuildCurrList (mpldnc);
 

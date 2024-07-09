@@ -113,6 +113,7 @@ typedef struct uivlcoldata {
   callback_t    *spinboxcb;
   callback_t    *spinboxtimecb;
   callback_t    *colgrowonlycb;
+  uiwcont_t     *extrarb;
   uivlcol_t     *col0;
   const char    *tag;
   char          *heading;
@@ -456,6 +457,7 @@ uivlFree (uivirtlist_t *vl)
     dataFree (vl->coldata [colidx].heading);
     callbackFree (vl->coldata [colidx].colgrowonlycb);
     uiwcontFree (vl->coldata [colidx].szgrp);
+    uiwcontFree (vl->coldata [colidx].extrarb);
   }
   dataFree (vl->coldata);
 
@@ -516,6 +518,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->spinboxcb = NULL;
     coldata->spinboxtimecb = NULL;
     coldata->colgrowonlycb = NULL;
+    coldata->extrarb = NULL;
     coldata->colidx = colidx;
     coldata->colwidth = -1;
     coldata->baseclass = NULL;
@@ -874,7 +877,7 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
     }
     case VL_TYPE_CHECKBOX:
     case VL_TYPE_RADIO_BUTTON: {
-      uiToggleButtonSetState (row->cols [colidx].uiwidget, state);
+      /* not supported */
       break;
     }
     case VL_TYPE_NONE:
@@ -1065,11 +1068,19 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
     case VL_TYPE_CHECKBOX:
     case VL_TYPE_RADIO_BUTTON: {
       int   nstate = UI_TOGGLE_BUTTON_OFF;
+      bool  oldval;
+
+      oldval = uiToggleButtonIsActive (row->cols [colidx].uiwidget);
 
       if (val) {
         nstate = UI_TOGGLE_BUTTON_ON;
+      } else {
+        /* turning the button off, turn on the extra-rb */
+        if (oldval) {
+          uiToggleButtonSetValue (vl->coldata [colidx].extrarb, UI_TOGGLE_BUTTON_ON);
+        }
       }
-      uiToggleButtonSetState (row->cols [colidx].uiwidget, nstate);
+      uiToggleButtonSetValue (row->cols [colidx].uiwidget, nstate);
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {
@@ -1904,15 +1915,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
       case VL_TYPE_RADIO_BUTTON: {
-        if (dispidx == 0) {
-          col->uiwidget = uiCreateRadioButton (NULL, "", 0);
-        } else {
-          uivlrow_t   *trow;
-
-          trow = &vl->rows [vl->headingoffset];
-          col->uiwidget =
-              uiCreateRadioButton (trow->cols [colidx].uiwidget, "", 0);
+        if (coldata->extrarb == NULL) {
+          coldata->extrarb = uiCreateRadioButton (NULL, "", 1);
         }
+
+        col->uiwidget = uiCreateRadioButton (coldata->extrarb, "", 0);
         uiWidgetEnableFocus (col->uiwidget);
         uiToggleButtonSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
         if (coldata->togglecb != NULL) {

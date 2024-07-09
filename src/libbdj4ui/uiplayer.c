@@ -839,11 +839,11 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 
   if (onoff && ! uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_ON]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
   }
   if (! onoff && uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_OFF]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendstate = onoff;
 
@@ -934,10 +934,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (ps->repeat) {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
     uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
   } else {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->repeatLock = false;
 

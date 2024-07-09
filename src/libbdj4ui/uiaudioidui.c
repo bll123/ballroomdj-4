@@ -527,8 +527,8 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
       tval = songDisplayString (song, tagidx, SONG_UNADJUSTED_DURATION);
     }
     nlistSetStr (audioidint->currlist, tagidx, tval);
-    uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
-    uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
     ttval = tval;
     if (tval == NULL) {
       ttval = "";
@@ -933,8 +933,8 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
     int         tagidx = audioidint->items [count].tagidx;
     const char  *ttval;
 
-    uiToggleButtonSetState (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
-    uiToggleButtonSetState (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (audioidint->items [count].currrb, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (audioidint->items [count].selrb, UI_TOGGLE_BUTTON_OFF);
 
     if (dlist == NULL) {
       uiToggleButtonSetText (audioidint->items [count].selrb, "");

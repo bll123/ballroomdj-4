@@ -164,7 +164,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
 }
 
 void
-uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
+uiToggleButtonSetValue (uiwcont_t *uiwidget, int state)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-state")) {
     return;

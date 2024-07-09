@@ -61,7 +61,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
 }
 
 void
-uiToggleButtonSetState (uiwcont_t *uiwidget, int state)
+uiToggleButtonSetValue (uiwcont_t *uiwidget, int state)
 {
   return;
 }

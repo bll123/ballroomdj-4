@@ -20,7 +20,7 @@ void uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image);
 void uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt);
 bool uiToggleButtonIsActive (uiwcont_t *uiwidget);
-void uiToggleButtonSetState (uiwcont_t *uiwidget, int state);
+void uiToggleButtonSetValue (uiwcont_t *uiwidget, int state);
 void uiToggleButtonEllipsize (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)

@@ -620,7 +620,7 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 }
 
 static void
-confuiDanceRemove (confuigui_t *gui, ilistidx_t delidx)
+confuiDanceRemove (confuigui_t *gui, ilistidx_t rowidx)
 {
   uivirtlist_t  *uivl;
   ilistidx_t    dkey;
@@ -630,13 +630,15 @@ confuiDanceRemove (confuigui_t *gui, ilistidx_t delidx)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
 
-  dkey = uivlGetRowColumnNum (uivl, delidx, CONFUI_DANCE_COL_DANCE_KEY);
+  dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
   danceDelete (dances, dkey);
   danceSave (dances, NULL, -1);
   count = danceGetCount (dances);
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_RATINGS].currcount = count;
   uivlPopulate (uivl);
+  dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
+  confuiDanceSelectLoadValues (gui, dkey);
 }
 
 static void

@@ -1375,7 +1375,7 @@ installerSetConvertStatus (installer_t *installer, int state)
     return;
   }
 
-  uiToggleButtonSetState (installer->wcont [INST_W_CONVERT], state);
+  uiToggleButtonSetValue (installer->wcont [INST_W_CONVERT], state);
 }
 
 static void
