@@ -233,8 +233,9 @@ main (int argc, char *argv[])
       uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
       bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
-      bdjoptGetStr (OPT_P_UI_MARK_COL));
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
   marqueeBuildUI (&marquee);
   osuiFinalize ();

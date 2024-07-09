@@ -29,6 +29,7 @@ typedef struct uievent {
   callback_t    *mbuttonpresscb;
   callback_t    *mbuttonreleasecb;
   callback_t    *scrollcb;
+  callback_t    *motioncb;
   callback_t    *elcb;
   int           eventtype;
   guint         keyval;
@@ -48,6 +49,8 @@ typedef struct uievent {
 static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata);
 static gboolean uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata);
+static gboolean uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata);
+static void uiEventGetRowColumnIdx (GtkWidget *w, GdkEvent *event, int *rowidx, int *colidx);
 
 uiwcont_t *
 uiEventAlloc (void)
@@ -63,6 +66,7 @@ uiEventAlloc (void)
   uievent->mbuttonpresscb = NULL;
   uievent->mbuttonreleasecb = NULL;
   uievent->scrollcb = NULL;
+  uievent->motioncb = NULL;
   uievent->elcb = NULL;
   uievent->eventtype = UIEVENT_EV_NONE;
   uievent->controlpressed = false;
@@ -187,6 +191,24 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
   gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_SCROLL_MASK);
   g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
+}
+
+void
+uiEventSetMotionCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  uievent_t   *uievent;
+
+  if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-button-cb")) {
+    return;
+  }
+
+  uievent = uieventwidget->uiint.uievent;
+
+  uievent->motioncb = uicb;
+  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_POINTER_MOTION_MASK);
+  g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
+      G_CALLBACK (uiEventMotionHandler), uieventwidget);
 }
 
 
@@ -752,12 +774,12 @@ static gboolean
 uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t   *uievent;
+  uievent_t *uievent;
   guint     button;
   guint     ttype;
   int       rc = UICB_CONT;
-  int       dispidx = -1;
-  int       colnum = -1;
+  int       rowidx = -1;
+  int       colidx = -1;
 
   uievent = uiwidget->uiint.uievent;
 
@@ -788,61 +810,7 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   /* it's relatively easy to figure out the row and the column. */
   /* only do this for press events. */
   if (ttype == GDK_BUTTON_PRESS || ttype == GDK_2BUTTON_PRESS) {
-    double        x, y;
-    GtkWidget     *tw;
-    GtkAllocation eba;
-    GtkAllocation rowa;
-
-    gdk_event_get_coords ((GdkEvent *) event, &x, &y);
-    /* the coordinates of the event box or container */
-    gtk_widget_get_allocation (w, &eba);
-
-    /* event-box    */
-    /*  vbox        */
-    /*   hbox (row) */
-    /*    col...    */
-
-    tw = w;
-    while (GTK_IS_BIN (tw)) {
-      tw = gtk_bin_get_child (GTK_BIN (w));
-    }
-    if (GTK_IS_CONTAINER (tw)) {
-      GList *list, *elem;
-
-      list = gtk_container_get_children (GTK_CONTAINER (tw));
-      for (elem = list; elem != NULL; elem = elem->next) {
-        tw = elem->data;
-        gtk_widget_get_allocation (tw, &rowa);
-        /* note that dispidx starts at -1, so the first increment points */
-        /* at row 0 */
-        if (eba.y + (int) y > rowa.y) {
-          ++dispidx;
-        } else {
-          break;
-        }
-
-        /* process the x coordinates (only once) to get the column number */
-        /* the tw gtk-widget should be pointing at a row-hbox */
-        if (elem == list) {
-          GList         *clist, *celem;
-          GtkWidget     *tcol;
-          GtkAllocation cola;
-
-          clist = gtk_container_get_children (GTK_CONTAINER (tw));
-          for (celem = clist; celem != NULL; celem = celem->next) {
-            tcol = celem->data;
-            gtk_widget_get_allocation (tcol, &cola);
-            /* note that colnum starts at -1, so the first increment points */
-            /* at column 0 */
-            if (eba.x + (int) x > cola.x) {
-              ++colnum;
-            } else {
-              break;
-            }
-          }
-        }
-      }
-    }
+    uiEventGetRowColumnIdx (w, (GdkEvent *) event, &rowidx, &colidx);
   }
 
   uievent->buttonpressed = false;
@@ -852,12 +820,12 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
       ttype == GDK_2BUTTON_PRESS) &&
       uievent->mbuttonpresscb != NULL) {
     uievent->buttonpressed = true;
-    rc = callbackHandlerII (uievent->mbuttonpresscb, dispidx, colnum);
+    rc = callbackHandlerII (uievent->mbuttonpresscb, rowidx, colidx);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
       uievent->mbuttonreleasecb != NULL) {
     uievent->buttonreleased = true;
-    rc = callbackHandlerII (uievent->mbuttonreleasecb, dispidx, colnum);
+    rc = callbackHandlerII (uievent->mbuttonreleasecb, rowidx, colidx);
   }
 
   return rc;
@@ -903,3 +871,87 @@ uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
 }
 
 
+static gboolean
+uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata)
+{
+  uiwcont_t *uiwidget = udata;
+  uievent_t *uievent;
+  int       rowidx = -1;
+  int       rc = UICB_CONT;
+
+  uievent = uiwidget->uiint.uievent;
+
+  uiEventGetRowColumnIdx (w, (GdkEvent *) event, &rowidx, NULL);
+  if (uievent->motioncb != NULL) {
+    rc = callbackHandlerI (uievent->motioncb, rowidx);
+  }
+
+  return rc;
+}
+
+static void
+uiEventGetRowColumnIdx (GtkWidget *w, GdkEvent *event, int *rowidx, int *colidx)
+{
+  double        x, y;
+  GtkWidget     *tw;
+  GtkAllocation eba;
+  GtkAllocation rowa;
+  GList         *list, *elem;
+
+
+  *rowidx = -1;
+  if (colidx != NULL) {
+    *colidx = -1;
+  }
+
+  gdk_event_get_coords ((GdkEvent *) event, &x, &y);
+  /* the coordinates of the event box or container */
+  gtk_widget_get_allocation (w, &eba);
+
+  /* event-box    */
+  /*  vbox        */
+  /*   hbox (row) */
+  /*    col...    */
+
+  tw = w;
+  while (GTK_IS_BIN (tw)) {
+    tw = gtk_bin_get_child (GTK_BIN (w));
+  }
+  if (! GTK_IS_CONTAINER (tw)) {
+    return;
+  }
+
+  list = gtk_container_get_children (GTK_CONTAINER (tw));
+  for (elem = list; elem != NULL; elem = elem->next) {
+    tw = elem->data;
+    gtk_widget_get_allocation (tw, &rowa);
+    /* note that rowidx starts at -1, so the first increment points */
+    /* at row 0 */
+    if (eba.y + (int) y > rowa.y) {
+      *rowidx += 1;
+    } else {
+      break;
+    }
+
+    /* process the x coordinates (only once) to get the column number */
+    /* the tw gtk-widget should be pointing at a row-hbox */
+    if (colidx != NULL && elem == list) {
+      GList         *clist, *celem;
+      GtkWidget     *tcol;
+      GtkAllocation cola;
+
+      clist = gtk_container_get_children (GTK_CONTAINER (tw));
+      for (celem = clist; celem != NULL; celem = celem->next) {
+        tcol = celem->data;
+        gtk_widget_get_allocation (tcol, &cola);
+        /* note that colidx starts at -1, so the first increment points */
+        /* at column 0 */
+        if (eba.x + (int) x > cola.x) {
+          *colidx += 1;
+        } else {
+          break;
+        }
+      }
+    } /* is this the first element? */
+  } /* for each child element */
+}

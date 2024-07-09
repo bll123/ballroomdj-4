@@ -51,7 +51,8 @@ uiCleanup (void)
 
 void
 uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *selectColor)
+    const char *accentColor, const char *errorColor, const char *markColor,
+    const char *selectColor, const char *rowhlColor)
 {
   return;
 }

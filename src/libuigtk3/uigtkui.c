@@ -39,6 +39,7 @@ static const char *currcss = NULL;
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel, const GLogField* fields, gsize n_fields, gpointer udata);
 static void uiAddScreenCSS (const char *css);
 static void uicssParseError (GtkCssProvider* self, GtkCssSection* section, GError* error, gpointer udata);
+static void uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor, const char *color, const char *classnm, double shadeval);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
@@ -117,16 +118,19 @@ uiCleanup (void)
 
 void
 uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor,
-    const char *selectColor, const char *markColor)
+    const char *accentColor, const char *errorColor, const char *markColor,
+    const char *rowselColor, const char *rowhlColor)
 {
   char            tbuff [8192];
   char            wbuff [400];
   char            *p;
   int             sz = 0;
 
-  if (selectColor == NULL || ! *selectColor) {
-    selectColor = accentColor;
+  if (rowselColor == NULL || ! *rowselColor) {
+    rowselColor = accentColor;
+  }
+  if (rowhlColor == NULL || ! *rowhlColor) {
+    rowhlColor = accentColor;
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -261,30 +265,14 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
-  if (selectColor != NULL) {
-    char    tmpselcolor [40];
+  if (rowselColor != NULL) {
+    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+        rowselColor, SELECTED_CLASS, 0.55);
+  }
 
-    if (selectColor == accentColor) {
-      snprintf (tmpselcolor, sizeof (tmpselcolor), "shade(%s,0.55)", selectColor);
-    } else {
-      strlcpy (tmpselcolor, selectColor, sizeof (tmpselcolor));
-    }
-    /* the problem with using the standard selected-bg-color with virtlist */
-    /* is it matches the radio button and check button colors */
-    /* (in the matcha series of themes) and */
-    /* there is no easy way to switch the radio buttons and */
-    /* check buttons to the obverse colors */
-    snprintf (wbuff, sizeof (wbuff),
-        "box.horizontal.%s { background-color: %s; } ",
-        SELECTED_CLASS, tmpselcolor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-    snprintf (wbuff, sizeof (wbuff),
-        "spinbutton.%s, "
-        "spinbutton.%s entry, "
-        "spinbutton.%s button "
-        "{ background-color: %s; } ",
-        SELECTED_CLASS, SELECTED_CLASS, SELECTED_CLASS, tmpselcolor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+  if (rowhlColor != NULL) {
+    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+        rowhlColor, ROW_HL_CLASS, 0.3);
   }
 
   if (errorColor != NULL) {
@@ -404,4 +392,34 @@ uicssParseError (GtkCssProvider* self, GtkCssSection* section,
   ep = gtk_css_section_get_end_position (section);
   t = gtk_css_section_get_section_type (section);
   fprintf (stderr, "ERR: CSS parse: %s from %d/%d to %d/%d type: %d\n", currcss, s, sp, e, ep, t);
+}
+
+static void
+uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
+    const char *color, const char *classnm, double shadeval)
+{
+  char    tmpcolor [40];
+  char    wbuff [400];
+
+  if (color == accentColor) {
+    snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%.2f)", color, shadeval);
+  } else {
+    strlcpy (tmpcolor, color, sizeof (tmpcolor));
+  }
+  /* the problem with using the standard selected-bg-color with virtlist */
+  /* is it matches the radio button and check button colors */
+  /* (in the matcha series of themes) and */
+  /* there is no easy way to switch the radio buttons and */
+  /* check buttons to the obverse colors */
+  snprintf (wbuff, sizeof (wbuff),
+      "box.horizontal.%s { background-color: %s; } ",
+      classnm, tmpcolor);
+  strlcat (tbuff, wbuff, sz);
+  snprintf (wbuff, sizeof (wbuff),
+      "spinbutton.%s, "
+      "spinbutton.%s entry, "
+      "spinbutton.%s button "
+      "{ background-color: %s; } ",
+      classnm, classnm, classnm, tmpcolor);
+  strlcat (tbuff, wbuff, sz);
 }

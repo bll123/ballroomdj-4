@@ -44,6 +44,7 @@ enum {
   VL_ROW_HEADING_IDX = 0,
   VL_DOUBLE_CLICK_TIME = 250,   // milliseconds
   VL_ROW_NO_LOCK = -1,
+  VL_UNK_ROW = -1,
   VL_REUSE_HEIGHT = -2,
 };
 
@@ -69,6 +70,7 @@ enum {
   VL_CB_HEADING_SZ_CHG,
   VL_CB_ROW_SZ_CHG,
   VL_CB_ENTER_WIN,
+  VL_CB_MOTION_WIN,
   VL_CB_MAX,
 };
 
@@ -190,6 +192,7 @@ typedef struct uivirtlist {
   /* the actual number of rows that can be displayed */
   int           dispsize;
   int           dispalloc;
+  int           lastdisphighlight;
   int           headingoffset;
   int           vboxheight;
   int           headingheight;
@@ -235,6 +238,7 @@ static bool uivlScrollbarCallback (void *udata, double value);
 static bool uivlKeyEvent (void *udata);
 static bool uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx);
 static bool uivlScrollEvent (void *udata, int32_t dir);
+static bool uivlMotionEvent (void *udata, int32_t dispidx);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearSelections (uivirtlist_t *vl);
@@ -265,6 +269,7 @@ static int32_t uivlCalcRownum (uivirtlist_t *vl, int dispidx);
 static void uivlShowRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlEnterEvent (void *udata);
 static void uivlCheckDisplay (uivirtlist_t *vl);
+static void uivlRemoveLastHighlight (uivirtlist_t *vl);
 
 /* listings with focusable widgets should pass in the parent window */
 /* parameter.  otherwise, it can be null */
@@ -295,6 +300,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->dispheading = true;
 
   vl->dispalloc = 0;
+  vl->lastdisphighlight = VL_UNK_ROW;
   /* display size is set to the number of rows that can be displayed */
   /* it includes the heading row if headings are on */
   vl->dispsize = dispsize;
@@ -351,6 +357,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVertSizeChg, vl);
   vl->callbacks [VL_CB_HEADING_SZ_CHG] = callbackInitII (uivlHeadingSizeChg, vl);
   vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
+  vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
+  vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
@@ -380,7 +388,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
   uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
-  vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
@@ -420,6 +427,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
       vl->callbacks [VL_CB_MBUTTON]);
   uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
       vl->callbacks [VL_CB_SCROLL]);
+  uiEventSetMotionCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
+      vl->callbacks [VL_CB_MOTION_WIN]);
 
   logProcEnd ("");
   return vl;
@@ -524,7 +533,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->ellipsize = false;
     coldata->grow = VL_COL_WIDTH_FIXED;
     coldata->hidden = VL_COL_SHOW;
-    coldata->clickmap = -1;
+    coldata->clickmap = VL_UNK_ROW;
   }
 
   vl->initialized = VL_INIT_BASIC;
@@ -1105,7 +1114,7 @@ int32_t
 uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   uivlrow_t   *row;
-  int32_t     value = -1;
+  int32_t     value = VL_UNK_ROW;
 
   logProcBegin ();
   if (! uivlValidateRowColumn (vl, VL_INIT_ROWS, rownum, colidx, __func__)) {
@@ -1399,7 +1408,7 @@ uivlGetCurrSelection (uivirtlist_t *vl)
 
   if (nlistGetCount (vl->selected) == 0) {
     logProcEnd ("no-sel");
-    return -1;
+    return VL_UNK_ROW;
   }
 
   logProcEnd ("");
@@ -2153,7 +2162,7 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 {
   uivirtlist_t  *vl = udata;
   int           button;
-  int32_t       rownum = -1;
+  int32_t       rownum = VL_UNK_ROW;
 
   logProcBegin ();
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -2449,6 +2458,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   if (calcrows != vl->dispsize) {
+// ### is this necessary?
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
     uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, -1);
@@ -2932,6 +2942,44 @@ uivlEnterEvent (void *udata)
   if (vl->keyhandling) {
     uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
   }
+  uivlRemoveLastHighlight (vl);
+
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
+/* the motion event handler handles highlighting the row as the mouse */
+/* moves over it */
+static bool
+uivlMotionEvent (void *udata, int32_t dispidx)
+{
+  uivirtlist_t  *vl = udata;
+  uivlrow_t     *row;
+
+  logProcBegin ();
+  if (vl == NULL || vl->ident != VL_IDENT) {
+    logProcEnd ("bad-vl");
+    return UICB_CONT;
+  }
+
+  if (dispidx < 0 || dispidx >= vl->dispsize) {
+    return UICB_CONT;
+  }
+
+  /* always remove the last highlight */
+  uivlRemoveLastHighlight (vl);
+
+  if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
+    return UICB_CONT;
+  }
+
+  row = &vl->rows [dispidx];
+  if (row->selected) {
+    return UICB_CONT;
+  }
+
+  uiWidgetAddClass (row->hbox, ROW_HL_CLASS);
+  vl->lastdisphighlight = dispidx;
 
   logProcEnd ("");
   return UICB_CONT;
@@ -2985,5 +3033,17 @@ uivlCheckDisplay (uivirtlist_t *vl)
 
   if (dispchg) {
     uivlDisplayChgHandler (vl);
+  }
+}
+
+static void
+uivlRemoveLastHighlight (uivirtlist_t *vl)
+{
+  uivlrow_t   *row;
+
+  if (vl->lastdisphighlight >= 0) {
+    row = &vl->rows [vl->lastdisphighlight];
+    uiWidgetRemoveClass (row->hbox, ROW_HL_CLASS);
+    vl->lastdisphighlight = VL_UNK_ROW;
   }
 }

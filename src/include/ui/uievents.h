@@ -40,6 +40,7 @@ uiwcont_t * uiEventCreateEventBox (uiwcont_t *uiwidgetp);
 void    uiEventSetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 void    uiEventSetButtonCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 void    uiEventSetScrollCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
+void    uiEventSetMotionCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb);
 int     uiEventEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyPressEvent (uiwcont_t *uiwidget);
 bool    uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget);

@@ -90,6 +90,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "UI_MARK_TEXT",         OPT_P_UI_MARK_TEXT,         VALUE_STR, NULL, DF_NORM },
   { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, DF_NORM },
   { "UI_ROWSEL_COL",        OPT_P_UI_ROWSEL_COL,        VALUE_STR, NULL, DF_NORM },
+  { "UI_ROW_HL_COL",        OPT_P_UI_ROW_HL_COL,        VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptqueuedfkeys [] = {
@@ -288,6 +289,11 @@ bdjoptInit (void)
     /* left five-eights block */
     nlistSetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT, "\xe2\x96\x8B");
   }
+
+  /* 4.11.0, added OPT_P_UI_ROWSEL_COL, OPT_P_UI_ROW_HL_COL. */
+  /* these do not need defaults, as their defaults are based off of the */
+  /* accent color */
+
 }
 
 void

@@ -116,8 +116,9 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   uiwidget = uiCreateButton (dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
-  if (isMacOS ()) {
-    uiButtonSetImageMarginTop (uiwidget, 4);
+  if (isMacOS () || isWindows ()) {
+    /* work around gtk not vertically centering the image */
+    uiButtonSetImageMarginTop (uiwidget, 3);
   }
   uiButtonAlignLeft (uiwidget);
   uiButtonSetImagePosRight (uiwidget);
