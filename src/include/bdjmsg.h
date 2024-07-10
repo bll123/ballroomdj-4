@@ -55,18 +55,13 @@ typedef enum {
   MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx, idx
   MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, start-idx
                             //    only truncates the music queue
-  MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
   MSG_CMD_PLAY,             // always to main, starts playback
   MSG_CMD_PLAYPAUSE,        // always to main
-  MSG_CMD_NEXTSONG,         // allows main to determine whether a nextsong
-                            //    message needs to be sent to the player
+  MSG_CMD_NEXTSONG_PLAY,    // to main.
+                            // do a next-song if necessary and then play.
   MSG_QUEUE_CLEAR,          // args: music-q-idx
                             //    clears both the playlist queue and
                             //    all of the music queue.
-  MSG_QUEUE_CLEAR_PLAY,     // args: music-q-idx, start-idx, dbidx
-                            //    does a msg_queue_clear + insert
-                            //    start-idx is supplied to keep internal
-                            //    processing consistent.
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name, edit-flag
@@ -153,6 +148,7 @@ typedef enum {
   MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
   MSG_MUSICQ_STATUS_DATA,   // main response to remote control
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
+  MSG_CURR_SONG_DATA,
 
   /* to/from marquee */
   MSG_MARQUEE_TIMER,        // args: played time, duration

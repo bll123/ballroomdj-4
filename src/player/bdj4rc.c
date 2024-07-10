@@ -38,6 +38,7 @@
 typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
+  char            msgqpba [40];
   int             stopwaitcount;
   char            *locknm;
   uint16_t        port;
@@ -48,6 +49,7 @@ typedef struct {
   mstime_t        playlistListTimer;
   char            *playlistList;
   char            *playerStatus;
+  char            *currSong;
   websrv_t        *websrv;
   bool            enabled : 1;
 } remctrldata_t;
@@ -96,12 +98,14 @@ main (int argc, char *argv[])
   remctrlData.user = mdstrdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
   remctrlData.pass = mdstrdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
+  remctrlData.currSong = NULL;
   remctrlData.playlistList = "";
   mstimeset (&remctrlData.playlistListTimer, 0);
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.progstate = progstateInit ("remctrl");
   remctrlData.websrv = NULL;
   remctrlData.stopwaitcount = 0;
+  snprintf (remctrlData.msgqpba, sizeof (remctrlData.msgqpba), "%d", MUSICQ_PB_A);
 
   progstateSetCallback (remctrlData.progstate, STATE_CONNECTING,
       remctrlConnectingCallback, &remctrlData);
@@ -165,6 +169,7 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   dataFree (remctrlData->user);
   dataFree (remctrlData->pass);
   dataFree (remctrlData->playerStatus);
+  dataFree (remctrlData->currSong);
   if (*remctrlData->danceList) {
     dataFree (remctrlData->danceList);
   }
@@ -224,7 +229,27 @@ remctrlEventHandler (struct mg_connection *c, int ev,
           "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
           "Unauthorized");
     } else if (mg_http_match_uri (hm, "/getstatus")) {
-      if (remctrlData->playerStatus == NULL) {
+      if (remctrlData->playerStatus == NULL || remctrlData->currSong == NULL) {
+        mg_http_reply (c, 204,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n",
+            "");
+      } else {
+        char    *jsbuff;
+
+        jsbuff = mdmalloc (BDJMSG_MAX);
+        *jsbuff = '\0';
+
+        strlcpy (jsbuff, remctrlData->playerStatus, BDJMSG_MAX);
+        strlcat (jsbuff, remctrlData->currSong, BDJMSG_MAX);
+
+        mg_http_reply (c, 200,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n", jsbuff);
+        dataFree (jsbuff);
+      }
+    } else if (mg_http_match_uri (hm, "/getcurrsong")) {
+      if (remctrlData->currSong == NULL) {
         mg_http_reply (c, 204,
             "Content-type: text/plain; charset=utf-8\r\n"
             "Cache-Control: max-age=0\r\n",
@@ -233,7 +258,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         mg_http_reply (c, 200,
             "Content-type: text/plain; charset=utf-8\r\n"
             "Cache-Control: max-age=0\r\n",
-            remctrlData->playerStatus);
+            remctrlData->currSong);
       }
     } else if (mg_http_match_uri (hm, "/cmd")) {
       bool ok = true;
@@ -241,10 +266,10 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       if (strcmp (querystr, "clear") == 0) {
         /* clears any playlists and truncates the music queue */
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
+            ROUTE_MAIN, MSG_QUEUE_CLEAR, remctrlData->msgqpba);
         /* and clear the current playing song */
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
+            ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
       } else if (strcmp (querystr, "fade") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
@@ -256,13 +281,20 @@ remctrlEventHandler (struct mg_connection *c, int ev,
             ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
       } else if (strcmp (querystr, "play") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_CMD_PLAYPAUSE, "0");
+            ROUTE_MAIN, MSG_CMD_PLAYPAUSE, remctrlData->msgqpba);
       } else if (strcmp (querystr, "playlistclearplay") == 0) {
-        /* clear-play is always not in edit mode */
-        /* the edit-flag will parse as a null; main handles this */
-        /* this may change at a future date */
+        /* clears any playlists and truncates the music queue */
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, tbuff);
+            ROUTE_MAIN, MSG_QUEUE_CLEAR, remctrlData->msgqpba);
+        /* and clear the current playing song */
+        connSendMessage (remctrlData->conn,
+            ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+        /* then queue the new playlist */
+        connSendMessage (remctrlData->conn,
+            ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
+        /* and play */
+        connSendMessage (remctrlData->conn,
+            ROUTE_MAIN, MSG_CMD_PLAY, NULL);
       } else if (strcmp (querystr, "playlistqueue") == 0) {
         /* queue-playlist is always not in edit mode */
         /* the edit-flag will parse as a null; main handles this */
@@ -272,9 +304,13 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       } else if (strcmp (querystr, "queue") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
+        connSendMessage (remctrlData->conn,
+            ROUTE_MAIN, MSG_CMD_PLAY, remctrlData->msgqpba);
       } else if (strcmp (querystr, "queue5") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_QUEUE_DANCE_5, tbuff);
+        connSendMessage (remctrlData->conn,
+            ROUTE_MAIN, MSG_CMD_PLAY, remctrlData->msgqpba);
       } else if (strcmp (querystr, "repeat") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
@@ -385,6 +421,11 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYER_STATUS_DATA: {
           dataFree (remctrlData->playerStatus);
           remctrlData->playerStatus = mdstrdup (args);
+          break;
+        }
+        case MSG_CURR_SONG_DATA: {
+          dataFree (remctrlData->currSong);
+          remctrlData->currSong = mdstrdup (args);
           break;
         }
         default: {

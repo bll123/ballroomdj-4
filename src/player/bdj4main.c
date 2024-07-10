@@ -78,8 +78,6 @@ enum {
   MAIN_PREP_SIZE = 5,
   MAIN_NOT_SET = -1,
   MAIN_TS_DEBUG_MAX = 6,
-  /* song is stopped, and finish msg received */
-  MAIN_PB_FINISH_DONE = 2,
 };
 
 typedef struct {
@@ -106,10 +104,6 @@ typedef struct {
   playerstate_t     playerState;
   char              *mobmqUserkey;
   int               stopwaitcount;
-  char              *pbfinishArgs;
-  int               pbfinishType;
-  bdjmsgroute_t     pbfinishRoute;
-  int               pbfinishrcv;
   int32_t           ploverridestoptime;
   int               songplaysentcount;        // for testsuite
   int               musicqChanged [MUSICQ_MAX];
@@ -154,7 +148,7 @@ static void mainMusicqMoveTop (maindata_t *mainData, char *args);
 static void mainMusicqClear (maindata_t *mainData, char *args);
 static void mainMusicqRemove (maindata_t *mainData, char *args);
 static void mainMusicqSwap (maindata_t *mainData, char *args);
-static void mainNextSong (maindata_t *mainData);
+static void mainNextSongPlay (maindata_t *mainData);
 static void mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void mainMusicqSetPlayback (maindata_t *mainData, char *args);
 static void mainMusicqSendQueueConfig (maindata_t *mainData);
@@ -167,6 +161,7 @@ static ilistidx_t mainMusicQueueLookup (void *mainData, ilistidx_t idx);
 static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
+static void mainSendRemctrlData (maindata_t *mainData);
 static void mainSendMusicqStatus (maindata_t *mainData);
 static int  mainMusicqIndexNumParse (maindata_t *mainData, char *args, ilistidx_t *b, ilistidx_t *c);
 static int  mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode);
@@ -178,7 +173,6 @@ static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
 static void mainMusicQueueMix (maindata_t *mainData, char *args);
 static void mainPlaybackFinishStopProcess (maindata_t *mainData, const char *args);
-static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
@@ -231,12 +225,11 @@ main (int argc, char *argv[])
   mainData.musicqLookupIdx = MUSICQ_PB_A;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.mobmqUserkey = NULL;
-  mainData.pbfinishArgs = NULL;
   mainData.switchQueueWhenEmpty = false;
   mainData.finished = false;
   mainData.marqueestarted = false;
   mainData.waitforpbfinish = false;
-  mainData.pbfinishrcv = 0;
+  /* wait for a stop message, and a playback-finish message */
   mainData.stopwaitcount = 0;
   mainData.ploverridestoptime = 0;
   mainData.songplaysentcount = 0;
@@ -336,7 +329,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
   slistFree (mainData->announceList);
   dataFree (mainData->mobmqUserkey);
-  dataFree (mainData->pbfinishArgs);
   dispselFree (mainData->dispsel);
 
   procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_FORCE_TERM);
@@ -388,46 +380,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (mainData->progstate);
           break;
         }
-        case MSG_PLAYLIST_CLEARPLAY: {
-          char  *ttargs;
-
-          ttargs = mdstrdup (targs);
-          mainQueueClear (mainData, ttargs);
-          mdfree (ttargs);
-          mainNextSong (mainData);
-          if (mainData->waitforpbfinish) {
-            mainData->pbfinishArgs = mdstrdup (targs);
-            mainData->pbfinishType = MAIN_PB_TYPE_PL;
-          } else {
-            mainQueuePlaylist (mainData, targs);
-          }
-          break;
-        }
         case MSG_QUEUE_CLEAR: {
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
           mainQueueClear (mainData, targs);
-          break;
-        }
-        case MSG_QUEUE_CLEAR_PLAY: {
-          char  *ttargs;
-
-          /* clears both the playlist queue and the music queue */
-          /* does a next song and starts playing */
-          logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear-play");
-          ttargs = mdstrdup (targs);
-          mainQueueClear (mainData, ttargs);
-          mdfree (ttargs);
-          mainNextSong (mainData);
-          /* if the player is paused, multiple selections will not start */
-          /* playing, but in most cases, this works */
-          if (mainData->waitforpbfinish) {
-            mainData->pbfinishArgs = mdstrdup (targs);
-            mainData->pbfinishType = MAIN_PB_TYPE_SONG;
-            mainData->pbfinishRoute = routefrom;
-          } else {
-            mainMusicqInsert (mainData, routefrom, targs);
-          }
           break;
         }
         case MSG_QUEUE_PLAYLIST: {
@@ -455,8 +411,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainMusicQueuePlay (mainData);
           break;
         }
-        case MSG_CMD_NEXTSONG: {
-          mainNextSong (mainData);
+        case MSG_CMD_NEXTSONG_PLAY: {
+          mainNextSongPlay (mainData);
           break;
         }
         case MSG_CMD_PLAYPAUSE: {
@@ -475,10 +431,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYBACK_FINISH_STOP: {
           mainPlaybackFinishStopProcess (mainData, targs);
+          if (mainData->waitforpbfinish) {
+            mainMusicQueuePlay (mainData);
+            mainData->waitforpbfinish = false;
+          }
           break;
         }
         case MSG_PLAYBACK_FINISH: {
-          mainPlaybackFinishProcess (mainData, targs);
+          mainMusicQueueNext (mainData, args);
+          if (mainData->waitforpbfinish) {
+            mainMusicQueuePlay (mainData);
+            mainData->waitforpbfinish = false;
+          }
           break;
         }
         case MSG_PL_OVERRIDE_STOP_TIME: {
@@ -558,6 +522,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYER_STATUS_DATA: {
           mainSendPlayerStatus (mainData, targs);
+          mainSendRemctrlData (mainData);
           break;
         }
         case MSG_START_MARQUEE: {
@@ -717,32 +682,9 @@ mainProcessing (void *udata)
 
   if (mainData->marqueeChanged) {
     mainSendMarqueeData (mainData);
-    mainData->marqueeChanged = false;
+    mainSendRemctrlData (mainData);
     if (mainData->finished && mainData->playerState == PL_STATE_STOPPED) {
       mainData->finished = false;
-    }
-  }
-
-  /* Do this after sending the latest musicq / marquee data. */
-  /* Wait for both the PLAYBACK_FINISH message and for the player to stop */
-  /* The 'finished' message is sent to the playerui after the player has */
-  /* stopped, and it is necessary to wait for after it is sent before */
-  /* queueing the next song or playlist. */
-  /* Note that it is possible for the player to already be stopped. */
-  if (mainData->waitforpbfinish) {
-    if (mainData->pbfinishrcv == MAIN_PB_FINISH_DONE) {
-      if (mainData->pbfinishArgs != NULL) {
-        if (mainData->pbfinishType == MAIN_PB_TYPE_PL) {
-          mainQueuePlaylist (mainData, mainData->pbfinishArgs);
-        }
-        if (mainData->pbfinishType == MAIN_PB_TYPE_SONG) {
-          mainMusicqInsert (mainData, mainData->pbfinishRoute, mainData->pbfinishArgs);
-        }
-        mdfree (mainData->pbfinishArgs);
-        mainData->pbfinishArgs = NULL;
-      }
-      mainData->pbfinishrcv = 0;
-      mainData->waitforpbfinish = false;
     }
   }
 
@@ -1034,6 +976,7 @@ mainSendMarqueeData (maindata_t *mainData)
   bool        mobmarqueeactive = false;
 
   logProcBegin ();
+  mainData->marqueeChanged = false;
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
     mobmarqueeactive = true;
@@ -1864,25 +1807,19 @@ mainMusicqSwap (maindata_t *mainData, char *args)
 }
 
 static void
-mainNextSong (maindata_t *mainData)
+mainNextSongPlay (maindata_t *mainData)
 {
   int   currlen;
 
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-  if (currlen > 0) {
-    if (mainData->playerState == PL_STATE_STOPPED) {
-      mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
-    }
+  if (currlen > 1) {
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-    if (mainData->playerState == PL_STATE_PAUSED ||
-        mainData->playerState == PL_STATE_STOPPED) {
-      mainData->waitforpbfinish = true;
-      mainData->pbfinishrcv = 0;
-      if (mainData->playerState == PL_STATE_STOPPED) {
-        /* already stopped, will not receive a stop message */
-        ++mainData->pbfinishrcv;
-      }
-    }
+  }
+  if (mainData->playerState == PL_STATE_STOPPED) {
+    mainMusicQueuePlay (mainData);
+  }
+  if (mainData->playerState == PL_STATE_PAUSED) {
+    mainData->waitforpbfinish = true;
   }
 }
 
@@ -2361,11 +2298,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   char        tbuff2 [40];
   char        *jsbuff = NULL;
   int         jsonflag;
-  int32_t     musicqLen;
-  const char  *data;
   const char  *p;
-  dbidx_t     dbidx;
-  song_t      *song;
   mp_playerstatus_t *ps;
 
   logProcBegin ();
@@ -2396,6 +2329,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   }
 
   jsbuff = mdmalloc (BDJMSG_MAX);
+  *jsbuff = '\0';
 
   strlcpy (jsbuff, "{ ", BDJMSG_MAX);
 
@@ -2423,6 +2357,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
       break;
     }
   }
+
   snprintf (tbuff, sizeof (tbuff),
       "\"playstate\" : \"%s\"", p);
   strlcat (jsbuff, tbuff, BDJMSG_MAX);
@@ -2459,7 +2394,39 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (jsbuff, ", ", BDJMSG_MAX);
   strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
+  /* the javascript is built as two pieces */
+  /* the complete js message will be put together by bdj4rc.c */
+
+  connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
+
+  msgparsePlayerStatusFree (ps);
+  dataFree (jsbuff);
+
+  logProcEnd ("");
+}
+
+static void
+mainSendRemctrlData (maindata_t *mainData)
+{
+  char        *jsbuff = NULL;
+  int32_t     musicqLen;
+  char        tbuff [200];
+  const char  *data;
+  dbidx_t     dbidx;
+  song_t      *song;
+
+  if (! bdjoptGetNum (OPT_P_REMOTECONTROL)) {
+    return;
+  }
+
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+
+  jsbuff = mdmalloc (BDJMSG_MAX);
+  *jsbuff = '\0';
+
+  /* the javascript is built as two pieces */
+  /* the complete js message will be put together by bdj4rc.c */
+
   snprintf (tbuff, sizeof (tbuff),
       "\"qlength\" : \"%" PRId32 "\"", musicqLen);
   strlcat (jsbuff, ", ", BDJMSG_MAX);
@@ -2494,9 +2461,8 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   strlcat (jsbuff, " }", BDJMSG_MAX);
 
-  connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
+  connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_CURR_SONG_DATA, jsbuff);
 
-  msgparsePlayerStatusFree (ps);
   dataFree (jsbuff);
 
   logProcEnd ("");
@@ -2869,13 +2835,6 @@ mainPlaybackFinishStopProcess (maindata_t *mainData, const char *args)
       }
     }
   }
-}
-
-static void
-mainPlaybackFinishProcess (maindata_t *mainData, const char *args)
-{
-  mainMusicQueueNext (mainData, args);
-  ++mainData->pbfinishrcv;
 }
 
 static void
@@ -3308,8 +3267,5 @@ mainProcessPlayerState (maindata_t *mainData, char *data)
       mainData->playerState, logPlayerState (mainData->playerState));
   mainData->marqueeChanged = true;
 
-  if (mainData->playerState == PL_STATE_STOPPED) {
-    ++mainData->pbfinishrcv;
-  }
   msgparsePlayerStateFree (ps);
 }

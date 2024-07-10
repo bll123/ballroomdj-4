@@ -3090,19 +3090,23 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
   }
 
   if (action == MANAGE_QUEUE) {
-    /* add 1 to the index, as the tree-view index is one less than */
-    /* the music queue index */
     manage->musicqueueprocessflag = false;
     manage->lastinsertlocation = loc;
     snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
-        MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
+        MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   }
 
   if (action == MANAGE_PLAY) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, mqidx,
+    char  tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "%d", mqidx);
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
         MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+    /* and play the next song */
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG_PLAY, NULL);
   }
   logProcEnd ("");
 }

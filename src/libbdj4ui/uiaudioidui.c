@@ -428,8 +428,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uiwidgetp = uiCreateLabel (" ");
   uiWidgetSetMarginEnd (uiwidgetp, 4);
-//  uiWidgetExpandHoriz (uiwidgetp);
-//  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
   uiwcontFree (uiwidgetp);

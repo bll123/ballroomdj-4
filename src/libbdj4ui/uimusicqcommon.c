@@ -145,12 +145,17 @@ void
 uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   char          tbuff [80];
+  char          tmp [40];
 
-  /* clear the playlist queue and music queue, current playing song */
+  snprintf (tmp, sizeof (tmp), "%d", mqidx);
+  /* clear the playlist queue and music queue */
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
   /* and insert the new song */
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32,
-      mqidx, MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
+      mqidx, MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  /* any play the next song */
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG_PLAY, NULL);
 }
 
 
