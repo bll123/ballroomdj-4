@@ -444,7 +444,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (vbox);
 
-  /* dance settings : holds the tree view */
+  /* dance settings : holds the list of dances with settings */
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);

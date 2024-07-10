@@ -380,9 +380,9 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   uivlPopulate (duallist->uivl [which]);
 }
 
-/* select in the source tree. */
-/* add to the target tree. */
-/* remove from the source tree. */
+/* select in the source list. */
+/* add to the target list. */
+/* remove from the source list. */
 static bool
 uiduallistDispSelect (void *udata)
 {
@@ -431,9 +431,9 @@ uiduallistDispSelect (void *udata)
   return UICB_CONT;
 }
 
-/* select in the target tree. */
-/* add to the source tree (in the proper position). */
-/* remove from the target tree. */
+/* select in the target list. */
+/* add to the source list (in the proper position). */
+/* remove from the target list. */
 static bool
 uiduallistDispRemove (void *udata)
 {
