@@ -405,7 +405,7 @@ static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int d
 /* playlist */
 static bool     managePlaylistExport (void *udata);
 static bool     managePlaylistImport (void *udata);
-static bool     managePlaylistExportRespHandler (void *udata, const char *str, int type);
+static bool     managePlaylistExportRespHandler (void *udata, const char *fname, int type);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -2858,7 +2858,14 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_RESUME, tbuff);
 
-  manageSetSonglistName (manage, fn);
+  strlcpy (tbuff, fn, sizeof (tbuff));
+  /* CONTEXT: playlist: the name of the history song list */
+  if (strcmp (fn, _("History")) == 0 ||
+      strcmp (fn, "History") == 0) {
+    snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), fn);
+  }
+
+  manageSetSonglistName (manage, tbuff);
   if (preloadflag != MANAGE_PRELOAD) {
     manageLoadPlaylistCB (manage, fn);
   }
@@ -2991,7 +2998,7 @@ manageSonglistSave (manageui_t *manage)
   }
 
   manageSetSonglistName (manage, name);
-  uimusicqSave (manage->slmusicq, name);
+  uimusicqSave (manage->musicdb, manage->musicqupdate [MUSICQ_SL], name);
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   manageLoadPlaylistCB (manage, name);
   mdfree (name);
@@ -3267,13 +3274,14 @@ managePlaylistImportBDJ4 (void *udata)
 }
 
 static bool
-managePlaylistExportRespHandler (void *udata, const char *str, int type)
+managePlaylistExportRespHandler (void *udata, const char *fname, int type)
 {
   manageui_t  *manage = udata;
   char        *slname;
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
-  uimusicqExport (manage->slmusicq, str, slname, type);
+  uimusicqExport (manage->slmusicq, manage->musicqupdate [MUSICQ_SL],
+      fname, slname, type);
   mdfree (slname);
 
   return UICB_CONT;
@@ -3288,7 +3296,7 @@ manageExportBDJ4ResponseHandler (void *udata)
   nlist_t     *dbidxlist;
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
-  dbidxlist = uimusicqGetDBIdxList (manage->slmusicq, MUSICQ_SL);
+  dbidxlist = uimusicqGetDBIdxList (manage->musicqupdate [MUSICQ_SL]);
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->minfo.options, MANAGE_EXP_BDJ4_DIR, dir);

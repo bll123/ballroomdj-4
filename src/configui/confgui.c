@@ -400,7 +400,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
 
   if (cb != NULL) {
-    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInitI (cb, gui);
     uiSwitchSetCallback (gui->uiitem [widx].uiwidgetp,
         gui->uiitem [widx].callback);
   }

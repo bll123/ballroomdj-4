@@ -53,11 +53,11 @@ typedef enum {
 } pltype_t;
 
 enum {
-  PL_LIST_ALL,          // everything, include QueueDance
-  PL_LIST_AUTO_SEQ,
-  PL_LIST_NORMAL,       // excludes the special QueueDance playlist
+  PL_LIST_ALL,          // include QueueDance, exclude History
+  PL_LIST_AUTO_SEQ,     // exclude QueueDance
+  PL_LIST_NORMAL,       // exclude QueueDance, History
   PL_LIST_SEQUENCE,
-  PL_LIST_SONGLIST,
+  PL_LIST_SONGLIST,     // will include History
   PL_LIST_DIR,          // specified directory
   PL_LIST_MAX,
 };

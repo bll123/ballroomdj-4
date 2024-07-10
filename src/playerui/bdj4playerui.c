@@ -1134,10 +1134,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             /* CONTEXT: playerui: name of the saved history playlist */
             const char  *name = _("History");
 
-            uimusicqSetManageIdx (plui->uimusicq, MUSICQ_HISTORY);
-            uimusicqSave (plui->uimusicq, name);
-            playlistCheckAndCreate (name, PLTYPE_SONGLIST);
-            uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
+            uimusicqSave (plui->musicdb,
+                plui->musicqupdate [MUSICQ_HISTORY], name);
           }
 
           plui->lastLoc [musicqupdate->mqidx] = -1;
@@ -1950,7 +1948,7 @@ pluiReloadSave (playerui_t *plui, int mqidx)
     /* as playlists are global and not per-profile */
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
-    uimusicqSave (plui->uimusicq, tmp);
+    uimusicqSave (plui->musicdb, plui->musicqupdate [mqidx], tmp);
     playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
     uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
   }
@@ -2050,3 +2048,4 @@ pluiDragDropCallback (void *udata, const char *uri)
   uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
   return UICB_CONT;
 }
+

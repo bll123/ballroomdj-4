@@ -516,33 +516,6 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   logProcEnd ("");
 }
 
-nlist_t *
-uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
-{
-  mq_internal_t       *mqint;
-  nlistidx_t          mqiter;
-  nlistidx_t          key;
-  mp_musicqupditem_t  *musicqupditem;
-
-  mqint = uimusicq->ui [mqidx].mqInternalData;
-
-  uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE] =
-      uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST];
-  nlistFree (uimusicq->savelist);
-  uimusicq->savelist = nlistAlloc ("savelist", LIST_UNORDERED, NULL);
-
-  nlistStartIterator (mqint->musicqupdate->dispList, &mqiter);
-  while ((key = nlistIterateKey (mqint->musicqupdate->dispList, &mqiter)) >= 0) {
-    musicqupditem = nlistGetData (mqint->musicqupdate->dispList, key);
-    if (uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE] != NULL) {
-      callbackHandlerI (uimusicq->usercb [UIMUSICQ_USER_CB_ITERATE],
-          musicqupditem->dbidx);
-    }
-  }
-
-  return uimusicq->savelist;
-}
-
 nlistidx_t
 uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 {

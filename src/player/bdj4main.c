@@ -78,6 +78,8 @@ enum {
   MAIN_PREP_SIZE = 5,
   MAIN_NOT_SET = -1,
   MAIN_TS_DEBUG_MAX = 6,
+  /* song is stopped, and finish msg received */
+  MAIN_PB_FINISH_DONE = 2,
 };
 
 typedef struct {
@@ -728,7 +730,7 @@ mainProcessing (void *udata)
   /* queueing the next song or playlist. */
   /* Note that it is possible for the player to already be stopped. */
   if (mainData->waitforpbfinish) {
-    if (mainData->pbfinishrcv == 2) {
+    if (mainData->pbfinishrcv == MAIN_PB_FINISH_DONE) {
       if (mainData->pbfinishArgs != NULL) {
         if (mainData->pbfinishType == MAIN_PB_TYPE_PL) {
           mainQueuePlaylist (mainData, mainData->pbfinishArgs);

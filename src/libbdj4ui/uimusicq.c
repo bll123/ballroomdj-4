@@ -23,6 +23,7 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "playlist.h"
 #include "song.h"
 #include "songlist.h"
 #include "songlistutil.h"
@@ -57,7 +58,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   }
   uimusicq->musicqManageIdx = MUSICQ_PB_A;
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
-  uimusicq->savelist = NULL;
   uimusicq->cbci = MUSICQ_PB_A;
   uimusicq->pausePixbuf = NULL;
   uimusicq->peercount = 0;
@@ -94,9 +94,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].playlistsel = NULL;
     uimusicq->ui [i].slname = NULL;
   }
-
-  uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =
-      callbackInitI (uimusicqSaveListCallback, uimusicq);
 
   logProcEnd ("");
   return uimusicq;
@@ -138,7 +135,6 @@ uimusicqFree (uimusicq_t *uimusicq)
 
   uiWidgetClearPersistent (uimusicq->pausePixbuf);
   uiwcontFree (uimusicq->pausePixbuf);
-  nlistFree (uimusicq->savelist);
 
   mdfree (uimusicq);
   logProcEnd ("");
@@ -238,24 +234,6 @@ uimusicqGetCount (uimusicq_t *uimusicq)
 }
 
 void
-uimusicqSave (uimusicq_t *uimusicq, const char *fname)
-{
-  logProcBegin ();
-
-  if (! uimusicq->changed) {
-    logProcEnd ("not-changed");
-    return;
-  }
-
-  uimusicqGetDBIdxList (uimusicq, uimusicq->musicqManageIdx);
-  songlistutilCreateFromList (uimusicq->musicdb, fname, uimusicq->savelist);
-
-  uimusicq->changed = false;
-
-  logProcEnd ("");
-}
-
-void
 uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
 {
   if (uimusicq == NULL) {
@@ -266,23 +244,27 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
 }
 
 void
-uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int exptype)
+uimusicqExport (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate,
+    const char *fname, const char *slname, int exptype)
 {
-  uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
+  nlist_t   *dbidxlist;
+
+  dbidxlist = uimusicqGetDBIdxList (musicqupdate);
   switch (exptype) {
     case EI_TYPE_M3U: {
-      m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      m3uExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
     case EI_TYPE_XSPF: {
-      xspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      xspfExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
     case EI_TYPE_JSPF: {
-      jspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      jspfExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
   }
+  nlistFree (dbidxlist);
 }
 
 void
@@ -299,4 +281,42 @@ uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
     return;
   }
   uimusicq->usercb [UIMUSICQ_USER_CB_QUEUE] = uicb;
+}
+
+void
+uimusicqSave (musicdb_t *musicdb, mp_musicqupdate_t *musicqupdate, const char *name)
+{
+  nlist_t             *dbidxlist;
+
+  logProcBegin ();
+
+  dbidxlist = uimusicqGetDBIdxList (musicqupdate);
+  songlistutilCreateFromList (musicdb, name, dbidxlist);
+  nlistFree (dbidxlist);
+  playlistCheckAndCreate (name, PLTYPE_SONGLIST);
+
+  logProcEnd ("");
+}
+
+nlist_t *
+uimusicqGetDBIdxList (mp_musicqupdate_t *musicqupdate)
+{
+  nlist_t             *dbidxlist;
+  nlistidx_t          mqiter;
+  nlistidx_t          key;
+
+  dbidxlist = nlistAlloc ("dbidxlist", LIST_UNORDERED, NULL);
+  if (musicqupdate == NULL) {
+    return dbidxlist;
+  }
+
+  nlistStartIterator (musicqupdate->dispList, &mqiter);
+  while ((key = nlistIterateKey (musicqupdate->dispList, &mqiter)) >= 0) {
+    mp_musicqupditem_t  *musicqupditem;
+
+    musicqupditem = nlistGetData (musicqupdate->dispList, key);
+    nlistSetNum (dbidxlist, musicqupditem->dbidx, 0);
+  }
+
+  return dbidxlist;
 }

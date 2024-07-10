@@ -702,10 +702,18 @@ playlistGetPlaylistList (int flag, const char *dir)
       continue;
     }
 
+    /* check for the special 'QueueDance' playlist */
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
         (strcmp (tfn, _("QueueDance")) == 0 ||
         strcmp (tfn, "QueueDance") == 0)) {
+      continue;
+    }
+    /* check for the 'History' playlist */
+    if ((flag == PL_LIST_NORMAL || flag == PL_LIST_ALL) &&
+        /* CONTEXT: playlist: the name of the history song list */
+        (strcmp (tfn, _("History")) == 0 ||
+        strcmp (tfn, "History") == 0)) {
       continue;
     }
     if (flag == PL_LIST_AUTO_SEQ) {

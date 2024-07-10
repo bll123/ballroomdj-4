@@ -159,12 +159,3 @@ uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)
 {
   uimusicq->ispeercall = val;
 }
-
-bool
-uimusicqSaveListCallback (void *udata, int32_t dbidx)
-{
-  uimusicq_t  *uimusicq = udata;
-
-  nlistSetStr (uimusicq->savelist, dbidx, NULL);
-  return UICB_CONT;
-}

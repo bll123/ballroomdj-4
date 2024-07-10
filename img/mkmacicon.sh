@@ -3,6 +3,11 @@
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd img
+
 BASE=bdj4_icon
 BASEI=bdj4_icon_inst
 

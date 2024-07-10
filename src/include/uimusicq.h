@@ -34,7 +34,6 @@ enum {
 enum {
   UIMUSICQ_CB_QUEUE_PLAYLIST,
   UIMUSICQ_CB_QUEUE_DANCE,
-  UIMUSICQ_CB_SAVE_LIST,
   UIMUSICQ_CB_MAX,
 };
 
@@ -42,7 +41,6 @@ enum {
 enum {
   UIMUSICQ_USER_CB_CLEAR_QUEUE,
   UIMUSICQ_USER_CB_EDIT,
-  UIMUSICQ_USER_CB_ITERATE,        // temporary for save
   UIMUSICQ_USER_CB_NEW_SEL,
   UIMUSICQ_USER_CB_QUEUE,
   UIMUSICQ_USER_CB_SONG_SAVE,
@@ -91,7 +89,6 @@ typedef struct uimusicq {
   uimusicq_t        *peers [UIMUSICQ_PEER_MAX];
   bool              ispeercall;
   /* temporary for save */
-  nlist_t           *savelist;
   int               cbci;
   bool              backupcreated : 1;
   bool              changed : 1;
@@ -113,11 +110,12 @@ void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
 void  uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
 nlistidx_t uimusicqGetCount (uimusicq_t *uimusicq);
-void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb);
-void  uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int exptype);
+void uimusicqExport (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, const char *fname, const char *slname, int exptype);
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
+void  uimusicqSave (musicdb_t *musicdb, mp_musicqupdate_t *musicqupdate, const char *name);
+nlist_t *uimusicqGetDBIdxList (mp_musicqupdate_t *musicqupdate);
 
 /* uimusicqui.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
@@ -135,7 +133,6 @@ void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 void      uimusicqSetMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetRequestLabel (uimusicq_t *uimusicq, const char *txt);
-nlist_t * uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx);
 
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count);
@@ -150,7 +147,6 @@ void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
-bool  uimusicqSaveListCallback (void *udata, int32_t dbidx);
 
 #endif /* INC_UIMUSICQ_H */
 

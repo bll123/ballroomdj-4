@@ -85,7 +85,7 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
   /* CONTEXT: select file: file type for the file selection dialog (song list) */
   title = _("Song List");
 
-  playlistSel = PL_LIST_NORMAL; /* excludes queuedance */
+  playlistSel = PL_LIST_NORMAL; /* excludes queuedance, history */
   switch (type) {
     case SELFILE_SONGLIST: {
       playlistSel = PL_LIST_SONGLIST;
