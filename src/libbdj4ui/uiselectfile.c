@@ -105,18 +105,21 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     }
   }
 
-  if (cb != NULL) {
-    filelist = playlistGetPlaylistList (playlistSel, NULL);
-    slistFree (selectfile->filelist);
-    selectfile->filelist = filelist;
-
-    selectFileCreateDialog (selectfile, filelist, title, cb);
-    uiDialogShow (selectfile->selfileDialog);
-
-    x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
-    y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMove (selectfile->selfileDialog, x, y, -1);
+  if (cb == NULL) {
+    return;
   }
+
+  filelist = playlistGetPlaylistList (playlistSel, NULL);
+  slistFree (selectfile->filelist);
+  selectfile->filelist = filelist;
+
+  selectFileCreateDialog (selectfile, filelist, title, cb);
+  uiDialogShow (selectfile->selfileDialog);
+
+  x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
+  y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
+  uiWindowMove (selectfile->selfileDialog, x, y, -1);
+  uivlUpdateDisplay (selectfile->uivl);
 }
 
 void

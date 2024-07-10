@@ -405,8 +405,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
   uivlConfigureScrollbar (vl);
-  uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
-  uiScrollbarSetUpper (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
 
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s init-disp-size: %d", vl->tag, dispsize);
@@ -1669,6 +1667,12 @@ uivlDisplay (uivirtlist_t *vl)
 
   /* at this point, the heading row is not yet mapped */
   logProcEnd ("");
+}
+
+void
+uivlUpdateDisplay (uivirtlist_t *vl)
+{
+  uivlConfigureScrollbar (vl);
 }
 
 /* display after a change */

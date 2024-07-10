@@ -124,6 +124,7 @@ void uivlRestoreSelections (uivirtlist_t *vl);
 
 /* processing */
 void  uivlDisplay (uivirtlist_t *vl);
+void uivlUpdateDisplay (uivirtlist_t *vl);
 void  uivlPopulate (uivirtlist_t *vl);
 uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 
