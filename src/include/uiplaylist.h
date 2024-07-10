@@ -10,11 +10,13 @@
 typedef struct uiplaylist uiplaylist_t;
 
 enum {
-  PL_PACK_START,
-  PL_PACK_END,
+  UIPL_PACK_START,
+  UIPL_PACK_END,
+  UIPL_FLAG_NONE,
+  UIPL_USE_BLANK,
 };
 
-uiplaylist_t *uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type, const char *label, int where);
+uiplaylist_t *uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type, const char *label, int where, int flag);
 void uiplaylistFree (uiplaylist_t *uiplaylist);
 void uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir);
 const char *uiplaylistGetKey (uiplaylist_t *uiplaylist);

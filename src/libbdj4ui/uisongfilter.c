@@ -524,7 +524,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitS (
       uisfPlaylistSelectHandler, uisf);
   uisf->uiplaylist = uiplaylistCreate (uisf->wcont [UISF_W_DIALOG], hbox,
-      PL_LIST_ALL, NULL, PL_PACK_START);
+      PL_LIST_ALL, NULL, UIPL_PACK_START, UIPL_USE_BLANK);
   uiplaylistSetSelectCallback (uisf->uiplaylist, uisf->callbacks [UISF_CB_PLAYLIST_SEL]);
   /* looks bad if added to the size group */
 

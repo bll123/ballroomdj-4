@@ -29,13 +29,14 @@ typedef struct uiplaylist {
   callback_t        *selectcb;
   ilist_t           *ddlist;
   slist_t           *ddlookup;
+  bool              blankflag : 1;
 } uiplaylist_t;
 
 static int32_t uiplaylistSelectHandler (void *udata, const char *key);
 
 uiplaylist_t *
 uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
-    const char *label, int where)
+    const char *label, int where, int flag)
 {
   uiplaylist_t  *uiplaylist;
   int           titleflag = DD_REPLACE_TITLE;
@@ -47,6 +48,10 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
   uiplaylist->selectcb = NULL;
   uiplaylist->ddlist = NULL;
   uiplaylist->ddlookup = NULL;
+  uiplaylist->blankflag = false;
+  if (flag == UIPL_USE_BLANK) {
+    uiplaylist->blankflag = true;
+  }
 
   uiplaylistSetList (uiplaylist, type, NULL);
   uiplaylist->internalselcb =
@@ -57,10 +62,10 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
   if (label == NULL) {
     label = "";
   }
-  if (where == PL_PACK_START) {
+  if (where == UIPL_PACK_START) {
     dwhere = DD_PACK_START;
   }
-  if (where == PL_PACK_END) {
+  if (where == UIPL_PACK_END) {
     dwhere = DD_PACK_END;
   }
   uiplaylist->uidd = uiddCreate ("uipl",
@@ -108,10 +113,13 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
   slistSetSize (ddlookup, count);
 
   idx = 0;
-  ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, "");
-  ilistSetStr (ddlist, idx, DD_LIST_DISP, "");
-  slistSetNum (ddlookup, "", idx);
-  ++idx;
+  if (uiplaylist->blankflag) {
+    /* the blank entry is used for the song filter dialog */
+    ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, "");
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, "");
+    slistSetNum (ddlookup, "", idx);
+    ++idx;
+  }
 
   slistStartIterator (pllist, &iteridx);
   while ((disp = slistIterateKey (pllist, &iteridx)) != NULL) {

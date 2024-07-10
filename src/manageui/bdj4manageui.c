@@ -2612,7 +2612,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcontFree (uiwidgetp);
 
   manage->cfpl = uiplaylistCreate (manage->wcont [MANAGE_W_CFPL_DIALOG],
-      hbox, PL_LIST_AUTO_SEQ, NULL, PL_PACK_START);
+      hbox, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();

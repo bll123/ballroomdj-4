@@ -355,7 +355,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
     uimusicq->ui [ci].playlistsel = uiplaylistCreate (parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
-        hbox, PL_LIST_NORMAL, _("Queue Playlist"), PL_PACK_END);
+        hbox, PL_LIST_NORMAL, _("Queue Playlist"), UIPL_PACK_END, UIPL_FLAG_NONE);
     uiplaylistSetSelectCallback (uimusicq->ui [ci].playlistsel,
         uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST]);
 
