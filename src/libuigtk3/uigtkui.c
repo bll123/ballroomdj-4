@@ -31,6 +31,11 @@
 
 #include "ui/uiui.h"
 
+enum {
+  UIUI_MIX,
+  UIUI_SHADE,
+};
+
 static char **cssdata = NULL;
 static int  csscount = 0;
 static bool initialized = false;
@@ -39,7 +44,7 @@ static const char *currcss = NULL;
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel, const GLogField* fields, gsize n_fields, gpointer udata);
 static void uiAddScreenCSS (const char *css);
 static void uicssParseError (GtkCssProvider* self, GtkCssSection* section, GError* error, gpointer udata);
-static void uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor, const char *color, const char *classnm, double shadeval);
+static void uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor, const char *color, const char *classnm, double shadeval, int type);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
@@ -268,13 +273,13 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
   if (rowselColor != NULL) {
     uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
-        rowselColor, SELECTED_CLASS, 0.55);
+        rowselColor, SELECTED_CLASS, 0.55, UIUI_SHADE);
   }
 
-//  if (rowhlColor != NULL) {
-//    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
-//        rowhlColor, ROW_HL_CLASS, 0.8);
-//  }
+  if (rowhlColor != NULL) {
+    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+        rowhlColor, ROW_HL_CLASS, 0.2, UIUI_MIX);
+  }
 
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
@@ -398,7 +403,7 @@ uicssParseError (GtkCssProvider* self, GtkCssSection* section,
 
 static void
 uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
-    const char *color, const char *classnm, double shadeval)
+    const char *color, const char *classnm, double shadeval, int type)
 {
   char    tmpcolor [40];
   char    wbuff [400];
@@ -406,8 +411,14 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
   if (color == accentColor) {
     /* gtk must have the radix as a . character */
     /* do a little math to force this */
-    snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%d.%02d)", color,
-        (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
+    if (type == UIUI_SHADE) {
+      snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%d.%02d)",
+          color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
+    }
+    if (type == UIUI_MIX) {
+      snprintf (tmpcolor, sizeof (tmpcolor), "mix(@theme_bg_color,%s,%d.%02d)",
+          color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
+    }
   } else {
     strlcpy (tmpcolor, color, sizeof (tmpcolor));
   }
