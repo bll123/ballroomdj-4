@@ -242,7 +242,8 @@ static bool uivlScrollEvent (void *udata, int32_t dir);
 static bool uivlMotionEvent (void *udata, int32_t dispidx);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
-static void uivlClearSelections (uivirtlist_t *vl);
+static void uivlClearAllSelections (uivirtlist_t *vl);
+static void uivlClearSelection (uivirtlist_t *vl, int32_t rownum);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVertSizeChg (void *udata, int32_t width, int32_t height);
@@ -1500,7 +1501,7 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   /* copy the selected list to vl_b */
   /* do not call the selection change callback for vl_b */
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: copy sel from %s to %s", vl_a->tag, vl_b->tag);
-  uivlClearSelections (vl_b);
+  uivlClearAllSelections (vl_b);
   nlistStartIterator (vl_a->selected, &iter_a);
   while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
     uivlAddSelection (vl_b, rowidx);
@@ -2361,11 +2362,35 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
 }
 
 static void
-uivlClearSelections (uivirtlist_t *vl)
+uivlClearAllSelections (uivirtlist_t *vl)
 {
   logProcBegin ();
   nlistFree (vl->selected);
   vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
+  logProcEnd ("");
+}
+
+static void
+uivlClearSelection (uivirtlist_t *vl, int32_t rownum)
+{
+  nlist_t     *newsel;
+  nlistidx_t  iteridx;
+  nlistidx_t  key;
+
+  logProcBegin ();
+  newsel = nlistAlloc ("vl-selected", LIST_UNORDERED, NULL);
+  nlistSetSize (newsel, nlistGetCount (vl->selected));
+  nlistStartIterator (vl->selected, &iteridx);
+  while ((key = nlistIterateKey (vl->selected, &iteridx)) >= 0) {
+    if (key == rownum) {
+      continue;
+    }
+    nlistSetNum (newsel, key, true);
+    vl->currSelection = key;
+  }
+  nlistSort (newsel);
+  nlistFree (vl->selected);
+  vl->selected = newsel;
   logProcEnd ("");
 }
 
@@ -2593,16 +2618,26 @@ uivlFocusCallback (void *udata)
 static void
 uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
 {
+  bool    controlpressed = false;
+  bool    shiftpressed = false;
+  bool    already = false;
+
   logProcBegin ();
+
   if (vl->wcont [VL_W_EVENTH] != NULL) {
-    if (vl->allowmultiple == false ||
-        ! uiEventIsControlPressed (vl->wcont [VL_W_EVENTH])) {
-      uivlClearSelections (vl);
-      uivlClearDisplaySelections (vl);
+    if (uiEventIsControlPressed (vl->wcont [VL_W_EVENTH])) {
+      controlpressed = true;
+    }
+    if (uiEventIsShiftPressed (vl->wcont [VL_W_EVENTH])) {
+      shiftpressed = true;
     }
   }
-  if (vl->allowmultiple == true &&
-      uiEventIsShiftPressed (vl->wcont [VL_W_EVENTH])) {
+
+  if (vl->allowmultiple == false || ! controlpressed) {
+    uivlClearAllSelections (vl);
+  }
+
+  if (vl->allowmultiple == true && shiftpressed) {
     int32_t   min = rownum;
     int32_t   max = rownum;
 
@@ -2617,7 +2652,21 @@ uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum)
       uivlAddSelection (vl, trownum);
     }
   }
-  uivlAddSelection (vl, rownum);
+
+  if (vl->allowmultiple == true && controlpressed) {
+    if (nlistGetNum (vl->selected, rownum) == true) {
+      already = true;
+    }
+  }
+
+  if (vl->allowmultiple == true && controlpressed && already) {
+    uivlClearSelection (vl, rownum);
+  } else {
+    /* in all other cases, the selection is added */
+    uivlAddSelection (vl, rownum);
+  }
+
+  uivlClearDisplaySelections (vl);
   uivlSetDisplaySelections (vl);
   if (nlistGetCount (vl->selected) == 1) {
     vl->lastSelection = vl->currSelection;
@@ -2795,7 +2844,7 @@ uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int coli
   bool    rc;
 
   rc = uivlValidateColumn (vl, initstate, colidx, func);
-  if (rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
+  if (rc && rownum != VL_ROW_HEADING && (rownum < 0 || rownum >= vl->numrows)) {
     rc = false;
   }
 

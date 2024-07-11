@@ -3545,7 +3545,6 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
       uisongselRestoreSelections (manage->mmsongsel);
-      uisongselSetPeerHandling (manage->mmsongsel, SONGSEL_ALL_PEERS);
       if (manage->selusesonglist) {
         uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
       }
@@ -3572,7 +3571,6 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     if (manage->selusesonglist &&
         manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
       uisongselSaveSelections (manage->mmsongsel);
-      uisongselSetPeerHandling (manage->mmsongsel, SONGSEL_NO_PEERS);
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);

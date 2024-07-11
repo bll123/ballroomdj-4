@@ -7,7 +7,7 @@
 **4.11.0 2024-7---**
 
 * Bug Fixes:
-    * All text fields in listings that can be long are now displayed with ellipses if necessary.
+    * All text fields in listings that may be long are now displayed with ellipses if necessary.
     * Edit Dances: Fixed a long-standing bug when adding multiple dances.
     * Management, Player, Mobile Remote Control: Fix where the 'History' songlist is allowed to be listed.
     * Mobile Remote Control: Fixed various issues.

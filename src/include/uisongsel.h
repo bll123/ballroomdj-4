@@ -28,11 +28,6 @@ enum {
   UISONGSEL_MQ_NOTSET = -1,
 };
 
-enum {
-  SONGSEL_NO_PEERS,
-  SONGSEL_ALL_PEERS,
-};
-
 typedef struct uisongsel {
   const char        *tag;
   conn_t            *conn;
@@ -53,7 +48,6 @@ typedef struct uisongsel {
   nlist_t           *musicqdbidxlist [MUSICQ_MAX];
   nlist_t           *songlistdbidxlist;
   /* peers */
-  int               peerhandling;
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];
   bool              ispeercall;
@@ -75,7 +69,6 @@ uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts,
     uisongfilter_t *uisf, dispselsel_t dispselType);
 void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
-void uisongselSetPeerHandling (uisongsel_t *uisongsel, int peerhandling);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);

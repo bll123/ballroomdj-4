@@ -448,26 +448,26 @@ uisongselApplySongFilter (void *udata)
 
   uisongselPopulateData (uisongsel);
 
+  /* set a default selection */
+  uisongselSetSelection (uisongsel, 0);
+
   ssint->inapply = false;
 
   if (uisongsel->ispeercall) {
     return UICB_CONT;
   }
-  if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
-    return UICB_CONT;
-  }
 
-  /* the song filter has been processed, the peers need to be populated */
+  /* the song filter has been processed, the peers need to have their */
+  /* song filter set and be re-populated */
 
   for (int i = 0; i < uisongsel->peercount; ++i) {
     if (uisongsel->peers [i] == NULL) {
       continue;
     }
-    uisongselPopulateData (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselApplySongFilter (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
-
-  /* set a default selection */
-  uisongselSetSelection (uisongsel, 0);
 
   logProcEnd ("");
   return UICB_CONT;
@@ -501,10 +501,6 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
-    return UICB_CONT;
-  }
-  if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
-    logProcEnd ("no-peers");
     return UICB_CONT;
   }
 
@@ -636,10 +632,6 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
 
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
-    return;
-  }
-  if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
-    logProcEnd ("no-peers");
     return;
   }
 
@@ -948,8 +940,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
 
   /* process the peers after the selections have been made */
-  if (! uisongsel->ispeercall &&
-      uisongsel->peerhandling == SONGSEL_ALL_PEERS) {
+  if (! uisongsel->ispeercall) {
     logMsg (LOG_DBG, LOG_INFO, "%s proc-sel-chg set peers", uisongsel->tag);
     for (int i = 0; i < uisongsel->peercount; ++i) {
       if (uisongsel->peers [i] == NULL) {
@@ -990,10 +981,6 @@ uisongselProcessDisplayChg (void *udata)
 
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
-    return UICB_CONT;
-  }
-  if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
-    logProcEnd ("no-peers");
     return UICB_CONT;
   }
 
