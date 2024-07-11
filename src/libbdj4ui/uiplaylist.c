@@ -28,7 +28,6 @@ typedef struct uiplaylist {
   callback_t        *internalselcb;
   callback_t        *selectcb;
   ilist_t           *ddlist;
-  slist_t           *ddlookup;
   bool              blankflag : 1;
 } uiplaylist_t;
 
@@ -47,7 +46,6 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
   uiplaylist->internalselcb = NULL;
   uiplaylist->selectcb = NULL;
   uiplaylist->ddlist = NULL;
-  uiplaylist->ddlookup = NULL;
   uiplaylist->blankflag = false;
   if (flag == UIPL_USE_BLANK) {
     uiplaylist->blankflag = true;
@@ -86,7 +84,6 @@ uiplaylistFree (uiplaylist_t *uiplaylist)
   callbackFree (uiplaylist->internalselcb);
   uiddFree (uiplaylist->uidd);
   ilistFree (uiplaylist->ddlist);
-  slistFree (uiplaylist->ddlookup);
   mdfree (uiplaylist);
 }
 
@@ -96,28 +93,23 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
   slist_t     *pllist;
   slistidx_t  iteridx;
   ilist_t     *ddlist;
-  slist_t     *ddlookup;
   const char  *disp;
   const char  *plkey;
   int         count;
   int         idx;
 
   ilistFree (uiplaylist->ddlist);
-  slistFree (uiplaylist->ddlookup);
 
   pllist = playlistGetPlaylistList (type, dir);
   count = slistGetCount (pllist);
   ddlist = ilistAlloc ("uipl", LIST_ORDERED);
   ilistSetSize (ddlist, count);
-  ddlookup = slistAlloc ("uipl-lookup", LIST_UNORDERED, NULL);
-  slistSetSize (ddlookup, count);
 
   idx = 0;
   if (uiplaylist->blankflag) {
     /* the blank entry is used for the song filter dialog */
     ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, "");
     ilistSetStr (ddlist, idx, DD_LIST_DISP, "");
-    slistSetNum (ddlookup, "", idx);
     ++idx;
   }
 
@@ -126,14 +118,11 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
     plkey = slistGetStr (pllist, disp);
     ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, plkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
-    slistSetNum (ddlookup, plkey, idx);
     ++idx;
   }
 
-  slistSort (ddlookup);
 
   uiplaylist->ddlist = ddlist;
-  uiplaylist->ddlookup = ddlookup;
 
   uiddSetList (uiplaylist->uidd, uiplaylist->ddlist);
 
@@ -168,16 +157,11 @@ uiplaylistGetKey (uiplaylist_t *uiplaylist)
 void
 uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn)
 {
-  slistidx_t      idx;
-
   if (uiplaylist == NULL) {
     return;
   }
 
-  idx = slistGetNum (uiplaylist->ddlookup, fn);
-  if (idx >= 0) {
-    uiddSetSelection (uiplaylist->uidd, idx);
-  }
+  uiddSetSelectionByStrKey (uiplaylist->uidd, fn);
 }
 
 

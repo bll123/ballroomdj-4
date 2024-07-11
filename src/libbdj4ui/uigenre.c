@@ -29,7 +29,6 @@ typedef struct uigenre {
   callback_t    *internalselcb;
   callback_t    *selectcb;
   ilist_t       *ddlist;
-  nlist_t       *ddlookup;
   ilistidx_t    selectedidx;
   bool          allflag : 1;
 } uigenre_t;
@@ -52,7 +51,6 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenre->internalselcb = NULL;
   uigenre->selectcb = NULL;
   uigenre->ddlist = NULL;
-  uigenre->ddlookup = NULL;
 
   uigenreCreateGenreList (uigenre);
   uigenre->internalselcb = callbackInitI (uigenreSelectHandler, uigenre);
@@ -74,7 +72,6 @@ uigenreFree (uigenre_t *uigenre)
   callbackFree (uigenre->internalselcb);
   uiddFree (uigenre->uidd);
   ilistFree (uigenre->ddlist);
-  nlistFree (uigenre->ddlookup);
   mdfree (uigenre);
 }
 
@@ -96,7 +93,7 @@ uigenreSetKey (uigenre_t *uigenre, ilistidx_t gkey)
   }
 
   uigenre->selectedidx = gkey;
-  uiddSetSelection (uigenre->uidd, nlistGetNum (uigenre->ddlookup, gkey));
+  uiddSetSelectionByNumKey (uigenre->uidd, gkey);
 }
 
 void
@@ -139,7 +136,6 @@ uigenreCreateGenreList (uigenre_t *uigenre)
   slist_t   *genrelist;
   slistidx_t  iteridx;
   ilist_t     *ddlist;
-  nlist_t     *ddlookup;
   const char  *disp;
   int         count;
   ilistidx_t  gkey;
@@ -149,8 +145,6 @@ uigenreCreateGenreList (uigenre_t *uigenre)
   count = slistGetCount (genrelist);
   ddlist = ilistAlloc ("uigenre", LIST_ORDERED);
   ilistSetSize (ddlist, count);
-  ddlookup = nlistAlloc ("uigenre-lookup", LIST_UNORDERED, NULL);
-  nlistSetSize (ddlookup, count);
 
   idx = 0;
   if (uigenre->allflag) {
@@ -158,7 +152,6 @@ uigenreCreateGenreList (uigenre_t *uigenre)
     disp = _("All Genres");
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
-    nlistSetNum (ddlookup, DD_NO_SELECTION, idx);
     ++idx;
   }
 
@@ -167,13 +160,9 @@ uigenreCreateGenreList (uigenre_t *uigenre)
     gkey = slistGetNum (genrelist, disp);
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, gkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
-    nlistSetNum (ddlookup, gkey, idx);
     ++idx;
   }
 
-  nlistSort (ddlookup);
-
   uigenre->ddlist = ddlist;
-  uigenre->ddlookup = ddlookup;
 }
 

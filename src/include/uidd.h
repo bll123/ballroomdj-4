@@ -34,6 +34,8 @@ uidd_t *uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int 
 void uiddFree (uidd_t *dd);
 void uiddSetList (uidd_t *dd, ilist_t *list);
 void uiddSetSelection (uidd_t *dd, nlistidx_t idx);
+void uiddSetSelectionByNumKey (uidd_t *dd, ilistidx_t key);
+void uiddSetSelectionByStrKey (uidd_t *dd, const char *key);
 void uiddSetState (uidd_t *dd, int state);
 const char *uiddGetSelectionStr (uidd_t *dd);
 

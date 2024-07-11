@@ -403,6 +403,8 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
   char    wbuff [400];
 
   if (color == accentColor) {
+    /* gtk must have the radix as a . character */
+    /* do a little math to force this */
     snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%d.%02d)", color,
         (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
   } else {

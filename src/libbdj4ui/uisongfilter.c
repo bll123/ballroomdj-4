@@ -95,8 +95,6 @@ typedef struct uisongfilter {
   uiplaylist_t      *uiplaylist;
   uidd_t            *ddsortby;
   ilist_t           *ddsortbylist;
-  slist_t           *ddlookup;
-  ilistidx_t        sortbyidx;        // for initialization
   uidance_t         *uidance;
   uigenre_t         *uigenre;
   uirating_t        *uirating;
@@ -151,8 +149,6 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->options = options;
   uisf->ddsortby = NULL;
   uisf->ddsortbylist = NULL;
-  uisf->ddlookup = NULL;
-  uisf->sortbyidx = 0;
   uisf->songfilter = songfilterAlloc ();
   songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
@@ -200,7 +196,6 @@ uisfFree (uisongfilter_t *uisf)
   playlistFree (uisf->playlist);
   uiddFree (uisf->ddsortby);
   ilistFree (uisf->ddsortbylist);
-  slistFree (uisf->ddlookup);
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiwcontFree (uisf->labels [i]);
   }
@@ -360,7 +355,8 @@ uisfInitDisplay (uisongfilter_t *uisf)
     uiplaylistSetKey (uisf->uiplaylist, uisf->playlistname);
   }
 
-  uiddSetSelection (uisf->ddsortby, uisf->sortbyidx);
+  uiddSetSelectionByStrKey (uisf->ddsortby,
+      songfilterGetSort (uisf->songfilter));
   uidanceSetKey (uisf->uidance, uisf->danceIdx);
   uigenreSetKey (uisf->uigenre, -1);
   uiEntrySetValue (uisf->wcont [UISF_W_SEARCH], "");
@@ -401,7 +397,7 @@ uisfSortBySelect (uisongfilter_t *uisf, const char *sval)
 {
   songfilterSetSort (uisf->songfilter, sval);
   nlistSetStr (uisf->options, SONGSEL_SORT_BY, sval);
-  uisf->sortbyidx = slistGetNum (uisf->ddlookup, sval);
+  uiddSetSelectionByStrKey (uisf->ddsortby, sval);
 }
 
 static void
@@ -409,20 +405,15 @@ uisfCreateSortByList (uisongfilter_t *uisf)
 {
   slist_t     *sortoptlist;
   ilist_t     *ddlist;
-  slist_t     *ddlookup;
   slistidx_t  iteridx;
   int         count;
   const char  *disp;
-  const char  *sortby;
 
   logProcBegin ();
 
-  sortby = songfilterGetSort (uisf->songfilter);
   sortoptlist = sortoptGetList (uisf->sortopt);
   ddlist = ilistAlloc ("sf-sortby-i", LIST_ORDERED);
   ilistSetSize (ddlist, slistGetCount (sortoptlist));
-  ddlookup = slistAlloc ("sf-sortby-s", LIST_ORDERED, NULL);
-  slistSetSize (ddlist, slistGetCount (sortoptlist));
 
   count = 0;
   slistStartIterator (sortoptlist, &iteridx);
@@ -432,14 +423,9 @@ uisfCreateSortByList (uisongfilter_t *uisf)
     sortkey = slistGetStr (sortoptlist, disp);
     ilistSetStr (ddlist, count, DD_LIST_KEY_STR, sortkey);
     ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
-    slistSetNum (ddlookup, sortkey, count);
-    if (strcmp (sortby, sortkey) == 0) {
-      uisf->sortbyidx = count;
-    }
     ++count;
   }
   uisf->ddsortbylist = ddlist;
-  uisf->ddlookup = ddlookup;
   logProcEnd ("");
 }
 

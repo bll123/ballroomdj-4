@@ -19,6 +19,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uidd.h"
@@ -61,6 +62,8 @@ typedef struct uidd {
   callback_t    *ddcb;
   uivirtlist_t  *uivl;
   ilist_t       *ddlist;
+  nlist_t       *ddnumlookup;
+  slist_t       *ddstrlookup;
   int           listtype;
   size_t        dispwidth;
   ilistidx_t    selectedidx;
@@ -78,12 +81,11 @@ static void uiddFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uiddSelected (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 static void uiddSetSelectionInternal (uidd_t *dd, ilistidx_t idx);
 static void uiddSetButtonText (uidd_t *dd, const char *str);
-static void uiddCalcDisplayWidth (uidd_t *dd);
+static void uiddProcessList (uidd_t *dd);
 
 uidd_t *
 uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
-    ilist_t *ddlist, int listtype,
-    const char *title, int titleflag,
+    ilist_t *ddlist, int listtype, const char *title, int titleflag,
     callback_t *ddcb)
 {
   uidd_t      *dd = NULL;
@@ -102,6 +104,8 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->titleflag = titleflag;
   dd->ddcb = ddcb;
   dd->ddlist = ddlist;
+  dd->ddnumlookup = NULL;
+  dd->ddstrlookup = NULL;
   dd->dispwidth = 0;
   dd->listtype = listtype;
   dd->parentwin = parentwin;
@@ -110,7 +114,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->open = false;
   dd->uivl = NULL;
 
-  uiddCalcDisplayWidth (dd);
+  uiddProcessList (dd);
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
@@ -157,6 +161,8 @@ uiddFree (uidd_t *dd)
   for (int i = 0; i < DD_CB_MAX; ++i) {
     callbackFree (dd->callbacks [i]);
   }
+  nlistFree (dd->ddnumlookup);
+  slistFree (dd->ddstrlookup);
   dataFree (dd->title);
   dd->dialogcreated = false;
 
@@ -172,7 +178,7 @@ uiddSetList (uidd_t *dd, ilist_t *list)
   }
 
   dd->ddlist = list;
-  uiddCalcDisplayWidth (dd);
+  uiddProcessList (dd);
   uivlSetColumnMinWidth (dd->uivl, DD_COL_DISP, dd->dispwidth);
   uivlSetNumRows (dd->uivl, ilistGetCount (dd->ddlist));
 }
@@ -195,6 +201,34 @@ uiddSetSelection (uidd_t *dd, ilistidx_t idx)
   if (dd->dialogcreated) {
     uiddSetSelectionInternal (dd, idx);
   }
+}
+
+void
+uiddSetSelectionByNumKey (uidd_t *dd, ilistidx_t key)
+{
+  ilistidx_t    idx;
+
+  if (dd == NULL || dd->ident != DD_IDENT || dd->ddnumlookup == NULL) {
+    return;
+  }
+
+  idx = nlistGetNum (dd->ddnumlookup, key);
+fprintf (stderr, "dd: key: %d idx: %d\n", key, idx);
+  uiddSetSelection (dd, idx);
+}
+
+void
+uiddSetSelectionByStrKey (uidd_t *dd, const char *key)
+{
+  ilistidx_t    idx;
+
+  if (dd == NULL || dd->ident != DD_IDENT || dd->ddstrlookup == NULL) {
+    return;
+  }
+
+  idx = slistGetNum (dd->ddstrlookup, key);
+fprintf (stderr, "dd: key: %s idx: %d\n", key, idx);
+  uiddSetSelection (dd, idx);
 }
 
 void
@@ -356,20 +390,50 @@ uiddSetButtonText (uidd_t *dd, const char *str)
 }
 
 static void
-uiddCalcDisplayWidth (uidd_t *dd)
+uiddProcessList (uidd_t *dd)
 {
-  ilistidx_t    iteridx;
-  ilistidx_t    idx;
+  ilistidx_t    iter;
+  ilistidx_t    key;
+  nlist_t       *ddnumlookup = NULL;
+  slist_t       *ddstrlookup = NULL;
 
-  ilistStartIterator (dd->ddlist, &iteridx);
-  while ((idx = ilistIterateKey (dd->ddlist, &iteridx)) != LIST_LOC_INVALID) {
+  if (dd->listtype == DD_LIST_TYPE_NUM) {
+    ddnumlookup = nlistAlloc ("dd-num-lookup", LIST_UNORDERED, NULL);
+    nlistSetSize (ddnumlookup, ilistGetCount (dd->ddlist));
+  }
+  if (dd->listtype == DD_LIST_TYPE_STR) {
+    ddstrlookup = slistAlloc ("dd-str-lookup", LIST_UNORDERED, NULL);
+    slistSetSize (ddnumlookup, ilistGetCount (dd->ddlist));
+  }
+
+  ilistStartIterator (dd->ddlist, &iter);
+  while ((key = ilistIterateKey (dd->ddlist, &iter)) >= 0) {
     const char  *disp;
     size_t      len;
 
-    disp = ilistGetStr (dd->ddlist, idx, DD_LIST_DISP);
+    disp = ilistGetStr (dd->ddlist, key, DD_LIST_DISP);
     len = istrlen (disp);
     if (len > dd->dispwidth) {
       dd->dispwidth = len;
     }
+    if (dd->listtype == DD_LIST_TYPE_NUM) {
+fprintf (stderr, "dd: set-lookup %ld %d\n", ilistGetNum (dd->ddlist, key, DD_LIST_KEY_NUM), key);
+      nlistSetNum (ddnumlookup, ilistGetNum (dd->ddlist, key, DD_LIST_KEY_NUM), key);
+    }
+    if (dd->listtype == DD_LIST_TYPE_STR) {
+fprintf (stderr, "dd: set-lookup %s %d\n", ilistGetStr (dd->ddlist, key, DD_LIST_KEY_STR), key);
+      slistSetNum (ddstrlookup, ilistGetStr (dd->ddlist, key, DD_LIST_KEY_STR), key);
+    }
+  }
+
+  if (dd->listtype == DD_LIST_TYPE_NUM) {
+    nlistFree (dd->ddnumlookup);
+    nlistSort (ddnumlookup);
+    dd->ddnumlookup = ddnumlookup;
+  }
+  if (dd->listtype == DD_LIST_TYPE_STR) {
+    slistFree (dd->ddstrlookup);
+    slistSort (ddstrlookup);
+    dd->ddstrlookup = ddstrlookup;
   }
 }

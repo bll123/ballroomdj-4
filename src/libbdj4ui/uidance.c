@@ -33,7 +33,6 @@ typedef struct uidance {
   callback_t    *selectcb;
   const char    *label;
   ilist_t       *ddlist;
-  nlist_t       *ddlookup;
   ilistidx_t    selectedidx;
   int           count;
   int           flags;
@@ -59,7 +58,6 @@ uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->internalselcb = NULL;
   uidance->selectcb = NULL;
   uidance->ddlist = NULL;
-  uidance->ddlookup = NULL;
 
   uidance->internalselcb = callbackInitI (uidanceSelectHandler, uidance);
 
@@ -88,7 +86,6 @@ uidanceFree (uidance_t *uidance)
   callbackFree (uidance->internalselcb);
   uiddFree (uidance->uidd);
   ilistFree (uidance->ddlist);
-  nlistFree (uidance->ddlookup);
   mdfree (uidance);
 }
 
@@ -110,7 +107,7 @@ uidanceSetKey (uidance_t *uidance, ilistidx_t dkey)
   }
 
   uidance->selectedidx = dkey;
-  uiddSetSelection (uidance->uidd, nlistGetNum (uidance->ddlookup, dkey));
+  uiddSetSelectionByNumKey (uidance->uidd, dkey);
 }
 
 void
@@ -153,7 +150,6 @@ uidanceCreateDanceList (uidance_t *uidance)
   slist_t     *danceList;
   slistidx_t  iteridx;
   ilist_t     *ddlist;
-  nlist_t     *ddlookup;
   const char  *disp;
   int         count;
   ilistidx_t  dkey;
@@ -163,30 +159,26 @@ uidanceCreateDanceList (uidance_t *uidance)
   count = slistGetCount (danceList);
   ddlist = ilistAlloc ("uidance", LIST_ORDERED);
   ilistSetSize (ddlist, count);
-  ddlookup = nlistAlloc ("uidance-lookup", LIST_UNORDERED, NULL);
-  nlistSetSize (ddlookup, count);
 
   idx = 0;
   /* if it is a combobox (UIDANCE_ALL_DANCES, UIDANCE_EMPTY_DANCE) */
   if (uidance->flags != UIDANCE_NONE) {
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, uidance->label);
-    nlistSetNum (ddlookup, DD_NO_SELECTION, idx);
+fprintf (stderr, "uid: set idx %d key: %d\n", idx, -1);
     ++idx;
   }
 
   slistStartIterator (danceList, &iteridx);
   while ((disp = slistIterateKey (danceList, &iteridx)) != NULL) {
     dkey = slistGetNum (danceList, disp);
+fprintf (stderr, "uid: set idx %d key: %d\n", idx, dkey);
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, dkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
-    nlistSetNum (ddlookup, dkey, idx);
     ++idx;
   }
 
-  nlistSort (ddlookup);
 
   uidance->ddlist = ddlist;
-  uidance->ddlookup = ddlookup;
 }
 
