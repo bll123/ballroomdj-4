@@ -17,6 +17,7 @@
     * Audio Identification: The original data row is locked into the view.
     * Configuration: New interface for Rating / Level / Status / Genre.
     * Listings: Row selection color and row highlight color can be manually configured.
+    * Music Manager: Added an edit button.
     * Playlist Management: New interface for the dances table.
     * Song Selection and Music Queue listings: Long values now have tooltips.
 * Translations:

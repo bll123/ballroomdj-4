@@ -163,12 +163,12 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       }
     }
 
-    snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; } ", tmp);
+    snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; }\n", tmp);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
   snprintf (wbuff, sizeof (wbuff),
-      "label.%s { font-weight: bold; } ", HEADING_CLASS);
+      "label.%s { font-weight: bold; }\n", HEADING_CLASS);
   strlcat (tbuff, wbuff, sizeof (tbuff));
 
   if (listingfont != NULL && *listingfont) {
@@ -197,17 +197,17 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       }
 
       snprintf (wbuff, sizeof (wbuff),
-          ".%s { font-family: '%s'; font-size: %dpt; } ",
+          ".%s { font-family: '%s'; font-size: %dpt; }\n",
           LISTING_CLASS, tmp, listingsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
 
       snprintf (wbuff, sizeof (wbuff),
-          "label.%s { font-size: %dpt; font-weight: bold; } ",
+          "label.%s { font-size: %dpt; font-weight: bold; }\n",
           LIST_FAV_CLASS, favsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
 
       snprintf (wbuff, sizeof (wbuff),
-          "label.%s { font-size: %dpt; font-weight: bold; } ",
+          "label.%s { font-size: %dpt; font-weight: bold; }\n",
           LIST_HEAD_CLASS, headsz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
@@ -216,51 +216,51 @@ uiSetUICSS (const char *uifont, const char *listingfont,
   if (sz > 0) {
     int   tsz;
 
-    snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
+    snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }\n", sz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     tsz = sz - 2;
-    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", tsz);
+    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }\n", tsz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     tsz = sz - 1;
-    snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; } ",
+    snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; }\n",
         LEFT_NB_CLASS, tsz);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     tsz = sz - 3;
     if (accentColor != NULL) {
-      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; color: %s; } ", tsz, accentColor);
+      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; color: %s; }\n", tsz, accentColor);
     } else {
-      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; } ", tsz);
+      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; }\n", tsz);
     }
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
   if (accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; } ", ACCENT_CLASS, accentColor);
+        "label.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: shade(%s,0.7); } ", DARKACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-
-    snprintf (wbuff, sizeof (wbuff),
-        "entry.%s { color: %s; } ", ACCENT_CLASS, accentColor);
+        "label.%s { color: shade(%s,0.7); }\n", DARKACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
-        "progressbar.%s > trough > progress { background-color: %s; }",
+        "entry.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+
+    snprintf (wbuff, sizeof (wbuff),
+        "progressbar.%s > trough > progress { background-color: %s; }\n",
         ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
-        "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }",
+        "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }\n",
         accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
 
     snprintf (wbuff, sizeof (wbuff),
-        "paned.%s > separator { background-color: %s; padding-bottom: 0px; } ",
+        "paned.%s > separator { background-color: %s; padding-bottom: 0px; }\n",
         ACCENT_CLASS, accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
@@ -277,13 +277,13 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; } ", ERROR_CLASS, errorColor);
+        "label.%s { color: %s; }\n", ERROR_CLASS, errorColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
   if (markColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; } ", MARK_CLASS, markColor);
+        "label.%s { color: %s; }\n", MARK_CLASS, markColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
@@ -299,7 +299,7 @@ uiAddColorClass (const char *classnm, const char *color)
 {
   char  tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff), "%s { color: %s; } ", classnm, color);
+  snprintf (tbuff, sizeof (tbuff), "%s { color: %s; }\n", classnm, color);
   uiAddScreenCSS (tbuff);
 }
 
@@ -308,7 +308,7 @@ uiAddBGColorClass (const char *classnm, const char *color)
 {
   char  tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff), "%s { background-color: %s; } ", classnm, color);
+  snprintf (tbuff, sizeof (tbuff), "%s { background-color: %s; }\n", classnm, color);
   uiAddScreenCSS (tbuff);
 }
 
@@ -318,7 +318,7 @@ uiAddProgressbarClass (const char *classnm, const char *color)
   char  tbuff [100];
 
   snprintf (tbuff, sizeof (tbuff),
-      "progressbar.%s > trough > progress { background-color: %s; }",
+      "progressbar.%s > trough > progress { background-color: %s; }\n",
       classnm, color);
   uiAddScreenCSS (tbuff);
 }
@@ -392,6 +392,7 @@ uicssParseError (GtkCssProvider* self, GtkCssSection* section,
   ep = gtk_css_section_get_end_position (section);
   t = gtk_css_section_get_section_type (section);
   fprintf (stderr, "ERR: CSS parse: %s from %d/%d to %d/%d type: %d\n", currcss, s, sp, e, ep, t);
+  fprintf (stderr, "ERR: CSS parse: %s\n", error->message);
 }
 
 static void
@@ -402,7 +403,8 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
   char    wbuff [400];
 
   if (color == accentColor) {
-    snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%.2f)", color, shadeval);
+    snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%d.%02d)", color,
+        (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
   } else {
     strlcpy (tmpcolor, color, sizeof (tmpcolor));
   }
@@ -412,14 +414,14 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
   /* there is no easy way to switch the radio buttons and */
   /* check buttons to the obverse colors */
   snprintf (wbuff, sizeof (wbuff),
-      "box.horizontal.%s { background-color: %s; } ",
+      "box.horizontal.%s { background-color: %s; }\n",
       classnm, tmpcolor);
   strlcat (tbuff, wbuff, sz);
   snprintf (wbuff, sizeof (wbuff),
       "spinbutton.%s, "
       "spinbutton.%s entry, "
       "spinbutton.%s button "
-      "{ background-color: %s; } ",
+      "{ background-color: %s; }\n",
       classnm, classnm, classnm, tmpcolor);
   strlcat (tbuff, wbuff, sz);
 }

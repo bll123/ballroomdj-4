@@ -15,7 +15,7 @@ chk dbidx 15
 msg player PLAY_REPEAT
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing repeat 1 prepqueuecount 2
-msg main CMD_NEXTSONG
+msg player PLAY_NEXTSONG
 get player CHK_PLAYER_STATUS
 mssleep 1500
 get player CHK_PLAYER_STATUS

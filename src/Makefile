@@ -183,7 +183,7 @@ testsection:
 .PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh
-	(cd ..;./bin/bdj4 --testsuite --runtest $(start))
+	(cd ..;./bin/bdj4 --testsuite --verbose --runtest $(start))
 
 .PHONY: teststart
 teststart:

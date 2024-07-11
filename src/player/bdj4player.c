@@ -1315,6 +1315,11 @@ playerNextSong (playerdata_t *playerData)
         playerData->currentSong = NULL;
       }
     } else {
+      /* stopped */
+      prepqueue_t     *tpq;
+
+      tpq = queuePop (playerData->prepQueue);
+      playerPrepQueueFree (tpq);
       playerData->gap = playerData->priorGap;
     }
 

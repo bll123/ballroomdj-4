@@ -2334,6 +2334,9 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     if (row == NULL) {
       continue;
     }
+    if (row->cleared) {
+      continue;
+    }
 
     if (vl->keyhandling == false &&
         row->dispidx != vl->lastselidx) {

@@ -1532,10 +1532,11 @@ resetPlayer (testsuite_t *testsuite)
   snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_CHK_CLEAR_PREP_Q, NULL);
   /* wait a bit for all the messages to clear */
   mssleep (200);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
