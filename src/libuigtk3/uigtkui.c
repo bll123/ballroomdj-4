@@ -118,8 +118,9 @@ uiCleanup (void)
 
 void
 uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *markColor,
-    const char *rowselColor, const char *rowhlColor)
+    const char *accentColor, const char *errorColor,
+    const char *markColor, const char *rowselColor,
+    const char *rowhlColor)
 {
   char            tbuff [8192];
   char            wbuff [400];
@@ -270,10 +271,10 @@ uiSetUICSS (const char *uifont, const char *listingfont,
         rowselColor, SELECTED_CLASS, 0.55);
   }
 
-  if (rowhlColor != NULL) {
-    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
-        rowhlColor, ROW_HL_CLASS, 0.3);
-  }
+//  if (rowhlColor != NULL) {
+//    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+//        rowhlColor, ROW_HL_CLASS, 0.8);
+//  }
 
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),

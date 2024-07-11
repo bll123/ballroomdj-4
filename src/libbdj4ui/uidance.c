@@ -165,14 +165,12 @@ uidanceCreateDanceList (uidance_t *uidance)
   if (uidance->flags != UIDANCE_NONE) {
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, uidance->label);
-fprintf (stderr, "uid: set idx %d key: %d\n", idx, -1);
     ++idx;
   }
 
   slistStartIterator (danceList, &iteridx);
   while ((disp = slistIterateKey (danceList, &iteridx)) != NULL) {
     dkey = slistGetNum (danceList, disp);
-fprintf (stderr, "uid: set idx %d key: %d\n", idx, dkey);
     ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, dkey);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
     ++idx;

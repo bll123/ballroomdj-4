@@ -213,7 +213,6 @@ uiddSetSelectionByNumKey (uidd_t *dd, ilistidx_t key)
   }
 
   idx = nlistGetNum (dd->ddnumlookup, key);
-fprintf (stderr, "dd: key: %d idx: %d\n", key, idx);
   uiddSetSelection (dd, idx);
 }
 
@@ -227,7 +226,6 @@ uiddSetSelectionByStrKey (uidd_t *dd, const char *key)
   }
 
   idx = slistGetNum (dd->ddstrlookup, key);
-fprintf (stderr, "dd: key: %s idx: %d\n", key, idx);
   uiddSetSelection (dd, idx);
 }
 
@@ -417,11 +415,9 @@ uiddProcessList (uidd_t *dd)
       dd->dispwidth = len;
     }
     if (dd->listtype == DD_LIST_TYPE_NUM) {
-fprintf (stderr, "dd: set-lookup %ld %d\n", ilistGetNum (dd->ddlist, key, DD_LIST_KEY_NUM), key);
       nlistSetNum (ddnumlookup, ilistGetNum (dd->ddlist, key, DD_LIST_KEY_NUM), key);
     }
     if (dd->listtype == DD_LIST_TYPE_STR) {
-fprintf (stderr, "dd: set-lookup %s %d\n", ilistGetStr (dd->ddlist, key, DD_LIST_KEY_STR), key);
       slistSetNum (ddstrlookup, ilistGetStr (dd->ddlist, key, DD_LIST_KEY_STR), key);
     }
   }

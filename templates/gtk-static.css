@@ -128,3 +128,10 @@ entry {
   color: @theme_fg_color;
 }
 
+box.horizontal.bdj-row-hl {
+  background-color: shade(@theme_base_color,0.8);
+}
+spinbutton.bdj-row-hl, spinbutton.bdj-row-hl entry,
+spinbutton.bdj-row-hl button {
+  background-color: shade(@theme_base_color,0.8);
+}
