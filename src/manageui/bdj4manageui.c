@@ -3545,9 +3545,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
       uisongselRestoreSelections (manage->mmsongsel);
-      if (manage->selusesonglist) {
-        uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
-      }
+      uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
       manage->lastmmdisp = MANAGE_DISP_SONG_SEL;
     }
 
