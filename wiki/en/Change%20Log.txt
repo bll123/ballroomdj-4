@@ -19,6 +19,7 @@
     * Listings: Row selection color and row highlight color can be manually configured.
     * Music Manager: Added an edit button.
     * Playlist Management: New interface for the dances table.
+    * Song Filter Dialog: Restore previous settings.
     * Song Selection and Music Queue listings: Long values now have tooltips.
 * Translations:
     * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬), Portuguese (Português).  All poor quality.

@@ -73,21 +73,22 @@ datafilekey_t dfkeys [FILTER_DISP_MAX] = {
 };
 
 static int valueTypeLookup [SONG_FILTER_MAX] = {
-  [SONG_FILTER_MPM_HIGH] =          SONG_FILTER_NUM,
-  [SONG_FILTER_MPM_LOW] =           SONG_FILTER_NUM,
-  [SONG_FILTER_DANCE_LIST] =        SONG_FILTER_ILIST,
-  [SONG_FILTER_DANCE_IDX] =         SONG_FILTER_NUM,
-  [SONG_FILTER_FAVORITE] =          SONG_FILTER_NUM,
-  [SONG_FILTER_GENRE] =             SONG_FILTER_NUM,
-  [SONG_FILTER_KEYWORD] =           SONG_FILTER_SLIST,
-  [SONG_FILTER_LEVEL_HIGH] =        SONG_FILTER_NUM,
-  [SONG_FILTER_LEVEL_LOW] =         SONG_FILTER_NUM,
   [SONG_FILTER_PLAYLIST] =          SONG_FILTER_STR,
   [SONG_FILTER_PL_TYPE] =           SONG_FILTER_NUM,
-  [SONG_FILTER_RATING] =            SONG_FILTER_NUM,
   [SONG_FILTER_SEARCH] =            SONG_FILTER_STR,
+  [SONG_FILTER_GENRE] =             SONG_FILTER_NUM,
+  [SONG_FILTER_KEYWORD] =           SONG_FILTER_SLIST,
+  [SONG_FILTER_LEVEL_LOW] =         SONG_FILTER_NUM,
+  [SONG_FILTER_LEVEL_HIGH] =        SONG_FILTER_NUM,
+  [SONG_FILTER_RATING] =            SONG_FILTER_NUM,
   [SONG_FILTER_STATUS] =            SONG_FILTER_NUM,
+  [SONG_FILTER_FAVORITE] =          SONG_FILTER_NUM,
   [SONG_FILTER_STATUS_PLAYABLE] =   SONG_FILTER_NUM,
+  /* dances */
+  [SONG_FILTER_DANCE_LIST] =        SONG_FILTER_ILIST,
+  [SONG_FILTER_DANCE_IDX] =         SONG_FILTER_NUM,
+  [SONG_FILTER_MPM_HIGH] =          SONG_FILTER_NUM,
+  [SONG_FILTER_MPM_LOW] =           SONG_FILTER_NUM,
 };
 
 static const char * const SONG_FILTER_SORT_DEFAULT = "TITLE";
@@ -256,6 +257,11 @@ songfilterOn (songfilter_t *sf, int filterType)
     logProcEnd ("null");
     return;
   }
+  if (filterType < 0 || filterType >= SONG_FILTER_MAX) {
+    logProcEnd ("bad-filter");
+    return;
+  }
+
   valueType = valueTypeLookup [filterType];
   if (valueType == SONG_FILTER_NUM) {
     /* this may not be valid */
@@ -279,6 +285,10 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
 
   if (sf == NULL) {
     logProcEnd ("null");
+    return;
+  }
+  if (filterType < 0 || filterType >= SONG_FILTER_MAX) {
+    logProcEnd ("bad-filter");
     return;
   }
 
@@ -318,6 +328,10 @@ songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
     logProcEnd ("null");
     return;
   }
+  if (filterType < 0 || filterType >= SONG_FILTER_MAX) {
+    logProcEnd ("bad-filter");
+    return;
+  }
 
   valueType = valueTypeLookup [filterType];
 
@@ -338,6 +352,11 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
   logProcBegin ();
 
   if (sf == NULL) {
+    logProcEnd ("null");
+    return;
+  }
+  if (filterType < 0 || filterType >= SONG_FILTER_MAX) {
+    logProcEnd ("bad-filter");
     return;
   }
 
@@ -761,6 +780,30 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   dbidx = nlistGetNum (sf->indexList, internalIdx);
   logProcEnd ("");
   return dbidx;
+}
+
+int
+songfilterGetNum (songfilter_t *sf, int key)
+{
+  int     valueType;
+
+  if (sf == NULL) {
+    return -1;
+  }
+  if (key < 0 || key >= SONG_FILTER_MAX) {
+    return -1;
+  }
+
+  valueType = valueTypeLookup [key];
+  if (valueType != SONG_FILTER_NUM) {
+    return -1;
+  }
+
+  if (! sf->inuse [key]) {
+    return -1;
+  }
+
+  return sf->numfilter [key];
 }
 
 dbidx_t

@@ -358,12 +358,17 @@ uisfInitDisplay (uisongfilter_t *uisf)
   uiddSetSelectionByStrKey (uisf->ddsortby,
       songfilterGetSort (uisf->songfilter));
   uidanceSetKey (uisf->uidance, uisf->danceIdx);
-  uigenreSetKey (uisf->uigenre, -1);
+  uigenreSetKey (uisf->uigenre,
+      songfilterGetNum (uisf->songfilter, SONG_FILTER_GENRE));
   uiEntrySetValue (uisf->wcont [UISF_W_SEARCH], "");
-  uiratingSetValue (uisf->uirating, -1);
-  uilevelSetValue (uisf->uilevel, -1);
-  uistatusSetValue (uisf->uistatus, -1);
-  uifavoriteSetValue (uisf->uifavorite, 0);
+  uiratingSetValue (uisf->uirating,
+      songfilterGetNum (uisf->songfilter, SONG_FILTER_RATING));
+  uilevelSetValue (uisf->uilevel,
+      songfilterGetNum (uisf->songfilter, SONG_FILTER_LEVEL_LOW));
+  uistatusSetValue (uisf->uistatus,
+      songfilterGetNum (uisf->songfilter, SONG_FILTER_STATUS));
+  uifavoriteSetValue (uisf->uifavorite,
+      songfilterGetNum (uisf->songfilter, SONG_FILTER_FAVORITE));
   logProcEnd ("");
 }
 
