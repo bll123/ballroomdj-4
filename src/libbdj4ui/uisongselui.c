@@ -497,13 +497,12 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 
   logProcBegin ();
 
+  uidanceSetKey (uisongsel->uidance, danceIdx);
+
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
     return UICB_CONT;
   }
-
-  uidanceSetKey (uisongsel->uidance, danceIdx);
-
   if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
     logProcEnd ("no-peers");
     return UICB_CONT;
@@ -633,13 +632,12 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
   logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
+  uivlRestoreSelections (ssint->uivl);
+
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
     return;
   }
-
-  uivlRestoreSelections (ssint->uivl);
-
   if (uisongsel->peerhandling == SONGSEL_NO_PEERS) {
     logProcEnd ("no-peers");
     return;
@@ -989,6 +987,7 @@ uisongselProcessDisplayChg (void *udata)
   ss_internal_t     *ssint;
 
   logProcBegin ();
+
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
     return UICB_CONT;
