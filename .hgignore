@@ -43,10 +43,10 @@ syntax: regexp
 ^locale/pl_PL/
 ^locale/pt
 ^locale/pt_PT/
-^locale/sv
-^locale/sv_SE/
 ^locale/ru
 ^locale/ru_RU/
+^locale/sv
+^locale/sv_SE/
 ^locale/uk
 ^locale/uk_UA/
 ^locale/zh

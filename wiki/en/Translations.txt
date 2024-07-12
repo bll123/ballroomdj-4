@@ -16,6 +16,7 @@ Current Translations and Status:
  Español|Machine Translated<br>Very poor quality|
  Suomi‬|Machine Translated<br>Very poor quality|
  Français|Machine Translated<br>Very poor quality|
+ magyar|Machine Translated<br>Very poor quality|
  Italiano|Machine Translated<br>Very poor quality|
  日本語|Machine Translated<br>Very poor quality|
  한국어‬|Machine Translated<br>Very poor quality|
@@ -24,6 +25,7 @@ Current Translations and Status:
  Português|Machine Translated<br>Very poor quality|
  Русский‬|OK<br>Still needs work|
  Svenska‬|Machine Translated<br>Very poor quality|
+ Українська‬|Machine Translated<br>Very poor quality|
  简体中文‬|Machine Translated<br>Very poor quality|
 
 [Wiki Home](Home)
