@@ -20,13 +20,15 @@ Current Translations and Status:
  Italiano|Machine Translated<br>Very poor quality|
  日本語|Machine Translated<br>Very poor quality|
  한국어‬|Machine Translated<br>Very poor quality|
- Nederlands|Complete, needs final QA|marimo
+ Nederlands|Mostly complete, needs final QA|marimo
+ norsk|Machine Translated<br>Very poor quality|
  Polski|Machine Translated<br>Very poor quality|
  Português|Machine Translated<br>Very poor quality|
  Русский‬|OK<br>Still needs work|
  Svenska‬|Machine Translated<br>Very poor quality|
  Українська‬|Machine Translated<br>Very poor quality|
  简体中文‬|Machine Translated<br>Very poor quality|
+ 繁體中文‬|Machine Translated<br>Very poor quality|
 
 [Wiki Home](Home)
 <br>_(Updated 2024-06-07 11:27:08; BDJ4 version 4.10.3)_

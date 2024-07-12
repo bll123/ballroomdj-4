@@ -16,9 +16,11 @@ it_IT italian Italiano
 ja_JP japanese 日本語
 ko_KR korean 한국어‬
 nl_BE dutch Nederlands
+nn_NO norwegian norsk
 pl_PL polish Polski
 pt_PT portuguese Português
 ru_RU russian Русский‬
 sv_SE swedish Svenska‬
 uk_UA ukranian Українська‬
 zh_CN chinese/cn 简体中文‬
+zh_TW chinese/tw 繁體中文‬

@@ -131,6 +131,13 @@ while read line; do
       test -h ${slocale} || ln -s ${locale} ${slocale}
     )
   fi
+  if [[ ${locale} == nn_NO ]]; then
+    (
+      cd ${LOCALEDIR}
+      # do not replace existing links
+      test -h nb || ln -s ${locale} nb
+    )
+  fi
 
   # add this entry to the localization.txt file
 

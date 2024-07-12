@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Dårlig
+20
+..Dårlig
+30
+..Dårlig
+40
+..Dårlig
+50
+..Dårlig
+60
+..Flink
+70
+..Flink
+80
+..Flott
+90
+..Flott
+100
+..Flott

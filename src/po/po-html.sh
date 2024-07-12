@@ -63,11 +63,16 @@ slocale=$1
 shift
 langdesc="$*"
 
+uselocale=${slocale}
+
 if [[ $pofile == "" || $locale == en_GB || $locale == en_US ]]; then
   exit 0
 fi
 
-test -d "${TMPLDIR}/${slocale}" || mkdir "${TMPLDIR}/${slocale}"
+if [[ -d "${TMPLDIR}/${locale}" ]]; then
+  uselocale=${locale}
+fi
+test -d "${TMPLDIR}/${uselocale}" || mkdir "${TMPLDIR}/${uselocale}"
 
 for fn in ${TMPLDIR}/*.html; do
   case $fn in
@@ -90,7 +95,7 @@ for fn in ${TMPLDIR}/*.html; do
   sort -u $TMP > $TMP.n
   mv -f $TMP.n $TMP
 
-  outfn="${TMPLDIR}/${slocale}/$(basename ${fn})"
+  outfn="${TMPLDIR}/${uselocale}/$(basename ${fn})"
 
   mkhtmlsub $fn $outfn $TMP $pofile
 

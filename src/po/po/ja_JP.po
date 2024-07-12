@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-12\n"
+"PO-Revision-Date: 2024-07-12 19:26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -370,6 +370,10 @@ msgstr "BDJタグのみ"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3データベースのバージョンが古すぎる。"
 
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
+msgstr "BDJ4内部"
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -447,6 +451,7 @@ msgstr "ビートに合わせて青いボックスの中でマウスをクリッ
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -650,6 +655,13 @@ msgstr "ディスプレイ設定"
 msgid "Don't Write"
 msgstr "書くな"
 
+#. CONTEXT: configuration: genres: information on how to edit a genre entry
+#. CONTEXT: configuration: dance levels: information on how to edit a level entry
+#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
+#. CONTEXT: configuration: status: information on how to edit a status entry
+msgid "Double click on a field to edit."
+msgstr "編集するフィールドをダブルクリックする。"
+
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "最新版のダウンロード"
@@ -697,7 +709,7 @@ msgstr "ダンスを編集する"
 msgid "Edit Genres"
 msgstr "編集ジャンル"
 
-#. CONTEXT: configuration: edit the dance levels table
+#. CONTEXT: configuration: edit dance levels table
 msgid "Edit Levels"
 msgstr "編集レベル"
 
@@ -901,9 +913,7 @@ msgid "High Dance Level"
 msgstr "ハイ・ダンス・レベル"
 
 #. CONTEXT: configuration: display settings for: history
-#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
-#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "歴史"
 
@@ -1068,13 +1078,13 @@ msgid "Marquee Theme"
 msgstr "マーキーのテーマ"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "最大プレー時間"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "最大プレー時間"
 
@@ -1284,6 +1294,10 @@ msgstr "パソドブレ"
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "パスワード"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Pause"
+msgstr "ポーズ"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1550,9 +1564,7 @@ msgid "Repeat"
 msgstr "リピート"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "BallroomDJ データベースを完全に置き換えます。データベースへのすべての変更は失われます。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1598,6 +1610,7 @@ msgstr "サンバ"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "セーブ"
@@ -1923,9 +1936,7 @@ msgid "The conversion process will not be run."
 msgstr "変換処理は実行されない。"
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "変換処理は、新規インストールと再インストールでのみ実行されます。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1956,14 +1967,6 @@ msgstr "トグル・ポーズ"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "トグル・リピート"
-
-#. CONTEXT: label: total disc count (short name for listing)
-msgid "Tot. Discs"
-msgstr ""
-
-#. CONTEXT: label: total track count (short name for listing)
-msgid "Tot. Tracks"
-msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2039,13 +2042,11 @@ msgstr "更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "%s データベースから BallroomDJ データベースの情報を更新する。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "オーディオファイルのタグから BallroomDJ データベースの情報を更新します。"
 
 #. CONTEXT: alternate installation: status message
@@ -2124,9 +2125,7 @@ msgid "Write Tags to Audio Files"
 msgstr "オーディオファイルにタグを書き込む"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "BallroomDJ データベースの情報を使って、オーディオファイルのタグを書き込みます。"
 
 #. CONTEXT: configuration: dialog: XML file types

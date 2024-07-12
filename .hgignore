@@ -39,6 +39,9 @@ syntax: regexp
 ^locale/ko_KR/
 ^locale/nl
 ^locale/nl_BE/
+^locale/nb
+^locale/nn
+^locale/nn_NO/
 ^locale/pl
 ^locale/pl_PL/
 ^locale/pt
@@ -51,6 +54,8 @@ syntax: regexp
 ^locale/uk_UA/
 ^locale/zh
 ^locale/zh_CN/
+^locale/zh
+^locale/zh_TW/
 ^packages/
 ^plocal/
 ^src/build/

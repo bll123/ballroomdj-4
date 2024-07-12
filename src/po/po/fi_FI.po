@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-12\n"
+"PO-Revision-Date: 2024-07-12 19:26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -370,6 +370,10 @@ msgstr "Vain BDJ-tunnisteet"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3-tietokannan versio on liian vanha."
 
+#. CONTEXT: Name of the BDJ4 internal audio tagging interface
+msgid "BDJ4 Internal"
+msgstr "BDJ4 Sisäinen"
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -447,6 +451,7 @@ msgstr "Napsauta hiirellä sinistä laatikkoa tahdin tahdissa."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -650,6 +655,13 @@ msgstr "Näytön asetukset"
 msgid "Don't Write"
 msgstr "Älä kirjoita"
 
+#. CONTEXT: configuration: genres: information on how to edit a genre entry
+#. CONTEXT: configuration: dance levels: information on how to edit a level entry
+#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
+#. CONTEXT: configuration: status: information on how to edit a status entry
+msgid "Double click on a field to edit."
+msgstr "Muokkaa kenttää kaksoisnapsauttamalla sitä."
+
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "Lataa uusin versio"
@@ -697,7 +709,7 @@ msgstr "Muokkaa tansseja"
 msgid "Edit Genres"
 msgstr "Muokkaa genrejä"
 
-#. CONTEXT: configuration: edit the dance levels table
+#. CONTEXT: configuration: edit dance levels table
 msgid "Edit Levels"
 msgstr "Muokkaa tasoja"
 
@@ -901,9 +913,7 @@ msgid "High Dance Level"
 msgstr "Korkea tanssin taso"
 
 #. CONTEXT: configuration: display settings for: history
-#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
-#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "Historia"
 
@@ -1068,14 +1078,14 @@ msgid "Marquee Theme"
 msgstr "Marquee teema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maksimi\n"
 "peliaika"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
+#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Maksimi peliaika"
 
@@ -1285,6 +1295,10 @@ msgstr "Paso Doble"
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "Salasana"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Pause"
+msgstr "Tauko"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1551,9 +1565,7 @@ msgid "Repeat"
 msgstr "Toista"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Korvaa BallroomDJ-tietokannan kokonaisuudessaan. Kaikki tietokantaan tehdyt muutokset menetetään."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1599,6 +1611,7 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Tallenna"
@@ -1924,9 +1937,7 @@ msgid "The conversion process will not be run."
 msgstr "Muunnosprosessia ei suoriteta."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Muunnosprosessi suoritetaan vain uusissa asennuksissa ja uudelleenasennuksissa."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1957,14 +1968,6 @@ msgstr "Vaihda tauko"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "Toggle Repeat"
-
-#. CONTEXT: label: total disc count (short name for listing)
-msgid "Tot. Discs"
-msgstr ""
-
-#. CONTEXT: label: total track count (short name for listing)
-msgid "Tot. Tracks"
-msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2040,13 +2043,11 @@ msgstr "Päivitetty"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot %s -tietokannasta."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot äänitiedoston tunnisteista."
 
 #. CONTEXT: alternate installation: status message
@@ -2125,9 +2126,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Kirjoita tunnisteet äänitiedostoihin"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Kirjoittaa äänitiedoston tunnisteet käyttäen BallroomDJ-tietokannan tietoja."
 
 #. CONTEXT: configuration: dialog: XML file types

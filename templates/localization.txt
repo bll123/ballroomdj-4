@@ -146,6 +146,18 @@ QDANCE
 KEY
 ..12
 LONG
+..nn_NO
+SHORT
+..nn
+DISPLAY
+..norsk
+STDROUNDS
+..standardrunder
+QDANCE
+..QueueDance
+KEY
+..13
+LONG
 ..pl_PL
 SHORT
 ..pl
@@ -156,7 +168,7 @@ STDROUNDS
 QDANCE
 ..Taniec w kolejce
 KEY
-..13
+..14
 LONG
 ..pt_PT
 SHORT
@@ -168,7 +180,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..14
+..15
 LONG
 ..ru_RU
 SHORT
@@ -180,7 +192,7 @@ STDROUNDS
 QDANCE
 ..Танец в очередь
 KEY
-..15
+..16
 LONG
 ..sv_SE
 SHORT
@@ -192,7 +204,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..16
+..17
 LONG
 ..uk_UA
 SHORT
@@ -204,7 +216,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..17
+..18
 LONG
 ..zh_CN
 SHORT
@@ -215,3 +227,15 @@ STDROUNDS
 ..标准件
 QDANCE
 ..队列舞蹈
+KEY
+..19
+LONG
+..zh_TW
+SHORT
+..zh
+DISPLAY
+..繁體中文‬
+STDROUNDS
+..標準發彈
+QDANCE
+..隊列舞
