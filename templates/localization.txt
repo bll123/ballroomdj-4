@@ -86,6 +86,18 @@ QDANCE
 KEY
 ..7
 LONG
+..hu_HU
+SHORT
+..hu
+DISPLAY
+..magyar‬
+STDROUNDS
+..standardrounds
+QDANCE
+..QueueDance
+KEY
+..8
+LONG
 ..it_IT
 SHORT
 ..it
@@ -96,7 +108,7 @@ STDROUNDS
 QDANCE
 ..Ballo in coda
 KEY
-..8
+..9
 LONG
 ..ja_JP
 SHORT
@@ -108,7 +120,7 @@ STDROUNDS
 QDANCE
 ..キューダンス
 KEY
-..9
+..10
 LONG
 ..ko_KR
 SHORT
@@ -120,7 +132,7 @@ STDROUNDS
 QDANCE
 ..큐댄스
 KEY
-..10
+..11
 LONG
 ..nl_BE
 SHORT
@@ -132,7 +144,7 @@ STDROUNDS
 QDANCE
 ..Dans In Wachtrij
 KEY
-..11
+..12
 LONG
 ..pl_PL
 SHORT
@@ -144,7 +156,7 @@ STDROUNDS
 QDANCE
 ..Taniec w kolejce
 KEY
-..12
+..13
 LONG
 ..pt_PT
 SHORT
@@ -156,7 +168,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..13
+..14
 LONG
 ..ru_RU
 SHORT
@@ -168,7 +180,7 @@ STDROUNDS
 QDANCE
 ..Танец в очередь
 KEY
-..14
+..15
 LONG
 ..sv_SE
 SHORT
@@ -180,7 +192,19 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..15
+..16
+LONG
+..uk_UA
+SHORT
+..uk
+DISPLAY
+..Українська‬
+STDROUNDS
+..стандартні раунди
+QDANCE
+..QueueDance
+KEY
+..17
 LONG
 ..zh_CN
 SHORT

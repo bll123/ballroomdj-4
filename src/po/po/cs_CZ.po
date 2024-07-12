@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-04\n"
+"PO-Revision-Date: 2024-07-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -901,7 +901,9 @@ msgid "High Dance Level"
 msgstr "Vysoká úroveň tance"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "Historie"
 
@@ -1278,10 +1280,6 @@ msgstr "Paso Doble"
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "Heslo"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "Pauza"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1957,11 +1955,11 @@ msgstr "Přepínání opakování"
 
 #. CONTEXT: label: total disc count (short name for listing)
 msgid "Tot. Discs"
-msgstr "Celkový počet disků"
+msgstr ""
 
 #. CONTEXT: label: total track count (short name for listing)
 msgid "Tot. Tracks"
-msgstr "Celkový počet stop"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"

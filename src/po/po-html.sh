@@ -13,7 +13,12 @@ function mkhtmlsub {
   tmpl=$1
   outfn=$2
   tempf=$3
-  pofile=$5
+  tpofile=$4
+
+  if [[ $tpofile == "" ]]; then
+    echo "$tmpl : no po file"
+    return
+  fi
 
   set -o noglob
   sedcmd=""
@@ -25,7 +30,7 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $pofile)
+    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $tpofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -70,7 +75,7 @@ for fn in ${TMPLDIR}/*.html; do
       continue
       ;;
     *mobilemq.html)
-      # 2023-11-28: mobilemq change to not have any title
+      # 2023-11-28: mobilemq changed to not have any title
       continue
       ;;
   esac

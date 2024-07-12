@@ -116,6 +116,7 @@
             <li><a href="index.html.es">Español</a></li>
             <li><a href="index.html.fi">Suomi</a></li>
             <li><a href="index.html.fr">Français</a></li>
+            <li><a href="index.html.hu">magyar</a></li>
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>
             <li><a href="index.html.ko">한국어‬</a></li>
@@ -124,6 +125,7 @@
             <li><a href="index.html.pt">Português</a></li>
             <li><a href="index.html.ru">Русский</a></li>
             <li><a href="index.html.sv">Svenska‬</a></li>
+            <li><a href="index.html.uk">Українська‬</a></li>
             <li><a href="index.html.zh_CN">简体中文‬</a></li>
           </ul>
         </div>

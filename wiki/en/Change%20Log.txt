@@ -22,7 +22,8 @@
     * Song Filter Dialog: Restore previous settings.
     * Song Selection and Music Queue listings: Long values now have tooltips.
 * Translations:
-    * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬), Swedish (Svenska‬), Portuguese (Português).  All poor quality.
+    * Machine translations added for: Korean (한국어‬), Czech (čeština), Chinese Simplified (简体中文‬).  All poor quality.
+    * Machine translations added for: Hungrian (magyar), Ukranian (Українська‬), Swedish (Svenska‬), Portuguese (Português). All poor quality.
     * "New Install" help text has been machine translated where it was missing.
 * Internal:
     * Code cleanup.

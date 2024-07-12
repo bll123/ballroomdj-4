@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-04\n"
+"PO-Revision-Date: 2024-07-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -901,7 +901,9 @@ msgid "High Dance Level"
 msgstr "高级舞蹈水平"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "历史"
 
@@ -1282,10 +1284,6 @@ msgstr "双人舞"
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "密码"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "暂停"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1961,11 +1959,11 @@ msgstr "切换重复"
 
 #. CONTEXT: label: total disc count (short name for listing)
 msgid "Tot. Discs"
-msgstr "光盘总数"
+msgstr ""
 
 #. CONTEXT: label: total track count (short name for listing)
 msgid "Tot. Tracks"
-msgstr "轨道总数"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"

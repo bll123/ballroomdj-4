@@ -29,6 +29,8 @@ syntax: regexp
 ^locale/fi_FI/
 ^locale/fr
 ^locale/fr_FR/
+^locale/hu
+^locale/hu_HU/
 ^locale/it
 ^locale/it_IT/
 ^locale/ja
@@ -45,6 +47,8 @@ syntax: regexp
 ^locale/sv_SE/
 ^locale/ru
 ^locale/ru_RU/
+^locale/uk
+^locale/uk_UA/
 ^locale/zh
 ^locale/zh_CN/
 ^packages/

@@ -1,6 +1,6 @@
 <!-- Français HTML 5 -->
-<!-- VERSION 1 -->
-<!-- 2022-1-17 -->
+<!-- VERSION 2 -->
+<!-- 2024-7-10 -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -351,15 +351,6 @@ http://danielstern.ca/range.css/#/
           <img class="vcenter" id="playstatusi"
             src="mrc/light/stop.svg" alt="Arrêter">
         </td>
-        <td class="vcenter">
-          <div class="divnone" id="pausestatusd">
-            <img class="vcenter" id="pausestatusi"
-              src="mrc/light/pause.svg" alt="Pause">
-          </div>
-          <div class="divinline" id="pauseblankd">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </div>
-        </td>
       </tr>
       <tr>
         <td colspan="4">
@@ -573,22 +564,14 @@ bdj.updatePlayListSel = function (data) {
 
 bdj.updateData = function (data) {
   var jd = JSON.parse (data);
+
   if (! jd) {
     return;
   }
+
   if (jd.playstate) {
     var o = document.getElementById("playstatusi");
     o.src = 'mrc/light/'+jd.playstate+".svg";
-  }
-
-  o = document.getElementById("pausestatusd");
-  var ob = document.getElementById("pauseblankd");
-  if (jd.willpause == 1) {
-    o.className = "divinline";
-    ob.className = "divnone";
-  } else {
-    o.className = "divnone";
-    ob.className = "divinline";
   }
 
   o = document.getElementById("repeatstatusd");
@@ -630,6 +613,7 @@ bdj.updateData = function (data) {
   o = document.getElementById("title");
   o.innerHTML = jd.title;
 }
+
 bdj.getDanceList = function () {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
@@ -665,10 +649,14 @@ bdj.doUpdate = function () {
   xhr.open('GET', '/getstatus', true);
   xhr.send();
 }
+
 bdj.setSize = function (o,s) {
-  o.height = s;
-  o.width = s;
+  if (o) {
+    o.height = s;
+    o.width = s;
+  }
 }
+
 bdj.doLoad = function () {
   var o = document.getElementById("fadeb");
   var s = o.clientHeight;

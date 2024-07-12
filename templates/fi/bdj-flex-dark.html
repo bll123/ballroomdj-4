@@ -1,6 +1,6 @@
 <!-- Suomi Flex Dark -->
-<!-- VERSION 1 -->
-<!-- 2022-1-17 -->
+<!-- VERSION 2 -->
+<!-- 2024-7-10 -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -100,9 +100,6 @@ http://danielstern.ca/range.css/#/
     }
     .pbold {
       font-weight: bold;
-    }
-    .white {
-      color: #ffffff;
     }
     img {
       border: 0;
@@ -253,6 +250,9 @@ http://danielstern.ca/range.css/#/
     input[type=range]:focus::-ms-fill-upper {
       background: #2f3537;
     }
+    .white {
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -289,10 +289,6 @@ http://danielstern.ca/range.css/#/
           <div class="rightbox vcenter">
             <img class="mpad" id="playstatusi"
                   src="mrc/dark/stop.svg" alt="Stop">
-            <div class="divshown" id="pausestatusd">
-              <img class="mpad mpadr" id="pausestatusi"
-                  src="mrc/dark/pause.svg" alt="Tauko">
-            </div>
           </div>
         </div>
         <div class="linebox">
@@ -507,15 +503,13 @@ bdj.updatePlayListSel = function (data) {
 
 bdj.updateData = function (data) {
   var jd = JSON.parse (data);
+
+  if (! jd) {
+    return;
+  }
+
   var o = document.getElementById("playstatusi");
   o.src = 'mrc/dark/'+jd.playstate+".svg";
-
-  o = document.getElementById("pausestatusd");
-  if (jd.willpause == 1) {
-    o.className = "divshown";
-  } else {
-    o.className = "divnone";
-  }
 
   o = document.getElementById("repeatstatusd");
   if (jd.repeat == 1) {
@@ -546,12 +540,6 @@ bdj.updateData = function (data) {
     o.value = jd.speed;
   }
 
-  o = document.getElementById("dance");
-  o.innerHTML = jd.dance;
-  o = document.getElementById("artist");
-  o.innerHTML = jd.artist;
-  o = document.getElementById("title");
-  o.innerHTML = jd.title;
   if (jd.duration != "0:00") {
     o = document.getElementById("playedtime");
     o.innerHTML = jd.playedtime;
@@ -567,6 +555,13 @@ bdj.updateData = function (data) {
     o = document.getElementById("duration");
     o.innerHTML = '';
   }
+
+  var o = document.getElementById("dance");
+  o.innerHTML = jd.dance;
+  o = document.getElementById("artist");
+  o.innerHTML = jd.artist;
+  o = document.getElementById("title");
+  o.innerHTML = jd.title;
 }
 
 bdj.getDanceList = function () {
@@ -606,9 +601,12 @@ bdj.doUpdate = function () {
   xhr.open('GET', '/getstatus', true);
   xhr.send();
 }
+
 bdj.setSize = function (o,s) {
-  o.height = s;
-  o.width = s;
+  if (o) {
+    o.height = s;
+    o.width = s;
+  }
 }
 bdj.doLoad = function () {
   var o = document.getElementById("fadeb");
@@ -627,9 +625,6 @@ bdj.doLoad = function () {
   bdj.setSize(o,s);
   o = document.getElementById("nextpagei");
   bdj.setSize(o,s);
-
-  o = document.getElementById("pausestatusd");
-  o.className = 'divshown';
 
   o = document.getElementById("muteb");
   var s2 = o.clientWidth;

@@ -11,6 +11,7 @@ en_US english/us English (US)
 es_ES spanish Español
 fi_FI finnish Suomi
 fr_FR french Français
+hu_HU hungarian magyar‬
 it_IT italian Italiano
 ja_JP japanese 日本語
 ko_KR korean 한국어‬
@@ -19,4 +20,5 @@ pl_PL polish Polski
 pt_PT portuguese Português
 ru_RU russian Русский‬
 sv_SE swedish Svenska‬
+uk_UA ukranian Українська‬
 zh_CN chinese/cn 简体中文‬

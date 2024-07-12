@@ -1,0 +1,2244 @@
+# == magyar
+# -- hungarian
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-07-12\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Hungarian\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: hu\n"
+"X-Crowdin-File: en_GB.po\n"
+"X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s nagyobbnak kell lennie, mint %2$s"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr "%s API Host"
+
+#. CONTEXT: configuration: the ACRCloud API Key
+#, c-format
+msgid "%s API Key"
+msgstr "%s API kulcs"
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr "%s API titkos kulcs"
+
+#. CONTEXT: configuration: configuration user interface window title
+#, c-format
+msgid "%s Configuration"
+msgstr "%s Konfiguráció"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%s Letöltés"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%s Fórumok"
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
+#, c-format
+msgid "%s Helper"
+msgstr "%s Segítő"
+
+#. CONTEXT: alternate installation: window title
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr "%s Telepítő"
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr "%s Helyszín"
+
+#. CONTEXT: managementui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%s Menedzsment"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
+msgstr "%s Média mappa"
+
+#. CONTEXT: playerui: main window title
+#, c-format
+msgid "%s Player"
+msgstr "%s Játékos"
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr "%s A játékos aktív"
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%s Lejátszási lista"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%s Támogatási jegyek"
+
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr "%s Verzió"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%s Wiki"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%s XML fájl"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr "%s az adatok átalakításra kerülnek."
+
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s talált fájlok"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "%s installed."
+msgstr "%s telepítve."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is installed"
+msgstr "%s telepítve van"
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%s nincs konfigurálva."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
+msgstr "%s nincs telepítve"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s nem haladhatja meg a dal időtartamát"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: *'\":|<>^ karakterek nem engedélyezettek."
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Érvénytelen idő (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Numerikusnak kell lennie."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Be kell állítani."
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s: A ferdehajlatok nem engedélyezettek."
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s: A szóközök nem engedélyezettek."
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "Akcentus szín"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "Akció"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "A cselekvés sikertelen"
+
+#. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
+#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "Tevékenységek"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "Aktív"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "Új hozzáadása"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "A sebesség, a dal kezdete és vége beállítása"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "Haladó"
+
+#. CONTEXT: label: album
+msgid "Album"
+msgstr "Album"
+
+#. CONTEXT: label: album artist
+msgid "Album Artist"
+msgstr "Előadó album"
+
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "Album Előadóművész Rendezési sorrend"
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr "Album rendezési sorrend"
+
+#. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
+msgid "All Dances"
+msgstr "Minden tánc"
+
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "Minden műfaj"
+
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "Minden szint"
+
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "Minden értékelés"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "Minden Címke"
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "Engedélyezett kulcsszavak"
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr "Már létezik"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "Bejelentés"
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "Bármilyen állapot"
+
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "Alkalmazza a"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "Alkalmazza a beállításokat"
+
+#. CONTEXT: managementui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "Alkalmazás Összes szerkesztése"
+
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "Argentin tangó"
+
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "Művész"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr "Művész Rendezési sorrend"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "Adatfájlok csatolása"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "Adatbázis csatolása"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "Audio"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "Hangfájl"
+
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "Hangfájlok"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: managementui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "Hangazonosító"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "Audio ID Match lista"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "Audio kimenet"
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "Automatikus szervezés"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "Automatikus"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+msgid "BDJ Tags Only"
+msgstr "Csak BDJ címkék"
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "A BDJ3 adatbázis verziója túl régi."
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "BPM számláló"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "Társastánc"
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "Bálterem zenei lejátszó"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "Üti a"
+
+#. CONTEXT: managementui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "Törlés Összes szerkesztése"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
+msgstr "Nem lehet átnevezni"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "Cha Cha Cha"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "Ellenőrizze az új"
+
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "Új hangfájlok keresése."
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "Klasszikus"
+
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "Klasszikus?"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "Clear & Play"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "A várólista törlése"
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "Clear Same Song Mark"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "Kattintson az egérrel a kék mezőbe az ütemmel egy időben."
+
+#. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
+#. CONTEXT: create from playlist: closes the dialog
+#. CONTEXT: playerui: marquee font size dialog: action button
+#. CONTEXT: helperui: close the helper window
+#. CONTEXT: starterui: support dialog: closes the dialog
+#. CONTEXT: starterui: support message dialog: closes the dialog
+msgid "Close"
+msgstr "Zárja be a"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "Kompakt"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "Az adatbázis tömörítése.  Használja a hangfájlok törlése után."
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "Teljes"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "Befejező üzenet"
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "Zeneszerző"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "Zeneszerző Rendezési sorrend"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "Vezető"
+
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "A  beállítása"
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "Az átalakítás befejeződött."
+
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
+msgstr "Átalakítás %s"
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: managementui: song editor menu: copy audio tags
+msgid "Copy Audio Tags"
+msgstr "Audio címkék másolása"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "A másolat már létezik."
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "Másolat kész."
+
+#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "A %smásolata"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "Fájlok másolása."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "Sablonfájlok másolása."
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "Count"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "Hozzon létre"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "Másolat létrehozása"
+
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "Profil létrehozása"
+
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "Shortcut létrehozása a profilhoz"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "Létrehozás lejátszási listából"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "Mappastruktúra létrehozása."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "Rövidítés létrehozása."
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "Jelenlegi"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "Jelenlegi dal"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "Tánc"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "Tánc szint"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "Tánc minősítés"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "Táncok"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "Adatbázis tölti a táncot a műfajból"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "Dátum"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "Hozzáadás dátuma"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "Debug"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "Alapértelmezett"
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "Alapértelmezett hangerő"
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "Törölje a  címet."
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "Profil törlése"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "Párbeszédek"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "Lemez"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "Megjelenítés"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "Megjelenítési beállítások"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "Ne írj"
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "Legújabb verzió letöltése"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "A %s letöltése sikertelen."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "Letöltés %s."
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "Időtartam"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "E-mail cím"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "Easy"
+
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: managementui: song editor menu: edit all
+msgid "Edit All"
+msgstr "Minden szerkesztése"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "Edit Dances"
+
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "Műfajok szerkesztése"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "Szerkesztési szintek"
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "Értékelések szerkesztése"
+
+#. CONTEXT: managementui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "Szerkesztés szekvenciák"
+
+#. CONTEXT: managementui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "Dallisták szerkesztése"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "Állapot szerkesztése"
+
+#. CONTEXT: configuration: enable mobile marquee
+msgid "Enable Mobile Marquee"
+msgstr "Mobil sátor engedélyezése"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "Távvezérlés engedélyezése"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "Adja meg a célmappát, ahová a BDJ4 telepítésre kerül."
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "Adja meg a mappát, ahová a %s telepítve van."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "Adja meg az új telepítés nevét."
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "Hiba: Mappa már létezik."
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "Hiba: Nem sikerült beállítani a munkamappát."
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "Példák"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "Kilépés"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "Lépjen ki a %s oldalról, és indítsa újra."
+
+#. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
+#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
+msgid "Export"
+msgstr "Exportálás"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr "Lejátszási lista exportálása"
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr "Export típus"
+
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "Exportálás a %scímre"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "Export a %scímre"
+
+#. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
+msgid "Export to"
+msgstr "Exportálás a"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "Külső kérés"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "Fade"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "Fade In Time"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "Fade Out idő"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "Kedvenc"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "Importálandó mezők"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "Fájl"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+msgid "Filter Songs"
+msgstr "Dalok szűrése"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "Első"
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "Mappa"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "Betűtípus"
+
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "Betűméret"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "Foxtrott"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "Hézag a dalok között"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "Általános"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "Műfaj"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "Jó"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "Nagyszerű"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "HTML sablon"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "HTTP-kód"
+
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "Kiválasztatlanok elrejtése"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "Magas %s"
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "Magas tánc szint"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
+msgid "History"
+msgstr "Történelem"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "Ha nincs BallroomDJ 3 telepítés, hagyja üresen a bejegyzést."
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: managementui: menu selection: import actions for song list
+msgid "Import"
+msgstr "Import"
+
+#. CONTEXT: managementui: menu selection: song list: import
+#. CONTEXT: managementui: song list import: title of dialog
+msgid "Import Playlist"
+msgstr "Lejátszási lista importálása"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "Importálás a"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "Import a %soldalról"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "Kezdeti beállítás."
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "Telepítse a"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "Telepítés helye"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "A telepítés megszakadt."
+
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "A telepítés befejeződött."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "A %stelepítése ."
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "Érvénytelen mappa"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "Érvénytelen név"
+
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "Érvénytelen választások"
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "Jazz"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "Jive"
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "Kulcsszó"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "Utolsó frissítés"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "Legújabb verzió"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "Szint"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "Listázás Font"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: load
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
+msgid "Load"
+msgstr "Terhelés"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "Adatbázisból betöltve"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "Helyszín"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "Található 'tclsh'."
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "Alacsony %s"
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
+msgstr "Alacsony tánc szint"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "Kezelje a  címet."
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "Mark as Same Song"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "Sátor"
+
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "Sátortetős kijelző"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "Marquee Font"
+
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "Marquee Betűméret"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "Marquee téma"
+
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid ""
+"Maximum\n"
+"Play Time"
+msgstr "Maximális\n"
+"játékidő"
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "Maximális játékidő"
+
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "Üzenet"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "Minimalizált"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "Mix"
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "Mobil sátor"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "Mobil távirányító"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: side-by-side list: button: move the selected field down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+msgid "Move Down"
+msgstr "Mozgás lefelé"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: side-by-side list: button: move the selected field up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+msgid "Move Up"
+msgstr "Mozogj feljebb"
+
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "Mozgás a tetejére"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "Zene mappa"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: managementui: name of music manager notebook tab
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "Zenei menedzser"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "Zenei várólista"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "Zenei várólisták"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "Mute"
+
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "Név"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "Új"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "Új %s telepítés."
+
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "Új automatikus lejátszási lista"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "Új tánc"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "Új fájlok"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "Új műfaj"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "Új szint"
+
+#. CONTEXT: playlist management: default name for a new playlist
+#, c-format
+msgid "New Playlist"
+msgstr "Új lejátszási lista"
+
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "Új profil %d"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "Új értékelés"
+
+#. CONTEXT: sequence editor: default name for a new sequence
+#, c-format
+msgid "New Sequence"
+msgstr "Új szekvencia"
+
+#. CONTEXT: managementui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "Új dalok listája"
+
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "Új dallista neve"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "Új állapot"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "Következő"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "Következő dal"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "Nincs mappa megadva."
+
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "Nincs internetkapcsolat"
+
+#. CONTEXT: configuration file: genre
+msgid "None"
+msgstr "Nincs"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "Normál"
+
+#. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
+msgid "Not Playing"
+msgstr "Nem játszik"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
+msgstr "Nem érvényes %s mappa."
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "Megjegyzések"
+
+#. CONTEXT: configuration: show-marquee: off
+msgid "Off"
+msgstr "Off"
+
+#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "Opciók"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "A legegyszerűbbtől a legfejlettebbig."
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "A legalacsonyabb minősítéstől a legmagasabb minősítésig."
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "Szervezet"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "Szervezeti útvonal"
+
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "Egyéb fájlok"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "Paso Doble"
+
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "Jelszó"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "Minden dal szüneteltetése"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Szünet a végén"
+
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song editor : play song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+msgid "Play"
+msgstr "Játsszon"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Lejátszás / szünet"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "Játsszon bejelentéseket"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "Lejátszás sorban álláskor"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "Játszani?"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "Játszható állapot"
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "Játékos"
+
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "Lejátszási lista"
+
+#. CONTEXT: managementui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "Lejátszási lista kezelése"
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "Lejátszási lista típusa"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: managementui: song list import: name of file import type
+msgid "Playlists"
+msgstr "Lejátszási listák"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+msgid "Please wait…"
+msgstr "Kérjük, várjon…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "Kérjük, várjon… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "Szegény"
+
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "Port"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "Pozíció"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "Átnevezés megakadályozása"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "Előző"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "A folyamat megszakadt."
+
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "Profil"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "Profil Szín"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "Profil neve"
+
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "Használatban lévő profil"
+
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "A profil nem törölhető."
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "QR-kód"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) external request dialog: queue the selected file
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+msgid "Queue"
+msgstr "Sorban állás"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "5. sor"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "B sor"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "C sor"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "D sor"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "Queue Dance"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "E sor"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "Sor hossza"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "Sorba állítás neve"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "Lejátszási lista várólistája"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "QueueDance"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "Queue_noun"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "Gyors szerkesztés"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "Gyors szerkesztés: Jelenlegi"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "Gyors szerkesztés: Kiválasztott"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "Quickstep"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "Értékelés"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "A  újratelepítése"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "A %sújratelepítése.  Felülírja a meglévő konfigurációt."
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "Adatbázis újraépítése"
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr "Marquee helyreállítása"
+
+#. CONTEXT: player-ui: error message
+msgid "Recovered from crash."
+msgstr "Összeomlásból felépült."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "A %sregisztrálása ."
+
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "Újratöltés"
+
+#. CONTEXT: side-by-side list: button: remove the selected field
+#. CONTEXT: music queue: button: remove the song from the queue
+msgid "Remove"
+msgstr "Távolítsa el a"
+
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "Távolítsd el a dalt"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "Átnevezve"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "Átnevezi a hangfájlokat a szervezési beállítások alapján."
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "A  újraszervezése"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "Ismétlés"
+
+#. CONTEXT: database update: rebuild: help text
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr "Teljes egészében helyettesíti a BallroomDJ adatbázist. Az adatbázis minden módosítása elveszik."
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "Kérés"
+
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "Reset"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "Eredeti visszaállítása"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "Vissza a dal elejére"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "Rock"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "Rumba"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "Konverziós szkript futása: %s."
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "Salsa"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "Samba"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: song editor : save data
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "Mentés"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "Telepítési hely mentése."
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "Skála"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "Score"
+
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "Keresés"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "Másodpercek"
+
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: managementui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "Válassza ki a  címet."
+
+#. CONTEXT: select file: title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr "Válassza ki a %scímet."
+
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
+#, c-format
+msgid "Select %s Location"
+msgstr "Válassza ki a %s helyet"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "Válassza ki a %s Médiahelyet"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "Válassza ki a %s XML fájlt"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "Hangfájl kiválasztása"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "Válassza ki a táncot"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "Fájl kiválasztása"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "Mappa kiválasztása"
+
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
+#, c-format
+msgid "Select Music Folder Location"
+msgstr "Zenei mappa helyének kiválasztása"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "Kiválasztott"
+
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "Támogatás üzenet küldése"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr "Küldés %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
+msgstr "A %s információ küldése"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
+msgstr "Diagnosztika küldése"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr "Támogatási üzenet küldése"
+
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "Sorozat"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "Lejátszási várólista beállítása"
+
+#. CONTEXT: starterui: menu item: install in alternate folder
+#, c-format
+msgid "Set Up Alternate Folder"
+msgstr "Alternatív mappa beállítása"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "Beállítások"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "Beállítás befejezve."
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "Extra várólista gombok megjelenítése"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "Extra várólisták megjelenítése"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "Sátor megjelenítése"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "Dal információk megjelenítése"
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Mutassa a sebesség visszaállítását"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "Leállítási parancsfájl"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "Side-by-Side dallista"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "Side-by-Side dalválasztás"
+
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "Oldalnézeti nézet"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "Átalakítás kihagyása."
+
+#. CONTEXT: managementui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "Dal szerkesztő"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "Dalszerkesztő - oszlop %d"
+
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "Dal vége"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: managementui: name of side-by-side view tab
+#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "Dalok listája"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "Dal kiválasztása"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "Dal kezdete"
+
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "Dalok"
+
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "Rendezés"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "Forrás"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "Sebesség"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "Sebesség beállítása"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "Indítsa el a  oldalt."
+
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "Új sorozat indítása"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "Új dallista indítása"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "Az átalakítási folyamat elindítása."
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "Startup Script"
+
+#. CONTEXT: managementui: name of statistics tab
+msgid "Statistics"
+msgstr "Statisztikák"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "Állapot"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Stop"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "Stop After"
+
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
+#, c-format
+msgid "Stop All %s Processes"
+msgstr "Állítsa le az összes %s folyamatot"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "Stop At"
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "Megállította a felhasználó"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
+msgstr "Tárgy"
+
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "Támogatás"
+
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "Támogatási üzenet"
+
+#. CONTEXT: starterui: basic support dialog, list of support options
+msgid "Support options"
+msgstr "Támogatási lehetőségek"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "Csere"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "Váltás a várólistára, ha üres"
+
+#. CONTEXT: configuration: dances: tags associated with the dance
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "Címkék"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "Tango"
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "Cél"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "Köszönöm táncosok"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "A konverziós folyamat nem fog lefutni."
+
+#. CONTEXT: installer: instructions
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
+msgstr "Az átalakítási folyamat csak új telepítések és újratelepítések esetén fut le."
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "Téma"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "Határidő"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "Időjelzés"
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+msgid "Title"
+msgstr "Cím"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "Cím Rendezési sorrend"
+
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "Szünet kapcsolása"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "Ismétlés átkapcsolása"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "Lemezek összesen"
+
+#. CONTEXT: database update: status message: total number of files found
+msgid "Total Files"
+msgstr "Fájlok összesen"
+
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "Teljes idő"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "Összes pálya"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "Pálya"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
+msgstr "Trim Silence"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "Truncate"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgid "Type"
+msgstr "Típus"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "Nem sikerült meghatározni a %s verziót."
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "Nem találja a %scímet."
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "Nem sikerült megtalálni a BDJ3 adatbázist."
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "A dal eltávolításának visszavonása"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "Nem minősített"
+
+#. CONTEXT: managementui: notebook tab title: update database
+msgid "Update Database"
+msgstr "Adatbázis frissítése"
+
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr "Frissítés a %soldalról"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "Frissítés az Audio File címkékről"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "Frissített"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "Frissíti a BallroomDJ adatbázisban lévő információkat a %s adatbázisból."
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "Frissíti a BallroomDJ adatbázisban lévő információkat az audiofájlok címkéiből."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "A %sfrissítése."
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "A meglévő %s telepítés frissítése."
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "Felhasználói azonosító"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "Felhasználói felület"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "Az ellenőrzés befejeződött."
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "Az ellenőrzés sikertelen."
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "A telepítés ellenőrzése."
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "Bécsi keringő"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "Látható"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "Kötet"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "Hangerő beállítása"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "Waltz"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "Súly"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "West Coast Swing"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "Ha a BPM-érték stabil, válassza a Mentés gombot."
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "Audio fájl írása Címkék"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "Címkék írása hangfájlokhoz"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
+msgstr "Kiírja az audiofájlok címkéit a BallroomDJ adatbázisból származó információk felhasználásával."
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "XML fájlok"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "klub"
+
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "delete"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "gyors"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "latin"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "normál"
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "eredeti"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "lassú"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "standard"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "standardrounds"
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr "Hogyan kaphat támogatást"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr "Támogatás igényléséhez válassza a 'Támogatás' gombot. Itt találja a wiki, a fórumok és a problémabejelentő rendszer linkjeit. Vagy használja a 'Támogatás üzenet küldése' gombot üzenet küldéséhez."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr "Ellenőrizze a táncot minden dalhoz"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr "=> Válassza a 'Music Manager' elemet a 'BDJ4 Management' ablak bal oldalán.<br>Görgessen végig a dalok listáján, és ellenőrizze, hogy minden dalhoz be van állítva a tánc.<br>A tánc beállításához dal: => Válassza ki a dalt. => Válassza ki a „Song Editor” lapot (a lejátszó alatt, a dallista felett). => A \"Dance\" címke mellett használja a tánc legördülő menüt, és válassza ki a dal táncát. => A „Song Editor” lap jobb felső sarkában válassza a „Mentés” gombot.<br>Visszaválthat a „Zenekezelő” lapra, és kereshet más dalokat, amelyekhez táncolni kell. => Hagyja nyitva a 'BDJ4 Management' ablakot."
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr "Az adatbázis első alkalommal történő létrehozása"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr "A működés érdekében a BallroomDJ 4 adatbázist tart fenn az összes dalodról. Ezt az adatbázist először kell felépíteni. => Válassza a 'Kezelés' gombot. => A 'BDJ4 Management' ablakban válassza ki az 'Adatbázis frissítése' részt az ablak bal oldalán.<br>Az alapértelmezett \"Új keresés\" beállítást használja a rendszer, amikor dalokat ad hozzá vagy távolít el a zenegyűjteményéből. => Módosítsa a kijelölést \"Adatbázis újraépítése\"-re. => Válassza a 'Start' gombot. => Várja meg, amíg az adatbázis-újraépítés befejeződik. => Hagyja nyitva a 'BDJ4 Management' ablakot."
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr "Példa lejátszási lista létrehozása"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr "=> A 'BDJ4 Management' ablak bal oldalán válassza a 'Song List' szerkesztése lehetőséget.<br> Az ablak alsó részének jobb oldalán található a dalok listája. => Válasszon ki egy dalt, ha rákattint. => Most válassza ki a bal nyíl gombot az alsó rész közepén.<br> Ezzel hozzáadja a kiválasztott dalt a készülő dallistához. => Válasszon ki néhány dalt, és adja hozzá mindegyiket a dallistához.<br> A dallista felett van egy beviteli mező, benne az „Új dallista” névvel. => Kattintson a mezőre, és változtassa meg a dallista nevét. => Zárja be a 'BDJ4 Management' ablakot. A dallista automatikusan mentésre kerül."
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr "A zenei mappa helyének beállítása"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr "Az első lépés a zenemappa helyének konfigurálása. => Válassza a 'Configure' gombot.<br> A 'BDJ4 Configuration' ablakban megjelenik az 'Általános' rész. Az 'Általános' első eleme a 'Zene mappa'. => Módosítsa a „Zene mappát” a zene helyére. => Hagyja nyitva a 'BDJ4 Configuration' ablakot."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr "A konfigurált táncok ellenőrzése"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr "A táncok nevének meg kell egyeznie azzal, amit használ. => A 'BDJ4 Configuration' ablak bal oldalán válassza ki az 'Edit Dances'-t.<br> Tekintse át a táncok listáját. Ha egy táncnak más a neve, mint amit használ, válassza ki a táncot, és változtassa meg a nevet. Ha egy használt tánc hiányzik, kattintson a 'Hozzáadás' gombra, és adja hozzá a táncot. Ha vannak olyan táncok, amelyeket soha nem fog használni, válassza ki a táncot, majd kattintson az „Eltávolítás” gombra. => Zárja be a 'BDJ4 Configuration' ablakot."
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr "Bevezetés / Kezdő lépések"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr "Ez a segédprogram végigvezeti Önt néhány lépésen, amelyek segítenek az indulásban. => Válassza a 'Next' gombot a következő lépéshez való továbblépéshez."
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr "Lejátszási lista lejátszása"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr "Most lejátszhatja az éppen létrehozott lejátszási listát. => Válassza ki a 'Player' gombot. => A lejátszó ablakában válaszd ki a 'Queue Playlist' legördülő menüt. => Válassza ki a korábban megadott lejátszási lista nevét."
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr "Hogyan szerveződik a zene"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr "A szervezési módszer beállítása azért fontos, hogy a BallroomDJ 4 meg tudja határozni a dalokra vonatkozó információkat az adatbázis felépítésekor. => Válassza a 'Szervezet' lehetőséget a 'BDJ4 konfiguráció' ablak bal oldalán.<br> Sokan úgy rendezik a zenéjüket, hogy minden táncot külön mappába helyeznek.<br>Az alapértelmezett elrendezés a 'Dance/Title'. Ha az iTunes telepítve van, a szervezet elérési útja a következőre lesz állítva 'Album előadó/album/lemez – Track0 címe'. => Válassza ki a dalokhoz használt szervezési módot a \"Szervezeti útvonal\" legördülő listában.<br> Ha a szükséges szervezési útvonal nem található meg, válassza ki a \"támogatás\" gombot a kezdő ablakban, és küldjön támogatási üzenetet. Szinte bármilyen szervezeti elérési út konfigurálható.<br> Ha hangfájljaiban a tánc a műfaj hangcímkéjében van tárolva, kapcsolja be az „Adatbázis betölti a táncot a műfajból” beállítást. => Hagyja nyitva a 'BDJ4 Configuration' ablakot."
+

@@ -90,6 +90,9 @@ not be played.
 
 The per dance playlist controls are in the __Dances__ tab.
 
+Be careful when using the scroll wheel in this window, as the spinbox
+widgets will change value when the scroll wheel is used.
+
 The per dance playlist controls are different for song lists,
 sequenced playlists and automatic playlists.
 
