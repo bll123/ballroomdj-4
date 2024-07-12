@@ -314,6 +314,7 @@ uiddDisplay (void *udata)
   uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], bx + x + 4, by + y + 4 + 30, -1);
   uiWindowPresent (dd->wcont [DD_W_DIALOG_WIN]);
   dd->open = true;
+  uivlUpdateDisplay (dd->uivl);
 
   return UICB_CONT;
 }
