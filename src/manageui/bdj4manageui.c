@@ -1978,8 +1978,6 @@ manageNewSelectionMoveCheck (manageui_t *manage, dbidx_t dbidx)
 static void
 manageSetSongEditDBIdx (manageui_t *manage, int mainlasttab, int mmlasttab)
 {
-  manage->songeditdbidx = -1;
-
   if (mainlasttab == MANAGE_TAB_MAIN_SL &&
       manage->slcurrtab == MANAGE_TAB_SONGLIST) {
     manage->songeditdbidx = manage->songlistdbidx;
