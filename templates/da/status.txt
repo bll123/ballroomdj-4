@@ -1,0 +1,19 @@
+# status
+# 2022-8-4
+# version 1
+version
+..1
+count
+..2
+KEY
+..0
+STATUS
+..Ny
+PLAYFLAG
+..1
+KEY
+..1
+STATUS
+..Komplet
+PLAYFLAG
+..1

@@ -18,6 +18,8 @@ syntax: regexp
 ^locale/locales.txt$
 ^locale/cs
 ^locale/cs_CZ/
+^locale/da
+^locale/da_DK/
 ^locale/de
 ^locale/de_DE/
 ^locale/en

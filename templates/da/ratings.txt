@@ -1,0 +1,31 @@
+# ratings
+# 2022-8-4
+# version 1
+version
+..1
+count
+..4
+KEY
+..0
+RATING
+..Ikke bedømt
+WEIGHT
+..5
+KEY
+..1
+RATING
+..Fattige
+WEIGHT
+..0
+KEY
+..2
+RATING
+..godt
+WEIGHT
+..15
+KEY
+..3
+RATING
+..Store
+WEIGHT
+..80

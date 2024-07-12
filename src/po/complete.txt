@@ -5,6 +5,7 @@
 #   descriptive name (to end of line)
 #
 cs_CZ czech čeština
+da_DK danish Dansk
 de_DE german Deutsch
 en_GB english/gb English (GB)
 en_US english/us English (US)
