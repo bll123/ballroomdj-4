@@ -358,7 +358,8 @@ uisfInitDisplay (uisongfilter_t *uisf)
   uidanceSetKey (uisf->uidance, uisf->danceIdx);
   uigenreSetKey (uisf->uigenre,
       songfilterGetNum (uisf->songfilter, SONG_FILTER_GENRE));
-  uiEntrySetValue (uisf->wcont [UISF_W_SEARCH], "");
+  uiEntrySetValue (uisf->wcont [UISF_W_SEARCH],
+      (const char *) songfilterGetData (uisf->songfilter, SONG_FILTER_SEARCH));
   uiratingSetValue (uisf->uirating,
       songfilterGetNum (uisf->songfilter, SONG_FILTER_RATING));
   uilevelSetValue (uisf->uilevel,

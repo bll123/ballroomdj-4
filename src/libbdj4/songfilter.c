@@ -782,6 +782,30 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   return dbidx;
 }
 
+void *
+songfilterGetData (songfilter_t *sf, int key)
+{
+  int     valueType;
+
+  if (sf == NULL) {
+    return NULL;
+  }
+  if (key < 0 || key >= SONG_FILTER_MAX) {
+    return NULL;
+  }
+
+  valueType = valueTypeLookup [key];
+  if (valueType != SONG_FILTER_STR) {
+    return NULL;
+  }
+
+  if (! sf->inuse [key]) {
+    return NULL;
+  }
+
+  return sf->datafilter [key];
+}
+
 int
 songfilterGetNum (songfilter_t *sf, int key)
 {
