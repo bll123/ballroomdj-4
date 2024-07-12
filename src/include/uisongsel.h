@@ -28,6 +28,11 @@ enum {
   UISONGSEL_MQ_NOTSET = -1,
 };
 
+enum {
+  SONGSEL_ALL_PEERS,
+  SONGSEL_NO_PEERS,
+};
+
 typedef struct uisongsel {
   const char        *tag;
   conn_t            *conn;
@@ -100,8 +105,7 @@ void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
 void uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx);
-void uisongselSaveSelections (uisongsel_t *uisongsel);
-void uisongselRestoreSelections (uisongsel_t *uisongsel);
+void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);

@@ -34,7 +34,7 @@ have the selected rating or better.
 
 ##### Song Selection with the Song Editor or Audio Identification
 
-When a song is selected in
+When switching to the Music Manager from
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
 edit button is used, the music manager will automatically set the
 filter to use the loaded playlist.  The filter dialog will show the
@@ -47,15 +47,15 @@ switch to the song editor.  The __Next__ and __Previous__ buttons
 will traverse the songs in the song list, as the music manager's
 filter has been set to use the loaded playlist.
 
-When a song is selected in the song selection tab, or the edit button
-is used in the song selection tab, the music manager will
-automatically use the filters set in song selection. The song editor
-can then be used to traverse the songs that have been selected.
+When switching to the Music Manager from the song selection tab, or
+the edit button is used in the song selection tab, the music manager
+will automatically use the filters set in song selection. The song
+editor can then be used to traverse the songs that have been selected.
 
 If you have a listing loaded in the music manager, multiple songs may
 be selected (using control-click or shift-click).  When multiple songs
 are selected in the music manager, the song editor will traverse the
-selected songs, and not the entire listing.
+selected songs, not the entire listing.
 
 The __First__, __Next__, and __Previous__ previous buttons in
 [Audio&nbsp;Identification](en-Management-Audio%20Identification)

@@ -201,11 +201,9 @@ typedef struct uivirtlist {
   int           lastselidx;       // used to know when to clear the focus
   int32_t       numrows;
   int32_t       rowoffset;
-  int32_t       savedrowoffset;
   int32_t       lastSelection;    // used for shift-click
   int32_t       currSelection;
   nlist_t       *selected;
-  nlist_t       *selectedSave;
   int           lockcount;
   int           initialized;
   /* user callbacks */
@@ -332,10 +330,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->numcols = 0;
   vl->numrows = 0;
   vl->rowoffset = 0;
-  vl->savedrowoffset = 0;
   vl->currSelection = 0;
   vl->selected = nlistAlloc ("vl-selected", LIST_ORDERED, NULL);
-  vl->selectedSave = NULL;
   /* default selection */
   nlistSetNum (vl->selected, 0, true);
   vl->initialized = VL_INIT_NONE;
@@ -461,7 +457,6 @@ uivlFree (uivirtlist_t *vl)
   dataFree (vl->coldata);
 
   nlistFree (vl->selected);
-  nlistFree (vl->selectedSave);
 
   for (int i = 0; i < VL_W_MAX; ++i) {
     uiwcontFree (vl->wcont [i]);
@@ -1522,68 +1517,6 @@ uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   }
   /* position the scroll in the same place */
   uivlProcessScroll (vl_b, vl_a->rowoffset, VL_SCROLL_FORCE);
-  logProcEnd ("");
-}
-
-void
-uivlSaveSelections (uivirtlist_t *vl)
-{
-  nlistidx_t    iter;
-  int32_t       rowidx;
-
-  logProcBegin ();
-  if (vl == NULL) {
-    logProcEnd ("bad-vl");
-    return;
-  }
-
-  nlistFree (vl->selectedSave);
-  vl->selectedSave = nlistAlloc ("vl-sel-save", LIST_UNORDERED, NULL);
-  vl->savedrowoffset = vl->rowoffset;
-
-  nlistStartIterator (vl->selected, &iter);
-  while ((rowidx = nlistIterateKey (vl->selected, &iter)) >= 0) {
-    nlistSetNum (vl->selectedSave, rowidx, true);
-  }
-
-  nlistSort (vl->selectedSave);
-  logProcEnd ("");
-}
-
-void
-uivlRestoreSelections (uivirtlist_t *vl)
-{
-  nlistidx_t    iter;
-  int32_t       rowidx;
-  int32_t       rownum = 0;
-
-  logProcBegin ();
-  if (vl == NULL) {
-    logProcEnd ("bad-vl");
-    return;
-  }
-
-  if (vl->selectedSave == NULL) {
-    logProcEnd ("no-save");
-    return;
-  }
-
-  nlistFree (vl->selected);
-  vl->selected = nlistAlloc ("vl-sel", LIST_UNORDERED, NULL);
-
-  nlistStartIterator (vl->selectedSave, &iter);
-  while ((rowidx = nlistIterateKey (vl->selectedSave, &iter)) >= 0) {
-    rownum = rowidx;
-    nlistSetNum (vl->selected, rowidx, true);
-  }
-
-  nlistSort (vl->selected);
-
-  vl->rowoffset = vl->savedrowoffset;
-  uivlProcessScroll (vl, vl->rowoffset, VL_SCROLL_NORM);
-  uivlSelectChgHandler (vl, rownum, VL_COL_UNKNOWN);
-  uivlClearDisplaySelections (vl);
-  uivlSetDisplaySelections (vl);
   logProcEnd ("");
 }
 

@@ -118,7 +118,6 @@ static void uisongselMoveSelection (void *udata, int where);
 static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
-static void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 static void uisongselSetPeerPosition (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 void
@@ -448,12 +447,12 @@ uisongselApplySongFilter (void *udata)
 
   uisongselPopulateData (uisongsel);
 
-  /* set a default selection */
-  uisongselSetSelection (uisongsel, 0);
-
   ssint->inapply = false;
 
   if (uisongsel->ispeercall) {
+    return UICB_CONT;
+  }
+  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
     return UICB_CONT;
   }
 
@@ -501,6 +500,10 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
+    return UICB_CONT;
+  }
+  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
+    logProcEnd ("pl-in-use");
     return UICB_CONT;
   }
 
@@ -610,39 +613,31 @@ uisongselSetSelection (uisongsel_t *uisongsel, int32_t rowidx)
 }
 
 void
-uisongselSaveSelections (uisongsel_t *uisongsel)
+uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
 {
   ss_internal_t   *ssint;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
 
-  logProcBegin ();
-  ssint = uisongsel->ssInternalData;
-  uivlSaveSelections (ssint->uivl);
-  logProcEnd ("");
-}
-
-void
-uisongselRestoreSelections (uisongsel_t *uisongsel)
-{
-  ss_internal_t   *ssint;
-
-  logProcBegin ();
-  ssint = uisongsel->ssInternalData;
-
-  uivlRestoreSelections (ssint->uivl);
-
-  if (uisongsel->ispeercall) {
-    logProcEnd ("is-peer-call");
+  if (uisongsel == NULL || peer == NULL) {
     return;
   }
 
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselRestoreSelections (uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  logProcBegin ();
+  ssint = uisongsel->ssInternalData;
+  vl_a = ssint->uivl;
+
+  ssint = peer->ssInternalData;
+  vl_b = ssint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    logProcEnd ("bad-peer");
+    return;
   }
+
+  ssint = NULL;
+  uivlCopySelectList (vl_a, vl_b);
   logProcEnd ("");
 }
 
@@ -812,13 +807,14 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
-  uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+  }
 
   if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
     logProcEnd ("not-fav-col");
     return;
   }
-
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   dbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
@@ -937,19 +933,8 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
     return;
   }
 
-  uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
-
-  /* process the peers after the selections have been made */
-  if (! uisongsel->ispeercall) {
-    logMsg (LOG_DBG, LOG_INFO, "%s proc-sel-chg set peers", uisongsel->tag);
-    for (int i = 0; i < uisongsel->peercount; ++i) {
-      if (uisongsel->peers [i] == NULL) {
-        continue;
-      }
-      uisongselSetPeerFlag (uisongsel->peers [i], true);
-      uisongselCopySelectList (uisongsel, uisongsel->peers [i]);
-      uisongselSetPeerFlag (uisongsel->peers [i], false);
-    }
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
   }
 
   /* the selection has changed, reset the iterator and set the select key */
@@ -957,14 +942,34 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
   ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
 
-  if (uisongsel->newselcb != NULL) {
+  /* this only needs to be processed once by the initiator */
+  if (! uisongsel->ispeercall &&
+      uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
-    /* the song editor points to the first selected */
     dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);
     }
+  }
+
+  if (uisongsel->ispeercall) {
+    return;
+  }
+  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
+    return;
+  }
+
+  /* process the peers after the selections have been made */
+  logMsg (LOG_DBG, LOG_INFO, "%s proc-sel-chg set peers", uisongsel->tag);
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselCopySelectList (uisongsel, uisongsel->peers [i]);
+    uisongselProcessSelectChg (uisongsel->peers [i], vl, rownum, colidx);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 
   logProcEnd ("");
@@ -981,6 +986,10 @@ uisongselProcessDisplayChg (void *udata)
 
   if (uisongsel->ispeercall) {
     logProcEnd ("is-peer-call");
+    return UICB_CONT;
+  }
+  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
+    logProcEnd ("pl-in-use");
     return UICB_CONT;
   }
 
@@ -1107,31 +1116,6 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   nlistFree (tdlist);
 
   ssint->inchange = false;
-  logProcEnd ("");
-}
-
-static void
-uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
-{
-  ss_internal_t   *ssint;
-  uivirtlist_t    *vl_a;
-  uivirtlist_t    *vl_b;
-
-  logProcBegin ();
-  ssint = uisongsel->ssInternalData;
-  vl_a = ssint->uivl;
-
-  ssint = peer->ssInternalData;
-  vl_b = ssint->uivl;
-
-  if (vl_b == NULL) {
-    /* the peer has not yet been initialized, even though it may exist */
-    logProcEnd ("bad-peer");
-    return;
-  }
-
-  ssint = NULL;
-  uivlCopySelectList (vl_a, vl_b);
   logProcEnd ("");
 }
 

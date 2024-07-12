@@ -105,7 +105,6 @@ typedef struct uisongfilter {
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
   bool              showplaylist : 1;
-  bool              playlistsel : 1;
 } uisongfilter_t;
 
 /* song filter handling */
@@ -162,7 +161,6 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->uifavorite = NULL;
   uisf->danceIdx = -1;
   uisf->showplaylist = false;
-  uisf->playlistsel = false;
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uisf->labels [i] = NULL;
   }
@@ -393,7 +391,8 @@ uisfPlaylistSelect (uisongfilter_t *uisf, const char *str)
     songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
     uisfEnableWidgets (uisf);
   }
-  uisf->playlistsel = true;
+  dataFree (uisf->playlistname);
+  uisf->playlistname = mdstrdup (str);
   logProcEnd ("");
 }
 
@@ -749,13 +748,6 @@ uisfResponseHandler (void *udata, int32_t responseid)
 
   if (responseid != RESPONSE_DELETE_WIN && responseid != RESPONSE_CLOSE) {
     uisfUpdate (uisf);
-    uisf->playlistsel = false;
-  }
-  if (responseid == RESPONSE_DELETE_WIN || responseid == RESPONSE_CLOSE) {
-    if (uisf->playlistsel) {
-      dataFree (uisf->playlistname);
-      uisf->playlistname = NULL;
-    }
   }
 
   return UICB_CONT;
