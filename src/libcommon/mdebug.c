@@ -53,6 +53,8 @@ enum {
   MDEBUG_CLOSE,
   MDEBUG_FOPEN,
   MDEBUG_FCLOSE,
+  MDEBUG_MEM_CURR,
+  MDEBUG_MEM_MAX,
   MDEBUG_MAX,
 };
 
@@ -67,13 +69,14 @@ typedef struct {
   int           lineno;
   char          subtag [MAXSUBTAG];
   long          loc;
+  ssize_t       sz;
   char          *bt;
 } mdebug_t;
 
 static char     mdebugtag [20] = { "none" };
 static char     mdebugsubtag [MAXSUBTAG] = { "" };
 static mdebug_t *mdebug = NULL;
-static long     mdebugcounts [MDEBUG_MAX];
+static ssize_t  mdebugcounts [MDEBUG_MAX];
 static bool     initialized = false;
 static bool     mdebugverbose = false;
 static bool     mdebugnooutput = false;
@@ -81,7 +84,7 @@ static bool     mdebugnooutput = false;
 static void * mdextalloc_a (void *data, const char *fn, int lineno, const char *tag, int type, int ctype);
 static void mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype);
 static void mdebugResize (void);
-static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno);
+static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz);
 static void mdebugDel (long idx);
 static long mdebugFind (void *data);
 static int  mdebugComp (const void *a, const void *b);
@@ -120,7 +123,7 @@ mdmalloc_r (size_t sz, const char *fn, int lineno)
     if (mdebugverbose) {
       mdebugLog ("%4s %s %p malloc %s %d\n", mdebugtag, mdebugsubtag, data, fn, lineno);
     }
-    mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno);
+    mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno, sz);
     mdebugcounts [MDEBUG_MALLOC] += 1;
   }
   return data;
@@ -157,13 +160,13 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
     if (mdebugverbose) {
       mdebugLog ("%4s %s %p realloc-init %s %d\n", mdebugtag, mdebugsubtag, ndata, fn, lineno);
     }
-    mdebugAdd (ndata, MDEBUG_TYPE_ALLOC, fn, lineno);
+    mdebugAdd (ndata, MDEBUG_TYPE_ALLOC, fn, lineno, sz);
   }
   if (initialized && data != NULL) {
     if (mdebugverbose) {
       mdebugLog ("%4s %s %p realloc %s %d\n", mdebugtag, mdebugsubtag, ndata, fn, lineno);
     }
-    mdebugAdd (ndata, MDEBUG_TYPE_REALLOC, fn, lineno);
+    mdebugAdd (ndata, MDEBUG_TYPE_REALLOC, fn, lineno, sz);
   }
   return ndata;
 }
@@ -181,7 +184,7 @@ mdstrdup_r (const char *s, const char *fn, int lineno)
     if (mdebugverbose) {
       mdebugLog ("%4s %s %p strdup %s %d\n", mdebugtag, mdebugsubtag, str, fn, lineno);
     }
-    mdebugAdd (str, MDEBUG_TYPE_STRDUP, fn, lineno);
+    mdebugAdd (str, MDEBUG_TYPE_STRDUP, fn, lineno, strlen (s) + 1);
     mdebugcounts [MDEBUG_STRDUP] += 1;
   }
   return str;
@@ -308,20 +311,22 @@ mdebugReport (void)
       return;
     }
 
-    mdebugLog ("  count: %ld\n", mdebugcounts [MDEBUG_COUNT]);
-    mdebugLog (" ERRORS: %ld\n", mdebugcounts [MDEBUG_ERRORS]);
-    mdebugLog (" malloc: %ld\n", mdebugcounts [MDEBUG_MALLOC]);
-    mdebugLog ("realloc: %ld\n", mdebugcounts [MDEBUG_REALLOC]);
-    mdebugLog (" strdup: %ld\n", mdebugcounts [MDEBUG_STRDUP]);
-    mdebugLog ("Emalloc: %ld\n", mdebugcounts [MDEBUG_EXTALLOC]);
-    mdebugLog ("  Efree: %ld\n", mdebugcounts [MDEBUG_EXTFREE]);
-    mdebugLog ("   free: %ld\n", mdebugcounts [MDEBUG_FREE]);
-    mdebugLog ("    max: %ld\n", mdebugcounts [MDEBUG_COUNT_MAX]);
-    mdebugLog ("   open: %ld\n", mdebugcounts [MDEBUG_OPEN]);
-    mdebugLog ("   sock: %ld\n", mdebugcounts [MDEBUG_SOCK]);
-    mdebugLog ("  close: %ld\n", mdebugcounts [MDEBUG_CLOSE]);
-    mdebugLog ("  fopen: %ld\n", mdebugcounts [MDEBUG_FOPEN]);
-    mdebugLog (" fclose: %ld\n", mdebugcounts [MDEBUG_FCLOSE]);
+    mdebugLog ("   count: %zd\n", mdebugcounts [MDEBUG_COUNT]);
+    mdebugLog ("  ERRORS: %zd\n", mdebugcounts [MDEBUG_ERRORS]);
+    mdebugLog ("  malloc: %zd\n", mdebugcounts [MDEBUG_MALLOC]);
+    mdebugLog (" realloc: %zd\n", mdebugcounts [MDEBUG_REALLOC]);
+    mdebugLog ("  strdup: %zd\n", mdebugcounts [MDEBUG_STRDUP]);
+    mdebugLog (" Emalloc: %zd\n", mdebugcounts [MDEBUG_EXTALLOC]);
+    mdebugLog ("   Efree: %zd\n", mdebugcounts [MDEBUG_EXTFREE]);
+    mdebugLog ("    free: %zd\n", mdebugcounts [MDEBUG_FREE]);
+    mdebugLog ("     max: %zd\n", mdebugcounts [MDEBUG_COUNT_MAX]);
+    mdebugLog ("    open: %zd\n", mdebugcounts [MDEBUG_OPEN]);
+    mdebugLog ("    sock: %zd\n", mdebugcounts [MDEBUG_SOCK]);
+    mdebugLog ("   close: %zd\n", mdebugcounts [MDEBUG_CLOSE]);
+    mdebugLog ("   fopen: %zd\n", mdebugcounts [MDEBUG_FOPEN]);
+    mdebugLog ("  fclose: %zd\n", mdebugcounts [MDEBUG_FCLOSE]);
+    mdebugLog ("mem-curr: %zd\n", mdebugcounts [MDEBUG_MEM_CURR]);
+    mdebugLog (" mem-max: %zd\n", mdebugcounts [MDEBUG_MEM_MAX]);
   }
 }
 
@@ -409,7 +414,7 @@ mdextalloc_a (void *data, const char *fn, int lineno,
     if (mdebugverbose) {
       mdebugLog ("%4s %s %p %s %s %d\n", mdebugtag, mdebugsubtag, data, tag, fn, lineno);
     }
-    mdebugAdd (data, type, fn, lineno);
+    mdebugAdd (data, type, fn, lineno, 0);
     mdebugcounts [ctype] += 1;
   }
   return data;
@@ -434,7 +439,7 @@ mdebugResize (void)
 }
 
 static void
-mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
+mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz)
 {
   size_t    tidx;
 
@@ -444,6 +449,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
   mdebug [tidx].fn = (fn == NULL ? "null" : fn);
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
+  mdebug [tidx].sz = sz;
   strncpy (mdebug [tidx].subtag, mdebugsubtag, MAXSUBTAG);
 #if MDEBUG_ENABLE_BACKTRACE
   mdebug [tidx].bt = mdebugBacktrace ();
@@ -452,6 +458,12 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
   if (mdebugcounts [MDEBUG_COUNT] > mdebugcounts [MDEBUG_COUNT_MAX]) {
     mdebugcounts [MDEBUG_COUNT_MAX] = mdebugcounts [MDEBUG_COUNT];
   }
+
+  mdebugcounts [MDEBUG_MEM_CURR] += sz;
+  if (mdebugcounts [MDEBUG_MEM_CURR] > mdebugcounts [MDEBUG_MEM_MAX]) {
+    mdebugcounts [MDEBUG_MEM_MAX] = mdebugcounts [MDEBUG_MEM_CURR];
+  }
+
   mdebugSort ();
 }
 
@@ -464,6 +476,9 @@ mdebugDel (long idx)
   }
   mdebug [idx].bt = NULL;
 #endif
+
+  mdebugcounts [MDEBUG_MEM_CURR] -= mdebug [idx].sz;
+
   for (long i = idx; i + 1 < mdebugcounts [MDEBUG_COUNT]; ++i) {
     memcpy (&mdebug [i], &mdebug [i + 1], sizeof (mdebug_t));
     mdebug [i].loc = i;
