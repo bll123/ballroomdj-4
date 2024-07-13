@@ -6,7 +6,7 @@
 
 Supported Platforms as of 2023-3-15: Linux 64-bit.
 
-* Distributions that have been tested (as of 2024-1).
+* Distributions that have been tested (as of 2024-5).
     * Debian based (MX Linux, Ubuntu, etc.)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
