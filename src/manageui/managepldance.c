@@ -60,7 +60,8 @@ typedef struct mpldance {
 static void manageplDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype);
 static bool manageplDanceChanged (void *udata);
 static bool manageplDanceHideUnselectedCB (void *udata);
-static int  manageplDanceBPMDisplay (ilistidx_t dkey, int bpm);
+static int  manageplDanceMPMDisplay (ilistidx_t dkey, int mpm);
+static int  manageplDanceMPMConvert (ilistidx_t dkey, int mpm);
 static void manageplDanceColumnHeading (char *tbuff, size_t sz, const char *disp, const char *bpmstr);
 static void manageplDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void manageplDanceRebuildCurrList (mpldance_t *mpldnc);
@@ -277,9 +278,13 @@ manageplDanceChanged (void *udata)
   val = uivlGetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_MAXPLAYTIME);
   playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, val);
   val = uivlGetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_LOWMPM);
+  val = manageplDanceMPMConvert (dkey, val);
   playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, val);
   val = uivlGetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM);
+  val = manageplDanceMPMConvert (dkey, val);
   playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, val);
+
+  mpldnc->changed = true;
 
   return UICB_CONT;
 }
@@ -303,14 +308,25 @@ manageplDanceHideUnselectedCB (void *udata)
 }
 
 static int
-manageplDanceBPMDisplay (ilistidx_t dkey, int bpm)
+manageplDanceMPMDisplay (ilistidx_t dkey, int mpm)
 {
-  if (bpm < 0) {
-    bpm = 0;
+  if (mpm < 0) {
+    mpm = 0;
   }
 
-  bpm = danceConvertMPMtoBPM (dkey, bpm);
-  return bpm;
+  mpm = danceConvertMPMtoBPM (dkey, mpm);
+  return mpm;
+}
+
+static int
+manageplDanceMPMConvert (ilistidx_t dkey, int mpm)
+{
+  if (mpm < 0) {
+    mpm = 0;
+  }
+
+  mpm = danceConvertBPMtoMPM (dkey, mpm, false);
+  return mpm;
 }
 
 /* modify long column headers (for low bpm/high bpm) */
@@ -366,11 +382,11 @@ manageplDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_MAXPLAYTIME, val);
 
   val = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_LOW);
-  val = manageplDanceBPMDisplay (dkey, val);
+  val = manageplDanceMPMDisplay (dkey, val);
   uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_LOWMPM, val);
 
   val = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_HIGH);
-  val = manageplDanceBPMDisplay (dkey, val);
+  val = manageplDanceMPMDisplay (dkey, val);
   uivlSetRowColumnNum (mpldnc->uivl, rownum, MPLDNC_COL_HIGHMPM, val);
 
   mpldnc->inchange = false;
