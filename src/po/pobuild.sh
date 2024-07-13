@@ -131,11 +131,11 @@ while read line; do
       test -h ${slocale} || ln -s ${locale} ${slocale}
     )
   fi
-  if [[ ${locale} == nn_NO ]]; then
+  if [[ ${locale} == nb_NO ]]; then
     (
       cd ${LOCALEDIR}
       # do not replace existing links
-      test -h nb || ln -s ${locale} nb
+      test -h nn || ln -s ${locale} nn
     )
   fi
 

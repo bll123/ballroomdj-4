@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nn">
+<html lang="nb">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="yandex-verification" content="52297d544556772d" />
@@ -121,7 +121,7 @@
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>
             <li><a href="index.html.ko">한국어‬</a></li>
-            <li><a href="index.html.nn">norsk</a></li>
+            <li><a href="index.html.nb">norsk</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
             <li><a href="index.html.po">Polski</a></li>
             <li><a href="index.html.pt">Português</a></li>

@@ -113,6 +113,7 @@ main (int argc, char *argv[])
   helper.nextCallback = NULL;
   helper.rx_br = regexInit ("<br>");
   helper.rx_nlsp = regexInit ("\\n *");
+  /* . or japanese/chinese full-stop */
   helper.rx_dot = regexInit ("([.\xe3\x80\x82])");
   helper.rx_eqgt = regexInit ("=>");
   helper.rx_spsp = regexInit ("  *");

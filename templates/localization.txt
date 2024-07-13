@@ -158,9 +158,9 @@ QDANCE
 KEY
 ..13
 LONG
-..nn_NO
+..nb_NO
 SHORT
-..nn
+..nb
 DISPLAY
 ..norsk
 STDROUNDS

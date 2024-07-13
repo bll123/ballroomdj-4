@@ -17,7 +17,7 @@ it_IT italian Italiano
 ja_JP japanese 日本語
 ko_KR korean 한국어‬
 nl_BE dutch Nederlands
-nn_NO norwegian norsk
+nb_NO norwegian norsk
 pl_PL polish Polski
 pt_PT portuguese Português
 ru_RU russian Русский‬
