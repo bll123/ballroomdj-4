@@ -205,7 +205,15 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   int             widx;
   nlistidx_t      num;
   int             timesig;
+  uivirtlist_t    *uivl;
+  int32_t         rownum;
 
+
+  uivl = gui->tables [CONFUI_ID_DANCE].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  /* the row number must be saved because it gets changed before the */
+  /* 'changed' callbacks get called */
+  gui->dancerownum = rownum;
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   sval = danceGetStr (dances, dkey, DANCE_DANCE);
@@ -356,7 +364,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  rownum = uivlGetCurrSelection (uivl);
+  rownum = gui->dancerownum;
   dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
 
   if (widx == CONFUI_ENTRY_DANCE_DANCE) {
@@ -429,8 +437,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   confuigui_t     *gui = udata;
   uivirtlist_t    *uivl = NULL;
   int             count = 0;
-  double          value;
-  long            nval = 0;
+  int32_t         nval = 0;
   dance_t         *dances;
   int32_t         rownum;
   ilistidx_t      dkey;
@@ -449,8 +456,10 @@ confuiDanceSpinboxChg (void *udata, int widx)
     nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
+    double    value;
+
     value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
-    nval = (long) value;
+    nval = (int32_t) value;
   }
 
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
@@ -461,10 +470,10 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  rownum = uivlGetCurrSelection (uivl);
+  rownum = gui->dancerownum;
   dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
   if (itemidx == DANCE_MPM_HIGH || itemidx == DANCE_MPM_LOW) {
-    nval = danceConvertBPMtoMPM (itemidx, nval, DANCE_NO_FORCE);
+    nval = danceConvertBPMtoMPM (dkey, nval, DANCE_NO_FORCE);
   }
   danceSetNum (dances, dkey, itemidx, nval);
   gui->tables [gui->tablecurr].changed = true;

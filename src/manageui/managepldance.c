@@ -325,7 +325,7 @@ manageplDanceMPMConvert (ilistidx_t dkey, int mpm)
     mpm = 0;
   }
 
-  mpm = danceConvertBPMtoMPM (dkey, mpm, false);
+  mpm = danceConvertBPMtoMPM (dkey, mpm, DANCE_NO_FORCE);
   return mpm;
 }
 

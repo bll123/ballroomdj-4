@@ -8,7 +8,7 @@
 
 * Bug Fixes:
     * All text fields in listings that may be long are now displayed with ellipses if necessary.
-    * Edit Dances: Fixed a long-standing bug when adding multiple dances.
+    * Edit Dances: Fixed bugs setting values when switching dances.
     * Management, Player, Mobile Remote Control: Fix where the 'History' songlist is allowed to be listed.
     * Mobile Remote Control: Fixed various issues.
     * Mobile Remote Control, Mobile Marquee: Fix browser icon.
