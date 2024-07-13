@@ -41,6 +41,11 @@ enum {
   HELPER_W_MAX,
 };
 
+enum {
+  HELPER_HORIZ_SZ = 1100,
+  HELPER_VERT_SZ = 680,
+};
+
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
@@ -52,9 +57,10 @@ typedef struct {
   ilistidx_t      helpiter;
   ilistidx_t      helpkey;
   bdjregex_t      *rx_br;
-  bdjregex_t      *rx_dotnlsp;
+  bdjregex_t      *rx_nlsp;
   bdjregex_t      *rx_dot;
   bdjregex_t      *rx_eqgt;
+  bdjregex_t      *rx_spsp;
   bool            scrollendflag : 1;
 } helperui_t;
 
@@ -106,9 +112,10 @@ main (int argc, char *argv[])
   helper.closeCallback = NULL;
   helper.nextCallback = NULL;
   helper.rx_br = regexInit ("<br>");
-  helper.rx_dotnlsp = regexInit ("\\.\\n ");
-  helper.rx_dot = regexInit ("\\.");
+  helper.rx_nlsp = regexInit ("\\n *");
+  helper.rx_dot = regexInit ("([.\xe3\x80\x82])");
   helper.rx_eqgt = regexInit ("=>");
+  helper.rx_spsp = regexInit ("  *");
 
   helper.progstate = progstateInit ("helperui");
   progstateSetCallback (helper.progstate, STATE_STOPPING,
@@ -185,9 +192,10 @@ helperClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (helper->wcont [i]);
   }
   regexFree (helper->rx_br);
-  regexFree (helper->rx_dotnlsp);
+  regexFree (helper->rx_nlsp);
   regexFree (helper->rx_dot);
   regexFree (helper->rx_eqgt);
+  regexFree (helper->rx_spsp);
 
   bdj4shutdown (ROUTE_HELPERUI, NULL);
 
@@ -217,7 +225,8 @@ helperBuildUI (helperui_t  *helper)
   uiWidgetSetAllMargins (vbox, 2);
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
 
-  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400,
+        bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetParagraph (helper->wcont [HELPER_W_TEXTBOX], 0, 5);
   uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
   uiTextBoxVertExpand (helper->wcont [HELPER_W_TEXTBOX]);
@@ -240,7 +249,8 @@ helperBuildUI (helperui_t  *helper)
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_CLOSE] = uiwidgetp;
 
-  uiWindowSetDefaultSize (helper->wcont [HELPER_W_WINDOW], 1100, 550);
+  uiWindowSetDefaultSize (helper->wcont [HELPER_W_WINDOW],
+      HELPER_HORIZ_SZ, HELPER_VERT_SZ);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
@@ -382,36 +392,43 @@ helpDisplay (helperui_t *helper)
   char        *ttext;
   char        *ntext;
 
-  if (helper->helpkey >= 0) {
-    title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
-    text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
-    ttext = _(text);
-    ntext = regexReplace (helper->rx_br, ttext, "\n");
-
-    ttext = ntext;
-    ntext = regexReplace (helper->rx_dotnlsp, ttext, ".\n");
-    mdfree (ttext);
-
-    ttext = ntext;
-    ntext = regexReplace (helper->rx_dot, ttext, ".  ");
-    mdfree (ttext);
-
-    ttext = ntext;
-    ntext = regexReplace (helper->rx_eqgt, ttext, "\n=>");
-    mdfree (ttext);
-
-    if (helper->helpkey > 0) {
-      uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
-    }
-    uiTextBoxAppendHighlightStr (helper->wcont [HELPER_W_TEXTBOX], _(title));
+  if (helper->helpkey < 0) {
     uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
-    ttext = ntext;
-    while (*ttext == ' ' || *ttext == '\n') {
-      ++ttext;
-    }
-    uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], ttext);
-    helper->scrollendflag = true;
-    mdfree (ntext);
+    return;
   }
+
+  title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
+  text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
+  ttext = _(text);
+  ntext = regexReplace (helper->rx_br, ttext, "\n\n");
+
+  ttext = ntext;
+  ntext = regexReplace (helper->rx_nlsp, ttext, "\n");
+  mdfree (ttext);
+
+  ttext = ntext;
+  ntext = regexReplace (helper->rx_dot, ttext, "\\1  ");
+  mdfree (ttext);
+
+  ttext = ntext;
+  ntext = regexReplace (helper->rx_eqgt, ttext, "\n=>");
+  mdfree (ttext);
+
+  ttext = ntext;
+  ntext = regexReplace (helper->rx_spsp, ttext, " ");
+  mdfree (ttext);
+
+  if (helper->helpkey > 0) {
+    uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
+  }
+  uiTextBoxAppendHighlightStr (helper->wcont [HELPER_W_TEXTBOX], _(title));
+  uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], "\n\n");
+  ttext = ntext;
+  while (*ttext == ' ' || *ttext == '\n') {
+    ++ttext;
+  }
+  uiTextBoxAppendStr (helper->wcont [HELPER_W_TEXTBOX], ttext);
+  helper->scrollendflag = true;
+  mdfree (ntext);
 }
 

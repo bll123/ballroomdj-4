@@ -12,6 +12,7 @@
     * Management, Player, Mobile Remote Control: Fix where the 'History' songlist is allowed to be listed.
     * Mobile Remote Control: Fixed various issues.
     * Mobile Remote Control, Mobile Marquee: Fix browser icon.
+    * New Install Help Utility: Fixed some small issues.
     * Player: Drag & Drop: Fixed issues with encoded filenames.
     * Song Filter Dialog: Restores prior settings.
 * Changes:
