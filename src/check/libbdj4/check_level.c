@@ -31,6 +31,13 @@ static void
 setup (void)
 {
   templateFileCopy ("levels.txt", "levels.txt");
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(level_alloc)
@@ -99,8 +106,6 @@ START_TEST(level_conv)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_conv");
   mdebugSubTag ("level_conv");
 
-  bdjvarsdfloadInit ();
-
   level = levelAlloc ();
   levelStartIterator (level, &iteridx);
   count = 0;
@@ -120,7 +125,6 @@ START_TEST(level_conv)
     ++count;
   }
   levelFree (level);
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -143,7 +147,6 @@ START_TEST(level_save)
   mdebugSubTag ("level_save");
 
   /* required for the level conversion function */
-  bdjvarsdfloadInit ();
 
   level = levelAlloc ();
 
@@ -187,7 +190,63 @@ START_TEST(level_save)
 
   ilistFree (tlist);
   levelFree (level);
-  bdjvarsdfloadCleanup ();
+}
+END_TEST
+
+START_TEST(level_set)
+{
+  level_t    *level = NULL;
+  const char  *sval = NULL;
+  int         oval;
+  int         nval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_set");
+  mdebugSubTag ("level_set");
+
+  level = levelAlloc ();
+
+  sval = levelGetLevel (level, 0);
+  ck_assert_str_ne (sval, "test");
+  levelSetLevel (level, 0, "test");
+  sval = levelGetLevel (level, 0);
+  ck_assert_str_eq (sval, "test");
+
+  oval = levelGetWeight (level, 0);
+  levelSetWeight (level, 0, oval + 10);
+  nval = levelGetWeight (level, 0);
+  ck_assert_int_eq (oval + 10, nval);
+
+  nval = levelGetDefault (level, 0);
+  ck_assert_int_ne (nval, 1);
+  levelSetDefault (level, 0);
+  nval = levelGetDefault (level, 0);
+  ck_assert_int_eq (nval, 1);
+  levelSetDefault (level, 1);
+  nval = levelGetDefault (level, 0);
+  ck_assert_int_eq (nval, 0);
+  nval = levelGetDefault (level, 1);
+  ck_assert_int_eq (nval, 1);
+
+  levelFree (level);
+}
+END_TEST
+
+START_TEST(level_dellast)
+{
+  level_t    *level = NULL;
+  int         ocount, ncount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_dellast");
+  mdebugSubTag ("level_dellast");
+
+  level = levelAlloc ();
+
+  ocount = levelGetCount (level);
+  levelDeleteLast (level);
+  ncount = levelGetCount (level);
+  ck_assert_int_eq (ocount - 1, ncount);
+
+  levelFree (level);
 }
 END_TEST
 
@@ -200,11 +259,13 @@ level_suite (void)
   s = suite_create ("level");
   tc = tcase_create ("level");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, level_alloc);
   tcase_add_test (tc, level_iterate);
   tcase_add_test (tc, level_conv);
   tcase_add_test (tc, level_save);
+  tcase_add_test (tc, level_set);
+  tcase_add_test (tc, level_dellast);
   suite_add_tcase (s, tc);
   return s;
 }
