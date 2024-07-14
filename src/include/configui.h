@@ -431,7 +431,7 @@ typedef struct confuigui {
   /* itunes */
   confitunes_t      *itunes;
   /* dances */
-  int32_t           dancerownum;    // for dance edit
+  int32_t           dancedkey;      // for dance edit
   bool              inchange : 1;
 } confuigui_t;
 

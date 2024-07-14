@@ -123,6 +123,7 @@ main (int argc, char *argv[])
   confui.gui.marqueetaglist = NULL;
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
+  confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;

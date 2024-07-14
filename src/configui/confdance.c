@@ -211,9 +211,12 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
 
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   rownum = uivlGetCurrSelection (uivl);
-  /* the row number must be saved because it gets changed before the */
+
+  /* the dance key must be saved because it gets changed before the */
   /* 'changed' callbacks get called */
-  gui->dancerownum = rownum;
+  /* this occurs when typing into a field, then selecting a new dance */
+  gui->dancedkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   sval = danceGetStr (dances, dkey, DANCE_DANCE);
@@ -335,7 +338,6 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   const char      *str = NULL;
   uivirtlist_t    *uivl = NULL;
   int             count = 0;
-  int32_t         rownum;
   dance_t         *dances;
   ilistidx_t      dkey;
   nlistidx_t      itemidx;
@@ -364,8 +366,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  rownum = gui->dancerownum;
-  dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
+  dkey = gui->dancedkey;
 
   if (widx == CONFUI_ENTRY_DANCE_DANCE) {
     danceSetStr (dances, dkey, itemidx, str);
@@ -439,7 +440,6 @@ confuiDanceSpinboxChg (void *udata, int widx)
   int             count = 0;
   int32_t         nval = 0;
   dance_t         *dances;
-  int32_t         rownum;
   ilistidx_t      dkey;
   nlistidx_t      itemidx;
 
@@ -470,8 +470,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  rownum = gui->dancerownum;
-  dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
+  dkey = gui->dancedkey;
   if (itemidx == DANCE_MPM_HIGH || itemidx == DANCE_MPM_LOW) {
     nval = danceConvertBPMtoMPM (dkey, nval, DANCE_NO_FORCE);
   }
