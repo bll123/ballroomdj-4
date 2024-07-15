@@ -74,7 +74,7 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
-grep 'PLUI_DBG_MSGS = 1,' src/playerui/bdj4playerui.c > /dev/null 2>&1
+grep 'PLUI_DBG_MSGS = 0,' src/playerui/bdj4playerui.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "plui debugging is on"

@@ -365,6 +365,12 @@ uiAddScreenCSS (const char *css)
   GdkScreen       *screen;
   char            *p;
 
+  for (int i = 0; i < csscount; ++i) {
+    if (strcmp (cssdata [i], css) == 0) {
+      return;
+    }
+  }
+
   p = mdstrdup (css);
   ++csscount;
   cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);

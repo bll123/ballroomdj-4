@@ -111,7 +111,7 @@ enum {
 };
 
 enum {
-  PLUI_DBG_MSGS = 1,
+  PLUI_DBG_MSGS = 0,
 };
 
 typedef struct {

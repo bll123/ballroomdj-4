@@ -67,7 +67,9 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
-  snprintf (bclassnm, sizeof (bclassnm), "box.profcol%s", tcolor + 1);
+  /* macos will crash if just box.profcol%s is used! */
+  snprintf (bclassnm, sizeof (bclassnm), "box.horizontal.profcol%s", tcolor + 1);
+  /* the ui library has code to prevent duplicates */
   uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiWidgetAddClass (uiwidgetp, classnm);
 }
