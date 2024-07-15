@@ -4,6 +4,18 @@ English Flex
 ..bdj-flex.html
 English HTML 5
 ..bdj.html
+čeština Flex Dark
+..cs/bdj-flex-dark.html
+čeština Flex
+..cs/bdj-flex.html
+čeština HTML 5
+..cs/bdj.html
+Dansk Flex Dark
+..da/bdj-flex-dark.html
+Dansk Flex
+..da/bdj-flex.html
+Dansk HTML 5
+..da/bdj.html
 Deutsch Flex Dark
 ..de/bdj-flex-dark.html
 Deutsch Flex
@@ -28,6 +40,12 @@ Français Flex
 ..fr/bdj-flex.html
 Français HTML 5
 ..fr/bdj.html
+magyar‬ Flex Dark
+..hu/bdj-flex-dark.html
+magyar‬ Flex
+..hu/bdj-flex.html
+magyar‬ HTML 5
+..hu/bdj.html
 Italiano Flex Dark
 ..it/bdj-flex-dark.html
 Italiano Flex
@@ -40,6 +58,18 @@ Italiano HTML 5
 ..ja/bdj-flex.html
 日本語 HTML 5
 ..ja/bdj.html
+한국어‬ Flex Dark
+..ko/bdj-flex-dark.html
+한국어‬ Flex
+..ko/bdj-flex.html
+한국어‬ HTML 5
+..ko/bdj.html
+norsk Flex Dark
+..nb/bdj-flex-dark.html
+norsk Flex
+..nb/bdj-flex.html
+norsk HTML 5
+..nb/bdj.html
 Nederlands Flex Dark
 ..nl/bdj-flex-dark.html
 Nederlands Flex
@@ -52,9 +82,39 @@ Polski Flex
 ..pl/bdj-flex.html
 Polski HTML 5
 ..pl/bdj.html
+Português Flex Dark
+..pt/bdj-flex-dark.html
+Português Flex
+..pt/bdj-flex.html
+Português HTML 5
+..pt/bdj.html
 Русский‬ Flex Dark
 ..ru/bdj-flex-dark.html
 Русский‬ Flex
 ..ru/bdj-flex.html
 Русский‬ HTML 5
 ..ru/bdj.html
+Svenska‬ Flex Dark
+..sv/bdj-flex-dark.html
+Svenska‬ Flex
+..sv/bdj-flex.html
+Svenska‬ HTML 5
+..sv/bdj.html
+Українська‬ Flex Dark
+..uk/bdj-flex-dark.html
+Українська‬ Flex
+..uk/bdj-flex.html
+Українська‬ HTML 5
+..uk/bdj.html
+简体中文‬ Flex Dark
+..zh_CN/bdj-flex-dark.html
+简体中文‬ Flex
+..zh_CN/bdj-flex.html
+简体中文‬ HTML 5
+..zh_CN/bdj.html
+繁體中文‬ Flex Dark
+..zh_TW/bdj-flex-dark.html
+繁體中文‬ Flex
+..zh_TW/bdj-flex.html
+繁體中文‬ HTML 5
+..zh_TW/bdj.html

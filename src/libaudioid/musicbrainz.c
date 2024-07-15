@@ -32,7 +32,7 @@ typedef struct audioidmb {
 } audioidmb_t;
 
 /* for debugging only */
-#define MUSICBRAINZ_REUSE 1
+#define MUSICBRAINZ_REUSE 0
 enum {
   QPS_LIMIT = 1000 / 1 + 1,
 };

@@ -1,5 +1,8 @@
 # 2023-4-9
 #
+# Note that the musicq chk commands currently return the internal musicq
+# index, which is offset by one.
+#
 # test songs are all between 29 and 32 seconds long
 # fade-out default: 4000
 # gap default: 2000

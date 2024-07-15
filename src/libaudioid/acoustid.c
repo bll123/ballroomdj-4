@@ -33,7 +33,7 @@
 /* for debugging only */
 /* this is useful, saves time and queries against the server */
 /* note that a valid out-acoustid.xml file must be downloaded first */
-#define ACOUSTID_REUSE 1
+#define ACOUSTID_REUSE 0
 
 enum {
   ACOUSTID_BUFF_SZ = 16384,

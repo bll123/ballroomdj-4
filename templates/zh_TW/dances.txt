@@ -22,7 +22,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..club
 KEY
 ..1
 ANNOUNCE

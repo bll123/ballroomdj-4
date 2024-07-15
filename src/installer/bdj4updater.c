@@ -427,6 +427,18 @@ main (int argc, char *argv [])
   /* datafile updates */
 
   {
+    char to [MAXPATHLEN];
+
+    /* 4.11.0 http/curl-ca-bundle.crt was not being updated. */
+    /* always update it. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "curl-ca-bundle.crt", "", PATHBLD_MP_DIR_TEMPLATE);
+    pathbldMakePath (to, sizeof (to),
+        "curl-ca-bundle.crt", "", PATHBLD_MP_DREL_HTTP);
+    filemanipCopy (tbuff, to);
+  }
+
+  {
     /* 4.0.5 2023-1-4 itunes-fields */
     /*   'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
