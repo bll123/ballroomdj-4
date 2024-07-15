@@ -205,6 +205,21 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
   uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
 
+  if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+    uiwcont_t   *thbox;
+
+    /* need a filler box to match the musicq */
+    thbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (thbox);
+    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox);
+
+    uiwidgetp = uiCreateLabel (" ");
+    uiWidgetSetMarginBottom (uiwidgetp, 5);
+    uiBoxPackStart (thbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+    uiwcontFree (thbox);
+  }
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
@@ -281,19 +296,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->wcont [SONGSEL_W_BUTTON_FILTER] = uiwidgetp;
 
   uiwcontFree (hbox);
-
-  if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
-    /* need a filler box to match the musicq */
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
-
-    uiwidgetp = uiCreateLabel (" ");
-    uiWidgetSetMarginBottom (uiwidgetp, 5);
-    uiBoxPackStart (hbox, uiwidgetp);
-    uiwcontFree (uiwidgetp);
-    uiwcontFree (hbox);
-  }
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);

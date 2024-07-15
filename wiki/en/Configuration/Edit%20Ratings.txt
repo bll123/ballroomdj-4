@@ -16,11 +16,12 @@ adjust which songs are used.  A weight of zero will prevent a song
 with that rating from being selected.  A higher rating weight will
 make a song more likely to play.
 
-Added a new rating: Select the __Add&nbsp;New__ (![Add
+Adding a new rating: Select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button to add a new rating. Click on the name of the new rating to
-change the name.  Then click on the weight to set the weight.  Use the
-up and down arrows
+change the name.  Then click on the weight to set the weight.
+
+Use the up and down arrows
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to move the rating to its correct position.

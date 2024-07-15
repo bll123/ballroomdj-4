@@ -4,6 +4,11 @@
 
 These items are not configurable via the user interface.
 
+###### data/dancetypes.txt
+
+Specifies the types of dances that may be selected.
+The defaults are standard, latin and club.
+
 ###### data/bdjconfig.txt
 
  * CLOCKDISP : Clock Display
@@ -32,11 +37,11 @@ These items are not configurable via the user interface.
     The default is a slash (/).
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
-    Must be specified as '#rrggbb'.
+    Must be specified as #rrggbb.
     The default is #444444 (dark grey).
   * MQ_TEXT_COL
     Marquee Text Color.
-    Must be specified as '#rrggbb'.
+    Must be specified as #rrggbb.
     The default is #000000 (black).
   * PLAYER_UI_SEP
     Separator character(s) for the player currently-playing display.
@@ -44,20 +49,24 @@ These items are not configurable via the user interface.
   * UI_ERROR_COL
     User Interface Error Color.
     The color of error messages.
-    Must be specified as '#rrggbb'.
+    Must be specified as #rrggbb.
     The default is #ff2222.
   * UI_MARK_COL
     User Interface Mark Color.
     The color for the request list in-queue mark.
-    Must be specified as '#rrggbb'.
+    Must be specified as #rrggbb.
     The default is #2222ff.
   * UI_MARK_TEXT
     The character(s) to use to display the mark.
     The default is a left-five-eights box.
   * UI_ROWSEL_COL
     Row selection color.  The default is a darker accent color.
+    Must be specified as #rrggbb.
+    To use the default, leave the setting empty.
   * UI_ROW_HL_COL
-    Row highlight color.  The default is a very dark accent color.
+    Row highlight color.  The default is a dark accent color.
+    Must be specified as #rrggbb.
+    To use the default, leave the setting empty.
 
 ###### data/favorites.txt
 
