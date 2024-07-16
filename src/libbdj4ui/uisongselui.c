@@ -63,7 +63,6 @@ enum {
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
-  SONGSEL_CB_DISP_CHG,
   SONGSEL_CB_MAX,
 };
 
@@ -111,14 +110,12 @@ static void uisongselRightClickCallback (void *udata, uivirtlist_t *vl, int32_t 
 
 static bool uisongselKeyEvent (void *udata);
 static void uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
-static bool uisongselProcessDisplayChg (void *udata);
 
 static void uisongselMoveSelection (void *udata, int where);
 
 static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
-static void uisongselSetPeerPosition (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -337,9 +334,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uivlSetRowClickCallback (ssint->uivl, uisongselRowClickCallback, uisongsel);
   uivlSetRightClickCallback (ssint->uivl, uisongselRightClickCallback, uisongsel);
   uivlSetSelectChgCallback (ssint->uivl, uisongselProcessSelectChg, uisongsel);
-  ssint->callbacks [SONGSEL_CB_DISP_CHG] = callbackInit (
-      uisongselProcessDisplayChg, uisongsel, NULL);
-  uivlSetDisplayChgCallback (ssint->uivl, ssint->callbacks [SONGSEL_CB_DISP_CHG]);
 
   uisongselApplySongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
@@ -451,31 +445,13 @@ uisongselApplySongFilter (void *udata)
 
   ssint->inapply = false;
 
-  if (uisongsel->ispeercall) {
-    return UICB_CONT;
-  }
-  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
-    return UICB_CONT;
-  }
-
-  /* the song filter has been processed, the peers need to have their */
-  /* song filter set and be re-populated */
-
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselApplySongFilter (uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
-
   logProcEnd ("");
   return UICB_CONT;
 }
 
 /* handles the dance drop-down */
 /* when a dance is selected, the song filter must be updated */
+// ### FIX
 /* call danceselectcallback to set all the peer drop-downs */
 /* will apply the filter */
 void
@@ -483,13 +459,13 @@ uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
 {
   logProcBegin ();
   uisfSetDanceIdx (uisongsel->uisongfilter, danceIdx);
-  uisongselDanceSelectCallback (uisongsel, danceIdx);
+  uidanceSetKey (uisongsel->uidance, danceIdx);
   uisongselApplySongFilter (uisongsel);
   logProcEnd ("");
 }
 
+// ### FIX
 /* callback for the song filter when the dance selection is changed */
-/* also used by DanceSelectHandler to set the peers dance drop-down */
 /* does not apply the filter */
 bool
 uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
@@ -500,25 +476,6 @@ uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 
   uidanceSetKey (uisongsel->uidance, danceIdx);
 
-  if (uisongsel->ispeercall) {
-    logProcEnd ("is-peer-call");
-    return UICB_CONT;
-  }
-  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
-    logProcEnd ("pl-in-use");
-    return UICB_CONT;
-  }
-
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    logMsg (LOG_DBG, LOG_INFO, "%s dance-sel set peers", uisongsel->tag);
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    /* sets the dance drop-down for the peer */
-    uisongselDanceSelectCallback (uisongsel->peers [i], danceIdx);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -945,8 +902,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
 
   /* this only needs to be processed once by the initiator */
-  if (! uisongsel->ispeercall &&
-      uisongsel->newselcb != NULL) {
+  if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
     dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
@@ -955,66 +911,8 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
     }
   }
 
-  if (uisongsel->ispeercall) {
-    return;
-  }
-  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
-    return;
-  }
-
-  /* process the peers after the selections have been made */
-  logMsg (LOG_DBG, LOG_INFO, "%s proc-sel-chg set peers", uisongsel->tag);
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselCopySelectList (uisongsel, uisongsel->peers [i]);
-    uisongselProcessSelectChg (uisongsel->peers [i], vl, rownum, colidx);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
-
   logProcEnd ("");
   return;
-}
-
-static bool
-uisongselProcessDisplayChg (void *udata)
-{
-  uisongsel_t       *uisongsel = udata;
-  ss_internal_t     *ssint;
-
-  logProcBegin ();
-
-  if (uisongsel->ispeercall) {
-    logProcEnd ("is-peer-call");
-    return UICB_CONT;
-  }
-  if (uisfPlaylistInUse (uisongsel->uisongfilter)) {
-    logProcEnd ("pl-in-use");
-    return UICB_CONT;
-  }
-
-  ssint = uisongsel->ssInternalData;
-
-  if (ssint->inapply) {
-    /* the apply-song-filter function will set the selection */
-    logProcEnd ("in-apply");
-    return UICB_CONT;
-  }
-
-  logMsg (LOG_DBG, LOG_INFO, "%s proc-disp-chg set peers", uisongsel->tag);
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselSetPeerPosition (uisongsel, uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
-
-  logProcEnd ("");
-  return UICB_CONT;
 }
 
 /* have to handle the case where the user switches tabs back to the */
@@ -1121,27 +1019,3 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   logProcEnd ("");
 }
 
-static void
-uisongselSetPeerPosition (uisongsel_t *uisongsel, uisongsel_t *peer)
-{
-  ss_internal_t   *ssint;
-  uivirtlist_t    *vl_a;
-  uivirtlist_t    *vl_b;
-
-  logProcBegin ();
-  ssint = uisongsel->ssInternalData;
-  vl_a = ssint->uivl;
-
-  ssint = peer->ssInternalData;
-  vl_b = ssint->uivl;
-
-  if (vl_b == NULL) {
-    /* the peer has not yet been initialized, even though it may exist */
-    logProcEnd ("bad-peer");
-    return;
-  }
-
-  ssint = NULL;
-  uivlCopyPosition (vl_a, vl_b);
-  logProcEnd ("");
-}

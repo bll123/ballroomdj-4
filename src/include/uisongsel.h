@@ -24,13 +24,7 @@ typedef struct uisongsel uisongsel_t;
 typedef struct ss_internal ss_internal_t;
 
 enum {
-  UISONGSEL_PEER_MAX = 2,
   UISONGSEL_MQ_NOTSET = -1,
-};
-
-enum {
-  SONGSEL_ALL_PEERS,
-  SONGSEL_NO_PEERS,
 };
 
 typedef struct uisongsel {
@@ -52,10 +46,6 @@ typedef struct uisongsel {
   dbidx_t           lastdbidx;
   nlist_t           *musicqdbidxlist [MUSICQ_MAX];
   nlist_t           *songlistdbidxlist;
-  /* peers */
-  int               peercount;
-  uisongsel_t       *peers [UISONGSEL_PEER_MAX];
-  bool              ispeercall;
   /* filter data */
   uisongfilter_t    *uisongfilter;
   callback_t        *sfapplycb;
@@ -73,7 +63,6 @@ typedef struct uisongsel {
 uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts,
     uisongfilter_t *uisf, dispselsel_t dispselType);
-void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);
@@ -110,7 +99,6 @@ void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
-void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 
 #endif /* INC_UISONGSEL_H */
 

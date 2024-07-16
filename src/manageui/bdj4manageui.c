@@ -149,7 +149,8 @@ enum {
   MANAGE_CB_MAIN_NB,
   MANAGE_CB_SL_NB,
   MANAGE_CB_MM_NB,
-  MANAGE_CB_EDIT,
+  MANAGE_CB_EDIT_SS,
+  MANAGE_CB_EDIT_SL,
   MANAGE_CB_SEQ_LOAD,
   MANAGE_CB_SEQ_NEW,
   MANAGE_CB_PL_LOAD,
@@ -249,6 +250,9 @@ typedef struct {
   /* lastmmdisp is the last type of display that was in the mm */
   /* it may have been a playlist filter or the entire song selection */
   int               lastmmdisp;
+  /* lasttabsel: one of MANAGE_TAB_SONGLIST or MANAGE_TAB_SL_SONGSEL */
+  /* this is needed so that the side-by-side view will work */
+  int               lasttabsel;
   int               dbchangecount;
   int               editmode;
   int               lastinsertlocation;
@@ -352,7 +356,9 @@ static void     manageSigHandler (int sig);
 static void     manageSongEditMenu (manageui_t *manage);
 static bool     manageNewSelectionSongSel (void *udata, int32_t dbidx);
 static bool     manageNewSelectionSonglist (void *udata, int32_t dbidx);
-static bool     manageSwitchToSongEditor (void *udata);
+static bool     manageSwitchToSongEditorSS (void *udata);
+static bool     manageSwitchToSongEditorSL (void *udata);
+static bool     manageSwitchToSongEditor (manageui_t *manage);
 static bool     manageSongEditSaveCallback (void *udata, int32_t dbidx);
 static void     manageRePopulateData (manageui_t *manage);
 static void     manageSetEditMenuItems (manageui_t *manage);
@@ -365,7 +371,7 @@ static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
 static void     manageReloadSongData (manageui_t *manage);
 static void manageNewSelectionMoveCheck (manageui_t *manage, dbidx_t dbidx);
-static void manageSetSongEditDBIdx (manageui_t *manage, int mainlasttab, int mmlasttab);
+static void manageSetSongEditDBIdx (manageui_t *manage, int mainlasttabsel, int mmlasttabsel);
 /* itunes */
 static bool     managePlaylistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
@@ -494,6 +500,7 @@ main (int argc, char *argv[])
   manage.slbackupcreated = false;
   manage.inload = false;
   manage.lastmmdisp = MANAGE_DISP_SONG_SEL;
+  manage.lasttabsel = MANAGE_TAB_SL_SONGSEL;
   manage.selbypass = true;
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
@@ -984,25 +991,18 @@ manageInitializeUI (manageui_t *manage)
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->minfo.options);
 
-  uisongselSetPeer (manage->mmsongsel, manage->slsbssongsel);
-  uisongselSetPeer (manage->mmsongsel, manage->slsongsel);
-
-  uisongselSetPeer (manage->slsongsel, manage->slsbssongsel);
-  uisongselSetPeer (manage->slsongsel, manage->mmsongsel);
-
-  uisongselSetPeer (manage->slsbssongsel, manage->mmsongsel);
-  uisongselSetPeer (manage->slsbssongsel, manage->slsongsel);
-
   uimusicqSetPeer (manage->slmusicq, manage->slsbsmusicq);
   uimusicqSetPeer (manage->slsbsmusicq, manage->slmusicq);
 
-  manage->callbacks [MANAGE_CB_EDIT] = callbackInit (
-      manageSwitchToSongEditor, manage, NULL);
-  uisongselSetEditCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_EDIT]);
-  uisongselSetEditCallback (manage->slsbssongsel, manage->callbacks [MANAGE_CB_EDIT]);
-  uisongselSetEditCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_EDIT]);
-  uimusicqSetEditCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_EDIT]);
-  uimusicqSetEditCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_EDIT]);
+  manage->callbacks [MANAGE_CB_EDIT_SL] = callbackInit (
+      manageSwitchToSongEditorSL, manage, NULL);
+  manage->callbacks [MANAGE_CB_EDIT_SS] = callbackInit (
+      manageSwitchToSongEditorSS, manage, NULL);
+  uisongselSetEditCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
+  uisongselSetEditCallback (manage->slsbssongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
+  uisongselSetEditCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
+  uimusicqSetEditCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_EDIT_SL]);
+  uimusicqSetEditCallback (manage->slsbsmusicq, manage->callbacks [MANAGE_CB_EDIT_SL]);
 
   manage->callbacks [MANAGE_CB_SAVE] = callbackInitI (
       manageSongEditSaveCallback, manage);
@@ -1714,6 +1714,9 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
   }
 
   manage->seldbidx = dbidx;
+  if (nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
+    manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
+  }
 
   manageNewSelectionMoveCheck (manage, dbidx);
 
@@ -1738,6 +1741,7 @@ manageNewSelectionSonglist (void *udata, int32_t dbidx)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: select within song list");
   manage->songlistdbidx = dbidx;
+  manage->lasttabsel = MANAGE_TAB_SONGLIST;
 
   manageNewSelectionMoveCheck (manage, dbidx);
 
@@ -1746,9 +1750,35 @@ manageNewSelectionSonglist (void *udata, int32_t dbidx)
 }
 
 static bool
-manageSwitchToSongEditor (void *udata)
+manageSwitchToSongEditorSL (void *udata)
 {
   manageui_t  *manage = udata;
+  int         from;
+
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
+    manage->lasttabsel = manage->slcurrtab;
+    if (uimusicqGetCount (manage->slmusicq) == 0) {
+      from = MANAGE_TAB_SL_SONGSEL;
+    }
+  }
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
+    manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
+  }
+  return manageSwitchToSongEditor (manage);
+}
+
+static bool
+manageSwitchToSongEditorSS (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
+  return manageSwitchToSongEditor (manage);
+}
+
+static bool
+manageSwitchToSongEditor (manageui_t *manage)
+{
   int         pagenum;
 
   logProcBegin ();
@@ -1976,18 +2006,21 @@ manageNewSelectionMoveCheck (manageui_t *manage, dbidx_t dbidx)
 }
 
 static void
-manageSetSongEditDBIdx (manageui_t *manage, int mainlasttab, int mmlasttab)
+manageSetSongEditDBIdx (manageui_t *manage, int mainlasttabsel, int mmlasttabsel)
 {
-  if (mainlasttab == MANAGE_TAB_MAIN_SL &&
+  if (mainlasttabsel == MANAGE_TAB_MAIN_SL &&
       manage->slcurrtab == MANAGE_TAB_SONGLIST) {
     manage->songeditdbidx = manage->songlistdbidx;
+    if (manage->lasttabsel == MANAGE_TAB_SL_SONGSEL) {
+      manage->songeditdbidx = manage->seldbidx;
+    }
   }
-  if (mainlasttab == MANAGE_TAB_MAIN_SL &&
+  if (mainlasttabsel == MANAGE_TAB_MAIN_SL &&
       manage->slcurrtab == MANAGE_TAB_SL_SONGSEL) {
     manage->songeditdbidx = manage->seldbidx;
   }
-  if (mainlasttab == MANAGE_TAB_MAIN_MM &&
-      mmlasttab == MANAGE_TAB_MM) {
+  if (mainlasttabsel == MANAGE_TAB_MAIN_MM &&
+      mmlasttabsel == MANAGE_TAB_MM) {
     if (uisfPlaylistInUse (manage->uisongfilter)) {
       manage->songeditdbidx = manage->songlistdbidx;
     } else {
@@ -3409,8 +3442,8 @@ static void
 manageSwitchPage (manageui_t *manage, int pagenum, int which)
 {
   int         id;
-  int         mainlasttab;
-  int         mmlasttab;
+  int         mainlasttabsel;
+  int         mmlasttabsel;
   bool        mainnb = false;
   bool        slnb = false;
   bool        mmnb = false;
@@ -3434,8 +3467,8 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
     mainnb = true;
   }
 
-  mainlasttab = manage->maincurrtab;
-  mmlasttab = manage->mmcurrtab;
+  mainlasttabsel = manage->maincurrtab;
+  mmlasttabsel = manage->mmcurrtab;
 
   if (mainnb) {
     if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
@@ -3532,13 +3565,13 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
       break;
     }
     case MANAGE_TAB_SONGEDIT: {
-      manageSetSongEditDBIdx (manage, mainlasttab, mmlasttab);
+      manageSetSongEditDBIdx (manage, mainlasttabsel, mmlasttabsel);
       manageSongEditMenu (manage);
       manageReloadSongData (manage);
       break;
     }
     case MANAGE_TAB_AUDIOID: {
-      manageSetSongEditDBIdx (manage, mainlasttab, mmlasttab);
+      manageSetSongEditDBIdx (manage, mainlasttabsel, mmlasttabsel);
       manage->currmenu = manageAudioIDMenu (manage->manageaudioid,
           manage->wcont [MANAGE_W_MENUBAR]);
       manageReloadSongData (manage);
@@ -3560,6 +3593,10 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
 static void
 manageSetDisplayPerSelection (manageui_t *manage, int id)
 {
+  bool    sbsinuse;
+
+  sbsinuse = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
+
   logProcBegin ();
   if (id == MANAGE_TAB_MAIN_SL) {
     bool    plinuse;
@@ -3568,12 +3605,15 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     plinuse = uisfPlaylistInUse (manage->uisongfilter);
     uisfHidePlaylistDisplay (manage->uisongfilter);
 
-    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
-        nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
+    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL || sbsinuse) {
       /* the song filter must be updated, as it is shared */
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
-      uisongselApplySongFilter (manage->slsongsel);
+      if (sbsinuse) {
+        uisongselApplySongFilter (manage->slsbssongsel);
+      } else {
+        uisongselApplySongFilter (manage->slsongsel);
+      }
       manage->selbypass = false;
     }
 
@@ -3586,8 +3626,11 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
 
     if (manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
-      uisongselCopySelectList (manage->mmsongsel, manage->slsongsel);
-      uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
+      if (sbsinuse) {
+        uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
+      } else {
+        uisongselCopySelectList (manage->mmsongsel, manage->slsongsel);
+      }
     }
   }
 
@@ -3596,10 +3639,12 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     uisfShowPlaylistDisplay (manage->uisongfilter);
 
-    /* switching to mm from the song list editor - song list tab */
-    /* the exception is if there are no songs in the song list */
-    if (manage->slcurrtab == MANAGE_TAB_SONGLIST &&
-        uimusicqGetCount (manage->slmusicq) > 0) {
+    /* switching to mm  */
+    /*   a) from the song list - has songs */
+    /*   b) last selection was on the song list */
+    if ((manage->slcurrtab == MANAGE_TAB_SONGLIST &&
+        uimusicqGetCount (manage->slmusicq) > 0) ||
+        manage->lasttabsel == MANAGE_TAB_SONGLIST) {
       nlistidx_t    idx;
 
       /* the song list must be saved, otherwise the song filter */
@@ -3610,22 +3655,29 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       mdfree (slname);
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
-      manage->selbypass = false;
       manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
       idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
       uisongselSetSelection (manage->mmsongsel, idx);
+      manage->selbypass = false;
     }
 
-    /* switching to mm from the song list editor - song selection tab */
-    /* or from the song list and there are no songs */
+    /* switching to mm */
+    /*   a) from the song selection tab */
+    /*   b) from the song list - no songs */
+    /*   c) last selection was on the song selection */
     if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
-        uimusicqGetCount (manage->slmusicq) == 0) {
+        uimusicqGetCount (manage->slmusicq) == 0 ||
+        manage->lasttabsel == MANAGE_TAB_SL_SONGSEL) {
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
-      manage->selbypass = false;
-      uisongselCopySelectList (manage->slsongsel, manage->mmsongsel);
+      if (sbsinuse) {
+        uisongselCopySelectList (manage->slsbssongsel, manage->mmsongsel);
+      } else {
+        uisongselCopySelectList (manage->slsongsel, manage->mmsongsel);
+      }
       manage->lastmmdisp = MANAGE_DISP_SONG_SEL;
+      manage->selbypass = false;
     }
   }
   logProcEnd ("");

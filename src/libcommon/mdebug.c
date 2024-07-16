@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
 #include <stdarg.h>
@@ -76,7 +77,7 @@ typedef struct {
 static char     mdebugtag [20] = { "none" };
 static char     mdebugsubtag [MAXSUBTAG] = { "" };
 static mdebug_t *mdebug = NULL;
-static ssize_t  mdebugcounts [MDEBUG_MAX];
+static int32_t  mdebugcounts [MDEBUG_MAX];
 static bool     initialized = false;
 static bool     mdebugverbose = false;
 static bool     mdebugnooutput = false;
@@ -85,8 +86,8 @@ static void * mdextalloc_a (void *data, const char *fn, int lineno, const char *
 static void mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype);
 static void mdebugResize (void);
 static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz);
-static void mdebugDel (long idx);
-static long mdebugFind (void *data);
+static void mdebugDel (int32_t idx);
+static int32_t mdebugFind (void *data);
 static int  mdebugComp (const void *a, const void *b);
 static void mdebugSort (void);
 static void mdebugLog (const char *fmt, ...)
@@ -141,7 +142,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
     mdebugcounts [MDEBUG_MALLOC] += 1;
   }
   if (initialized && data != NULL) {
-    long  loc;
+    int32_t loc;
 
     loc = mdebugFind (data);
     if (loc >= 0) {
@@ -289,7 +290,7 @@ mdebugReport (void)
       mdebugLog ("== %s ==\n", mdebugtag);
     }
 
-    for (long i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
+    for (int32_t i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
       mdebugcounts [MDEBUG_ERRORS] += 1;
       if (mdebugnooutput) {
         continue;
@@ -311,22 +312,22 @@ mdebugReport (void)
       return;
     }
 
-    mdebugLog ("   count: %zd\n", mdebugcounts [MDEBUG_COUNT]);
-    mdebugLog ("  ERRORS: %zd\n", mdebugcounts [MDEBUG_ERRORS]);
-    mdebugLog ("  malloc: %zd\n", mdebugcounts [MDEBUG_MALLOC]);
-    mdebugLog (" realloc: %zd\n", mdebugcounts [MDEBUG_REALLOC]);
-    mdebugLog ("  strdup: %zd\n", mdebugcounts [MDEBUG_STRDUP]);
-    mdebugLog (" Emalloc: %zd\n", mdebugcounts [MDEBUG_EXTALLOC]);
-    mdebugLog ("   Efree: %zd\n", mdebugcounts [MDEBUG_EXTFREE]);
-    mdebugLog ("    free: %zd\n", mdebugcounts [MDEBUG_FREE]);
-    mdebugLog ("     max: %zd\n", mdebugcounts [MDEBUG_COUNT_MAX]);
-    mdebugLog ("    open: %zd\n", mdebugcounts [MDEBUG_OPEN]);
-    mdebugLog ("    sock: %zd\n", mdebugcounts [MDEBUG_SOCK]);
-    mdebugLog ("   close: %zd\n", mdebugcounts [MDEBUG_CLOSE]);
-    mdebugLog ("   fopen: %zd\n", mdebugcounts [MDEBUG_FOPEN]);
-    mdebugLog ("  fclose: %zd\n", mdebugcounts [MDEBUG_FCLOSE]);
-    mdebugLog ("mem-curr: %zd\n", mdebugcounts [MDEBUG_MEM_CURR]);
-    mdebugLog (" mem-max: %zd\n", mdebugcounts [MDEBUG_MEM_MAX]);
+    mdebugLog ("   count: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT]);
+    mdebugLog ("  ERRORS: %" PRId32 "\n", mdebugcounts [MDEBUG_ERRORS]);
+    mdebugLog ("  malloc: %" PRId32 "\n", mdebugcounts [MDEBUG_MALLOC]);
+    mdebugLog (" realloc: %" PRId32 "\n", mdebugcounts [MDEBUG_REALLOC]);
+    mdebugLog ("  strdup: %" PRId32 "\n", mdebugcounts [MDEBUG_STRDUP]);
+    mdebugLog (" Emalloc: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTALLOC]);
+    mdebugLog ("   Efree: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTFREE]);
+    mdebugLog ("    free: %" PRId32 "\n", mdebugcounts [MDEBUG_FREE]);
+    mdebugLog ("     max: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT_MAX]);
+    mdebugLog ("    open: %" PRId32 "\n", mdebugcounts [MDEBUG_OPEN]);
+    mdebugLog ("    sock: %" PRId32 "\n", mdebugcounts [MDEBUG_SOCK]);
+    mdebugLog ("   close: %" PRId32 "\n", mdebugcounts [MDEBUG_CLOSE]);
+    mdebugLog ("   fopen: %" PRId32 "\n", mdebugcounts [MDEBUG_FOPEN]);
+    mdebugLog ("  fclose: %" PRId32 "\n", mdebugcounts [MDEBUG_FCLOSE]);
+    mdebugLog ("mem-curr: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_CURR]);
+    mdebugLog (" mem-max: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_MAX]);
   }
 }
 
@@ -354,13 +355,13 @@ mdebugCleanup (void)
 
 /* the following routines are for the test suite */
 
-long
+int32_t
 mdebugCount (void) /* TESTING */
 {
   return mdebugcounts [MDEBUG_COUNT];
 }
 
-long
+int32_t
 mdebugErrors (void) /* TESTING */
 {
   return mdebugcounts [MDEBUG_ERRORS];
@@ -384,7 +385,7 @@ mdebugSetNoOutput (void) /* TESTING */
 static void
 mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype)
 {
-  long  loc;
+  int32_t     loc;
 
   if (initialized && data == NULL) {
     mdebugLog ("%4s %s %p %s-null %s %d\n", mdebugtag, mdebugsubtag, data, tag, fn, lineno);
@@ -423,7 +424,7 @@ mdextalloc_a (void *data, const char *fn, int lineno,
 static void
 mdebugResize (void)
 {
-  long    tval;
+  int32_t     tval;
 
   tval = mdebugcounts [MDEBUG_COUNT] + 1;
   if (tval >= mdebugcounts [MDEBUG_INT_ALLOC]) {
@@ -468,7 +469,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz
 }
 
 static void
-mdebugDel (long idx)
+mdebugDel (int32_t idx)
 {
 #if MDEBUG_ENABLE_BACKTRACE
   if (mdebug [idx].bt != NULL) {
@@ -479,19 +480,19 @@ mdebugDel (long idx)
 
   mdebugcounts [MDEBUG_MEM_CURR] -= mdebug [idx].sz;
 
-  for (long i = idx; i + 1 < mdebugcounts [MDEBUG_COUNT]; ++i) {
+  for (int32_t i = idx; i + 1 < mdebugcounts [MDEBUG_COUNT]; ++i) {
     memcpy (&mdebug [i], &mdebug [i + 1], sizeof (mdebug_t));
     mdebug [i].loc = i;
   }
   mdebugcounts [MDEBUG_COUNT] -= 1;
 }
 
-static long
+static int32_t
 mdebugFind (void *data)
 {
   mdebug_t    tmpmd;
   mdebug_t    *fmd;
-  long        loc = -1;
+  int32_t     loc = -1;
 
   tmpmd.addr = (ssize_t) data;
   fmd = bsearch (&tmpmd, mdebug, mdebugcounts [MDEBUG_COUNT],
@@ -520,8 +521,8 @@ mdebugComp (const void *a, const void *b)
 static void
 mdebugSort (void)
 {
-  long            last;
-  long            prior;
+  int32_t         last;
+  int32_t         prior;
   mdebug_t        tmp;
 
   last = mdebugcounts [MDEBUG_COUNT] - 1;

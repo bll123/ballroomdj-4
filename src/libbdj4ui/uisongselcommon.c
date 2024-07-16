@@ -34,9 +34,3 @@ uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
   }
 }
 
-void
-uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val)
-{
-  uisongsel->ispeercall = val;
-}
-

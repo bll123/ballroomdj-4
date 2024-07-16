@@ -14,10 +14,10 @@ libati            audio tagging interface
                   were in process.
 libaudioid        audio identification
 libaudiosrc       audio source interface
-libbasic          basic utilities that use lists
+libbasic          lists, basic utilities that use lists or libicu
 libbdj4           bdj4 specific utilities
 libbdj4ui         bdj4 general ui
-libcommon         common utilities that do not use lists
+libcommon         common utilities that do not use lists nor libicu
 libcont           music controller (not yet in use)
 libdylib          dynamic library handling
 libpli            player interface (dynamic libraries)

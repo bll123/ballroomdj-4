@@ -2342,6 +2342,11 @@ uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype)
   int32_t       wantrow = start;
 
   logProcBegin ();
+  if (vl->inscroll) {
+    logProcEnd ("in-scroll");
+    return;
+  }
+
   vl->inscroll = true;
 
   start = uivlRowOffsetLimit (vl, start);
@@ -2648,6 +2653,11 @@ static void
 uivlSelectChgHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx)
 {
   logProcBegin ();
+  if (vl->inscroll) {
+    logProcEnd ("in-scroll");
+    return;
+  }
+
   if (vl->selchgcb != NULL) {
     vl->selchgcb (vl->seludata, vl, rownum, colidx);
   }
