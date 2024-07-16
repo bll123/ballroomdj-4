@@ -918,7 +918,7 @@ updaterCleanFiles (void)
     if (*pattern == '\0') {
       continue;
     }
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
 
     /* on any change of directory or flag, process what has been queued */
     if (strcmp (pattern, "::macosonly") == 0 ||
@@ -974,7 +974,7 @@ updaterCleanFiles (void)
     }
 
     snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
     rx = regexInit (fullpattern);
     nlistSetData (cleanlist, count, rx);
     ++count;
@@ -1033,18 +1033,20 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
     nlistStartIterator (cleanlist, &cliteridx);
     while ((key = nlistIterateKey (cleanlist, &cliteridx)) >= 0) {
       rx = nlistGetData (cleanlist, key);
-      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  check %s", fn); //
       if (regexMatch (rx, fn)) {
-        // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  match %s", fn); //
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "  match %s", fn); //
         if (osIsLink (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete link %s", fn);
           fileopDelete (fn);
+          break;
         } else if (fileopIsDirectory (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete dir %s", fn);
           diropDeleteDir (fn, DIROP_ALL);
+          break;
         } else if (fileopFileExists (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete %s", fn);
           fileopDelete (fn);
+          break;
         }
       }
     }

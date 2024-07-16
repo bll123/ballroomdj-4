@@ -63,7 +63,8 @@ Licenses:
     qrcode      : MIT License (templates/qrcode/LICENSE)
     img/musicbrainz-logo.svg : GPLv2
     MacOS:
-      ICU         : ICU
+      ICU       : ICU
+      themes    : GPLv3 License
     Windows:
       curl      : MIT License
       ffmpeg    : GPLv3 License
@@ -75,6 +76,7 @@ Licenses:
       nghttp2   : MIT License
       opusfile  : Xiph/BSD License
       opus      : Xiph/BSD License
+      themes    : GPLv3 License
 
 Building From Source:
 

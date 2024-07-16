@@ -602,6 +602,11 @@ starterBuildUI (startui_t  *starter)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  if (isMacOS ()) {
+    /* macos has a bug where the starter window does not have the proper */
+    /* right margin */
+    uiWidgetSetMarginEnd (vbox, 6);
+  }
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);

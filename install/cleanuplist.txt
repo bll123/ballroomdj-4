@@ -159,6 +159,17 @@ img/acrcloud-logo\.png$
 bin/aesed$
 bin/aesed\.exe$
 
+# 2024-7-16 remove unneeded theme dirs, these just take up space.
+plocal/share/themes/[^/]*/cinnamon
+plocal/share/themes/[^/]*/gnome-shell
+plocal/share/themes/[^/]*/gtk-2.0
+plocal/share/themes/[^/]*/metacity-1
+plocal/share/themes/[^/]*/openbox-3
+plocal/share/themes/[^/]*/plank
+plocal/share/themes/[^/]*/unity
+plocal/share/themes/[^/]*/xfce-notify-4.0
+plocal/share/themes/[^/]*/xfwm4
+
 ####
 # mac-os
 

@@ -3519,6 +3519,9 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
       break;
     }
     case MANAGE_TAB_SL_SONGSEL: {
+      /* this is necessary, as switching back to the sl-songlist tab */
+      /* does not call this */
+      manageSetDisplayPerSelection (manage, manage->maincurrtab);
       break;
     }
     case MANAGE_TAB_STATISTICS: {
@@ -3559,8 +3562,22 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 {
   logProcBegin ();
   if (id == MANAGE_TAB_MAIN_SL) {
-    if (uisfPlaylistInUse (manage->uisongfilter) ||
-        manage->lastmmdisp == MANAGE_DISP_SONG_LIST) {
+    bool    plinuse;
+
+    /* save current playlist-in-use status */
+    plinuse = uisfPlaylistInUse (manage->uisongfilter);
+    uisfHidePlaylistDisplay (manage->uisongfilter);
+
+    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
+        nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
+      /* the song filter must be updated, as it is shared */
+      uisfClearPlaylist (manage->uisongfilter);
+      manage->selbypass = true;
+      uisongselApplySongFilter (manage->slsongsel);
+      manage->selbypass = false;
+    }
+
+    if (plinuse || manage->lastmmdisp == MANAGE_DISP_SONG_LIST) {
       nlistidx_t    nidx;
 
       /* get the selection from mm, and set it for the sle */
@@ -3568,13 +3585,10 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
     }
 
-    if (! uisfPlaylistInUse (manage->uisongfilter) ||
-        manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
+    if (manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
       uisongselCopySelectList (manage->mmsongsel, manage->slsongsel);
       uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
     }
-
-    uisfHidePlaylistDisplay (manage->uisongfilter);
   }
 
   if (id == MANAGE_TAB_MAIN_MM) {
