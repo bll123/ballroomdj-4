@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-12 19:26\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -138,7 +138,7 @@ msgstr "Установлен %s"
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s не настроен"
+msgstr "%s не настроен."
 
 #. CONTEXT: installer: display of package status
 #, c-format

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-12 20:21\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -1482,7 +1482,7 @@ msgstr "隊列舞"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "隊列_名詞"
+msgstr "隊列"
 
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
