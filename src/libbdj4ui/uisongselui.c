@@ -437,6 +437,9 @@ uisongselApplySongFilter (void *udata)
   ssint = uisongsel->ssInternalData;
   ssint->inapply = true;
 
+  uidanceSetKey (uisongsel->uidance,
+      songfilterGetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX));
+
   uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
@@ -451,9 +454,7 @@ uisongselApplySongFilter (void *udata)
 
 /* handles the dance drop-down */
 /* when a dance is selected, the song filter must be updated */
-// ### FIX
-/* call danceselectcallback to set all the peer drop-downs */
-/* will apply the filter */
+/* applies the song filter */
 void
 uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
 {
@@ -464,7 +465,6 @@ uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
   logProcEnd ("");
 }
 
-// ### FIX
 /* callback for the song filter when the dance selection is changed */
 /* does not apply the filter */
 bool
@@ -599,7 +599,6 @@ uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
   uivlCopySelectList (vl_a, vl_b);
   logProcEnd ("");
 }
-
 
 /* internal routines */
 
@@ -952,35 +951,39 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   logProcBegin ();
 
   dbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
+  if (dbidx < 0) {
+    return;
+  }
   song = dbGetByIdx (uisongsel->musicdb, dbidx);
+  if (song == NULL) {
+    return;
+  }
 
   ssint->inchange = true;
 
   uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
 
-  markstr = "";
+  markstr = " ";
 
-  if (song != NULL) {
-    if (uisongsel->dispselType != DISP_SEL_MM &&
-        uisongsel->songlistdbidxlist != NULL) {
-      /* check and see if the song is in the song list */
-      if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-        markstr = ssint->marktext;
-        sscolor = MARK_CLASS;
-      }
+  if (uisongsel->dispselType != DISP_SEL_MM &&
+      uisongsel->songlistdbidxlist != NULL) {
+    /* check and see if the song is in the song list */
+    if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
+      markstr = ssint->marktext;
+      sscolor = MARK_CLASS;
     }
+  }
 
-    if (uisongsel->dispselType == DISP_SEL_MM) {
-      sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
-      if (sscolor != NULL) {
-        if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
-          slistSetNum (ssint->sscolorlist, sscolor, 1);
-          uiLabelAddClass (sscolor + 1, sscolor);
-        }
-        markstr = ssint->marktext;
-        /* skip the leading # for the class name */
-        sscolor = sscolor + 1;
+  if (uisongsel->dispselType == DISP_SEL_MM) {
+    sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
+    if (sscolor != NULL) {
+      if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
+        slistSetNum (ssint->sscolorlist, sscolor, 0);
+        uiLabelAddClass (sscolor + 1, sscolor);
       }
+      markstr = ssint->marktext;
+      /* skip the leading # for the class name */
+      sscolor = sscolor + 1;
     }
   }
 

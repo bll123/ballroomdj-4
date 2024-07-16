@@ -10,7 +10,11 @@
 #     all of the false USERSEL entries should be placed after the
 #     true USERSEL entries.
 #
-# Other possibilities if people want more variety.
+# Current:
+#   five-point star ★
+#   heart ♥
+#   broken-heart 💔
+# Other possibilities if people want more variety:
 #   flag ⚑
 #   checkmark ✔
 #   xmark ✘
