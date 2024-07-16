@@ -1718,11 +1718,16 @@ installerCopyTemplates (installer_t *installer)
 
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-dark-solid");
     snprintf (to, sizeof (to), "%s/.themes/Mojave-dark-solid", installer->home);
-    filemanipLinkCopy (from, to);
+    /* be nice, and don't remove existing links/themes */
+    if (! fileopIsDirectory (to)) {
+      filemanipLinkCopy (from, to);
+    }
 
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-light-solid");
     snprintf (to, sizeof (to), "%s/.themes/Mojave-light-solid", installer->home);
-    filemanipLinkCopy (from, to);
+    if (! fileopIsDirectory (to)) {
+      filemanipLinkCopy (from, to);
+    }
   }
 
   installer->instState = INST_CONVERT_START;

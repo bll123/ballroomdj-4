@@ -4,6 +4,7 @@
 
 [Audio Tags](Development-Audio%20Tags)
 <br>[DBus](Development-DBus)
+<br>[General](Development-General)
 <br>[GTK](Development-GTK)
 <br>[Linux](Development-Linux)
 <br>[Mac OS](Development-MacOS)
