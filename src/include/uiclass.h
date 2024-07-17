@@ -17,6 +17,7 @@
 #define LISTING_CLASS "bdj-listing"
 #define LIST_FAV_CLASS "bdj-list-fav"
 #define LIST_HEAD_CLASS "bdj-list-head"
+#define LIST_NO_DISP "bdj-nodisp"
 #define MARK_CLASS "bdj-mark"
 #define MQ_ACCENT_CLASS "bdj-mqaccent"
 #define NORMBG_CLASS "bdj-norm-bg"

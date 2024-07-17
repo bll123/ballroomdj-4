@@ -146,7 +146,6 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 int
 osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
-  pid_t   pid;
   STARTUPINFOW        si;
   PROCESS_INFORMATION pi;
   char                tbuff [MAXPATHLEN];
@@ -231,7 +230,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     return -1;
   }
 
-  pid = pi.dwProcessId;
   CloseHandle (pi.hThread);
 
   CloseHandle (handleStdoutWrite);

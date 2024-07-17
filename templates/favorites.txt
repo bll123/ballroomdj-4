@@ -15,12 +15,17 @@
 #   heart ♥
 #   broken-heart 💔
 # Other possibilities if people want more variety:
-#   flag ⚑
+#   arrowhead ⮞
 #   checkmark ✔
-#   xmark ✘
 #   circle ●
 #   diamond ◆
+#   flag ⚑
 #   four-point star 🟆
+#   pentagon ⬟
+#   square ■
+#   teardrop-spoked asterisk ✻
+#   up-triangle ▲
+#   xmark ✘
 #
 version
 ..1

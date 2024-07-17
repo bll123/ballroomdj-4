@@ -1753,12 +1753,11 @@ static bool
 manageSwitchToSongEditorSL (void *udata)
 {
   manageui_t  *manage = udata;
-  int         from;
 
   if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
     manage->lasttabsel = manage->slcurrtab;
     if (uimusicqGetCount (manage->slmusicq) == 0) {
-      from = MANAGE_TAB_SL_SONGSEL;
+      manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
     }
   }
   if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {

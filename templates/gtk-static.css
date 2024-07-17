@@ -58,6 +58,9 @@ progressbar > trough progress {
 label.bdj-selected {
   color: @theme_selected_fg_color;
 }
+label.bdj-nodisp {
+  color: rgba(0,0,0,0);
+}
 
 textview.bdj-dark-bg text {
   background-color: shade(@theme_base_color,0.7);

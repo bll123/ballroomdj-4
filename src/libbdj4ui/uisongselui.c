@@ -116,6 +116,7 @@ static void uisongselMoveSelection (void *udata, int where);
 static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint, dbidx_t dbidx, int32_t rownum);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -187,7 +188,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiwcont_t         *hbox;
   slist_t           *sellist;
   char              tbuff [200];
-  int               startcol;
   int               colidx;
   int               tagidx;
   slistidx_t        iteridx;
@@ -316,15 +316,16 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uivlSetAllowMultiple (uivl);
   uivlSetAllowDoubleClick (uivl);
 
-  startcol = SONGSEL_COL_MAX;
-  ssint->colcount = SONGSEL_COL_MAX + slistGetCount (sellist);
+  ssint->colcount = slistGetCount (sellist) + SONGSEL_COL_MAX;
   uivlSetNumColumns (uivl, ssint->colcount);
 
   uivlMakeColumn (uivl, "dbidx", SONGSEL_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "mark", SONGSEL_COL_MARK, VL_TYPE_LABEL);
-  uivlSetColumnGrow (uivl, SONGSEL_COL_MARK, VL_COL_WIDTH_GROW_ONLY);
+  uivlSetColumnClass (uivl, SONGSEL_COL_MARK, LIST_NO_DISP);
+  uivlSetColumnGrow (uivl, SONGSEL_COL_MARK, VL_COL_WIDTH_FIXED);
 
-  uivlAddDisplayColumns (uivl, sellist, startcol);
+  uivlAddDisplayColumns (uivl, sellist, SONGSEL_COL_MAX);
+
   uivlSetRowFillCallback (uivl, uisongselFillRow, ssint);
   uivlSetNumRows (uivl, uisongsel->numrows);
 
@@ -944,8 +945,6 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   song_t              *song;
   nlist_t             *tdlist;
   slistidx_t          seliteridx;
-  const char          *markstr;
-  const char          *sscolor = NULL;
   dbidx_t             dbidx;
 
   logProcBegin ();
@@ -962,35 +961,6 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   ssint->inchange = true;
 
   uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
-
-  markstr = " ";
-
-  if (uisongsel->dispselType != DISP_SEL_MM &&
-      uisongsel->songlistdbidxlist != NULL) {
-    /* check and see if the song is in the song list */
-    if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-      markstr = ssint->marktext;
-      sscolor = MARK_CLASS;
-    }
-  }
-
-  if (uisongsel->dispselType == DISP_SEL_MM) {
-    sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
-    if (sscolor != NULL) {
-      if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
-        slistSetNum (ssint->sscolorlist, sscolor, 0);
-        uiLabelAddClass (sscolor + 1, sscolor);
-      }
-      markstr = ssint->marktext;
-      /* skip the leading # for the class name */
-      sscolor = sscolor + 1;
-    }
-  }
-
-  uivlSetRowColumnStr (ssint->uivl, rownum, SONGSEL_COL_MARK, markstr);
-  if (sscolor != NULL) {
-    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, sscolor);
-  }
 
   tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);
   slistStartIterator (ssint->sellist, &seliteridx);
@@ -1018,7 +988,54 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
   nlistFree (tdlist);
 
+  uisongselFillMark (uisongsel, ssint, dbidx, rownum);
+
   ssint->inchange = false;
   logProcEnd ("");
 }
 
+
+static void
+uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
+    dbidx_t dbidx, int32_t rownum)
+{
+  const char  *markstr = NULL;
+  const char  *sscolor = NULL;
+  const char  *classnm = NULL;
+
+  /* very strange bug */
+  /* on windows, if the markstr is not static, the scrollbar stops */
+  /* working after one of the marks is turned off */
+  /* as a work-around, always set the markstr to the same value, */
+  /* and set the column class to bdj-nodisp */
+  /* i don't understand why this is happening, when the favorite column */
+  /* works fine. */
+  markstr = ssint->marktext;
+
+  if (uisongsel->dispselType != DISP_SEL_MM &&
+      uisongsel->songlistdbidxlist != NULL) {
+    /* check and see if the song is in the song list */
+    if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
+      markstr = ssint->marktext;
+      classnm = MARK_CLASS;
+    }
+  }
+
+  if (uisongsel->dispselType == DISP_SEL_MM) {
+    sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
+    if (sscolor != NULL) {
+      /* skip the leading # for the class name */
+      classnm = sscolor + 1;
+      if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
+        slistSetNum (ssint->sscolorlist, sscolor, 0);
+        uiLabelAddClass (classnm, sscolor);
+      }
+      markstr = ssint->marktext;
+    }
+  }
+
+  uivlSetRowColumnStr (ssint->uivl, rownum, SONGSEL_COL_MARK, markstr);
+  if (classnm != NULL) {
+    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, classnm);
+  }
+}
