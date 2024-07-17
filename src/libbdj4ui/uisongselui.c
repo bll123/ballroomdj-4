@@ -321,6 +321,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uivlMakeColumn (uivl, "dbidx", SONGSEL_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "mark", SONGSEL_COL_MARK, VL_TYPE_LABEL);
+  /* see comments in fill-mark */
   uivlSetColumnClass (uivl, SONGSEL_COL_MARK, LIST_NO_DISP);
   uivlSetColumnGrow (uivl, SONGSEL_COL_MARK, VL_COL_WIDTH_FIXED);
 
@@ -901,7 +902,6 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
   ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
 
-  /* this only needs to be processed once by the initiator */
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
@@ -1003,13 +1003,14 @@ uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
   const char  *sscolor = NULL;
   const char  *classnm = NULL;
 
-  /* very strange bug */
-  /* on windows, if the markstr is not static, the scrollbar stops */
+  /* very strange windows/gtk bug */
+  /* symptom: scrollbar stops updating */
+  /* only seems to be an issue with the mark column, not other columns */
+  /* if the markstr is not static, the scrollbar stops */
   /* working after one of the marks is turned off */
   /* as a work-around, always set the markstr to the same value, */
   /* and set the column class to bdj-nodisp */
-  /* i don't understand why this is happening, when the favorite column */
-  /* works fine. */
+  /* i don't understand why this is happening */
   markstr = ssint->marktext;
 
   if (uisongsel->dispselType != DISP_SEL_MM &&

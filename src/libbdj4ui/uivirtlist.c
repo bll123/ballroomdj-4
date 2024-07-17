@@ -402,6 +402,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
   uivlConfigureScrollbar (vl);
+  uiScrollbarSetPosition (vl->wcont [VL_W_SB], 0.0);
   uiScrollbarSetChangeCallback (vl->wcont [VL_W_SB], vl->callbacks [VL_CB_SB]);
 
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s init-disp-size: %d", vl->tag, dispsize);
@@ -1494,12 +1495,12 @@ uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b)
   }
 
   /* copy the selected list to vl_b */
-  /* do not call the selection change callback for vl_b */
   logMsg (LOG_DBG, LOG_VIRTLIST, "vl: copy sel from %s to %s", vl_a->tag, vl_b->tag);
   uivlClearAllSelections (vl_b);
   nlistStartIterator (vl_a->selected, &iter_a);
   while ((rowidx = nlistIterateKey (vl_a->selected, &iter_a)) >= 0) {
     uivlAddSelection (vl_b, rowidx);
+    uivlSelectChgHandler (vl_b, rowidx, VL_COL_UNKNOWN);
   }
   uivlClearDisplaySelections (vl_b);
   uivlSetDisplaySelections (vl_b);
@@ -2879,7 +2880,6 @@ uivlConfigureScrollbar (uivirtlist_t *vl)
 {
   logProcEnd ("");
   uiScrollbarSetUpper (vl->wcont [VL_W_SB], (double) vl->numrows);
-  uiScrollbarSetPosition (vl->wcont [VL_W_SB], (double) vl->currSelection);
   uiScrollbarSetPageIncrement (vl->wcont [VL_W_SB],
       (double) ((vl->dispsize - vl->headingoffset) - vl->lockcount) / 2);
   uiScrollbarSetPageSize (vl->wcont [VL_W_SB],
