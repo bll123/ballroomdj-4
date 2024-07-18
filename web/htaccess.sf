@@ -1,1 +1,6 @@
+AddLanguage es .es-ES
+AddLanguage pl .pl-PL
+AddLanguage pt .pt-PT
+AddLanguage nb .nb-NO
+AddLanguage nn .nb-NO
 Options +MultiViews
