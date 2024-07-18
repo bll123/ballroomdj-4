@@ -157,6 +157,8 @@ checktag:
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
+# test suite
+
 # testoption could have:
 #   --pli VLC3/VLC4/GST/MPRISVLC
 #   --vol pipewire
@@ -177,17 +179,17 @@ testsuitemprisvlc:
 
 .PHONY: testsection
 testsection:
-	./utils/mktestsetup.sh
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --runsection $(start))
 
 .PHONY: testtest
 testtest:
-	./utils/mktestsetup.sh
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --verbose --runtest $(start))
 
 .PHONY: teststart
 teststart:
-	./utils/mktestsetup.sh
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --starttest $(start))
 
 # cleaning

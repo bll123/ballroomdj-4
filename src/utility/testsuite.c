@@ -203,6 +203,7 @@ main (int argc, char *argv [])
   testsuite.chkexpect = NULL;
   mstimeset (&testsuite.waitCheck, 100);
   mstimeset (&testsuite.responseStart, 0);
+  testsuite.responseTimeout = 8000;
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
   *testsuite.sectionnum = '\0';
   *testsuite.sectionname = '\0';
@@ -1534,7 +1535,13 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
+  mssleep (100);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+  mssleep (100);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+  mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_CHK_CLEAR_PREP_Q, NULL);
   /* wait a bit for all the messages to clear */

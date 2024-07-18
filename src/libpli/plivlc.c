@@ -5,7 +5,7 @@
  */
 #include "config.h"
 
-#if _lib_libvlc_new
+#if _lib_libvlc3_new || _lib_libvlc4_new
 
 #include <stdio.h>
 #include <stdlib.h>

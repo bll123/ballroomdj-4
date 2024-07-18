@@ -74,37 +74,76 @@ pkg_check_modules (XML2 libxml-2.0)
 
 #### VLC
 
-# pkg_check_modules (LIBVLC libvlc)
+# linux
+# will need to figure out vlc3/vlc4 in the future
+pkg_check_modules (LIBVLC libvlc)
 
-# will need to determine whether both vlc3 and vlc4 are installed
-if (NOT LIBVLC_FOUND)
-  find_package (LIBVLC)
+# on MacOS, the libvlc.dylib is located in a different place
+# for vlc-3 and vlc-4.
+if (APPLE AND NOT LIBVLC_FOUND)
+  if (EXISTS "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+    message ("-- VLC3: Using /Applications/VLC.app")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  # for development
+  if (NOT LIBVLC_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
+    message ("-- VLC3: Using $ENV{HOME}/Applications/VLC3.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC4_LIBRARY "/Applications/VLC.app/Contents/MacOS/")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
 endif()
-if (NOT WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_LIBRARY "-lvlc")
-  set (LIBVLC_FOUND TRUE)
-endif()
-
-# for development
 if (APPLE AND NOT LIBVLC4_FOUND)
-  set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
-  set (LIBVLC4_LIBRARY "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
-  set (LIBVLC4_FOUND TRUE)
+  if (EXISTS "/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")
+    message ("-- VLC4: Using /Applications/VLC.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
+  # for development
+  if (NOT LIBVLC4_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    message ("-- VLC4: Using $ENV{HOME}/Applications/VLC4.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
 endif()
 
-# windows will not find any vlc include files in the vlc dir
-# as the standard package does not include the sdk.
 # The include files are found in the .7z package.
-# for the purposes of development,
+# For the purposes of development,
 #   VLC 3 is installed into Program Files/VideoLAN/VLC3
-#   and VLC 4 is installed into Program Files/VideoLAN/VLC4
+#   VLC 4 is installed into Program Files/VideoLAN/VLC4
+# need a way to differentiate a vlc-3 and vlc-4 installation.
 if (WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
-  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
-  set (LIBVLC_FOUND TRUE)
-  set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
-  set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
-  set (LIBVLC4_FOUND TRUE)
+  if (EXISTS "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+    message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  # for development, override the usual VLC dir, as it is not known
+  # what version it is.
+  if (AND EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC3")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  if (NOT LIBVLC4_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+    message ("-- VLC4: Using C:/Program Files/VideoLAN/VLC4")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
+endif()
+
+# linux can use gstreamer.
+if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
+  if (APPLE OR WIN32)
+    message (FATAL_ERROR "Unable to locate a VLC library")
+  endif()
 endif()
 
 #### MPV
@@ -517,12 +556,10 @@ check_function_exists (timegm _lib_timegm)
 check_function_exists (uname _lib_uname)
 
 set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LIBRARY})
-check_function_exists (libvlc_new _lib_libvlc_new)
-check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
+check_function_exists (libvlc_new _lib_libvlc3_new)
 set (CMAKE_REQUIRED_LIBRARIES "")
 set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC4_LIBRARY})
-check_function_exists (libvlc_new _lib_libvlc_new)
-check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
+check_function_exists (libvlc_new _lib_libvlc4_new)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
 set (CMAKE_REQUIRED_LIBRARIES ${LIBMPV_LDFLAGS})

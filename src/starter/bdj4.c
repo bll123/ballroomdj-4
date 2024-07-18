@@ -87,6 +87,7 @@ main (int argc, char * argv[])
     { "ttagdbchk",      no_argument,        NULL,   27 },
     { "uitest",         no_argument,        NULL,   31 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
+    { "vlcversion",     no_argument,        NULL,   32 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
@@ -356,6 +357,13 @@ main (int argc, char * argv[])
       }
       case 31: {
         prog = "uitest";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 32: {
+        prog = "vlcversion";
         nodetach = true;
         wait = true;
         ++validargs;

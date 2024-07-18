@@ -396,6 +396,9 @@ confuiGetThemeList (void)
     filelist = dirlistRecursiveDirList (tbuff, DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
+    if (slistGetNum (sthemelist, "Windows-10-Acrylic") >= 0) {
+      slistSetNum (sthemelist, "Windows-10-Acrylic:dark", 0);
+    }
   } else {
     /* for macos */
     filelist = dirlistRecursiveDirList ("/opt/local/share/themes", DIRLIST_DIRS);
@@ -413,11 +416,7 @@ confuiGetThemeList (void)
   }
   /* make sure the built-in themes are present */
   slistSetStr (sthemelist, "Adwaita", 0);
-  /* adwaita-dark does not appear to work on macos w/macports */
-  /* 4.3.3 adwaita-dark does not appear to work on windos either */
-  if (isLinux ()) {
-    slistSetStr (sthemelist, "Adwaita-dark", 0);
-  }
+  slistSetStr (sthemelist, "Adwaita:dark", 0);
   slistSetStr (sthemelist, "HighContrast", 0);
   slistSetStr (sthemelist, "HighContrastInverse", 0);
   slistSort (sthemelist);
@@ -441,8 +440,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   const char    *fn;
   pathinfo_t    *pi;
   static char   *srchdir = "gtk-3.0";
-  char          tbuff [MAXPATHLEN];
-  char          tmp [MAXPATHLEN];
+  static char   *srchfn = "gtk.css";
 
   logProcBegin ();
   if (filelist == NULL) {
@@ -452,17 +450,29 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 
   slistStartIterator (filelist, &iteridx);
 
-  /* the key value used here is meaningless */
+  /* it would be very messy to try and determine which themes */
+  /* already have a dark version listed */
+
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (fileopIsDirectory (fn)) {
       pi = pathInfo (fn);
       if (pi->flen == strlen (srchdir) &&
           strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
+        char  tbuff [MAXPATHLEN];
+        char  tmp [MAXPATHLEN];
+
+        snprintf (tmp, sizeof (tmp), "%s/%s", fn, srchfn);
+        if (! fileopFileExists (tmp)) {
+          continue;
+        }
+
+        pi = pathInfo (fn);
         pathInfoGetDir (pi, tbuff, sizeof (tbuff));
         pathInfoFree (pi);
+
         pi = pathInfo (tbuff);
         strlcpy (tmp, pi->filename, pi->flen + 1);
-        slistSetStr (themelist, tmp, 0);
+        slistSetNum (themelist, tmp, 0);
       }
       pathInfoFree (pi);
     } /* is directory */

@@ -1167,7 +1167,9 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+# 2024-7-18 not all languages are tested, just a representation.
+# nl_NL is important, as there is no nl_NL/ dir.
+for section in fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   locale=${section}
 
   cleanInstTest

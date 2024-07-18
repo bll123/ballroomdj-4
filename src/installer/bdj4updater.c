@@ -411,6 +411,20 @@ main (int argc, char *argv [])
     }
   }
 
+  {
+    /* 4.11.0, on macos, Default, Emacs and Mac were not really themes */
+    /* translate these to Adwaita */
+    if (isMacOS ()) {
+      tval = bdjoptGetStr (OPT_MP_UI_THEME);
+      if (strcmp (tval, "Default") == 0 ||
+          strcmp (tval, "Emacs") == 0 ||
+          strcmp (tval, "Mac") == 0) {
+        bdjoptSetStr (OPT_MP_UI_THEME, "Adwaita:dark");
+        bdjoptchanged = true;
+      }
+    }
+  }
+
   if (bdjoptchanged) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "save bdjopt");
     bdjoptSave ();

@@ -129,6 +129,22 @@ target_link_libraries (uitest PRIVATE
 )
 addIntlLibrary (uitest)
 
+if (LIBVLC_FOUND)
+  add_executable (vlcversion
+    vlcversion.c
+  )
+  if (WIN32)
+    target_compile_options (uitest PRIVATE -municode)
+    target_compile_options (uitest PRIVATE -mwindows)
+  endif()
+  target_include_directories (vlcversion
+    PRIVATE "${LIBVLC_INCLUDE_DIR}"
+  )
+  target_link_libraries (vlcversion PRIVATE
+    ${LIBVLC_LIBRARY}
+  )
+endif()
+
 install (TARGETS
   bdj4info
   bdj4tags
@@ -146,6 +162,12 @@ install (TARGETS
   uitest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+if (LIBVLC_FOUND)
+  install (TARGETS
+    vlcversion
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
 
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
@@ -161,3 +183,6 @@ updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)
 updateRPath (uitest)
+if (LIBVLC_FOUND)
+  updateRPath (vlcversion)
+endif()

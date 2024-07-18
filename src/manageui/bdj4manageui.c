@@ -1980,6 +1980,7 @@ manageReloadSongData (manageui_t *manage)
 {
   song_t    *song;
 
+  logProcBegin ();
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   if (song == NULL) {
     return;
@@ -1993,6 +1994,7 @@ manageReloadSongData (manageui_t *manage)
     manageAudioIdLoad (manage->manageaudioid, song, manage->songeditdbidx);
   }
   manageSetEditMenuItems (manage);
+  logProcEnd ("");
 }
 
 static void
@@ -2010,6 +2012,7 @@ manageNewSelectionMoveCheck (manageui_t *manage, dbidx_t dbidx)
 static void
 manageSetSongEditDBIdx (manageui_t *manage, int mainlasttabsel, int mmlasttabsel)
 {
+  logProcBegin ();
   if (mainlasttabsel == MANAGE_TAB_MAIN_SL &&
       manage->slcurrtab == MANAGE_TAB_SONGLIST) {
     manage->songeditdbidx = manage->songlistdbidx;
@@ -2029,6 +2032,7 @@ manageSetSongEditDBIdx (manageui_t *manage, int mainlasttabsel, int mmlasttabsel
       manage->songeditdbidx = manage->seldbidx;
     }
   }
+  logProcEnd ("");
 }
 
 /* itunes */
@@ -3598,9 +3602,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 {
   bool    sbsinuse;
 
+  logProcBegin ();
   sbsinuse = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
 
-  logProcBegin ();
   if (id == MANAGE_TAB_MAIN_SL) {
     bool    plinuse;
 

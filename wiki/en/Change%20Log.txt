@@ -8,17 +8,17 @@
 
 * Bug Fixes:
     * Edit Dances: Fixed bugs setting values when switching dances.
-    * Listings: All text fields that may be long are now displayed with ellipses if necessary.
+    * Listings: All text fields with long values are now displayed with ellipses.
     * Management, Player, Mobile Remote Control: Fix where the 'History' songlist is allowed to be listed.
     * Mobile Remote Control: Fixed various issues.
     * Mobile Remote Control, Mobile Marquee: Fix browser icon.
     * New Install Help Utility: Fixed some small issues.
     * Player: Drag & Drop: Fixed issues with encoded filenames.
     * Song Filter Dialog: Restores prior settings.
+    * User Interface Themes: Add missing dark themes, fix theme check.
 * Changes:
     * Audio Identification: The original data row is locked into the view.
     * Configuration: New interface for Rating / Level / Status / Genre.
-    * Listings: Row selection color and row highlight color may be manually configured.
     * Music Manager: Added an edit button.
     * Playlist Management: New interface for the dances table.
     * Song Selection and Music Queue listings: Long values now have tooltips.
