@@ -93,7 +93,15 @@ fi
 
 mkdir -p $TMP${testpath}
 cp -pf bdj4.css $TMP${testpath}
-for fn in bdj4.html.??; do
+for fn in bdj4.html.*; do
+  case $fn in
+    *~)
+      continue
+      ;;
+    *.orig)
+      continue
+      ;;
+  esac
   lang=$(echo ${fn} | sed -e 's,.*\.,,')
   sed "s/#VERSION#/${vers}/g" ${fn} > $TMPMAIN
   cp -pf $TMPMAIN $TMP${testpath}/index.html.${lang}

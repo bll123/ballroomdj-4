@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="es">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="yandex-verification" content="52297d544556772d" />
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- WT_021 -->
-  <title>BallroomDJ 4 - 舞厅音乐播放器</title>
+  <title>BallroomDJ 4 - Reproductor de música de salón</title>
   <!-- WT_022 -->
-  <meta name="Description" content="BallroomDJ 4 - 舞厅音乐播放器">
+  <meta name="Description" content="BallroomDJ 4 - Reproductor de música de salón">
   <meta name="Keywords" content="ballroom music player,
       Ballroom Музыкальный плеер,
       Ballroom Muziekspeler,
@@ -33,13 +33,13 @@
     <div class="menuwidget">
       <!-- WT_023 -->
       <img src="/img/menu.svg"
-          alt="菜单"
+          alt="Menú"
           onclick="javascript:setDisplay('menu');">
     </div>
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="BallroomDJ 4 - 舞厅音乐播放器"
+        alt="BallroomDJ 4 - El reproductor de música de salón"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -61,7 +61,7 @@
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
           <!-- WT_002 -->
           <li id="" class="menuitem"
-              onclick="javascript:setDisplay('donate');">捐赠</li>
+              onclick="javascript:setDisplay('donate');">Donar</li>
         </ul>
       </div>
     </div>
@@ -69,44 +69,44 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4 (BDJ4) 是一款专为台式机和笔记本电脑设计的音乐播放器（也可在某些平板电脑上使用）。它的设计目的是能够在没有任何干预的情况下播放整晚的音乐。</p>
+          <p>BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la velada sin ninguna intervención.</p>
           <!-- WT_004 -->
-          <p>BDJ4 可高度自定义，提供组织舞厅音乐、创建歌曲列表、自动播放列表和顺序播放列表的功能。</p>
+          <p>BDJ4 es altamente personalizable y proporciona facilidades para organizar la música de baile de salón y crear listas de canciones, listas de reproducción automáticas y listas de reproducción secuenciadas.</p>
           <!-- WT_005 -->
-          <p>BDJ4 可在 Windows、MacOS 和 Linux 上运行。</p>
+          <p>BDJ4 funciona en Windows, MacOS y Linux.</p>
           <!-- WT_006 -->
           <p><b><a target="_blank"
               href="https://sourceforge.net/projects/ballroomdj4/files/"
-              >下载 BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>最新版本</span> <b>#VERSION#</b>)</p>
+              >Descargar BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>última versión</span> <b>#VERSION#</b>)</p>
           <!-- WT_007 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
-              >更改日志</a></p>
+              >Registro de cambios</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
-              href="https://ballroomdj.org/forum/">BDJ4 论坛</a></p>
+              href="https://ballroomdj.org/forum/">Foro BDJ4</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
-              >BDJ4 维基百科</a></p>
+              >BDJ4 Wiki</a></p>
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >BDJ4 功能</a></p>
+              >BDJ4 Características</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
-              >帮助翻译 BallroomDJ 4</a></p>
+              >Ayuda para traducir BallroomDJ 4</a></p>
           <!-- WT_012 -->
-          <p>可以找到 BallroomDJ 4 发布公告的其他网站：</p>
+          <p>Otros sitios donde se pueden encontrar anuncios del lanzamiento de BallroomDJ 4:</p>
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
-              >BDJ4 at freshcode.club</a></p>
+              >BDJ4 en freshcode.club</a></p>
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
-              >BallroomDJ at pro-linux.de</a>  (Deutsch)</p>
+              >BallroomDJ en pro-linux.de</a>  (Deutsch)</p>
         </div>
         <div class="tleft dlang">
           <ul>
@@ -114,22 +114,22 @@
             <li><a href="index.html.da">Dansk</a></li>
             <li><a href="index.html.de">Deutsch</a></li>
             <li><a href="index.html.en">English</a></li>
-            <li><a href="index.html.es">Español</a></li>
+            <li><a href="index.html.es-ES">Español</a></li>
             <li><a href="index.html.fi">Suomi</a></li>
             <li><a href="index.html.fr">Français</a></li>
             <li><a href="index.html.hu">magyar</a></li>
             <li><a href="index.html.it">Italiano</a></li>
             <li><a href="index.html.ja">日本語‬</a></li>
             <li><a href="index.html.ko">한국어‬</a></li>
-            <li><a href="index.html.nb">norsk</a></li>
+            <li><a href="index.html.nb-NO">norsk</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
-            <li><a href="index.html.po">Polski</a></li>
-            <li><a href="index.html.pt">Português</a></li>
+            <li><a href="index.html.pl-PL">Polski</a></li>
+            <li><a href="index.html.pt-PT">Português</a></li>
             <li><a href="index.html.ru">Русский</a></li>
             <li><a href="index.html.sv">Svenska‬</a></li>
             <li><a href="index.html.uk">Українська‬</a></li>
-            <li><a href="index.html.zh_CN">简体中文‬</a></li>
-            <li><a href="index.html.zh_TW">繁體中文‬</a></li>
+            <li><a href="index.html.zh-CN">简体中文‬</a></li>
+            <li><a href="index.html.zh-TW">繁體中文‬</a></li>
           </ul>
         </div>
       </div>
@@ -138,19 +138,19 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>BallroomDJ 是之前的舞厅音乐播放器。现在已不再支持。</p>
+        <p>BallroomDJ era el anterior reproductor de música de salón. Ya no es compatible.</p>
         <!-- WT_016 -->
-        <p>敦促 BallroomDJ 的所有用户转换到 BallroomDJ 4</p>
+        <p>Se insta a todos los usuarios de BallroomDJ a pasar a BallroomDJ 4</p>
         <!-- WT_017 -->
         <p><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj/files/"
-            >下载 BallroomDJ 3</a></p>
+            >Descargar BallroomDJ 3</a></p>
       </div>
     </div>
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>捐助 BDJ4</p>
+      <p>Haz un donativo a BDJ4</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -158,9 +158,9 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>为 BDJ4 使用的软件项目捐款：</p>
+      <p>Dona a proyectos de software que utiliza BDJ4:</p>
       <!-- WT_020 -->
-      <p><a href="https://videolan.org">VLC</a> (捐款按钮位于最上方）</p>
+      <p><a href="https://videolan.org">VLC</a> (botón de donación arriba del todo)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>
       <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
       <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>

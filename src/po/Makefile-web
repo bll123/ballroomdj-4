@@ -15,6 +15,7 @@ WEBDIR = ../../web
 all: $(WEBDIR)/bdj4.html.$(SLOCALE)
 	@:
 
-$(WEBDIR)/bdj4.html.$(LOCALE) $(WEBDIR)/bdj4.html.$(SLOCALE): $(POWEBDIR)/web-$(LOCALE).po \
-		$(WEBDIR)/bdj4.html.en
+$(WEBDIR)/bdj4.html.$(LOCALE) $(WEBDIR)/bdj4.html.$(SLOCALE): \
+		$(POWEBDIR)/web-$(LOCALE).po $(WEBDIR)/bdj4.html.en
+	@echo "-- $$(date +%T) inst-web $(LOCALE)"
 	@./po-instweb.sh $< $(LOCALE) $(SLOCALE)
