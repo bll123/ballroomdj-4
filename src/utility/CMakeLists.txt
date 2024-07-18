@@ -141,6 +141,7 @@ if (LIBVLC_FOUND)
     PRIVATE "${LIBVLC_INCLUDE_DIR}"
   )
   target_link_libraries (vlcversion PRIVATE
+    ${LIBVLC_LDFLAGS}
     ${LIBVLC_LIBRARY}
   )
 endif()

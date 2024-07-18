@@ -27,6 +27,7 @@ if (LIBVLC_FOUND)
   )
   target_link_libraries (libplivlc PRIVATE
     libbdj4common
+    ${LIBVLC_LDFLAGS}
     ${LIBVLC_LIBRARY}
   )
 endif()

@@ -32,4 +32,4 @@ Current Translations and Status:
  繁體中文‬|Machine Translated<br>Very poor quality|
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-07 11:27:08; BDJ4 version 4.10.3)_
+<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_

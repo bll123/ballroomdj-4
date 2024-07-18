@@ -4,7 +4,11 @@
 
 <!--
 
-**4.11.0 2024-7---**
+**4.11.1 2024-7---**
+
+-->
+
+**4.11.0 2024-7-18**
 
 * Bug Fixes:
     * Edit Dances: Fixed bugs setting values when switching dances.
@@ -38,8 +42,6 @@
 * Internal:
     * Code cleanup.
     * Re-work of all table handling.
-
--->
 
 **4.10.6 2024-6-22**
 
@@ -965,4 +967,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-22 11:57:40; BDJ4 version 4.10.6)_
+<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_

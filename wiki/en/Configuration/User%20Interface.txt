@@ -25,4 +25,4 @@ the color of the buttons.
 <br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-22 11:57:40; BDJ4 version 4.10.6)_
+<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
