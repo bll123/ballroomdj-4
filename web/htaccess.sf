@@ -1,6 +1,9 @@
+AddLanguage da .da
 AddLanguage es .es-ES
+AddLanguage fi .fi
+AddLanguage hu .hu
+AddLanguage nb .nb-NO
 AddLanguage pl .pl-PL
 AddLanguage pt .pt-PT
-AddLanguage nb .nb-NO
-AddLanguage nn .nb-NO
+AddLanguage uk .uk
 Options +MultiViews
