@@ -47,7 +47,7 @@ uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
 {
   uidance_t   *uidance;
   int         ddwhere = DD_PACK_START;
-
+  int         ddflag;
 
   uidance = mdmalloc (sizeof (uidance_t));
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -69,9 +69,13 @@ uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   }
   uidance->label = label;
   uidanceCreateDanceList (uidance);
+  ddflag = DD_REPLACE_TITLE;
+  if (flags == UIDANCE_NONE) {
+    ddflag = DD_KEEP_TITLE;
+  }
   uidance->uidd = uiddCreate ("uidance", parentwin, boxp, ddwhere,
       uidance->ddlist, DD_LIST_TYPE_NUM,
-      label, DD_REPLACE_TITLE, uidance->internalselcb);
+      label, ddflag, uidance->internalselcb);
 
   return uidance;
 }

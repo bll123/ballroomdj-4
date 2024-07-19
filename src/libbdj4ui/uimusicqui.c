@@ -687,8 +687,16 @@ static bool
 uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count)
 {
   uimusicq_t    *uimusicq = udata;
+  mq_internal_t *mqint;
+  int           mqidx;
 
   uimusicqQueueDanceProcess (uimusicq, idx, count);
+
+  mqidx = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [mqidx].mqInternalData;
+  uidanceSetKey (mqint->uidance, UIDANCE_NONE);
+  uidanceSetKey (mqint->uidance5, UIDANCE_NONE);
+
   return UICB_CONT;
 }
 
@@ -1130,7 +1138,7 @@ uimusicqKeyEvent (void *udata)
       uimusicqPlayCallback (uimusicq);
       return UICB_STOP;
     }
-    if (uiEventIsKey (keyh, 'S')) {
+    if (uiEventIsControlPressed (keyh) && uiEventIsKey (keyh, 'S')) {
       uimusicqSwap (uimusicq, ci);
       return UICB_STOP;
     }

@@ -394,11 +394,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    if (i <= BPMCOUNT_DISP_BPM) {
-      uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
-    } else {
-      uiwidgetp = uiCreateLabel (bpmcounter->disptxt [i]);
-    }
+    uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
     bpmcounter->dispwidget [i] = uiwidgetp;

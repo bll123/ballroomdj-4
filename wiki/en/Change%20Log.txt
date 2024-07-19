@@ -8,7 +8,7 @@
 
 * Bug Fixes:
     * Song Editor, Song List Editor: Fixed keyboard handling.
-    * Player: Reset 'Queue Dance' and 'Queue 5' buttons after use.
+    * Player: Fix 'Queue Dance' and 'Queue 5' buttons display after use.
 
 -->
 

@@ -752,7 +752,6 @@ uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
       ((state & GDK_SUPER_MASK) == GDK_SUPER_MASK) ||
       ((state & GDK_HYPER_MASK) == GDK_HYPER_MASK)) {
     uievent->ismaskedkey = true;
-    skip = true;
   }
 
   if (skip) {
