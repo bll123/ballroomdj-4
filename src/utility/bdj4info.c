@@ -33,8 +33,8 @@
 static const char *envitems [] = {
   "DESKTOP_SESSION",
   "DYLD_FALLBACK_LIBRARY_PATH",
-  "G_FILENAME_ENCODING",
   "GDK_SCALE",
+  "G_FILENAME_ENCODING",
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
@@ -140,10 +140,15 @@ main (int argc, char *argv [])
   fprintf (stdout, " c: atomics %d\n", c);
   fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 #if BDJ4_USE_GTK3
+  fprintf (stdout, "ui: GTK3\n");
+#endif
+#if BDJ4_USE_GTK4
+  fprintf (stdout, "ui: GTK4\n");
+#endif
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
   fprintf (stdout, " i: glong %d\n", (int) sizeof (glong));
-  fprintf (stdout, "ui: GTK3\n");
 #endif
 #if BDJ4_USE_NULLUI
   fprintf (stdout, "ui: null\n");

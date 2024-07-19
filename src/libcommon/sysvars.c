@@ -675,7 +675,8 @@ sysvarsInit (const char *argv0, int flags)
 
   sysvarsCheckPaths (NULL);
 
-  if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
+  if (flags == SYSVARS_FLAG_ALL &&
+      strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
     char  *data;
     char  *tdata;
 
