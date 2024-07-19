@@ -21,6 +21,7 @@ find_package (Iconv)
 
 # check for all supported ui interfaces
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
@@ -29,6 +30,11 @@ endif()
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_compile_options (-DBDJ4_USE_GTK3=1)
   set (BDJ4_UI_LIB libuigtk3)
+endif()
+
+if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  add_compile_options (-DBDJ4_USE_GTK4=1)
+  set (BDJ4_UI_LIB libuigtk4)
 endif()
 
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
@@ -64,6 +70,9 @@ pkg_check_modules (JSONC json-c)
 
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (GTK gtk+-3.0)
+endif()
+if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  pkg_check_modules (GTK libgtk-4-1)
 endif()
 pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
@@ -193,7 +202,8 @@ pkg_check_modules (ICUI18N icu-i18n)
 
 #### generic compile options
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   add_compile_options (-DGDK_DISABLE_DEPRECATED)
   add_compile_options (-DGTK_DISABLE_DEPRECATED)
 endif()
@@ -429,7 +439,8 @@ set (CMAKE_REQUIRED_INCLUDES ${LIBMPV_INCLUDE_DIRS})
 check_include_file (mpv/client.h _hdr_mpv_client)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
   check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
   check_include_file (gtk/gtk.h _hdr_gtk_gtk)

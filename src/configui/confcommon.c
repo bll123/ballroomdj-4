@@ -390,6 +390,7 @@ confuiGetThemeList (void)
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4_DIR_MAIN));
@@ -419,6 +420,8 @@ confuiGetThemeList (void)
   slistSetStr (sthemelist, "Adwaita:dark", 0);
   slistSetStr (sthemelist, "HighContrast", 0);
   slistSetStr (sthemelist, "HighContrastInverse", 0);
+#endif   /* gtk3 or gtk4 */
+
   slistSort (sthemelist);
 
   slistStartIterator (sthemelist, &iteridx);
@@ -439,8 +442,15 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   slistidx_t    iteridx;
   const char    *fn;
   pathinfo_t    *pi;
+#if BDJ4_USE_GTK3
   static char   *srchdir = "gtk-3.0";
+#endif
+#if BDJ4_USE_GTK4
+  static char   *srchdir = "gtk-4.0";
+#endif
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   static char   *srchfn = "gtk.css";
+#endif
 
   logProcBegin ();
   if (filelist == NULL) {
