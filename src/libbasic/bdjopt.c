@@ -20,6 +20,7 @@
 #include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "osprocess.h"
 #include "pathbld.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -138,6 +139,7 @@ void
 bdjoptInit (void)
 {
   char          path [MAXPATHLEN];
+  const char    *pli;
 
   if (bdjopt != NULL) {
     bdjoptCleanup ();
@@ -294,6 +296,39 @@ bdjoptInit (void)
   /* these do not need defaults, as their defaults are based off of the */
   /* accent color */
 
+  /* 4.11.1 check the OPT_M_PLAYER_INTFC for VLC */
+  /* if it is VLC, check the VLC version and switch the player interface */
+  /* if necessary */
+  /* check for either libplivlc or libplivlc4 */
+  pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
+  if (strncmp (pli, "libplivlc", 9) == 0) {
+    if (isLinux () || isWindows ()) {
+      char    tbuff [MAXPATHLEN];
+      char    *data;
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
+      data = osRunProgram (tbuff, "--vlcversion", NULL);
+      if (data != NULL) {
+        sysvarsSetNum (SVL_VLC_VERSION, atoi (data));
+      }
+      dataFree (data);
+    }
+
+    /* check for a change in VLC version, and adjust the interface */
+    /* as needed */
+
+    if (sysvarsGetNum (SVL_VLC_VERSION) == 3 &&
+        strcmp (pli, "libplivlc4") == 0) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc");
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
+    }
+    if (sysvarsGetNum (SVL_VLC_VERSION) == 3 &&
+        strcmp (pli, "libplivlc") == 0) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc4");
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
+    }
+  }
 }
 
 void
@@ -826,7 +861,3 @@ bdjoptCreateNewConfigs (void)
   sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }
-
-
-
-

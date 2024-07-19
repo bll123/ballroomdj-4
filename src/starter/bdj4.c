@@ -504,26 +504,17 @@ main (int argc, char * argv[])
 
       strlcpy (pbuff, tbuff, sizeof (pbuff));
 
-      /* libvlc.dylib is a symlink to the current version of the library */
-
-      snprintf (tbuff, sizeof (tbuff),
-          "%s/Contents/MacOS/lib/libvlc.dylib", pbuff);
-      if (fileopFileExists (tbuff)) {
+      if (sysvarsGetNum (SVL_VLC_VERSION) == 3) {
         /* VLC 3 */
-        snprintf (tbuff, sizeof (tbuff),
-            "%s/Contents/MacOS/lib/", pbuff);
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/MacOS/lib/", pbuff);
         osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
-        snprintf (tbuff, sizeof (tbuff),
-            "%s/Contents/MacOS/plugins", pbuff);
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/MacOS/plugins", pbuff);
         osSetEnv ("VLC_PLUGIN_PATH", tbuff);
       }
 
-      snprintf (tbuff, sizeof (tbuff),
-          "%s/Contents/Frameworks/libvlc.dylib", pbuff);
-      if (fileopFileExists (tbuff)) {
+      if (sysvarsGetNum (SVL_VLC_VERSION) == 4) {
         /* VLC 4 */
-        snprintf (tbuff, sizeof (tbuff),
-            "%s/Contents/Frameworks", pbuff);
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/Frameworks", pbuff);
         osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
         snprintf (tbuff, sizeof (tbuff),
             "%s/Contents/Frameworks/plugins", pbuff);

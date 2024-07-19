@@ -79,7 +79,6 @@ typedef enum {
   SV_USER,
   SV_USER_AGENT,
   SV_USER_MUNGE,
-  SV_VLC_VERSION,
   SV_WEB_VERSION_FILE,
   SV_MAX
 } sysvarkey_t;
@@ -103,6 +102,7 @@ typedef enum {
   SVL_NUM_PROC,
   SVL_OSBITS,
   SVL_USER_ID,
+  SVL_VLC_VERSION,
   SVL_MAX
 } sysvarlkey_t;
 

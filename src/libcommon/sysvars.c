@@ -120,7 +120,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_USER_AGENT] = { "USER_AGENT" },
   [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
-  [SV_VLC_VERSION] = { "VLC_VERSION" },
   [SV_WEB_VERSION_FILE] = { "WEB_VERSION_FILE" },
 };
 
@@ -143,6 +142,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_NUM_PROC] = { "NUM_PROC" },
   [SVL_OSBITS] = { "OSBITS" },
   [SVL_USER_ID] = { "USER_ID" },
+  [SVL_VLC_VERSION] = { "VLC_VERSION" },
 };
 
 enum {
@@ -891,12 +891,19 @@ sysvarsCheckPaths (const char *otherpaths)
   strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
       "https://api.acoustid.org/v2/lookup", SV_MAX_SZ);
 
+  lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
   strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {
     strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
   }
   if (isMacOS ()) {
-    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+    if (fileopFileExists ("/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")) {
+      strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+    }
+    if (fileopFileExists ("/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")) {
+      strlcpy (tbuff, "/Applications/VLC.app/Contents/Frameworks", sizeof (tbuff));
+      lsysvars [SVL_VLC_VERSION] = 4;
+    }
   }
   if (isLinux ()) {
     strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
@@ -913,8 +920,6 @@ sysvarsCheckPaths (const char *otherpaths)
     }
   }
 }
-
-
 
 char *
 sysvarsGetStr (sysvarkey_t idx)
