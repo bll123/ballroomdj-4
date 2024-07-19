@@ -105,7 +105,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();

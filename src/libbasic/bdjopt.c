@@ -45,6 +45,7 @@ enum {
 };
 
 static bdjopt_t   *bdjopt = NULL;
+static bool       vlccheckdone = false;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACOUSTID_KEY",         OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },
@@ -302,7 +303,7 @@ bdjoptInit (void)
   /* check for either libplivlc or libplivlc4 */
   pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
   if (strncmp (pli, "libplivlc", 9) == 0) {
-    if (isLinux () || isWindows ()) {
+    if (! vlccheckdone && (isLinux () || isWindows ())) {
       char    tbuff [MAXPATHLEN];
       char    *data;
 
@@ -313,6 +314,7 @@ bdjoptInit (void)
         sysvarsSetNum (SVL_VLC_VERSION, atoi (data));
       }
       dataFree (data);
+      vlccheckdone = true;
     }
 
     /* check for a change in VLC version, and adjust the interface */

@@ -176,7 +176,7 @@ static sysdistinfo_t *sysvarsParseDistFile (const char *path);
 static void sysvarsParseDistFileFree (sysdistinfo_t *distinfo);
 
 void
-sysvarsInit (const char *argv0)
+sysvarsInit (const char *argv0, int flags)
 {
   char          tcwd [SV_MAX_SZ+1];
   char          tbuff [SV_MAX_SZ+1];
@@ -719,7 +719,7 @@ sysvarsInit (const char *argv0)
 
     /* gtk cannot seem to retrieve the properties from settings */
     /* so run the gsettings program to get the info */
-    if (*sysvars [SV_PATH_GSETTINGS]) {
+    if (flags == SYSVARS_FLAG_ALL && *sysvars [SV_PATH_GSETTINGS]) {
       svGetLinuxDefaultTheme ();
     }
   }
@@ -757,7 +757,9 @@ sysvarsInit (const char *argv0)
 #endif
   }
 
-  svGetSystemFont ();
+  if (flags == SYSVARS_FLAG_ALL) {
+    svGetSystemFont ();
+  }
 
   lsysvars [SVL_ALTIDX] = 0;
   lsysvars [SVL_PROFILE_IDX] = 0;

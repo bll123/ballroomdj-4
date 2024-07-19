@@ -49,7 +49,7 @@ main (int argc, char *argv [])
 
   sRandom ();
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
 
   if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {

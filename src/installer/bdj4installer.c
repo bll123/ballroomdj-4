@@ -345,7 +345,7 @@ main (int argc, char *argv[])
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
 
   if (isMacOS ()) {

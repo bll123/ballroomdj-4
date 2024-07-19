@@ -113,6 +113,8 @@ enum {
   SYSVARS_DATAPATH_UNKNOWN,
   SYSVARS_LOCALE_NOT_SET,
   SYSVARS_LOCALE_SET,
+  SYSVARS_FLAG_BASIC,
+  SYSVARS_FLAG_ALL,
 };
 
 typedef struct {
@@ -128,7 +130,7 @@ enum {
   SVC_USER_ID_NONE = -1,
 };
 
-void    sysvarsInit (const char *argv0);
+void    sysvarsInit (const char *argv0, int basicflag);
 void    sysvarsCheckPaths (const char *otherpaths);
 char    * sysvarsGetStr (sysvarkey_t idx);
 int64_t sysvarsGetNum (sysvarlkey_t idx);

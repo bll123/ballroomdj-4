@@ -36,7 +36,7 @@ main (int argc, char *argv [])
   bdj4arg = bdj4argInit (argc, argv);
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
 
   /* bdj4cleantmp is started by bdj4, and will be in the datatopdir */
 

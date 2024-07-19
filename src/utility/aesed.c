@@ -41,7 +41,7 @@ main (int argc, char *argv [])
   }
 
   sRandom ();
-  sysvarsInit (argv [0]);
+  sysvarsInit (argv [0], SYSVARS_FLAG_ALL);
   // logStartAppend ("aesed", "taes", LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
   bdjoptInit ();
 
