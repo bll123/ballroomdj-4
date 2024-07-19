@@ -7,22 +7,22 @@ how the user interface is displayed._</span>
 
 __Theme__: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
-Other themes may be installed if wanted.
+Other themes may be installed if desired.
 
 __Font__: The display font used for the main user interface.
 
 __Listing Font__: The font used to display lists of songs in the music
-queues, requests, song selection, &etc.
+queues, music manager, requests, and song selection.
 
 __Scale__: The scale of the user interface.  Only needs to be changed
 for 4K or larger displays.
 
-__Accent Color__: The color used for important status messages and for
-the color of the buttons.
+__Accent Color__: The color used for important status messages and
+the color of various images.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-D.png)
 <br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

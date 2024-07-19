@@ -7,6 +7,10 @@ for playback of songs._</span>
 
 ### Player
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-A.png)
+<br><span style="color:#4559bf;">__Player__</span> </div>
+
 ##### Player Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -71,6 +75,15 @@ player will stop playing after the song finishes.
 
 __Speed__: Adjusts the speed of the currently playing song. The
 speed will reset when the next song starts playing.
+
+If the _Show&nbsp;Speed&nbsp;Reset_ setting (See
+[Configure&nbsp;/&nbsp;Player](en-Configuration-Player)) is on, a
+_100%_ button is displayed next to the speed selection.  The _100%_
+button will reset the speed to 100%.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-spd-reset](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-spd-reset-A.png)
+<br><span style="color:#4559bf;">__Player / Speed Reset__</span> </div>
 
 __Position__: Displays the current position of the song.  The slider
 can be adjusted to change the current position of the song.
@@ -139,8 +152,9 @@ dance drop-down may be used to quickly change which dance is
 displayed.  The filter button
 (![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
 will start a dialog where the filters can be chosen to limit which
-songs are displayed in the listing.
-<br>See also: [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs))
+songs are displayed in the listing. <br>See also:
+[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
+<br>[Subjects&nbsp;/&nbsp;Filter&nbsp;Dialog](en-Subjects-Filter%20Dialog)
 
 Select a song and select the __Queue__ button to add a song to the music
 queue.  The selected song will be added after the currently selected
@@ -187,6 +201,10 @@ See: [Player&nbsp;/&nbsp;Reload](en-Player-Reload)
 __Marquee / Font Size__: Starts a dialog where the marquee's font size may be
 changed.  The font size will be changed immediately.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-mq-font-sz](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-mq-font-sz-A.png)
+<br><span style="color:#4559bf;">__Player / Marquee Font Size__</span> </div>
+
 __Marquee / Recover Marquee__: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
 to the current screen.
@@ -226,4 +244,4 @@ See also
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 08:31:29; BDJ4 version 4.11.0)_

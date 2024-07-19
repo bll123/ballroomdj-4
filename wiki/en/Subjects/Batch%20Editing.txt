@@ -138,11 +138,13 @@ has the incorrect spelling for _Michael&nbsp;Buble_.  Scroll through
 the list and make sure all of songs to be changed are selected and the
 songs that are not be changed are not selected.
 
-Select the __Song&nbsp;Editor__ tab.  Change the _Artist_ to
-_Michael&nbsp;Bublé_.  Select __Apply&nbsp;Edit&nbsp;All__ from the
-__Actions__ menu.
+Select the __Song&nbsp;Editor__ tab.  Select
+__Actions&nbsp;/&nbsp;Edit&nbsp;All__ from the menu.
+
+Change the _Artist_ to _Michael&nbsp;Bublé_.  Select
+__Apply&nbsp;Edit&nbsp;All__ from the __Actions__ menu.
 
 Only the songs selected with control-click will be updated.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-27 08:46:24; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

@@ -6,7 +6,7 @@ playback for each music queue._</span>
 ### Configure : Music Queues
 
 __Queue__: Selects which music queue to configure.  The following settings
-apply to the selected music queue.
+apply to the selected music queue.  Five music queues are supported.
 
 __Queue Name__: The name displayed for this music queue.
 
@@ -23,36 +23,39 @@ volume when the song starts playing.  Set to 0.0 for no fade in.
 __Fade Out Time__: The amount of time used to fade out the volume when
 song ends.  Set to 0.0 for no fade out.
 
-__Gap__: The amount of time to wait before playing the next song.  The
-gap can also be configured for a specific playlist.
-<br>See [Playlist&nbsp;Management](en-Management-Playlist%20Management)
+__Gap__: The amount of time to wait before playing the next song.
+<br>The gap can also be set for a playlist
+([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
 
 __Maximum Play Time__: The maximum duration a song will play.  This is
-often set anywhere from 2:00 minutes to 3:00 minutes. Set to 0:00 to
-turn off entirely.  A playlist can also be configured with a maximum
-play time. <br>See
-[Playlist&nbsp;Management](en-Management-Playlist%20Management)
+often set anywhere from 2:00 minutes to 3:00 minutes. If your songs
+are already trimmed to the correct length, set to 0:00 to turn off
+entirely.
+<br>The maximum play time can also be set for a playlist
+([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
 
-__Stop At__: The time when playback stops when using this queue. See
-also the __Stop&nbsp;At__ capabilities in
+__Stop At__: The time when playback stops when using this queue.
+<br>See also the __Stop&nbsp;At__ capabilities in
 [Playlist&nbsp;Management](en-Management-Playlist%20Management).
 
 __Pause Each Song__: Playback will pause after each song
 is played.  This setting is used for showcases and events.
 
 __Play Announcements__: The dance announcement will be played before
-each song. <br>See [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
+each song.
+<br>
+See [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
 __Play When Queued__: Songs and playlists will start playing
 immediately when queued.
 
 __Show Extra Queue Buttons__: Show the __Queue&nbsp;Dance__ and
 __Queue&nbsp;5__ buttons.  These buttons are usually used for
-teaching.
+practice and teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-D.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

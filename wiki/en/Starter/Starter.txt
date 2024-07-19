@@ -59,8 +59,8 @@ database.  (Linux and Windows only).
 ##### Support
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-D.png)
-<br><span style="color:#4559bf;">__Starter__ / Support</span> </div>
+![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-E.png)
+<br><span style="color:#4559bf;">__Starter / Support__</span> </div>
 
 The support window lists the current installed version of BDJ4 and the
 latest version that is available.
@@ -100,4 +100,4 @@ database is very useful when finding problems associated with the
 audio files.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-28 05:21:07; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-07-19 05:56:31; BDJ4 version 4.11.0)_

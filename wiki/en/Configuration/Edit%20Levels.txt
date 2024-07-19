@@ -33,8 +33,8 @@ Select the __Delete__
 button to delete a level.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-E.png)
+![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

@@ -6,8 +6,9 @@
 
 The __Player__ and __Audio__ settings usually do not change.
 
-__Player__: Selects the player interface.  At this time, only
-_Integrated&nbsp;VLC_ is supported.
+__Player__: Selects the player interface.  At this time,
+_Integrated&nbsp;VLC3_ and _GStreamer_ are supported.  The _GStreamer_
+interface is currently only enabled for Linux platforms.
 
 __Audio__: Selects the audio interface.
 
@@ -22,12 +23,12 @@ __Queue Length__: The number of songs the music queue is filled with.
 __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
-__Show Speed Reset__: The 'reset speed to 100%' button will be
+__Show Speed Reset__: The 'Reset Speed to 100%' button will be
 displayed in the player.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-E.png)
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-F.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

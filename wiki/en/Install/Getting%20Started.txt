@@ -10,7 +10,7 @@ Start BDJ4.  The window that displays is the _Starter_ window. Select
 the __Configure__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-B.png)
+![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-C.png)
 <br><span style="color:#4559bf;">__Starter__</span> </div>
 
 ##### Locale
@@ -100,7 +100,7 @@ Close the configuration window.
 <!-- appears in configuration/edit dances.txt also -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-E.png)
+![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-G.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Creating the database for the first time
@@ -132,7 +132,7 @@ dance is set for each song.  It is OK if some songs are left without
 an assigned dance, but most should have a dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-C.png)
+![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-D.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 If the dance is not set, select the song in the listing, then select
@@ -143,7 +143,7 @@ _Music&nbsp;Manager_ tab and check for other songs that need to have
 the dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-B.png)
+![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-C.png)
 <br><span style="color:#4559bf;">__Manage / Song Editor__</span> </div>
 
 Leave the management window open.
@@ -165,7 +165,7 @@ of the song list.
 Select some more songs and add each of them to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-C.png)
+![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-D.png)
 <br><span style="color:#4559bf;">__Manage / Song List Editor__</span> </div>
 
 Close the management window.  The song list is automatically saved.
@@ -182,7 +182,7 @@ __Play&nbsp;/&nbsp;Pause__ button
 to start the music playing.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-player-A.png)
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-player-B.png)
 <br><span style="color:#4559bf;">__Player__</span> </div>
 
 #### More information
@@ -198,4 +198,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 05:51:14; BDJ4 version 4.11.0)_

@@ -30,12 +30,15 @@ Removing a rating: Select the rating and select the __Delete__
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button.
 
-Modifying a rating: Select the rating, then click on the name or
-weight to change it.
+Modifying a rating: Select the rating, then select the name entry
+field to change the name.   Use the __+__ and __-__ buttons to change
+the weight or select the weight and type in the new weight.
+The _Unrated_ rating may not have its name
+changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-E.png)
+![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

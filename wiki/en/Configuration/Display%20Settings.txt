@@ -14,7 +14,7 @@ The following displays can be configured:
 
 * Music&nbsp;Queue
 * History
-* Requests
+* Request
 * Song&nbsp;List
 * Song&nbsp;Selection
 * Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List
@@ -42,8 +42,8 @@ to remove and add columns to display.  Use the up and down arrows
 to change the order in which the columns are displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-E.png)
+![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-F.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-29 14:32:40; BDJ4 version 4.9.0)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

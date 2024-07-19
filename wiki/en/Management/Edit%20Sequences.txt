@@ -28,7 +28,7 @@ Use the remove button
 to remove a dance from the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-C.png)
+![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
 
 ##### Naming the Sequence
@@ -58,9 +58,9 @@ _New&nbsp;Sequence_, then enter the new name of the sequence.
 ![seq-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-edit-menu-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Sequences / Edit Menu__</span> </div>
 
-An existing sequence can be loaded by selecting
-__Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open
-allowing selection of an existing sequence.
+__Edit&nbsp;/&nbsp;Load__ will open a dialog to select and existing
+sequence.  Select a sequence and then the __Select__ button to load
+it. Any current sequence will be saved first.
 
 __Edit&nbsp;/&nbsp;Start&nbsp;New&nbsp;Sequence__ will clean
 out any loaded sequence and reset the name to _New&nbsp;Sequence_.
@@ -75,8 +75,8 @@ sequence from your storage device and start a new sequence.
 ##### Song Selection
 
 To filter which songs are selected by BDJ4 when the sequence is
-played, change the settings in
+played, change the playlist settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-18 11:37:38; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 07:39:00; BDJ4 version 4.11.0)_

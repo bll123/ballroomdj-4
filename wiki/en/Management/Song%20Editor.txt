@@ -15,7 +15,7 @@ three display columns may be configured. A full list of fields is at
 the bottom of this wiki page.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-B.png)
+![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 ##### Traversing the Song Listing
@@ -33,13 +33,13 @@ edit button is used, the __Next__ and __Previous__ buttons will
 traverse the songs in the song list.
 
 When a song is selected in the song selection tab, or the edit button
-is used in the song selection tab, the song editor
-will traverse the songs in the song selection.
+is used in the song selection tab, the song editor will traverse the
+songs in the song selection.
 
 If you have a listing loaded in the music manager, multiple songs may
 be selected (using control-click or shift-click).  When multiple songs
-are selected in the music manager, the song editor will traverse the
-selected songs, and not the entire listing.
+are selected in the music manager, the song editor will traverse only
+the selected songs, and not the entire listing.
 
 ##### File Display
 
@@ -57,7 +57,7 @@ silence), a __*__ will be displayed.
 The filename is displayed.  The music folder set in
 [Configure&nbsp;/&nbsp;General](en-Configuration-General) is not
 displayed as part of the filename. The copy button
-(![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-A.png))
+(![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-B.png))
 may be used to copy the full filename to the clipboard.
 
 ##### Change Bars
@@ -83,7 +83,7 @@ __Previous__ to switch to a different song, then switch back.
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Actions Menu__</span> </div>
 
-__MPM__ starts the BPM/MPM Counter.
+__MPM__ (or __BPM__) starts the BPM/MPM Counter.
 
 __Actions&nbsp;/&nbsp;Copy&nbsp;Audio&nbsp;Tags__ starts a dialog to
 copy the audio tags from one audio file to another.
@@ -120,13 +120,13 @@ song editor using
 After selecting the song to edit in the song editor, use the play
 button
 (![play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
-to play the song.  Then select the _MPM_ menu selection in the
-__Actions__ menu.  The BPM Counter will start.
+to play the song.  Then select the __MPM__ (or __BPM__) menu selection
+in the __Actions__ menu.  The BPM Counter will start.
 
 <!-- this image is re-used: see subjects/bpm-mpm -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-B.png)
+![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
@@ -180,4 +180,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-29 15:17:08; BDJ4 version 4.9.0)_
+<br>_(Updated 2024-07-19 08:03:03; BDJ4 version 4.11.0)_

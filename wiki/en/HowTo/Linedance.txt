@@ -8,6 +8,9 @@ Line dances present a unique problem.  During a dance event, you might
 want to play a few line dances.  But for the next dance event, a
 different selection of line dances is wanted.
 
+Line dances also present a management issue.  You may not want to add
+a new dance to the list of dances every time you add a new line dance.
+
 If a song list is created manually
 ([Subjects&nbsp;/&nbsp;Song&nbsp;List](en-Subjects-Song%20List)), this
 is not so much of a problem.  The DJ can pick and choose the line
@@ -53,7 +56,7 @@ the name of the line dance.
 In the [Music&nbsp;Manager](en-Manage-Music%20Manager), select line
 dances in the dance drop-down (_LD_ in this example).  All of the line
 dances will be listed.  The _Marquee&nbsp;Display_ will be listed next
-to the dance (available in version 4.7.0).
+to the dance (available starting with version 4.7.0).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-A.png)
@@ -83,4 +86,4 @@ on the marquee instead of the dance.
 <br><span style="color:#4559bf;">__Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 07:39:00; BDJ4 version 4.11.0)_
