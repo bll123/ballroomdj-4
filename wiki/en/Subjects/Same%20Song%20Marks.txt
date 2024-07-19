@@ -30,7 +30,7 @@ mouse click) on each song.
 Select __Mark&nbsp;as&nbsp;Same&nbsp;Song__ in the __Actions__ menu.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![samesong-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/samesong-mm-A.png)
+![samesong-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/samesong-mm-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 ##### Adding Additional Songs to an Existing Set
@@ -51,4 +51,4 @@ mark cleared, then select __Clear&nbsp;Same&nbsp;Song&nbsp;Mark__ in
 the __Actions__ menu.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 07:28:52; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-07-19 13:57:57; BDJ4 version 4.11.0)_

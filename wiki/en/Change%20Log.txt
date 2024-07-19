@@ -6,6 +6,10 @@
 
 **4.11.1 2024-7---**
 
+* Bug Fixes:
+    * Song Editor, Song List Editor: Fixed keyboard handling.
+    * Player: Reset 'Queue Dance' and 'Queue 5' buttons after use.
+
 -->
 
 **4.11.0 2024-7-18**

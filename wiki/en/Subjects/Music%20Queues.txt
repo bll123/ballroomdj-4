@@ -105,7 +105,7 @@ maximum play time set high so that the entire song will play.  The
 name of the music queue is set to "Teach".
 
 The __Play&nbsp;When&nbsp;Queued__ and
-__Show&nbsp;Extra&nbsp;QueueDance&nbsp;Buttons__ switches are turned on.
+__Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ switches are turned on.
 __Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -153,23 +153,25 @@ queue that is selected for playback.  To change which queue is
 selected for playback, select the music queue you want to play from,
 and then select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
 
-In the _Teach_ music queue example from above, close the player and
-re-start the player.  Select the _Teach_ music queue.  Use the
-__Queue&nbsp;Dance__ button and select a dance (or use the _Request_
-tab to queue a song).  Since the _Teach_ music queue is not selected
-for playback, the song is queued, but it will not play.
+In the _Teach_ music queue example from above, select the _Teach_
+music queue.  Use the __Queue&nbsp;Dance__ button and select a dance
+(or use the _Request_ tab to queue a song).  Since the _Teach_ music
+queue is not selected for playback, the song is queued, but it will
+not play.
 
-Now close the player and re-start the player again.  Select the
-_Teach_ music queue. Select the
-__Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button to set the _Teach_
-music queue for playback. Use the __Queue&nbsp;Dance__ button and
-select a dance (or use the _Request_ tab to queue a song).  This time,
-the song will start playing, as the __Play&nbsp;When&nbsp;Queued__
-switch is on for the _Teach_ music queue.
+Select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button to set the
+_Teach_ music queue for playback.  The song that was selected is moved
+out of the queue to the current song.
+
+Select the __Next&nbsp;Song__ button to clear the song. Use the
+__Queue&nbsp;Dance__ button and select a dance (or use the _Request_
+tab to queue a song).  This time, the song will start playing, as the
+__Play&nbsp;When&nbsp;Queued__ switch is on for the _Teach_ music
+queue, and the queue was empty.
 
 See also:
 <br>[Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

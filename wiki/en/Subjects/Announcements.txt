@@ -45,7 +45,7 @@ will be played.
 <!-- this images is also used in Subjects/BPM-MPM -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ann-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-C.png)
+![ann-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-D.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 ##### Playing Announcements
@@ -84,4 +84,4 @@ configured, and turn on the __Play&nbsp;Announcements__ switch.
 <br><span style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

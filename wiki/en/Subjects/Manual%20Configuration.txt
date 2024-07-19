@@ -44,7 +44,7 @@ The defaults are standard, latin and club.
     Must be specified as #rrggbb.
     The default is #000000 (black).
   * PLAYER_UI_SEP
-    Separator character(s) for the player currently-playing display.
+    Separator character(s) for the player song display.
     The default is a colon (:).
   * UI_ERROR_COL
     User Interface Error Color.
@@ -85,4 +85,4 @@ display. [Contact](en-Getting%20Help) the developers for more
 information.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

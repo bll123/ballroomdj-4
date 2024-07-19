@@ -24,7 +24,7 @@ The _Favorite_ column that will be displayed is narrow and does not
 take up much space.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-B.png)
+![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-C.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 In [Configure&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs), select
@@ -40,7 +40,7 @@ Now the _Favorite_ column will be displayed as seen in the song list
 editor side-by-side view example below.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-sample-view-B.png)
+![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-sample-view-C.png)
 <br><span style="color:#4559bf;">__Song List Editor__</span> </div>
 
 When no favorite is selected, a hollow star is displayed
@@ -91,4 +91,4 @@ If there is enough interest in being able to easily change the symbols
 and colors, I can add a configuration screen for that.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 13:53:36; BDJ4 version 4.11.0)_

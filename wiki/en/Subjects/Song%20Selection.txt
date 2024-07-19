@@ -22,23 +22,28 @@ See [Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
 to change the song's dance rating, dance level, keyword and status.
 
 * Dance rating
+<br>
 The song must have a dance rating equal to or greater than the
 playlist's dance rating setting.
 <br>(See [Configure / Edit Ratings](en-Configuration-Edit%20Ratings))
 * Dance level
+<br>
 Dance level is optional.  The default selections allow all songs.  When
 in use, the song must have a dance level between the low and high
 dance level settings.
 <br>(See [Configure / Edit Levels](en-Configuration-Edit%20Levels))
 * Keywords
+<br>
 Any song with a keyword set is rejected, unless the keyword is added
 to the _Allowed&nbsp;Keywords_ setting in the playlist.
 * Status
+<br>
 Status is optional.  If the status is in use, only those songs that
 have a playable status are chosen.  The default status settings allow
 all songs.
 <br>(See [Configure / Edit Status](en-Configuration-Edit%20Status))
 * Same Song Marks
+<br>
 If a song is are marked as the same song as another song, only one of
 the songs with the same mark can be chosen.
 <br>(See [Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks))
@@ -72,4 +77,4 @@ _data/autoselection.txt_ file.  If changes to these parameters are
 desired, they must be changed manually.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 07:15:26; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-07-19 13:47:20; BDJ4 version 4.11.0)_
