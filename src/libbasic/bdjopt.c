@@ -323,12 +323,12 @@ bdjoptInit (void)
     if (sysvarsGetNum (SVL_VLC_VERSION) == 3 &&
         strcmp (pli, "libplivlc4") == 0) {
       nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc");
-      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "Integrated VLC 3");
     }
     if (sysvarsGetNum (SVL_VLC_VERSION) == 4 &&
         strcmp (pli, "libplivlc") == 0) {
       nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc4");
-      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "Integrated VLC 4");
     }
   }
 }
