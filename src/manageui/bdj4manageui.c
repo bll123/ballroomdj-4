@@ -1713,9 +1713,24 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
     return UICB_CONT;
   }
 
-  manage->seldbidx = dbidx;
-  if (nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
-    manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
+    if (uisfPlaylistInUse (manage->uisongfilter)) {
+      logMsg (LOG_DBG, LOG_INFO, "new-selection: mm/pl-in-use set sl-dbidx");
+      manage->songlistdbidx = dbidx;
+    } else {
+      logMsg (LOG_DBG, LOG_INFO, "new-selection: mm set sel-dbidx");
+      manage->seldbidx = dbidx;
+    }
+  } else {
+    logMsg (LOG_DBG, LOG_INFO, "new-selection: other set sel-dbidx");
+    manage->seldbidx = dbidx;
+  }
+
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
+    if (nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
+      logMsg (LOG_DBG, LOG_INFO, "new-selection: set last-tab song-sel");
+      manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
+    }
   }
 
   manageNewSelectionMoveCheck (manage, dbidx);
@@ -1740,7 +1755,9 @@ manageNewSelectionSonglist (void *udata, int32_t dbidx)
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: select within song list");
+  logMsg (LOG_DBG, LOG_INFO, "new-selection: set sl-dbidx");
   manage->songlistdbidx = dbidx;
+  logMsg (LOG_DBG, LOG_INFO, "new-selection: set last-tab sl");
   manage->lasttabsel = MANAGE_TAB_SONGLIST;
 
   manageNewSelectionMoveCheck (manage, dbidx);
@@ -1757,10 +1774,12 @@ manageSwitchToSongEditorSL (void *udata)
   if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
     manage->lasttabsel = manage->slcurrtab;
     if (uimusicqGetCount (manage->slmusicq) == 0) {
+      logMsg (LOG_DBG, LOG_INFO, "sw-to-se: sl: set last-tab song-sel (no data)");
       manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
     }
   }
   if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
+    logMsg (LOG_DBG, LOG_INFO, "sw-to-se: mm: set last-tab song-sel");
     manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
   }
   return manageSwitchToSongEditor (manage);
@@ -3557,28 +3576,34 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
 
   switch (id) {
     case MANAGE_TAB_SONGLIST: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: sl-songlist");
       manageSonglistMenu (manage);
       break;
     }
     case MANAGE_TAB_SL_SONGSEL: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: sl-songsel");
       /* this is necessary, as switching back to the sl-songlist tab */
       /* does not call this */
       manageSetDisplayPerSelection (manage, manage->maincurrtab);
       break;
     }
     case MANAGE_TAB_STATISTICS: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: sl-stats");
       break;
     }
     case MANAGE_TAB_MM: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: mm-mm");
       manageMusicManagerMenu (manage);
       break;
     }
     case MANAGE_TAB_SONGEDIT: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: mm-se");
       manageSongEditMenu (manage);
       manageReloadSongData (manage);
       break;
     }
     case MANAGE_TAB_AUDIOID: {
+      logMsg (LOG_DBG, LOG_INFO, "new sub-tab: mm-audid");
       manage->currmenu = manageAudioIDMenu (manage->manageaudioid,
           manage->wcont [MANAGE_W_MENUBAR]);
       manageReloadSongData (manage);

@@ -9,6 +9,9 @@
 * Bug Fixes:
     * Song Editor, Song List Editor: Fixed keyboard handling.
     * Player: Fix 'Queue Dance' and 'Queue 5' buttons display after use.
+* Internal:
+    * Prepare for VLC 4.
+    * Code cleanup.
 
 -->
 
