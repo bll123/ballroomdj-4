@@ -302,7 +302,7 @@ bdjoptInit (void)
   /* if necessary */
   /* check for either libplivlc or libplivlc4 */
   pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
-  if (strncmp (pli, "libplivlc", 9) == 0) {
+  if (pli != NULL && strncmp (pli, "libplivlc", 9) == 0) {
     if (! vlccheckdone && (isLinux () || isWindows ())) {
       char    tbuff [MAXPATHLEN];
       char    *data;
