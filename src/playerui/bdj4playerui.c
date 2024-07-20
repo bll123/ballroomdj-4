@@ -195,7 +195,9 @@ enum {
 };
 
 static datafilekey_t reloaddfkeys [] = {
-  { "CURRENT",  RELOAD_CURR, VALUE_STR, NULL, DF_NORM },
+  { "CURRENT_SONG", RELOAD_CURR_SONG, VALUE_STR, NULL, DF_NORM },
+  { "MANAGE_QUEUE", RELOAD_MANAGE_QUEUE, VALUE_NUM, NULL, DF_NORM },
+  { "PLAY_QUEUE",   RELOAD_PLAY_QUEUE, VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   RELOAD_DFKEY_COUNT = (sizeof (reloaddfkeys) / sizeof (datafilekey_t)),
@@ -1369,6 +1371,8 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
   }
+
+  pluiReloadSaveCurrent (plui);
   logProcEnd ("");
 }
 
@@ -1393,6 +1397,7 @@ pluiSetManageQueue (playerui_t *plui, int mqidx)
 
   plui->musicqManageIdx = mqidx;
   uimusicqSetManageIdx (plui->uimusicq, mqidx);
+  pluiReloadSaveCurrent (plui);
 }
 
 static bool
@@ -1844,19 +1849,23 @@ static bool
 pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
+  char          msg [200];
+  char          tbuff [MAXPATHLEN];
+  char          tmp [200];
 
   plui->inreload = true;
   plui->reloadchk = true;
   plui->reloadexpected = 0;
   plui->reloadrcvd = 0;
 
-  for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
-    char    tmp [100];
-    char    msg [200];
-    char    tbuff [MAXPATHLEN];
+  plui->reloadexpected = 1;
+  pluiReloadCurrent (plui);
+  plui->reloadexpected = 0;
 
+  for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
     snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
+
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
     pathbldMakePath (tbuff, sizeof (tbuff),
@@ -1868,7 +1877,6 @@ pluiReload (void *udata)
     }
   }
 
-  pluiReloadCurrent (plui);
 
   plui->inreload = false;
   return UICB_CONT;
@@ -1883,6 +1891,8 @@ pluiReloadCurrent (playerui_t *plui)
   dbidx_t         dbidx;
   const char      *nm;
   song_t          *song;
+  int             tmqplayidx;
+  int             tmqmngidx;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       RELOAD_CURR_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -1894,17 +1904,24 @@ pluiReloadCurrent (playerui_t *plui)
     return;
   }
 
-  nm = nlistGetStr (reloaddata, RELOAD_CURR);
+  tmqplayidx = nlistGetNum (reloaddata, RELOAD_PLAY_QUEUE);
+  tmqmngidx = nlistGetNum (reloaddata, RELOAD_MANAGE_QUEUE);
+  pluiSetPlaybackQueue (plui, tmqplayidx, PLUI_UPDATE_MAIN);
+  pluiSetManageQueue (plui, tmqplayidx);
+
+  nm = nlistGetStr (reloaddata, RELOAD_CURR_SONG);
   song = dbGetByName (plui->musicdb, nm);
   if (song != NULL) {
     dbidx = songGetNum (song, TAG_DBIDX);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_PB_A,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, tmqplayidx,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 0);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", tmqplayidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   }
+
   datafileFree (reloaddf);
+  uiNotebookSetPage (plui->wcont [PLUI_W_NOTEBOOK], tmqmngidx);
 }
 
 static void
@@ -1978,7 +1995,9 @@ pluiReloadSaveCurrent (playerui_t *plui)
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
   song = dbGetByIdx (plui->musicdb, dbidx);
   if (song != NULL) {
-    nlistSetStr (reloaddata, RELOAD_CURR, songGetStr (song, TAG_URI));
+    nlistSetStr (reloaddata, RELOAD_CURR_SONG, songGetStr (song, TAG_URI));
+    nlistSetNum (reloaddata, RELOAD_PLAY_QUEUE, plui->musicqPlayIdx);
+    nlistSetNum (reloaddata, RELOAD_MANAGE_QUEUE, plui->musicqManageIdx);
     datafileSave (reloaddf, NULL, reloaddata, DF_NO_OFFSET, 1);
   }
   nlistFree (reloaddata);

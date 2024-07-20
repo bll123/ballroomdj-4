@@ -7,8 +7,11 @@
 **4.11.1 2024-7---**
 
 * Bug Fixes:
+    * Management: Fix issues editing incorrect song.
+    * Player UI: Fix and improve 'Reload' with multiple queues.
+    * Player UI: Fix 'Queue Dance' and 'Queue 5' buttons display after use.
+    * Playlist Management: Fix issue with playlist not updating.
     * Song Editor, Song List Editor: Fixed keyboard handling.
-    * Player: Fix 'Queue Dance' and 'Queue 5' buttons display after use.
 * Internal:
     * Prepare for VLC 4.
     * Code cleanup.

@@ -601,13 +601,6 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   }
   logProcBegin ();
 
-  if (preloadflag != MANAGE_PRELOAD_FORCE &&
-      managepl->playlist != NULL &&
-      strcmp (fn, playlistGetName (managepl->playlist)) == 0) {
-    logProcEnd ("already");
-    return;
-  }
-
   logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
