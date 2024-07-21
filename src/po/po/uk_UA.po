@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-16 09:41\n"
+"PO-Revision-Date: 2024-07-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -370,10 +370,6 @@ msgstr "Тільки теги BDJ"
 msgid "BDJ3 database version is too old."
 msgstr "Застаріла версія бази даних BDJ3."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 Внутрішній"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -451,7 +447,6 @@ msgstr "Клацніть мишкою в синьому полі в такт р�
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -655,13 +650,6 @@ msgstr "Налаштування дисплея"
 msgid "Don't Write"
 msgstr "Не пиши"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Двічі клацніть на полі для редагування."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr "Завантажити останню версію"
@@ -709,7 +697,7 @@ msgstr "Редагувати танці"
 msgid "Edit Genres"
 msgstr "Редагувати жанри"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Редагування рівнів"
 
@@ -913,7 +901,9 @@ msgid "High Dance Level"
 msgstr "Високий танцювальний рівень"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "Історія"
 
@@ -1078,14 +1068,14 @@ msgid "Marquee Theme"
 msgstr "Тема шатра"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Максим.\n"
 "час гри"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
-#. CONTEXT: playlist management: validation: max play time
 msgid "Maximum Play Time"
 msgstr "Максимальний час гри"
 
@@ -1295,10 +1285,6 @@ msgstr "Пасо Добле"
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "Пароль"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "Пауза."
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1565,7 +1551,9 @@ msgid "Repeat"
 msgstr "Повторити"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Замінює базу даних BallroomDJ повністю. Всі зміни в базі даних будуть втрачені."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1611,7 +1599,6 @@ msgstr "Самба"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Зберегти"
@@ -1937,7 +1924,9 @@ msgid "The conversion process will not be run."
 msgstr "Процес конвертації не буде запущено."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Процес перетворення виконуватиметься лише для нових та повторних інсталяцій."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1968,6 +1957,14 @@ msgstr "Перемикання Пауза"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "Перемикач Повторити"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2043,11 +2040,13 @@ msgstr "Оновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Оновлює інформацію в базі даних BallroomDJ з бази даних %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Оновлює інформацію в базі даних BallroomDJ з тегів аудіофайлів."
 
 #. CONTEXT: alternate installation: status message
@@ -2126,7 +2125,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Додавання тегів до аудіофайлів"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Записує теги аудіофайлів, використовуючи інформацію з бази даних BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

@@ -6,6 +6,9 @@
 
 **4.11.2 2024-7---**
 
+* Bug Fixes:
+    * PENDING: Configuration: Mobile Remote Control: Clean up template selection.
+
 -->
 
 **4.11.1 2024-7-20**
