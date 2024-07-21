@@ -60,3 +60,19 @@ ltxt: $(TMPLDIR)/localization.txt
 $(TMPLDIR)/localization.txt: complete.txt $(wildcard $(PODIR)/*.po) po-ltxt.sh
 	@echo "-- $$(date +%T) updating localization.txt"
 	@./po-ltxt.sh
+
+# html-list.txt file
+# this does not go into the 'all' target.
+
+# prevent nothing to be done message
+.PHONY: htmllist
+htmllist: $(TMPLDIR)/html-list.txt
+	@:
+
+# gnu make extension: wildcard
+$(TMPLDIR)/html-list.txt: $(wildcard $(TMPLDIR)/*.html) \
+		$(wildcard $(TMPLDIR)/*/*.html) \
+		po-htmllist.sh
+	@echo "-- $$(date +%T) updating html-list.txt"
+	@./po-htmllist.sh
+

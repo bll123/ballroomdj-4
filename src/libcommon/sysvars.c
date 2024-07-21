@@ -89,6 +89,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_HOST_WIKI] = { "HOST_WIKI" },
   [SV_LOCALE] = { "LOCALE" },
   [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
+  [SV_LOCALE_ORIG_SHORT] = { "LOCALE_ORIG_SHORT" },
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
@@ -567,6 +568,7 @@ sysvarsInit (const char *argv0, int flags)
   /* localeinit will also convert the windows names to something normal */
   strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_ORIG], "en_GB", SV_MAX_SZ);
+  strlcpy (sysvars [SV_LOCALE_ORIG_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);

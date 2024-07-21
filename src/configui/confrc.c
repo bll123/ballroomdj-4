@@ -20,11 +20,25 @@
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "sysvars.h"
 #include "ui.h"
 
 static bool confuiRemctrlChg (void *udata, int value);
 static bool confuiRemctrlPortChg (void *udata);
 static void confuiLoadHTMLList (confuigui_t *gui);
+
+enum {
+  HTML_LOCALE,
+  HTML_TITLE,
+  HTML_FILE,
+  HTML_KEY_MAX,
+};
+
+static datafilekey_t htmldfkeys [HTML_KEY_MAX] = {
+  { "FILE",      HTML_FILE,     VALUE_STR, NULL, DF_NORM },
+  { "LOCALE",    HTML_LOCALE,   VALUE_STR, NULL, DF_NORM },
+  { "TITLE",     HTML_TITLE,    VALUE_STR, NULL, DF_NORM },
+};
 
 void
 confuiInitMobileRemoteControl (confuigui_t *gui)
@@ -121,35 +135,64 @@ confuiLoadHTMLList (confuigui_t *gui)
   char          tbuff [MAXPATHLEN];
   nlist_t       *tlist = NULL;
   datafile_t    *df = NULL;
-  slist_t       *list = NULL;
-  slistidx_t    iteridx;
-  const char    *key;
-  const char    *data;
-  const char    *tstr;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  const char    *origlocale;
+  const char    *origlocaleshort;
+  const char    *locale;
+  const char    *localeshort;
+  const char    *currfn;
   nlist_t       *llist;
   int           count;
 
   logProcBegin ();
+
+  origlocale = sysvarsGetStr (SV_LOCALE_ORIG);
+  origlocaleshort = sysvarsGetStr (SV_LOCALE_ORIG_SHORT);
+  locale = sysvarsGetStr (SV_LOCALE);
+  localeshort = sysvarsGetStr (SV_LOCALE_SHORT);
 
   tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
-  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
-      NULL, 0, DF_NO_OFFSET, NULL);
+  df = datafileAllocParse ("html-list", DFTYPE_INDIRECT, tbuff,
+      htmldfkeys, HTML_KEY_MAX, DF_NO_OFFSET, NULL);
   list = datafileGetList (df);
 
-  tstr = bdjoptGetStr (OPT_G_REMCONTROLHTML);
-  slistStartIterator (list, &iteridx);
+  currfn = bdjoptGetStr (OPT_G_REMCONTROLHTML);
+  ilistStartIterator (list, &iteridx);
   count = 0;
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    data = slistGetStr (list, key);
-    if (tstr != NULL && strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    const char  *tlocale;
+    const char  *title;
+    const char  *htmlfn;
+    bool        ok;
+
+    tlocale = ilistGetStr (list, key, HTML_LOCALE);
+    ok = false;
+    /* include files matching original system locale, locale setting, */
+    /* and english locale */
+    if (strcmp (tlocale, locale) == 0 ||
+        strcmp (tlocale, localeshort) == 0 ||
+        strcmp (tlocale, origlocale) == 0 ||
+        strcmp (tlocale, origlocaleshort) == 0 ||
+        strcmp (tlocale, "en") == 0) {
+      ok = true;
+    }
+    if (! ok) {
+      continue;
+    }
+    title = ilistGetStr (list, key, HTML_TITLE);
+    htmlfn = ilistGetStr (list, key, HTML_FILE);
+
+    if (strcmp (htmlfn, currfn) == 0) {
       gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
     }
-    nlistSetStr (tlist, count, key);
-    nlistSetStr (llist, count, data);
+    nlistSetStr (tlist, count, title);
+    nlistSetStr (llist, count, htmlfn);
     ++count;
   }
   datafileFree (df);

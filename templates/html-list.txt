@@ -1,120 +1,482 @@
-English Flex Dark
+# html-list
+# generated 2024-07-21
+KEY
+..0
+LOCALE
+..en
+TITLE
+..English Flex Dark
+FILE
 ..bdj-flex-dark.html
-English Flex
+KEY
+..1
+LOCALE
+..en
+TITLE
+..English Flex
+FILE
 ..bdj-flex.html
-English HTML 5
+KEY
+..2
+LOCALE
+..en
+TITLE
+..English HTML 5
+FILE
 ..bdj.html
-čeština Flex Dark
+KEY
+..3
+LOCALE
+..cs
+TITLE
+..čeština Flex Dark
+FILE
 ..cs/bdj-flex-dark.html
-čeština Flex
+KEY
+..4
+LOCALE
+..cs
+TITLE
+..čeština Flex
+FILE
 ..cs/bdj-flex.html
-čeština HTML 5
+KEY
+..5
+LOCALE
+..cs
+TITLE
+..čeština HTML 5
+FILE
 ..cs/bdj.html
-Dansk Flex Dark
+KEY
+..6
+LOCALE
+..da
+TITLE
+..Dansk Flex Dark
+FILE
 ..da/bdj-flex-dark.html
-Dansk Flex
+KEY
+..7
+LOCALE
+..da
+TITLE
+..Dansk Flex
+FILE
 ..da/bdj-flex.html
-Dansk HTML 5
+KEY
+..8
+LOCALE
+..da
+TITLE
+..Dansk HTML 5
+FILE
 ..da/bdj.html
-Deutsch Flex Dark
+KEY
+..9
+LOCALE
+..de
+TITLE
+..Deutsch Flex Dark
+FILE
 ..de/bdj-flex-dark.html
-Deutsch Flex
+KEY
+..10
+LOCALE
+..de
+TITLE
+..Deutsch Flex
+FILE
 ..de/bdj-flex.html
-Deutsch HTML 5
+KEY
+..11
+LOCALE
+..de
+TITLE
+..Deutsch HTML 5
+FILE
 ..de/bdj.html
-Español Flex Dark
+KEY
+..12
+LOCALE
+..es
+TITLE
+..Español Flex Dark
+FILE
 ..es/bdj-flex-dark.html
-Español Flex
+KEY
+..13
+LOCALE
+..es
+TITLE
+..Español Flex
+FILE
 ..es/bdj-flex.html
-Español HTML 5
+KEY
+..14
+LOCALE
+..es
+TITLE
+..Español HTML 5
+FILE
 ..es/bdj.html
-Suomi Flex Dark
+KEY
+..15
+LOCALE
+..fi
+TITLE
+..Suomi Flex Dark
+FILE
 ..fi/bdj-flex-dark.html
-Suomi Flex
+KEY
+..16
+LOCALE
+..fi
+TITLE
+..Suomi Flex
+FILE
 ..fi/bdj-flex.html
-Suomi HTML 5
+KEY
+..17
+LOCALE
+..fi
+TITLE
+..Suomi HTML 5
+FILE
 ..fi/bdj.html
-Français Flex Dark
+KEY
+..18
+LOCALE
+..fr
+TITLE
+..Français Flex Dark
+FILE
 ..fr/bdj-flex-dark.html
-Français Flex
+KEY
+..19
+LOCALE
+..fr
+TITLE
+..Français Flex
+FILE
 ..fr/bdj-flex.html
-Français HTML 5
+KEY
+..20
+LOCALE
+..fr
+TITLE
+..Français HTML 5
+FILE
 ..fr/bdj.html
-magyar‬ Flex Dark
+KEY
+..21
+LOCALE
+..hu
+TITLE
+..magyar Flex Dark
+FILE
 ..hu/bdj-flex-dark.html
-magyar‬ Flex
+KEY
+..22
+LOCALE
+..hu
+TITLE
+..magyar Flex
+FILE
 ..hu/bdj-flex.html
-magyar‬ HTML 5
+KEY
+..23
+LOCALE
+..hu
+TITLE
+..magyar HTML 5
+FILE
 ..hu/bdj.html
-Italiano Flex Dark
+KEY
+..24
+LOCALE
+..it
+TITLE
+..Italiano Flex Dark
+FILE
 ..it/bdj-flex-dark.html
-Italiano Flex
+KEY
+..25
+LOCALE
+..it
+TITLE
+..Italiano Flex
+FILE
 ..it/bdj-flex.html
-Italiano HTML 5
+KEY
+..26
+LOCALE
+..it
+TITLE
+..Italiano HTML 5
+FILE
 ..it/bdj.html
-日本語 Flex Dark
+KEY
+..27
+LOCALE
+..ja
+TITLE
+..日本語 Flex Dark
+FILE
 ..ja/bdj-flex-dark.html
-日本語 Flex
+KEY
+..28
+LOCALE
+..ja
+TITLE
+..日本語 Flex
+FILE
 ..ja/bdj-flex.html
-日本語 HTML 5
+KEY
+..29
+LOCALE
+..ja
+TITLE
+..日本語 HTML 5
+FILE
 ..ja/bdj.html
-한국어‬ Flex Dark
+KEY
+..30
+LOCALE
+..ko
+TITLE
+..한국어 Flex Dark
+FILE
 ..ko/bdj-flex-dark.html
-한국어‬ Flex
+KEY
+..31
+LOCALE
+..ko
+TITLE
+..한국어 Flex
+FILE
 ..ko/bdj-flex.html
-한국어‬ HTML 5
+KEY
+..32
+LOCALE
+..ko
+TITLE
+..한국어 HTML 5
+FILE
 ..ko/bdj.html
-norsk Flex Dark
+KEY
+..33
+LOCALE
+..nb
+TITLE
+..norsk Flex Dark
+FILE
 ..nb/bdj-flex-dark.html
-norsk Flex
+KEY
+..34
+LOCALE
+..nb
+TITLE
+..norsk Flex
+FILE
 ..nb/bdj-flex.html
-norsk HTML 5
+KEY
+..35
+LOCALE
+..nb
+TITLE
+..norsk HTML 5
+FILE
 ..nb/bdj.html
-Nederlands Flex Dark
+KEY
+..36
+LOCALE
+..nl
+TITLE
+..Nederlands Flex Dark
+FILE
 ..nl/bdj-flex-dark.html
-Nederlands Flex
+KEY
+..37
+LOCALE
+..nl
+TITLE
+..Nederlands Flex
+FILE
 ..nl/bdj-flex.html
-Nederlands HTML 5
+KEY
+..38
+LOCALE
+..nl
+TITLE
+..Nederlands HTML 5
+FILE
 ..nl/bdj.html
-Polski Flex Dark
+KEY
+..39
+LOCALE
+..pl
+TITLE
+..Polski Flex Dark
+FILE
 ..pl/bdj-flex-dark.html
-Polski Flex
+KEY
+..40
+LOCALE
+..pl
+TITLE
+..Polski Flex
+FILE
 ..pl/bdj-flex.html
-Polski HTML 5
+KEY
+..41
+LOCALE
+..pl
+TITLE
+..Polski HTML 5
+FILE
 ..pl/bdj.html
-Português Flex Dark
+KEY
+..42
+LOCALE
+..pt
+TITLE
+..Português Flex Dark
+FILE
 ..pt/bdj-flex-dark.html
-Português Flex
+KEY
+..43
+LOCALE
+..pt
+TITLE
+..Português Flex
+FILE
 ..pt/bdj-flex.html
-Português HTML 5
+KEY
+..44
+LOCALE
+..pt
+TITLE
+..Português HTML 5
+FILE
 ..pt/bdj.html
-Русский‬ Flex Dark
+KEY
+..45
+LOCALE
+..ru
+TITLE
+..Русский Flex Dark
+FILE
 ..ru/bdj-flex-dark.html
-Русский‬ Flex
+KEY
+..46
+LOCALE
+..ru
+TITLE
+..Русский Flex
+FILE
 ..ru/bdj-flex.html
-Русский‬ HTML 5
+KEY
+..47
+LOCALE
+..ru
+TITLE
+..Русский HTML 5
+FILE
 ..ru/bdj.html
-Svenska‬ Flex Dark
+KEY
+..48
+LOCALE
+..sv
+TITLE
+..Svenska Flex Dark
+FILE
 ..sv/bdj-flex-dark.html
-Svenska‬ Flex
+KEY
+..49
+LOCALE
+..sv
+TITLE
+..Svenska Flex
+FILE
 ..sv/bdj-flex.html
-Svenska‬ HTML 5
+KEY
+..50
+LOCALE
+..sv
+TITLE
+..Svenska HTML 5
+FILE
 ..sv/bdj.html
-Українська‬ Flex Dark
+KEY
+..51
+LOCALE
+..uk
+TITLE
+..Українська Flex Dark
+FILE
 ..uk/bdj-flex-dark.html
-Українська‬ Flex
+KEY
+..52
+LOCALE
+..uk
+TITLE
+..Українська Flex
+FILE
 ..uk/bdj-flex.html
-Українська‬ HTML 5
+KEY
+..53
+LOCALE
+..uk
+TITLE
+..Українська HTML 5
+FILE
 ..uk/bdj.html
-简体中文‬ Flex Dark
+KEY
+..54
+LOCALE
+..zh_CN
+TITLE
+..简体中文 Flex Dark
+FILE
 ..zh_CN/bdj-flex-dark.html
-简体中文‬ Flex
+KEY
+..55
+LOCALE
+..zh_CN
+TITLE
+..简体中文 Flex
+FILE
 ..zh_CN/bdj-flex.html
-简体中文‬ HTML 5
+KEY
+..56
+LOCALE
+..zh_CN
+TITLE
+..简体中文 HTML 5
+FILE
 ..zh_CN/bdj.html
-繁體中文‬ Flex Dark
+KEY
+..57
+LOCALE
+..zh_TW
+TITLE
+..繁體中文 Flex Dark
+FILE
 ..zh_TW/bdj-flex-dark.html
-繁體中文‬ Flex
+KEY
+..58
+LOCALE
+..zh_TW
+TITLE
+..繁體中文 Flex
+FILE
 ..zh_TW/bdj-flex.html
-繁體中文‬ HTML 5
+KEY
+..59
+LOCALE
+..zh_TW
+TITLE
+..繁體中文 HTML 5
+FILE
 ..zh_TW/bdj.html

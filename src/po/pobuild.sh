@@ -130,5 +130,6 @@ done < complete.txt
 # create the localization.txt file
 
 make -f Makefile ltxt
+make -f Makefile htmllist
 
 exit 0

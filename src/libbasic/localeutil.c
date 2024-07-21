@@ -130,6 +130,7 @@ localeSetup (void)
 {
   char          lbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
+  char          sbuff [40];
   bool          useutf8ext = false;
   struct lconv  *lconv;
 
@@ -155,13 +156,15 @@ localeSetup (void)
     tbuff [2] = '_';
   }
   sysvarsSetStr (SV_LOCALE_ORIG, tbuff);
+  snprintf (sbuff, sizeof (sbuff), "%-.2s", tbuff);
+  sysvarsSetStr (SV_LOCALE_ORIG_SHORT, sbuff);
 
   /* if sysvars has already read the locale.txt file, do not override */
   /* the locale setting */
   if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     sysvarsSetStr (SV_LOCALE, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
-    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+    snprintf (sbuff, sizeof (sbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
+    sysvarsSetStr (SV_LOCALE_SHORT, sbuff);
   }
 
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
