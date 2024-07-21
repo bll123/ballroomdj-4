@@ -1,4 +1,5 @@
 # localization
+# generated 2024-07-21
 KEY
 ..0
 LONG
@@ -102,7 +103,7 @@ LONG
 SHORT
 ..hu
 DISPLAY
-..magyar‬
+..magyar
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -138,7 +139,7 @@ LONG
 SHORT
 ..ko
 DISPLAY
-..한국어‬
+..한국어
 STDROUNDS
 ..표준 라운드
 QDANCE
@@ -198,7 +199,7 @@ LONG
 SHORT
 ..ru
 DISPLAY
-..Русский‬
+..Русский
 STDROUNDS
 ..стандартные циклы
 QDANCE
@@ -210,7 +211,7 @@ LONG
 SHORT
 ..sv
 DISPLAY
-..Svenska‬
+..Svenska
 STDROUNDS
 ..standardrundor
 QDANCE
@@ -222,7 +223,7 @@ LONG
 SHORT
 ..uk
 DISPLAY
-..Українська‬
+..Українська
 STDROUNDS
 ..стандартні раунди
 QDANCE
@@ -234,7 +235,7 @@ LONG
 SHORT
 ..zh
 DISPLAY
-..简体中文‬
+..简体中文
 STDROUNDS
 ..标准件
 QDANCE
@@ -246,7 +247,7 @@ LONG
 SHORT
 ..zh
 DISPLAY
-..繁體中文‬
+..繁體中文
 STDROUNDS
 ..標準發彈
 QDANCE

@@ -43,45 +43,6 @@ cwd=$(pwd)
 TMPLDIR=../../templates
 LOCALEDIR=../../locale
 
-export keycount=0
-
-function appendlocaledata {
-  pofile=$1
-  locale=$2
-  slocale=$3
-  langdesc=$4
-
-  for txt in standardrounds queuedance; do
-    ttxt=$txt
-    if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
-    xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
-    if [[ $xl == "" ]]; then
-      xl=$ttxt
-    fi
-    eval $txt="\"$xl\""
-  done
-
-  echo KEY >> $LOCALEDATA
-  echo "..$keycount" >> $LOCALEDATA
-  echo LONG >> $LOCALEDATA
-  echo "..$locale" >> $LOCALEDATA
-  echo SHORT >> $LOCALEDATA
-  echo "..$slocale" >> $LOCALEDATA
-  echo DISPLAY >> $LOCALEDATA
-  echo "..$langdesc" >> $LOCALEDATA
-  echo STDROUNDS >> $LOCALEDATA
-  echo "..${standardrounds}" >> $LOCALEDATA
-  echo QDANCE >> $LOCALEDATA
-  echo "..${queuedance}" >> $LOCALEDATA
-
-  keycount=$(($keycount+1))
-}
-
-LOCALEDATA=${TMPLDIR}/localization.txt
-> $LOCALEDATA
-echo "# localization" >> $LOCALEDATA
-
 # first, make bdj4.pot, en_GB.po, en_US.po
 make
 
@@ -107,7 +68,6 @@ while read line; do
   langdesc="$*"
 
   slocale=$(echo $locale | sed 's,\(..\).*,\1,')
-  dashlocale=$(echo $locale | sed 's,_,-,')
 
   # create the .po file
 
@@ -143,16 +103,11 @@ while read line; do
     )
   fi
 
-  # add this entry to the localization.txt file
-
-  pofile=po/${locale}.po
-
-  appendlocaledata ${pofile} ${locale} ${slocale} "${langdesc}"
-
   # create the localized template files
 
   if [[ $locale == en_GB || $locale == en_US ]]; then
     # en_US has its own localized templates
+    #   that do not get generated.
     # en_GB/en_US web page is the base
     continue
   fi
@@ -166,4 +121,12 @@ while read line; do
       LOCALE=${locale} \
       WEBLOCALE=${weblocale}
 
+  keycount=$(($keycount + 1))
+
 done < complete.txt
+
+# create the localization.txt file
+
+make -f Makefile-ltxt
+
+exit 0

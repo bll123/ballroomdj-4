@@ -26,13 +26,14 @@ TMPLFILES = \
 	$(TMPLDIR)/bdj-flex-dark.html \
 	$(INSTDIR)/bdj4.desktop
 
-all: potemplates.c rebuildpot bdj4.pot $(PODIR)/en_GB.po $(PODIR)/en_US.po
+all: potemplates.c \
+	rebuildpot bdj4.pot $(PODIR)/en_GB.po $(PODIR)/en_US.po
 
 potemplates.c:	$(TMPLFILES) poexttmpl.sh
 	@echo "-- $$(date +%T) update potemplates.c"
 	@./poexttmpl.sh
 
-# for now, skip any method to create the deps on *all* the .c 
+# for now, skip any method to create the deps on *all* the .c
 # files containing a translatable string.
 # let the script replace bdj4.pot if necessary.
 .PHONY: rebuildpot

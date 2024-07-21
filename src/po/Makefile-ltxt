@@ -1,0 +1,15 @@
+#
+# Copyright 2024 Brad Lanam Pleasant Hill CA
+#
+
+TMPLDIR = ../../templates
+PODIR = po
+
+# prevent nothing to be done message
+.PHONY: all
+all: $(TMPLDIR)/localization.txt
+	@:
+
+$(TMPLDIR)/localization.txt: complete.txt $(wildcard $(PODIR)/*.po) po-ltxt.sh
+	@echo "-- $$(date +%T) updating localization.txt"
+	@./po-ltxt.sh
