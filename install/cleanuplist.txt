@@ -389,3 +389,7 @@ data/localization\.txt$
 # buggy profile stuff.
 data/profile-65534$
 data/[^/]*/profile-65534$
+
+# 2024-7-21 4.11.2
+# localization.txt only needs to be in templates/
+data/localization.txt
