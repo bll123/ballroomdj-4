@@ -15,7 +15,7 @@ WEBSITE=${WEBDIR}/${BASEFN}.en
 
 pofile=$1
 locale=$2
-slocale=$3
+weblocale=$3
 
 html=$(cat $WEBSITE | tr '\n' '@' |
     sed -e 's,\([A-Za-z0-9 .]\) *@ *\([A-Za-z0-9 .]\),\1 \2,g')
@@ -55,18 +55,12 @@ while read -r line; do
   sedcmd+="-e 's~>${nl}<~>${xl}<~g' "
 done < $pofile
 
-sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${slocale}\"~' "
-# long locales: es-ES, pl-PL, pt-PT, nb-NO, zh-CN, zh-TW
-locale=$(echo $locale | sed 's,_,-,')
+sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${weblocale}\"~' "
 
-if [[ -f ${WEBDIR}/${BASEFN}.${locale} ]]; then
-  nfn=${WEBDIR}/${BASEFN}.${locale}
-else
-  nfn=${WEBDIR}/${BASEFN}.${slocale}
-fi
+nfn=${WEBDIR}/${BASEFN}.${weblocale}
 nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
 nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')
-printf "%s" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
+printf "%s\n" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
 set +o noglob
 
 exit 0

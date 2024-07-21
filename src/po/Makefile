@@ -29,6 +29,7 @@ TMPLFILES = \
 all: potemplates.c rebuildpot bdj4.pot $(PODIR)/en_GB.po $(PODIR)/en_US.po
 
 potemplates.c:	$(TMPLFILES) poexttmpl.sh
+	@echo "-- $$(date +%T) update potemplates.c"
 	@./poexttmpl.sh
 
 # for now, skip any method to create the deps on *all* the .c 
@@ -39,7 +40,9 @@ rebuildpot:
 	@./poextract.sh
 
 $(PODIR)/en_GB.po: bdj4.pot po-en-gb.sh po-mk.sh
+	@echo "-- $$(date +%T) update en_GB.po"
 	@./po-en-gb.sh
 
 $(PODIR)/en_US.po: $(PODIR)/en_GB.po po-en-us.sh mken_us.awk
+	@echo "-- $$(date +%T) update en_US.po"
 	@./po-en-us.sh

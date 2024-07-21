@@ -97,13 +97,17 @@ while read line; do
 
   set $line
   locale=$1
-
-  englishnm=$2
+  tmpllocale=$2
+  weblocale=$3
+  englishnm=$4
+  shift
+  shift
   shift
   shift
   langdesc="$*"
 
   slocale=$(echo $locale | sed 's,\(..\).*,\1,')
+  dashlocale=$(echo $locale | sed 's,_,-,')
 
   # create the .po file
 
@@ -120,7 +124,7 @@ while read line; do
 
   make -f Makefile-inst \
         LOCALE=${locale} \
-        SLOCALE=${slocale}
+        SLOCALE=${slocale} \
 
   # create the short-locale links to the long-locale
   # en -> en_GB, not en_US.
@@ -155,14 +159,11 @@ while read line; do
 
   make -f Makefile-tmpl \
       LOCALE=${locale} \
-      SLOCALE=${slocale} \
+      TMPLLOCALE=${tmpllocale} \
       LANGDESC="${langdesc}"
 
-  if [[ $slocale == pl ]]; then
-    slocale=po
-  fi
   make -f Makefile-web \
       LOCALE=${locale} \
-      SLOCALE=${slocale}
+      WEBLOCALE=${weblocale}
 
 done < complete.txt
