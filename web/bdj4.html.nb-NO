@@ -9,14 +9,25 @@
   <title>BallroomDJ 4 - Ballroom Music Player</title>
   <!-- WT_022 -->
   <meta name="Description" content="BallroomDJ 4 - Ballroom Music Player">
-  <meta name="Keywords" content="ballroom music player,
-      Ballroom Музыкальный плеер,
+  <meta name="Keywords" content="Ballroom Music Player,
+      Přehrávač taneční hudby,
+      Ballroom musikafspiller,
+      Ballroom-Musikspieler,
+      Reproductor de música de salón,
+      Ballroom-musiikkisoitin,
+      Lecteur de musique de salon,
+      Bálterem zene lejátszó,
+      Lettore di musica da sala da ballo,
+      ボールルーム・ミュージック・プレーヤー,
+      볼룸 음악 플레이어,
       Ballroom Muziekspeler,
       Odtwarzacz muzyki z sali balowej,
-      ボールルーム・ミュージック・プレーヤー,
-      Lettore di musica da sala da ballo,
-      Lecteur de musique de salon,
-      Ballroom-Musikspieler,
+      Leitor de música de salão,
+      Ballroom Музыкальный плеер,
+      Musikspelare för balsalar,
+      програвач бальної музики,
+      舞厅音乐播放器,
+      舞廳音樂播放器,
       ballroom music dj, ballroom dance dj,
       ballroom music playback,
       ballroom dance software,
@@ -119,17 +130,17 @@
             <li><a href="index.html.fr">Français</a></li>
             <li><a href="index.html.hu">magyar</a></li>
             <li><a href="index.html.it">Italiano</a></li>
-            <li><a href="index.html.ja">日本語‬</a></li>
-            <li><a href="index.html.ko">한국어‬</a></li>
+            <li><a href="index.html.ja">日本語</a></li>
+            <li><a href="index.html.ko">한국어</a></li>
             <li><a href="index.html.nb-NO">norsk</a></li>
             <li><a href="index.html.nl">Nederlands</a></li>
             <li><a href="index.html.pl-PL">Polski</a></li>
             <li><a href="index.html.pt-PT">Português</a></li>
             <li><a href="index.html.ru">Русский</a></li>
-            <li><a href="index.html.sv">Svenska‬</a></li>
-            <li><a href="index.html.uk">Українська‬</a></li>
-            <li><a href="index.html.zh-CN">简体中文‬</a></li>
-            <li><a href="index.html.zh-TW">繁體中文‬</a></li>
+            <li><a href="index.html.sv">Svenska</a></li>
+            <li><a href="index.html.uk">Українська</a></li>
+            <li><a href="index.html.zh-CN">简体中文</a></li>
+            <li><a href="index.html.zh-TW">繁體中文</a></li>
           </ul>
         </div>
       </div>

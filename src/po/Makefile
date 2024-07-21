@@ -47,3 +47,16 @@ $(PODIR)/en_GB.po: bdj4.pot po-en-gb.sh po-mk.sh
 $(PODIR)/en_US.po: $(PODIR)/en_GB.po po-en-us.sh mken_us.awk
 	@echo "-- $$(date +%T) update en_US.po"
 	@./po-en-us.sh
+
+# localization.txt file
+# this does not go into the 'all' target.
+
+# prevent nothing to be done message
+.PHONY: ltxt
+ltxt: $(TMPLDIR)/localization.txt
+	@:
+
+# gnu make extension: wildcard
+$(TMPLDIR)/localization.txt: complete.txt $(wildcard $(PODIR)/*.po) po-ltxt.sh
+	@echo "-- $$(date +%T) updating localization.txt"
+	@./po-ltxt.sh

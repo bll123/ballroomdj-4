@@ -127,6 +127,6 @@ done < complete.txt
 
 # create the localization.txt file
 
-make -f Makefile-ltxt
+make -f Makefile ltxt
 
 exit 0
