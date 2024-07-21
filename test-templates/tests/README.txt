@@ -41,7 +41,7 @@
 #     (wait-not)
 #
 # main:
-#   musicq:
+#   musicq: CHK_MAIN_MUSICQ
 #     mqplay mq0len mq1len m-songfn title dance
 #     dbidx
 #       only if playing, from the musicq-play-idx
@@ -50,7 +50,7 @@
 #     mqXidxN (mq 0-1 idx 0-5)
 #     paeX (pause-at-end 0-5)
 # player:
-#   status:
+#   status: CHK_PLAYER_STATUS
 #     playstate
 #       unknown stopped loading playing paused in-fadeout in-gap
 #     plistate
@@ -64,6 +64,6 @@
 #     pauseatend repeat
 #     currentsink
 #     prepqueuecount
-#   song:
+#   song: CHK_PLAYER_SONG
 #     p-duration p-songfn
 #

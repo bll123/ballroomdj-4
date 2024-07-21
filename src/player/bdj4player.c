@@ -130,6 +130,7 @@ typedef struct {
   mstime_t        playEndCheck;
   mstime_t        fadeTimeCheck;
   mstime_t        volumeTimeCheck;
+  int             newSpeed;
   long            priorGap;           // used for announcements
   long            gap;
   mstime_t        gapFinishTime;
@@ -147,10 +148,11 @@ typedef struct {
   bool            inFadeOut : 1;
   bool            inGap : 1;
   bool            mute : 1;
+  bool            newsong : 1;      // used in the player status msg
   bool            pauseAtEnd : 1;
   bool            repeat : 1;
+  bool            speedWaitChg : 1;
   bool            stopPlaying : 1;
-  bool            newsong : 1;      // used in the player status msg
 } playerdata_t;
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -174,6 +176,7 @@ static void     playerPauseAtEnd (playerdata_t *playerData);
 static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
 static void     playerSpeed (playerdata_t *playerData, char *trate);
+static void     playerChangeSpeed (playerdata_t *playerData, int speed);
 static void     playerSeek (playerdata_t *playerData, ssize_t pos);
 static void     playerStop (playerdata_t *playerData);
 static void     playerSongBegin (playerdata_t *playerData);
@@ -235,17 +238,19 @@ main (int argc, char *argv[])
   playerData.prepQueue = queueAlloc ("prep-q", playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc ("prep-req", playerPrepQueueFree);
   playerData.progstate = progstateInit ("player");
+  playerData.stopNextsongFlag = STOP_NORMAL;
+  playerData.stopwaitcount = 0;
+  playerData.newSpeed = 100;
   playerData.inFade = false;
   playerData.inFadeIn = false;
   playerData.inFadeOut = false;
   playerData.inGap = false;
   playerData.mute = false;
+  playerData.newsong = false;
   playerData.pauseAtEnd = false;
   playerData.repeat = false;
-  playerData.stopNextsongFlag = STOP_NORMAL;
-  playerData.stopwaitcount = 0;
+  playerData.speedWaitChg = false;
   playerData.stopPlaying = false;
-  playerData.newsong = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
       playerConnectingCallback, &playerData);
@@ -1417,10 +1422,23 @@ playerSpeed (playerdata_t *playerData, char *trate)
 
   if (playerData->playerState == PL_STATE_PLAYING) {
     rate = atof (trate);
-    pliRate (playerData->pli, (ssize_t) rate);
-    playerData->currentSpeed = (ssize_t) rate;
+    playerChangeSpeed (playerData, (int) rate);
   }
+  if (playerData->playerState == PL_STATE_PAUSED ||
+      playerData->playerState == PL_STATE_STOPPED) {
+    playerData->speedWaitChg = true;
+    playerData->newSpeed = (int) atof (trate);
+  }
+
   logProcEnd ("");
+}
+
+static void
+playerChangeSpeed (playerdata_t *playerData, int speed)
+{
+  pliRate (playerData->pli, (ssize_t) speed);
+  playerData->currentSpeed = (ssize_t) speed;
+  playerData->speedWaitChg = false;
 }
 
 static void
@@ -1846,6 +1864,12 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATE, tbuff);
+
+    if (playerData->speedWaitChg &&
+        playerData->playerState == PL_STATE_PLAYING) {
+      playerChangeSpeed (playerData, playerData->newSpeed);
+    }
+
     /* any time there is a change of player state, send the status */
     playerSendStatus (playerData, STATUS_NO_FORCE);
     /* reset the new-song flag after it has been sent */

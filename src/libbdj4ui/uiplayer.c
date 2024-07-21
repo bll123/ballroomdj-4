@@ -36,12 +36,15 @@
 #include "ui.h"
 #include "uiplayer.h"
 
-/* there are all sorts of latency issues making the sliders work nicely */
-/* it will take at least 100ms and at most 200ms for the message to get */
-/* back.  Then there are the latency issues on this end. */
 enum {
-  UIPLAYER_LOCK_TIME_WAIT = 300,
-  UIPLAYER_LOCK_TIME_SEND = 50,
+  /* for volume and speed */
+  UIPLAYER_LOCK_TIME_WAIT = 100,
+  UIPLAYER_LOCK_TIME_SEND = 10,
+  /* there are all sorts of latency issues making the sliders work nicely */
+  /* it will take at least 100ms and at most 200ms for the message to get */
+  /* back.  Then there are the latency issues on this end. */
+  UIPLAYER_SEEK_LOCK_TIME_WAIT = 300,
+  UIPLAYER_SEEK_LOCK_TIME_SEND = 50,
 };
 
 enum {
@@ -597,14 +600,8 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
   }
 
   if (mstimeCheck (&uiplayer->speedLockTimeout)) {
-    /* if the player is paused, keep resetting the lock timers */
-    /* until such time as the player starts playing again */
-    /* VLC cannot change the speed while paused */
-    if (uiplayer->playerState != PL_STATE_PAUSED &&
-        uiplayer->playerState != PL_STATE_STOPPED) {
-      mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
-      uiplayer->speedLock = false;
-    }
+    mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
+    uiplayer->speedLock = false;
   }
 
   if (mstimeCheck (&uiplayer->speedLockSend)) {
@@ -613,26 +610,14 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
 
     value = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
     if (value != uiplayer->speedLastValue) {
-      if (uiplayer->playerState == PL_STATE_PLAYING) {
-        uiplayer->speedLastValue = value;
-        snprintf (tbuff, sizeof (tbuff), "%.0f", value);
-        connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
-      }
-
-      if (uiplayer->playerState == PL_STATE_PAUSED ||
-          uiplayer->playerState == PL_STATE_STOPPED) {
-        /* if the player is paused, keep resetting the lock timers */
-        /* until such time as the player starts playing again */
-        /* VLC cannot change the speed while paused */
-        mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
-        mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
-      } else if (uiplayer->speedLock) {
-        /* if the speedlock is on, keep re-testing for a speed change */
-        /* the speedlock is turned off by the speed-lock timeout */
+      uiplayer->speedLastValue = value;
+      snprintf (tbuff, sizeof (tbuff), "%.0f", value);
+      connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
+      if (uiplayer->speedLock) {
         mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
       } else {
-        /* no speedlock is set, clear the send timer */
         mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
+        uiplayer->speedLastValue = -1.0;
       }
     }
   }
@@ -653,7 +638,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
       connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
       if (uiplayer->seekLock) {
-        mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+        mstimeset (&uiplayer->seekLockSend, UIPLAYER_SEEK_LOCK_TIME_SEND);
       }
     } else {
       mstimeset (&uiplayer->seekLockSend, TM_TIMER_OFF);
@@ -1178,6 +1163,7 @@ uiplayerSpeedCallback (void *udata, double value)
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SPEED], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
@@ -1197,10 +1183,10 @@ uiplayerSeekCallback (void *udata, double value)
   logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: position chg", uiplayer->tag);
 
   if (! uiplayer->seekLock) {
-    mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+    mstimeset (&uiplayer->seekLockSend, UIPLAYER_SEEK_LOCK_TIME_SEND);
   }
   uiplayer->seekLock = true;
-  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_SEEK_LOCK_TIME_WAIT);
 
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SEEK], value);
   position = (ssize_t) round (value);
@@ -1254,16 +1240,9 @@ uiplayerSpdResetCallback (void *udata)
   uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], "100");
 
   if (! uiplayer->speedLock) {
-    /* turn on the send, send it immediately, no lock required */
-    mstimeset (&uiplayer->speedLockSend, 0);
-
-    if (uiplayer->playerState == PL_STATE_PAUSED) {
-      /* if paused, turn on the speed lock timers, so that the */
-      /* speed-changed while paused processing will work */
-      uiplayer->speedLock = true;
-      mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
-      mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
-    }
+    mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
   }
+  uiplayer->speedLock = true;
+  mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
   return UICB_CONT;
 }
