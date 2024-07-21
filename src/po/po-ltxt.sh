@@ -47,6 +47,8 @@ function appendlocaledata {
 echo "# localization" >> $LOCALEDATA
 echo "# generated $(date +%F)" >> $LOCALEDATA
 
+# if there are any changes to complete.txt,
+# this loop is duplicated in pobuild.sh
 while read line; do
   case $line in
     '#'*)
