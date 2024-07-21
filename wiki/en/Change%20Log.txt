@@ -4,20 +4,21 @@
 
 <!--
 
+**4.11.2 2024-7---**
+
+-->
+
 **4.11.1 2024-7-20**
 
 * Bug Fixes:
-    * Fix possible crash.
     * Management: Fix mismatch in song selection and song edit.
     * Player UI: Fix and improve 'Reload' with multiple queues.
-    * Player UI: Fix 'Queue Dance' and 'Queue 5' buttons display after use.
+    * Player UI: Fix 'Queue Dance' and 'Queue 5' button display.
     * Playlist Management: Fix issue with no update after change of original.
     * Song Editor, Song List Editor: Fixed keyboard handling.
 * Internal:
     * Prepare for VLC 4.
     * Code cleanup.
-
--->
 
 **4.11.0 2024-7-18**
 
@@ -978,4 +979,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-20 07:38:59; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-20 17:02:25; BDJ4 version 4.11.1)_
