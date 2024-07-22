@@ -119,3 +119,62 @@ wait playstate playing
 chk speed 110
 #
 end
+
+# test the position slider while playing/paused
+test 50-50 Position-Paused
+# test while playing
+msg main MUSICQ_INSERT 0~999~4
+msg main MUSICQ_INSERT 0~999~5
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+mssleep 500
+msg player PLAY_SEEK 5000
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 5000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 6000
+#
+msg player PLAY_SEEK 0
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 0
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 1000
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SEEK 1000
+mssleep 100
+get player CHK_PLAYER_STATUS
+chk playtimeplayed 1000
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 1000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 2000
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SEEK 5000
+mssleep 100
+get player CHK_PLAYER_STATUS
+chk playtimeplayed 5000
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 5000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 6000
+#
+end
+

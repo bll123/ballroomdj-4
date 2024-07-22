@@ -319,6 +319,7 @@ bdjoptInit (void)
 
     /* check for a change in VLC version, and adjust the interface */
     /* as needed */
+    /* note that sysvars will have already checked macos */
 
     if (sysvarsGetNum (SVL_VLC_VERSION) == 3 &&
         strcmp (pli, "libplivlc4") == 0) {

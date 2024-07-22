@@ -9,6 +9,8 @@
 * Bug Fixes:
     * Configuration: Mobile Remote Control: Clean up template selection.
     * Player: Improve speed change control.
+* Internal:
+    * Code Cleanup.
 
 -->
 
