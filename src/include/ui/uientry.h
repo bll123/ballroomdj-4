@@ -28,11 +28,9 @@ uiwcont_t *uiEntryInit (int entrySize, int maxSize);
 void uiEntryFree (uiwcont_t *entry);
 void uiEntrySetIcon (uiwcont_t *entry, const char *name);
 void uiEntryClearIcon (uiwcont_t *entry);
-void uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry);
 const char * uiEntryGetValue (uiwcont_t *entry);
 void uiEntrySetValue (uiwcont_t *entry, const char *value);
-void uiEntrySetValidate (uiwcont_t *entry, const char *label,
-    uientryval_t valfunc, void *udata, int valdelay);
+void uiEntrySetValidate (uiwcont_t *entry, const char *label, uientryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uiwcont_t *entry, bool forceflag);
 void uiEntryValidateClear (uiwcont_t *entry);
 int uiEntryValidateDir (uiwcont_t *edata, const char *label, void *udata);
