@@ -48,8 +48,8 @@ and the song.
 <br>[Subjects / Automatic Playlists](en-Subjects-Automatic%20Playlists)
 
 A BDJ4 _Song&nbsp;List_, _Sequence_ and _Automatic&nbsp;Playlist_ all
-have associated playlist settings that can be changed.  For a song
-list and sequence, usually there are no changes to the settings.
+have associated playlist settings that can be changed.  Most often, no
+changes are needed for song lists and sequences.
 <br>__References:__
 <br>[Management / Playlist Management](en-Management-Playlist%20Management)
 
@@ -65,4 +65,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-22 08:11:40; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-22 08:18:06; BDJ4 version 4.11.1)_
