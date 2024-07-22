@@ -624,6 +624,10 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, int mqidx)
 {
   logProcBegin ();
 
+  if (uimusicq == NULL) {
+    logProcEnd ("null");
+    return;
+  }
   if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
     logProcEnd ("bad-mq-idx");
     return;
@@ -703,8 +707,8 @@ uimusicqCopySelectList (uimusicq_t *uimusicq, uimusicq_t *peer)
 
   mqint = NULL;
   uivlCopySelectList (vl_a, vl_b);
-  uimusicq->ui [ci_b].currSelection = uimusicq->ui [ci_a].currSelection;
-  uimusicqSelectionPreviousProcess (peer, uimusicq->ui [ci_a].prevSelection);
+  uimusicq->ui [ci_b].currSelection = uimusicq->ui [ci_a].prevSelection;
+  uimusicqSelectionPreviousProcess (peer, uimusicq->ui [ci_a].currSelection);
 }
 
 /* internal routines */

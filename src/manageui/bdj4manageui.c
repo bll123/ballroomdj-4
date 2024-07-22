@@ -604,7 +604,6 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
   }
   manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
-  manage.currmusicq = manageGetCurrMusicQ (&manage);
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
@@ -925,6 +924,8 @@ manageBuildUI (manageui_t *manage)
 
   manage->selbypass = false;
 
+  /* make sure the curr-musicq is set */
+  manage->currmusicq = manageGetCurrMusicQ (manage);
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
 
@@ -953,7 +954,7 @@ manageInitializeUI (manageui_t *manage)
 
   manage->slplayer = uiplayerInit ("sl-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
-  manage->slmusicq = uimusicqInit ("m-songlist", manage->conn,
+  manage->slmusicq = uimusicqInit ("m-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
   uimusicqSetPlayIdx (manage->slmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
@@ -970,7 +971,7 @@ manageInitializeUI (manageui_t *manage)
   uisongselSetQueueCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
-  manage->slsbsmusicq = uimusicqInit ("m-sbs-songlist", manage->conn,
+  manage->slsbsmusicq = uimusicqInit ("m-sbs-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SBS_SONGLIST);
   manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
@@ -3002,12 +3003,19 @@ manageToggleSBSSonglist (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle side-by-side songlist");
+
+  ouimusicq = manageGetCurrMusicQ (manage);
+
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   val = ! val;
   nlistSetNum (manage->minfo.options, MANAGE_SBS_SONGLIST, val);
-
-  ouimusicq = manageGetCurrMusicQ (manage);
   manage->sbssonglist = val;
+  if (manage->sbssonglist) {
+    manage->currmusicq = manage->slsbsmusicq;
+  } else {
+    manage->currmusicq = manage->slmusicq;
+  }
+
   uimusicq = manageGetCurrMusicQ (manage);
 
   if (manage->musicqManageIdx == MUSICQ_SL) {
@@ -3015,6 +3023,11 @@ manageToggleSBSSonglist (void *udata)
 
     uimusicqCopySelectList (ouimusicq, uimusicq);
     name = uimusicqGetSonglistName (ouimusicq);
+    if (name == NULL || ! *name) {
+      fprintf (stderr, "ERR: setting empty song list name\n");
+      mdfree (name);
+      name = mdstrdup (_("New Song List"));
+    }
     manageSetSonglistName (manage, name);
     mdfree (name);
   }
@@ -3024,19 +3037,19 @@ manageToggleSBSSonglist (void *udata)
   return UICB_CONT;
 }
 
+/* sets up the tabs to display the appropriate musicq */
+/* runs the load-musicq process to get the display correct */
 static void
 manageSetSBSSonglist (manageui_t *manage)
 {
   logProcBegin ();
 
   if (manage->sbssonglist) {
-    manage->currmusicq = manage->slsbsmusicq;
     uiWidgetShow (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 0);
   } else {
-    manage->currmusicq = manage->slmusicq;
     uiWidgetHide (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetShow (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetShow (manage->wcont [MANAGE_W_SONGSEL_TAB]);
