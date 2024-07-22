@@ -57,7 +57,7 @@ silence), a __*__ will be displayed.
 The filename is displayed.  The music folder set in
 [Configure&nbsp;/&nbsp;General](en-Configuration-General) is not
 displayed as part of the filename. The copy button
-(![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-B.png))
+(![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-C.png))
 may be used to copy the full filename to the clipboard.
 
 ##### Change Bars
@@ -180,4 +180,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 08:03:03; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 07:18:36; BDJ4 version 4.11.1)_

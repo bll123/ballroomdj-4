@@ -864,6 +864,22 @@ function checkInstallation {
       echo "  $(basename ${fn}) exists"
     fi
 
+    res=$(($res+1))  # data/html-list.txt file only in templates
+    fn="${DATADIR}/html-list.txt"
+    if [[ $fin == T && ! -f "${fn}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename ${fn}) exists"
+    fi
+
+    res=$(($res+1))  # data/helpdata.txt file only in templates
+    fn="${DATADIR}/helpdata.txt"
+    if [[ $fin == T && ! -f "${fn}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename ${fn}) exists"
+    fi
+
     res=$(($res+1))  # mobilemq.html file
     fn="${HTTPDIR}/mobilemq.html"
     if [[ $fin == T && -f ${fn} ]]; then

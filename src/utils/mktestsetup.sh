@@ -137,6 +137,9 @@ for f in templates/*.txt; do
     *ui-*.txt)
       continue
       ;;
+    *localization.txt|*html-list.txt|*helpdata.txt)
+      continue
+      ;;
   esac
   cp -f $f data
 done
