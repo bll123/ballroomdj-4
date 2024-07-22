@@ -17,8 +17,9 @@ _New_ status.
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
 request selection.  This selection corresponds to the
-_Playable&nbsp;Status_ filter
-<br>See [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).
+_Playable&nbsp;Status_ filter.
+<br>__References:__
+<br>[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
 
 Adding a status: select the __Add&nbsp;New__
 (![Add&nbsp;New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
@@ -37,4 +38,4 @@ button.
 <br><span style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

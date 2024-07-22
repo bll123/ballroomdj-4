@@ -25,7 +25,7 @@ Each time the marquee is started, BDJ4 will attempt to position and
 size the marquee window where it was before.
 
 If the _Show&nbsp;Song&nbsp;Information_ selection is turned on
-(See [Configure&nbsp;/&nbsp;Marquee](en-Configuration-Marquee)), the current
+([Configure&nbsp;/&nbsp;Marquee](en-Configuration-Marquee)), the current
 playing song's information is displayed.  The song information that is
 displayed can be changed in
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings)
@@ -36,4 +36,4 @@ using the _Marquee_ selection.
 <br><span style="color:#4559bf;">__Player / Marquee__</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 08:41:13; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

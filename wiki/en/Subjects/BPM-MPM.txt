@@ -119,7 +119,8 @@ song editor to save the changes.
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
-See also: [Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
+<br>__References:__
+<br>[Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

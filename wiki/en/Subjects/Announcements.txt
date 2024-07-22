@@ -40,7 +40,8 @@ dance to edit, select the __Announcement__ file chooser button with
 the folder icon and select the announcement audio file for that dance.
 If a dance does not have an announcement assigned, no announcement
 will be played.
-<br>(See [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
+<br>__References:__
+<br>[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
 <!-- this images is also used in Subjects/BPM-MPM -->
 
@@ -84,4 +85,4 @@ configured, and turn on the __Play&nbsp;Announcements__ switch.
 <br><span style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

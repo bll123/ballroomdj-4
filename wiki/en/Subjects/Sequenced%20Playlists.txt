@@ -52,7 +52,8 @@ The sequence will be saved automatically.
 
 When a sequence is played, BDJ4 chooses the song from the songs filtered
 by any playlist song selection filters.
-<br>(See [Playlist&nbsp;Management](en-Management-Playlist%20Management))
+<br>__References:__
+<br>[Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 The song to be played is chosen based on the
 [Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
@@ -87,4 +88,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

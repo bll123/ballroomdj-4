@@ -42,7 +42,9 @@
 <br>[Installing on Windows](en-Install-Windows)
 
 [Getting Started with BDJ4](en-Install-Getting%20Started)
-<br>[Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
+<br>[Overview of BDJ4](en-Install-Overview)
+
+[Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Installing BDJ4 in Other Locales](en-Install-Locales)
 <br>[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
@@ -143,4 +145,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-07-19 06:46:22; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 07:44:36; BDJ4 version 4.11.1)_

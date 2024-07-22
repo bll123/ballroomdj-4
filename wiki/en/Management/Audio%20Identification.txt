@@ -22,12 +22,11 @@ _Audio&nbsp;ID&nbsp;Match&nbsp;List_ and _Audio&nbsp;ID_ selections.
 
 ##### Traversing the Song Listing
 
-Audio identification works in conjunction with the
-[Music&nbsp;Manager](en-Management-Music%20Manager).  The __First__,
-__Next__ and __Previous__ buttons traverse the songs selected in the
-[Music&nbsp;Manager](en-Management-Music%20Manager). See the
-[Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
-details.
+Audio identification works in conjunction with the music manager. The
+__First__, __Next__ and __Previous__ buttons traverse the songs
+selected in the music manager.
+<br>__References:__
+<br>[Music&nbsp;Manager](en-Management-Music%20Manager)
 
 ##### Match List
 
@@ -57,4 +56,4 @@ Then select the __Save__ button in the upper right to save the changes
 to the database.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 08:03:03; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

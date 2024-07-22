@@ -29,20 +29,23 @@ automatic playlists.
 __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
 this playlist.  The maximum play time set here will override the
 music queue __Maximum&nbsp;Play&nbsp;Time__ setting.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;At__ sets the time when the playlist will stop. The stop at
 time set here will override the player per-queue __Stop&nbsp;At__
 setting.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;After__ configures how many songs will play from this
 playlist.
 
 If __Play&nbsp;Announcements__ is enabled, announcements will be played
 for each song for this playlist.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues),
-[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
+<br>[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
 ##### Song Selection Filters
 
@@ -58,7 +61,8 @@ playlists.  The filters limit which songs can be played.
 __Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
 Any song with a rating equal to __or better__ than the dance rating set
 here may be played.
-<br>(See also [Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings))
+<br>__References:__
+<br>[Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings)
 
 __Low&nbsp;Dance&nbsp;Level__ and __High&nbsp;Dance&nbsp;Level__ are
 optional.  Leave these set to _Easy_ and _Advanced_ if levels are not
@@ -67,12 +71,14 @@ in use.
 __Low&nbsp;Dance&nbsp;Level__ sets the lowest dance level.  Any song
 with a dance level equal to or higher than the dance level set here
 may be played.
-<br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
+<br>__References:__
+<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
 
 __High&nbsp;Dance&nbsp;Level__ sets the highest dance level.  Any song
 with a dance level equal to or lower than the dance level set here may
 be played.
-<br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
+<br>__References:__
+<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
 
 If a song has a keyword set, and the keyword is in the
 __Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
@@ -88,7 +94,8 @@ appear during the song selection process.
 In addition, the playable status is always used for song selection. If
 the song's status does not have the __Play?__ flag set, the song will
 not be played.
-<br>(See also [Edit&nbsp;Status](en-Configuration-Edit%20Status))
+<br>__References:__
+<br>[Edit&nbsp;Status](en-Configuration-Edit%20Status)
 
 ##### Per Dance Playlist Controls
 
@@ -167,4 +174,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 07:39:00; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

@@ -1,0 +1,68 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Overview of BDJ4
+
+A short list of some things that are useful to know when starting out
+with BDJ4.
+
+##### Configuration
+
+The configuration is static, not dynamic.  When you change the
+configuration, you will need to close and restart the player and
+management interfaces.  Configuration changes are not immediately
+applied.  Certain configuration options (profile color, accent color,
+user interface, et.al.) require restarting BDJ4 entirely.
+
+##### Database Updates
+
+When a database update is done (rebuild, check for new, re-organize,
+etc.), it is safest to exit the player and management interfaces, and
+re-open them.  While BDJ4 tries to keep the database changes updated
+and consistent, it is still safest to exit and restart to make sure the
+management and player interfaces have a consistent view.
+
+##### Definition of a Playlist
+
+A playlist in most music players is a static list of songs, which
+can't be changed during playback.
+
+In BDJ4, this is closest to a _Song&nbsp;List_.  But once a
+_Song&nbsp;List_ is queued, the BDJ4 player allows songs to be moved,
+added, and removed.  This does not modify the original song list.
+<br>__References:__
+<br>[Management / Edit Song Lists](en-Management-Edit%20Song%20Lists)
+<br>[Subjects / Song Lists](en-Subjects-Song%20Lists)
+
+BDJ4 also has sequences, where dances are played in sequence of your
+choosing, and BDJ4 chooses the song to be played.
+<br>__References:__
+<br>[Management / Edit Sequences](en-Management-Edit%20Sequences)
+<br>[Subjects / Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+
+And there are automatic playlists, where BDJ4 will choose the dance
+and the song.
+<br>__References:__
+<br>[Management / Playlist Management](en-Management-Playlist%20Management)
+<br>[Subjects / Automatic Playlists](en-Subjects-Automatic%20Playlists)
+
+A BDJ4 _Song&nbsp;List_, _Sequence_ and _Automatic&nbsp;Playlist_ all
+have associated playlist settings that can be changed.  For a song
+list and sequence, usually there are no changes to the settings.
+<br>__References:__
+<br>[Management / Playlist Management](en-Management-Playlist%20Management)
+
+In all of these cases, once queued for playback, the BDJ4 player
+allows songs to be moved, added, and removed.  This does not modify
+the original song list, sequence or automatic playlist.
+
+##### Getting help
+
+If you need help getting started, understanding how something in BDJ4
+functions, or want to learn how to accomplish a particular goal in
+BDJ4, use one of the methods in
+[Getting&nbsp;Help](en-Getting%20Help).
+
+[Wiki Home](Home)
+<br>_(Updated 2024-07-22 07:54:12; BDJ4 version 4.11.1)_

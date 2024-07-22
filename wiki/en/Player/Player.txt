@@ -88,9 +88,9 @@ button will reset the speed to 100%.
 __Position__: Displays the current position of the song.  The slider
 can be adjusted to change the current position of the song.
 
-__Volume__: Sets the playback volume.  <br>(See also
-__Default&nbsp;Volume__ in
-[Configure&nbsp;/&nbsp;Player](en-Configuration-Player))
+__Volume__: Sets the playback volume.
+<br>__References:__
+<br>__Default&nbsp;Volume__ in [Configure&nbsp;/&nbsp;Player](en-Configuration-Player)
 
 ##### Music Queue Controls
 
@@ -152,8 +152,9 @@ dance drop-down may be used to quickly change which dance is
 displayed.  The filter button
 (![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
 will start a dialog where the filters can be chosen to limit which
-songs are displayed in the listing. <br>See also:
-[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
+songs are displayed in the listing.
+<br>__References:__
+<br>[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
 <br>[Subjects&nbsp;/&nbsp;Filter&nbsp;Dialog](en-Subjects-Filter%20Dialog)
 
 Select a song and select the __Queue__ button to add a song to the music
@@ -172,8 +173,8 @@ filled in from the audio file tags if possible.  The artist, title,
 dance and marquee display may be changed. After setting the song
 information, select the __Queue__ button to add the song to the music
 queue.
-<br>
-(See also: [Player / External Request](en-Player-External%20Request)
+<br>__References:__
+<br>[Player / External Request](en-Player-External%20Request)
 
 When an audio file is dragged from the file manager and dropped in
 a music queue, the external request dialog is started.
@@ -238,10 +239,10 @@ __Options / Switch Queue When Empty__: When selected and all the songs in a
 queue have been played, the player will check for another queue that
 has songs queued and start playing songs from it.
 
-See also
+<br>__References:__
 <br>[Configure / Player](en-Configuration-Player)
 <br>[Configure / Music Queues](en-Configuration-Music%20Queues)
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 08:31:29; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

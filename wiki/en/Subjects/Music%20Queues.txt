@@ -93,7 +93,7 @@ The __Play&nbsp;When&nbsp;Queued__ and
 __Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ are generally used for
 teaching.  See the example below for a music queue set up for teaching.
 
-See also:
+<br>__References:__
 <br>[Configure / Music Queues](en-Configuration-Music%20Queues)
 <br>[Manage / Playlist Management](en-Management-Playlist%20Management)
 
@@ -121,8 +121,9 @@ __There is a special playlist named QueueDance that controls what
 songs are added to the queue by the queue dance buttons__.  If you try
 this example, you may need to adjust this special playlist to allow
 songs to be queued. (The _Request_ tab can also be used to add songs
-to the music queue). <br>(See [Manage / Playlist
-Management](en-Management-Playlist%20Management))
+to the music queue).
+<br>__References:__
+<br>[Manage / Playlist Management](en-Management-Playlist%20Management)
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![musicq-tabs-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-teach-A.png)
@@ -169,9 +170,9 @@ tab to queue a song).  This time, the song will start playing, as the
 __Play&nbsp;When&nbsp;Queued__ switch is on for the _Teach_ music
 queue, and the queue was empty.
 
-See also:
+<br>__References:__
 <br>[Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

@@ -20,12 +20,11 @@ the bottom of this wiki page.
 
 ##### Traversing the Song Listing
 
-The song editor works in conjunction with the
-[Music&nbsp;Manager](en-Management-Music%20Manager).  The __First__,
-__Next__ and __Previous__ buttons traverse the songs selected in the
-[Music&nbsp;Manager](en-Management-Music%20Manager). See the
-[Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
-details.
+The song editor works in conjunction with the music manager The
+__First__, __Next__ and __Previous__ buttons traverse the songs
+selected in the music manager.
+<br>__References:__
+<br>[Music&nbsp;Manager](en-Management-Music%20Manager)
 
 When a song is selected in
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
@@ -180,4 +179,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-22 07:18:36; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

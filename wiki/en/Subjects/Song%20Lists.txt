@@ -139,9 +139,8 @@ The [playlist&nbsp;settings](en-Management-Playlist%20Management)
 (except _Stop&nbsp;After_) and the _Maximum&nbsp;Play&nbsp;Time_ for a dance
 will be propagated from the automatic or sequenced playlist to the
 new song list.
-
-(See also:
-[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
+<br>__References:__
+<br>[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

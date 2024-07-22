@@ -92,8 +92,8 @@ use that are missing from the list.  Also check to make sure the
 spelling of each dance matches what you use.  For example, _Waltz_ may
 need to be changed to _Slow&nbsp;Waltz_.  Any dances that you do not
 use may be deleted.
-<br>See also:
-[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+<br>__References:__
+<br>[Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
 Close the configuration window.
 
@@ -198,4 +198,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 05:51:14; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

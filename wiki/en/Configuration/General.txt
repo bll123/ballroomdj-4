@@ -6,13 +6,13 @@ affect the entire BDJ4 application._</span>
 ### Configure : General
 
 __Music Folder__: The main music folder where the music is found.
-<br>
-See also [Update&nbsp;Database](en-Management-Update%20Database)
+<br>__References:__
+<br>[Update&nbsp;Database](en-Management-Update%20Database)
 
 __Profile Name__: The name of this profile.  This name will appear in
 the title of all windows.
-<br>
-See also [Subjects&nbsp;/&nbsp;Profiles](en-Subjects-Profiles)
+<br>__References:__
+<br>[Subjects&nbsp;/&nbsp;Profiles](en-Subjects-Profiles)
 
 __Profile Color__: The accent color used to identify this profile.
 This appears as a block of color in the upper right corner of each
@@ -22,8 +22,8 @@ the window's profile can be quickly identified.
 __BPM__: The label to use for _beats&nbsp;per&nbsp;minute_ or
 _measures&nbsp;per&nbsp;minute_.  When set to BPM, beats per minute
 are displayed.  When set to MPM, measures per minute are displayed.
-<br>
-See also [Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
+<br>__References:__
+<br>[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
 
 __Locale__: Which locale is used for the text in BDJ4.
 
@@ -50,4 +50,4 @@ paste the appropriate information into the configuration.
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_
