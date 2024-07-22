@@ -229,6 +229,7 @@ typedef struct {
   dbidx_t           songeditdbidx;
   /* song list ui major elements */
   uiplayer_t        *slplayer;
+  uimusicq_t        *currmusicq;
   uimusicq_t        *slmusicq;
   managestats_t     *slstats;
   uisongsel_t       *slsongsel;
@@ -301,6 +302,7 @@ typedef struct {
   bool              musicqupdated : 1;
   bool              optionsalloc : 1;
   bool              pluiActive : 1;
+  bool              sbssonglist : 1;
   bool              selbypass : 1;
   bool              slbackupcreated : 1;
 } manageui_t;
@@ -405,11 +407,12 @@ static void     manageSetSBSSonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 static bool     managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t mqidx);
-static bool     managePlayProcessEasySonglist (void *udata, int32_t dbidx, int32_t mqidx);
+static bool     managePlayProcessSBSSonglist (void *udata, int32_t dbidx, int32_t mqidx);
 static bool     managePlayProcessMusicManager (void *udata, int32_t dbidx, int32_t mqidx);
 static bool     manageQueueProcessSonglist (void *udata, int32_t dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
+static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
 /* playlist */
 static bool     managePlaylistExport (void *udata);
 static bool     managePlaylistImport (void *udata);
@@ -428,6 +431,7 @@ static void     manageSetDisplayPerSelection (manageui_t *manage, int id);
 static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
 static void     manageProcessDatabaseUpdate (manageui_t *manage);
+static uimusicq_t * manageGetCurrMusicQ (manageui_t *manage);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -466,6 +470,7 @@ main (int argc, char *argv[])
     manage.wcont [i] = NULL;
   }
   manage.slplayer = NULL;
+  manage.currmusicq = NULL;
   manage.slmusicq = NULL;
   manage.slstats = NULL;
   manage.slsongsel = NULL;
@@ -528,6 +533,7 @@ main (int argc, char *argv[])
   manage.musicqueueprocessflag = false;
   manage.musicqupdated = false;
   manage.pluiActive = false;
+  manage.sbssonglist = true;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uict = NULL;
@@ -597,6 +603,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, QE_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
   }
+  manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
+  manage.currmusicq = manageGetCurrMusicQ (&manage);
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
@@ -970,7 +978,7 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
   manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitII (
-      managePlayProcessEasySonglist, manage);
+      managePlayProcessSBSSonglist, manage);
   uisongselSetPlayCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL_SBS]);
   manage->callbacks [MANAGE_CB_QUEUE_SL_SBS] = callbackInitI (
@@ -990,9 +998,6 @@ manageInitializeUI (manageui_t *manage)
 
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->minfo.options);
-
-  uimusicqSetPeer (manage->slmusicq, manage->slsbsmusicq);
-  uimusicqSetPeer (manage->slsbsmusicq, manage->slmusicq);
 
   manage->callbacks [MANAGE_CB_EDIT_SL] = callbackInit (
       manageSwitchToSongEditorSL, manage, NULL);
@@ -1112,8 +1117,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_SONGLIST], MANAGE_TAB_SL_SONGSEL);
   manage->wcont [MANAGE_W_SONGSEL_TAB] = uip;
   uiwcontFree (uiwidgetp);
-
-  uimusicqPeerSonglistName (manage->slmusicq, manage->slsbsmusicq);
 
   /* song list editor: statistics tab */
   uip = manageBuildUIStats (manage->slstats);
@@ -1473,7 +1476,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {
-          mp_musicqupdate_t  *musicqupdate;
+          mp_musicqupdate_t   *musicqupdate;
+          nlistidx_t          newcount = 0;
 
           musicqupdate = msgparseMusicQueueData (targs);
           if (musicqupdate == NULL) {
@@ -1485,17 +1489,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uimusicqSetMusicQueueData (manage->slmusicq, musicqupdate);
             uimusicqSetMusicQueueData (manage->slsbsmusicq, musicqupdate);
-            uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate->mqidx);
-            uimusicqProcessMusicQueueData (manage->slsbsmusicq, musicqupdate->mqidx);
+            newcount = manageLoadMusicQueue (manage, musicqupdate->mqidx);
             manageStatsProcessData (manage->slstats, musicqupdate);
           }
-          /* the music queue data is used to display the mark */
-          /* indicating that the song is already in the song list */
-          if (musicqupdate->mqidx == manage->musicqManageIdx) {
-            uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
-            uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
-          }
-          if (uimusicqGetCount (manage->slmusicq) > 0) {
+          if (newcount > 0) {
             manage->musicqupdated = true;
           }
           manage->musicqueueprocessflag = true;
@@ -1505,8 +1502,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_songselect_t   *songselect;
 
           songselect = msgparseSongSelect (targs);
-          uimusicqProcessSongSelect (manage->slmusicq, songselect);
-          uimusicqProcessSongSelect (manage->slsbsmusicq, songselect);
+          uimusicqProcessSongSelect (manage->currmusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
         }
@@ -1727,7 +1723,7 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
   }
 
   if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
-    if (nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST)) {
+    if (manage->sbssonglist) {
       logMsg (LOG_DBG, LOG_INFO, "new-selection: set last-tab song-sel");
       manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
     }
@@ -1773,7 +1769,7 @@ manageSwitchToSongEditorSL (void *udata)
 
   if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
     manage->lasttabsel = manage->slcurrtab;
-    if (uimusicqGetCount (manage->slmusicq) == 0) {
+    if (uimusicqGetCount (manage->currmusicq) == 0) {
       logMsg (LOG_DBG, LOG_INFO, "sw-to-se: sl: set last-tab song-sel (no data)");
       manage->lasttabsel = MANAGE_TAB_SL_SONGSEL;
     }
@@ -2507,8 +2503,7 @@ manageSonglistMenu (manageui_t *manage)
       manageToggleSBSSonglist);
   /* CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view) */
   menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
-      nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST),
-      manage->callbacks [MANAGE_MENU_CB_SL_SBS_EDIT]);
+      manage->sbssonglist, manage->callbacks [MANAGE_MENU_CB_SL_SBS_EDIT]);
   uiwcontFree (menuitem);
 
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SL]);
@@ -2555,7 +2550,7 @@ manageSonglistCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
   manageSonglistSave (manage);
 
-  oname = uimusicqGetSonglistName (manage->slmusicq);
+  oname = uimusicqGetSonglistName (manage->currmusicq);
 
   /* CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -2581,8 +2576,8 @@ manageSonglistNew (void *udata)
   /* CONTEXT: managementui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
   manage->slbackupcreated = false;
-  uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqTruncateQueueCallback (manage->slmusicq);
+  uimusicqSetSelectionFirst (manage->currmusicq, manage->musicqManageIdx);
+  uimusicqTruncateQueueCallback (manage->currmusicq);
   manageNewPlaylistCB (manage);
   /* the music manager must be reset to use the song selection as */
   /* there are no songs selected */
@@ -2599,7 +2594,7 @@ manageSonglistDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
-  oname = uimusicqGetSonglistName (manage->slmusicq);
+  oname = uimusicqGetSonglistName (manage->currmusicq);
 
   manageDeletePlaylist (manage->minfo.errorMsg, oname);
   /* no save */
@@ -2618,7 +2613,7 @@ manageSonglistTruncate (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: truncate songlist");
-  uimusicqTruncateQueueCallback (manage->slmusicq);
+  uimusicqTruncateQueueCallback (manage->currmusicq);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -2642,8 +2637,8 @@ manageSonglistCreateFromPlaylist (void *udata)
   /* the user may have typed in a new name before running create-from-pl */
   dataFree (manage->slpriorname);
   manage->slpriorname = NULL;
-  if (uimusicqGetCount (manage->slmusicq) <= 0) {
-    manage->slpriorname = uimusicqGetSonglistName (manage->slmusicq);
+  if (uimusicqGetCount (manage->currmusicq) <= 0) {
+    manage->slpriorname = uimusicqGetSonglistName (manage->currmusicq);
   }
   manageSongListCFPLCreateDialog (manage);
 
@@ -2834,7 +2829,7 @@ manageCFPLPostProcess (manageui_t *manage)
   ilistidx_t  dkey;
   char        *tnm;
 
-  tnm = uimusicqGetSonglistName (manage->slmusicq);
+  tnm = uimusicqGetSonglistName (manage->currmusicq);
   manageSonglistSave (manage);
 
   /* copy the settings from the base playlist to the new song list */
@@ -2892,7 +2887,7 @@ manageSonglistSwap (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist swap");
-  uimusicqSwap (manage->slmusicq, manage->musicqManageIdx);
+  uimusicqSwap (manage->currmusicq, manage->musicqManageIdx);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -2901,7 +2896,7 @@ static void
 manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
 {
   manageui_t  *manage = udata;
-  char  tbuff [200];
+  char        tbuff [200];
 
   logProcBegin ();
   if (manage->inload) {
@@ -2935,8 +2930,8 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_SUSPEND, tbuff);
 
   /* truncate from the first selection */
-  uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqTruncateQueueCallback (manage->slmusicq);
+  uimusicqSetSelectionFirst (manage->currmusicq, manage->musicqManageIdx);
+  uimusicqTruncateQueueCallback (manage->currmusicq);
 
   msgbuildQueuePlaylist (tbuff, sizeof (tbuff),
       manage->musicqManageIdx, fn, manage->editmode);
@@ -3001,6 +2996,8 @@ static bool
 manageToggleSBSSonglist (void *udata)
 {
   manageui_t  *manage = udata;
+  uimusicq_t  *ouimusicq = NULL;
+  uimusicq_t  *uimusicq = NULL;
   int         val;
 
   logProcBegin ();
@@ -3008,6 +3005,20 @@ manageToggleSBSSonglist (void *udata)
   val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
   val = ! val;
   nlistSetNum (manage->minfo.options, MANAGE_SBS_SONGLIST, val);
+
+  ouimusicq = manageGetCurrMusicQ (manage);
+  manage->sbssonglist = val;
+  uimusicq = manageGetCurrMusicQ (manage);
+
+  if (manage->musicqManageIdx == MUSICQ_SL) {
+    char    *name;
+
+    uimusicqCopySelectList (ouimusicq, uimusicq);
+    name = uimusicqGetSonglistName (ouimusicq);
+    manageSetSonglistName (manage, name);
+    mdfree (name);
+  }
+
   manageSetSBSSonglist (manage);
   logProcEnd ("");
   return UICB_CONT;
@@ -3016,21 +3027,23 @@ manageToggleSBSSonglist (void *udata)
 static void
 manageSetSBSSonglist (manageui_t *manage)
 {
-  int     val;
-
   logProcBegin ();
-  val = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
-  if (val) {
+
+  if (manage->sbssonglist) {
+    manage->currmusicq = manage->slsbsmusicq;
     uiWidgetShow (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetHide (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 0);
   } else {
+    manage->currmusicq = manage->slmusicq;
     uiWidgetHide (manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB]);
     uiWidgetShow (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
     uiWidgetShow (manage->wcont [MANAGE_W_SONGSEL_TAB]);
     uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 1);
   }
+
+  manageLoadMusicQueue (manage, manage->musicqManageIdx);
   logProcEnd ("");
 }
 
@@ -3039,15 +3052,15 @@ manageSetSonglistName (manageui_t *manage, const char *nm)
 {
   dataFree (manage->sloldname);
   manage->sloldname = mdstrdup (nm);
-  uimusicqSetSonglistName (manage->slmusicq, nm);
+  uimusicqSetSonglistName (manage->currmusicq, nm);
   logMsg (LOG_DBG, LOG_INFO, "song list name set: %s", nm);
 }
 
 static void
 manageSonglistSave (manageui_t *manage)
 {
-  char  *name;
-  char  nnm [MAXPATHLEN];
+  char        *name;
+  char        nnm [MAXPATHLEN];
 
   logProcBegin ();
   if (manage == NULL) {
@@ -3058,17 +3071,18 @@ manageSonglistSave (manageui_t *manage)
     logProcEnd ("no-sl-old-name");
     return;
   }
-  if (manage->slmusicq == NULL) {
-    logProcEnd ("no-slmusicq");
+
+  if (manage->currmusicq == NULL) {
+    logProcEnd ("no-musicq");
     return;
   }
 
-  if (uimusicqGetCount (manage->slmusicq) <= 0) {
+  if (uimusicqGetCount (manage->currmusicq) <= 0) {
     logProcEnd ("count <= 0");
     return;
   }
 
-  name = uimusicqGetSonglistName (manage->slmusicq);
+  name = uimusicqGetSonglistName (manage->currmusicq);
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
@@ -3101,7 +3115,7 @@ managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t mqidx)
 }
 
 static bool
-managePlayProcessEasySonglist (void *udata, int32_t dbidx, int32_t mqidx)
+managePlayProcessSBSSonglist (void *udata, int32_t dbidx, int32_t mqidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from side-by-side songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SBS_SONGLIST, MANAGE_PLAY);
@@ -3198,6 +3212,16 @@ manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int acti
   logProcEnd ("");
 }
 
+static nlistidx_t
+manageLoadMusicQueue (manageui_t *manage, int mqidx)
+{
+  nlistidx_t    newcount = 0;
+
+  uimusicqProcessMusicQueueData (manage->currmusicq, mqidx);
+  newcount = uimusicqGetCount (manage->currmusicq);
+  return newcount;
+}
+
 /* export and import (m3u, xspf, jspf) */
 
 static bool
@@ -3216,7 +3240,7 @@ managePlaylistExport (void *udata)
 
   manageSonglistSave (manage);
 
-  slname = uimusicqGetSonglistName (manage->slmusicq);
+  slname = uimusicqGetSonglistName (manage->currmusicq);
   uiexpplDialog (manage->uiexppl, slname);
   mdfree (slname);
 
@@ -3296,7 +3320,7 @@ managePlaylistImport (void *udata)
     mqidx = manage->musicqManageIdx;
 
     /* clear the entire queue */
-    uimusicqTruncateQueueCallback (manage->slmusicq);
+    uimusicqTruncateQueueCallback (manage->currmusicq);
 
     if (list != NULL && nlistGetCount (list) > 0) {
       nlistStartIterator (list, &iteridx);
@@ -3370,8 +3394,8 @@ managePlaylistExportRespHandler (void *udata, const char *fname, int type)
   manageui_t  *manage = udata;
   char        *slname;
 
-  slname = uimusicqGetSonglistName (manage->slmusicq);
-  uimusicqExport (manage->slmusicq, manage->musicqupdate [MUSICQ_SL],
+  slname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqExport (manage->currmusicq, manage->musicqupdate [MUSICQ_SL],
       fname, slname, type);
   mdfree (slname);
 
@@ -3386,7 +3410,7 @@ manageExportBDJ4ResponseHandler (void *udata)
   char        *dir = NULL;
   nlist_t     *dbidxlist;
 
-  slname = uimusicqGetSonglistName (manage->slmusicq);
+  slname = uimusicqGetSonglistName (manage->currmusicq);
   dbidxlist = uimusicqGetDBIdxList (manage->musicqupdate [MUSICQ_SL]);
 
   dir = uieibdj4GetDir (manage->uieibdj4);
@@ -3625,10 +3649,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
 static void
 manageSetDisplayPerSelection (manageui_t *manage, int id)
 {
-  bool    sbsinuse;
-
   logProcBegin ();
-  sbsinuse = nlistGetNum (manage->minfo.options, MANAGE_SBS_SONGLIST);
 
   if (id == MANAGE_TAB_MAIN_SL) {
     bool    plinuse;
@@ -3637,11 +3658,11 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     plinuse = uisfPlaylistInUse (manage->uisongfilter);
     uisfHidePlaylistDisplay (manage->uisongfilter);
 
-    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL || sbsinuse) {
+    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL || manage->sbssonglist) {
       /* the song filter must be updated, as it is shared */
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
-      if (sbsinuse) {
+      if (manage->sbssonglist) {
         uisongselApplySongFilter (manage->slsbssongsel);
       } else {
         uisongselApplySongFilter (manage->slsongsel);
@@ -3654,11 +3675,11 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
       /* get the selection from mm, and set it for the sle */
       nidx = uisongselGetSelectLocation (manage->mmsongsel);
-      uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
+      uimusicqSetSelectLocation (manage->currmusicq, manage->musicqManageIdx, nidx);
     }
 
     if (manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
-      if (sbsinuse) {
+      if (manage->sbssonglist) {
         uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
       } else {
         uisongselCopySelectList (manage->mmsongsel, manage->slsongsel);
@@ -3678,21 +3699,21 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     /*   a) from the song list - has songs */
     /*   b) last selection was on the song list */
     if ((manage->slcurrtab == MANAGE_TAB_SONGLIST &&
-        uimusicqGetCount (manage->slmusicq) > 0) ||
+        uimusicqGetCount (manage->currmusicq) > 0) ||
         lasttab == MANAGE_TAB_SONGLIST) {
       nlistidx_t    idx;
 
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
-      slname = uimusicqGetSonglistName (manage->slmusicq);
+      slname = uimusicqGetSonglistName (manage->currmusicq);
       uisfSetPlaylist (manage->uisongfilter, slname);
       mdfree (slname);
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
       manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
-      idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
+      idx = uimusicqGetSelectLocation (manage->currmusicq, manage->musicqManageIdx);
       uisongselSetSelection (manage->mmsongsel, idx);
     }
 
@@ -3701,13 +3722,13 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     /*   b) from the song list - no songs */
     /*   c) last selection was on the song selection */
     if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
-        uimusicqGetCount (manage->slmusicq) == 0 ||
+        uimusicqGetCount (manage->currmusicq) == 0 ||
         lasttab == MANAGE_TAB_SL_SONGSEL) {
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
-      if (sbsinuse) {
+      if (manage->sbssonglist) {
         uisongselCopySelectList (manage->slsbssongsel, manage->mmsongsel);
       } else {
         uisongselCopySelectList (manage->slsongsel, manage->mmsongsel);
@@ -3740,7 +3761,7 @@ manageSonglistLoadCheck (manageui_t *manage)
     return;
   }
 
-  name = uimusicqGetSonglistName (manage->slmusicq);
+  name = uimusicqGetSonglistName (manage->currmusicq);
 
   if (! songlistExists (name)) {
     logMsg (LOG_DBG, LOG_INFO, "no songlist %s", name);
@@ -3779,6 +3800,21 @@ manageProcessDatabaseUpdate (manageui_t *manage)
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 
   uisongselApplySongFilter (manage->slsongsel);
+}
+
+static uimusicq_t *
+manageGetCurrMusicQ (manageui_t *manage)
+{
+  uimusicq_t  *uimusicq = NULL;
+
+  if (! manage->sbssonglist) {
+    uimusicq = manage->slmusicq;
+  }
+  if (manage->sbssonglist) {
+    uimusicq = manage->slsbsmusicq;
+  }
+
+  return uimusicq;
 }
 
 /* bpm counter */

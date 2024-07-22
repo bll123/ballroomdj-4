@@ -45,12 +45,6 @@ uiEntryClearIcon (uiwcont_t *uientry)
   return;
 }
 
-void
-uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry)
-{
-  return;
-}
-
 const char *
 uiEntryGetValue (uiwcont_t *uientry)
 {

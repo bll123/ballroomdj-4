@@ -157,10 +157,3 @@ uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
   /* any play the next song */
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG_PLAY, NULL);
 }
-
-
-void
-uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)
-{
-  uimusicq->ispeercall = val;
-}

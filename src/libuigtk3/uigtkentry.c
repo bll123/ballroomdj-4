@@ -118,26 +118,6 @@ uiEntryClearIcon (uiwcont_t *uiwidget)
       GTK_ENTRY_ICON_SECONDARY, NULL);
 }
 
-void
-uiEntryPeerBuffer (uiwcont_t *targetentry, uiwcont_t *sourceentry)
-{
-  uientry_t   *target;
-  uientry_t   *source;
-
-  if (! uiwcontValid (targetentry, WCONT_T_ENTRY, "entry-peer-buffer-target")) {
-    return;
-  }
-  if (! uiwcontValid (sourceentry, WCONT_T_ENTRY, "entry-peer-buffer-src")) {
-    return;
-  }
-
-  target = targetentry->uiint.uientry;
-  source = sourceentry->uiint.uientry;
-
-  gtk_entry_set_buffer (GTK_ENTRY (targetentry->uidata.widget), source->buffer);
-  target->buffer = source->buffer;
-}
-
 const char *
 uiEntryGetValue (uiwcont_t *uiwidget)
 {

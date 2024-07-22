@@ -60,13 +60,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
   uimusicq->cbci = MUSICQ_PB_A;
   uimusicq->pausePixbuf = NULL;
-  uimusicq->peercount = 0;
   uimusicq->backupcreated = false;
   uimusicq->changed = false;
-  uimusicq->ispeercall = false;
-  for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
-    uimusicq->peers [i] = NULL;
-  }
 
   /* want a copy of the pixbuf for this image */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
@@ -97,16 +92,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   logProcEnd ("");
   return uimusicq;
-}
-
-void
-uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer)
-{
-  if (uimusicq->peercount >= UIMUSICQ_PEER_MAX) {
-    return;
-  }
-  uimusicq->peers [uimusicq->peercount] = peer;
-  ++uimusicq->peercount;
 }
 
 void
@@ -211,13 +196,6 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   tval = mdstrdup (val);
   stringTrimChar (tval, ' ');
   return tval;
-}
-
-void
-uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
-{
-  uiEntryPeerBuffer (targetq->ui [MUSICQ_SL].slname,
-      sourceq->ui [MUSICQ_SL].slname);
 }
 
 nlistidx_t

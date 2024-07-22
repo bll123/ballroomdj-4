@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2024 Brad Lanam Pleasant Hill CA
+#
 
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
