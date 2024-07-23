@@ -84,6 +84,7 @@ typedef struct managepl {
   uinbtabid_t     *tabids;
   mpldance_t      *mpldnc;
   playlist_t      *playlist;
+  const char      *newplname;
   bool            changed : 1;
   bool            inload : 1;
 } managepl_t;
@@ -126,6 +127,8 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->changed = false;
   managepl->inload = false;
   managepl->plloadcb = NULL;
+  /* CONTEXT: playlist management: default name for a new playlist */
+  managepl->newplname = _("New Playlist");
   for (int i = 0; i < MPL_CB_MAX; ++i) {
     managepl->callbacks [i] = NULL;
   }
@@ -538,7 +541,7 @@ managePlaylistSave (managepl_t *managepl)
   }
 
   name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      _("New Automatic Playlist"));
+      managepl->newplname);
 
   managepl->changed = managePlaylistCheckChanged (managepl);
 
@@ -584,7 +587,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
   }
 
   name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      _("New Automatic Playlist"));
+      managepl->newplname);
 
   if (! playlistExists (name)) {
     managePlaylistNew (managepl, MANAGE_STD);
@@ -658,8 +661,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
     managePlaylistSave (managepl);
   }
 
-  /* CONTEXT: playlist management: default name for a new playlist */
-  snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
+  strlcpy (tbuff, managepl->newplname, sizeof (tbuff));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
 
@@ -788,7 +790,7 @@ managePlaylistCopy (void *udata)
   managePlaylistSave (managepl);
 
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      _("New Automatic Playlist"));
+      managepl->newplname);
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
@@ -814,7 +816,7 @@ managePlaylistDelete (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      _("New Automatic Playlist"));
+      managepl->newplname);
   manageDeletePlaylist (managepl->minfo->errorMsg, oname);
   manageResetChanged (managepl);
 

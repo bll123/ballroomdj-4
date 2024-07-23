@@ -49,6 +49,7 @@ typedef struct manageseq {
   uiduallist_t    *seqduallist;
   uiwcont_t       *seqname;
   char            *seqoldname;
+  const char      *newseqname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
   bool            inload : 1;
@@ -77,6 +78,8 @@ manageSequenceAlloc (manageinfo_t *minfo)
   manageseq->inload = false;
   manageseq->seqloadcb = NULL;
   manageseq->seqnewcb = NULL;
+  /* CONTEXT: sequence editor: default name for a new sequence */
+  manageseq->newseqname = _("New Sequence");
   for (int i = 0; i < MSEQ_CB_MAX; ++i) {
     manageseq->callbacks [i] = NULL;
   }
@@ -146,8 +149,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiwidgetp = uiEntryInit (30, 100);
   manageseq->seqname = uiwidgetp;
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
-  /* CONTEXT: sequence editor: default name for a new sequence */
-  manageSetSequenceName (manageseq, _("New Sequence"));
+  manageSetSequenceName (manageseq, manageseq->newseqname);
   uiBoxPackStart (hbox, uiwidgetp);
   /* CONTEXT: sequence editor: sequence name */
   uiEntrySetValidate (manageseq->seqname, _("Sequence"),
@@ -253,7 +255,7 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
+  name = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
@@ -304,7 +306,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     return;
   }
 
-  name = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
+  name = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
 
   if (! sequenceExists (name)) {
     /* make sure no save happens */
@@ -415,7 +417,7 @@ manageSequenceCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
-  oname = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
+  oname = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
 
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -443,8 +445,7 @@ manageSequenceNew (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
   manageSequenceSave (manageseq);
 
-  /* CONTEXT: sequence editor: default name for a new sequence */
-  snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
+  strlcpy (tbuff, manageseq->newseqname, sizeof (tbuff));
   manageSetSequenceName (manageseq, tbuff);
   manageseq->seqbackupcreated = false;
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
@@ -466,7 +467,7 @@ manageSequenceDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
-  oname = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
+  oname = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
   manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
