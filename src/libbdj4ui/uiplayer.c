@@ -39,8 +39,8 @@
 enum {
   /* for volume and speed */
   UIPLAYER_LOCK_TIME_WAIT = 100,
-  UIPLAYER_LOCK_TIME_SEND = 10,
-  /* there are all sorts of latency issues making the sliders work nicely */
+  UIPLAYER_LOCK_TIME_SEND = 20,
+  /* there are all sorts of latency issues making the seek work nicely */
   /* it will take at least 100ms and at most 200ms for the message to get */
   /* back.  Then there are the latency issues on this end. */
   UIPLAYER_SEEK_LOCK_TIME_WAIT = 300,
