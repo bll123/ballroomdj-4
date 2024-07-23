@@ -3023,11 +3023,6 @@ manageToggleSBSSonglist (void *udata)
 
     uimusicqCopySelectList (ouimusicq, uimusicq);
     name = uimusicqGetSonglistName (ouimusicq);
-    if (name == NULL || ! *name) {
-      fprintf (stderr, "ERR: setting empty song list name\n");
-      mdfree (name);
-      name = mdstrdup (_("New Song List"));
-    }
     manageSetSonglistName (manage, name);
     mdfree (name);
   }

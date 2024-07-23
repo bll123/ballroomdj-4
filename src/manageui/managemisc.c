@@ -56,15 +56,24 @@ manageDeletePlaylist (uiwcont_t *statusMsg, const char *name)
   uiLabelSetText (statusMsg, tbuff);
 }
 
+/* gets the entry value, trims spaces before and after. */
+/* if the entry is empty, replace it with newname. */
 char *
-manageTrimName (const char *name)
+manageGetEntryValue (uiwcont_t *uientry, const char *newname)
 {
-  char  *tname;
+  const char  *val;
+  char        *tval;
 
-  while (*name == ' ') {
-    ++name;
+  val = uiEntryGetValue (uientry);
+  while (*val == ' ') {
+    ++val;
   }
-  tname = mdstrdup (name);
-  stringTrimChar (tname, ' ');
-  return tname;
+  tval = mdstrdup (val);
+  stringTrimChar (tval, ' ');
+  if (*tval == '\0') {
+    uiEntrySetValue (uientry, newname);
+    mdfree (tval);
+    tval = mdstrdup (newname);
+  }
+  return tval;
 }

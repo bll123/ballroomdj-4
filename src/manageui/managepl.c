@@ -537,7 +537,8 @@ managePlaylistSave (managepl_t *managepl)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
+  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
+      _("New Automatic Playlist"));
 
   managepl->changed = managePlaylistCheckChanged (managepl);
 
@@ -582,7 +583,8 @@ managePlaylistLoadCheck (managepl_t *managepl)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
+  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
+      _("New Automatic Playlist"));
 
   if (! playlistExists (name)) {
     managePlaylistNew (managepl, MANAGE_STD);
@@ -785,7 +787,8 @@ managePlaylistCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
-  oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
+  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
+      _("New Automatic Playlist"));
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
@@ -810,7 +813,8 @@ managePlaylistDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
-  oname = manageTrimName (uiEntryGetValue (managepl->wcont [MPL_W_PL_NAME]));
+  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
+      _("New Automatic Playlist"));
   manageDeletePlaylist (managepl->minfo->errorMsg, oname);
   manageResetChanged (managepl);
 

@@ -253,7 +253,7 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  name = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
@@ -304,7 +304,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  name = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
 
   if (! sequenceExists (name)) {
     /* make sure no save happens */
@@ -415,7 +415,7 @@ manageSequenceCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
-  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  oname = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
 
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -466,7 +466,7 @@ manageSequenceDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
-  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  oname = manageGetEntryValue (manageseq->seqname, _("New Sequence"));
   manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
