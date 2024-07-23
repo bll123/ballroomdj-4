@@ -74,11 +74,11 @@ all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
 # group-targets to only run this once.
 $(PLAYLISTS) $(DATAFILES) &:	$(PLAYLISTSRC) $(DATAFILESRC) \
 		$(PODIR)/$(LOCALE).po po-tmpl.sh
-	@echo "-- $$(date +%T) Update templates for $(LOCALE)"
+	@# echo "-- $$(date +%T) Update templates for $(LOCALE)"
 	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(TMPLLOCALE)
 
 $(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po complete.txt po-html.sh
-	@echo "-- $$(date +%T) Update html for $(LOCALE)"
+	@# echo "-- $$(date +%T) Update html for $(LOCALE)"
 	@./po-html.sh $(PODIR)/$(LOCALE).po \
             $(LOCALE) $(TMPLLOCALE) "$(LANGDESC)"
 

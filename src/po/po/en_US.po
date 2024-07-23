@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.11.1\n"
+"Project-Id-Version: ballroomdj-4 4.11.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-07-20\n"
-"PO-Revision-Date: 2024-07-20\n"
+"POT-Creation-Date: 2024-07-23\n"
+"PO-Revision-Date: 2024-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -955,6 +955,10 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -967,6 +971,12 @@ msgstr ""
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
+msgstr ""
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
 msgstr ""
 
 #. CONTEXT: configuration file: genre
@@ -1170,7 +1180,6 @@ msgid "New Level"
 msgstr ""
 
 #. CONTEXT: playlist management: default name for a new playlist
-#, c-format
 msgid "New Playlist"
 msgstr ""
 
@@ -1184,7 +1193,6 @@ msgid "New Rating"
 msgstr ""
 
 #. CONTEXT: sequence editor: default name for a new sequence
-#, c-format
 msgid "New Sequence"
 msgstr ""
 
@@ -1779,6 +1787,7 @@ msgstr ""
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab

@@ -199,8 +199,6 @@ if [[ $tag == linux && $isprimary == T ]]; then
     cp -pf ${ttfn} ${htfn}
   fi
   rm -f ${ttfn}.n
-
-  ./src/utils/makehtmllist.sh
 fi
 
 # on windows, copy all of the required .dll files to plocal/bin
