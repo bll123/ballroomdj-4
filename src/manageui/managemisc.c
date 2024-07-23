@@ -59,7 +59,7 @@ manageDeletePlaylist (uiwcont_t *statusMsg, const char *name)
 /* gets the entry value, trims spaces before and after. */
 /* if the entry is empty, replace it with newname. */
 char *
-manageGetEntryValue (uiwcont_t *uientry, const char *newname)
+manageGetEntryValue (uiwcont_t *uientry)
 {
   const char  *val;
   char        *tval;
@@ -70,10 +70,5 @@ manageGetEntryValue (uiwcont_t *uientry, const char *newname)
   }
   tval = mdstrdup (val);
   stringTrimChar (tval, ' ');
-  if (*tval == '\0') {
-    uiEntrySetValue (uientry, newname);
-    mdfree (tval);
-    tval = mdstrdup (newname);
-  }
   return tval;
 }

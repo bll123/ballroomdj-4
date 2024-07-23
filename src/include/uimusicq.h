@@ -99,6 +99,7 @@ void  uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb);
 void  uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
+bool uimusicqSonglistNameIsNotValid (uimusicq_t *uimusicq);
 nlistidx_t uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb);
 void uimusicqExport (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, const char *fname, const char *slname, int exptype);

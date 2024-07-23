@@ -228,6 +228,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
     uimusicq->ui [ci].slname = uiwidgetp;
     if (validateFunc != NULL) {
+      /* CONTEXT: music queue: song list name */
       uiEntrySetValidate (uiwidgetp, _("Song List"),
           validateFunc, errorMsg, UIENTRY_IMMEDIATE);
     }

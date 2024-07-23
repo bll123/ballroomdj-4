@@ -8,7 +8,7 @@
 
 * Bug Fixes:
     * Configuration: Mobile Remote Control: Clean up template selection.
-    * Management: Force non-empty song list, sequence, playlist names.
+    * Management: Prevent save with bad song list/sequence/playlist name.
     * Player: Improve speed change control.
 * Internal:
     * Code Cleanup.

@@ -181,9 +181,6 @@ uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
 }
 
 /* the caller takes ownership of the returned value */
-/* 2024-7-23 as the validation process does not force the name to be */
-/* set, check for an empty name here, and if empty, set it to something */
-/* empty names are bad. */
 char *
 uimusicqGetSonglistName (uimusicq_t *uimusicq)
 {
@@ -198,13 +195,18 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   }
   tval = mdstrdup (val);
   stringTrimChar (tval, ' ');
-  if (*tval == '\0') {
-    /* do not allow any empty name to pass through */
-    uiEntrySetValue (uimusicq->ui [ci].slname, _("New Song List"));
-    mdfree (tval);
-    tval = mdstrdup (_("New Song List"));
-  }
   return tval;
+}
+
+bool
+uimusicqSonglistNameIsNotValid (uimusicq_t *uimusicq)
+{
+  int     ci;
+  bool    rc;
+
+  ci = uimusicq->musicqManageIdx;
+  rc = uiEntryIsNotValid (uimusicq->ui [ci].slname);
+  return rc;
 }
 
 nlistidx_t

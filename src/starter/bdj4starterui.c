@@ -120,19 +120,20 @@ enum {
 
 enum {
   START_W_WINDOW,
-  START_W_STATUS_DISP,
-  START_W_STATUS_MSG,
-  START_W_STATUS_DISP_MSG,
-  START_W_PROFILE_ACCENT,
-  START_W_SUPPORT_DIALOG,
-  START_W_SUPPORT_MSG_DIALOG,
-  START_W_SUPPORT_SEND_FILES,
-  START_W_SUPPORT_SEND_DB,
   START_W_MENU_DEL_PROFILE,
-  START_W_SUPPORT_TEXTBOX,
-  START_W_SUPPORT_SUBJECT,
-  START_W_SUPPORT_EMAIL,
+  START_W_PROFILE_ACCENT,
   START_W_PROFILE_SEL,
+  START_W_STATUS_DISP,
+  START_W_STATUS_DISP_MSG,
+  START_W_STATUS_MSG,
+  START_W_SUPPORT_DIALOG,
+  START_W_SUPPORT_EMAIL,
+  START_W_SUPPORT_MSG_DIALOG,
+  START_W_SUPPORT_SEND_DB,
+  START_W_SUPPORT_SEND_FILES,
+  START_W_SUPPORT_STATUS_MSG,
+  START_W_SUPPORT_SUBJECT,
+  START_W_SUPPORT_TEXTBOX,
   START_W_MAX,
 };
 
@@ -1922,6 +1923,17 @@ starterCreateSupportMsgDialog (void *udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  starter->wcont [START_W_SUPPORT_STATUS_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* line 2 */
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
   /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiwidgetp = uiCreateColonLabel (_("E-Mail Address"));
   uiBoxPackStart (hbox, uiwidgetp);
@@ -2035,6 +2047,11 @@ starterSupportMsgHandler (void *udata, int32_t responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      if (uiEntryIsNotValid (starter->wcont [START_W_SUPPORT_EMAIL])) {
+        /* CONTEXT: Send support message: Error message for invalid e-mail. */
+        uiLabelSetText (starter->wcont [START_W_SUPPORT_STATUS_MSG], _("Invalid E-Mail Address."));
+        break;
+      }
       starter->startState = START_STATE_SUPPORT_INIT;
       break;
     }

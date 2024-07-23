@@ -237,6 +237,7 @@ manageSequenceSave (manageseq_t *manageseq)
   char        nnm [MAXPATHLEN];
   char        *name;
   bool        changed = false;
+  bool        notvalid = false;
 
   logProcBegin ();
   if (manageseq->seqoldname == NULL) {
@@ -255,7 +256,14 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
+  name = manageGetEntryValue (manageseq->seqname);
+  notvalid = false;
+  if (uiEntryIsNotValid (manageseq->seqname)) {
+    mdfree (name);
+    name = mdstrdup (manageseq->seqoldname);
+    uiEntrySetValue (manageseq->seqname, manageseq->seqoldname);
+    notvalid = true;
+  }
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
@@ -289,6 +297,13 @@ manageSequenceSave (manageseq_t *manageseq)
     callbackHandlerS (manageseq->seqloadcb, name);
   }
   mdfree (name);
+
+  if (notvalid) {
+    /* set the message after the entry field has been reset */
+    /* CONTEXT: Saving Sequence: Error message for invalid sequence name. */
+    uiLabelSetText (manageseq->minfo->errorMsg, _("Invalid name. Using old name."));
+  }
+
   logProcEnd ("");
 }
 
@@ -306,7 +321,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     return;
   }
 
-  name = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
+  name = manageGetEntryValue (manageseq->seqname);
 
   if (! sequenceExists (name)) {
     /* make sure no save happens */
@@ -417,7 +432,7 @@ manageSequenceCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
-  oname = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
+  oname = manageGetEntryValue (manageseq->seqname);
 
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -467,8 +482,8 @@ manageSequenceDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
-  oname = manageGetEntryValue (manageseq->seqname, manageseq->newseqname);
-  manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
+  oname = manageGetEntryValue (manageseq->seqname);
+  manageDeletePlaylist (manageseq->minfo->statusMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
   mdfree (oname);

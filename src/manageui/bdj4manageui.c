@@ -2597,7 +2597,7 @@ manageSonglistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->currmusicq);
 
-  manageDeletePlaylist (manage->minfo.errorMsg, oname);
+  manageDeletePlaylist (manage->minfo.statusMsg, oname);
   /* no save */
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
@@ -3069,6 +3069,7 @@ manageSonglistSave (manageui_t *manage)
 {
   char        *name;
   char        nnm [MAXPATHLEN];
+  bool        notvalid;
 
   logProcBegin ();
   if (manage == NULL) {
@@ -3091,6 +3092,13 @@ manageSonglistSave (manageui_t *manage)
   }
 
   name = uimusicqGetSonglistName (manage->currmusicq);
+  notvalid = false;
+  if (uimusicqSonglistNameIsNotValid (manage->currmusicq)) {
+    mdfree (name);
+    name = mdstrdup (manage->sloldname);
+    uimusicqSetSonglistName (manage->currmusicq, manage->sloldname);
+    notvalid = true;
+  }
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
@@ -3111,6 +3119,13 @@ manageSonglistSave (manageui_t *manage)
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   manageLoadPlaylistCB (manage, name);
   mdfree (name);
+
+  if (notvalid) {
+    /* set the message after the entry field has been reset */
+    /* CONTEXT: Saving Song List: Error message for invalid song list name. */
+    uiLabelSetText (manage->minfo.errorMsg, _("Invalid name. Using old name."));
+  }
+
   logProcEnd ("");
 }
 

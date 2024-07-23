@@ -84,7 +84,6 @@ typedef struct managepl {
   uinbtabid_t     *tabids;
   mpldance_t      *mpldnc;
   playlist_t      *playlist;
-  const char      *newplname;
   bool            changed : 1;
   bool            inload : 1;
 } managepl_t;
@@ -127,8 +126,6 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->changed = false;
   managepl->inload = false;
   managepl->plloadcb = NULL;
-  /* CONTEXT: playlist management: default name for a new playlist */
-  managepl->newplname = _("New Playlist");
   for (int i = 0; i < MPL_CB_MAX; ++i) {
     managepl->callbacks [i] = NULL;
   }
@@ -533,6 +530,7 @@ void
 managePlaylistSave (managepl_t *managepl)
 {
   char      *name;
+  bool      notvalid = false;
 
   logProcBegin ();
   if (managepl->ploldname == NULL) {
@@ -540,10 +538,16 @@ managePlaylistSave (managepl_t *managepl)
     return;
   }
 
-  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      managepl->newplname);
+  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
 
   managepl->changed = managePlaylistCheckChanged (managepl);
+  notvalid = false;
+  if (uiEntryIsNotValid (managepl->wcont [MPL_W_PL_NAME])) {
+    mdfree (name);
+    name = mdstrdup (managepl->ploldname);
+    uiEntrySetValue (managepl->wcont [MPL_W_PL_NAME], managepl->ploldname);
+    notvalid = true;
+  }
 
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
@@ -569,6 +573,13 @@ managePlaylistSave (managepl_t *managepl)
     }
   }
   mdfree (name);
+
+  if (notvalid) {
+    /* set the message after the entry field has been reset */
+    /* CONTEXT: Saving Playlist: Error message for invalid playlist name. */
+    uiLabelSetText (managepl->minfo->errorMsg, _("Invalid name. Using old name."));
+  }
+
   logProcEnd ("");
 }
 
@@ -586,8 +597,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
     return;
   }
 
-  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      managepl->newplname);
+  name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
 
   if (! playlistExists (name)) {
     managePlaylistNew (managepl, MANAGE_STD);
@@ -661,7 +671,8 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
     managePlaylistSave (managepl);
   }
 
-  strlcpy (tbuff, managepl->newplname, sizeof (tbuff));
+  /* CONTEXT: playlist management: default name for a new playlist */
+  strlcpy (tbuff, _("New Playlist"), sizeof (tbuff));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
 
@@ -789,8 +800,7 @@ managePlaylistCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
-  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      managepl->newplname);
+  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->minfo->errorMsg, oname, newname)) {
@@ -815,9 +825,8 @@ managePlaylistDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
-  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME],
-      managepl->newplname);
-  manageDeletePlaylist (managepl->minfo->errorMsg, oname);
+  oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
+  manageDeletePlaylist (managepl->minfo->statusMsg, oname);
   manageResetChanged (managepl);
 
   managePlaylistNew (managepl, MANAGE_STD);

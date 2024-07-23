@@ -111,8 +111,8 @@ uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
   int         flags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
   bool        val;
 
-  rc = UIENTRY_OK;
   uiLabelSetText (msgwidget, "");
+  rc = UIENTRY_OK;
   str = uiEntryGetValue (entry);
   if (isWindows ()) {
     flags |= VAL_NO_WINCHARS;

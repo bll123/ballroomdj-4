@@ -40,6 +40,7 @@ typedef struct uientry {
   mstime_t        validateTimer;
   void            *udata;
   bool            valdelay : 1;
+  bool            valid : 1;
 } uientry_t;
 
 static void uiEntryValidateStart (uiwcont_t *uiwidget);
@@ -61,6 +62,7 @@ uiEntryInit (int entrySize, int maxSize)
   uientry->udata = NULL;
   mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
   uientry->valdelay = false;
+  uientry->valid = true;
   uientry->buffer = gtk_entry_buffer_new (NULL, -1);
 
   uiwidget = uiwcontAlloc ();
@@ -189,7 +191,7 @@ uiEntrySetValidate (uiwcont_t *uiwidget, const char *label,
 int
 uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
 {
-  int   rc;
+  int         rc;
   uientry_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate")) {
@@ -213,9 +215,11 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
   }
   if (rc == UIENTRY_ERROR) {
     uiEntrySetIcon (uiwidget, "dialog-error");
+    uientry->valid = false;
   }
   if (rc == UIENTRY_OK) {
     uiEntryClearIcon (uiwidget);
+    uientry->valid = true;
   }
   return rc;
 }
@@ -233,6 +237,9 @@ uiEntryValidateClear (uiwcont_t *uiwidget)
 
   if (uientry->validateFunc != NULL) {
     mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
+    /* validate-clear is called when the entry is switch to a new value */
+    /* assume validity */
+    uientry->valid = true;
   }
 }
 
@@ -256,11 +263,13 @@ uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata)
 
   rc = UIENTRY_ERROR;
   dir = gtk_entry_buffer_get_text (uientry->buffer);
+  uientry->valid = false;
   if (dir != NULL) {
     strlcpy (tbuff, dir, sizeof (tbuff));
     pathNormalizePath (tbuff, sizeof (tbuff));
     if (fileopIsDirectory (tbuff)) {
       rc = UIENTRY_OK;
+      uientry->valid = true;
     } /* exists */
   } /* not null */
 
@@ -287,20 +296,37 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 
   rc = UIENTRY_ERROR;
   fn = gtk_entry_buffer_get_text (uientry->buffer);
+  uientry->valid = false;
   if (fn != NULL) {
     if (*fn == '\0') {
       rc = UIENTRY_OK;
+      uientry->valid = true;
     } else {
       strlcpy (tbuff, fn, sizeof (tbuff));
       pathNormalizePath (tbuff, sizeof (tbuff));
       if (fileopFileExists (tbuff)) {
         rc = UIENTRY_OK;
+        uientry->valid = true;
       } /* exists */
     } /* not empty */
   } /* not null */
 
   return rc;
 }
+
+bool
+uiEntryIsNotValid (uiwcont_t *uiwidget)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-file")) {
+    return false;
+  }
+
+  uientry = uiwidget->uiint.uientry;
+  return ! uientry->valid;
+}
+
 
 void
 uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
@@ -343,6 +369,7 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
 {
   uiwcont_t   *uiwidget = udata;
   uientry_t   *uientry;
+  int         rc;
 
   uientry = uiwidget->uiint.uientry;
 
@@ -350,7 +377,13 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
     uiEntryValidateStart (uiwidget);
   } else {
     if (uientry->validateFunc != NULL) {
-      uientry->validateFunc (uiwidget, uientry->label, uientry->udata);
+      rc = uientry->validateFunc (uiwidget, uientry->label, uientry->udata);
+      if (rc == UIENTRY_ERROR) {
+        uientry->valid = false;
+      }
+      if (rc == UIENTRY_OK) {
+        uientry->valid = true;
+      }
     }
   }
   return;

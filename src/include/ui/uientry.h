@@ -35,6 +35,7 @@ int uiEntryValidate (uiwcont_t *entry, bool forceflag);
 void uiEntryValidateClear (uiwcont_t *entry);
 int uiEntryValidateDir (uiwcont_t *edata, const char *label, void *udata);
 int uiEntryValidateFile (uiwcont_t *edata, const char *label, void *udata);
+bool uiEntryIsNotValid (uiwcont_t *uiwidget);
 void uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiEntrySetState (uiwcont_t *entry, int state);
 
