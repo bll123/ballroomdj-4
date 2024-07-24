@@ -364,7 +364,7 @@ main (int argc, char * argv[])
       }
       case 32: {
         prog = "vlcversion";
-        nodetach = true;
+        nodetach = false;
         wait = true;
         ++validargs;
         break;

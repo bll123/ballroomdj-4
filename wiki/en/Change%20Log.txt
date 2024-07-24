@@ -4,16 +4,18 @@
 
 <!--
 
-**4.11.2 2024-7---**
+**4.11.3 2024-7---**
+
+-->
+
+**4.11.2 2024-7-24**
 
 * Bug Fixes:
     * Configuration: Mobile Remote Control: Clean up template selection.
     * Management: Prevent save with bad song list/sequence/playlist name.
     * Player: Improve speed change control.
 * Internal:
-    * Code Cleanup.
-
--->
+    * Code Cleanup (manage ui).
 
 **4.11.1 2024-7-20**
 
@@ -986,4 +988,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-23 04:27:09; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_

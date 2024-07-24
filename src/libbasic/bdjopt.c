@@ -307,9 +307,10 @@ bdjoptInit (void)
       char    tbuff [MAXPATHLEN];
       char    *data;
 
+      /* the path and environment variables are already set up */
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
-      data = osRunProgram (tbuff, "--vlcversion", NULL);
+          "vlcversion", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
+      data = osRunProgram (tbuff, NULL);
       if (data != NULL) {
         sysvarsSetNum (SVL_VLC_VERSION, atoi (data));
       }

@@ -7,7 +7,7 @@
 The __Player__ and __Audio__ settings usually do not change.
 
 __Player__: Selects the player interface.  At this time,
-_Integrated&nbsp;VLC3_ and _GStreamer_ are supported.  The _GStreamer_
+_Integrated&nbsp;VLC&nbsp;3_ and _GStreamer_ are supported.  The _GStreamer_
 interface is currently only enabled for Linux platforms.
 
 __Audio__: Selects the audio interface.
@@ -31,4 +31,4 @@ displayed in the player.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_

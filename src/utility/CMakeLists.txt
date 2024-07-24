@@ -129,21 +129,32 @@ target_link_libraries (uitest PRIVATE
 )
 addIntlLibrary (uitest)
 
-if (LIBVLC_FOUND)
+# want to always build this
+if (LIBVLC_FOUND OR LIBVLC4_FOUND)
   add_executable (vlcversion
     vlcversion.c
   )
   if (WIN32)
     target_compile_options (uitest PRIVATE -municode)
-    target_compile_options (uitest PRIVATE -mwindows)
   endif()
-  target_include_directories (vlcversion
-    PRIVATE "${LIBVLC_INCLUDE_DIR}"
-  )
-  target_link_libraries (vlcversion PRIVATE
-    ${LIBVLC_LDFLAGS}
-    ${LIBVLC_LIBRARY}
-  )
+  if (LIBVLC_FOUND)
+    target_include_directories (vlcversion
+      PRIVATE "${LIBVLC_INCLUDE_DIR}"
+    )
+    target_link_libraries (vlcversion PRIVATE
+      ${LIBVLC_LDFLAGS}
+      ${LIBVLC_LIBRARY}
+    )
+  endif ()
+  if (LIBVLC4_FOUND)
+    target_include_directories (vlcversion
+      PRIVATE "${LIBVLC4_INCLUDE_DIR}"
+    )
+    target_link_libraries (vlcversion PRIVATE
+      ${LIBVLC4_LDFLAGS}
+      ${LIBVLC4_LIBRARY}
+    )
+  endif ()
 endif()
 
 install (TARGETS
@@ -163,7 +174,7 @@ install (TARGETS
   uitest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
-if (LIBVLC_FOUND)
+if (LIBVLC_FOUND OR LIBVLC4_FOUND)
   install (TARGETS
     vlcversion
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
@@ -184,6 +195,6 @@ updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)
 updateRPath (uitest)
-if (LIBVLC_FOUND)
+if (LIBVLC_FOUND OR LIBVLC4_FOUND)
   updateRPath (vlcversion)
 endif()

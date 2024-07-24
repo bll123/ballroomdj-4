@@ -377,13 +377,15 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
 static nlist_t *
 confuiGetThemeList (void)
 {
-  slist_t     *filelist = NULL;
   nlist_t     *themelist = NULL;
-  char        tbuff [MAXPATHLEN];
   slist_t     *sthemelist = NULL;
   slistidx_t  iteridx;
   const char  *nm;
   int         count;
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+  char        tbuff [MAXPATHLEN];
+  slist_t     *filelist = NULL;
+#endif
 
 
   logProcBegin ();
@@ -442,6 +444,9 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   slistidx_t    iteridx;
   const char    *fn;
   pathinfo_t    *pi;
+#if BDJ4_USE_NULLUI
+  static char   *srchdir = "null";
+#endif
 #if BDJ4_USE_GTK3
   static char   *srchdir = "gtk-3.0";
 #endif
@@ -450,6 +455,9 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 #endif
 #if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   static char   *srchfn = "gtk.css";
+#endif
+#if BDJ4_USE_NULLUI
+  static char   *srchfn = "null";
 #endif
 
   logProcBegin ();
