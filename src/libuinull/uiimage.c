@@ -45,12 +45,6 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
   return;
 }
 
-void *
-uiImageGetPixbuf (uiwcont_t *uiwidget)
-{
-  return NULL;
-}
-
 void
 uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
 {

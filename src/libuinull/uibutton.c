@@ -39,6 +39,11 @@ uiButtonSetImagePosRight (uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
+{
+  return;
+}
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)

@@ -35,6 +35,12 @@ uiLabelAddClass (const char *classnm, const char *color)
 }
 
 void
+uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
+{
+  return;
+}
+
+void
 uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 {
   return;

@@ -30,12 +30,6 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
 }
 
 void
-uichgindMarkError (uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
 uichgindMarkChanged (uiwcont_t *uiwidget)
 {
   return;

@@ -207,3 +207,8 @@ uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
   return;
 }
 
+void
+uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  return;
+}

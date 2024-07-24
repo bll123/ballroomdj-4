@@ -189,3 +189,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiWindowClearFocus (uiwcont_t *uiwidget)
+{
+  return;
+}

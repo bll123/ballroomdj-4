@@ -99,3 +99,9 @@ uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }
+
+bool
+uiEntryIsNotValid (uiwcont_t *uiwidget)
+{
+  return false;
+}

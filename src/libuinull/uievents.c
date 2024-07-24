@@ -35,8 +35,35 @@ uiEventFree (uiwcont_t *uiwidget)
   return;
 }
 
+uiwcont_t *
+uiEventCreateEventBox (uiwcont_t *uiwidgetp)
+{
+  return NULL;
+}
+
 void
 uiEventSetKeyCallback (uiwcont_t *uiwidget, uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  return;
+}
+
+void
+uiEventSetButtonCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  return;
+}
+
+void
+uiEventSetScrollCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
+{
+  return;
+}
+
+void
+uiEventSetMotionCallback (uiwcont_t *uieventwidget,
+    uiwcont_t *uiwidgetp, callback_t *uicb)
 {
   return;
 }
@@ -49,6 +76,24 @@ uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
 
 bool
 uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+bool
+uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+bool
+uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+bool
+uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)   /* KEEP */
 {
   return false;
 }
@@ -122,7 +167,19 @@ uiEventIsNavKey (uiwcont_t *uiwidget)
 }
 
 bool
+uiEventIsPasteCutKey (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+bool
 uiEventIsMaskedKey (uiwcont_t *uiwidget)
+{
+  return false;
+}
+
+bool
+uiEventIsAltPressed (uiwcont_t *uiwidget)
 {
   return false;
 }
@@ -139,46 +196,9 @@ uiEventIsShiftPressed (uiwcont_t *uiwidget)
   return false;
 }
 
-bool
-uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
-{
-  return false;
-}
-
-bool
-uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
-{
-  return false;
-}
-
-bool
-uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)  /* KEEP */
-{
-  return false;
-}
-
-uiwcont_t *
-uiEventCreateEventBox (uiwcont_t *uiwidgetp)
-{
-  return NULL;
-}
-
-void
-uiEventSetScrollCallback (uiwcont_t *uieventwidget,
-    uiwcont_t *uiwidgetp, callback_t *uicb)
-{
-  return;
-}
-
-void
-uiEventSetButtonCallback (uiwcont_t *uieventwidget,
-    uiwcont_t *uiwidgetp, callback_t *uicb)
-{
-  return;
-}
-
 int
 uiEventGetButton (uiwcont_t *uiwidget)
 {
-  return 1;
+  return -1;
 }
+
