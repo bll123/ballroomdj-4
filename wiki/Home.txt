@@ -101,6 +101,7 @@
 ### Subjects
 __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Adding Songs to the Database](en-Subjects-Adding%20Songs)
+<br>&nbsp;&nbsp;&nbsp;[Changing the Name of a Dance](en-Subjects-Changing%20Dance%20Name)
 <br>&nbsp;&nbsp;&nbsp;[Moving BDJ4 to a new Computer](en-Subjects-Moving)
 <br>&nbsp;&nbsp;&nbsp;[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
 <br>__Advanced Setup__
@@ -145,4 +146,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-07-22 07:44:36; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-25 04:46:03; BDJ4 version 4.11.2)_

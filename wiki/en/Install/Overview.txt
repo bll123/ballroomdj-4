@@ -57,6 +57,24 @@ In all of these cases, once queued for playback, the BDJ4 player
 allows songs to be moved, added, and removed.  This does not modify
 the original song list, sequence or automatic playlist.
 
+##### Using Genre
+
+Some people use the genre tag to set the dance (Waltz, Rumba, etc.).
+
+In writing BDJ4, I have been careful not to overwrite tags that people
+may be using. BDJ4 leaves the genre tag alone so that it can be used
+by the user for the purpose they choose (it may be set to New Age,
+Jazz, Rock, etc.).  BDJ4 saves the dance in its own tag, and leaves
+the genre tag as is.
+
+When updating the BDJ4 database, there is a _Database Loads Dance from
+Genre_ option that can be set to check the genre tag for the dance
+when the audio file information is first read and saved into the
+database.
+
+<br>__References:__
+<br>[Configuration / Organization](en-Configuration-Organization)
+
 ##### Getting help
 
 If you need help getting started, understanding how something in BDJ4
@@ -65,4 +83,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-22 08:19:27; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-25 05:03:21; BDJ4 version 4.11.2)_
