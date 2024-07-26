@@ -74,6 +74,7 @@ enum {
   CONFUI_SPINBOX_BEGIN,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
+  CONFUI_SPINBOX_CONTROLLER,
   CONFUI_SPINBOX_DANCE_SPEED,
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
@@ -446,7 +447,7 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 int32_t confuiOrgPathSelect (void *udata, const char *sval);
-void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx);
+void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);

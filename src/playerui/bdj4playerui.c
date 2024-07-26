@@ -25,6 +25,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
+#include "controller.h"
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
@@ -82,6 +83,7 @@ enum {
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
+  PLUI_CB_CONTROLLER,
   PLUI_CB_MAX,
 };
 
@@ -159,6 +161,8 @@ typedef struct {
   mp3exp_t        *mp3exp;
   mstime_t        expmp3chkTime;
   int             expmp3state;
+  /* controller */
+  controller_t    *controller;
   /* flags */
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
@@ -210,6 +214,7 @@ enum {
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
+static bool     pluiInitDataCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
@@ -255,6 +260,7 @@ static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
+static bool     pluiControllerCallback (void *udata, int32_t val, int32_t cmd);
 static int32_t  pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
@@ -276,6 +282,8 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_INITIALIZE_DATA,
+      pluiInitDataCallback, &plui);
 
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
@@ -309,6 +317,7 @@ main (int argc, char *argv[])
   plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
+ plui.controller = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -489,6 +498,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
+
+  controllerFree (plui->controller);
 
   logProcEnd ("");
   return STATE_FINISHED;
@@ -1016,6 +1027,35 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   }
 
   logProcEnd ("");
+  return rc;
+}
+
+static bool
+pluiInitDataCallback (void *udata, programstate_t programState)
+{
+  playerui_t    *plui = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  if (plui->controller == NULL) {
+    const char  *val;
+
+    val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
+    if (val != NULL && *val) {
+      plui->controller = controllerInit (val);
+    } else {
+      rc = STATE_FINISHED;
+    }
+  }
+
+  if (plui->controller != NULL &&
+      controllerCheckReady (plui->controller)) {
+    controllerSetup (plui->controller);
+    plui->callbacks [PLUI_CB_CONTROLLER] =
+        callbackInitII (pluiControllerCallback, plui);
+    controllerSetCallback (plui->controller, plui->callbacks [PLUI_CB_CONTROLLER]);
+    rc = STATE_FINISHED;
+  }
+
   return rc;
 }
 
@@ -2068,3 +2108,13 @@ pluiDragDropCallback (void *udata, const char *uri)
   return UICB_CONT;
 }
 
+static bool
+pluiControllerCallback (void *udata, int32_t val, int32_t cmd)
+{
+//  playerui_t    *plui = udata;
+  bool          rc = false;
+
+fprintf (stderr, "plui-cb: cmd: %d val: %d\n", cmd, val);
+
+  return rc;
+}

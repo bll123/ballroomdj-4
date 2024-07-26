@@ -358,7 +358,7 @@ fprintf (stderr, "mprisi-method: %s %s\n", intfc, method);
     cmd = CONTROLLER_QUIT;
   }
 
-  callbackHandlerLongInt (contdata->cb, val, cmd);
+  callbackHandlerII (contdata->cb, val, cmd);
 
   return true;
 }
