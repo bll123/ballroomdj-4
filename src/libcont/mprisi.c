@@ -208,6 +208,7 @@ fprintf (stderr, "cont-mpris init\n");
 
   contdata->dbus = dbusConnInit ();
   dbusConnectAcquireName (contdata->dbus, instname, interface [MPRIS_INTFC_MP2]);
+fprintf (stderr, "cont-mpris init-fin\n");
 
   return contdata;
 }
@@ -215,19 +216,28 @@ fprintf (stderr, "cont-mpris init\n");
 void
 contiFree (contdata_t *contdata)
 {
+  if (contdata == NULL) {
+    return;
+  }
+
 fprintf (stderr, "cont-mpris free\n");
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
+fprintf (stderr, "cont-mpris free-a\n");
     dbusUnregisterObject (contdata->dbus, contdata->root_interface_id);
     dbusUnregisterObject (contdata->dbus, contdata->player_interface_id);
   }
   if (contdata->dbus != NULL) {
+fprintf (stderr, "cont-mpris free-b\n");
     dbusConnClose (contdata->dbus);
   }
+  mdfree (contdata);
+fprintf (stderr, "cont-mpris free-fin\n");
 }
 
 void
 contiSetup (contdata_t *contdata)
 {
+fprintf (stderr, "cont-mpris setup\n");
   dbusSetIntrospectionData (contdata->dbus, introspection_xml);
 
   contdata->root_interface_id = dbusRegisterObject (contdata->dbus,
@@ -248,6 +258,7 @@ contiCheckReady (contdata_t *contdata)
   if (contdata == NULL || contdata->dbus == NULL) {
     return rc;
   }
+fprintf (stderr, "cont-mpris chk-ready\n");
   ret = dbusCheckAcquireName (contdata->dbus);
 fprintf (stderr, "cont-mpris chk: ret: %d\n", ret);
   if (ret == DBUS_NAME_OPEN) {

@@ -112,6 +112,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
 
 static datafilekey_t bdjoptmachinedfkeys [] = {
   { "AUDIOTAG",           OPT_M_AUDIOTAG_INTFC,     VALUE_STR, NULL, DF_NORM },
+  { "CONTROLLER",         OPT_M_CONTROLLER_INTFC,   VALUE_STR, NULL, DF_NORM },
   { "DIRITUNESMEDIA",     OPT_M_DIR_ITUNES_MEDIA,   VALUE_STR, NULL, DF_NORM },
   { "DIRMUSIC",           OPT_M_DIR_MUSIC,          VALUE_STR, NULL, DF_NORM },
   { "DIROLDSKIP",         OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },

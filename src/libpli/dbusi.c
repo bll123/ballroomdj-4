@@ -127,6 +127,22 @@ dbusConnClose (dbus_t *dbus)
     return;
   }
 
+  if (dbus->data != NULL) {
+    mdextfree (dbus->data);
+fprintf (stderr, "data-unref: %d\n", G_IS_OBJECT (dbus->data));
+    if (G_IS_OBJECT (dbus->data)) {
+      g_variant_unref (dbus->data);
+    }
+  }
+
+  if (dbus->result != NULL) {
+    mdextfree (dbus->result);
+fprintf (stderr, "result-unref: %d\n", G_IS_OBJECT (dbus->result));
+    if (G_IS_OBJECT (dbus->result)) {
+      g_variant_unref (dbus->result);
+    }
+  }
+
   if (dbus->idata != NULL) {
     g_dbus_node_info_unref (dbus->idata);
   }
@@ -137,15 +153,8 @@ dbusConnClose (dbus_t *dbus)
 
   if (dbus->dconn != NULL) {
     mdextfree (dbus->dconn);
+fprintf (stderr, "dconn-unref: %d\n", G_IS_OBJECT (dbus->dconn));
     g_object_unref (dbus->dconn);
-  }
-
-  mdextfree (dbus->dconn);
-  g_object_unref (dbus->dconn);
-
-  if (dbus->result != NULL) {
-    mdextfree (dbus->result);
-    g_variant_unref (dbus->result);
   }
 
   /* apparently, the data variant does not need to be unref'd */
@@ -261,6 +270,7 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
 
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
+fprintf (stderr, "msg:result-unref: %d\n", G_IS_OBJECT (dbus->result));
     g_variant_unref (dbus->result);
   }
   dbus->result = NULL;
@@ -284,8 +294,8 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
 bool
 dbusResultGet (dbus_t *dbus, ...)
 {
-  const char  *type;
-  GVariant    *val;
+  const char  *type = NULL;
+  GVariant    *val = NULL;
   va_list     args;
 
   val = dbus->result;
@@ -299,13 +309,13 @@ dbusResultGet (dbus_t *dbus, ...)
 # if DBUS_DEBUG
   fprintf (stderr, "-- result: %s\n", type);
 # endif
-  if (strcmp (type, "(v)") == 0) {
+  if (type != NULL && strcmp (type, "(v)") == 0) {
     g_variant_get (val, type, &val);
     type = g_variant_get_type_string (val);
     /* supported-uri-schemes returns a (v);as */
   }
 
-  if (strcmp (type, "(as)") == 0) {
+  if (type != NULL && strcmp (type, "(as)") == 0) {
     GVariantIter  gvi;
 
     g_variant_iter_init (&gvi, val);
@@ -314,7 +324,7 @@ dbusResultGet (dbus_t *dbus, ...)
     /* list-names returns a (as);as */
   }
 
-  if (strcmp (type, "as") == 0) {
+  if (type != NULL && strcmp (type, "as") == 0) {
     const char  ***out;
     long        *alen;
     gsize       len;
@@ -328,7 +338,7 @@ dbusResultGet (dbus_t *dbus, ...)
     return true;
   }
 
-  if (strcmp (type, "a{sv}") == 0) {
+  if (type != NULL && strcmp (type, "a{sv}") == 0) {
     GVariantIter  gvi;
     GVariant      *ival;
     GVariant      *tv;
@@ -368,6 +378,7 @@ dbusResultGet (dbus_t *dbus, ...)
         break;
       }
       mdextfree (ival);
+fprintf (stderr, "ival-unref: %d\n", G_IS_OBJECT (ival));
       g_variant_unref (ival);
     }
     va_end (args);
@@ -449,6 +460,7 @@ dbusFreeData (dbus_t *dbus)
   }
 
   mdextfree (dbus->data);
+fprintf (stderr, "data-unref: %d\n", G_IS_OBJECT (dbus->data));
   g_variant_unref (dbus->data);
 }
 
@@ -491,7 +503,9 @@ dbusMethodHandler (GDBusConnection *connection,
   dbus_t    *dbus = udata;
 
 fprintf (stderr, "dbus-method: %s %s %s\n", objpath, intfc, method);
-dumpResult ("  method-params", parameters);
+# if DBUS_DEBUG
+  dumpResult ("  method-params", parameters);
+# endif
 
   if (dbus->cbmethod != NULL) {
     dbus->cbmethod (intfc, method, dbus->userdata);
@@ -570,7 +584,10 @@ dumpResult (const char *tag, GVariant *data)
       mdextalloc (v);
       dumpResult ("value-as", v);
       mdextfree (v);
-      g_variant_unref (v);
+fprintf (stderr, "v-unref: %d\n", G_IS_OBJECT (v));
+      if (G_IS_OBJECT (v)) {
+        g_variant_unref (v);
+      }
     }
   } else if (strcmp (type, "as") == 0) {
     const char  **out;

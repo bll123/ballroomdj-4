@@ -87,6 +87,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
 
+  /* CONTEXT: configuration: which controller to use */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Controller"),
+      CONFUI_SPINBOX_CONTROLLER, OPT_M_CONTROLLER_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_CONTROLLER].listidx, NULL);
+
   /* CONTEXT: configuration: the volume used when starting the player */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
@@ -233,7 +238,7 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
   ilistFree (interfaces);
 
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
-      /* CONTEXT: configuration: no controller */
+      /* CONTEXT: configuration: controller: no controller */
       _("None"));
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
 
@@ -242,7 +247,7 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
 nlistidx_t iter;
 nlistidx_t key;
   nlistStartIterator (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter);
-  while ((key = nlistIterateKey (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter)) != LIST_END_LIST) {
+  while ((key = nlistIterateKey (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter)) != LIST_LOC_INVALID) {
     fprintf (stderr, "key: %d\n", key);
     fprintf (stderr, "  disp: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, key));
     fprintf (stderr, "  sbkey: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, key));
