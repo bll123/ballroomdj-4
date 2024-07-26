@@ -117,7 +117,7 @@ diropMakeRecursiveDir (const char *dirname)
 
   for (p = tbuff + 1; *p; p++) {
     if (*p == '/') {
-      *p = 0;
+      *p = '\0';
       diropMkdir (tbuff);
       *p = '/';
     }
