@@ -9,6 +9,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "bdj4.h"
 #include "autosel.h"
 #include "bdjvarsdf.h"
 #include "dance.h"    // for debugging
@@ -204,7 +205,7 @@ songselInitialize (songsel_t *songsel, nlist_t *songlist, songfilter_t *songfilt
   /* when songlist is not null, it is a song-list, and all songs should */
   /* be used. */
   if (songlist != NULL) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "processing songs from songlist (%d)",
+    logMsg (LOG_DBG, LOG_SONGSEL, "processing songs from songlist (%" PRId32 ")",
         nlistGetCount (songlist));
 
     nlistStartIterator (songlist, &iteridx);
@@ -278,7 +279,7 @@ songselSelect (songsel_t *songsel, ilistidx_t danceIdx)
   songdata = searchForPercentage (songseldance, dval);
   if (songdata != NULL) {
     song = dbGetByIdx (songsel->musicdb, songdata->dbidx);
-    logMsg (LOG_DBG, LOG_SONGSEL, "selected idx:%d dbidx:%d from %d/%s",
+    logMsg (LOG_DBG, LOG_SONGSEL, "selected idx:%" PRId32 " dbidx:%" PRId32 " from %d/%s",
         songdata->idx, songdata->dbidx, songseldance->danceIdx,
         danceGetStr (songsel->dances, songseldance->danceIdx, DANCE_DANCE));
     songsel->lastSelection = songdata;
@@ -307,7 +308,8 @@ songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
 
   if (songsel->lastSelection != NULL) {
     songdata = songsel->lastSelection;
-    logMsg (LOG_DBG, LOG_SONGSEL, "removing idx:%d dbidx:%d ssidx:%d from %d/%s",
+    logMsg (LOG_DBG, LOG_SONGSEL,
+        "removing idx:%" PRId32 " dbidx:%" PRId32 " ssidx:%" PRId32 " from %d/%s",
         songdata->idx, songdata->dbidx, songdata->ssidx, songseldance->danceIdx,
         danceGetStr (songsel->dances, songseldance->danceIdx, DANCE_DANCE));
     songselRemoveSong (songsel, songseldance, songdata);
@@ -349,7 +351,7 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song)
 
   ss = songGetNum (song, TAG_SAMESONG);
 
-  logMsg (LOG_DBG, LOG_SONGSEL, "add-song: dbidx:%d ss:%d", dbidx, ss);
+  logMsg (LOG_DBG, LOG_SONGSEL, "add-song: dbidx:%" PRId32 " ss:%" PRId32, dbidx, ss);
 
   rating = songGetNum (song, TAG_DANCERATING);
   weight = ratingGetWeight (ratings, rating);

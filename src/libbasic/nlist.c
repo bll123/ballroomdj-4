@@ -46,7 +46,7 @@ nlistSetSize (nlist_t *list, nlistidx_t siz)
 }
 
 void
-nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
+nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)  /* KEEP */
 {
   if (list == NULL) {
     return;
@@ -159,7 +159,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
 /* get routines */
 
 nlistidx_t
-nlistGetIdx (nlist_t *list, nlistidx_t lkey)
+nlistGetIdx (nlist_t *list, nlistidx_t lkey)  /* TESTING */
 {
   nlistidx_t      idx;
 
@@ -177,14 +177,14 @@ nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
   return listGetDataByIdx (LIST_KEY_NUM, list, idx);
 }
 
-listnum_t
+nlistnum_t
 nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
   return listGetNumByIdx (LIST_KEY_NUM, list, idx);
 }
 
 nlistidx_t
-nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
+nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx) /* TESTING */
 {
   return listGetKeyNumByIdx (LIST_KEY_NUM, list, idx);
 }
@@ -207,7 +207,7 @@ nlistGetStr (nlist_t *list, nlistidx_t lkey)
   return listGetStrByIdx (LIST_KEY_NUM, list, idx);
 }
 
-listnum_t
+nlistnum_t
 nlistGetNum (nlist_t *list, nlistidx_t lkey)
 {
   nlistidx_t      idx;
@@ -305,14 +305,14 @@ nlistSearchProbTable (nlist_t *probTable, double dval)
 /* debug / informational */
 
 bool
-nlistDebugIsCached (list_t *list, listidx_t key)
+nlistDebugIsCached (list_t *list, listidx_t key) /* TESTING */
 {
   return listDebugIsCached (LIST_KEY_NUM, list, key);
 }
 
 /* for testing */
 nlistidx_t
-nlistGetAllocCount (nlist_t *list)
+nlistGetAllocCount (nlist_t *list) /* TESTING */
 {
   return listGetAllocCount (LIST_KEY_NUM, list);
 }
@@ -325,7 +325,7 @@ nlistDumpInfo (nlist_t *list)
 
 /* for testing */
 int
-nlistGetOrdering (nlist_t *list)
+nlistGetOrdering (nlist_t *list) /* TESTING */
 {
   return listGetOrdering (LIST_KEY_NUM, list);
 }

@@ -20,6 +20,7 @@
 
 #include <opus/opusfile.h>
 
+#include "bdj4.h"
 #include "atioggutil.h"
 #include "audiofile.h"
 #include "fileop.h"

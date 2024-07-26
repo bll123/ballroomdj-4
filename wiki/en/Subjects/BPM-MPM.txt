@@ -54,7 +54,7 @@ range for a dance (see [Song&nbsp;Editor](#song-editor) below).
 <!-- this images is also used in Subjects/Announcements -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![bpm-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-C.png)
+![bpm-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-D.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 ##### Display Configuration
@@ -67,7 +67,7 @@ _Song&nbsp;Editor_ columns and add BPM/MPM.
 Also add BPM/MPM to the various song listings and music queues as you prefer.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![bpm-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-disp-settings-B.png)
+![bpm-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-disp-settings-C.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 ##### Song Editor
@@ -116,10 +116,11 @@ song editor to save the changes.
 <!-- this image is re-used: see management/song-editor -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-B.png)
+![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
-See also: [Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
+<br>__References:__
+<br>[Manage&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

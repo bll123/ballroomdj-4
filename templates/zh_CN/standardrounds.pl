@@ -1,0 +1,29 @@
+# playlist
+# 2024-2-16
+# version 3
+version
+..1
+ALLOWEDKEYWORDS
+..
+DANCERATING
+..良好
+GAP
+..3000
+MAXPLAYTIME
+..0
+PLAYANNOUNCE
+..no
+STOPAFTER
+..0
+STOPTIME
+..0
+DANCELEVELLOW
+..简单
+DANCELEVELHIGH
+..高级设置
+TAGS
+..
+TAG_WEIGHT
+..
+TYPE
+..sequence

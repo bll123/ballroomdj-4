@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#include "callback.h"
 #include "uiwcont.h"
 
 uiwcont_t *uiCreateVertBox (void);
@@ -16,6 +17,7 @@ void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

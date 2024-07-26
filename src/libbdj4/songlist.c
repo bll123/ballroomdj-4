@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "bdj4.h"
@@ -22,9 +23,11 @@
 
 enum {
   SONGLIST_VERSION = 1,
+  SONGLIST_IDENT = 0x0074736c676e6f73,
 };
 
 typedef struct songlist {
+  uint64_t        ident;
   datafile_t      *df;
   ilist_t         *songlist;
   ilistidx_t      sliteridx;
@@ -80,21 +83,25 @@ songlistLoad (const char *fname)
 void
 songlistFree (songlist_t *sl)
 {
-  if (sl != NULL) {
-    if (sl->songlist != datafileGetList (sl->df)) {
-      ilistFree (sl->songlist);
-    }
-    datafileFree (sl->df);
-    dataFree (sl->fname);
-    dataFree (sl->path);
-    mdfree (sl);
+  if (sl == NULL || sl->ident != SONGLIST_IDENT) {
+    return;
   }
+
+  if (sl->songlist != datafileGetList (sl->df)) {
+    ilistFree (sl->songlist);
+  }
+  datafileFree (sl->df);
+  dataFree (sl->fname);
+  dataFree (sl->path);
+  sl->ident = BDJ4_IDENT_FREE;
+  mdfree (sl);
 }
 
 bool
 songlistExists (const char *name)
 {
   char    tfn [MAXPATHLEN];
+
   pathbldMakePath (tfn, sizeof (tfn), name,
       BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (tfn);
@@ -103,7 +110,7 @@ songlistExists (const char *name)
 int
 songlistGetCount (songlist_t *sl)
 {
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return 0;
   }
   return ilistGetCount (sl->songlist);
@@ -112,7 +119,7 @@ songlistGetCount (songlist_t *sl)
 void
 songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 {
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return;
   }
   ilistStartIterator (sl->songlist, iteridx);
@@ -123,7 +130,7 @@ songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
 {
   ilistidx_t    key = LIST_VALUE_INVALID;
 
-  if (sl == NULL || sl->songlist == NULL) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return key;
   }
 
@@ -132,11 +139,14 @@ songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
 }
 
 ilistidx_t
-songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx) /* TESTING */
 {
   ilistidx_t    val;
 
-  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  if (ikey < 0 || lidx < 0) {
     return LIST_VALUE_INVALID;
   }
   val = ilistGetNum (sl->songlist, ikey, lidx);
@@ -148,7 +158,10 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   const char  *val = NULL;
 
-  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
+    return NULL;
+  }
+  if (ikey < 0 || lidx < 0) {
     return NULL;
   }
   val = ilistGetStr (sl->songlist, ikey, lidx);
@@ -158,28 +171,35 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 void
 songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val)
 {
-  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return;
   }
+  if (ikey < 0 || lidx < 0) {
+    return;
+  }
+
   ilistSetNum (sl->songlist, ikey, lidx, val);
 }
 
 void
 songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval)
 {
-  if (sl == NULL || sl->songlist == NULL || ikey < 0 || lidx < 0) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return;
   }
+  if (ikey < 0 || lidx < 0) {
+    return;
+  }
+
   ilistSetStr (sl->songlist, ikey, lidx, sval);
 }
 
 void
 songlistClear (songlist_t *sl)
 {
-  if (sl == NULL) {
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return;
   }
-
   if (ilistGetCount (sl->songlist) == 0) {
     return;
   }
@@ -197,12 +217,7 @@ songlistSave (songlist_t *sl, int tmflag, int distvers)
 {
   time_t    origtm = 0;
 
-  if (sl == NULL) {
-    return;
-  }
-
-  if (sl->songlist == NULL) {
-    fprintf (stderr, "ERR: songlist: save: null songlist\n");
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->songlist == NULL) {
     return;
   }
 
@@ -225,8 +240,8 @@ songlistSave (songlist_t *sl, int tmflag, int distvers)
 int
 songlistDistVersion (songlist_t *sl)
 {
-  if (sl == NULL) {
-    return 1;
+  if (sl == NULL || sl->ident != SONGLIST_IDENT || sl->df == NULL) {
+    return 0;
   }
 
   return datafileDistVersion (sl->df);
@@ -242,6 +257,7 @@ songlistAlloc (const char *fname)
   pathinfo_t    *pi;
 
   sl = mdmalloc (sizeof (songlist_t));
+  sl->ident = SONGLIST_IDENT;
   sl->songlist = NULL;
   sl->df = NULL;
   if (fileopIsAbsolutePath (fname)) {

@@ -13,22 +13,24 @@
 
 # include "pli.h"
 
-typedef struct vlcData vlcData_t;
+typedef struct vlcdata vlcdata_t;
 
-ssize_t           vlcGetDuration (vlcData_t *vlcData);
-ssize_t           vlcGetTime (vlcData_t *vlcData);
-int               vlcStop (vlcData_t *vlcData);
-int               vlcPause (vlcData_t *vlcData);
-int               vlcPlay (vlcData_t *vlcData);
-ssize_t           vlcSeek (vlcData_t *vlcData, ssize_t dpos);
-double            vlcRate (vlcData_t *vlcData, double drate);
-const char *      vlcVersion (vlcData_t *vlcData);
-plistate_t        vlcState (vlcData_t *vlcData);
-int               vlcMedia (vlcData_t *vlcdata, const char *fn);
-vlcData_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
-void              vlcClose (vlcData_t *vlcData);
-void              vlcRelease (vlcData_t *vlcData);
-int               vlcSetAudioDev (vlcData_t *vlcData, const char *dev, int plidevtype);
+ssize_t           vlcGetDuration (vlcdata_t *vlcdata);
+ssize_t           vlcGetTime (vlcdata_t *vlcdata);
+int               vlcStop (vlcdata_t *vlcdata);
+int               vlcPause (vlcdata_t *vlcdata);
+int               vlcPlay (vlcdata_t *vlcdata);
+ssize_t           vlcSeek (vlcdata_t *vlcdata, ssize_t dpos);
+double            vlcRate (vlcdata_t *vlcdata, double drate);
+const char *      vlcVersion (vlcdata_t *vlcdata);
+plistate_t        vlcState (vlcdata_t *vlcdata);
+int               vlcMedia (vlcdata_t *vlcdata, const char *fn);
+vlcdata_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
+void              vlcClose (vlcdata_t *vlcdata);
+void              vlcRelease (vlcdata_t *vlcdata);
+int               vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plidevtype);
+bool              vlcVersionLinkCheck (void);
+bool              vlcVersionCheck (void);
 
 #endif /* _hdr_vlc_vlc */
 

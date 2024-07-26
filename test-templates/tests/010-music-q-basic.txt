@@ -35,22 +35,22 @@ end
 test 10-20 Insert-Begin
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
-msg main MUSICQ_INSERT 0~1~0
+msg main MUSICQ_INSERT 0~0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 mq0idx0 0
-msg main MUSICQ_INSERT 0~1~1
+msg main MUSICQ_INSERT 0~0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq0idx0 0 mq0idx1 1
-msg main MUSICQ_INSERT 0~1~2
+msg main MUSICQ_INSERT 0~0~2
 get main CHK_MAIN_MUSICQ
 chk mq0len 3 mq0idx0 0 mq0idx1 1 mq0idx2 2
-msg main MUSICQ_INSERT 0~1~3
+msg main MUSICQ_INSERT 0~0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 4 mq0idx0 0 mq0idx1 1 mq0idx2 3 mq0idx3 2
-msg main MUSICQ_INSERT 0~1~4
+msg main MUSICQ_INSERT 0~0~4
 get main CHK_MAIN_MUSICQ
 chk mq0len 5 mq0idx0 0 mq0idx1 1 mq0idx2 4 mq0idx3 3 mq0idx4 2
-msg main MUSICQ_INSERT 0~1~5
+msg main MUSICQ_INSERT 0~0~5
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 4 mq0idx4 3 mq0idx5 2
 end
@@ -65,20 +65,20 @@ msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_MOVE_UP 0~5
-get main CHK_MAIN_MUSICQ
-chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 5 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~4
 get main CHK_MAIN_MUSICQ
-chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 5 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 5 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~3
 get main CHK_MAIN_MUSICQ
-chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 5 mq0idx4 3 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~2
+get main CHK_MAIN_MUSICQ
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 4
+msg main MUSICQ_MOVE_UP 0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 # a swap is possible as the player is stopped
-msg main MUSICQ_MOVE_UP 0~1
+msg main MUSICQ_MOVE_UP 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 5 mq0idx1 0 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 end
@@ -93,16 +93,16 @@ msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_MOVE_DOWN 0~1
+msg main MUSICQ_MOVE_DOWN 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 1 mq0idx3 3 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_MOVE_DOWN 0~2
+msg main MUSICQ_MOVE_DOWN 0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 1 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_MOVE_DOWN 0~3
+msg main MUSICQ_MOVE_DOWN 0~2
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 1 mq0idx5 5
-msg main MUSICQ_MOVE_DOWN 0~4
+msg main MUSICQ_MOVE_DOWN 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
 end
@@ -117,28 +117,28 @@ msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_MOVE_TOP 0~5
+msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
-msg main MUSICQ_MOVE_TOP 0~5
+msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 1 mq0idx4 2 mq0idx5 3
-msg main MUSICQ_MOVE_TOP 0~5
+msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 3 mq0idx2 4 mq0idx3 5 mq0idx4 1 mq0idx5 2
-msg main MUSICQ_MOVE_TOP 0~5
+msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
-msg main MUSICQ_MOVE_TOP 0~4
+msg main MUSICQ_MOVE_TOP 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 1
-msg main MUSICQ_MOVE_TOP 0~4
+msg main MUSICQ_MOVE_TOP 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 1
-msg main MUSICQ_MOVE_TOP 0~2
+msg main MUSICQ_MOVE_TOP 0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
-msg main MUSICQ_MOVE_TOP 0~1
+msg main MUSICQ_MOVE_TOP 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
 end
@@ -153,19 +153,19 @@ msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 5 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5
-msg main MUSICQ_REMOVE 0~4
+msg main MUSICQ_REMOVE 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 4 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 3 mq0idx0 0 mq0idx1 3 mq0idx2 4
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq0idx0 0 mq0idx1 4
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 mq0idx0 0
 end

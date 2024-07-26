@@ -1,5 +1,18 @@
 [Wiki Home](Home)
 
+====== Installing VLC for development
+
+Install VLC 4 using a VLC4 installpath.
+Rename the VideoLAN/VLC4 dir to VLC4temp.
+Install VLC 3 using a VLC3 installpath.
+Rename the VideoLAN/VLC4temp dir to VLC4.
+Copy VideoLan/VLC3 to VideoLan/VLC
+Fix the shortcuts on the desktop if wanted.
+
+====== Turning off 8.3 name generation.
+
+Many applications break.
+
 fsutil.exe 8dot3name query C:
 <br>fsutil.exe 8dot3name set C: 1
 <br>fsutil.exe 8dot3name strip /s /v C:
@@ -7,4 +20,4 @@ fsutil.exe 8dot3name query C:
 fsutil.exe behavior set disable8dot3 1
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-06-07 11:27:08; BDJ4 version 4.10.3)_

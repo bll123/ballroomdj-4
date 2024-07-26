@@ -1,0 +1,113 @@
+# == 한국어‬
+# -- korean
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Korean\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "BallroomDJ의 모든 사용자는 BallroomDJ 4로 전환할 것을 권장합니다."
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - 볼룸 음악 플레이어"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4(BDJ4)는 데스크톱 및 노트북 컴퓨터용으로 설계된 음악 플레이어입니다(일부 태블릿에서도 작동). 별도의 조작 없이 저녁 내내 음악을 재생할 수 있도록 설계되었습니다."
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - 연회장 음악 플레이어"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "pro-linux.de의 BallroomDJ"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJ는 이전의 연회장 음악 플레이어였습니다. 더 이상 지원되지 않습니다."
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "freshcode.club의 BDJ4"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "BDJ4 특징"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "BDJ4 포럼"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4는 고도로 사용자 정의가 가능하며 볼룸 댄스 음악을 구성하고 노래 목록, 자동 재생 목록 및 시퀀스 재생 목록을 만들 수 있는 기능을 제공합니다."
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4는 Windows, MacOS 및 Linux에서 실행됩니다."
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 위키"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "변경 로그"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "기부하기"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "BDJ4가 사용하는 소프트웨어 프로젝트에 기부하세요:"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "BallroomDJ 3 다운로드"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "BallroomDJ 4 다운로드"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "BallroomDJ 4 번역 도움말"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "최신 버전"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "메뉴"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "BallroomDJ 4 출시 공지를 확인할 수 있는 다른 사이트도 있습니다:"
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (맨 위에 있는 기부 버튼)"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "BDJ4에 기부하기"
+

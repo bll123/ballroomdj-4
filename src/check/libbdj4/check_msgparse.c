@@ -75,7 +75,7 @@ START_TEST(msgparse_mq_data)
   ck_assert_int_eq (mpmqu->currdbidx, 77);
   list = mpmqu->dispList;
   for (int i = 0; i < titemsz; ++i) {
-    mpmqitem = nlistGetData (list, i + 1);
+    mpmqitem = nlistGetData (list, i);
     ck_assert_ptr_nonnull (mpmqitem);
     ck_assert_int_eq (mpmqitem->dispidx, mptestdata [i].didx);
     ck_assert_int_eq (mpmqitem->uniqueidx, mptestdata [i].uidx);
@@ -94,16 +94,14 @@ START_TEST(msgparse_songsel_data)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- msgparse_songsel_data");
   mdebugSubTag ("msgparse_songsel_data");
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d",
-      2, MSG_ARGS_RS, 12);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", 2, MSG_ARGS_RS, 12);
   mpss = msgparseSongSelect (tbuff);
   ck_assert_ptr_nonnull (mpss);
   ck_assert_int_eq (mpss->mqidx, 2);
   ck_assert_int_eq (mpss->loc, 12);
   msgparseSongSelectFree (mpss);
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d",
-      4, MSG_ARGS_RS, 15);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", 4, MSG_ARGS_RS, 15);
   mpss = msgparseSongSelect (tbuff);
   ck_assert_ptr_nonnull (mpss);
   ck_assert_int_eq (mpss->mqidx, 4);

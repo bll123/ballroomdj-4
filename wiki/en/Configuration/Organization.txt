@@ -23,7 +23,7 @@ __Database Loads Dance from Genre__: Used when the song's genre is set
 to the dance. Enabling this option will try to set the dance from the
 song's genre field.
 
-__Auto Organise__: When enabled, the audio files are renamed to match
+__Auto Organize__: When enabled, the audio files are renamed to match
 the organization path.
 <br>See: [Subjects / Organizing Music](en-Subjects-Organizing%20Music).
 
@@ -32,4 +32,4 @@ the organization path.
 <br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

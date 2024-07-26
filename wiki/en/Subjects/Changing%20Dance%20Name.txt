@@ -1,0 +1,98 @@
+[Wiki Home](Home)
+
+### Changing the Name of a Dance
+
+There are occasions when the name of a dance needs to be changed. This
+happens when a typographical error has been made, or you simply just
+decide that instead of _Waltz_ you want _Slow Waltz_.  Or you want to
+use the native name of the dance instead of the English name.
+
+If there are no songs that have been assigned to this dance, this is
+easy. Simply add a dance with the new name, and delete the dance with
+the old name.
+
+But if there are already songs with dance set to the old name, this is
+more difficult.  The batch editing facilities of BDJ4 can be used to
+manage this task.
+
+The first step is to add the new dance name.  For the purposes of this
+example, _Waltz_ will be changed to _Slow&nbsp;Waltz_.  Select
+__Configure__ and __Edit&nbsp;Dances__.  Select the __Add&nbsp;New__
+button (![Add
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
+to add a new dance entry.
+
+In the new entry, change the dance name to _Slow&nbsp;Waltz_.  Switch
+back and forth between the _Waltz_ and the new _Slow&nbsp;Waltz_ dance
+entry, and copy the type, speed, tags, announcement (if present), MPM
+and time signature settings from _Waltz_.  Do not delete _Waltz_.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![chg-dnc-edit-dnc](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-edit-dnc-A.png)
+<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+
+Once finished, the _Configuration_ window can be closed.
+
+Now the songs with their dance set to _Waltz_ must be changed. Select
+__Manage__, and select the __Music&nbsp;Manager__ tab.  Select the
+filter
+(![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
+button. In the __Dance__ stop-down, select _Waltz_, then select __Apply__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![chg-dnc-filter](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-filter-A.png)
+<br><span style="color:#4559bf;">__Filter Dialog__</span> </div>
+
+In the management window, scroll through the list and verify that you
+have selected the correct songs.  Before doing a batch edit, always
+verify that you have the correct songs selected.
+
+In the _Music&nbsp;Manager_, select the __Song&nbsp;Editor__ tab.
+Select the __First__ button to make sure all selections will be
+modified.  In the __Actions__ menu, select __Edit&nbsp;All__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![chg-dnc-menu-edit-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-menu-edit-all-A.png)
+<br><span style="color:#4559bf;">__Song Editor / Actions / Edit All__</span> </div>
+
+Note that the _Song&nbsp;Editor's_ _Save_ button is now disabled, and
+_Edit&nbsp;All_ is now displayed next to the save button to indicate
+that you are in _Edit&nbsp;All_ mode.
+
+In the __Dance__ drop-down, select the new dance name,
+_Slow&nbsp;Waltz_. The change indicator in front of _Dance_ will be
+active. Make sure no other change indicators are active, as only the
+dance should be changed.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![chg-dnc-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-se-A.png)
+<br><span style="color:#4559bf;">__Song Editor__</span> </div>
+
+In the __Actions__ menu, select __Apply&nbsp;Edit&nbsp;All__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![chg-dnc-menu-apply](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-menu-apply-A.png)
+<br><span style="color:#4559bf;">__Song Editor / Actions / Apply Edit All__</span> </div>
+
+All of the selected songs will now have their _Dance_ set to
+_Slow&nbsp;Waltz_.
+
+To verify the changes, switch to the __Music&nbsp;Manager__ tab, and
+use the __Dance__ drop-down in the filter dialog to verify that there
+are no songs with the dance set to _Waltz_, and there are now songs
+with the dance set to _Slow&nbsp;Waltz_.
+
+Close the _Management_ window, select
+__Configure__, and __Edit&nbsp;Dances__.  Select the __Waltz__ entry,
+then select the __Delete__
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+button to remove the old dance name.
+
+<br>__References:__
+<br>[Configuration / Edit Dances](en-Configuration-Edit%20Dances)
+<br>[Management / Song Editor](en-Management-Song%20Editor)
+<br>[Subjects / Batch Editing](en-Subjects-Batch%20Editing)
+
+
+[Wiki Home](Home)
+<br>_(Updated 2024-07-25 04:57:26; BDJ4 version 4.11.2)_

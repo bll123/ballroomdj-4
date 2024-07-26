@@ -37,7 +37,7 @@ enum {
 };
 
 enum {
-  QUEUE_IDENT = 0x717565756500aabb,
+  QUEUE_IDENT = 0xbbaa006575657571,
 };
 
 typedef struct queuenode {
@@ -63,6 +63,7 @@ typedef struct queue {
 
 static queuenode_t * queueGetNodeByIdx (queue_t *q, qidx_t idx);
 static void * queueRemove (queue_t *q, queuenode_t *node);
+static void queueFreeNodeData (queue_t *q, queuenode_t *node);
 
 queue_t *
 queueAlloc (const char *name, queueFree_t freeHook)
@@ -115,20 +116,12 @@ queueFree (queue_t *q)
   tnode = node;
   while (node != NULL && node->next != NULL) {
     node = node->next;
-    if (tnode != NULL) {
-      if (tnode->data != NULL && q->freeHook != NULL) {
-        q->freeHook (tnode->data);
-      }
-      mdfree (tnode);
-    }
+    queueFreeNodeData (q, tnode);
+    dataFree (tnode);
     tnode = node;
   }
-  if (tnode != NULL) {
-    if (tnode->data != NULL && q->freeHook != NULL) {
-      q->freeHook (tnode->data);
-    }
-    mdfree (tnode);
-  }
+  queueFreeNodeData (q, tnode);
+  dataFree (tnode);
   mdfree (q);
 
   logProcEnd ("");
@@ -310,9 +303,7 @@ queueClear (queue_t *q, qidx_t startIdx)
   while (node != NULL && q->count > startIdx) {
     tnode = node;
     node = node->prev;
-    if (tnode->data != NULL && q->freeHook != NULL) {
-      q->freeHook (tnode->data);
-    }
+    queueFreeNodeData (q, tnode);
     queueRemove (q, tnode);
   }
 
@@ -520,8 +511,9 @@ queueIterateRemoveNode (queue_t *q, qidx_t *iteridx)
   return data;
 }
 
+/* for testing/debugging */
 int
-queueDebugSearchDist (queue_t *q)
+queueDebugSearchDist (queue_t *q) /* TESTING */
 {
   if (q == NULL) {
     return -1;
@@ -620,6 +612,7 @@ queueRemove (queue_t *q, queuenode_t *node)
     node->next->prev = node->prev;
   }
   q->count--;
+  /* the data is being returned, do not free it */
   mdfree (node);
 
   /* a removal invalidates the cache */
@@ -627,5 +620,17 @@ queueRemove (queue_t *q, queuenode_t *node)
   q->cacheIdx = QUEUE_NO_IDX;
 
   return data;
+}
+
+static void
+queueFreeNodeData (queue_t *q, queuenode_t *node)
+{
+  if (node == NULL) {
+    return;
+  }
+  if (node->data != NULL && q->freeHook != NULL) {
+    q->freeHook (node->data);
+    node->data = NULL;
+  }
 }
 

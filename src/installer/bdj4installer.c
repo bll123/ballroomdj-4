@@ -181,9 +181,7 @@ typedef struct {
   bool            vlcinstalled : 1;
 } installer_t;
 
-#define INST_TEMP_FILE  "tmp/bdj4instout.txt"
-#define CONV_TEMP_FILE "tmp/bdj4convout.txt"
-#define BDJ3_LOC_FILE "install/bdj3loc.txt"
+static const char * const BDJ3_LOC_FILE = "install/bdj3loc.txt";
 
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
@@ -193,11 +191,11 @@ static bool installerConversionCBHandler (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
 static bool installerBDJ3LocDirDialog (void *udata);
-static int  installerValidateTarget (uiwcont_t *entry, void *udata);
+static int  installerValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
 static void installerTargetFeedbackMsg (installer_t *installer);
 static void installerSetConversionFlags (installer_t *installer);
-static int  installerValidateBDJ3Loc (uiwcont_t *entry, void *udata);
+static int  installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata);
 static int  installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 static void installerSetConvertStatus (installer_t *installer, int val);
@@ -279,6 +277,7 @@ main (int argc, char *argv[])
     { "nodetach",   no_argument,        NULL,   0 },
     { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
+    { "pli",        required_argument,  NULL,   0 },
     { "wait",       no_argument,        NULL,   0 },
     { "origcwd",      required_argument,  NULL,   0 },
     { NULL,         0,                  NULL,   0 }
@@ -346,7 +345,7 @@ main (int argc, char *argv[])
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
 
   if (isMacOS ()) {
@@ -526,7 +525,7 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 16";
       }
     }
-    uiSetUICSS (uifont, INST_HL_COLOR, NULL);
+    uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL, NULL, NULL, NULL);
   }
 
   if (installer.guienabled) {
@@ -613,7 +612,7 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
-  uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
 
   /* begin line : target instructions */
@@ -663,7 +662,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_REINST]);
 
   installer->wcont [INST_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -672,7 +671,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -743,7 +742,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_CONV]);
 
   installer->wcont [INST_W_CONV_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -752,7 +751,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -768,7 +767,7 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
-  uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
 
   uiwcontFree (hbox);
@@ -799,7 +798,7 @@ installerBuildUI (installer_t *installer)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  uiBoxPackStartExpand (vbox, uiwidgetp);
   installer->wcont [INST_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);
@@ -809,9 +808,9 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  uiEntrySetValidate (installer->wcont [INST_W_TARGET],
+  uiEntrySetValidate (installer->wcont [INST_W_TARGET], "",
       installerValidateTarget, installer, UIENTRY_DELAYED);
-  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC],
+  uiEntrySetValidate (installer->wcont [INST_W_BDJ3_LOC], "",
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 }
 
@@ -1034,7 +1033,7 @@ installerConversionCBHandler (void *udata)
 }
 
 static int
-installerValidateTarget (uiwcont_t *entry, void *udata)
+installerValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -1224,7 +1223,7 @@ installerSetConversionFlags (installer_t *installer)
 }
 
 static int
-installerValidateBDJ3Loc (uiwcont_t *entry, void *udata)
+installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -1376,7 +1375,7 @@ installerSetConvertStatus (installer_t *installer, int state)
     return;
   }
 
-  uiToggleButtonSetState (installer->wcont [INST_W_CONVERT], state);
+  uiToggleButtonSetValue (installer->wcont [INST_W_CONVERT], state);
 }
 
 static void
@@ -1719,11 +1718,16 @@ installerCopyTemplates (installer_t *installer)
 
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-dark-solid");
     snprintf (to, sizeof (to), "%s/.themes/Mojave-dark-solid", installer->home);
-    filemanipLinkCopy (from, to);
+    /* be nice, and don't remove existing links/themes */
+    if (! fileopIsDirectory (to)) {
+      filemanipLinkCopy (from, to);
+    }
 
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/Mojave-light-solid");
     snprintf (to, sizeof (to), "%s/.themes/Mojave-light-solid", installer->home);
-    filemanipLinkCopy (from, to);
+    if (! fileopIsDirectory (to)) {
+      filemanipLinkCopy (from, to);
+    }
   }
 
   installer->instState = INST_CONVERT_START;
@@ -2037,6 +2041,7 @@ installerVLCCheck (installer_t *installer)
   char    tbuff [MAXPATHLEN];
 
   /* on linux, vlc is installed via other methods */
+  /* also on linux, gstreamer can be used even if there is no vlc */
   if (installer->vlcinstalled || isLinux ()) {
     installer->instState = INST_FINALIZE;
     return;

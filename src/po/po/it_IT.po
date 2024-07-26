@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-05-04 12:19\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -23,11 +23,6 @@ msgstr ""
 #, c-format
 msgid "%1$s must be greater than %2$s"
 msgstr "%1$s deve essere maggiore di %2$s"
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
-msgstr "%d file trovati"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
@@ -125,6 +120,11 @@ msgstr "%s File XML"
 msgid "%s data will be converted."
 msgstr "%s i dati saranno convertiti."
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s file trovati"
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -151,37 +151,43 @@ msgstr "%s non è installato"
 msgid "%s may not exceed the song duration"
 msgstr "%s non può superare la durata del brano"
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr "%s deve essere numerico."
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
-msgstr "%s deve essere impostato."
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: I caratteri *'\":|<>^ non sono ammessi."
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
-msgid "%s: Invalid time."
-msgstr "%s: Ora non valida."
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Ora non valida (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Deve essere numerico."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Deve essere impostato."
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
-msgstr "%s: Gli slash non sono ammessi"
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Gli slash non sono ammessi."
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
 msgstr "%s: Gli spazi non sono ammessi."
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
-msgstr "%sdeve essere numerico."
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -242,11 +248,11 @@ msgstr "Artista dell'album"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr ""
+msgstr "Album Artista Ordine di ordinamento"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr ""
+msgstr "Ordine di ordinamento degli album"
 
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
@@ -312,7 +318,7 @@ msgstr "Artista"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr ""
+msgstr "Ordine di ordinamento degli artisti"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
@@ -364,10 +370,6 @@ msgstr "Solo tag BDJ"
 msgid "BDJ3 database version is too old."
 msgstr "La versione del database BDJ3 è troppo vecchia."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 Interno"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -396,7 +398,7 @@ msgstr "Annulla Modifica Tutti"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr ""
+msgstr "Impossibile rinominare"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -445,7 +447,6 @@ msgstr "Fate clic con il mouse nel riquadro blu a tempo con il ritmo."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -480,7 +481,7 @@ msgstr "Compositore"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr ""
+msgstr "Ordine di ordinamento dei compositori"
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
@@ -573,7 +574,7 @@ msgstr "Attuale"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
-msgstr ""
+msgstr "Canzone attuale"
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -630,7 +631,7 @@ msgstr "Cancellare il profilo"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
-msgstr ""
+msgstr "Dialoghi"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -649,16 +650,9 @@ msgstr "Impostazioni del display"
 msgid "Don't Write"
 msgstr "Non scrivere"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Fare doppio clic su un campo da modificare."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
-msgstr ""
+msgstr "Scarica la versione più recente"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -703,7 +697,7 @@ msgstr "Modifica le danze"
 msgid "Edit Genres"
 msgstr "Modifica dei generi"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Modifica dei livelli"
 
@@ -742,7 +736,7 @@ msgstr "Inserire la cartella in cui è installato %s ."
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr ""
+msgstr "Inserire il nome della nuova installazione."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -781,11 +775,11 @@ msgstr "Esportazione"
 #. CONTEXT: managementui: export playlist: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export
 msgid "Export Playlist"
-msgstr ""
+msgstr "Esporta Scaletta"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr ""
+msgstr "Tipo di esportazione"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
@@ -907,7 +901,9 @@ msgid "High Dance Level"
 msgstr "Livello di danza alto"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "La storia"
 
@@ -924,7 +920,7 @@ msgstr "Importazione"
 #. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importa Scaletta"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
@@ -965,6 +961,10 @@ msgstr "Installazione completata."
 msgid "Installing %s."
 msgstr "Installazione di %s."
 
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -973,11 +973,17 @@ msgstr "Cartella non valida"
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
-msgstr ""
+msgstr "Nome non valido"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Selezioni non valide"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr ""
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -1072,9 +1078,11 @@ msgid "Marquee Theme"
 msgstr "Tema del tendone"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
-msgstr "Tempo Massimo\\nDi Gioco"
+msgstr "Tempo Massimo\n"
+"Di Gioco"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
@@ -1144,7 +1152,6 @@ msgid "Mute"
 msgstr "Muto"
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Nome"
 
@@ -1180,7 +1187,6 @@ msgid "New Level"
 msgstr "Nuovo livello"
 
 #. CONTEXT: playlist management: default name for a new playlist
-#, c-format
 msgid "New Playlist"
 msgstr "Nuova playlist"
 
@@ -1194,7 +1200,6 @@ msgid "New Rating"
 msgstr "Nuova valutazione"
 
 #. CONTEXT: sequence editor: default name for a new sequence
-#, c-format
 msgid "New Sequence"
 msgstr "Nuova sequenza"
 
@@ -1289,10 +1294,6 @@ msgstr "Paso Doble"
 msgid "Password"
 msgstr "Password"
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "Pausa"
-
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
 msgstr "Mettere in pausa ogni brano"
@@ -1355,7 +1356,7 @@ msgstr "Tipo di playlist"
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: managementui: song list import: name of file import type
 msgid "Playlists"
-msgstr ""
+msgstr "Playlists"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1386,7 +1387,7 @@ msgstr "Posizione"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
-msgstr ""
+msgstr "Impedire la rinominazione"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
@@ -1509,7 +1510,7 @@ msgstr "Reinstallazione"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr ""
+msgstr "Reinstallare %s.  Sovrascrive la configurazione esistente."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1530,7 +1531,7 @@ msgstr "Registrazione di %s."
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
-msgstr ""
+msgstr "Ricarica"
 
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
@@ -1539,11 +1540,11 @@ msgstr "Rimuovere"
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr ""
+msgstr "Rimuovere la canzone"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr ""
+msgstr "Rinominato"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
@@ -1558,7 +1559,9 @@ msgid "Repeat"
 msgstr "Ripetere"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Sostituisce il database BallroomDJ nella sua interezza. Tutte le modifiche apportate al database andranno perse."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1604,7 +1607,6 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Risparmiare"
@@ -1714,6 +1716,7 @@ msgstr "Invio di un messaggio di supporto"
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr "Sequenza"
@@ -1751,6 +1754,10 @@ msgstr "Mostra Tendone"
 msgid "Show Song Information"
 msgstr "Mostra informazioni sulla canzone"
 
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Mostra azzeramento della velocità"
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "Script di spegnimento"
@@ -1787,6 +1794,7 @@ msgstr "Fine della canzone"
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
@@ -1925,7 +1933,9 @@ msgid "The conversion process will not be run."
 msgstr "Il processo di conversione non verrà eseguito."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Il processo di conversione viene eseguito solo per le nuove installazioni e per le reinstallazioni."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1947,7 +1957,7 @@ msgstr "Titolo"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr ""
+msgstr "Titolo Ordine di ordinamento"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
@@ -1956,6 +1966,14 @@ msgstr "Alterna la pausa"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "Alterna la ripetizione"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2005,7 +2023,7 @@ msgstr "Impossibile individuare il database BDJ3."
 
 #. CONTEXT: managementui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
-msgstr ""
+msgstr "Annullamento della rimozione del brano"
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
@@ -2031,11 +2049,13 @@ msgstr "Aggiornato"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aggiorna le informazioni nel database BallroomDJ dal database %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aggiorna le informazioni nel database di BallroomDJ dai tag del file audio."
 
 #. CONTEXT: alternate installation: status message
@@ -2114,16 +2134,14 @@ msgid "Write Tags to Audio Files"
 msgstr "Scrivere i tag sui file audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Scrive i tag del file audio utilizzando le informazioni del database di BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
 msgstr "File XML"
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
-msgstr "automatico"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"
@@ -2167,7 +2185,7 @@ msgstr "Come ottenere assistenza"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "Per ottenere supporto, seleziona il pulsante \"Supporto\". Sono presenti collegamenti al wiki, ai forum e al sistema di segnalazione dei problemi. Oppure utilizza il pulsante \"Invia messaggio di supporto\" per inviare un messaggio."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2175,7 +2193,7 @@ msgstr "Controllare la danza per ogni canzone"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Seleziona \"Gestione musica\" sul lato sinistro della finestra \"Gestione BDJ4\".<br>Scorri l'elenco dei brani e controlla che il ballo sia impostato per ogni brano.<br>Per impostare il ballo per un canzone: => Seleziona la canzone. => Seleziona la scheda \"Editor brani\" (sotto il lettore, sopra l'elenco dei brani). => Accanto all'etichetta \"Danza\", utilizza la selezione a discesa della danza e seleziona la danza per la canzone. => Nell'angolo in alto a destra della scheda \"Editor brani\", seleziona il pulsante \"Salva\".<br>Puoi tornare alla scheda \"Gestione musica\" e verificare la presenza di altri brani che necessitano del set dance. => Lascia aperta la finestra 'Gestione BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2183,7 +2201,7 @@ msgstr "Creare il database per la prima volta"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "Per funzionare, BallroomDJ 4 mantiene un database di tutte le tue canzoni. Questo database deve essere creato per la prima volta. => Seleziona il pulsante 'Gestisci'. => Nella finestra \"Gestione BDJ4\", seleziona la sezione \"Aggiorna database\" sul lato sinistro della finestra.<br>La selezione predefinita \"Verifica nuovi\" viene utilizzata quando aggiungi o rimuovi brani dalla tua raccolta musicale. => Cambia la selezione in 'Ricostruisci database'. => Selezionare il pulsante 'Avvia'. => Attendi il completamento della ricostruzione del database. => Lascia aperta la finestra 'Gestione BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2191,7 +2209,7 @@ msgstr "Creare una playlist di esempio"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Seleziona \"Modifica elenchi brani\" nella parte sinistra della finestra \"Gestione BDJ4\".<br>Sul lato destro della sezione inferiore della finestra c'è un elenco delle tue canzoni. => Seleziona una canzone cliccandoci sopra. => Ora seleziona il pulsante freccia sinistra al centro della sezione inferiore.<br>Questo aggiungerà il brano selezionato all'elenco dei brani in fase di creazione. => Seleziona alcuni brani e aggiungili ciascuno all'elenco dei brani.<br>Sopra l'elenco dei brani è presente una casella di immissione con il nome \"Nuovo elenco dei brani\". => Fare clic nella casella e modificare il nome dell'elenco dei brani. => Chiudi la finestra 'Gestione BDJ4'. L'elenco dei brani viene salvato automaticamente."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2199,7 +2217,7 @@ msgstr "Impostare la posizione della cartella musicale"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Il primo passo consiste nel configurare la posizione della cartella musicale. => Selezionare il pulsante 'Configura'.<br>Nella finestra 'Configurazione BDJ4', viene visualizzata la sezione 'Generale'. La prima voce di 'Generale' è 'Cartella musicale'. => Cambiare la 'Cartella musicale' con la posizione della propria musica. => Lasciare aperta la finestra 'Configurazione BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2207,7 +2225,7 @@ msgstr "Verifica delle danze configurate"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "I nomi dei balli devono corrispondere a quello che usi. => Seleziona \"Modifica danze\" nella parte sinistra della finestra \"Configurazione BDJ4\".<br>Rivedi l'elenco delle danze. Se un ballo ha un nome diverso da quello che usi, seleziona il ballo e cambia il nome. Se manca una danza che usi, seleziona il pulsante \"Aggiungi\" e aggiungi la danza. Se ci sono balli che non utilizzerai mai, seleziona il ballo, quindi seleziona il pulsante \"Rimuovi\". => Chiudi la finestra 'Configurazione BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2215,7 +2233,7 @@ msgstr "Introduzione / Come iniziare"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started.=> Select the 'Next' button to continue on to the next step."
+msgstr "Questa utility vi guiderà attraverso alcuni passaggi per aiutarvi a iniziare. => Selezionate il pulsante \"Avanti\" per continuare con il passaggio successivo."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2223,7 +2241,7 @@ msgstr "Riproduzione di una playlist"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created.=> Select the 'Player' button.=> In the player window, select the 'Queue Playlist' drop-down.=> Select the name of the playlist that you entered previously."
+msgstr "Ora riprodurrai la playlist appena creata. => Seleziona il pulsante \"Giocatore\". => Nella finestra del lettore, seleziona il menu a discesa \"Playlist in coda\". => Seleziona il nome della playlist che hai inserito in precedenza."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2231,5 +2249,5 @@ msgstr "Come è organizzata la musica"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "L'impostazione del metodo di organizzazione è importante in modo che BallroomDJ 4 possa determinare le informazioni sui tuoi brani quando viene creato il database. => Seleziona 'Organizzazione' nella parte sinistra della finestra 'Configurazione BDJ4'.<br>Molte persone organizzano la propria musica inserendo ogni ballo in una cartella separata.<br>L'organizzazione predefinita è 'Ballo/Titolo'. Se hai installato iTunes, il percorso dell'organizzazione sarà impostato su \"Artista album/Album/Disco - Titolo traccia0\". => Seleziona il metodo di organizzazione che utilizzi per le tue canzoni nel menu a discesa \"Percorso di organizzazione\".<br>Se il percorso di organizzazione di cui hai bisogno non è presente, seleziona il pulsante \"Supporto\" nella finestra iniziale e invia un messaggio di supporto. È possibile configurare quasi tutti i percorsi organizzativi.<br>Se i tuoi file audio hanno la danza memorizzata nel tag audio del genere, attiva \"Il database carica la danza dal genere\". => Lascia aperta la finestra 'Configurazione BDJ4'."
 

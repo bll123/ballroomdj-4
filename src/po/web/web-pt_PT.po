@@ -1,0 +1,113 @@
+# == Português
+# -- portuguese/pt
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Portuguese\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: pt-PT\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "Todos os utilizadores de BallroomDJ são convidados a converter para BallroomDJ 4"
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - Leitor de música de salão"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "O BallroomDJ 4 (BDJ4) é um leitor de música concebido para computadores de secretária e portáteis (e funciona em alguns tablets). Foi concebido para poder reproduzir música durante toda a noite sem qualquer intervenção."
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - O leitor de música de salão"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "BallroomDJ em pro-linux.de"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "O BallroomDJ era o anterior leitor de música de salão de baile. Já não é suportado."
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 em freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "BDJ4 Características"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "Fórum BDJ4"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "O BDJ4 é altamente personalizável e oferece facilidades para organizar músicas de dança de salão e criar listas de músicas, listas de reprodução automáticas e listas de reprodução sequenciadas."
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "O BDJ4 funciona em Windows, MacOS e Linux."
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 Wiki"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "Registo de alterações"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "Doar"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "Fazer donativos para projectos de software que a BDJ4 utiliza:"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "Descarregar o BallroomDJ 3"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "Descarregar o BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "Ajuda para traduzir o BallroomDJ 4"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "última versão"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "Menu"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "Outros sítios onde podem ser encontrados anúncios de lançamento do BallroomDJ 4:"
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (botão de donativo no topo da página)"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "Doar para a BDJ4"
+

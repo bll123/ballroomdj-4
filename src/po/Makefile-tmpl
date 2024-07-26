@@ -3,7 +3,7 @@
 #
 # This makefile uses the gnu make grouped-target extension
 
-# SLOCALE must be set to the short locale name
+# TMPLLOCALE must be set to the short locale name
 # LOCALE must be set to the long locale name
 # LANGDESC must be set to the language description
 
@@ -11,8 +11,7 @@
 TMPLDIR = ../../templates
 PODIR = po
 
-PLAYLISTSRC = $(TMPLDIR)/automatic.pl \
-	$(TMPLDIR)/automatic.pldances \
+PLAYLISTSRC = \
 	$(TMPLDIR)/QueueDance.pl \
 	$(TMPLDIR)/QueueDance.pldances \
 	$(TMPLDIR)/standardrounds.pl \
@@ -39,33 +38,32 @@ HTMLFILESRC = \
 	$(TMPLDIR)/bdj-flex.html \
 	$(TMPLDIR)/bdj.html
 
-PLAYLISTS = $(TMPLDIR)/$(SLOCALE)/automatic.pl \
-	$(TMPLDIR)/$(SLOCALE)/automatic.pldances \
-	$(TMPLDIR)/$(SLOCALE)/QueueDance.pl \
-	$(TMPLDIR)/$(SLOCALE)/QueueDance.pldances \
-	$(TMPLDIR)/$(SLOCALE)/standardrounds.pl \
-	$(TMPLDIR)/$(SLOCALE)/standardrounds.pldances \
-	$(TMPLDIR)/$(SLOCALE)/standardrounds.sequence
+PLAYLISTS = \
+	$(TMPLDIR)/$(TMPLLOCALE)/QueueDance.pl \
+	$(TMPLDIR)/$(TMPLLOCALE)/QueueDance.pldances \
+	$(TMPLDIR)/$(TMPLLOCALE)/standardrounds.pl \
+	$(TMPLDIR)/$(TMPLLOCALE)/standardrounds.pldances \
+	$(TMPLDIR)/$(TMPLLOCALE)/standardrounds.sequence
 
 DATAFILES = \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q0.txt \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q1.txt \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q2.txt \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q3.txt \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.q4.txt \
-	$(TMPLDIR)/$(SLOCALE)/bdjconfig.txt.p \
-	$(TMPLDIR)/$(SLOCALE)/dances.txt \
-	$(TMPLDIR)/$(SLOCALE)/dancetypes.txt \
-	$(TMPLDIR)/$(SLOCALE)/genres.txt \
-	$(TMPLDIR)/$(SLOCALE)/itunes-stars.txt \
-	$(TMPLDIR)/$(SLOCALE)/levels.txt \
-	$(TMPLDIR)/$(SLOCALE)/ratings.txt \
-	$(TMPLDIR)/$(SLOCALE)/status.txt
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q0.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q1.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q2.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q3.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q4.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.txt.p \
+	$(TMPLDIR)/$(TMPLLOCALE)/dances.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/dancetypes.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/genres.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/itunes-stars.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/levels.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/ratings.txt \
+	$(TMPLDIR)/$(TMPLLOCALE)/status.txt
 
 HTMLFILES = \
-	$(TMPLDIR)/$(SLOCALE)/bdj-flex-dark.html \
-	$(TMPLDIR)/$(SLOCALE)/bdj-flex.html \
-	$(TMPLDIR)/$(SLOCALE)/bdj.html
+	$(TMPLDIR)/$(TMPLLOCALE)/bdj-flex-dark.html \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdj-flex.html \
+	$(TMPLDIR)/$(TMPLLOCALE)/bdj.html
 
 .PHONY: all
 all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
@@ -76,10 +74,11 @@ all: $(PLAYLISTS) $(DATAFILES) $(HTMLFILES)
 # group-targets to only run this once.
 $(PLAYLISTS) $(DATAFILES) &:	$(PLAYLISTSRC) $(DATAFILESRC) \
 		$(PODIR)/$(LOCALE).po po-tmpl.sh
-	@# echo "-- $(date +%T) Update templates for $(SLOCALE)"
-	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(SLOCALE)
+	@# echo "-- $$(date +%T) Update templates for $(LOCALE)"
+	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(TMPLLOCALE)
 
-$(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po po-html.sh
+$(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po complete.txt po-html.sh
+	@# echo "-- $$(date +%T) Update html for $(LOCALE)"
 	@./po-html.sh $(PODIR)/$(LOCALE).po \
-            $(LOCALE) $(SLOCALE) "$(LANGDESC)"
+            $(LOCALE) $(TMPLLOCALE) "$(LANGDESC)"
 

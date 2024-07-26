@@ -10,7 +10,6 @@ extern "C" {
 
 #include "uiwcont.h"
 
-uiwcont_t *uiPanedWindowCreateHoriz (void);
 uiwcont_t *uiPanedWindowCreateVert (void);
 void uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box);
 void uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box);

@@ -26,12 +26,14 @@ TMPLFILES = \
 	$(TMPLDIR)/bdj-flex-dark.html \
 	$(INSTDIR)/bdj4.desktop
 
-all: potemplates.c rebuildpot bdj4.pot $(PODIR)/en_GB.po $(PODIR)/en_US.po
+all: potemplates.c \
+	rebuildpot bdj4.pot $(PODIR)/en_GB.po $(PODIR)/en_US.po
 
 potemplates.c:	$(TMPLFILES) poexttmpl.sh
+	@echo "-- $$(date +%T) update potemplates.c"
 	@./poexttmpl.sh
 
-# for now, skip any method to create the deps on *all* the .c 
+# for now, skip any method to create the deps on *all* the .c
 # files containing a translatable string.
 # let the script replace bdj4.pot if necessary.
 .PHONY: rebuildpot
@@ -39,7 +41,38 @@ rebuildpot:
 	@./poextract.sh
 
 $(PODIR)/en_GB.po: bdj4.pot po-en-gb.sh po-mk.sh
+	@echo "-- $$(date +%T) update en_GB.po"
 	@./po-en-gb.sh
 
 $(PODIR)/en_US.po: $(PODIR)/en_GB.po po-en-us.sh mken_us.awk
+	@echo "-- $$(date +%T) update en_US.po"
 	@./po-en-us.sh
+
+# localization.txt file
+# this does not go into the 'all' target.
+
+# prevent nothing to be done message
+.PHONY: ltxt
+ltxt: $(TMPLDIR)/localization.txt
+	@:
+
+# gnu make extension: wildcard
+$(TMPLDIR)/localization.txt: complete.txt $(wildcard $(PODIR)/*.po) po-ltxt.sh
+	@echo "-- $$(date +%T) updating localization.txt"
+	@./po-ltxt.sh
+
+# html-list.txt file
+# this does not go into the 'all' target.
+
+# prevent nothing to be done message
+.PHONY: htmllist
+htmllist: $(TMPLDIR)/html-list.txt
+	@:
+
+# gnu make extension: wildcard
+$(TMPLDIR)/html-list.txt: $(wildcard $(TMPLDIR)/*.html) \
+		$(wildcard $(TMPLDIR)/*/*.html) \
+		po-htmllist.sh
+	@echo "-- $$(date +%T) updating html-list.txt"
+	@./po-htmllist.sh
+

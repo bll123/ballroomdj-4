@@ -70,15 +70,15 @@ typedef struct uiexppl {
   char              *slname;
   int               exptype;
   bool              isactive : 1;
-  bool              in_validation : 1;
+  bool              invalidation : 1;
 } uiexppl_t;
 
 /* export playlist */
 static void   uiexpplCreateDialog (uiexppl_t *uiexppl);
 static bool   uiexpplTargetDialog (void *udata);
-static bool   uiexpplResponseHandler (void *udata, long responseid);
+static bool   uiexpplResponseHandler (void *udata, int32_t responseid);
 static void   uiexpplFreeDialog (uiexppl_t *uiexppl);
-static int    uiexpplValidateTarget (uiwcont_t *entry, void *udata);
+static int    uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static bool   uiexpplExportTypeCallback (void *udata);
 
 uiexppl_t *
@@ -99,11 +99,14 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
   }
   uiexppl->slname = NULL;
   uiexppl->isactive = false;
-  uiexppl->in_validation = false;
+  uiexppl->invalidation = false;
 
   uiexppl->exptype = nlistGetNum (uiexppl->options, MANAGE_EXP_PL_TYPE);
+  if (uiexppl->exptype < 0) {
+    uiexppl->exptype = EI_TYPE_M3U;
+  }
 
-  uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitLong (
+  uiexppl->callbacks [UIEXPPL_CB_DIALOG] = callbackInitI (
       uiexpplResponseHandler, uiexppl);
   uiexppl->callbacks [UIEXPPL_CB_TARGET] = callbackInit (
       uiexpplTargetDialog, uiexppl, NULL);
@@ -167,7 +170,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   uiexpplCreateDialog (uiexppl);
 
   odir = nlistGetStr (uiexppl->options, MANAGE_EXP_PL_DIR);
-  if (odir == NULL) {
+  if (odir == NULL || ! *odir) {
     odir = sysvarsGetStr (SV_HOME);
   }
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
@@ -185,15 +188,6 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   return UICB_CONT;
 }
 
-void
-uiexpplDialogClear (uiexppl_t *uiexppl)
-{
-  if (uiexppl == NULL) {
-    return;
-  }
-
-  uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
-}
 
 /* delayed entry validation for the audio file needs to be run */
 void
@@ -291,7 +285,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
 
-  uiEntrySetValidate (uiwidgetp,
+  uiEntrySetValidate (uiwidgetp, "",
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
   /* target folder button */
@@ -355,7 +349,7 @@ uiexpplTargetDialog (void *udata)
 
 
 static bool
-uiexpplResponseHandler (void *udata, long responseid)
+uiexpplResponseHandler (void *udata, int32_t responseid)
 {
   uiexppl_t  *uiexppl = udata;
   int             x, y, ws;
@@ -382,7 +376,7 @@ uiexpplResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: exppl: apply");
       str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
       if (uiexppl->responsecb != NULL) {
-        callbackHandlerStrInt (uiexppl->responsecb, str, uiexppl->exptype);
+        callbackHandlerSI (uiexppl->responsecb, str, uiexppl->exptype);
       }
       uiWidgetHide (uiexppl->wcont [UIEXPPL_W_DIALOG]);
       break;
@@ -403,19 +397,20 @@ uiexpplFreeDialog (uiexppl_t *uiexppl)
 }
 
 static int
-uiexpplValidateTarget (uiwcont_t *entry, void *udata)
+uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   uiexppl_t   *uiexppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
   char        tdir [MAXPATHLEN];
   pathinfo_t  *pi;
+  bool        found = false;
 
-  if (uiexppl->in_validation) {
-    return UICB_CONT;
+  if (uiexppl->invalidation) {
+    return UIENTRY_OK;
   }
 
-  uiexppl->in_validation = true;
+  uiexppl->invalidation = true;
 
   str = uiEntryGetValue (entry);
 
@@ -424,7 +419,7 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
   /*   target is a directory */
   /* file may or may not exist */
   if (! *str || fileopIsDirectory (str)) {
-    uiexppl->in_validation = false;
+    uiexppl->invalidation = false;
     return UIENTRY_ERROR;
   }
 
@@ -433,8 +428,10 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
 
   pi = pathInfo (tbuff);
   snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
-  nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
+  if (! fileopIsDirectory (tdir)) {
+    uiexppl->invalidation = false;
+    return UIENTRY_ERROR;
+  }
 
   if (pi->dlen > 0 &&
       ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
@@ -444,12 +441,22 @@ uiexpplValidateTarget (uiwcont_t *entry, void *udata)
           pathInfoExtCheck (pi, exptypes [i].extb))) {
         uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
         uiexppl->exptype = i;
+        found = true;
+        break;
       }
     }
   }
   pathInfoFree (pi);
 
-  uiexppl->in_validation = false;
+  if (! found) {
+    uiexppl->invalidation = false;
+    return UIENTRY_ERROR;
+  }
+
+  nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
+  nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
+
+  uiexppl->invalidation = false;
   return UIENTRY_OK;
 }
 
@@ -461,11 +468,11 @@ uiexpplExportTypeCallback (void *udata)
   const char  *str;
   pathinfo_t  *pi;
 
-  if (uiexppl->in_validation) {
+  if (uiexppl->invalidation) {
     return UICB_CONT;
   }
 
-  uiexppl->in_validation = true;
+  uiexppl->invalidation = true;
 
   uiexppl->exptype = uiSpinboxTextGetValue (
       uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
@@ -485,7 +492,7 @@ uiexpplExportTypeCallback (void *udata)
   }
   pathInfoFree (pi);
 
-  uiexppl->in_validation = false;
+  uiexppl->invalidation = false;
   return UICB_CONT;
 }
 

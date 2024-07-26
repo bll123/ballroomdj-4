@@ -52,7 +52,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 # musicq_truncate clears the playlist queue and the music q
 # it does not clear the currently playing song
-msg main MUSICQ_TRUNCATE 0~1
+msg main MUSICQ_TRUNCATE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
@@ -68,7 +68,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 8
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
-msg main MUSICQ_TRUNCATE 0~4
+msg main MUSICQ_TRUNCATE 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
 get player CHK_PLAYER_STATUS
@@ -123,8 +123,8 @@ chk actualvolume defaultvol
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 
-# The queue-clear-play message
-#   is used by the management ui to play a selected song.
+# main's cmd-nextsong-play message
+#   is used to play the next song
 # => play-when-queued must be true.
 # The queue-clear-play message acts upon
 # a) an empty queue
@@ -139,7 +139,9 @@ chk mq0len 0
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0
 # empty queue
-msg main QUEUE_CLEAR_PLAY 0~999~16
+msg main QUEUE_CLEAR 0
+msg main MUSICQ_INSERT 0~999~16
+msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
@@ -149,7 +151,9 @@ chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 # playing song
-msg main QUEUE_CLEAR_PLAY 0~999~18
+msg main QUEUE_CLEAR 0
+msg main MUSICQ_INSERT 0~999~18
+msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -163,7 +167,9 @@ msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 wait playstate paused
 mssleep 1000
-msg main QUEUE_CLEAR_PLAY 0~999~20
+msg main QUEUE_CLEAR 0
+msg main MUSICQ_INSERT 0~999~20
+msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -193,32 +199,32 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 7
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
-msg main MUSICQ_REMOVE 0~3
+msg main MUSICQ_REMOVE 0~2
 get main CHK_MAIN_MUSICQ
 chk mq0len 6
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
-msg main MUSICQ_REMOVE 0~2
+msg main MUSICQ_REMOVE 0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 5
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 4
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 3
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 3
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 2
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 2
-msg main MUSICQ_REMOVE 0~1
+msg main MUSICQ_REMOVE 0~0
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
@@ -242,7 +248,7 @@ wait playstate playing
 # play 3 : 5 7 9 11 13 15
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
-msg main MUSICQ_TOGGLE_PAUSE 0~1
+msg main MUSICQ_TOGGLE_PAUSE 0~0
 get main CHK_MAIN_MUSICQ
 chk pae1 1
 msg player PLAY_FADE
@@ -270,7 +276,7 @@ resptimeout 7500
 wait playstate stopped
 # wait for finish messages to be processed before setting the toggle-pause
 mssleep 200
-msg main MUSICQ_TOGGLE_PAUSE 0~2
+msg main MUSICQ_TOGGLE_PAUSE 0~1
 get main CHK_MAIN_MUSICQ
 chk pae2 1
 msg main CMD_PLAY

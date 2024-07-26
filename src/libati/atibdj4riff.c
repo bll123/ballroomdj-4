@@ -33,11 +33,11 @@ enum {
   RIFF_ID_LEN = 4,
 };
 
-#define RIFF_ID_RIFF "RIFF"
-#define RIFF_ID_WAVE "WAVE"
-#define RIFF_ID_FMT  "fmt "
-#define RIFF_ID_LIST "LIST"
-#define RIFF_ID_INFO "INFO"
+static const char * const RIFF_ID_RIFF = "RIFF";
+static const char * const RIFF_ID_WAVE = "WAVE";
+static const char * const RIFF_ID_FMT  = "fmt ";
+static const char * const RIFF_ID_LIST = "LIST";
+static const char * const RIFF_ID_INFO = "INFO";
 
 typedef struct {
   uint16_t      audioformat;
@@ -138,41 +138,6 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
   mdextfclose (fh);
   fclose (fh);
 
-  return;
-}
-
-int
-atibdj4WriteRIFFTags (atidata_t *atidata, const char *ffn,
-    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
-{
-  return -1;
-}
-
-atisaved_t *
-atibdj4SaveRIFFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return NULL;
-}
-
-void
-atibdj4FreeSavedRIFFTags (atisaved_t *atisaved, int tagtype, int filetype)
-{
-  return;
-}
-
-int
-atibdj4RestoreRIFFTags (atidata_t *atidata,
-    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
-{
-  return -1;
-}
-
-void
-atibdj4CleanRIFFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
   return;
 }
 

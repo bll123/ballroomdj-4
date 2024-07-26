@@ -14,56 +14,56 @@
 
 #include "bdj4intl.h"
 #include "bdjstring.h"
-#include "istring.h"
 #include "mdebug.h"
+#include "queue.h"
 #include "slist.h"
 #include "ui.h"
 #include "callback.h"
 #include "uiduallist.h"
+#include "uivirtlist.h"
 
 enum {
-  DUALLIST_COL_DISP,
-  DUALLIST_COL_SB_PAD,
-  DUALLIST_COL_DISP_IDX,
-  DUALLIST_COL_MAX,
+  DL_COL_DISP,
+  DL_COL_MAX,
 };
 
 enum {
-  DUALLIST_MOVE_PREV,
-  DUALLIST_MOVE_NEXT,
-  DUALLIST_SEARCH_INSERT,
-  DUALLIST_SEARCH_REMOVE,
+  DL_MOVE_PREV,
+  DL_MOVE_NEXT,
 };
 
 enum {
-  DUALLIST_BUTTON_SELECT,
-  DUALLIST_BUTTON_REMOVE,
-  DUALLIST_BUTTON_MOVE_UP,
-  DUALLIST_BUTTON_MOVE_DOWN,
-  DUALLIST_BUTTON_MAX,
+  DL_BUTTON_SELECT,
+  DL_BUTTON_REMOVE,
+  DL_BUTTON_MOVE_UP,
+  DL_BUTTON_MOVE_DOWN,
+  DL_BUTTON_MAX,
 };
 
 enum {
-  DUALLIST_CB_MOVEPREV,
-  DUALLIST_CB_MOVENEXT,
-  DUALLIST_CB_SELECT,
-  DUALLIST_CB_REMOVE,
-  DUALLIST_CB_GET_DATA,
-  DUALLIST_CB_SRC_SEARCH,
-  DUALLIST_CB_MAX,
+  DL_CB_MOVEPREV,
+  DL_CB_MOVENEXT,
+  DL_CB_SELECT,
+  DL_CB_REMOVE,
+  DL_CB_MAX,
+};
+
+enum {
+  DL_MIN_WIDTH = 200,
 };
 
 typedef struct uiduallist {
-  uiwcont_t         *uitrees [DUALLIST_TREE_MAX];
-  callback_t        *callbacks [DUALLIST_CB_MAX];
-  uiwcont_t         *buttons [DUALLIST_BUTTON_MAX];
+  uivirtlist_t      *uivl [DL_LIST_MAX];
+  callback_t        *callbacks [DL_CB_MAX];
+  uiwcont_t         *buttons [DL_BUTTON_MAX];
+  /* dispq is the display list of strings */
+  /* it is used as the source to display in the virtlist */
+  queue_t           *dispq [DL_LIST_MAX];
+  /* displist is used to look up the keys */
+  /* and to retain the values from the caller */
+  slist_t           *displist [DL_LIST_MAX];
   int               flags;
-  const char        *searchstr;
-  int               pos;
-  int               searchtype;
-  slist_t           *savelist;
   bool              changed : 1;
-  bool              searchfound : 1;
 } uiduallist_t;
 
 static bool uiduallistMovePrev (void *tduallist);
@@ -71,9 +71,10 @@ static bool uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
 static bool uiduallistDispSelect (void *udata);
 static bool uiduallistDispRemove (void *udata);
-static bool uiduallistSourceSearch (void *udata);
-static bool uiduallistGetData (void *udata);
-static void uiduallistSetDefaultSelection (uiduallist_t *duallist, int which);
+static void uiduallistVLFillSourceCB (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uiduallistVLFillTargetCB (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, int which);
+static void uiduallistFreeQKey (void *data);
 
 uiduallist_t *
 uiCreateDualList (uiwcont_t *mainvbox, int flags,
@@ -83,40 +84,32 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *dvbox;
-  uiwcont_t     *scwindow;
   uiwcont_t     *uiwidgetp = NULL;
-  uiwcont_t     *uitree;
+  uivirtlist_t  *uivl;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
-  for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
-    duallist->uitrees [i] = NULL;
+  for (int i = 0; i < DL_LIST_MAX; ++i) {
+    duallist->uivl [i] = NULL;
+    duallist->dispq [i] = queueAlloc ("duallist-q", uiduallistFreeQKey);
+    duallist->displist [i] = slistAlloc ("duallist-list", LIST_ORDERED, NULL);
   }
   duallist->flags = flags;
-  duallist->pos = 0;
-  duallist->searchtype = DUALLIST_SEARCH_INSERT;
-  duallist->searchfound = false;
-  duallist->searchstr = NULL;
-  duallist->savelist = NULL;
   duallist->changed = false;
-  for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
+  for (int i = 0; i < DL_BUTTON_MAX; ++i) {
     duallist->buttons [i] = NULL;
   }
-  for (int i = 0; i < DUALLIST_CB_MAX; ++i) {
+  for (int i = 0; i < DL_CB_MAX; ++i) {
     duallist->callbacks [i] = NULL;
   }
 
-  duallist->callbacks [DUALLIST_CB_MOVEPREV] = callbackInit (
+  duallist->callbacks [DL_CB_MOVEPREV] = callbackInit (
       uiduallistMovePrev, duallist, NULL);
-  duallist->callbacks [DUALLIST_CB_MOVENEXT] = callbackInit (
+  duallist->callbacks [DL_CB_MOVENEXT] = callbackInit (
       uiduallistMoveNext, duallist, NULL);
-  duallist->callbacks [DUALLIST_CB_SELECT] = callbackInit (
+  duallist->callbacks [DL_CB_SELECT] = callbackInit (
       uiduallistDispSelect, duallist, NULL);
-  duallist->callbacks [DUALLIST_CB_REMOVE] = callbackInit (
+  duallist->callbacks [DL_CB_REMOVE] = callbackInit (
       uiduallistDispRemove, duallist, NULL);
-  duallist->callbacks [DUALLIST_CB_GET_DATA] = callbackInit (
-      uiduallistGetData, duallist, NULL);
-  duallist->callbacks [DUALLIST_CB_SRC_SEARCH] = callbackInit (
-      uiduallistSourceSearch, duallist, NULL);
 
   hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizStart (hbox);
@@ -133,47 +126,32 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  scwindow = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (scwindow);
-  uiBoxPackStartExpand (vbox, scwindow);
-
-  uitree = uiCreateTreeView ();
-  duallist->uitrees [DUALLIST_TREE_SOURCE] = uitree;
-  uiTreeViewDarkBackground (uitree);
-  uiWidgetExpandVert (uitree);
-  uiWindowPackInWindow (scwindow, uitree);
-
-  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
-  uiTreeViewDisableHeaders (uitree);
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, DUALLIST_COL_DISP, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_TYPE_END);
+  uivl = uivlCreate ("dl-source", NULL, vbox, 10, DL_MIN_WIDTH,
+      VL_NO_HEADING | VL_ENABLE_KEYS);
+  duallist->uivl [DL_LIST_SOURCE] = uivl;
+  uivlSetDarkBackground (uivl);
+  uivlSetNumColumns (uivl, DL_COL_MAX);
+  uivlMakeColumn (uivl, "src", DL_COL_DISP, VL_TYPE_LABEL);
+  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
+  uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
   dvbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
-  uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_SELECT],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
   uiBoxPackStart (dvbox, uiwidgetp);
-  duallist->buttons [DUALLIST_BUTTON_SELECT] = uiwidgetp;
+  duallist->buttons [DL_BUTTON_SELECT] = uiwidgetp;
 
-  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-    uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+  if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
+    uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_left");
     uiBoxPackStart (dvbox, uiwidgetp);
-    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uiwidgetp;
+    duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 
   uiwcontFree (vbox);
@@ -188,29 +166,14 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uiwcontFree (scwindow);
-  scwindow = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (scwindow);
-  uiBoxPackStartExpand (vbox, scwindow);
-
-  uitree = uiCreateTreeView ();
-  duallist->uitrees [DUALLIST_TREE_TARGET] = uitree;
-  uiTreeViewDarkBackground (uitree);
-  uiWidgetExpandVert (uitree);
-  uiWindowPackInWindow (scwindow, uitree);
-
-  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
-  uiTreeViewDisableHeaders (uitree);
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, DUALLIST_COL_DISP, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_TYPE_END);
+  uivl = uivlCreate ("dl-target", NULL, vbox, 10, DL_MIN_WIDTH,
+      VL_NO_HEADING | VL_ENABLE_KEYS);
+  duallist->uivl [DL_LIST_TARGET] = uivl;
+  uivlSetDarkBackground (uivl);
+  uivlSetNumColumns (uivl, DL_COL_MAX);
+  uivlMakeColumn (uivl, "tgt", DL_COL_DISP, VL_TYPE_LABEL);
+  uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
+  uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 
   uiwcontFree (dvbox);
   dvbox = uiCreateVertBox ();
@@ -219,30 +182,33 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVEPREV],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
   uiBoxPackStart (dvbox, uiwidgetp);
-  duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uiwidgetp;
+  duallist->buttons [DL_BUTTON_MOVE_UP] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVENEXT],
+  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
   uiBoxPackStart (dvbox, uiwidgetp);
-  duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uiwidgetp;
+  duallist->buttons [DL_BUTTON_MOVE_DOWN] = uiwidgetp;
 
-  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) == DUALLIST_FLAGS_PERSISTENT) {
-    uiwidgetp = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
+  if ((duallist->flags & DL_FLAGS_PERSISTENT) == DL_FLAGS_PERSISTENT) {
+    uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_remove");
     uiBoxPackStart (dvbox, uiwidgetp);
-    duallist->buttons [DUALLIST_BUTTON_REMOVE] = uiwidgetp;
+    duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 
-  uiwcontFree (scwindow);
   uiwcontFree (dvbox);
   uiwcontFree (vbox);
   uiwcontFree (hbox);
+
+  for (int i = 0; i < DL_LIST_MAX; ++i) {
+    uivlDisplay (duallist->uivl [i]);
+  }
 
   return duallist;
 }
@@ -251,13 +217,15 @@ void
 uiduallistFree (uiduallist_t *duallist)
 {
   if (duallist != NULL) {
-    for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
-      uiwcontFree (duallist->uitrees [i]);
+    for (int i = 0; i < DL_LIST_MAX; ++i) {
+      uivlFree (duallist->uivl [i]);
+      queueFree (duallist->dispq [i]);
+      slistFree (duallist->displist [i]);
     }
-    for (int i = 0; i < DUALLIST_CB_MAX; ++i) {
+    for (int i = 0; i < DL_CB_MAX; ++i) {
       callbackFree (duallist->callbacks [i]);
     }
-    for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
+    for (int i = 0; i < DL_BUTTON_MAX; ++i) {
       uiwcontFree (duallist->buttons [i]);
     }
     mdfree (duallist);
@@ -270,62 +238,46 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
   const char    *keystr;
   slistidx_t    siteridx;
-  uiwcont_t     *uitree = NULL;
-  uiwcont_t     *uistree = NULL;
 
   if (duallist == NULL) {
     return;
   }
 
-  if (which < 0 || which >= DUALLIST_TREE_MAX) {
+  if (which < 0 || which >= DL_LIST_MAX) {
     return;
   }
 
-  uitree = duallist->uitrees [which];
-  if (uitree == NULL) {
-    return;
-  }
+  queueClear (duallist->dispq [which], 0);
+  slistFree (duallist->displist [which]);
+  duallist->displist [which] = slistAlloc ("duallist", LIST_UNORDERED, NULL);
 
-  /* the assumption made is that the source tree has been populated */
-  /* just before the target tree */
-  uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
-
-  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
-
+  /* the caller should set the target list first */
+  /* so that the source list can be populated correctly */
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
-    long    val;
+    long  val;
+    char  *tkeystr;
 
     val = slistGetNum (slist, keystr);
-    uiTreeViewValueAppend (uitree);
-    uiTreeViewSetValues (uitree,
-        DUALLIST_COL_DISP, keystr,
-        DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, (treenum_t) val,
-        TREE_VALUE_END);
-
-    /* if inserting into the target tree, and the persistent flag */
-    /* is not set, remove the matching entries from the source tree */
-    if (which == DUALLIST_TREE_TARGET &&
-        (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-      duallist->pos = 0;
-      duallist->searchstr = keystr;
-      duallist->searchtype = DUALLIST_SEARCH_REMOVE;
-      duallist->searchfound = false;
-      /* this is not efficient, but the lists are relatively short */
-      uiTreeViewForeach (uistree, duallist->callbacks [DUALLIST_CB_SRC_SEARCH]);
-
-      if (duallist->searchfound) {
-        uiTreeViewSelectSave (uistree);
-        uiTreeViewSelectSet (uistree, duallist->pos);
-        uiTreeViewValueRemove (uistree);
-        uiTreeViewSelectRestore (uistree);
+    if (which == DL_LIST_SOURCE &&
+        duallist->displist [DL_LIST_TARGET] != NULL &&
+        (duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
+      if (slistGetNum (duallist->displist [DL_LIST_TARGET], keystr) >= 0) {
+        continue;
       }
     }
+
+    slistSetNum (duallist->displist [which], keystr, val);
+    tkeystr = mdstrdup (keystr);
+    queuePush (duallist->dispq [which], tkeystr);
   }
 
-  uiduallistSetDefaultSelection (duallist, which);
+  slistSort (duallist->displist [which]);
+
+  /* initial number of rows */
+  uivlSetNumRows (duallist->uivl [which],
+      queueGetCount (duallist->dispq [which]));
+  uivlPopulate (duallist->uivl [which]);
 }
 
 bool
@@ -348,17 +300,25 @@ uiduallistClearChanged (uiduallist_t *duallist)
   duallist->changed = false;
 }
 
+/* the caller takes ownership of the list */
 slist_t *
 uiduallistGetList (uiduallist_t *duallist)
 {
-  uiwcont_t     *uittree;
   slist_t       *slist;
+  qidx_t        qiter;
+  const char    *keystr;
 
 
-  uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
   slist = slistAlloc ("duallist-return", LIST_UNORDERED, NULL);
-  duallist->savelist = slist;
-  uiTreeViewForeach (uittree, duallist->callbacks [DUALLIST_CB_GET_DATA]);
+  queueStartIterator (duallist->dispq [DL_LIST_TARGET], &qiter);
+  while ((keystr =
+      queueIterateData (duallist->dispq [DL_LIST_TARGET], &qiter)) != NULL) {
+    listnum_t   val;
+
+    val = slistGetNum (duallist->displist [DL_LIST_TARGET], keystr);
+    slistSetNum (slist, keystr, val);
+  }
+
   return slist;
 }
 
@@ -368,7 +328,7 @@ static bool
 uiduallistMovePrev (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
-  uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_PREV);
+  uiduallistMove (duallist, DL_LIST_TARGET, DL_MOVE_PREV);
   return UICB_CONT;
 }
 
@@ -376,196 +336,194 @@ static bool
 uiduallistMoveNext (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
-  uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_NEXT);
+  uiduallistMove (duallist, DL_LIST_TARGET, DL_MOVE_NEXT);
   return UICB_CONT;
 }
 
 static void
 uiduallistMove (uiduallist_t *duallist, int which, int dir)
 {
-  uiwcont_t         *uitree;
   int               count;
+  int               idx;
+  int               toidx = -1;
 
   if (duallist == NULL) {
     return;
   }
-  if (which < 0 || which >= DUALLIST_TREE_MAX) {
+  if (which < 0 || which >= DL_LIST_MAX) {
     return;
   }
 
-  uitree = duallist->uitrees [which];
-
-  count = uiTreeViewSelectGetCount (duallist->uitrees [which]);
+  count = uivlSelectionCount (duallist->uivl [which]);
   if (count != 1) {
     return;
   }
 
-  if (dir == DUALLIST_MOVE_PREV) {
-    uiTreeViewMoveBefore (uitree);
+  idx = uivlGetCurrSelection (duallist->uivl [which]);
+  count = queueGetCount (duallist->dispq [which]);
+
+  /* a move has no effect on duallist->displist, as it is sorted */
+  if (idx > 0 && dir == DL_MOVE_PREV) {
+    toidx = idx - 1;
   }
-  if (dir == DUALLIST_MOVE_NEXT) {
-    uiTreeViewMoveAfter (uitree);
+  if (idx < count - 1 && dir == DL_MOVE_NEXT) {
+    toidx = idx + 1;
   }
+  if (toidx < 0 || toidx >= count) {
+    return;
+  }
+
+  queueMove (duallist->dispq [which], idx, toidx);
+  uivlSetSelection (duallist->uivl [which], toidx);
 
   duallist->changed = true;
+  uivlPopulate (duallist->uivl [which]);
 }
 
-/* select in the source tree. */
-/* add to the target tree. */
-/* remove from the source tree. */
+/* select in the source list. */
+/* add to the target list. */
+/* remove from the source list. */
 static bool
 uiduallistDispSelect (void *udata)
 {
-  uiduallist_t      *duallist = udata;
-  uiwcont_t         *uistree;
-  int               count;
-  uiwcont_t         *uittree;
-  char              *str;
-  int               tval;
-  int               idx;
+  uiduallist_t  *duallist = udata;
+  int           count;
+  char          *keystr;
+  char          *tkeystr;
+  int           idx;
+  int           toidx;
+  listnum_t     val;
 
-  uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
-
-  count = uiTreeViewSelectGetCount (uistree);
+  count = uivlSelectionCount (duallist->uivl [DL_LIST_SOURCE]);
   if (count != 1) {
     return UICB_CONT;
   }
-
-  uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
-  uiTreeViewSelectCurrent (uittree);
-
-  str = uiTreeViewGetValueStr (uistree, DUALLIST_COL_DISP);
-  tval = uiTreeViewGetValue (uistree, DUALLIST_COL_DISP_IDX);
-  idx = uiTreeViewSelectGetIndex (uistree);
-
-  uiTreeViewValueInsertAfter (uittree);
-  uiTreeViewSetValues (uittree,
-      DUALLIST_COL_DISP, str,
-      DUALLIST_COL_SB_PAD, "    ",
-      DUALLIST_COL_DISP_IDX, (treenum_t) tval,
-      TREE_VALUE_END);
-  dataFree (str);
-
-  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-    uiTreeViewValueRemove (uistree);
-    uiTreeViewSelectSet (uistree, idx);
+  if (queueGetCount (duallist->dispq [DL_LIST_SOURCE]) == 0) {
+    return UICB_CONT;
   }
+
+  idx = uivlGetCurrSelection (duallist->uivl [DL_LIST_SOURCE]);
+  toidx = uivlGetCurrSelection (duallist->uivl [DL_LIST_TARGET]);
+  keystr = queueGetByIdx (duallist->dispq [DL_LIST_SOURCE], idx);
+  val = slistGetNum (duallist->displist [DL_LIST_SOURCE], keystr);
+
+  tkeystr = mdstrdup (keystr);
+  if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_TARGET])) {
+    queuePush (duallist->dispq [DL_LIST_TARGET], tkeystr);
+  } else {
+    queueInsert (duallist->dispq [DL_LIST_TARGET], toidx + 1, tkeystr);
+  }
+  slistSetNum (duallist->displist [DL_LIST_TARGET], keystr, val);
+  uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
+      queueGetCount (duallist->dispq [DL_LIST_TARGET]));
+  uivlMoveSelection (duallist->uivl [DL_LIST_TARGET], VL_DIR_NEXT);
+
+  if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
+    queueRemoveByIdx (duallist->dispq [DL_LIST_SOURCE], idx);
+    slistDelete (duallist->displist [DL_LIST_SOURCE], keystr);
+    uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],
+        queueGetCount (duallist->dispq [DL_LIST_SOURCE]));
+  }
+
   duallist->changed = true;
+  uivlPopulate (duallist->uivl [DL_LIST_SOURCE]);
+  uivlPopulate (duallist->uivl [DL_LIST_TARGET]);
   return UICB_CONT;
 }
 
-/* select in the target tree. */
-/* add to the source tree (in the proper position). */
-/* remove from the target tree. */
+/* select in the target list. */
+/* add to the source list (in the proper position). */
+/* remove from the target list. */
 static bool
 uiduallistDispRemove (void *udata)
 {
   uiduallist_t  *duallist = udata;
-  uiwcont_t     *uittree;
-  uiwcont_t     *uistree;
   int           count;
   int           idx;
+  int           toidx;
+  const char    *keystr;
 
 
-  uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
-  count = uiTreeViewSelectGetCount (uittree);
-  if (count == 0) {
+  count = uivlSelectionCount (duallist->uivl [DL_LIST_TARGET]);
+  if (count != 1) {
+    return UICB_CONT;
+  }
+  if (queueGetCount (duallist->dispq [DL_LIST_TARGET]) == 0) {
     return UICB_CONT;
   }
 
-  uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
-  uiTreeViewSelectCurrent (uistree);
+  idx = uivlGetCurrSelection (duallist->uivl [DL_LIST_TARGET]);
+  keystr = queueRemoveByIdx (duallist->dispq [DL_LIST_TARGET], idx);
+  uivlSetNumRows (duallist->uivl [DL_LIST_TARGET],
+      queueGetCount (duallist->dispq [DL_LIST_TARGET]));
 
-  if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-    char          *str;
-    long          tval;
+  if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
+    listnum_t   val;
 
-    str = uiTreeViewGetValueStr (uittree, DUALLIST_COL_DISP);
-    tval = uiTreeViewGetValue (uittree, DUALLIST_COL_DISP_IDX);
+    val = slistGetNum (duallist->displist [DL_LIST_TARGET], keystr);
+    slistSetNum (duallist->displist [DL_LIST_SOURCE], keystr, val);
+    toidx = slistGetIdx (duallist->displist [DL_LIST_SOURCE], keystr);
 
-    duallist->pos = 0;
-    duallist->searchstr = str;
-    duallist->searchtype = DUALLIST_SEARCH_INSERT;
-    duallist->searchfound = false;
-    uiTreeViewForeach (uistree, duallist->callbacks [DUALLIST_CB_SRC_SEARCH]);
-
-    if (! duallist->searchfound) {
-      duallist->pos = -1;
+    if (toidx == 0) {
+      queuePushHead (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
+    } else {
+      toidx -= 1;
+      if (toidx + 1 >= queueGetCount (duallist->dispq [DL_LIST_SOURCE])) {
+        queuePush (duallist->dispq [DL_LIST_SOURCE], (void *) keystr);
+      } else {
+        queueInsert (duallist->dispq [DL_LIST_SOURCE], toidx + 1, (void *) keystr);
+      }
     }
-    uiTreeViewSelectSet (uistree, duallist->pos);
-    uiTreeViewValueInsertBefore (uistree);
-    uiTreeViewSetValues (uistree,
-        DUALLIST_COL_DISP, str,
-        DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, (treenum_t) tval,
-        TREE_VALUE_END);
-    dataFree (str);
+    uivlSetNumRows (duallist->uivl [DL_LIST_SOURCE],
+        queueGetCount (duallist->dispq [DL_LIST_SOURCE]));
+    uivlSetSelection (duallist->uivl [DL_LIST_SOURCE], toidx + 1);
   }
 
-  idx = uiTreeViewSelectGetIndex (uittree);
-  uiTreeViewValueRemove (uittree);
-  uiTreeViewSelectSet (uittree, idx);
+  slistDelete (duallist->displist [DL_LIST_TARGET], keystr);
+
   duallist->changed = true;
+  uivlPopulate (duallist->uivl [DL_LIST_SOURCE]);
+  uivlPopulate (duallist->uivl [DL_LIST_TARGET]);
   return UICB_CONT;
 }
 
-static bool
-uiduallistSourceSearch (void *udata)
+static void
+uiduallistVLFillSourceCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  uiduallist_t  *duallist = udata;
-  char          *str;
-
-  str = uiTreeViewGetValueStr (duallist->uitrees [DUALLIST_TREE_SOURCE],
-      DUALLIST_COL_DISP);
-  if (duallist->searchtype == DUALLIST_SEARCH_INSERT) {
-    if (istringCompare (duallist->searchstr, str) < 0) {
-      duallist->searchfound = true;
-      dataFree (str);
-      return UI_FOREACH_STOP;
-    }
-  }
-  if (duallist->searchtype == DUALLIST_SEARCH_REMOVE) {
-    if (istringCompare (duallist->searchstr, str) == 0) {
-      duallist->searchfound = true;
-      dataFree (str);
-      return UI_FOREACH_STOP;
-    }
-  }
-
-  dataFree (str);
-  duallist->pos += 1;
-  return UI_FOREACH_CONT;
+  uiduallistVLFillCB (udata, vl, rownum, DL_LIST_SOURCE);
 }
-
-static bool
-uiduallistGetData (void *udata)
-{
-  uiduallist_t  *duallist = udata;
-  uiwcont_t     *uittree;
-  char          *str;
-  long          tval;
-
-  uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
-  str = uiTreeViewGetValueStr (uittree, DUALLIST_COL_DISP);
-  tval = uiTreeViewGetValue (uittree, DUALLIST_COL_DISP_IDX);
-  slistSetNum (duallist->savelist, str, tval);
-  dataFree (str);
-  return UI_FOREACH_CONT;
-}
-
 
 static void
-uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
+uiduallistVLFillTargetCB (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  uiwcont_t         *uitree;
+  uiduallistVLFillCB (udata, vl, rownum, DL_LIST_TARGET);
+}
 
-  if (duallist == NULL) {
+static void
+uiduallistVLFillCB (uiduallist_t *duallist, uivirtlist_t *vl, int32_t rownum, int which)
+{
+  qidx_t        count;
+  const char    *keystr;
+
+  if (duallist->dispq [which] == NULL) {
     return;
   }
-  if (which < 0 || which >= DUALLIST_TREE_MAX) {
+  if (duallist->uivl [which] == NULL) {
     return;
   }
 
-  uitree = duallist->uitrees [which];
-  uiTreeViewSelectDefault (uitree);
+  count = queueGetCount (duallist->dispq [which]);
+  if (rownum >= count) {
+    return;
+  }
+
+  keystr = queueGetByIdx (duallist->dispq [which], rownum);
+  uivlSetRowColumnStr (duallist->uivl [which], rownum,
+      DL_COL_DISP, keystr);
+}
+
+static void
+uiduallistFreeQKey (void *data)
+{
+  dataFree (data);
 }

@@ -490,7 +490,7 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
 /* allocates the data buffer.               */
 /* the buffer must be freed by the caller.  */
 char *
-sockRead (Sock_t sock, size_t *rlen)
+sockRead (Sock_t sock, size_t *rlen)  /* TESTING */
 {
   uint32_t     len;
   ssize_t     rc;
@@ -513,7 +513,7 @@ sockRead (Sock_t sock, size_t *rlen)
 
 /* sockWriteStr() writes the null byte also */
 int
-sockWriteStr (Sock_t sock, char *data, size_t len)
+sockWriteStr (Sock_t sock, char *data, size_t len)  /* TESTING */
 {
   int   rc;
 

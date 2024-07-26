@@ -1,6 +1,9 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
+/* the conversion routines use the internal genre-list, but it */
+/* is not necessary to update this for editing or for the save */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -18,141 +21,276 @@
 #include "bdjvarsdf.h"
 #include "configui.h"
 #include "genre.h"
-#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
-#include "tagdef.h"
 #include "ui.h"
 
-static bool confuiGenreListCreate (void *udata);
 static void confuiGenreSave (confuigui_t *gui);
+static void confuiGenreFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static bool confuiGenreChangeCB (void *udata);
+static int confuiGenreEntryChangeCB (uiwcont_t *entry, const char *label, void *udata);
+static void confuiGenreAdd (confuigui_t *gui);
+static void confuiGenreRemove (confuigui_t *gui, ilistidx_t idx);
+static void confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
 confuiBuildUIEditGenres (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    *uiwidgetp;
 
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  /* edit genres */
+  /* edit genre */
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
 
-  /* CONTEXT: configuration: genres: information on how to edit a genre entry */
-  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
   hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizStart (hbox);
   uiBoxPackStartExpand (vbox, hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
-  gui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   gui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
+  gui->tables [CONFUI_ID_GENRES].addfunc = confuiGenreAdd;
+  gui->tables [CONFUI_ID_GENRES].removefunc = confuiGenreRemove;
+  gui->tables [CONFUI_ID_GENRES].movefunc = confuiGenreMove;
   confuiCreateGenreTable (gui);
-  uiwcontFree (hbox);
+
   uiwcontFree (vbox);
+  uiwcontFree (hbox);
+
   logProcEnd ("");
 }
 
 void
 confuiCreateGenreTable (confuigui_t *gui)
 {
-  ilistidx_t        iteridx;
-  ilistidx_t        key;
   genre_t           *genres;
-  uiwcont_t         *uitree;
+  uivirtlist_t      *uivl;
 
   logProcBegin ();
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-  uitree = gui->tables [CONFUI_ID_GENRES].uitree;
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  uivlSetNumColumns (uivl, CONFUI_GENRE_COL_MAX);
 
-  gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED] =
-      callbackInitLong (confuiTableChanged, gui);
-  uiTreeViewSetEditedCallback (uitree,
-      gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED]);
+  uivlMakeColumnEntry (uivl, "genre", CONFUI_GENRE_COL_GENRE, 15, 30);
+  uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_GENRE,
+      tagdefs [TAG_GENRE].displayname);
 
-  uiTreeViewCreateValueStore (uitree, CONFUI_GENRE_COL_MAX,
-      TREE_TYPE_INT,        // editable
-      TREE_TYPE_STRING,     // display
-      TREE_TYPE_BOOLEAN,    // classical flag
-      TREE_TYPE_STRING,     // scrollbar pad
-      TREE_TYPE_END);
+  uivlMakeColumn (uivl, "clflag", CONFUI_GENRE_COL_CLASSICAL, VL_TYPE_CHECKBOX);
+  /* CONTEXT: configuration: genre: title of the classical setting column */
+  uivlSetColumnHeading (uivl, CONFUI_GENRE_COL_CLASSICAL, _("Classical?"));
+  uivlSetColumnAlignCenter (uivl, CONFUI_GENRE_COL_CLASSICAL);
 
-  genreStartIterator (genres, &iteridx);
+  uivlSetNumRows (uivl, genreGetCount (genres));
+  gui->tables [CONFUI_ID_GENRES].currcount = genreGetCount (genres);
 
-  while ((key = genreIterate (genres, &iteridx)) >= 0) {
-    const char  *genredisp;
-    long        clflag;
+  gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_GENRE_CB] =
+      callbackInit (confuiGenreChangeCB, gui, NULL);
+  uivlSetEntryValidation (uivl, CONFUI_GENRE_COL_GENRE,
+      confuiGenreEntryChangeCB, gui);
+  uivlSetCheckboxChangeCallback (uivl, CONFUI_GENRE_COL_CLASSICAL,
+      gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_GENRE_CB]);
 
-    genredisp = genreGetGenre (genres, key);
-    clflag = genreGetClassicalFlag (genres, key);
-
-    uiTreeViewValueAppend (uitree);
-    confuiGenreSet (uitree, true, genredisp, clflag);
-    gui->tables [CONFUI_ID_GENRES].currcount += 1;
-  }
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, tagdefs [TAG_GENRE].displayname,
-      TREE_COL_TYPE_TEXT, CONFUI_GENRE_COL_GENRE,
-      TREE_COL_TYPE_EDITABLE, CONFUI_GENRE_COL_EDITABLE,
-      TREE_COL_TYPE_END);
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_CHECKBOX, TREE_ALIGN_CENTER,
-      /* CONTEXT: configuration: genre: title of the classical setting column */
-      TREE_COL_DISP_GROW, _("Classical?"),
-      TREE_COL_TYPE_ACTIVE, CONFUI_GENRE_COL_CLASSICAL,
-      TREE_COL_TYPE_END);
-
-  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, NULL,
-      TREE_COL_TYPE_TEXT, CONFUI_GENRE_COL_SB_PAD,
-      TREE_COL_TYPE_END);
+  uivlSetRowFillCallback (uivl, confuiGenreFillRow, gui);
+  uivlDisplay (uivl);
 
   logProcEnd ("");
 }
 
-
-static bool
-confuiGenreListCreate (void *udata)
-{
-  confuigui_t *gui = udata;
-  char        *genredisp;
-  int         clflag;
-
-  logProcBegin ();
-  genredisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_GENRES].uitree,
-      CONFUI_GENRE_COL_GENRE);
-  clflag = uiTreeViewGetValue (gui->tables [CONFUI_ID_GENRES].uitree,
-      CONFUI_GENRE_COL_CLASSICAL);
-  ilistSetStr (gui->tables [CONFUI_ID_GENRES].savelist,
-      gui->tables [CONFUI_ID_GENRES].saveidx, GENRE_GENRE, genredisp);
-  ilistSetNum (gui->tables [CONFUI_ID_GENRES].savelist,
-      gui->tables [CONFUI_ID_GENRES].saveidx, GENRE_CLASSICAL_FLAG, clflag);
-  gui->tables [CONFUI_ID_GENRES].saveidx += 1;
-  dataFree (genredisp);
-  logProcEnd ("");
-  return UI_FOREACH_CONT;
-}
+/* internal routines */
 
 static void
 confuiGenreSave (confuigui_t *gui)
 {
-  genre_t    *genres;
+  genre_t       *genres;
+  ilist_t       *genrelist;
+  ilistidx_t    count;
 
   logProcBegin ();
+
+  if (gui->tables [CONFUI_ID_GENRES].changed == false) {
+    return;
+  }
+
   genres = bdjvarsdfGet (BDJVDF_GENRES);
-  genreSave (genres, gui->tables [CONFUI_ID_GENRES].savelist);
-  ilistFree (gui->tables [CONFUI_ID_GENRES].savelist);
+
+  genrelist = ilistAlloc ("genre-save", LIST_ORDERED);
+  count = genreGetCount (genres);
+  for (int rowidx = 0; rowidx < count; ++rowidx) {
+    const char  *genredisp;
+    int         clflag;
+
+    genredisp = genreGetGenre (genres, rowidx);
+    clflag = genreGetClassicalFlag (genres, rowidx);
+    ilistSetStr (genrelist, rowidx, GENRE_GENRE, genredisp);
+    ilistSetNum (genrelist, rowidx, GENRE_CLASSICAL_FLAG, clflag);
+  }
+
+  genreSave (genres, genrelist);
+  ilistFree (genrelist);
   logProcEnd ("");
+}
+
+static void
+confuiGenreFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+{
+  confuigui_t *gui = udata;
+  genre_t     *genres;
+  const char  *genredisp;
+  int         clflag;
+
+  gui->inchange = true;
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  if (rownum >= genreGetCount (genres)) {
+    return;
+  }
+
+  genredisp = genreGetGenre (genres, rownum);
+  clflag = genreGetClassicalFlag (genres, rownum);
+  uivlSetRowColumnStr (gui->tables [CONFUI_ID_GENRES].uivl, rownum,
+      CONFUI_GENRE_COL_GENRE, genredisp);
+  uivlSetRowColumnNum (gui->tables [CONFUI_ID_GENRES].uivl, rownum,
+      CONFUI_GENRE_COL_CLASSICAL, clflag);
+
+  gui->inchange = false;
+}
+
+static bool
+confuiGenreChangeCB (void *udata)
+{
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  int           clflag;
+  genre_t       *genres;
+
+  if (gui->inchange) {
+    return UICB_CONT;
+  }
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  clflag = uivlGetRowColumnNum (uivl, rownum, CONFUI_GENRE_COL_CLASSICAL);
+  genreSetClassicalFlag (genres, rownum, clflag);
+  gui->tables [CONFUI_ID_GENRES].changed = true;
+  return UICB_CONT;
+}
+
+static int
+confuiGenreEntryChangeCB (uiwcont_t *entry, const char *label, void *udata)
+{
+  confuigui_t   *gui = udata;
+  uivirtlist_t  *uivl;
+  int32_t       rownum;
+  const char    *genredisp;
+  genre_t       *genres;
+
+  if (gui->inchange) {
+    return UIENTRY_OK;
+  }
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  rownum = uivlGetCurrSelection (uivl);
+  genredisp = uivlGetRowColumnEntry (uivl, rownum, CONFUI_GENRE_COL_GENRE);
+  genreSetGenre (genres, rownum, genredisp);
+  gui->tables [CONFUI_ID_GENRES].changed = true;
+  return UIENTRY_OK;
+}
+
+static void
+confuiGenreAdd (confuigui_t *gui)
+{
+  genre_t       *genres;
+  int           count;
+  uivirtlist_t  *uivl;
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+
+  count = genreGetCount (genres);
+  /* CONTEXT: configuration: genre name that is set when adding a new genre */
+  genreSetGenre (genres, count, _("New Genre"));
+  genreSetClassicalFlag (genres, count, 0);
+  count += 1;
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_GENRES].currcount = count;
+  uivlPopulate (uivl);
+  uivlSetSelection (uivl, count - 1);
+}
+
+static void
+confuiGenreRemove (confuigui_t *gui, ilistidx_t delidx)
+{
+  genre_t       *genres;
+  uivirtlist_t  *uivl;
+  int           count;
+  bool          docopy = false;
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+  count = genreGetCount (genres);
+
+  for (int idx = 0; idx < count - 1; ++idx) {
+    if (idx == delidx) {
+      docopy = true;
+    }
+    if (docopy) {
+      const char  *genredisp;
+      int         clflag;
+
+      genredisp = genreGetGenre (genres, idx + 1);
+      clflag = genreGetClassicalFlag (genres, idx + 1);
+      genreSetGenre (genres, idx, genredisp);
+      genreSetClassicalFlag (genres, idx, clflag);
+    }
+  }
+
+  genreDeleteLast (genres);
+  count = genreGetCount (genres);
+  uivlSetNumRows (uivl, count);
+  gui->tables [CONFUI_ID_GENRES].currcount = count;
+  uivlPopulate (uivl);
+}
+
+static void
+confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir)
+{
+  genre_t       *genres;
+  uivirtlist_t  *uivl;
+  ilistidx_t    toidx;
+  char          *genredisp;
+  int           clflag;
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  uivl = gui->tables [CONFUI_ID_GENRES].uivl;
+
+  toidx = idx;
+  if (dir == CONFUI_MOVE_PREV) {
+    toidx -= 1;
+    uivlMoveSelection (uivl, VL_DIR_PREV);
+  }
+  if (dir == CONFUI_MOVE_NEXT) {
+    toidx += 1;
+    uivlMoveSelection (uivl, VL_DIR_NEXT);
+  }
+
+  genredisp = mdstrdup (genreGetGenre (genres, toidx));
+  clflag = genreGetClassicalFlag (genres, toidx);
+  genreSetGenre (genres, toidx, genreGetGenre (genres, idx));
+  genreSetClassicalFlag (genres, toidx, genreGetClassicalFlag (genres, idx));
+  genreSetGenre (genres, idx, genredisp);
+  genreSetClassicalFlag (genres, idx, clflag);
+  dataFree (genredisp);
+
+  uivlPopulate (uivl);
+
+  return;
 }

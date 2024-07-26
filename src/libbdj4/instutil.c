@@ -246,9 +246,6 @@ instutilCopyTemplates (void)
       strlcpy (tbuff, fname, sizeof (tbuff));
 
       fkey = -1;
-      if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
-        fkey = LOCALE_KEY_AUTO;
-      }
       if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
         fkey = LOCALE_KEY_STDROUNDS;
       }

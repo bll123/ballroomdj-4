@@ -1,0 +1,42 @@
+[Wiki Home](Home)
+
+Directory Layout
+
+ Directory|Notes
+ ---------|-----
+ build|cmake build directory
+ check|C language test programs
+ configui|configuration ui
+ include|include files
+ installer|installer, updater
+ libati|audio tagging interface
+this was written as a dynamic library since at one
+point, both mutagen and the bdj4-ati interfaces
+were in process.
+ libaudioid|audio identification
+ libaudiosrc|audio source interface
+ libbasic|lists, basic utilities that use lists or libicu
+ libbdj4|bdj4 specific utilities
+ libbdj4ui|bdj4 general ui
+ libcommon|common utilities that do not use lists nor libicu
+ libcont|music controller (not yet in use)
+ libdylib|dynamic library handling
+ libpli|player interface (dynamic libraries)
+ libuigtk3|gtk3 user interface layer
+ libuinull|null user interface layer
+ libuiwcont|ui widget container
+ libvol|volume interface (dynamic libraries)
+ libwebsrv|web server (uses mongoose)
+ manageui|management ui
+ mongoose|third-party web server
+ player|the main player process, the player process,
+marquee, mobile marquee and remote control
+only the marquee has ui linked in
+ playerui|player ui
+ po|localization
+ starter|the launcher and starter process
+ utility|various utility programs used in testing
+ utils|various utility scripts and files
+
+[Wiki Home](Home)
+<br>_(Updated 2024-07-20 07:38:59; BDJ4 version 4.11.0)_

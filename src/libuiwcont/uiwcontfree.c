@@ -16,15 +16,13 @@
 
 /* the includes are needed to get the declaration of ...Free() */
 #include "ui/uibutton.h"
-#include "ui/uidropdown.h"
 #include "ui/uientry.h"
-#include "ui/uikeys.h"
+#include "ui/uievents.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
-#include "ui/uitreeview.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -42,16 +40,12 @@ uiwcontFree (uiwcont_t *uiwidget)
       uiButtonFree (uiwidget);
       break;
     }
-    case WCONT_T_DROPDOWN: {
-      uiDropDownFree (uiwidget);
-      break;
-    }
     case WCONT_T_ENTRY: {
       uiEntryFree (uiwidget);
       break;
     }
     case WCONT_T_KEY: {
-      uiKeyFree (uiwidget);
+      uiEventFree (uiwidget);
       break;
     }
     case WCONT_T_MENU: {
@@ -74,10 +68,6 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_TEXT_BOX: {
       uiTextBoxFree (uiwidget);
-      break;
-    }
-    case WCONT_T_TREE: {
-      uiTreeViewFree (uiwidget);
       break;
     }
     default: {

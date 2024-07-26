@@ -4,6 +4,7 @@
 #ifndef INC_MANAGEUI_H
 #define INC_MANAGEUI_H
 
+#include "callback.h"
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"
@@ -48,16 +49,14 @@ void managePlaylistLoadCheck (managepl_t *managepl);
 void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
 bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 
-/* managepltree.c */
-typedef struct managepltree managepltree_t;
+/* managepldance.c */
+typedef struct mpldance mpldance_t;
 
-managepltree_t *managePlaylistTreeAlloc (uiwcont_t *errorMsg);
-void managePlaylistTreeFree (managepltree_t *managepltree);
-void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp);
-void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
-void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
-bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
-void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
+mpldance_t *manageplDanceAlloc (manageinfo_t *minfo);
+void manageplDanceFree (mpldance_t *mpldnc);
+void manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp);
+void manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl);
+bool manageplDanceIsChanged (mpldance_t *mpldnc);
 
 /* manageseq.c */
 typedef struct manageseq manageseq_t;
@@ -90,7 +89,7 @@ void  manageDbResetButtons (managedb_t *managedb);
 bool manageCreatePlaylistCopy (uiwcont_t *errorMsg,
     const char *oname, const char *newname);
 void manageDeletePlaylist (uiwcont_t *statusMsg, const char *name);
-char * manageTrimName (const char *name);
+char * manageGetEntryValue (uiwcont_t *uientry);
 
 /* managestats.c */
 typedef struct managestats managestats_t;

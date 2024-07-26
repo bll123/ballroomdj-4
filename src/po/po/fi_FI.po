@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-05-04 12:19\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -23,11 +23,6 @@ msgstr ""
 #, c-format
 msgid "%1$s must be greater than %2$s"
 msgstr "%1$s on oltava suurempi kuin %2$s"
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
-msgstr "%d löydetyt tiedostot"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
@@ -125,6 +120,11 @@ msgstr "%s XML-tiedosto"
 msgid "%s data will be converted."
 msgstr "%s tiedot muunnetaan."
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s löydetyt tiedostot"
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -151,37 +151,43 @@ msgstr "%s ei ole asennettu"
 msgid "%s may not exceed the song duration"
 msgstr "%s ei saa ylittää kappaleen kestoa"
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr "%s on oltava numeerinen."
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
-msgstr "%s on asetettava."
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: *'\":|<>^ merkit eivät ole sallittuja."
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
-msgid "%s: Invalid time."
-msgstr "%s: Väärä aika."
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Väärä aika (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: On oltava numeerinen."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: On asetettava."
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
-msgstr "%s: Vinoviivat eivät ole sallittuja"
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Vinoviivat eivät ole sallittuja."
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
 msgstr "%s: Välilyöntejä ei sallita."
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
-msgstr "%s: on oltava numeerinen."
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -242,11 +248,11 @@ msgstr "Albumin esittäjä"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr ""
+msgstr "Albumi artisti Lajittelujärjestys"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr ""
+msgstr "Albumin lajittelujärjestys"
 
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
@@ -312,7 +318,7 @@ msgstr "Artisti"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr ""
+msgstr "Taiteilija Lajittelujärjestys"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
@@ -364,10 +370,6 @@ msgstr "Vain BDJ-tunnisteet"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3-tietokannan versio on liian vanha."
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4 Sisäinen"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -396,7 +398,7 @@ msgstr "Peruuta Muokkaa kaikkia"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr ""
+msgstr "Ei voi nimetä uudelleen"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -445,7 +447,6 @@ msgstr "Napsauta hiirellä sinistä laatikkoa tahdin tahdissa."
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -480,7 +481,7 @@ msgstr "Säveltäjä"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr ""
+msgstr "Säveltäjä Lajittelujärjestys"
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
@@ -573,7 +574,7 @@ msgstr "Nykyinen"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
-msgstr ""
+msgstr "Nykyinen laulu"
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -630,7 +631,7 @@ msgstr "Poista profiili"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
-msgstr ""
+msgstr "Dialogit"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -649,16 +650,9 @@ msgstr "Näytön asetukset"
 msgid "Don't Write"
 msgstr "Älä kirjoita"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "Muokkaa kenttää kaksoisnapsauttamalla sitä."
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
-msgstr ""
+msgstr "Lataa uusin versio"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -703,7 +697,7 @@ msgstr "Muokkaa tansseja"
 msgid "Edit Genres"
 msgstr "Muokkaa genrejä"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "Muokkaa tasoja"
 
@@ -742,7 +736,7 @@ msgstr "Kirjoita kansio, johon %s on asennettu."
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr ""
+msgstr "Kirjoita uuden asennuksen nimi."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -781,11 +775,11 @@ msgstr "Vie"
 #. CONTEXT: managementui: export playlist: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export
 msgid "Export Playlist"
-msgstr ""
+msgstr "Vie soittolista"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr ""
+msgstr "Vientityyppi"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
@@ -907,7 +901,9 @@ msgid "High Dance Level"
 msgstr "Korkea tanssin taso"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "Historia"
 
@@ -924,7 +920,7 @@ msgstr "Tuo"
 #. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
 msgid "Import Playlist"
-msgstr ""
+msgstr "Tuo soittolista"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
@@ -965,6 +961,10 @@ msgstr "Asennus valmis."
 msgid "Installing %s."
 msgstr "Asennus %s."
 
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -973,11 +973,17 @@ msgstr "Virheellinen kansio"
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
-msgstr ""
+msgstr "Virheellinen nimi"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Virheelliset valinnat"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr ""
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -1072,7 +1078,8 @@ msgid "Marquee Theme"
 msgstr "Marquee teema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maksimi\n"
 "peliaika"
@@ -1145,7 +1152,6 @@ msgid "Mute"
 msgstr "Mykistä"
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "Nimi"
 
@@ -1181,7 +1187,6 @@ msgid "New Level"
 msgstr "Uusi taso"
 
 #. CONTEXT: playlist management: default name for a new playlist
-#, c-format
 msgid "New Playlist"
 msgstr "Uusi soittolista"
 
@@ -1195,7 +1200,6 @@ msgid "New Rating"
 msgstr "Uusi luokitus"
 
 #. CONTEXT: sequence editor: default name for a new sequence
-#, c-format
 msgid "New Sequence"
 msgstr "Uusi jakso"
 
@@ -1290,10 +1294,6 @@ msgstr "Paso Doble"
 msgid "Password"
 msgstr "Salasana"
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "Tauko"
-
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
 msgstr "Pysäytä jokainen kappale"
@@ -1356,7 +1356,7 @@ msgstr "Soittolistan tyyppi"
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: managementui: song list import: name of file import type
 msgid "Playlists"
-msgstr ""
+msgstr "Soittolistat"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1387,7 +1387,7 @@ msgstr "Asema"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
-msgstr ""
+msgstr "Estä uudelleennimeäminen"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
@@ -1477,7 +1477,7 @@ msgstr "Jonotanssi"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "Queue"
+msgstr "Jonottaa"
 
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
@@ -1510,7 +1510,7 @@ msgstr "Asenna uudelleen"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr ""
+msgstr "Asenna uudelleen %s.  Korvaa olemassa olevan kokoonpanon."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1531,7 +1531,7 @@ msgstr "Rekisteröinti %s."
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
-msgstr ""
+msgstr "Lataa uudelleen"
 
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
@@ -1540,11 +1540,11 @@ msgstr "Poista"
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr ""
+msgstr "Poista laulu"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr ""
+msgstr "Uudelleen nimetty"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
@@ -1559,7 +1559,9 @@ msgid "Repeat"
 msgstr "Toista"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Korvaa BallroomDJ-tietokannan kokonaisuudessaan. Kaikki tietokantaan tehdyt muutokset menetetään."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1605,7 +1607,6 @@ msgstr "Samba"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Tallenna"
@@ -1715,6 +1716,7 @@ msgstr "Tukiviestin lähettäminen"
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr "Jakso"
@@ -1752,6 +1754,10 @@ msgstr "Näytä teltta"
 msgid "Show Song Information"
 msgstr "Näytä kappaleen tiedot"
 
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Näytä nopeuden nollaus"
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "Sammutuskäsikirjoitus"
@@ -1788,6 +1794,7 @@ msgstr "Laulun loppu"
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
@@ -1926,7 +1933,9 @@ msgid "The conversion process will not be run."
 msgstr "Muunnosprosessia ei suoriteta."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Muunnosprosessi suoritetaan vain uusissa asennuksissa ja uudelleenasennuksissa."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1948,7 +1957,7 @@ msgstr "Otsikko"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr ""
+msgstr "Otsikko Lajittelujärjestys"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
@@ -1957,6 +1966,14 @@ msgstr "Vaihda tauko"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "Toggle Repeat"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2006,7 +2023,7 @@ msgstr "BDJ3-tietokantaa ei löydy."
 
 #. CONTEXT: managementui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
-msgstr ""
+msgstr "Kumoa kappaleen poisto"
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
@@ -2032,11 +2049,13 @@ msgstr "Päivitetty"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot %s -tietokannasta."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Päivittää BallroomDJ-tietokannan tiedot äänitiedoston tunnisteista."
 
 #. CONTEXT: alternate installation: status message
@@ -2115,16 +2134,14 @@ msgid "Write Tags to Audio Files"
 msgstr "Kirjoita tunnisteet äänitiedostoihin"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Kirjoittaa äänitiedoston tunnisteet käyttäen BallroomDJ-tietokannan tietoja."
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
 msgstr "XML-tiedostot"
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
-msgstr "automaattinen"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"
@@ -2168,7 +2185,7 @@ msgstr "Kuinka saada tukea"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "Saat tukea valitsemalla Tuki-painikkeen. Siellä on linkkejä wikiin, foorumeihin ja ongelmalippujärjestelmään. Tai käytä \"Lähetä tukiviesti\" -painiketta lähettääksesi viestin."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2176,7 +2193,7 @@ msgstr "Tarkista kunkin kappaleen tanssi"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=> Valitse 'Music Manager' 'BDJ4 Management' -ikkunan vasemmasta reunasta.<br>Selaa kappaleluetteloa ja varmista, että jokaiselle kappaleelle on asetettu tanssi.<br>Tanssin asettaminen kappale: => Valitse kappale. => Valitse 'Song Editor'-välilehti (soittimen alapuolella, kappaleluettelon yläpuolella). => Käytä Dance-tunnisteen vieressä olevaa tanssi-pudotusvalikkoa ja valitse kappaleen tanssi. => Valitse \"Song Editor\" -välilehden oikeasta yläkulmasta \"Tallenna\"-painike.<br>Voit vaihtaa takaisin \"Music Manager\" -välilehteen ja tarkistaa, onko muita kappaleita, jotka tarvitsevat tanssin. => Jätä 'BDJ4 Management' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2184,7 +2201,7 @@ msgstr "Rakenna tietokanta ensimmäistä kertaa"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "Toimiakseen BallroomDJ 4 ylläpitää tietokantaa kaikista kappaleistasi. Tämä tietokanta on rakennettava ensimmäistä kertaa. => Valitse 'Hallitse'-painike. => Valitse 'BDJ4 Management' -ikkunassa 'Update Database' -osio ikkunan vasemmasta reunasta.<br>Oletusvalintaa 'Check for New' käytetään, kun lisäät tai poistat kappaleita musiikkikokoelmastasi. => Muuta valinnaksi \"Rebuild Database\". => Valitse 'Käynnistä'-painike. => Odota tietokannan uudelleenmuodostuksen valmistumista. => Jätä 'BDJ4 Management' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2192,7 +2209,7 @@ msgstr "Luo esimerkkisoittolista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> Valitse 'Muokkaa kappalelistoja' 'BDJ4 Management' -ikkunan vasemmasta reunasta.<br>Ikkunan alaosan oikealla puolella on luettelo kappaleistasi. => Valitse kappale napsauttamalla sitä. => Valitse nyt vasen nuolipainike alaosan keskellä.<br>Tämä lisää valitsemasi kappaleen luotavaan kappaleluetteloon. => Valitse muutama kappale ja lisää jokainen niistä kappaleluetteloon.<br>Kappaleluettelon yläpuolella on syöttöruutu, jossa on nimi \"New Song List\". => Napsauta ruutua ja muuta kappaleluettelon nimi. => Sulje 'BDJ4 Management' -ikkuna. Kappaleluettelo tallennetaan automaattisesti."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2200,7 +2217,7 @@ msgstr "Musiikkikansion sijainnin määrittäminen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Ensimmäinen vaihe on määrittää musiikkikansiosi sijainti. => Valitse 'Configure' -painike.<br>BDJ4 Configuration -ikkunassa näkyy 'General' -osio. Ensimmäinen kohta 'General' -kohdassa on 'Music Folder' (musiikkikansio). => Muuta 'Music Folder' (musiikkikansio) musiikkisi sijaintiin. => Jätä 'BDJ4 Configuration' -ikkuna auki."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2208,7 +2225,7 @@ msgstr "Tarkista määritetyt tanssit"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "Tanssien nimien tulee vastata käyttämääsi. => Valitse 'Muokkaa tansseja' 'BDJ4 Configuration' -ikkunan vasemmasta reunasta.<br>Tarkista tanssiluettelo. Jos tanssilla on eri nimi kuin käytät, valitse tanssi ja vaihda nimi. Jos käyttämäsi tanssi puuttuu, valitse Lisää-painike ja lisää tanssi. Jos on tansseja, joita et koskaan käytä, valitse tanssi ja napsauta sitten Poista-painiketta. => Sulje 'BDJ4 Configuration' -ikkuna."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2216,7 +2233,7 @@ msgstr "Johdanto / Aloittaminen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started.=> Select the 'Next' button to continue on to the next step."
+msgstr "Tämä apuohjelma ohjaa sinut muutaman vaiheen läpi, jotta pääset alkuun. => Jatka seuraavaan vaiheeseen valitsemalla Seuraava-painike."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2224,7 +2241,7 @@ msgstr "Toista soittolista"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created.=> Select the 'Player' button.=> In the player window, select the 'Queue Playlist' drop-down.=> Select the name of the playlist that you entered previously."
+msgstr "Nyt toistat juuri luodun soittolistan. => Valitse 'Player'-painike. => Valitse soitinikkunassa 'Jonon soittolista' -pudotusvalikko. => Valitse aiemmin antamasi soittolistan nimi."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2232,5 +2249,5 @@ msgstr "Miten musiikki on järjestetty"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "Järjestämismenetelmän asettaminen on tärkeää, jotta BallroomDJ 4 voi määrittää kappaleihisi liittyvät tiedot tietokantaa rakennettaessa. => Valitse Organisation 'BDJ4 Configuration' -ikkunan vasemmasta reunasta.<br>Monet ihmiset järjestävät musiikkinsa laittamalla jokaisen tanssin erilliseen kansioon.<br>Oletusorganisaatio on Dance/Title. Jos iTunes on asennettuna, organisaatiopoluksi asetetaan \"Albumin esittäjä/albumi/levy - kappaleen0 nimi\". => Valitse organisointitapa, jota käytät kappaleissasi \"Organisation Path\" -pudotusvalikosta.<br>Jos tarvitsemaasi organisaatiopolkua ei löydy, valitse aloitusikkunassa tukipainike ja lähetä tukiviesti. Melkein mikä tahansa organisaatiopolku voidaan määrittää.<br>Jos äänitiedostojesi tanssi on tallennettu genren äänitunnisteeseen, ota käyttöön \"Database Loads Dance from Genre\". => Jätä 'BDJ4 Configuration' -ikkuna auki."
 

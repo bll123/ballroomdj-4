@@ -36,7 +36,6 @@
 
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
-  { "AUTO",       LOCALE_KEY_AUTO,      VALUE_STR, NULL, DF_NORM },
   { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
   { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
   { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },
@@ -131,6 +130,7 @@ localeSetup (void)
 {
   char          lbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
+  char          sbuff [40];
   bool          useutf8ext = false;
   struct lconv  *lconv;
 
@@ -156,13 +156,15 @@ localeSetup (void)
     tbuff [2] = '_';
   }
   sysvarsSetStr (SV_LOCALE_ORIG, tbuff);
+  snprintf (sbuff, sizeof (sbuff), "%-.2s", tbuff);
+  sysvarsSetStr (SV_LOCALE_ORIG_SHORT, sbuff);
 
   /* if sysvars has already read the locale.txt file, do not override */
   /* the locale setting */
   if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     sysvarsSetStr (SV_LOCALE, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
-    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+    snprintf (sbuff, sizeof (sbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
+    sysvarsSetStr (SV_LOCALE_SHORT, sbuff);
   }
 
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
@@ -262,8 +264,9 @@ localeCleanup (void)
   }
 }
 
+#if 0   /* for debugging */
 void
-localeDebug (const char *tag)
+localeDebug (const char *tag)   /* KEEP */
 {
   char    tbuff [200];
 
@@ -285,6 +288,7 @@ localeDebug (const char *tag)
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }
+#endif
 
 /* internal routines */
 

@@ -18,13 +18,12 @@
 #include "songfilter.h"
 #include "uidance.h"
 #include "uisongfilter.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uisongsel uisongsel_t;
 typedef struct ss_internal ss_internal_t;
 
 enum {
-  UISONGSEL_PEER_MAX = 2,
   UISONGSEL_MQ_NOTSET = -1,
 };
 
@@ -38,7 +37,7 @@ typedef struct uisongsel {
   musicdb_t         *musicdb;
   samesong_t        *samesong;
   dispselsel_t      dispselType;
-  double            dfilterCount;
+  int32_t           numrows;
   uiwcont_t         *windowp;
   callback_t        *queuecb;
   callback_t        *playcb;
@@ -47,10 +46,6 @@ typedef struct uisongsel {
   dbidx_t           lastdbidx;
   nlist_t           *musicqdbidxlist [MUSICQ_MAX];
   nlist_t           *songlistdbidxlist;
-  /* peers */
-  int               peercount;
-  uisongsel_t       *peers [UISONGSEL_PEER_MAX];
-  bool              ispeercall;
   /* filter data */
   uisongfilter_t    *uisongfilter;
   callback_t        *sfapplycb;
@@ -68,7 +63,6 @@ typedef struct uisongsel {
 uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts,
     uisongfilter_t *uisf, dispselsel_t dispselType);
-void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);
@@ -86,33 +80,25 @@ void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t 
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
 uiwcont_t   * uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin);
-bool  uisongselPlayCallback (void *udata);
-void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
-void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselSelectCallback (void *udata);
-void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
-void  uisongselSetSelection (uisongsel_t *uisongsel, dbidx_t idx);
-void  uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
 nlistidx_t uisongselGetSelectLocation (uisongsel_t *uisongsel);
 bool  uisongselApplySongFilter (void *udata);
 void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t idx);
-bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
-void  uisongselSaveSelections (uisongsel_t *uisongsel);
-void  uisongselRestoreSelections (uisongsel_t *uisongsel);
+bool  uisongselDanceSelectCallback (void *udata, int32_t danceIdx);
+bool uisongselPlayCallback (void *udata);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
-void uisongselClearAllUISelections (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
+void uisongselSetSelection (uisongsel_t *uisongsel, int32_t idx);
+void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
-void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
-void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 
 #endif /* INC_UISONGSEL_H */
 

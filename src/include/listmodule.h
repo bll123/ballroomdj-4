@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef LIST_MODULE_H
-#define LIST_MODULE_H
+#ifndef INC_LISTMODULE_H
+#define INC_LISTMODULE_H
 
 #include "list.h"
 
@@ -17,14 +17,12 @@ void        listFree (keytype_t keytype, void *list);
 /* list management */
 void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);
 void        listSort (keytype_t keytype, list_t *list);
-void        listCalcMaxKeyWidth (keytype_t keytype, list_t *list);
 void        listCalcMaxValueWidth (keytype_t keytype, list_t *list);
 const char  *listGetName (keytype_t keytype, list_t *list);
 void        listSetFreeHook (keytype_t keytype, list_t *list, listFree_t valueFreeHook);
 
 /* counts */
 listidx_t   listGetCount (keytype_t keytype, list_t *list);
-int         listGetMaxKeyWidth (keytype_t keytype, list_t *list);
 int         listGetMaxValueWidth (keytype_t keytype, list_t *list);
 
 /* version */
@@ -32,7 +30,6 @@ void        listSetVersion (keytype_t keytype, list_t *list, int version);
 int         listGetVersion (keytype_t keytype, list_t *list);
 
 /* iterators */
-void        listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
 const char  *listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx);
@@ -55,7 +52,6 @@ void        listSetStrData (keytype_t keytype, list_t *list, const char *key, vo
 void        listSetStrList (keytype_t keytype, list_t *list, const char *key, void *data);
 void        listSetStrStr (keytype_t keytype, list_t *list, const char *key, const char *str);
 void        listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val);
-void        listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval);
 void        listSetNumData (keytype_t keytype, list_t *list, listidx_t key, void *data);
 void        listSetNumList (keytype_t keytype, list_t *list, listidx_t key, void *data);
 void        listSetNumStr (keytype_t keytype, list_t *list, listidx_t key, const char *str);
@@ -71,4 +67,4 @@ void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 int         listGetOrdering (keytype_t keytype, list_t *list);
 
-#endif /* LIST_MODULE_H */
+#endif /* INC_LISTMODULE_H */

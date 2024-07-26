@@ -18,7 +18,7 @@
 #include "tmutil.h"
 
 enum {
-  LIST_IDENT = 0x6c69737400aabbcc,
+  LIST_IDENT = 0xccbbaa007473696c,
 };
 
 typedef union {
@@ -49,7 +49,6 @@ typedef struct list {
   int             version;
   listidx_t       count;
   listidx_t       allocCount;
-  int             maxKeyWidth;
   int             maxValueWidth;
   keytype_t       keytype;
   listorder_t     ordered;
@@ -95,7 +94,6 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   /* counts */
   list->count = 0;
   list->allocCount = 0;
-  list->maxKeyWidth = 0;
   list->maxValueWidth = 0;
   /* flags */
   list->replace = false;
@@ -182,28 +180,6 @@ listSort (keytype_t keytype, list_t *list)
 }
 
 void
-listCalcMaxKeyWidth (keytype_t keytype, list_t *list)
-{
-  int     maxlen = 10;
-
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  for (listidx_t i = 0; i < list->count; ++i) {
-    if (list->data [i].key.strkey != NULL) {
-      size_t    len;
-
-      len = istrlen (list->data [i].key.strkey);
-      if ((int) len > maxlen) {
-        maxlen = len;
-      }
-    }
-  }
-  list->maxKeyWidth = maxlen;
-}
-
-void
 listCalcMaxValueWidth (keytype_t keytype, list_t *list)
 {
   int     maxlen = 10;
@@ -257,15 +233,6 @@ listGetCount (keytype_t keytype, list_t *list)
 }
 
 int
-listGetMaxKeyWidth (keytype_t keytype, list_t *list)
-{
-  if (! listCheckIfValid (list, keytype)) {
-    return 0;
-  }
-  return list->maxKeyWidth;
-}
-
-int
 listGetMaxValueWidth (keytype_t keytype, list_t *list)
 {
   if (! listCheckIfValid (list, keytype)) {
@@ -295,16 +262,6 @@ listGetVersion (keytype_t keytype, list_t *list)
 }
 
 /* iterators */
-
-void
-listStartIterator (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  *iteridx = LIST_END_LIST;
-}
 
 listidx_t
 listIterateKeyNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
@@ -437,13 +394,13 @@ listidx_t
 listGetKeyNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
 {
   if (! listCheckIfValid (list, keytype)) {
-    return LIST_LOC_INVALID;
+    return LIST_VALUE_INVALID;
   }
 
   if (idx >= 0 && idx < list->count) {
     return list->data [idx].key.idx;
   }
-  return LIST_LOC_INVALID;
+  return LIST_VALUE_INVALID;
 }
 
 const char *
@@ -471,7 +428,7 @@ listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     value = list->data [idx].value.data;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%d ?/%d", list->name, idx, value == NULL);
+  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%" PRId32 " ?/%d", list->name, idx, value == NULL);
   return value;
 }
 
@@ -488,7 +445,7 @@ listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   }
 
   value = listGetDataByIdx (keytype, list, idx);
-  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%d %s/%d", list->name, idx, value, value == NULL);
+  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%" PRId32 " %s/%d", list->name, idx, value, value == NULL);
   return value;
 }
 
@@ -503,7 +460,7 @@ listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   if (idx >= 0 && idx < list->count) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:gnbi:%s idx:%d %" PRId64, list->name, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:gnbi:%s idx:%" PRId32 " %" PRId64, list->name, idx, value);
   return value;
 }
 
@@ -519,7 +476,7 @@ listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     value = list->data [idx].value.dval;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list:gdbi:%s idx:%d %.2f", list->name, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:gdbi:%s idx:%" PRId32 " %.2f", list->name, idx, value);
   return value;
 }
 
@@ -547,7 +504,7 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
        memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
     }
   }
-  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%d", list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%" PRId32, list->name, idx);
 }
 
 void
@@ -610,21 +567,6 @@ listSetStrNum (keytype_t keytype, list_t *list, const char *key, listnum_t val)
   item.key.strkey = mdstrdup (key);
   item.valuetype = VALUE_NUM;
   item.value.num = val;
-  listSet (list, &item);
-}
-
-void
-listSetStrDouble (keytype_t keytype, list_t *list, const char *key, double dval)
-{
-  listitem_t    item;
-
-  if (! listCheckIfValid (list, keytype)) {
-    return;
-  }
-
-  item.key.strkey = mdstrdup (key);
-  item.valuetype = VALUE_DOUBLE;
-  item.value.dval = dval;
   listSet (list, &item);
 }
 
@@ -717,7 +659,7 @@ listDumpInfo (keytype_t keytype, list_t *list)
     }
     return;
   }
-  logMsg (LOG_DBG, LOG_IMPORTANT, "list: %s count: %d key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_IMPORTANT, "list: %s count: %" PRId32 " key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 
@@ -916,7 +858,7 @@ listFreeItem (list_t *list, listidx_t idx)
   } /* if the data pointer is not null */
 }
 
-static inline listidx_t
+static listidx_t
 listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
 {
   listidx_t   value = LIST_LOC_INVALID;

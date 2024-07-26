@@ -1,4 +1,5 @@
 /*
+ * Copyright 2021 Brad Lanam Pleasant Hill CA
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  *
  * https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Migrate-PulseAudio
@@ -385,7 +386,7 @@ pipewireInit (void)
   pwstate->initialized = false;
 
   pwstate->pwloop = pw_thread_loop_new (NULL, NULL);
-  mdextalloc (pwstate->pwthreadloop);
+  mdextalloc (pwstate->pwloop);
 
   pwstate->context = pw_context_new (
       pw_thread_loop_get_loop (pwstate->pwloop),
@@ -634,7 +635,6 @@ pipewireMetadataEvent (void *udata, uint32_t id,
     }
     if (pwstate->defsinkname == NULL || pwstate->changed) {
       dataFree (pwstate->defsinkname);
-fprintf (stderr, "res-orig: %s\n", res);
       pwstate->defsinkname = mdstrdup (res);
     }
   }

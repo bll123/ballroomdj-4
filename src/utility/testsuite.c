@@ -99,7 +99,7 @@ typedef struct {
   slistidx_t  tliteridx;
   FILE        *fh;
   int         lineno;
-  long        defaultVol;
+  int         defaultVol;
   bool        greaterthan : 1;
   bool        lessthan : 1;
   bool        checkor : 1;
@@ -203,6 +203,7 @@ main (int argc, char *argv [])
   testsuite.chkexpect = NULL;
   mstimeset (&testsuite.waitCheck, 100);
   mstimeset (&testsuite.responseStart, 0);
+  testsuite.responseTimeout = 8000;
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
   *testsuite.sectionnum = '\0';
   *testsuite.sectionname = '\0';
@@ -1233,7 +1234,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
       valresp = slistGetStr (testsuite->chkresponse, key);
 
       if (strcmp (valexp, "defaultvol") == 0) {
-        snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+        snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
         valexp = tmp;
       }
 
@@ -1439,7 +1440,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     }
 
     if (strcmp (p, "defaultvol") == 0) {
-      snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+      snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
       p = tmp;
     }
 
@@ -1529,13 +1530,20 @@ resetPlayer (testsuite_t *testsuite)
   char  tmp [40];
 
   /* clears both queue and playlist queue, resets manage idx */
-  snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+  snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
+  mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+  mssleep (100);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+  mssleep (100);
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_CHK_CLEAR_PREP_Q, NULL);
   /* wait a bit for all the messages to clear */
   mssleep (200);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");

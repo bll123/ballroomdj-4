@@ -43,50 +43,11 @@ cwd=$(pwd)
 TMPLDIR=../../templates
 LOCALEDIR=../../locale
 
-export keycount=0
-
-function appendlocaledata {
-  pofile=$1
-  locale=$2
-  slocale=$3
-  langdesc=$4
-
-  for txt in automatic standardrounds queuedance; do
-    ttxt=$txt
-    if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
-    xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
-    if [[ $xl == "" ]]; then
-      xl=$ttxt
-    fi
-    eval $txt="\"$xl\""
-  done
-
-  echo KEY >> $LOCALEDATA
-  echo "..$keycount" >> $LOCALEDATA
-  echo LONG >> $LOCALEDATA
-  echo "..$locale" >> $LOCALEDATA
-  echo SHORT >> $LOCALEDATA
-  echo "..$slocale" >> $LOCALEDATA
-  echo DISPLAY >> $LOCALEDATA
-  echo "..$langdesc" >> $LOCALEDATA
-  echo AUTO >> $LOCALEDATA
-  echo "..${automatic}" >> $LOCALEDATA
-  echo STDROUNDS >> $LOCALEDATA
-  echo "..${standardrounds}" >> $LOCALEDATA
-  echo QDANCE >> $LOCALEDATA
-  echo "..${queuedance}" >> $LOCALEDATA
-
-  keycount=$(($keycount+1))
-}
-
-LOCALEDATA=${TMPLDIR}/localization.txt
-> $LOCALEDATA
-echo "# localization" >> $LOCALEDATA
-
 # first, make bdj4.pot, en_GB.po, en_US.po
 make
 
+# if there are any changes to complete.txt,
+# this loop is duplicated in po-ltxt.sh
 while read line; do
   case $line in
     '#'*)
@@ -99,8 +60,11 @@ while read line; do
 
   set $line
   locale=$1
-
-  englishnm=$2
+  tmpllocale=$2
+  weblocale=$3
+  englishnm=$4
+  shift
+  shift
   shift
   shift
   langdesc="$*"
@@ -122,7 +86,7 @@ while read line; do
 
   make -f Makefile-inst \
         LOCALE=${locale} \
-        SLOCALE=${slocale}
+        SLOCALE=${slocale} \
 
   # create the short-locale links to the long-locale
   # en -> en_GB, not en_US.
@@ -133,31 +97,39 @@ while read line; do
       test -h ${slocale} || ln -s ${locale} ${slocale}
     )
   fi
-
-  # add this entry to the localization.txt file
-
-  pofile=po/${locale}.po
-
-  appendlocaledata ${pofile} ${locale} ${slocale} "${langdesc}"
+  if [[ ${locale} == nb_NO ]]; then
+    (
+      cd ${LOCALEDIR}
+      # do not replace existing links
+      test -h nn || ln -s ${locale} nn
+    )
+  fi
 
   # create the localized template files
 
   if [[ $locale == en_GB || $locale == en_US ]]; then
     # en_US has its own localized templates
+    #   that do not get generated.
     # en_GB/en_US web page is the base
     continue
   fi
 
   make -f Makefile-tmpl \
       LOCALE=${locale} \
-      SLOCALE=${slocale} \
+      TMPLLOCALE=${tmpllocale} \
       LANGDESC="${langdesc}"
 
-  if [[ $slocale == pl ]]; then
-    slocale=po
-  fi
   make -f Makefile-web \
       LOCALE=${locale} \
-      SLOCALE=${slocale}
+      WEBLOCALE=${weblocale}
+
+  keycount=$(($keycount + 1))
 
 done < complete.txt
+
+# create the localization.txt file
+
+make -f Makefile ltxt
+make -f Makefile htmllist
+
+exit 0

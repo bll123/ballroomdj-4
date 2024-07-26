@@ -31,7 +31,7 @@ enum {
   AES_RAND_SZ = 7,
 };
 
-#define AES_E_PFX "A256"
+static const char * const AES_E_PFX = "A256";
 
 static bool initialized = false;
 
@@ -219,7 +219,7 @@ aesMakeKey (uint8_t *key, uint8_t *rbytes, int mode)
   }
 }
 
-#if 0
+#if 0   /* for debugging */
 static void
 dumpBytes (const uint8_t *str, size_t len)
 {

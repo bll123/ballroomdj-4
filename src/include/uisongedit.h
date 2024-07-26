@@ -12,7 +12,7 @@
 #include "song.h"
 #include "tmutil.h"
 #include "uisongsel.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct se_internal se_internal_t;
 
@@ -43,7 +43,6 @@ void  uisongeditSetDatabase (uisongedit_t *uisongedit, musicdb_t *musicdb);
 void  uisongeditMainLoop (uisongedit_t *uisongedit);
 int   uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);
-void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb);
 void  uisongeditSetApplyAdjCallback (uisongedit_t *uisongedit, callback_t *uicb);
 

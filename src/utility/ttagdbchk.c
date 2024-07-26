@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -55,13 +57,17 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "ttagdbchk",    no_argument,      NULL,   0 },
-    { "debug",        required_argument,  NULL,   'd' },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "wait",         no_argument,      NULL,   0, },
-    { "nodetach",     no_argument,      NULL,   0, },
-    { "origcwd",      required_argument,  NULL,   0 },
     { "ignoremissing",no_argument,      NULL,   'I', },
     { "verbose",      no_argument,      NULL,   'V', },
+    /* launcher options */
+    { "debug",        required_argument,  NULL,   'd' },
+    { "debugself",    no_argument,      NULL,   0 },
+    { "nodetach",     no_argument,      NULL,   0, },
+    { "origcwd",      required_argument,  NULL,   0 },
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
+    { "pli",          required_argument, NULL,   0, },
+    { "wait",         no_argument,      NULL,   0, },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -105,7 +111,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -203,10 +209,10 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
     taglist = songTagList (song);
 
     if (verbose) {
-      fprintf (stderr, "  ttag: audio tagdata: %d\n", slistGetCount (tagdata));
+      fprintf (stderr, "  ttag: audio tagdata: %" PRId32 "\n", slistGetCount (tagdata));
     }
     if (verbose) {
-      fprintf (stderr, "  ttag: song tags: %d\n", slistGetCount (taglist));
+      fprintf (stderr, "  ttag: song tags: %" PRId32 "\n", slistGetCount (taglist));
     }
 
     slistStartIterator (tagdata, &tagiteridx);

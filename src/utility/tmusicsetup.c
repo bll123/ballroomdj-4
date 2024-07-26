@@ -147,12 +147,14 @@ main (int argc, char *argv [])
     { "musicdir",     required_argument,  NULL,   'D' },
     { "verbose",      no_argument,        NULL,   0, },
     /* launcher options */
-    { "debugself",    no_argument,        NULL,   0 },
     { "debug",        required_argument,  NULL,   'd' },
+    { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "origcwd",      required_argument,  NULL,   0 },
     { "scale",        required_argument,  NULL,   0 },
     { "theme",        required_argument,  NULL,   0 },
+    { "pli",          required_argument,  NULL,   0, },
+    { "wait",         no_argument,        NULL,   0, },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -225,7 +227,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();

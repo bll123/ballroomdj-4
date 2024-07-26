@@ -1,0 +1,37 @@
+# genres
+# 2022-8-4
+# version 1
+version
+..1
+count
+..5
+KEY
+..0
+GENRE
+..Ні.
+CLASSICAL
+..0
+KEY
+..1
+GENRE
+..Бальні танці
+CLASSICAL
+..0
+KEY
+..2
+GENRE
+..Класика.
+CLASSICAL
+..1
+KEY
+..3
+GENRE
+..Джаз
+CLASSICAL
+..0
+KEY
+..4
+GENRE
+..Рок
+CLASSICAL
+..0

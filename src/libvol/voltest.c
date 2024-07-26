@@ -41,7 +41,7 @@ main (int argc, char *argv [])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("tvol");
 #endif
-  sysvarsInit (argv [0]);
+  sysvarsInit (argv [0], SYSVARS_FLAG_ALL);
   bdjoptInit ();
 
   if (argc == 2 && strcmp (argv [1], "interfaces") == 0) {

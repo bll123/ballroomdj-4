@@ -22,7 +22,7 @@
 #include "slist.h"
 #include "tagdef.h"
 
-#define MB_TAG      "http://musicbrainz.org"
+static const char * const MB_TAG = "http://musicbrainz.org";
 
 typedef struct atisaved {
   bool            hasdata;

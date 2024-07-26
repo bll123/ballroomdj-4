@@ -15,49 +15,62 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "callback.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "playlist.h"
 #include "slist.h"
 #include "ui.h"
+#include "uidd.h"
 #include "uiplaylist.h"
 
-enum {
-  UIPLAYLIST_CB_SEL,
-  UIPLAYLIST_CB_MAX,
-};
-
 typedef struct uiplaylist {
-  uiwcont_t         *dropdown;
-  uiwcont_t         *uiwidgetp;
-  callback_t        *callbacks [UIPLAYLIST_CB_MAX];
+  uidd_t            *uidd;
+  callback_t        *internalselcb;
   callback_t        *selectcb;
+  ilist_t           *ddlist;
+  bool              blankflag : 1;
 } uiplaylist_t;
 
-static bool     uiplaylistSelectHandler (void *udata, long idx);
+static int32_t uiplaylistSelectHandler (void *udata, const char *key);
 
 uiplaylist_t *
-uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
+uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
+    const char *label, int where, int flag)
 {
-  uiplaylist_t    *uiplaylist;
-  uiwcont_t       *uiwidgetp;
+  uiplaylist_t  *uiplaylist;
+  int           titleflag = DD_REPLACE_TITLE;
+  int           dwhere = DD_PACK_START;
 
   uiplaylist = mdmalloc (sizeof (uiplaylist_t));
-  uiplaylist->dropdown = NULL;
-  for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
-    uiplaylist->callbacks [i] = NULL;
-  }
+  uiplaylist->uidd = NULL;
+  uiplaylist->internalselcb = NULL;
   uiplaylist->selectcb = NULL;
+  uiplaylist->ddlist = NULL;
+  uiplaylist->blankflag = false;
+  if (flag == UIPL_USE_BLANK) {
+    uiplaylist->blankflag = true;
+  }
 
-  uiplaylist->dropdown = uiDropDownInit ();
-  uiplaylist->callbacks [UIPLAYLIST_CB_SEL] =
-      callbackInitLong (uiplaylistSelectHandler, uiplaylist);
-  uiwidgetp = uiComboboxCreate (uiplaylist->dropdown,
-      parentwin, "",
-      uiplaylist->callbacks [UIPLAYLIST_CB_SEL], uiplaylist);
   uiplaylistSetList (uiplaylist, type, NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiplaylist->internalselcb =
+      callbackInitS (uiplaylistSelectHandler, uiplaylist);
+  if (label != NULL) {
+    titleflag = DD_KEEP_TITLE;
+  }
+  if (label == NULL) {
+    label = "";
+  }
+  if (where == UIPL_PACK_START) {
+    dwhere = DD_PACK_START;
+  }
+  if (where == UIPL_PACK_END) {
+    dwhere = DD_PACK_END;
+  }
+  uiplaylist->uidd = uiddCreate ("uipl",
+      parentwin, hbox, dwhere,
+      uiplaylist->ddlist, DD_LIST_TYPE_STR,
+      label, titleflag, uiplaylist->internalselcb);
 
-  uiplaylist->uiwidgetp = uiwidgetp;
   return uiplaylist;
 }
 
@@ -68,38 +81,68 @@ uiplaylistFree (uiplaylist_t *uiplaylist)
     return;
   }
 
-  for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
-    callbackFree (uiplaylist->callbacks [i]);
-  }
-  uiwcontFree (uiplaylist->dropdown);
+  callbackFree (uiplaylist->internalselcb);
+  uiddFree (uiplaylist->uidd);
+  ilistFree (uiplaylist->ddlist);
   mdfree (uiplaylist);
 }
 
 void
 uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
 {
-  slist_t           *pllist;
+  slist_t     *pllist;
+  slistidx_t  iteridx;
+  ilist_t     *ddlist;
+  const char  *disp;
+  const char  *plkey;
+  int         count;
+  int         idx;
+
+  ilistFree (uiplaylist->ddlist);
 
   pllist = playlistGetPlaylistList (type, dir);
-  /* what text is best to use for 'no selection'? */
-  uiDropDownSetList (uiplaylist->dropdown, pllist, "");
+  count = slistGetCount (pllist);
+  ddlist = ilistAlloc ("uipl", LIST_ORDERED);
+  ilistSetSize (ddlist, count);
+
+  idx = 0;
+  if (uiplaylist->blankflag) {
+    /* the blank entry is used for the song filter dialog */
+    ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, "");
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, "");
+    ++idx;
+  }
+
+  slistStartIterator (pllist, &iteridx);
+  while ((disp = slistIterateKey (pllist, &iteridx)) != NULL) {
+    plkey = slistGetStr (pllist, disp);
+    ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, plkey);
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
+    ++idx;
+  }
+
+
+  uiplaylist->ddlist = ddlist;
+
+  uiddSetList (uiplaylist->uidd, uiplaylist->ddlist);
+
   slistFree (pllist);
 }
 
-static bool
-uiplaylistSelectHandler (void *udata, long idx)
+static int32_t
+uiplaylistSelectHandler (void *udata, const char *str)
 {
   uiplaylist_t  *uiplaylist = udata;
 
   if (uiplaylist->selectcb != NULL) {
-    callbackHandlerLong (uiplaylist->selectcb, idx);
+    callbackHandlerS (uiplaylist->selectcb, str);
   }
 
-  return UICB_CONT;
+  return 0;
 }
 
 const char *
-uiplaylistGetValue (uiplaylist_t *uiplaylist)
+uiplaylistGetKey (uiplaylist_t *uiplaylist)
 {
   const char    *fn;
 
@@ -107,28 +150,20 @@ uiplaylistGetValue (uiplaylist_t *uiplaylist)
     return NULL;
   }
 
-  fn = uiDropDownGetString (uiplaylist->dropdown);
+  fn = uiddGetSelectionStr (uiplaylist->uidd);
   return fn;
 }
 
 void
-uiplaylistSetValue (uiplaylist_t *uiplaylist, const char *fn)
+uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn)
 {
   if (uiplaylist == NULL) {
     return;
   }
 
-  uiDropDownSelectionSetStr (uiplaylist->dropdown, fn);
+  uiddSetSelectionByStrKey (uiplaylist->uidd, fn);
 }
 
-void
-uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg)
-{
-  if (uiplaylist == NULL) {
-    return;
-  }
-  uiSizeGroupAdd (sg, uiplaylist->uiwidgetp);
-}
 
 void
 uiplaylistSetSelectCallback (uiplaylist_t *uiplaylist, callback_t *cb)

@@ -98,10 +98,14 @@ typedef enum {
   OPT_P_REMCONTROLPORT,
   OPT_P_REMCONTROLUSER,
   OPT_P_REMOTECONTROL,
+  OPT_P_SHOW_SPD_CONTROL,
   OPT_P_UI_ACCENT_COL,
   OPT_P_UI_ERROR_COL,
   OPT_P_UI_MARK_COL,
+  OPT_P_UI_MARK_TEXT,
   OPT_P_UI_PROFILE_COL,
+  OPT_P_UI_ROWSEL_COL,
+  OPT_P_UI_ROW_HL_COL,
   /* the queue values must be at the end of enum list, as they are */
   /* duplicated for each playback queue */
   /* opt_q_active must be the first opt_q_ item */

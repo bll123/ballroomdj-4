@@ -22,7 +22,7 @@ void
 uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx)
 {
   if (uisongsel->queuecb != NULL) {
-    callbackHandlerLong (uisongsel->queuecb, dbidx);
+    callbackHandlerI (uisongsel->queuecb, dbidx);
   }
 }
 
@@ -30,28 +30,7 @@ void
 uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
   if (uisongsel->playcb != NULL) {
-    callbackHandlerLongInt (uisongsel->playcb, dbidx, mqidx);
-  }
-}
-
-void
-uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val)
-{
-  uisongsel->ispeercall = val;
-}
-
-void
-uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
-{
-  song_t    *song;
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: chg favorite");
-  song = dbGetByIdx (uisongsel->musicdb, dbidx);
-  if (song != NULL) {
-    songChangeFavorite (song);
-    if (uisongsel->songsavecb != NULL) {
-      callbackHandlerLong (uisongsel->songsavecb, dbidx);
-    }
+    callbackHandlerII (uisongsel->playcb, dbidx, mqidx);
   }
 }
 

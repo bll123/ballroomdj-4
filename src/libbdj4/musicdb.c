@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <time.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -31,11 +32,11 @@
 #include "tmutil.h"
 
 enum {
-  MUSICDB_IDENT = 0x6d757369646200cc,
+  MUSICDB_IDENT = 0xcc0062646973756d,
 };
 
 typedef struct musicdb {
-  int64_t       ident;
+  uint64_t      ident;
   dbidx_t       count;
   nlist_t       *songs;
   nlist_t       *danceCounts;  // used by main for automatic playlists
@@ -90,7 +91,6 @@ dbClose (musicdb_t *musicdb)
   if (musicdb->inbatch) {
     dbEndBatch (musicdb);
   }
-  musicdb->ident = 0;
   raClose (musicdb->radb);
   musicdb->radb = NULL;
 
@@ -98,6 +98,7 @@ dbClose (musicdb_t *musicdb)
   nlistFree (musicdb->danceCounts);
   dataFree (musicdb->fn);
   nlistFree (musicdb->tempSongs);
+  musicdb->ident = BDJ4_IDENT_FREE;
   mdfree (musicdb);
 }
 
@@ -132,7 +133,7 @@ dbLoad (musicdb_t *musicdb)
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   racount = raGetCount (musicdb->radb);
   slistSetSize (musicdb->songs, racount);
-  logMsg (LOG_DBG, LOG_DB, "db-load: %s %d\n", musicdb->fn, racount);
+  logMsg (LOG_DBG, LOG_DB, "db-load: %s %" PRId32 "\n", musicdb->fn, racount);
 
   raStartBatch (musicdb->radb);
 
@@ -168,7 +169,7 @@ dbLoad (musicdb_t *musicdb)
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %d", dkey, count);
+      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %" PRId32, dkey, count);
     }
   }
 
@@ -420,15 +421,6 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
   return song;
 }
 
-nlist_t *
-dbGetDanceCounts (musicdb_t *musicdb)
-{
-  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
-    return NULL;
-  }
-
-  return musicdb->danceCounts;
-}
 
 void
 dbBackup (void)
@@ -461,9 +453,9 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   return dbidx;
 }
 
-#if 0
+#if 0 /* for debugging */
 void
-dbDumpSongList (musicdb_t *musicdb)
+dbDumpSongList (musicdb_t *musicdb)   /* KEEP */
 {
   slistidx_t    siteridx;
   const char    *key;
@@ -511,7 +503,7 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   *data = '\0';
   rc = raRead (musicdb->radb, rrn, data);
   if (rc != 1) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %d", rrn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %" PRId32, rrn);
   }
   if (rc == 0 || ! *data) {
     return NULL;
@@ -554,7 +546,7 @@ dbRebuildDanceCounts (musicdb_t *musicdb)
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %d count: %d", dkey, count);
+      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %" PRId32 " count: %" PRId32, dkey, count);
     }
   }
 }

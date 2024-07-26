@@ -27,31 +27,6 @@ Close the configuration window to save the configuration changes.
 ![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-E.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
-##### Creating an Automatic Playlist for the Mixer
-
-If you always use the same dance for your mixer, setting up an
-automatic playlist for the mixer can save some work.  Otherwise, skip
-to the [Turn on the Extra Queues](#turn-on-the-extra-queues) step.
-
-In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, select
-__Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ from the menu.
-Change the name of the playlist to _Waltz&nbsp;Mixer_.  Set
-__Stop&nbsp;After__ to 4.  Set __Dance&nbsp;Rating__ to _Great_.
-In the _Dances_ tab, select _Waltz_, click on the
-__Count__ for _Waltz_, and set the count to 1.
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-playlist-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-settings-B.png)
-<br><span style="color:#4559bf;">__Manage / Playlist Management / Settings__</span> </div>
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-playlist-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-playlist-dances-A.png)
-<br><span style="color:#4559bf;">__Manage / Playlist Management / Dances__</span> </div>
-
-Be aware that to use an automatic playlist, the dance rating for each
-song must be set.
-<br>(See: [Automatic Playlists](en-Subjects-Automatic-Playlists))
-
 ##### Turn on the Extra Queues
 
 In the __Player__, open the __Options__ menu, and turn on
@@ -71,19 +46,6 @@ dance. Use the __Play&nbsp;/&nbsp;Pause__
 button to start the dance.
 
 ##### Adding Songs for the Mixer
-
-If you always use the same dance for your mixer, see [Creating an
-Automatic Playlist for the
-Mixer](#creating-an-automatic-playlist-for-the-mixer) for an
-alternative.
-
-A) If you are using an automatic playlist as outlined above:
-
-In the __Player__, select the ___Mixer___
-music queue and use the __Queue&nbsp;Playlist__ button to queue the
-_Waltz&nbsp;Mixer_ playlist that was created for this example.
-
-B) If you are not using an automatic playlist:
 
 In the __Player__, first select the ___Mixer___ music queue.
 
@@ -129,4 +91,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 14:09:06; BDJ4 version 4.11.0)_

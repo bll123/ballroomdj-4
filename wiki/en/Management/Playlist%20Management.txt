@@ -1,8 +1,9 @@
 [Wiki Home](Home)
 
 <span style="color:#4559bf;">_Playlist management configures playlist
-controls and per dance controls for all playlists, and song selection
-filters for automatic and sequenced playlists._</span>
+controls and per dance controls for song lists, sequences and
+automatic playlists, and song selection filters for automatic and
+sequenced playlists._</span>
 
 [TOC]
 
@@ -18,7 +19,8 @@ Playlist controls are in the __Settings__ tab.
 
 The __Maximum&nbsp;Play&nbsp;Time__, __Stop&nbsp;At__ time,
 __Stop&nbsp;After__ count, __Gap__ and __Play&nbsp;Announcements__
-playlist controls are available for all playlist types.
+playlist controls are available for song lists, seuqences and
+automatic playlists.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-B.png)
@@ -27,20 +29,23 @@ playlist controls are available for all playlist types.
 __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
 this playlist.  The maximum play time set here will override the
 music queue __Maximum&nbsp;Play&nbsp;Time__ setting.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;At__ sets the time when the playlist will stop. The stop at
 time set here will override the player per-queue __Stop&nbsp;At__
 setting.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;After__ configures how many songs will play from this
 playlist.
 
 If __Play&nbsp;Announcements__ is enabled, announcements will be played
 for each song for this playlist.
-<br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues),
-[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
+<br>__References:__
+<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
+<br>[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
 ##### Song Selection Filters
 
@@ -54,9 +59,10 @@ playlists.  The filters limit which songs can be played.
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Song Selection__</span> </div>
 
 __Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
-Any song with a rating equal to or better than the dance rating set
+Any song with a rating equal to __or better__ than the dance rating set
 here may be played.
-<br>(See also [Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings))
+<br>__References:__
+<br>[Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings)
 
 __Low&nbsp;Dance&nbsp;Level__ and __High&nbsp;Dance&nbsp;Level__ are
 optional.  Leave these set to _Easy_ and _Advanced_ if levels are not
@@ -65,12 +71,14 @@ in use.
 __Low&nbsp;Dance&nbsp;Level__ sets the lowest dance level.  Any song
 with a dance level equal to or higher than the dance level set here
 may be played.
-<br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
+<br>__References:__
+<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
 
 __High&nbsp;Dance&nbsp;Level__ sets the highest dance level.  Any song
 with a dance level equal to or lower than the dance level set here may
 be played.
-<br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
+<br>__References:__
+<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
 
 If a song has a keyword set, and the keyword is in the
 __Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
@@ -79,40 +87,46 @@ __Allowed&nbsp;Keywords__ list, the song will not be played.
 
 __Tag__ and __Tag Weight__: Enter a list of tags to match.  If one of
 the tags matches the song's keyword, or any of the song tags, then the
-tag weight is applied to the song selection process.
+tag weight is applied to the song selection process.  This setting is
+used to make songs with a matching keyword or tag more likely to
+appear during the song selection process.
 
 In addition, the playable status is always used for song selection. If
 the song's status does not have the __Play?__ flag set, the song will
 not be played.
-<br>(See also [Edit&nbsp;Status](en-Configuration-Edit%20Status))
+<br>__References:__
+<br>[Edit&nbsp;Status](en-Configuration-Edit%20Status)
 
 ##### Per Dance Playlist Controls
 
 The per dance playlist controls are in the __Dances__ tab.
 
-The per dance playlist controls are different for song lists,
-sequenced playlists and automatic playlists.
+Be careful when using the scroll wheel in this window, as the spinbox
+widgets will change value when the scroll wheel is used.
+
+The per-dance selection changes depending on the type of playlist.
 
 Song lists can only have the maximum play time configured per dance.
+All dances will be listed.
 
-The maximum play time, low BPM and high BPM can be configured per
+The maximum play time, low MPM/BPM and high MPM/BPM can be configured per
 dance for automatic and sequenced playlists.
+
+For automatic playlists, the dances that may be played are selected
+here, and the relative count for each dance is also set here.
+
+For automatic playlists, the __Hide&nbsp;Unselected__ checkbox may be
+used to limit which dances are displayed.
 
 If the maximum play time is set for a particular dance, it will
 override the player per-queue maximum play time setting and the
 playlist maximum play time setting.
 
-For automatic playlists, the dances that may be played are selected
-here, and the relative count for each dance is also set here.
-
 To change a setting, select the dance, then click on the field to be
 changed.
 
-The __Hide Unselected__ checkbox may be used to limit which dances are
-displayed for automatic playlists.
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-C.png)
+![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-D.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Dance Controls (automatic)__</span> </div>
 
 ##### Naming the Playlist
@@ -126,6 +140,12 @@ name.  This defaults to _New&nbsp;Playlist_.  Click in the entry
 box and change the name of the playlist.  If there is a song list or
 sequence associated with the playlist, it will also be renamed.
 
+On all platforms, the slash and backslash characters are not allowed
+in playlist names.
+
+On Windows, the following characters are not allowed in playlist names:
+__&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;__
+
 If you forget to change the name, the automatic playlist will be saved
 as _New&nbsp;Playlist_. To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select _New&nbsp;Playlist_,
@@ -137,9 +157,9 @@ then enter the new name of the automatic playlist.
 ![plmgmt-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-edit-menu-B.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Edit Menu__</span> </div>
 
-An existing playlist can be loaded by selecting
-__Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open allowing
-selection of an existing playlist.
+__Edit&nbsp;/&nbsp;Load__ will open a dialog to select an existing
+playlist.  Select a playlist and select the __Select__ button to load
+it. Any current playlist will be saved first.
 
 __Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ will clean out
 any loaded playlist and reset the name to _New&nbsp;Playlist_.  The
@@ -154,4 +174,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-21 03:12:49; BDJ4 version 4.6.0)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

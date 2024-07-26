@@ -50,30 +50,47 @@ function copytestf {
   fi
 }
 
-ATIBDJ4=F
-PLI=VLC
+ATI=BDJ4
+PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
+setpli=F
+setvol=F
+setati=F
+# $@ must be preserved, it is passed on to mkdbtest.sh
 for arg in "$@"; do
   case $arg in
-    --atibdj4)
-      ATIBDJ4=T
+    --ati)
+      setati=T
       ;;
-    --plimprisvlc)
-      PLI=MPRISVLC
+    --pli)
+      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC
+      setpli=T
       ;;
-    --pligst)
-      PLI=GST
-      ;;
-    --volpipewire)
-      VOL=pipewire
+    --vol)
+      # vol argument may be one of: pipewire
+      setvol=T
       ;;
     --nodbcopy)
       DBCOPY=F
       ;;
     --keepdb)
       KEEPDB=T
+      ;;
+    *)
+      if [[ $setpli == T ]]; then
+        PLI=$arg
+        setpli=F
+      fi
+      if [[ $setvol == T ]]; then
+        VOL=$arg
+        setvol=F
+      fi
+      if [[ $setati == T ]]; then
+        ATI=$arg
+        setati=F
+      fi
       ;;
   esac
 done
@@ -120,6 +137,9 @@ for f in templates/*.txt; do
     *ui-*.txt)
       continue
       ;;
+    *localization.txt|*html-list.txt|*helpdata.txt)
+      continue
+      ;;
   esac
   cp -f $f data
 done
@@ -134,7 +154,6 @@ for fn in templates/bdjconfig.q?.txt; do
 done
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
 cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
-cp -f templates/automatic.* data
 cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
 # the test dances data file has announcements set for tango & waltz
@@ -176,11 +195,9 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 ATII=libatibdj4
-if [[ $ATIBDJ4 == T ]]; then
-  ATII=libatibdj4
-fi
+
 PLII=libplivlc
-PLIINM="Integrated VLC"
+PLIINM="Integrated VLC 3"
 if [[ $PLI == MPRISVLC ]]; then
   PLII=libplimpris
   PLIINM="MPRIS VLC Media Player"
@@ -189,6 +206,11 @@ if [[ $PLI == GST ]]; then
   PLII=libpligst
   PLIINM="GStreamer"
 fi
+if [[ $PLI == VLC4 ]]; then
+  PLII=libplivlc4
+  PLIINM="Integrated VLC 4"
+fi
+
 # if VOLI is empty, no change is made, and the default is used
 VOLI=
 if [[ $VOL == pipewire ]]; then
@@ -271,6 +293,11 @@ _HERE_
 args=""
 
 outfile=$(./src/utils/mktestdb.sh "$@")
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "FAIL: mktestdb failed"
+  exit 1
+fi
 # if an outfile was specified,
 # copy the db to the data dir after it is created
 if [[ $DBCOPY == T ]]; then

@@ -103,6 +103,7 @@ START_TEST(bdjstring_string_trim_char)
 }
 END_TEST
 
+#if 0
 START_TEST(bdjstring_version_compare)
 {
   int   rc;
@@ -143,6 +144,7 @@ START_TEST(bdjstring_version_compare)
   ck_assert_int_eq (rc, 1);
 }
 END_TEST
+#endif
 
 START_TEST(bdjstring_append)
 {
@@ -193,7 +195,7 @@ bdjstring_suite (void)
   tcase_add_test (tc, bdjstring_string_to_upper);
   tcase_add_test (tc, bdjstring_string_trim);
   tcase_add_test (tc, bdjstring_string_trim_char);
-  tcase_add_test (tc, bdjstring_version_compare);
+  // tcase_add_test (tc, bdjstring_version_compare);
   tcase_add_test (tc, bdjstring_append);
   suite_add_tcase (s, tc);
   return s;

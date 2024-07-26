@@ -211,12 +211,13 @@ progstateProcessLoop (progstate_t *progstate)
   return progstate->programState;
 }
 
+#if 0 /* for debugging */
 const char *
-progstateDebug (progstate_t *progstate)
+progstateDebug (progstate_t *progstate)     /* KEEP */
 {
   if (progstate == NULL) {
     return progstatetext [STATE_NOT_RUNNING];
   }
   return progstatetext [progstate->programState];
 }
-
+#endif

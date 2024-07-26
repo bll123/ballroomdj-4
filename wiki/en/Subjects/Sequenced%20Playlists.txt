@@ -22,6 +22,12 @@ A sample _Standard&nbsp;Rounds_ sequence is installed with BDJ4.
 The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
 Enter the new name of the sequence playlist at any time.
 
+On all platforms, the slash and backslash characters are not allowed
+in sequence names.
+
+On Windows, the following characters are not allowed in sequence names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the name, the sequence will be named
 _New&nbsp;Sequence_.  Select __Load__ from the __Edit__ menu.  Select
 _New&nbsp;Sequence_.  Change the name of the sequence.
@@ -46,7 +52,8 @@ The sequence will be saved automatically.
 
 When a sequence is played, BDJ4 chooses the song from the songs filtered
 by any playlist song selection filters.
-<br>(See [Playlist&nbsp;Management](en-Management-Playlist%20Management))
+<br>__References:__
+<br>[Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 The song to be played is chosen based on the
 [Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
@@ -81,4 +88,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-01 06:45:21; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

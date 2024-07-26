@@ -23,7 +23,7 @@ Start BDJ4, then select __Create&nbsp;Profile__ in the __Profile__
 selection.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![profile-create](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-create-A.png)
+![profile-create](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-create-B.png)
 <br><span style="color:#4559bf;">__Starter / Create Profile__</span> </div>
 
 Select __Configure__.
@@ -96,4 +96,4 @@ on their USB headphones.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-27 06:07:23; BDJ4 version 4.8.0)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

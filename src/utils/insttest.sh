@@ -107,6 +107,8 @@ UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
 LOG="tmp/insttest-log.txt"
 
+fn="templates/ds-audioid-list.txt"
+AUDIOIDLISTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
@@ -162,6 +164,11 @@ function checkUpdaterClean {
   # ds-audioid.txt file should be installed if missing
   fn="$DATADIR/profile00/ds-audioid.txt"
   rm -f "${fn}"
+
+  # ds-audioid-list.txt version number should be updated
+  fn="$DATADIR/profile00/ds-audioid-list.txt"
+  sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 
   # bdjconfig.q4.txt file should be installed if missing
   fn="$DATADIR/profile00/bdjconfig.q4.txt"
@@ -434,6 +441,21 @@ function checkInstallation {
       echo "  ${fn} should not be present"
     fi
 
+    res=$(($res+1))  # ds-audioid-list file
+    fn="${DATADIR}/profile00/ds-audioid-list.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      tver=$(grep "version ${AUDIOIDLISTVER}" "${fn}")
+      grep "version ${AUDIOIDLISTVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  ds-audioid-list.txt file has wrong version"
+      fi
+    else
+      echo "  no ds-audioid-list.txt file"
+    fi
+
     fn=${DATADIR}/profile00/ds-currsong.txt
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
@@ -621,56 +643,6 @@ function checkInstallation {
       fi
     else
       echo "  no autoselection.txt file"
-    fi
-
-    # automatic.pl file
-    fna="${DATADIR}/automatic.pl"
-    fnb=""
-    if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/automatisch.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == es_ES ]]; then
-      fna="${DATADIR}/automático.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == fi_FI ]]; then
-      fna="${DATADIR}/automaattinen.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == fr_FR ]]; then
-      fna="${DATADIR}/automatique.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == it_IT ]]; then
-      fna="${DATADIR}/automatico.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == ja_JP ]]; then
-      fna="${DATADIR}/自動.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == nl_BE || $section == nl_NL ]]; then
-      fna="${DATADIR}/Automatisch.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == pl_PL ]]; then
-      fna="${DATADIR}/automatyczny.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    if [[ $section == ru_RU ]]; then
-      fna="${DATADIR}/автоматически.pl"
-      fnb="${DATADIR}/automatic.pl"
-    fi
-    res=$(($res+1))   # automatic playlist
-    if [[ -f ${fna} ]]; then
-      if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename ${fnb})"
-      else
-        chk=$(($chk+1))
-      fi
-    else
-      echo "  no $(basename ${fna})"
     fi
 
     res=$(($res+1))  # itunes-fields.txt file
@@ -878,6 +850,30 @@ function checkInstallation {
 
     res=$(($res+1))  # audiotagintfc.txt file removed
     fn="${DATADIR}/audiotagintfc.txt"
+    if [[ $fin == T && ! -f "${fn}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename ${fn}) exists"
+    fi
+
+    res=$(($res+1))  # data/localization.txt file only in templates
+    fn="${DATADIR}/localization.txt"
+    if [[ $fin == T && ! -f "${fn}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename ${fn}) exists"
+    fi
+
+    res=$(($res+1))  # data/html-list.txt file only in templates
+    fn="${DATADIR}/html-list.txt"
+    if [[ $fin == T && ! -f "${fn}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename ${fn}) exists"
+    fi
+
+    res=$(($res+1))  # data/helpdata.txt file only in templates
+    fn="${DATADIR}/helpdata.txt"
     if [[ $fin == T && ! -f "${fn}" ]]; then
       chk=$(($chk+1))
     else
@@ -1195,7 +1191,9 @@ if [[ $readonly == T ]]; then
   exit 1
 fi
 
-for section in de_DE es_ES fi_FI fr_FR it_IT ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+# 2024-7-18 not all languages are tested, just a representation.
+# nl_NL is important, as there is no nl_NL/ dir.
+for section in fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   locale=${section}
 
   cleanInstTest

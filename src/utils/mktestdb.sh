@@ -73,17 +73,17 @@ while test $# -gt 0; do
       args+="'$1'"
       args+=" "
       ;;
-    --atibdj4)
+    --ati)
       # ignored
+      shift
       ;;
-    --plimprisvlc)
+    --pli)
       # ignored
+      shift
       ;;
-    --pligst)
+    --vol)
       # ignored
-      ;;
-    --volpipewire)
-      # ignored
+      shift
       ;;
     --nodbcopy)
       # ignored

@@ -1,6 +1,6 @@
 <!-- Español Flex -->
-<!-- VERSION 1 -->
-<!-- 2022-1-17 -->
+<!-- VERSION 2 -->
+<!-- 2024-7-10 -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -109,15 +109,22 @@ http://danielstern.ca/range.css/#/
     button {
       padding-top: 7pt;
       padding-bottom: 7pt;
-      border-radius: 0;
-      -webkit-border-radius: 0;
-      -webkit-appearance: none;
+/*      border-radius: 0; */
+/*      -webkit-border-radius: 0; */
+/*      -webkit-appearance: none; */
       background-color: #d5b5ff;
+      border: 1pt solid #010101;
+      box-shadow: 2px 8px 10px 0 rgba(0,0,0,0.2);
+    }
+    input[type=submit] {
+      border-radius: 1pt;
+      border: 1pt solid #010101;
+      box-shadow: 2px 8px 10px 0 rgba(0,0,0,0.2);
     }
     input[type='submit']:active {
       background-color: #b595df;
     }
-    input.button:focus {
+    input[type='submit']:focus {
       outline-width: 0;
       color: black;
     }
@@ -127,6 +134,10 @@ http://danielstern.ca/range.css/#/
     select {
       background-color: #d5b5ff;
       appearance: none;
+      border: 1pt solid #010101;
+      box-shadow: 2px 8px 10px 0 rgba(0,0,0,0.2);
+      color: #000000;
+      font-size: 110%;
     }
     input {
       outline: none;
@@ -360,10 +371,6 @@ http://danielstern.ca/range.css/#/
           <div class="rightbox vcenter">
             <img class="mpad" id="playstatusi"
                   src="mrc/light/stop.svg" alt="Stop">
-            <div class="divshown" id="pausestatusd">
-              <img class="mpad mpadr" id="pausestatusi"
-                  src="mrc/light/pause.svg" alt="Pausa">
-            </div>
           </div>
         </div>
         <div class="linebox">
@@ -578,15 +585,13 @@ bdj.updatePlayListSel = function (data) {
 
 bdj.updateData = function (data) {
   var jd = JSON.parse (data);
+
+  if (! jd) {
+    return;
+  }
+
   var o = document.getElementById("playstatusi");
   o.src = 'mrc/light/'+jd.playstate+".svg";
-
-  o = document.getElementById("pausestatusd");
-  if (jd.willpause == 1) {
-    o.className = "divshown";
-  } else {
-    o.className = "divnone";
-  }
 
   o = document.getElementById("repeatstatusd");
   if (jd.repeat == 1) {
@@ -617,12 +622,6 @@ bdj.updateData = function (data) {
     o.value = jd.speed;
   }
 
-  o = document.getElementById("dance");
-  o.innerHTML = jd.dance;
-  o = document.getElementById("artist");
-  o.innerHTML = jd.artist;
-  o = document.getElementById("title");
-  o.innerHTML = jd.title;
   if (jd.duration != "0:00") {
     o = document.getElementById("playedtime");
     o.innerHTML = jd.playedtime;
@@ -638,6 +637,13 @@ bdj.updateData = function (data) {
     o = document.getElementById("duration");
     o.innerHTML = '';
   }
+
+  o = document.getElementById("dance");
+  o.innerHTML = jd.dance;
+  o = document.getElementById("artist");
+  o.innerHTML = jd.artist;
+  o = document.getElementById("title");
+  o.innerHTML = jd.title;
 }
 
 bdj.getDanceList = function () {
@@ -678,8 +684,10 @@ bdj.doUpdate = function () {
   xhr.send();
 }
 bdj.setSize = function (o,s) {
-  o.height = s;
-  o.width = s;
+  if (o) {
+    o.height = s;
+    o.width = s;
+  }
 }
 bdj.doLoad = function () {
   var o = document.getElementById("fadeb");
@@ -698,9 +706,6 @@ bdj.doLoad = function () {
   bdj.setSize(o,s);
   o = document.getElementById("nextpagei");
   bdj.setSize(o,s);
-
-  o = document.getElementById("pausestatusd");
-  o.className = 'divshown';
 
   o = document.getElementById("muteb");
   var s2 = o.clientWidth;

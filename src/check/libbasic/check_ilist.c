@@ -185,7 +185,7 @@ START_TEST(ilist_iterate)
   nval = ilistGetNum (list, key, 1);
   ck_assert_int_eq (nval, 6);
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 0);
@@ -302,7 +302,7 @@ START_TEST(ilist_replace_str)
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "555");
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 0);
@@ -338,7 +338,7 @@ START_TEST(ilist_replace_str)
   value =  ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "555");
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value =  ilistGetStr (list, key, 0);
@@ -428,6 +428,7 @@ START_TEST(ilist_delete)
   ck_assert_int_eq (val, 0);
 
   ilistDelete (list, 6);
+  ck_assert_int_eq (ilistGetCount (list), 6);
 
   val = ilistExists (list, 6);
   ck_assert_int_eq (val, 0);

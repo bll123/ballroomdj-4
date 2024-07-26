@@ -22,7 +22,7 @@
 
 static bool confuiMobmqTypeChg (void *udata);
 static bool confuiMobmqPortChg (void *udata);
-static int  confuiMobmqTitleChg (uiwcont_t *entry, void *udata);
+static int  confuiMobmqTitleChg (uiwcont_t *entry, const char *label, void *udata);
 
 void
 confuiInitMobileMarquee (confuigui_t *gui)
@@ -62,7 +62,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       CONFUI_ENTRY_MMQ_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MMQ_TITLE].uiwidgetp,
-      confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
+      "", confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
@@ -109,7 +109,7 @@ confuiMobmqPortChg (void *udata)
 }
 
 static int
-confuiMobmqTitleChg (uiwcont_t *entry, void *udata)
+confuiMobmqTitleChg (uiwcont_t *entry, const char *label, void *udata)
 {
   confuigui_t     *gui = udata;
   const char      *sval;

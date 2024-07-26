@@ -15,7 +15,7 @@ WEBSITE=${WEBDIR}/${BASEFN}.en
 
 pofile=$1
 locale=$2
-slocale=$3
+weblocale=$3
 
 html=$(cat $WEBSITE | tr '\n' '@' |
     sed -e 's,\([A-Za-z0-9 .]\) *@ *\([A-Za-z0-9 .]\),\1 \2,g')
@@ -55,17 +55,12 @@ while read -r line; do
   sedcmd+="-e 's~>${nl}<~>${xl}<~g' "
 done < $pofile
 
-sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${slocale}\"~' "
-if [[ $slocale == pl ]]; then
-  # the polish .pl extension was taken over by perl
-  # already processed by pobuild.sh, but leave this check in place
-  # in case the script is run manually.
-  slocale=po
-fi
-nfn=${WEBDIR}/${BASEFN}.${slocale}
+sedcmd+="-e 's~lang=\"[^\"]*\"~lang=\"${weblocale}\"~' "
+
+nfn=${WEBDIR}/${BASEFN}.${weblocale}
 nhtml=$(printf "%s" "$html" | eval sed ${sedcmd})
 nnhtml=$(printf "%s" "$nhtml" | tr '@' '\n')
-printf "%s" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
+printf "%s\n" "$nnhtml" | sed -e "s~!!!~'~g" > $nfn
 set +o noglob
 
 exit 0

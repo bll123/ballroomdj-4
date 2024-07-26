@@ -65,6 +65,8 @@ void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
                   int filterType, ssize_t value);
 dbidx_t       songfilterProcess (songfilter_t *sf, musicdb_t *musicdb);
 bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
+void          *songfilterGetData (songfilter_t *sf, int key);
+int           songfilterGetNum (songfilter_t *sf, int key);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
 char *        songfilterGetSort (songfilter_t *sf);
 dbidx_t       songfilterGetCount (songfilter_t *sf);

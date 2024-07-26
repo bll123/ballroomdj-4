@@ -24,17 +24,18 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "vsencdec.h"
+#include "ui.h"
 
 void
 confuiPopulateOptions (confuigui_t *gui)
 {
   const char  *sval;
-  ssize_t     nval;
+  int64_t     nval;
   nlistidx_t  selidx;
   double      dval;
   confuibasetype_t basetype;
   confuiouttype_t outtype;
-  long        debug = 0;
+  int32_t     debug = 0;
 
   logProcBegin ();
 
@@ -100,6 +101,13 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_SPINBOX_TIME: {
         nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [i].uiwidgetp);
+
+        /* do some additional validation, as after a failed validation, */
+        /* the spinbox value can be junk */
+        if (nval < 5000 || nval > 7200000) {
+          nval = 0;
+        }
+
         if (i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
@@ -124,10 +132,9 @@ confuiPopulateOptions (confuigui_t *gui)
         nval = uiToggleButtonIsActive (gui->uiitem [i].uiwidgetp);
         break;
       }
-      case CONFUI_COMBOBOX: {
-        sval = slistGetDataByIdx (gui->uiitem [i].displist,
-            gui->uiitem [i].listidx);
-        outtype = CONFUI_OUT_STR;
+      case CONFUI_DD: {
+        /* org: the listidx is not valid */
+        outtype = CONFUI_OUT_NONE;
         break;
       }
     }
@@ -253,7 +260,7 @@ confuiPopulateOptions (confuigui_t *gui)
       fileopDelete (tbuff);
 
       fh = fileopOpen (tbuff, "w");
-      fprintf (fh, "%d\n", (int) nval);
+      fprintf (fh, "%" PRId64 "\n", nval);
       mdextfclose (fh);
       fclose (fh);
     }

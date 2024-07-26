@@ -2,7 +2,7 @@
 #
 # Copyright 2023-2024 Brad Lanam Pleasant Hill CA
 #
-ver=2
+ver=3
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -143,7 +143,7 @@ if [[ -f /usr/bin/apt ]]; then
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
       libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
-      libcurl4-openssl-dev libchromaprint-tools"
+      libcurl4-openssl-dev libchromaprint-tools libgstreamer1.0-dev"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -159,7 +159,7 @@ if [[ -f /usr/bin/dnf ]]; then
       ffmpeg-free-devel libavformat-free-devel
       pipewire-devel libcurl-devel gtk3-devel vlc-devel pulseaudio-libs-devel
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
-      libvorbis-devel
+      libvorbis-devel gstreamer-devel
       flac-devel check-devel json-c-devel
       chromaprint-tools"
 fi
@@ -174,7 +174,7 @@ if [[ -f /usr/bin/zypper ]]; then
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
       opusfile-devel libvorbis-devel flac-devel check-devel
-      libxml2-devel libjson-c-devel libvlc5
+      libxml2-devel libjson-c-devel libvlc5 gstreamer-devel
       chromaprint-fpcalc"
 fi
 

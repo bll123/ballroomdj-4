@@ -9,17 +9,7 @@ The dance level can be used to help filter songs according to their
 difficulty.  If you want to use levels, you will also want to change
 the [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-Levels should be ordered from the easiest to the most advanced.
-
-To add a new level, select the __Add&nbsp;New__ (![Add
-New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
-button.  Then click on the name to change the name. Use the up and
-down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
-to move the level to the position you want. Select the __Delete__
-(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
-button to delete a level.
+Dance levels should be ordered from the easiest to the most advanced.
 
 The __Weight__ is used by the automatic and sequenced song selection to
 adjust which songs are used.  A higher level weight will make a song
@@ -29,9 +19,22 @@ change the weight.
 The __Default__ selection determines which dance level is assigned to
 songs that do not have a dance level set.
 
+Adding a new level, select the __Add&nbsp;New__ (![Add
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
+button.  Click on the name to change the name.
+
+Use the up and down arrows
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
+to move the level to the position you want.
+
+Select the __Delete__
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+button to delete a level.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-E.png)
+![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

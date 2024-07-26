@@ -25,14 +25,9 @@
 #include "callback.h"
 
 typedef struct {
-  int     a;
-  int     b;
+  int32_t     a;
+  int32_t     b;
 } ii_t;
-
-typedef struct {
-  long    a;
-  int     b;
-} li_t;
 
 static bool
 cbn (void *udata)
@@ -59,7 +54,7 @@ cbd (void *udata, double val)
 }
 
 static bool
-cbii (void *udata, int a, int b)
+cbii (void *udata, int32_t a, int32_t b)
 {
   if (udata != NULL) {
     ii_t *iival = udata;
@@ -72,10 +67,10 @@ cbii (void *udata, int a, int b)
 }
 
 static bool
-cbl (void *udata, long val)
+cbl (void *udata, int32_t val)
 {
   if (udata != NULL) {
-    long  *lval = udata;
+    int32_t  *lval = udata;
 
     *lval = val;
     return true;
@@ -83,20 +78,7 @@ cbl (void *udata, long val)
   return false;
 }
 
-static int
-cbli (void *udata, long a, int b)
-{
-  if (udata != NULL) {
-    li_t *lival = udata;
-
-    lival->a = a;
-    lival->b = b;
-    return true;
-  }
-  return false;
-}
-
-static long
+static int32_t
 cbs (void *udata, const char *txt)
 {
   if (udata != NULL) {
@@ -114,6 +96,7 @@ START_TEST(callback_alloc)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_alloc");
   mdebugSubTag ("callback_alloc");
+
   cb = callbackInit (NULL, NULL, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
@@ -122,23 +105,19 @@ START_TEST(callback_alloc)
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
 
-  cb = callbackInitDouble (cbd, NULL);
+  cb = callbackInitD (cbd, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
 
-  cb = callbackInitIntInt (cbii, NULL);
+  cb = callbackInitII (cbii, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
 
-  cb = callbackInitLong (cbl, NULL);
+  cb = callbackInitI (cbl, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
 
-  cb = callbackInitLongInt (cbli, NULL);
-  ck_assert_ptr_nonnull (cb);
-  callbackFree (cb);
-
-  cb = callbackInitStr (cbs, NULL);
+  cb = callbackInitS (cbs, NULL);
   ck_assert_ptr_nonnull (cb);
   callbackFree (cb);
 }
@@ -176,15 +155,38 @@ START_TEST(callback_double)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_double");
   mdebugSubTag ("callback_double");
 
-  cb = callbackInitDouble (cbd, NULL);
-  rc = callbackHandlerDouble (cb, 4.0);
+  cb = callbackInitD (cbd, NULL);
+  rc = callbackHandlerD (cb, 4.0);
   ck_assert_float_eq (a, -1.0);
   ck_assert_int_eq (rc, 0);
   callbackFree (cb);
 
-  cb = callbackInitDouble (cbd, &a);
-  rc = callbackHandlerDouble (cb, 5.0);
+  cb = callbackInitD (cbd, &a);
+  rc = callbackHandlerD (cb, 5.0);
   ck_assert_double_eq (a, 5.0);
+  ck_assert_int_eq (rc, 1);
+  callbackFree (cb);
+}
+END_TEST
+
+START_TEST(callback_int)
+{
+  callback_t    *cb;
+  int32_t       a = -1;
+  bool          rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_int");
+  mdebugSubTag ("callback_int");
+
+  cb = callbackInitI (cbl, NULL);
+  rc = callbackHandlerI (cb, 4);
+  ck_assert_int_eq (a, -1);
+  ck_assert_int_eq (rc, 0);
+  callbackFree (cb);
+
+  cb = callbackInitI (cbl, &a);
+  rc = callbackHandlerI (cb, 4);
+  ck_assert_int_eq (a, 4);
   ck_assert_int_eq (rc, 1);
   callbackFree (cb);
 }
@@ -202,66 +204,15 @@ START_TEST(callback_intint)
   a.a = -1;
   a.b = -2;
 
-  cb = callbackInitIntInt (cbii, NULL);
-  rc = callbackHandlerIntInt (cb, 4, 5);
+  cb = callbackInitII (cbii, NULL);
+  rc = callbackHandlerII (cb, 4, 5);
   ck_assert_int_eq (a.a, -1.0);
   ck_assert_int_eq (a.b, -2.0);
   ck_assert_int_eq (rc, 0);
   callbackFree (cb);
 
-  cb = callbackInitIntInt (cbii, &a);
-  rc = callbackHandlerIntInt (cb, 4, 5);
-  ck_assert_int_eq (a.a, 4);
-  ck_assert_int_eq (a.b, 5);
-  ck_assert_int_eq (rc, 1);
-  callbackFree (cb);
-}
-END_TEST
-
-START_TEST(callback_long)
-{
-  callback_t    *cb;
-  long          a = -1;
-  bool          rc;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_long");
-  mdebugSubTag ("callback_long");
-
-  cb = callbackInitLong (cbl, NULL);
-  rc = callbackHandlerLong (cb, 4);
-  ck_assert_int_eq (a, -1);
-  ck_assert_int_eq (rc, 0);
-  callbackFree (cb);
-
-  cb = callbackInitLong (cbl, &a);
-  rc = callbackHandlerLong (cb, 4);
-  ck_assert_int_eq (a, 4);
-  ck_assert_int_eq (rc, 1);
-  callbackFree (cb);
-}
-END_TEST
-
-START_TEST(callback_longint)
-{
-  callback_t    *cb;
-  li_t          a;
-  bool          rc;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_longint");
-  mdebugSubTag ("callback_longint");
-
-  a.a = -1;
-  a.b = -2;
-
-  cb = callbackInitLongInt (cbli, NULL);
-  rc = callbackHandlerLongInt (cb, 4, 5);
-  ck_assert_int_eq (a.a, -1.0);
-  ck_assert_int_eq (a.b, -2.0);
-  ck_assert_int_eq (rc, 0);
-  callbackFree (cb);
-
-  cb = callbackInitLongInt (cbli, &a);
-  rc = callbackHandlerLongInt (cb, 4, 5);
+  cb = callbackInitII (cbii, &a);
+  rc = callbackHandlerII (cb, 4, 5);
   ck_assert_int_eq (a.a, 4);
   ck_assert_int_eq (a.b, 5);
   ck_assert_int_eq (rc, 1);
@@ -273,20 +224,20 @@ START_TEST(callback_string)
 {
   callback_t    *cb;
   const char    *a;
-  long          rc;
+  int32_t       rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_long");
-  mdebugSubTag ("callback_long");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- callback_str");
+  mdebugSubTag ("callback_str");
   a = "1234";
 
-  cb = callbackInitStr (cbs, NULL);
-  rc = callbackHandlerStr (cb, "abcdef");
+  cb = callbackInitS (cbs, NULL);
+  rc = callbackHandlerS (cb, "abcdef");
   ck_assert_str_eq (a, "1234");
   ck_assert_int_eq (rc, 0);
   callbackFree (cb);
 
-  cb = callbackInitStr (cbs, &a);
-  rc = callbackHandlerStr (cb, "abcdef");
+  cb = callbackInitS (cbs, &a);
+  rc = callbackHandlerS (cb, "abcdef");
   ck_assert_str_eq (a, "abcdef");
   ck_assert_int_eq (rc, 1);
   callbackFree (cb);
@@ -306,9 +257,8 @@ callback_suite (void)
   tcase_add_test (tc, callback_alloc);
   tcase_add_test (tc, callback_norm);
   tcase_add_test (tc, callback_double);
+  tcase_add_test (tc, callback_int);
   tcase_add_test (tc, callback_intint);
-  tcase_add_test (tc, callback_long);
-  tcase_add_test (tc, callback_longint);
   tcase_add_test (tc, callback_string);
   suite_add_tcase (s, tc);
   return s;

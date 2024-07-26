@@ -1,0 +1,113 @@
+# == norsk
+# -- norwegian
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Norwegian\n"
+"Language: no\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: no\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "Alle brukere av BallroomDJ oppfordres til å konvertere til BallroomDJ 4"
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - Ballroom Music Player"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4 (BDJ4) er en musikkspiller designet for stasjonære og bærbare datamaskiner (og vil fungere på noen nettbrett). Den er designet for å kunne spille musikk hele kvelden uten inngrep."
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - The Ballroom Music Player"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "BallroomDJ på pro-linux.de"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJ var den forrige ballroommusikkspilleren. Det støttes ikke lenger."
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 på freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "BDJ4-funksjoner"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "BDJ4-forum"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4 er svært tilpassbar og gir fasiliteter for å organisere ballroomdansemusikk og lage sanglister, automatiske spillelister og sekvenserte spillelister."
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4 kjører på Windows, MacOS og Linux."
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 Wiki"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "Endre logg"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "Donere"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "Doner til programvareprosjekter som BDJ4 bruker:"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "Last ned BallroomDJ 3"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "Last ned BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "Hjelp til å oversette BallroomDJ 4"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "siste versjon"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "Meny"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "Andre nettsteder hvor utgivelseskunngjøringer for BallroomDJ 4 kan bli funnet:"
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (donasjonsknapp helt øverst)"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "Doner til BDJ4"
+

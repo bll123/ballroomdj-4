@@ -14,25 +14,28 @@ The _New_ and _Complete_ status may not be removed or have their
 names changed.  Songs newly added to the database are assigned the
 _New_ status.
 
-To add a new status, select the __Add&nbsp;New__ (![Add
-New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
-button.  Then double-click on the status name to edit the name.  Use
-the up and down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
-to adjust the order in which the statuses appear.  Use the __Delete__
-(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
-button to remove a status.
-
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
 request selection.  This selection corresponds to the
-_Playable&nbsp;Status_ filter
-<br>See [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).
+_Playable&nbsp;Status_ filter.
+<br>__References:__
+<br>[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
+
+Adding a status: select the __Add&nbsp;New__
+(![Add&nbsp;New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
+button.  Click on the status name to edit the name.  Use the up and
+down arrows
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
+to adjust the order in which the statuses appear.
+
+Removing a status: Select the status and select the __Delete__
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-E.png)
+![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

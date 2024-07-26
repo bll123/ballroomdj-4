@@ -49,11 +49,11 @@ typedef struct audioidacr {
   int           respcount;
 } audioidacr_t;
 
+/* for debugging only */
+/* this is useful, as the free ACRCloud only allows 100 queries/month */
+/* note that a valid out-acr.json file must be downloaded first */
+#define ACRCLOUD_REUSE 0
 enum {
-  /* for debugging only */
-  /* this is useful, as the free ACRCloud only allows 100 queries/month */
-  /* note that a valid out-acr.json file must be downloaded first */
-  ACRCLOUD_REUSE = 0,
   FREE_LIMIT = 100,
   QPS_LIMIT = 1000 / 2 + 1,
 };
@@ -315,7 +315,8 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   query [qc++] = ts;
   query [qc++] = NULL;
 
-  if (ACRCLOUD_REUSE == 1 && fileopFileExists (ACRCLOUD_TEMP_FN)) {
+#if ACRCLOUD_REUSE
+  if (fileopFileExists (ACRCLOUD_TEMP_FN)) {
     FILE    *ifh;
     size_t  tsize;
     char    *tstr;
@@ -332,7 +333,9 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
     tstr [tsize] = '\0';
     acr->webresponse = tstr;
     fclose (ifh);
-  } else {
+  } else
+#endif
+  {
     int             webrc;
 
     mstimestart (&starttm);

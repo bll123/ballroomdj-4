@@ -472,7 +472,7 @@ START_TEST(datafile_keyval_dfkey)
   ck_assert_int_eq (lval, 0);
 
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 14);
@@ -578,7 +578,7 @@ START_TEST(datafile_keyval_dfkey_missing)
   ck_assert_int_eq (lval, 0);
 
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 14);
@@ -698,7 +698,7 @@ START_TEST(datafile_keyval_df_extra)
   ck_assert_int_eq (lval, 0);
 
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 14);
@@ -766,7 +766,7 @@ START_TEST(datafile_indirect)
   ck_assert_int_eq (key, 3);
 
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);
@@ -787,7 +787,7 @@ START_TEST(datafile_indirect)
   ck_assert_str_eq (value, "a");
 
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);
@@ -866,7 +866,7 @@ START_TEST(datafile_indirect_missing)
   ck_assert_int_eq (lval, 3);
 
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);
@@ -887,7 +887,7 @@ START_TEST(datafile_indirect_missing)
   ck_assert_ptr_null (value);
 
   key = ilistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);

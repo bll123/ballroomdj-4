@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONG
-#define INC_SONG
+#ifndef INC_SONG_H
+#define INC_SONG_H
 
 #include "datafile.h"
 #include "ilist.h"
@@ -41,4 +41,4 @@ bool      songHasSonglistChange (song_t *song);
 void      songClearChanged (song_t *song);
 //void      songDump (song_t *song);
 
-#endif /* INC_SONG */
+#endif /* INC_SONG_H */

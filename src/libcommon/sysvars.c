@@ -89,6 +89,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_HOST_WIKI] = { "HOST_WIKI" },
   [SV_LOCALE] = { "LOCALE" },
   [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
+  [SV_LOCALE_ORIG_SHORT] = { "LOCALE_ORIG_SHORT" },
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
@@ -120,7 +121,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_USER_AGENT] = { "USER_AGENT" },
   [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
-  [SV_VLC_VERSION] = { "VLC_VERSION" },
   [SV_WEB_VERSION_FILE] = { "WEB_VERSION_FILE" },
 };
 
@@ -143,6 +143,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_NUM_PROC] = { "NUM_PROC" },
   [SVL_OSBITS] = { "OSBITS" },
   [SVL_USER_ID] = { "USER_ID" },
+  [SVL_VLC_VERSION] = { "VLC_VERSION" },
 };
 
 enum {
@@ -176,7 +177,7 @@ static sysdistinfo_t *sysvarsParseDistFile (const char *path);
 static void sysvarsParseDistFileFree (sysdistinfo_t *distinfo);
 
 void
-sysvarsInit (const char *argv0)
+sysvarsInit (const char *argv0, int flags)
 {
   char          tcwd [SV_MAX_SZ+1];
   char          tbuff [SV_MAX_SZ+1];
@@ -481,17 +482,18 @@ sysvarsInit (const char *argv0)
 
           /* extract the name of the app from the main-dir */
           strlcpy (tmp, sysvars [SV_BDJ4_DIR_MAIN], sizeof (tmp));
-          offset = strlen (tmp) -
-              strlen (MACOS_APP_PREFIX) -
-              strlen (MACOS_APP_EXT);
-          if (offset >= 0) {
-            tmp [offset] = '\0';
-          }
-          tp = strrchr (tmp, '/');
-          if (tp != NULL) {
-            ++tp;
-          } else {
-            tp = BDJ4_NAME;
+          tp = BDJ4_NAME;
+          if (strstr (tmp, MACOS_APP_PREFIX) != NULL) {
+            offset = strlen (tmp) -
+                strlen (MACOS_APP_PREFIX) -
+                strlen (MACOS_APP_EXT);
+            if (offset >= 0) {
+              tmp [offset] = '\0';
+            }
+            tp = strrchr (tmp, '/');
+            if (tp != NULL) {
+              ++tp;
+            }
           }
 
           strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
@@ -566,6 +568,7 @@ sysvarsInit (const char *argv0)
   /* localeinit will also convert the windows names to something normal */
   strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_ORIG], "en_GB", SV_MAX_SZ);
+  strlcpy (sysvars [SV_LOCALE_ORIG_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
@@ -674,7 +677,8 @@ sysvarsInit (const char *argv0)
 
   sysvarsCheckPaths (NULL);
 
-  if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
+  if (flags == SYSVARS_FLAG_ALL &&
+      strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
     char  *data;
     char  *tdata;
 
@@ -718,7 +722,7 @@ sysvarsInit (const char *argv0)
 
     /* gtk cannot seem to retrieve the properties from settings */
     /* so run the gsettings program to get the info */
-    if (*sysvars [SV_PATH_GSETTINGS]) {
+    if (flags == SYSVARS_FLAG_ALL && *sysvars [SV_PATH_GSETTINGS]) {
       svGetLinuxDefaultTheme ();
     }
   }
@@ -756,7 +760,9 @@ sysvarsInit (const char *argv0)
 #endif
   }
 
-  svGetSystemFont ();
+  if (flags == SYSVARS_FLAG_ALL) {
+    svGetSystemFont ();
+  }
 
   lsysvars [SVL_ALTIDX] = 0;
   lsysvars [SVL_PROFILE_IDX] = 0;
@@ -890,12 +896,19 @@ sysvarsCheckPaths (const char *otherpaths)
   strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
       "https://api.acoustid.org/v2/lookup", SV_MAX_SZ);
 
+  lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
   strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {
     strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
   }
   if (isMacOS ()) {
-    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+    if (fileopFileExists ("/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")) {
+      strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+    }
+    if (fileopFileExists ("/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")) {
+      strlcpy (tbuff, "/Applications/VLC.app/Contents/Frameworks", sizeof (tbuff));
+      lsysvars [SVL_VLC_VERSION] = 4;
+    }
   }
   if (isLinux ()) {
     strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
@@ -912,8 +925,6 @@ sysvarsCheckPaths (const char *otherpaths)
     }
   }
 }
-
-
 
 char *
 sysvarsGetStr (sysvarkey_t idx)

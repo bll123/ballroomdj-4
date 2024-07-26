@@ -1,0 +1,29 @@
+# playlist
+# 2024-2-16
+# version 3
+version
+..2
+ALLOWEDKEYWORDS
+..
+DANCERATING
+..평가 없음
+GAP
+..500
+MAXPLAYTIME
+..0
+PLAYANNOUNCE
+..no
+STOPAFTER
+..0
+STOPTIME
+..0
+DANCELEVELLOW
+..쉬운
+DANCELEVELHIGH
+..고급
+TAGS
+..
+TAG_WEIGHT
+..
+TYPE
+..automatic

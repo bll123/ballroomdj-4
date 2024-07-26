@@ -31,9 +31,9 @@ typedef struct audioidmb {
   int           respcount;
 } audioidmb_t;
 
+/* for debugging only */
+#define MUSICBRAINZ_REUSE 0
 enum {
-  /* for debugging only */
-  MUSICBRAINZ_REUSE = 0,
   QPS_LIMIT = 1000 / 1 + 1,
 };
 
@@ -165,7 +165,8 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
   strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
-  if (MUSICBRAINZ_REUSE == 1 && fileopFileExists (MUSICBRAINZ_TEMP_FN)) {
+#if MUSICBRAINZ_REUSE
+  if (fileopFileExists (MUSICBRAINZ_TEMP_FN)) {
     FILE    *ifh;
     size_t  tsize;
     char    *tstr;
@@ -182,7 +183,9 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
     tstr [tsize] = '\0';
     mb->webresponse = tstr;
     fclose (ifh);
-  } else {
+  } else
+#endif
+  {
     int   webrc;
 
     mstimestart (&starttm);

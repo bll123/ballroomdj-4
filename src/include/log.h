@@ -1,14 +1,13 @@
 /*
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJLOG_H
-#define INC_BDJLOG_H
+#ifndef INC_LOG_H
+#define INC_LOG_H
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "bdj4.h"
 #include "player.h"
 
 /*
@@ -73,6 +72,7 @@ enum {
   LOG_AUDIO_TAG       = (1 << 22), // 4194304
   LOG_AUDIO_ID        = (1 << 23), // 8388608
   LOG_AUDIOID_DUMP    = (1 << 24), // 16777216
+  LOG_VIRTLIST        = (1 << 25), // 33554432
   /* insert new values here, push redir_inst down */
   LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,
@@ -100,8 +100,9 @@ enum {
   LOG_MAX_BUFF    = 4096,
 };
 
-#define logProcBegin()   rlogProcBegin (__FILE__, __LINE__, __func__)
-#define logProcEnd(suffix)  rlogProcEnd (suffix, __FILE__, __LINE__, __func__)
+#define logStartProgram(prog)   rlogStartProgram (prog, __FILE__, __LINE__, __func__)
+#define logProcBegin()          rlogProcBegin (__FILE__, __LINE__, __func__)
+#define logProcEnd(suffix)      rlogProcEnd (suffix, __FILE__, __LINE__, __func__)
 #define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__, __func__)
 #define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, __func__, fmt __VA_OPT__(,) __VA_ARGS__)
 
@@ -116,7 +117,7 @@ void logStartAppend (const char *processnm, const char *processtag, loglevel_t l
 void logEnd (void);
 void logBacktraceHandler (int sig);
 void logBacktrace (void);
-const char * logPlstateDebugText (playerstate_t plstate);
+const char * logPlayerState (playerstate_t plstate);
 const char * logStateDebugText (int state);
 void logBasic (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
@@ -124,10 +125,11 @@ void logStderr (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
+void rlogStartProgram (const char *prog, const char *fn, int line, const char *func);
 void rlogProcBegin (const char *fn, int line, const char *func);
 void rlogProcEnd (const char *suffix, const char *fn, int line, const char *func);
 void rlogError (const char *msg, int err, const char *fn, int line, const char *func);
 void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *func, const char *fmt, ...)
     __attribute__ ((format (printf, 6, 7)));
 
-#endif /* INC_BDJLOG_H */
+#endif /* INC_LOG_H */

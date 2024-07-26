@@ -194,15 +194,6 @@ atiCheckCodec (const char *ffn, int filetype)
   return filetype;
 }
 
-ilist_t *
-atiInterfaceList (void)
-{
-  ilist_t     *interfaces;
-
-  interfaces = dyInterfaceList (LIBATI_PFX, "atiiDesc");
-  return interfaces;
-}
-
 void
 atiGetSupportedTypes (const char *atipkg, int supported [])
 {

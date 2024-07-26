@@ -25,7 +25,6 @@
 #include "songutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "validate.h"
 
 bool
 manageCreatePlaylistCopy (uiwcont_t *errorMsg,
@@ -57,15 +56,19 @@ manageDeletePlaylist (uiwcont_t *statusMsg, const char *name)
   uiLabelSetText (statusMsg, tbuff);
 }
 
+/* gets the entry value, trims spaces before and after. */
+/* if the entry is empty, replace it with newname. */
 char *
-manageTrimName (const char *name)
+manageGetEntryValue (uiwcont_t *uientry)
 {
-  char  *tname;
+  const char  *val;
+  char        *tval;
 
-  while (*name == ' ') {
-    ++name;
+  val = uiEntryGetValue (uientry);
+  while (*val == ' ') {
+    ++val;
   }
-  tname = mdstrdup (name);
-  stringTrimChar (tname, ' ');
-  return tname;
+  tval = mdstrdup (val);
+  stringTrimChar (tval, ' ');
+  return tval;
 }

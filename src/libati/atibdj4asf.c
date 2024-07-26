@@ -90,41 +90,6 @@ atibdj4ParseASFTags (atidata_t *atidata, slist_t *tagdata,
   return;
 }
 
-int
-atibdj4WriteASFTags (atidata_t *atidata, const char *ffn,
-    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
-{
-  return -1;
-}
-
-atisaved_t *
-atibdj4SaveASFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return NULL;
-}
-
-void
-atibdj4FreeSavedASFTags (atisaved_t *atisaved, int tagtype, int filetype)
-{
-  return;
-}
-
-int
-atibdj4RestoreASFTags (atidata_t *atidata,
-    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
-{
-  return -1;
-}
-
-void
-atibdj4CleanASFTags (atidata_t *atidata,
-    const char *ffn, int tagtype, int filetype)
-{
-  return;
-}
-
 /* internal routines */
 
 static int
@@ -458,7 +423,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
         break;
       }
       if (tagname != NULL) {
-        snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle16toh (t16));
+        snprintf (tmp, sizeof (tmp), "%" PRIu16, atibdj4ASFle16toh (t16));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }
@@ -472,7 +437,7 @@ atibdj4ASFProcessTag (FILE *fh, atidata_t *atidata, slist_t *tagdata,
         break;
       }
       if (tagname != NULL) {
-        snprintf (tmp, sizeof (tmp), "%d", atibdj4ASFle32toh (t32));
+        snprintf (tmp, sizeof (tmp), "%" PRIu32, atibdj4ASFle32toh (t32));
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, nm, tmp);
         slistSetStr (tagdata, tagname, tmp);
       }

@@ -5,19 +5,19 @@
 #define INC_UIDUALLIST_H
 
 #include "slist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 enum {
-  DUALLIST_TREE_SOURCE,
-  DUALLIST_TREE_TARGET,
-  DUALLIST_TREE_MAX,
+  DL_LIST_SOURCE,
+  DL_LIST_TARGET,
+  DL_LIST_MAX,
 };
 
 enum {
-  DUALLIST_FLAGS_NONE       = 0,
-  DUALLIST_FLAGS_MULTIPLE   = (1 << 0),
+  DL_FLAGS_NONE       = 0,
+  DL_FLAGS_MULTIPLE   = (1 << 0),
   /* if persistent, the selections are not removed from the source tree */
-  DUALLIST_FLAGS_PERSISTENT = (1 << 1),
+  DL_FLAGS_PERSISTENT = (1 << 1),
 };
 
 typedef struct uiduallist uiduallist_t;

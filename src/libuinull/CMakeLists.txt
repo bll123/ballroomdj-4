@@ -6,36 +6,33 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libuinull SHARED
-  uinulladjustment.c
-  uinullbox.c
-  uinullbutton.c
-  uinullchgind.c
-  uinullclipboard.c
-  uinulldialog.c
-  uinulldragdrop.c
-  uinulldropdown.c
-  uinullentry.c
-  uinullimage.c
-  uinullkeys.c
-  uinulllabel.c
-  uinulllink.c
-  uinullmenu.c
-  uinullmiscbutton.c
-  uinullnotebook.c
-  uinullpanedwindow.c
-  uinullpbar.c
-  uinullscale.c
-  uinullscrollbar.c
-  uinullsep.c
-  uinullsizegrp.c
-  uinullspinbox.c
-  uinullswitch.c
-  uinulltextbox.c
-  uinulltoggle.c
-  uinulltreeview.c
-  uinullui.c
-  uinullwidget.c
-  uinullwindow.c
+  uibox.c
+  uibutton.c
+  uichgind.c
+  uiclipboard.c
+  uidialog.c
+  uidragdrop.c
+  uientry.c
+  uievents.c
+  uiimage.c
+  uilabel.c
+  uilink.c
+  uimenu.c
+  uimiscbutton.c
+  uinotebook.c
+  uipanedwindow.c
+  uipbar.c
+  uiscale.c
+  uiscrollbar.c
+  uisep.c
+  uisizegrp.c
+  uispinbox.c
+  uiswitch.c
+  uitextbox.c
+  uitoggle.c
+  uiui.c
+  uiwidget.c
+  uiwindow.c
 )
 target_link_libraries (libuinull PRIVATE
   objuiwcont libbdj4 libbdj4basic libbdj4common

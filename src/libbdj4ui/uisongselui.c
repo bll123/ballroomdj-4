@@ -34,16 +34,13 @@
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
-#include "uitreedisp.h"
+#include "uiutils.h"
+#include "uivirtlist.h"
+#include "uivlutil.h"
 
 enum {
-  SONGSEL_COL_ELLIPSIZE,
-  SONGSEL_COL_FONT,
-  SONGSEL_COL_IDX,
-  SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
-  SONGSEL_COL_MARK_MARKUP,
-  SONGSEL_COL_SAMESONG_MARKUP,
+  SONGSEL_COL_MARK,
   SONGSEL_COL_MAX,
 };
 
@@ -52,19 +49,9 @@ enum {
   UISONGSEL_NEXT,
   UISONGSEL_PREVIOUS,
   UISONGSEL_DIR_NONE,
-  UISONGSEL_MOVE_KEY,
   UISONGSEL_MOVE_SE,
   UISONGSEL_PLAY,
   UISONGSEL_QUEUE,
-  UISONGSEL_SCROLL_NORMAL,
-  UISONGSEL_SCROLL_FORCE,
-};
-
-enum {
-  /* how many rows in the tree storage display */
-  /* this needs to be enough to handle an expansion of the display */
-  STORE_ROWS = 60,
-  TREE_DOUBLE_CLICK_TIME = 250,
 };
 
 /* for callbacks */
@@ -76,13 +63,6 @@ enum {
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
-  SONGSEL_CB_SCROLL_CHG,
-  SONGSEL_CB_SEL_CHG,
-  SONGSEL_CB_SELECT_PROCESS,
-  SONGSEL_CB_ROW_CLICK,
-  SONGSEL_CB_RIGHT_CLICK,
-  SONGSEL_CB_SZ_CHG,
-  SONGSEL_CB_SCROLL_EVENT,
   SONGSEL_CB_MAX,
 };
 
@@ -96,119 +76,108 @@ enum {
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
   SONGSEL_W_SCROLLBAR,
-  SONGSEL_W_KEY_HNDLR,
-  SONGSEL_W_TREE,
   SONGSEL_W_MAX,
 };
-
-
-#define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
 
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *wcont [SONGSEL_W_MAX];
+  uisongsel_t         *uisongsel;
+  uivirtlist_t        *uivl;
   genre_t             *genres;
+  slist_t             *sellist;
+  slist_t             *sscolorlist;
   /* other data */
-  int                 maxRows;
   nlist_t             *selectedBackup;
-  nlist_t             *selectedList;
-  nlistidx_t          selectListIter;
+  nlistidx_t          vlSelectIter;
   nlistidx_t          selectListKey;
-  int                 *typelist;
-  int                 colcount;            // for the display type callback
-  const   char        *markcolor;
+  int                 colcount;
+  int                 favcolumn;
+  const char          *marktext;
   /* for shift-click */
   nlistidx_t          shiftfirstidx;
   nlistidx_t          shiftlastidx;
-  /* for double-click checks */
-  dbidx_t             lastRowDBIdx;
-  mstime_t            lastRowCheck;
-  bool                inscroll : 1;
-  bool                inselectchgprocess : 1;
-  bool                rightclick : 1;
+  bool                inapply : 1;
+  bool                inchange : 1;
 } ss_internal_t;
 
-static void uisongselClearSelections (uisongsel_t *uisongsel);
-static bool uisongselScrollSelection (uisongsel_t *uisongsel, dbidx_t idxStart, int scrollflag, int dir);
 static bool uisongselQueueCallback (void *udata);
 static void uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action);
-static void uisongselInitializeStore (uisongsel_t *uisongsel);
-static void uisongselInitializeStoreCallback (int type, void *udata);
-static void uisongselCreateRows (uisongsel_t *uisongsel);
-static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
-static bool uisongselRowClickCallback (void *udata, long col);
-static bool uisongselRightClickCallback (void *udata);
+static void uisongselDoubleClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static void uisongselRowClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static void uisongselRightClickCallback (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
-static bool uisongselProcessTreeSize (void *udata, long rows);
-static bool uisongselScroll (void *udata, double value);
-static void uisongselUpdateSelections (uisongsel_t *uisongsel);
-static bool uisongselScrollEvent (void *udata, long dir);
-static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static bool uisongselKeyEvent (void *udata);
-static bool uisongselSelectionChgCallback (void *udata);
-static bool uisongselProcessSelection (void *udata, long row);
-static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
+static void uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
 
-static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
+static void uisongselMoveSelection (void *udata, int where);
 
-static int  uisongselUIDanceSelectCallback (void *udata, long idx, int count);
+static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count);
 static bool uisongselSongEditCallback (void *udata);
+static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint, dbidx_t dbidx, int32_t rownum);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
 {
   ss_internal_t  *ssint;
 
+  logProcBegin ();
   ssint = mdmalloc (sizeof (ss_internal_t));
-  ssint->wcont [SONGSEL_W_TREE] = NULL;
-  ssint->maxRows = 0;
-  ssint->inscroll = false;
-  ssint->inselectchgprocess = false;
-  ssint->rightclick = false;
+  ssint->uivl = NULL;
+  ssint->uisongsel = uisongsel;
+  ssint->sscolorlist = slistAlloc ("ss-colors", LIST_ORDERED, NULL);
+  ssint->inapply = false;
+  ssint->inchange = false;
   ssint->selectedBackup = NULL;
-  ssint->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
   ssint->selectListKey = -1;
+  ssint->favcolumn = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
     ssint->callbacks [i] = NULL;
   }
   for (int i = 0; i < SONGSEL_W_MAX; ++i) {
     ssint->wcont [i] = NULL;
   }
-  ssint->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
-  ssint->lastRowDBIdx = -1;
+  ssint->marktext = bdjoptGetStr (OPT_P_UI_MARK_TEXT);
   ssint->genres = bdjvarsdfGet (BDJVDF_GENRES);
-  mstimeset (&ssint->lastRowCheck, 0);
 
-  ssint->wcont [SONGSEL_W_KEY_HNDLR] = uiKeyAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
-  ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitLong (
-      uisongselProcessSelection, uisongsel);
+  uivlSetKeyCallback (ssint->uivl, ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uisongsel->ssInternalData = ssint;
+
+  uiutilsAddFavoriteClasses ();
+
+  logProcEnd ("");
 }
 
 void
 uisongselUIFree (uisongsel_t *uisongsel)
 {
-  if (uisongsel->ssInternalData != NULL) {
-    ss_internal_t    *ssint;
+  ss_internal_t    *ssint;
 
-    ssint = uisongsel->ssInternalData;
-
-    nlistFree (ssint->selectedBackup);
-    nlistFree (ssint->selectedList);
-    for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
-      callbackFree (ssint->callbacks [i]);
-    }
-    for (int i = 0; i < SONGSEL_W_MAX; ++i) {
-      uiwcontFree (ssint->wcont [i]);
-    }
-    mdfree (ssint);
-    uisongsel->ssInternalData = NULL;
+  logProcBegin ();
+  if (uisongsel == NULL || uisongsel->ssInternalData == NULL) {
+    logProcEnd ("bad-ss-ssint");
+    return;
   }
+
+  ssint = uisongsel->ssInternalData;
+
+  nlistFree (ssint->selectedBackup);
+  slistFree (ssint->sscolorlist);
+  for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
+    callbackFree (ssint->callbacks [i]);
+  }
+  for (int i = 0; i < SONGSEL_W_MAX; ++i) {
+    uiwcontFree (ssint->wcont [i]);
+  }
+  uivlFree (ssint->uivl);
+  mdfree (ssint);
+  uisongsel->ssInternalData = NULL;
+  logProcEnd ("");
 }
 
 uiwcont_t *
@@ -217,10 +186,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ss_internal_t     *ssint;
   uiwcont_t         *uiwidgetp;
   uiwcont_t         *hbox;
-  uiwcont_t         *vbox;
   slist_t           *sellist;
   char              tbuff [200];
-  int               col;
+  int               colidx;
+  int               tagidx;
+  slistidx_t        iteridx;
+  uivirtlist_t      *uivl;
 
   logProcBegin ();
 
@@ -232,16 +203,18 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
 
   if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+    uiwcont_t   *thbox;
+
     /* need a filler box to match the musicq */
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
+    thbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (thbox);
+    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox);
 
     uiwidgetp = uiCreateLabel (" ");
     uiWidgetSetMarginBottom (uiwidgetp, 5);
-    uiBoxPackStart (hbox, uiwidgetp);
+    uiBoxPackStart (thbox, uiwidgetp);
     uiwcontFree (uiwidgetp);
-    uiwcontFree (hbox);
+    uiwcontFree (thbox);
   }
 
   hbox = uiCreateHorizBox ();
@@ -262,7 +235,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_MM) {
     ssint->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
     uiwidgetp = uiCreateButton (ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
@@ -283,10 +257,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_BUTTON_QUEUE] = uiwidgetp;
 
     uiwidgetp = uiCreateLabel ("");
-    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+    uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
     uiBoxPackStart (hbox, uiwidgetp);
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
+
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
@@ -300,9 +275,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_BUTTON_PLAY] = uiwidgetp;
   }
 
-  ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitLongInt (
+  ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitII (
       uisongselUIDanceSelectCallback, uisongsel);
-  uisongsel->uidance = uidanceDropDownCreate (hbox, parentwin,
+  uisongsel->uidance = uidanceCreate (hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
       UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END, 1);
   uidanceSetCallback (uisongsel->uidance,
@@ -318,196 +293,75 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->wcont [SONGSEL_W_BUTTON_FILTER] = uiwidgetp;
 
   uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hbox, vbox);
-
-  ssint->wcont [SONGSEL_W_SCROLLBAR] =
-      uiCreateVerticalScrollbar (uisongsel->dfilterCount);
-  uiBoxPackEnd (hbox, ssint->wcont [SONGSEL_W_SCROLLBAR]);
-  ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitDouble (
-      uisongselScroll, uisongsel);
-  uiScrollbarSetChangeCallback (ssint->wcont [SONGSEL_W_SCROLLBAR],
-      ssint->callbacks [SONGSEL_CB_SCROLL_CHG]);
-
-  ssint->wcont [SONGSEL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
-  uiWindowSetPolicyExternal (ssint->wcont [SONGSEL_W_SCROLL_WIN]);
-  uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_SCROLL_WIN]);
-  uiBoxPackStartExpand (vbox, ssint->wcont [SONGSEL_W_SCROLL_WIN]);
-
-  uiwidgetp = uiCreateTreeView ();
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
-  uiWidgetExpandVert (uiwidgetp);
-  uiTreeViewEnableHeaders (uiwidgetp);
-
-  /* all types of song selection will allow multiple selections */
-  uiTreeViewSelectSetMode (uiwidgetp, SELECT_MULTIPLE);
-
-  uiKeySetKeyCallback (ssint->wcont [SONGSEL_W_KEY_HNDLR], uiwidgetp,
-      ssint->callbacks [SONGSEL_CB_KEYB]);
-
-  uiTreeViewAttachScrollController (uiwidgetp, uisongsel->dfilterCount);
-  uiWindowPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uiwidgetp);
-
-  ssint->callbacks [SONGSEL_CB_ROW_CLICK] = callbackInitLong (
-        uisongselRowClickCallback, uisongsel);
-  uiTreeViewSetRowActivatedCallback (uiwidgetp,
-        ssint->callbacks [SONGSEL_CB_ROW_CLICK]);
-
-  ssint->callbacks [SONGSEL_CB_RIGHT_CLICK] = callbackInit (
-        uisongselRightClickCallback, uisongsel, NULL);
-  uiTreeViewSetButton3Callback (uiwidgetp,
-        ssint->callbacks [SONGSEL_CB_RIGHT_CLICK]);
-
-  ssint->callbacks [SONGSEL_CB_SCROLL_EVENT] = callbackInitLong (
-        uisongselScrollEvent, uisongsel);
-  uiTreeViewSetScrollEventCallback (uiwidgetp,
-        ssint->callbacks [SONGSEL_CB_SCROLL_EVENT]);
-  ssint->wcont [SONGSEL_W_TREE] = uiwidgetp;
-
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
+  ssint->sellist = sellist;
 
-  /* the mark display is a special case, it always exists */
-  col = SONGSEL_COL_MARK_MARKUP;
-  if (uisongsel->dispselType == DISP_SEL_MM) {
-    col = SONGSEL_COL_SAMESONG_MARKUP;
+  colidx = 0;
+  slistStartIterator (sellist, &iteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &iteridx)) >= 0) {
+    if (tagidx == TAG_FAVORITE) {
+      ssint->favcolumn = SONGSEL_COL_MAX + colidx;
+      break;
+    }
+    ++colidx;
   }
-  uiTreeViewAppendColumn (ssint->wcont [SONGSEL_W_TREE], TREE_NO_COLUMN,
-      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
-      TREE_COL_DISP_GROW, "",
-      TREE_COL_TYPE_MARKUP, col,
-      TREE_COL_TYPE_FONT, SONGSEL_COL_FONT,
-      TREE_COL_TYPE_END);
 
-  uitreedispAddDisplayColumns (
-      ssint->wcont [SONGSEL_W_TREE], sellist, SONGSEL_COL_MAX,
-      SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE,
-      TREE_NO_COLUMN, TREE_NO_COLUMN);
+  uivl = uivlCreate (uisongsel->tag, NULL, hbox, 7, 300, VL_ENABLE_KEYS);
+  ssint->uivl = uivl;
+  uivlSetUseListingFont (uivl);
+  uivlSetAllowMultiple (uivl);
+  uivlSetAllowDoubleClick (uivl);
 
-  uisongselInitializeStore (uisongsel);
-  ssint->maxRows = STORE_ROWS;
+  ssint->colcount = slistGetCount (sellist) + SONGSEL_COL_MAX;
+  uivlSetNumColumns (uivl, ssint->colcount);
 
-  uisongselCreateRows (uisongsel);
-  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: initial", uisongsel->tag);
-  uisongselProcessSongFilter (uisongsel);
+  uivlMakeColumn (uivl, "dbidx", SONGSEL_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
+  uivlMakeColumn (uivl, "mark", SONGSEL_COL_MARK, VL_TYPE_LABEL);
+  /* see comments in fill-mark */
+  uivlSetColumnClass (uivl, SONGSEL_COL_MARK, LIST_NO_DISP);
+  uivlSetColumnGrow (uivl, SONGSEL_COL_MARK, VL_COL_WIDTH_FIXED);
 
-  uidanceSetValue (uisongsel->uidance, -1);
+  uivlAddDisplayColumns (uivl, sellist, SONGSEL_COL_MAX);
 
-  ssint->callbacks [SONGSEL_CB_SEL_CHG] = callbackInit (
-      uisongselSelectionChgCallback, uisongsel, NULL);
-  uiTreeViewSetSelectChangedCallback (ssint->wcont [SONGSEL_W_TREE],
-      ssint->callbacks [SONGSEL_CB_SEL_CHG]);
+  uivlSetRowFillCallback (uivl, uisongselFillRow, ssint);
+  uivlSetNumRows (uivl, uisongsel->numrows);
 
-  ssint->callbacks [SONGSEL_CB_SZ_CHG] = callbackInitLong (
-      uisongselProcessTreeSize, uisongsel);
-  uiTreeViewSetSizeChangeCallback (ssint->wcont [SONGSEL_W_TREE],
-      ssint->callbacks [SONGSEL_CB_SZ_CHG]);
+  uivlDisplay (uivl);
+
+  uivlSetDoubleClickCallback (ssint->uivl, uisongselDoubleClickCallback, uisongsel);
+  uivlSetRowClickCallback (ssint->uivl, uisongselRowClickCallback, uisongsel);
+  uivlSetRightClickCallback (ssint->uivl, uisongselRightClickCallback, uisongsel);
+  uivlSetSelectChgCallback (ssint->uivl, uisongselProcessSelectChg, uisongsel);
+
+  uisongselApplySongFilter (uisongsel);
+  uidanceSetKey (uisongsel->uidance, -1);
 
   uiwcontFree (hbox);
-  uiwcontFree (vbox);
 
   logProcEnd ("");
   return ssint->wcont [SONGSEL_W_MAIN_VBOX];
 }
 
-void
-uisongselClearData (uisongsel_t *uisongsel)
-{
-  ss_internal_t   * ssint;
-
-  logProcBegin ();
-
-  ssint = uisongsel->ssInternalData;
-
-  uiTreeViewValueClear (ssint->wcont [SONGSEL_W_TREE], 0);
-
-  /* having cleared the list, the rows must be re-created */
-  uisongselCreateRows (uisongsel);
-  uiScrollbarSetPosition (ssint->wcont [SONGSEL_W_SCROLLBAR], 0.0);
-  logProcEnd ("");
-}
 
 void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
-  dbidx_t         idx;
-  int             row;
-  song_t          * song;
-  dbidx_t         dbidx;
-  const char      * listingFont;
-  slist_t         * sellist = NULL;
-  const char      * sscolor = ""; // "#000000";
 
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
-  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
-  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
 
   /* re-fetch the count, as the songfilter process may not have been */
   /* processed by this instance */
-  uisongsel->dfilterCount = (double) songfilterGetCount (uisongsel->songfilter);
+  uisongsel->numrows = songfilterGetCount (uisongsel->songfilter);
+  /* set-num-rows calls uivlpopulate */
+  uivlSetNumRows (ssint->uivl, uisongsel->numrows);
 
-  uiScrollbarSetUpper (ssint->wcont [SONGSEL_W_SCROLLBAR], uisongsel->dfilterCount);
-
-  row = 0;
-  idx = uisongsel->idxStart;
-  while (row < ssint->maxRows) {
-    char        colorbuff [200];
-
-    uiTreeViewValueIteratorSet (ssint->wcont [SONGSEL_W_TREE], row);
-
-    dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
-    song = NULL;
-    if (dbidx >= 0) {
-      song = dbGetByIdx (uisongsel->musicdb, dbidx);
-    }
-    if (song != NULL && (double) row < uisongsel->dfilterCount) {
-      *colorbuff = '\0';
-
-      if (uisongsel->dispselType != DISP_SEL_MM &&
-          uisongsel->songlistdbidxlist != NULL) {
-        /* check and see if the song is in the song list */
-        if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-          snprintf (colorbuff, sizeof (colorbuff),
-              "<span color=\"%s\">%s</span>", ssint->markcolor, MARK_DISPLAY);
-        }
-      }
-
-      if (uisongsel->dispselType == DISP_SEL_MM) {
-        const char *tsscolor;
-        tsscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
-        if (tsscolor != NULL) {
-          sscolor = tsscolor;
-          snprintf (colorbuff, sizeof (colorbuff),
-              "<span color=\"%s\">%s</span>", sscolor, MARK_DISPLAY);
-        }
-      }
-
-      uiTreeViewSetValueEllipsize (ssint->wcont [SONGSEL_W_TREE],
-          SONGSEL_COL_ELLIPSIZE);
-      uiTreeViewSetValues (ssint->wcont [SONGSEL_W_TREE],
-          SONGSEL_COL_FONT, listingFont,
-          SONGSEL_COL_IDX, (treenum_t) idx,
-          SONGSEL_COL_SORTIDX, (treenum_t) idx,
-          SONGSEL_COL_DBIDX, (treenum_t) dbidx,
-          SONGSEL_COL_MARK_MARKUP, colorbuff,
-          SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
-          TREE_VALUE_END);
-    }
-    /* song may or may not be null */
-    uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
-         uisongselPopulateDataCallback, uisongsel);
-
-    ++idx;
-    ++row;
-  }
-
-  uiTreeViewValueIteratorClear (ssint->wcont [SONGSEL_W_TREE]);
   logProcEnd ("");
 }
 
@@ -516,80 +370,41 @@ uisongselSelectCallback (void *udata)
 {
   uisongsel_t       *uisongsel = udata;
 
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
   /* only the song selection and side-by-side song selection have */
   /* a select button to queue to the song list */
   uisongselQueueHandler (uisongsel, UISONGSEL_MQ_NOTSET, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
   /* it's confusing for the user */
+  logProcEnd ("");
   return UICB_CONT;
-}
-
-void
-uisongselSetDefaultSelection (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-  int             count;
-
-  ssint = uisongsel->ssInternalData;
-
-  count = uiTreeViewSelectGetCount (ssint->wcont [SONGSEL_W_TREE]);
-  if (count < 1) {
-    uiTreeViewSelectFirst (ssint->wcont [SONGSEL_W_TREE]);
-  }
-
-  return;
-}
-
-void
-uisongselSetSelection (uisongsel_t *uisongsel, dbidx_t idx)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-
-  if (idx < 0) {
-    return;
-  }
-
-  uiTreeViewSelectSet (ssint->wcont [SONGSEL_W_TREE], idx);
-}
-
-void
-uisongselSetSelectionOffset (uisongsel_t *uisongsel, dbidx_t idx)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-
-  if (idx < 0) {
-    return;
-  }
-
-  uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
-  idx -= uisongsel->idxStart;
-
-  uiTreeViewSelectSet (ssint->wcont [SONGSEL_W_TREE], idx);
 }
 
 bool
 uisongselNextSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_NEXT, 1, UISONGSEL_MOVE_SE);
+  logProcBegin ();
+  uisongselMoveSelection (udata, UISONGSEL_NEXT);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
 bool
 uisongselPreviousSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS, 1, UISONGSEL_MOVE_SE);
+  logProcBegin ();
+  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
 bool
 uisongselFirstSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_FIRST, 0, UISONGSEL_MOVE_SE);
+  logProcBegin ();
+  uisongselMoveSelection (udata, UISONGSEL_FIRST);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -599,146 +414,72 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   ss_internal_t   *ssint;
   int             count;
   nlistidx_t      nidx = -1;
-  nlistidx_t      iteridx;
 
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
-  count = nlistGetCount (ssint->selectedList);
+  count = uivlSelectionCount (ssint->uivl);
   if (count != 1) {
+    logProcEnd ("no-sel");
     return -1;
   }
 
-  /* get the select location from the selected list, not from on-screen */
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  nidx = nlistIterateKey (ssint->selectedList, &iteridx);
+  uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+  nidx = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+  logProcEnd ("");
   return nidx;
 }
 
 bool
 uisongselApplySongFilter (void *udata)
 {
-  uisongsel_t *uisongsel = udata;
+  uisongsel_t     *uisongsel = udata;
+  ss_internal_t   *ssint;
 
-  uisongsel->dfilterCount = (double) songfilterProcess (
+  logProcBegin ();
+  ssint = uisongsel->ssInternalData;
+  ssint->inapply = true;
+
+  uidanceSetKey (uisongsel->uidance,
+      songfilterGetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX));
+
+  uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
 
-  /* the call to cleardata() will remove any selections */
-  /* afterwards, make sure something is selected */
-  uisongselClearData (uisongsel);
-  uisongselClearSelections (uisongsel);
   uisongselPopulateData (uisongsel);
 
-  /* the song filter has been processed, the peers need to be populated */
+  ssint->inapply = false;
 
-  /* if the song selection is displaying something else, do not */
-  /* update the peers */
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselClearData (uisongsel->peers [i]);
-    uisongselClearSelections (uisongsel->peers [i]);
-    uisongselPopulateData (uisongsel->peers [i]);
-  }
-
-  /* set the selection after the populate is done */
-
-  uisongselSetDefaultSelection (uisongsel);
-
+  logProcEnd ("");
   return UICB_CONT;
 }
 
 /* handles the dance drop-down */
 /* when a dance is selected, the song filter must be updated */
-/* call danceselectcallback to set all the peer drop-downs */
-/* will apply the filter */
+/* applies the song filter */
 void
 uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
 {
+  logProcBegin ();
   uisfSetDanceIdx (uisongsel->uisongfilter, danceIdx);
-  uisongselDanceSelectCallback (uisongsel, danceIdx);
+  uidanceSetKey (uisongsel->uidance, danceIdx);
   uisongselApplySongFilter (uisongsel);
+  logProcEnd ("");
 }
 
 /* callback for the song filter when the dance selection is changed */
-/* also used by DanceSelectHandler to set the peers dance drop-down */
 /* does not apply the filter */
 bool
-uisongselDanceSelectCallback (void *udata, long danceIdx)
+uisongselDanceSelectCallback (void *udata, int32_t danceIdx)
 {
   uisongsel_t *uisongsel = udata;
 
-  uidanceSetValue (uisongsel->uidance, danceIdx);
+  logProcBegin ();
 
-  if (uisongsel->ispeercall) {
-    return UICB_CONT;
-  }
+  uidanceSetKey (uisongsel->uidance, danceIdx);
 
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselDanceSelectCallback (uisongsel->peers [i], danceIdx);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
+  logProcEnd ("");
   return UICB_CONT;
-}
-
-void
-uisongselSaveSelections (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  if (ssint->selectedBackup != NULL) {
-    return;
-  }
-
-  ssint->selectedBackup = ssint->selectedList;
-  ssint->selectedList = nlistAlloc ("selected-list-save", LIST_ORDERED, NULL);
-
-  if (uisongsel->ispeercall) {
-    return;
-  }
-
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselSaveSelections (uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
-}
-
-void
-uisongselRestoreSelections (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  if (ssint->selectedBackup == NULL) {
-    return;
-  }
-
-  nlistFree (ssint->selectedList);
-  ssint->selectedList = ssint->selectedBackup;
-  ssint->selectedBackup = NULL;
-  uisongselScrollSelection (uisongsel, uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
-
-  if (uisongsel->ispeercall) {
-    return;
-  }
-
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselRestoreSelections (uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
 }
 
 bool
@@ -747,6 +488,7 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin ();
   /* only song selection, side-by-side song sel and music manager */
   /* have a play button */
   /* use the hidden manage playback music queue */
@@ -755,6 +497,7 @@ uisongselPlayCallback (void *udata)
   /* note that only the first of multiple selections */
   /* will use 'play', and the rest will be queued */
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_PLAY);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -763,6 +506,7 @@ uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active)
 {
   ss_internal_t  *ssint;
 
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
   /* if the player is active, disable the button */
@@ -771,6 +515,7 @@ uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active)
   } else {
     uiWidgetSetState (ssint->wcont [SONGSEL_W_BUTTON_PLAY], UIWIDGET_ENABLE);
   }
+  logProcEnd ("");
 }
 
 nlist_t *
@@ -778,27 +523,22 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
   nlist_t         *tlist;
-  nlistidx_t      iteridx;
+  nlistidx_t      vliteridx;
   dbidx_t         dbidx;
+  int32_t         rowidx;
 
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
   tlist = nlistAlloc ("selected-list-dbidx", LIST_UNORDERED, NULL);
-  nlistSetSize (tlist, nlistGetCount (ssint->selectedList));
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
+  nlistSetSize (tlist, uivlSelectionCount (ssint->uivl));
+  uivlStartSelectionIterator (ssint->uivl, &vliteridx);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
     nlistSetNum (tlist, dbidx, 0);
   }
   nlistSort (tlist);
+  logProcEnd ("");
   return tlist;
-}
-
-void
-uisongselClearAllUISelections (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  uiTreeViewSelectClearAll (ssint->wcont [SONGSEL_W_TREE]);
 }
 
 void
@@ -806,85 +546,146 @@ uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
 {
   ss_internal_t  *ssint;
 
+  logProcBegin ();
   if (uisongsel == NULL) {
+    logProcEnd ("bad-ss");
     return;
   }
 
   ssint = uisongsel->ssInternalData;
   uiLabelSetText (ssint->wcont [SONGSEL_W_REQ_QUEUE], txt);
+  logProcEnd ("");
+}
+
+void
+uisongselSetSelection (uisongsel_t *uisongsel, int32_t rowidx)
+{
+  ss_internal_t   *ssint;
+
+  logProcBegin ();
+  ssint = uisongsel->ssInternalData;
+  uivlSetSelection (ssint->uivl, rowidx);
+
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+  }
+
+  logProcEnd ("");
+}
+
+void
+uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer)
+{
+  ss_internal_t   *ssint;
+  uivirtlist_t    *vl_a;
+  uivirtlist_t    *vl_b;
+
+  if (uisongsel == NULL || peer == NULL) {
+    return;
+  }
+
+  logProcBegin ();
+  ssint = uisongsel->ssInternalData;
+  vl_a = ssint->uivl;
+
+  ssint = peer->ssInternalData;
+  vl_b = ssint->uivl;
+
+  if (vl_b == NULL) {
+    /* the peer has not yet been initialized, even though it may exist */
+    logProcEnd ("bad-peer");
+    return;
+  }
+
+  ssint = NULL;
+  uivlCopySelectList (vl_a, vl_b);
+  logProcEnd ("");
 }
 
 /* internal routines */
 
 static void
-uisongselClearSelections (uisongsel_t *uisongsel)
+uisongselMoveSelection (void *udata, int direction)
 {
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-
-  nlistFree (ssint->selectedList);
-  ssint->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
-  ssint->selectListKey = -1;
-}
-
-static bool
-uisongselScrollSelection (uisongsel_t *uisongsel, dbidx_t idxStart,
-    int scrollflag, int direction)
-{
+  uisongsel_t     *uisongsel = udata;
   ss_internal_t   *ssint;
-  bool            scrolled = false;
-  dbidx_t         oidx;
-  bool            idxchanged = false;
+  int             count;
 
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
-  oidx = uisongsel->idxStart;
+  count = uivlSelectionCount (ssint->uivl);
+  if (count == 0) {
+    logProcEnd ("no-sel");
+    return;
+  }
 
-  if (scrollflag == UISONGSEL_SCROLL_NORMAL &&
-      idxStart >= oidx &&
-      idxStart < oidx + ssint->maxRows + 1) {
-    if (direction == UISONGSEL_DIR_NONE) {
-      return false;
+  if (count > 1) {
+    /* need to be able to move forwards and backwards within the select-list */
+    /* do not change the virtual-list selection */
+
+    if (direction == UISONGSEL_FIRST) {
+      uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+      ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
     }
     if (direction == UISONGSEL_NEXT) {
-      if (idxStart < oidx + ssint->maxRows / 2) {
-        return false;
-      } else {
-        idxchanged = true;
-        uisongsel->idxStart += 1;
+      nlistidx_t  pkey;
+      nlistidx_t  piter;
+
+      pkey = ssint->selectListKey;
+      piter = ssint->vlSelectIter;
+
+      ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+      if (ssint->selectListKey < 0) {
+        /* remain on the current selection, keep the iterator intact */
+        ssint->selectListKey = pkey;
+        ssint->vlSelectIter = piter;
       }
     }
     if (direction == UISONGSEL_PREVIOUS) {
-      if (idxStart >= oidx + ssint->maxRows / 2 - 1) {
-        return false;
-      } else {
-        idxchanged = true;
-        uisongsel->idxStart -= 1;
+      ssint->selectListKey = uivlIterateSelectionPrevious (ssint->uivl, &ssint->vlSelectIter);
+      if (ssint->selectListKey < 0) {
+        /* reset to the beginning */
+        uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+        ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
+      }
+    }
+
+    if (uisongsel->newselcb != NULL) {
+      dbidx_t   dbidx;
+
+      dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+      if (dbidx >= 0) {
+        callbackHandlerI (uisongsel->newselcb, dbidx);
       }
     }
   }
-  if (! idxchanged) {
-    uisongsel->idxStart = idxStart;
-  }
 
-  uisongselScroll (uisongsel, (double) uisongsel->idxStart);
-
-  scrolled = true;
-  if (oidx == uisongsel->idxStart) {
-    scrolled = false;
+  /* if there is only a single selection, move the virtual-list selection */
+  if (count == 1) {
+    if (direction == UISONGSEL_FIRST) {
+      uivlSetSelection (ssint->uivl, 0);
+    }
+    if (direction == UISONGSEL_NEXT) {
+      uivlMoveSelection (ssint->uivl, VL_DIR_NEXT);
+    }
+    if (direction == UISONGSEL_PREVIOUS) {
+      uivlMoveSelection (ssint->uivl, VL_DIR_PREV);
+    }
   }
-  return scrolled;
+  logProcEnd ("");
 }
+
 
 static bool
 uisongselQueueCallback (void *udata)
 {
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin ();
   /* queues from the request listing to a music queue in the player */
   uisongselQueueHandler (uisongsel, UISONGSEL_MQ_NOTSET, UISONGSEL_QUEUE);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -892,15 +693,16 @@ static void
 uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 {
   ss_internal_t   * ssint;
-  nlistidx_t      iteridx;
+  nlistidx_t      vliteridx;
+  int32_t         rowidx;
   dbidx_t         dbidx;
 
   logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
-
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
+  uivlStartSelectionIterator (ssint->uivl, &vliteridx);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
     if (action == UISONGSEL_QUEUE) {
       uisongselQueueProcess (uisongsel, dbidx);
     }
@@ -915,695 +717,202 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 }
 
 /* count is not used */
-static int
-uisongselUIDanceSelectCallback (void *udata, long idx, int count)
+static bool
+uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t count)
 {
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: dance select");
   uisongselDanceSelectHandler (uisongsel, idx);
+  logProcEnd ("");
   return UICB_CONT;
 }
 
 static void
-uisongselInitializeStore (uisongsel_t *uisongsel)
+uisongselDoubleClickCallback (void *udata, uivirtlist_t *vl,
+    int32_t rownum, int colidx)
 {
-  ss_internal_t     * ssint;
-  slist_t           *sellist;
+  uisongsel_t   * uisongsel = udata;
 
   logProcBegin ();
 
-  ssint = uisongsel->ssInternalData;
-  ssint->typelist = mdmalloc (sizeof (int) * SONGSEL_COL_MAX);
-  ssint->colcount = 0;
-  ssint->typelist [SONGSEL_COL_ELLIPSIZE] = TREE_TYPE_ELLIPSIZE;
-  ssint->typelist [SONGSEL_COL_FONT] = TREE_TYPE_STRING;
-  ssint->typelist [SONGSEL_COL_IDX] = TREE_TYPE_NUM;
-  ssint->typelist [SONGSEL_COL_SORTIDX] = TREE_TYPE_NUM;
-  ssint->typelist [SONGSEL_COL_DBIDX] = TREE_TYPE_NUM;
-  ssint->typelist [SONGSEL_COL_MARK_MARKUP] = TREE_TYPE_STRING;
-  ssint->typelist [SONGSEL_COL_SAMESONG_MARKUP] = TREE_TYPE_STRING;
-  ssint->colcount = SONGSEL_COL_MAX;
-
-  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-  uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
-
-  uiTreeViewCreateValueStoreFromList (ssint->wcont [SONGSEL_W_TREE],
-      ssint->colcount, ssint->typelist);
-  mdfree (ssint->typelist);
-
-  logProcEnd ("");
-}
-
-static void
-uisongselInitializeStoreCallback (int type, void *udata)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  ssint->typelist = mdrealloc (ssint->typelist, sizeof (int) * (ssint->colcount + 1));
-  ssint->typelist [ssint->colcount] = type;
-  ++ssint->colcount;
-}
-
-
-static void
-uisongselCreateRows (uisongsel_t *uisongsel)
-{
-  ss_internal_t    *ssint;
-
-  logProcBegin ();
-
-  ssint = uisongsel->ssInternalData;
-  /* enough pre-allocated rows are needed so that if the windows is */
-  /* maximized and the font size is not large, enough rows are available */
-  /* to be displayed */
-  for (int i = 0; i < STORE_ROWS; ++i) {
-    uiTreeViewValueAppend (ssint->wcont [SONGSEL_W_TREE]);
+  /* double-click in the song selection or side-by-side */
+  /* song selection adds the song to the song list */
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
+    uisongselSelectCallback (uisongsel);
+  }
+  /* double-click in the music manager edits the song */
+  if (uisongsel->dispselType == DISP_SEL_MM) {
+    uisongselSongEditCallback (uisongsel);
+  }
+  /* double-click in the request window queues the song */
+  if (uisongsel->dispselType == DISP_SEL_REQUEST) {
+    uisongselQueueCallback (uisongsel);
   }
   logProcEnd ("");
 }
 
-static void
-uisongselProcessSongFilter (uisongsel_t *uisongsel)
-{
-  /* initial song filter process */
-  uisongsel->dfilterCount = (double) songfilterProcess (
-      uisongsel->songfilter, uisongsel->musicdb);
-}
 
-static bool
-uisongselRowClickCallback (void *udata, long col)
+static void
+uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
+    int32_t rownum, int colidx)
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
+  dbidx_t       dbidx;
+  song_t        *song;
 
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
-
-  /* double-click processing */
-  if (ssint->lastRowDBIdx == uisongsel->lastdbidx &&
-      ! mstimeCheck (&ssint->lastRowCheck)) {
-    /* double-click in the song selection or side-by-side */
-    /* song selection adds the song to the song list */
-    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-        uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
-      uisongselSelectCallback (uisongsel);
-    }
-    /* double-click in the music manager edits the song */
-    if (uisongsel->dispselType == DISP_SEL_MM) {
-      uisongselSongEditCallback (uisongsel);
-    }
-    /* double-click in the request window queues the song */
-    if (uisongsel->dispselType == DISP_SEL_REQUEST) {
-      uisongselQueueCallback (uisongsel);
-    }
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
   }
-  mstimeset (&ssint->lastRowCheck, TREE_DOUBLE_CLICK_TIME);
-  ssint->lastRowDBIdx = uisongsel->lastdbidx;
 
-  if (col == TREE_NO_COLUMN) {
+  if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
     logProcEnd ("not-fav-col");
-    return UICB_CONT;
+    return;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
-  uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
+  dbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+  if (dbidx < 0) {
+    logProcEnd ("bad-dbidx");
+    return;
+  }
+  song = dbGetByIdx (uisongsel->musicdb, dbidx);
+  if (song != NULL) {
+    songChangeFavorite (song);
+    if (uisongsel->songsavecb != NULL) {
+      callbackHandlerI (uisongsel->songsavecb, dbidx);
+    }
+  }
   logProcEnd ("");
-  return UICB_CONT;
+  return;
 }
 
-static bool
-uisongselRightClickCallback (void *udata)
+static void
+uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
+    int32_t rownum, int colidx)
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
-
-  logProcBegin ();
-
-  ssint = uisongsel->ssInternalData;
-  ssint->rightclick = true;
-
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-static bool
-uisongselProcessTreeSize (void *udata, long rows)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t   *ssint;
-
-  if (uisongsel->ispeercall) {
-    return UICB_CONT;
-  }
+  nlistidx_t    vlseliter;
+  int32_t       rowidx;
+  dbidx_t       dbidx;
 
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
 
-  ssint->maxRows = rows;
+  uivlStartSelectionIterator (ssint->uivl, &vlseliter);
+  while ((rowidx = uivlIterateSelection (ssint->uivl, &vlseliter)) >= 0) {
+    song_t      *song;
+    nlistidx_t  genreidx;
+    bool        clflag;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "%s max-rows:%d", uisongsel->tag, ssint->maxRows);
+    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
 
-  /* the step increment does not work correctly with smooth scrolling */
-  /* and it appears there's no easy way to turn smooth scrolling off */
-  uiScrollbarSetStepIncrement (ssint->wcont [SONGSEL_W_SCROLLBAR], 4.0);
-  uiScrollbarSetPageIncrement (ssint->wcont [SONGSEL_W_SCROLLBAR], (double) ssint->maxRows);
-  uiScrollbarSetPageSize (ssint->wcont [SONGSEL_W_SCROLLBAR], (double) ssint->maxRows);
+    song = dbGetByIdx (uisongsel->musicdb, dbidx);
+    genreidx = songGetNum (song, TAG_GENRE);
+    clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+    if (clflag) {
+      char        work [200];
+      nlistidx_t  end;
 
-  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: tree size change", uisongsel->tag);
-  uisongselPopulateData (uisongsel);
+      songGetClassicalWork (song, work, sizeof (work));
+      if (*work) {
+        char    twork [200];
 
-  /* neither queue_draw nor queue_resize on the tree */
-  /* does not help with the redraw issue */
-
-  /* this is necessary because gtk on windows has a bug where the */
-  /* music manager song-selection does not receive the size-allocate */
-  /* signal from gtk */
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselProcessTreeSize (uisongsel->peers [i], rows);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
-
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-static bool
-uisongselScroll (void *udata, double value)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t   *ssint;
-  double          start;
-  double          tval;
-
-  logProcBegin ();
-
-  if (uisongsel == NULL) {
-    return UICB_STOP;
-  }
-
-  ssint = uisongsel->ssInternalData;
-  if (ssint == NULL) {
-    return UICB_STOP;
-  }
-  if (ssint->inselectchgprocess) {
-    return UICB_STOP;
-  }
-
-  /* if even a tiny portion of the last row is visible, */
-  /* gtk will report the range as including that last row */
-  /* subtract 1 from maxrows to make sure the last row always gets displayed */
-
-  start = floor (value);
-  if (start < 0.0) {
-    start = 0.0;
-  }
-  tval = uisongsel->dfilterCount - (double) (ssint->maxRows - 1);
-  if (tval < 0) {
-    tval = 0;
-  }
-  if (start >= tval) {
-    start = tval;
-  }
-  uisongsel->idxStart = (dbidx_t) start;
-
-  ssint->inscroll = true;
-
-  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
-  uisongselPopulateData (uisongsel);
-  uiScrollbarSetPosition (ssint->wcont [SONGSEL_W_SCROLLBAR], value);
-  uisongselUpdateSelections (uisongsel);
-
-  ssint->inscroll = false;
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-static void
-uisongselUpdateSelections (uisongsel_t *uisongsel)
-{
-  nlistidx_t    idx;
-  nlistidx_t    iteridx;
-  ss_internal_t *ssint;
-
-  ssint = uisongsel->ssInternalData;
-
-  ssint->inselectchgprocess = true;
-
-  /* clear the current selections */
-  uisongselClearAllUISelections (uisongsel);
-
-  /* set the selections based on the saved selection list */
-  nlistStartIterator (ssint->selectedList, &iteridx);
-  while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
-    if (idx >= uisongsel->idxStart &&
-        idx < uisongsel->idxStart + ssint->maxRows) {
-      uiTreeViewSelectSet (ssint->wcont [SONGSEL_W_TREE],
-          idx - uisongsel->idxStart);
-
-      if (! uisongsel->ispeercall) {
-        for (int i = 0; i < uisongsel->peercount; ++i) {
-          if (uisongsel->peers [i] == NULL) {
-            continue;
+        end = uisongsel->numrows;
+        for (nlistidx_t i = rowidx + 1; i < end; ++i) {
+          dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
+          song = dbGetByIdx (uisongsel->musicdb, dbidx);
+          genreidx = songGetNum (song, TAG_GENRE);
+          clflag = genreGetClassicalFlag (ssint->genres, genreidx);
+          if (! clflag) {
+            break;
           }
-          uisongselSetPeerFlag (uisongsel->peers [i], true);
-          uisongselSetSelectionOffset (uisongsel->peers [i], idx);
-          uisongselSetPeerFlag (uisongsel->peers [i], false);
-        }
-      }
-    }
-  }
 
-  ssint->inselectchgprocess = false;
-}
+          songGetClassicalWork (song, twork, sizeof (twork));
+          if (*twork && strcmp (work, twork) == 0) {
+            uivlAppendSelection (ssint->uivl, i);
+          } else {
+            break;
+          }
+        }  /* check each following song for a matching classical work */
+      } /* if the classical song has a 'work' */
+    } /* if the song is classical */
+  } /* for each selection in the virtual list */
 
-static bool
-uisongselScrollEvent (void *udata, long dir)
-{
-  uisongsel_t     *uisongsel = udata;
-  int             ndir = UISONGSEL_NEXT;
-
-  logProcBegin ();
-
-  if (dir == TREE_SCROLL_NEXT) {
-    ndir = UISONGSEL_NEXT;
-  }
-  if (dir == TREE_SCROLL_PREV) {
-    ndir = UISONGSEL_PREVIOUS;
-  }
-  uisongselProcessScroll (uisongsel, ndir, 1);
+  uisongselProcessSelectChg (uisongsel, ssint->uivl, rownum, colidx);
 
   logProcEnd ("");
-  return UICB_STOP;
-}
-
-static void
-uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines)
-{
-  ss_internal_t  *ssint;
-  nlistidx_t      tval;
-
-  ssint = uisongsel->ssInternalData;
-
-  if (dir == UISONGSEL_NEXT) {
-    uisongsel->idxStart += lines;
-  }
-  if (dir == UISONGSEL_PREVIOUS) {
-    uisongsel->idxStart -= lines;
-  }
-
-  if (uisongsel->idxStart < 0) {
-    uisongsel->idxStart = 0;
-  }
-
-  tval = (nlistidx_t) uisongsel->dfilterCount - ssint->maxRows;
-  if (uisongsel->idxStart > tval) {
-    uisongsel->idxStart = tval;
-  }
-
-  uisongselScroll (uisongsel, (double) uisongsel->idxStart);
-
-  logProcEnd ("");
+  return;
 }
 
 static bool
 uisongselKeyEvent (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
-  ss_internal_t  *ssint;
+  ss_internal_t   *ssint;
+  uiwcont_t       *keyh;
 
+  logProcBegin ();
   if (uisongsel == NULL) {
+    logProcEnd ("bad-ss");
     return UICB_CONT;
   }
 
   ssint = uisongsel->ssInternalData;
+  keyh = uivlGetEventHandler (ssint->uivl);
 
-  if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (keyh) &&
+      uiEventIsAudioPlayKey (keyh)) {
     uisongselPlayCallback (uisongsel);
   }
 
-  if (uiKeyIsMovementKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    int     dir;
-    int     lines;
-
-    dir = UISONGSEL_DIR_NONE;
-    lines = 1;
-
-    if (uiKeyIsPressEvent (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-      if (uiKeyIsUpKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-        dir = UISONGSEL_PREVIOUS;
-      }
-      if (uiKeyIsDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-        dir = UISONGSEL_NEXT;
-      }
-      if (uiKeyIsPageUpDownKey (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-        lines = ssint->maxRows;
-      }
-
-      uisongselMoveSelection (uisongsel, dir, lines, UISONGSEL_MOVE_KEY);
-    }
-
-    /* movement keys are handled internally */
-    return UICB_STOP;
-  }
-
+  logProcEnd ("");
   return UICB_CONT;
 }
 
-static bool
-uisongselSelectionChgCallback (void *udata)
+static void
+uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
-  nlist_t           *tlist;
-  nlistidx_t        idx;
-  nlistidx_t        iteridx;
 
+  logProcBegin ();
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->inscroll) {
-    return UICB_CONT;
-  }
-  if (ssint->inselectchgprocess) {
-    return UICB_CONT;
-  }
-
-  if (ssint->selectedBackup != NULL &&
-      uisongsel->dispselType != DISP_SEL_MM) {
-    /* if the music manager is currently using the song list */
-    /* do not update the selection list for the music manager */
-    return UICB_CONT;
+  if (ssint->inapply) {
+    /* the apply-song-filter function will set the selection */
+    logProcEnd ("in-apply");
+    return;
   }
 
-  ssint->inselectchgprocess = true;
-
-  /* if neither the control key nor the shift key are pressed */
-  /* then this will be a new selection and not a modification */
-  tlist = nlistAlloc ("selected-list-chg", LIST_ORDERED, NULL);
-
-  /* clear the selections from the peers first */
-  if (! uisongsel->ispeercall) {
-    for (int i = 0; i < uisongsel->peercount; ++i) {
-      if (uisongsel->peers [i] == NULL) {
-        continue;
-      }
-      uisongselSetPeerFlag (uisongsel->peers [i], true);
-      uisongselClearSelections (uisongsel->peers [i]);
-      uisongselClearAllUISelections (uisongsel->peers [i]);
-      uisongselSetPeerFlag (uisongsel->peers [i], false);
-    }
+  if (uivlSelectionCount (ssint->uivl) == 1) {
+    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
   }
 
-  /* if the shift key is pressed, get the first and the last item */
-  /* in the selection list (both, as it is not yet known where */
-  /* the new selection is in relation). */
-  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    ssint->shiftfirstidx = -1;
-    ssint->shiftlastidx = -1;
-    nlistStartIterator (ssint->selectedList, &iteridx);
-    while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
-      if (ssint->shiftfirstidx == -1) {
-        ssint->shiftfirstidx = idx;
-      }
-      ssint->shiftlastidx = idx;
-    }
-  }
-
-  /* if the control-key is pressed, add any current */
-  /* selection that is not in view to the new selection list */
-  if (uiKeyIsControlPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    nlistStartIterator (ssint->selectedList, &iteridx);
-    while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
-      if (idx < uisongsel->idxStart ||
-          idx > uisongsel->idxStart + ssint->maxRows - 1) {
-        nlistSetNum (tlist, idx, nlistGetNum (ssint->selectedList, idx));
-      }
-    }
-  }
-
-  nlistFree (ssint->selectedList);
-  ssint->selectedList = tlist;
-
-  /* and now process the selections from gtk */
-  uiTreeViewSelectForeach (ssint->wcont [SONGSEL_W_TREE],
-      ssint->callbacks [SONGSEL_CB_SELECT_PROCESS]);
-
-  /* any time the selection is changed, re-start the edit iterator */
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
-  ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
-
-  /* update the current listing's selections */
-  uisongselUpdateSelections (uisongsel);
-
-  /* process the peers after the selections have been made */
-  if (! uisongsel->ispeercall) {
-    for (int i = 0; i < uisongsel->peercount; ++i) {
-      if (uisongsel->peers [i] == NULL) {
-        continue;
-      }
-      uisongselSetPeerFlag (uisongsel->peers [i], true);
-      uisongselScroll (uisongsel->peers [i], (double) uisongsel->idxStart);
-      uisongselSetPeerFlag (uisongsel->peers [i], false);
-    }
-  }
+  /* the selection has changed, reset the iterator and set the select key */
+  /* always set to the first in the list */
+  uivlStartSelectionIterator (ssint->uivl, &ssint->vlSelectIter);
+  ssint->selectListKey = uivlIterateSelection (ssint->uivl, &ssint->vlSelectIter);
 
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
-    /* the song editor points to the first selected */
-    dbidx = nlistGetNum (ssint->selectedList, ssint->selectListKey);
+    dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
     if (dbidx >= 0) {
-      callbackHandlerLong (uisongsel->newselcb, dbidx);
+      callbackHandlerI (uisongsel->newselcb, dbidx);
     }
   }
 
-  ssint->inselectchgprocess = false;
-  ssint->rightclick = false;
-  return UICB_CONT;
-}
-
-static bool
-uisongselProcessSelection (void *udata, long row)
-{
-  uisongsel_t       *uisongsel = udata;
-  ss_internal_t     *ssint;
-  nlistidx_t        idx;
-  dbidx_t           dbidx = -1;
-
-  ssint = uisongsel->ssInternalData;
-
-  idx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
-      SONGSEL_COL_IDX);
-
-  if (uiKeyIsShiftPressed (ssint->wcont [SONGSEL_W_KEY_HNDLR])) {
-    nlistidx_t    beg = 0;
-    nlistidx_t    end = -1;
-
-    if (idx <= ssint->shiftfirstidx) {
-      beg = idx;
-      end = ssint->shiftfirstidx;
-    }
-    if (idx >= ssint->shiftlastidx) {
-      beg = ssint->shiftlastidx;
-      end = idx;
-    }
-
-    for (nlistidx_t i = beg; i <= end; ++i) {
-      dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-      nlistSetNum (ssint->selectedList, i, dbidx);
-    }
-  } else {
-    dbidx = uiTreeViewSelectForeachGetValue (ssint->wcont [SONGSEL_W_TREE],
-        SONGSEL_COL_DBIDX);
-    nlistSetNum (ssint->selectedList, idx, dbidx);
-    if (ssint->rightclick) {
-      song_t      *song;
-      nlistidx_t  genreidx;
-      bool        clflag;
-
-      song = dbGetByIdx (uisongsel->musicdb, dbidx);
-      genreidx = songGetNum (song, TAG_GENRE);
-      clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-      if (clflag) {
-        char        work [200];
-        nlistidx_t  end;
-
-        songGetClassicalWork (song, work, sizeof (work));
-        if (*work) {
-          char    twork [200];
-
-          end = (nlistidx_t) uisongsel->dfilterCount;
-          for (nlistidx_t i = idx + 1; i < end; ++i) {
-            dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-            song = dbGetByIdx (uisongsel->musicdb, dbidx);
-            genreidx = songGetNum (song, TAG_GENRE);
-            clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-            if (! clflag) {
-              break;
-            }
-
-            songGetClassicalWork (song, twork, sizeof (twork));
-            if (*twork && strcmp (work, twork) == 0) {
-              nlistSetNum (ssint->selectedList, i, dbidx);
-            } else {
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  uisongsel->lastdbidx = dbidx;
-
-  return UICB_CONT;
-}
-
-static void
-uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  uitreedispSetDisplayColumn (ssint->wcont [SONGSEL_W_TREE], col, num, str);
-}
-
-
-static void
-uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t   *ssint;
-  int             count;
-  long            loc = -1;
-  dbidx_t         nidx;
-  bool            scrolled = false;
-
-  ssint = uisongsel->ssInternalData;
-
-  count = nlistGetCount (ssint->selectedList);
-
-  if (count == 0) {
-    return;
-  }
-
-  if (count > 1 && moveflag == UISONGSEL_MOVE_KEY) {
-    return;
-  }
-
-  if (count > 1) {
-    /* need to be able to move forwards and backwards within the select-list */
-    /* do not change the gtk selection */
-
-    if (direction == UISONGSEL_FIRST) {
-      nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
-      ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
-    }
-    if (direction == UISONGSEL_NEXT) {
-      nlistidx_t  pkey;
-      nlistidx_t  piter;
-
-      pkey = ssint->selectListKey;
-      piter = ssint->selectListIter;
-
-      ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
-      if (ssint->selectListKey < 0) {
-        /* remain on the current selection, keep the iterator intact */
-        ssint->selectListKey = pkey;
-        ssint->selectListIter = piter;
-      }
-    }
-    if (direction == UISONGSEL_PREVIOUS) {
-      ssint->selectListKey = nlistIterateKeyPrevious (ssint->selectedList, &ssint->selectListIter);
-      if (ssint->selectListKey < 0) {
-        /* reset to the beginning */
-        ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
-      }
-    }
-
-    uisongselScrollSelection (uisongsel, ssint->selectListKey, UISONGSEL_SCROLL_NORMAL, direction);
-    if (uisongsel->newselcb != NULL) {
-      dbidx_t   dbidx;
-
-      dbidx = nlistGetNum (ssint->selectedList, ssint->selectListKey);
-      if (dbidx >= 0) {
-        callbackHandlerLong (uisongsel->newselcb, dbidx);
-      }
-    }
-  }
-
-  if (count == 1) {
-    uiTreeViewSelectCurrent (ssint->wcont [SONGSEL_W_TREE]);
-    nidx = uisongselGetSelectLocation (uisongsel);
-    if (nidx < uisongsel->idxStart ||
-        nidx >= uisongsel->idxStart + ssint->maxRows) {
-      /* off-screen, scroll into view */
-      uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
-    }
-
-    loc = nidx - uisongsel->idxStart;
-
-    if (direction == UISONGSEL_FIRST) {
-      nidx = 0;
-      loc = 0;
-      scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
-      uiTreeViewSelectFirst (ssint->wcont [SONGSEL_W_TREE]);
-    }
-    if (direction == UISONGSEL_NEXT) {
-      while (lines > 0) {
-        ++nidx;
-        scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
-        if (! scrolled) {
-          long    idx;
-
-          idx = uiTreeViewGetValue (ssint->wcont [SONGSEL_W_TREE], SONGSEL_COL_IDX);
-          if (loc < ssint->maxRows - 1 &&
-              idx < (long) uisongsel->dfilterCount - 1) {
-            uiTreeViewSelectNext (ssint->wcont [SONGSEL_W_TREE]);
-            ++loc;
-          } else {
-            break;
-          }
-        }
-        --lines;
-      }
-    }
-    if (direction == UISONGSEL_PREVIOUS) {
-      while (lines > 0) {
-        --nidx;
-        scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
-        if (! scrolled) {
-          if (loc > 0) {
-            uiTreeViewSelectPrevious (ssint->wcont [SONGSEL_W_TREE]);
-            --loc;
-          } else {
-            break;
-          }
-        }
-        --lines;
-      }
-    }
-
-    /* works around gtk tree view issues where the prior */
-    /* selection is not cleared */
-    uiTreeViewSelectClear (ssint->wcont [SONGSEL_W_TREE]);
-
-    /* if the scroll was bumped, the iterator is still pointing to the same */
-    /* row (but a new dbidx), re-select it */
-    /* if the iter was moved, it is pointing at the new selection */
-    /* if the iter was not moved, the original must be re-selected */
-    uiTreeViewSelectSet (ssint->wcont [SONGSEL_W_TREE], loc);
-  }
+  logProcEnd ("");
+  return;
 }
 
 /* have to handle the case where the user switches tabs back to the */
@@ -1612,15 +921,122 @@ static bool
 uisongselSongEditCallback (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
-  long            dbidx;
+  dbidx_t         dbidx;
 
+
+  logProcBegin ();
   if (uisongsel->newselcb != NULL) {
     dbidx = uisongsel->lastdbidx;
     if (dbidx < 0) {
+      logProcEnd ("bad-dbidx");
       return UICB_CONT;
     }
-    callbackHandlerLong (uisongsel->newselcb, dbidx);
+    callbackHandlerI (uisongsel->newselcb, dbidx);
   }
+  logProcEnd ("");
   return callbackHandler (uisongsel->editcb);
 }
 
+static void
+uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+{
+  ss_internal_t       *ssint = udata;
+  uisongsel_t         *uisongsel = ssint->uisongsel;
+  song_t              *song;
+  nlist_t             *tdlist;
+  slistidx_t          seliteridx;
+  dbidx_t             dbidx;
+
+  logProcBegin ();
+
+  dbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
+  if (dbidx < 0) {
+    return;
+  }
+  song = dbGetByIdx (uisongsel->musicdb, dbidx);
+  if (song == NULL) {
+    return;
+  }
+
+  ssint->inchange = true;
+
+  uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
+
+  tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);
+  slistStartIterator (ssint->sellist, &seliteridx);
+  for (int colidx = SONGSEL_COL_MAX; colidx < ssint->colcount; ++colidx) {
+    int         tagidx;
+    const char  *str;
+
+    tagidx = slistIterateValueNum (ssint->sellist, &seliteridx);
+    str = nlistGetStr (tdlist, tagidx);
+    if (str == NULL) {
+      str = "";
+    }
+    uivlSetRowColumnStr (ssint->uivl, rownum, colidx, str);
+
+    if (tagidx == TAG_FAVORITE) {
+      songfav_t   *songfav;
+      int         favidx;
+      const char  *name;
+
+      songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+      favidx = songGetNum (song, TAG_FAVORITE);
+      name = songFavoriteGetStr (songfav, favidx, SONGFAV_NAME);
+      uivlSetRowColumnClass (ssint->uivl, rownum, colidx, name);
+    }
+  }
+  nlistFree (tdlist);
+
+  uisongselFillMark (uisongsel, ssint, dbidx, rownum);
+
+  ssint->inchange = false;
+  logProcEnd ("");
+}
+
+
+static void
+uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
+    dbidx_t dbidx, int32_t rownum)
+{
+  const char  *markstr = NULL;
+  const char  *sscolor = NULL;
+  const char  *classnm = NULL;
+
+  /* very strange windows/gtk bug */
+  /* symptom: scrollbar stops updating */
+  /* only seems to be an issue with the mark column, not other columns */
+  /* if the markstr is not static, the scrollbar stops */
+  /* working after one of the marks is turned off */
+  /* as a work-around, always set the markstr to the same value, */
+  /* and set the column class to bdj-nodisp */
+  /* i don't understand why this is happening */
+  markstr = ssint->marktext;
+
+  if (uisongsel->dispselType != DISP_SEL_MM &&
+      uisongsel->songlistdbidxlist != NULL) {
+    /* check and see if the song is in the song list */
+    if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
+      markstr = ssint->marktext;
+      classnm = MARK_CLASS;
+    }
+  }
+
+  if (uisongsel->dispselType == DISP_SEL_MM) {
+    sscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
+    if (sscolor != NULL) {
+      /* skip the leading # for the class name */
+      classnm = sscolor + 1;
+      if (slistGetNum (ssint->sscolorlist, sscolor) < 0) {
+        slistSetNum (ssint->sscolorlist, sscolor, 0);
+        uiLabelAddClass (classnm, sscolor);
+      }
+      markstr = ssint->marktext;
+    }
+  }
+
+  uivlSetRowColumnStr (ssint->uivl, rownum, SONGSEL_COL_MARK, markstr);
+  if (classnm != NULL) {
+    uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, classnm);
+  }
+}

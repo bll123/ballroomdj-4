@@ -12,7 +12,6 @@ extern "C" {
 
 uiwcont_t *uiCreateChangeIndicator (uiwcont_t *boxp);
 void  uichgindMarkNormal (uiwcont_t *uiwidget);
-void  uichgindMarkError (uiwcont_t *uiwidget);
 void  uichgindMarkChanged (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)

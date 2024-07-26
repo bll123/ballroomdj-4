@@ -54,7 +54,6 @@ typedef struct pli pli_t;
 
 pli_t         *pliInit (const char *plipkg, const char *plinm);
 void          pliFree (pli_t *pli);
-void          pliCleanup (dlhandle_t *dlHandle);
 void          pliMediaSetup (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
 void          pliPause (pli_t *pli);
@@ -69,6 +68,7 @@ plistate_t    pliState (pli_t *pli);
 int           pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
+
 const char    *pliStateText (pli_t *pli);
 ilist_t       *pliInterfaceList (void);
 

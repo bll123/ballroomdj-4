@@ -49,13 +49,14 @@ typedef struct manageseq {
   uiduallist_t    *seqduallist;
   uiwcont_t       *seqname;
   char            *seqoldname;
+  const char      *newseqname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
   bool            inload : 1;
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
-static long   manageSequenceLoadCB (void *udata, const char *fn);
+static int32_t manageSequenceLoadCB (void *udata, const char *fn);
 static bool   manageSequenceCopy (void *udata);
 static bool   manageSequenceNew (void *udata);
 static bool   manageSequenceDelete (void *udata);
@@ -77,12 +78,14 @@ manageSequenceAlloc (manageinfo_t *minfo)
   manageseq->inload = false;
   manageseq->seqloadcb = NULL;
   manageseq->seqnewcb = NULL;
+  /* CONTEXT: sequence editor: default name for a new sequence */
+  manageseq->newseqname = _("New Sequence");
   for (int i = 0; i < MSEQ_CB_MAX; ++i) {
     manageseq->callbacks [i] = NULL;
   }
 
   manageseq->callbacks [MSEQ_CB_SEL_FILE] =
-      callbackInitStr (manageSequenceLoadCB, manageseq);
+      callbackInitS (manageSequenceLoadCB, manageseq);
 
   return manageseq;
 }
@@ -90,16 +93,18 @@ manageSequenceAlloc (manageinfo_t *minfo)
 void
 manageSequenceFree (manageseq_t *manageseq)
 {
-  if (manageseq != NULL) {
-    uiwcontFree (manageseq->seqmenu);
-    uiduallistFree (manageseq->seqduallist);
-    dataFree (manageseq->seqoldname);
-    uiwcontFree (manageseq->seqname);
-    for (int i = 0; i < MSEQ_CB_MAX; ++i) {
-      callbackFree (manageseq->callbacks [i]);
-    }
-    mdfree (manageseq);
+  if (manageseq == NULL) {
+    return;
   }
+
+  uiwcontFree (manageseq->seqmenu);
+  uiduallistFree (manageseq->seqduallist);
+  dataFree (manageseq->seqoldname);
+  uiwcontFree (manageseq->seqname);
+  for (int i = 0; i < MSEQ_CB_MAX; ++i) {
+    callbackFree (manageseq->callbacks [i]);
+  }
+  mdfree (manageseq);
 }
 
 void
@@ -143,22 +148,25 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (30, 100);
   manageseq->seqname = uiwidgetp;
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  /* CONTEXT: sequence editor: default name for a new sequence */
-  manageSetSequenceName (manageseq, _("New Sequence"));
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  manageSetSequenceName (manageseq, manageseq->newseqname);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
+  /* CONTEXT: sequence editor: sequence name */
+  uiEntrySetValidate (manageseq->seqname, _("Sequence"),
+      uiutilsValidatePlaylistName,
       manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
-      DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
+      DL_FLAGS_MULTIPLE | DL_FLAGS_PERSISTENT,
       tagdefs [TAG_DANCE].displayname,
       /* CONTEXT: sequence editor: title for the sequence list  */
       _("Sequence"));
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
-  uiduallistSet (manageseq->seqduallist, dancelist, DUALLIST_TREE_SOURCE);
+  /* as the source list is persistent, it is ok to set it before */
+  /* setting the duallist target */
+  uiduallistSet (manageseq->seqduallist, dancelist, DL_LIST_SOURCE);
 
   uiwcontFree (hbox);
 
@@ -229,6 +237,7 @@ manageSequenceSave (manageseq_t *manageseq)
   char        nnm [MAXPATHLEN];
   char        *name;
   bool        changed = false;
+  bool        notvalid = false;
 
   logProcBegin ();
   if (manageseq->seqoldname == NULL) {
@@ -247,7 +256,14 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  name = manageGetEntryValue (manageseq->seqname);
+  notvalid = false;
+  if (uiEntryIsNotValid (manageseq->seqname)) {
+    mdfree (name);
+    name = mdstrdup (manageseq->seqoldname);
+    uiEntrySetValue (manageseq->seqname, manageseq->seqoldname);
+    notvalid = true;
+  }
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
@@ -278,9 +294,16 @@ manageSequenceSave (manageseq_t *manageseq)
   playlistCheckAndCreate (name, PLTYPE_SEQUENCE);
   slistFree (slist);
   if (manageseq->seqloadcb != NULL) {
-    callbackHandlerStr (manageseq->seqloadcb, name);
+    callbackHandlerS (manageseq->seqloadcb, name);
   }
   mdfree (name);
+
+  if (notvalid) {
+    /* set the message after the entry field has been reset */
+    /* CONTEXT: Saving Sequence: Error message for invalid sequence name. */
+    uiLabelSetText (manageseq->minfo->errorMsg, _("Invalid name. Using old name."));
+  }
+
   logProcEnd ("");
 }
 
@@ -298,7 +321,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     return;
   }
 
-  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  name = manageGetEntryValue (manageseq->seqname);
 
   if (! sequenceExists (name)) {
     /* make sure no save happens */
@@ -307,7 +330,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     manageSequenceNew (manageseq);
   } else {
     if (manageseq->seqloadcb != NULL) {
-      callbackHandlerStr (manageseq->seqloadcb, name);
+      callbackHandlerS (manageseq->seqloadcb, name);
     }
   }
   mdfree (name);
@@ -355,13 +378,13 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
     dstr = nlistGetStr (dancelist, didx);
     slistSetNum (tlist, dstr, didx);
   }
-  uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistSet (manageseq->seqduallist, tlist, DL_LIST_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
 
   manageSetSequenceName (manageseq, fn);
   if (manageseq->seqloadcb != NULL && preloadflag == MANAGE_STD) {
-    callbackHandlerStr (manageseq->seqloadcb, fn);
+    callbackHandlerS (manageseq->seqloadcb, fn);
   }
 
   sequenceFree (seq);
@@ -387,7 +410,7 @@ manageSequenceLoad (void *udata)
   return UICB_CONT;
 }
 
-static long
+static int32_t
 manageSequenceLoadCB (void *udata, const char *fn)
 {
   manageseq_t *manageseq = udata;
@@ -409,7 +432,7 @@ manageSequenceCopy (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
-  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
+  oname = manageGetEntryValue (manageseq->seqname);
 
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -418,7 +441,7 @@ manageSequenceCopy (void *udata)
     manageseq->seqbackupcreated = false;
     uiduallistClearChanged (manageseq->seqduallist);
     if (manageseq->seqloadcb != NULL) {
-      callbackHandlerStr (manageseq->seqloadcb, newname);
+      callbackHandlerS (manageseq->seqloadcb, newname);
     }
   }
   mdfree (oname);
@@ -437,12 +460,11 @@ manageSequenceNew (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
   manageSequenceSave (manageseq);
 
-  /* CONTEXT: sequence editor: default name for a new sequence */
-  snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
+  strlcpy (tbuff, manageseq->newseqname, sizeof (tbuff));
   manageSetSequenceName (manageseq, tbuff);
   manageseq->seqbackupcreated = false;
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
-  uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistSet (manageseq->seqduallist, tlist, DL_LIST_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
   if (manageseq->seqnewcb != NULL) {
@@ -460,8 +482,8 @@ manageSequenceDelete (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
-  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
-  manageDeletePlaylist (manageseq->minfo->errorMsg, oname);
+  oname = manageGetEntryValue (manageseq->seqname);
+  manageDeletePlaylist (manageseq->minfo->statusMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
   mdfree (oname);

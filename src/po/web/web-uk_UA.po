@@ -1,0 +1,113 @@
+# == Українська
+# -- ukranian
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: uk\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "Усім користувачам BallroomDJ рекомендується перейти на BallroomDJ 4"
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - програвач бальної музики"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4 (BDJ4) - це музичний програвач, призначений для настільних і портативних комп'ютерів (і буде працювати на деяких планшетах). Він розроблений таким чином, щоб мати можливість відтворювати музику протягом усього вечора без будь-якого втручання."
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - програвач бальної музики"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "BallroomDJ на pro-linux.de"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJ був попереднім програвачем бальної музики. Він більше не підтримується."
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 на freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "Особливості BDJ4"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "Форум BDJ4"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4 легко налаштовується і надає можливості для організації музики для бальних танців та створення списків пісень, автоматичних списків відтворення і послідовних списків відтворення."
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4 працює на Windows, MacOS та Linux."
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 Вікі"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "Журнал змін"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "Пожертвувати"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "Пожертвуйте на програмні проекти, які використовує BDJ4:"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "Завантажити BallroomDJ 3"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "Завантажити BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "Допоможіть перекласти BallroomDJ 4"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "остання версія"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "Меню"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "Інші сайти, де можна знайти оголошення про випуск BallroomDJ 4:"
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (кнопка пожертвувати вгорі)"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "Пожертвувати на BDJ4"
+

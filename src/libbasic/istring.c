@@ -127,29 +127,6 @@ istringToLower (char *str)
   }
 }
 
-void
-istringToUpper (char *str)
-{
-  UErrorCode  status = U_ZERO_ERROR;
-  char        *dest = NULL;
-  size_t      sz;
-  size_t      rsz;
-
-  if (ucsm == NULL) {
-    return;
-  }
-
-  sz = strlen (str);
-  ++sz;
-  dest = mdmalloc (sz + 1);
-  *dest = '\0';
-  rsz = ucasemap_utf8ToUpper (ucsm, dest, sz + 1, str, sz, &status);
-  if (rsz <= sz && status == U_ZERO_ERROR) {
-    strlcpy (str, dest, sz);
-    mdfree (dest);
-  }
-}
-
 char *
 istring16ToUTF8 (wchar_t *instr)
 {

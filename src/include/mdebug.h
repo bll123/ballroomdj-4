@@ -4,6 +4,8 @@
 #ifndef INC_MDEBUG_H
 #define INC_MDEBUG_H
 
+#include <stdint.h>
+
 #define MDEBUG_ENABLE_BACKTRACE 0
 
 #if defined (BDJ4_MEM_DEBUG)
@@ -55,8 +57,8 @@ void mdebugReport (void);
 void mdebugInit (const char *tag);
 void mdebugSubTag (const char *tag);
 void mdebugCleanup (void);
-long mdebugCount (void);
-long mdebugErrors (void);
+int32_t mdebugCount (void);
+int32_t mdebugErrors (void);
 void mdebugSetVerbose (void);
 void mdebugSetNoOutput (void);
 #if MDEBUG_ENABLE_BACKTRACE

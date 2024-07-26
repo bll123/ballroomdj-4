@@ -120,19 +120,20 @@ enum {
 
 enum {
   START_W_WINDOW,
-  START_W_STATUS_DISP,
-  START_W_STATUS_MSG,
-  START_W_STATUS_DISP_MSG,
-  START_W_PROFILE_ACCENT,
-  START_W_SUPPORT_DIALOG,
-  START_W_SUPPORT_MSG_DIALOG,
-  START_W_SUPPORT_SEND_FILES,
-  START_W_SUPPORT_SEND_DB,
   START_W_MENU_DEL_PROFILE,
-  START_W_SUPPORT_TEXTBOX,
-  START_W_SUPPORT_SUBJECT,
-  START_W_SUPPORT_EMAIL,
+  START_W_PROFILE_ACCENT,
   START_W_PROFILE_SEL,
+  START_W_STATUS_DISP,
+  START_W_STATUS_DISP_MSG,
+  START_W_STATUS_MSG,
+  START_W_SUPPORT_DIALOG,
+  START_W_SUPPORT_EMAIL,
+  START_W_SUPPORT_MSG_DIALOG,
+  START_W_SUPPORT_SEND_DB,
+  START_W_SUPPORT_SEND_FILES,
+  START_W_SUPPORT_STATUS_MSG,
+  START_W_SUPPORT_SUBJECT,
+  START_W_SUPPORT_TEXTBOX,
   START_W_MAX,
 };
 
@@ -269,10 +270,10 @@ static bool     starterCreateProfileShortcut (void *udata);
 static void     starterSupportInit (startui_t *starter);
 static bool     starterProcessSupport (void *udata);
 static void     starterSupportDialogClear (startui_t *starter);
-static bool     starterSupportResponseHandler (void *udata, long responseid);
+static bool     starterSupportResponseHandler (void *udata, int32_t responseid);
 static bool     starterCreateSupportMsgDialog (void *udata);
 static void     starterSupportMsgDialogClear (startui_t *starter);
-static bool     starterSupportMsgHandler (void *udata, long responseid);
+static bool     starterSupportMsgHandler (void *udata, int32_t responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
 
@@ -283,14 +284,14 @@ static bool     starterDownloadLinkHandler (void *udata);
 static bool     starterWikiLinkHandler (void *udata);
 static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
-static void     starterLinkHandler (startui_t *starter, int cbidx);
+static void     starterLinkHandler (startui_t *starter, int32_t cbidx);
 
 static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterStartAltInst (void *udata);
 static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
-static int      starterValidateEmail (uiwcont_t *entry, void *udata);
+static int      starterValidateEmail (uiwcont_t *entry, const char *label, void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -368,9 +369,9 @@ main (int argc, char *argv[])
 
   starter.callbacks [START_CB_SEND_SUPPORT] = callbackInit (
       starterCreateSupportMsgDialog, &starter, NULL);
-  starter.callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
+  starter.callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitI (
       starterSupportMsgHandler, &starter);
-  starter.callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
+  starter.callbacks [START_CB_SUPPORT_RESP] = callbackInitI (
       starterSupportResponseHandler, &starter);
   starter.callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
       starterCreateProfileShortcut, &starter, NULL);
@@ -421,8 +422,12 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+      bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
   starterBuildUI (&starter);
   osuiFinalize ();
@@ -598,19 +603,24 @@ starterBuildUI (startui_t  *starter)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  if (isMacOS ()) {
+    /* macos has a bug where the starter window does not have the proper */
+    /* right margin */
+    uiWidgetSetMarginEnd (vbox, 6);
+  }
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  starter->wcont [START_W_PROFILE_ACCENT] = accent.label;
+  starter->wcont [START_W_PROFILE_ACCENT] = accent.cbox;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_MSG] = uiwidgetp;
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartExpand (hbox, menubar);
   uiwcontFree (hbox);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
@@ -1404,10 +1414,10 @@ starterProcessSupport (void *udata)
   /* status message line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_DISP_MSG] = uiwidgetp;
 
@@ -1605,7 +1615,7 @@ starterSupportDialogClear (startui_t *starter)
 
 
 static bool
-starterSupportResponseHandler (void *udata, long responseid)
+starterSupportResponseHandler (void *udata, int32_t responseid)
 {
   startui_t *starter = udata;
 
@@ -1906,10 +1916,21 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* profile color line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
   uiwcontFree (accent.hbox);
 
   /* line 1 */
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  starter->wcont [START_W_SUPPORT_STATUS_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* line 2 */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -1922,7 +1943,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiEntryInit (50, 100);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp, starterValidateEmail, starter, UIENTRY_DELAYED);
+  /* CONTEXT: starterui: sending support message: user's e-mail address */
+  uiEntrySetValidate (uiwidgetp, _("E-Mail Address"),
+      starterValidateEmail, starter, UIENTRY_DELAYED);
 
   uiwcontFree (hbox);
 
@@ -1950,7 +1973,7 @@ starterCreateSupportMsgDialog (void *udata)
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (tb));
+  uiBoxPackStartExpand (vbox, tb);
   starter->wcont [START_W_SUPPORT_TEXTBOX] = tb;
 
   /* line 5 */
@@ -1967,7 +1990,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (vbox, uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   starter->wcont [START_W_STATUS_DISP] = uiwidgetp;
 
   starter->wcont [START_W_SUPPORT_MSG_DIALOG] = uidialog;
@@ -2009,7 +2032,7 @@ starterSupportMsgDialogClear (startui_t *starter)
 
 
 static bool
-starterSupportMsgHandler (void *udata, long responseid)
+starterSupportMsgHandler (void *udata, int32_t responseid)
 {
   startui_t   *starter = udata;
 
@@ -2024,6 +2047,11 @@ starterSupportMsgHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      if (uiEntryIsNotValid (starter->wcont [START_W_SUPPORT_EMAIL])) {
+        /* CONTEXT: Send support message: Error message for invalid e-mail. */
+        uiLabelSetText (starter->wcont [START_W_SUPPORT_STATUS_MSG], _("Invalid E-Mail Address."));
+        break;
+      }
       starter->startState = START_STATE_SUPPORT_INIT;
       break;
     }
@@ -2163,7 +2191,7 @@ starterTicketLinkHandler (void *udata)
 }
 
 static void
-starterLinkHandler (startui_t *starter, int cbidx)
+starterLinkHandler (startui_t *starter, int32_t cbidx)
 {
   char        *uri;
   char        tmp [200];
@@ -2255,7 +2283,7 @@ starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int route
 }
 
 static int
-starterValidateEmail (uiwcont_t *entry, void *udata)
+starterValidateEmail (uiwcont_t *entry, const char *label, void *udata)
 {
   startui_t   *starter = udata;
   const char  *email;

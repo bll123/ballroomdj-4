@@ -6,7 +6,7 @@
 
 #include "callback.h"
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 enum {
   SELFILE_PLAYLIST,

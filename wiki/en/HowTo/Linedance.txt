@@ -8,6 +8,9 @@ Line dances present a unique problem.  During a dance event, you might
 want to play a few line dances.  But for the next dance event, a
 different selection of line dances is wanted.
 
+Line dances also present a management issue.  You may not want to add
+a new dance to the list of dances every time you add a new line dance.
+
 If a song list is created manually
 ([Subjects&nbsp;/&nbsp;Song&nbsp;List](en-Subjects-Song%20List)), this
 is not so much of a problem.  The DJ can pick and choose the line
@@ -32,7 +35,7 @@ For the purposes of this example, the line dance will just be named
 _LD_ to keep it short.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-B.png)
+![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-C.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 ##### Setting up the Line Dances (Marquee Display)
@@ -53,10 +56,10 @@ the name of the line dance.
 In the [Music&nbsp;Manager](en-Manage-Music%20Manager), select line
 dances in the dance drop-down (_LD_ in this example).  All of the line
 dances will be listed.  The _Marquee&nbsp;Display_ will be listed next
-to the dance (available in version 4.7.0).
+to the dance (available starting with version 4.7.0).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-A.png)
+![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 ##### Adding Line Dances to an Automatic Playlist
@@ -70,7 +73,7 @@ load the automatic playlist to change.  Turn on the line dance (_LD_
 in this example) and set the count to the number of dances you want.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-auto-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-auto-pl-A.png)
+![ld-auto-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-auto-pl-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 ##### Marquee
@@ -83,4 +86,4 @@ on the marquee instead of the dance.
 <br><span style="color:#4559bf;">__Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 14:06:46; BDJ4 version 4.11.0)_

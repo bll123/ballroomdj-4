@@ -4,8 +4,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -13,8 +15,8 @@
 #include "log.h"
 #include "musicdb.h"
 #include "playlist.h"
-#include "tmutil.h"
 #include "uimusicq.h"
+#include "uiplaylist.h"
 #include "ui.h"
 
 void
@@ -33,25 +35,24 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
     if (count > 1) {
       msg = MSG_QUEUE_DANCE_5;
     }
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d", ci, MSG_ARGS_RS, idx);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, ci, MSG_ARGS_RS, idx);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, msg, tbuff);
   }
   logProcEnd ("");
 }
 
 void
-uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, nlistidx_t idx)
+uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, const char *fn)
 {
   int           ci;
-  char          tbuff [200];
+  char          tbuff [300];
 
   logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
-  if (idx >= 0) {
-    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), ci,
-        uiDropDownGetString (uimusicq->ui [ci].playlistsel), EDIT_FALSE);
+  if (fn != NULL) {
+    msgbuildQueuePlaylist (tbuff, sizeof (tbuff), ci, fn, EDIT_FALSE);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
   logProcEnd ("");
@@ -63,9 +64,8 @@ uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_TOP, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_TOP, tbuff);
 }
 
 void
@@ -74,7 +74,7 @@ uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   logProcEnd ("");
 }
@@ -85,7 +85,7 @@ uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_DOWN, tbuff);
 }
 
@@ -94,7 +94,7 @@ uimusicqTogglePause (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char        tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_TOGGLE_PAUSE, tbuff);
 }
@@ -105,7 +105,7 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
   char        tbuff [40];
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
 }
@@ -113,38 +113,23 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 void
 uimusicqSwap (uimusicq_t *uimusicq, int mqidx)
 {
-  char        tbuff [100];
+  char          tbuff [100];
+  uimusicqui_t  *mqui;
 
-  if (uimusicq->ui [mqidx].prevSelection < 0 ||
-      uimusicq->ui [mqidx].currSelection < 0 ||
-      uimusicq->ui [mqidx].prevSelection >= uimusicq->ui [mqidx].count ||
-      uimusicq->ui [mqidx].currSelection >= uimusicq->ui [mqidx].count ||
-      uimusicq->ui [mqidx].prevSelection == uimusicq->ui [mqidx].currSelection) {
+  mqui = &uimusicq->ui [mqidx];
+  if (mqui->prevSelection < 0 ||
+      mqui->currSelection < 0 ||
+      mqui->prevSelection >= mqui->rowcount ||
+      mqui->currSelection >= mqui->rowcount ||
+      mqui->prevSelection == mqui->currSelection) {
     return;
   }
 
   uimusicq->changed = true;
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", mqidx,
-      MSG_ARGS_RS, uimusicq->ui [mqidx].prevSelection + 1,
-      MSG_ARGS_RS, uimusicq->ui [mqidx].currSelection + 1);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
+      MSG_ARGS_RS, mqui->prevSelection,
+      MSG_ARGS_RS, mqui->currSelection);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_SWAP, tbuff);
-}
-
-void
-uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
-{
-  int               ci;
-  slist_t           *plList;
-
-
-  logProcBegin ();
-
-  ci = uimusicq->musicqManageIdx;
-
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
-  uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
-  slistFree (plList);
-  logProcEnd ("");
 }
 
 void
@@ -152,7 +137,7 @@ uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx)
 {
   char          tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
 }
 
@@ -160,33 +145,15 @@ void
 uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   char          tbuff [80];
+  char          tmp [40];
 
-  /* clear the playlist queue and music queue, current playing song */
+  snprintf (tmp, sizeof (tmp), "%d", mqidx);
+  /* clear the playlist queue and music queue */
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
   /* and insert the new song */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",
-      mqidx, MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
-}
-
-void
-uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
-{
-  if (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] != NULL) {
-    callbackHandlerLongInt (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx, mqidx);
-  }
-}
-
-void
-uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)
-{
-  uimusicq->ispeercall = val;
-}
-
-bool
-uimusicqSaveListCallback (void *udata, long dbidx)
-{
-  uimusicq_t  *uimusicq = udata;
-
-  nlistSetStr (uimusicq->savelist, dbidx, NULL);
-  return UICB_CONT;
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32,
+      mqidx, MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  /* any play the next song */
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG_PLAY, NULL);
 }

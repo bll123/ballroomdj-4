@@ -6,11 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "bdj4arg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -102,7 +105,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();
@@ -196,7 +199,7 @@ dbReadEntry (rafile_t *radb, rafileidx_t rrn)
   *data = '\0';
   rc = raRead (radb, rrn, data);
   if (rc != 1) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %d", rrn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %" PRId32, rrn);
   }
   if (rc == 0 || ! *data) {
     return NULL;

@@ -5,7 +5,7 @@
 #define INC_UISTATUS_H
 
 #include "callback.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uistatus uistatus_t;
 

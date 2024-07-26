@@ -6,7 +6,7 @@
 
 Supported Platforms as of 2023-3-15: Linux 64-bit.
 
-* Distributions that have been tested (as of 2024-1).
+* Distributions that have been tested (as of 2024-5).
     * Debian based (MX Linux, Ubuntu, etc.)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
@@ -55,9 +55,14 @@ Open a terminal and run this script using the following command:
 This script performs the following actions:
 
 * Installs the required software used by BallroomDJ 4.
-  (vlc, ffmpeg, libcurl, flac, libopusfile, etc.).
+  (libvlc, ffmpeg, libcurl, flac, libopusfile, etc.).
 * Adds the user to the 'audio' group.
 * If pulseaudio is installed, sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
+
+Note: Currently, libVLC is installed, but the Linux installation may be
+configured to use GStreamer, and libVLC is not necessary.  The GStreamer
+interface has not received as much real-world testing as the libVLC
+interface.
 
 ##### Install BallroomDJ 4
 
@@ -68,13 +73,13 @@ Download the Linux installer from sourceforge.
 Choose the appropriate installer.
 <br>The Debian 11 installer is built on MX Linux 21.
 <br>The Debian 12 installer is built on MX Linux 23.
-<br>The OpenSUSE installer is built on OpenSUSE 15.5.
+<br>The OpenSUSE installer is built on OpenSUSE 15.6.
 
-For Arch-based distributions, BDJ4 will need to be built manually.  I
-cannot create software packages for moving targets.
+For RedHat and Arch-based distributions, BDJ4 will need to be built
+manually.  I cannot create software packages for moving targets.
 
 If you have a Linux distribution where BDJ4 fails to work, or want
-supported please [let me know](Getting%20Help). For the Linux
+supported, please [let me know](Getting%20Help). For the Linux
 distributions that do not have a pre-built installer, I can check to
 make sure that the build works and that BDJ4 works.
 
@@ -86,8 +91,8 @@ Open a terminal and run the installer:
 
     :::bash
     cd Downloads
-    chmod a+rx bdj4-installer-linux-debian12-4.8.0
-    ./bdj4-installer-linux-debian12-4.8.0
+    chmod a+rx bdj4-installer-linux-debian12-4.11.0
+    ./bdj4-installer-linux-debian12-4.11.0
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
 folder will be pre-selected for you.
@@ -113,4 +118,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_

@@ -1,0 +1,113 @@
+# == 简体中文‬
+# -- chinese/cn
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2023-09-27\n"
+"PO-Revision-Date: 2024-07-16 09:41\n"
+"Last-Translator: manually generated\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: web-en_GB.po\n"
+"X-Crowdin-File-ID: 141\n"
+
+#. CONTEXT: website : ballroomdj 3 information text
+msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
+msgstr "敦促 BallroomDJ 的所有用户转换到 BallroomDJ 4"
+
+#. CONTEXT: website : title, description
+msgid "BallroomDJ 4 - Ballroom Music Player"
+msgstr "BallroomDJ 4 - 舞厅音乐播放器"
+
+#. CONTEXT: website : descriptive text A
+msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
+msgstr "BallroomDJ 4 (BDJ4) 是一款专为台式机和笔记本电脑设计的音乐播放器（也可在某些平板电脑上使用）。它的设计目的是能够在没有任何干预的情况下播放整晚的音乐。"
+
+#. CONTEXT: website : image alt-text for main logo
+msgid "BallroomDJ 4 - The Ballroom Music Player"
+msgstr "BallroomDJ 4 - 舞厅音乐播放器"
+
+#. CONTEXT: website : resource link
+msgid "BallroomDJ at pro-linux.de"
+msgstr "BallroomDJ at pro-linux.de"
+
+#. CONTEXT: website : ballroomdj 3 descriptive text
+msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
+msgstr "BallroomDJ 是之前的舞厅音乐播放器。现在已不再支持。"
+
+#. CONTEXT: website : resource link
+msgid "BDJ4 at freshcode.club"
+msgstr "BDJ4 at freshcode.club"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Features"
+msgstr "BDJ4 功能"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Forum"
+msgstr "BDJ4 论坛"
+
+#. CONTEXT: website : descriptive text B
+msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
+msgstr "BDJ4 可高度自定义，提供组织舞厅音乐、创建歌曲列表、自动播放列表和顺序播放列表的功能。"
+
+#. CONTEXT: website : descriptive text C
+msgid "BDJ4 runs on Windows, MacOS and Linux."
+msgstr "BDJ4 可在 Windows、MacOS 和 Linux 上运行。"
+
+#. CONTEXT: website : link
+msgid "BDJ4 Wiki"
+msgstr "BDJ4 维基百科"
+
+#. CONTEXT: website : link
+msgid "Change Log"
+msgstr "更改日志"
+
+#. CONTEXT: website : menu item
+msgid "Donate"
+msgstr "捐赠"
+
+#. CONTEXT: website : donation description
+msgid "Donate to software projects that BDJ4 uses:"
+msgstr "为 BDJ4 使用的软件项目捐款："
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 3"
+msgstr "下载 BallroomDJ 3"
+
+#. CONTEXT: website : link
+msgid "Download BallroomDJ 4"
+msgstr "下载 BallroomDJ 4"
+
+#. CONTEXT: website : link to crowdin
+msgid "Help Translate BallroomDJ 4"
+msgstr "帮助翻译 BallroomDJ 4"
+
+#. CONTEXT: website : information text
+msgid "latest version"
+msgstr "最新版本"
+
+#. CONTEXT: website : image alt-text for menu
+msgid "Menu"
+msgstr "菜单"
+
+#. CONTEXT: website : information text
+msgid "Other sites where BallroomDJ 4 release announcements can be found:"
+msgstr "可以找到 BallroomDJ 4 发布公告的其他网站："
+
+#. CONTEXT: website : donate information text
+msgid " (donate button at very top)"
+msgstr " (捐款按钮位于最上方）"
+
+#. CONTEXT: website : donate text
+msgid "Donate to BDJ4"
+msgstr "捐助 BDJ4"
+

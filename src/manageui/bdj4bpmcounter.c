@@ -194,8 +194,12 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+      bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
   bpmcounterBuildUI (&bpmcounter);
   osuiFinalize ();
@@ -351,7 +355,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   /* instructions */
   uiwcontFree (hbox);
@@ -390,11 +394,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    if (i <= BPMCOUNT_DISP_BPM) {
-      uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
-    } else {
-      uiwidgetp = uiCreateLabel (bpmcounter->disptxt [i]);
-    }
+    uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
     bpmcounter->dispwidget [i] = uiwidgetp;

@@ -1,8 +1,8 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGTK_H
-#define INC_UIGTK_H
+#ifndef INC_UI_GTK3_H
+#define INC_UI_GTK3_H
 
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
@@ -13,6 +13,7 @@ enum {
   UICB_DISPLAY_OFF = false,
   UICB_CONVERTED = true,
   UICB_NOT_CONVERTED = false,
+  UICB_CONVERT_FAIL = -1,       // GTK_INPUT_ERROR
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,
@@ -23,4 +24,4 @@ enum {
   UI_FOREACH_CONT = false,
 };
 
-#endif /* INC_UIGTK_H */
+#endif /* INC_UI_GTK3_H */

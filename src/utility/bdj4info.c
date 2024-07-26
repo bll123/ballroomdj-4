@@ -30,9 +30,11 @@
 #include "osenv.h"
 #include "sysvars.h"
 
-const char *envitems [] = {
+static const char *envitems [] = {
   "DESKTOP_SESSION",
+  "DYLD_FALLBACK_LIBRARY_PATH",
   "GDK_SCALE",
+  "G_FILENAME_ENCODING",
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
@@ -46,6 +48,7 @@ const char *envitems [] = {
   "USER",
   "USERNAME",
   "USERPROFILE",
+  "VLC_PLUGIN_PATH",
   "XDG_CACHE_HOME",
   "XDG_CONFIG_HOME",
   "XDG_CURRENT_DESKTOP",
@@ -65,16 +68,18 @@ main (int argc, char *argv [])
   const char  *targ;
 
   static struct option bdj_options [] = {
-    { "bdj4info",   no_argument,        NULL,   0 },
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "datatopdir", required_argument,  NULL,   't' },
+    { "bdj4info",     no_argument,        NULL,   0 },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "datatopdir",   required_argument,  NULL,   't' },
     /* ignored */
-    { "nodetach",     no_argument,      NULL,   0 },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "scale",        required_argument,NULL,   0 },
-    { "theme",        required_argument,NULL,   0 },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "nodetach",     no_argument,        NULL,   0 },
     { "origcwd",      required_argument,  NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
+    { "pli",          required_argument,  NULL,   0 },
+    { "wait",         no_argument,        NULL,   0 },
+    { NULL,           0,                  NULL,   0 }
   };
 
 #if BDJ4_MEM_DEBUG
@@ -112,7 +117,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
 
   fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
@@ -135,10 +140,15 @@ main (int argc, char *argv [])
   fprintf (stdout, " c: atomics %d\n", c);
   fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 #if BDJ4_USE_GTK3
+  fprintf (stdout, "ui: GTK3\n");
+#endif
+#if BDJ4_USE_GTK4
+  fprintf (stdout, "ui: GTK4\n");
+#endif
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
   fprintf (stdout, " i: glong %d\n", (int) sizeof (glong));
-  fprintf (stdout, "ui: GTK3\n");
 #endif
 #if BDJ4_USE_NULLUI
   fprintf (stdout, "ui: null\n");

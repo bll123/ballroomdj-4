@@ -34,7 +34,7 @@ have the selected rating or better.
 
 ##### Song Selection with the Song Editor or Audio Identification
 
-When a song is selected in
+When switching to the Music Manager from
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
 edit button is used, the music manager will automatically set the
 filter to use the loaded playlist.  The filter dialog will show the
@@ -47,15 +47,15 @@ switch to the song editor.  The __Next__ and __Previous__ buttons
 will traverse the songs in the song list, as the music manager's
 filter has been set to use the loaded playlist.
 
-When a song is selected in the song selection tab, or the edit button
-is used in the song selection tab, the music manager will
-automatically use the filters set in song selection. The song editor
-can then be used to traverse the songs that have been selected.
+When switching to the Music Manager from the song selection tab, or
+the edit button is used in the song selection tab, the music manager
+will automatically use the filters set in song selection. The song
+editor can then be used to traverse the songs that have been selected.
 
 If you have a listing loaded in the music manager, multiple songs may
 be selected (using control-click or shift-click).  When multiple songs
 are selected in the music manager, the song editor will traverse the
-selected songs, and not the entire listing.
+selected songs, not the entire listing.
 
 The __First__, __Next__, and __Previous__ previous buttons in
 [Audio&nbsp;Identification](en-Management-Audio%20Identification)
@@ -71,23 +71,23 @@ will also act upon the Music&nbsp;Manager's current selection.
 
 __Actions&nbsp;/&nbsp;Mark as Same Song__ will mark the
 selected songs as the same song.
-<br>
-(See [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks))
+<br>__References:__
+<br>[Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)
 
 __Actions&nbsp;/&nbsp;Clear Same Song Mark__ will clear the
 same song markers from the selected songs.
-<br>
-(See [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks))
+<br>__References:__
+<br>[Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)
 
 __Actions&nbsp;/&nbsp;Remove&nbsp;Song__ will remove a song from the
 database.
-<br>
-(See [Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs))
+<br>__References:__
+<br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
 
 __Actions&nbsp;/&nbsp;Undo&nbsp;Song&nbsp;Removal__ will undo any
 pending song removals.
-<br>
-(See [Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs))
+<br>__References:__
+<br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
 
 ##### Same Song Marks
 
@@ -98,12 +98,12 @@ different artists.
 For example, if you have a copy of __Sway__ by __Michael Bublé__
 and also a copy of __Sway__ by __Pussy Cat Dolls__, these can be
 marked as the same song.
-
-(See also [Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)).
+<br>__References:__
+<br>[Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-same-song](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-same-song-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Same Song Marks__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 11:23:36; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

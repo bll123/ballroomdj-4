@@ -27,7 +27,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
-#define DBSET_CLEAR "xclearx"
+static const char * const DBSET_CLEAR = "xclearx";
 
 int
 main (int argc, char *argv [])
@@ -57,6 +57,7 @@ main (int argc, char *argv [])
     { "tdbsetval",    no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
     { "wait",         no_argument,      NULL,   0, },
+    { "pli",          required_argument, NULL,   0, },
     { "nodetach",     no_argument,      NULL,   0, },
     { "verbose",      no_argument,      NULL,   'V', },
     { "origcwd",      required_argument,  NULL,   0 },
@@ -88,7 +89,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
   tagdefInit ();

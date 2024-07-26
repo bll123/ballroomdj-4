@@ -1,0 +1,31 @@
+# levels
+# 2022-8-4
+# version 1
+version
+..1
+count
+..3
+KEY
+..0
+LEVEL
+..Lätt
+DEFAULT
+..0
+WEIGHT
+..50
+KEY
+..1
+LEVEL
+..Normal
+DEFAULT
+..1
+WEIGHT
+..40
+KEY
+..2
+LEVEL
+..Avancerad
+DEFAULT
+..0
+WEIGHT
+..10

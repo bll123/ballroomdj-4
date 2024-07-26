@@ -11,7 +11,7 @@ add_executable (bdj4manageui
   managedb.c
   managemisc.c
   managepl.c
-  managepltree.c
+  managepldance.c
   manageseq.c
   managestats.c
 )

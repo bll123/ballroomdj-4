@@ -22,7 +22,8 @@ uiwcontAlloc (void)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = WCONT_T_UNKNOWN;
   uiwidget->wtype = WCONT_T_UNKNOWN;
-  uiwidget->widget = NULL;
+  uiwidget->uidata.widget = NULL;
+  uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->uiint.voidwidget = NULL;    // union
   return uiwidget;
 }
@@ -48,7 +49,6 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_CHGIND] = "CHGIND",
   [WCONT_T_COLOR_BUTTON] = "COLOR_BUTTON",
   [WCONT_T_DIALOG_WINDOW] = "DIALOG_WINDOW",
-  [WCONT_T_DROPDOWN] = "DROPDOWN",
   [WCONT_T_ENTRY] = "ENTRY",
   [WCONT_T_FONT_BUTTON] = "FONT_BUTTON",
   [WCONT_T_IMAGE] = "IMAGE",
@@ -81,14 +81,13 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_TEXT_BOX] = "TEXT_BOX",
   [WCONT_T_TEXT_BUFFER] = "TEXT_BUFFER",
   [WCONT_T_TOGGLE_BUTTON] = "TOGGLE_BUTTON",
-  [WCONT_T_TREE] = "TREE",
   [WCONT_T_UNKNOWN] = "unknown",
   [WCONT_T_WINDOW] = "WINDOW",
 };
 
 /* for debugging */
 const char *
-uiwcontDesc (int wtype)
+uiwcontDesc (int wtype)   /* KEEP */
 {
   if (wtype < 0 || wtype >= WCONT_T_MAX) {
     return "invalid";

@@ -1,3 +1,6 @@
+/*
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
+ */
 #ifndef INC_GSTI_H
 #define INC_GSTI_H
 
@@ -16,7 +19,6 @@ void gstiPause (gsti_t *gsti);
 void gstiPlay (gsti_t *gsti);
 void gstiStop (gsti_t *gsti);
 bool gstiSetPosition (gsti_t *gsti, int64_t pos);
-bool gstiSetVolume (gsti_t *gsti, double vol);
 bool gstiSetRate (gsti_t *gsti, double rate);
 
 #endif /* INC_GSTI_H */

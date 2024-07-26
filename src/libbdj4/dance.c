@@ -42,6 +42,7 @@ enum {
 
 static void danceConvSpeed (datafileconv_t *conv);
 static void danceConvTimeSig (datafileconv_t *conv);
+static void danceCreateDanceList (dance_t *dances);
 
 /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [] = {
@@ -75,12 +76,8 @@ static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
 dance_t *
 danceAlloc (const char *altfname)
 {
-  dance_t     *dance;
+  dance_t     *dances;
   char        fname [MAXPATHLEN];
-  const char  *val;
-  int         key;
-  ilistidx_t  iteridx;
-  bool        fixbpm;
 
   if (altfname != NULL) {
     strlcpy (fname, altfname, sizeof (fname));
@@ -93,55 +90,31 @@ danceAlloc (const char *altfname)
     return NULL;
   }
 
-  dance = mdmalloc (sizeof (dance_t));
+  dances = mdmalloc (sizeof (dance_t));
 
-  dance->path = mdstrdup (fname);
-  dance->danceList = NULL;
+  dances->path = mdstrdup (fname);
+  dances->danceList = NULL;
 
-  dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
+  dances->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, dancedfcount, DF_NO_OFFSET, NULL);
-  dance->dances = datafileGetList (dance->df);
+  dances->dances = datafileGetList (dances->df);
 
-  fixbpm = false;
-  if (ilistGetVersion (dance->dances) == DANCE_BPM_VERSION) {
-    fixbpm = true;
-  }
+  danceCreateDanceList (dances);
 
-  dance->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
-  slistSetSize (dance->danceList, ilistGetCount (dance->dances));
-
-  ilistStartIterator (dance->dances, &iteridx);
-  while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
-    val = ilistGetStr (dance->dances, key, DANCE_DANCE);
-    slistSetNum (dance->danceList, val, key);
-
-    if (fixbpm) {
-      int   tval;
-
-      tval = ilistGetNum (dance->dances, key, DANCE_MPM_HIGH);
-      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
-      ilistSetNum (dance->dances, key, DANCE_MPM_HIGH, tval);
-
-      tval = ilistGetNum (dance->dances, key, DANCE_MPM_LOW);
-      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
-      ilistSetNum (dance->dances, key, DANCE_MPM_LOW, tval);
-    }
-  }
-  slistSort (dance->danceList);
-  slistCalcMaxKeyWidth (dance->danceList);
-
-  return dance;
+  return dances;
 }
 
 void
-danceFree (dance_t *dance)
+danceFree (dance_t *dances)
 {
-  if (dance != NULL) {
-    dataFree (dance->path);
-    datafileFree (dance->df);
-    slistFree (dance->danceList);
-    mdfree (dance);
+  if (dances == NULL) {
+    return;
   }
+
+  dataFree (dances->path);
+  datafileFree (dances->df);
+  slistFree (dances->danceList);
+  mdfree (dances);
 }
 
 void
@@ -243,23 +216,23 @@ danceGetDanceList (dance_t *dances)
 void
 danceConvDance (datafileconv_t *conv)
 {
-  dance_t   *dance;
+  dance_t   *dances;
   ssize_t   num;
 
   if (conv == NULL) {
     return;
   }
 
-  dance = bdjvarsdfGet (BDJVDF_DANCES);
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
-    num = slistGetNum (dance->danceList, conv->str);
+    num = slistGetNum (dances->danceList, conv->str);
     conv->num = num;
   } else if (conv->invt == VALUE_NUM) {
     conv->outvt = VALUE_STR;
     num = conv->num;
-    conv->str = ilistGetStr (dance->dances, num, DANCE_DANCE);
+    conv->str = ilistGetStr (dances->dances, num, DANCE_DANCE);
   }
 }
 
@@ -280,6 +253,7 @@ danceSave (dance_t *dances, ilist_t *list, int newdistvers)
   }
   ilistSetVersion (list, DANCE_DF_VERSION);
   datafileSave (dances->df, NULL, list, DF_NO_OFFSET, distvers);
+  danceCreateDanceList (dances);
 }
 
 void
@@ -412,3 +386,39 @@ danceConvTimeSig (datafileconv_t *conv)
   }
 }
 
+static void
+danceCreateDanceList (dance_t *dances)
+{
+  ilistidx_t  iteridx;
+  int         key;
+  bool        fixbpm = false;
+
+  if (ilistGetVersion (dances->dances) == DANCE_BPM_VERSION) {
+    fixbpm = true;
+  }
+
+  slistFree (dances->danceList);
+  dances->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
+  slistSetSize (dances->danceList, ilistGetCount (dances->dances));
+
+  ilistStartIterator (dances->dances, &iteridx);
+  while ((key = ilistIterateKey (dances->dances, &iteridx)) >= 0) {
+    const char  *val;
+
+    val = ilistGetStr (dances->dances, key, DANCE_DANCE);
+    slistSetNum (dances->danceList, val, key);
+
+    if (fixbpm) {
+      int   tval;
+
+      tval = ilistGetNum (dances->dances, key, DANCE_MPM_HIGH);
+      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
+      ilistSetNum (dances->dances, key, DANCE_MPM_HIGH, tval);
+
+      tval = ilistGetNum (dances->dances, key, DANCE_MPM_LOW);
+      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
+      ilistSetNum (dances->dances, key, DANCE_MPM_LOW, tval);
+    }
+  }
+  slistSort (dances->danceList);
+}

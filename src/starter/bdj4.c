@@ -56,6 +56,7 @@ main (int argc, char * argv[])
   int       rc;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  const char  *vlctag = "VLC";
 
   static struct option bdj_options [] = {
     { "aesed",          no_argument,        NULL,   30 },
@@ -86,6 +87,7 @@ main (int argc, char * argv[])
     { "ttagdbchk",      no_argument,        NULL,   27 },
     { "uitest",         no_argument,        NULL,   31 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
+    { "vlcversion",     no_argument,        NULL,   32 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
@@ -111,6 +113,7 @@ main (int argc, char * argv[])
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
+    { "pli",            required_argument,  NULL,   'P' },
     { "wait",           no_argument,        NULL,   'w' },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
@@ -151,7 +154,7 @@ main (int argc, char * argv[])
 
   bdj4arg = bdj4argInit (argc, argv);
 
-#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
+#if BDJ4_GUI_LAUNCHER && (BDJ4_USE_GTK3 || BDJ4_USE_GTK4)
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
   gtk_init (&argc, NULL);
@@ -160,8 +163,8 @@ main (int argc, char * argv[])
   prog = "bdj4starterui";  // default
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ);
-#if BDJ4_USE_GTK3
+  sysvarsInit (targ, SYSVARS_FLAG_BASIC);
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
   }
@@ -359,6 +362,13 @@ main (int argc, char * argv[])
         ++validargs;
         break;
       }
+      case 32: {
+        prog = "vlcversion";
+        nodetach = false;
+        wait = true;
+        ++validargs;
+        break;
+      }
       case 'c': {
         forcenodetach = true;
         break;
@@ -384,7 +394,7 @@ main (int argc, char * argv[])
       case 'T': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
           osSetEnv ("GTK_THEME", targ);
 #endif
         }
@@ -392,10 +402,14 @@ main (int argc, char * argv[])
         break;
       }
       case 'S': {
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
         osSetEnv ("GDK_SCALE", optarg);
 #endif
         havescale = true;
+        break;
+      }
+      case 'P': {
+        vlctag = bdj4argGet (bdj4arg, optind - 1, optarg);
         break;
       }
       default: {
@@ -430,7 +444,7 @@ main (int argc, char * argv[])
     }
   }
 
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   osSetEnv ("GTK_CSD", "0");
 #endif
 
@@ -459,10 +473,55 @@ main (int argc, char * argv[])
   }
 
   if (isMacOS ()) {
-    osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
-        "/Applications/VLC.app/Contents/MacOS/lib/");
-    osSetEnv ("VLC_PLUGIN_PATH",
-        "/Applications/VLC.app/Contents/MacOS/plugins");
+    char    pbuff [MAXPATHLEN];
+    char    tbuff [MAXPATHLEN];
+    bool    foundvlc = false;
+
+    /* players other than vlc may need a different setup */
+
+    /* determine the location of VLC, /Applications or $HOME/Applications */
+    snprintf (tbuff, sizeof (tbuff),
+          "/Applications/%s.app", vlctag);
+    if (fileopIsDirectory (tbuff)) {
+      foundvlc = true;
+    } else {
+      snprintf (tbuff, sizeof (tbuff),
+          "%s/Applications/%s.app", sysvarsGetStr (SV_HOME), vlctag);
+      if (fileopIsDirectory (tbuff)) {
+        foundvlc = true;
+      }
+    }
+
+    if (! foundvlc) {
+      fprintf (stderr, "ERR: Unable to locate VLC\n");
+    }
+
+    if (foundvlc) {
+      /* determine if this is vlc-3 or vlc-4 */
+      /* vlc-3 has the library in ../Contents/MacOS/lib */
+      /* vlc-4 has the library in ../Contents/Frameworks */
+      /* note that 'tbuff' currently has the main path */
+
+      strlcpy (pbuff, tbuff, sizeof (pbuff));
+
+      if (sysvarsGetNum (SVL_VLC_VERSION) == 3) {
+        /* VLC 3 */
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/MacOS/lib/", pbuff);
+        osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/MacOS/plugins", pbuff);
+        osSetEnv ("VLC_PLUGIN_PATH", tbuff);
+      }
+
+      if (sysvarsGetNum (SVL_VLC_VERSION) == 4) {
+        /* VLC 4 */
+        snprintf (tbuff, sizeof (tbuff), "%s/Contents/Frameworks", pbuff);
+        osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH", tbuff);
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Contents/Frameworks/plugins", pbuff);
+        osSetEnv ("VLC_PLUGIN_PATH", tbuff);
+      }
+    }
+
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 
@@ -493,7 +552,8 @@ main (int argc, char * argv[])
     }
 
     /* do not use double quotes w/environment var */
-    strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
+    snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", vlctag);
+    strlcat (path, tbuff, sz);
     strlcat (path, ";", sz);
     strlcat (path, getenv ("PATH"), sz);
 
@@ -503,7 +563,7 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 #endif
 
@@ -521,7 +581,7 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
       osSetEnv ("GTK_THEME", buff);
 #endif
       havetheme = true;
@@ -539,28 +599,26 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
       osSetEnv ("GDK_SCALE", buff);
 #endif
       havescale = true;
     }
   }
 
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
   if (! havetheme && isWindows ()) {
-#if BDJ4_USE_GTK3
     osSetEnv ("GTK_THEME", "Windows-10-Dark");
-#endif
   }
   if (! havetheme && isMacOS ()) {
-#if BDJ4_USE_GTK3
     osSetEnv ("GTK_THEME", "Mojave-dark-solid");
-#endif
   }
+#endif
 
   /* launch the program */
 
   if (debugself) {
-#if BDJ4_USE_GTK3
+#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));

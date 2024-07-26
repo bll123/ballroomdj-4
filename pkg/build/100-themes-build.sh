@@ -40,6 +40,13 @@ if [[ $pkgname == "" || $pkgname = "themes" ]]; then
         mv "$tn" "$nn"
       fi
     done
+    for tn in ../plocal/share/themes/*; do
+      for d in cinnamon gnome-shell gtk-2.0 metacity-1 plank openbox-3 unity xfce-notify-4.0 xfwm4; do
+        if [[ -d "$tn/$d" ]]; then
+          rm -rf "$tn/$d"
+        fi
+      done
+    done
   fi
 fi
 

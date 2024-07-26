@@ -4,9 +4,15 @@
 
 These items are not configurable via the user interface.
 
+###### data/dancetypes.txt
+
+Specifies the types of dances that may be selected.
+The defaults are standard, latin and club.
+
 ###### data/bdjconfig.txt
 
  * CLOCKDISP : Clock Display
+    The default is "local".
     * local
       standard display
     * iso
@@ -25,20 +31,42 @@ These items are not configurable via the user interface.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
 <br><span style="color:#4559bf;">__Fade Types__</span> </div>
+    The default is "triangle".
   * MQ_INFO_SEP
     Separator character(s) for the marquee information display.
+    The default is a slash (/).
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
+    Must be specified as #rrggbb.
+    The default is #444444 (dark grey).
   * MQ_TEXT_COL
     Marquee Text Color.
+    Must be specified as #rrggbb.
+    The default is #000000 (black).
   * PLAYER_UI_SEP
-    Separator character(s) for the player currently-playing display.
+    Separator character(s) for the player song display.
+    The default is a colon (:).
   * UI_ERROR_COL
     User Interface Error Color.
     The color of error messages.
+    Must be specified as #rrggbb.
+    The default is #ff2222.
   * UI_MARK_COL
     User Interface Mark Color.
     The color for the request list in-queue mark.
+    Must be specified as #rrggbb.
+    The default is #2222ff.
+  * UI_MARK_TEXT
+    The character(s) to use to display the mark.
+    The default is a left-five-eights box.
+  * UI_ROWSEL_COL
+    Row selection color.  The default is a darker accent color.
+    Must be specified as #rrggbb.
+    To use the default, leave the setting empty.
+  * UI_ROW_HL_COL
+    Row highlight color.  The default is a dark accent color.
+    Must be specified as #rrggbb.
+    To use the default, leave the setting empty.
 
 ###### data/favorites.txt
 
@@ -57,4 +85,4 @@ display. [Contact](en-Getting%20Help) the developers for more
 information.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-18 17:05:25; BDJ4 version 4.8.3)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

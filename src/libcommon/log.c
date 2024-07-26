@@ -19,17 +19,17 @@
 #endif
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "dirop.h"
+#include "filemanip.h"
+#include "fileop.h"
+#include "fileshared.h"
 #include "log.h"
 #include "mdebug.h"
-#include "tmutil.h"
-#include "fileop.h"
-#include "filemanip.h"
-#include "fileshared.h"
 #include "pathbld.h"
 #include "pathinfo.h"
 #include "player.h"
-#include "bdjstring.h"
+#include "tmutil.h"
 
 /* for debugging and for test suite */
 static const char *playerstateTxt [PL_STATE_MAX] = {
@@ -86,6 +86,18 @@ logClose (logidx_t idx)
 
   fileSharedClose (l->fhandle);
   l->opened = 0;
+}
+
+void
+rlogStartProgram (const char *prog, const char *fn, int line, const char *func)
+{
+  char      tdt [40];
+
+  if (! logCheck (LOG_DBG, LOG_IMPORTANT)) {
+    return;
+  }
+  tmutilDstamp (tdt, sizeof (tdt));
+  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line, func, "=== %s started %s pid %ld", prog, tdt, (long) getpid ());
 }
 
 void
@@ -199,17 +211,17 @@ logSetLevel (logidx_t idx, loglevel_t level, const char *processtag)
 /* these routines act upon all open logs */
 
 void
-logStart (const char *processnm, const char *processtag, loglevel_t level)
+logStart (const char *prog, const char *processtag, loglevel_t level)
 {
   logInit ();
-  rlogStart (processnm, processtag, FILE_OPEN_TRUNCATE, level);
+  rlogStart (prog, processtag, FILE_OPEN_TRUNCATE, level);
 }
 
 void
-logStartAppend (const char *processnm, const char *processtag, loglevel_t level)
+logStartAppend (const char *prog, const char *processtag, loglevel_t level)
 {
   logInit ();
-  rlogStart (processnm, processtag, FILE_OPEN_APPEND, level);
+  rlogStart (prog, processtag, FILE_OPEN_APPEND, level);
 }
 
 void
@@ -251,7 +263,7 @@ logCheck (logidx_t idx, loglevel_t level)
 
 /* for debugging */
 const char *
-logPlstateDebugText (playerstate_t plstate)
+logPlayerState (playerstate_t plstate)
 {
   if (plstate < 0 || plstate >= PL_STATE_MAX) {
     return "invalid";
@@ -274,15 +286,18 @@ enum {
   LOG_BACKTRACE_SIZE = 30,
 };
 
+#if 0 /* for debugging */
 void
-logBacktraceHandler (int sig)
+logBacktraceHandler (int sig)     /* KEEP */
 {
   logBacktrace ();
   exit (1);
 }
+#endif
 
+#if 0 /* for debugging */
 void
-logBacktrace (void)
+logBacktrace (void) /* KEEP */
 {
 #if _lib_backtrace
   void    *array [LOG_BACKTRACE_SIZE];
@@ -302,9 +317,10 @@ logBacktrace (void)
   mdfree (out);
 #endif
 }
+#endif
 
 void
-logBasic (const char *fmt, ...)
+logBasic (const char *fmt, ...)    /* KEEP */
 {
   char      ttm [40];
   FILE      *fh;
@@ -321,7 +337,7 @@ logBasic (const char *fmt, ...)
 }
 
 void
-logStderr (const char *fmt, ...)
+logStderr (const char *fmt, ...)      /* KEEP */
 {
   char      ttm [40];
   va_list   args;
@@ -336,7 +352,7 @@ logStderr (const char *fmt, ...)
 /* internal routines */
 
 static void
-rlogStart (const char *processnm, const char *processtag,
+rlogStart (const char *prog, const char *processtag,
     int truncflag, loglevel_t level)
 {
   char      tnm [MAXPATHLEN];
@@ -350,7 +366,7 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s pid %ld", processnm, tdt, (long) getpid ());
+    rlogStartProgram (prog, "", 0, "");
   }
 }
 

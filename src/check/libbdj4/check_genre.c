@@ -31,6 +31,13 @@ static void
 setup (void)
 {
   templateFileCopy ("genres.txt", "genres.txt");
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(genre_alloc)
@@ -94,9 +101,6 @@ START_TEST(genre_conv)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_conv");
   mdebugSubTag ("genre_conv");
 
-  /* required for the genre conversion function */
-  bdjvarsdfloadInit ();
-
   genre = genreAlloc ();
   genreStartIterator (genre, &iteridx);
   count = 0;
@@ -116,7 +120,6 @@ START_TEST(genre_conv)
     ++count;
   }
   genreFree (genre);
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -137,8 +140,6 @@ START_TEST(genre_save)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_save");
   mdebugSubTag ("genre_save");
 
-  /* required for the genre conversion function */
-  bdjvarsdfloadInit ();
 
   genre = genreAlloc ();
   gl = genreGetList (genre);
@@ -180,7 +181,52 @@ START_TEST(genre_save)
 
   ilistFree (tlist);
   genreFree (genre);
-  bdjvarsdfloadCleanup ();
+}
+END_TEST
+
+START_TEST(genre_set)
+{
+  genre_t    *genre = NULL;
+  const char  *sval = NULL;
+  int         nval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_set");
+  mdebugSubTag ("genre_set");
+
+  genre = genreAlloc ();
+
+  sval = genreGetGenre (genre, 0);
+  ck_assert_str_ne (sval, "test");
+  genreSetGenre (genre, 0, "test");
+  sval = genreGetGenre (genre, 0);
+  ck_assert_str_eq (sval, "test");
+
+  nval = genreGetClassicalFlag (genre, 0);
+  ck_assert_int_eq (nval, 0);
+  genreSetClassicalFlag (genre, 0, 1);
+  nval = genreGetClassicalFlag (genre, 0);
+  ck_assert_int_eq (nval, 1);
+
+  genreFree (genre);
+}
+END_TEST
+
+START_TEST(genre_dellast)
+{
+  genre_t    *genre = NULL;
+  int         ocount, ncount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_dellast");
+  mdebugSubTag ("genre_dellast");
+
+  genre = genreAlloc ();
+
+  ocount = genreGetCount (genre);
+  genreDeleteLast (genre);
+  ncount = genreGetCount (genre);
+  ck_assert_int_eq (ocount - 1, ncount);
+
+  genreFree (genre);
 }
 END_TEST
 
@@ -193,11 +239,13 @@ genre_suite (void)
   s = suite_create ("genre");
   tc = tcase_create ("genre");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, genre_alloc);
   tcase_add_test (tc, genre_iterate);
   tcase_add_test (tc, genre_conv);
   tcase_add_test (tc, genre_save);
+  tcase_add_test (tc, genre_set);
+  tcase_add_test (tc, genre_dellast);
   suite_add_tcase (s, tc);
   return s;
 }

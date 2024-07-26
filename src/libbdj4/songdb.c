@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <errno.h>
 
+#include "bdj4.h"
 #include "audiofile.h"
 #include "audiosrc.h"
 #include "audiotag.h"
@@ -32,11 +33,11 @@
 #include "tagdef.h"
 
 enum {
-  SONGDB_IDENT = 0x736f6e67646200aa,
+  SONGDB_IDENT = 0xaa006264676e6f73,
 };
 
 typedef struct songdb {
-  int64_t   ident;
+  uint64_t  ident;
   musicdb_t *musicdb;
   org_t     *org;
   org_t     *orgold;
@@ -73,7 +74,7 @@ songdbFree (songdb_t *songdb)
     return;
   }
 
-  songdb->ident = 0;
+  songdb->ident = BDJ4_IDENT_FREE;
   orgFree (songdb->org);
   songdb->org = NULL;
   orgFree (songdb->orgold);

@@ -13,7 +13,12 @@ function mkhtmlsub {
   tmpl=$1
   outfn=$2
   tempf=$3
-  pofile=$5
+  tpofile=$4
+
+  if [[ $tpofile == "" ]]; then
+    echo "$tmpl : no po file"
+    return
+  fi
 
   set -o noglob
   sedcmd=""
@@ -25,7 +30,7 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $pofile)
+    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $tpofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -58,11 +63,16 @@ slocale=$1
 shift
 langdesc="$*"
 
+uselocale=${slocale}
+
 if [[ $pofile == "" || $locale == en_GB || $locale == en_US ]]; then
   exit 0
 fi
 
-test -d "${TMPLDIR}/${slocale}" || mkdir "${TMPLDIR}/${slocale}"
+if [[ -d "${TMPLDIR}/${locale}" ]]; then
+  uselocale=${locale}
+fi
+test -d "${TMPLDIR}/${uselocale}" || mkdir "${TMPLDIR}/${uselocale}"
 
 for fn in ${TMPLDIR}/*.html; do
   case $fn in
@@ -70,7 +80,7 @@ for fn in ${TMPLDIR}/*.html; do
       continue
       ;;
     *mobilemq.html)
-      # 2023-11-28: mobilemq change to not have any title
+      # 2023-11-28: mobilemq changed to not have any title
       continue
       ;;
   esac
@@ -85,7 +95,7 @@ for fn in ${TMPLDIR}/*.html; do
   sort -u $TMP > $TMP.n
   mv -f $TMP.n $TMP
 
-  outfn="${TMPLDIR}/${slocale}/$(basename ${fn})"
+  outfn="${TMPLDIR}/${uselocale}/$(basename ${fn})"
 
   mkhtmlsub $fn $outfn $TMP $pofile
 

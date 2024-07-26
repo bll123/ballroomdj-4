@@ -6,7 +6,9 @@ of upcoming songs._</span>
 ### Marquee
 
 If the marquee cannot be displayed with a projector or on a monitor,
-consider using announcements or the mobile marquee
+consider using announcements
+([Subjects&nbsp;/&nbsp;Announcements](en-Subjects-Announcements)) or
+the mobile marquee
 ([Configure&nbsp;/&nbsp;Mobile&nbsp;Marquee](en-Configuration-Mobile%20Marquee))
 so that the dancers know which songs will be played next.
 
@@ -22,12 +24,16 @@ marquee to its previous size.
 Each time the marquee is started, BDJ4 will attempt to position and
 size the marquee window where it was before.
 
-See also:
-<br>[Configure / Marquee](en-Configuration-Marquee)
+If the _Show&nbsp;Song&nbsp;Information_ selection is turned on
+([Configure&nbsp;/&nbsp;Marquee](en-Configuration-Marquee)), the current
+playing song's information is displayed.  The song information that is
+displayed can be changed in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings)
+using the _Marquee_ selection.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-A.png)
-<br><span style="color:#4559bf;">__Player / Marquee__</span> </div>
+![player-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-B.png)
+<br><span style="color:#4559bf;">__Player / Marquee__</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

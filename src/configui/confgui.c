@@ -17,13 +17,14 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "configui.h"
 #include "istring.h"
 #include "log.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
+#include "uidd.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "validate.h"
@@ -35,9 +36,8 @@ enum {
 
 static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
-static long confuiValMSCallback (void *udata, const char *txt);
-static long confuiValHMCallback (void *udata, const char *txt);
-static long confuiValHMSCallback (void *udata, const char *txt);
+static int32_t confuiValHMCallback (void *udata, const char *label, const char *txt);
+static int32_t confuiValHMSCallback (void *udata, const char *label, const char *txt);
 
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
@@ -116,33 +116,30 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 }
 
 void
-confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
-    const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
+confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
+    const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb,
     const char *value)
 {
   uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
 
   logProcBegin ();
-  gui->uiitem [widx].basetype = CONFUI_COMBOBOX;
-  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+  gui->uiitem [widx].basetype = CONFUI_DD;
+  /* the selection handler sets bdjopt to the appropriate value */
+  /* and also listidx is not set */
+  gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
 
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
-  gui->uiitem [widx].uiwidgetp = uiDropDownInit ();
-  uiwidgetp = uiComboboxCreate (gui->uiitem [widx].uiwidgetp,
-      gui->window, txt, gui->uiitem [widx].callback, gui);
-
-  uiDropDownSetList (gui->uiitem [widx].uiwidgetp,
-      gui->uiitem [widx].displist, NULL);
-  uiDropDownSelectionSetStr (gui->uiitem [widx].uiwidgetp, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
-  uiBoxPackStart (hbox, uiwidgetp);
+  gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  gui->uiitem [widx].uidd = uiddCreate ("confgui",
+      gui->window, hbox, DD_PACK_START,
+      gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
+      txt, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
+  /* this is the only time the index is used */
+  uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);
   uiBoxPackStart (boxp, hbox);
 
-  gui->uiitem [widx].uibutton = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiwcontFree (hbox);
   logProcEnd ("");
@@ -291,19 +288,16 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   confuiMakeItemLabel (hbox, szgrp, txt, indent);
 
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    gui->uiitem [widx].callback = callbackInitStr (
-        confuiValHMCallback, gui);
-    /* convert value to mm:ss */
+    gui->uiitem [widx].callback = callbackInitSS (
+        confuiValHMCallback, &gui->uiitem [widx]);
+    /* convert value to mm:ss for display */
     value /= 60;
   } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
-    gui->uiitem [widx].callback = callbackInitStr (
-        confuiValHMSCallback, gui);
-  } else {
-    gui->uiitem [widx].callback = callbackInitStr (
-        confuiValMSCallback, gui);
+    gui->uiitem [widx].callback = callbackInitSS (
+        confuiValHMSCallback, &gui->uiitem [widx]);
   }
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
-      gui->uiitem [widx].callback);
+      txt, gui->uiitem [widx].callback);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
@@ -406,7 +400,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
 
   if (cb != NULL) {
-    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInitI (cb, gui);
     uiSwitchSetCallback (gui->uiitem [widx].uiwidgetp,
         gui->uiitem [widx].callback);
   }
@@ -578,73 +572,55 @@ confuiLinkCallback (void *udata)
   return UICB_CONT;
 }
 
-
-static long
-confuiValMSCallback (void *udata, const char *txt)
+static int32_t
+confuiValHMCallback (void *udata, const char *label, const char *txt)
 {
-  confuigui_t *gui = udata;
-  const char  *valstr;
-  char        tbuff [200];
-  long        val;
+  confuiitem_t  *uiitem = udata;
+  confuigui_t   *gui = uiitem->gui;
+  char          tbuff [200];
+  int32_t       value;
+  bool          val;
 
   logProcBegin ();
 
   uiLabelSetText (gui->statusMsg, "");
-  valstr = validate (txt, VAL_MIN_SEC);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
+  if (val == false) {
+    int32_t oval;
+
+    oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
     uiLabelSetText (gui->statusMsg, tbuff);
-    return -1;
+    return oval;
   }
 
-  val = tmutilStrToMS (txt);
+  value = tmutilStrToHM (txt);
   logProcEnd ("");
-  return val;
+  return value;
 }
 
-static long
-confuiValHMCallback (void *udata, const char *txt)
+static int32_t
+confuiValHMSCallback (void *udata, const char *label, const char *txt)
 {
-  confuigui_t *gui = udata;
-  const char  *valstr;
-  char        tbuff [200];
-  long        val;
+  confuiitem_t  *uiitem = udata;
+  confuigui_t   *gui = uiitem->gui;
+  char          tbuff [200];
+  int32_t       value;
+  bool          val;
 
   logProcBegin ();
 
   uiLabelSetText (gui->statusMsg, "");
-  valstr = validate (txt, VAL_HOUR_MIN);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
+  if (val == false) {
+    int32_t oval;
+
+    oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
     uiLabelSetText (gui->statusMsg, tbuff);
-    return -1;
+    return oval;
   }
 
-  val = tmutilStrToHM (txt);
+  value = tmutilStrToMS (txt);
   logProcEnd ("");
-  return val;
-}
-
-static long
-confuiValHMSCallback (void *udata, const char *txt)
-{
-  confuigui_t *gui = udata;
-  const char  *valstr;
-  char        tbuff [200];
-  long        val;
-
-  logProcBegin ();
-
-  uiLabelSetText (gui->statusMsg, "");
-  valstr = validate (txt, VAL_HOUR_MIN_SEC);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, txt);
-    uiLabelSetText (gui->statusMsg, tbuff);
-    return -1;
-  }
-
-  val = tmutilStrToMS (txt);
-  logProcEnd ("");
-  return val;
+  return value;
 }
 

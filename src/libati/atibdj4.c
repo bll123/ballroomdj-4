@@ -30,20 +30,6 @@ static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list 
 static void atibdj4LogVersion (void);
 static bool gversionlogged = false;
 
-void
-atiiDesc (char **ret, int max)
-{
-  int   c = 0;
-
-  if (max < 2) {
-    return;
-  }
-
-  /* CONTEXT: Name of the BDJ4 internal audio tagging interface */
-  ret [c++] = _("BDJ4 Internal");
-  ret [c++] = NULL;
-}
-
 atidata_t *
 atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,
@@ -160,7 +146,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
     duration = ictx->duration;
     duration /= 1000;
-    snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
+    snprintf (pbuff, sizeof (pbuff), "%" PRId32, duration);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
     slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
 
@@ -184,7 +170,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     return -1;
   }
 
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%d del:%d", ffn, slistGetCount (updatelist), slistGetCount (dellist));
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags: %s upd:%" PRId32 " del:%" PRId32, ffn, slistGetCount (updatelist), slistGetCount (dellist));
 
   if (filetype == AFILE_TYPE_FLAC) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
@@ -321,7 +307,7 @@ atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 static void
 atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl)
 {
-//  vfprintf (stderr, fmt, vl);
+  // vfprintf (stderr, fmt, vl);
   return;
 }
 

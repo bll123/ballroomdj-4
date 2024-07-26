@@ -16,11 +16,12 @@ adjust which songs are used.  A weight of zero will prevent a song
 with that rating from being selected.  A higher rating weight will
 make a song more likely to play.
 
-Added a new rating: Select the __Add&nbsp;New__ (![Add
+Adding a new rating: Select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button to add a new rating. Click on the name of the new rating to
-change the name.  Then click on the weight to set the weight.  Use the
-up and down arrows
+change the name.  Then click on the weight to set the weight.
+
+Use the up and down arrows
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to move the rating to its correct position.
@@ -29,12 +30,15 @@ Removing a rating: Select the rating and select the __Delete__
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button.
 
-Modifying a rating: Select the rating, then click on the name or
-weight to change it.
+Modifying a rating: Select the rating, then select the name entry
+field to change the name.   Use the __+__ and __-__ buttons to change
+the weight or select the weight and type in the new weight.
+The _Unrated_ rating may not have its name
+changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-E.png)
+![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

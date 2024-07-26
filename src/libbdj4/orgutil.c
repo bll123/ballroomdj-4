@@ -276,14 +276,6 @@ orgSetCleanType (org_t *org, int type)
   org->chartype = type;
 }
 
-slist_t *
-orgGetList (org_t *org)
-{
-  if (org == NULL) {
-    return NULL;
-  }
-  return org->orgparsed;
-}
 
 const char *
 orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
@@ -524,14 +516,6 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   return retval;
 }
 
-bool
-orgHaveDance (org_t *org)
-{
-  if (org == NULL) {
-    return false;
-  }
-  return org->havedance;
-}
 
 void
 orgStartIterator (org_t *org, slistidx_t *iteridx)

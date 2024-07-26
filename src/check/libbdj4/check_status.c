@@ -31,6 +31,13 @@ static void
 setup (void)
 {
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(status_alloc)
@@ -96,8 +103,6 @@ START_TEST(status_conv)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_conv");
   mdebugSubTag ("status_conv");
 
-  bdjvarsdfloadInit ();
-
   status = statusAlloc ();
   statusStartIterator (status, &iteridx);
   count = 0;
@@ -117,7 +122,6 @@ START_TEST(status_conv)
     ++count;
   }
   statusFree (status);
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -136,9 +140,6 @@ START_TEST(status_save)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_save");
   mdebugSubTag ("status_save");
-
-  /* required for the status conversion function */
-  bdjvarsdfloadInit ();
 
   status = statusAlloc ();
 
@@ -177,7 +178,52 @@ START_TEST(status_save)
 
   ilistFree (tlist);
   statusFree (status);
-  bdjvarsdfloadCleanup ();
+}
+END_TEST
+
+START_TEST(status_set)
+{
+  status_t    *status = NULL;
+  const char  *sval = NULL;
+  int         nval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_set");
+  mdebugSubTag ("status_set");
+
+  status = statusAlloc ();
+
+  sval = statusGetStatus (status, 1);
+  ck_assert_str_ne (sval, "test");
+  statusSetStatus (status, 1, "test");
+  sval = statusGetStatus (status, 1);
+  ck_assert_str_eq (sval, "test");
+
+  nval = statusGetPlayFlag (status, 1);
+  ck_assert_int_eq (nval, 0);
+  statusSetPlayFlag (status, 1, 1);
+  nval = statusGetPlayFlag (status, 1);
+  ck_assert_int_eq (nval, 1);
+
+  statusFree (status);
+}
+END_TEST
+
+START_TEST(status_dellast)
+{
+  status_t    *status = NULL;
+  int         ocount, ncount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_dellast");
+  mdebugSubTag ("status_dellast");
+
+  status = statusAlloc ();
+
+  ocount = statusGetCount (status);
+  statusDeleteLast (status);
+  ncount = statusGetCount (status);
+  ck_assert_int_eq (ocount - 1, ncount);
+
+  statusFree (status);
 }
 END_TEST
 
@@ -190,11 +236,13 @@ status_suite (void)
   s = suite_create ("status");
   tc = tcase_create ("status");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, status_alloc);
   tcase_add_test (tc, status_iterate);
   tcase_add_test (tc, status_conv);
   tcase_add_test (tc, status_save);
+  tcase_add_test (tc, status_set);
+  tcase_add_test (tc, status_dellast);
   suite_add_tcase (s, tc);
   return s;
 }

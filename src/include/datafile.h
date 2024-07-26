@@ -89,7 +89,6 @@ char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *f
 list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int *distvers);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const char *key);
 list_t *      datafileGetList (datafile_t *);
-void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
 size_t        datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset, int flags);
 void          datafileSave (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);

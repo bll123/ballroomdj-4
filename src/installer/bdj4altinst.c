@@ -5,8 +5,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -137,9 +138,9 @@ static int  altinstMainLoop (void *udata);
 static bool altinstExitCallback (void *udata);
 static bool altinstReinstallCBHandler (void *udata);
 static bool altinstTargetDirDialog (void *udata);
-static int  altinstValidateTarget (uiwcont_t *entry, void *udata);
+static int  altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata);
 static int  altinstValidateProcessTarget (altinst_t *altinst, const char *dir);
-static int  altinstValidateName (uiwcont_t *entry, void *udata);
+static int  altinstValidateName (uiwcont_t *entry, const char *label, void *udata);
 static void altinstTargetFeedbackMsg (altinst_t *altinst);
 static bool altinstSetupCallback (void *udata);
 static void altinstSetPaths (altinst_t *altinst);
@@ -308,8 +309,12 @@ main (int argc, char *argv[])
     uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
 
     uiSetUICSS (uiutilsGetCurrentFont (),
+        uiutilsGetListingFont (),
         bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-        bdjoptGetStr (OPT_P_UI_ERROR_COL));
+        bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
     altinstBuildUI (&altinst);
     osuiFinalize ();
@@ -373,12 +378,12 @@ altinstBuildUI (altinst_t *altinst)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   /* begin line : status message */
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   altinst->wcont [ALT_W_ERROR_MSG] = uiwidgetp;
 
@@ -454,7 +459,7 @@ altinstBuildUI (altinst_t *altinst)
   uiToggleButtonSetCallback (altinst->wcont [ALT_W_REINST], altinst->callbacks [ALT_CB_REINST]);
 
   altinst->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
+  uiWidgetAddClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
@@ -485,15 +490,16 @@ altinstBuildUI (altinst_t *altinst)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (uiwidgetp));
+  uiBoxPackStartExpand (vbox, uiwidgetp);
   altinst->wcont [ALT_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);
   altinst->uiBuilt = true;
 
-  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET],
+  uiEntrySetValidate (altinst->wcont [ALT_W_TARGET], "",
       altinstValidateTarget, altinst, UIENTRY_DELAYED);
-  uiEntrySetValidate (altinst->wcont [ALT_W_NAME],
+  /* CONTEXT: alternate installation: name (for shortcut) */
+  uiEntrySetValidate (altinst->wcont [ALT_W_NAME], _("Name"),
       altinstValidateName, altinst, UIENTRY_IMMEDIATE);
 
   uiwcontFree (vbox);
@@ -558,7 +564,7 @@ altinstMainLoop (void *udata)
       /* to the data-top-dir */
       logStart ("bdj4altinst", "alt",
           LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
+      logStartProgram ("alternate-setup");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altinst->target);
       break;
     }
@@ -616,7 +622,7 @@ altinstReinstallCBHandler (void *udata)
 }
 
 static int
-altinstValidateTarget (uiwcont_t *entry, void *udata)
+altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *dir;
@@ -722,13 +728,14 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
 }
 
 static int
-altinstValidateName (uiwcont_t *entry, void *udata)
+altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *name;
-  const char    *msg;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_ERROR;
+  int           valflags;
+  bool          val;
 
   if (! altinst->guienabled) {
     return UIENTRY_ERROR;
@@ -748,10 +755,13 @@ altinstValidateName (uiwcont_t *entry, void *udata)
     return rc;
   }
 
-  msg = validate (name, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (msg != NULL) {
-    /* CONTEXT: alternate installer: name (for shortcut) */
-    snprintf (tbuff, sizeof (tbuff), msg, _("Name"));
+  /* CONTEXT: alternate installer: name (for shortcut) */
+  valflags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
+  if (isWindows ()) {
+    valflags |= VAL_NO_WINCHARS;
+  }
+  val = validate (tbuff, sizeof (tbuff), label, name, valflags);
+  if (val == false) {
     uiLabelSetText (altinst->wcont [ALT_W_ERROR_MSG], tbuff);
     return rc;
   }
@@ -764,7 +774,7 @@ altinstValidateName (uiwcont_t *entry, void *udata)
   altinstSetTargetEntry (altinst, tbuff);
   if (isMacOS ()) {
     /* on macos, the field is disabled, so the validation must be forced */
-    rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], altinst);
+    rc = altinstValidateTarget (altinst->wcont [ALT_W_TARGET], "", altinst);
   }
 
   if (rc == UIENTRY_ERROR) {
@@ -1153,7 +1163,7 @@ altinstFinalize (altinst_t *altinst)
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
-    fprintf (fh, "%u\n", baseport);
+    fprintf (fh, "%" PRIu32 "\n", baseport);
     mdextfclose (fh);
     fclose (fh);
   }

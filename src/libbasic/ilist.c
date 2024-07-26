@@ -3,10 +3,11 @@
  */
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 
 #include "bdjstring.h"
@@ -125,7 +126,7 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 }
 
 void
-ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
+ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistnum_t val)
 {
   nlist_t *datalist = NULL;
 
@@ -134,20 +135,7 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
   }
 
   datalist = ilistGetDatalist (list, ikey, ILIST_SET);
-  nlistSetNum (datalist, lidx, data);
-}
-
-void
-ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
-{
-  nlist_t     *datalist = NULL;
-
-  if (list == NULL) {
-    return;
-  }
-
-  datalist = ilistGetDatalist (list, ikey, ILIST_SET);
-  nlistSetDouble (datalist, lidx, data);
+  nlistSetNum (datalist, lidx, val);
 }
 
 bool
@@ -193,7 +181,7 @@ ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return value;
 }
 
-ilistidx_t
+ilistnum_t
 ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   ilistidx_t      value = LIST_VALUE_INVALID;
@@ -234,19 +222,6 @@ ilistGetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 }
 
 void
-ilistDelete (list_t *list, ilistidx_t ikey)
-{
-  ilistidx_t      idx;
-
-  if (list == NULL) {
-    return;
-  }
-
-  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
-  listDeleteByIdx (LIST_KEY_IND, list, idx);
-}
-
-void
 ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 {
   *iteridx = -1;
@@ -256,6 +231,19 @@ ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
   return listIterateKeyNum (LIST_KEY_IND, list, iteridx);
+}
+
+void
+ilistDelete (ilist_t *list, ilistidx_t ikey)
+{
+  ilistidx_t      idx;
+
+  if (list == NULL) {
+    return;
+  }
+
+  idx = listGetIdxNumKey (LIST_KEY_IND, list, ikey);
+  listDeleteByIdx (LIST_KEY_IND, list, idx);
 }
 
 /* debug / informational */
@@ -268,14 +256,14 @@ ilistDumpInfo (ilist_t *list)
 
 /* for testing */
 ilistidx_t
-ilistGetAllocCount (ilist_t *list)
+ilistGetAllocCount (ilist_t *list)  /* TESTING */
 {
   return listGetAllocCount (LIST_KEY_IND, list);
 }
 
 /* for testing */
 int
-ilistGetOrdering (ilist_t *list)
+ilistGetOrdering (ilist_t *list) /* TESTING */
 {
   return listGetOrdering (LIST_KEY_IND, list);
 }
@@ -297,7 +285,7 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
   datalist = listGetDataByIdx (LIST_KEY_IND, list, idx);
 
   if (gsflag == ILIST_SET && datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%d",
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%" PRId32,
         listGetName (LIST_KEY_IND, list), ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
 
@@ -305,6 +293,3 @@ ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag)
   }
   return datalist;
 }
-
-
-

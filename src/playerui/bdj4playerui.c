@@ -25,7 +25,6 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
-#include "controller.h"
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
@@ -83,7 +82,6 @@ enum {
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
-  PLUI_CB_CONTROLLER,
   PLUI_CB_MAX,
 };
 
@@ -112,6 +110,10 @@ enum {
   RESET_VOL_CURR,
 };
 
+enum {
+  PLUI_DBG_MSGS = 0,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -134,11 +136,12 @@ typedef struct {
   int             reloadexpected;
   int             reloadrcvd;
   nlistidx_t      lastLoc [MUSICQ_MAX];
+  mp_musicqupdate_t *musicqupdate [MUSICQ_MAX];
   /* quick edit */
   uiqe_t          *uiqe;
   int             resetvolume;
   /* external request */
-  int             extreqRow;
+  int32_t         extreqRow;
   uiextreq_t      *uiextreq;
   /* notebook */
   uinbtabid_t     *nbtabid;
@@ -156,8 +159,6 @@ typedef struct {
   mp3exp_t        *mp3exp;
   mstime_t        expmp3chkTime;
   int             expmp3state;
-  /* controller */
-  controller_t    *controller;
   /* flags */
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
@@ -194,7 +195,9 @@ enum {
 };
 
 static datafilekey_t reloaddfkeys [] = {
-  { "CURRENT",  RELOAD_CURR, VALUE_STR, NULL, DF_NORM },
+  { "CURRENT_SONG", RELOAD_CURR_SONG, VALUE_STR, NULL, DF_NORM },
+  { "MANAGE_QUEUE", RELOAD_MANAGE_QUEUE, VALUE_NUM, NULL, DF_NORM },
+  { "PLAY_QUEUE",   RELOAD_PLAY_QUEUE, VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   RELOAD_DFKEY_COUNT = (sizeof (reloaddfkeys) / sizeof (datafilekey_t)),
@@ -207,7 +210,6 @@ enum {
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
-static bool     pluiInitDataCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
@@ -221,7 +223,7 @@ static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 static char *   pluiExportMP3Dialog (playerui_t *plui);
 /* queue selection handlers */
-static bool     pluiSwitchPage (void *udata, long pagenum);
+static bool     pluiSwitchPage (void *udata, int32_t pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, int newqueue, int updateFlag);
@@ -233,13 +235,13 @@ static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
-static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
+static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid);
 static bool     pluiMarqueeFontSizeChg (void *udata);
 static bool     pluiMarqueeRecover (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
-static bool     pluiQueueProcess (void *udata, long dbidx);
-static bool     pluiSongSaveCallback (void *udata, long dbidx);
+static bool     pluiQueueProcess (void *udata, int32_t dbidx);
+static bool     pluiSongSaveCallback (void *udata, int32_t dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
@@ -251,10 +253,9 @@ static bool     pluiReload (void *udata);
 static void     pluiReloadCurrent (playerui_t *plui);
 static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
-static bool     pluiKeyEvent (void *udata);
+static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
-static int      pluiControllerCallback (void *udata, long val, int cmd);
+static int32_t  pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
 
@@ -275,8 +276,6 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_INITIALIZE_DATA,
-      pluiInitDataCallback, &plui);
 
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
@@ -287,7 +286,7 @@ main (int argc, char *argv[])
   plui.marqueeIsMaximized = false;
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
-  mstimeset (&plui.marqueeFontSizeCheck, 3600000);
+  mstimeset (&plui.marqueeFontSizeCheck, TM_TIMER_OFF);
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
   plui.nbtabid = uinbutilIDInit ();
@@ -310,7 +309,6 @@ main (int argc, char *argv[])
   plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
-  plui.controller = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -322,6 +320,7 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     plui.lastLoc [i] = -1;
+    plui.musicqupdate [i] = NULL;
   }
 
   osSetStandardSignals (pluiSigHandler);
@@ -375,8 +374,12 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+      bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
   pluiBuildUI (&plui);
   osuiFinalize ();
@@ -455,6 +458,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
 
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    msgparseMusicQueueDataFree (plui->musicqupdate [i]);
+  }
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
   }
@@ -483,8 +489,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
-
-  controllerFree (plui->controller);
 
   logProcEnd ("");
   return STATE_FINISHED;
@@ -536,20 +540,20 @@ pluiBuildUI (playerui_t *plui)
   uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 4);
 
-  plui->wcont [PLUI_W_KEY_HNDLR] = uiKeyAlloc ();
+  plui->wcont [PLUI_W_KEY_HNDLR] = uiEventAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
-      pluiKeyEvent, plui, NULL);
-  uiKeySetKeyCallback (plui->wcont [PLUI_W_KEY_HNDLR],
+      pluiEventEvent, plui, NULL);
+  uiEventSetKeyCallback (plui->wcont [PLUI_W_KEY_HNDLR],
       plui->wcont [PLUI_W_MAIN_VBOX], plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
   uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
   uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartExpand (hbox, menubar);
 
   plui->wcont [PLUI_W_CLOCK] = uiCreateLabel ("");
   uiBoxPackEnd (hbox, plui->wcont [PLUI_W_CLOCK]);
@@ -557,12 +561,12 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_ERROR_MSG] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_STATUS_MSG] = uiwidgetp;
 
@@ -677,7 +681,7 @@ pluiBuildUI (playerui_t *plui)
   plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
 
-  plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
+  plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
       pluiSwitchPage, plui);
   uiNotebookSetCallback (plui->wcont [PLUI_W_NOTEBOOK], plui->callbacks [PLUI_CB_NOTEBOOK]);
 
@@ -690,7 +694,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (uiwidgetp);
   plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
 
-  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStrInt (
+  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitS (
       pluiDragDropCallback, plui);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -708,7 +712,7 @@ pluiBuildUI (playerui_t *plui)
     }
 
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
-        plui->wcont [PLUI_W_ERROR_MSG], NULL);
+        plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
 
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
@@ -760,7 +764,7 @@ pluiBuildUI (playerui_t *plui)
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
 
-  plui->callbacks [PLUI_CB_SONG_SAVE] = callbackInitLong (
+  plui->callbacks [PLUI_CB_SONG_SAVE] = callbackInitI (
       pluiSongSaveCallback, plui);
   uimusicqSetSongSaveCallback (plui->uimusicq, plui->callbacks [PLUI_CB_SONG_SAVE]);
   uisongselSetSongSaveCallback (plui->uisongsel, plui->callbacks [PLUI_CB_SONG_SAVE]);
@@ -805,7 +809,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
-  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitLong (
+  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitI (
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
       plui->callbacks [PLUI_CB_QUEUE_SL]);
@@ -879,7 +883,7 @@ pluiMainLoop (void *tplui)
     }
     snprintf (tbuff, sizeof (tbuff), "%d", sz);
     connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_SET_FONT_SZ, tbuff);
-    mstimeset (&plui->marqueeFontSizeCheck, 3600000);
+    mstimeset (&plui->marqueeFontSizeCheck, TM_TIMER_OFF);
   }
 
   connProcessUnconnected (plui->conn);
@@ -910,7 +914,7 @@ pluiClock (playerui_t *plui)
   uiLabelSetText (plui->wcont [PLUI_W_CLOCK],
       tmutilDisp (tbuff, sizeof (tbuff), bdjoptGetNum (OPT_G_CLOCK_DISP)));
   if (bdjoptGetNum (OPT_G_CLOCK_DISP) == TM_CLOCK_OFF) {
-    mstimeset (&plui->clockCheck, 3600000);
+    mstimeset (&plui->clockCheck, TM_TIMER_OFF);
   } else {
     mstimeset (&plui->clockCheck, 200);
   }
@@ -1015,35 +1019,6 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   return rc;
 }
 
-static bool
-pluiInitDataCallback (void *udata, programstate_t programState)
-{
-  playerui_t    *plui = udata;
-  bool          rc = STATE_NOT_FINISH;
-
-  if (plui->controller == NULL) {
-    const char  *val;
-
-    val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
-    if (val != NULL && *val) {
-      plui->controller = controllerInit (val);
-    } else {
-      rc = STATE_FINISHED;
-    }
-  }
-
-  if (plui->controller != NULL &&
-      controllerCheckReady (plui->controller)) {
-    controllerSetup (plui->controller);
-    plui->callbacks [PLUI_CB_CONTROLLER] =
-        callbackInitLongInt (pluiControllerCallback, plui);
-    controllerSetCallback (plui->controller, plui->callbacks [PLUI_CB_CONTROLLER]);
-    rc = STATE_FINISHED;
-  }
-
-  return rc;
-}
-
 static int
 pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
@@ -1057,8 +1032,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     targs = mdstrdup (args);
   }
 
-  if (msg != MSG_MUSIC_QUEUE_DATA &&
-      msg != MSG_PLAYER_STATUS_DATA) {
+  if (PLUI_DBG_MSGS == 1 ||
+      (msg != MSG_MUSIC_QUEUE_DATA &&
+      msg != MSG_PLAYER_STATUS_DATA)) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
@@ -1118,8 +1094,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_songselect_t   *songselect;
 
           songselect = msgparseSongSelect (targs);
-          /* the display is offset by 1, as the 0 index is the current song */
-          --songselect->loc;
           uimusicqProcessSongSelect (plui->uimusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
@@ -1136,6 +1110,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             break;
           }
 
+          msgparseMusicQueueDataFree (plui->musicqupdate [musicqupdate->mqidx]);
+          plui->musicqupdate [musicqupdate->mqidx] = musicqupdate;
+
           if ((int) musicqupdate->mqidx >= MUSICQ_DISP_MAX ||
               ! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
             logMsg (LOG_DBG, LOG_INFO, "ERR: music queue data: mq idx %d not valid", musicqupdate->mqidx);
@@ -1145,7 +1122,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
             /* if displayed */
             if (bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
-              uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
+              uimusicqSetMusicQueueData (plui->uimusicq, musicqupdate);
+              uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate->mqidx);
               /* the music queue data is used to display the mark */
               /* indicating that the song is already in the song list */
               uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
@@ -1155,17 +1133,14 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluiReloadSave (plui, musicqupdate->mqidx);
 
           if (musicqupdate->mqidx == MUSICQ_HISTORY) {
+            /* CONTEXT: playerui: name of the saved history playlist */
             const char  *name = _("History");
 
-            uimusicqSetManageIdx (plui->uimusicq, MUSICQ_HISTORY);
-            uimusicqSave (plui->uimusicq, name);
-            playlistCheckAndCreate (name, PLTYPE_SONGLIST);
-            uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
+            uimusicqSave (plui->musicdb,
+                plui->musicqupdate [MUSICQ_HISTORY], name);
           }
 
           plui->lastLoc [musicqupdate->mqidx] = -1;
-
-          msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
         case MSG_DATABASE_UPDATE: {
@@ -1300,7 +1275,7 @@ pluiExportMP3Dialog (playerui_t *plui)
 }
 
 static bool
-pluiSwitchPage (void *udata, long pagenum)
+pluiSwitchPage (void *udata, int32_t pagenum)
 {
   playerui_t  *plui = udata;
   int         tabid;
@@ -1396,6 +1371,8 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
   }
+
+  pluiReloadSaveCurrent (plui);
   logProcEnd ("");
 }
 
@@ -1420,6 +1397,7 @@ pluiSetManageQueue (playerui_t *plui, int mqidx)
 
   plui->musicqManageIdx = mqidx;
   uimusicqSetManageIdx (plui->uimusicq, mqidx);
+  pluiReloadSaveCurrent (plui);
 }
 
 static bool
@@ -1547,7 +1525,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   logProcBegin ();
 
-  plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
+  plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitI (
       pluiMarqueeFontSizeDialogResponse, plui);
   plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG] = uiCreateDialog (plui->wcont [PLUI_W_WINDOW],
       plui->callbacks [PLUI_CB_FONT_SIZE],
@@ -1597,7 +1575,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 }
 
 static bool
-pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
+pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid)
 {
   playerui_t  *plui = udata;
 
@@ -1672,7 +1650,7 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
 }
 
 static bool
-pluiQueueProcess (void *udata, long dbidx)
+pluiQueueProcess (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
   nlistidx_t  loc;
@@ -1698,16 +1676,14 @@ pluiQueueProcess (void *udata, long dbidx)
     plui->lastLoc [mqidx] = loc + 1;
   }
 
-  /* increment the location by 1 as the tree-view index is one less than */
-  /* the music queue index */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
-      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%" PRId32, mqidx,
+      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;
 }
 
 static bool
-pluiSongSaveCallback (void *udata, long dbidx)
+pluiSongSaveCallback (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
   char        tmp [40];
@@ -1716,7 +1692,7 @@ pluiSongSaveCallback (void *udata, long dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%ld", dbidx);
+  snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   uisongselPopulateData (plui->uisongsel);
@@ -1743,7 +1719,7 @@ pluiPushHistory (playerui_t *plui, const char *args)
 
   dbidx = atol (args);
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_HISTORY,
       MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
@@ -1776,7 +1752,7 @@ pluiExtReqCallback (void *udata)
 
     tbuff = mdmalloc (BDJMSG_MAX);
     tmp = songCreateSaveData (song);
-    snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
+    snprintf (tbuff, BDJMSG_MAX, "%s%c%" PRId32 "%c%s",
         songGetStr (song, TAG_URI),
         MSG_ARGS_RS, dbidx,
         MSG_ARGS_RS, tmp);
@@ -1821,7 +1797,7 @@ pluiQuickEditSelected (void *udata)
   double        vol, speed;
   int           basevol;
 
-  dbidx = uimusicqGetSelectionDbidx (plui->uimusicq);
+  dbidx = uimusicqGetSelectionDBidx (plui->uimusicq);
   /* don't need vol and speed */
   uiplayerGetVolumeSpeed (plui->uiplayer, &basevol, &vol, &speed);
   plui->resetvolume = RESET_VOL_NO;
@@ -1873,19 +1849,23 @@ static bool
 pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
+  char          msg [200];
+  char          tbuff [MAXPATHLEN];
+  char          tmp [200];
 
   plui->inreload = true;
   plui->reloadchk = true;
   plui->reloadexpected = 0;
   plui->reloadrcvd = 0;
 
-  for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
-    char    tmp [100];
-    char    msg [200];
-    char    tbuff [MAXPATHLEN];
+  plui->reloadexpected = 1;
+  pluiReloadCurrent (plui);
+  plui->reloadexpected = 0;
 
-    snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
+  for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
+    snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
+
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
     pathbldMakePath (tbuff, sizeof (tbuff),
@@ -1897,7 +1877,6 @@ pluiReload (void *udata)
     }
   }
 
-  pluiReloadCurrent (plui);
 
   plui->inreload = false;
   return UICB_CONT;
@@ -1912,6 +1891,8 @@ pluiReloadCurrent (playerui_t *plui)
   dbidx_t         dbidx;
   const char      *nm;
   song_t          *song;
+  int             tmqplayidx;
+  int             tmqmngidx;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       RELOAD_CURR_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -1923,17 +1904,24 @@ pluiReloadCurrent (playerui_t *plui)
     return;
   }
 
-  nm = nlistGetStr (reloaddata, RELOAD_CURR);
+  tmqplayidx = nlistGetNum (reloaddata, RELOAD_PLAY_QUEUE);
+  tmqmngidx = nlistGetNum (reloaddata, RELOAD_MANAGE_QUEUE);
+  pluiSetPlaybackQueue (plui, tmqplayidx, PLUI_UPDATE_MAIN);
+  pluiSetManageQueue (plui, tmqplayidx);
+
+  nm = nlistGetStr (reloaddata, RELOAD_CURR_SONG);
   song = dbGetByName (plui->musicdb, nm);
   if (song != NULL) {
     dbidx = songGetNum (song, TAG_DBIDX);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_PB_A,
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, tmqplayidx,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%d", MUSICQ_PB_A, MSG_ARGS_RS, 1);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d", tmqplayidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   }
+
   datafileFree (reloaddf);
+  uiNotebookSetPage (plui->wcont [PLUI_W_NOTEBOOK], tmqmngidx);
 }
 
 static void
@@ -1977,7 +1965,7 @@ pluiReloadSave (playerui_t *plui, int mqidx)
     /* as playlists are global and not per-profile */
     snprintf (tmp, sizeof (tmp), "%s-%d-%d", RELOAD_FN,
         (int) sysvarsGetNum (SVL_PROFILE_IDX), mqidx);
-    uimusicqSave (plui->uimusicq, tmp);
+    uimusicqSave (plui->musicdb, plui->musicqupdate [mqidx], tmp);
     playlistCheckAndCreate (tmp, PLTYPE_SONGLIST);
     uimusicqSetManageIdx (plui->uimusicq, plui->musicqManageIdx);
   }
@@ -2007,7 +1995,9 @@ pluiReloadSaveCurrent (playerui_t *plui)
   dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
   song = dbGetByIdx (plui->musicdb, dbidx);
   if (song != NULL) {
-    nlistSetStr (reloaddata, RELOAD_CURR, songGetStr (song, TAG_URI));
+    nlistSetStr (reloaddata, RELOAD_CURR_SONG, songGetStr (song, TAG_URI));
+    nlistSetNum (reloaddata, RELOAD_PLAY_QUEUE, plui->musicqPlayIdx);
+    nlistSetNum (reloaddata, RELOAD_MANAGE_QUEUE, plui->musicqManageIdx);
     datafileSave (reloaddf, NULL, reloaddata, DF_NO_OFFSET, 1);
   }
   nlistFree (reloaddata);
@@ -2015,28 +2005,28 @@ pluiReloadSaveCurrent (playerui_t *plui)
 }
 
 static bool
-pluiKeyEvent (void *udata)
+pluiEventEvent (void *udata)
 {
   playerui_t  *plui = udata;
 
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPlayKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
     return UICB_STOP;
   }
   /* isaudiopausekey() also checks for the stop key */
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPauseKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioNextKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     return UICB_STOP;
   }
-  if (uiKeyIsPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
-      uiKeyIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
+  if (uiEventIsKeyPressEvent (plui->wcont [PLUI_W_KEY_HNDLR]) &&
+      uiEventIsAudioPrevKey (plui->wcont [PLUI_W_KEY_HNDLR])) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
     return UICB_STOP;
   }
@@ -2058,30 +2048,23 @@ pluiExportMP3 (void *udata)
   return UICB_CONT;
 }
 
-static bool
-pluiDragDropCallback (void *udata, const char *uri, int row)
+static int32_t
+pluiDragDropCallback (void *udata, const char *uri)
 {
-  playerui_t        *plui = udata;
+  playerui_t    *plui = udata;
+  int           mqidx;
+  int32_t       rownum;
 
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
     return UICB_STOP;
   }
 
   plui->musicqRequestIdx = plui->musicqManageIdx;
-  plui->extreqRow = row;
+  mqidx = plui->musicqManageIdx;
+  rownum = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+  plui->extreqRow = rownum;
 
   uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
   return UICB_CONT;
 }
 
-
-static int
-pluiControllerCallback (void *udata, long val, int cmd)
-{
-  playerui_t    *plui = udata;
-  int           rc = 0;
-
-fprintf (stderr, "plui-cb: cmd: %d val: %ld\n", cmd, val);
-
-  return rc;
-}

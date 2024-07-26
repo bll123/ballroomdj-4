@@ -59,12 +59,6 @@ slistSetSize (slist_t *list, listidx_t siz)
 }
 
 void
-slistCalcMaxKeyWidth (slist_t *list)
-{
-  listCalcMaxKeyWidth (LIST_KEY_STR, list);
-}
-
-void
 slistSetData (slist_t *list, const char *sidx, void *data)
 {
   listSetStrData (LIST_KEY_STR, list, sidx, data);
@@ -82,11 +76,6 @@ slistSetNum (slist_t *list, const char *sidx, listnum_t data)
   listSetStrNum (LIST_KEY_STR, list, sidx, data);
 }
 
-void
-slistSetDouble (slist_t *list, const char *sidx, double data)
-{
-  listSetStrDouble (LIST_KEY_STR, list, sidx, data);
-}
 
 void
 slistSetList (slist_t *list, const char *sidx, slist_t *data)
@@ -170,34 +159,10 @@ slistGetNum (slist_t *list, const char *sidx)
   return value;
 }
 
-double
-slistGetDouble (slist_t *list, const char *sidx)
-{
-  double          value = LIST_DOUBLE_INVALID;
-  slistidx_t      idx;
-
-  idx = listGetIdxStrKey (LIST_KEY_STR, list, sidx);
-  value = listGetDoubleByIdx (LIST_KEY_STR, list, idx);
-  return value;
-}
-
 slist_t *
 slistGetList (slist_t *list, const char *sidx)
 {
   return slistGetData (list, sidx);
-}
-
-int
-slistGetMaxKeyWidth (slist_t *list)
-{
-  int     value;
-
-  if (list == NULL) {
-    return 0;
-  }
-
-  value = listGetMaxKeyWidth (LIST_KEY_STR, list);
-  return value;
 }
 
 slistidx_t
@@ -246,14 +211,14 @@ slistDumpInfo (slist_t *list)
 
 /* for testing */
 slistidx_t
-slistGetAllocCount (slist_t *list)
+slistGetAllocCount (slist_t *list)  /* TESTING */
 {
   return listGetAllocCount (LIST_KEY_STR, list);
 }
 
 /* for testing */
 int
-slistGetOrdering (slist_t *list)
+slistGetOrdering (slist_t *list) /* TESTING */
 {
   return listGetOrdering (LIST_KEY_STR, list);
 }

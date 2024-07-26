@@ -26,8 +26,8 @@ song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-B.png)
-<br><span style="color:#4559bf;">__Manage / Edit Song Lists (Side-by-Side View)__</span> </div>
+![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-C.png)
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists (Side#8209;by#8209;Side View)__</span> </div>
 
 ##### Song List Editor
 
@@ -36,10 +36,10 @@ by holding down the _Control_ key when clicking on each song.
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Options Menu__</span> </div>
 
 An alternate layout is available by turning off the
-side&#8209;by&#8209;side view in the __Options__ menu.  The song list
-and the song selection are displayed in separate tabs.  This layout
-allows more information about each song to be displayed. The columns
-displayed can be changed in
+_Side&#8209;by&#8209;Side&nbsp;View_ in the __Options__ menu.  The
+song list and the song selection are displayed in separate tabs.  This
+layout allows more information about each song to be displayed. The
+columns displayed can be changed in
 [Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
 _Song&nbsp;List_ and _Song%20Selection_ selections.
 
@@ -49,7 +49,7 @@ down the _Control_ key when clicking on each song.  Use the _Select_
 button at the top of the listing to add the songs to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-C.png)
+![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists (Standard)__</span> </div>
 
 ##### Naming the Song List
@@ -62,6 +62,12 @@ At the top of the song list, there is an entry box with the song list
 name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
 box and change the name of the song list.
 
+On all platforms, the slash and backslash characters are not allowed
+in song list names.
+
+On Windows, the following characters are not allowed in song list names:
+__&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;__
+
 If you forget to change the name, the song list will be saved as
 _New&nbsp;Song&nbsp;List_.  To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select
@@ -70,7 +76,8 @@ _New&nbsp;Song&nbsp;List_, then enter the new name of the song list.
 ##### Song Selection Indicators
 
 The song selection listing will display a mark before each song that
-is already in the song list.
+is already in the song list.  (See the
+_Side&#8209;by&#8209;Side&nbsp;View_ image above).
 
 ##### Filtering the Song Selection
 
@@ -94,7 +101,7 @@ The filters displayed can be adjusted in
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Filter Dialog__</span> </div>
 
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
-have the selected rating or better.
+have the selected rating __or better__.
 
 Above the song selection listing, the dance drop-down may be used to
 quickly change which dance is displayed in the song selection listing.
@@ -120,6 +127,9 @@ While in the song list or the song selection, select the play button
 (![Play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
 above the listing to play the currently selected song.
 
+Note that the play/pause button in the player section will not play
+the selected song, it is only used for song currently in the player.
+
 ##### Editing a Song
 
 While in the song list or the song selection, select the edit button
@@ -141,9 +151,9 @@ each dance is displayed.
 
 ##### Edit Menu
 
-An existing song list can be loaded by selecting
-__Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open
-allowing selection of an existing song list.
+__Edit&nbsp;/&nbsp;Load__ will open a dialog to select an existing
+song list.  Select a song list and then the __Select__ button to load
+it. Any current song list will be saved first.
 
 __Edit&nbsp;/&nbsp;Start&nbsp;New&nbsp;Song&nbsp;List__ will
 clean out any loaded song list and reset the name to
@@ -220,4 +230,4 @@ playlist from iTunes.
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Menu__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 07:39:00; BDJ4 version 4.11.0)_

@@ -15,7 +15,7 @@ chk dbidx 15
 msg player PLAY_REPEAT
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing repeat 1 prepqueuecount 2
-msg main CMD_NEXTSONG
+msg player PLAY_NEXTSONG
 get player CHK_PLAYER_STATUS
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -68,3 +68,113 @@ resptimeout 7500
 wait playstate playing
 chk pauseatend 0 playstate playing repeat 1
 end
+
+# speed can now be changed while paused or stopped
+test 50-40 Speed-Chg-Pause-Stop
+msg main MUSICQ_INSERT 0~999~19
+msg main MUSICQ_INSERT 0~999~20
+resptimeout 2000
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+msg player PLAY_SPEED 110
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk speed 110
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SPEED 90
+# the speed in the status reflects the old speed
+msg main CMD_PLAY
+mssleep 500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+chk speed 90
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SPEED 110
+# the speed in the status reflects the old speed
+msg main CMD_PLAY
+mssleep 500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+chk speed 110
+#
+msg player PLAY_PAUSEATEND
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+chk speed 100
+msg player PLAY_SPEED 110
+msg main CMD_PLAY
+mssleep 500
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+chk speed 110
+#
+end
+
+# test the position slider while playing/paused
+test 50-50 Position-Paused
+# test while playing
+msg main MUSICQ_INSERT 0~999~4
+msg main MUSICQ_INSERT 0~999~5
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+mssleep 500
+msg player PLAY_SEEK 5000
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 5000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 6000
+#
+msg player PLAY_SEEK 0
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 0
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 1000
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SEEK 1000
+mssleep 100
+get player CHK_PLAYER_STATUS
+chk playtimeplayed 1000
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 1000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 2000
+#
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+msg player PLAY_SEEK 5000
+mssleep 100
+get player CHK_PLAYER_STATUS
+chk playtimeplayed 5000
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 5000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 6000
+#
+end
+

@@ -127,6 +127,16 @@ sequenceGetDanceList (sequence_t *sequence)
   return sequence->sequence;
 }
 
+int32_t
+sequenceGetCount (sequence_t *sequence)
+{
+  if (sequence == NULL || sequence->sequence == NULL) {
+    return 0;
+  }
+
+  return nlistGetCount (sequence->sequence);
+}
+
 void
 sequenceStartIterator (sequence_t *sequence, nlistidx_t *iteridx)
 {

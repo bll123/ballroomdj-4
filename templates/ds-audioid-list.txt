@@ -1,7 +1,7 @@
 # ds-audioid-disp
-# 2022-9-12
-# version 1
-SCORE
+# 2024-7-8
+# version 2
+AUDIOID_SCORE
 ALBUM
 ARTIST
 TITLE

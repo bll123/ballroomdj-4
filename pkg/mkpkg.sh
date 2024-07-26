@@ -116,23 +116,25 @@ function copyreleasefiles {
   echo "   removing exclusions"
   # bdj4se is only used for packaging
   # testing:
-  #   check_all, chkprocess, chkfileshared, dmkmfromdb
+  #   aesed, check_all, chkprocess, chkfileshared, dmkmfromdb
   #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   dbustest, plisinklist, voltest, vsencdec, uitest
   # img/profile[1-9] may be left over from testing
   # 2024-1-16 do not ship the pli-mpv interface either.
+  # 2024-6-3 for the time being, do not ship libplivlc4
   rm -f \
       ${stage}/bin/aesed* \
       ${stage}/bin/bdj4se* \
       ${stage}/bin/check_all* \
       ${stage}/bin/chkfileshared* \
       ${stage}/bin/chkprocess* \
-      ${stage}/bin/dmkmfromdb* \
-      ${stage}/bin/libvolnull* \
-      ${stage}/bin/libplinull* \
       ${stage}/bin/dbustest* \
-      ${stage}/bin/plisinklist* \
+      ${stage}/bin/dmkmfromdb* \
       ${stage}/bin/libplimpv* \
+      ${stage}/bin/libplinull* \
+      ${stage}/bin/libplivlc4* \
+      ${stage}/bin/libvolnull* \
+      ${stage}/bin/plisinklist* \
       ${stage}/bin/tdbcompare* \
       ${stage}/bin/tdbsetval* \
       ${stage}/bin/testsuite* \
@@ -162,16 +164,19 @@ function copyreleasefiles {
 
   # the graphics-linked launcher is not used on linux or windows
   # mpris is not available on windows or macos
+  # bdj4winmksc is only for windows
   # 2024-3-9 the pli-gstreamer interface is not shipped for macos or windows.
   #   It is possible to make it work, but it has no speed+pitch control.
   case ${tag} in
     linux)
       rm -f ${stage}/bin/bdj4g
+      rm -f ${stage}/bin/bdj4winmksc
       ;;
     macos)
       rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/libpligst*
       rm -f ${stage}/bin/libcontmpris*
+      rm -f ${stage}/bin/bdj4winmksc
       ;;
     win64)
       rm -f ${stage}/bin/bdj4g

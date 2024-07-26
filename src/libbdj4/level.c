@@ -41,7 +41,7 @@ static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
 level_t *
 levelAlloc ()
 {
-  level_t     *level;
+  level_t     *levels;
   ilistidx_t  key;
   ilistidx_t  iteridx;
   char        fname [MAXPATHLEN];
@@ -53,126 +53,209 @@ levelAlloc ()
     return NULL;
   }
 
-  level = mdmalloc (sizeof (level_t));
+  levels = mdmalloc (sizeof (level_t));
 
-  level->path = mdstrdup (fname);
-  level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
+  levels->path = mdstrdup (fname);
+  levels->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
       leveldfkeys, LEVEL_KEY_MAX, DF_NO_OFFSET, NULL);
-  level->level = datafileGetList (level->df);
-  ilistDumpInfo (level->level);
+  levels->level = datafileGetList (levels->df);
+  ilistDumpInfo (levels->level);
 
-  level->levelList = slistAlloc ("level-disp", LIST_UNORDERED, NULL);
-  slistSetSize (level->levelList, ilistGetCount (level->level));
+  levels->levelList = slistAlloc ("level-disp", LIST_UNORDERED, NULL);
+  slistSetSize (levels->levelList, ilistGetCount (levels->level));
 
-  level->maxWidth = ilistGetMaxValueWidth (level->level, LEVEL_LEVEL);
+  levels->maxWidth = ilistGetMaxValueWidth (levels->level, LEVEL_LEVEL);
 
-  ilistStartIterator (level->level, &iteridx);
-  while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
+  ilistStartIterator (levels->level, &iteridx);
+  while ((key = ilistIterateKey (levels->level, &iteridx)) >= 0) {
     const char  *val;
-    ssize_t     nval;
+    ilistidx_t  nval;
 
-    val = ilistGetStr (level->level, key, LEVEL_LEVEL);
-    slistSetNum (level->levelList, val, key);
-    nval = ilistGetNum (level->level, key, LEVEL_DEFAULT_FLAG);
+    val = ilistGetStr (levels->level, key, LEVEL_LEVEL);
+    slistSetNum (levels->levelList, val, key);
+    nval = ilistGetNum (levels->level, key, LEVEL_DEFAULT_FLAG);
     if (nval && val != NULL) {
-      level->defaultName = mdstrdup (val);
-      level->defaultKey = nval;
+      levels->defaultName = mdstrdup (val);
+      levels->defaultKey = nval;
     }
   }
 
-  slistSort (level->levelList);
+  slistSort (levels->levelList);
 
-  return level;
+  return levels;
 }
 
 void
-levelFree (level_t *level)
+levelFree (level_t *levels)
 {
-  if (level != NULL) {
-    dataFree (level->path);
-    datafileFree (level->df);
-    dataFree (level->defaultName);
-    slistFree (level->levelList);
-    mdfree (level);
+  if (levels == NULL) {
+    return;
   }
-}
 
-ssize_t
-levelGetCount (level_t *level)
-{
-  return ilistGetCount (level->level);
-}
-
-int
-levelGetMaxWidth (level_t *level)
-{
-  return level->maxWidth;
-}
-
-const char *
-levelGetLevel (level_t *level, ilistidx_t ikey)
-{
-  return ilistGetStr (level->level, ikey, LEVEL_LEVEL);
-}
-
-ssize_t
-levelGetWeight (level_t *level, ilistidx_t ikey)
-{
-  return ilistGetNum (level->level, ikey, LEVEL_WEIGHT);
-}
-
-ssize_t
-levelGetDefault (level_t *level, ilistidx_t ikey)
-{
-  return ilistGetNum (level->level, ikey, LEVEL_DEFAULT_FLAG);
-}
-
-char *
-levelGetDefaultName (level_t *level)
-{
-  if (level == NULL) {
-    return NULL;
-  }
-  return level->defaultName;
-}
-
-ssize_t
-levelGetDefaultKey (level_t *level)
-{
-  if (level == NULL) {
-    return 0;
-  }
-  return level->defaultKey;
-}
-
-ssize_t
-levelGetMax (level_t *level)
-{
-  return ilistGetCount (level->level) - 1;
-}
-
-void
-levelStartIterator (level_t *level, ilistidx_t *iteridx)
-{
-  ilistStartIterator (level->level, iteridx);
+  dataFree (levels->path);
+  datafileFree (levels->df);
+  dataFree (levels->defaultName);
+  slistFree (levels->levelList);
+  mdfree (levels);
 }
 
 ilistidx_t
-levelIterate (level_t *level, ilistidx_t *iteridx)
+levelGetCount (level_t *levels)
 {
-  return ilistIterateKey (level->level, iteridx);
+  if (levels == NULL) {
+    return 0;
+  }
+
+  return ilistGetCount (levels->level);
+}
+
+int
+levelGetMaxWidth (level_t *levels)
+{
+  if (levels == NULL) {
+    return 0;
+  }
+
+  return levels->maxWidth;
+}
+
+const char *
+levelGetLevel (level_t *levels, ilistidx_t ikey)
+{
+  if (levels == NULL) {
+    return NULL;
+  }
+
+  return ilistGetStr (levels->level, ikey, LEVEL_LEVEL);
+}
+
+int
+levelGetWeight (level_t *levels, ilistidx_t ikey)
+{
+  if (levels == NULL) {
+    return 0;
+  }
+
+  return ilistGetNum (levels->level, ikey, LEVEL_WEIGHT);
+}
+
+int
+levelGetDefault (level_t *levels, ilistidx_t ikey)
+{
+  if (levels == NULL) {
+    return 0;
+  }
+
+  return ilistGetNum (levels->level, ikey, LEVEL_DEFAULT_FLAG);
+}
+
+char *
+levelGetDefaultName (level_t *levels)
+{
+  if (levels == NULL) {
+    return NULL;
+  }
+
+  return levels->defaultName;
+}
+
+ilistidx_t
+levelGetDefaultKey (level_t *levels)
+{
+  if (levels == NULL) {
+    return 0;
+  }
+
+  return levels->defaultKey;
+}
+
+void
+levelSetLevel (level_t *levels, ilistidx_t ikey, const char *leveldisp)
+{
+  if (levels == NULL) {
+    return;
+  }
+
+  ilistSetStr (levels->level, ikey, LEVEL_LEVEL, leveldisp);
+}
+
+void
+levelSetWeight (level_t *levels, ilistidx_t ikey, int weight)
+{
+  if (levels == NULL) {
+    return;
+  }
+
+  ilistSetNum (levels->level, ikey, LEVEL_WEIGHT, weight);
+}
+
+void
+levelSetDefault (level_t *levels, ilistidx_t ikey)
+{
+  ilistidx_t  count;
+
+  if (levels == NULL) {
+    return;
+  }
+
+  count = ilistGetCount (levels->level);
+  for (ilistidx_t tidx = 0; tidx < count; ++tidx) {
+    ilistSetNum (levels->level, tidx, LEVEL_DEFAULT_FLAG, 0);
+  }
+  ilistSetNum (levels->level, ikey, LEVEL_DEFAULT_FLAG, 1);
+  dataFree (levels->defaultName);
+  levels->defaultName = mdstrdup (
+      ilistGetStr (levels->level, ikey, LEVEL_LEVEL));
+  levels->defaultKey = ikey;
+}
+
+void
+levelDeleteLast (level_t *levels)
+{
+  ilistidx_t    count;
+
+  if (levels == NULL) {
+    return;
+  }
+
+  count = ilistGetCount (levels->level);
+  ilistDelete (levels->level, count - 1);
+}
+
+void
+levelStartIterator (level_t *levels, ilistidx_t *iteridx) /* TESTING */
+{
+  if (levels == NULL) {
+    return;
+  }
+
+  ilistStartIterator (levels->level, iteridx);
+}
+
+ilistidx_t
+levelIterate (level_t *levels, ilistidx_t *iteridx)  /* TESTING */
+{
+  if (levels == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
+  return ilistIterateKey (levels->level, iteridx);
 }
 
 void
 levelConv (datafileconv_t *conv)
 {
-  level_t     *level;
-  ssize_t     num;
+  level_t     *levels;
+  slistidx_t  num;
 
-  level = bdjvarsdfGet (BDJVDF_LEVELS);
+  if (conv == NULL) {
+    return;
+  }
+
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   if (conv->invt == VALUE_STR) {
-    num = slistGetNum (level->levelList, conv->str);
+    num = slistGetNum (levels->levelList, conv->str);
     conv->outvt = VALUE_NUM;
     conv->num = num;
     if (conv->num == LIST_VALUE_INVALID) {
@@ -182,13 +265,13 @@ levelConv (datafileconv_t *conv)
   } else if (conv->invt == VALUE_NUM) {
     num = conv->num;
     conv->outvt = VALUE_STR;
-    conv->str = ilistGetStr (level->level, num, LEVEL_LEVEL);
+    conv->str = ilistGetStr (levels->level, num, LEVEL_LEVEL);
   }
 }
 
 void
-levelSave (level_t *level, ilist_t *list)
+levelSave (level_t *levels, ilist_t *list)
 {
-  datafileSave (level->df, NULL, list, DF_NO_OFFSET,
-      datafileDistVersion (level->df));
+  datafileSave (levels->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (levels->df));
 }

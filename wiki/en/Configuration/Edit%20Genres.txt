@@ -7,10 +7,15 @@
 If you want to use genres, you will also want to change the
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
+The __Classical?__ selection is used for classical music genres.  The
+classical music setting affects the right-click action in song
+selection listings.
+
 To add a new genre, select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
-button.  Then click on the name to change the name.  Select the
-__Delete__
+button.  Click on the name to change the name.
+
+Select the __Delete__
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button to delete a genre.
 
@@ -19,12 +24,9 @@ Use the up and down arrows
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order of the genres to match your preference.
 
-The __Classical?__ selection is used for classical music.  ___Classical
-music support is not yet implemented in BDJ4.___
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-E.png)
+![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-F.png)
 <br><span style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_

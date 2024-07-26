@@ -11,6 +11,7 @@ Contents
   Copyright
   Licenses
   Building From Source
+  Translations
 
 Installation:
   Windows:
@@ -62,7 +63,8 @@ Licenses:
     qrcode      : MIT License (templates/qrcode/LICENSE)
     img/musicbrainz-logo.svg : GPLv2
     MacOS:
-      ICU         : ICU
+      ICU       : ICU
+      themes    : GPLv3 License
     Windows:
       curl      : MIT License
       ffmpeg    : GPLv3 License
@@ -74,6 +76,7 @@ Licenses:
       nghttp2   : MIT License
       opusfile  : Xiph/BSD License
       opus      : Xiph/BSD License
+      themes    : GPLv3 License
 
 Building From Source:
 
@@ -82,3 +85,10 @@ Building From Source:
   Unpack the package, and read the 'BUILD.txt' file.
   For Windows, the bdj4-src-win64-DATE.zip file is also needed.
   For MacOS, the bdj4-src-macos-DATE.zip file is also needed.
+
+Translations:
+
+  Except for Nederlands (Dutch), most of the translation are machine
+  translated and of very poor quality.
+
+  If you can help with translating, please let me know.

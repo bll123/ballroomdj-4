@@ -4,7 +4,6 @@
 #ifndef INC_DANCESEL_H
 #define INC_DANCESEL_H
 
-#include "bdj4.h"
 #include "autosel.h"
 #include "dance.h"
 #include "ilist.h"

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-05-04 12:19\n"
+"POT-Creation-Date: 2024-06-17\n"
+"PO-Revision-Date: 2024-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -23,11 +23,6 @@ msgstr ""
 #, c-format
 msgid "%1$s must be greater than %2$s"
 msgstr "%1$s は %2$sより大きくなければならない。"
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
-msgstr "%d ファイルが見つかりました"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
@@ -125,6 +120,11 @@ msgstr "%s XMLファイル"
 msgid "%s data will be converted."
 msgstr "%s のデータが変換される。"
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s ファイルが見つかりました"
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -151,37 +151,43 @@ msgstr "%s がインストールされていない"
 msgid "%s may not exceed the song duration"
 msgstr "%s 曲の長さを超えてはならない"
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr "%s は数値でなければならない。"
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
-msgstr "%s を設定しなければならない。"
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s:*'\":|<>^文字は使用できません。"
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
-msgid "%s: Invalid time."
-msgstr "%s無効な時間です。"
+msgid "%s: Invalid time (%s)."
+msgstr "%s: 無効な時間です (%s)。"
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: は数値でなければならない。"
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: を設定しなければならない。"
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
-msgstr "%sスラッシュは使用不可"
+msgid "%s: Slashes are not allowed."
+msgstr "%s: スラッシュは使用不可。"
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
-msgstr "%sスペースは使用できません。"
+msgstr "%s: スペースは使用できません。"
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
-msgstr "%s数値でなければならない。"
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -242,11 +248,11 @@ msgstr "アルバム・アーティスト"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr ""
+msgstr "アルバム・アーティストのソート順"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr ""
+msgstr "アルバムのソート順"
 
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
@@ -312,7 +318,7 @@ msgstr "アーティスト"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr ""
+msgstr "アーティストのソート順"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
@@ -364,10 +370,6 @@ msgstr "BDJタグのみ"
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3データベースのバージョンが古すぎる。"
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr "BDJ4内部"
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -396,7 +398,7 @@ msgstr "すべての編集をキャンセルする"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr ""
+msgstr "リネーム不可"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -445,7 +447,6 @@ msgstr "ビートに合わせて青いボックスの中でマウスをクリッ
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -480,7 +481,7 @@ msgstr "作曲家"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr ""
+msgstr "作曲家のソート順"
 
 #. CONTEXT: label: conductor
 msgid "Conductor"
@@ -573,7 +574,7 @@ msgstr "現在"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
-msgstr ""
+msgstr "現在の曲"
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -630,7 +631,7 @@ msgstr "プロフィール削除"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
-msgstr ""
+msgstr "ダイアログ"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -649,16 +650,9 @@ msgstr "ディスプレイ設定"
 msgid "Don't Write"
 msgstr "書くな"
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr "編集するフィールドをダブルクリックする。"
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
-msgstr ""
+msgstr "最新版のダウンロード"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -703,7 +697,7 @@ msgstr "ダンスを編集する"
 msgid "Edit Genres"
 msgstr "編集ジャンル"
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr "編集レベル"
 
@@ -742,7 +736,7 @@ msgstr "%s がインストールされているフォルダを入力してくだ
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr ""
+msgstr "新しいインストールの名前を入力します。"
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -781,11 +775,11 @@ msgstr "輸出"
 #. CONTEXT: managementui: export playlist: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export
 msgid "Export Playlist"
-msgstr ""
+msgstr "プレイリストのエクスポート"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr ""
+msgstr "輸出タイプ"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
@@ -907,7 +901,9 @@ msgid "High Dance Level"
 msgstr "ハイ・ダンス・レベル"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "歴史"
 
@@ -924,7 +920,7 @@ msgstr "輸入"
 #. CONTEXT: managementui: menu selection: song list: import
 #. CONTEXT: managementui: song list import: title of dialog
 msgid "Import Playlist"
-msgstr ""
+msgstr "プレイリストのインポート"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
@@ -965,6 +961,10 @@ msgstr "設置完了。"
 msgid "Installing %s."
 msgstr "%sのインストール ."
 
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -973,11 +973,17 @@ msgstr "無効なフォルダ"
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
-msgstr ""
+msgstr "無効な名前"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "無効な選択"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr ""
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -1029,7 +1035,7 @@ msgstr "場所は「tclsh」。"
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "%s"
+msgstr "低い %s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
@@ -1072,7 +1078,8 @@ msgid "Marquee Theme"
 msgstr "マーキーのテーマ"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "最大プレー時間"
 
@@ -1144,7 +1151,6 @@ msgid "Mute"
 msgstr "ミュート"
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr "名称"
 
@@ -1180,7 +1186,6 @@ msgid "New Level"
 msgstr "新しいレベル"
 
 #. CONTEXT: playlist management: default name for a new playlist
-#, c-format
 msgid "New Playlist"
 msgstr "新しいプレイリスト"
 
@@ -1194,7 +1199,6 @@ msgid "New Rating"
 msgstr "新規格付け"
 
 #. CONTEXT: sequence editor: default name for a new sequence
-#, c-format
 msgid "New Sequence"
 msgstr "新シークエンス"
 
@@ -1289,10 +1293,6 @@ msgstr "パソドブレ"
 msgid "Password"
 msgstr "パスワード"
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
-msgstr "ポーズ"
-
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
 msgstr "各曲を一時停止する"
@@ -1355,7 +1355,7 @@ msgstr "プレイリスト・タイプ"
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: managementui: song list import: name of file import type
 msgid "Playlists"
-msgstr ""
+msgstr "プレイリスト"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1386,7 +1386,7 @@ msgstr "ポジション"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
-msgstr ""
+msgstr "名前の変更を防ぐ"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
@@ -1476,7 +1476,7 @@ msgstr "キューダンス"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
 msgid "Queue_noun"
-msgstr "キュー"
+msgstr "列"
 
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
@@ -1509,7 +1509,7 @@ msgstr "再インストール"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr ""
+msgstr "%sを再インストールする。  既存の設定を上書きします。"
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1530,7 +1530,7 @@ msgstr "%sを登録する。"
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
-msgstr ""
+msgstr "リロード"
 
 #. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
@@ -1539,11 +1539,11 @@ msgstr "削除"
 
 #. CONTEXT: managementui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr ""
+msgstr "歌の削除"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr ""
+msgstr "名称変更"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
@@ -1558,7 +1558,9 @@ msgid "Repeat"
 msgstr "リピート"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "BallroomDJ データベースを完全に置き換えます。データベースへのすべての変更は失われます。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1604,7 +1606,6 @@ msgstr "サンバ"
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "セーブ"
@@ -1714,6 +1715,7 @@ msgstr "サポートメッセージの送信"
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr "シーケンス"
@@ -1751,6 +1753,10 @@ msgstr "ショー・マーキー"
 msgid "Show Song Information"
 msgstr "ショー・ソング・インフォメーション"
 
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "スピードリセットを表示"
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "シャットダウンスクリプト"
@@ -1787,6 +1793,7 @@ msgstr "ソング・エンド"
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
@@ -1925,7 +1932,9 @@ msgid "The conversion process will not be run."
 msgstr "変換処理は実行されない。"
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "変換処理は、新規インストールと再インストールでのみ実行されます。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1947,7 +1956,7 @@ msgstr "タイトル"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr ""
+msgstr "タイトルソート順"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
@@ -1956,6 +1965,14 @@ msgstr "トグル・ポーズ"
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr "トグル・リピート"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
@@ -2005,7 +2022,7 @@ msgstr "BDJ3 データベースが見つかりません。"
 
 #. CONTEXT: managementui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
-msgstr ""
+msgstr "曲の削除を元に戻す"
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
@@ -2031,11 +2048,13 @@ msgstr "更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "%s データベースから BallroomDJ データベースの情報を更新する。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "オーディオファイルのタグから BallroomDJ データベースの情報を更新します。"
 
 #. CONTEXT: alternate installation: status message
@@ -2114,16 +2133,14 @@ msgid "Write Tags to Audio Files"
 msgstr "オーディオファイルにタグを書き込む"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "BallroomDJ データベースの情報を使って、オーディオファイルのタグを書き込みます。"
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
 msgstr "XMLファイル"
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
-msgstr "自動"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"
@@ -2167,7 +2184,7 @@ msgstr "サポートを受けるには"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+msgstr "サポートを受けるには、「サポート」ボタンを選択してください。Wiki、フォーラム、問題チケット システムへのリンクがあります。または、「サポート メッセージの送信」ボタンを使用してメッセージを送信してください。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
@@ -2175,7 +2192,7 @@ msgstr "各曲のダンスをチェック"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window.<br> Scroll through the list of songs and check to make sure the dance is set for each song.<br>To set the dance for a song:=> Select the song.=> Select the 'Song Editor' tab (below the player, above the list of songs).=> Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song.=> In the upper right of the 'Song Editor' tab, select the 'Save' button.<br> You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set.=> Leave the 'BDJ4 Management' window open."
+msgstr "=>「BDJ4 管理」ウィンドウの左側にある「ミュージック マネージャー」を選択します。<br>曲のリストをスクロールして、各曲にダンスが設定されていることを確認します。<br>曲のダンスを設定するには: => 曲を選択します。 =>「曲エディター」タブを選択します (プレーヤーの下、曲のリストの上)。 =>「ダンス」ラベルの横にあるダンス ドロップダウン選択を使用して、曲のダンスを選択します。 =>「曲エディター」タブの右上にある「保存」ボタンを選択します。<br>「ミュージック マネージャー」タブに戻って、ダンスを設定する必要がある他の曲を確認できます。 =>「BDJ4 管理」ウィンドウを開いたままにしておきます。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
@@ -2183,7 +2200,7 @@ msgstr "初めてデータベースを構築する"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "In order to function, BallroomDJ 4 maintains a database of all of your songs. This database must be built for the first time.=> Select the 'Manage' button.=> In the 'BDJ4 Management' window, select the 'Update Database' section in the left side of the window.<br> The default selection 'Check for New' is used when you add or remove songs from your music collection.=> Change the selection to 'Rebuild Database'.=> Select the 'Start' button.=> Wait for the database rebuild to finish.=> Leave the 'BDJ4 Management' window open."
+msgstr "BallroomDJ 4 が機能するためには、すべての曲のデータベースを維持する必要があります。このデータベースは、最初に構築する必要があります。=>「管理」ボタンを選択します。=>「BDJ4 管理」ウィンドウで、ウィンドウの左側にある「データベースの更新」セクションを選択します。<br>デフォルトで選択されている「新規チェック」は、音楽コレクションに曲を追加または削除するときに使用されます。=>選択を「データベースの再構築」に変更します。=>「開始」ボタンを選択します。=>データベースの再構築が完了するまで待ちます。=>「BDJ4 管理」ウィンドウを開いたままにします。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2191,7 +2208,7 @@ msgstr "プレイリストの例"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.<br> On the right side of the lower section of the window is a list of your songs.=> Select a song by clicking on it.=> Now select the left arrow button in the middle of the lower section.<br> This will add the song you selected to the song list that is being created.=> Select a few songs and add each of them to the song list.<br> Above the song list is an entry box with the name 'New Song List' in it.=> Click in the box and change the name of the song list.=> Close the 'BDJ4 Management' window. The song list is automatically saved."
+msgstr "=> 「BDJ4 管理」ウィンドウの左側にある「曲リストの編集」を選択します。<br>ウィンドウの下部の右側に曲のリストが表示されます。 => 曲をクリックして選択します。 => 次に、下部の中央にある左矢印ボタンを選択します。<br>これにより、選択した曲が作成中の曲リストに追加されます。 => いくつかの曲を選択し、それぞれを曲リストに追加します。<br>曲リストの上には、「新しい曲リスト」という名前の入力ボックスがあります。 => ボックスをクリックして、曲リストの名前を変更します。 => 「BDJ4 管理」ウィンドウを閉じます。曲リストは自動的に保存されます。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
@@ -2199,7 +2216,7 @@ msgstr "音楽フォルダの場所を設定する"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "The first step is to configure the location of your music folder.=> Select the 'Configure' button.<br> In the 'BDJ4 Configuration' window, the 'General' section is displayed. The first item in 'General' is the 'Music Folder'.=> Change the 'Music Folder' to the location of your music.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "最初のステップは、音楽フォルダの場所を設定することです。=>「設定」ボタンを選択します。<br>「BDJ4 設定」ウィンドウに、「一般」セクションが表示されます。「一般」の最初の項目は「音楽フォルダ」です。=>「音楽フォルダ」を音楽の場所に変更します。=>「BDJ4 設定」ウィンドウを開いたままにします。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2207,7 +2224,7 @@ msgstr "設定されたダンスを確認する"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "The names of the dances need to match what you use.=> Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.<br> Review the list of dances. If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button.=> Close the 'BDJ4 Configuration' window."
+msgstr "ダンスの名前は、使用するものと一致する必要があります。 => 「BDJ4 構成」ウィンドウの左側にある「ダンスの編集」を選択します。<br>ダンスのリストを確認します。ダンスの名前が使用するものと異なる場合は、ダンスを選択して名前を変更します。使用するダンスが見つからない場合は、「追加」ボタンを選択してダンスを追加します。使用しないダンスがある場合は、ダンスを選択してから、「削除」ボタンを選択します。 => 「BDJ4 構成」ウィンドウを閉じます。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2215,7 +2232,7 @@ msgstr "はじめに／はじめに"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "This utility will walk you through a few steps to help you get started.=> Select the 'Next' button to continue on to the next step."
+msgstr "このユーティリティは、いくつかのステップを経て、使い始めることができます。=> 次のステップに進むには、'Next' ボタンを選択します。"
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2223,7 +2240,7 @@ msgstr "プレイリストを再生する"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Now you will play the playlist that was just created.=> Select the 'Player' button.=> In the player window, select the 'Queue Playlist' drop-down.=> Select the name of the playlist that you entered previously."
+msgstr "ここで、作成したプレイリストを再生します。 => 「プレーヤー」ボタンを選択します。 => プレーヤー ウィンドウで、「キュー プレイリスト」ドロップダウンを選択します。 => 前に入力したプレイリストの名前を選択します。"
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2231,5 +2248,5 @@ msgstr "音楽の編成"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Setting the organisation method is important so that BallroomDJ 4  can determine the information about your songs when the database is built.=> Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.<br> Many people have their music organised by putting each dance into a separate folder.<br>The default organisation is 'Dance/Title'. If you have iTunes installed, the organization path will be set to 'Album Artist/Album/Disc - Track0 Title'.=> Select the organisation method you use for your songs in the 'Organisation Path' drop-down.<br> If the organisation path you need is not present, select the 'support' button in the starter window and send a support message. Almost any organisation path can be configured.<br> If your audio files have the dance stored in the genre audio tag, turn on 'Database Loads Dance from Genre'.=> Leave the 'BDJ4 Configuration' window open."
+msgstr "データベースの構築時に BallroomDJ 4 が曲に関する情報を判断できるように、整理方法を設定することが重要です。 => 「BDJ4 構成」ウィンドウの左側にある「整理」を選択します。<br>多くの人は、各ダンスを別のフォルダに入れて音楽を整理しています。<br>デフォルトの整理は「ダンス/タイトル」です。iTunes がインストールされている場合、整理パスは「アルバム アーティスト/アルバム/ディスク - トラック 0 タイトル」に設定されます。 => 「整理パス」ドロップダウンで、曲に使用する整理方法を選択します。<br>必要な整理パスが存在しない場合は、スターター ウィンドウの「サポート」ボタンを選択して、サポート メッセージを送信してください。ほぼすべての整理パスを設定できます。<br>オーディオ ファイルにジャンル オーディオ タグにダンスが保存されている場合は、「データベースがジャンルからダンスをロードする」をオンにします。 => 「BDJ4 構成」ウィンドウを開いたままにします。"
 

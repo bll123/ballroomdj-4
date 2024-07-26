@@ -46,6 +46,7 @@ typedef enum {
   SV_HOST_WIKI,
   SV_LOCALE,
   SV_LOCALE_ORIG,
+  SV_LOCALE_ORIG_SHORT,
   SV_LOCALE_RADIX,
   SV_LOCALE_SHORT,
   SV_LOCALE_SYSTEM,
@@ -79,7 +80,6 @@ typedef enum {
   SV_USER,
   SV_USER_AGENT,
   SV_USER_MUNGE,
-  SV_VLC_VERSION,
   SV_WEB_VERSION_FILE,
   SV_MAX
 } sysvarkey_t;
@@ -103,6 +103,7 @@ typedef enum {
   SVL_NUM_PROC,
   SVL_OSBITS,
   SVL_USER_ID,
+  SVL_VLC_VERSION,
   SVL_MAX
 } sysvarlkey_t;
 
@@ -113,6 +114,8 @@ enum {
   SYSVARS_DATAPATH_UNKNOWN,
   SYSVARS_LOCALE_NOT_SET,
   SYSVARS_LOCALE_SET,
+  SYSVARS_FLAG_BASIC,
+  SYSVARS_FLAG_ALL,
 };
 
 typedef struct {
@@ -128,7 +131,7 @@ enum {
   SVC_USER_ID_NONE = -1,
 };
 
-void    sysvarsInit (const char *argv0);
+void    sysvarsInit (const char *argv0, int basicflag);
 void    sysvarsCheckPaths (const char *otherpaths);
 char    * sysvarsGetStr (sysvarkey_t idx);
 int64_t sysvarsGetNum (sysvarlkey_t idx);

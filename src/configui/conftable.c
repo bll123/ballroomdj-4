@@ -35,35 +35,42 @@ void
 confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     int flags)
 {
-  uiwcont_t   *mhbox;
-  uiwcont_t   *bvbox;
-  uiwcont_t   *scwindow;
-  uiwcont_t   *uiwidgetp;
+  uiwcont_t     *vbox = NULL;
+  uiwcont_t     *bvbox = NULL;
+  uiwcont_t     *uiwidgetp = NULL;
+  uivirtlist_t  *uivl = NULL;
+  const char    *tag = "conf";
+  int           vlflags = VL_FLAGS_NONE;
 
   logProcBegin ();
 
-  mhbox = uiCreateHorizBox ();
-  uiWidgetSetMarginTop (mhbox, 2);
-  uiBoxPackStart (boxp, mhbox);
+  switch (id) {
+    case CONFUI_ID_DANCE: { tag = "conf-dance"; break; }
+    case CONFUI_ID_GENRES: { tag = "conf-genre"; break; }
+    case CONFUI_ID_LEVELS: { tag = "conf-level"; break; }
+    case CONFUI_ID_RATINGS: { tag = "conf-rating"; break; }
+    case CONFUI_ID_STATUS: { tag = "conf-status"; break; }
+    default: { tag = "conf"; break; }
+  }
 
-  scwindow = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (scwindow);
-  uiBoxPackStartExpand (mhbox, scwindow);
-
-  gui->tables [id].uitree = uiCreateTreeView ();
   gui->tables [id].flags = flags;
 
-  uiWidgetSetMarginStart (gui->tables [id].uitree, 8);
-  uiTreeViewEnableHeaders (gui->tables [id].uitree);
-  uiWindowPackInWindow (scwindow, gui->tables [id].uitree);
-
-  uiwcontFree (scwindow);
+  if (id == CONFUI_ID_DANCE) {
+    vlflags = VL_NO_HEADING;
+  }
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 1);
+  uiWidgetAlignHorizStart (vbox);
+  uiBoxPackStart (boxp, vbox);
+  uivl = uivlCreate (tag, gui->window, vbox, 10, 100, vlflags);
+  gui->tables [id].uivl = uivl;
+  uiwcontFree (vbox);
 
   bvbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (bvbox, 4);
   uiWidgetSetMarginTop (bvbox, 32);
   uiWidgetAlignVertStart (bvbox);
-  uiBoxPackStart (mhbox, bvbox);
+  uiBoxPackStart (boxp, bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     gui->tables [id].callbacks [CONFUI_TABLE_CB_UP] = callbackInit (
@@ -103,7 +110,6 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
-  uiwcontFree (mhbox);
   uiwcontFree (bvbox);
 
   logProcEnd ("");
@@ -120,15 +126,14 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
     uiwcontFree (gui->tables [id].buttons [i]);
     gui->tables [id].buttons [i] = NULL;
   }
-  uiwcontFree (gui->tables [id].uitree);
-  gui->tables [id].uitree = NULL;
+  uivlFree (gui->tables [id].uivl);
+  gui->tables [id].uivl = NULL;
 }
 
 void
 confuiTableSave (confuigui_t *gui, confuiident_t id)
 {
   savefunc_t    savefunc;
-  char          tbuff [40];
 
   logProcBegin ();
   if (gui->tables [id].changed == false) {
@@ -140,36 +145,17 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
     return;
   }
 
-  if (gui->tables [id].listcreatefunc != NULL) {
-    callback_t    *cb;
-
-    snprintf (tbuff, sizeof (tbuff), "cu-table-save-%d", id);
-    gui->tables [id].savelist = ilistAlloc (tbuff, LIST_ORDERED);
-    gui->tables [id].saveidx = 0;
-    cb = callbackInit (gui->tables [id].listcreatefunc, gui, NULL);
-    uiTreeViewForeach (gui->tables [id].uitree, cb);
-    callbackFree (cb);
-  }
-
   savefunc = gui->tables [id].savefunc;
-  savefunc (gui);
+  if (savefunc != NULL) {
+    savefunc (gui);
+  }
   logProcEnd ("");
 }
 
 bool
-confuiTableChanged (void *udata, long col)
-{
-  confuigui_t   *gui = udata;
-
-  gui->tables [gui->tablecurr].changed = true;
-  return UICB_CONT;
-}
-
-bool
-confuiSwitchTable (void *udata, long pagenum)
+confuiSwitchTable (void *udata, int32_t pagenum)
 {
   confuigui_t       *gui = udata;
-  uiwcont_t         *uitree;
   confuiident_t     newid;
 
   logProcBegin ();
@@ -198,9 +184,9 @@ confuiSwitchTable (void *udata, long pagenum)
     confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_ORGPATH));
   }
   if (gui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
-    /* be sure to create the listing first */
-    confuiCreateTagListingDisp (gui);
+    /* be sure to create the target first */
     confuiCreateTagSelectedDisp (gui);
+    confuiCreateTagListingDisp (gui);
   }
 
   if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
@@ -208,14 +194,42 @@ confuiSwitchTable (void *udata, long pagenum)
     return UICB_CONT;
   }
 
-  uitree = gui->tables [gui->tablecurr].uitree;
-  if (uitree == NULL) {
-    logProcEnd ("no-tree-a");
-    return UICB_CONT;
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
+bool
+confuiTableAdd (void *udata)
+{
+  confuigui_t     *gui = udata;
+  uivirtlist_t    *uivl = NULL;
+  int             count = 0;
+  addfunc_t       addfunc = NULL;
+
+  logProcBegin ();
+
+  if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
+    logProcEnd ("non-table");
+    return UICB_STOP;
   }
 
-  uiTreeViewSelectDefault (uitree);
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uivl == NULL) {
+    logProcEnd ("no-vl");
+    return UICB_STOP;
+  }
 
+  count = uivlSelectionCount (uivl);
+  if (count != 1) {
+    return UICB_STOP;
+  }
+
+  addfunc = gui->tables [gui->tablecurr].addfunc;
+  if (addfunc != NULL) {
+    addfunc (gui);
+  }
+
+  gui->tables [gui->tablecurr].changed = true;
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -245,36 +259,56 @@ confuiTableMoveDown (void *udata)
 static void
 confuiTableMove (confuigui_t *gui, int dir)
 {
-  uiwcont_t         *uitree;
-  int               count;
-  int               idx;
-  int               flags;
+  uivirtlist_t  *uivl = NULL;
+  int           count = 0;
+  ilistidx_t    idx = -1;
+  int           flags;
+  movefunc_t    movefunc = NULL;
+
 
   logProcBegin ();
   flags = gui->tables [gui->tablecurr].flags;
 
-  uitree = gui->tables [gui->tablecurr].uitree;
-  count = uiTreeViewSelectGetCount (uitree);
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uivl == NULL) {
+    logProcEnd ("no-vl");
+    return;
+  }
+
+  count = uivlSelectionCount (uivl);
   if (count != 1) {
     logProcEnd ("no-selection");
     return;
   }
 
-  idx = uiTreeViewSelectGetIndex (uitree);
+  idx = uivlGetCurrSelection (uivl);
+  if (idx < 0) {
+    return;
+  }
 
+  count = gui->tables [gui->tablecurr].currcount;
+
+  if (idx == 0 && dir == CONFUI_MOVE_PREV) {
+    logProcEnd ("move-prev-first");
+    return;
+  }
+  if (idx == count - 1 && dir == CONFUI_MOVE_NEXT) {
+    logProcEnd ("move-next-last");
+    return;
+  }
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
     logProcEnd ("move-prev-keep-first");
     return;
   }
-  if (idx == gui->tables [gui->tablecurr].currcount - 1 &&
+  if (idx == count - 1 &&
       dir == CONFUI_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
     logProcEnd ("move-prev-keep-last");
     return;
   }
-  if (idx == gui->tables [gui->tablecurr].currcount - 2 &&
+  if (idx == count - 2 &&
       dir == CONFUI_MOVE_NEXT &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
     logProcEnd ("move-next-keep-last");
@@ -287,10 +321,9 @@ confuiTableMove (confuigui_t *gui, int dir)
     return;
   }
 
-  if (dir == CONFUI_MOVE_PREV) {
-    uiTreeViewMoveBefore (uitree);
-  } else {
-    uiTreeViewMoveAfter (uitree);
+  movefunc = gui->tables [gui->tablecurr].movefunc;
+  if (movefunc != NULL) {
+    movefunc (gui, idx, dir);
   }
   gui->tables [gui->tablecurr].changed = true;
   logProcEnd ("");
@@ -300,54 +333,61 @@ static bool
 confuiTableRemove (void *udata)
 {
   confuigui_t       *gui = udata;
-  uiwcont_t         *uitree;
-  int               idx;
-  int               count;
+  uivirtlist_t      *uivl;
+  int               idx = -1;
+  int               count = 0;
   int               flags;
 
   logProcBegin ();
 
-  uitree = gui->tables [gui->tablecurr].uitree;
-  if (uitree == NULL) {
+  flags = gui->tables [gui->tablecurr].flags;
+
+  uivl = gui->tables [gui->tablecurr].uivl;
+  if (uivl == NULL) {
     return UICB_STOP;
   }
 
-  flags = gui->tables [gui->tablecurr].flags;
-  count = uiTreeViewSelectGetCount (uitree);
+  count = uivlSelectionCount (uivl);
   if (count != 1) {
     logProcEnd ("no-selection");
     return UICB_STOP;
   }
 
-  idx = uiTreeViewSelectGetIndex (uitree);
+  idx = uivlGetCurrSelection (uivl);
+  if (idx < 0) {
+    return UICB_STOP;
+  }
+
+  count = gui->tables [gui->tablecurr].currcount;
+
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
     logProcEnd ("keep-first");
     return UICB_CONT;
   }
-  if (idx == gui->tables [gui->tablecurr].currcount - 1 &&
+  if (idx == count - 1 &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
     logProcEnd ("keep-last");
     return UICB_CONT;
   }
 
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
-    listidx_t     dkey;
-    dance_t       *dances;
+  if (uivl != NULL) {
+    removefunc_t  removefunc;
 
-    dkey = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceDelete (dances, dkey);
+    removefunc = gui->tables [gui->tablecurr].removefunc;
+    if (removefunc != NULL) {
+      removefunc (gui, idx);
+    }
+
+    count = gui->tables [gui->tablecurr].currcount;
+    if (idx >= count) {
+      uivlSetSelection (uivl, count - 1);
+    }
   }
 
-  uiTreeViewValueRemove (uitree);
   gui->tables [gui->tablecurr].changed = true;
-  gui->tables [gui->tablecurr].currcount -= 1;
-
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
-    confuiDanceSelect (gui, 0);
-  }
 
   logProcEnd ("");
   return UICB_CONT;
 }
+

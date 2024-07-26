@@ -17,6 +17,7 @@ add_library (libbdj4ui SHARED
   uiaudioidui.c
   uicopytags.c
   uidance.c
+  uidd.c
   uiduallist.c
   uiexppl.c
   uiexpimpbdj4.c
@@ -41,8 +42,9 @@ add_library (libbdj4ui SHARED
   uisongselcommon.c
   uisongselui.c
   uistatus.c
-  uitreedisp.c
   uiutils.c
+  uivirtlist.c
+  uivlutil.c
 )
 target_include_directories (libbdj4ui
   PRIVATE ${GTK_INCLUDE_DIRS}

@@ -19,24 +19,30 @@ target_link_libraries (libplinull PRIVATE
   libbdj4common
 )
 
-add_library (libplivlc SHARED plivlc.c vlci.c)
-target_include_directories (libplivlc
-  PRIVATE "${LIBVLC_INCLUDE_DIR}"
-)
-target_link_libraries (libplivlc PRIVATE
-  libbdj4common
-  ${LIBVLC_LIBRARY}
-)
+if (LIBVLC_FOUND)
+  add_library (libplivlc SHARED plivlc.c vlci.c)
+  target_compile_options (libplivlc PRIVATE -DBDJ4_VLC_VERS=3)
+  target_include_directories (libplivlc
+    PRIVATE "${LIBVLC_INCLUDE_DIR}"
+  )
+  target_link_libraries (libplivlc PRIVATE
+    libbdj4common
+    ${LIBVLC_LDFLAGS}
+    ${LIBVLC_LIBRARY}
+  )
+endif()
 
-#add_library (libplivlc4 SHARED plivlc4.c vlc4i.c)
-#target_include_directories (libplivlc4
-##  PRIVATE "${LIBVLC_INCLUDE_DIR}"
-#  PRIVATE "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0"
-#)
-#target_link_libraries (libplivlc4 PRIVATE
-#  libbdj4common
-#  ${LIBVLC_LIBRARY}
-#)
+if (LIBVLC4_FOUND)
+  add_library (libplivlc4 SHARED plivlc.c vlci.c)
+  target_compile_options (libplivlc4 PRIVATE -DBDJ4_VLC_VERS=4)
+  target_include_directories (libplivlc4
+    PRIVATE "${LIBVLC4_INCLUDE_DIR}"
+  )
+  target_link_libraries (libplivlc4 PRIVATE
+    libbdj4common
+    ${LIBVLC4_LIBRARY}
+  )
+endif()
 
 # make this an object in case something else needs it
 # but leave it in libpli/ for now
@@ -72,14 +78,29 @@ target_link_libraries (libpligst PRIVATE
 install (TARGETS
   libbdj4pli
   libplinull
-  libplivlc
   libplimpris
   libpligst
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
+if (LIBVLC_FOUND)
+  install (TARGETS
+    libplivlc
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+  updateRPath (libplivlc)
+endif()
+
+if (LIBVLC4_FOUND)
+  install (TARGETS
+    libplivlc4
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+  updateRPath (libplivlc4)
+endif()
+
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
-updateRPath (libplivlc)
 updateRPath (libplimpris)
 updateRPath (libpligst)
+

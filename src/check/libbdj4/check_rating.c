@@ -31,6 +31,13 @@ static void
 setup (void)
 {
   templateFileCopy ("ratings.txt", "ratings.txt");
+  bdjvarsdfloadInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjvarsdfloadCleanup ();
 }
 
 START_TEST(rating_alloc)
@@ -84,8 +91,6 @@ START_TEST(rating_conv)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_conv");
   mdebugSubTag ("rating_conv");
 
-  bdjvarsdfloadInit ();
-
   rating = ratingAlloc ();
   ratingStartIterator (rating, &iteridx);
   count = 0;
@@ -105,7 +110,6 @@ START_TEST(rating_conv)
     ++count;
   }
   ratingFree (rating);
-  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -124,9 +128,6 @@ START_TEST(rating_save)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_save");
   mdebugSubTag ("rating_save");
-
-  /* required for the rating conversion function */
-  bdjvarsdfloadInit ();
 
   rating = ratingAlloc ();
 
@@ -165,7 +166,52 @@ START_TEST(rating_save)
 
   ilistFree (tlist);
   ratingFree (rating);
-  bdjvarsdfloadCleanup ();
+}
+END_TEST
+
+START_TEST(rating_set)
+{
+  rating_t    *rating = NULL;
+  const char  *sval = NULL;
+  int         oval;
+  int         nval;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_set");
+  mdebugSubTag ("rating_set");
+
+  rating = ratingAlloc ();
+
+  sval = ratingGetRating (rating, 0);
+  ck_assert_str_ne (sval, "test");
+  ratingSetRating (rating, 0, "test");
+  sval = ratingGetRating (rating, 0);
+  ck_assert_str_eq (sval, "test");
+
+  oval = ratingGetWeight (rating, 0);
+  ratingSetWeight (rating, 0, oval + 10);
+  nval = ratingGetWeight (rating, 0);
+  ck_assert_int_eq (oval + 10, nval);
+
+  ratingFree (rating);
+}
+END_TEST
+
+START_TEST(rating_dellast)
+{
+  rating_t    *rating = NULL;
+  int         ocount, ncount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rating_dellast");
+  mdebugSubTag ("rating_dellast");
+
+  rating = ratingAlloc ();
+
+  ocount = ratingGetCount (rating);
+  ratingDeleteLast (rating);
+  ncount = ratingGetCount (rating);
+  ck_assert_int_eq (ocount - 1, ncount);
+
+  ratingFree (rating);
 }
 END_TEST
 
@@ -178,11 +224,13 @@ rating_suite (void)
   s = suite_create ("rating");
   tc = tcase_create ("rating");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, rating_alloc);
   tcase_add_test (tc, rating_iterate);
   tcase_add_test (tc, rating_conv);
   tcase_add_test (tc, rating_save);
+  tcase_add_test (tc, rating_set);
+  tcase_add_test (tc, rating_dellast);
   suite_add_tcase (s, tc);
   return s;
 }

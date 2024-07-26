@@ -33,7 +33,28 @@ for arg in "$@"; do
       INSTTEST=F
       ;;
   esac
+  shift
 done
+
+systype=$(uname -s)
+case $systype in
+  Linux)
+    os=linux
+    platform=unix
+    ;;
+  Darwin)
+    os=macos
+    platform=unix
+    ;;
+  MINGW64*)
+    os=win64
+    platform=windows
+    ;;
+  MINGW32*)
+    echo "Platform not supported"
+    exit 1
+    ;;
+esac
 
 . ./src/utils/pkgnm.sh
 pkgnmgetdata
@@ -48,6 +69,36 @@ fi
 
 LOG=src/testall.log
 > $LOG
+
+
+function runTestSuite {
+  pli=$1
+  vol=$2
+
+  echo "-- $(date +%T) make test setup"
+  pliargs="--pli $pli"
+  if [[ $os == linux && $pli == VLC3 ]]; then
+    # this may change later
+    pliargs=""
+  fi
+  volargs=""
+  if [[ $vol != "" ]]; then
+    volargs="--vol $vol"
+  fi
+  ./src/utils/mktestsetup.sh --force $pliargs $volargs >> $LOG 2>&1
+  echo "-- $(date +%T) testsuite $pli $vol" >> $LOG
+  echo "-- $(date +%T) testsuite $pli $vol"
+  # the pliargs need to be passed to the bdj4 launcher
+  # as macos and windows will modify their paths for vlc3/4.
+  ./bin/bdj4 --testsuite $pliargs >> $LOG 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "-- $(date +%T) testsuite $pli $vol FAIL"
+  else
+    echo "-- $(date +%T) testsuite $pli $vol OK"
+  fi
+  return $rc
+}
 
 if [[ $TBUILD == T ]]; then
   (
@@ -118,15 +169,15 @@ fi
 if [[ $DBTEST == T ]]; then
   if [[ $grc -eq 0 ]]; then
     # dbtest will rebuild the databases.
-    echo "-- dbtest atibdj4" >> $LOG
-    echo "-- $(date +%T) dbtest atibdj4"
-    ./src/utils/dbtest.sh --atibdj4 >> $LOG 2>&1
+    echo "-- dbtest " >> $LOG
+    echo "-- $(date +%T) dbtest"
+    ./src/utils/dbtest.sh >> $LOG 2>&1
     rc=$?
     if [[ $rc -ne 0 ]]; then
-      echo "-- $(date +%T) dbtest atibdj4 FAIL"
+      echo "-- $(date +%T) dbtest FAIL"
       grc=1
     else
-      echo "-- $(date +%T) dbtest atibdj4 OK"
+      echo "-- $(date +%T) dbtest OK"
     fi
   else
     echo "dbtest not run"
@@ -150,21 +201,46 @@ if [[ $INSTTEST == T ]]; then
 fi
 
 if [[ $TESTSUITE == T ]]; then
-  if [[ $grc -eq 0 ]]; then
-    echo "-- testsuite" >> $LOG
-    echo "-- $(date +%T) make test setup"
-    ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
-    echo "-- $(date +%T) testsuite"
-    ./bin/bdj4 --testsuite >> $LOG 2>&1
+  TESTVLC3ON=T
+  if [[ $grc -eq 0 && $TESTVLC3ON == T ]]; then
+    runTestSuite VLC3
     rc=$?
     if [[ $rc -ne 0 ]]; then
-      echo "-- $(date +%T) testsuite FAIL"
       grc=1
-    else
-      echo "-- $(date +%T) testsuite OK"
     fi
-  else
-    echo "testsuite not run"
+  fi
+
+  # the pipewire volume interface is only tested on linux
+  # need to modify this to check if the pipewire interface is available
+  # on the particular linux platform.
+  TESTPWON=F
+  if [[ $grc -eq 0 && $TESTPWON == T && $os == linux ]]; then
+    runTestSuite VLC3 pipewire
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      grc=1
+    fi
+  fi
+
+  # for the moment, only test gstreamer on linux
+  TESTGSTON=T
+  if [[ $grc -eq 0 && $TESTGSTON == T && $os == linux ]]; then
+    runTestSuite GST
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      grc=1
+    fi
+  fi
+
+  # for the time being, do not run the VLC 4 tests. (2024-6)
+  # VLC 4 has no release date scheduled.
+  TESTVLC4ON=F
+  if [[ $grc -eq 0 && $TESTVLC4ON == T && $os != linux ]]; then
+    runTestSuite VLC4
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      grc=1
+    fi
   fi
 fi
 

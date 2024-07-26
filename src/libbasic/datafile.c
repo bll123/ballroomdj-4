@@ -46,9 +46,9 @@ typedef struct datafile {
   list_t          *data;
 } datafile_t;
 
-#define DF_VERSION_STR      "version"
-#define DF_VERSION_DIST_STR "# version "
-#define DF_VERSION_FMT      "# version %d"
+static const char * const DF_VERSION_STR      = "version";
+static const char * const DF_VERSION_DIST_STR = "# version ";
+static const char * const DF_VERSION_FMT      = "# version %d";
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
 static void     datafileFreeData (datafile_t *df);
@@ -396,16 +396,6 @@ datafileGetList (datafile_t *df)
 }
 
 void
-datafileSetData (datafile_t *df, void *data)
-{
-  if (df != NULL) {
-    return;
-  }
-  df->data = data;
-  return;
-}
-
-void
 datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
     int dfkeycount, nlist_t *list, int offset)
 {
@@ -461,26 +451,29 @@ datafileReadDistVersion (const char *fname)
 
 /* debug / informational */
 
+/* for testing */
 datafiletype_t
-datafileGetType (datafile_t *df)
+datafileGetType (datafile_t *df) /* TESTING */
 {
   return df->dftype;
 }
 
+/* for testing */
 char *
-datafileGetFname (datafile_t *df)
+datafileGetFname (datafile_t *df) /* TESTING */
 {
   return df->fname;
 }
 
+/* for testing */
 list_t *
-datafileGetData (datafile_t *df)
+datafileGetData (datafile_t *df) /* TESTING */
 {
   return df->data;
 }
 
 listidx_t
-parseGetAllocCount (parseinfo_t *pi)
+parseGetAllocCount (parseinfo_t *pi)  /* TESTING */
 {
   return pi->allocCount;
 }
@@ -703,7 +696,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         nikey++;
       }
       key = atol (tvalstr);
-      snprintf (temp, sizeof (temp), "%s-item-%d", name, nikey);
+      snprintf (temp, sizeof (temp), "%s-item-%" PRId32, name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, NULL);
       continue;
     }
@@ -717,10 +710,10 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
       listidx_t idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
-        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %d", tkeystr, idx);
+        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %" PRId32, tkeystr, idx);
         ikey = dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
-        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%d(%d) vt:%d tvalstr:%s", ikey, ikey + offset, vt, tvalstr);
+        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%" PRId32 "(%" PRId32 ") vt:%d tvalstr:%s", ikey, ikey + offset, vt, tvalstr);
 
         conv.invt = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
@@ -861,7 +854,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   ilistStartIterator (list, &iteridx);
 
   fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, ilistGetVersion (list));
-  fprintf (fh, "count\n..%d\n", count);
+  fprintf (fh, "count\n..%" PRId32 "\n", count);
 
   count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {

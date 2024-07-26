@@ -19,20 +19,21 @@
 #include "mdebug.h"
 #include "ui.h"
 #include "callback.h"
+#include "uidd.h"
 #include "uigenre.h"
 
 typedef struct uigenre {
   genre_t       *genres;
-  uiwcont_t     *dropdown;
   uiwcont_t     *parentwin;
-  uiwcont_t     *buttonp;
-  callback_t    *cb;
+  uidd_t        *uidd;
+  callback_t    *internalselcb;
   callback_t    *selectcb;
-  long          selectedidx;
+  ilist_t       *ddlist;
+  ilistidx_t    selectedidx;
   bool          allflag : 1;
 } uigenre_t;
 
-static bool uigenreSelectHandler (void *udata, long idx);
+static bool uigenreSelectHandler (void *udata, int32_t idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
@@ -44,31 +45,22 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenre = mdmalloc (sizeof (uigenre_t));
   uigenre->genres = bdjvarsdfGet (BDJVDF_GENRES);
   uigenre->allflag = allflag;
-  uigenre->dropdown = NULL;
+  uigenre->uidd = NULL;
   uigenre->selectedidx = 0;
   uigenre->parentwin = parentwin;
-  uigenre->cb = NULL;
+  uigenre->internalselcb = NULL;
   uigenre->selectcb = NULL;
+  uigenre->ddlist = NULL;
 
-  uigenre->dropdown = uiDropDownInit ();
-  uigenre->cb = callbackInitLong (uigenreSelectHandler, uigenre);
-  uigenre->buttonp = uiComboboxCreate (uigenre->dropdown,
-      parentwin, "", uigenre->cb, uigenre);
   uigenreCreateGenreList (uigenre);
-  uiBoxPackStart (boxp, uigenre->buttonp);
+  uigenre->internalselcb = callbackInitI (uigenreSelectHandler, uigenre);
+  uigenre->uidd = uiddCreate ("uigenre",
+      parentwin, boxp, DD_PACK_START,
+      uigenre->ddlist, DD_LIST_TYPE_NUM,
+      "", DD_REPLACE_TITLE, uigenre->internalselcb);
 
   return uigenre;
 }
-
-uiwcont_t *
-uigenreGetButton (uigenre_t *uigenre)
-{
-  if (uigenre == NULL) {
-    return NULL;
-  }
-  return uigenre->buttonp;
-}
-
 
 void
 uigenreFree (uigenre_t *uigenre)
@@ -77,13 +69,14 @@ uigenreFree (uigenre_t *uigenre)
     return;
   }
 
-  callbackFree (uigenre->cb);
-  uiwcontFree (uigenre->dropdown);
+  callbackFree (uigenre->internalselcb);
+  uiddFree (uigenre->uidd);
+  ilistFree (uigenre->ddlist);
   mdfree (uigenre);
 }
 
-int
-uigenreGetValue (uigenre_t *uigenre)
+ilistidx_t
+uigenreGetKey (uigenre_t *uigenre)
 {
   if (uigenre == NULL) {
     return 0;
@@ -93,29 +86,23 @@ uigenreGetValue (uigenre_t *uigenre)
 }
 
 void
-uigenreSetValue (uigenre_t *uigenre, int value)
+uigenreSetKey (uigenre_t *uigenre, ilistidx_t gkey)
 {
-  if (uigenre == NULL || uigenre->dropdown == NULL) {
+  if (uigenre == NULL || uigenre->uidd == NULL) {
     return;
   }
 
-  uigenre->selectedidx = value;
-  uiDropDownSelectionSetNum (uigenre->dropdown, value);
+  uigenre->selectedidx = gkey;
+  uiddSetSelectionByNumKey (uigenre->uidd, gkey);
 }
 
 void
 uigenreSetState (uigenre_t *uigenre, int state)
 {
-  if (uigenre == NULL || uigenre->dropdown == NULL) {
+  if (uigenre == NULL || uigenre->uidd == NULL) {
     return;
   }
-  uiDropDownSetState (uigenre->dropdown, state);
-}
-
-void
-uigenreSizeGroupAdd (uigenre_t *uigenre, uiwcont_t *sg)
-{
-  uiSizeGroupAdd (sg, uigenre->buttonp);
+  uiddSetState (uigenre->uidd, state);
 }
 
 void
@@ -131,14 +118,14 @@ uigenreSetCallback (uigenre_t *uigenre, callback_t *cb)
 /* internal routines */
 
 static bool
-uigenreSelectHandler (void *udata, long idx)
+uigenreSelectHandler (void *udata, int32_t idx)
 {
   uigenre_t   *uigenre = udata;
 
   uigenre->selectedidx = idx;
 
   if (uigenre->selectcb != NULL) {
-    callbackHandlerLong (uigenre->selectcb, idx);
+    callbackHandlerI (uigenre->selectcb, idx);
   }
   return UICB_CONT;
 }
@@ -147,14 +134,35 @@ static void
 uigenreCreateGenreList (uigenre_t *uigenre)
 {
   slist_t   *genrelist;
-  char      *dispptr;
+  slistidx_t  iteridx;
+  ilist_t     *ddlist;
+  const char  *disp;
+  int         count;
+  ilistidx_t  gkey;
+  int         idx;
 
   genrelist = genreGetList (uigenre->genres);
-  dispptr = NULL;
+  count = slistGetCount (genrelist);
+  ddlist = ilistAlloc ("uigenre", LIST_ORDERED);
+  ilistSetSize (ddlist, count);
+
+  idx = 0;
   if (uigenre->allflag) {
-      /* CONTEXT: genre: a filter: all genres are displayed in the song selection */
-      dispptr = _("All Genres");
+    /* CONTEXT: genre: a filter: all genres are displayed in the song selection */
+    disp = _("All Genres");
+    ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
+    ++idx;
   }
-  uiDropDownSetNumList (uigenre->dropdown, genrelist, dispptr);
+
+  slistStartIterator (genrelist, &iteridx);
+  while ((disp = slistIterateKey (genrelist, &iteridx)) != NULL) {
+    gkey = slistGetNum (genrelist, disp);
+    ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, gkey);
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
+    ++idx;
+  }
+
+  uigenre->ddlist = ddlist;
 }
 

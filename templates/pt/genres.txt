@@ -1,0 +1,37 @@
+# genres
+# 2022-8-4
+# version 1
+version
+..1
+count
+..5
+KEY
+..0
+GENRE
+..Nenhum
+CLASSICAL
+..0
+KEY
+..1
+GENRE
+..Dança de salão
+CLASSICAL
+..0
+KEY
+..2
+GENRE
+..Clássico
+CLASSICAL
+..1
+KEY
+..3
+GENRE
+..Jazz
+CLASSICAL
+..0
+KEY
+..4
+GENRE
+..Pedra
+CLASSICAL
+..0

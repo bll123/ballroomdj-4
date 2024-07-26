@@ -18,6 +18,7 @@
 
 #include <check.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "mdebug.h"

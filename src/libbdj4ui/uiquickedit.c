@@ -87,7 +87,7 @@ typedef struct uiqe {
 /* quick edit */
 static void   uiqeCreateDialog (uiqe_t *uiqe);
 static void   uiqeInitDisplay (uiqe_t *uiqe);
-static bool   uiqeResponseHandler (void *udata, long responseid);
+static bool   uiqeResponseHandler (void *udata, int32_t responseid);
 static void   uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx);
 static bool   uiqeScaleDisplayCallback (void *udata, double value);
 
@@ -127,7 +127,7 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiqe->qe = quickeditAlloc ();
   uiqe->qedispsel = quickeditGetList (uiqe->qe);
 
-  uiqe->callbacks [UIQE_CB_DIALOG] = callbackInitLong (
+  uiqe->callbacks [UIQE_CB_DIALOG] = callbackInitI (
       uiqeResponseHandler, uiqe);
 
   return uiqe;
@@ -332,13 +332,13 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_ARTIST_DISP] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiWidgetSetMarginStart (uiwidgetp, 10);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
@@ -417,7 +417,7 @@ uiqeInitDisplay (uiqe_t *uiqe)
 }
 
 static bool
-uiqeResponseHandler (void *udata, long responseid)
+uiqeResponseHandler (void *udata, int32_t responseid)
 {
   uiqe_t  *uiqe = udata;
   int     x, y, ws;
@@ -506,7 +506,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
 
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
   uiqe->scaledata [scidx].scale = uiwidgetp;
-  uiqe->scaledata [scidx].scalecb = callbackInitDouble (
+  uiqe->scaledata [scidx].scalecb = callbackInitD (
       uiqeScaleDisplayCallback, &uiqe->scaledata [scidx]);
   uiScaleSetCallback (uiwidgetp, uiqe->scaledata [scidx].scalecb);
 

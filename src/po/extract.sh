@@ -143,8 +143,6 @@ grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
 
 # names of playlist files
-echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMP
-echo "..automatic" >> $TMP
 echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMP
 echo "..standardrounds" >> $TMP
 echo "// CONTEXT: The name of the 'queuedance' playlist file" >> $TMP
@@ -213,18 +211,25 @@ fi
 # If a translation is removed, remember to also remove
 # the locale/xx files and directories.
 
-mkpo de de_DE.po 'unassigned' Deutsch german
-mkpo es es_ES.po 'unassigned' Español spanish
-mkpo fi fi_FI.po 'unassigned' Suomi finnish
-mkpo fr fr_FR.po 'unassigned' Français french
-mkpo it it_IT.po 'unassigned' Italiano‬ italian
-mkpo ja ja_JP.po 'unassigned' 日本語‬ japanese
-mkpo nl nl_BE.po 'marimo' Nederlands dutch
-mkpo pl pl_PL.po 'unassigned' Polski polish
-mkpo ru ru_RU.po 'unassigned' Русский‬ russian
-
-#mkpo zh zh_TW.po 'unassigned' "繁體中文" "chinese (TW)"
-#mkpo zh zh_CN.po 'unassigned' "简体中文" "chinese (CN)"
+mkpo cs cs_CZ.po 'unassigned' 'čeština' czech
+mkpo da da_DK.po 'unassigned' 'Dansk' danish
+mkpo de de_DE.po 'unassigned' 'Deutsch' german
+mkpo es es_ES.po 'unassigned' 'Español' spanish
+mkpo fi fi_FI.po 'unassigned' 'Suomi' finnish
+mkpo fr fr_FR.po 'unassigned' 'Français' french
+mkpo hu hu_HU.po 'unassigned' 'magyar‬' hungarian
+mkpo it it_IT.po 'unassigned' 'Italiano‬' italian
+mkpo ja ja_JP.po 'unassigned' '日本語‬' japanese
+mkpo ko ko_KR.po 'unassigned' '한국어‬' korean
+mkpo nl nl_BE.po 'marimo' 'Nederlands' dutch
+mkpo nb nb_NO.po 'unassigned' 'norsk' norwegian
+mkpo pl pl_PL.po 'unassigned' 'Polski' polish
+mkpo pt pt_PT.po 'unassigned' 'Português' portuguese
+mkpo ru ru_RU.po 'unassigned' 'Русский‬' russian
+mkpo sv sv_SE.po 'unassigned' 'Svenska‬' swedish
+mkpo uk uk_UA.po 'unassigned' 'Українська‬' ukranian
+mkpo zh_CN zh_CN.po 'unassigned' '简体中文' 'chinese/cn'
+mkpo zh_TW zh_TW.po 'unassigned' '繁體中文' 'chinese/tw'
 
 echo "-- $(date +%T) finished"
 

@@ -17,6 +17,7 @@
 #include "bdj4ui.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "conn.h"
 #include "dance.h"
 #include "dispsel.h"
@@ -33,15 +34,17 @@
 #include "song.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiplayer.h"
 
-/* there are all sorts of latency issues making the sliders work nicely */
-/* it will take at least 100ms and at most 200ms for the message to get */
-/* back.  Then there are the latency issues on this end. */
 enum {
-  UIPLAYER_LOCK_TIME_WAIT = 300,
-  UIPLAYER_LOCK_TIME_SEND = 50,
+  /* for volume and speed */
+  UIPLAYER_LOCK_TIME_WAIT = 100,
+  UIPLAYER_LOCK_TIME_SEND = 20,
+  /* there are all sorts of latency issues making the seek work nicely */
+  /* it will take at least 100ms and at most 200ms for the message to get */
+  /* back.  Then there are the latency issues on this end. */
+  UIPLAYER_SEEK_LOCK_TIME_WAIT = 300,
+  UIPLAYER_SEEK_LOCK_TIME_SEND = 50,
 };
 
 enum {
@@ -54,6 +57,7 @@ enum {
   UIPL_CB_SPEED,
   UIPL_CB_SEEK,
   UIPL_CB_VOLUME,
+  UIPL_CB_SPD_RESET,
   UIPL_CB_MAX,
 };
 
@@ -74,6 +78,7 @@ enum {
   UIPL_W_BUTTON_PLAYPAUSE,
   UIPL_W_BUTTON_BEGSONG,
   UIPL_W_BUTTON_NEXTSONG,
+  UIPL_W_BUTTON_SPD_RESET,
   UIPL_W_MAIN_VBOX,
   /* the info display must have enough labels for both the display */
   /* and the separators */
@@ -148,7 +153,7 @@ static bool  uiplayerInitCallback (void *udata, programstate_t programState);
 static bool  uiplayerClosingCallback (void *udata, programstate_t programState);
 
 static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
-static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState);
+static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data);
 static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static bool     uiplayerFadeProcess (void *udata);
@@ -161,6 +166,7 @@ static bool     uiplayerSpeedCallback (void *udata, double value);
 static bool     uiplayerSeekCallback (void *udata, double value);
 static bool     uiplayerVolumeCallback (void *udata, double value);
 static void     uiplayerClearDisplay (uiplayer_t *uiplayer);
+static bool     uiplayerSpdResetCallback (void *udata);
 
 uiplayer_t *
 uiplayerInit (const char *tag, progstate_t *progstate,
@@ -224,22 +230,28 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uiwcont_t       *uiwidgetp;
-  uiwcont_t       *hbox;
-  uiwcont_t       *tbox;
-  uiwcont_t       *szgrpA;
-  uiwcont_t       *szgrpB;
-  uiwcont_t       *szgrpC;
-  uiwcont_t       *szgrpD;
-  uiwcont_t       *szgrpE;
+  uiwcont_t       *uiwidgetp = NULL;
+  uiwcont_t       *hbox = NULL;
+  uiwcont_t       *statusbox = NULL;
+  uiwcont_t       *szgrpScalePerc = NULL;
+  uiwcont_t       *szgrpScaleDisp = NULL;
+  uiwcont_t       *szgrpScale = NULL;
+  uiwcont_t       *szgrpScaleLabel = NULL;
+  uiwcont_t       *szgrpScaleButton = NULL;
+  uiwcont_t       *szgrpStatus = NULL;
+  bool            showspd = false;
 
   logProcBegin ();
 
-  szgrpA = uiCreateSizeGroupHoriz ();
-  szgrpB = uiCreateSizeGroupHoriz ();
-  szgrpC = uiCreateSizeGroupHoriz ();
-  szgrpD = uiCreateSizeGroupHoriz ();
-  szgrpE = uiCreateSizeGroupHoriz ();
+  showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
+  if (showspd) {
+    szgrpScaleButton = uiCreateSizeGroupHoriz ();
+  }
+  szgrpScalePerc = uiCreateSizeGroupHoriz ();
+  szgrpScaleDisp = uiCreateSizeGroupHoriz ();
+  szgrpScale = uiCreateSizeGroupHoriz ();
+  szgrpScaleLabel = uiCreateSizeGroupHoriz ();
+  szgrpStatus = uiCreateSizeGroupHoriz ();
 
   uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
@@ -251,10 +263,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
   /* size group E */
-  tbox = uiCreateHorizBox ();
-  uiBoxPackStart (hbox, tbox);
-  uiWidgetAlignVertCenter (tbox);
-  uiSizeGroupAdd (szgrpE, tbox);
+  statusbox = uiCreateHorizBox ();
+  uiBoxPackStart (hbox, statusbox);
+  uiWidgetAlignVertCenter (statusbox);
+  uiSizeGroupAdd (szgrpStatus, statusbox);
 
   uiplayer->images [UIPL_IMG_STATUS] = uiImageNew ();
 
@@ -267,9 +279,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
-  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_STATUS]);
-  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_STATUS]);
-  uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_STATUS]);
+  uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_STATUS]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -293,14 +303,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_REPEAT], 18, -1);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
-  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_REPEAT]);
-  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_REPEAT]);
-  uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_REPEAT]);
+  uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
     if (i == UIPL_W_INFO_DISP_A) {
-      uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+      uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
     }
     uiWidgetAlignHorizStart (uiwidgetp);
     if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
@@ -316,24 +324,38 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  if (showspd) {
+    /* size group F */
+    uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
+        uiplayerSpdResetCallback, uiplayer, "spd-reset");
+    uiwidgetp = uiCreateButton (
+        uiplayer->callbacks [UIPL_CB_SPD_RESET],
+        /* CONTEXT: playerui: button: reset speed to 100% */
+        _("100%"), NULL);
+    uiWidgetAddClass (uiwidgetp, "bdj-spd-reset");
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;
+  }
+
   /* size group A */
   uiwidgetp = uiCreateLabel ("%");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* size group B */
   uiplayer->wcont [UIPL_W_SPEED_DISP] = uiCreateLabel ("100");
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED_DISP]);
-  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_SPEED_DISP]);
+  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
   uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
       SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
-  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SPEED]);
-  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
+  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SPEED]);
+  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitD (
       uiplayerSpeedCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_SPEED], uiplayer->callbacks [UIPL_CB_SPEED]);
 
@@ -343,7 +365,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* position controls / display */
@@ -356,7 +378,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpE, uiwidgetp);
+  uiSizeGroupAdd (szgrpStatus, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER] = uiCreateLabel (" 0:00");
@@ -377,24 +399,32 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  if (showspd) {
+    /* size group F */
+    uiwidgetp = uiCreateLabel ("");
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+  }
+
   /* size group A */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* size group B */
   uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
-  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_SEEK_DISP]);
+  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SEEK_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
   uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
-  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SEEK]);
-  uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
+  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SEEK]);
+  uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitD (
       uiplayerSeekCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_SEEK], uiplayer->callbacks [UIPL_CB_SEEK]);
 
@@ -404,7 +434,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* main controls */
@@ -417,7 +447,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpE, uiwidgetp);
+  uiSizeGroupAdd (szgrpStatus, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
@@ -488,24 +518,32 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* volume controls / display */
 
+  if (showspd) {
+    /* size group F */
+    uiwidgetp = uiCreateLabel ("");
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+  }
+
   /* size group A */
   uiwidgetp = uiCreateLabel ("%");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* size group B */
   uiplayer->wcont [UIPL_W_VOLUME_DISP] = uiCreateLabel ("100");
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_VOLUME_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
-  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
+  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
 
   /* size group C */
   uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
-  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_VOLUME]);
-  uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
+  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_VOLUME]);
+  uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitD (
       uiplayerVolumeCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_VOLUME], uiplayer->callbacks [UIPL_CB_VOLUME]);
 
@@ -515,18 +553,21 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiplayer->uibuilt = true;
 
-  uiwcontFree (tbox);
+  uiwcontFree (statusbox);
   uiwcontFree (hbox);
-  uiwcontFree (szgrpA);
-  uiwcontFree (szgrpB);
-  uiwcontFree (szgrpC);
-  uiwcontFree (szgrpD);
-  uiwcontFree (szgrpE);
+  if (showspd) {
+    uiwcontFree (szgrpScaleButton);
+  }
+  uiwcontFree (szgrpScalePerc);
+  uiwcontFree (szgrpScaleDisp);
+  uiwcontFree (szgrpScale);
+  uiwcontFree (szgrpScaleLabel);
+  uiwcontFree (szgrpStatus);
 
   logProcEnd ("");
   return uiplayer->wcont [UIPL_W_MAIN_VBOX];
@@ -536,7 +577,7 @@ void
 uiplayerMainLoop (uiplayer_t *uiplayer)
 {
   if (mstimeCheck (&uiplayer->volumeLockTimeout)) {
-    mstimeset (&uiplayer->volumeLockTimeout, 3600000);
+    mstimeset (&uiplayer->volumeLockTimeout, TM_TIMER_OFF);
     uiplayer->volumeLock = false;
   }
 
@@ -552,14 +593,14 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       if (uiplayer->volumeLock) {
         mstimeset (&uiplayer->volumeLockSend, UIPLAYER_LOCK_TIME_SEND);
       } else {
-        mstimeset (&uiplayer->volumeLockSend, 3600000);
+        mstimeset (&uiplayer->volumeLockSend, TM_TIMER_OFF);
         uiplayer->volumeLastValue = -1.0;
       }
     }
   }
 
   if (mstimeCheck (&uiplayer->speedLockTimeout)) {
-    mstimeset (&uiplayer->speedLockTimeout, 3600000);
+    mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
     uiplayer->speedLock = false;
   }
 
@@ -575,14 +616,14 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       if (uiplayer->speedLock) {
         mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
       } else {
-        mstimeset (&uiplayer->speedLockSend, 3600000);
+        mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
         uiplayer->speedLastValue = -1.0;
       }
     }
   }
 
   if (mstimeCheck (&uiplayer->seekLockTimeout)) {
-    mstimeset (&uiplayer->seekLockTimeout, 3600000);
+    mstimeset (&uiplayer->seekLockTimeout, TM_TIMER_OFF);
     uiplayer->seekLock = false;
   }
 
@@ -597,11 +638,11 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
       connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
       if (uiplayer->seekLock) {
-        mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
-      } else {
-        mstimeset (&uiplayer->seekLockSend, 3600000);
-        uiplayer->seekLastValue = -1.0;
+        mstimeset (&uiplayer->seekLockSend, UIPLAYER_SEEK_LOCK_TIME_SEND);
       }
+    } else {
+      mstimeset (&uiplayer->seekLockSend, TM_TIMER_OFF);
+      uiplayer->seekLastValue = -1.0;
     }
   }
 }
@@ -624,7 +665,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, atol (targs));
+          uiplayerProcessPlayerState (uiplayer, targs);
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
@@ -724,17 +765,17 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   logProcBegin ();
 
   uiplayer->playerState = PL_STATE_STOPPED;
-  mstimeset (&uiplayer->speedLockTimeout, 3600000);
-  mstimeset (&uiplayer->speedLockSend, 3600000);
-  mstimeset (&uiplayer->volumeLockTimeout, 3600000);
-  mstimeset (&uiplayer->volumeLockSend, 3600000);
+  mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
+  mstimeset (&uiplayer->volumeLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->volumeLockSend, TM_TIMER_OFF);
   uiplayer->baseVolume = -1;
   uiplayer->lastdur = 180000;
-  mstimeset (&uiplayer->seekLockTimeout, 3600000);
-  mstimeset (&uiplayer->seekLockSend, 3600000);
+  mstimeset (&uiplayer->seekLockTimeout, TM_TIMER_OFF);
+  mstimeset (&uiplayer->seekLockSend, TM_TIMER_OFF);
   uiplayer->seekLastValue = -1.0;
   uiplayer->volumeLastValue = -1.0;
-  uiplayer->speedLastValue = -1.0;
+  uiplayer->speedLastValue = 100.0;
   uiplayer->seekLock = false;
   uiplayer->speedLock = false;
   uiplayer->repeatLock = false;
@@ -783,11 +824,11 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 
   if (onoff && ! uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_ON]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
   }
   if (! onoff && uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_OFF]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendstate = onoff;
 
@@ -796,16 +837,26 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 }
 
 static void
-uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
+uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
 {
-  int   state;
+  int               state;
+  mp_playerstate_t  *ps;
 
   logProcBegin ();
 
-  uiplayer->playerState = playerState;
+  ps = msgparsePlayerStateData (data);
+  uiplayer->playerState = ps->playerState;
+
+  if (ps->newsong) {
+    /* clear any speed lock */
+    /* this will force the speed to be reset */
+    uiplayer->speedLock = false;
+    mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
+    mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
+  }
 
   state = UIWIDGET_ENABLE;
-  if (playerState == PL_STATE_IN_FADEOUT) {
+  if (uiplayer->playerState == PL_STATE_IN_FADEOUT) {
     state = UIWIDGET_DISABLE;
   }
 
@@ -818,7 +869,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
-  switch (playerState) {
+  switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
@@ -844,6 +895,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
       break;
     }
   }
+  msgparsePlayerStateFree (ps);
   logProcEnd ("");
 }
 
@@ -867,10 +919,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (ps->repeat) {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
     uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
   } else {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->repeatLock = false;
 
@@ -891,6 +943,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
     dval = (double) ps->currentSpeed;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
+    uiplayer->speedLastValue = dval;
   }
 
   /* base vol */
@@ -1110,6 +1163,7 @@ uiplayerSpeedCallback (void *udata, double value)
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SPEED], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
@@ -1129,10 +1183,10 @@ uiplayerSeekCallback (void *udata, double value)
   logMsg (LOG_DBG, LOG_ACTIONS, "%s =action: position chg", uiplayer->tag);
 
   if (! uiplayer->seekLock) {
-    mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+    mstimeset (&uiplayer->seekLockSend, UIPLAYER_SEEK_LOCK_TIME_SEND);
   }
   uiplayer->seekLock = true;
-  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_SEEK_LOCK_TIME_WAIT);
 
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SEEK], value);
   position = (ssize_t) round (value);
@@ -1175,4 +1229,20 @@ uiplayerClearDisplay (uiplayer_t *uiplayer)
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiLabelSetText (uiplayer->wcont [i], "");
   }
+}
+
+static bool
+uiplayerSpdResetCallback (void *udata)
+{
+  uiplayer_t    *uiplayer = udata;
+
+  uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], 100.0);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], "100");
+
+  if (! uiplayer->speedLock) {
+    mstimeset (&uiplayer->speedLockSend, UIPLAYER_LOCK_TIME_SEND);
+  }
+  uiplayer->speedLock = true;
+  mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+  return UICB_CONT;
 }

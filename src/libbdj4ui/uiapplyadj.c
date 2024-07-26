@@ -51,7 +51,7 @@ typedef struct uiaa {
 
 static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig);
 static void   uiaaInitDisplay (uiaa_t *uiaa);
-static bool   uiaaResponseHandler (void *udata, long responseid);
+static bool   uiaaResponseHandler (void *udata, int32_t responseid);
 
 uiaa_t *
 uiaaInit (uiwcont_t *windowp, nlist_t *opts)
@@ -74,7 +74,7 @@ uiaaInit (uiwcont_t *windowp, nlist_t *opts)
   /* CONTEXT: apply adjustments: please wait... status message */
   uiaa->pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
-  uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
+  uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitI (
       uiaaResponseHandler, uiaa);
 
   return uiaa;
@@ -190,7 +190,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   uiaa->statusMsg = uiwidgetp;
 
@@ -231,7 +231,7 @@ uiaaInitDisplay (uiaa_t *uiaa)
 }
 
 static bool
-uiaaResponseHandler (void *udata, long responseid)
+uiaaResponseHandler (void *udata, int32_t responseid)
 {
   uiaa_t  *uiaa = udata;
   int         x, y, ws;
@@ -259,7 +259,7 @@ uiaaResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: restore orig");
       uiLabelSetText (uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
-        callbackHandlerLong (uiaa->responsecb, SONG_ADJUST_RESTORE);
+        callbackHandlerI (uiaa->responsecb, SONG_ADJUST_RESTORE);
       }
       break;
     }
@@ -275,7 +275,7 @@ uiaaResponseHandler (void *udata, long responseid)
       }
       uiLabelSetText (uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
-        callbackHandlerLong (uiaa->responsecb, aaflags);
+        callbackHandlerI (uiaa->responsecb, aaflags);
       }
       break;
     }

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="yandex-verification" content="52297d544556772d" />
+  <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- WT_021 -->
+  <title>BallroomDJ 4 - 볼룸 음악 플레이어</title>
+  <!-- WT_022 -->
+  <meta name="Description" content="BallroomDJ 4 - 볼룸 음악 플레이어">
+  <meta name="Keywords" content="Ballroom Music Player,
+      Přehrávač taneční hudby,
+      Ballroom musikafspiller,
+      Ballroom-Musikspieler,
+      Reproductor de música de salón,
+      Ballroom-musiikkisoitin,
+      Lecteur de musique de salon,
+      Bálterem zene lejátszó,
+      Lettore di musica da sala da ballo,
+      ボールルーム・ミュージック・プレーヤー,
+      볼룸 음악 플레이어,
+      Ballroom Muziekspeler,
+      Odtwarzacz muzyki z sali balowej,
+      Leitor de música de salão,
+      Ballroom Музыкальный плеер,
+      Musikspelare för balsalar,
+      програвач бальної музики,
+      舞厅音乐播放器,
+      舞廳音樂播放器,
+      ballroom music dj, ballroom dance dj,
+      ballroom music playback,
+      ballroom dance software,
+      ballroom dance music software,
+      ballroom dj software, ballroom dance software,
+      dance studio music software,
+      dance school music software,
+      tango music player, tango dance player,
+      country music player, country dance player">
+  <link rel="stylesheet" type="text/css" href="bdj4.css">
+</head>
+<body>
+  <div class="dbgwhite">
+    <div class="menuwidget">
+      <!-- WT_023 -->
+      <img src="/img/menu.svg"
+          alt="메뉴"
+          onclick="javascript:setDisplay('menu');">
+    </div>
+    <div>
+      <!-- WT_001 -->
+      <img src="/img/ballroomdj4.svg"
+        alt="BallroomDJ 4 - 연회장 음악 플레이어"
+        width="50%" style="max-width: 420px">
+    </div>
+    <div class="donatewidget">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+      </form>
+    </div>
+  </div>
+  <div>
+    <div id="dmenu" class="mdiv dispnone divmenu">
+      <div class="tleft dinlineblock">
+        <ul id="" class="menu">
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('bdj4');">BallroomDJ 4</li>
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
+          <!-- WT_002 -->
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('donate');">기부하기</li>
+        </ul>
+      </div>
+    </div>
+    <div id="dbdj4" class="mdiv dispblock">
+      <div class="dflex">
+        <div class="tleft dtext">
+          <!-- WT_003 -->
+          <p>BallroomDJ 4(BDJ4)는 데스크톱 및 노트북 컴퓨터용으로 설계된 음악 플레이어입니다(일부 태블릿에서도 작동). 별도의 조작 없이 저녁 내내 음악을 재생할 수 있도록 설계되었습니다.</p>
+          <!-- WT_004 -->
+          <p>BDJ4는 고도로 사용자 정의가 가능하며 볼룸 댄스 음악을 구성하고 노래 목록, 자동 재생 목록 및 시퀀스 재생 목록을 만들 수 있는 기능을 제공합니다.</p>
+          <!-- WT_005 -->
+          <p>BDJ4는 Windows, MacOS 및 Linux에서 실행됩니다.</p>
+          <!-- WT_006 -->
+          <p><b><a target="_blank"
+              href="https://sourceforge.net/projects/ballroomdj4/files/"
+              >BallroomDJ 4 다운로드</a></b>&nbsp;&nbsp;&nbsp;(<span>최신 버전</span> <b>#VERSION#</b>)</p>
+          <!-- WT_007 -->
+          <p><a target="_blank"
+              href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
+              >변경 로그</a></p>
+          <!-- WT_008 -->
+          <p><a target="_blank"
+              href="https://ballroomdj.org/forum/">BDJ4 포럼</a></p>
+          <!-- WT_009 -->
+          <p><a target="_blank"
+              href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
+              >BDJ4 위키</a></p>
+          <!-- WT_010 -->
+          <p><a target="_blank"
+              href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
+              >BDJ4 특징</a></p>
+          <!-- WT_011 -->
+          <p><a target="_blank"
+              href="https://crowdin.com/project/ballroomdj-4"
+              >BallroomDJ 4 번역 도움말</a></p>
+          <!-- WT_012 -->
+          <p>BallroomDJ 4 출시 공지를 확인할 수 있는 다른 사이트도 있습니다:</p>
+          <!-- WT_013 -->
+          <p><a target="_blank"
+              href="https://freshcode.club/projects/bdj4"
+              >freshcode.club의 BDJ4</a></p>
+          <!-- WT_014 -->
+          <p><a target="_blank"
+              href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
+              >pro-linux.de의 BallroomDJ</a>  (Deutsch)</p>
+        </div>
+        <div class="tleft dlang">
+          <ul>
+            <li><a href="index.html.cs">čeština</a></li>
+            <li><a href="index.html.da">Dansk</a></li>
+            <li><a href="index.html.de">Deutsch</a></li>
+            <li><a href="index.html.en">English</a></li>
+            <li><a href="index.html.es-ES">Español</a></li>
+            <li><a href="index.html.fi">Suomi</a></li>
+            <li><a href="index.html.fr">Français</a></li>
+            <li><a href="index.html.hu">magyar</a></li>
+            <li><a href="index.html.it">Italiano</a></li>
+            <li><a href="index.html.ja">日本語</a></li>
+            <li><a href="index.html.ko">한국어</a></li>
+            <li><a href="index.html.nb-NO">norsk</a></li>
+            <li><a href="index.html.nl">Nederlands</a></li>
+            <li><a href="index.html.pl-PL">Polski</a></li>
+            <li><a href="index.html.pt-PT">Português</a></li>
+            <li><a href="index.html.ru">Русский</a></li>
+            <li><a href="index.html.sv">Svenska</a></li>
+            <li><a href="index.html.uk">Українська</a></li>
+            <li><a href="index.html.zh-CN">简体中文</a></li>
+            <li><a href="index.html.zh-TW">繁體中文</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="dbdj3" class="mdiv dispnone">
+      <div class="tleft dinlineblock">
+        <!-- WT_015 -->
+        <p>BallroomDJ는 이전의 연회장 음악 플레이어였습니다. 더 이상 지원되지 않습니다.</p>
+        <!-- WT_016 -->
+        <p>BallroomDJ의 모든 사용자는 BallroomDJ 4로 전환할 것을 권장합니다.</p>
+        <!-- WT_017 -->
+        <p><a target="_blank"
+            href="https://sourceforge.net/projects/ballroomdj/files/"
+            >BallroomDJ 3 다운로드</a></p>
+      </div>
+    </div>
+
+    <div id="ddonate" class="mdiv dispnone tleft">
+      <!-- WT_018 -->
+      <p>BDJ4에 기부하기</p>
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+      </form>
+      <!-- WT_019 -->
+      <p>BDJ4가 사용하는 소프트웨어 프로젝트에 기부하세요:</p>
+      <!-- WT_020 -->
+      <p><a href="https://videolan.org">VLC</a> (맨 위에 있는 기부 버튼)</p>
+      <p><a href="https://curl.se/donation.html">Curl</a></p>
+      <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
+      <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+//<![CDATA[
+function setDisplay (id) {
+  if (id != 'menu') {
+    var dids = {menu:0, bdj4:0, bdj3:0, donate:0};
+    for (var i in dids) {
+      var o = document.getElementById ('d'+i);
+      o.style.display = 'none';
+    }
+  }
+
+  var o = document.getElementById ('d'+id);
+  o.style.display = 'block';
+}
+//]]>
+  </script>
+</body>
+</html>

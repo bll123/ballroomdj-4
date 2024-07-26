@@ -1,5 +1,5 @@
-/* 2024-2-19 */
-/* version 4 */
+/* 2024-7-16 */
+/* version 6 */
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
@@ -47,15 +47,23 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
-textview.bdj-tb-dark text {
-  background-color: shade(@theme_base_color,0.8);
+.bdj-dark-bg {
+  background-color: shade(@theme_base_color,0.85);
+}
+/* used by drop-downs */
+.bdj-norm-bg {
+  background-color: @theme_base_color;
+  margin-right: 4pt;
+}
+label.bdj-selected {
+  color: @theme_selected_fg_color;
+}
+label.bdj-nodisp {
+  color: rgba(0,0,0,0);
 }
 
-treeview.bdj-tv-dark {
-  background-color: shade(@theme_base_color,0.8);
-}
-treeview.bdj-tv-dark:selected {
-  background-color: @theme_selected_bg_color;
+textview.bdj-dark-bg text {
+  background-color: shade(@theme_base_color,0.7);
 }
 
 /* gtk: notebook header tabs tab label */
@@ -68,6 +76,14 @@ scrolledwindow undershoot.top, scrolledwindow undershoot.right,
 scrolledwindow undershoot.left, scrolledwindow undershoot.bottom {
   background-image: none;
   outline-width: 0px;
+}
+
+button.bdj-spd-reset {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 1px;
+  padding-right: 1px;
+  border-color: black;
 }
 
 button.bdj-switch {

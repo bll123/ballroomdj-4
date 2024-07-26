@@ -123,6 +123,7 @@ main (int argc, char *argv[])
   confui.gui.marqueetaglist = NULL;
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
+  confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;
@@ -136,7 +137,7 @@ main (int argc, char *argv[])
     for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
       confui.gui.tables [i].callbacks [j] = NULL;
     }
-    confui.gui.tables [i].uitree = NULL;
+    confui.gui.tables [i].uivl = NULL;
     confui.gui.tables [i].flags = CONFUI_TABLE_NONE;
     confui.gui.tables [i].changed = false;
     confui.gui.tables [i].currcount = 0;
@@ -144,25 +145,31 @@ main (int argc, char *argv[])
     confui.gui.tables [i].savelist = NULL;
     confui.gui.tables [i].listcreatefunc = NULL;
     confui.gui.tables [i].savefunc = NULL;
+    confui.gui.tables [i].addfunc = NULL;
+    confui.gui.tables [i].removefunc = NULL;
+    confui.gui.tables [i].movefunc = NULL;
     for (int j = 0; j < CONFUI_BUTTON_TABLE_MAX; ++j) {
       confui.gui.tables [i].buttons [j] = NULL;
     }
   }
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    confui.gui.uiitem [i].gui = &confui.gui;
     confui.gui.uiitem [i].uibutton = NULL;
     confui.gui.uiitem [i].basetype = CONFUI_NONE;
     confui.gui.uiitem [i].outtype = CONFUI_OUT_NONE;
     confui.gui.uiitem [i].bdjoptIdx = -1;
     confui.gui.uiitem [i].listidx = 0;
     confui.gui.uiitem [i].debuglvl = 0;
+    confui.gui.uiitem [i].ddlist = NULL;
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
-    confui.gui.uiitem [i].danceidx = DANCE_DANCE;
+    confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
+    confui.gui.uiitem [i].uidd = NULL;
     confui.gui.uiitem [i].uri = NULL;
     confui.gui.uiitem [i].changed = false;
     confui.gui.uiitem [i].entrysz = 20;
@@ -264,8 +271,12 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
   uiSetUICSS (uiutilsGetCurrentFont (),
+      uiutilsGetListingFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+      bdjoptGetStr (OPT_P_UI_ERROR_COL),
+      bdjoptGetStr (OPT_P_UI_MARK_COL),
+      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
+      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
 
   confuiBuildUI (&confui);
   osuiFinalize ();
@@ -348,9 +359,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   uiwcontFree (confui->gui.window);
 
-  for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
-    /* the button is freed by dropdown-free */
-    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
+  for (int i = CONFUI_DD_BEGIN + 1; i < CONFUI_DD_MAX; ++i) {
+    uiddFree (confui->gui.uiitem [i].uidd);
+    ilistFree (confui->gui.uiitem [i].ddlist);
   }
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
@@ -436,15 +447,15 @@ confuiBuildUI (configui_t *confui)
 
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
   hbox = accent.hbox;
-  uiwcontFree (accent.label);
+  uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.statusMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
-  uiWidgetSetClass (confui->gui.notebook, LEFT_NB_CLASS);
+  uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
@@ -466,7 +477,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
 
-  confui->gui.nbcb = callbackInitLong (confuiSwitchTable, &confui->gui);
+  confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
   uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);

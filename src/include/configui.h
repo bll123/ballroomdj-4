@@ -4,14 +4,18 @@
 #ifndef INC_CONFIGUI_H
 #define INC_CONFIGUI_H
 
+#include <stdint.h>
+
+#include "callback.h"
 #include "dispsel.h"
 #include "ilist.h"
 #include "nlist.h"
 #include "orgutil.h"
-#include "callback.h"
+#include "uidd.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "uiselectfile.h"
+#include "uivirtlist.h"
 #include "uiwcont.h"
 
 /* base type */
@@ -21,7 +25,7 @@ typedef enum {
   CONFUI_ENTRY_ENCRYPT,
   CONFUI_FONT,
   CONFUI_COLOR,
-  CONFUI_COMBOBOX,
+  CONFUI_DD,
   CONFUI_SPINBOX_TEXT,
   CONFUI_SPINBOX_NUM,
   CONFUI_SPINBOX_DOUBLE,
@@ -43,9 +47,9 @@ typedef enum {
 
 enum {
   CONFUI_BEGIN,
-  CONFUI_COMBOBOX_BEGIN,
-  CONFUI_COMBOBOX_ORGPATH,
-  CONFUI_COMBOBOX_MAX,
+  CONFUI_DD_BEGIN,
+  CONFUI_DD_ORGPATH,
+  CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_COMPLETE_MSG,
   CONFUI_ENTRY_DANCE_TAGS,
@@ -70,7 +74,6 @@ enum {
   CONFUI_SPINBOX_BEGIN,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
-  CONFUI_SPINBOX_CONTROLLER,
   CONFUI_SPINBOX_DANCE_SPEED,
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
@@ -111,6 +114,7 @@ enum {
   CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED,
   CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE,
   CONFUI_SWITCH_RC_ENABLE,
+  CONFUI_SWITCH_SHOW_SPD_CONTROL,
   CONFUI_WIDGET_AO_EXAMPLE_1,
   CONFUI_WIDGET_AO_EXAMPLE_2,
   CONFUI_WIDGET_AO_EXAMPLE_3,
@@ -118,34 +122,34 @@ enum {
   CONFUI_WIDGET_AO_EXAMPLE_MAX,
   CONFUI_WIDGET_DANCE_MPM_HIGH,
   CONFUI_WIDGET_DANCE_MPM_LOW,
-  /* the debug enums must be in numeric order */
-  CONFUI_WIDGET_DEBUG_1,
-  CONFUI_WIDGET_DEBUG_2,
-  CONFUI_WIDGET_DEBUG_4,
-  CONFUI_WIDGET_DEBUG_8,
-  CONFUI_WIDGET_DEBUG_16,
-  CONFUI_WIDGET_DEBUG_32,
-  CONFUI_WIDGET_DEBUG_64,
-  CONFUI_WIDGET_DEBUG_128,
-  CONFUI_WIDGET_DEBUG_256,
-  CONFUI_WIDGET_DEBUG_512,
-  CONFUI_WIDGET_DEBUG_1024,
-  CONFUI_WIDGET_DEBUG_2048,
-  CONFUI_WIDGET_DEBUG_4096,
-  CONFUI_WIDGET_DEBUG_8192,
-  CONFUI_WIDGET_DEBUG_16384,
-  CONFUI_WIDGET_DEBUG_32768,
-  CONFUI_WIDGET_DEBUG_65536,
-  CONFUI_WIDGET_DEBUG_131072,
-  CONFUI_WIDGET_DEBUG_262144,
-  CONFUI_WIDGET_DEBUG_524288,
-  CONFUI_WIDGET_DEBUG_1048576,
-  CONFUI_WIDGET_DEBUG_2097152,
-  CONFUI_WIDGET_DEBUG_4194304,
-  CONFUI_WIDGET_DEBUG_8388608,
-  CONFUI_WIDGET_DEBUG_16777216,
-  CONFUI_WIDGET_DEBUG_MAX,
-  CONFUI_WIDGET_DEBUG_LABEL,
+  /* the debug enums must be in the same order as log.h */
+  CONFUI_DBG_IMPORTANT,
+  CONFUI_DBG_BASIC,
+  CONFUI_DBG_MSGS,
+  CONFUI_DBG_INFO,
+  CONFUI_DBG_ACTIONS,
+  CONFUI_DBG_LIST,
+  CONFUI_DBG_SONGSEL,
+  CONFUI_DBG_DANCESEL,
+  CONFUI_DBG_VOLUME,
+  CONFUI_DBG_SOCKET,
+  CONFUI_DBG_DB,
+  CONFUI_DBG_RAFILE,
+  CONFUI_DBG_PROC,
+  CONFUI_DBG_PLAYER,
+  CONFUI_DBG_DATAFILE,
+  CONFUI_DBG_PROCESS,
+  CONFUI_DBG_WEBSRV,
+  CONFUI_DBG_WEBCLIENT,
+  CONFUI_DBG_DBUPDATE,
+  CONFUI_DBG_PROGSTATE,
+  CONFUI_DBG_ITUNES,
+  CONFUI_DBG_AUDIO_ADJUST,
+  CONFUI_DBG_AUDIO_TAG,
+  CONFUI_DBG_AUDIO_ID,
+  CONFUI_DBG_AUDIOID_DUMP,
+  CONFUI_DBG_VIRTLIST,
+  CONFUI_DBG_MAX,
   CONFUI_WIDGET_DEFAULT_VOL,
   /* should be in the same order as in songfilter.h */
   CONFUI_WIDGET_FILTER_START,
@@ -213,7 +217,17 @@ enum {
   CONFUI_ITEM_MAX,
 };
 
+typedef struct configui configui_t;
+typedef struct confuigui confuigui_t;
+typedef struct confuitable confuitable_t;
+typedef void (*savefunc_t) (confuigui_t *);
+typedef bool (*listcreatefunc_t) (void *);
+typedef void (*addfunc_t) (confuigui_t *);
+typedef void (*removefunc_t) (confuigui_t *, ilistidx_t delidx);
+typedef void (*movefunc_t) (confuigui_t *, ilistidx_t idx, int dir);
+
 typedef struct {
+  confuigui_t       *gui;
   confuibasetype_t  basetype;
   confuiouttype_t   outtype;
   long              debuglvl;
@@ -221,17 +235,19 @@ typedef struct {
   uiwcont_t         *uibutton;      // for entry chooser
   uisfcb_t          sfcb;           // for entry chooser, combobox
   int               listidx;        // for combobox, spinbox
+  ilist_t           *ddlist;
   nlist_t           *displist;      // indexed by spinbox/combobox index
                                     //    value: display
   nlist_t           *sbkeylist;     // indexed by spinbox index
                                     //    value: key
-  int               danceidx;       // for dance edit
+  int               danceitemidx;   // for dance edit
   int               entrysz;
   int               entrymaxsz;
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
+  uidd_t            *uidd;
   char              *uri;
-  bool              changed;
+  bool              changed : 1;
 } confuiitem_t;
 
 typedef enum {
@@ -292,20 +308,16 @@ enum {
 };
 
 enum {
+  CONFUI_RATING_CB_WEIGHT,
+  CONFUI_LEVEL_CB,
+  CONFUI_STATUS_CB,
+  CONFUI_GENRE_CB,
   CONFUI_TABLE_CB_UP,
   CONFUI_TABLE_CB_DOWN,
   CONFUI_TABLE_CB_REMOVE,
   CONFUI_TABLE_CB_ADD,
-  CONFUI_TABLE_CB_CHANGED,
-  CONFUI_TABLE_CB_DANCE_SELECT,
   CONFUI_TABLE_CB_MAX,
 };
-
-typedef struct configui configui_t;
-typedef struct confuigui confuigui_t;
-typedef struct confuitable confuitable_t;
-typedef void (*savefunc_t) (confuigui_t *);
-typedef bool (*listcreatefunc_t) (void *);
 
 enum {
   CONFUI_BUTTON_TABLE_UP,
@@ -316,7 +328,7 @@ enum {
 };
 
 typedef struct confuitable {
-  uiwcont_t         *uitree;
+  uivirtlist_t      *uivl;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uiwcont_t         *buttons [CONFUI_BUTTON_TABLE_MAX];
   int               flags;
@@ -326,45 +338,37 @@ typedef struct confuitable {
   ilist_t           *savelist;
   listcreatefunc_t  listcreatefunc;
   savefunc_t        savefunc;
+  addfunc_t         addfunc;
+  removefunc_t      removefunc;
+  movefunc_t        movefunc;
 } confuitable_t;
 
 enum {
   CONFUI_DANCE_COL_DANCE,
-  CONFUI_DANCE_COL_SB_PAD,
-  CONFUI_DANCE_COL_DANCE_IDX,
+  CONFUI_DANCE_COL_DANCE_KEY,
   CONFUI_DANCE_COL_MAX,
 };
 
 enum {
-  CONFUI_RATING_COL_R_EDITABLE,
-  CONFUI_RATING_COL_W_EDITABLE,
   CONFUI_RATING_COL_RATING,
   CONFUI_RATING_COL_WEIGHT,
-  CONFUI_RATING_COL_ADJUST,
-  CONFUI_RATING_COL_DIGITS,
   CONFUI_RATING_COL_MAX,
 };
 
 enum {
-  CONFUI_LEVEL_COL_EDITABLE,
   CONFUI_LEVEL_COL_LEVEL,
   CONFUI_LEVEL_COL_WEIGHT,
   CONFUI_LEVEL_COL_DEFAULT,
-  CONFUI_LEVEL_COL_ADJUST,
-  CONFUI_LEVEL_COL_DIGITS,
   CONFUI_LEVEL_COL_MAX,
 };
 
 enum {
-  CONFUI_GENRE_COL_EDITABLE,
   CONFUI_GENRE_COL_GENRE,
   CONFUI_GENRE_COL_CLASSICAL,
-  CONFUI_GENRE_COL_SB_PAD,
   CONFUI_GENRE_COL_MAX,
 };
 
 enum {
-  CONFUI_STATUS_COL_EDITABLE,
   CONFUI_STATUS_COL_STATUS,
   CONFUI_STATUS_COL_PLAY_FLAG,
   CONFUI_STATUS_COL_MAX,
@@ -427,6 +431,7 @@ typedef struct confuigui {
   /* itunes */
   confitunes_t      *itunes;
   /* dances */
+  int32_t           dancedkey;      // for dance edit
   bool              inchange : 1;
 } confuigui_t;
 
@@ -440,12 +445,14 @@ void confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath, const char *
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
-bool confuiOrgPathSelect (void *udata, long idx);
-void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
+int32_t confuiOrgPathSelect (void *udata, const char *sval);
+void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
 void confuiBuildUIEditDances (confuigui_t *gui);
+void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
+void confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey);
 
 /* confdebug.c */
 void confuiBuildUIDebug (confuigui_t *gui);
@@ -471,7 +478,7 @@ void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, 
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, const char *value);
+void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb, const char *value);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
@@ -536,22 +543,8 @@ void confuiCreateStatusTable (confuigui_t *gui);
 void confuiMakeItemTable (confuigui_t *gui, uiwcont_t *box, confuiident_t id, int flags);
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
-bool confuiTableChanged (void *udata, long col);
-bool confuiSwitchTable (void *udata, long pagenum);
-
-/* conftableadd.c */
+bool confuiSwitchTable (void *udata, int32_t pagenum);
 bool confuiTableAdd (void *udata);
-
-/* conftabledance.c */
-bool confuiDanceSelect (void *udata, long col);
-void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
-
-/* conftableset.c */
-void confuiDanceSet (uiwcont_t *uiwidget, const char *dancedisp, ilistidx_t key);
-void confuiGenreSet (uiwcont_t *uiwidget, int editable, const char *genredisp, int clflag);
-void confuiLevelSet (uiwcont_t *uiwidget, int editable, const char *leveldisp, long weight, int def);
-void confuiRatingSet (uiwcont_t *uiwidget, int editable, const char *ratingdisp, long weight);
-void confuiStatusSet (uiwcont_t *uiwidget, int editable, const char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);

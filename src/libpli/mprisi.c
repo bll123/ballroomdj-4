@@ -22,14 +22,14 @@
 #include "mprisi.h"
 #include "pli.h"
 
-#define MPRIS_PFX "MPRIS "
+static const char * const MPRIS_PFX = "MPRIS ";
 
 enum {
   MPRIS_MAX_PLAYERS = 10,
 };
 
 enum {
-  MPRIS_IDENT = 0x6d7072697300aabb,
+  MPRIS_IDENT = 0xbbaa00736972706d,
 };
 
 typedef struct {
@@ -38,7 +38,7 @@ typedef struct {
 } mpris_player_t;
 
 typedef struct mpris {
-  int64_t         ident;
+  uint64_t        ident;
   dbus_t          *dbus;
   const char      *mpbus;
   char            trackid [DBUS_MAX_TRACKID];
@@ -388,7 +388,7 @@ mprisFree (mpris_t *mpris)
     return;
   }
 
-  mpris->ident = 0;
+  mpris->ident = BDJ4_IDENT_FREE;
   mpris->mpbus = NULL;
   dbusConnClose (mpris->dbus);
   mpris->dbus = NULL;
@@ -546,19 +546,6 @@ mprisStop (mpris_t *mpris)
   mpris->state = PLI_STATE_STOPPED;
 }
 
-bool
-mprisSetVolume (mpris_t *mpris, double vol)
-{
-  bool    rc;
-
-  if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
-    return false;
-  }
-
-  rc = mprisSetPropDouble (mpris, property [MPRIS_PROP_MP2_PLAYER],
-      propname [MPRIS_PROPNM_VOLUME], vol);
-  return rc;
-}
 
 bool
 mprisSetPosition (mpris_t *mpris, int64_t pos)

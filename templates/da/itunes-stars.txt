@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Fattige
+20
+..Fattige
+30
+..Fattige
+40
+..Fattige
+50
+..Fattige
+60
+..godt
+70
+..godt
+80
+..Store
+90
+..Store
+100
+..Store

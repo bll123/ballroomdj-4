@@ -34,7 +34,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  sysvarsInit (argv [0]);
+  sysvarsInit (argv [0], SYSVARS_FLAG_ALL);
   bdjoptInit ();
 
   volumeInitSinkList (&sinklist);

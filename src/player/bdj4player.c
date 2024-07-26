@@ -11,10 +11,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
+#include <stdint.h>
 #include <inttypes.h>
+#include <string.h>
 #include <errno.h>
 #include <getopt.h>
 #include <ctype.h>
@@ -30,11 +30,14 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dyintfc.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "msgparse.h"
 #include "osenv.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -63,24 +66,24 @@ enum {
 };
 
 enum {
-  PREP_QUEUE_IDENT = 0x707265707100aabb,
+  PREP_QUEUE_IDENT = 0xbbaa007170657270,
 };
 
 typedef struct {
-  int64_t       ident;
+  uint64_t      ident;
   char          *songname;
   char          *tempname;
   int32_t       dur;
   int32_t       plidur;
   listnum_t     songstart;
   double        voladjperc;
-  long          uniqueidx;
+  int32_t       uniqueidx;
   int           speed;
   int           announce;     // one of PREP_SONG or PREP_ANNOUNCE
 } prepqueue_t;
 
 typedef struct {
-  long          uniqueidx;
+  int32_t       uniqueidx;
   char          *songname;
 } playrequest_t;
 
@@ -127,6 +130,7 @@ typedef struct {
   mstime_t        playEndCheck;
   mstime_t        fadeTimeCheck;
   mstime_t        volumeTimeCheck;
+  int             newSpeed;
   long            priorGap;           // used for announcements
   long            gap;
   mstime_t        gapFinishTime;
@@ -144,8 +148,10 @@ typedef struct {
   bool            inFadeOut : 1;
   bool            inGap : 1;
   bool            mute : 1;
+  bool            newsong : 1;      // used in the player status msg
   bool            pauseAtEnd : 1;
   bool            repeat : 1;
+  bool            speedWaitChg : 1;
   bool            stopPlaying : 1;
 } playerdata_t;
 
@@ -162,7 +168,7 @@ static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
-static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *sfname);
+static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname);
 static void     playerPause (playerdata_t *playerData);
 static void     playerPlay (playerdata_t *playerData);
 static void     playerNextSong (playerdata_t *playerData);
@@ -170,6 +176,7 @@ static void     playerPauseAtEnd (playerdata_t *playerData);
 static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
 static void     playerSpeed (playerdata_t *playerData, char *trate);
+static void     playerChangeSpeed (playerdata_t *playerData, int speed);
 static void     playerSeek (playerdata_t *playerData, ssize_t pos);
 static void     playerStop (playerdata_t *playerData);
 static void     playerSongBegin (playerdata_t *playerData);
@@ -194,6 +201,7 @@ static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
+static const char * playerGetAudioInterface (void);
 
 static int  gKillReceived = 0;
 
@@ -204,6 +212,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   uint32_t        flags;
   const char      *audiosink;
+  const char      *plintfc;
   char            *volintfc;
   int             plidevtype;
 
@@ -221,7 +230,7 @@ main (int argc, char *argv[])
   mstimestart (&playerData.playTimeStart);
   playerData.playTimePlayed = 0;
   playerData.playRequest = queueAlloc ("play-request", playerFreePlayRequest);
-  mstimeset (&playerData.statusCheck, 3600000);
+  mstimeset (&playerData.statusCheck, TM_TIMER_OFF);
   playerData.priorGap = 2000;
   playerData.gap = 2000;
   playerData.pli = NULL;
@@ -229,15 +238,18 @@ main (int argc, char *argv[])
   playerData.prepQueue = queueAlloc ("prep-q", playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc ("prep-req", playerPrepQueueFree);
   playerData.progstate = progstateInit ("player");
+  playerData.stopNextsongFlag = STOP_NORMAL;
+  playerData.stopwaitcount = 0;
+  playerData.newSpeed = 100;
   playerData.inFade = false;
   playerData.inFadeIn = false;
   playerData.inFadeOut = false;
   playerData.inGap = false;
   playerData.mute = false;
+  playerData.newsong = false;
   playerData.pauseAtEnd = false;
   playerData.repeat = false;
-  playerData.stopNextsongFlag = STOP_NORMAL;
-  playerData.stopwaitcount = 0;
+  playerData.speedWaitChg = false;
   playerData.stopPlaying = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
@@ -289,14 +301,16 @@ main (int argc, char *argv[])
     }
   }
 
+  /* vlc must be checked for a switch in versions */
+  plintfc = playerGetAudioInterface ();
+
   /* sets the current sink */
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   plidevtype = playerSetAudioSink (&playerData, audiosink);
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", plintfc);
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
-  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
-      bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+  playerData.pli = pliInit (plintfc, bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   playerData.pliSupported = pliSupported (playerData.pli);
 
   /* vlc needs to have the audio device set */
@@ -706,7 +720,7 @@ playerProcessing (void *udata)
         if (tdur >= 0) {
           pq->dur = tdur;
         }
-        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %d", pq->dur);
+        logMsg (LOG_DBG, LOG_INFO, "WARN: Replace duration with player data: %" PRId32, pq->dur);
       }
 
       /* save for later use */
@@ -815,12 +829,16 @@ playerProcessing (void *udata)
             playerData->pauseAtEnd = false;
             playerSendPauseAtEndState (playerData);
             logMsg (LOG_DBG, LOG_BASIC, "pause-at-end");
-            playerSetPlayerState (playerData, PL_STATE_STOPPED);
+
+            /* want the newsong flag to be sent with the stop state */
             if (! playerData->repeat) {
               /* let main know we're done with this song. */
+              playerData->newsong = true;
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH_STOP, nsflag);
             }
+            playerSetPlayerState (playerData, PL_STATE_STOPPED);
+
             if (playerData->repeat) {
               playrequest_t *preq;
 
@@ -832,6 +850,7 @@ playerProcessing (void *udata)
             }
           } else {
             if (! playerData->repeat) {
+              playerData->newsong = true;
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, nsflag);
             }
@@ -998,11 +1017,11 @@ playerSongPrep (playerdata_t *playerData, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
   npq->plidur = 0;
-  logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId64, (int64_t) npq->dur);
+  logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId32, npq->dur);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->songstart = atol (p);
-  logMsg (LOG_DBG, LOG_INFO, "     songstart: %" PRId64, (int64_t) npq->songstart);
+  npq->songstart = atoll (p);
+  logMsg (LOG_DBG, LOG_INFO, "     songstart: %" PRId64, npq->songstart);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->speed = atoi (p);
@@ -1018,10 +1037,10 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->uniqueidx = atol (p);
-  logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %ld", npq->uniqueidx);
+  logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %" PRId32, npq->uniqueidx);
 
   queuePush (playerData->prepRequestQueue, npq);
-  logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_INFO, "prep-req-add: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
 }
 
@@ -1048,7 +1067,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
     /* prevent any issues by checking the uniqueidx again */
     if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
-      logMsg (LOG_DBG, LOG_INFO, "prep-clear: %ld %s r:%d p:%d", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+      logMsg (LOG_DBG, LOG_INFO, "prep-clear: %" PRId32 " %s r:%d p:%" PRId32, tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
       playerPrepQueueFree (tpq);
     }
   }
@@ -1076,7 +1095,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   }
   npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
-  logMsg (LOG_DBG, LOG_INFO, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
 }
 
@@ -1087,7 +1106,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   playrequest_t *preq = NULL;
   char          *p;
   char          *tokstr = NULL;
-  long          uniqueidx;
+  qidx_t        uniqueidx;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1107,7 +1126,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "play request: %ld %s", uniqueidx, p);
+  logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (pq == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
@@ -1128,7 +1147,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
 }
 
 static prepqueue_t *
-playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *sfname)
+playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname)
 {
   prepqueue_t       *pq = NULL;
   bool              found = false;
@@ -1142,8 +1161,8 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     pq = playerData->currentSong;
     if (pq != NULL && pq->announce == PREP_SONG &&
         uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld as repeat", sfname, uniqueidx);
-      logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32 " as repeat", sfname, uniqueidx);
+      logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
       found = true;
     }
   }
@@ -1156,15 +1175,15 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
       if (uniqueidx == PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx &&
           strcmp (sfname, pq->songname) == 0) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
@@ -1185,7 +1204,7 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     return NULL;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
+  logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
   logProcEnd ("");
   return pq;
 }
@@ -1301,6 +1320,11 @@ playerNextSong (playerdata_t *playerData)
         playerData->currentSong = NULL;
       }
     } else {
+      /* stopped */
+      prepqueue_t     *tpq;
+
+      tpq = queuePop (playerData->prepQueue);
+      playerPrepQueueFree (tpq);
       playerData->gap = playerData->priorGap;
     }
 
@@ -1398,10 +1422,23 @@ playerSpeed (playerdata_t *playerData, char *trate)
 
   if (playerData->playerState == PL_STATE_PLAYING) {
     rate = atof (trate);
-    pliRate (playerData->pli, (ssize_t) rate);
-    playerData->currentSpeed = (ssize_t) rate;
+    playerChangeSpeed (playerData, (int) rate);
   }
+  if (playerData->playerState == PL_STATE_PAUSED ||
+      playerData->playerState == PL_STATE_STOPPED) {
+    playerData->speedWaitChg = true;
+    playerData->newSpeed = (int) atof (trate);
+  }
+
   logProcEnd ("");
+}
+
+static void
+playerChangeSpeed (playerdata_t *playerData, int speed)
+{
+  pliRate (playerData->pli, (ssize_t) speed);
+  playerData->currentSpeed = (ssize_t) speed;
+  playerData->speedWaitChg = false;
 }
 
 static void
@@ -1555,7 +1592,7 @@ playerPrepQueueFree (void *data)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_INFO, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
+  logMsg (LOG_DBG, LOG_INFO, "prep-free: %" PRId32 " %s", pq->uniqueidx, pq->songname);
 
   if (pq->ident != PREP_QUEUE_IDENT) {
     logMsg (LOG_DBG, LOG_ERR, "ERR: double free of prep queue");
@@ -1786,7 +1823,7 @@ playerStartFadeOut (playerdata_t *playerData)
 static void
 playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 {
-  ssize_t newdur;
+  int32_t     newdur;
 
   logProcBegin ();
 
@@ -1802,8 +1839,8 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   if (pq->announce == PREP_SONG && playerData->fadeoutTime > 0) {
     mstimeset (&playerData->fadeTimeCheck, newdur - playerData->fadeoutTime);
   }
-  logMsg (LOG_DBG, LOG_INFO, "pq->dur: %" PRId64, (int64_t) pq->dur);
-  logMsg (LOG_DBG, LOG_INFO, "newdur: %" PRId64, (int64_t) newdur);
+  logMsg (LOG_DBG, LOG_INFO, "pq->dur: %" PRId32, pq->dur);
+  logMsg (LOG_DBG, LOG_INFO, "newdur: %" PRId32, newdur);
   logMsg (LOG_DBG, LOG_INFO, "playTimeStart: %" PRId64, (int64_t) mstimeend (&playerData->playTimeStart));
   logMsg (LOG_DBG, LOG_INFO, "playEndCheck: %" PRId64, (int64_t) mstimeend (&playerData->playEndCheck));
   logMsg (LOG_DBG, LOG_INFO, "playTimeCheck: %" PRId64, (int64_t) mstimeend (&playerData->playTimeCheck));
@@ -1821,13 +1858,22 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-        playerData->playerState, logPlstateDebugText (playerData->playerState));
-    snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
+        playerData->playerState, logPlayerState (playerData->playerState));
+    msgbuildPlayerState (tbuff, sizeof (tbuff),
+        playerData->playerState, playerData->newsong);
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATE, tbuff);
+
+    if (playerData->speedWaitChg &&
+        playerData->playerState == PL_STATE_PLAYING) {
+      playerChangeSpeed (playerData, playerData->newSpeed);
+    }
+
     /* any time there is a change of player state, send the status */
     playerSendStatus (playerData, STATUS_NO_FORCE);
+    /* reset the new-song flag after it has been sent */
+    playerData->newsong = false;
   }
   logProcEnd ("");
 }
@@ -1838,8 +1884,8 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 {
   char        *rbuff;
   prepqueue_t *pq = playerData->currentSong;
-  ssize_t     tm;
-  ssize_t     dur;
+  int32_t     tm;
+  int32_t     dur;
 
   logProcBegin ();
 
@@ -1879,17 +1925,12 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
-      playerData->repeat, MSG_ARGS_RS,
-      playerData->pauseAtEnd, MSG_ARGS_RS,
-      playerData->currentVolume, MSG_ARGS_RS,
-      playerData->currentSpeed, MSG_ARGS_RS,
-      playerData->baseVolume, MSG_ARGS_RS,
-      (uint64_t) tm, MSG_ARGS_RS,
-      (int64_t) dur);
+  msgbuildPlayerStatus (rbuff, BDJMSG_MAX,
+      playerData->repeat, playerData->pauseAtEnd, playerData->currentVolume,
+      playerData->currentSpeed, playerData->baseVolume, tm, dur);
 
   /* 4.4.4 send the playerui and manageui the messages from here, */
-  /* avoid some latency by routing through main */
+  /* avoid some latency by not routing through main */
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAYER_STATUS_DATA, rbuff);
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
@@ -1994,9 +2035,9 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "playtimeplayed%c%" PRIu64 "%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
-      "prepqueuecount%c%d%c"
+      "prepqueuecount%c%" PRId32 "%c"
       "currentsink%c%s",
-      MSG_ARGS_RS, logPlstateDebugText (playerData->playerState), MSG_ARGS_RS,
+      MSG_ARGS_RS, logPlayerState (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
@@ -2065,4 +2106,75 @@ playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault)
     /* this works for pulse-audio and pipewire */
     osSetEnv ("PULSE_SINK", playerData->actualSink);
   }
+}
+
+static const char *
+playerGetAudioInterface (void)
+{
+  const char  *currplintfc;
+  bool        currvlc3 = false;
+  bool        currvlc4 = false;
+  bool        havevlc3 = false;
+  bool        havevlc4 = false;
+  ilist_t     *interfaces;
+  ilistidx_t  iter;
+  ilistidx_t  key;
+  ilistidx_t  vlc3key = -1;
+  ilistidx_t  vlc4key = -1;
+  const char  *intfc;
+  const char  *newnm = NULL;
+  bool        chg = false;
+
+  currplintfc = bdjoptGetStr (OPT_M_PLAYER_INTFC);
+  if (currplintfc == NULL || strstr (currplintfc, "vlc") == NULL) {
+    return currplintfc;
+  }
+
+  /* 4.10.3 if the configuration is set to use a VLC player, */
+  /* use the player interface list to check and see which */
+  /* versions of VLC are available */
+  /* if version 3 is configured, and version 4 is available, switch */
+  /* if version 4 is configured, and version 3 is available, switch */
+
+  if (strcmp (currplintfc, "libplivlc") == 0) {
+    currvlc3 = true;
+  }
+  if (strcmp (currplintfc, "libplivlc4") == 0) {
+    currvlc4 = true;
+  }
+
+  interfaces = pliInterfaceList ();
+  ilistStartIterator (interfaces, &iter);
+  while ((key = ilistIterateKey (interfaces, &iter)) >= 0) {
+    intfc = ilistGetStr (interfaces, key, DYI_LIB);
+    if (intfc != NULL && strcmp (intfc, "libplivlc") == 0) {
+      havevlc3 = true;
+      vlc3key = key;
+    }
+    if (intfc != NULL && strcmp (intfc, "libplivlc4") == 0) {
+      havevlc4 = true;
+      vlc4key = key;
+    }
+  }
+
+  if (currvlc3 && ! havevlc3 && havevlc4) {
+    intfc = ilistGetStr (interfaces, vlc4key, DYI_LIB);
+    newnm = ilistGetStr (interfaces, vlc4key, DYI_DESC);
+    chg = true;
+  }
+  if (currvlc4 && ! havevlc4 && havevlc3) {
+    intfc = ilistGetStr (interfaces, vlc3key, DYI_LIB);
+    newnm = ilistGetStr (interfaces, vlc3key, DYI_DESC);
+    chg = true;
+  }
+
+  if (chg) {
+    bdjoptSetStr (OPT_M_PLAYER_INTFC, intfc);
+    bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, newnm);
+    bdjoptSave ();
+  }
+
+  ilistFree (interfaces);
+
+  return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }

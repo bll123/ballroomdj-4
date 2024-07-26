@@ -4,10 +4,11 @@
 #ifndef INC_UIEXTREQ_H
 #define INC_UIEXTREQ_H
 
+#include "callback.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "song.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uiextreq uiextreq_t;
 

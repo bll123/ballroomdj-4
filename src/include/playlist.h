@@ -53,11 +53,11 @@ typedef enum {
 } pltype_t;
 
 enum {
-  PL_LIST_ALL,          // everything, include QueueDance
-  PL_LIST_AUTO_SEQ,
-  PL_LIST_NORMAL,       // excludes the special QueueDance playlist
+  PL_LIST_ALL,          // include QueueDance, exclude History
+  PL_LIST_AUTO_SEQ,     // exclude QueueDance
+  PL_LIST_NORMAL,       // exclude QueueDance, History
   PL_LIST_SEQUENCE,
-  PL_LIST_SONGLIST,
+  PL_LIST_SONGLIST,     // will include History
   PL_LIST_DIR,          // specified directory
   PL_LIST_MAX,
 };
@@ -71,6 +71,7 @@ enum {
 typedef struct playlist playlist_t;
 
 playlist_t *playlistLoad (const char *name, musicdb_t *musicdb);
+bool      playlistCheck (playlist_t *pl);
 playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb);
 void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);

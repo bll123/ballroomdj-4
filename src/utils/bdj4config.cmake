@@ -21,6 +21,7 @@ find_package (Iconv)
 
 # check for all supported ui interfaces
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
@@ -29,6 +30,11 @@ endif()
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_compile_options (-DBDJ4_USE_GTK3=1)
   set (BDJ4_UI_LIB libuigtk3)
+endif()
+
+if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  add_compile_options (-DBDJ4_USE_GTK4=1)
+  set (BDJ4_UI_LIB libuigtk4)
 endif()
 
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
@@ -65,6 +71,9 @@ pkg_check_modules (JSONC json-c)
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (GTK gtk+-3.0)
 endif()
+if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  pkg_check_modules (GTK libgtk-4-1)
+endif()
 pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
@@ -74,20 +83,78 @@ pkg_check_modules (XML2 libxml-2.0)
 
 #### VLC
 
-# pkg_check_modules (LIBVLC libvlc)
+# linux
+# will need to figure out vlc3/vlc4 in the future
+pkg_check_modules (LIBVLC libvlc)
 
-if (NOT LIBVLC_FOUND)
-  find_package (LIBVLC)
+# on MacOS, the libvlc.dylib is located in a different place
+# for vlc-3 and vlc-4.
+if (APPLE AND NOT LIBVLC_FOUND)
+  if (EXISTS "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+    message ("-- VLC3: Using /Applications/VLC.app")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  # for development
+  if (NOT LIBVLC_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
+    message ("-- VLC3: Using $ENV{HOME}/Applications/VLC3.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC4_LIBRARY "/Applications/VLC.app/Contents/MacOS/")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
 endif()
-if (NOT WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_LIBRARY "-lvlc")
-  set (LIBVLC_FOUND TRUE)
+if (APPLE AND NOT LIBVLC4_FOUND)
+  if (EXISTS "/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")
+    message ("-- VLC4: Using /Applications/VLC.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
+  # for development
+  if (NOT LIBVLC4_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    message ("-- VLC4: Using $ENV{HOME}/Applications/VLC4.app")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
 endif()
-# windows will not find any vlc include files in the vlc dir
+
+# The include files are found in the .7z package.
+# For the purposes of development,
+#   VLC 3 is installed into Program Files/VideoLAN/VLC3
+#   VLC 4 is installed into Program Files/VideoLAN/VLC4
+# need a way to differentiate a vlc-3 and vlc-4 installation.
 if (WIN32 AND NOT LIBVLC_FOUND)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.18")
-  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
-  set (LIBVLC_FOUND TRUE)
+  if (EXISTS "C:/Program Files/VideoLAN/VLC/libvlc.dll" AND
+      NOT EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  # for development, override the usual VLC dir, as it is not known
+  # what version it is.
+  if (NOT LIBVLC_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC3")
+    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.20")
+    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    set (LIBVLC_FOUND TRUE)
+  endif()
+  # for development
+  if (NOT LIBVLC4_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+    message ("-- VLC4: Using C:/Program Files/VideoLAN/VLC4")
+    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+    set (LIBVLC4_FOUND TRUE)
+  endif()
+endif()
+
+# linux can use gstreamer.
+if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
+  if (APPLE OR WIN32)
+    message (FATAL_ERROR "Unable to locate a VLC library")
+  endif()
 endif()
 
 #### MPV
@@ -135,7 +202,8 @@ pkg_check_modules (ICUI18N icu-i18n)
 
 #### generic compile options
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   add_compile_options (-DGDK_DISABLE_DEPRECATED)
   add_compile_options (-DGTK_DISABLE_DEPRECATED)
 endif()
@@ -156,6 +224,7 @@ add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
 add_compile_options (-Werror=return-type)
 add_compile_options (-Wdeprecated-declarations)
+add_compile_options (-Wunreachable-code)
 
 #### compiler-specific compile options
 
@@ -210,7 +279,7 @@ endif()
 
 if (BDJ4_BUILD STREQUAL "Debug")
   message ("Debug Build")
-  add_compile_options (-O0)
+  add_compile_options (-Og)
   add_compile_options (-ggdb3)
   add_link_options (-g)
 endif()
@@ -244,7 +313,7 @@ set (BDJ4_FORTIFY T)
 if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR BDJ4_BUILD STREQUAL "Memdebug-Sanitize")
   message ("Sanitize Address Build")
   set (BDJ4_FORTIFY F)
-  add_compile_options (-O0)
+  add_compile_options (-Og)
   add_compile_options (-ggdb3)
   add_link_options (-g)
   add_compile_options (-fsanitize=address)
@@ -264,7 +333,7 @@ endif()
 if (BDJ4_BUILD STREQUAL "SanitizeUndef")
   message ("Sanitize Undefined Build")
   set (BDJ4_FORTIFY F)
-  add_compile_options (-O0)
+  add_compile_options (-Og)
   add_compile_options (-ggdb3)
   add_link_options (-g)
   add_compile_options (-fsanitize=undefined)
@@ -362,12 +431,16 @@ set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
+set (CMAKE_REQUIRED_INCLUDES ${LIBVLC4_INCLUDE_DIR})
+check_include_file (vlc/vlc.h _hdr_vlc_vlc)
+set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${LIBMPV_INCLUDE_DIRS})
 check_include_file (mpv/client.h _hdr_mpv_client)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
   check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
   check_include_file (gtk/gtk.h _hdr_gtk_gtk)
@@ -495,10 +568,16 @@ check_function_exists (sysconf _lib_sysconf)
 check_function_exists (timegm _lib_timegm)
 check_function_exists (uname _lib_uname)
 
-set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LIBRARY})
-check_function_exists (libvlc_new _lib_libvlc_new)
-check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
-set (CMAKE_REQUIRED_LIBRARIES "")
+if (LIBVLC_FOUND)
+  set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LDFLAGS} ${LIBVLC_LIBRARY})
+  check_function_exists (libvlc_new _lib_libvlc3_new)
+  set (CMAKE_REQUIRED_LIBRARIES "")
+endif()
+if (LIBVLC4_FOUND)
+  set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LDFLAGS} ${LIBVLC4_LIBRARY})
+  check_function_exists (libvlc_new _lib_libvlc4_new)
+  set (CMAKE_REQUIRED_LIBRARIES "")
+endif()
 
 set (CMAKE_REQUIRED_LIBRARIES ${LIBMPV_LDFLAGS})
 check_function_exists (mpv_create _lib_mpv_create)

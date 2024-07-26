@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#include "callback.h"
 #include "uiwcont.h"
 
 /* widget interface */
@@ -27,18 +28,25 @@ void  uiWidgetAlignHorizCenter (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertFill (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertStart (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertCenter (uiwcont_t *uiwidget);
+void  uiWidgetAlignVertEnd (uiwcont_t *uiwidget);
 void  uiWidgetDisableFocus (uiwcont_t *uiwidget);
+void  uiWidgetEnableFocus (uiwcont_t *uiwidget);
+void  uiWidgetGrabFocus (uiwcont_t *uiwidget);
 void  uiWidgetHide (uiwcont_t *uiwidget);
 void  uiWidgetShow (uiwcont_t *uiwidget);
 void  uiWidgetShowAll (uiwcont_t *uiwidget);
 void  uiWidgetMakePersistent (uiwcont_t *uiuiwidget);
 void  uiWidgetClearPersistent (uiwcont_t *uiuiwidget);
 void  uiWidgetSetSizeRequest (uiwcont_t *uiuiwidget, int width, int height);
-bool  uiWidgetIsValid (uiwcont_t *uiwidget);
+bool  uiWidgetIsMapped (uiwcont_t *uiuiwidget);
 void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
-void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
+void  uiWidgetAddClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
+void  uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void  uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb);
+
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

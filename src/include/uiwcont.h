@@ -1,8 +1,8 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGENERAL_H
-#define INC_UIGENERAL_H
+#ifndef INC_UIWCONT_H
+#define INC_UIWCONT_H
 
 typedef struct uiwcont uiwcont_t;
 
@@ -20,4 +20,4 @@ const char * uiwcontDesc (int wtype);
 /* uiwcontFree() will also call any widget-specific free procedures */
 void  uiwcontFree (uiwcont_t *uiwidget);
 
-#endif /* INC_UIGENERAL_H */
+#endif /* INC_UIWCONT_H */

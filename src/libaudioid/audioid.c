@@ -152,7 +152,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         char      tmp [40];
         nlist_t   *respdata;
 
-        snprintf (tmp, sizeof (tmp), "%ld", (long) songGetNum (song, TAG_DURATION));
+        snprintf (tmp, sizeof (tmp), "%" PRIu64, songGetNum (song, TAG_DURATION));
         respdata = audioidGetResponseData (audioid->resp, 0);
         nlistSetStr (respdata, TAG_DURATION, tmp);
         audioid->respcount [AUDIOID_ID_ACOUSTID] =
@@ -219,8 +219,8 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       audioid_id_t  ident;
       double        score;
       const char    *str;
-      long          dur;
-      long          tdur = -1;
+      int32_t       dur;
+      int32_t       tdur = -1;
       nlist_t       *respdata;
 
       respdata = audioidGetResponseData (audioid->resp, key);
@@ -228,14 +228,14 @@ audioidLookup (audioid_t *audioid, const song_t *song)
 
       str = nlistGetStr (respdata, TAG_TITLE);
       if (str == NULL || ! *str) {
-        logMsg (LOG_DBG, LOG_AUDIO_ID, "%d no title, reject", key);
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " no title, reject", key);
         /* acoustid can return results with id and score and no data */
         /* do not add this to the response index list */
         continue;
       }
 
       if (score == LIST_VALUE_INVALID || score < AUDIOID_MIN_SCORE) {
-        logMsg (LOG_DBG, LOG_AUDIO_ID, "%d score %.1f < %.1f, reject",
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " score %.1f < %.1f, reject",
             key, score, AUDIOID_MIN_SCORE);
         /* do not add this to the response index list */
         continue;
@@ -250,7 +250,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         }
         dur = songGetNum (song, TAG_DURATION);
         if (labs (dur - tdur) > AUDIOID_DUR_DIFF) {
-          logMsg (LOG_DBG, LOG_AUDIO_ID, "%d duration reject %ld/%ld", key, dur, tdur);
+          logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " duration reject %" PRId32 "/%" PRId32, key, dur, tdur);
           continue;
         }
       }
@@ -289,7 +289,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         prevkey = rikey;
         continue;
       }
-      // logMsg (LOG_DBG, LOG_AUDIO_ID, "dup chk compare %d/%d", prevkey, rikey);
+      // logMsg (LOG_DBG, LOG_AUDIO_ID, "dup chk compare %" PRId32 "/%" PRId32, prevkey, rikey);
 
       nlistStartIterator (audioid->dupchklist, &dupiter);
       while ((duptag = nlistIterateKey (audioid->dupchklist, &dupiter)) >= 0) {
@@ -301,7 +301,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
         vala = nlistGetStr (respdata, duptag);
         respdata = audioidGetResponseData (audioid->resp, rikey);
         valb = nlistGetStr (respdata, duptag);
-        // logMsg (LOG_DBG, LOG_AUDIO_ID, "%d/%d dup chk %d/%s %s %s", prevkey, rikey, duptag, tagdefs [duptag].tag, vala, valb);
+        // logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 "/%" PRId32 " dup chk %d/%s %s %s", prevkey, rikey, duptag, tagdefs [duptag].tag, vala, valb);
         if (vala != NULL && valb != NULL &&
             strcmp (vala, valb) != 0) {
           match = false;
@@ -312,7 +312,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       if (match) {
         /* there is no difference in data between this and the last */
         /* do not add it to the respidx list */
-        logMsg (LOG_DBG, LOG_AUDIO_ID, "%d dup data, reject", rikey);
+        logMsg (LOG_DBG, LOG_AUDIO_ID, "%" PRId32 " dup data, reject", rikey);
       } else {
         nlistSetNum (audioid->respidx, idxkey, rikey);
       }
@@ -322,7 +322,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
     nlistFree (orespidx);
     nlistSort (audioid->respidx);
 
-    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: usable responses: %d",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audioid: usable responses: %" PRId32,
         nlistGetCount (audioid->respidx));
     audioid->state = BDJ4_STATE_FINISH;
   }
@@ -466,7 +466,7 @@ dumpResults (audioid_t *audioid)
   while ((key = nlistIterateKey (audioid->resp->respdatalist, &iteridx)) >= 0) {
     nlist_t     *respdata;
 
-    logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "== resp key: %d", key);
+    logMsg (LOG_DBG, LOG_AUDIOID_DUMP, "== resp key: %" PRId32, key);
 
     respdata = audioidGetResponseData (audioid->resp, key);
     audioidDumpResult (respdata);

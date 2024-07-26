@@ -16,49 +16,49 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
+#include "bdjvarsdf.h"
 #include "oslocale.h"
+#include "songfav.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"
 #include "validate.h"
 
-#define RHB "\xE2\x96\x90"  /* right half block 0xE2 0x96 0x90 */
-#define FB  "\xE2\x96\x88"  /* full block 0xE2 0x96 0x88 */
-#define LHB "\xE2\x96\x8c"  /* left half block 0xE2 0x96 0x8c */
+enum {
+  PROFILE_BOX_SZ = 26,
+};
 
-/* as a side effect, hbox is set, and */
+static bool favclassinit = false;
+
+/* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
 uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
-  uiwcont_t       *label;
-  const char      *txt;
+  uiwcont_t       *cbox;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
-    txt = LHB FB;
-  } else {
-    txt = RHB FB;
-  }
-  /* there is some weird bug on macos where the color profile box */
-  /* does not display properly */
+  cbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizCenter (cbox);
+  uiWidgetAlignVertCenter (cbox);
+  uiWidgetSetMarginStart (cbox, 4);
+  uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
+  uiutilsSetProfileColor (cbox);
+  uiBoxPackEnd (hbox, cbox);
+  uiWidgetShowAll (hbox);
 
-  label = uiCreateLabel (txt);
-  uiWidgetSetMarginStart (label, 3);
-  uiutilsSetProfileColor (label);
-  uiBoxPackEnd (hbox, label);
-
+  accent->cbox = cbox;
   accent->hbox = hbox;
-  accent->label = label;
 }
 
 void
 uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
 {
   char        classnm [100];
+  char        bclassnm [100];
   const char  *tcolor = NULL;
 
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
@@ -67,8 +67,11 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
-  uiLabelAddClass (classnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiWidgetSetClass (uiwidgetp, classnm);
+  /* macos will crash if just box.profcol%s is used! */
+  snprintf (bclassnm, sizeof (bclassnm), "box.horizontal.profcol%s", tcolor + 1);
+  /* the ui library has code to prevent duplicates */
+  uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiWidgetAddClass (uiwidgetp, classnm);
 }
 
 const char *
@@ -83,22 +86,40 @@ uiutilsGetCurrentFont (void)
   return tstr;
 }
 
-int
-uiutilsValidatePlaylistName (uiwcont_t *entry, void *udata)
+const char *
+uiutilsGetListingFont (void)
 {
-  uiwcont_t   *statusMsg = udata;
+  const char  *tstr;
+
+  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  if (tstr == NULL || ! *tstr) {
+    tstr = bdjoptGetStr (OPT_MP_UIFONT);
+    if (tstr == NULL || ! *tstr) {
+      tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+    }
+  }
+  return tstr;
+}
+
+int
+uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
+{
+  uiwcont_t   *msgwidget = udata;
   int         rc;
   const char  *str;
   char        tbuff [200];
-  const char  *valstr;
+  int         flags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
+  bool        val;
 
+  uiLabelSetText (msgwidget, "");
   rc = UIENTRY_OK;
-  uiLabelSetText (statusMsg, "");
   str = uiEntryGetValue (entry);
-  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (valstr != NULL) {
-    snprintf (tbuff, sizeof (tbuff), valstr, str);
-    uiLabelSetText (statusMsg, tbuff);
+  if (isWindows ()) {
+    flags |= VAL_NO_WINCHARS;
+  }
+  val = validate (tbuff, sizeof (tbuff), label, str, flags);
+  if (val == false) {
+    uiLabelSetText (msgwidget, tbuff);
     rc = UIENTRY_ERROR;
   }
 
@@ -146,3 +167,31 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
   }
   snprintf (buff, sz, "%s %s %d", fontname, style, newsz);
 }
+
+void
+uiutilsAddFavoriteClasses (void)
+{
+  int         count;
+  const char  *name;
+  const char  *color;
+  songfav_t   *songfav;
+
+  if (favclassinit) {
+    return;
+  }
+
+  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+  count = songFavoriteGetCount (songfav);
+  for (int idx = 0; idx < count; ++idx) {
+    name = songFavoriteGetStr (songfav, idx, SONGFAV_NAME);
+    color = songFavoriteGetStr (songfav, idx, SONGFAV_COLOR);
+    if (name == NULL || ! *name) {
+      continue;
+    }
+    uiSpinboxAddClass (name, color);
+    uiLabelAddClass (name, color);
+  }
+
+  favclassinit = true;
+}
+

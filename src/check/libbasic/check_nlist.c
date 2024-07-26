@@ -629,7 +629,7 @@ START_TEST(nlist_s_iterate_str)
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "555");
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = nlistGetStr (list, key);
@@ -774,7 +774,7 @@ START_TEST(nlist_s_iterate_num)
   value = nlistGetNum (list, key);
   ck_assert_int_eq (value, 555);
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = nlistGetNum (list, key);
@@ -828,9 +828,9 @@ START_TEST(nlist_s_iterate_num)
   ck_assert_int_eq (value, 0);
   /* previous does not wrap at this time */
   key = nlistIterateKeyPrevious (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = nlistIterateKeyPrevious (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
 
   nlistStartIterator (list, &iteridx);
   value = nlistIterateValueNum (list, &iteridx);
@@ -910,7 +910,7 @@ START_TEST(nlist_s_replace_str)
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "555");
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = nlistGetStr (list, key);
@@ -946,7 +946,7 @@ START_TEST(nlist_s_replace_str)
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "555");
   key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, -1);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
   key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
   value = nlistGetStr (list, key);

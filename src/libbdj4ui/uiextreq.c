@@ -68,15 +68,15 @@ typedef struct uiextreq {
 
 /* external request */
 static void   uiextreqCreateDialog (uiextreq_t *uiextreq);
-static int    uiextreqDanceSelectHandler (void *udata, long idx, int count);
+static bool   uiextreqDanceSelectHandler (void *udata, int32_t idx, int32_t count);
 static void   uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn);
 static void   uiextreqClearSong (uiextreq_t *uiextreq);
-static bool   uiextreqResponseHandler (void *udata, long responseid);
+static bool   uiextreqResponseHandler (void *udata, int32_t responseid);
 static void   uiextreqProcessAudioFile (uiextreq_t *uiextreq);
-static int    uiextreqValidateAudioFile (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateArtist (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateTitle (uiwcont_t *entry, void *udata);
-static int    uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata);
+static int    uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateArtist (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateTitle (uiwcont_t *entry, const char *label, void *udata);
+static int    uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata);
 
 uiextreq_t *
 uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
@@ -210,7 +210,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpEntry = uiCreateSizeGroupHoriz ();
 
-  uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitLong (
+  uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitI (
       uiextreqResponseHandler, uiextreq);
   uiextreq->wcont [UIEXTREQ_W_DIALOG] = uiCreateDialog (uiextreq->wcont [UIEXTREQ_W_WINDOW],
       uiextreq->callbacks [UIEXTREQ_CB_DIALOG],
@@ -310,9 +310,9 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitLongInt (
+  uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitII (
       uiextreqDanceSelectHandler, uiextreq);
-  uiextreq->uidance = uidanceDropDownCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
+  uiextreq->uidance = uidanceCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
       /* CONTEXT: external request: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uiextreq->uidance, uiextreq->callbacks [UIEXTREQ_CB_DANCE]);
@@ -340,21 +340,21 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
 
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], "",
       uiextreqValidateAudioFile, uiextreq, UIENTRY_DELAYED);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST], "",
       uiextreqValidateArtist, uiextreq, UIENTRY_IMMEDIATE);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_TITLE],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_TITLE], "",
       uiextreqValidateTitle, uiextreq, UIENTRY_IMMEDIATE);
-  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
+  uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "",
       uiextreqValidateMQDisplay, uiextreq, UIENTRY_IMMEDIATE);
 
   logProcEnd ("");
 }
 
 /* count is not used */
-static int
-uiextreqDanceSelectHandler (void *udata, long idx, int count)
+static bool
+uiextreqDanceSelectHandler (void *udata, int32_t idx, int32_t count)
 {
   uiextreq_t  *uiextreq = udata;
 
@@ -381,7 +381,7 @@ uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn)
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_ARTIST], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_TITLE], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "");
-  uidanceSetValue (uiextreq->uidance, -1);
+  uidanceSetKey (uiextreq->uidance, -1);
 }
 
 static void
@@ -398,7 +398,7 @@ uiextreqClearSong (uiextreq_t *uiextreq)
 }
 
 static bool
-uiextreqResponseHandler (void *udata, long responseid)
+uiextreqResponseHandler (void *udata, int32_t responseid)
 {
   uiextreq_t  *uiextreq = udata;
   int         x, y, ws;
@@ -489,19 +489,19 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
           songGetStr (uiextreq->song, TAG_TITLE));
       uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
           songGetStr (uiextreq->song, TAG_MQDISPLAY));
-      uidanceSetValue (uiextreq->uidance,
+      uidanceSetKey (uiextreq->uidance,
           songGetNum (uiextreq->song, TAG_DANCE));
     }
   }
 }
 
 static int
-uiextreqValidateAudioFile (uiwcont_t *entry, void *udata)
+uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   int         rc;
 
-  rc = uiEntryValidateFile (entry, NULL);
+  rc = uiEntryValidateFile (entry, label, NULL);
   if (rc == UIENTRY_OK) {
     pathinfo_t    *pi;
     const char    *fn;
@@ -522,7 +522,7 @@ uiextreqValidateAudioFile (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateArtist (uiwcont_t *entry, void *udata)
+uiextreqValidateArtist (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;
@@ -535,7 +535,7 @@ uiextreqValidateArtist (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateTitle (uiwcont_t *entry, void *udata)
+uiextreqValidateTitle (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;
@@ -548,7 +548,7 @@ uiextreqValidateTitle (uiwcont_t *entry, void *udata)
 }
 
 static int
-uiextreqValidateMQDisplay (uiwcont_t *entry, void *udata)
+uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata)
 {
   uiextreq_t  *uiextreq = udata;
   const char  *str;

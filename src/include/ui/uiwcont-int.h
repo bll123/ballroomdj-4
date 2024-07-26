@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ */
 #ifndef INC_UIWCONT_INT_H
 #define INC_UIWCONT_INT_H
 
@@ -6,11 +9,10 @@ extern "C" {
 #endif
 
 #include "ui/uidialog.h"
-#include "ui/uitreeview.h"
 
 /* partially in use. */
 /* The widget container will be more generic and */
-/* hold uitree_t, uibutton_t, etc. */
+/* hold uibutton_t, etc. */
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,
@@ -20,7 +22,6 @@ typedef enum {
   WCONT_T_CHGIND,
   WCONT_T_COLOR_BUTTON,
   WCONT_T_DIALOG_WINDOW,
-  WCONT_T_DROPDOWN,
   WCONT_T_ENTRY,
   WCONT_T_FONT_BUTTON,
   WCONT_T_IMAGE,
@@ -57,7 +58,7 @@ typedef enum {
   WCONT_T_TEXT_BUFFER,      // gtk widget
   /* base type for check-box, radio-button */
   WCONT_T_TOGGLE_BUTTON,
-  WCONT_T_TREE,
+  WCONT_T_EVENT_BOX,
   WCONT_T_UNKNOWN,
   /* base type for scroll-window, dialog-window, paned-window */
   WCONT_T_WINDOW,
@@ -70,64 +71,41 @@ enum {
 };
 
 typedef struct uibutton uibutton_t;
-typedef struct uidropdown uidropdown_t;
 typedef struct uientry uientry_t;
-typedef struct uikey uikey_t;
+typedef struct uievent uievent_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
-typedef struct uitree uitree_t;
+typedef struct uivirtlist uivirtlist_t;
 
-/* for future use */
-/* the widget pointer will be moved out of the below structure */
-/* and into the uiwcont_t union */
-/* partially done: 2024-1 */
 typedef union {
     void          *voidwidget;
     uibutton_t    *uibutton;
-    uidropdown_t  *uidropdown;
     uientry_t     *uientry;
-    uikey_t       *uikey;
+    uievent_t       *uievent;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
     uispinbox_t   *uispinbox;
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;
-    uitree_t      *uitree;
+    uivirtlist_t  *uivirtlist;
 } uiwcontint_t;
 
-/* UISPECIFIC is defined as the contents of the anonymous union. */
-/* UISPECIFIC must contain a value named 'widget' */
-
 # if BDJ4_USE_GTK3 /* gtk3 */
-
-#  include <gtk/gtk.h>
-
-#define UISPECIFIC \
-  GtkWidget     *widget; \
-  GtkSizeGroup  *sg; \
-  GdkPixbuf     *pixbuf; \
-  GtkTextBuffer *buffer; \
-  GtkAdjustment *adjustment;
-
+#  include "ui/uigtk3-int.h"
 # endif /* BDJ4_USE_GTK3 */
 
 # if BDJ4_USE_NULLUI
-
-#define UISPECIFIC \
-  void      *widget;
-
+#  include "ui/uinull-int.h"
 # endif /* BDJ4_USE_NULLUI */
 
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
   uiwcontint_t    uiint;
-  union {
-    UISPECIFIC
-  };
+  uispecific_t    uidata;
 } uiwcont_t;
 
 static inline bool
@@ -136,8 +114,7 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   if (uiwidget == NULL) {
     return false;
   }
-  if ((int) uiwidget->wbasetype != WCONT_T_DROPDOWN &&
-      uiwidget->widget == NULL) {
+  if (uiwidget->uidata.widget == NULL) {
     return false;
   }
   if ((int) uiwidget->wbasetype != exptype &&

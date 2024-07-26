@@ -27,7 +27,7 @@ typedef enum {
 } valuetype_t;
 
 enum {
-  LIST_LOC_INVALID    = -1,
+  LIST_LOC_INVALID    = -65532,
   LIST_VALUE_INVALID  = -65534,
   LIST_END_LIST       = -1,
   LIST_NO_VERSION     = -1,

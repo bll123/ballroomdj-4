@@ -21,6 +21,7 @@ apt install libpulse-dev libpipewire-0.3-dev libgcrypt-dev
 apt install libogg-dev libopus-dev libopusfile-dev libvorbis-dev libflac-dev
 apt install libavformat-dev libavutil-dev
 apt install libxml2-dev libjson-c-dev libcurl4-openssl-dev
+apt install libgstreamer1.0-dev
 usermod -a -G vboxsf <user>
 ~~~
 
@@ -46,7 +47,7 @@ dnf install ffmpeg-free-devel libavformat-free-devel
 dnf install pulseaudio-libs-devel openssl-devel libgcrypt-devel
 dnf install libogg-devel opus-devel opusfile-devel flac-devel
 dnf install libvorbis-devel
-dnf install check-devel json-c-devel
+dnf install check-devel json-c-devel gstreamer-devel
 ~~~
 
 Other notes
@@ -104,8 +105,7 @@ zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
 zypper install libpulse-devel libopenssl-devel libgcrypt-devel
 zypper install libogg-devel libopus-devel opusfile-devel libvorbis-devel
 zypper install flac-devel check-devel libxml2-devel
-zypper install libjson-c-devel
-zypper remove gcc7
+zypper install libjson-c-devel gstreamer-devel
 zypper refresh
 zypper update
 ~~~
@@ -117,4 +117,4 @@ usermod -a -G vboxsf <user>
 ~~~
 
 [Wiki Home](Home)
-<br>_(Updated 2024-04-20 11:15:25; BDJ4 version 4.8.4)_
+<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_

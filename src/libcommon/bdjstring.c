@@ -12,7 +12,7 @@
 
 #include "bdjstring.h"
 
-static const char *versionNext (const char *tv1);
+  // static const char *versionNext (const char *tv1);
 
 /* not for use on localized strings */
 char *
@@ -80,8 +80,9 @@ stringTrimChar (char *s, unsigned char c)
   return;
 }
 
+#if 0
 int
-versionCompare (const char *v1, const char *v2)
+versionCompare (const char *v1, const char *v2) /* UNUSED */
 {
   const char  *tv1, *tv2;
   int         iv1, iv2;
@@ -112,6 +113,7 @@ versionCompare (const char *v1, const char *v2)
 
   return rc;
 }
+#endif
 
 /* a more efficient way of appending strings, the length must be tracked */
 /* used by musicdb.c */
@@ -136,7 +138,8 @@ stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
 
 /* internal routines */
 
-static inline const char *
+#if 0
+static const char *
 versionNext (const char *tv1)
 {
   tv1 = strstr (tv1, ".");
@@ -147,4 +150,5 @@ versionNext (const char *tv1)
   }
   return tv1;
 }
+#endif
 

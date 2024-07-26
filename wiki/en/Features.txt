@@ -4,34 +4,36 @@
 
 * Supported Platforms as of 2023-3-16
     * Windows 10, Windows 11
-    [Install / Installing on Windows](en-Install-Windows)
+      [Install / Installing on Windows](en-Install-Windows)
     * MacOS Big Sur, Monterey, Ventura, Sonoma
-    [Install / Installing on MacOS](en-Install-MacOS)
+      [Install / Installing on MacOS](en-Install-MacOS)
     * Linux (Only OpenSUSE and Debian are packaged, other Linux must be built from source)
-    [Install / Installing on Linux](en-Install-Linux)
+      [Install / Installing on Linux](en-Install-Linux)
 * Free and open source software.
 * Full unicode support, supports all languages.
 * No limitation on the number of audio files.
 * Any audio file that can be played by VLC is supported (MP3, FLAC, Opus, OGG, etc.)
+    * Linux also supports GStreamer.
 * Fully configurable.
     * Player, Marquee, User Interface, Dances, Dance Ratings, etc.
 * Player.
   [Player / Player](en-Player-Player)
     * Reload the player upon accidental exit.
-    [Player / Reload](en-Player-Reload)
+      [Player / Reload](en-Player-Reload)
     * Marquee.
-    [Player / Marquee](en-Player-Marquee)
+      [Player / Marquee](en-Player-Marquee)
     * Announcements.
-    [Configuration / Edit Dances](en-Configuration-Edit%20Dances)
-    [Subjects / Announcements](en-Subjects-Announcements)
+      [Configuration / Edit Dances](en-Configuration-Edit%20Dances)
+      [Subjects / Announcements](en-Subjects-Announcements)
     * Requests.
         * Column display is fully configurable.
-        [Configuration / Display Settings](en-Configuration-Display%20Settings)
+          [Configuration / Display Settings](en-Configuration-Display%20Settings)
         * Filter your song collection to select the requested song.
-        [Subjects / Filter Dialog](en-Subjects-Filter%20Dialog)
+          [Subjects / Filter Dialog](en-Subjects-Filter%20Dialog)
     * Request an external song not in the database.
+      [Player / Playing a Song not in the Database](en-Player-External%20Request)
     * Player Controls.
-    [Player / Player](en-Player-Player)
+      [Player / Player](en-Player-Player)
         * Play / Pause.
         * Repeat.
         * Pause at end.
@@ -40,14 +42,14 @@
         * Speed with pitch control.
         * Volume.
     * Multiple queues.
-    [Subjects / Music Queues](en-Subjects-Music%20Queues
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[How To / Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[How To / Running a Showcase](en-HowTo-Running%20a%20Showcase))
+      [Subjects / Music Queues](en-Subjects-Music%20Queues)
+      [How To / Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
+      [How To / Running a Showcase](en-HowTo-Running%20a%20Showcase)
         * Column display is fully configurable.
-        [Configuration / Display Settings](en-Configuration-Display%20Settings)
+          [Configuration / Display Settings](en-Configuration-Display%20Settings)
         * Songs can be added to / moved within / removed from the queue while playing.
         * Queue configuration.
-        [Configuration / Music Queues](en-Configuration-Music%20Queues)
+          [Configuration / Music Queues](en-Configuration-Music%20Queues)
             * Fade-in time.
             * Fade-out time.
             * Gap between songs.
@@ -55,49 +57,51 @@
             * Stop time.
             * Pause each song.
             * Play announcement for each dance.
+              [Subjects / Announcements](en-Subjects-Announcements)
     * History of played songs.
     * Export the playlist as MP3 files.
 * Playlists
     * Song lists : pick and choose the songs to play.
-    [Management / Edit Song Lists](en-Management-Edit%20Song%20Lists)
+      [Management / Edit Song Lists](en-Management-Edit%20Song%20Lists)
+      [Subjects / Song Lists](en-Subjects-Song%20Lists)
         * Create song lists using sequenced or automatic playlists.
-        [Subjects / Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
+          [Subjects / Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
         * Export a song list for BDJ4 / Import a song list from BDJ4.
     * Sequenced : specify which dances and the order in which they are played.
-    [Management / Edit Sequences](en-Management-Edit%20Sequences)
-    [Subjects / Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
-    [Subjects / Song Selection](en-Subjects-Song%20Selection)
+      [Management / Edit Sequences](en-Management-Edit%20Sequences)
+      [Subjects / Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+      [Subjects / Song Selection](en-Subjects-Song%20Selection)
     * Automatic : choose how many of each dance play and let BDJ4 do the rest.
-    [Management / Playlist Management](en-Management-Playlist%20Management)
-    [Subjects / Automatic Playlists](en-Subjects-Automatic%20Playlists)
-    [Subjects / Dance Selection](en-Subjects-Dance%20Selection)
-    [Subjects / Song Selection](en-Subjects-Song%20Selection)
+      [Management / Playlist Management](en-Management-Playlist%20Management)
+      [Subjects / Automatic Playlists](en-Subjects-Automatic%20Playlists)
+      [Subjects / Dance Selection](en-Subjects-Dance%20Selection)
+      [Subjects / Song Selection](en-Subjects-Song%20Selection)
     * Playlist Controls
-    [Management / Playlist Management](en-Management-Playlist%20Management)
+      [Management / Playlist Management](en-Management-Playlist%20Management)
         * Maximum play time for the playlist or for a particular dance.
         * Gap between songs.
         * Stop at a particular time.
         * Stop after some number of songs have played.
 * Music Manager
-    [Management / Music Manager](en-Management-Music%20Manager)
+  [Management / Music Manager](en-Management-Music%20Manager)
     * Easily filter your song collection to select the songs to work with.
-    [Subjects / Filter Dialog](en-Subjects-Filter%20Dialog)
+      [Subjects / Filter Dialog](en-Subjects-Filter%20Dialog)
     * Mark songs as the _same song_ to prevent similar songs from being selected in automatic and sequenced playlists.
-    [Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
-    [Subjects / Song Selection](en-Subjects-Song%20Selection)
+      [Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
+      [Subjects / Song Selection](en-Subjects-Song%20Selection)
     * Column display is fully configurable.
-    [Configuration / Display Settings](en-Configuration-Display%20Settings)
+      [Configuration / Display Settings](en-Configuration-Display%20Settings)
     * Automatic Organization.
-    [Subjects / Organizing Music](en-Subjects-Organizing%20Music)
+      [Subjects / Organizing Music](en-Subjects-Organizing%20Music)
 * Song Editor
-    [Management / Song Editor](en-Management-Song%20Editor)
+  [Management / Song Editor](en-Management-Song%20Editor)
     * Field display is fully configurable.
-    [Configuration / Display Settings](en-Configuration-Display%20Settings)
+      [Configuration / Display Settings](en-Configuration-Display%20Settings)
     * BPM Counter.
-    [Subjects / BPM &amp; MPM](en-Subjects-BPM-MPM)
+      [Subjects / BPM &amp; MPM](en-Subjects-BPM-MPM)
     * Optionally update the audio file tags.
     * Song adjustments for playback.
-    [Subjects / Playback Controls](en-Subjects-Playback%20Controls)
+      [Subjects / Playback Controls](en-Subjects-Playback%20Controls)
         * Adjust the song start and song end.
         * Adjust the song speed.
         * Adjust the song volume.
@@ -105,24 +109,24 @@
         * Trim Silence.
         * Adjust: apply speed, song start, song end to a song.
     * Batch Edit songs.
-    [Subjects / Batch Editing](en-Subjects-Batch%20Editing)
+      [Subjects / Batch Editing](en-Subjects-Batch%20Editing)
 * Audio Identification
-    [Management / Audio Identification](en-Management-Audio%20Identification)
+  [Management / Audio Identification](en-Management-Audio%20Identification)
     * Identify songs and retrieve tags for the song.
 * iTunes Support.
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
-    [Configuration / iTunes](en-Configuration-iTunes)
+      [Configuration / iTunes](en-Configuration-iTunes)
 * Mobile Remote Control
     * Control BDJ4 from your mobile device.
-    [Configuration / Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
+      [Configuration / Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
 * Mobile Marquee
     * Dancers can view upcoming songs on their mobile device.
-    [Configuration / Mobile Marquee](en-Configuration-Mobile%20Marquee)
+      [Configuration / Mobile Marquee](en-Configuration-Mobile%20Marquee)
 * Secondary installations with separate databases.
   [Subjects / Alternate Folders](en-Subjects-Alternate%20Folders)
 * Multiple profiles can be set up for different playback needs.
   [Subjects / Profiles](en-Subjects-Profiles)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-19 11:40:18; BDJ4 version 4.10.0)_
+<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_

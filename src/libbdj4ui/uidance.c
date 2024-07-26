@@ -16,75 +16,69 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "ilist.h"
 #include "mdebug.h"
+#include "nlist.h"
+#include "slist.h"
 #include "ui.h"
 #include "callback.h"
 #include "uidance.h"
+#include "uidd.h"
 
 typedef struct uidance {
   dance_t       *dances;
-  uiwcont_t     *dropdown;
   uiwcont_t     *parentwin;
-  uiwcont_t     *buttonp;
-  callback_t    *cb;
+  uidd_t        *uidd;
+  callback_t    *internalselcb;
   callback_t    *selectcb;
   const char    *label;
-  long          selectedidx;
+  ilist_t       *ddlist;
+  ilistidx_t    selectedidx;
   int           count;
   int           flags;
 } uidance_t;
 
-static bool uidanceSelectHandler (void *udata, long idx);
+static bool uidanceSelectHandler (void *udata, int32_t dkey);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
+uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
     const char *label, int where, int count)
 {
-  uidance_t  *uidance;
-
+  uidance_t   *uidance;
+  int         ddwhere = DD_PACK_START;
+  int         ddflag;
 
   uidance = mdmalloc (sizeof (uidance_t));
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
   uidance->count = count;
   uidance->flags = flags;
-  uidance->dropdown = NULL;
   uidance->selectedidx = 0;
   uidance->parentwin = parentwin;
-  uidance->cb = NULL;
+  uidance->internalselcb = NULL;
   uidance->selectcb = NULL;
+  uidance->ddlist = NULL;
 
-  uidance->dropdown = uiDropDownInit ();
-  uidance->cb = callbackInitLong (uidanceSelectHandler, uidance);
-  uidance->label = label;  /* this is a temporary value */
-  if (flags == UIDANCE_NONE) {
-    uidance->buttonp = uiDropDownCreate (uidance->dropdown,
-        parentwin, label, uidance->cb, uidance);
-  } else {
-    /* UIDANCE_ALL_DANCES or UIDANCE_EMPTY_DANCE */
-    uidance->buttonp = uiComboboxCreate (uidance->dropdown,
-        parentwin, label, uidance->cb, uidance);
-  }
-  uidanceCreateDanceList (uidance);
+  uidance->internalselcb = callbackInitI (uidanceSelectHandler, uidance);
+
   if (where == UIDANCE_PACK_END) {
-    uiBoxPackEnd (boxp, uidance->buttonp);
+    ddwhere = DD_PACK_END;
   }
   if (where == UIDANCE_PACK_START) {
-    uiBoxPackStart (boxp, uidance->buttonp);
+    ddwhere = DD_PACK_START;
   }
+  uidance->label = label;
+  uidanceCreateDanceList (uidance);
+  ddflag = DD_REPLACE_TITLE;
+  if (flags == UIDANCE_NONE) {
+    ddflag = DD_KEEP_TITLE;
+  }
+  uidance->uidd = uiddCreate ("uidance", parentwin, boxp, ddwhere,
+      uidance->ddlist, DD_LIST_TYPE_NUM,
+      label, ddflag, uidance->internalselcb);
 
   return uidance;
 }
-
-uiwcont_t *
-uidanceGetButton (uidance_t *uidance)
-{
-  if (uidance == NULL) {
-    return NULL;
-  }
-  return uidance->buttonp;
-}
-
 
 void
 uidanceFree (uidance_t *uidance)
@@ -93,13 +87,14 @@ uidanceFree (uidance_t *uidance)
     return;
   }
 
-  callbackFree (uidance->cb);
-  uiwcontFree (uidance->dropdown);
+  callbackFree (uidance->internalselcb);
+  uiddFree (uidance->uidd);
+  ilistFree (uidance->ddlist);
   mdfree (uidance);
 }
 
 int
-uidanceGetValue (uidance_t *uidance)
+uidanceGetKey (uidance_t *uidance)
 {
   if (uidance == NULL) {
     return 0;
@@ -109,29 +104,23 @@ uidanceGetValue (uidance_t *uidance)
 }
 
 void
-uidanceSetValue (uidance_t *uidance, int value)
+uidanceSetKey (uidance_t *uidance, ilistidx_t dkey)
 {
-  if (uidance == NULL || uidance->dropdown == NULL) {
+  if (uidance == NULL || uidance->uidd == NULL) {
     return;
   }
 
-  uidance->selectedidx = value;
-  uiDropDownSelectionSetNum (uidance->dropdown, value);
+  uidance->selectedidx = dkey;
+  uiddSetSelectionByNumKey (uidance->uidd, dkey);
 }
 
 void
 uidanceSetState (uidance_t *uidance, int state)
 {
-  if (uidance == NULL || uidance->dropdown == NULL) {
+  if (uidance == NULL || uidance->uidd == NULL) {
     return;
   }
-  uiDropDownSetState (uidance->dropdown, state);
-}
-
-void
-uidanceSizeGroupAdd (uidance_t *uidance, uiwcont_t *sg)
-{
-  uiSizeGroupAdd (sg, uidance->buttonp);
+  uiddSetState (uidance->uidd, state);
 }
 
 void
@@ -147,18 +136,14 @@ uidanceSetCallback (uidance_t *uidance, callback_t *cb)
 /* internal routines */
 
 static bool
-uidanceSelectHandler (void *udata, long idx)
+uidanceSelectHandler (void *udata, int32_t dkey)
 {
   uidance_t   *uidance = udata;
 
-  uidance->selectedidx = idx;
-  if (uidance->flags != UIDANCE_NONE) {
-    /* the drop down set must be called to set the combobox display */
-    uiDropDownSelectionSetNum (uidance->dropdown, idx);
-  }
+  uidance->selectedidx = dkey;
 
   if (uidance->selectcb != NULL) {
-    callbackHandlerLongInt (uidance->selectcb, idx, uidance->count);
+    callbackHandlerII (uidance->selectcb, dkey, uidance->count);
   }
   return UICB_CONT;
 }
@@ -167,14 +152,35 @@ static void
 uidanceCreateDanceList (uidance_t *uidance)
 {
   slist_t     *danceList;
-  const char  *selectLabel;
+  slistidx_t  iteridx;
+  ilist_t     *ddlist;
+  const char  *disp;
+  int         count;
+  ilistidx_t  dkey;
+  int         idx;
 
   danceList = danceGetDanceList (uidance->dances);
-  selectLabel = NULL;
+  count = slistGetCount (danceList);
+  ddlist = ilistAlloc ("uidance", LIST_ORDERED);
+  ilistSetSize (ddlist, count);
+
+  idx = 0;
   /* if it is a combobox (UIDANCE_ALL_DANCES, UIDANCE_EMPTY_DANCE) */
   if (uidance->flags != UIDANCE_NONE) {
-    selectLabel = uidance->label;
+    ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, DD_NO_SELECTION);
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, uidance->label);
+    ++idx;
   }
-  uiDropDownSetNumList (uidance->dropdown, danceList, selectLabel);
+
+  slistStartIterator (danceList, &iteridx);
+  while ((disp = slistIterateKey (danceList, &iteridx)) != NULL) {
+    dkey = slistGetNum (danceList, disp);
+    ilistSetNum (ddlist, idx, DD_LIST_KEY_NUM, dkey);
+    ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
+    ++idx;
+  }
+
+
+  uidance->ddlist = ddlist;
 }
 

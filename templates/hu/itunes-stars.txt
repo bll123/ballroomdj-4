@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Szegény
+20
+..Szegény
+30
+..Szegény
+40
+..Szegény
+50
+..Szegény
+60
+..Jó
+70
+..Jó
+80
+..Nagyszerű
+90
+..Nagyszerű
+100
+..Nagyszerű

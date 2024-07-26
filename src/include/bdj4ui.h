@@ -52,7 +52,9 @@ enum {
   MANAGE_EXP_PL_DIR,
   MANAGE_EXP_PL_TYPE,
   /* the reload data is in its own data file, not the options file */
-  RELOAD_CURR,
+  RELOAD_CURR_SONG,
+  RELOAD_PLAY_QUEUE,
+  RELOAD_MANAGE_QUEUE,
   PLUI_KEY_MAX,
 };
 

@@ -4,9 +4,111 @@
 
 <!--
 
-**4.10.3 2024-6---**
+**4.11.3 2024-7---**
 
 -->
+
+**4.11.2 2024-7-24**
+
+* Bug Fixes:
+    * Configuration: Mobile Remote Control: Clean up template selection.
+    * Management: Prevent save with bad song list/sequence/playlist name.
+    * Player: Improve speed change control.
+* Internal:
+    * Code Cleanup (manage ui).
+
+**4.11.1 2024-7-20**
+
+* Bug Fixes:
+    * Management: Fix mismatch in song selection and song edit.
+    * Player UI: Fix and improve 'Reload' with multiple queues.
+    * Player UI: Fix 'Queue Dance' and 'Queue 5' button display.
+    * Playlist Management: Fix issue with no update after change of original.
+    * Song Editor, Song List Editor: Fixed keyboard handling.
+* Internal:
+    * Prepare for VLC 4.
+    * Code cleanup.
+
+**4.11.0 2024-7-18**
+
+* Bug Fixes:
+    * Edit Dances: Fixed bugs setting values when switching dances.
+    * Listings: All text fields with long values are now displayed with ellipses.
+    * Management, Player, Mobile Remote Control: Fix where the 'History' songlist is allowed to be listed.
+    * Mobile Remote Control: Fixed various issues.
+    * Mobile Remote Control, Mobile Marquee: Fix browser icon.
+    * New Install Help Utility: Fixed some small issues.
+    * Player: Drag & Drop: Fixed issues with encoded filenames.
+    * Song Filter Dialog: Restores prior settings.
+    * User Interface Themes: Add missing dark themes, fix theme check.
+* Changes:
+    * Audio Identification: The original data row is locked into the view.
+    * Configuration: New interface for Rating / Level / Status / Genre.
+    * Music Manager: Added an edit button.
+    * Playlist Management: New interface for the dances table.
+    * Song Selection and Music Queue listings: Long values now have tooltips.
+* Translations:
+    * Machine translations added. All very poor quality.
+        * Czech (čeština)
+        * Danish (Dansk)
+        * Hungarian (magyar)
+        * Korean (한국어‬)
+        * Norwegian (norsk)
+        * Portuguese (Português).
+        * Swedish (Svenska‬)
+        * Ukranian (Українська‬)
+        * Chinese Simplified (简体中文‬).
+        * Chinese Traditional (繁體中文‬).
+    * "New Install" help text has been machine translated where it was missing.
+* Internal:
+    * Code cleanup.
+    * Re-work of all table handling.
+
+**4.10.6 2024-6-22**
+
+* Bug Fixes:
+    * Player: Fixed toggle-pause display (introduced in 4.10.4).
+* Changes:
+    * Player: Allow change of speed when the player is stopped.
+* Internal:
+    * Fix various memory leaks.
+
+**4.10.5 2024-6-17**
+
+* Bug Fixes:
+    * Export to BDJ4 / Import from BDJ4: Fixed.
+* Changes:
+    * The sample automatic playlist has been removed for new installs.
+* New Features:
+    * Configuration: Player: Added option to show speed reset.
+
+**4.10.4 2024-6-15**
+
+* Bug Fixes:
+    * Code cleanup: Fix various portability issues.
+    * Configuration: Improved validation for time fields.
+    * Export Playlist: Fix a crash.
+    * Export Playlist: Improve validation.
+    * Player: Fix hang when loading an automatic playlist with no dances.
+    * Player: Prevent any processing of bad playlists.
+    * Playlist Management: Do not save automatic playlists with no dances.
+    * Song Editor: Validate song start and song end.
+    * Windows: Reject invalid characters in filenames.
+* Changes:
+    * Improved validation messages.
+* New Features:
+    * Player: Speed: Add button to reset speed to 100%.
+    * Player: Speed: Speed of the song can be changed while paused.
+
+**4.10.3 2024-6-7**
+
+* Bug Fixes:
+    * Song Filter: Also search the marquee display.
+    * MacOS: Check both system and home application folders for VLC.
+    * Linux: GStreamer player interface: now fully functional.
+* Internal:
+    * Prepare for VLC version 4 support.
+    * Update VLC player interface.
 
 **4.10.2 2024-6-1**
 
@@ -886,4 +988,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-06-01 10:50:10; BDJ4 version 4.10.2)_
+<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_

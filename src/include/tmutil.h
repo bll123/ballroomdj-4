@@ -22,6 +22,12 @@ enum {
   TM_CLOCK_OFF,
 };
 
+enum {
+  /* this is just a very large number so that the timer won't pop */
+  /* any time soon. use 48 hours */
+  TM_TIMER_OFF = 172800000,
+};
+
 typedef struct {
   struct timeval    tm;
 } mstime_t;
@@ -40,7 +46,6 @@ char      *tmutilTstamp (char *, size_t);
 char      *tmutilShortTstamp (char *, size_t);
 char      *tmutilToMS (time_t ms, char *buff, size_t max);
 char      *tmutilToMSD (time_t ms, char *buff, size_t max, int decimals);
-char      * tmutilToDate (time_t ms, char *buff, size_t max);
 char      * tmutilToDateHM (time_t ms, char *buff, size_t max);
 long      tmutilStrToMS (const char *str);
 long      tmutilStrToHM (const char *str);

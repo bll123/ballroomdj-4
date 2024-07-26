@@ -50,7 +50,7 @@ typedef struct uict {
 } uict_t;
 
 static void   uicopytagsCreateDialog (uict_t *uict);
-static bool   uicopytagsResponseHandler (void *udata, long responseid);
+static bool   uicopytagsResponseHandler (void *udata, int32_t responseid);
 
 uict_t *
 uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
@@ -81,7 +81,7 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
   uict->targetsfcb.entry = uict->target;
   uict->targetsfcb.window = uict->parentwin;
 
-  uict->callbacks [UICT_CB_DIALOG] = callbackInitLong (
+  uict->callbacks [UICT_CB_DIALOG] = callbackInitI (
       uicopytagsResponseHandler, uict);
 
   return uict;
@@ -202,7 +202,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   uict->statusMsg = uiwidgetp;
 
@@ -222,7 +222,8 @@ uicopytagsCreateDialog (uict_t *uict)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->source = uiwidgetp;
-  uiEntrySetValidate (uict->source, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uiEntrySetValidate (uict->source, "",
+      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
       selectAllFileCallback, &uict->sourcesfcb, NULL);
@@ -247,7 +248,8 @@ uicopytagsCreateDialog (uict_t *uict)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->target = uiwidgetp;
-  uiEntrySetValidate (uiwidgetp, uiEntryValidateFile, NULL, UIENTRY_DELAYED);
+  uiEntrySetValidate (uiwidgetp, "",
+      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_TARGET_SEL] = callbackInit (
       selectAudioFileCallback, &uict->targetsfcb, NULL);
@@ -263,7 +265,7 @@ uicopytagsCreateDialog (uict_t *uict)
 }
 
 static bool
-uicopytagsResponseHandler (void *udata, long responseid)
+uicopytagsResponseHandler (void *udata, int32_t responseid)
 {
   uict_t      *uict = udata;
   int         x, y, ws;

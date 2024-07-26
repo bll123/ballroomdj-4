@@ -109,14 +109,6 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   return 0;
 }
 
-void
-uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
-{
-  song_t      *song;
-
-  song = dbGetByIdx (uisongedit->musicdb, dbidx);
-  uisongeditLoadData (uisongedit, song, dbidx, UISONGEDIT_ALL);
-}
 
 void
 uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb)

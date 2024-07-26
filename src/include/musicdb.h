@@ -48,7 +48,6 @@ song_t    *dbGetByName (musicdb_t *db, const char *);
 song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);
 void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);
 song_t    *dbIterate (musicdb_t *db, dbidx_t *dbidx, slistidx_t *iteridx);
-nlist_t   *dbGetDanceCounts (musicdb_t *db);
 void      dbBackup (void);
 dbidx_t   dbAddTemporarySong (musicdb_t *db, song_t *song);
 /* void      dbDumpSongList (musicdb_t *db); */ // for debugging

@@ -6,7 +6,7 @@
 
 #include "callback.h"
 #include "musicdb.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uifavorite uifavorite_t;
 

@@ -1,5 +1,7 @@
 #!/usr/bin/make
 #
+# Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+#
 
 MAKEFLAGS += --no-print-directory
 
@@ -155,9 +157,11 @@ checktag:
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
-# testoption could be:
-#   --pligst
-#   --volpipewire
+# test suite
+
+# testoption could have:
+#   --pli VLC3/VLC4/GST/MPRISVLC
+#   --vol pipewire
 .PHONY: testsuite
 testsuite:
 	./utils/mktestsetup.sh --force $(testoption)
@@ -165,7 +169,7 @@ testsuite:
 
 .PHONY: testsuitemprisvlc
 testsuitemprisvlc:
-	./utils/mktestsetup.sh --force --plimprisvlc
+	./utils/mktestsetup.sh --force --pli MPRISVLC
 	# & is a shell command terminator, no semicolon
 	vlc --intf=dummy --no-video & \
         pid=$$$$; \
@@ -175,17 +179,17 @@ testsuitemprisvlc:
 
 .PHONY: testsection
 testsection:
-	./utils/mktestsetup.sh
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --runsection $(start))
 
 .PHONY: testtest
 testtest:
-	./utils/mktestsetup.sh
-	(cd ..;./bin/bdj4 --testsuite --runtest $(start))
+	./utils/mktestsetup.sh $(testoption)
+	(cd ..;./bin/bdj4 --testsuite --verbose --runtest $(start))
 
 .PHONY: teststart
 teststart:
-	./utils/mktestsetup.sh
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --starttest $(start))
 
 # cleaning
@@ -218,13 +222,12 @@ tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
 	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
-	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
-	@-$(RM) -f */w */ww ../asan.* ./asan.* po/*.debug
+	@-$(RM) -f w ww www ../w ../ww ../www */w */ww ../*/w ../*/ww ../*/www
+	@-$(RM) -f ../asan.* ./asan.* po/*.debug
 	@-$(RM) -f ../mdebug.txt ../out.txt out.txt
 	@-$(RM) -f ../out-acoustid.xml ../out-acr.json ../out-mb.xml
-	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../mpvdebug.txt
-	@-$(RM) -f ../vgcore.* vgcore.* ../core gmon.out ../gmon.out
+	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../vlc-out.txt ../mpvdebug.txt
+	@-$(RM) -f ../vgcore.* vgcore.* ../core core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
-	@-$(RM) -f inctest.c inctest.log dep-*.txt
-
+	@-$(RM) -f dep-*.txt

@@ -2,6 +2,9 @@
 
 ### Keyboard Shortcuts
 
+The Multi-Media keys may be captured by other programs on your
+computer, and may not work within BDJ4.
+
 ##### Music Manager
 
 __Multi-media Play__: Plays the selected song.
@@ -39,4 +42,4 @@ __Multi-media Play__: Plays the selected song.
 __Control-S__: Swap songs.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-07-19 13:32:54; BDJ4 version 4.11.0)_

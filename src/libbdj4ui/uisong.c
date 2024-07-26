@@ -4,9 +4,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
@@ -17,43 +18,78 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uisong.h"
+#include "uivirtlist.h"
 
 static valuetype_t uisongDetermineValueType (int tagidx);
 
-void
-uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
-    uisongcb_t cb, void *udata)
+nlist_t *
+uisongGetDisplayList (slist_t *sellistA, slist_t *sellistB, song_t *song)
 {
   slistidx_t    seliteridx;
   int           tagidx;
   char          *str = NULL;
-  long          num;
+  nlist_t       *dlist;
+  int32_t       num;
   double        dval;
 
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    if (tagidx == TAG_AUDIOID_IDENT) {
-      col += 1;
+  dlist = nlistAlloc ("song-disp", LIST_UNORDERED, NULL);
+  nlistSetSize (dlist, slistGetCount (sellistA));
+
+  slistStartIterator (sellistA, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellistA, &seliteridx)) >= 0) {
+    if (tagidx == TAG_AUDIOID_IDENT || tagidx == TAG_AUDIOID_SCORE) {
+      nlistSetStr (dlist, tagidx, "");
       continue;
     }
     if (song != NULL) {
       str = uisongGetDisplay (song, tagidx, &num, &dval);
     } else {
-      str = "";
+      nlistSetStr (dlist, tagidx, "");
       num = LIST_VALUE_INVALID;
     }
-    if (cb != NULL) {
-      cb (col, num, str, udata);
-    }
-    col += 1;
-    if (song != NULL) {
-      dataFree (str);
+
+    if (str != NULL) {
+      nlistSetStr (dlist, tagidx, str);
+      mdfree (str);
+    } else if (num != LIST_VALUE_INVALID) {
+      char  tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%" PRId32, num);
+      nlistSetStr (dlist, tagidx, tmp);
     }
   } /* for each tagidx in the display selection list */
+
+  nlistSort (dlist);
+
+  if (sellistB != NULL) {
+    /* and also any data needed to display in the item display */
+    /* this is a bit inefficient, as there are many duplicates */
+    slistStartIterator (sellistB, &seliteridx);
+    while ((tagidx = slistIterateValueNum (sellistB, &seliteridx)) >= 0) {
+      if (song != NULL) {
+        str = uisongGetDisplay (song, tagidx, &num, &dval);
+      } else {
+        nlistSetStr (dlist, tagidx, "");
+        num = LIST_VALUE_INVALID;
+      }
+
+      if (str != NULL) {
+        nlistSetStr (dlist, tagidx, str);
+        mdfree (str);
+      } else if (num != LIST_VALUE_INVALID) {
+        char  tmp [40];
+
+        snprintf (tmp, sizeof (tmp), "%" PRId32, num);
+        nlistSetStr (dlist, tagidx, tmp);
+      }
+    }
+  }
+
+  return dlist;
 }
 
 char *
-uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
+uisongGetDisplay (song_t *song, int tagidx, int32_t *num, double *dval)
 {
   char          *str;
 
@@ -72,7 +108,7 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
 }
 
 char *
-uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
+uisongGetValue (song_t *song, int tagidx, int32_t *num, double *dval)
 {
   valuetype_t   vt;
   char          *str = NULL;
@@ -101,30 +137,12 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
   } else if (vt == VALUE_DOUBLE) {
     *dval = songGetDouble (song, tagidx);
     /* the only double that is displayed is the score, and that value */
-    /* is never store in the song */
-    str = mdstrdup ("");
+    /* is never stored in the song */
   }
 
   return str;
 }
 
-
-void
-uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
-{
-  slistidx_t    seliteridx;
-  int           tagidx;
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    if (cb != NULL) {
-      int   type = TREE_TYPE_STRING;
-
-      /* gtk doesn't have a method to display a blank numeric afaik */
-      cb (type, udata);
-    }
-  }
-}
 
 /* internal routines */
 

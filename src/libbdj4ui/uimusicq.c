@@ -23,6 +23,7 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "playlist.h"
 #include "song.h"
 #include "songlist.h"
 #include "songlistutil.h"
@@ -52,21 +53,15 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
     uimusicq->callbacks [i] = NULL;
   }
-  for (int i = 0; i < UIMUSICQ_CBC_MAX; ++i) {
-    uimusicq->cbcopy [i] = NULL;
+  for (int i = 0; i < UIMUSICQ_USER_CB_MAX; ++i) {
+    uimusicq->usercb [i] = NULL;
   }
   uimusicq->musicqManageIdx = MUSICQ_PB_A;
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
-  uimusicq->savelist = NULL;
   uimusicq->cbci = MUSICQ_PB_A;
   uimusicq->pausePixbuf = NULL;
-  uimusicq->peercount = 0;
   uimusicq->backupcreated = false;
   uimusicq->changed = false;
-  uimusicq->ispeercall = false;
-  for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
-    uimusicq->peers [i] = NULL;
-  }
 
   /* want a copy of the pixbuf for this image */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
@@ -86,31 +81,17 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
       uimusicq->ui [i].dispselType = DISP_SEL_HISTORY;
     }
     uimusicq->ui [i].hasui = false;
-    uimusicq->ui [i].count = 0;
+    uimusicq->ui [i].rowcount = 0;
     uimusicq->ui [i].haveselloc = false;
     uimusicq->ui [i].lastLocation = -1;
     uimusicq->ui [i].prevSelection = -1;
     uimusicq->ui [i].currSelection = -1;
-    uimusicq->ui [i].selchgbypass = false;
     uimusicq->ui [i].playlistsel = NULL;
     uimusicq->ui [i].slname = NULL;
   }
 
-  uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =
-      callbackInitLong (uimusicqSaveListCallback, uimusicq);
-
   logProcEnd ("");
   return uimusicq;
-}
-
-void
-uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer)
-{
-  if (uimusicq->peercount >= UIMUSICQ_PEER_MAX) {
-    return;
-  }
-  uimusicq->peers [uimusicq->peercount] = peer;
-  ++uimusicq->peercount;
 }
 
 void
@@ -132,14 +113,13 @@ uimusicqFree (uimusicq_t *uimusicq)
   }
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiwcontFree (uimusicq->ui [i].mainbox);
-    uiwcontFree (uimusicq->ui [i].playlistsel);
+    uiplaylistFree (uimusicq->ui [i].playlistsel);
     uiwcontFree (uimusicq->ui [i].slname);
   }
   uimusicqUIFree (uimusicq);
 
   uiWidgetClearPersistent (uimusicq->pausePixbuf);
   uiwcontFree (uimusicq->pausePixbuf);
-  nlistFree (uimusicq->savelist);
 
   mdfree (uimusicq);
   logProcEnd ("");
@@ -170,7 +150,7 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, callback_t *uicbdbidx)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] = uicbdbidx;
+  uimusicq->usercb [UIMUSICQ_USER_CB_NEW_SEL] = uicbdbidx;
 }
 
 void
@@ -179,7 +159,7 @@ uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_SONG_SAVE] = uicb;
 }
 
 void
@@ -188,7 +168,7 @@ uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_CLEAR_QUEUE] = uicb;
 }
 
 void
@@ -218,11 +198,15 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   return tval;
 }
 
-void
-uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
+bool
+uimusicqSonglistNameIsNotValid (uimusicq_t *uimusicq)
 {
-  uiEntryPeerBuffer (targetq->ui [MUSICQ_SL].slname,
-      sourceq->ui [MUSICQ_SL].slname);
+  int     ci;
+  bool    rc;
+
+  ci = uimusicq->musicqManageIdx;
+  rc = uiEntryIsNotValid (uimusicq->ui [ci].slname);
+  return rc;
 }
 
 nlistidx_t
@@ -235,25 +219,7 @@ uimusicqGetCount (uimusicq_t *uimusicq)
   }
 
   ci = uimusicq->musicqManageIdx;
-  return uimusicq->ui [ci].count;
-}
-
-void
-uimusicqSave (uimusicq_t *uimusicq, const char *fname)
-{
-  logProcBegin ();
-
-  if (! uimusicq->changed) {
-    logProcEnd ("not-changed");
-    return;
-  }
-
-  uimusicqGetDBIdxList (uimusicq, uimusicq->musicqManageIdx);
-  songlistutilCreateFromList (uimusicq->musicdb, fname, uimusicq->savelist);
-
-  uimusicq->changed = false;
-
-  logProcEnd ("");
+  return uimusicq->ui [ci].rowcount;
 }
 
 void
@@ -263,27 +229,31 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
     return;
   }
 
-  uimusicq->cbcopy [UIMUSICQ_CBC_EDIT] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_EDIT] = uicb;
 }
 
 void
-uimusicqExport (uimusicq_t *uimusicq, const char *fname, const char *slname, int exptype)
+uimusicqExport (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate,
+    const char *fname, const char *slname, int exptype)
 {
-  uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
+  nlist_t   *dbidxlist;
+
+  dbidxlist = uimusicqGetDBIdxList (musicqupdate);
   switch (exptype) {
     case EI_TYPE_M3U: {
-      m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      m3uExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
     case EI_TYPE_XSPF: {
-      xspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      xspfExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
     case EI_TYPE_JSPF: {
-      jspfExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+      jspfExport (uimusicq->musicdb, dbidxlist, fname, slname);
       break;
     }
   }
+  nlistFree (dbidxlist);
 }
 
 void
@@ -299,5 +269,43 @@ uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] = uicb;
+  uimusicq->usercb [UIMUSICQ_USER_CB_QUEUE] = uicb;
+}
+
+void
+uimusicqSave (musicdb_t *musicdb, mp_musicqupdate_t *musicqupdate, const char *name)
+{
+  nlist_t             *dbidxlist;
+
+  logProcBegin ();
+
+  dbidxlist = uimusicqGetDBIdxList (musicqupdate);
+  songlistutilCreateFromList (musicdb, name, dbidxlist);
+  nlistFree (dbidxlist);
+  playlistCheckAndCreate (name, PLTYPE_SONGLIST);
+
+  logProcEnd ("");
+}
+
+nlist_t *
+uimusicqGetDBIdxList (mp_musicqupdate_t *musicqupdate)
+{
+  nlist_t             *dbidxlist;
+  nlistidx_t          mqiter;
+  nlistidx_t          key;
+
+  dbidxlist = nlistAlloc ("dbidxlist", LIST_UNORDERED, NULL);
+  if (musicqupdate == NULL) {
+    return dbidxlist;
+  }
+
+  nlistStartIterator (musicqupdate->dispList, &mqiter);
+  while ((key = nlistIterateKey (musicqupdate->dispList, &mqiter)) >= 0) {
+    mp_musicqupditem_t  *musicqupditem;
+
+    musicqupditem = nlistGetData (musicqupdate->dispList, key);
+    nlistSetNum (dbidxlist, musicqupditem->dbidx, 0);
+  }
+
+  return dbidxlist;
 }

@@ -42,7 +42,9 @@
 <br>[Installing on Windows](en-Install-Windows)
 
 [Getting Started with BDJ4](en-Install-Getting%20Started)
-<br>[Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
+<br>[Overview of BDJ4](en-Install-Overview)
+
+[Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Installing BDJ4 in Other Locales](en-Install-Locales)
 <br>[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
@@ -99,6 +101,7 @@
 ### Subjects
 __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Adding Songs to the Database](en-Subjects-Adding%20Songs)
+<br>&nbsp;&nbsp;&nbsp;[Changing the Name of a Dance](en-Subjects-Changing%20Dance%20Name)
 <br>&nbsp;&nbsp;&nbsp;[Moving BDJ4 to a new Computer](en-Subjects-Moving)
 <br>&nbsp;&nbsp;&nbsp;[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
 <br>__Advanced Setup__
@@ -113,6 +116,8 @@ __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Batch Editing](en-Subjects-Batch%20Editing)
 <br>&nbsp;&nbsp;&nbsp;[BPM &amp; MPM](en-Subjects-BPM-MPM)
 <br>&nbsp;&nbsp;&nbsp;[Quick Edit](en-Subjects-Quick%20Edit)
+<br>__Filtering Songs__
+<br>&nbsp;&nbsp;&nbsp;[Filter Dialog](en-Subjects-Filter%20Dialog)
 <br>__Playback__
 <br>&nbsp;&nbsp;&nbsp;[Announcements](en-Subjects-Announcements)
 <br>__Playback Controls__
@@ -125,10 +130,10 @@ __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
 <br>&nbsp;&nbsp;&nbsp;[Dance Selection](en-Subjects-Dance%20Selection)
 <br>&nbsp;&nbsp;&nbsp;[Song Selection](en-Subjects-Song%20Selection)
-<br>[Favorites](en-Subjects-Favorites)
-<br>[Filter Dialog](en-Subjects-Filter%20Dialog)
-<br>[Keyword](en-Subjects-Keyword)
-<br>[Same Song Marks](en-Subjects-Same%20Song%20Marks)
+<br>__Song Management__
+<br>&nbsp;&nbsp;&nbsp;[Favorites](en-Subjects-Favorites)
+<br>&nbsp;&nbsp;&nbsp;[Keyword](en-Subjects-Keyword)
+<br>&nbsp;&nbsp;&nbsp;[Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
 ### How To
 [Line Dances (Marquee Display)](en-HowTo-Linedance)
@@ -141,4 +146,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-25 04:46:03; BDJ4 version 4.11.2)_

@@ -17,8 +17,9 @@
         * leave DEVELOPMENT tag on
     * update change log
     * make sure all debugging is removed
-    * ./utils/testall.sh
+    * ../pkg/prepkg.sh
     * sync source with other platforms
+    * ./utils/testall.sh
 * for each platform
     * pull source if necessary
     * ./utils/testall.sh
@@ -28,6 +29,7 @@
         * turn DEVELOPMENT tag off
     * ./utils/prerel.sh
     * ./utils/pkg.sh
+<br>This must be done before syncing, as the version file is updated.
 <br>Recall that any time the packaging scripts are run on the primary
 development platform, the source must be re-synced to the other platforms
 and packaging must be run again on the other platforms.
@@ -63,4 +65,4 @@ On Windows, the packages should be cleaned up first.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-05-22 14:33:00; BDJ4 version 4.10.1)_
+<br>_(Updated 2024-07-19 05:27:53; BDJ4 version 4.11.0)_

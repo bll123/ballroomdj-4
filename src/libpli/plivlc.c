@@ -1,9 +1,11 @@
 /*
+ * Copyright 2016-2017 Brad Lanam Walnut Creek CA
+ * Copyright 2020 Brad Lanam Pleasant Hill CA
  * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
-#if _lib_libvlc_new
+#if _lib_libvlc3_new || _lib_libvlc4_new
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,9 +21,11 @@
 #include "vlci.h"
 #include "volsink.h"
 
+#define VLCLOGGING 0
+
 typedef struct plidata {
   char              *name;
-  vlcData_t         *vlcdata;
+  vlcdata_t         *vlcdata;
   ssize_t           duration;
   ssize_t           playTime;
   plistate_t        state;
@@ -44,7 +48,7 @@ static char *vlcDefaultOptions [] = {
       "--no-metadata-network-access",
 /* VLC logging options */
 /* turn off SILENCE_LOG in vlci.c also */
-#if 0
+#if VLCLOGGING
       "-vv",
       "--file-logging",
       "--logfile", "vlc-log.txt",
@@ -60,13 +64,22 @@ static void pliiWaitUntilPlaying (plidata_t *pliData);
 void
 pliiDesc (char **ret, int max)
 {
-  int         c = 0;
+  int   c = 0;
 
   if (max < 2) {
     return;
   }
 
-  ret [c++] = "Integrated VLC";
+  if (vlcVersionLinkCheck ()) {
+    if (vlcVersionCheck ()) {
+#if BDJ4_VLC_VERS == 4
+      ret [c++] = "Integrated VLC 4";
+#endif
+#if BDJ4_VLC_VERS == 3
+      ret [c++] = "Integrated VLC 3";
+#endif
+    }
+  }
   ret [c++] = NULL;
 }
 
@@ -304,4 +317,3 @@ pliiWaitUntilPlaying (plidata_t *pliData)
 }
 
 #endif /* have libvlc_new */
-

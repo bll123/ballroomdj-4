@@ -4,8 +4,9 @@
 #ifndef INC_UIEXPPL_H
 #define INC_UIEXPPL_H
 
+#include "callback.h"
 #include "nlist.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 /* import/export types */
 enum {
@@ -21,7 +22,6 @@ uiexppl_t  *uiexpplInit (uiwcont_t *windowp, nlist_t *opts);
 void    uiexpplFree (uiexppl_t *uiexppl);
 void    uiexpplSetResponseCallback (uiexppl_t *uiexppl, callback_t *uicb);
 bool    uiexpplDialog (uiexppl_t *uiexppl, const char *slname);
-void    uiexpplDialogClear (uiexppl_t *uiexppl);
 void    uiexpplProcess (uiexppl_t *uiexppl);
 
 #endif /* INC_UIEXPPL_H */

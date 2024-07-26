@@ -28,6 +28,7 @@ enum {
   MAIN_FINISH,
 };
 
+static sockserver_t * sockhStartServer (uint16_t listenPort);
 static void  sockhCloseServer (sockserver_t *sockserver);
 static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
 
@@ -69,24 +70,6 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
   logProcEnd ("");
 }
 
-sockserver_t *
-sockhStartServer (uint16_t listenPort)
-{
-  int           err = 0;
-  sockserver_t  *sockserver;
-
-  sockserver = mdmalloc (sizeof (sockserver_t));
-  sockserver->listenSock = INVALID_SOCKET;
-  sockserver->si = NULL;
-
-  logProcBegin ();
-  sockserver->listenSock = sockServer (listenPort, &err);
-  sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
-  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %" PRId64,
-      (int64_t) sockserver->listenSock);
-  return sockserver;
-}
-
 int
 sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args)
@@ -114,6 +97,24 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
 }
 
 /* internal routines */
+
+static sockserver_t *
+sockhStartServer (uint16_t listenPort)
+{
+  int           err = 0;
+  sockserver_t  *sockserver;
+
+  sockserver = mdmalloc (sizeof (sockserver_t));
+  sockserver->listenSock = INVALID_SOCKET;
+  sockserver->si = NULL;
+
+  logProcBegin ();
+  sockserver->listenSock = sockServer (listenPort, &err);
+  sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
+  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %" PRId64,
+      (int64_t) sockserver->listenSock);
+  return sockserver;
+}
 
 static void
 sockhCloseServer (sockserver_t *sockserver)

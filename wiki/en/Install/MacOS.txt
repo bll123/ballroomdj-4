@@ -27,7 +27,7 @@ this script.
 This step only needs to be run once, not for every installation or
 update.  An internet connection is required to run this script.
 
-Download the macos-pre-install-macports-v20.sh script from sourceforge.
+Download the macos-pre-install-macports-v21.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -36,7 +36,7 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
-    bash macos-pre-install-macports-v20.sh
+    bash macos-pre-install-macports-v21.sh
 
 This script performs the following actions:
 
@@ -102,4 +102,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-05-22 14:33:00; BDJ4 version 4.10.1)_
+<br>_(Updated 2024-06-07 11:27:08; BDJ4 version 4.10.3)_

@@ -5,10 +5,27 @@
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.
 #   The names must be unique.
-#   The display string should be a single character that can take a color.
+#   The display string should be a single glyph that can take a color.
 #   USERSEL is true if the symbol is selectable by the user.
 #     all of the false USERSEL entries should be placed after the
 #     true USERSEL entries.
+#
+# Current:
+#   five-point star ★
+#   heart ♥
+#   broken-heart 💔
+# Other possibilities if people want more variety:
+#   arrowhead ⮞
+#   checkmark ✔
+#   circle ●
+#   diamond ◆
+#   flag ⚑
+#   four-point star 🟆
+#   pentagon ⬟
+#   square ■
+#   teardrop-spoked asterisk ✻
+#   up-triangle ▲
+#   xmark ✘
 #
 version
 ..1

@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ */
 #include "config.h"
 
 #include <stdio.h>

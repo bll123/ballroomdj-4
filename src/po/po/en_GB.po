@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.9.0\n"
+"Project-Id-Version: ballroomdj-4 4.11.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-05-03\n"
-"PO-Revision-Date: 2024-05-03\n"
+"POT-Creation-Date: 2024-07-23\n"
+"PO-Revision-Date: 2024-07-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -16,11 +16,6 @@ msgstr ""
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
 msgid "%1$s must be greater than %2$s"
-msgstr ""
-
-#. CONTEXT: database update: status message
-#, c-format
-msgid "%d files found"
 msgstr ""
 
 #. CONTEXT: configuration: the ACRCloud API Host
@@ -119,6 +114,11 @@ msgstr ""
 msgid "%s data will be converted."
 msgstr ""
 
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -145,26 +145,33 @@ msgstr ""
 msgid "%s may not exceed the song duration"
 msgstr ""
 
-#. CONTEXT: validation: must be a numeric value
+#. CONTEXT: validation: characters not allowed
 #, c-format
-msgid "%s must be numeric."
-msgstr ""
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s must be set."
+msgid "%s: *'\":|<>^ characters are not allowed."
 msgstr ""
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
-msgid "%s: Invalid time."
+msgid "%s: Invalid time (%s)."
+msgstr ""
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr ""
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
 msgstr ""
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
-msgid "%s: Slashes are not allowed"
+msgid "%s: Slashes are not allowed."
 msgstr ""
 
 #. CONTEXT: validation: spaces are not allowed
@@ -172,9 +179,8 @@ msgstr ""
 msgid "%s: Spaces are not allowed."
 msgstr ""
 
-#. CONTEXT: validation: must be numeric
-#, c-format
-msgid "%s: must be numeric."
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
 msgstr ""
 
 #. CONTEXT: configuration: dance time signature
@@ -358,10 +364,6 @@ msgstr ""
 msgid "BDJ3 database version is too old."
 msgstr ""
 
-#. CONTEXT: Name of the BDJ4 internal audio tagging interface
-msgid "BDJ4 Internal"
-msgstr ""
-
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -439,7 +441,6 @@ msgstr ""
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -643,13 +644,6 @@ msgstr ""
 msgid "Don't Write"
 msgstr ""
 
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
-#. CONTEXT: configuration: status: information on how to edit a status entry
-msgid "Double click on a field to edit."
-msgstr ""
-
 #. CONTEXT: starterui: basic support dialog: support option (download latest version)
 msgid "Download Latest Version"
 msgstr ""
@@ -697,7 +691,7 @@ msgstr ""
 msgid "Edit Genres"
 msgstr ""
 
-#. CONTEXT: configuration: edit dance levels table
+#. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
 msgstr ""
 
@@ -901,7 +895,9 @@ msgid "High Dance Level"
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr ""
 
@@ -959,6 +955,10 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -971,6 +971,12 @@ msgstr ""
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
+msgstr ""
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
 msgstr ""
 
 #. CONTEXT: configuration file: genre
@@ -1139,7 +1145,6 @@ msgid "Mute"
 msgstr ""
 
 #. CONTEXT: alternate installation: name (for shortcut)
-#. CONTEXT: alternate installer: name (for shortcut)
 msgid "Name"
 msgstr ""
 
@@ -1175,7 +1180,6 @@ msgid "New Level"
 msgstr ""
 
 #. CONTEXT: playlist management: default name for a new playlist
-#, c-format
 msgid "New Playlist"
 msgstr ""
 
@@ -1189,7 +1193,6 @@ msgid "New Rating"
 msgstr ""
 
 #. CONTEXT: sequence editor: default name for a new sequence
-#, c-format
 msgid "New Sequence"
 msgstr ""
 
@@ -1282,10 +1285,6 @@ msgstr ""
 
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Pause"
 msgstr ""
 
 #. CONTEXT: configuration: queue: pause each song
@@ -1601,7 +1600,6 @@ msgstr ""
 #. CONTEXT: audio identification: save data
 #. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
-#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr ""
@@ -1711,6 +1709,7 @@ msgstr ""
 #. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
 #. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr ""
@@ -1746,6 +1745,10 @@ msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
+msgstr ""
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
 msgstr ""
 
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
@@ -1784,6 +1787,7 @@ msgstr ""
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
@@ -1956,6 +1960,14 @@ msgstr ""
 msgid "Toggle Repeat"
 msgstr ""
 
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr ""
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr ""
+
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
 msgstr ""
@@ -2122,10 +2134,6 @@ msgstr ""
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
-msgstr ""
-
-#. CONTEXT: The name of the 'automatic' playlist file
-msgid "automatic"
 msgstr ""
 
 #. CONTEXT: configuration file: dance type

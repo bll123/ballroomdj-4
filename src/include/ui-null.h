@@ -1,8 +1,8 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UINULL_H
-#define INC_UINULL_H
+#ifndef INC_UI_NULL_H
+#define INC_UI_NULL_H
 
 enum {
   UICB_STOP = true,
@@ -21,4 +21,4 @@ enum {
   UI_FOREACH_CONT = false,
 };
 
-#endif /* INC_UINULL_H */
+#endif /* INC_UI_NULL_H */

@@ -4,9 +4,10 @@
 #ifndef INC_UISONGFILTER_H
 #define INC_UISONGFILTER_H
 
+#include "callback.h"
 #include "nlist.h"
 #include "songfilter.h"
-#include "ui.h"
+#include "uiwcont.h"
 
 typedef struct uisongfilter uisongfilter_t;
 

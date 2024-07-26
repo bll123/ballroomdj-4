@@ -170,7 +170,7 @@ itunesAlloc (void)
       nlistidx_t    eiteridx;
 
       entry = nlistGetList (itunes->songbyidx, nkey);
-      fprintf (stderr, "-- %d %s \n", nkey, nlistGetStr (entry, TAG_URI));
+      fprintf (stderr, "-- %" PRId32 " %s \n", nkey, nlistGetStr (entry, TAG_URI));
 
       nlistStartIterator (entry, &eiteridx);
       while ((tagidx = nlistIterateKey (entry, &eiteridx)) >= 0) {
@@ -178,7 +178,7 @@ itunesAlloc (void)
           continue;
         }
         if (tagdefs [tagidx].valueType == VALUE_NUM) {
-          fprintf (stderr, "  %s %ld\n", tagdefs [tagidx].tag, nlistGetNum (entry, tagidx));
+          fprintf (stderr, "  %s %" PRId32 "\n", tagdefs [tagidx].tag, nlistGetNum (entry, tagidx));
         } else {
           fprintf (stderr, "  %s %s\n", tagdefs [tagidx].tag, nlistGetStr (entry, tagidx));
         }
@@ -196,7 +196,7 @@ itunesAlloc (void)
       ids = slistGetList (itunes->playlists, skey);
       nlistStartIterator (ids, &iiteridx);
       while ((ikey = nlistIterateKey (ids, &iiteridx)) >= 0) {
-        fprintf (stderr, " %d", ikey);
+        fprintf (stderr, " %" PRId32, ikey);
       }
       fprintf (stderr, "\n");
     }
@@ -390,32 +390,6 @@ itunesGetSongDataByName (itunes_t *itunes, const char *skey)
   return itunesGetSongData (itunes, idx);
 }
 
-void
-itunesStartIterateSongs (itunes_t *itunes)
-{
-  if (itunes == NULL || itunes->songbyidx == NULL) {
-    return;
-  }
-
-  nlistStartIterator (itunes->songbyidx, &itunes->songiteridx);
-}
-
-nlist_t *
-itunesIterateSongs (itunes_t *itunes)
-{
-  nlist_t       *entry;
-  nlistidx_t    nkey;
-
-  if (itunes == NULL || itunes->songbyidx == NULL) {
-    return NULL;
-  }
-
-  nkey = nlistIterateKey (itunes->songbyidx, &itunes->songiteridx);
-  entry = nlistGetList (itunes->songbyidx, nkey);
-  return entry;
-}
-
-
 slist_t *
 itunesGetPlaylistData (itunes_t *itunes, const char *skey)
 {
@@ -538,8 +512,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         }
         songFavoriteConv (&conv);
         nlistSetNum (entry, TAG_FAVORITE, conv.num);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld",
-            tagdefs [TAG_FAVORITE].tag, (long) conv.num);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %" PRId64 "",
+            tagdefs [TAG_FAVORITE].tag, conv.num);
       }
     } else {
       int   tagidx;
@@ -583,7 +557,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         /* 2023-01-03T18:34:58Z */
         tmval = tmutilStringToUTC (val, "%FT%TZ");
         nlistSetNum (entry, tagidx, tmval);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) tmval);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %" PRIu64, tagdefs [tagidx].tag, (uint64_t) tmval);
       } else if (tagidx == TAG_DANCERATING) {
         int   ratingidx;
         int   tval;
@@ -596,7 +570,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         tval = tval / 10 - 1;
         ratingidx = nlistGetNum (itunes->stars, tval);
         nlistSetNum (entry, tagidx, ratingidx);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %d", tagdefs [tagidx].tag, ratingidx);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %" PRId32, tagdefs [tagidx].tag, ratingidx);
       } else if (tagidx == TAG_GENRE) {
         datafileconv_t  conv;
 
@@ -604,7 +578,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         conv.str = val;
         genreConv (&conv);
         nlistSetNum (entry, tagidx, conv.num);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) conv.num);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %" PRId64, tagdefs [tagidx].tag, conv.num);
       } else {
         /* start time and stop time are already in the correct format (ms) */
         if (tagdefs [tagidx].valueType == VALUE_NUM) {

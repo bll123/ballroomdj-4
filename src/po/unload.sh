@@ -53,8 +53,14 @@ fi
 for f in po/*.po; do
   base=$(echo $f | sed -e 's,^po/,,' -e 's,\.po$,,' -e 's,^web-,,')
   tbase=$(echo $base | sed -e 's,_,-,')
+  if [[ $tbase == nb-NO ]]; then
+    tbase=no-NO
+  fi
   if [[ ! -d $TMP/$tbase ]]; then
     tbase=$(echo $tbase | sed 's,\(..\).*,\1,')
+  fi
+  if [[ $tbase == nb ]]; then
+    tbase=no
   fi
   if [[ ! -d $TMP/$tbase ]]; then
     continue
@@ -71,8 +77,14 @@ done
 for f in web/*.po; do
   base=$(echo $f | sed -e 's,^web/,,' -e 's,\.po$,,' -e 's,^web-,,')
   tbase=$(echo $base | sed -e 's,_,-,')
+  if [[ $tbase == nb-NO ]]; then
+    tbase=no-NO
+  fi
   if [[ ! -d $TMP/$tbase ]]; then
     tbase=$(echo $tbase | sed 's,\(..\).*,\1,')
+  fi
+  if [[ $tbase == nb ]]; then
+    tbase=no
   fi
   if [[ ! -d $TMP/$tbase ]]; then
     continue

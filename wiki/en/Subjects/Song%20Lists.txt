@@ -18,6 +18,12 @@ on the buttons and menus.
 The song list's name is at the top of the _Song&nbsp;List_ tab. Enter
 the new name of the song list at any time.
 
+On all platforms, the slash and backslash characters are not allowed
+in song list names.
+
+On Windows, the following characters are not allowed in song list names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
 If you forget to change the song list's name, it probably has the name
 _New&nbsp;Song&nbsp;List_.  In _Edit&nbsp;Song&nbsp;Lists_, select
 __Load__ from the __Edit__ menu.  Select _New&nbsp;Song&nbsp;List_.
@@ -133,9 +139,8 @@ The [playlist&nbsp;settings](en-Management-Playlist%20Management)
 (except _Stop&nbsp;After_) and the _Maximum&nbsp;Play&nbsp;Time_ for a dance
 will be propagated from the automatic or sequenced playlist to the
 new song list.
-
-(See also:
-[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
+<br>__References:__
+<br>[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2024-02-27 07:25:20; BDJ4 version 4.6.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

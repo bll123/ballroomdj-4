@@ -7,6 +7,10 @@ for playback of songs._</span>
 
 ### Player
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-A.png)
+<br><span style="color:#4559bf;">__Player__</span> </div>
+
 ##### Player Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -61,10 +65,10 @@ Re-starts the song from the beginning and sets the song position to 0:00.
 
 __Next Song__:
 (![b-nextsong](https://ballroomdj4.sourceforge.io/wikiimg/player-b-nextsong-A.png))
-Immediately skips the next song in the queue.  There is no fade out
-and no gap applied.  If the player is playing, the next song will
-start playing.  The next song button may be used when the player is
-paused or stopped.
+Immediately skips to the next song in the queue.  There is no fade out
+and no gap applied.  If repeat is on for the song, it is turned off.
+If the player is currently playing, the next song will start playing.
+The next song button may be used when the player is paused or stopped.
 
 __Pause at End__: Turns on and off the pause at end toggle.  The
 player will stop playing after the song finishes.
@@ -72,12 +76,21 @@ player will stop playing after the song finishes.
 __Speed__: Adjusts the speed of the currently playing song. The
 speed will reset when the next song starts playing.
 
+If the _Show&nbsp;Speed&nbsp;Reset_ setting (See
+[Configure&nbsp;/&nbsp;Player](en-Configuration-Player)) is on, a
+_100%_ button is displayed next to the speed selection.  The _100%_
+button will reset the speed to 100%.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-spd-reset](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-spd-reset-A.png)
+<br><span style="color:#4559bf;">__Player / Speed Reset__</span> </div>
+
 __Position__: Displays the current position of the song.  The slider
 can be adjusted to change the current position of the song.
 
-__Volume__: Sets the playback volume.  <br>(See also
-__Default&nbsp;Volume__ in
-[Configure&nbsp;/&nbsp;Player](en-Configuration-Player))
+__Volume__: Sets the playback volume.
+<br>__References:__
+<br>__Default&nbsp;Volume__ in [Configure&nbsp;/&nbsp;Player](en-Configuration-Player)
 
 ##### Music Queue Controls
 
@@ -140,7 +153,9 @@ displayed.  The filter button
 (![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
 will start a dialog where the filters can be chosen to limit which
 songs are displayed in the listing.
-<br>See also: [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs))
+<br>__References:__
+<br>[Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs)
+<br>[Subjects&nbsp;/&nbsp;Filter&nbsp;Dialog](en-Subjects-Filter%20Dialog)
 
 Select a song and select the __Queue__ button to add a song to the music
 queue.  The selected song will be added after the currently selected
@@ -158,8 +173,8 @@ filled in from the audio file tags if possible.  The artist, title,
 dance and marquee display may be changed. After setting the song
 information, select the __Queue__ button to add the song to the music
 queue.
-<br>
-(See also: [Player / External Request](en-Player-External%20Request)
+<br>__References:__
+<br>[Player / External Request](en-Player-External%20Request)
 
 When an audio file is dragged from the file manager and dropped in
 a music queue, the external request dialog is started.
@@ -186,6 +201,10 @@ See: [Player&nbsp;/&nbsp;Reload](en-Player-Reload)
 
 __Marquee / Font Size__: Starts a dialog where the marquee's font size may be
 changed.  The font size will be changed immediately.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-mq-font-sz](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-mq-font-sz-A.png)
+<br><span style="color:#4559bf;">__Player / Marquee Font Size__</span> </div>
 
 __Marquee / Recover Marquee__: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
@@ -220,10 +239,10 @@ __Options / Switch Queue When Empty__: When selected and all the songs in a
 queue have been played, the player will check for another queue that
 has songs queued and start playing songs from it.
 
-See also
+<br>__References:__
 <br>[Configure / Player](en-Configuration-Player)
 <br>[Configure / Music Queues](en-Configuration-Music%20Queues)
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_

@@ -12,20 +12,21 @@ services to identify the song and retrieve the song information._</span>
 The fields displayed in audio identification can be set in
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).  The
 fields displayed in the match list and the fields displayed in the
-current / selected display can be modified.
+current / selected display can be modified in
+[Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
+_Audio&nbsp;ID&nbsp;Match&nbsp;List_ and _Audio&nbsp;ID_ selections.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![audioid](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/audioid-A.png)
+![audioid](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/audioid-B.png)
 <br><span style="color:#4559bf;">__Manage / Audio Identification__</span> </div>
 
 ##### Traversing the Song Listing
 
-Audio identification works in conjunction with the
-[Music&nbsp;Manager](en-Management-Music%20Manager).  The __First__,
-__Next__ and __Previous__ buttons traverse the songs selected in the
-[Music&nbsp;Manager](en-Management-Music%20Manager). See the
-[Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
-details.
+Audio identification works in conjunction with the music manager. The
+__First__, __Next__ and __Previous__ buttons traverse the songs
+selected in the music manager.
+<br>__References:__
+<br>[Music&nbsp;Manager](en-Management-Music%20Manager)
 
 ##### Match List
 
@@ -36,6 +37,7 @@ status area at the upper right of the screen.
 
 The first row in the match list is the current song data so that a
 comparison can be made against the other matches that are returned.
+This row will remain in position as the list is scrolled.
 
 Each of the other rows in the match list will have a score assigned
 indicating how close of a match the song is to the original.
@@ -54,4 +56,4 @@ Then select the __Save__ button in the upper right to save the changes
 to the database.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_
