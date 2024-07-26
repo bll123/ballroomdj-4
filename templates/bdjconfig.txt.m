@@ -5,6 +5,8 @@ version
 ..1
 AUDIOTAG
 ..libatibdj4
+CONTROLLER
+..
 DIRMUSIC
 ..
 DIRITUNESMEDIA
