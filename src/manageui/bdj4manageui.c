@@ -427,7 +427,7 @@ static bool     manageSwitchPageMain (void *udata, int32_t pagenum);
 static bool     manageSwitchPageSonglist (void *udata, int32_t pagenum);
 static bool     manageSwitchPageMM (void *udata, int32_t pagenum);
 static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
-static void     manageSetDisplayPerSelection (manageui_t *manage, int id);
+static void     manageSetDisplayPerSelection (manageui_t *manage, int lastmaintab);
 static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
 static void     manageProcessDatabaseUpdate (manageui_t *manage);
@@ -2025,6 +2025,7 @@ manageNewSelectionMoveCheck (manageui_t *manage, dbidx_t dbidx)
   }
 }
 
+/* the song edit dbidx is set based on which tab the user came from */
 static void
 manageSetSongEditDBIdx (manageui_t *manage, int mainlasttabsel, int mmlasttabsel)
 {
@@ -3576,7 +3577,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
   switch (id) {
     case MANAGE_TAB_MAIN_SL: {
       logMsg (LOG_DBG, LOG_INFO, "new tab: main-sl");
-      manageSetDisplayPerSelection (manage, id);
+      manageSetDisplayPerSelection (manage, mainlasttabsel);
       manageSonglistLoadCheck (manage);
       break;
     }
@@ -3595,7 +3596,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
     }
     case MANAGE_TAB_MAIN_MM: {
       logMsg (LOG_DBG, LOG_INFO, "new tab: main-mm");
-      manageSetDisplayPerSelection (manage, id);
+      manageSetDisplayPerSelection (manage, mainlasttabsel);
       break;
     }
     case MANAGE_TAB_MAIN_UPDDB: {
@@ -3631,7 +3632,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
       logMsg (LOG_DBG, LOG_INFO, "new sub-tab: sl-songsel");
       /* this is necessary, as switching back to the sl-songlist tab */
       /* does not call this */
-      manageSetDisplayPerSelection (manage, manage->maincurrtab);
+      manageSetDisplayPerSelection (manage, mainlasttabsel);
       break;
     }
     case MANAGE_TAB_STATISTICS: {
@@ -3670,11 +3671,12 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
 /* display, but makes the song editor easier to use and more intuitive. */
 /* note that this routine gets called upon the appropriate page switch. */
 static void
-manageSetDisplayPerSelection (manageui_t *manage, int id)
+manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
 {
   logProcBegin ();
 
-  if (id == MANAGE_TAB_MAIN_SL) {
+  /* switching to the song-list */
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
     bool    plinuse;
 
     /* save current playlist-in-use status */
@@ -3693,7 +3695,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       manage->selbypass = false;
     }
 
-    if (plinuse || manage->lastmmdisp == MANAGE_DISP_SONG_LIST) {
+    /* switching from music-manager */
+    if (mainlasttab == MANAGE_TAB_MAIN_MM &&
+        (plinuse || manage->lastmmdisp == MANAGE_DISP_SONG_LIST)) {
       nlistidx_t    nidx;
 
       /* get the selection from mm, and set it for the sle */
@@ -3701,7 +3705,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       uimusicqSetSelectLocation (manage->currmusicq, manage->musicqManageIdx, nidx);
     }
 
-    if (manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
+    /* switching from music-manager */
+    if (mainlasttab == MANAGE_TAB_MAIN_MM &&
+        manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
       if (manage->sbssonglist) {
         uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
       } else {
@@ -3710,7 +3716,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
   }
 
-  if (id == MANAGE_TAB_MAIN_MM) {
+  /* switching to the music-manager */
+  if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
     char    *slname;
     int     lasttab;
 
@@ -3721,42 +3728,46 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     /* switching to mm  */
     /*   a) from the song list - has songs */
     /*   b) last selection was on the song list */
-    if ((manage->slcurrtab == MANAGE_TAB_SONGLIST &&
-        uimusicqGetCount (manage->currmusicq) > 0) ||
-        lasttab == MANAGE_TAB_SONGLIST) {
-      nlistidx_t    idx;
+    if (mainlasttab == MANAGE_TAB_MAIN_SL) {
+      if ((manage->slcurrtab == MANAGE_TAB_SONGLIST &&
+          uimusicqGetCount (manage->currmusicq) > 0) ||
+          lasttab == MANAGE_TAB_SONGLIST) {
+        nlistidx_t    idx;
 
-      /* the song list must be saved, otherwise the song filter */
-      /* can't load it */
-      manageSonglistSave (manage);
-      slname = uimusicqGetSonglistName (manage->currmusicq);
-      uisfSetPlaylist (manage->uisongfilter, slname);
-      mdfree (slname);
-      manage->selbypass = true;
-      uisongselApplySongFilter (manage->mmsongsel);
-      manage->selbypass = false;
-      manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
-      idx = uimusicqGetSelectLocation (manage->currmusicq, manage->musicqManageIdx);
-      uisongselSetSelection (manage->mmsongsel, idx);
+        /* the song list must be saved, otherwise the song filter */
+        /* can't load it */
+        manageSonglistSave (manage);
+        slname = uimusicqGetSonglistName (manage->currmusicq);
+        uisfSetPlaylist (manage->uisongfilter, slname);
+        mdfree (slname);
+        manage->selbypass = true;
+        uisongselApplySongFilter (manage->mmsongsel);
+        manage->selbypass = false;
+        manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
+        idx = uimusicqGetSelectLocation (manage->currmusicq, manage->musicqManageIdx);
+        uisongselSetSelection (manage->mmsongsel, idx);
+      }
     }
 
     /* switching to mm */
     /*   a) from the song selection tab */
     /*   b) from the song list - no songs */
     /*   c) last selection was on the song selection */
-    if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
-        uimusicqGetCount (manage->currmusicq) == 0 ||
-        lasttab == MANAGE_TAB_SL_SONGSEL) {
-      uisfClearPlaylist (manage->uisongfilter);
-      manage->selbypass = true;
-      uisongselApplySongFilter (manage->mmsongsel);
-      manage->selbypass = false;
-      if (manage->sbssonglist) {
-        uisongselCopySelectList (manage->slsbssongsel, manage->mmsongsel);
-      } else {
-        uisongselCopySelectList (manage->slsongsel, manage->mmsongsel);
+    if (mainlasttab == MANAGE_TAB_MAIN_SL) {
+      if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL ||
+          uimusicqGetCount (manage->currmusicq) == 0 ||
+          lasttab == MANAGE_TAB_SL_SONGSEL) {
+        uisfClearPlaylist (manage->uisongfilter);
+        manage->selbypass = true;
+        uisongselApplySongFilter (manage->mmsongsel);
+        manage->selbypass = false;
+        if (manage->sbssonglist) {
+          uisongselCopySelectList (manage->slsbssongsel, manage->mmsongsel);
+        } else {
+          uisongselCopySelectList (manage->slsongsel, manage->mmsongsel);
+        }
+        manage->lastmmdisp = MANAGE_DISP_SONG_SEL;
       }
-      manage->lastmmdisp = MANAGE_DISP_SONG_SEL;
     }
   }
   logProcEnd ("");

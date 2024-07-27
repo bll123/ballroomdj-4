@@ -6,6 +6,10 @@
 
 **4.11.3 2024-7---**
 
+* Bug Fixes:
+    * Linux/GStreamer: Attempt to fix incorrect volume at initialization.
+    * Management: Fix incorrect selection handling.
+
 -->
 
 **4.11.2 2024-7-24**
