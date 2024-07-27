@@ -410,7 +410,7 @@ static bool     managePlayProcessSonglist (void *udata, int32_t dbidx, int32_t m
 static bool     managePlayProcessSBSSonglist (void *udata, int32_t dbidx, int32_t mqidx);
 static bool     managePlayProcessMusicManager (void *udata, int32_t dbidx, int32_t mqidx);
 static bool     manageQueueProcessSonglist (void *udata, int32_t dbidx);
-static bool     manageQueueProcessEasySonglist (void *udata, int32_t dbidx);
+static bool     manageQueueProcessSBSSongList (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
 /* playlist */
@@ -983,7 +983,7 @@ manageInitializeUI (manageui_t *manage)
   uisongselSetPlayCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL_SBS]);
   manage->callbacks [MANAGE_CB_QUEUE_SL_SBS] = callbackInitI (
-      manageQueueProcessEasySonglist, manage);
+      manageQueueProcessSBSSongList, manage);
   uisongselSetQueueCallback (manage->slsbssongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL_SBS]);
 
@@ -3173,7 +3173,7 @@ manageQueueProcessSonglist (void *udata, int32_t dbidx)
 }
 
 static bool
-manageQueueProcessEasySonglist (void *udata, int32_t dbidx)
+manageQueueProcessSBSSongList (void *udata, int32_t dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to side-by-side songlist");
   manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SBS_SONGLIST, MANAGE_QUEUE);
