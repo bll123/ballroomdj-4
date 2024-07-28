@@ -4,11 +4,12 @@
 
 <!--
 
-**4.11.3 2024-7---**
+**4.11.3 2024-7-28**
 
 * Bug Fixes:
     * Linux/GStreamer: Attempt to fix incorrect volume at initialization.
     * Management: Fix incorrect selection handling.
+    * Player: Queue Dance: Preserve last selection.
 
 -->
 

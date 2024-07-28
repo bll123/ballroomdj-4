@@ -725,8 +725,6 @@ uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count)
 
   mqidx = uimusicq->musicqManageIdx;
   mqint = uimusicq->ui [mqidx].mqInternalData;
-  uidanceSetKey (mqint->uidance, UIDANCE_NONE);
-  uidanceSetKey (mqint->uidance5, UIDANCE_NONE);
 
   return UICB_CONT;
 }
