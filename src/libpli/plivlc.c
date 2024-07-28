@@ -293,6 +293,15 @@ pliiSupported (plidata_t *pliData)
   return pliData->supported;
 }
 
+int
+pliiGetVolume (plidata_t *pliData)
+{
+  int   val;
+
+  val = vlcGetVolume (pliData->vlcdata);
+  return val;
+}
+
 /* internal routines */
 
 static void

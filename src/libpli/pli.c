@@ -34,22 +34,23 @@ static char *plistateTxt [PLI_STATE_MAX] = {
 typedef struct pli {
   dlhandle_t        *dlHandle;
   plidata_t         *(*pliiInit) (const char *plinm);
-  void              (*pliiFree) (plidata_t *pliData);
-  void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath, int sourceType);
-  void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
-  void              (*pliiClose) (plidata_t *pliData);
-  void              (*pliiPause) (plidata_t *pliData);
-  void              (*pliiPlay) (plidata_t *pliData);
-  void              (*pliiStop) (plidata_t *pliData);
-  ssize_t           (*pliiSeek) (plidata_t *pliData, ssize_t pos);
-  ssize_t           (*pliiRate) (plidata_t *pliData, ssize_t rate);
-  ssize_t           (*pliiGetDuration) (plidata_t *pliData);
-  ssize_t           (*pliiGetTime) (plidata_t *pliData);
-  plistate_t        (*pliiState) (plidata_t *pliData);
-  int               (*pliiSetAudioDevice) (plidata_t *pliData, const char *dev, int plidevtype);
-  int               (*pliiAudioDeviceList) (plidata_t *pliData, volsinklist_t *sinklist);
-  int               (*pliiSupported) (plidata_t *pliData);
-  plidata_t         *pliData;
+  void              (*pliiFree) (plidata_t *plidata);
+  void              (*pliiMediaSetup) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
+  void              (*pliiStartPlayback) (plidata_t *plidata, ssize_t pos, ssize_t speed);
+  void              (*pliiClose) (plidata_t *plidata);
+  void              (*pliiPause) (plidata_t *plidata);
+  void              (*pliiPlay) (plidata_t *plidata);
+  void              (*pliiStop) (plidata_t *plidata);
+  ssize_t           (*pliiSeek) (plidata_t *plidata, ssize_t pos);
+  ssize_t           (*pliiRate) (plidata_t *plidata, ssize_t rate);
+  ssize_t           (*pliiGetDuration) (plidata_t *plidata);
+  ssize_t           (*pliiGetTime) (plidata_t *plidata);
+  plistate_t        (*pliiState) (plidata_t *plidata);
+  int               (*pliiSetAudioDevice) (plidata_t *plidata, const char *dev, int plidevtype);
+  int               (*pliiAudioDeviceList) (plidata_t *plidata, volsinklist_t *sinklist);
+  int               (*pliiSupported) (plidata_t *plidata);
+  int               (*pliiGetVolume) (plidata_t *plidata);
+  plidata_t         *plidata;
 } pli_t;
 
 pli_t *
@@ -59,7 +60,7 @@ pliInit (const char *plipkg, const char *plinm)
   char      dlpath [MAXPATHLEN];
 
   pli = mdmalloc (sizeof (pli_t));
-  pli->pliData = NULL;
+  pli->plidata = NULL;
   pli->pliiInit = NULL;
   pli->pliiFree = NULL;
   pli->pliiMediaSetup = NULL;
@@ -76,6 +77,7 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiSetAudioDevice = NULL;
   pli->pliiAudioDeviceList = NULL;
   pli->pliiSupported = NULL;
+  pli->pliiGetVolume = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -104,10 +106,11 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiSetAudioDevice = dylibLookup (pli->dlHandle, "pliiSetAudioDevice");
   pli->pliiAudioDeviceList = dylibLookup (pli->dlHandle, "pliiAudioDeviceList");
   pli->pliiSupported = dylibLookup (pli->dlHandle, "pliiSupported");
+  pli->pliiGetVolume = dylibLookup (pli->dlHandle, "pliiGetVolume");
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
-    pli->pliData = pli->pliiInit (plinm);
+    pli->plidata = pli->pliiInit (plinm);
   }
   return pli;
 }
@@ -117,8 +120,8 @@ pliFree (pli_t *pli)
 {
   if (pli != NULL && pli->pliiFree != NULL) {
     pliClose (pli);
-    if (pli->pliData != NULL) {
-      pli->pliiFree (pli->pliData);
+    if (pli->plidata != NULL) {
+      pli->pliiFree (pli->plidata);
     }
     if (pli->dlHandle != NULL) {
       dylibClose (pli->dlHandle);
@@ -133,7 +136,7 @@ pliMediaSetup (pli_t *pli, const char *mediaPath,
     const char *fullMediaPath, int sourceType)
 {
   if (pli != NULL && pli->pliiMediaSetup != NULL && mediaPath != NULL) {
-    pli->pliiMediaSetup (pli->pliData, mediaPath, fullMediaPath, sourceType);
+    pli->pliiMediaSetup (pli->plidata, mediaPath, fullMediaPath, sourceType);
   }
 }
 
@@ -141,7 +144,7 @@ void
 pliStartPlayback (pli_t *pli, ssize_t pos, ssize_t speed)
 {
   if (pli != NULL && pli->pliiStartPlayback != NULL) {
-    pli->pliiStartPlayback (pli->pliData, pos, speed);
+    pli->pliiStartPlayback (pli->plidata, pos, speed);
   }
 }
 
@@ -149,7 +152,7 @@ void
 pliPause (pli_t *pli)
 {
   if (pli != NULL && pli->pliiPause != NULL) {
-    pli->pliiPause (pli->pliData);
+    pli->pliiPause (pli->plidata);
   }
 }
 
@@ -157,7 +160,7 @@ void
 pliPlay (pli_t *pli)
 {
   if (pli != NULL && pli->pliiPlay != NULL) {
-    pli->pliiPlay (pli->pliData);
+    pli->pliiPlay (pli->plidata);
   }
 }
 
@@ -165,7 +168,7 @@ void
 pliStop (pli_t *pli)
 {
   if (pli != NULL && pli->pliiStop != NULL) {
-    pli->pliiStop (pli->pliData);
+    pli->pliiStop (pli->plidata);
   }
 }
 
@@ -175,7 +178,7 @@ pliSeek (pli_t *pli, ssize_t pos)
   ssize_t     ret = -1;
 
   if (pli != NULL && pli->pliiSeek != NULL) {
-    ret = pli->pliiSeek (pli->pliData, pos);
+    ret = pli->pliiSeek (pli->plidata, pos);
   }
   return ret;
 }
@@ -186,7 +189,7 @@ pliRate (pli_t *pli, ssize_t rate)
   ssize_t   ret = 100;
 
   if (pli != NULL && pli->pliiRate != NULL) {
-    ret = pli->pliiRate (pli->pliData, rate);
+    ret = pli->pliiRate (pli->plidata, rate);
   }
   return ret;
 }
@@ -195,7 +198,7 @@ void
 pliClose (pli_t *pli)
 {
   if (pli != NULL && pli->pliiClose != NULL) {
-    pli->pliiClose (pli->pliData);
+    pli->pliiClose (pli->plidata);
   }
 }
 
@@ -205,7 +208,7 @@ pliGetDuration (pli_t *pli)
   ssize_t     duration = 0;
 
   if (pli != NULL && pli->pliiGetDuration != NULL) {
-    duration = pli->pliiGetDuration (pli->pliData);
+    duration = pli->pliiGetDuration (pli->plidata);
   }
   return duration;
 }
@@ -216,7 +219,7 @@ pliGetTime (pli_t *pli)
   ssize_t     playTime = 0;
 
   if (pli != NULL && pli->pliiGetTime != NULL) {
-    playTime = pli->pliiGetTime (pli->pliData);
+    playTime = pli->pliiGetTime (pli->plidata);
   }
   return playTime;
 }
@@ -227,7 +230,7 @@ pliState (pli_t *pli)
   plistate_t          plistate = PLI_STATE_NONE; /* unknown */
 
   if (pli != NULL && pli->pliiState != NULL) {
-    plistate = pli->pliiState (pli->pliData);
+    plistate = pli->pliiState (pli->plidata);
   }
   return plistate;
 }
@@ -236,7 +239,7 @@ int
 pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype)
 {
   if (pli != NULL && pli->pliiSetAudioDevice != NULL) {
-    return pli->pliiSetAudioDevice (pli->pliData, dev, plidevtype);
+    return pli->pliiSetAudioDevice (pli->plidata, dev, plidevtype);
   }
   return -1;
 }
@@ -245,7 +248,7 @@ int
 pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist)
 {
   if (pli != NULL && pli->pliiAudioDeviceList != NULL) {
-    return pli->pliiAudioDeviceList (pli->pliData, sinklist);
+    return pli->pliiAudioDeviceList (pli->plidata, sinklist);
   }
   return -1;
 }
@@ -256,7 +259,7 @@ pliSupported (pli_t *pli)
   int   rc = PLI_SUPPORT_NONE;
 
   if (pli != NULL && pli->pliiSupported != NULL) {
-    rc = pli->pliiSupported (pli->pliData);
+    rc = pli->pliiSupported (pli->plidata);
   }
   return rc;
 }
@@ -271,7 +274,7 @@ pliStateText (pli_t *pli)
     return "unknown";
   }
 
-  return plistateTxt [pli->pliiState (pli->pliData)];
+  return plistateTxt [pli->pliiState (pli->plidata)];
 }
 
 ilist_t *
@@ -281,4 +284,17 @@ pliInterfaceList (void)
 
   interfaces = dyInterfaceList ("libpli", "pliiDesc");
   return interfaces;
+}
+
+/* for debugging */
+int
+pliGetVolume (pli_t *pli)
+{
+  int   val = 0;
+
+  if (pli != NULL && pli->pliiGetVolume != NULL) {
+    val = pli->pliiGetVolume (pli->plidata);
+  }
+
+  return val;
 }

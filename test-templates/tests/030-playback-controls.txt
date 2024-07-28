@@ -11,7 +11,7 @@ resptimeout 1000
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume 25 actualvolume 25
+chk currvolume 25 actualvolume 25 plivolume 100
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
@@ -40,7 +40,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing
 msg player PLAY_PAUSEATEND
@@ -72,7 +72,7 @@ resptimeout 2000
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
@@ -130,7 +130,7 @@ resptimeout 2000
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol plivolume 100
 msg player PLAY_SEEK 25000
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 25000
@@ -365,7 +365,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 mssleep 500
@@ -385,13 +385,13 @@ resptimeout 7500
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol repeat 1 playstate playing
+chk currvolume defaultvol actualvolume defaultvol repeat 1 playstate playing plivolume 100
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 # next song
 msg player PLAY_REPEAT
 get player CHK_PLAYER_STATUS
-chk repeat 0 playstate playing actualvolume defaultvol
+chk repeat 0 playstate playing actualvolume defaultvol plivolume 100
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 msg player PLAY_FADE
@@ -400,7 +400,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol repeat 0 playstate playing
+chk currvolume defaultvol actualvolume defaultvol repeat 0 playstate playing plivolume 100
 get main CHK_MAIN_MUSICQ
 chk dbidx 13
 end
@@ -418,7 +418,7 @@ resptimeout 2000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 get player CHK_PLAYER_STATUS
 chk-lt playtimeplayed 1900
 msg player PLAY_SONG_BEGIN
@@ -469,24 +469,24 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 20
+chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
 msg player PLAYER_VOLUME 30
 get player CHK_PLAYER_STATUS
-chk currvolume 30 realvolume 30 actualvolume 30
+chk currvolume 30 realvolume 30 actualvolume 30 plivolume 100
 msg player PLAYER_VOLUME 40
 get player CHK_PLAYER_STATUS
-chk currvolume 40 realvolume 40 actualvolume 40
+chk currvolume 40 realvolume 40 actualvolume 40 plivolume 100
 msg player PLAYER_VOLUME 20
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 20
+chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
 # toggle mute on
 msg player PLAYER_VOL_MUTE
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 0
+chk currvolume 20 realvolume 20 actualvolume 0 plivolume 100
 # toggle mute back off
 msg player PLAYER_VOL_MUTE
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 20
+chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
 msg player PLAYER_VOLUME defaultvol
 end
 
@@ -504,7 +504,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol speed 100
+chk currvolume defaultvol actualvolume defaultvol speed 100 plivolume 100
 msg player PLAY_SPEED 110
 get player CHK_PLAYER_STATUS
 chk speed 110
@@ -517,7 +517,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 msg player PLAY_SPEED 130
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
@@ -529,7 +529,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol plivolume 100
 msg player PLAY_SPEED 70
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000

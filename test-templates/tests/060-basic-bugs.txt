@@ -29,4 +29,3 @@ get main CHK_MAIN_MUSICQ
 # this must be 1.
 chk mq0len 1 dbidx 10 songplaysentcount 1
 end
-

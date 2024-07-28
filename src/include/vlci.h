@@ -31,6 +31,7 @@ void              vlcRelease (vlcdata_t *vlcdata);
 int               vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plidevtype);
 bool              vlcVersionLinkCheck (void);
 bool              vlcVersionCheck (void);
+int               vlcGetVolume (vlcdata_t *vlcdata);
 
 #endif /* _hdr_vlc_vlc */
 

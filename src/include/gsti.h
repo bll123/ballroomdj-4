@@ -20,5 +20,6 @@ void gstiPlay (gsti_t *gsti);
 void gstiStop (gsti_t *gsti);
 bool gstiSetPosition (gsti_t *gsti, int64_t pos);
 bool gstiSetRate (gsti_t *gsti, double rate);
+int gstiGetVolume (gsti_t *gsti);
 
 #endif /* INC_GSTI_H */

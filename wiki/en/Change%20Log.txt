@@ -10,6 +10,7 @@
     * Linux/GStreamer: Attempt to fix incorrect volume at initialization.
     * Management: Fix incorrect selection handling.
     * Player: Queue Dance: Preserve last selection.
+    * PENDING: crash in player
 
 -->
 

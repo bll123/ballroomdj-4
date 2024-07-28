@@ -60,6 +60,7 @@
 #         are playing and paused.
 #     currvolume realvolume actualvolume
 #       actualvolume is used to test fade-in and fade-out
+#     plivolume
 #     speed playtimeplayed
 #     pauseatend repeat
 #     currentsink

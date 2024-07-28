@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
+#include <math.h>
 
 #if _hdr_gst_gst
 
@@ -361,6 +362,17 @@ gstiSetRate (gsti_t *gsti, double rate)
 
   gstiRunOnce (gsti);
   return rc;
+}
+
+int
+gstiGetVolume (gsti_t *gsti)
+{
+  double  dval;
+  int     val;
+
+  g_object_get (G_OBJECT (gsti->pipeline), "volume", &dval, NULL);
+  val = round (dval * 100.0);
+  return val;
 }
 
 
