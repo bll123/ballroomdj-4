@@ -9,8 +9,8 @@
 * Bug Fixes:
     * Linux/GStreamer: Attempt to fix incorrect volume at initialization.
     * Management: Fix incorrect selection handling.
+    * Player: Prevent a possible crash.
     * Player: Queue Dance: Preserve last selection.
-    * PENDING: crash in player
 
 -->
 

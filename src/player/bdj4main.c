@@ -322,10 +322,12 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->playlistQueue [i] != NULL) {
       queueFree (mainData->playlistQueue [i]);
+      mainData->playlistQueue [i] = NULL;
     }
   }
   if (mainData->musicQueue != NULL) {
     musicqFree (mainData->musicQueue);
+    mainData->musicQueue = NULL;
   }
   slistFree (mainData->announceList);
   dataFree (mainData->mobmqUserkey);
@@ -1006,12 +1008,15 @@ mainSendMarqueeData (maindata_t *mainData)
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   mqidx = mainData->musicqPlayIdx;
-  musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  musicqLen = 0;
+  if (mainData->musicQueue != NULL) {
+    musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  }
 
   if (mobmarqueeactive) {
     const char  *title = NULL;
 
-    title = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
+    title = bdjoptGetStr (OPT_P_MOBMQ_TITLE);
     if (title == NULL) {
       title = "";
     }
@@ -1069,10 +1074,16 @@ mainSendMarqueeData (maindata_t *mainData)
     if (docheck && mainData->switchQueueWhenEmpty) {
       lastmqidx = mqidx;
       mqidx = musicqNextQueue (mqidx);
-      musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+      musicqLen = 0;
+      if (mainData->musicQueue != NULL) {
+        musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+      }
       while (mqidx != mainData->musicqPlayIdx && musicqLen == 0) {
         mqidx = musicqNextQueue (mqidx);
-        musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+        musicqLen = 0;
+        if (mainData->musicQueue != NULL) {
+          musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+        }
       }
       if (mqidx != mainData->musicqPlayIdx) {
         /* offset 0 is not active if this is not the queue set for playback */

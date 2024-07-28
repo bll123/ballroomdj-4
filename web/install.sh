@@ -88,7 +88,8 @@ export SSHPASS
 
 echo "## copying files"
 if [[ $server == ballroomdj.org ]]; then
-  cp -pf bdj4register.php bdj4report.php bdj4support.php bdj4tester.php $TMP
+  cp -pf bdj4marquee.php bdj4register.php bdj4report.php \
+      bdj4support.php bdj4tester.php $TMP
 fi
 
 mkdir -p $TMP${testpath}

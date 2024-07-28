@@ -120,36 +120,40 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
-  bool          enabled;
-  uiwcont_t    *uiwidgetp = NULL;
+  int           type;
+  uiwcont_t     *uiwidgetp = NULL;
 
   logProcBegin ();
 
-  enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
+  type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
 
   confuiSetStatusMsg (gui, "");
-  if (! enabled) {
+  if (type == MOBMQ_TYPE_OFF) {
     *tbuff = '\0';
     *uridisp = '\0';
     qruri = "";
   }
-  if (enabled) {
+  if (type == MOBMQ_TYPE_LOCAL) {
     const char  *host;
 
     host = sysvarsGetStr (SV_HOSTNAME);
     snprintf (uridisp, sizeof (uridisp), "http://%s.local:%" PRId64, host,
-        bdjoptGetNum (OPT_P_MOBILEMQPORT));
+        bdjoptGetNum (OPT_P_MOBMQ_PORT));
+  }
+  if (type == MOBMQ_TYPE_INTERNET) {
+    snprintf (uridisp, sizeof (uridisp), "%s/bdj4marquee.php?tag=%s",
+        sysvarsGetStr (SV_HOST_MOBMQ), bdjoptGetStr (OPT_P_MOBMQ_TAG));
   }
 
-  if (enabled) {
+  if (type != MOBMQ_TYPE_OFF) {
     /* CONTEXT: configuration: qr code: title display for mobile marquee */
     qruri = confuiMakeQRCodeFile (_("Mobile Marquee"), uridisp);
   }
 
-  uiwidgetp = gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidgetp;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
-  dataFree (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
-  gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = mdstrdup (qruri);
+  dataFree (gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri);
+  gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri = mdstrdup (qruri);
   if (*qruri) {
     mdfree (qruri);
   }

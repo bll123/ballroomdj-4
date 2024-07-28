@@ -539,6 +539,7 @@ sysvarsInit (const char *argv0, int flags)
   strlcpy (sysvars [SV_HOST_TICKET], "https://sourceforge.net", SV_MAX_SZ);
   strlcpy (sysvars [SV_HOST_WEB], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
   strlcpy (sysvars [SV_HOST_WIKI], "https://sourceforge.net", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_MOBMQ], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_DOWNLOAD], "/projects/ballroomdj4/files", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_FORUM], "/forum/index.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_REGISTER], "/bdj4register.php", SV_MAX_SZ);

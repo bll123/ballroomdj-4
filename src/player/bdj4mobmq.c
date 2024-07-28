@@ -96,9 +96,9 @@ main (int argc, char *argv[])
       mobmqStopWaitCallback, &mobmqData);
   progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
       mobmqClosingCallback, &mobmqData);
-  mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
+  mobmqData.port = bdjoptGetNum (OPT_P_MOBMQ_PORT);
 
-  tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
+  tval = bdjoptGetStr (OPT_P_MOBMQ_TITLE);
   mobmqData.title = NULL;
   if (tval != NULL) {
     mobmqData.title = mdstrdup (tval);

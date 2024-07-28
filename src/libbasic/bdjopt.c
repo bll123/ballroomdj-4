@@ -70,9 +70,13 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, DF_NORM },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, DF_NORM },
   { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,         VALUE_NUM, bdjoptConvMarqueeShow, DF_NORM },
-  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, convBoolean, DF_NORM },
-  { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL, DF_NORM },
-  { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_STR, NULL, DF_NORM },
+  /* the mobile mq enable switch was changed to mobmq-type */
+  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, convBoolean, DF_NO_WRITE },
+  { "MOBILEMQKEY",          OPT_P_MOBMQ_KEY,            VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQPORT",         OPT_P_MOBMQ_PORT,           VALUE_NUM, NULL, DF_NORM },
+  { "MOBILEMQTAG",          OPT_P_MOBMQ_TAG,            VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQTITLE",        OPT_P_MOBMQ_TITLE,          VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQTYPE",         OPT_P_MOBMQ_TYPE,           VALUE_NUM, bdjoptConvMobMQType, DF_NORM },
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, DF_NORM },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, DF_NORM },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
@@ -333,6 +337,15 @@ bdjoptInit (void)
       nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "Integrated VLC 4");
     }
   }
+
+  /* added 4.11.3, make sure it is set/converted properly */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_MOBMQ_TYPE) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_MOBMQ_TYPE, MOBMQ_TYPE_OFF);
+    if (nlistGetNum (bdjopt->bdjoptList, OPT_P_MOBILEMARQUEE) > 0) {
+      nlistSetNum (bdjopt->bdjoptList, OPT_P_MOBMQ_TYPE, MOBMQ_TYPE_LOCAL);
+    }
+    /* mobmq-tag and mobmq-key can be left unset */
+  }
 }
 
 void
@@ -539,6 +552,58 @@ bdjoptSave (void)
 }
 
 void
+bdjoptDump (void)
+{
+  for (int i = 0; i < OPTTYPE_MAX; ++i) {
+    if (i == OPTTYPE_QUEUE) {
+      continue;
+    }
+    datafileDumpKeyVal (bdjopt->shorttag [i], bdjopt->dfkeys [i],
+        bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
+  }
+  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    char  tmp [20];
+    int   offset;
+
+    snprintf (tmp, sizeof (tmp), "%s%d", bdjopt->shorttag [OPTTYPE_QUEUE], i);
+    offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
+    datafileDumpKeyVal (tmp, bdjopt->dfkeys [OPTTYPE_QUEUE],
+        bdjopt->dfcount [OPTTYPE_QUEUE], bdjopt->bdjoptList, offset);
+  }
+}
+
+bool
+bdjoptProfileExists (void)
+{
+  char      tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  return fileopFileExists (tbuff);
+}
+
+char *
+bdjoptGetProfileName (void)
+{
+  char        tbuff [MAXPATHLEN];
+  datafile_t  *df = NULL;
+  nlist_t     *dflist = NULL;
+  char        *pname = NULL;
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+  df = datafileAllocParse (bdjopt->tag [OPTTYPE_PROFILE], DFTYPE_KEY_VAL,
+      tbuff, bdjopt->dfkeys [OPTTYPE_PROFILE],
+      bdjopt->dfcount [OPTTYPE_PROFILE], DF_NO_OFFSET, NULL);
+  dflist = datafileGetList (df);
+  pname = mdstrdup (nlistGetStr (dflist, OPT_P_PROFILENAME));
+  datafileFree (df);
+  return pname;
+}
+
+/* the conversion routines are public so that the check suite can test them */
+
+void
 bdjoptConvBPM (datafileconv_t *conv)
 {
   bdjbpm_t   nbpm = BPM_BPM;
@@ -601,58 +666,6 @@ bdjoptConvClock (datafileconv_t *conv)
     conv->str = sval;
   }
 }
-
-void
-bdjoptDump (void)
-{
-  for (int i = 0; i < OPTTYPE_MAX; ++i) {
-    if (i == OPTTYPE_QUEUE) {
-      continue;
-    }
-    datafileDumpKeyVal (bdjopt->shorttag [i], bdjopt->dfkeys [i],
-        bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
-  }
-  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
-    char  tmp [20];
-    int   offset;
-
-    snprintf (tmp, sizeof (tmp), "%s%d", bdjopt->shorttag [OPTTYPE_QUEUE], i);
-    offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
-    datafileDumpKeyVal (tmp, bdjopt->dfkeys [OPTTYPE_QUEUE],
-        bdjopt->dfcount [OPTTYPE_QUEUE], bdjopt->bdjoptList, offset);
-  }
-}
-
-bool
-bdjoptProfileExists (void)
-{
-  char      tbuff [MAXPATHLEN];
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  return fileopFileExists (tbuff);
-}
-
-char *
-bdjoptGetProfileName (void)
-{
-  char        tbuff [MAXPATHLEN];
-  datafile_t  *df = NULL;
-  nlist_t     *dflist = NULL;
-  char        *pname = NULL;
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  df = datafileAllocParse (bdjopt->tag [OPTTYPE_PROFILE], DFTYPE_KEY_VAL,
-      tbuff, bdjopt->dfkeys [OPTTYPE_PROFILE],
-      bdjopt->dfcount [OPTTYPE_PROFILE], DF_NO_OFFSET, NULL);
-  dflist = datafileGetList (df);
-  pname = mdstrdup (nlistGetStr (dflist, OPT_P_PROFILENAME));
-  datafileFree (df);
-  return pname;
-}
-
-/* the conversion routines are public so that the check suite can test them */
 
 void
 bdjoptConvFadeType (datafileconv_t *conv)
@@ -780,6 +793,37 @@ bdjoptConvDanceselMethod (datafileconv_t *conv)
     conv->str = sval;
   }
 }
+
+void
+bdjoptConvMobMQType (datafileconv_t *conv)
+{
+  int   type = MOBMQ_TYPE_LOCAL;
+  char  *sval = NULL;
+
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
+
+    if (strcmp (conv->str, "off") == 0) {
+      type = MOBMQ_TYPE_OFF;
+    }
+    if (strcmp (conv->str, "local") == 0) {
+      type = MOBMQ_TYPE_LOCAL;
+    }
+    if (strcmp (conv->str, "internet") == 0) {
+      type = MOBMQ_TYPE_INTERNET;
+    }
+    conv->num = type;
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
+    switch (conv->num) {
+      case MOBMQ_TYPE_OFF: { sval = "off"; break; }
+      case MOBMQ_TYPE_LOCAL: { sval = "local"; break; }
+      case MOBMQ_TYPE_INTERNET: { sval = "internet"; break; }
+    }
+    conv->str = sval;
+  }
+}
+
 
 /* internal routines */
 

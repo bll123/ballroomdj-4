@@ -16,6 +16,13 @@ typedef enum {
 } bdjwritetags_t;
 
 typedef enum {
+  MOBMQ_TYPE_OFF,
+  MOBMQ_TYPE_LOCAL,
+  MOBMQ_TYPE_INTERNET,
+  MOBMQ_TYPE_MAX,
+} bdjmobmqtype_t;
+
+typedef enum {
   MARQUEE_SHOW_OFF,
   MARQUEE_SHOW_MINIMIZE,
   MARQUEE_SHOW_VISIBLE,
@@ -82,9 +89,12 @@ typedef enum {
   OPT_P_DEFAULTVOLUME,
   OPT_P_FADETYPE,
   OPT_P_MARQUEE_SHOW,
-  OPT_P_MOBILEMARQUEE,
-  OPT_P_MOBILEMQPORT,
-  OPT_P_MOBILEMQTITLE,
+  OPT_P_MOBILEMARQUEE,       // no longer in use, replaced with mobmq-type
+  OPT_P_MOBMQ_KEY,
+  OPT_P_MOBMQ_PORT,
+  OPT_P_MOBMQ_TAG,
+  OPT_P_MOBMQ_TITLE,
+  OPT_P_MOBMQ_TYPE,
   OPT_P_MQ_ACCENT_COL,
   OPT_P_MQ_INFO_COL,
   OPT_P_MQQLEN,
@@ -149,14 +159,18 @@ void    bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq);
 void    bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq);
 void    bdjoptDeleteProfile (void);
 void    bdjoptSave (void);
+void    bdjoptDump (void);
+bool    bdjoptProfileExists (void);
+char    * bdjoptGetProfileName (void);
+
+/* the conversion routines are public so that the check suite can test them */
 void    bdjoptConvBPM (datafileconv_t *conv);
 void    bdjoptConvClock (datafileconv_t *conv);
 void    bdjoptConvFadeType (datafileconv_t *conv);
 void    bdjoptConvWriteTags (datafileconv_t *conv);
 void    bdjoptConvMarqueeShow (datafileconv_t *conv);
 void    bdjoptConvDanceselMethod (datafileconv_t *conv);
-void    bdjoptDump (void);
-bool    bdjoptProfileExists (void);
-char    * bdjoptGetProfileName (void);
+void    bdjoptConvMobMQType (datafileconv_t *conv);
+
 
 #endif /* INC_BDJOPT_H */

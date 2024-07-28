@@ -178,7 +178,7 @@ main (int argc, char *argv[])
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_TAGS, 30, 100);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_DANCE, 30, 50);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_MMQ_TITLE, 20, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_MOBMQ_TITLE, 20, 100);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PROFILE_NAME, 20, 30);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_COMPLETE_MSG, 20, 30);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_QUEUE_NM, 20, 30);
