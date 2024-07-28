@@ -46,15 +46,21 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
 void
 websrvFree (websrv_t *websrv)
 {
-  if (websrv != NULL) {
-    mg_mgr_free (&websrv->mgr);
-    mdfree (websrv);
+  if (websrv == NULL) {
+    return;
   }
+
+  mg_mgr_free (&websrv->mgr);
+  mdfree (websrv);
 }
 
 void
 websrvProcess (websrv_t *websrv)
 {
+  if (websrv == NULL) {
+    return;
+  }
+
   mg_mgr_poll (&websrv->mgr, 10);
 }
 

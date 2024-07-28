@@ -87,6 +87,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_HOST_TICKET] = { "HOST_TICKET" },
   [SV_HOST_WEB] = { "HOST_WEB" },
   [SV_HOST_WIKI] = { "HOST_WIKI" },
+  [SV_HOST_MOBMQ] = { "HOST_MOBMQ" },
   [SV_LOCALE] = { "LOCALE" },
   [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
   [SV_LOCALE_ORIG_SHORT] = { "LOCALE_ORIG_SHORT" },
@@ -118,6 +119,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_URI_SUPPORTMSG] = { "URI_SUPPORTMSG" },
   [SV_URI_TICKET] = { "URI_TICKET" },
   [SV_URI_WIKI] = { "URI_WIKI" },
+  [SV_URI_MOBMQ_HTML] = { "URI_MOBMQ_HTML" },
+  [SV_URI_MOBMQ_PHP] = { "URI_MOBMQ_PHP" },
   [SV_USER_AGENT] = { "USER_AGENT" },
   [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
@@ -546,6 +549,8 @@ sysvarsInit (const char *argv0, int flags)
   strlcpy (sysvars [SV_URI_SUPPORTMSG], "/bdj4support.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_TICKET], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_WIKI], "/p/ballroomdj4/wiki/Home", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ_HTML], "/bdj4marquee.html", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ_PHP], "/bdj4marquee.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {

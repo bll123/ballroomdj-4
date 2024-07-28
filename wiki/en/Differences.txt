@@ -18,7 +18,6 @@ __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
 * Playlist: Marquee message.
 * Player: Marquee message.
 * Player: Changing the gap dynamically.
-* Mobile Marquee: internet mode.
 * Built-in Help
 <br>Keeping two help sources up to date (built-in and wiki) is difficult.
 I prefer to only have one.  Only the wiki will be be supported.

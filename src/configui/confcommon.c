@@ -141,8 +141,9 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
         bdjoptGetNum (OPT_P_MOBMQ_PORT));
   }
   if (type == MOBMQ_TYPE_INTERNET) {
-    snprintf (uridisp, sizeof (uridisp), "%s/bdj4marquee.php?tag=%s",
-        sysvarsGetStr (SV_HOST_MOBMQ), bdjoptGetStr (OPT_P_MOBMQ_TAG));
+    snprintf (uridisp, sizeof (uridisp), "%s/%s?tag=%s",
+        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_HTML),
+        bdjoptGetStr (OPT_P_MOBMQ_TAG));
   }
 
   if (type != MOBMQ_TYPE_OFF) {

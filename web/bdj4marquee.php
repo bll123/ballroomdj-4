@@ -14,9 +14,7 @@ if (isset($_POST['key']) && $_POST['key'] != '73459734') {
 }
 
 # if the mobmq-key is present, there must be marquee data
-if (isset($_POST['mobmqkey']) &&
-   ! (isset($_POST['res']) || isset($_POST['mqdata']))
-   ) {
+if (isset($_POST['mobmqkey']) && ! isset($_POST['mqdata'])) {
   echo 'NG3';
   exit (0);
 }
@@ -29,7 +27,7 @@ if (isset($_POST['mobmqkey'])) {
 $md = 'bdj4mqdata';
 $nfn = $md . '/' . $tag;
 $kfn = $md . '/' . $tag . '.key';
-$kres = '';
+$mqdata = '';
 $secured = 'F';
 
 # if the mobmq-key is present, check and see if there is a .key file
@@ -58,17 +56,14 @@ header ("Expires: 0");
 
 if (isset($_POST['mobmqkey'])) {
   if ($secured == 'T') {
-    if (isset($_POST['res'])) {
-      $res = $_POST['res'];
-    }
     if (isset($_POST['mqdata'])) {
-      $res = $_POST['mqdata'];
+      $mqdata = $_POST['mqdata'];
     }
 
     $tfn = $nfn . '.new';
 
     $rc = 'NG6';
-    if (file_put_contents ($tfn, $res) !== FALSE) {
+    if (file_put_contents ($tfn, $mqdata) !== FALSE) {
       if (rename ($tfn, $nfn)) {
         $rc = 'OK';
       }

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- VERSION 3 -->
-<!-- 2023-11-28 -->
+<!-- VERSION 4 -->
+<!-- 2024-7-28 -->
 <html>
 <head>
   <title></title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="Description" content="BallroomDJ Marquee">
+  <meta name="Description" content="BallroomDJ 4 Marquee">
   <meta http-equiv="Cache-Control" content="no-store, max-age=0, no-cache">
   <style type="text/css">
     body {
@@ -175,7 +175,7 @@ bdj.doUpdate = function () {
     }
   };
   if (tag) {
-    xhr.open('GET', '/marquee4.php?v=2&tag='+tag, true);
+    xhr.open('GET', '/bdj4marquee.php?tag='+tag, true);
   } else {
     xhr.open('GET', '/mmupdate', true);
   }
