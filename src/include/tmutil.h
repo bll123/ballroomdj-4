@@ -14,13 +14,14 @@
  #define BDJ_TYPEDEF_USECONDS 1
 #endif
 
-enum {
+typedef enum {
   TM_CLOCK_ISO,
   TM_CLOCK_LOCAL,
   TM_CLOCK_TIME_12,
   TM_CLOCK_TIME_24,
   TM_CLOCK_OFF,
-};
+  TM_CLOCK_MAX,
+} bdjtmclock_t;
 
 enum {
   /* this is just a very large number so that the timer won't pop */

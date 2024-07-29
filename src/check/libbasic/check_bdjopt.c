@@ -30,7 +30,7 @@ START_TEST(bdjopt_conv_bpm)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_bpm");
   mdebugSubTag ("bdjopt_conv_bpm");
 
-  for (int i = BPM_BPM; i <= BPM_MPM; ++i) {
+  for (int i = BPM_BPM; i < BPM_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvBPM (&conv);
@@ -51,7 +51,7 @@ START_TEST(bdjopt_conv_clock)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_bpm");
   mdebugSubTag ("bdjopt_conv_bpm");
 
-  for (int i = TM_CLOCK_ISO; i <= TM_CLOCK_OFF; ++i) {
+  for (int i = TM_CLOCK_ISO; i < TM_CLOCK_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvClock (&conv);
@@ -72,7 +72,7 @@ START_TEST(bdjopt_conv_fadetype)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_fadetype");
   mdebugSubTag ("bdjopt_conv_fadetype");
 
-  for (int i = FADETYPE_EXPONENTIAL_SINE; i <= FADETYPE_TRIANGLE; ++i) {
+  for (int i = FADETYPE_EXPONENTIAL_SINE; i < FADETYPE_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvFadeType (&conv);
@@ -93,7 +93,7 @@ START_TEST(bdjopt_conv_writetags)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_writetags");
   mdebugSubTag ("bdjopt_conv_writetags");
 
-  for (int i = WRITE_TAGS_NONE; i <= WRITE_TAGS_ALL; ++i) {
+  for (int i = WRITE_TAGS_NONE; i < WRITE_TAGS_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvWriteTags (&conv);
@@ -114,7 +114,7 @@ START_TEST(bdjopt_conv_mqshow)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_mqshow");
   mdebugSubTag ("bdjopt_conv_mqshow");
 
-  for (int i = MARQUEE_SHOW_OFF; i <= MARQUEE_SHOW_VISIBLE; ++i) {
+  for (int i = MARQUEE_SHOW_OFF; i < MARQUEE_SHOW_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvMarqueeShow (&conv);
@@ -135,7 +135,7 @@ START_TEST(bdjopt_conv_dancesel_method)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_dancesel_method");
   mdebugSubTag ("bdjopt_conv_dancesel_method");
 
-  for (int i = DANCESEL_METHOD_WINDOWED; i <= DANCESEL_METHOD_WINDOWED; ++i) {
+  for (int i = DANCESEL_METHOD_WINDOWED; i < DANCESEL_METHOD_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
     bdjoptConvDanceselMethod (&conv);
@@ -143,6 +143,27 @@ START_TEST(bdjopt_conv_dancesel_method)
     ck_assert_ptr_nonnull (conv.str);
     conv.invt = VALUE_STR;
     bdjoptConvDanceselMethod (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_NUM);
+    ck_assert_int_eq (conv.num, i);
+  }
+}
+END_TEST
+
+START_TEST(bdjopt_conv_mobmq)
+{
+  datafileconv_t conv;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_mobmq");
+  mdebugSubTag ("bdjopt_conv_mobmq");
+
+  for (int i = MOBMQ_TYPE_OFF; i < MOBMQ_TYPE_MAX; ++i) {
+    conv.invt = VALUE_NUM;
+    conv.num = i;
+    bdjoptConvMobMQType (&conv);
+    ck_assert_int_eq (conv.outvt, VALUE_STR);
+    ck_assert_ptr_nonnull (conv.str);
+    conv.invt = VALUE_STR;
+    bdjoptConvMobMQType (&conv);
     ck_assert_int_eq (conv.outvt, VALUE_NUM);
     ck_assert_int_eq (conv.num, i);
   }
@@ -336,6 +357,7 @@ bdjopt_suite (void)
   tcase_add_test (tc, bdjopt_conv_writetags);
   tcase_add_test (tc, bdjopt_conv_mqshow);
   tcase_add_test (tc, bdjopt_conv_dancesel_method);
+  tcase_add_test (tc, bdjopt_conv_mobmq);
   tcase_add_test (tc, bdjopt_get);
   tcase_add_test (tc, bdjopt_set);
   tcase_add_test (tc, bdjopt_save);

@@ -256,7 +256,7 @@ tmutilDisp (char *buff, size_t sz, int type)
       strlcpy (buff, tmp, sz);
       mdfree (tmp);
     }
-# if _lib_GetDateFormatEx
+# if _lib_GetTimeFormatEx
     GetTimeFormatEx (LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, NULL,
         NULL, wtmp, 200);
     tmp = osFromWideChar (wtmp);

@@ -13,6 +13,7 @@ typedef enum {
   WRITE_TAGS_NONE,
   WRITE_TAGS_BDJ_ONLY,
   WRITE_TAGS_ALL,
+  WRITE_TAGS_MAX,
 } bdjwritetags_t;
 
 typedef enum {
@@ -26,6 +27,7 @@ typedef enum {
   MARQUEE_SHOW_OFF,
   MARQUEE_SHOW_MINIMIZE,
   MARQUEE_SHOW_VISIBLE,
+  MARQUEE_SHOW_MAX,
 } bdjmarqueeshow_t;
 
 typedef enum {
@@ -35,16 +37,19 @@ typedef enum {
   FADETYPE_QUADRATIC,
   FADETYPE_QUARTER_SINE,
   FADETYPE_TRIANGLE,
+  FADETYPE_MAX,
 } bdjfadetype_t;
 
 typedef enum {
   BPM_BPM,
   BPM_MPM,
+  BPM_MAX,
 } bdjbpm_t;
 
 /* expected-count removed 4.3.2.4 */
 enum {
   DANCESEL_METHOD_WINDOWED,
+  DANCESEL_METHOD_MAX,
 };
 
 typedef enum {
