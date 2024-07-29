@@ -486,16 +486,14 @@ static int
 bpmcounterMainLoop (void *tbpmcounter)
 {
   bpmcounter_t  *bpmcounter = tbpmcounter;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
-  if (! stop) {
-    uiUIProcessEvents ();
-  }
+  uiUIProcessEvents ();
 
   if (! progstateIsRunning (bpmcounter->progstate)) {
     progstateProcess (bpmcounter->progstate);
     if (progstateCurrState (bpmcounter->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

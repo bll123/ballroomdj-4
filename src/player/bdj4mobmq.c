@@ -286,13 +286,13 @@ mobmqProcessing (void *udata)
 {
   mobmqdata_t   *mobmqdata = udata;
   websrv_t      *websrv = mobmqdata->websrv;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
 
   if (! progstateIsRunning (mobmqdata->progstate)) {
     progstateProcess (mobmqdata->progstate);
     if (progstateCurrState (mobmqdata->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (mobmqdata->progstate);

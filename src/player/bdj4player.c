@@ -572,12 +572,12 @@ static int
 playerProcessing (void *udata)
 {
   playerdata_t  *playerData = udata;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
   if (! progstateIsRunning (playerData->progstate)) {
     progstateProcess (playerData->progstate);
     if (progstateCurrState (playerData->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (playerData->progstate);

@@ -413,14 +413,14 @@ static int
 dbupdateProcessing (void *udata)
 {
   dbupdate_t  *dbupdate = (dbupdate_t *) udata;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
   char        *msg = NULL;
 
 
   if (! progstateIsRunning (dbupdate->progstate)) {
     progstateProcess (dbupdate->progstate);
     if (progstateCurrState (dbupdate->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (dbupdate->progstate);

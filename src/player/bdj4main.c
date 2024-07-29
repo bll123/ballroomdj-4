@@ -655,12 +655,12 @@ static int
 mainProcessing (void *udata)
 {
   maindata_t  *mainData = udata;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
 
   if (! progstateIsRunning (mainData->progstate)) {
     progstateProcess (mainData->progstate);
     if (progstateCurrState (mainData->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (mainData->progstate);

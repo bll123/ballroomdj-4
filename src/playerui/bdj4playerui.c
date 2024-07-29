@@ -488,8 +488,11 @@ pluiClosingCallback (void *udata, programstate_t programState)
   datafileFree (plui->optiondf);
 
   uiplayerFree (plui->uiplayer);
+  plui->uiplayer = NULL;
   uimusicqFree (plui->uimusicq);
+  plui->uimusicq = NULL;
   uisongselFree (plui->uisongsel);
+  plui->uisongsel = NULL;
 
   logProcEnd ("");
   return STATE_FINISHED;
@@ -823,14 +826,14 @@ static int
 pluiMainLoop (void *tplui)
 {
   playerui_t  *plui = tplui;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
 
   uiUIProcessEvents ();
 
   if (! progstateIsRunning (plui->progstate)) {
     progstateProcess (plui->progstate);
     if (progstateCurrState (plui->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

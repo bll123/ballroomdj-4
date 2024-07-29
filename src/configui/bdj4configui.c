@@ -506,9 +506,7 @@ confuiMainLoop (void *tconfui)
   configui_t    *confui = tconfui;
   int           stop = SOCKH_CONTINUE;
 
-  if (! stop) {
-    uiUIProcessEvents ();
-  }
+  uiUIProcessEvents ();
 
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);

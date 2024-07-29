@@ -53,7 +53,7 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
       }
     }
     tdone = processFunc (userData);
-    if (tdone) {
+    if (tdone == SOCKH_STOP) {
       rc = sockWaitClosed (sockserver->si);
       if (rc) {
         done = MAIN_FINISH;

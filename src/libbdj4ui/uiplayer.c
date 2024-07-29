@@ -204,25 +204,32 @@ uiplayerInit (const char *tag, progstate_t *progstate,
 void
 uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb)
 {
+  if (uiplayer == NULL) {
+    return;
+  }
+
   uiplayer->musicdb = musicdb;
 }
 
 void
 uiplayerFree (uiplayer_t *uiplayer)
 {
-  logProcBegin ();
-  if (uiplayer != NULL) {
-    for (int i = 0; i < UIPL_CB_MAX; ++i) {
-      callbackFree (uiplayer->callbacks [i]);
-    }
-    for (int i = 0; i < UIPL_IMG_MAX; ++i) {
-      uiwcontFree (uiplayer->images [i]);
-    }
-    for (int i = 0; i < UIPL_W_MAX; ++i) {
-      uiwcontFree (uiplayer->wcont [i]);
-    }
-    mdfree (uiplayer);
+  if (uiplayer == NULL) {
+    return;
   }
+
+  logProcBegin ();
+
+  for (int i = 0; i < UIPL_CB_MAX; ++i) {
+    callbackFree (uiplayer->callbacks [i]);
+  }
+  for (int i = 0; i < UIPL_IMG_MAX; ++i) {
+    uiwcontFree (uiplayer->images [i]);
+  }
+  for (int i = 0; i < UIPL_W_MAX; ++i) {
+    uiwcontFree (uiplayer->wcont [i]);
+  }
+  mdfree (uiplayer);
   logProcEnd ("");
 }
 
@@ -240,6 +247,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcont_t       *szgrpScaleButton = NULL;
   uiwcont_t       *szgrpStatus = NULL;
   bool            showspd = false;
+
+  if (uiplayer == NULL) {
+    return NULL;
+  }
 
   logProcBegin ();
 
@@ -576,6 +587,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 void
 uiplayerMainLoop (uiplayer_t *uiplayer)
 {
+  if (uiplayer == NULL) {
+    return;
+  }
+
   if (mstimeCheck (&uiplayer->volumeLockTimeout)) {
     mstimeset (&uiplayer->volumeLockTimeout, TM_TIMER_OFF);
     uiplayer->volumeLock = false;
@@ -653,6 +668,10 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   uiplayer_t    *uiplayer = udata;
   char          *targs = NULL;
+
+  if (uiplayer == NULL) {
+    return 0;
+  }
 
   logProcBegin ();
   if (args != NULL) {

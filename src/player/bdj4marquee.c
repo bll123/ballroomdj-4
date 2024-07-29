@@ -486,16 +486,14 @@ static int
 marqueeMainLoop (void *tmarquee)
 {
   marquee_t   *marquee = tmarquee;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
 
-  if (! stop) {
-    uiUIProcessEvents ();
-  }
+  uiUIProcessEvents ();
 
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
     if (progstateCurrState (marquee->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
