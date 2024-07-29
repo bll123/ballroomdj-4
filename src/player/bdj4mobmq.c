@@ -412,7 +412,6 @@ mobmqWebResponseCallback (void *userdata, const char *resp, size_t len)
 
   mobmqwebresp->webresponse = resp;
   mobmqwebresp->webresplen = len;
-fprintf (stderr, "mobmq: web-resp: %.*s\n", (int) len, resp);
   return;
 }
 

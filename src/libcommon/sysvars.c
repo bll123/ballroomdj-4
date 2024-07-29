@@ -549,8 +549,8 @@ sysvarsInit (const char *argv0, int flags)
   strlcpy (sysvars [SV_URI_SUPPORTMSG], "/bdj4support.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_TICKET], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_WIKI], "/p/ballroomdj4/wiki/Home", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_MOBMQ_HTML], "/bdj4marquee.html", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_MOBMQ_PHP], "/bdj4marquee.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ_HTML], "bdj4marquee.html", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ_PHP], "bdj4marquee.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {

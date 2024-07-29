@@ -168,6 +168,8 @@ bdj.updateData = function (data) {
 }
 bdj.doUpdate = function () {
   var tag = null;
+  var urlParams = new URLSearchParams(window.location.search);
+  tag = urlParams.get('mobmqtag');
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -175,7 +177,7 @@ bdj.doUpdate = function () {
     }
   };
   if (tag) {
-    xhr.open('GET', '/bdj4marquee.php?tag='+tag, true);
+    xhr.open('GET', '/bdj4marquee.php?mobmqtag='+tag, true);
   } else {
     xhr.open('GET', '/mmupdate', true);
   }

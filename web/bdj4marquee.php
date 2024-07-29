@@ -43,7 +43,7 @@ if (isset($_POST['mobmqkey'])) {
     $secured = 'T';
   } else {
     /* if the .key file is not present, write the key out to the file */
-    if (file_put_contents ($kfn, $key) === false) {
+    if (file_put_contents ($kfn, $_POST['mobmqkey']) === false) {
       echo 'NG5';
       exit (0);
     }
