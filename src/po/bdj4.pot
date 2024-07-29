@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 06:03-0700\n"
+"POT-Creation-Date: 2024-07-28 17:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -715,10 +715,6 @@ msgstr ""
 msgid "Edit Status"
 msgstr ""
 
-#. CONTEXT: configuration: enable mobile marquee
-msgid "Enable Mobile Marquee"
-msgstr ""
-
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr ""
@@ -959,6 +955,10 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr ""
+
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
 msgstr ""
@@ -1019,6 +1019,10 @@ msgstr ""
 
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
+msgstr ""
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
 msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
@@ -1255,6 +1259,7 @@ msgid "Notes"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
 msgid "Off"
 msgstr ""
 
@@ -1287,6 +1292,7 @@ msgstr ""
 msgid "Paso Doble"
 msgstr ""
 
+#. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr ""
@@ -1907,6 +1913,10 @@ msgstr ""
 msgid "Switch Queue When Empty"
 msgstr ""
 
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr ""
+
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
@@ -2001,6 +2011,7 @@ msgid "Truncate"
 msgstr ""
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr ""
 
