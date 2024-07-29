@@ -6,6 +6,10 @@
 
 **4.11.3 2024-7---**
 
+-->
+
+**4.11.3 2024-7-29**
+
 * Bug Fixes:
     * Linux/GStreamer: Possible fix for incorrect volume at initialization.
     * Management: Fix incorrect selection handling.
@@ -14,8 +18,6 @@
     * Player: Queue Dance: Preserve last selection.
 * New Features:
     * Mobile Marquee: Internet mode.
-
--->
 
 **4.11.2 2024-7-24**
 
@@ -997,4 +999,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_
+<br>_(Updated 2024-07-29 16:55:43; BDJ4 version 4.11.3)_

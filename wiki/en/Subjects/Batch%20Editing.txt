@@ -147,4 +147,4 @@ __Apply&nbsp;Edit&nbsp;All__ from the __Actions__ menu.
 Only the songs selected with control-click will be updated.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-19 06:42:08; BDJ4 version 4.11.0)_
+<br>_(Updated 2024-07-29 16:55:43; BDJ4 version 4.11.3)_

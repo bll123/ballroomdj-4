@@ -143,4 +143,4 @@ new song list.
 <br>[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-22 08:03:37; BDJ4 version 4.11.1)_
+<br>_(Updated 2024-07-29 16:55:43; BDJ4 version 4.11.3)_
