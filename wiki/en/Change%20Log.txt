@@ -4,13 +4,16 @@
 
 <!--
 
-**4.11.3 2024-7-28**
+**4.11.3 2024-7---**
 
 * Bug Fixes:
     * Linux/GStreamer: Attempt to fix incorrect volume at initialization.
     * Management: Fix incorrect selection handling.
-    * Player: Prevent a possible crash.
+    * Marquee: Fix vertical alignment of song information.
+    * Player: Prevent a potential crash.
     * Player: Queue Dance: Preserve last selection.
+* New Features:
+    * Mobile Marquee: Internet mode.
 
 -->
 

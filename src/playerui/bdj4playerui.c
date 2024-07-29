@@ -469,6 +469,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     uiwcontFree (plui->wcont [i]);
+    plui->wcont [i] = NULL;
   }
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);

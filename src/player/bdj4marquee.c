@@ -63,6 +63,7 @@ enum {
   MQ_W_INFOBOX,
   MQ_W_SEP,
   MQ_W_COUNTDOWN_TIMER,
+  MQ_W_INFO_SZGRP,
   MQ_W_INFO_DISP_A,
   MQ_W_INFO_DISP_B,
   MQ_W_INFO_DISP_C,
@@ -412,6 +413,9 @@ marqueeBuildUI (marquee_t *marquee)
   marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
 
   uiwcontFree (hbox);
+
+  /* info line */
+
   hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizFill (hbox);
   uiWidgetExpandHoriz (hbox);
@@ -421,6 +425,7 @@ marqueeBuildUI (marquee_t *marquee)
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
     uiwidgetp = uiCreateLabel ("");
     uiWidgetAlignHorizStart (uiwidgetp);
+    uiWidgetAlignVertBaseline (uiwidgetp);
     uiWidgetDisableFocus (uiwidgetp);
     if ((i - MQ_W_INFO_DISP_A) % 2 == 0) {
       uiLabelEllipsizeOn (uiwidgetp);

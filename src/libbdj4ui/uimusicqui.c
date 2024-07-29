@@ -718,14 +718,8 @@ static bool
 uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count)
 {
   uimusicq_t    *uimusicq = udata;
-  mq_internal_t *mqint;
-  int           mqidx;
 
   uimusicqQueueDanceProcess (uimusicq, idx, count);
-
-  mqidx = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [mqidx].mqInternalData;
-
   return UICB_CONT;
 }
 
