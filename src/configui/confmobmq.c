@@ -34,7 +34,7 @@ confuiInitMobileMarquee (confuigui_t *gui)
   confuiSpinboxTextInitDataNum (gui, "cu-mobmq-type",
       CONFUI_SPINBOX_MOBMQ_TYPE,
       /* CONTEXT: configuration: mobile marquee type: off */
-      MOBMQ_TYPE_LOCAL, _("Off"),
+      MOBMQ_TYPE_OFF, _("Off"),
       /* CONTEXT: configuration: mobile marquee type: local */
       MOBMQ_TYPE_LOCAL, _("Local"),
       /* CONTEXT: configuration: mobile marquee type: internet */
