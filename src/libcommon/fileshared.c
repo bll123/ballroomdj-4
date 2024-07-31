@@ -25,6 +25,7 @@
 #include "fileshared.h"
 #include "mdebug.h"
 #include "osutils.h"
+#include "sysvars.h"
 
 enum {
   FLUSH_COUNT = 20,
@@ -124,7 +125,10 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
   rc = fwrite (data, len, 1, fhandle->fh);
 #endif
 
-  if (fhandle->count == FLUSH_COUNT) {
+  /* on linux, flushing each time is reasonably fast */
+  /* on MacOS, flushing each time is very slow */
+  /* windows has not been tested */
+  if (isLinux () || fhandle->count == FLUSH_COUNT) {
 #if _lib_FlushFileBuffers
     FlushFileBuffers (fhandle->handle);
 #else
