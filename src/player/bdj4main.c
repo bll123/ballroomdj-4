@@ -322,10 +322,12 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->playlistQueue [i] != NULL) {
       queueFree (mainData->playlistQueue [i]);
+      mainData->playlistQueue [i] = NULL;
     }
   }
   if (mainData->musicQueue != NULL) {
     musicqFree (mainData->musicQueue);
+    mainData->musicQueue = NULL;
   }
   slistFree (mainData->announceList);
   dataFree (mainData->mobmqUserkey);
@@ -653,12 +655,12 @@ static int
 mainProcessing (void *udata)
 {
   maindata_t  *mainData = udata;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
 
   if (! progstateIsRunning (mainData->progstate)) {
     progstateProcess (mainData->progstate);
     if (progstateCurrState (mainData->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (mainData->progstate);
@@ -711,7 +713,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags, NULL);
-    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
+    if (bdjoptGetNum (OPT_P_MOBMQ_TYPE) != MOBMQ_TYPE_OFF) {
       mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
           ROUTE_MOBILEMQ, "bdj4mobmq", flags, NULL);
     }
@@ -747,7 +749,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
     if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
       connConnect (mainData->conn, ROUTE_PLAYER);
     }
-    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
+    if (bdjoptGetNum (OPT_P_MOBMQ_TYPE) != MOBMQ_TYPE_OFF) {
       if (! connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
         connConnect (mainData->conn, ROUTE_MOBILEMQ);
       }
@@ -769,7 +771,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
   if (connIsConnected (mainData->conn, ROUTE_PLAYER)) {
     ++connCount;
   }
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
+  if (bdjoptGetNum (OPT_P_MOBMQ_TYPE) != MOBMQ_TYPE_OFF) {
     ++connMax;
     if (connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
       ++connCount;
@@ -978,7 +980,7 @@ mainSendMarqueeData (maindata_t *mainData)
   logProcBegin ();
   mainData->marqueeChanged = false;
 
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
+  if (bdjoptGetNum (OPT_P_MOBMQ_TYPE) != MOBMQ_TYPE_OFF) {
     mobmarqueeactive = true;
     jbuff = mdmalloc (BDJMSG_MAX);
     jbuff [0] = '\0';
@@ -1006,12 +1008,15 @@ mainSendMarqueeData (maindata_t *mainData)
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   mqidx = mainData->musicqPlayIdx;
-  musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  musicqLen = 0;
+  if (mainData->musicQueue != NULL) {
+    musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  }
 
   if (mobmarqueeactive) {
     const char  *title = NULL;
 
-    title = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
+    title = bdjoptGetStr (OPT_P_MOBMQ_TITLE);
     if (title == NULL) {
       title = "";
     }
@@ -1069,10 +1074,16 @@ mainSendMarqueeData (maindata_t *mainData)
     if (docheck && mainData->switchQueueWhenEmpty) {
       lastmqidx = mqidx;
       mqidx = musicqNextQueue (mqidx);
-      musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+      musicqLen = 0;
+      if (mainData->musicQueue != NULL) {
+        musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+      }
       while (mqidx != mainData->musicqPlayIdx && musicqLen == 0) {
         mqidx = musicqNextQueue (mqidx);
-        musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+        musicqLen = 0;
+        if (mainData->musicQueue != NULL) {
+          musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+        }
       }
       if (mqidx != mainData->musicqPlayIdx) {
         /* offset 0 is not active if this is not the queue set for playback */
@@ -2562,7 +2573,7 @@ mainSendFinished (maindata_t *mainData)
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_FINISHED, NULL);
   }
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
+  if (bdjoptGetNum (OPT_P_MOBMQ_TYPE) != MOBMQ_TYPE_OFF) {
     connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_FINISHED, NULL);
   }
 }

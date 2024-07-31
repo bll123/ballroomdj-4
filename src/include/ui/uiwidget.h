@@ -29,6 +29,7 @@ void  uiWidgetAlignVertFill (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertStart (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertCenter (uiwcont_t *uiwidget);
 void  uiWidgetAlignVertEnd (uiwcont_t *uiwidget);
+void  uiWidgetAlignVertBaseline (uiwcont_t *uiwidget);
 void  uiWidgetDisableFocus (uiwcont_t *uiwidget);
 void  uiWidgetEnableFocus (uiwcont_t *uiwidget);
 void  uiWidgetGrabFocus (uiwcont_t *uiwidget);

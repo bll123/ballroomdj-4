@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
+#include <math.h>
 
 #if _hdr_gst_gst
 
@@ -93,22 +94,31 @@ gstiInit (const char *plinm)
   gsti->rate = 1.0;
   gsti->isstopping = false;
 
+  gsti->mainctx = g_main_context_default ();
+  gstiRunOnce (gsti);
+
   gsti->pipeline = gst_element_factory_make ("playbin", "play");
   mdextalloc (gsti->pipeline);
+  gstiRunOnce (gsti);
+
   g_object_get (G_OBJECT (gsti->pipeline), "flags", &flags, NULL);
   flags |= GST_PLAY_FLAG_AUDIO;
   flags &= ~GST_PLAY_FLAG_VIDEO;
   flags &= ~GST_PLAY_FLAG_TEXT;
   flags &= ~GST_PLAY_FLAG_VIS;
   g_object_set (G_OBJECT (gsti->pipeline), "flags", flags, NULL);
+  gstiRunOnce (gsti);
+
   g_object_set (G_OBJECT (gsti->pipeline), "volume", 1.0, NULL);
+  gstiRunOnce (gsti);
 
   scaletempo = gst_element_factory_make ("scaletempo", "scaletempo");
   convert = gst_element_factory_make ("audioconvert", "convert");
   resample = gst_element_factory_make ("audioresample", "resample");
   g_object_set (G_OBJECT (resample), "quality", 8, NULL);
-  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+  gstiRunOnce (gsti);
 
+  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
   sinkbin = gst_bin_new ("audio_sink_bin");
   gst_bin_add_many (GST_BIN (sinkbin), scaletempo, convert, resample, sink, NULL);
   gst_element_link_many (scaletempo, convert, resample, sink, NULL);
@@ -120,13 +130,11 @@ gstiInit (const char *plinm)
   gst_object_unref (pad);
 
   g_object_set (G_OBJECT (gsti->pipeline), "audio-sink", sinkbin, NULL);
+  gstiRunOnce (gsti);
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (gsti->pipeline));
   gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
   g_object_unref (bus);
-
-  gsti->mainctx = g_main_context_default ();
-
   gstiRunOnce (gsti);
 
   return gsti;
@@ -281,10 +289,11 @@ gstiStop (gsti_t *gsti)
   gsti->isstopping = true;
   g_object_set (G_OBJECT (gsti->pipeline), "volume", 0.0, NULL);
   gstiRunOnce (gsti);
+
   gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_READY);
   gstiWaitState (gsti, GST_STATE_READY);
-
   gstiRunOnce (gsti);
+
   g_object_set (G_OBJECT (gsti->pipeline), "volume", 1.0, NULL);
   gstiRunOnce (gsti);
 
@@ -353,6 +362,17 @@ gstiSetRate (gsti_t *gsti, double rate)
 
   gstiRunOnce (gsti);
   return rc;
+}
+
+int
+gstiGetVolume (gsti_t *gsti)
+{
+  double  dval;
+  int     val;
+
+  g_object_get (G_OBJECT (gsti->pipeline), "volume", &dval, NULL);
+  val = round (dval * 100.0);
+  return val;
 }
 
 

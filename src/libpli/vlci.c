@@ -541,6 +541,15 @@ vlcVersionCheck (void)
 
 /* for debugging */
 
+int
+vlcGetVolume (vlcdata_t *vlcdata)
+{
+  int     val;
+
+  val = libvlc_audio_get_volume (vlcdata->mp);
+  return val;
+}
+
 #if VLCDEBUG
 
 static void

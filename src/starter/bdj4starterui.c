@@ -788,21 +788,21 @@ int
 starterMainLoop (void *tstarter)
 {
   startui_t   *starter = tstarter;
-  int         stop = false;
+  int         stop = SOCKH_CONTINUE;
   /* support message handling */
   char        tbuff [MAXPATHLEN];
 
   uiUIProcessEvents ();
 
   if (gNewProfile) {
-    return true;
+    return SOCKH_STOP;
   }
 
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
     if (progstateCurrState (starter->progstate) == STATE_CLOSED) {
       gStopProgram = true;
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

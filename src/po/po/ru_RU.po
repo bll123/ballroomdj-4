@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-23\n"
+"PO-Revision-Date: 2024-07-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -717,10 +717,6 @@ msgstr "Редактировать списки песен"
 msgid "Edit Status"
 msgstr "Редактировать статус"
 
-#. CONTEXT: configuration: enable mobile marquee
-msgid "Enable Mobile Marquee"
-msgstr "Включить мобильный экран с дисплеем песен"
-
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr "Включить удаленное управление"
@@ -961,6 +957,10 @@ msgstr "Установка завершена."
 msgid "Installing %s."
 msgstr "Установка %s."
 
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr ""
+
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
 msgstr ""
@@ -1022,6 +1022,10 @@ msgstr "Загрузить"
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
 msgstr "Загружено из базы данных"
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
+msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
 msgid "Locale"
@@ -1259,6 +1263,7 @@ msgid "Notes"
 msgstr "Заметки"
 
 #. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
 msgid "Off"
 msgstr "Выкл"
 
@@ -1291,6 +1296,7 @@ msgstr "Другие файлы"
 msgid "Paso Doble"
 msgstr "Пасодобль"
 
+#. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "Пароль"
@@ -1911,6 +1917,10 @@ msgstr "обмен"
 msgid "Switch Queue When Empty"
 msgstr "Переключение очереди когда пусто"
 
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr ""
+
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
@@ -2005,6 +2015,7 @@ msgid "Truncate"
 msgstr "Усечение"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "Тип"
 

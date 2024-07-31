@@ -4,9 +4,25 @@
 
 <!--
 
-**4.11.3 2024-7---**
+**4.11.4 2024-7---**
 
 -->
+
+**4.11.3.1 2024-7-30**
+
+* Bug Fixes:
+    * Mobile Marquee: Fixed bug preventing it from being turned off (copy/paste error).
+
+**4.11.3 2024-7-29**
+
+* Bug Fixes:
+    * Linux/GStreamer: Possible fix for incorrect volume at initialization.
+    * Management: Fix incorrect selection handling.
+    * Marquee: Fix vertical alignment of song information.
+    * Player: Prevent a potential crash.
+    * Player: Queue Dance: Preserve last selection.
+* New Features:
+    * Mobile Marquee: Internet mode.
 
 **4.11.2 2024-7-24**
 
@@ -988,4 +1004,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-24 08:22:54; BDJ4 version 4.11.2)_
+<br>_(Updated 2024-07-30 06:47:56; BDJ4 version 4.11.3.1)_

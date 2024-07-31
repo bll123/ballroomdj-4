@@ -554,7 +554,7 @@ confuiLinkCallback (void *udata)
   int         widx = -1;
 
   if (gui->tablecurr == CONFUI_ID_MOBILE_MQ) {
-    widx = CONFUI_WIDGET_MMQ_QR_CODE;
+    widx = CONFUI_WIDGET_MOBMQ_QR_CODE;
   }
   if (gui->tablecurr == CONFUI_ID_REM_CONTROL) {
     widx = CONFUI_WIDGET_RC_QR_CODE;

@@ -26,7 +26,7 @@ typedef struct plidata {
   int               supported;
 } plidata_t;
 
-static void pliiWaitUntilPlaying (plidata_t *pliData);
+static void pliiWaitUntilPlaying (plidata_t *plidata);
 
 void
 pliiDesc (char **ret, int max)
@@ -40,41 +40,41 @@ pliiDesc (char **ret, int max)
 plidata_t *
 pliiInit (const char *plinm)
 {
-  plidata_t *pliData;
+  plidata_t *plidata;
 
-  pliData = mdmalloc (sizeof (plidata_t));
-  pliData->gsti = gstiInit (plinm);
-  pliData->state = PLI_STATE_STOPPED;
-  pliData->supported = PLI_SUPPORT_NONE;
-  pliData->supported |= PLI_SUPPORT_SEEK;
-  pliData->supported |= PLI_SUPPORT_SPEED;
+  plidata = mdmalloc (sizeof (plidata_t));
+  plidata->gsti = gstiInit (plinm);
+  plidata->state = PLI_STATE_STOPPED;
+  plidata->supported = PLI_SUPPORT_NONE;
+  plidata->supported |= PLI_SUPPORT_SEEK;
+  plidata->supported |= PLI_SUPPORT_SPEED;
 
-  return pliData;
+  return plidata;
 }
 
 void
-pliiFree (plidata_t *pliData)
+pliiFree (plidata_t *plidata)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  gstiFree (pliData->gsti);
-  pliiClose (pliData);
-  mdfree (pliData);
+  gstiFree (plidata->gsti);
+  pliiClose (plidata);
+  mdfree (plidata);
   gstiCleanup ();
 }
 
 void
-pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
+pliiMediaSetup (plidata_t *plidata, const char *mediaPath,
     const char *fullMediaPath, int sourceType)
 {
-  if (pliData == NULL || mediaPath == NULL) {
+  if (plidata == NULL || mediaPath == NULL) {
     return;
   }
 
-  gstiMedia (pliData->gsti, fullMediaPath, sourceType);
-  pliData->state = PLI_STATE_STOPPED;
+  gstiMedia (plidata->gsti, fullMediaPath, sourceType);
+  plidata->state = PLI_STATE_STOPPED;
 }
 
 void
@@ -85,167 +85,176 @@ pliiCleanup (void)
 }
 
 void
-pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
+pliiStartPlayback (plidata_t *plidata, ssize_t dpos, ssize_t speed)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  pliiPlay (pliData);
+  pliiPlay (plidata);
   if (dpos > 0 || speed != 100) {
     /* GStreamer must be in a paused or playing state to seek/set rate */
-    pliiWaitUntilPlaying (pliData);
+    pliiWaitUntilPlaying (plidata);
   }
   /* set the rate first */
   /* GStreamer can change the rate, but not the pitch */
-  /* pliiRate (pliData, speed); */
-  pliiSeek (pliData, dpos);
+  /* pliiRate (plidata, speed); */
+  pliiSeek (plidata, dpos);
 }
 
 void
-pliiPause (plidata_t *pliData)
+pliiPause (plidata_t *plidata)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  gstiPause (pliData->gsti);
-  pliData->state = PLI_STATE_PAUSED;
+  gstiPause (plidata->gsti);
+  plidata->state = PLI_STATE_PAUSED;
 }
 
 void
-pliiPlay (plidata_t *pliData)
+pliiPlay (plidata_t *plidata)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  gstiPlay (pliData->gsti);
-  pliData->state = PLI_STATE_PLAYING;
+  gstiPlay (plidata->gsti);
+  plidata->state = PLI_STATE_PLAYING;
 }
 
 void
-pliiStop (plidata_t *pliData)
+pliiStop (plidata_t *plidata)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  gstiStop (pliData->gsti);
-  pliData->state = PLI_STATE_STOPPED;
+  gstiStop (plidata->gsti);
+  plidata->state = PLI_STATE_STOPPED;
 }
 
 ssize_t
-pliiSeek (plidata_t *pliData, ssize_t pos)
+pliiSeek (plidata_t *plidata, ssize_t pos)
 {
   ssize_t   ret = pos;
 
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return pos;
   }
 
-  gstiSetPosition (pliData->gsti, pos);
+  gstiSetPosition (plidata->gsti, pos);
   return ret;
 }
 
 ssize_t
-pliiRate (plidata_t *pliData, ssize_t rate)
+pliiRate (plidata_t *plidata, ssize_t rate)
 {
   double    drate;
 
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return 100;
   }
 
   drate = (double) rate / 100.0;
-  gstiSetRate (pliData->gsti, drate);
+  gstiSetRate (plidata->gsti, drate);
   return rate;
 }
 
 void
-pliiClose (plidata_t *pliData)
+pliiClose (plidata_t *plidata)
 {
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return;
   }
 
-  pliData->state = PLI_STATE_STOPPED;
+  plidata->state = PLI_STATE_STOPPED;
 }
 
 ssize_t
-pliiGetDuration (plidata_t *pliData)
+pliiGetDuration (plidata_t *plidata)
 {
   ssize_t     duration = 0;
 
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return 0;
   }
 
-  duration = gstiGetDuration (pliData->gsti);
+  duration = gstiGetDuration (plidata->gsti);
   return duration;
 }
 
 ssize_t
-pliiGetTime (plidata_t *pliData)
+pliiGetTime (plidata_t *plidata)
 {
   ssize_t     playTime = 0;
 
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return playTime;
   }
 
-  playTime = gstiGetPosition (pliData->gsti);
+  playTime = gstiGetPosition (plidata->gsti);
   return playTime;
 }
 
 plistate_t
-pliiState (plidata_t *pliData)
+pliiState (plidata_t *plidata)
 {
   plistate_t  plistate = PLI_STATE_NONE; /* unknown */
 
-  if (pliData == NULL) {
+  if (plidata == NULL) {
     return plistate;
   }
 
-  plistate = gstiState (pliData->gsti);
-  pliData->state = plistate;
+  plistate = gstiState (plidata->gsti);
+  plidata->state = plistate;
   return plistate;
 }
 
 int
-pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
+pliiSetAudioDevice (plidata_t *plidata, const char *dev, int plidevtype)
 {
   return 0;
 }
 
 int
-pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
+pliiAudioDeviceList (plidata_t *plidata, volsinklist_t *sinklist)
 {
   return 0;
 }
 
 int
-pliiSupported (plidata_t *pliData)
+pliiSupported (plidata_t *plidata)
 {
-  return pliData->supported;
+  return plidata->supported;
+}
+
+int
+pliiGetVolume (plidata_t *plidata)
+{
+  int   val;
+
+  val = gstiGetVolume (plidata->gsti);
+  return val;
 }
 
 /* internal routines */
 
 static void
-pliiWaitUntilPlaying (plidata_t *pliData)
+pliiWaitUntilPlaying (plidata_t *plidata)
 {
   plistate_t  state;
   long        count;
 
-  state = gstiState (pliData->gsti);
+  state = gstiState (plidata->gsti);
   count = 0;
   while (state == PLI_STATE_IDLE ||
          state == PLI_STATE_OPENING ||
          state == PLI_STATE_BUFFERING ||
          state == PLI_STATE_STOPPED) {
     mssleep (1);
-    state = gstiState (pliData->gsti);
+    state = gstiState (plidata->gsti);
     ++count;
     if (count > 10000) {
       break;

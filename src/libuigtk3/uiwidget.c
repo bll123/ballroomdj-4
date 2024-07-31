@@ -194,6 +194,16 @@ uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
 }
 
 void
+uiWidgetAlignVertBaseline (uiwcont_t *uiwidget)
+{
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_BASELINE);
+}
+
+void
 uiWidgetDisableFocus (uiwcont_t *uiwidget)
 {
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {

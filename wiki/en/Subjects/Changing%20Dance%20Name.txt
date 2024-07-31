@@ -37,7 +37,7 @@ Now the songs with their dance set to _Waltz_ must be changed. Select
 __Manage__, and select the __Music&nbsp;Manager__ tab.  Select the
 filter
 (![Filter&nbsp;Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
-button. In the __Dance__ stop-down, select _Waltz_, then select __Apply__.
+button. In the __Dance__ drop-down, select _Waltz_, then select __Apply__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-filter](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-filter-A.png)
@@ -95,4 +95,4 @@ button to remove the old dance name.
 
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-25 04:57:26; BDJ4 version 4.11.2)_
+<br>_(Updated 2024-07-30 07:04:48; BDJ4 version 4.11.3.1)_

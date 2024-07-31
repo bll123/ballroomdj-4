@@ -572,12 +572,12 @@ static int
 playerProcessing (void *udata)
 {
   playerdata_t  *playerData = udata;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
   if (! progstateIsRunning (playerData->progstate)) {
     progstateProcess (playerData->progstate);
     if (progstateCurrState (playerData->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (playerData->progstate);
@@ -2031,6 +2031,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "currvolume%c%d%c"
       "realvolume%c%d%c"
       "actualvolume%c%d%c"
+      "plivolume%c%d%c"
       "speed%c%d%c"
       "playtimeplayed%c%" PRIu64 "%c"
       "pauseatend%c%d%c"
@@ -2042,6 +2043,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->actualVolume, MSG_ARGS_RS,
+      MSG_ARGS_RS, pliGetVolume (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
       MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,

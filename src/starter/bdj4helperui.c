@@ -267,15 +267,13 @@ static int
 helperMainLoop (void *thelper)
 {
   helperui_t    *helper = thelper;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
   /* support message handling */
 
-  if (! stop) {
-    uiUIProcessEvents ();
-  }
+  uiUIProcessEvents ();
 
-  if (! stop && helper->scrollendflag) {
+  if (helper->scrollendflag) {
     uiTextBoxScrollToEnd (helper->wcont [HELPER_W_TEXTBOX]);
     helper->scrollendflag = false;
     uiUIProcessWaitEvents ();
@@ -285,7 +283,7 @@ helperMainLoop (void *thelper)
   if (! progstateIsRunning (helper->progstate)) {
     progstateProcess (helper->progstate);
     if (progstateCurrState (helper->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

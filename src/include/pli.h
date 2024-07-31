@@ -69,6 +69,7 @@ int           pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
 
+int           pliGetVolume (pli_t *pli);      // for debugging
 const char    *pliStateText (pli_t *pli);
 ilist_t       *pliInterfaceList (void);
 
@@ -90,5 +91,6 @@ int           pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plide
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
 void          pliiDesc (char **ret, int max);
+int           pliiGetVolume (plidata_t *pliData);
 
 #endif

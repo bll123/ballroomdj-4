@@ -31,18 +31,29 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "webclient.h"
 #include "websrv.h"
+
+typedef struct {
+  const char    *webresponse;
+  size_t        webresplen;
+} mobmqwebresp_t;
 
 typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   int             stopwaitcount;
   char            *locknm;
-  bool            enabled;
-  uint16_t        port;
   char            *title;
   websrv_t        *websrv;
+  webclient_t     *webclient;
   char            *marqueeData;
+  const char      *tag;
+  const char      *key;
+  mobmqwebresp_t  mobmqwebresp;
+  char            tdata [800];
+  uint16_t        port;
+  int             type;
   bool            finished;
 } mobmqdata_t;
 
@@ -57,13 +68,16 @@ static int      mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mobmqProcessing (void *udata);
 static void     mobmqSigHandler (int sig);
+static void mobmqInternetProcess (mobmqdata_t *mobmqdata);
+static const char *mobmqBuildResponse (mobmqdata_t *mobmqdata);
+static void mobmqWebResponseCallback (void *userdata, const char *resp, size_t len);
 
 static int  gKillReceived = 0;
 
 int
 main (int argc, char *argv[])
 {
-  mobmqdata_t     mobmqData;
+  mobmqdata_t     mobmqdata;
   uint16_t        listenPort;
   const char      *tval;
   uint32_t        flags;
@@ -76,45 +90,54 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, &flags);
-  mobmqData.conn = connInit (ROUTE_MARQUEE);
+  mobmqdata.conn = connInit (ROUTE_MARQUEE);
 
-  mobmqData.enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
-  if (! mobmqData.enabled) {
-    lockRelease (mobmqData.locknm, PATHBLD_MP_USEIDX);
+  mobmqdata.type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
+  if (mobmqdata.type == MOBMQ_TYPE_OFF) {
+    bdj4shutdown (ROUTE_MOBILEMQ, NULL);
+    connFree (mobmqdata.conn);
     exit (0);
   }
 
-  mobmqData.progstate = progstateInit ("mobilemq");
+  mobmqdata.progstate = progstateInit ("mobilemq");
 
-  progstateSetCallback (mobmqData.progstate, STATE_CONNECTING,
-      mobmqConnectingCallback, &mobmqData);
-  progstateSetCallback (mobmqData.progstate, STATE_WAIT_HANDSHAKE,
-      mobmqHandshakeCallback, &mobmqData);
-  progstateSetCallback (mobmqData.progstate, STATE_STOPPING,
-      mobmqStoppingCallback, &mobmqData);
-  progstateSetCallback (mobmqData.progstate, STATE_STOP_WAIT,
-      mobmqStopWaitCallback, &mobmqData);
-  progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
-      mobmqClosingCallback, &mobmqData);
-  mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
+  progstateSetCallback (mobmqdata.progstate, STATE_CONNECTING,
+      mobmqConnectingCallback, &mobmqdata);
+  progstateSetCallback (mobmqdata.progstate, STATE_WAIT_HANDSHAKE,
+      mobmqHandshakeCallback, &mobmqdata);
+  progstateSetCallback (mobmqdata.progstate, STATE_STOPPING,
+      mobmqStoppingCallback, &mobmqdata);
+  progstateSetCallback (mobmqdata.progstate, STATE_STOP_WAIT,
+      mobmqStopWaitCallback, &mobmqdata);
+  progstateSetCallback (mobmqdata.progstate, STATE_CLOSING,
+      mobmqClosingCallback, &mobmqdata);
 
-  tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
-  mobmqData.title = NULL;
+  tval = bdjoptGetStr (OPT_P_MOBMQ_TITLE);
+  mobmqdata.title = NULL;
   if (tval != NULL) {
-    mobmqData.title = mdstrdup (tval);
+    mobmqdata.title = mdstrdup (tval);
+  }
+  mobmqdata.tag = bdjoptGetStr (OPT_P_MOBMQ_TAG);
+  mobmqdata.key = bdjoptGetStr (OPT_P_MOBMQ_KEY);
+  mobmqdata.port = bdjoptGetNum (OPT_P_MOBMQ_PORT);
+
+  mobmqdata.websrv = NULL;
+  mobmqdata.webclient = NULL;
+  mobmqdata.marqueeData = NULL;
+  mobmqdata.stopwaitcount = 0;
+  mobmqdata.finished = false;
+
+  if (mobmqdata.type == MOBMQ_TYPE_LOCAL) {
+    mobmqdata.websrv = websrvInit (mobmqdata.port, mobmqEventHandler, &mobmqdata);
+  }
+  if (mobmqdata.type == MOBMQ_TYPE_INTERNET) {
+    mobmqdata.webclient = webclientAlloc (&mobmqdata.mobmqwebresp, mobmqWebResponseCallback);
   }
 
-  mobmqData.websrv = NULL;
-  mobmqData.marqueeData = NULL;
-  mobmqData.stopwaitcount = 0;
-  mobmqData.finished = false;
-
-  mobmqData.websrv = websrvInit (mobmqData.port, mobmqEventHandler, &mobmqData);
-
   listenPort = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
-  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
-  connFree (mobmqData.conn);
-  progstateFree (mobmqData.progstate);
+  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata);
+  connFree (mobmqdata.conn);
+  progstateFree (mobmqdata.progstate);
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -128,9 +151,9 @@ main (int argc, char *argv[])
 static bool
 mobmqStoppingCallback (void *tmmdata, programstate_t programState)
 {
-  mobmqdata_t   *mobmqData = tmmdata;
+  mobmqdata_t   *mobmqdata = tmmdata;
 
-  connDisconnectAll (mobmqData->conn);
+  connDisconnectAll (mobmqdata->conn);
   return STATE_FINISHED;
 }
 
@@ -147,13 +170,14 @@ mobmqStopWaitCallback (void *tmobmq, programstate_t programState)
 static bool
 mobmqClosingCallback (void *tmmdata, programstate_t programState)
 {
-  mobmqdata_t   *mobmqData = tmmdata;
+  mobmqdata_t   *mobmqdata = tmmdata;
 
   bdj4shutdown (ROUTE_MOBILEMQ, NULL);
 
-  websrvFree (mobmqData->websrv);
-  dataFree (mobmqData->title);
-  dataFree (mobmqData->marqueeData);
+  websrvFree (mobmqdata->websrv);
+  webclientClose (mobmqdata->webclient);
+  dataFree (mobmqdata->title);
+  dataFree (mobmqdata->marqueeData);
 
   return STATE_FINISHED;
 }
@@ -161,37 +185,15 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 static void
 mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
 {
-  mobmqdata_t   *mobmqData = userdata;
-  char          *data = NULL;
-  char          *title = NULL;
-  char          tbuff [400];
+  mobmqdata_t   *mobmqdata = userdata;
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
 
     if (mg_http_match_uri (hm, "/mmupdate")) {
-      const char  *disp;
+      const char *data = NULL;
 
-      data = mobmqData->marqueeData;
-      title = mobmqData->title;
-      if (data == NULL || mobmqData->finished) {
-        if (title == NULL) {
-          title = "";
-        }
-        /* CONTEXT: mobile marquee: playback is not active */
-        disp = _("Not Playing");
-        if (mobmqData->finished) {
-          disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-        }
-        snprintf (tbuff, sizeof (tbuff),
-            "{ "
-            "\"title\" : \"%s\","
-            "\"current\" : \"%s\","
-            "\"skip\" : \"true\""
-            "}",
-            title, disp);
-        data = tbuff;
-      }
+      data = mobmqBuildResponse (mobmqdata);
       mg_http_reply (c, 200, "Content-Type: application/json\r\n",
           "%s\r\n", data);
     } else if (mg_http_match_uri (hm, "#.key") ||
@@ -233,7 +235,7 @@ static int
 mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  mobmqdata_t     *mobmqData = udata;
+  mobmqdata_t     *mobmqdata = udata;
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -244,22 +246,25 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MOBILEMQ: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-          connProcessHandshake (mobmqData->conn, routefrom);
+          connProcessHandshake (mobmqdata->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          progstateShutdownProcess (mobmqData->progstate);
+          progstateShutdownProcess (mobmqdata->progstate);
           break;
         }
         case MSG_MARQUEE_DATA: {
-          mobmqData->finished = false;
-          dataFree (mobmqData->marqueeData);
-          mobmqData->marqueeData = mdstrdup (args);
+          mobmqdata->finished = false;
+          dataFree (mobmqdata->marqueeData);
+          mobmqdata->marqueeData = mdstrdup (args);
+          if (mobmqdata->type == MOBMQ_TYPE_INTERNET) {
+            mobmqInternetProcess (mobmqdata);
+          }
           break;
         }
         case MSG_FINISHED: {
-          mobmqData->finished = true;
+          mobmqdata->finished = true;
           break;
         }
         default: {
@@ -279,29 +284,29 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 mobmqProcessing (void *udata)
 {
-  mobmqdata_t     *mobmqData = udata;
-  websrv_t        *websrv = mobmqData->websrv;
-  int           stop = false;
+  mobmqdata_t   *mobmqdata = udata;
+  websrv_t      *websrv = mobmqdata->websrv;
+  int           stop = SOCKH_CONTINUE;
 
 
-  if (! progstateIsRunning (mobmqData->progstate)) {
-    progstateProcess (mobmqData->progstate);
-    if (progstateCurrState (mobmqData->progstate) == STATE_CLOSED) {
-      stop = true;
+  if (! progstateIsRunning (mobmqdata->progstate)) {
+    progstateProcess (mobmqdata->progstate);
+    if (progstateCurrState (mobmqdata->progstate) == STATE_CLOSED) {
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
-      progstateShutdownProcess (mobmqData->progstate);
+      progstateShutdownProcess (mobmqdata->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
     return stop;
   }
 
-  connProcessUnconnected (mobmqData->conn);
+  connProcessUnconnected (mobmqdata->conn);
 
   websrvProcess (websrv);
 
   if (gKillReceived) {
-    progstateShutdownProcess (mobmqData->progstate);
+    progstateShutdownProcess (mobmqdata->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
   return stop;
@@ -310,16 +315,16 @@ mobmqProcessing (void *udata)
 static bool
 mobmqConnectingCallback (void *tmmdata, programstate_t programState)
 {
-  mobmqdata_t   *mobmqData = tmmdata;
+  mobmqdata_t   *mobmqdata = tmmdata;
   bool          rc = STATE_NOT_FINISH;
 
-  connProcessUnconnected (mobmqData->conn);
+  connProcessUnconnected (mobmqdata->conn);
 
-  if (! connIsConnected (mobmqData->conn, ROUTE_MAIN)) {
-    connConnect (mobmqData->conn, ROUTE_MAIN);
+  if (! connIsConnected (mobmqdata->conn, ROUTE_MAIN)) {
+    connConnect (mobmqdata->conn, ROUTE_MAIN);
   }
 
-  if (connIsConnected (mobmqData->conn, ROUTE_MAIN)) {
+  if (connIsConnected (mobmqdata->conn, ROUTE_MAIN)) {
     rc = STATE_FINISHED;
   }
 
@@ -329,12 +334,12 @@ mobmqConnectingCallback (void *tmmdata, programstate_t programState)
 static bool
 mobmqHandshakeCallback (void *tmmdata, programstate_t programState)
 {
-  mobmqdata_t   *mobmqData = tmmdata;
+  mobmqdata_t   *mobmqdata = tmmdata;
   bool          rc = STATE_NOT_FINISH;
 
-  connProcessUnconnected (mobmqData->conn);
+  connProcessUnconnected (mobmqdata->conn);
 
-  if (connHaveHandshake (mobmqData->conn, ROUTE_MAIN)) {
+  if (connHaveHandshake (mobmqdata->conn, ROUTE_MAIN)) {
     rc = STATE_FINISHED;
   }
 
@@ -346,3 +351,67 @@ mobmqSigHandler (int sig)
 {
   gKillReceived = 1;
 }
+
+static void
+mobmqInternetProcess (mobmqdata_t *mobmqdata)
+{
+  const char    *data;
+  char          uri [200];
+  char          tbuff [4096];
+
+  data = mobmqBuildResponse (mobmqdata);
+  snprintf (uri, sizeof (uri), "%s/%s",
+      sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_PHP));
+  snprintf (tbuff, sizeof (tbuff),
+      "key=%s"
+      "&mobmqtag=%s"
+      "&mobmqkey=%s"
+      "&mqdata=%s",
+      "73459734",     // key
+      mobmqdata->tag,
+      mobmqdata->key,
+      data);
+  webclientPost (mobmqdata->webclient, uri, tbuff);
+}
+
+static const char *
+mobmqBuildResponse (mobmqdata_t *mobmqdata)
+{
+  const char  *data = NULL;
+  const char  *disp = NULL;
+  const char  *title = NULL;
+
+  data = mobmqdata->marqueeData;
+  title = mobmqdata->title;
+  if (data == NULL || mobmqdata->finished) {
+    if (title == NULL) {
+      title = "";
+    }
+    /* CONTEXT: mobile marquee: playback is not active */
+    disp = _("Not Playing");
+    if (mobmqdata->finished) {
+      disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
+    }
+    snprintf (mobmqdata->tdata, sizeof (mobmqdata->tdata),
+        "{ "
+        "\"title\" : \"%s\","
+        "\"current\" : \"%s\","
+        "\"skip\" : \"true\""
+        "}",
+        title, disp);
+    data = mobmqdata->tdata;
+  }
+
+  return data;
+}
+
+static void
+mobmqWebResponseCallback (void *userdata, const char *resp, size_t len)
+{
+  mobmqwebresp_t *mobmqwebresp = userdata;
+
+  mobmqwebresp->webresponse = resp;
+  mobmqwebresp->webresplen = len;
+  return;
+}
+

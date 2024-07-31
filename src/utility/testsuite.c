@@ -377,19 +377,19 @@ tsProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  return 0;
+  return SOCKH_CONTINUE;
 }
 
 static int
 tsProcessing (void *udata)
 {
   testsuite_t *testsuite = udata;
-  bool        stop = false;
+  bool        stop = SOCKH_CONTINUE;
 
   if (! progstateIsRunning (testsuite->progstate)) {
     progstateProcess (testsuite->progstate);
     if (progstateCurrState (testsuite->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (testsuite->progstate);

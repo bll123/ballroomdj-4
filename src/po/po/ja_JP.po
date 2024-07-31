@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-23\n"
+"PO-Revision-Date: 2024-07-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -717,10 +717,6 @@ msgstr "ソングリストの編集"
 msgid "Edit Status"
 msgstr "編集状況"
 
-#. CONTEXT: configuration: enable mobile marquee
-msgid "Enable Mobile Marquee"
-msgstr "モバイル・マーキーを有効にする"
-
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr "リモートコントロールを有効にする"
@@ -961,6 +957,10 @@ msgstr "設置完了。"
 msgid "Installing %s."
 msgstr "%sのインストール ."
 
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr ""
+
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
 msgstr ""
@@ -1022,6 +1022,10 @@ msgstr "負荷"
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
 msgstr "データベースからロード"
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
+msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
 msgid "Locale"
@@ -1257,6 +1261,7 @@ msgid "Notes"
 msgstr "備考"
 
 #. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
 msgid "Off"
 msgstr "オフ"
 
@@ -1289,6 +1294,7 @@ msgstr "その他のファイル"
 msgid "Paso Doble"
 msgstr "パソドブレ"
 
+#. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
 msgstr "パスワード"
@@ -1909,6 +1915,10 @@ msgstr "スワップ"
 msgid "Switch Queue When Empty"
 msgstr "空キュー切り替え"
 
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr ""
+
 #. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
@@ -2003,6 +2013,7 @@ msgid "Truncate"
 msgstr "切り捨て"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "タイプ"
 

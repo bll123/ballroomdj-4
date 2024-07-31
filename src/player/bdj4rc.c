@@ -447,13 +447,13 @@ remctrlProcessing (void *udata)
 {
   remctrldata_t *remctrlData = udata;
   websrv_t      *websrv = remctrlData->websrv;
-  int           stop = false;
+  int           stop = SOCKH_CONTINUE;
 
 
   if (! progstateIsRunning (remctrlData->progstate)) {
     progstateProcess (remctrlData->progstate);
     if (progstateCurrState (remctrlData->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       progstateShutdownProcess (remctrlData->progstate);

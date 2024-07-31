@@ -248,6 +248,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "PATHFMT" } { set key "ORGPATH" }
+        if { $key eq "MOBILEMARQUEE" } { set key "MOBILEMQTYPE" }
         if { $key eq "MUSICDIR" } {
           set key DIRMUSIC
           set musicdir $value
@@ -367,11 +368,6 @@ foreach path [list {} profiles $mpath $mppath] {
           if { $value eq {} } {
             set value 360000
           }
-        }
-        if { $key eq "MOBILEMARQUEE" } {
-          if { $value eq "local" } { set value yes }
-          if { $value eq "internet" } { set value no }
-          if { $value eq "off" } { set value no }
         }
         if { [regexp {ORGPATH$} $key] } {
           # various is no longer supported, remove the group entirely.
