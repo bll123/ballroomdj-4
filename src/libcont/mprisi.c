@@ -28,6 +28,7 @@
 #include "dbusi.h"
 #include "mdebug.h"
 #include "player.h"
+#include "nlist.h"
 #include "tmutil.h"
 
 static const char *introspection_xml =
@@ -110,6 +111,25 @@ static const char *interface [MPRIS_INTFC_MAX] = {
 };
 
 enum {
+  MPRIS_PROP_PB_STATUS,
+  MPRIS_PROP_REPEAT_STATUS,
+  MPRIS_PROP_RATE,
+  MPRIS_PROP_METADATA,
+  MPRIS_PROP_VOLUME,
+  MPRIS_PROP_POSITION,
+  MPRIS_PROP_MAX,
+};
+
+static const char *propstr [MPRIS_PROP_MAX] = {
+  [MPRIS_PROP_PB_STATUS] = "PlaybackStatus",
+  [MPRIS_PROP_REPEAT_STATUS] = "LoopStatus",
+  [MPRIS_PROP_RATE] = "Rate",
+  [MPRIS_PROP_METADATA] = "Metadata",
+  [MPRIS_PROP_VOLUME] = "Volume",
+  [MPRIS_PROP_POSITION] = "Position",
+};
+
+enum {
   MPRIS_STATUS_PLAY,
   MPRIS_STATUS_PAUSE,
   MPRIS_STATUS_STOP,
@@ -138,13 +158,14 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 typedef struct contdata {
   dbus_t              *dbus;
   callback_t          *cb;
-  double              pos;
+  nlist_t             *chgprop;
   int                 root_interface_id;
   int                 player_interface_id;
   int                 playstatus;
   int                 repeatstatus;
-//  GHashTable          *changed_properties;
-//  GVariant            *metadata;
+  double              pos;
+  int                 rate;
+  int                 volume;
   bool                seek_expected : 1;
   bool                idle : 1;
   bool                paused : 1;
@@ -194,14 +215,17 @@ contiInit (const char *instname)
 
   contdata = mdmalloc (sizeof (contdata_t));
   contdata->cb = NULL;
+  contdata->chgprop = nlistAlloc ("cont-mprisi", LIST_ORDERED, NULL);
+  contdata->root_interface_id = -1;
+  contdata->player_interface_id = -1;
   contdata->playstatus = MPRIS_STATUS_STOP;
   contdata->repeatstatus = MPRIS_REPEAT_NONE;
-//  contdata->changed_properties = g_hash_table_new (g_str_hash, g_str_equal);
+  contdata->pos = 0.0;
+  contdata->rate = 100;
+  contdata->volume = 0;
   contdata->seek_expected = false;
   contdata->idle = false;
   contdata->paused = false;
-  contdata->root_interface_id = -1;
-  contdata->player_interface_id = -1;
 
   contdata->dbus = dbusConnInit ();
   dbusConnectAcquireName (contdata->dbus, instname, interface [MPRIS_INTFC_MP2]);
@@ -216,6 +240,7 @@ contiFree (contdata_t *contdata)
     return;
   }
 
+  nlistFree (contdata->chgprop);
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
     dbusUnregisterObject (contdata->dbus, contdata->root_interface_id);
     dbusUnregisterObject (contdata->dbus, contdata->player_interface_id);
@@ -295,20 +320,29 @@ contiSetPlayState (contdata_t *contdata, int state)
       break;
     }
   }
+  if (contdata->playstatus != nstate) {
+    nlistSetStr (contdata->chgprop, MPRIS_PROP_PB_STATUS, statusstr [contdata->playstatus]);
+  }
   contdata->playstatus = nstate;
 }
 
 void
 contiSetRepeatState (contdata_t *contdata, bool state)
 {
+  int   nstate;
+
   if (contdata == NULL) {
     return;
   }
 
-  contdata->repeatstatus = MPRIS_REPEAT_NONE;
+  nstate = MPRIS_REPEAT_NONE;
   if (state) {
-    contdata->repeatstatus = MPRIS_REPEAT_TRACK;
+    nstate = MPRIS_REPEAT_TRACK;
   }
+  if (contdata->repeatstatus != state) {
+    nlistSetStr (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, repeatstr [nstate]);
+  }
+  contdata->repeatstatus = nstate;
 }
 
 void
@@ -318,7 +352,36 @@ contiSetPosition (contdata_t *contdata, double pos)
     return;
   }
 
+  if (contdata->pos != pos) {
+    nlistSetDouble (contdata->chgprop, MPRIS_PROP_POSITION, pos);
+  }
   contdata->pos = pos;
+}
+
+void
+contiSetRate (contdata_t *contdata, int rate)
+{
+  if (contdata == NULL) {
+    return;
+  }
+
+  if (contdata->rate != rate) {
+    nlistSetNum (contdata->chgprop, MPRIS_PROP_RATE, rate);
+  }
+  contdata->rate = rate;
+}
+
+void
+contiSetVolume (contdata_t *contdata, int volume)
+{
+  if (contdata == NULL) {
+    return;
+  }
+
+  if (contdata->volume != volume) {
+    nlistSetNum (contdata->chgprop, MPRIS_PROP_VOLUME, volume);
+  }
+  contdata->volume = volume;
 }
 
 /* internal routines */
@@ -431,15 +494,15 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
   }
 
   if (strcmp (intfc, interface [MPRIS_INTFC_MP2_PLAYER]) == 0) {
-    if (strcmp (prop, "PlaybackStatus") == 0) {
+    if (strcmp (prop, propstr [MPRIS_PROP_PB_STATUS]) == 0) {
       tv = dbusMessageBuild ("s", statusstr [contdata->playstatus], NULL);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-    } else if (strcmp (prop, "LoopStatus") == 0) {
+    } else if (strcmp (prop, propstr [MPRIS_PROP_REPEAT_STATUS]) == 0) {
       tv = dbusMessageBuild ("s", repeatstr [contdata->repeatstatus], NULL);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-    } else if (strcmp (prop, "Rate") == 0) {
+    } else if (strcmp (prop, propstr [MPRIS_PROP_RATE]) == 0) {
       rc = true;
 //      double rate;
   //      mpv_get_property (contdata->mpv, "speed", MPV_FORMAT_DOUBLE, &rate);
@@ -448,7 +511,7 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       tv = dbusMessageBuild ("b", false, NULL);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-    } else if (strcmp (prop, "Metadata") == 0) {
+    } else if (strcmp (prop, propstr [MPRIS_PROP_METADATA]) == 0) {
       rc = true;
 #if 0
       if (!contdata->metadata) {
@@ -458,14 +521,14 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       g_variant_ref (contdata->metadata);
       ret = contdata->metadata;
 #endif
-    } else if (strcmp (prop, "Volume") == 0) {
+    } else if (strcmp (prop, propstr [MPRIS_PROP_VOLUME]) == 0) {
       rc = true;
 //      double volume;
 
   //      mpv_get_property (contdata->mpv, "volume", MPV_FORMAT_DOUBLE, &volume);
 //      volume /= 100;
 //      ret = g_variant_new_double (volume);
-    } else if (strcmp (prop, "Position") == 0) {
+    } else if (strcmp (prop, propstr [MPRIS_PROP_POSITION]) == 0) {
       rc = true;
 //      double  position_s;
 //      int64_t position_us;

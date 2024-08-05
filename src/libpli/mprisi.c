@@ -215,6 +215,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
 
       if (strstr (*tout, BDJ4_NAME) != NULL) {
         /* do not reference bdj4 players */
+        ++tout;
         continue;
       }
 

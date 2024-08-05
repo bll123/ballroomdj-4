@@ -31,6 +31,8 @@ typedef struct controller {
   void              (*contiSetPlayState) (contdata_t *contdata, int state);
   void              (*contiSetRepeatState) (contdata_t *contdata, bool state);
   void              (*contiSetPosition) (contdata_t *contdata, double pos);
+  void              (*contiSetRate) (contdata_t *contdata, int rate);
+  void              (*contiSetVolume) (contdata_t *contdata, int volume);
 } controller_t;
 
 controller_t *
@@ -69,6 +71,8 @@ controllerInit (const char *contpkg)
   cont->contiSetPlayState = dylibLookup (cont->dlHandle, "contiSetPlayState");
   cont->contiSetRepeatState = dylibLookup (cont->dlHandle, "contiSetRepeatState");
   cont->contiSetPosition = dylibLookup (cont->dlHandle, "contiSetPosition");
+  cont->contiSetRate = dylibLookup (cont->dlHandle, "contiSetRate");
+  cont->contiSetVolume = dylibLookup (cont->dlHandle, "contiSetVolume");
 #pragma clang diagnostic pop
 
   strlcpy (instname, BDJ4_NAME, sizeof (instname));
@@ -178,6 +182,30 @@ controllerSetPosition (controller_t *cont, double pos)
 
   if (cont->contdata != NULL && cont->contiSetPosition != NULL) {
     cont->contiSetPosition (cont->contdata, pos);
+  }
+}
+
+void
+controllerSetRate (controller_t *cont, int rate)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetRate != NULL) {
+    cont->contiSetRate (cont->contdata, rate);
+  }
+}
+
+void
+controllerSetVolume (controller_t *cont, int volume)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetVolume != NULL) {
+    cont->contiSetVolume (cont->contdata, volume);
   }
 }
 

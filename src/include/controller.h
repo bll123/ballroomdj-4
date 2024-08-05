@@ -42,6 +42,8 @@ void controllerSetCallback (controller_t *cont, callback_t *cb);
 void controllerSetPlayState (controller_t *cont, int state);
 void controllerSetRepeatState (controller_t *cont, bool state);
 void controllerSetPosition (controller_t *cont, double pos);
+void controllerSetRate (controller_t *cont, int rate);
+void controllerSetVolume (controller_t *cont, int volume);
 ilist_t *controllerInterfaceList (void);
 
 void contiDesc (char **ret, int max);
@@ -53,6 +55,8 @@ void contiSetCallback (contdata_t *contdata, callback_t *cb);
 void contiSetPlayState (contdata_t *contdata, int state);
 void contiSetRepeatState (contdata_t *contdata, bool state);
 void contiSetPosition (contdata_t *contdata, double pos);
+void contiSetRate (contdata_t *contdata, int rate);
+void contiSetVolume (contdata_t *contdata, int volume);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

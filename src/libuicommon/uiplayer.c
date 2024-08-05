@@ -960,6 +960,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
     dval = (double) ps->currentVolume;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_VOLUME], dval);
+    controllerSetVolume (uiplayer->controller, ps->currentVolume);
   }
 
   /* speed */
@@ -969,6 +970,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     dval = (double) ps->currentSpeed;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
     uiplayer->speedLastValue = dval;
+    controllerSetRate (uiplayer->controller, ps->currentSpeed);
   }
 
   /* base vol */
