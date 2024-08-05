@@ -450,6 +450,19 @@ dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
   dbus->userdata = udata;
 }
 
+void
+dbusEmitSignal (dbus_t *dbus, const char *objpath,
+    const char *intfc, const char *property, void *params)
+{
+  GError              *gerror = NULL;
+
+  g_dbus_connection_emit_signal (dbus->dconn, NULL,
+      objpath, intfc, property, params, &gerror);
+  if (gerror != NULL) {
+    fprintf (stderr, "%s\n", gerror->message);
+  }
+}
+
 /* internal routines */
 
 static void
@@ -550,7 +563,7 @@ dbusPropertySetHandler (GDBusConnection *connection,
     gpointer udata)
 {
 fprintf (stderr, "dbus-prop-set: %s %s %s\n", objpath, intfc, property);
-  return FALSE;
+  return TRUE;
 }
 
 # if DBUS_DEBUG
@@ -603,6 +616,7 @@ fprintf (stderr, "v-unref: %d\n", G_IS_OBJECT (v));
   } else {
     fprintf (stderr, "  data: %s\n", g_variant_print (data, true));
   }
+  fflush (stderr);
 }
 
 # endif

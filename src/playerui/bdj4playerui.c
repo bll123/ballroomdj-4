@@ -317,7 +317,7 @@ main (int argc, char *argv[])
   plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
- plui.controller = NULL;
+  plui.controller = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -800,7 +800,8 @@ pluiBuildUI (playerui_t *plui)
 static void
 pluiInitializeUI (playerui_t *plui)
 {
-  plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn, plui->musicdb, plui->dispsel);
+  plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn,
+      plui->musicdb, plui->dispsel, plui->controller);
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);

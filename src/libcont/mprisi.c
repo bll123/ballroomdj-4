@@ -30,8 +30,6 @@
 #include "player.h"
 #include "tmutil.h"
 
-// #include <libavformat/avformat.h>
-
 static const char *introspection_xml =
     "<node>\n"
     "  <interface name=\"org.mpris.MediaPlayer2\">\n"
@@ -140,12 +138,12 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 typedef struct contdata {
   dbus_t              *dbus;
   callback_t          *cb;
-  GHashTable          *changed_properties;
   double              pos;
   int                 root_interface_id;
   int                 player_interface_id;
   int                 playstatus;
   int                 repeatstatus;
+//  GHashTable          *changed_properties;
 //  GVariant            *metadata;
   bool                seek_expected : 1;
   bool                idle : 1;
@@ -194,7 +192,6 @@ contiInit (const char *instname)
 {
   contdata_t  *contdata;
 
-fprintf (stderr, "cont-mpris init\n");
   contdata = mdmalloc (sizeof (contdata_t));
   contdata->cb = NULL;
   contdata->playstatus = MPRIS_STATUS_STOP;
@@ -208,7 +205,6 @@ fprintf (stderr, "cont-mpris init\n");
 
   contdata->dbus = dbusConnInit ();
   dbusConnectAcquireName (contdata->dbus, instname, interface [MPRIS_INTFC_MP2]);
-fprintf (stderr, "cont-mpris init-fin\n");
 
   return contdata;
 }
@@ -220,24 +216,19 @@ contiFree (contdata_t *contdata)
     return;
   }
 
-fprintf (stderr, "cont-mpris free\n");
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
-fprintf (stderr, "cont-mpris free-a\n");
     dbusUnregisterObject (contdata->dbus, contdata->root_interface_id);
     dbusUnregisterObject (contdata->dbus, contdata->player_interface_id);
   }
   if (contdata->dbus != NULL) {
-fprintf (stderr, "cont-mpris free-b\n");
     dbusConnClose (contdata->dbus);
   }
   mdfree (contdata);
-fprintf (stderr, "cont-mpris free-fin\n");
 }
 
 void
 contiSetup (contdata_t *contdata)
 {
-fprintf (stderr, "cont-mpris setup\n");
   dbusSetIntrospectionData (contdata->dbus, introspection_xml);
 
   contdata->root_interface_id = dbusRegisterObject (contdata->dbus,
@@ -339,7 +330,7 @@ mprisiMethodCallback (const char *intfc, const char *method, void *udata)
   int           cmd = CONTROLLER_NONE;
   long          val = 0;
 
-fprintf (stderr, "mprisi-method: %s %s\n", intfc, method);
+fprintf (stderr, "-- mprisi-method: %s %s\n", intfc, method);
 
   if (contdata == NULL || contdata->cb == NULL) {
     return true;
@@ -380,7 +371,7 @@ mprisiPropertyGetCallback (const char *intfc, const char *prop, void *udata)
   contdata_t    *contdata = udata;
   bool          rc = false;
   void          *tv;
-fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
+fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
 
   dbusMessageInit (contdata->dbus);
 
@@ -420,6 +411,7 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
           NULL);
     } else if (strcmp (prop, "SupportedMimeTypes") == 0) {
       rc = true;
+      /* this is the list from vlc w/o video */
       dbusMessageSetDataArray (contdata->dbus, "(as)",
           "audio/mpeg",
           "audio/x-mpeg",
@@ -427,7 +419,7 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
           "application/ogg",
           "application/x-ogg",
           /* do not know what this is */
-          "application/x-mplayer2",
+//          "application/x-mplayer2",
           "audio/wav",
           "audio/x-wav",
           "audio/3gpp",
@@ -1086,7 +1078,7 @@ emit_property_changes (gpointer data)
             }
         }
         params = g_variant_new ("(sa{sv}as)",
-                               "org.mpris.MediaPlayer2.Player", properties, invalidated);
+            "org.mpris.MediaPlayer2.Player", properties, invalidated);
         g_variant_builder_unref (properties);
         g_variant_builder_unref (invalidated);
 

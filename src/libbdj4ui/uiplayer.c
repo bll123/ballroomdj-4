@@ -19,6 +19,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
+#include "controller.h"
 #include "dance.h"
 #include "dispsel.h"
 #include "ilist.h"
@@ -117,6 +118,7 @@ typedef struct uiplayer {
   uiwcont_t       *wcont [UIPL_W_MAX];
   int             pliSupported;
   dispsel_t       *dispsel;
+  controller_t    *controller;
   /* song display */
   uiwcont_t       *images [UIPL_IMG_MAX];
   /* speed controls / display */
@@ -170,7 +172,8 @@ static bool     uiplayerSpdResetCallback (void *udata);
 
 uiplayer_t *
 uiplayerInit (const char *tag, progstate_t *progstate,
-    conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel)
+    conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel,
+    controller_t *controller)
 {
   uiplayer_t    *uiplayer;
 
@@ -181,6 +184,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
   uiplayer->dispsel = dispsel;
+  uiplayer->controller = controller;
   for (int i = 0; i < UIPL_CB_MAX; ++i) {
     uiplayer->callbacks [i] = NULL;
   }
@@ -888,6 +892,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
+  controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
   switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
@@ -944,6 +949,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->repeatLock = false;
+  controllerSetRepeatState (uiplayer->controller, ps->repeat);
 
   /* pauseatend */
   uiplayerProcessPauseatend (uiplayer, ps->pauseatend);
@@ -971,6 +977,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   /* playedtime */
   position = ps->playedtime;
   dval = (double) ps->playedtime;    // used below
+  controllerSetPosition (uiplayer->controller, dval);
 
   /* duration */
   ddur = (double) ps->duration;
