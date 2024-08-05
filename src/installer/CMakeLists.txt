@@ -45,7 +45,8 @@ if (WIN32)
   target_compile_options (bdj4installer PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4installer PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
+  libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
@@ -58,7 +59,8 @@ if (WIN32)
   target_compile_options (bdj4altinst PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
+  libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}

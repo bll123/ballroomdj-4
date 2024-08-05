@@ -6,9 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4uii SHARED
-  osuilinuxutils.c
-  osuimacutils.m
-  osuiwinutils.c
   uidance.c
   uidd.c
   uiduallist.c
@@ -23,7 +20,6 @@ add_library (libbdj4uii SHARED
   uisong.c
   uisongfilter.c
   uistatus.c
-  uiutils.c
   uivirtlist.c
   uivlutil.c
 )
@@ -36,7 +32,7 @@ if (APPLE)
   )
 endif()
 target_link_libraries (libbdj4uii PRIVATE
-  ${BDJ4_UI_LIB}
+  libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
   ${GTK_LDFLAGS}
 )

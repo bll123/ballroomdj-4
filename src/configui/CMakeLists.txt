@@ -34,7 +34,7 @@ if (WIN32)
   target_compile_options (bdj4configui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4configui PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB}
+  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4ati libbdj4pli libbdj4vol libbdj4cont
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}

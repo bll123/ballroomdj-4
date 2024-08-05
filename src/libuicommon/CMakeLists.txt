@@ -23,7 +23,7 @@ if (APPLE)
   )
 endif()
 target_link_libraries (libbdj4uic PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB} libbdj4cont
+  libbdj4uii libbdj4uib ${BDJ4_UI_LIB} libbdj4cont
   libbdj4 libbdj4basic libbdj4common
   ${GTK_LDFLAGS}
 )
