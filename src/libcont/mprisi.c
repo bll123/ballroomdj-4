@@ -12,13 +12,15 @@
  */
 #include "config.h"
 
+#if __linux__
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <inttypes.h>
 #include <string.h>
 
-#if __linux__
+#include <glib.h>
 
 #include "bdj4.h"
 #include "callback.h"
@@ -138,25 +140,23 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 typedef struct contdata {
   dbus_t              *dbus;
   callback_t          *cb;
+  GHashTable          *changed_properties;
+  double              pos;
   int                 root_interface_id;
   int                 player_interface_id;
-  double              pos;
   int                 playstatus;
   int                 repeatstatus;
-//  GHashTable          *changed_properties;
 //  GVariant            *metadata;
-  bool                seek_expected;
-  bool                idle;
-  bool                paused;
+  bool                seek_expected : 1;
+  bool                idle : 1;
+  bool                paused : 1;
 } contdata_t;
 
 static bool mprisiMethodCallback (const char *intfc, const char *method, void *udata);
 static bool mprisiPropertyGetCallback (const char *intfc, const char *method, void *udata);
 
-
-
-
 #if 0
+
 static void mprisiMethodRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static void mprisiMethodPlayer (GDBusConnection *connection, const char *sender, const char *_object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static GVariant * mprisiPropertyGetRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
@@ -517,9 +517,6 @@ fprintf (stderr, "mprisi-prop-get: %s %s\n", intfc, prop);
 
   return rc;
 }
-
-
-
 
 #if 0
 

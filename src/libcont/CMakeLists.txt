@@ -16,6 +16,9 @@ target_link_libraries (libbdj4cont PRIVATE
 
 if (NOT WIN32 AND NOT APPLE)
   add_library (libcontmpris SHARED mprisi.c)
+  target_include_directories (libcontmpris
+    PRIVATE "${GLIB_INCLUDE_DIRS}"
+  )
   target_link_libraries (libcontmpris PRIVATE
     libbdj4common
     objdbusi
@@ -36,3 +39,6 @@ if (NOT WIN32 AND NOT APPLE)
 endif()
 
 updateRPath (libbdj4cont)
+if (NOT WIN32 AND NOT APPLE)
+  updateRPath (libcontmpris)
+endif()
