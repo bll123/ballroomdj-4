@@ -176,7 +176,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     vsnprintf (tbuff, sizeof (tbuff), fmt, args);
     va_end (args);
   }
-  if (fn != NULL) {
+  if (fn != NULL && func != NULL && *fn && *func) {
     snprintf (tfn, sizeof (tfn), "(%s: %s(): %d)", logTail (fn), func, line);
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
