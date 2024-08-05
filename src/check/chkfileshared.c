@@ -17,6 +17,7 @@
 #pragma GCC diagnostic ignored "-Wformat-extra-args"
 
 #include "fileshared.h"
+#include "tmutil.h"
 
 static const char * const FN  = "tmp/fileshared.txt";
 static const char * const DATAB = "def456\n";
@@ -27,9 +28,9 @@ main (int argc, char *argv [])
   fileshared_t  *sfh;
 
   sfh = fileSharedOpen (FN, FILE_OPEN_APPEND);
-  sleep (1);
+  mssleep (500);
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
-  sleep (1);
+  mssleep (500);
   fileSharedClose (sfh);
 }
 

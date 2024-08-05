@@ -623,7 +623,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   /* used by playlist.c */
   /* note that the dance filter list must also be set */
   if (sf->inuse [SONG_FILTER_MPM_LOW] && sf->inuse [SONG_FILTER_MPM_HIGH]) {
-    ilistidx_t    danceIdx;
+    ilistidx_t    danceIdx = LIST_VALUE_INVALID;
     int           bpmlow = 0;
     int           bpmhigh = 0;
     ilist_t       *danceFilterList = NULL;

@@ -31,7 +31,7 @@ enum {
   FLUSH_COUNT = 20,
 };
 
-typedef union filehandle {
+typedef struct filehandle {
 #if _typ_HANDLE
   HANDLE  handle;
 #endif
@@ -42,15 +42,15 @@ typedef union filehandle {
 fileshared_t *
 fileSharedOpen (const char *fname, int truncflag)
 {
-  fileshared_t  *fhandle;
+  fileshared_t  *fhandle = NULL;
 
 #if _lib_CreateFileW
-  wchar_t   *wfname = NULL;
-  HANDLE    handle;
-  DWORD     cd;
+  wchar_t     *wfname = NULL;
+  HANDLE      handle = NULL;
+  DWORD       cd;
 #else
   FILE        *fh;
-  int         flags;
+  const char  *mode;
 #endif
 
   if (fname == NULL || ! *fname) {
@@ -58,8 +58,11 @@ fileSharedOpen (const char *fname, int truncflag)
   }
 
   fhandle = mdmalloc (sizeof (fileshared_t));
-  fhandle->fh = NULL;
   fhandle->count = 0;
+  fhandle->fh = NULL;
+#if _typ_HANDLE
+  fhaneld->handle = NULL;
+#endif
 
 #if _lib_CreateFileW
   cd = OPEN_ALWAYS;
@@ -87,15 +90,12 @@ fileSharedOpen (const char *fname, int truncflag)
 
   /* not windows */
 
-  flags = O_WRONLY | O_APPEND | O_CREAT;
-# if _define_O_CLOEXEC
-  flags |= O_CLOEXEC;
-# endif
+  mode = "a";
   if (truncflag == FILE_OPEN_TRUNCATE) {
-    flags |= O_TRUNC;
+    mode = "w";
   }
 
-  fh = fopen (fname, "a");
+  fh = fopen (fname, mode);
   mdextfopen (fh);
   fhandle->fh = fh;
   if (fh == NULL) {
@@ -128,7 +128,7 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
   /* on linux, flushing each time is reasonably fast */
   /* on MacOS, flushing each time is very slow */
   /* windows has not been tested */
-  if (isLinux () || fhandle->count == FLUSH_COUNT) {
+  if (isLinux () || fhandle->count >= FLUSH_COUNT) {
 #if _lib_FlushFileBuffers
     FlushFileBuffers (fhandle->handle);
 #else

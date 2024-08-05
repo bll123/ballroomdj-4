@@ -4,7 +4,7 @@
 #ifndef INC_FILESHARED_H
 #define INC_FILESHARED_H
 
-typedef union filehandle fileshared_t;
+typedef struct filehandle fileshared_t;
 
 enum {
   FILE_OPEN_APPEND,

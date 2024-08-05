@@ -29,6 +29,7 @@
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 #define FN  "tmp/fileshared.txt"
 #define DATAA "abc123\n"
@@ -166,7 +167,7 @@ START_TEST(fileshared_write_shared)
     fileSharedWrite (sfh, DATAA, strlen (DATAA));
     procutilFree (process);
   }
-  sleep (2);
+  mssleep (1500);   /* must be longer than the sleeps in chkfileshared.c */
 
   fileSharedClose (sfh);
 
