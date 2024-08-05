@@ -126,7 +126,7 @@ if (WIN32)
   target_compile_options (uitest PRIVATE -mwindows)
 endif()
 target_link_libraries (uitest PRIVATE
-  libbdj4ui ${BDJ4_UI_LIB}
+  libbdj4uii ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
   ${GTK_LDFLAGS}

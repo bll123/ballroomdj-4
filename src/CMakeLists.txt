@@ -125,7 +125,10 @@ endif()
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
   add_subdirectory (libuinull)
 endif()
-add_subdirectory (libbdj4ui)
+add_subdirectory (libuiintfc)
+add_subdirectory (libuicommon)
+add_subdirectory (libuimanage)
+add_subdirectory (libuiplayer)
 
 # executables
 add_subdirectory (configui)

@@ -61,7 +61,7 @@ fileSharedOpen (const char *fname, int truncflag)
   fhandle->count = 0;
   fhandle->fh = NULL;
 #if _typ_HANDLE
-  fhaneld->handle = NULL;
+  fhandle->handle = NULL;
 #endif
 
 #if _lib_CreateFileW

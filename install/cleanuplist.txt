@@ -170,6 +170,10 @@ plocal/share/themes/[^/]*/unity
 plocal/share/themes/[^/]*/xfce-notify-4.0
 plocal/share/themes/[^/]*/xfwm4
 
+# 2024-8-5
+# the libbdj4ui library has been split up
+bin/libbdj4ui\.(so|dylib|dll)$
+
 ####
 # mac-os
 
