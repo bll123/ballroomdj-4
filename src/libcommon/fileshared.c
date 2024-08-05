@@ -25,12 +25,18 @@
 #include "fileshared.h"
 #include "mdebug.h"
 #include "osutils.h"
+#include "sysvars.h"
+
+enum {
+  FLUSH_COUNT = 20,
+};
 
 typedef union filehandle {
 #if _typ_HANDLE
   HANDLE  handle;
 #endif
-  int     fd;
+  FILE    *fh;
+  int     count;
 } fileshared_t;
 
 fileshared_t *
@@ -43,7 +49,7 @@ fileSharedOpen (const char *fname, int truncflag)
   HANDLE    handle;
   DWORD     cd;
 #else
-  int         fd;
+  FILE        *fh;
   int         flags;
 #endif
 
@@ -52,6 +58,8 @@ fileSharedOpen (const char *fname, int truncflag)
   }
 
   fhandle = mdmalloc (sizeof (fileshared_t));
+  fhandle->fh = NULL;
+  fhandle->count = 0;
 
 #if _lib_CreateFileW
   cd = OPEN_ALWAYS;
@@ -87,10 +95,10 @@ fileSharedOpen (const char *fname, int truncflag)
     flags |= O_TRUNC;
   }
 
-  fd = open (fname, flags, 0600);
-  mdextopen (fd);
-  fhandle->fd = fd;
-  if (fd < 0) {
+  fh = fopen (fname, "a");
+  mdextfopen (fh);
+  fhandle->fh = fh;
+  if (fh == NULL) {
     dataFree (fhandle);
     fhandle = NULL;
   }
@@ -114,8 +122,22 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
 #if _lib_WriteFile
   rc = WriteFile (fhandle->handle, data, len, &wlen, NULL);
 #else
-  rc = write (fhandle->fd, data, len);
+  rc = fwrite (data, len, 1, fhandle->fh);
 #endif
+
+  /* on linux, flushing each time is reasonably fast */
+  /* on MacOS, flushing each time is very slow */
+  /* windows has not been tested */
+  if (isLinux () || fhandle->count == FLUSH_COUNT) {
+#if _lib_FlushFileBuffers
+    FlushFileBuffers (fhandle->handle);
+#else
+    fflush (fhandle->fh);
+#endif
+    fhandle->count = 0;
+  }
+  ++fhandle->count;
+
   return rc;
 }
 
@@ -130,8 +152,8 @@ fileSharedClose (fileshared_t *fhandle)
   mdextfclose (fhandle->handle);
   CloseHandle (fhandle->handle);
 #else
-  mdextclose (fhandle->fd);
-  close (fhandle->fd);
+  mdextfclose (fhandle->fh);
+  fclose (fhandle->fh);
 #endif
   dataFree (fhandle);
   return;

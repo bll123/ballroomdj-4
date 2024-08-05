@@ -29,8 +29,10 @@ or group, such as the city and state or province.  e.g.
 _danceacademy_ is a bad tag.  _danceacademybrusselsbe_ is better.
 
 __Password__: _Internet_ mode only.  The password for the internet
-mobile marquee.  Once set, it cannot be changed.  The password
-prevents anyone else from using the tag you selected.
+mobile marquee.  The password prevents anyone else from using the tag
+you selected. Once set, it cannot be changed.  [[The password is set
+permanently the first time the mobile marquee is started by the
+player]].
 
 __Port__: _Local_ mode only. The port to connect to.  This usually
 does not need to be changed unless there is another device using this
@@ -52,4 +54,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-07-30 06:29:47; BDJ4 version 4.11.3)_
+<br>_(Updated 2024-08-01 08:21:53; BDJ4 version 4.11.3.1)_
