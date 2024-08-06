@@ -48,6 +48,7 @@ typedef struct dbus {
   GVariant        *tvariant;
   GVariant        *data;
   GVariant        *result;
+  GVariantBuilder gvbuild;
   int             busid;
   _Atomic(int)    state;
   _Atomic(int)    busstate;
@@ -224,17 +225,23 @@ dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...)
   va_list         args;
   GVariant        *v;
   GVariant        *tv;
-  GVariantBuilder b;
   const char      *str;
 
   va_start (args, sdata);
   dbusFreeData (dbus);
-  g_variant_builder_init (&b, G_VARIANT_TYPE ("as"));
+  g_variant_builder_init (&dbus->gvbuild, G_VARIANT_TYPE (sdata));
 
-  while ((str = va_arg (args, const char *)) != NULL) {
-    g_variant_builder_add (&b, "s", str);
+  if (strcmp (sdata, "as") == 0) {
+    while ((str = va_arg (args, const char *)) != NULL) {
+      g_variant_builder_add (&dbus->gvbuild, "s", str);
+    }
   }
-  tv = g_variant_builder_end (&b);
+  if (strcmp (sdata, "a{sv}") == 0) {
+    str = va_arg (args, const char *);
+    v = va_arg (args, void *);
+    g_variant_builder_add (&dbus->gvbuild, "{sv}", str, v);
+  }
+  tv = g_variant_builder_end (&dbus->gvbuild);
   v = g_variant_new ("(v)", tv);
   dbus->data = v;
   mdextalloc (dbus->data);
@@ -242,6 +249,56 @@ dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...)
   dumpResult ("data-va-a", dbus->data);
 # endif
   va_end (args);
+}
+
+void
+dbusMessageInitArray (dbus_t *dbus, const char *sdata)
+{
+fprintf (stderr, "i-array\n");
+  g_variant_builder_init (&dbus->gvbuild, G_VARIANT_TYPE (sdata));
+fprintf (stderr, "i-array-fin\n");
+}
+
+void
+dbusMessageAppendArray (dbus_t *dbus, const char *sdata, ...)
+{
+  va_list         args;
+  GVariant        *v;
+  const char      *str;
+
+fprintf (stderr, "a-array\n");
+  va_start (args, sdata);
+  dbusFreeData (dbus);
+
+  if (strcmp (sdata, "as") == 0) {
+    str = va_arg (args, const char *);
+    g_variant_builder_add (&dbus->gvbuild, "s", str);
+  }
+  if (strcmp (sdata, "a{sv}") == 0) {
+    str = va_arg (args, const char *);
+    v = va_arg (args, void *);
+# if DBUS_DEBUG
+  dumpResult ("aa-v", v);
+# endif
+    g_variant_builder_add (&dbus->gvbuild, "{sv}", str, v);
+  }
+  va_end (args);
+fprintf (stderr, "a-array-fin\n");
+}
+
+void *
+dbusMessageFinalizeArray (dbus_t *dbus)
+{
+  GVariant        *tv;
+
+fprintf (stderr, "f-array\n");
+  tv = g_variant_builder_end (&dbus->gvbuild);
+//  g_variant_ref (tv);
+# if DBUS_DEBUG
+  dumpResult ("fin-arr", tv);
+# endif
+fprintf (stderr, "f-array-fin\n");
+  return tv;
 }
 
 /* use a gvariant string to set the data */
@@ -452,12 +509,17 @@ dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
 
 void
 dbusEmitSignal (dbus_t *dbus, const char *objpath,
-    const char *intfc, const char *property, void *params)
+    const char *intfc, const char *property)
 {
   GError              *gerror = NULL;
 
+
+# if DBUS_DEBUG
+  fprintf (stderr, "== %s\n   %s\n   %s\n", objpath, intfc, property);
+  dumpResult ("emit", dbus->data);
+# endif
   g_dbus_connection_emit_signal (dbus->dconn, NULL,
-      objpath, intfc, property, params, &gerror);
+      objpath, intfc, property, dbus->data, &gerror);
   if (gerror != NULL) {
     fprintf (stderr, "%s\n", gerror->message);
   }
@@ -473,8 +535,10 @@ dbusFreeData (dbus_t *dbus)
   }
 
   mdextfree (dbus->data);
-fprintf (stderr, "data-unref: %d\n", G_IS_OBJECT (dbus->data));
-  g_variant_unref (dbus->data);
+fprintf (stderr, "fd-data-unref: %d\n", G_IS_OBJECT (dbus->data));
+  if (G_IS_OBJECT (dbus->data)) {
+    g_variant_unref (dbus->data);
+  }
 }
 
 static void

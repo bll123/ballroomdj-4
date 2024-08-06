@@ -130,6 +130,25 @@ static const char *propstr [MPRIS_PROP_MAX] = {
 };
 
 enum {
+  MPRIS_METADATA_ALBUM,
+  MPRIS_METADATA_ALBUMARTIST,
+  MPRIS_METADATA_ARTIST,
+  MPRIS_METADATA_TITLE,
+  MPRIS_METADATA_TRACKID,
+  MPRIS_METADATA_DURATION,
+  MPRIS_METADATA_MAX,
+};
+
+static const char *metadatastr [MPRIS_METADATA_MAX] = {
+  [MPRIS_METADATA_ALBUM] = "xesam:album",
+  [MPRIS_METADATA_ALBUMARTIST] = "xesam:albumArtist",
+  [MPRIS_METADATA_ARTIST] = "xesam:artist",
+  [MPRIS_METADATA_TITLE] = "xesam:title",
+  [MPRIS_METADATA_TRACKID] = "mpris:trackid",
+  [MPRIS_METADATA_DURATION] = "mpris:length",
+};
+
+enum {
   MPRIS_STATUS_PLAY,
   MPRIS_STATUS_PAUSE,
   MPRIS_STATUS_STOP,
@@ -159,6 +178,8 @@ typedef struct contdata {
   dbus_t              *dbus;
   callback_t          *cb;
   nlist_t             *chgprop;
+  nlist_t             *metadata;
+  void                *metav;
   int                 root_interface_id;
   int                 player_interface_id;
   int                 playstatus;
@@ -173,13 +194,13 @@ typedef struct contdata {
 
 static bool mprisiMethodCallback (const char *intfc, const char *method, void *udata);
 static bool mprisiPropertyGetCallback (const char *intfc, const char *method, void *udata);
+static void mprisSendPropertyChange (contdata_t *contdata);
 
 #if 0
 
 static void mprisiMethodRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static void mprisiMethodPlayer (GDBusConnection *connection, const char *sender, const char *_object_path, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
 static GVariant * mprisiPropertyGetRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
-static GVariant * mprisiPropertyGetPlayer (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GError **error, gpointer udata);
 static gboolean mprisiPropertySetRoot (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
 static gboolean mprisiPropertySetPlayer (GDBusConnection *connection, const char *sender, const char *object_path, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
 
@@ -215,7 +236,9 @@ contiInit (const char *instname)
 
   contdata = mdmalloc (sizeof (contdata_t));
   contdata->cb = NULL;
-  contdata->chgprop = nlistAlloc ("cont-mprisi", LIST_ORDERED, NULL);
+  contdata->chgprop = nlistAlloc ("cont-mprisi-prop", LIST_ORDERED, NULL);
+  contdata->metadata = NULL;
+  contdata->metav = NULL;
   contdata->root_interface_id = -1;
   contdata->player_interface_id = -1;
   contdata->playstatus = MPRIS_STATUS_STOP;
@@ -241,6 +264,7 @@ contiFree (contdata_t *contdata)
   }
 
   nlistFree (contdata->chgprop);
+  nlistFree (contdata->metadata);
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
     dbusUnregisterObject (contdata->dbus, contdata->root_interface_id);
     dbusUnregisterObject (contdata->dbus, contdata->player_interface_id);
@@ -303,6 +327,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     return;
   }
 
+fprintf (stderr, "mprisi: set-play-state\n");
   switch (state) {
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING:
@@ -321,7 +346,8 @@ contiSetPlayState (contdata_t *contdata, int state)
     }
   }
   if (contdata->playstatus != nstate) {
-    nlistSetStr (contdata->chgprop, MPRIS_PROP_PB_STATUS, statusstr [contdata->playstatus]);
+    nlistSetNum (contdata->chgprop, MPRIS_PROP_PB_STATUS, nstate);
+    mprisSendPropertyChange (contdata);
   }
   contdata->playstatus = nstate;
 }
@@ -335,12 +361,14 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     return;
   }
 
+fprintf (stderr, "mprisi: set-repeat-state\n");
   nstate = MPRIS_REPEAT_NONE;
   if (state) {
     nstate = MPRIS_REPEAT_TRACK;
   }
-  if (contdata->repeatstatus != state) {
-    nlistSetStr (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, repeatstr [nstate]);
+  if (contdata->repeatstatus != nstate) {
+    nlistSetNum (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, nstate);
+    mprisSendPropertyChange (contdata);
   }
   contdata->repeatstatus = nstate;
 }
@@ -352,9 +380,7 @@ contiSetPosition (contdata_t *contdata, double pos)
     return;
   }
 
-  if (contdata->pos != pos) {
-    nlistSetDouble (contdata->chgprop, MPRIS_PROP_POSITION, pos);
-  }
+fprintf (stderr, "mprisi: set-position\n");
   contdata->pos = pos;
 }
 
@@ -365,8 +391,13 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
+fprintf (stderr, "mprisi: set-rate\n");
   if (contdata->rate != rate) {
-    nlistSetNum (contdata->chgprop, MPRIS_PROP_RATE, rate);
+    double    dval;
+
+    dval = (double) rate / 100.0;
+    nlistSetDouble (contdata->chgprop, MPRIS_PROP_RATE, dval);
+    mprisSendPropertyChange (contdata);
   }
   contdata->rate = rate;
 }
@@ -378,10 +409,78 @@ contiSetVolume (contdata_t *contdata, int volume)
     return;
   }
 
+fprintf (stderr, "mprisi: set-volume\n");
   if (contdata->volume != volume) {
-    nlistSetNum (contdata->chgprop, MPRIS_PROP_VOLUME, volume);
+    double    dval;
+
+    dval = (double) volume / 100.0;
+    nlistSetDouble (contdata->chgprop, MPRIS_PROP_VOLUME, dval);
+    mprisSendPropertyChange (contdata);
   }
   contdata->volume = volume;
+}
+
+void
+contiSetCurrent (contdata_t *contdata, const char *album,
+    const char *albumartist, const char *artist, const char *title,
+    int32_t trackid, int32_t duration)
+{
+  char        tbuff [200];
+  nlistidx_t  miter;
+  nlistidx_t  mkey;
+  void        *tv;
+
+  if (contdata == NULL) {
+    return;
+  }
+
+fprintf (stderr, "mprisi: set-current\n");
+
+  nlistFree (contdata->metadata);
+  contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
+
+  if (trackid >= 0) {
+    snprintf (tbuff, sizeof (tbuff), "/%" PRId32, trackid);
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "/noplaylist");
+  }
+  nlistSetStr (contdata->metadata, MPRIS_METADATA_TRACKID, tbuff);
+  nlistSetNum (contdata->metadata, MPRIS_METADATA_DURATION, duration);
+
+  if (title != NULL && *title) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_TITLE, title);
+  }
+  if (artist != NULL && *artist) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ARTIST, artist);
+  }
+  if (album != NULL && *album) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUM, album);
+  }
+  if (albumartist != NULL && *albumartist) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUMARTIST, albumartist);
+  }
+
+  nlistStartIterator (contdata->metadata, &miter);
+  dbusMessageInitArray (contdata->dbus, "a{sv}");
+  while ((mkey = nlistIterateKey (contdata->metadata, &miter)) >= 0) {
+    if (mkey == MPRIS_METADATA_DURATION) {
+fprintf (stderr, "    key %d %ld\n", mkey, (long) nlistGetNum (contdata->metadata, mkey));
+      tv = dbusMessageBuild ("x", nlistGetNum (contdata->metadata, mkey));
+    } else if (mkey == MPRIS_METADATA_TRACKID) {
+fprintf (stderr, "    key %d %s\n", mkey, nlistGetStr (contdata->metadata, mkey));
+      tv = dbusMessageBuild ("o", nlistGetStr (contdata->metadata, mkey));
+    } else {
+fprintf (stderr, "    key %d %s\n", mkey, nlistGetStr (contdata->metadata, mkey));
+      tv = dbusMessageBuild ("s", nlistGetStr (contdata->metadata, mkey));
+    }
+    dbusMessageAppendArray (contdata->dbus, "a{sv}",
+        metadatastr [mkey], tv, NULL);
+  }
+  tv = dbusMessageFinalizeArray (contdata->dbus);
+  contdata->metav = tv;
+
+  nlistSetNum (contdata->chgprop, MPRIS_PROP_METADATA, 1);
+  mprisSendPropertyChange (contdata);
 }
 
 /* internal routines */
@@ -469,13 +568,13 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       rc = true;
     } else if (strcmp (prop, "SupportedUriSchemes") == 0) {
       rc = true;
-      dbusMessageSetDataArray (contdata->dbus, "(as)",
+      dbusMessageSetDataArray (contdata->dbus, "as",
           "file",
           NULL);
     } else if (strcmp (prop, "SupportedMimeTypes") == 0) {
       rc = true;
       /* this is the list from vlc w/o video */
-      dbusMessageSetDataArray (contdata->dbus, "(as)",
+      dbusMessageSetDataArray (contdata->dbus, "as",
           "audio/mpeg",
           "audio/x-mpeg",
           "audio/mp4",
@@ -503,38 +602,26 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, propstr [MPRIS_PROP_RATE]) == 0) {
+      tv = dbusMessageBuild ("d", (double) contdata->rate, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-//      double rate;
-  //      mpv_get_property (contdata->mpv, "speed", MPV_FORMAT_DOUBLE, &rate);
-//      ret = g_variant_new_double (rate);
     } else if (strcmp (prop, "Shuffle") == 0) {
       tv = dbusMessageBuild ("b", false, NULL);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
     } else if (strcmp (prop, propstr [MPRIS_PROP_METADATA]) == 0) {
-      rc = true;
-#if 0
-      if (!contdata->metadata) {
-        contdata->metadata = create_metadata (contdata);
+      if (contdata->metav != NULL) {
+        dbusMessageSetData (contdata->dbus, "(v)", contdata->metav, NULL);
+        rc = true;
       }
-      // Increase reference count to prevent it from being freed after returning
-      g_variant_ref (contdata->metadata);
-      ret = contdata->metadata;
-#endif
     } else if (strcmp (prop, propstr [MPRIS_PROP_VOLUME]) == 0) {
+      tv = dbusMessageBuild ("d", (double) contdata->volume, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-//      double volume;
-
-  //      mpv_get_property (contdata->mpv, "volume", MPV_FORMAT_DOUBLE, &volume);
-//      volume /= 100;
-//      ret = g_variant_new_double (volume);
     } else if (strcmp (prop, propstr [MPRIS_PROP_POSITION]) == 0) {
+      tv = dbusMessageBuild ("x", (double) contdata->pos, NULL);
+      dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
       rc = true;
-//      double  position_s;
-//      int64_t position_us;
-  //    mpv_get_property (contdata->mpv, "time-pos", MPV_FORMAT_DOUBLE, &position_s);
-//      position_us = position_s * 1000000.0; // s -> us
-//      ret = g_variant_new_int64 (position_us);
     } else if (strcmp (prop, "MinimumRate") == 0) {
       tv = dbusMessageBuild ("d", 0.7, NULL);
       dbusMessageSetData (contdata->dbus, "(v)", tv, NULL);
@@ -572,6 +659,68 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
 
   return rc;
 }
+
+static void
+mprisSendPropertyChange (contdata_t *contdata)
+{
+  nlistidx_t    iter;
+  nlistidx_t    key;
+
+  if (nlistGetCount (contdata->chgprop) == 0) {
+    return;
+  }
+
+fprintf (stderr, "mprisi: send-prop-chg\n");
+  dbusMessageInit (contdata->dbus);
+  nlistStartIterator (contdata->chgprop, &iter);
+  while ((key = nlistIterateKey (contdata->chgprop, &iter)) >= 0) {
+    int         val = 0;
+    double      dval = 0.0;
+    const char  *str = NULL;
+//    void        *tv = NULL;
+    void        *tvv = NULL;
+
+    switch (key) {
+      case MPRIS_PROP_PB_STATUS: {
+fprintf (stderr, "  pb-status\n");
+        val = nlistGetNum (contdata->chgprop, key);
+        str = statusstr [val];
+        break;
+      }
+      case MPRIS_PROP_REPEAT_STATUS: {
+fprintf (stderr, "  rep-status\n");
+        val = nlistGetNum (contdata->chgprop, key);
+        str = repeatstr [val];
+        break;
+      }
+      case MPRIS_PROP_METADATA: {
+fprintf (stderr, "  metadata\n");
+        tvv = contdata->metav;
+        break;
+      }
+      default: {
+        dval = nlistGetDouble (contdata->chgprop, key);
+        break;
+      }
+    }
+
+    if (str != NULL) {
+      tvv = dbusMessageBuild ("s", str, NULL);
+    } else if (tvv == NULL) {
+      tvv = dbusMessageBuild ("d", dval, NULL);
+    }
+//    tv = dbusMessageBuild ("{sv}", propstr [key], tvv, NULL);
+fprintf (stderr, "  %s\n", propstr [key]);
+    dbusMessageSetDataArray (contdata->dbus, "a{sv}", propstr [key], tvv, NULL);
+  }
+
+  dbusEmitSignal (contdata->dbus, objpath [MPRIS_OBJP_MP2],
+      interface [MPRIS_INTFC_DBUS_PROP], "PropertiesChanged");
+
+  nlistFree (contdata->chgprop);
+  contdata->chgprop = nlistAlloc ("mprisi-chgprop", LIST_ORDERED, NULL);
+}
+
 
 #if 0
 
@@ -744,77 +893,6 @@ mprisiMethodPlayer (GDBusConnection *connection,
         G_DBUS_ERROR_UNKNOWN_METHOD,
         "Unknown method");
   }
-}
-
-static GVariant *
-mprisiPropertyGetPlayer (GDBusConnection *connection,
-    const char *sender,
-    const char *object_path,
-    const char *interface_name,
-    const char *prop,
-    GError **error,
-    gpointer udata)
-{
-  contdata_t  *contdata = (contdata_t*) udata;
-  GVariant    *ret;
-
-  if (strcmp (prop, "PlaybackStatus") == 0) {
-    ret = g_variant_new_string (contdata->playstatus);
-  } else if (strcmp (prop, "LoopStatus") == 0) {
-    ret = g_variant_new_string (contdata->repeatstatus);
-  } else if (strcmp (prop, "Rate") == 0) {
-    double rate;
-
-//      mpv_get_property (contdata->mpv, "speed", MPV_FORMAT_DOUBLE, &rate);
-    ret = g_variant_new_double (rate);
-  } else if (strcmp (prop, "Shuffle") == 0) {
-    int shuffle;
-
-//      mpv_get_property (contdata->mpv, "playlist-shuffle", MPV_FORMAT_FLAG, &shuffle);
-    ret = g_variant_new_boolean (shuffle);
-  } else if (strcmp (prop, "Metadata") == 0) {
-    if (!contdata->metadata) {
-      contdata->metadata = create_metadata (contdata);
-    }
-    // Increase reference count to prevent it from being freed after returning
-    g_variant_ref (contdata->metadata);
-    ret = contdata->metadata;
-  } else if (strcmp (prop, "Volume") == 0) {
-    double volume;
-
-//      mpv_get_property (contdata->mpv, "volume", MPV_FORMAT_DOUBLE, &volume);
-    volume /= 100;
-    ret = g_variant_new_double (volume);
-  } else if (strcmp (prop, "Position") == 0) {
-    double  position_s;
-    int64_t position_us;
-//    mpv_get_property (contdata->mpv, "time-pos", MPV_FORMAT_DOUBLE, &position_s);
-    position_us = position_s * 1000000.0; // s -> us
-    ret = g_variant_new_int64 (position_us);
-  } else if (strcmp (prop, "MinimumRate") == 0) {
-    ret = g_variant_new_double (0.01);
-  } else if (strcmp (prop, "MaximumRate") == 0) {
-    ret = g_variant_new_double (100);
-  } else if (strcmp (prop, "CanGoNext") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else if (strcmp (prop, "CanGoPrevious") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else if (strcmp (prop, "CanPlay") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else if (strcmp (prop, "CanPause") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else if (strcmp (prop, "CanSeek") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else if (strcmp (prop, "CanControl") == 0) {
-    ret = g_variant_new_boolean (TRUE);
-  } else {
-    ret = NULL;
-    g_set_error (error, G_DBUS_ERROR,
-        G_DBUS_ERROR_UNKNOWN_PROPERTY,
-        "Unknown property %s", prop);
-  }
-
-  return ret;
 }
 
 static gboolean

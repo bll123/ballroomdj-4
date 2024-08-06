@@ -30,6 +30,9 @@ void *dbusMessageBuild (const char *sdata, ...);
 void *dbusMessageBuildObj (const char *path);
 void dbusMessageSetData (dbus_t *dbus, const char *sdata, ...);
 void dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...);
+void dbusMessageInitArray (dbus_t *dbus, const char *sdata);
+void dbusMessageAppendArray (dbus_t *dbus, const char *sdata, ...);
+void *dbusMessageFinalizeArray (dbus_t *dbus);
 void dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...);
 bool dbusMessage (dbus_t *dbus, const char *bus, const char *objpath, const char *intfc, const char *method);
 bool dbusResultGet (dbus_t *dbus, ...);
@@ -37,6 +40,6 @@ void dbusSetIntrospectionData (dbus_t *dbus, const char *intropection_xml);
 int   dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc);
 void dbusUnregisterObject (dbus_t *dbus, int intfcid);
 void dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod, dbusCBpropget_t cbpropget);
-void dbusEmitSignal (dbus_t *dbus, const char *objpath, const char *intfc, const char *property, void *params);
+void dbusEmitSignal (dbus_t *dbus, const char *objpath, const char *intfc, const char *property);
 
 #endif /* INC_DBUSI_H */

@@ -266,6 +266,33 @@ msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx,
       mqidx, MSG_ARGS_RS, fn, MSG_ARGS_RS, editflag);
 }
 
+void
+msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx)
+{
+  snprintf (buff, sz, "%" PRId32 "%c%" PRId32, dbidx, MSG_ARGS_RS, uniqueidx);
+}
+
+void
+msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
+{
+  char    *p;
+  char    *tokstr;
+
+  if (mqstatus == NULL || data == NULL) {
+    return;
+  }
+
+  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    mqstatus->dbidx = atol (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    mqstatus->uniqueidx = atol (p);
+  }
+}
+
 /* internal routines */
 
 static void

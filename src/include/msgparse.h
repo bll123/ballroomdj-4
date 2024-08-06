@@ -43,6 +43,11 @@ typedef struct {
   bool            newsong : 1;
 } mp_playerstate_t;
 
+typedef struct {
+  dbidx_t   dbidx;
+  int32_t   uniqueidx;
+} mp_musicqstatus_t;
+
 mp_musicqupdate_t *msgparseMusicQueueData (char * data);
 void  msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate);
 
@@ -58,5 +63,8 @@ mp_playerstate_t *msgparsePlayerStateData (char * data);
 void msgparsePlayerStateFree (mp_playerstate_t *playerstate);
 
 void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);
+
+void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx);
+void msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data);
 
 #endif /* INC_MSGPARSE_H */

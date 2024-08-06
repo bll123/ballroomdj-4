@@ -172,8 +172,7 @@ static bool     uiplayerSpdResetCallback (void *udata);
 
 uiplayer_t *
 uiplayerInit (const char *tag, progstate_t *progstate,
-    conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel,
-    controller_t *controller)
+    conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel)
 {
   uiplayer_t    *uiplayer;
 
@@ -184,7 +183,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
   uiplayer->dispsel = dispsel;
-  uiplayer->controller = controller;
+  uiplayer->controller = NULL;
   for (int i = 0; i < UIPL_CB_MAX; ++i) {
     uiplayer->callbacks [i] = NULL;
   }
@@ -213,6 +212,16 @@ uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb)
   }
 
   uiplayer->musicdb = musicdb;
+}
+
+void
+uiplayerSetController (uiplayer_t *uiplayer, controller_t *controller)
+{
+  if (uiplayer == NULL) {
+    return;
+  }
+
+  uiplayer->controller = controller;
 }
 
 void
@@ -892,6 +901,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
+fprintf (stderr, "call cont-set-play-state %p\n", uiplayer->controller);
   controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
   switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
@@ -1014,18 +1024,16 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 static void
 uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 {
-  char          *p;
-  char          *tokstr;
-  dbidx_t       dbidx = -1;
-  song_t        *song = NULL;
-  ilistidx_t    danceIdx;
-  dance_t       *dances;
-  slist_t       *sellist;
-  const char    *sep = "";
-  char          sepstr [20] = { " " };
-  int           idx;
-  int           tagidx;
-  slistidx_t    seliteridx;
+  song_t            *song = NULL;
+  ilistidx_t        danceIdx;
+  dance_t           *dances;
+  slist_t           *sellist;
+  const char        *sep = "";
+  char              sepstr [20] = { " " };
+  int               idx;
+  int               tagidx;
+  slistidx_t        seliteridx;
+  mp_musicqstatus_t mqstatus;
 
   logProcBegin ();
 
@@ -1035,17 +1043,16 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     return;
   }
 
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  dbidx = atol (p);
-  uiplayer->curr_dbidx = dbidx;
+  msgparseMusicQStatus (&mqstatus, args);
+  uiplayer->curr_dbidx = mqstatus.dbidx;
 
-  if (dbidx < 0) {
+  if (mqstatus.dbidx < 0) {
     uiplayerClearDisplay (uiplayer);
     logProcEnd ("no-dbidx");
     return;
   }
 
-  song = dbGetByIdx (uiplayer->musicdb, dbidx);
+  song = dbGetByIdx (uiplayer->musicdb, mqstatus.dbidx);
   if (song == NULL) {
     uiplayerClearDisplay (uiplayer);
     logProcEnd ("null-song");
@@ -1053,6 +1060,11 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   }
 
   sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_CURRSONG);
+
+  controllerSetCurrent (uiplayer->controller, songGetStr (song, TAG_ALBUM),
+      songGetStr (song, TAG_ALBUMARTIST), songGetStr (song, TAG_ARTIST),
+      songGetStr (song, TAG_TITLE), mqstatus.uniqueidx,
+      songGetNum (song, TAG_DURATION));
 
   idx = UIPL_W_INFO_DISP_A;
   slistStartIterator (sellist, &seliteridx);

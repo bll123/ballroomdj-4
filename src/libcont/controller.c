@@ -33,6 +33,7 @@ typedef struct controller {
   void              (*contiSetPosition) (contdata_t *contdata, double pos);
   void              (*contiSetRate) (contdata_t *contdata, int rate);
   void              (*contiSetVolume) (contdata_t *contdata, int volume);
+  void              (*contiSetCurrent) (contdata_t *contdata, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
 } controller_t;
 
 controller_t *
@@ -73,6 +74,7 @@ controllerInit (const char *contpkg)
   cont->contiSetPosition = dylibLookup (cont->dlHandle, "contiSetPosition");
   cont->contiSetRate = dylibLookup (cont->dlHandle, "contiSetRate");
   cont->contiSetVolume = dylibLookup (cont->dlHandle, "contiSetVolume");
+  cont->contiSetCurrent = dylibLookup (cont->dlHandle, "contiSetCurrent");
 #pragma clang diagnostic pop
 
   strlcpy (instname, BDJ4_NAME, sizeof (instname));
@@ -206,6 +208,21 @@ controllerSetVolume (controller_t *cont, int volume)
 
   if (cont->contdata != NULL && cont->contiSetVolume != NULL) {
     cont->contiSetVolume (cont->contdata, volume);
+  }
+}
+
+void
+controllerSetCurrent (controller_t *cont, const char *album,
+    const char *albumartist, const char *artist, const char *title,
+    int32_t trackid, int32_t duration)
+{
+  if (cont == NULL) {
+    return;
+  }
+
+  if (cont->contdata != NULL && cont->contiSetCurrent != NULL) {
+    cont->contiSetCurrent (cont->contdata, album, albumartist, artist, title,
+        trackid, duration);
   }
 }
 

@@ -801,7 +801,7 @@ static void
 pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn,
-      plui->musicdb, plui->dispsel, plui->controller);
+      plui->musicdb, plui->dispsel);
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
@@ -1046,6 +1046,7 @@ pluiInitDataCallback (void *udata, programstate_t programState)
 
     val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
     if (val != NULL && *val) {
+fprintf (stderr, "plui: init controller\n");
       plui->controller = controllerInit (val);
     } else {
       rc = STATE_FINISHED;
@@ -1054,11 +1055,15 @@ pluiInitDataCallback (void *udata, programstate_t programState)
 
   if (plui->controller != NULL &&
       controllerCheckReady (plui->controller)) {
+fprintf (stderr, "plui: controller ready\n");
     controllerSetup (plui->controller);
     plui->callbacks [PLUI_CB_CONTROLLER] =
         callbackInitII (pluiControllerCallback, plui);
     controllerSetCallback (plui->controller, plui->callbacks [PLUI_CB_CONTROLLER]);
+    uiplayerSetController (plui->uiplayer, plui->controller);
     rc = STATE_FINISHED;
+  } else {
+fprintf (stderr, "plui: controller not ready\n");
   }
 
   return rc;

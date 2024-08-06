@@ -16,8 +16,9 @@
 
 typedef struct uiplayer uiplayer_t;
 
-uiplayer_t  * uiplayerInit (const char *tag, progstate_t *progstate, conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel, controller_t *controller);
+uiplayer_t  * uiplayerInit (const char *tag, progstate_t *progstate, conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel);
 void  uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb);
+void  uiplayerSetController (uiplayer_t *uiplayer, controller_t *controller);
 void  uiplayerFree (uiplayer_t *uiplayer);
 uiwcont_t     *uiplayerBuildUI (uiplayer_t *uiplayer);
 void  uiplayerMainLoop (uiplayer_t *uiplayer);

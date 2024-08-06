@@ -953,7 +953,7 @@ manageInitializeUI (manageui_t *manage)
       SONG_FILTER_FOR_SELECTION);
 
   manage->slplayer = uiplayerInit ("sl-player", manage->progstate, manage->conn,
-      manage->musicdb, manage->minfo.dispsel, NULL);
+      manage->musicdb, manage->minfo.dispsel);
   manage->slmusicq = uimusicqInit ("m-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
   uimusicqSetPlayIdx (manage->slmusicq, manage->musicqPlayIdx);
@@ -988,7 +988,7 @@ manageInitializeUI (manageui_t *manage)
       manage->callbacks [MANAGE_CB_QUEUE_SL_SBS]);
 
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
-      manage->musicdb, manage->minfo.dispsel, NULL);
+      manage->musicdb, manage->minfo.dispsel);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
       manage->uisongfilter, DISP_SEL_MM);
