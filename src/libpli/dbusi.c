@@ -51,6 +51,7 @@ typedef struct dbus {
   GVariantBuilder gvbuild;
   int             acount;
   int             busid;
+  int             vtableidx;
   _Atomic(int)    state;
   _Atomic(int)    busstate;
   dbusCBmethod_t  cbmethod;
@@ -68,8 +69,9 @@ static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char 
 static void dumpResult (const char *tag, GVariant *data);
 # endif
 
-static GDBusInterfaceVTable vtable = {
-    dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 },
+static GDBusInterfaceVTable vtable [] = {
+  { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
+  { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
 };
 
 dbus_t *
@@ -80,6 +82,7 @@ dbusConnInit (void)
   dbus = mdmalloc (sizeof (dbus_t));
   dbus->dconn = NULL;
   dbus->idata = NULL;
+  dbus->vtableidx = 0;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->busid = DBUS_INVALID_BUS;
@@ -510,7 +513,7 @@ dbusSetIntrospectionData (dbus_t *dbus, const char *introspection_xml)
 
   dbus->idata = g_dbus_node_info_new_for_xml (introspection_xml, &error);
   if (error != NULL) {
-    fprintf (stderr, "%s\n", error->message);
+    fprintf (stderr, "ERR: %s\n", error->message);
   }
 }
 
@@ -528,9 +531,11 @@ dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc)
   info = g_dbus_node_info_lookup_interface (dbus->idata, intfc);
 
   intfcid = g_dbus_connection_register_object (
-      dbus->dconn, objpath, info, &vtable, dbus, NULL, &error);
+      dbus->dconn, objpath, info, &vtable [dbus->vtableidx], dbus, NULL, &error);
+  ++dbus->vtableidx;
+fprintf (stderr, "register: o:%s i:%s id:%d\n", objpath, intfc, intfcid);
   if (error != NULL) {
-    fprintf (stderr, "%s\n", error->message);
+    fprintf (stderr, "ERR: %s\n", error->message);
   }
 
   return intfcid;
@@ -559,7 +564,7 @@ dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
 }
 
 void
-dbusEmitSignal (dbus_t *dbus, const char *bus, const char *objpath,
+dbusEmitSignal (dbus_t *dbus, const char *objpath,
     const char *intfc, const char *property)
 {
   GError              *gerror = NULL;
@@ -568,10 +573,10 @@ dbusEmitSignal (dbus_t *dbus, const char *bus, const char *objpath,
   fprintf (stderr, "== %s\n   %s\n   %s\n", objpath, intfc, property);
   dumpResult ("emit", dbus->data);
 # endif
-  g_dbus_connection_emit_signal (dbus->dconn, bus,
+  g_dbus_connection_emit_signal (dbus->dconn, NULL,
       objpath, intfc, property, dbus->data, &gerror);
   if (gerror != NULL) {
-    fprintf (stderr, "%s\n", gerror->message);
+    fprintf (stderr, "ERR: %s\n", gerror->message);
   }
 }
 
@@ -697,7 +702,6 @@ dumpResult (const char *tag, GVariant *data)
   type = g_variant_get_type_string (data);
   fprintf (stderr, "  type: %s\n", type);
 
-#if 0
   if (strcmp (type, "(v)") == 0) {
     g_variant_get (data, type, &v);
     dumpResult ("value", v);
@@ -725,8 +729,6 @@ dumpResult (const char *tag, GVariant *data)
       fprintf (stderr, "  array: %s\n", tstr);
     }
   } else {
-#endif
-  {
     char    *ts;
 
     ts = g_variant_print (data, true);

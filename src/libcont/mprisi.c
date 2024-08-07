@@ -85,15 +85,6 @@ static const char *introspection_xml =
     "</node>\n";
 
 enum {
-  MPRIS_BUS_DBUS,
-  MPRIS_BUS_MAX,
-};
-
-static const char *bus [MPRIS_BUS_MAX] = {
-  [MPRIS_BUS_DBUS] = "org.freedesktop.DBus",
-};
-
-enum {
   MPRIS_OBJP_DBUS,
   MPRIS_OBJP_MP2,
   MPRIS_OBJP_MAX,
@@ -702,11 +693,12 @@ fprintf (stderr, "  %s\n", propstr [key]);
     tv = dbusMessageFinalizeArray (contdata->dbus);
     emptyv = dbusMessageEmptyArray ("as");
     sv = dbusMessageBuild ("s", interface [MPRIS_INTFC_MP2_PLAYER], NULL);
+    /* need to set the type from the children's types */
     dbusMessageSetDataTuple (contdata->dbus, "(sa{sv}as)",
         sv, tv, emptyv, NULL);
   }
 
-  dbusEmitSignal (contdata->dbus, bus [MPRIS_BUS_DBUS],
+  dbusEmitSignal (contdata->dbus,
       objpath [MPRIS_OBJP_MP2], interface [MPRIS_INTFC_DBUS_PROP],
       "PropertiesChanged");
 
