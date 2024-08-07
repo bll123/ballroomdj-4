@@ -278,9 +278,7 @@ contiCheckReady (contdata_t *contdata)
   if (contdata == NULL || contdata->dbus == NULL) {
     return rc;
   }
-fprintf (stderr, "cont-mpris chk-ready\n");
   ret = dbusCheckAcquireName (contdata->dbus);
-fprintf (stderr, "cont-mpris chk: ret: %d\n", ret);
   if (ret == DBUS_NAME_OPEN) {
     rc = true;
   }
@@ -307,7 +305,6 @@ contiSetPlayState (contdata_t *contdata, int state)
     return;
   }
 
-fprintf (stderr, "mprisi: set-play-state\n");
   switch (state) {
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING:
@@ -341,7 +338,6 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     return;
   }
 
-fprintf (stderr, "mprisi: set-repeat-state\n");
   nstate = MPRIS_REPEAT_NONE;
   if (state) {
     nstate = MPRIS_REPEAT_TRACK;
@@ -360,7 +356,6 @@ contiSetPosition (contdata_t *contdata, double pos)
     return;
   }
 
-fprintf (stderr, "mprisi: set-position\n");
   contdata->pos = pos;
 }
 
@@ -371,7 +366,6 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
-fprintf (stderr, "mprisi: set-rate\n");
   if (contdata->rate != rate) {
     double    dval;
 
@@ -389,7 +383,6 @@ contiSetVolume (contdata_t *contdata, int volume)
     return;
   }
 
-fprintf (stderr, "mprisi: set-volume\n");
   if (contdata->volume != volume) {
     double    dval;
 
@@ -413,8 +406,6 @@ contiSetCurrent (contdata_t *contdata, const char *album,
   if (contdata == NULL) {
     return;
   }
-
-fprintf (stderr, "mprisi: set-current\n");
 
   nlistFree (contdata->metadata);
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
@@ -444,13 +435,10 @@ fprintf (stderr, "mprisi: set-current\n");
   dbusMessageInitArray (contdata->dbus, "a{sv}");
   while ((mkey = nlistIterateKey (contdata->metadata, &miter)) >= 0) {
     if (mkey == MPRIS_METADATA_DURATION) {
-fprintf (stderr, "    key %d %ld\n", mkey, (long) nlistGetNum (contdata->metadata, mkey));
       tv = dbusMessageBuild ("x", nlistGetNum (contdata->metadata, mkey));
     } else if (mkey == MPRIS_METADATA_TRACKID) {
-fprintf (stderr, "    key %d %s\n", mkey, nlistGetStr (contdata->metadata, mkey));
       tv = dbusMessageBuild ("o", nlistGetStr (contdata->metadata, mkey));
     } else {
-fprintf (stderr, "    key %d %s\n", mkey, nlistGetStr (contdata->metadata, mkey));
       tv = dbusMessageBuild ("s", nlistGetStr (contdata->metadata, mkey));
     }
     dbusMessageAppendArray (contdata->dbus, "a{sv}",
@@ -660,19 +648,16 @@ fprintf (stderr, "mprisi: send-prop-chg\n");
 
     switch (key) {
       case MPRIS_PROP_PB_STATUS: {
-fprintf (stderr, "  pb-status\n");
         val = nlistGetNum (contdata->chgprop, key);
         str = statusstr [val];
         break;
       }
       case MPRIS_PROP_REPEAT_STATUS: {
-fprintf (stderr, "  rep-status\n");
         val = nlistGetNum (contdata->chgprop, key);
         str = repeatstr [val];
         break;
       }
       case MPRIS_PROP_METADATA: {
-fprintf (stderr, "  metadata\n");
         tvv = contdata->metav;
         break;
       }
@@ -687,7 +672,6 @@ fprintf (stderr, "  metadata\n");
     } else if (tvv == NULL) {
       tvv = dbusMessageBuild ("d", dval, NULL);
     }
-fprintf (stderr, "  %s\n", propstr [key]);
     dbusMessageInitArray (contdata->dbus, "a{sv}");
     dbusMessageAppendArray (contdata->dbus, "a{sv}", propstr [key], tvv, NULL);
     tv = dbusMessageFinalizeArray (contdata->dbus);

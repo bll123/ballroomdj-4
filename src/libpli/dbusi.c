@@ -40,6 +40,7 @@ enum {
   DBUS_TIMEOUT = 500,
   /* documentation states that the bus id will never be zero */
   DBUS_INVALID_BUS = 0,
+  DBUS_VTABLE_MAX = 2,
 };
 
 typedef struct dbus {
@@ -69,7 +70,8 @@ static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char 
 static void dumpResult (const char *tag, GVariant *data);
 # endif
 
-static GDBusInterfaceVTable vtable [] = {
+/* each registration requires its own vtable entry */
+static GDBusInterfaceVTable vtable [DBUS_VTABLE_MAX] = {
   { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
   { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
 };
@@ -107,10 +109,8 @@ dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc)
   if (dbus == NULL || instname == NULL || intfc == NULL) {
     return;
   }
-fprintf (stderr, "acquire-name: %s %s\n", instname, intfc);
 
   snprintf (fullinstname, sizeof (fullinstname), "%s.%s", intfc, instname);
-fprintf (stderr, "full-inst: %s\n", fullinstname);
 
   dbus->busstate = DBUS_NAME_WAIT;
 
@@ -527,13 +527,17 @@ dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc)
   if (dbus == NULL || dbus->idata == NULL) {
     return 0;
   }
+  /* each registration requires its own vtable entry */
+  /* otherwise it does not work */
+  if (dbus->vtableidx >= DBUS_VTABLE_MAX) {
+    return 0;
+  }
 
   info = g_dbus_node_info_lookup_interface (dbus->idata, intfc);
 
   intfcid = g_dbus_connection_register_object (
       dbus->dconn, objpath, info, &vtable [dbus->vtableidx], dbus, NULL, &error);
   ++dbus->vtableidx;
-fprintf (stderr, "register: o:%s i:%s id:%d\n", objpath, intfc, intfcid);
   if (error != NULL) {
     fprintf (stderr, "ERR: %s\n", error->message);
   }
@@ -590,10 +594,7 @@ dbusFreeData (dbus_t *dbus)
   }
 
   mdextfree (dbus->data);
-fprintf (stderr, "fd-data-unref: %d\n", G_IS_OBJECT (dbus->data));
-  if (G_IS_OBJECT (dbus->data)) {
-    g_variant_unref (dbus->data);
-  }
+  g_variant_unref (dbus->data);
 }
 
 static void
@@ -605,7 +606,6 @@ dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata)
     return;
   }
 
-fprintf (stderr, "  acquired %s\n", name);
   dbus->busstate = DBUS_NAME_OPEN;
 }
 
@@ -715,7 +715,8 @@ dumpResult (const char *tag, GVariant *data)
       mdextalloc (v);
       dumpResult ("value-as", v);
       mdextfree (v);
-      g_variant_unref (v);
+      /* this seems to crash */
+      // g_variant_unref (v);
     }
   } else if (strcmp (type, "as") == 0) {
     const char  **out;
