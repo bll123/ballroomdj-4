@@ -233,7 +233,8 @@ contiInit (const char *instname)
   contdata->paused = false;
 
   contdata->dbus = dbusConnInit ();
-  dbusConnectAcquireName (contdata->dbus, instname, interface [MPRIS_INTFC_MP2]);
+  dbusConnectAcquireName (contdata->dbus, contdata->instname,
+      interface [MPRIS_INTFC_MP2]);
 
   return contdata;
 }
@@ -245,7 +246,6 @@ contiFree (contdata_t *contdata)
     return;
   }
 
-  dataFree (contdata->instname);
   nlistFree (contdata->chgprop);
   nlistFree (contdata->metadata);
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
@@ -255,6 +255,7 @@ contiFree (contdata_t *contdata)
   if (contdata->dbus != NULL) {
     dbusConnClose (contdata->dbus);
   }
+  dataFree (contdata->instname);
   mdfree (contdata);
 }
 
@@ -524,7 +525,7 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       dbusMessageSetData (contdata->dbus, "b", false, NULL);
       rc = true;
     } else if (strcmp (prop, "Identity") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", contdata->instname, NULL);
+      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);
       rc = true;
     } else if (strcmp (prop, "DesktopEntry") == 0) {
       dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);
